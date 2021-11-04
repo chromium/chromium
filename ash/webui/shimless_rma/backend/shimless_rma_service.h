@@ -117,6 +117,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void WriteProtectManuallyEnabled(
       WriteProtectManuallyEnabledCallback callback) override;
 
+  void GetLog(GetLogCallback callback) override;
   void EndRmaAndReboot(EndRmaAndRebootCallback callback) override;
   void EndRmaAndShutdown(EndRmaAndShutdownCallback callback) override;
   void EndRmaAndCutoffBattery(EndRmaAndCutoffBatteryCallback callback) override;
@@ -169,6 +170,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                           absl::optional<rmad::GetStateReply> response);
   void OnAbortRmaResponse(AbortRmaCallback callback,
                           absl::optional<rmad::AbortRmaReply> response);
+  void OnGetLog(GetLogCallback callback, absl::optional<std::string> log);
   void OnNetworkListResponse(
       BeginFinalizationCallback callback,
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>

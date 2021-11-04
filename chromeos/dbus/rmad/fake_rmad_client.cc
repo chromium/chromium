@@ -78,6 +78,9 @@ rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
     case rmad::RmadState::kFinalize:
       state->set_allocated_finalize(new rmad::FinalizeState());
       break;
+    case rmad::RmadState::kRepairComplete:
+      state->set_allocated_repair_complete(new rmad::RepairCompleteState());
+      break;
     default:
       NOTREACHED();
       break;
@@ -142,6 +145,7 @@ void FakeRmadClient::CreateWithState() {
       CreateStateReply(rmad::RmadState::kProvisionDevice, rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kWpEnablePhysical, rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK),
   };
   fake->SetFakeStateReplies(fake_states);
 }
@@ -238,11 +242,16 @@ void FakeRmadClient::AbortRma(
                      absl::optional<rmad::AbortRmaReply>(abort_rma_reply_)));
 }
 
-void FakeRmadClient::GetLogPath(DBusMethodCallback<std::string> callback) {
+void FakeRmadClient::GetLog(DBusMethodCallback<std::string> callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     absl::optional<std::string>("fake/log/path.log")));
+      base::BindOnce(
+          std::move(callback),
+          absl::optional<std::string>(
+              "This is a log.\nIt has multiple lines.\nSome of which are very, "
+              "very long so that the log window can be tested. I mean really "
+              "long, much longer than you expect. It just keeps going on and "
+              "on, until it just stops.")));
 }
 
 void FakeRmadClient::AddObserver(Observer* observer) {

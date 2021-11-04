@@ -637,6 +637,16 @@ export class FakeShimlessRmaService {
         'writeProtectManuallyEnabled', RmaState.kWaitForManualWPEnable);
   }
 
+  /** @return {!Promise<{log: string}>} */
+  getLog() {
+    return this.methods_.resolveMethod('getLog');
+  }
+
+  /** @param {string} log */
+  setGetLogResult(log) {
+    this.methods_.setResult('getLog', {log: log});
+  }
+
   /**
    * @return {!Promise<!StateResult>}
    */
@@ -1043,6 +1053,7 @@ export class FakeShimlessRmaService {
     // methods is a little different than other fakes in that they don't return
     // undefined by default.
     this.components_ = [];
+    this.setGetLogResult('');
   }
 
   /**
@@ -1116,6 +1127,7 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('writeProtectManuallyEnabled');
 
+    this.methods_.register('getLog');
     this.methods_.register('endRmaAndReboot');
     this.methods_.register('endRmaAndShutdown');
     this.methods_.register('endRmaAndCutoffBattery');

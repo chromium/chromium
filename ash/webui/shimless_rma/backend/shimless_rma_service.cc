@@ -701,6 +701,27 @@ void ShimlessRmaService::WriteProtectManuallyEnabled(
   TransitionNextStateGeneric(std::move(callback));
 }
 
+void ShimlessRmaService::GetLog(GetLogCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
+    LOG(ERROR) << "GetLog called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run("");
+    return;
+  }
+  chromeos::RmadClient::Get()->GetLog(
+      base::BindOnce(&ShimlessRmaService::OnGetLog,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ShimlessRmaService::OnGetLog(GetLogCallback callback,
+                                  absl::optional<std::string> log) {
+  if (!log) {
+    std::move(callback).Run("");
+    return;
+  }
+  std::move(callback).Run(*log);
+}
+
 void ShimlessRmaService::EndRmaAndReboot(EndRmaAndRebootCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
     LOG(ERROR) << "EndRmaAndReboot called from incorrect state "

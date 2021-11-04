@@ -39,6 +39,10 @@
     height: 40px;
     width: 40px;
   }
+
+  .log {
+    white-space: pre;
+  }
 </style>
 
 <base-page orientation="column">
@@ -99,8 +103,9 @@
     RMA Logs
   </div>
   <div slot="body">
-    Logs..
-    <hr>
+    <div class="log">[[log_]]</div>
+  </div>
+  <div slot="footer">
     <cr-button id="closeLogDialogButton" on-click="onCancelClick_">Cancel</cr-button>
     <cr-button id="rmaLogButton" on-click="onRmaLogButtonClick_">Save to ...</cr-button>
   </div>
@@ -113,7 +118,8 @@
   </div>
   <div slot="body">
     Shut down your device to complete battery cut off
-    <hr>
+  </div>
+  <div slot="footer">
     <cr-button id="closeBatteryDialogButton" on-click="onCancelClick_">Cancel</cr-button>
     <cr-button id="shutdownButton" on-click="onShutdownClick_">Shut down</cr-button>
   </div>

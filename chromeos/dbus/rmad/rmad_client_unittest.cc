@@ -595,36 +595,36 @@ TEST_F(RmadClientTest, AbortRma_EmptyResponse) {
   run_loop.RunUntilIdle();
 }
 
-TEST_F(RmadClientTest, GetLogPath) {
+TEST_F(RmadClientTest, GetLog) {
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
-  const std::string expected_path = "test/path/to/rma.log";
-  dbus::MessageWriter(response.get()).AppendString(expected_path);
+  const std::string expected_log = "test rma log";
+  dbus::MessageWriter(response.get()).AppendString(expected_log);
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetLogPathMethod),
+              DoCallMethod(HasMember(rmad::kGetLogMethod),
                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
-  client_->GetLogPath(
+  client_->GetLog(
       base::BindLambdaForTesting([&](absl::optional<std::string> response) {
         EXPECT_TRUE(response.has_value());
-        EXPECT_EQ(response, expected_path);
+        EXPECT_EQ(response, expected_log);
         run_loop.Quit();
       }));
   run_loop.RunUntilIdle();
 }
 
-TEST_F(RmadClientTest, GetLogPath_NullResponse) {
+TEST_F(RmadClientTest, GetLog_NullResponse) {
   response_ = nullptr;
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetLogPathMethod),
+              DoCallMethod(HasMember(rmad::kGetLogMethod),
                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
-  client_->GetLogPath(
+  client_->GetLog(
       base::BindLambdaForTesting([&](absl::optional<std::string> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();
@@ -632,17 +632,17 @@ TEST_F(RmadClientTest, GetLogPath_NullResponse) {
   run_loop.RunUntilIdle();
 }
 
-TEST_F(RmadClientTest, GetLogPath_EmptyResponse) {
+TEST_F(RmadClientTest, GetLog_EmptyResponse) {
   std::unique_ptr<dbus::Response> response = dbus::Response::CreateEmpty();
 
   response_ = response.get();
   EXPECT_CALL(*mock_proxy_.get(),
-              DoCallMethod(HasMember(rmad::kGetLogPathMethod),
+              DoCallMethod(HasMember(rmad::kGetLogMethod),
                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, _))
       .WillOnce(Invoke(this, &RmadClientTest::OnCallDbusMethod));
 
   base::RunLoop run_loop;
-  client_->GetLogPath(
+  client_->GetLog(
       base::BindLambdaForTesting([&](absl::optional<std::string> response) {
         EXPECT_FALSE(response.has_value());
         run_loop.Quit();

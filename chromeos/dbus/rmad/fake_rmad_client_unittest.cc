@@ -467,12 +467,17 @@ TEST_F(FakeRmadClientTest, Abortable_SetTrue_Ok) {
   run_loop.RunUntilIdle();
 }
 
-TEST_F(FakeRmadClientTest, GetLogPath) {
+TEST_F(FakeRmadClientTest, GetLog) {
   base::RunLoop run_loop;
-  client_->GetLogPath(
+  client_->GetLog(
       base::BindLambdaForTesting([&](absl::optional<std::string> response) {
         EXPECT_TRUE(response.has_value());
-        EXPECT_EQ(*response, "fake/log/path.log");
+        EXPECT_EQ(
+            *response,
+            "This is a log.\nIt has multiple lines.\nSome of which are very, "
+            "very long so that the log window can be tested. I mean really "
+            "long, much longer than you expect. It just keeps going on and "
+            "on, until it just stops.");
         run_loop.Quit();
       }));
   run_loop.RunUntilIdle();

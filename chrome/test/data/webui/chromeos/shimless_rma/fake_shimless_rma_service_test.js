@@ -683,6 +683,16 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
+  test('GetLog', () => {
+    let states = [{state: RmaState.kRepairComplete, error: RmadErrorCode.kOk}];
+    service.setStates(states);
+    const expectedLog = 'fake log';
+    service.setGetLogResult(expectedLog);
+    return service.getLog().then((res) => {
+      assertEquals(expectedLog, res.log);
+    });
+  });
+
   test('EndRmaAndRebootOk', () => {
     let states = [
       {state: RmaState.kRepairComplete, error: RmadErrorCode.kOk},

@@ -32,7 +32,7 @@ class RmadClientImpl : public RmadClient {
 
   void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) override;
 
-  void GetLogPath(DBusMethodCallback<std::string> callback) override;
+  void GetLog(DBusMethodCallback<std::string> callback) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -47,8 +47,8 @@ class RmadClientImpl : public RmadClient {
   template <class T>
   void OnProtoReply(DBusMethodCallback<T> callback, dbus::Response* response);
 
-  void OnGetLogPathReply(DBusMethodCallback<std::string> callback,
-                         dbus::Response* response);
+  void OnGetLogReply(DBusMethodCallback<std::string> callback,
+                     dbus::Response* response);
 
   void CalibrationProgressReceived(dbus::Signal* signal);
   void CalibrationOverallProgressReceived(dbus::Signal* signal);
@@ -327,13 +327,12 @@ void RmadClientImpl::AbortRma(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void RmadClientImpl::GetLogPath(DBusMethodCallback<std::string> callback) {
-  dbus::MethodCall method_call(rmad::kRmadInterfaceName,
-                               rmad::kGetLogPathMethod);
+void RmadClientImpl::GetLog(DBusMethodCallback<std::string> callback) {
+  dbus::MethodCall method_call(rmad::kRmadInterfaceName, rmad::kGetLogMethod);
   dbus::MessageWriter writer(&method_call);
   rmad_proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&RmadClientImpl::OnGetLogPathReply,
+      base::BindOnce(&RmadClientImpl::OnGetLogReply,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -374,8 +373,8 @@ void RmadClientImpl::OnProtoReply(DBusMethodCallback<T> callback,
   std::move(callback).Run(std::move(response_proto));
 }
 
-void RmadClientImpl::OnGetLogPathReply(DBusMethodCallback<std::string> callback,
-                                       dbus::Response* response) {
+void RmadClientImpl::OnGetLogReply(DBusMethodCallback<std::string> callback,
+                                   dbus::Response* response) {
   if (!response) {
     LOG(ERROR) << "Error calling rmad function";
     std::move(callback).Run(absl::nullopt);

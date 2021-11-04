@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
 
   void AbortRma(DBusMethodCallback<rmad::AbortRmaReply> callback) override;
 
-  void GetLogPath(DBusMethodCallback<std::string> callback) override;
+  void GetLog(DBusMethodCallback<std::string> callback) override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
