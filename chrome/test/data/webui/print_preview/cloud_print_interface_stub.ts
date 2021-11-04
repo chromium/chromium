@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloudPrintInterfaceEventType, createDestinationKey, Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
+import {CloudPrintInterface, CloudPrintInterfaceEventType, createDestinationKey, Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -11,64 +11,48 @@ import {getCddTemplate} from './print_preview_test_utils.js';
 
 /**
  * Test version of the cloud print interface.
- * @implements {CloudPrintInterface}
  */
-export class CloudPrintInterfaceStub extends TestBrowserProxy {
+export class CloudPrintInterfaceStub extends TestBrowserProxy implements
+    CloudPrintInterface {
+  private eventTarget_: EventTarget = new EventTarget();
+  private searchInProgress_: boolean = false;
+  private cloudPrintersMap_: Map<string, Destination> = new Map();
+  private initialized_: boolean = false;
+  private users_: string[] = [];
+  private configured_: boolean = false;
+
   constructor() {
     super(['printer', 'search', 'submit']);
-
-    /** @private {!EventTarget} */
-    this.eventTarget_ = new EventTarget();
-
-    /** @private {boolean} */
-    this.searchInProgress_ = false;
-
-    /** @private {!Map<string, !Destination>} */
-    this.cloudPrintersMap_ = new Map();
-
-    /** @private {boolean} */
-    this.initialized_ = false;
-
-    /** @private {!Array<string>} */
-    this.users_ = [];
-
-    /** @private {boolean} */
-    this.configured_ = false;
   }
 
-  /** @override */
   configure() {
     this.configured_ = true;
   }
 
-  /** @override */
   getEventTarget() {
     return this.eventTarget_;
   }
 
-  /** @override */
   isCloudDestinationSearchInProgress() {
     return this.searchInProgress_;
   }
 
-  /** @override */
   isConfigured() {
     return this.configured_;
   }
 
-  /** @override */
-  setUsers(users) {
+  setUsers(users: string[]) {
     this.users_ = users;
   }
 
-  /** @override */
-  areCookieDestinationsDisabled() {}
+  areCookieDestinationsDisabled() {
+    return false;
+  }
 
   /**
-   * @param {!Destination} printer The destination to return
-   *     when the printer is requested.
+   * @param printer The destination to return when the printer is requested.
    */
-  setPrinter(printer) {
+  setPrinter(printer: Destination) {
     this.cloudPrintersMap_.set(printer.key, printer);
     if (!this.users_.includes(printer.account)) {
       this.users_.push(printer.account);
@@ -76,25 +60,10 @@ export class CloudPrintInterfaceStub extends TestBrowserProxy {
   }
 
   /**
-   * Helper method to derive logged in users from the |cloudPrintersMap_|.
-   * @return {!Array<string>} The logged in user accounts.
-   */
-  getUsers_() {
-    const users = [];
-    this.cloudPrintersMap_.forEach((printer, key) => {
-      if (!users.includes(printer.account)) {
-        users.push(printer.account);
-      }
-    });
-    return users;
-  }
-
-  /**
    * Dispatches a CloudPrintInterfaceEventType.SEARCH_DONE event with the
    * printers that have been set so far using setPrinter().
-   * @override
    */
-  search(account) {
+  search(account: string) {
     this.methodCalled('search', account);
     this.searchInProgress_ = true;
     const activeUser = !!account && this.users_.includes(account) ?
@@ -107,7 +76,7 @@ export class CloudPrintInterfaceStub extends TestBrowserProxy {
       this.initialized_ = true;
     }
 
-    const printers = [];
+    const printers: Destination[] = [];
     this.cloudPrintersMap_.forEach((value) => {
       if (value.account === account) {
         printers.push(value);
@@ -131,13 +100,12 @@ export class CloudPrintInterfaceStub extends TestBrowserProxy {
   /**
    * Dispatches a CloudPrintInterfaceEventType.PRINTER_DONE event with the
    * printer details if the printer has been added by calling setPrinter().
-   * @override
    */
-  printer(printerId, origin, account) {
+  printer(printerId: string, origin: DestinationOrigin, account: string) {
     // Use setTimeout to make this return asynchronously to better simulate the
     // real CloudPrintInterface. This allows testing for timing issues, e.g.
     // https://crbug.com/1038645
-    setTimeout(() => {
+    window.setTimeout(() => {
       this.methodCalled(
           'printer', {id: printerId, origin: origin, account: account});
       const printer = this.cloudPrintersMap_.get(
@@ -173,7 +141,9 @@ export class CloudPrintInterfaceStub extends TestBrowserProxy {
     }, 1);
   }
 
-  submit(destination, printTicket, documentTitle, data) {
+  submit(
+      destination: Destination, printTicket: string, documentTitle: string,
+      data: string) {
     this.methodCalled('submit', {
       destination: destination,
       printTicket: printTicket,

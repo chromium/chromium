@@ -41,7 +41,8 @@ export function getDefaultInitialSettings(isPdf = false) {
 /**
  * @param {string} printerId
  * @param {string=} opt_printerName Defaults to an empty string.
- * @return {!{printer: !capabilities: !Cdd}}
+ * @return {!{printer: {deviceName: string, printerName: string},
+ *                      capabilities: !Cdd}}
  */
 export function getCddTemplate(printerId, opt_printerName) {
   const template = {

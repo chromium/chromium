@@ -14,6 +14,7 @@ preprocessed_tests = [
   "destination_store_test.js",
   "invalid_settings_browsertest.js",
   "key_event_test.js",
+  "native_layer_stub.ts",
   "policy_test.js",
   "preview_generation_test.js",
   "print_button_test.js",
@@ -30,7 +31,7 @@ non_preprocessed_tests = [
   "advanced_item_test.js",
   "button_strip_interactive_test.js",
   "button_strip_test.js",
-  "cloud_print_interface_stub.js",
+  "cloud_print_interface_stub.ts",
   "color_settings_test.js",
   "copies_settings_test.js",
   "custom_margins_test.js",
@@ -52,7 +53,6 @@ non_preprocessed_tests = [
   "model_settings_availability_test.js",
   "model_settings_policy_test.js",
   "model_test.js",
-  "native_layer_stub.js",
   "number_settings_section_interactive_test.js",
   "number_settings_section_test.js",
   "other_options_settings_test.js",
@@ -71,7 +71,7 @@ non_preprocessed_tests = [
   "select_behavior_test.js",
   "settings_select_test.js",
   "system_dialog_browsertest.js",
-  "test_plugin_proxy.js",
+  "test_plugin_proxy.ts",
 ]
 
 if (is_chromeos) {
@@ -81,7 +81,7 @@ if (is_chromeos) {
     "destination_search_test_chromeos.js",
     "destination_select_test_cros.js",
     "destination_settings_test_cros.js",
-    "native_layer_cros_stub.js",
+    "native_layer_cros_stub.ts",
     "pin_settings_test.js",
     "print_server_store_test.js",
   ]

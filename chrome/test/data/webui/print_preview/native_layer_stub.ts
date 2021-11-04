@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, GooglePromotedDestinationId, PrinterType} from 'chrome://print/print_preview.js';
+import {CapabilitiesResponse, GooglePromotedDestinationId, LocalDestinationInfo, NativeInitialSettings, NativeLayer, PageLayoutInfo, PrinterType, ProvisionalDestinationInfo} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -13,9 +13,46 @@ import {getCddTemplate, getPdfPrinter} from './print_preview_test_utils.js';
 
 /**
  * Test version of the native layer.
- * @implements {NativeLayer}
  */
-export class NativeLayerStub extends TestBrowserProxy {
+export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
+  /**
+   * The initial settings to be used for the response to a |getInitialSettings|
+   * call.
+   */
+  private initialSettings_: NativeInitialSettings|null = null;
+
+  /** Accounts to be sent on signIn(). */
+  private accounts_: string[]|null = null;
+
+  /**
+   * Local destination list to be used for the response to |getPrinters|.
+   */
+  private localDestinationInfos_: LocalDestinationInfo[] = [];
+
+  /**
+   * Extension destination list to be used for the response to |getPrinters|.
+   */
+  private extensionDestinationInfos_: ProvisionalDestinationInfo[] = [];
+
+  /**
+   *     A map from destination IDs to the responses to be sent when
+   *     |getPrinterCapabilities| is called for the ID.
+   */
+  private localDestinationCapabilities_:
+      Map<string, Promise<CapabilitiesResponse>> = new Map();
+
+  private multipleCapabilitiesPromise_: PromiseResolver<void>|null = null;
+
+  private multipleCapabilitiesCount_: number = 0;
+
+  /** The ID of a printer with a simulated bad driver. */
+  private badPrinterId_: string = '';
+
+  /** The number of total pages in the document. */
+  private pageCount_: number = 1;
+
+  private pageLayoutInfo_: PageLayoutInfo|null = null;
+
   constructor() {
     super([
       'dialogClose',
@@ -29,72 +66,22 @@ export class NativeLayerStub extends TestBrowserProxy {
       'showSystemDialog',
       'signIn',
     ]);
-
-    /**
-     * @private {?NativeInitialSettings} The initial settings
-     *     to be used for the response to a |getInitialSettings| call.
-     */
-    this.initialSettings_ = null;
-
-    /** @private {?Array<string>} Accounts to be sent on signIn(). */
-    this.accounts_ = null;
-
-    /**
-     * @private {!Array<!LocalDestinationInfo>} Local
-     *     destination list to be used for the response to |getPrinters|.
-     */
-    this.localDestinationInfos_ = [];
-
-    /**
-     * @private {!Array<!ProvisionalDestinationInfo>} Local
-     *     destination list to be used for the response to |getPrinters|.
-     */
-    this.extensionDestinationInfos_ = [];
-
-    /**
-     * @private {!Map<string,
-     *                !Promise<!CapabilitiesResponse>>}
-     *     A map from destination IDs to the responses to be sent when
-     *     |getPrinterCapabilities| is called for the ID.
-     */
-    this.localDestinationCapabilities_ = new Map();
-
-    /** @private {?PromiseResolver} */
-    this.multipleCapabilitiesPromise_ = null;
-
-    /** @private {number} */
-    this.multipleCapabilitiesCount_ = 0;
-
-    /**
-     * @private {string} The ID of a printer with a bad driver.
-     */
-    this.badPrinterId_ = '';
-
-    /** @private {number} The number of total pages in the document. */
-    this.pageCount_ = 1;
-
-    /** @private {?PageLayoutInfo} Page layout information */
-    this.pageLayoutInfo_ = null;
   }
 
-  /** @param {number} pageCount The number of pages in the document. */
-  setPageCount(pageCount) {
+  setPageCount(pageCount: number) {
     this.pageCount_ = pageCount;
   }
 
-  /** @override */
-  dialogClose(isCancel) {
+  dialogClose(isCancel: boolean) {
     this.methodCalled('dialogClose', isCancel);
   }
 
-  /** @override */
   getInitialSettings() {
     this.methodCalled('getInitialSettings');
-    return Promise.resolve(assert(this.initialSettings_));
+    return Promise.resolve(assert(this.initialSettings_!));
   }
 
-  /** @override */
-  getPrinters(type) {
+  getPrinters(type: PrinterType) {
     this.methodCalled('getPrinters', type);
     if (type === PrinterType.LOCAL_PRINTER &&
         this.localDestinationInfos_.length > 0) {
@@ -109,8 +96,7 @@ export class NativeLayerStub extends TestBrowserProxy {
     return Promise.resolve();
   }
 
-  /** @override */
-  getPreview(printTicket) {
+  getPreview(printTicket: string) {
     this.methodCalled('getPreview', {printTicket: printTicket});
     const printTicketParsed = JSON.parse(printTicket);
     if (printTicketParsed.deviceName === this.badPrinterId_) {
@@ -128,23 +114,24 @@ export class NativeLayerStub extends TestBrowserProxy {
         webUIListenerCallback('page-preview-ready', i, 0, requestId);
       }
     } else {
-      const pages = pageRanges.reduce(function(soFar, range) {
-        for (let page = range.from; page <= range.to; page++) {
-          soFar.push(page);
-        }
-        return soFar;
-      }, []);
+      const pages = pageRanges.reduce(
+          function(soFar: number[], range: {from: number, to: number}) {
+            for (let page = range.from; page <= range.to; page++) {
+              soFar.push(page);
+            }
+            return soFar;
+          },
+          []);
       webUIListenerCallback(
           'page-count-ready', this.pageCount_, requestId, 100);
-      pages.forEach(function(page) {
+      pages.forEach(function(page: number) {
         webUIListenerCallback('page-preview-ready', page - 1, 0, requestId);
       });
     }
     return Promise.resolve(requestId);
   }
 
-  /** @override */
-  getPrinterCapabilities(printerId, type) {
+  getPrinterCapabilities(printerId: string, type: PrinterType) {
     this.methodCalled(
         'getPrinterCapabilities',
         {destinationId: printerId, printerType: type});
@@ -155,10 +142,14 @@ export class NativeLayerStub extends TestBrowserProxy {
         this.multipleCapabilitiesPromise_ = null;
       }
     }
-    if (printerId === GooglePromotedDestinationId.SAVE_AS_PDF ||
-        printerId === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
+    if (printerId === GooglePromotedDestinationId.SAVE_AS_PDF) {
       return Promise.resolve(getPdfPrinter());
     }
+    // <if expr="chromeos or lacros">
+    if (printerId === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
+      return Promise.resolve(getPdfPrinter());
+    }
+    // </if>
     if (type !== PrinterType.LOCAL_PRINTER) {
       return Promise.reject();
     }
@@ -166,34 +157,28 @@ export class NativeLayerStub extends TestBrowserProxy {
         Promise.reject();
   }
 
-  /** @override */
-  print(printTicket) {
+  print(printTicket: string) {
     this.methodCalled('print', printTicket);
     if (JSON.parse(printTicket).printerType === PrinterType.CLOUD_PRINTER) {
       return Promise.resolve('sample data');
     }
-    return Promise.resolve();
+    return Promise.resolve(undefined);
   }
 
-  /** @override */
   hidePreview() {
     this.methodCalled('hidePreview');
   }
 
-  /** @override */
   showSystemDialog() {
     this.methodCalled('showSystemDialog');
   }
 
-  /** @override */
   recordInHistogram() {}
 
-  /** @override */
-  saveAppState(appState) {
+  saveAppState(appState: string) {
     this.methodCalled('saveAppState', appState);
   }
 
-  /** @override */
   signIn() {
     this.methodCalled('signIn');
     const accounts = this.accounts_ || ['foo@chromium.org'];
@@ -205,25 +190,22 @@ export class NativeLayerStub extends TestBrowserProxy {
     }
   }
 
-  /** @override */
   cancelPendingPrintRequest() {}
 
-  /** @override */
   managePrinters() {}
 
   /**
-   * @param {!NativeInitialSettings} settings The settings
-   *     to return as a response to |getInitialSettings|.
+   * settings The settings to return as a response to |getInitialSettings|.
    */
-  setInitialSettings(settings) {
+  setInitialSettings(settings: NativeInitialSettings) {
     this.initialSettings_ = settings;
   }
 
   /**
-   * @param {!Array<!LocalDestinationInfo>} localDestinations
-   *     The local destinations to return as a response to |getPrinters|.
+   * @param localDestinations The local destinations to return as a response to
+   *     |getPrinters|.
    */
-  setLocalDestinations(localDestinations) {
+  setLocalDestinations(localDestinations: LocalDestinationInfo[]) {
     this.localDestinationInfos_ = localDestinations;
     this.localDestinationCapabilities_ = new Map();
     this.localDestinationInfos_.forEach(info => {
@@ -236,46 +218,44 @@ export class NativeLayerStub extends TestBrowserProxy {
   }
 
   /**
-   * @param {!Array<!ProvisionalDestinationInfo>}
-   *     extensionDestinations The extension destinations to return as a
+   * @param extensionDestinations The extension destinations to return as a
    *     response to |getPrinters|.
    */
-  setExtensionDestinations(extensionDestinations) {
+  setExtensionDestinations(extensionDestinations:
+                               ProvisionalDestinationInfo[]) {
     this.extensionDestinationInfos_ = extensionDestinations;
   }
 
   /**
-   * @param {!CapabilitiesResponse} response The
-   *     response to send for the destination whose ID is in the response.
-   * @param {boolean=} opt_reject Whether to reject the callback for this
-   *     destination. Defaults to false (will resolve callback) if not
-   *     provided.
+   * @param response The response to send for the destination whose ID is in the
+   *     response.
+   * @param opt_reject Whether to reject the callback for this destination.
+   *     Defaults to false (will resolve callback) if not provided.
    */
-  setLocalDestinationCapabilities(response, opt_reject) {
+  setLocalDestinationCapabilities(
+      response: CapabilitiesResponse, opt_reject?: boolean) {
     this.localDestinationCapabilities_.set(
-        response.printer.deviceName,
+        response.printer!.deviceName,
         opt_reject ? Promise.reject() : Promise.resolve(response));
   }
 
   /**
-   * @param {string} id The printer ID that should cause an
-   *     SETTINGS_INVALID error in response to a preview request. Models a
-   *     bad printer driver.
+   * @param id The printer ID that should cause an SETTINGS_INVALID error in
+   *     response to a preview request. Models a bad printer driver.
    */
-  setInvalidPrinterId(id) {
+  setInvalidPrinterId(id: string) {
     this.badPrinterId_ = id;
   }
 
-  /** @param {!PageLayoutInfo} pageLayoutInfo */
-  setPageLayoutInfo(pageLayoutInfo) {
+  setPageLayoutInfo(pageLayoutInfo: PageLayoutInfo) {
     this.pageLayoutInfo_ = pageLayoutInfo;
   }
 
   /**
-   * @param {number} count The number of capability requests to wait for.
-   * @return {!Promise} Promise that resolves after |count| requests.
+   * @param count The number of capability requests to wait for.
+   * @return Promise that resolves after |count| requests.
    */
-  waitForMultipleCapabilities(count) {
+  waitForMultipleCapabilities(count: number): Promise<void> {
     assert(this.multipleCapabilitiesPromise_ === null);
     this.multipleCapabilitiesCount_ = count;
     this.multipleCapabilitiesPromise_ = new PromiseResolver();

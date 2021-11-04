@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 export {PluralStringProxyImpl as PrintPreviewPluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-export {CloudPrintInterfaceEventType} from './cloud_print_interface.js';
+export {CloudPrintInterface, CloudPrintInterfaceEventType} from './cloud_print_interface.js';
 export {CloudPrintInterfaceImpl} from './cloud_print_interface_impl.js';
 export {ColorMode, createDestinationKey, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationType, GooglePromotedDestinationId, makeRecentDestination} from './data/destination.js';
 // <if expr="chromeos or lacros">
@@ -11,6 +11,8 @@ export {SAVE_TO_DRIVE_CROS_DESTINATION_KEY} from './data/destination.js';
 // </if>
 export {PrinterType} from './data/destination_match.js';
 export {DestinationErrorType, DestinationStore, DestinationStoreEventType} from './data/destination_store.js';
+export {PageLayoutInfo} from './data/document_info.js';
+export {LocalDestinationInfo, ProvisionalDestinationInfo} from './data/local_parsers.js';
 export {CustomMarginsOrientation, Margins, MarginsType} from './data/margins.js';
 export {MeasurementSystem, MeasurementSystemUnitType} from './data/measurement_system.js';
 export {DuplexMode, DuplexType, getInstance, PrintPreviewModelElement, whenReady} from './data/model.js';
@@ -18,15 +20,16 @@ export {DuplexMode, DuplexType, getInstance, PrintPreviewModelElement, whenReady
 export {PrintServerStore, PrintServerStoreEventType} from './data/print_server_store.js';
 // </if>
 // <if expr="chromeos or lacros">
-export {PrinterState, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
+export {PrinterState, PrinterStatus, PrinterStatusReason, PrinterStatusSeverity} from './data/printer_status_cros.js';
 // </if>
 export {ScalingType} from './data/scaling.js';
 export {Size} from './data/size.js';
 export {Error, State} from './data/state.js';
-export {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, NativeLayerImpl, PinModeRestriction} from './native_layer.js';
+export {BackgroundGraphicsModeRestriction, CapabilitiesResponse, ColorModeRestriction, DuplexModeRestriction, NativeInitialSettings, NativeLayer, NativeLayerImpl, PinModeRestriction} from './native_layer.js';
 // <if expr="chromeos or lacros">
-export {NativeLayerCrosImpl} from './native_layer_cros.js';
+export {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse, PrintServersConfig} from './native_layer_cros.js';
 // </if>
+export {PDFPlugin} from './pdf/pdf_scripting_api.js';
 export {getSelectDropdownBackground} from './print_preview_utils.js';
 export {PrintPreviewAdvancedSettingsDialogElement} from './ui/advanced_settings_dialog.js';
 export {PrintPreviewAdvancedSettingsItemElement} from './ui/advanced_settings_item.js';
@@ -65,7 +68,7 @@ export {PrintPreviewNumberSettingsSectionElement} from './ui/number_settings_sec
 export {PrintPreviewOtherOptionsSettingsElement} from './ui/other_options_settings.js';
 export {PrintPreviewPagesPerSheetSettingsElement} from './ui/pages_per_sheet_settings.js';
 export {PrintPreviewPagesSettingsElement} from './ui/pages_settings.js';
-export {PluginProxyImpl} from './ui/plugin_proxy.js';
+export {PluginProxy, PluginProxyImpl, ViewportChangedCallback} from './ui/plugin_proxy.js';
 export {PreviewAreaState, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
