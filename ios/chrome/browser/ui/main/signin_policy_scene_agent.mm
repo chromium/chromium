@@ -53,11 +53,6 @@
 // Browser of the main interface of the scene.
 @property(nonatomic, assign) Browser* mainBrowser;
 
-// YES if the scene is showing the forced sign-in prompt. This is to avoid
-// that the scene that is presenting the forced sign-in UI handles the
-// policy more than one time.
-@property(nonatomic, assign) BOOL presentingForcedSigninPrompt;
-
 @end
 
 @implementation SigninPolicySceneAgent
@@ -105,6 +100,13 @@
   // dismissed which might be because the scene that was displaying the
   // sign-in prompt previously was closed. Choosing a new scene to prompt
   // is needed in that case.
+  [self handleSigninPromptsIfUIAvailable];
+}
+
+- (void)signinDidEnd:(SceneState*)sceneState {
+  // Consider showing the forced sign-in prompt when the sign-in prompt is
+  // dismissed/done because the browser may be signed out if sign-in is
+  // cancelled.
   [self handleSigninPromptsIfUIAvailable];
 }
 
@@ -201,8 +203,6 @@
       DCHECK(self.sceneState.appState.currentUIBlocker == self.sceneState);
     }
 
-    self.presentingForcedSigninPrompt = YES;
-
     // Put a UI blocker to stop the other scenes from handling the policy.
     // This UI blocker will be superimposed on the one of the sign-in prompt
     // command and maybe the existing sign-in prompt (to be dismissed) to not
@@ -232,16 +232,13 @@
 
 // Shows the forced sign-in prompt using the application command.
 - (void)showForcedSigninPrompt {
-  __weak __typeof(self) weakSelf = self;
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AUTHENTICATION_OPERATION_FORCED_SIGNIN
                identity:nil
             accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(BOOL success) {
-                 weakSelf.presentingForcedSigninPrompt = NO;
-               }];
+               callback:nil];
 
   id<ApplicationCommands> handler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
@@ -266,12 +263,12 @@
     return NO;
   }
 
-  if (self.presentingForcedSigninPrompt) {
-    // Return NO when the scene is already presenting the forced sign-in prompt
-    // to not handle the forced sign-in policy more than one time. The other
-    // scenes will have |self.sceneState.presentingModalOverlay| == YES which
-    // will stop them from handling the policy as well. For example, this stops
-    // the scene from rehandling the forced sign-in policy when foregrounded.
+  if (self.sceneState.signinInProgress) {
+    // Prompting to sign-in is already in progress in that scene, no need to
+    // present the forced sign-in prompt on top of that. The other scenes will
+    // have |self.sceneState.presentingModalOverlay| == YES which will stop
+    // them from handling the policy as well. For example, this stops the scene
+    // from rehandling the forced sign-in policy when foregrounded.
     return NO;
   }
 

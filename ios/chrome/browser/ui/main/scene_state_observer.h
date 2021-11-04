@@ -41,6 +41,10 @@ enum SceneActivationLevel : NSUInteger;
 // Notifies that the scene switched between incognito/normal mode.
 - (void)sceneState:(SceneState*)sceneState
     isDisplayingIncognitoContent:(BOOL)incognitoContentVisible;
+// Notifies that prompting to sign-in did start.
+- (void)signinDidStart:(SceneState*)sceneState;
+// Notifies that prompting to sign-in and the authentication flow are done.
+- (void)signinDidEnd:(SceneState*)sceneState;
 
 @end
 

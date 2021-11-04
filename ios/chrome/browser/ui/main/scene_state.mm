@@ -226,6 +226,17 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
   [self.observers sceneState:self receivedUserActivity:pendingUserActivity];
 }
 
+- (void)setSigninInProgress:(BOOL)signinInProgress {
+  DCHECK(_signinInProgress != signinInProgress);
+
+  _signinInProgress = signinInProgress;
+  if (signinInProgress) {
+    [self.observers signinDidStart:self];
+  } else {
+    [self.observers signinDidEnd:self];
+  }
+}
+
 #pragma mark - UIBlockerTarget
 
 - (id<UIBlockerManager>)uiBlockerManager {

@@ -2726,6 +2726,7 @@ bool IsSigninForcedByPolicy() {
   }
 
   DCHECK(self.signinCoordinator);
+  self.sceneState.signinInProgress = YES;
 
   __block std::unique_ptr<ScopedUIBlocker> uiBlocker =
       std::make_unique<ScopedUIBlocker>(self.sceneState);
@@ -2738,6 +2739,8 @@ bool IsSigninForcedByPolicy() {
         [strongSelf.signinCoordinator stop];
         strongSelf.signinCoordinator = nil;
         uiBlocker.reset();
+
+        weakSelf.sceneState.signinInProgress = NO;
 
         if (completion) {
           completion(result == SigninCoordinatorResultSuccess);
