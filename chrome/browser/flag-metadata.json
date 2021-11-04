@@ -465,11 +465,6 @@
     "expiry_milestone": 79
   },
   {
-    "name": "autofill-prune-suggestions",
-    "owners": [ "ftirelo", "tmartino" ],
-    "expiry_milestone": 78
-  },
-  {
     "name": "autofill-save-card-dismiss-on-navigation",
     "owners": [ "sczs", "bling-flags@google.com" ],
     "expiry_milestone": 82

@@ -308,41 +308,6 @@ TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_DedupeLimit) {
   }
 }
 
-TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_PruneSuggestions) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndEnableFeature(features::kAutofillPruneSuggestions);
-
-  // Test limit of suggestions when the feature is enabled.
-  std::vector<std::unique_ptr<AutofillProfile>> profiles_data;
-  for (size_t i = 0; i < kMaxPrunedUniqueSuggestionsCount + 1; i++) {
-    profiles_data.push_back(CreateProfileUniquePtr(
-        base::StringPrintf("Bob %zu", i).c_str(), "Doe"));
-  }
-
-  // Map all the pointers into an array that has the right type.
-  std::vector<AutofillProfile*> profiles_pointers;
-  std::transform(profiles_data.begin(), profiles_data.end(),
-                 std::back_inserter(profiles_pointers),
-                 [](const std::unique_ptr<AutofillProfile>& profile) {
-                   return profile.get();
-                 });
-
-  std::vector<AutofillProfile*> unique_matched_profiles;
-  auto unique_suggestions = GetUniqueSuggestions(
-      {NAME_LAST}, comparator_, app_locale_, profiles_pointers,
-      CreateSuggestions(profiles_pointers, NAME_FIRST),
-      &unique_matched_profiles);
-
-  ASSERT_EQ(kMaxPrunedUniqueSuggestionsCount, unique_suggestions.size());
-  ASSERT_EQ(kMaxPrunedUniqueSuggestionsCount, unique_matched_profiles.size());
-
-  // All profiles are different.
-  for (size_t i = 0; i < unique_suggestions.size(); i++) {
-    ASSERT_EQ(ASCIIToUTF16(base::StringPrintf("Bob %zu", i)),
-              unique_suggestions[i].value);
-  }
-}
-
 TEST_F(SuggestionSelectionTest, GetUniqueSuggestions_EmptyMatchingProfiles) {
   std::vector<AutofillProfile*> unique_matched_profiles;
   auto unique_suggestions = GetUniqueSuggestions(

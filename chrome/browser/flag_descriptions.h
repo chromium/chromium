@@ -229,9 +229,6 @@ extern const char kAutofillProfileClientValidationDescription[];
 extern const char kAutofillProfileServerValidationName[];
 extern const char kAutofillProfileServerValidationDescription[];
 
-extern const char kAutofillPruneSuggestionsName[];
-extern const char kAutofillPruneSuggestionsDescription[];
-
 extern const char kAutofillSaveAndFillVPAName[];
 extern const char kAutofillSaveAndFillVPADescription[];
 

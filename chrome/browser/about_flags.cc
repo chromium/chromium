@@ -5926,11 +5926,6 @@ const FeatureEntry kFeatureEntries[] = {
          "AutofillUseMobileLabelDisambiguation")},
 #endif  // defined(OS_ANDROID)
 
-    {"autofill-prune-suggestions",
-     flag_descriptions::kAutofillPruneSuggestionsName,
-     flag_descriptions::kAutofillPruneSuggestionsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillPruneSuggestions)},
-
     {"allow-sync-xhr-in-page-dismissal",
      flag_descriptions::kAllowSyncXHRInPageDismissalName,
      flag_descriptions::kAllowSyncXHRInPageDismissalDescription,

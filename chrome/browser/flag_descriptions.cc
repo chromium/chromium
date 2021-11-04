@@ -398,10 +398,6 @@ const char kAutofillProfileServerValidationName[] =
 const char kAutofillProfileServerValidationDescription[] =
     "Allows autofill to use server side validation";
 
-const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
-const char kAutofillPruneSuggestionsDescription[] =
-    "Further limits the number of suggestions in the Autofill dropdown.";
-
 const char kAutofillUseConsistentPopupSettingsIconsName[] =
     "Consistent Autofill settings icon";
 const char kAutofillUseConsistentPopupSettingsIconsDescription[] =

@@ -107,7 +107,6 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillLabelAffixRemoval;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillCenterAlignedSuggestions;
-COMPONENT_EXPORT(AUTOFILL) extern const base::Feature kAutofillPruneSuggestions;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillParsingPatternsFromRemote;
 COMPONENT_EXPORT(AUTOFILL)
