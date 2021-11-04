@@ -1225,7 +1225,8 @@ void HTMLInputElement::setValue(const String& value,
 
   if (value_changed) {
     NotifyFormStateChanged();
-    if (value.IsEmpty() && HasBeenPasswordField() && GetDocument().GetPage()) {
+    if (sanitized_value.IsEmpty() && HasBeenPasswordField() &&
+        GetDocument().GetPage()) {
       GetDocument().GetPage()->GetChromeClient().PasswordFieldReset(*this);
     }
   }
