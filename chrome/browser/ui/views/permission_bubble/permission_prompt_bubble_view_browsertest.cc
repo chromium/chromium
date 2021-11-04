@@ -79,8 +79,17 @@ class PermissionPromptBubbleViewBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   PermissionPromptBubbleViewBrowserTest() {
-    feature_list_.InitWithFeatureState(permissions::features::kPermissionChip,
-                                       GetParam());
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {permissions::features::kPermissionChip},
+          {permissions::features::kPermissionChipGestureSensitive,
+           permissions::features::kPermissionChipRequestTypeSensitive});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {permissions::features::kPermissionChip,
+               permissions::features::kPermissionChipGestureSensitive,
+               permissions::features::kPermissionChipRequestTypeSensitive});
+    }
   }
 
   PermissionPromptBubbleViewBrowserTest(
@@ -275,8 +284,9 @@ class PermissionPromptBubbleViewBrowserTest
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
+// TODO(crbug.com/1266750): Add verification for MAC.
 IN_PROC_BROWSER_TEST_P(PermissionPromptBubbleViewBrowserTest,
-                       AlertAccessibleEvent) {
+                       DISABLED_AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
   ShowUi("geolocation");

@@ -228,7 +228,11 @@ PermissionPromptImpl::GetPromptDisposition() const {
     case PermissionPromptStyle::kBubbleOnly:
       return permissions::PermissionPromptDisposition::ANCHORED_BUBBLE;
     case PermissionPromptStyle::kChip:
-      return permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP;
+      return ShouldBubbleStartOpen(delegate_)
+                 ? permissions::PermissionPromptDisposition::
+                       LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
+                 : permissions::PermissionPromptDisposition::
+                       LOCATION_BAR_LEFT_CHIP;
     case PermissionPromptStyle::kQuietChip:
       return permissions::PermissionUiSelector::ShouldSuppressAnimation(
                  delegate_->ReasonForUsingQuietUi())
