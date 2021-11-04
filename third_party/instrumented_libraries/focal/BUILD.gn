@@ -234,10 +234,9 @@ instrumented_library("libatk-bridge2.0-0") {
 }
 
 instrumented_library("libatspi2.0-0") {
-  extra_configure_flags = [
-    "--disable-static",
-    "--disable-introspection",
-  ]
+  build_method = "meson"
+  package_ldflags = [ "-Wl,-z,undefs" ]
+  extra_configure_flags = [ "-Dintrospection=no" ]
 }
 
 instrumented_library("libavahi-client3") {
