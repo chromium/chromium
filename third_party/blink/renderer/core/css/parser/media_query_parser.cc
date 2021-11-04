@@ -202,6 +202,7 @@ void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {
     }
   } else {
     range.ConsumeComponentValue();
+    range.ConsumeWhitespace();
   }
 }
 
@@ -210,22 +211,23 @@ void MediaQueryParser::Done(CSSParserTokenRange& range) {
 }
 
 CSSParserToken MediaQueryParser::ConsumeToken(CSSParserTokenRange& range) {
-  CSSParserToken token = range.Consume();
+  CSSParserToken token = range.ConsumeIncludingWhitespace();
   DCHECK_EQ(token.GetBlockType(), CSSParserToken::kNotBlock);
   return token;
 }
 
 void MediaQueryParser::ProcessToken(CSSParserTokenRange& range) {
   // Call the function that handles current state
-  if (range.Peek().GetType() != kWhitespaceToken)
-    ((this)->*(state_))(range);
-  else
-    range.Consume();
+  ((this)->*(state_))(range);
+  // State handlers must make sure that trailing whitespace is consumed.
+  DCHECK(range.Peek().GetType() != kWhitespaceToken);
 }
 
 // The state machine loop
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
     CSSParserTokenRange range) {
+  range.ConsumeWhitespace();
+
 #if DCHECK_IS_ON()
   // Used to detect loops.
   Vector<State> seen_states;
