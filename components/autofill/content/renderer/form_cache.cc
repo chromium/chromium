@@ -119,7 +119,7 @@ void FormCache::MaybeUpdateParsedFormsPeak() {
 
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     const FieldDataManager* field_data_manager) {
-  DCHECK(base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction));
+  DCHECK(base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms));
 
   initial_checked_state_.clear();
   initial_select_values_.clear();
@@ -240,7 +240,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
 FormCache::UpdateFormCacheResult FormCache::ExtractNewForms(
     const FieldDataManager* field_data_manager) {
-  if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms)) {
     return UpdateFormCache(field_data_manager);
   }
 
@@ -306,20 +306,9 @@ FormCache::UpdateFormCacheResult FormCache::ExtractNewForms(
 
     if (!base::Contains(parsed_forms_, form)) {
       for (auto it = parsed_forms_.begin(); it != parsed_forms_.end(); ++it) {
-        // We don't want to store twice forms that have the same rendererID or
-        // the same attributes/fields.
-        if (base::FeatureList::IsEnabled(
-                features::
-                    kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval)) {
-          if (it->unique_renderer_id == form.unique_renderer_id) {
-            parsed_forms_.erase(it);
-            break;
-          }
-        } else {
-          if (it->SameFormAs(form)) {
-            parsed_forms_.erase(it);
-            break;
-          }
+        if (it->SameFormAs(form)) {
+          parsed_forms_.erase(it);
+          break;
         }
       }
 

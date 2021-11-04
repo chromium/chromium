@@ -713,6 +713,7 @@ source_set("unit_tests") {
     "autofill_download_manager_unittest.cc",
     "autofill_experiments_unittest.cc",
     "autofill_external_delegate_unittest.cc",
+    "autofill_manager_unittest.cc",
     "autofill_merge_unittest.cc",
     "autofill_metrics_unittest.cc",
     "autofill_profile_import_process_unittest.cc",

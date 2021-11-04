@@ -215,9 +215,9 @@ class CapturedSitesPasswordManagerBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{autofill::features::kAutofillShowTypePredictions,
+        /*enabled_features=*/{autofill::features::kAutofillDisplaceRemovedForms,
+                              autofill::features::kAutofillShowTypePredictions,
                               features::kUsernameFirstFlow,
-                              autofill::features::kAutofillUseNewFormExtraction,
                               autofill::features::
                                   kAutofillUseUnassociatedListedElements},
         {});

@@ -97,6 +97,12 @@ const base::Feature kAutofillEnableSupportForParsingWithSharedLabels{
 const base::Feature kAutofillDisableFilling{"AutofillDisableFilling",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to displace removed forms in both FormCache and
+// AutofillManager.
+// TODO(crbug.com/1215333): Remove the feature when the experiment is completed.
+const base::Feature kAutofillDisplaceRemovedForms{
+    "AutofillDisplaceRemovedForms", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Kill switch for Autofill address import.
 const base::Feature kAutofillDisableAddressImport{
     "AutofillDisableAddressImport", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -384,12 +390,6 @@ const base::Feature kAutofillUseImprovedLabelDisambiguation{
     "AutofillUseImprovedLabelDisambiguation",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to use new form extraction function that does not leak
-// memory and uses comparison based on the FormRendererIds.
-// TODO(crbug.com/1215333): Remove the feature when the experiment is completed.
-const base::Feature kAutofillUseNewFormExtraction{
-    "AutofillUseNewFormExtraction", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether to use the same icon for the settings section in the popup
 // footer.
 const base::Feature kAutofillUseConsistentPopupSettingsIcons{
@@ -400,13 +400,6 @@ const base::Feature kAutofillUseConsistentPopupSettingsIcons{
 // implementation for section splitting or not. See https://crbug.com/1076175.
 const base::Feature kAutofillUseNewSectioningMethod{
     "AutofillUseNewSectioningMethod", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls whether to use only rendererID for removing duplicated old forms
-// from the extracted forms when modified.
-// TODO(crbug.com/1215333): Remove the feature when the experiment is completed.
-const base::Feature kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval{
-    "AutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval",
-    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, to get the unowned control elements we call
 // Document::UnassociatedListedElements(). This way we can reduce the number of

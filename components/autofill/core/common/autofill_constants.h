@@ -22,6 +22,10 @@ constexpr size_t kMinRequiredFieldsForHeuristics = 3;
 constexpr size_t kMinRequiredFieldsForQuery = 1;
 constexpr size_t kMinRequiredFieldsForUpload = 1;
 
+// Set a conservative upper bound on the number of forms we are willing to
+// cache, simply to prevent unbounded memory consumption.
+constexpr size_t kAutofillManagerMaxFormCacheSize = 100;
+
 // The maximum number of form fields we are willing to parse, due to
 // computational costs. Several examples of forms with lots of fields that are
 // not relevant to Autofill: (1) the Netflix queue; (2) the Amazon wishlist;

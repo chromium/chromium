@@ -86,7 +86,7 @@ class ParameterizedFormCacheBrowserTest
     std::vector<base::Feature> enabled;
     std::vector<base::Feature> disabled;
     (use_new_form_extraction ? &enabled : &disabled)
-        ->push_back(features::kAutofillUseNewFormExtraction);
+        ->push_back(features::kAutofillDisplaceRemovedForms);
     scoped_features_.InitWithFeatures(enabled, disabled);
   }
 
@@ -163,7 +163,7 @@ TEST_P(ParameterizedFormCacheBrowserTest, RemovedForms) {
   forms = form_cache.ExtractNewForms(nullptr);
 
   EXPECT_TRUE(forms.updated_forms.empty());
-  if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms)) {
     EXPECT_THAT(forms.removed_forms, ElementsAre(FormRendererId()));
   } else {
     EXPECT_THAT(
@@ -181,7 +181,7 @@ TEST_P(ParameterizedFormCacheBrowserTest, RemovedForms) {
 
   forms = form_cache.ExtractNewForms(nullptr);
 
-  if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms)) {
     EXPECT_THAT(forms.updated_forms, ElementsAre(HasName("form2")));
     EXPECT_TRUE(forms.removed_forms.empty());
   } else {
@@ -204,7 +204,7 @@ TEST_P(ParameterizedFormCacheBrowserTest, RemovedForms) {
   forms = form_cache.ExtractNewForms(nullptr);
 
   EXPECT_THAT(forms.updated_forms, ElementsAre(HasName("form2")));
-  if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms)) {
     EXPECT_TRUE(forms.removed_forms.empty());
   } else {
     EXPECT_THAT(forms.removed_forms,
@@ -679,101 +679,11 @@ TEST_P(ParameterizedFormCacheBrowserTest,
                   .IsFormElementEligibleForManualFilling(last_name_element));
 }
 
-// Test that after adding an input element to an already extracted non-synthetic
-// form, the form (has the same rendererId) is not added twice to the extracted
-// forms.
-TEST_P(ParameterizedFormCacheBrowserTest,
-       RemoveReextractedModifiedNonSyntheticFormsWithSameRendererID) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval);
-
-  LoadHTML(R"(
-    <form id="form1">
-      <input type="text">
-    </form>
-  )");
-
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms =
-      form_cache.ExtractNewForms(/*field_data_manager=*/nullptr);
-
-  EXPECT_THAT(forms.updated_forms, ElementsAre(HasName("form1")));
-  EXPECT_TRUE(forms.removed_forms.empty());
-
-  // Append an input element to the form.
-  ExecuteJavaScriptForTests(R"(
-    var form1 = document.getElementById("form1");
-    form1.appendChild(document.createElement("input"));
-  )");
-
-  forms = form_cache.ExtractNewForms(nullptr);
-
-  // Check if a field was truly added to the form.
-  const FormData* form1 = GetFormByName(forms.updated_forms, "form1");
-  ASSERT_TRUE(form1);
-  EXPECT_EQ(2u, form1->fields.size());
-
-  // Check if the modified form with the same rendererId was not added again.
-  if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
-    EXPECT_EQ(1u,
-              FormCacheTestApi(&form_cache).parsed_forms_by_renderer_id_size());
-  } else {
-    EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_size());
-  }
-}
-
-// Test that after adding an unowned input element to an already extracted
-// synthetic form, the form (has the same rendererId) is not added twice to the
-// extracted forms.
-TEST_P(ParameterizedFormCacheBrowserTest,
-       RemoveReextractedModifiedSyntheticFormsWithSameRendererID) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillUseOnlyFormRendererIDForOldDuplicateFormRemoval);
-
-  LoadHTML(R"(
-    <input type="text" name="unowned_element">
-  )");
-
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms =
-      form_cache.ExtractNewForms(/*field_data_manager=*/nullptr);
-
-  EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
-  EXPECT_TRUE(forms.removed_forms.empty());
-
-  // Append the document with a new unowned input.
-  ExecuteJavaScriptForTests(R"(
-    var new_unowned_input = document.createElement("input");
-    document.body.appendChild(new_unowned_input);
-  )");
-
-  forms = form_cache.ExtractNewForms(nullptr);
-
-  EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
-  EXPECT_TRUE(forms.removed_forms.empty());
-
-  // Check if the unowned field was truly added.
-  const FormData* unowned_form = GetFormByName(forms.updated_forms, "");
-  ASSERT_TRUE(unowned_form);
-  EXPECT_EQ(2u, unowned_form->fields.size());
-
-  // Check if the modified form with the same rendererId was not added again.
-  // (We expect that all the unowned fields have the same rendererId.)
-  if (base::FeatureList::IsEnabled(features::kAutofillUseNewFormExtraction)) {
-    EXPECT_EQ(1u,
-              FormCacheTestApi(&form_cache).parsed_forms_by_renderer_id_size());
-  } else {
-    EXPECT_EQ(1u, FormCacheTestApi(&form_cache).parsed_forms_size());
-  }
-}
-
 // Test that the FormCache does not contain empty forms.
 TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillUseNewFormExtraction);
+      features::kAutofillDisplaceRemovedForms);
 
   LoadHTML(R"(<form></form>)");
 
@@ -794,7 +704,7 @@ TEST_F(FormCacheBrowserTest, DoNotStoreEmptyForms) {
 TEST_F(FormCacheBrowserTest, FormCacheSizeUpperBound) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillUseNewFormExtraction);
+      features::kAutofillDisplaceRemovedForms);
 
   // Create a HTML page that contains `kMaxParseableFields + 1` non-empty
   // forms.

@@ -11,6 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -25,10 +26,6 @@
 namespace autofill {
 
 namespace {
-
-// Set a conservative upper bound on the number of forms we are willing to
-// cache, simply to prevent unbounded memory consumption.
-const size_t kAutofillManagerMaxFormCacheSize = 100;
 
 // Returns the AutofillField* corresponding to |field| in |form| or nullptr,
 // if not found.
@@ -185,15 +182,20 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
 void AutofillManager::OnFormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {
+  if (base::FeatureList::IsEnabled(features::kAutofillDisplaceRemovedForms)) {
+    // Erase forms that have been removed from the DOM. This prevents
+    // |form_structures_| from growing up its upper bound
+    // kAutofillManagerMaxFormCacheSize.
+    for (FormGlobalId removed_form : removed_forms)
+      form_structures_.erase(removed_form);
+  }
+
   if (!IsValidFormDataVector(updated_forms) || !driver_->RendererIsAvailable())
     return;
 
   // This should be called even forms is empty, AutofillProviderAndroid uses
   // this event to detect form submission.
   if (!ShouldParseForms(updated_forms))
-    return;
-
-  if (updated_forms.empty())
     return;
 
   std::vector<const FormData*> new_forms;

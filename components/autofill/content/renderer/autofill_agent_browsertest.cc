@@ -195,7 +195,7 @@ class AutofillAgentTest : public content::RenderViewTest {
   std::unique_ptr<AutofillAssistantAgent> autofill_assistant_agent_;
 };
 
-// The parameter indicates if kAutofillUseNewFormExtraction is enabled.
+// The parameter indicates if kAutofillDisplaceRemovedForms is enabled.
 class AutofillAgentTestWithFeatures
     : public AutofillAgentTest,
       public ::testing::WithParamInterface<bool> {
@@ -205,7 +205,7 @@ class AutofillAgentTestWithFeatures
     std::vector<base::Feature> disabled;
     enabled.push_back(features::kAutofillAcrossIframes);
     (GetParam() ? enabled : disabled)
-        .push_back(features::kAutofillUseNewFormExtraction);
+        .push_back(features::kAutofillDisplaceRemovedForms);
     scoped_features_.InitWithFeatures(enabled, disabled);
   }
 
