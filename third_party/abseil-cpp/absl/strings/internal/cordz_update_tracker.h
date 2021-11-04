@@ -39,6 +39,7 @@ class CordzUpdateTracker {
   // Tracked update methods.
   enum MethodIdentifier {
     kUnknown,
+    kAppendBuffer,
     kAppendCord,
     kAppendExternalMemory,
     kAppendString,
@@ -54,6 +55,7 @@ class CordzUpdateTracker {
     kMoveAppendCord,
     kMoveAssignCord,
     kMovePrependCord,
+    kPrependBuffer,
     kPrependCord,
     kPrependString,
     kRemovePrefix,

@@ -154,6 +154,16 @@ absl_source_set("cord_internal") {
   ]
 }
 
+absl_source_set("cord_internal_test") {
+  testonly = true
+  sources = [ "internal/cord_internal_test.cc" ]
+  deps = [
+    ":cord_internal",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
 absl_source_set("cord_rep_btree_test") {
   testonly = true
   sources = [ "internal/cord_rep_btree_test.cc" ]
@@ -449,6 +459,28 @@ absl_source_set("cordz_test_helpers") {
     "//third_party/googletest:gtest",
   ]
 }
+
+# TODO(b/186638384): Re-enable when random is compilable on win32-archive-rel bot
+# absl_source_set("cord_test") {
+#   testonly = true
+#   public = [ "cord_test.cc" ]
+#   deps = [
+#     ":cord",
+#     ":cord_test_helpers",
+#     ":cordz_functions",
+#     ":cordz_test_helpers",
+#     ":str_format",
+#     ":strings",
+#     "//third_party/abseil-cpp/absl/base",
+#     "//third_party/abseil-cpp/absl/base:config",
+#     "//third_party/abseil-cpp/absl/base:core_headers",
+#     "//third_party/abseil-cpp/absl/base:endian",
+#     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+#     "//third_party/abseil-cpp/absl/container:fixed_array",
+#     "//third_party/abseil-cpp/absl/random",
+#     "//third_party/googletest:gtest",
+#   ]
+# }
 
 absl_source_set("cordz_test") {
   testonly = true

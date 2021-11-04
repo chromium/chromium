@@ -920,6 +920,7 @@ absl_cc_test(
     absl::cordz_test_helpers
     absl::core_headers
     absl::endian
+    absl::random_random
     absl::raw_logging_internal
     absl::fixed_array
     GTest::gmock_main
@@ -940,6 +941,18 @@ absl_cc_test(
     absl::function_ref
     absl::raw_logging_internal
     absl::strings
+    GTest::gmock_main
+)
+
+absl_cc_test(
+  NAME
+    cord_internal_test
+  SRCS
+    "internal/cord_internal_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::cord_internal
     GTest::gmock_main
 )
 

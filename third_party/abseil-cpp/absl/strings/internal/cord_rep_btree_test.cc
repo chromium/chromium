@@ -47,7 +47,9 @@ class CordRepBtreeTestPeer {
 namespace {
 
 using ::absl::cordrep_testing::AutoUnref;
+using ::absl::cordrep_testing::CordCollectRepsIf;
 using ::absl::cordrep_testing::CordToString;
+using ::absl::cordrep_testing::CordVisitReps;
 using ::absl::cordrep_testing::CreateFlatsFromString;
 using ::absl::cordrep_testing::CreateRandomString;
 using ::absl::cordrep_testing::MakeConcat;
@@ -62,6 +64,7 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::HasSubstr;
+using ::testing::Le;
 using ::testing::Ne;
 using ::testing::Not;
 using ::testing::SizeIs;
@@ -205,12 +208,15 @@ CordRepBtree* MakeTree(size_t size, bool append = true) {
   return tree;
 }
 
-CordRepBtree* CreateTree(absl::string_view data, size_t chunk_size) {
-  std::vector<CordRep*> flats = CreateFlatsFromString(data, chunk_size);
-  auto it = flats.begin();
+CordRepBtree* CreateTree(absl::Span<CordRep* const> reps) {
+  auto it = reps.begin();
   CordRepBtree* tree = CordRepBtree::Create(*it);
-  while (++it != flats.end()) tree = CordRepBtree::Append(tree, *it);
+  while (++it != reps.end()) tree = CordRepBtree::Append(tree, *it);
   return tree;
+}
+
+CordRepBtree* CreateTree(absl::string_view data, size_t chunk_size) {
+  return CreateTree(CreateFlatsFromString(data, chunk_size));
 }
 
 CordRepBtree* CreateTreeReverse(absl::string_view data, size_t chunk_size) {
@@ -759,6 +765,63 @@ TEST(CordRepBtreeTest, MergeFuzzTest) {
   }
 }
 
+TEST_P(CordRepBtreeTest, RemoveSuffix) {
+  // Create tree of 1, 2 and 3 levels high
+  constexpr size_t max_cap = CordRepBtree::kMaxCapacity;
+  for (size_t cap : {max_cap - 1, max_cap * 2, max_cap * max_cap * 2}) {
+    const std::string data = CreateRandomString(cap * 512);
+
+    {
+      // Verify RemoveSuffix(<all>)
+      AutoUnref refs;
+      CordRepBtree* node = refs.RefIf(shared(), CreateTree(data, 512));
+      EXPECT_THAT(CordRepBtree::RemoveSuffix(node, data.length()), Eq(nullptr));
+
+      // Verify RemoveSuffix(<none>)
+      node = refs.RefIf(shared(), CreateTree(data, 512));
+      EXPECT_THAT(CordRepBtree::RemoveSuffix(node, 0), Eq(node));
+      CordRep::Unref(node);
+    }
+
+    for (int n = 1; n < data.length(); ++n) {
+      AutoUnref refs;
+      auto flats = CreateFlatsFromString(data, 512);
+      CordRepBtree* node = refs.RefIf(shared(), CreateTree(flats));
+      CordRep* rep = refs.Add(CordRepBtree::RemoveSuffix(node, n));
+      EXPECT_THAT(CordToString(rep), Eq(data.substr(0, data.length() - n)));
+
+      // Collect all flats
+      auto is_flat = [](CordRep* rep) { return rep->tag >= FLAT; };
+      std::vector<CordRep*> edges = CordCollectRepsIf(is_flat, rep);
+      ASSERT_THAT(edges.size(), Le(flats.size()));
+
+      // Isolate last edge
+      CordRep* last_edge = edges.back();
+      edges.pop_back();
+      const size_t last_length = rep->length - edges.size() * 512;
+
+      // All flats except the last edge must be kept or copied 'as is'
+      int index = 0;
+      for (CordRep* edge : edges) {
+        ASSERT_THAT(edge, Eq(flats[index++]));
+        ASSERT_THAT(edge->length, Eq(512));
+      }
+
+      // CordRepBtree may optimize small substrings to avoid waste, so only
+      // check for flat sharing / updates where the code should always do this.
+      if (last_length >= 500) {
+        EXPECT_THAT(last_edge, Eq(flats[index++]));
+        if (shared()) {
+          EXPECT_THAT(last_edge->length, Eq(512));
+        } else {
+          EXPECT_TRUE(last_edge->refcount.IsOne());
+          EXPECT_THAT(last_edge->length, Eq(last_length));
+        }
+      }
+    }
+  }
+}
+
 TEST(CordRepBtreeTest, SubTree) {
   // Create tree of at least 2 levels high
   constexpr size_t max_cap = CordRepBtree::kMaxCapacity;
@@ -984,23 +1047,6 @@ TEST_P(CordRepBtreeTest, CreateFromTreeReturnsTree) {
   CordRepBtree* result = CordRepBtree::Create(leaf);
   EXPECT_THAT(result, Eq(leaf));
   CordRep::Unref(result);
-}
-
-TEST_P(CordRepBtreeTest, ExceedMaxHeight) {
-  AutoUnref refs;
-  CordRepBtree* tree = MakeLeaf();
-  for (int h = 1; h <= CordRepBtree::kMaxHeight; ++h) {
-    CordRepBtree* newtree = CordRepBtree::New(tree);
-    for (size_t i = 1; i < CordRepBtree::kMaxCapacity; ++i) {
-      newtree = CordRepBtree::Append(newtree, CordRep::Ref(tree));
-    }
-    tree = newtree;
-  }
-  refs.RefIf(shared(), tree);
-#if defined(GTEST_HAS_DEATH_TEST)
-  EXPECT_DEATH(tree = CordRepBtree::Append(tree, MakeFlat("Boom")), ".*");
-#endif
-  CordRep::Unref(tree);
 }
 
 TEST(CordRepBtreeTest, GetCharacter) {
@@ -1387,6 +1433,54 @@ TEST(CordRepBtreeTest, CheckAssertValidShallowVsDeep) {
 
   flat->length = 3;
   CordRep::Unref(tree);
+}
+
+TEST_P(CordRepBtreeTest, Rebuild) {
+  for (size_t size : {3, 8, 100, 10000, 1000000}) {
+    SCOPED_TRACE(absl::StrCat("Rebuild @", size));
+
+    std::vector<CordRepFlat*> flats;
+    for (int i = 0; i < size; ++i) {
+      flats.push_back(CordRepFlat::New(2));
+      flats.back()->Data()[0] = 'x';
+      flats.back()->length = 1;
+    }
+
+    // Build the tree into 'right', and each so many 'split_limit' edges,
+    // combine 'left' + 'right' into a new 'left', and start a new 'right'.
+    // This guarantees we get a reasonable amount of chaos in the tree.
+    size_t split_count = 0;
+    size_t split_limit = 3;
+    auto it = flats.begin();
+    CordRepBtree* left = nullptr;
+    CordRepBtree* right = CordRepBtree::New(*it);
+    while (++it != flats.end()) {
+      if (++split_count >= split_limit) {
+        split_limit += split_limit / 16;
+        left = left ? CordRepBtree::Append(left, right) : right;
+        right = CordRepBtree::New(*it);
+      } else {
+        right = CordRepBtree::Append(right, *it);
+      }
+    }
+
+    // Finalize tree
+    left = left ? CordRepBtree::Append(left, right) : right;
+
+    // Rebuild
+    AutoUnref ref;
+    left = ref.Add(CordRepBtree::Rebuild(ref.RefIf(shared(), left)));
+    ASSERT_TRUE(CordRepBtree::IsValid(left));
+
+    // Verify we have the exact same edges in the exact same order.
+    bool ok = true;
+    it = flats.begin();
+    CordVisitReps(left, [&](CordRep* edge) {
+      if (edge->tag < FLAT) return;
+      ok = ok && (it != flats.end() && *it++ == edge);
+    });
+    EXPECT_TRUE(ok && it == flats.end()) << "Rebuild edges mismatch";
+  }
 }
 
 }  // namespace

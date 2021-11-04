@@ -78,10 +78,12 @@ HashtablezInfo* Register(HashtablezSampler* s, size_t size) {
 
 TEST(HashtablezInfoTest, PrepareForSampling) {
   absl::Time test_start = absl::Now();
+  const size_t test_element_size = 17;
   HashtablezInfo info;
   absl::MutexLock l(&info.init_mu);
   info.PrepareForSampling();
 
+  info.inline_element_size = test_element_size;
   EXPECT_EQ(info.capacity.load(), 0);
   EXPECT_EQ(info.size.load(), 0);
   EXPECT_EQ(info.num_erases.load(), 0);
@@ -93,6 +95,7 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   EXPECT_EQ(info.hashes_bitwise_xor.load(), 0);
   EXPECT_EQ(info.max_reserve.load(), 0);
   EXPECT_GE(info.create_time, test_start);
+  EXPECT_EQ(info.inline_element_size, test_element_size);
 
   info.capacity.store(1, std::memory_order_relaxed);
   info.size.store(1, std::memory_order_relaxed);
@@ -116,6 +119,7 @@ TEST(HashtablezInfoTest, PrepareForSampling) {
   EXPECT_EQ(info.hashes_bitwise_and.load(), ~size_t{});
   EXPECT_EQ(info.hashes_bitwise_xor.load(), 0);
   EXPECT_EQ(info.max_reserve.load(), 0);
+  EXPECT_EQ(info.inline_element_size, test_element_size);
   EXPECT_GE(info.create_time, test_start);
 }
 
@@ -154,9 +158,11 @@ TEST(HashtablezInfoTest, RecordInsert) {
 }
 
 TEST(HashtablezInfoTest, RecordErase) {
+  const size_t test_element_size = 29;
   HashtablezInfo info;
   absl::MutexLock l(&info.init_mu);
   info.PrepareForSampling();
+  info.inline_element_size = test_element_size;
   EXPECT_EQ(info.num_erases.load(), 0);
   EXPECT_EQ(info.size.load(), 0);
   RecordInsertSlow(&info, 0x0000FF00, 6 * kProbeLength);
@@ -164,12 +170,15 @@ TEST(HashtablezInfoTest, RecordErase) {
   RecordEraseSlow(&info);
   EXPECT_EQ(info.size.load(), 0);
   EXPECT_EQ(info.num_erases.load(), 1);
+  EXPECT_EQ(info.inline_element_size, test_element_size);
 }
 
 TEST(HashtablezInfoTest, RecordRehash) {
+  const size_t test_element_size = 31;
   HashtablezInfo info;
   absl::MutexLock l(&info.init_mu);
   info.PrepareForSampling();
+  info.inline_element_size = test_element_size;
   RecordInsertSlow(&info, 0x1, 0);
   RecordInsertSlow(&info, 0x2, kProbeLength);
   RecordInsertSlow(&info, 0x4, kProbeLength);
@@ -188,6 +197,7 @@ TEST(HashtablezInfoTest, RecordRehash) {
   EXPECT_EQ(info.total_probe_length.load(), 3);
   EXPECT_EQ(info.num_erases.load(), 0);
   EXPECT_EQ(info.num_rehashes.load(), 1);
+  EXPECT_EQ(info.inline_element_size, test_element_size);
 }
 
 TEST(HashtablezInfoTest, RecordReservation) {
@@ -208,12 +218,13 @@ TEST(HashtablezInfoTest, RecordReservation) {
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
 TEST(HashtablezSamplerTest, SmallSampleParameter) {
+  const size_t test_element_size = 31;
   SetHashtablezEnabled(true);
   SetHashtablezSampleParameter(100);
 
   for (int i = 0; i < 1000; ++i) {
     int64_t next_sample = 0;
-    HashtablezInfo* sample = SampleSlow(&next_sample);
+    HashtablezInfo* sample = SampleSlow(&next_sample, test_element_size);
     EXPECT_GT(next_sample, 0);
     EXPECT_NE(sample, nullptr);
     UnsampleSlow(sample);
@@ -221,12 +232,13 @@ TEST(HashtablezSamplerTest, SmallSampleParameter) {
 }
 
 TEST(HashtablezSamplerTest, LargeSampleParameter) {
+  const size_t test_element_size = 31;
   SetHashtablezEnabled(true);
   SetHashtablezSampleParameter(std::numeric_limits<int32_t>::max());
 
   for (int i = 0; i < 1000; ++i) {
     int64_t next_sample = 0;
-    HashtablezInfo* sample = SampleSlow(&next_sample);
+    HashtablezInfo* sample = SampleSlow(&next_sample, test_element_size);
     EXPECT_GT(next_sample, 0);
     EXPECT_NE(sample, nullptr);
     UnsampleSlow(sample);
@@ -234,13 +246,14 @@ TEST(HashtablezSamplerTest, LargeSampleParameter) {
 }
 
 TEST(HashtablezSamplerTest, Sample) {
+  const size_t test_element_size = 31;
   SetHashtablezEnabled(true);
   SetHashtablezSampleParameter(100);
   int64_t num_sampled = 0;
   int64_t total = 0;
   double sample_rate = 0.0;
   for (int i = 0; i < 1000000; ++i) {
-    HashtablezInfoHandle h = Sample();
+    HashtablezInfoHandle h = Sample(test_element_size);
     ++total;
     if (HashtablezInfoHandlePeer::IsSampled(h)) {
       ++num_sampled;

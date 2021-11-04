@@ -34,6 +34,7 @@
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/macros.h"
 #include "absl/container/fixed_array.h"
+#include "absl/random/random.h"
 #include "absl/strings/cord_test_helpers.h"
 #include "absl/strings/cordz_test_helpers.h"
 #include "absl/strings/str_cat.h"
@@ -1831,6 +1832,48 @@ TEST_P(CordTest, Hardening) {
   EXPECT_DEATH_IF_SUPPORTED(*cord.chunk_end(), "");
   EXPECT_DEATH_IF_SUPPORTED(static_cast<void>(cord.chunk_end()->empty()), "");
   EXPECT_DEATH_IF_SUPPORTED(++cord.chunk_end(), "");
+}
+
+// This test mimics a specific (and rare) application repeatedly splitting a
+// cord, inserting (overwriting) a string value, and composing a new cord from
+// the three pieces. This is hostile towards a Btree implementation: A split of
+// a node at any level is likely to have the right-most edge of the left split,
+// and the left-most edge of the right split shared. For example, splitting a
+// leaf node with 6 edges will result likely in a 1-6, 2-5, 3-4, etc. split,
+// sharing the 'split node'. When recomposing such nodes, we 'injected' an edge
+// in that node. As this happens with some probability on each level of the
+// tree, this will quickly grow the tree until it reaches maximum height.
+TEST_P(CordTest, BtreeHostileSplitInsertJoin) {
+  absl::BitGen bitgen;
+
+  // Start with about 1GB of data
+  std::string data(1 << 10, 'x');
+  absl::Cord buffer(data);
+  absl::Cord cord;
+  for (int i = 0; i < 1000000; ++i) {
+    cord.Append(buffer);
+  }
+
+  for (int j = 0; j < 1000; ++j) {
+    size_t offset = absl::Uniform(bitgen, 0u, cord.size());
+    size_t length = absl::Uniform(bitgen, 100u, data.size());
+    if (cord.size() == offset) {
+      cord.Append(absl::string_view(data.data(), length));
+    } else {
+      absl::Cord suffix;
+      if (offset + length < cord.size()) {
+        suffix = cord;
+        suffix.RemovePrefix(offset + length);
+      }
+      if (cord.size() > offset) {
+        cord.RemoveSuffix(cord.size() - offset);
+      }
+      cord.Append(absl::string_view(data.data(), length));
+      if (!suffix.empty()) {
+        cord.Append(suffix);
+      }
+    }
+  }
 }
 
 class AfterExitCordTester {

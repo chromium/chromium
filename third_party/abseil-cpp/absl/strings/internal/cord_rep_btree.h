@@ -163,6 +163,12 @@ class CordRepBtree : public CordRep {
   // typically after a ref_count.Decrement() on the last reference count.
   static void Destroy(CordRepBtree* tree);
 
+  // Use CordRep::Unref() as we overload for absl::Span<CordRep* const>.
+  using CordRep::Unref;
+
+  // Unrefs all edges in `edges` which are assumed to be 'likely one'.
+  static void Unref(absl::Span<CordRep* const> edges);
+
   // Appends / Prepends an existing CordRep instance to this tree.
   // The below methods accept three types of input:
   // 1) `rep` is a data node (See `IsDataNode` for valid data edges).
@@ -198,6 +204,19 @@ class CordRepBtree : public CordRep {
   // Requires `offset + n <= length`. Returns `nullptr` if `n` is zero.
   CordRep* SubTree(size_t offset, size_t n);
 
+  // Removes `n` trailing bytes from `tree`, and returns the resulting tree
+  // or data edge. Returns `tree` if n is zero, and nullptr if n == length.
+  // This function is logically identical to:
+  //   result = tree->SubTree(0, tree->length - n);
+  //   Unref(tree);
+  //   return result;
+  // However, the actual implementation will as much as possible perform 'in
+  // place' modifications on the tree on all nodes and edges that are mutable.
+  // For example, in a fully privately owned tree with the last edge being a
+  // flat of length 12, RemoveSuffix(1) will simply set the length of that data
+  // edge to 11, and reduce the length of all nodes on the edge path by 1.
+  static CordRep* RemoveSuffix(CordRepBtree* tree, size_t n);
+
   // Returns the character at the given offset.
   char GetCharacter(size_t offset) const;
 
@@ -221,9 +240,9 @@ class CordRepBtree : public CordRep {
   // length of the flat node and involved tree nodes have been increased by
   // `span.length()`. The caller is responsible for immediately assigning values
   // to all uninitialized data reference by the returned span.
-  // Requires `this->refcount.IsOne()`: this function forces the caller to do
-  // this fast path check on the top level node, as this is the most commonly
-  // shared node of a cord tree.
+  // Requires `this->refcount.IsMutable()`: this function forces the
+  // caller to do this fast path check on the top level node, as this is the
+  // most commonly shared node of a cord tree.
   Span<char> GetAppendBuffer(size_t size);
 
   // Returns the `height` of the tree. The height of a tree is limited to
@@ -324,6 +343,11 @@ class CordRepBtree : public CordRep {
   // `front.height() + 1`. Requires `back.height() == front.height()`.
   static CordRepBtree* New(CordRepBtree* front, CordRepBtree* back);
 
+  // Creates a fully balanced tree from the provided tree by rebuilding a new
+  // tree from all data edges in the input. This function is automatically
+  // invoked internally when the tree exceeds the maximum height.
+  static CordRepBtree* Rebuild(CordRepBtree* tree);
+
  private:
   CordRepBtree() = default;
   ~CordRepBtree() = default;
@@ -368,6 +392,12 @@ class CordRepBtree : public CordRep {
   // Requires 0 < `offset` <= length.
   Position IndexBefore(size_t offset) const;
 
+  // Returns the index of the edge ending at (or on) length `length`, and the
+  // number of bytes inside that edge up to `length`. For example, if we have a
+  // Node with 2 edges, one of 10 and one of 20 long, then IndexOfLength(27)
+  // will return {1, 17}, and IndexOfLength(10) will return {0, 10}.
+  Position IndexOfLength(size_t n) const;
+
   // Identical to the above function except starting from the position `front`.
   // This function is equivalent to `IndexBefore(front.n + offset)`, with
   // the difference that this function is optimized to start at `front.index`.
@@ -406,10 +436,27 @@ class CordRepBtree : public CordRep {
   // created copy to `new_length`.
   CordRepBtree* CopyBeginTo(size_t end, size_t new_length) const;
 
+  // Returns a tree containing the edges [tree->begin(), end) and length
+  // of `new_length`. This method consumes a reference on the provided
+  // tree, and logically performs the following operation:
+  //   result = tree->CopyBeginTo(end, new_length);
+  //   CordRep::Unref(tree);
+  //   return result;
+  static CordRepBtree* ConsumeBeginTo(CordRepBtree* tree, size_t end,
+                                      size_t new_length);
+
   // Creates a partial copy of this Btree node, copying all edges starting at
   // `begin`, adding a reference on each copied edge, and sets the length of
   // the newly created copy to `new_length`.
   CordRepBtree* CopyToEndFrom(size_t begin, size_t new_length) const;
+
+  // Extracts and returns the front edge from the provided tree.
+  // This method consumes a reference on the provided tree, and logically
+  // performs the following operation:
+  //   edge = CordRep::Ref(tree->Edge(kFront));
+  //   CordRep::Unref(tree);
+  //   return edge;
+  static CordRep* ExtractFront(CordRepBtree* tree);
 
   // Returns a tree containing the result of appending `right` to `left`.
   static CordRepBtree* MergeTrees(CordRepBtree* left, CordRepBtree* right);
@@ -419,6 +466,12 @@ class CordRepBtree : public CordRep {
   static CordRepBtree* CreateSlow(CordRep* rep);
   static CordRepBtree* AppendSlow(CordRepBtree*, CordRep* rep);
   static CordRepBtree* PrependSlow(CordRepBtree*, CordRep* rep);
+
+  // Recursively rebuilds `tree` into `stack`. If 'consume` is set to true, the
+  // function will consume a reference on `tree`. `stack` is a null terminated
+  // array containing the new tree's state, with the current leaf node at
+  // stack[0], and parent nodes above that, or null for 'top of tree'.
+  static void Rebuild(CordRepBtree** stack, CordRepBtree* tree, bool consume);
 
   // Aligns existing edges to start at index 0, to allow for a new edge to be
   // added to the back of the current edges.
@@ -459,11 +512,11 @@ class CordRepBtree : public CordRep {
   // Returns a partial copy of the current tree containing the first `n` bytes
   // of data. `CopyResult` contains both the resulting edge and its height. The
   // resulting tree may be less high than the current tree, or even be a single
-  // matching data edge. For example, if `n == 1`, then the result will be the
-  // single data edge, and height will be set to -1 (one below the owning leaf
-  // node). If n == 0, this function returns null.
-  // Requires `n <= length`
-  CopyResult CopyPrefix(size_t n);
+  // matching data edge if `allow_folding` is set to true.
+  // For example, if `n == 1`, then the result will be the single data edge, and
+  // height will be set to -1 (one below the owning leaf node). If n == 0, this
+  // function returns null. Requires `n <= length`
+  CopyResult CopyPrefix(size_t n, bool allow_folding = true);
 
   // Returns a partial copy of the current tree containing all data starting
   // after `offset`. `CopyResult` contains both the resulting edge and its
@@ -619,6 +672,14 @@ inline void CordRepBtree::Destroy(CordRepBtree* tree) {
   DestroyTree(tree, tree->begin(), tree->end());
 }
 
+inline void CordRepBtree::Unref(absl::Span<CordRep* const> edges) {
+  for (CordRep* edge : edges) {
+    if (ABSL_PREDICT_FALSE(!edge->refcount.Decrement())) {
+      CordRep::Destroy(edge);
+    }
+  }
+}
+
 inline CordRepBtree* CordRepBtree::CopyRaw() const {
   auto* tree = static_cast<CordRepBtree*>(::operator new(sizeof(CordRepBtree)));
   memcpy(static_cast<void*>(tree), this, sizeof(CordRepBtree));
@@ -762,6 +823,14 @@ inline CordRepBtree::Position CordRepBtree::IndexBefore(Position front,
   return {index, offset};
 }
 
+inline CordRepBtree::Position CordRepBtree::IndexOfLength(size_t n) const {
+  assert(n <= length);
+  size_t index = back();
+  size_t strip = length - n;
+  while (strip >= edges_[index]->length) strip -= edges_[index--]->length;
+  return {index, edges_[index]->length - strip};
+}
+
 inline CordRepBtree::Position CordRepBtree::IndexBeyond(
     const size_t offset) const {
   // We need to find the edge which `starting offset` is beyond (>=)`offset`.
@@ -780,7 +849,7 @@ inline CordRepBtree* CordRepBtree::Create(CordRep* rep) {
 }
 
 inline Span<char> CordRepBtree::GetAppendBuffer(size_t size) {
-  assert(refcount.IsOne());
+  assert(refcount.IsMutable());
   CordRepBtree* tree = this;
   const int height = this->height();
   CordRepBtree* n1 = tree;
@@ -789,21 +858,21 @@ inline Span<char> CordRepBtree::GetAppendBuffer(size_t size) {
   switch (height) {
     case 3:
       tree = tree->Edge(kBack)->btree();
-      if (!tree->refcount.IsOne()) return {};
+      if (!tree->refcount.IsMutable()) return {};
       n2 = tree;
       ABSL_FALLTHROUGH_INTENDED;
     case 2:
       tree = tree->Edge(kBack)->btree();
-      if (!tree->refcount.IsOne()) return {};
+      if (!tree->refcount.IsMutable()) return {};
       n1 = tree;
       ABSL_FALLTHROUGH_INTENDED;
     case 1:
       tree = tree->Edge(kBack)->btree();
-      if (!tree->refcount.IsOne()) return {};
+      if (!tree->refcount.IsMutable()) return {};
       ABSL_FALLTHROUGH_INTENDED;
     case 0:
       CordRep* edge = tree->Edge(kBack);
-      if (!edge->refcount.IsOne()) return {};
+      if (!edge->refcount.IsMutable()) return {};
       if (edge->tag < FLAT) return {};
       size_t avail = edge->flat()->Capacity() - edge->length;
       if (avail == 0) return {};

@@ -894,3 +894,18 @@ absl_cc_test(
     absl::unordered_map_modifiers_test
     GTest::gmock_main
 )
+
+absl_cc_test(
+  NAME
+    sample_element_size_test
+  SRCS
+    "sample_element_size_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::flat_hash_map
+    absl::flat_hash_set
+    absl::node_hash_map
+    absl::node_hash_set
+    GTest::gmock_main
+)
