@@ -66,6 +66,10 @@ struct FlossDeviceId {
   std::string address;
   std::string name;
 
+  inline bool operator==(const FlossDeviceId& rhs) const {
+    return address == rhs.address && name == rhs.name;
+  }
+
   friend std::ostream& operator<<(std::ostream& os, const FlossDeviceId& id) {
     return os << "FlossDeviceId(" << id.address << ", " << id.name << ")";
   }

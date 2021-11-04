@@ -22,6 +22,17 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+using testing::_;
+
+// Matches a dbus::MethodCall based on the method name (member).
+MATCHER_P(HasMemberOf, member, "") {
+  return arg->GetMember() == member;
+}
+
+}  // namespace
+
 namespace floss {
 namespace {
 
@@ -103,18 +114,10 @@ class FlossAdapterClientTest : public testing::Test {
     EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(7);
 
     // Handle method calls on the object proxy
-    ON_CALL(*adapter_object_proxy_.get(), DoCallMethodWithErrorResponse)
-        .WillByDefault(
-            [this](::dbus::MethodCall* method_call, int timeout_ms,
-                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
-              if (method_call->GetMember() == adapter::kGetAddress) {
-                HandleGetAddress(method_call, timeout_ms, cb);
-              } else if (method_call->GetMember() == adapter::kCreateBond) {
-                HandleCreateBond(method_call, timeout_ms, cb);
-              }
-
-              method_called_[method_call->GetMember()] = true;
-            });
+    ON_CALL(
+        *adapter_object_proxy_.get(),
+        DoCallMethodWithErrorResponse(HasMemberOf(adapter::kGetAddress), _, _))
+        .WillByDefault(Invoke(this, &FlossAdapterClientTest::HandleGetAddress));
   }
 
   void SetUp() override {
@@ -123,7 +126,6 @@ class FlossAdapterClientTest : public testing::Test {
     bus_ = base::MakeRefCounted<::dbus::MockBus>(options);
     client_ = FlossAdapterClient::Create();
 
-    valid_create_bond_ = false;
     SetUpMocks();
   }
 
@@ -131,7 +133,6 @@ class FlossAdapterClientTest : public testing::Test {
     // Clean up the client first so it gets rid of all its references to the
     // various buses, object proxies, etc.
     client_.reset();
-    method_called_.clear();
   }
 
   void ExpectErrorResponse(std::unique_ptr<dbus::Response> response) {
@@ -154,21 +155,28 @@ class FlossAdapterClientTest : public testing::Test {
     std::move(*cb).Run(response.get(), nullptr);
   }
 
-  void HandleCreateBond(::dbus::MethodCall* method_call,
-                        int timeout_ms,
-                        ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+  void HandleCreateBond(
+      FlossDeviceId expected_device,
+      FlossAdapterClient::BluetoothTransport expected_transport,
+      ::dbus::MethodCall* method_call,
+      int timeout_ms,
+      ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
     dbus::MessageReader msg(method_call);
-    FlossDeviceId foo;
+    FlossDeviceId device;
     uint32_t transport;
-    valid_create_bond_ = FlossAdapterClient::ParseFlossDeviceId(&msg, &foo) &&
-                         msg.PopUint32(&transport);
+
+    ASSERT_TRUE(FlossAdapterClient::ParseFlossDeviceId(&msg, &device));
+    ASSERT_TRUE(msg.PopUint32(&transport));
+    EXPECT_EQ(expected_device, device);
+    EXPECT_EQ(expected_transport,
+              static_cast<FlossAdapterClient::BluetoothTransport>(transport));
 
     auto response = ::dbus::Response::CreateEmpty();
     std::move(*cb).Run(response.get(), nullptr);
   }
 
   void ExpectValidCreateBond(const absl::optional<Error>& err) {
-    EXPECT_TRUE(valid_create_bond_);
+    EXPECT_FALSE(err.has_value());
   }
 
   void SendAddressChangeCallback(
@@ -280,11 +288,9 @@ class FlossAdapterClientTest : public testing::Test {
   dbus::ObjectPath adapter_path_;
   std::string adapter_address_ = "00:11:22:33:44:55";
 
-  bool valid_create_bond_;
   scoped_refptr<::dbus::MockBus> bus_;
   scoped_refptr<::dbus::MockExportedObject> exported_callbacks_;
   scoped_refptr<::dbus::MockObjectProxy> adapter_object_proxy_;
-  std::map<std::string, bool> method_called_;
   std::unique_ptr<FlossAdapterClient> client_;
 
   base::test::TaskEnvironment task_environment_;
@@ -294,10 +300,23 @@ class FlossAdapterClientTest : public testing::Test {
 // Verify initial states and assumptions.
 TEST_F(FlossAdapterClientTest, InitializesCorrectly) {
   TestAdapterObserver test_observer(client_.get());
-  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
 
-  EXPECT_TRUE(method_called_[adapter::kGetAddress]);
-  EXPECT_TRUE(method_called_[adapter::kRegisterCallback]);
+  // Because of the specific method call expectations below, we need a catch all
+  // here to say that it is okay to have more method calls of any sort (not
+  // exclusively those specific calls).
+  EXPECT_CALL(*adapter_object_proxy_.get(), DoCallMethodWithErrorResponse)
+      .Times(testing::AnyNumber());
+
+  // Expected specific method calls.
+  EXPECT_CALL(
+      *adapter_object_proxy_.get(),
+      DoCallMethodWithErrorResponse(HasMemberOf(adapter::kGetAddress), _, _))
+      .Times(1);
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kRegisterCallback), _, _))
+      .Times(1);
+  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
 
   // Make sure the address is initialized correctly
   EXPECT_EQ(test_observer.address_changed_count_, 1);
@@ -414,6 +433,15 @@ TEST_F(FlossAdapterClientTest, CreateBond) {
 
   FlossDeviceId bond = {.address = "00:22:44:11:33:55", .name = "James"};
   auto transport = FlossAdapterClient::BluetoothTransport::kBrEdr;
+
+  EXPECT_CALL(
+      *adapter_object_proxy_.get(),
+      DoCallMethodWithErrorResponse(HasMemberOf(adapter::kCreateBond), _, _))
+      .WillOnce([this, &bond, &transport](
+                    ::dbus::MethodCall* method_call, int timeout_ms,
+                    ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        HandleCreateBond(bond, transport, method_call, timeout_ms, cb);
+      });
 
   client_->CreateBond(
       base::BindOnce(&FlossAdapterClientTest::ExpectValidCreateBond,
