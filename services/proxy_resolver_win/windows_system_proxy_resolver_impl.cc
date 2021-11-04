@@ -17,7 +17,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_list.h"
-#include "services/proxy_resolver_win/winhttp_api_wrapper.h"
+#include "services/proxy_resolver_win/winhttp_api_wrapper_impl.h"
 #include "services/proxy_resolver_win/winhttp_proxy_resolver_functions.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -396,7 +396,8 @@ net::WinHttpStatus WindowsSystemProxyResolverImpl::EnsureInitialized() {
     uninitialized_winhttp_api_wrapper = std::move(winhttp_api_wrapper_);
     winhttp_api_wrapper_.reset();
   } else {
-    uninitialized_winhttp_api_wrapper = std::make_unique<WinHttpAPIWrapper>();
+    uninitialized_winhttp_api_wrapper =
+        std::make_unique<WinHttpAPIWrapperImpl>();
   }
 
   if (!uninitialized_winhttp_api_wrapper->CallWinHttpOpen())

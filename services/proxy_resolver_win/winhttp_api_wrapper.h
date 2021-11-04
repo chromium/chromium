@@ -8,30 +8,12 @@
 #include <windows.h>
 #include <winhttp.h>
 
-#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 
 namespace proxy_resolver_win {
-
-// This is a utility class that encapsulates the memory management necessary for
-// WINHTTP_CURRENT_USER_IE_PROXY_CONFIG in RAII style.
-class ScopedIEConfig final {
- public:
-  ScopedIEConfig();
-
-  ScopedIEConfig(const ScopedIEConfig&) = delete;
-  ScopedIEConfig& operator=(const ScopedIEConfig&) = delete;
-
-  ~ScopedIEConfig();
-
-  WINHTTP_CURRENT_USER_IE_PROXY_CONFIG* config() { return &ie_config; }
-
- private:
-  WINHTTP_CURRENT_USER_IE_PROXY_CONFIG ie_config = {0};
-};
 
 // This provides a layer of abstraction between calling code and WinHTTP APIs,
 // allowing them to be mocked out for testing. This object is not thread safe
@@ -40,40 +22,37 @@ class ScopedIEConfig final {
 // https://docs.microsoft.com/en-us/windows/win32/api/winhttp/
 class COMPONENT_EXPORT(PROXY_RESOLVER_WIN) WinHttpAPIWrapper {
  public:
-  WinHttpAPIWrapper();
-
-  WinHttpAPIWrapper(const WinHttpAPIWrapper&) = delete;
-  WinHttpAPIWrapper& operator=(const WinHttpAPIWrapper&) = delete;
-
-  virtual ~WinHttpAPIWrapper();
+  virtual ~WinHttpAPIWrapper() = default;
 
   // Creates our WinHttp session handle |session_handle_|. The lifetime of that
   // session handle is determined by the lifetime of this object. It'll get
   // closed when this object destructs.
-  virtual bool CallWinHttpOpen() WARN_UNUSED_RESULT;
+  virtual bool CallWinHttpOpen() WARN_UNUSED_RESULT = 0;
 
   // Controls the timeout for WinHttpGetProxyForUrlEx().
   virtual bool CallWinHttpSetTimeouts(int resolve_timeout,
                                       int connect_timeout,
                                       int send_timeout,
-                                      int receive_timeout) WARN_UNUSED_RESULT;
+                                      int receive_timeout)
+      WARN_UNUSED_RESULT = 0;
 
   // Sets the callback WinHttp will call into with the result of any
   // asynchronous call.
   virtual bool CallWinHttpSetStatusCallback(
-      WINHTTP_STATUS_CALLBACK internet_callback) WARN_UNUSED_RESULT;
+      WINHTTP_STATUS_CALLBACK internet_callback) WARN_UNUSED_RESULT = 0;
 
   // Fetches the proxy configs for the current active network connection and
   // current Windows user. The |ie_proxy_config| says whether or not
   // AutoProxy (WPAD) is enabled and if there's a PAC URL configured for this
   // connection/user.
   virtual bool CallWinHttpGetIEProxyConfigForCurrentUser(
-      WINHTTP_CURRENT_USER_IE_PROXY_CONFIG* ie_proxy_config) WARN_UNUSED_RESULT;
+      WINHTTP_CURRENT_USER_IE_PROXY_CONFIG* ie_proxy_config)
+      WARN_UNUSED_RESULT = 0;
 
   // Creates a handle |resolver_handle| that should be used for the call to
   // WinHttpGetProxyForUrlEx().
   virtual bool CallWinHttpCreateProxyResolver(HINTERNET* out_resolver_handle)
-      WARN_UNUSED_RESULT;
+      WARN_UNUSED_RESULT = 0;
 
   // Using the specific |resolver_handle| handle from
   // CallWinHttpCreateProxyResolver(), resolve a proxy for a specific |url| with
@@ -100,7 +79,7 @@ class COMPONENT_EXPORT(PROXY_RESOLVER_WIN) WinHttpAPIWrapper {
       HINTERNET resolver_handle,
       const std::string& url,
       WINHTTP_AUTOPROXY_OPTIONS* autoproxy_options,
-      DWORD_PTR context) WARN_UNUSED_RESULT;
+      DWORD_PTR context) WARN_UNUSED_RESULT = 0;
 
   // As long as CallWinHttpGetProxyForUrlEx() doesn't hit any errors, there will
   // be a proxy result to examine. This function retrieves that proxy resolution
@@ -108,21 +87,16 @@ class COMPONENT_EXPORT(PROXY_RESOLVER_WIN) WinHttpAPIWrapper {
   // result must be freed with CallWinHttpFreeProxyResult().
   virtual bool CallWinHttpGetProxyResult(HINTERNET resolver_handle,
                                          WINHTTP_PROXY_RESULT* proxy_result)
-      WARN_UNUSED_RESULT;
+      WARN_UNUSED_RESULT = 0;
 
   // Frees the |proxy_result| retrieved by CallWinHttpGetProxyResult().
-  virtual void CallWinHttpFreeProxyResult(WINHTTP_PROXY_RESULT* proxy_result);
+  virtual void CallWinHttpFreeProxyResult(
+      WINHTTP_PROXY_RESULT* proxy_result) = 0;
 
   // Every opened HINTERNET handle must be closed. This closes handle
   // |internet_handle|. After being closed, WinHttp calls cannot be made using
   // that handle.
-  virtual void CallWinHttpCloseHandle(HINTERNET internet_handle);
-
- private:
-  // Closes |session_handle_|.
-  void CloseSessionHandle();
-
-  HINTERNET session_handle_ = nullptr;
+  virtual void CallWinHttpCloseHandle(HINTERNET internet_handle) = 0;
 };
 
 }  // namespace proxy_resolver_win

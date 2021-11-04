@@ -55,7 +55,7 @@ void CopySettingToIEProxyConfigString(const std::wstring& setting,
 
 // This class will internally validate behavior that MUST be present in the code
 // in order to successfully use WinHttp APIs.
-class MockWinHttpAPIWrapper : public WinHttpAPIWrapper {
+class MockWinHttpAPIWrapper final : public WinHttpAPIWrapper {
  public:
   MockWinHttpAPIWrapper() {}
   ~MockWinHttpAPIWrapper() override {

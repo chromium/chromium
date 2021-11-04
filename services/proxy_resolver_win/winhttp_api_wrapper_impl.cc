@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/proxy_resolver_win/winhttp_api_wrapper.h"
+#include "services/proxy_resolver_win/winhttp_api_wrapper_impl.h"
 
 #include <string>
 #include <utility>
@@ -26,14 +26,14 @@ ScopedIEConfig::~ScopedIEConfig() {
     GlobalFree(ie_config.lpszProxyBypass);
 }
 
-WinHttpAPIWrapper::WinHttpAPIWrapper() = default;
-WinHttpAPIWrapper::~WinHttpAPIWrapper() {
+WinHttpAPIWrapperImpl::WinHttpAPIWrapperImpl() = default;
+WinHttpAPIWrapperImpl::~WinHttpAPIWrapperImpl() {
   if (session_handle_)
     ignore_result(CallWinHttpSetStatusCallback(nullptr));
   CloseSessionHandle();
 }
 
-bool WinHttpAPIWrapper::CallWinHttpOpen() {
+bool WinHttpAPIWrapperImpl::CallWinHttpOpen() {
   DCHECK_EQ(nullptr, session_handle_);
   session_handle_ =
       WinHttpOpen(nullptr, WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME,
@@ -41,16 +41,16 @@ bool WinHttpAPIWrapper::CallWinHttpOpen() {
   return (session_handle_ != nullptr);
 }
 
-bool WinHttpAPIWrapper::CallWinHttpSetTimeouts(int resolve_timeout,
-                                               int connect_timeout,
-                                               int send_timeout,
-                                               int receive_timeout) {
+bool WinHttpAPIWrapperImpl::CallWinHttpSetTimeouts(int resolve_timeout,
+                                                   int connect_timeout,
+                                                   int send_timeout,
+                                                   int receive_timeout) {
   DCHECK_NE(nullptr, session_handle_);
   return (!!WinHttpSetTimeouts(session_handle_, resolve_timeout,
                                connect_timeout, send_timeout, receive_timeout));
 }
 
-bool WinHttpAPIWrapper::CallWinHttpSetStatusCallback(
+bool WinHttpAPIWrapperImpl::CallWinHttpSetStatusCallback(
     WINHTTP_STATUS_CALLBACK internet_callback) {
   DCHECK_NE(nullptr, session_handle_);
   const WINHTTP_STATUS_CALLBACK winhttp_status_callback =
@@ -62,12 +62,12 @@ bool WinHttpAPIWrapper::CallWinHttpSetStatusCallback(
   return (winhttp_status_callback != WINHTTP_INVALID_STATUS_CALLBACK);
 }
 
-bool WinHttpAPIWrapper::CallWinHttpGetIEProxyConfigForCurrentUser(
+bool WinHttpAPIWrapperImpl::CallWinHttpGetIEProxyConfigForCurrentUser(
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG* ie_proxy_config) {
   return !!WinHttpGetIEProxyConfigForCurrentUser(ie_proxy_config);
 }
 
-bool WinHttpAPIWrapper::CallWinHttpCreateProxyResolver(
+bool WinHttpAPIWrapperImpl::CallWinHttpCreateProxyResolver(
     HINTERNET* out_resolver_handle) {
   DCHECK_NE(nullptr, session_handle_);
   const DWORD result =
@@ -76,7 +76,7 @@ bool WinHttpAPIWrapper::CallWinHttpCreateProxyResolver(
   return (result == ERROR_SUCCESS);
 }
 
-bool WinHttpAPIWrapper::CallWinHttpGetProxyForUrlEx(
+bool WinHttpAPIWrapperImpl::CallWinHttpGetProxyForUrlEx(
     HINTERNET resolver_handle,
     const std::string& url,
     WINHTTP_AUTOPROXY_OPTIONS* autoproxy_options,
@@ -90,7 +90,7 @@ bool WinHttpAPIWrapper::CallWinHttpGetProxyForUrlEx(
   return (result == ERROR_IO_PENDING);
 }
 
-bool WinHttpAPIWrapper::CallWinHttpGetProxyResult(
+bool WinHttpAPIWrapperImpl::CallWinHttpGetProxyResult(
     HINTERNET resolver_handle,
     WINHTTP_PROXY_RESULT* proxy_result) {
   const DWORD result =
@@ -99,16 +99,16 @@ bool WinHttpAPIWrapper::CallWinHttpGetProxyResult(
   return (result == ERROR_SUCCESS);
 }
 
-VOID WinHttpAPIWrapper::CallWinHttpFreeProxyResult(
+VOID WinHttpAPIWrapperImpl::CallWinHttpFreeProxyResult(
     WINHTTP_PROXY_RESULT* proxy_result) {
   WinHttpProxyResolverFunctions::GetInstance().free_proxy_result(proxy_result);
 }
 
-void WinHttpAPIWrapper::CallWinHttpCloseHandle(HINTERNET internet_handle) {
+void WinHttpAPIWrapperImpl::CallWinHttpCloseHandle(HINTERNET internet_handle) {
   WinHttpCloseHandle(internet_handle);
 }
 
-void WinHttpAPIWrapper::CloseSessionHandle() {
+void WinHttpAPIWrapperImpl::CloseSessionHandle() {
   if (session_handle_) {
     CallWinHttpCloseHandle(session_handle_);
     session_handle_ = nullptr;
