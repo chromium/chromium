@@ -1634,6 +1634,7 @@ ci.chromium_builder(
         category = "mac",
         short_name = "rel",
     ),
+    cores = 12,
     main_console_view = "main",
     os = os.MAC_DEFAULT,
     properties = {
