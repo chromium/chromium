@@ -19,8 +19,13 @@
     <div class="icon" id="icon" aria-hidden="true">
       <img id="family-link-kite">
     </div>
-    <img id="illustration-light-theme" src="error_page_illustration_light_theme.svg">
-    <img id="illustration-dark-theme" src="error_page_illustration_dark_theme.svg">
+    <picture>
+      <source 
+        srcset="error_page_illustration_dark_theme.svg"              
+        media="(prefers-color-scheme: dark)">
+      <img id="illustration"
+        src="error_page_illustration_light_theme.svg">
+    </picture>
     <div id="main-message">
       <h1 id="block-page-header">$i18n{blockPageHeader}</h1>
       <p id="block-page-message">$i18n{blockPageMessage}</p>

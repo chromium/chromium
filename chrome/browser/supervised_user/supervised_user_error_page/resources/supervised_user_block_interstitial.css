@@ -107,8 +107,7 @@ p {
   width: 72px;
 }
 
-#illustration-light-theme,
-#illustration-dark-theme {
+#illustration {
   display: none;
 }
 
@@ -222,7 +221,11 @@ p {
   display: none;
 }
 
-.interstitial-refresh-enabled #illustration-light-theme {
+picture {
+  margin: auto;
+}
+
+.interstitial-refresh-enabled #illustration {
   display: inline;
 }
 
@@ -281,14 +284,6 @@ is enabled. */
     --paragraph-color: var(--google-gray-500);
   }
 
-  .interstitial-refresh-enabled #illustration-light-theme {
-    display: none;
-  }
-
-  .interstitial-refresh-enabled #illustration-dark-theme {
-    display: inline;
-  }
-
   .interstitial-refresh-enabled .remote-approvals-button {
     color: var(--google-blue-300);
     border-color: var(--secondary-button-border-color);
@@ -333,8 +328,7 @@ enabled. */
     margin: 0 4px 16px 4px;
   }
 
-  .interstitial-refresh-enabled #illustration-light-theme,
-  .interstitial-refresh-enabled #illustration-dark-theme {
+  .interstitial-refresh-enabled #illustration{
     display: none;
   }
 
