@@ -185,6 +185,46 @@ void TaskAnnotator::ClearObserverForTesting() {
   g_task_annotator_observer = nullptr;
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+// TRACE_EVENT argument helper, writing the task location data into
+// EventContext.
+void TaskAnnotator::EmitTaskLocation(perfetto::EventContext& ctx,
+                                     const PendingTask& task) const {
+  ctx.event()->set_task_execution()->set_posted_from_iid(
+      base::trace_event::InternedSourceLocation::Get(
+          &ctx, base::trace_event::TraceSourceLocation(task.posted_from)));
+}
+
+// TRACE_EVENT argument helper, writing the incoming task flow information
+// into EventContext if toplevel.flow category is enabled.
+void TaskAnnotator::MaybeEmitIncomingTaskFlow(perfetto::EventContext& ctx,
+                                              const PendingTask& task) const {
+  static const uint8_t* flow_enabled =
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
+  if (!*flow_enabled)
+    return;
+
+  perfetto::TerminatingFlow::ProcessScoped(GetTaskTraceID(task))(ctx);
+}
+
+void TaskAnnotator::MaybeEmitIPCHashAndDelay(perfetto::EventContext& ctx,
+                                             const PendingTask& task) const {
+  static const uint8_t* toplevel_ipc_enabled =
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+          TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"));
+  if (!*toplevel_ipc_enabled)
+    return;
+
+  auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+  auto* annotator = event->set_chrome_task_annotator();
+  annotator->set_ipc_hash(task.ipc_hash);
+  if (!task.delayed_run_time.is_null()) {
+    annotator->set_task_delay_us(
+        (task.delayed_run_time - task.queue_time).InMicroseconds());
+  }
+}
+#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
+
 TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(uint32_t ipc_hash)
     : ScopedSetIpcHash(ipc_hash, nullptr) {}
 

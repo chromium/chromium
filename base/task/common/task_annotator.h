@@ -54,48 +54,6 @@ class BASE_EXPORT TaskAnnotator {
   // |queue_function == nullptr| in above methods).
   uint64_t GetTaskTraceID(const PendingTask& task) const;
 
- private:
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-  // TRACE_EVENT argument helper, writing the task location data into
-  // EventContext.
-  void EmitTaskLocation(perfetto::EventContext& ctx,
-                        const PendingTask& task) const {
-    ctx.event()->set_task_execution()->set_posted_from_iid(
-        base::trace_event::InternedSourceLocation::Get(
-            &ctx, base::trace_event::TraceSourceLocation(task.posted_from)));
-  }
-
-  // TRACE_EVENT argument helper, writing the incoming task flow information
-  // into EventContext if toplevel.flow category is enabled.
-  void MaybeEmitIncomingTaskFlow(perfetto::EventContext& ctx,
-                                 const PendingTask& task) const {
-    static const uint8_t* flow_enabled =
-        TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
-    if (!*flow_enabled)
-      return;
-
-    perfetto::TerminatingFlow::ProcessScoped(GetTaskTraceID(task))(ctx);
-  }
-
-  auto MaybeEmitIPCHashAndDelay(perfetto::EventContext& ctx,
-                                const PendingTask& task) const {
-    static const uint8_t* toplevel_ipc_enabled =
-        TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-            TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"));
-    if (!*toplevel_ipc_enabled)
-      return;
-
-    auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-    auto* annotator = event->set_chrome_task_annotator();
-    annotator->set_ipc_hash(task.ipc_hash);
-    if (!task.delayed_run_time.is_null()) {
-      annotator->set_task_delay_us(
-          (task.delayed_run_time - task.queue_time).InMicroseconds());
-    }
-  }
-#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
-
- public:
   // Run the given task, emitting the toplevel trace event and additional
   // trace event arguments. Like for TRACE_EVENT macros, all of the arguments
   // are used (i.e. lambdas are invoked) before this function exits, so it's
@@ -126,6 +84,21 @@ class BASE_EXPORT TaskAnnotator {
   // responsible to ensure thread-safety.
   static void RegisterObserverForTesting(ObserverForTesting* observer);
   static void ClearObserverForTesting();
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  // TRACE_EVENT argument helper, writing the task location data into
+  // EventContext.
+  void EmitTaskLocation(perfetto::EventContext& ctx,
+                        const PendingTask& task) const;
+
+  // TRACE_EVENT argument helper, writing the incoming task flow information
+  // into EventContext if toplevel.flow category is enabled.
+  void MaybeEmitIncomingTaskFlow(perfetto::EventContext& ctx,
+                                 const PendingTask& task) const;
+
+  void MaybeEmitIPCHashAndDelay(perfetto::EventContext& ctx,
+                                const PendingTask& task) const;
+#endif  //  BUILDFLAG(ENABLE_BASE_TRACING)
 };
 
 class BASE_EXPORT TaskAnnotator::ScopedSetIpcHash {
