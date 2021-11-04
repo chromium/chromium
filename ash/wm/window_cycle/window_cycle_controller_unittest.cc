@@ -1710,6 +1710,32 @@ TEST_F(WindowCycleControllerTest, TapSelect) {
   EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
 }
 
+// Tests that releasing alt key while continuing tapping on the window cycle
+// list doesn't lead to a crash. Regression test for https://crbug.com/1228381.
+TEST_F(WindowCycleControllerTest, AltReleaseWithoutReleasingTap) {
+  std::unique_ptr<Window> w0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> w1(CreateTestWindowInShellWithId(1));
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+
+  // Start window cycling by press Alt + Tab key.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  WindowState::Get(w0.get())->Activate();
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(controller->IsCycling());
+  generator->ReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(controller->IsCycling());
+
+  // Tapping on the window cycle list without releasing the tap.
+  gfx::Point center_point =
+      GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint();
+  generator->PressTouch(center_point);
+
+  // Release the alt key. Make sure no crash happens.
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_FALSE(controller->IsCycling());
+}
+
 class ReverseGestureWindowCycleControllerTest
     : public WindowCycleControllerTest {
  public:
