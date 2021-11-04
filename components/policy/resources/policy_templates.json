@@ -28511,7 +28511,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'example_value': True,
       'id': 905,
       'tags': [],
-      'caption': '''Prompt for the client certificate when multiple certificates match.''',
+      'caption': '''Prompt when multiple certificates match''',
       'desc': '''This policy controls whether the user is prompted to select a client certificate when more than one certificate matches <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME">AutoSelectCertificateForUrls</ph>.
       If this policy is set to Enabled, the user is prompted to select a client certificate whenever the auto-selection policy matches multiple certificates.
       If this policy is set to Disabled or not set, the user may only be prompted when no certificate matches the auto-selection.''',
