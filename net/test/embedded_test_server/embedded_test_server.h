@@ -303,6 +303,9 @@ class EmbeddedTestServer {
 
     // A list of DNS names to include in the leaf subjectAltName extension.
     std::vector<std::string> dns_names;
+
+    // A list of IP addresses to include in the leaf subjectAltName extension.
+    std::vector<net::IPAddress> ip_addresses;
   };
 
   typedef base::RepeatingCallback<std::unique_ptr<HttpResponse>(

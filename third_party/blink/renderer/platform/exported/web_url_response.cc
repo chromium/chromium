@@ -36,6 +36,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "net/ssl/ssl_info.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/load_timing_info.mojom.h"
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
@@ -262,52 +263,8 @@ void WebURLResponse::SetSecurityStyle(SecurityStyle security_style) {
   resource_response_->SetSecurityStyle(security_style);
 }
 
-void WebURLResponse::SetSecurityDetails(
-    const WebSecurityDetails& web_security_details) {
-  ResourceResponse::SignedCertificateTimestampList sct_list;
-  for (const auto& iter : web_security_details.sct_list) {
-    sct_list.push_back(
-        static_cast<ResourceResponse::SignedCertificateTimestamp>(iter));
-  }
-  Vector<String> san_list;
-  san_list.Append(
-      web_security_details.san_list.Data(),
-      base::checked_cast<wtf_size_t>(web_security_details.san_list.size()));
-  Vector<AtomicString> certificate;
-  for (const auto& iter : web_security_details.certificate) {
-    AtomicString cert = iter;
-    certificate.push_back(cert);
-  }
-  resource_response_->SetSecurityDetails(
-      web_security_details.protocol, web_security_details.key_exchange,
-      web_security_details.key_exchange_group, web_security_details.cipher,
-      web_security_details.mac, web_security_details.subject_name, san_list,
-      web_security_details.issuer,
-      static_cast<time_t>(web_security_details.valid_from),
-      static_cast<time_t>(web_security_details.valid_to), certificate,
-      sct_list);
-}
-
-absl::optional<WebURLResponse::WebSecurityDetails>
-WebURLResponse::SecurityDetailsForTesting() {
-  const absl::optional<ResourceResponse::SecurityDetails>& security_details =
-      resource_response_->GetSecurityDetails();
-  if (!security_details.has_value())
-    return absl::nullopt;
-  SignedCertificateTimestampList sct_list;
-  for (const auto& iter : security_details->sct_list) {
-    sct_list.emplace_back(SignedCertificateTimestamp(
-        iter.status_, iter.origin_, iter.log_description_, iter.log_id_,
-        iter.timestamp_, iter.hash_algorithm_, iter.signature_algorithm_,
-        iter.signature_data_));
-  }
-  return WebSecurityDetails(
-      security_details->protocol, security_details->key_exchange,
-      security_details->key_exchange_group, security_details->cipher,
-      security_details->mac, security_details->subject_name,
-      security_details->san_list, security_details->issuer,
-      security_details->valid_from, security_details->valid_to,
-      security_details->certificate, sct_list);
+void WebURLResponse::SetSSLInfo(const net::SSLInfo& ssl_info) {
+  resource_response_->SetSSLInfo(ssl_info);
 }
 
 const ResourceResponse& WebURLResponse::ToResourceResponse() const {

@@ -407,6 +407,10 @@ base::StringPiece CryptoBufferAsStringPiece(const CRYPTO_BUFFER* buffer) {
       CRYPTO_BUFFER_len(buffer));
 }
 
+base::span<const uint8_t> CryptoBufferAsSpan(const CRYPTO_BUFFER* buffer) {
+  return base::make_span(CRYPTO_BUFFER_data(buffer), CRYPTO_BUFFER_len(buffer));
+}
+
 scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(
     const STACK_OF(CRYPTO_BUFFER) * buffers) {
   if (sk_CRYPTO_BUFFER_num(buffers) == 0) {

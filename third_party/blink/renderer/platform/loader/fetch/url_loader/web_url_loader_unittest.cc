@@ -54,6 +54,7 @@
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "url/gurl.h"
@@ -576,7 +577,7 @@ TEST_F(WebURLLoaderTest, ResponseAddressSpaceConsidersResponseUrl) {
   EXPECT_EQ(network::mojom::IPAddressSpace::kLocal, response.AddressSpace());
 }
 
-TEST_F(WebURLLoaderTest, ResponseCert) {
+TEST_F(WebURLLoaderTest, SSLInfo) {
   KURL url("https://test.example/");
 
   net::CertificateList certs;
@@ -600,56 +601,11 @@ TEST_F(WebURLLoaderTest, ResponseCert) {
   WebURLResponse web_url_response;
   WebURLLoader::PopulateURLResponse(url, head, &web_url_response, true, -1);
 
-  absl::optional<WebURLResponse::WebSecurityDetails> security_details =
-      web_url_response.SecurityDetailsForTesting();
-  ASSERT_TRUE(security_details.has_value());
-  EXPECT_EQ("TLS 1.2", security_details->protocol);
-  EXPECT_EQ("127.0.0.1", security_details->subject_name);
-  EXPECT_EQ("127.0.0.1", security_details->issuer);
-  ASSERT_EQ(3U, security_details->san_list.size());
-  EXPECT_EQ("test.example", security_details->san_list[0]);
-  EXPECT_EQ("127.0.0.2", security_details->san_list[1]);
-  EXPECT_EQ("fe80::1", security_details->san_list[2]);
-  EXPECT_EQ(certs[0]->valid_start().ToTimeT(), security_details->valid_from);
-  EXPECT_EQ(certs[0]->valid_expiry().ToTimeT(), security_details->valid_to);
-  ASSERT_EQ(2U, security_details->certificate.size());
-  EXPECT_EQ(WebString::FromLatin1(std::string(cert0_der)),
-            security_details->certificate[0]);
-  EXPECT_EQ(WebString::FromLatin1(std::string(cert1_der)),
-            security_details->certificate[1]);
-}
-
-TEST_F(WebURLLoaderTest, ResponseCertWithNoSANs) {
-  KURL url("https://test.example/");
-
-  net::CertificateList certs;
-  ASSERT_TRUE(net::LoadCertificateFiles({"multi-root-B-by-C.pem"}, &certs));
-  ASSERT_EQ(1U, certs.size());
-
-  base::StringPiece cert0_der =
-      net::x509_util::CryptoBufferAsStringPiece(certs[0]->cert_buffer());
-
-  net::SSLInfo ssl_info;
-  net::SSLConnectionStatusSetVersion(net::SSL_CONNECTION_VERSION_TLS1_2,
-                                     &ssl_info.connection_status);
-  ssl_info.cert = certs[0];
-  network::mojom::URLResponseHead head;
-  head.ssl_info = ssl_info;
-  WebURLResponse web_url_response;
-  WebURLLoader::PopulateURLResponse(url, head, &web_url_response, true, -1);
-
-  absl::optional<WebURLResponse::WebSecurityDetails> security_details =
-      web_url_response.SecurityDetailsForTesting();
-  ASSERT_TRUE(security_details.has_value());
-  EXPECT_EQ("TLS 1.2", security_details->protocol);
-  EXPECT_EQ("B CA - Multi-root", security_details->subject_name);
-  EXPECT_EQ("C CA - Multi-root", security_details->issuer);
-  EXPECT_EQ(0U, security_details->san_list.size());
-  EXPECT_EQ(certs[0]->valid_start().ToTimeT(), security_details->valid_from);
-  EXPECT_EQ(certs[0]->valid_expiry().ToTimeT(), security_details->valid_to);
-  ASSERT_EQ(1U, security_details->certificate.size());
-  EXPECT_EQ(WebString::FromLatin1(std::string(cert0_der)),
-            security_details->certificate[0]);
+  const absl::optional<net::SSLInfo>& got_ssl_info =
+      web_url_response.ToResourceResponse().GetSSLInfo();
+  ASSERT_TRUE(got_ssl_info.has_value());
+  EXPECT_EQ(ssl_info.connection_status, got_ssl_info->connection_status);
+  EXPECT_TRUE(ssl_info.cert->EqualsIncludingChain(got_ssl_info->cert.get()));
 }
 
 // Verifies that the lengths used by the PerformanceResourceTiming API are

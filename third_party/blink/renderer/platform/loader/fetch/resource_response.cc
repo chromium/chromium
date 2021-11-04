@@ -32,6 +32,7 @@
 #include <string>
 
 #include "net/http/structured_headers.h"
+#include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_response.h"
@@ -60,26 +61,6 @@ static const char kCacheControlHeader[] = "cache-control";
 static const char kPragmaHeader[] = "pragma";
 
 }  // namespace
-
-ResourceResponse::SignedCertificateTimestamp::SignedCertificateTimestamp(
-    const blink::WebURLResponse::SignedCertificateTimestamp& sct)
-    : status_(sct.status),
-      origin_(sct.origin),
-      log_description_(sct.log_description),
-      log_id_(sct.log_id),
-      timestamp_(sct.timestamp),
-      hash_algorithm_(sct.hash_algorithm),
-      signature_algorithm_(sct.signature_algorithm),
-      signature_data_(sct.signature_data) {}
-
-ResourceResponse::SignedCertificateTimestamp
-ResourceResponse::SignedCertificateTimestamp::IsolatedCopy() const {
-  return SignedCertificateTimestamp(
-      status_.IsolatedCopy(), origin_.IsolatedCopy(),
-      log_description_.IsolatedCopy(), log_id_.IsolatedCopy(), timestamp_,
-      hash_algorithm_.IsolatedCopy(), signature_algorithm_.IsolatedCopy(),
-      signature_data_.IsolatedCopy());
-}
 
 ResourceResponse::ResourceResponse()
     : was_cached_(false),
@@ -247,24 +228,10 @@ void ResourceResponse::UpdateHeaderParsedState(const AtomicString& name) {
     have_parsed_last_modified_header_ = false;
 }
 
-void ResourceResponse::SetSecurityDetails(
-    const String& protocol,
-    const String& key_exchange,
-    const String& key_exchange_group,
-    const String& cipher,
-    const String& mac,
-    const String& subject_name,
-    const Vector<String>& san_list,
-    const String& issuer,
-    time_t valid_from,
-    time_t valid_to,
-    const Vector<AtomicString>& certificate,
-    const SignedCertificateTimestampList& sct_list) {
+void ResourceResponse::SetSSLInfo(const net::SSLInfo& ssl_info) {
   DCHECK_NE(security_style_, SecurityStyle::kUnknown);
   DCHECK_NE(security_style_, SecurityStyle::kNeutral);
-  security_details_ = SecurityDetails(
-      protocol, key_exchange, key_exchange_group, cipher, mac, subject_name,
-      san_list, issuer, valid_from, valid_to, certificate, sct_list);
+  ssl_info_ = ssl_info;
 }
 
 bool ResourceResponse::IsCorsSameOrigin() const {

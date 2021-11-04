@@ -915,6 +915,9 @@ _CONFIG = [
             # [C]h[R]ome [D]ev[T]ools [P]rotocol implementation support library
             # (see third_party/inspector_protocol/crdtp).
             'crdtp::.+',
+            # DevTools manages certificates from the net stack.
+            'net::X509Certificate',
+            'net::x509_util::CryptoBufferAsSpan',
         ],
     },
     {
@@ -952,8 +955,12 @@ _CONFIG = [
             'third_party/blink/renderer/core/inspector/inspector_network_agent.cc'
         ],
         'allowed': [
-            'net::SourceStream',
             'base::flat_set',
+            'base::HexEncode',
+            'net::ct::.+',
+            'net::IPAddress',
+            'net::SourceStream',
+            'net::SSL.+',
         ],
     },
     {

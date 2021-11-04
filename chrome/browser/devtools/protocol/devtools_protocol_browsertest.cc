@@ -31,12 +31,16 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "net/base/ip_address.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
+#include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "net/ssl/ssl_server_config.h"
 #include "printing/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
@@ -356,6 +360,240 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
   EXPECT_EQ(security_state_issue_ids->GetList().size(), 0u);
 
   ASSERT_FALSE(params.FindPath("visibleSecurityState.safetyTipInfo"));
+}
+
+class NetworkResponseProtocolTest : public DevToolsProtocolTest {
+ protected:
+  base::Value FetchAndWaitForResponse(const GURL& url) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::string script =
+        content::JsReplace("fetch($1).then(r => r.status)", url.spec());
+    content::EvalJsResult status = content::EvalJs(web_contents, script);
+    EXPECT_EQ(200, status);
+    if (!(200 == status)) {
+      return base::Value();
+    }
+
+    // Look for the requestId.
+    auto matches_url = [](const GURL& url, const base::Value& params) {
+      const std::string* got_url = params.FindStringPath("request.url");
+      return got_url && *got_url == url.spec();
+    };
+    base::Value request = WaitForMatchingNotification(
+        "Network.requestWillBeSent", base::BindRepeating(matches_url, url));
+    const std::string* request_id = request.FindStringPath("requestId");
+    if (!request_id) {
+      ADD_FAILURE() << "Could not find request ID";
+      return base::Value();
+    }
+
+    // Look for the response.
+    auto matches_id = [](const std::string& request_id,
+                         const base::Value& params) {
+      const std::string* id = params.FindStringPath("requestId");
+      return id && *id == request_id;
+    };
+    return WaitForMatchingNotification(
+        "Network.responseReceived",
+        base::BindRepeating(matches_id, *request_id));
+  }
+};
+
+// Test that the SecurityDetails field of the resource response matches the
+// server.
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
+  // Configure a specific TLS configuration to compare against.
+  net::SSLServerConfig server_config;
+  server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+  server_config.cipher_suite_for_testing = 0xc02f;
+  server_config.curves_for_testing = {NID_X25519};
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
+                      server_config);
+  server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(server.Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), server.GetURL("/title1.html"), 1);
+
+  Attach();
+  SendCommand("Network.enable");
+
+  base::Value response = FetchAndWaitForResponse(server.GetURL("/empty.html"));
+
+  const std::string* protocol =
+      response.FindStringPath("response.securityDetails.protocol");
+  ASSERT_TRUE(protocol);
+  EXPECT_EQ("TLS 1.2", *protocol);
+
+  const std::string* key_exchange =
+      response.FindStringPath("response.securityDetails.keyExchange");
+  ASSERT_TRUE(key_exchange);
+  EXPECT_EQ("ECDHE_RSA", *key_exchange);
+
+  const std::string* cipher =
+      response.FindStringPath("response.securityDetails.cipher");
+  ASSERT_TRUE(cipher);
+  EXPECT_EQ("AES_128_GCM", *cipher);
+
+  // AEAD ciphers should not report a MAC.
+  EXPECT_FALSE(response.FindStringPath("response.securityDetails.mac"));
+
+  const std::string* group =
+      response.FindStringPath("response.securityDetails.keyExchangeGroup");
+  ASSERT_TRUE(group);
+  EXPECT_EQ("X25519", *group);
+
+  const std::string* subject =
+      response.FindStringPath("response.securityDetails.subjectName");
+  ASSERT_TRUE(subject);
+  EXPECT_EQ(server.GetCertificate()->subject().common_name, *subject);
+
+  const std::string* issuer =
+      response.FindStringPath("response.securityDetails.issuer");
+  ASSERT_TRUE(issuer);
+  EXPECT_EQ(server.GetCertificate()->issuer().common_name, *issuer);
+
+  // The default certificate has a single SAN, 127.0.0.1.
+  const base::Value* sans =
+      response.FindListPath("response.securityDetails.sanList");
+  ASSERT_TRUE(sans);
+  ASSERT_EQ(1u, sans->GetList().size());
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetList()[0]);
+
+  absl::optional<double> valid_from =
+      response.FindDoublePath("response.securityDetails.validFrom");
+  EXPECT_EQ(server.GetCertificate()->valid_start().ToDoubleT(), valid_from);
+
+  absl::optional<double> valid_to =
+      response.FindDoublePath("response.securityDetails.validTo");
+  EXPECT_EQ(server.GetCertificate()->valid_expiry().ToDoubleT(), valid_to);
+}
+
+// Test SecurityDetails, but with a TLS 1.3 cipher suite, which should not
+// report a key exchange component.
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsTLS13) {
+  // Configure a specific TLS configuration to compare against.
+  net::SSLServerConfig server_config;
+  server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_3;
+  server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_3;
+  server_config.curves_for_testing = {NID_X25519};
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
+                      server_config);
+  server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(server.Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), server.GetURL("/title1.html"), 1);
+
+  Attach();
+  SendCommand("Network.enable");
+
+  base::Value response = FetchAndWaitForResponse(server.GetURL("/empty.html"));
+
+  const std::string* protocol =
+      response.FindStringPath("response.securityDetails.protocol");
+  ASSERT_TRUE(protocol);
+  EXPECT_EQ("TLS 1.3", *protocol);
+
+  const std::string* key_exchange =
+      response.FindStringPath("response.securityDetails.keyExchange");
+  ASSERT_TRUE(key_exchange);
+  EXPECT_EQ("", *key_exchange);
+
+  const std::string* cipher =
+      response.FindStringPath("response.securityDetails.cipher");
+  ASSERT_TRUE(cipher);
+  // Depending on whether the host machine has AES hardware, the server may
+  // pick AES-GCM or ChaCha20-Poly1305.
+  EXPECT_TRUE(*cipher == "AES_128_GCM" || *cipher == "CHACHA20_POLY1305");
+
+  // AEAD ciphers should not report a MAC.
+  EXPECT_FALSE(response.FindStringPath("response.securityDetails.mac"));
+
+  const std::string* group =
+      response.FindStringPath("response.securityDetails.keyExchangeGroup");
+  ASSERT_TRUE(group);
+  EXPECT_EQ("X25519", *group);
+}
+
+// Test SecurityDetails, but with a legacy cipher suite, which should report a
+// separate MAC component and no group.
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest,
+                       SecurityDetailsLegacyCipher) {
+  // Configure a specific TLS configuration to compare against.
+  net::SSLServerConfig server_config;
+  server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
+  // TLS_RSA_WITH_AES_128_CBC_SHA
+  server_config.cipher_suite_for_testing = 0x002f;
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
+                      server_config);
+  server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(server.Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), server.GetURL("/title1.html"), 1);
+
+  Attach();
+  SendCommand("Network.enable");
+
+  base::Value response = FetchAndWaitForResponse(server.GetURL("/empty.html"));
+
+  const std::string* key_exchange =
+      response.FindStringPath("response.securityDetails.keyExchange");
+  ASSERT_TRUE(key_exchange);
+  EXPECT_EQ("RSA", *key_exchange);
+
+  const std::string* cipher =
+      response.FindStringPath("response.securityDetails.cipher");
+  ASSERT_TRUE(cipher);
+  EXPECT_EQ("AES_128_CBC", *cipher);
+
+  const std::string* mac =
+      response.FindStringPath("response.securityDetails.mac");
+  ASSERT_TRUE(mac);
+  EXPECT_EQ("HMAC-SHA1", *mac);
+
+  // RSA ciphers should not report a MAC.
+  EXPECT_FALSE(
+      response.FindStringPath("response.securityDetails.keyExchangeGroup"));
+}
+
+// Test that complex certificate SAN lists are reported in SecurityDetails.
+IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsSAN) {
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.dns_names = {"a.example", "b.example", "*.c.example"};
+  cert_config.ip_addresses = {net::IPAddress::IPv4Localhost(),
+                              net::IPAddress::IPv6Localhost(),
+                              net::IPAddress(1, 2, 3, 4)};
+  net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
+  server.SetSSLConfig(cert_config);
+  server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(server.Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), server.GetURL("/title1.html"), 1);
+
+  Attach();
+  SendCommand("Network.enable");
+
+  base::Value response = FetchAndWaitForResponse(server.GetURL("/empty.html"));
+  const base::Value* sans =
+      response.FindListPath("response.securityDetails.sanList");
+  ASSERT_TRUE(sans);
+  ASSERT_EQ(6u, sans->GetList().size());
+  EXPECT_EQ(base::Value("a.example"), sans->GetList()[0]);
+  EXPECT_EQ(base::Value("b.example"), sans->GetList()[1]);
+  EXPECT_EQ(base::Value("*.c.example"), sans->GetList()[2]);
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetList()[3]);
+  EXPECT_EQ(base::Value("::1"), sans->GetList()[4]);
+  EXPECT_EQ(base::Value("1.2.3.4"), sans->GetList()[5]);
 }
 
 class ExtensionProtocolTest : public DevToolsProtocolTest {

@@ -38,7 +38,11 @@
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/cert/ct_sct_to_string.h"
+#include "net/cert/x509_util.h"
 #include "net/http/http_status_code.h"
+#include "net/ssl/ssl_cipher_suite_names.h"
+#include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
@@ -95,6 +99,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 using crdtp::SpanFrom;
@@ -151,17 +156,22 @@ bool LoadsFromCacheOnly(const ResourceRequest& request) {
 }
 
 protocol::Network::CertificateTransparencyCompliance
-SerializeCTPolicyCompliance(
-    ResourceResponse::CTPolicyCompliance ct_compliance) {
+SerializeCTPolicyCompliance(net::ct::CTPolicyCompliance ct_compliance) {
   switch (ct_compliance) {
-    case ResourceResponse::kCTPolicyComplianceDetailsNotAvailable:
-      return protocol::Network::CertificateTransparencyComplianceEnum::Unknown;
-    case ResourceResponse::kCTPolicyComplies:
+    case net::ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS:
       return protocol::Network::CertificateTransparencyComplianceEnum::
           Compliant;
-    case ResourceResponse::kCTPolicyDoesNotComply:
+    case net::ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS:
+    case net::ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS:
       return protocol::Network::CertificateTransparencyComplianceEnum::
           NotCompliant;
+    case net::ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY:
+    case net::ct::CTPolicyCompliance::
+        CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE:
+      return protocol::Network::CertificateTransparencyComplianceEnum::Unknown;
+    case net::ct::CTPolicyCompliance::CT_POLICY_COUNT:
+      NOTREACHED();
+      // Fallthrough to default.
   }
   NOTREACHED();
   return protocol::Network::CertificateTransparencyComplianceEnum::Unknown;
@@ -760,6 +770,107 @@ static bool FormDataToString(
   return true;
 }
 
+static String StringFromASCII(const std::string& str) {
+  String ret(str);
+  DCHECK(ret.ContainsOnlyASCIIOrEmpty());
+  return ret;
+}
+
+static std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
+    const net::SSLInfo& ssl_info) {
+  // This function should be kept in sync with the corresponding function in
+  // network_handler.cc in //content.
+  if (!ssl_info.cert)
+    return nullptr;
+  auto signed_certificate_timestamp_list = std::make_unique<
+      protocol::Array<protocol::Network::SignedCertificateTimestamp>>();
+  for (auto const& sct : ssl_info.signed_certificate_timestamps) {
+    std::unique_ptr<protocol::Network::SignedCertificateTimestamp>
+        signed_certificate_timestamp =
+            protocol::Network::SignedCertificateTimestamp::create()
+                .setStatus(StringFromASCII(net::ct::StatusToString(sct.status)))
+                .setOrigin(
+                    StringFromASCII(net::ct::OriginToString(sct.sct->origin)))
+                .setLogDescription(String::FromUTF8(sct.sct->log_description))
+                .setLogId(StringFromASCII(base::HexEncode(
+                    sct.sct->log_id.c_str(), sct.sct->log_id.length())))
+                .setTimestamp(sct.sct->timestamp.ToJavaTime())
+                .setHashAlgorithm(
+                    StringFromASCII(net::ct::HashAlgorithmToString(
+                        sct.sct->signature.hash_algorithm)))
+                .setSignatureAlgorithm(
+                    StringFromASCII(net::ct::SignatureAlgorithmToString(
+                        sct.sct->signature.signature_algorithm)))
+                .setSignatureData(StringFromASCII(base::HexEncode(
+                    sct.sct->signature.signature_data.c_str(),
+                    sct.sct->signature.signature_data.length())))
+                .build();
+    signed_certificate_timestamp_list->emplace_back(
+        std::move(signed_certificate_timestamp));
+  }
+  std::vector<std::string> san_dns;
+  std::vector<std::string> san_ip;
+  ssl_info.cert->GetSubjectAltName(&san_dns, &san_ip);
+  auto san_list = std::make_unique<protocol::Array<String>>();
+  for (const std::string& san : san_dns) {
+    // DNS names in a SAN list are always ASCII.
+    san_list->push_back(StringFromASCII(san));
+  }
+  for (const std::string& san : san_ip) {
+    net::IPAddress ip(reinterpret_cast<const uint8_t*>(san.data()), san.size());
+    san_list->push_back(StringFromASCII(ip.ToString()));
+  }
+
+  const char* protocol = "";
+  const char* key_exchange = "";
+  const char* cipher = "";
+  const char* mac = nullptr;
+  if (ssl_info.connection_status) {
+    net::SSLVersion ssl_version =
+        net::SSLConnectionStatusToVersion(ssl_info.connection_status);
+    net::SSLVersionToString(&protocol, ssl_version);
+    bool is_aead;
+    bool is_tls13;
+    uint16_t cipher_suite =
+        net::SSLConnectionStatusToCipherSuite(ssl_info.connection_status);
+    net::SSLCipherSuiteToStrings(&key_exchange, &cipher, &mac, &is_aead,
+                                 &is_tls13, cipher_suite);
+    if (key_exchange == nullptr) {
+      DCHECK(is_tls13);
+      key_exchange = "";
+    }
+  }
+
+  std::unique_ptr<protocol::Network::SecurityDetails> security_details =
+      protocol::Network::SecurityDetails::create()
+          .setProtocol(protocol)
+          .setKeyExchange(key_exchange)
+          .setCipher(cipher)
+          .setSubjectName(
+              String::FromUTF8(ssl_info.cert->subject().common_name))
+          .setSanList(std::move(san_list))
+          .setIssuer(String::FromUTF8(ssl_info.cert->issuer().common_name))
+          .setValidFrom(ssl_info.cert->valid_start().ToDoubleT())
+          .setValidTo(ssl_info.cert->valid_expiry().ToDoubleT())
+          .setCertificateId(0)  // Keep this in protocol for compatibility.
+          .setSignedCertificateTimestampList(
+              std::move(signed_certificate_timestamp_list))
+          .setCertificateTransparencyCompliance(
+              SerializeCTPolicyCompliance(ssl_info.ct_policy_compliance))
+          .build();
+
+  if (ssl_info.key_exchange_group != 0) {
+    const char* key_exchange_group =
+        SSL_get_curve_name(ssl_info.key_exchange_group);
+    if (key_exchange_group)
+      security_details->setKeyExchangeGroup(key_exchange_group);
+  }
+  if (mac)
+    security_details->setMac(mac);
+
+  return security_details;
+}
+
 static std::unique_ptr<protocol::Network::Request>
 BuildObjectForResourceRequest(const ResourceRequest& request,
                               scoped_refptr<EncodedFormData> post_data,
@@ -904,55 +1015,9 @@ BuildObjectForResourceResponse(const ResourceResponse& response,
   }
   response_object->setProtocol(protocol);
 
-  const absl::optional<ResourceResponse::SecurityDetails>&
-      response_security_details = response.GetSecurityDetails();
-  if (response_security_details.has_value()) {
-    auto san_list = std::make_unique<protocol::Array<String>>(
-        response_security_details->san_list.begin(),
-        response_security_details->san_list.end());
-
-    auto signed_certificate_timestamp_list = std::make_unique<
-        protocol::Array<protocol::Network::SignedCertificateTimestamp>>();
-    for (auto const& sct : response_security_details->sct_list) {
-      std::unique_ptr<protocol::Network::SignedCertificateTimestamp>
-          signed_certificate_timestamp =
-              protocol::Network::SignedCertificateTimestamp::create()
-                  .setStatus(sct.status_)
-                  .setOrigin(sct.origin_)
-                  .setLogDescription(sct.log_description_)
-                  .setLogId(sct.log_id_)
-                  .setTimestamp(sct.timestamp_)
-                  .setHashAlgorithm(sct.hash_algorithm_)
-                  .setSignatureAlgorithm(sct.signature_algorithm_)
-                  .setSignatureData(sct.signature_data_)
-                  .build();
-      signed_certificate_timestamp_list->emplace_back(
-          std::move(signed_certificate_timestamp));
-    }
-
-    std::unique_ptr<protocol::Network::SecurityDetails> security_details =
-        protocol::Network::SecurityDetails::create()
-            .setProtocol(response_security_details->protocol)
-            .setKeyExchange(response_security_details->key_exchange)
-            .setCipher(response_security_details->cipher)
-            .setSubjectName(response_security_details->subject_name)
-            .setSanList(std::move(san_list))
-            .setIssuer(response_security_details->issuer)
-            .setValidFrom(response_security_details->valid_from)
-            .setValidTo(response_security_details->valid_to)
-            .setCertificateId(0)  // Keep this in protocol for compatability.
-            .setSignedCertificateTimestampList(
-                std::move(signed_certificate_timestamp_list))
-            .setCertificateTransparencyCompliance(
-                SerializeCTPolicyCompliance(response.GetCTPolicyCompliance()))
-            .build();
-    if (response_security_details->key_exchange_group.length() > 0)
-      security_details->setKeyExchangeGroup(
-          response_security_details->key_exchange_group);
-    if (response_security_details->mac.length() > 0)
-      security_details->setMac(response_security_details->mac);
-
-    response_object->setSecurityDetails(std::move(security_details));
+  const absl::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
+  if (ssl_info.has_value()) {
+    response_object->setSecurityDetails(BuildSecurityDetails(*ssl_info));
   }
 
   return response_object;
@@ -1308,11 +1373,9 @@ void InspectorNetworkAgent::DidReceiveResourceResponse(
   resources_data_->ResponseReceived(request_id, frame_id, response);
   resources_data_->SetResourceType(request_id, type);
 
-  const absl::optional<ResourceResponse::SecurityDetails>&
-      response_security_details = response.GetSecurityDetails();
-  if (response_security_details.has_value()) {
-    resources_data_->SetCertificate(request_id,
-                                    response_security_details->certificate);
+  const absl::optional<net::SSLInfo>& ssl_info = response.GetSSLInfo();
+  if (ssl_info.has_value() && ssl_info->cert) {
+    resources_data_->SetCertificate(request_id, ssl_info->cert);
   }
 
   if (IsNavigation(loader, identifier))
@@ -2011,12 +2074,15 @@ Response InspectorNetworkAgent::getCertificate(
   for (auto& resource : resources_data_->Resources()) {
     scoped_refptr<const SecurityOrigin> resource_origin =
         SecurityOrigin::Create(resource->RequestedURL());
-    if (resource_origin->IsSameOriginWith(security_origin.get()) &&
-        resource->Certificate().size()) {
-      for (auto& cert : resource->Certificate()) {
+    net::X509Certificate* cert = resource->Certificate();
+    if (resource_origin->IsSameOriginWith(security_origin.get()) && cert) {
+      (*certificate)
+          ->push_back(Base64Encode(
+              net::x509_util::CryptoBufferAsSpan(cert->cert_buffer())));
+      for (const auto& buf : cert->intermediate_buffers()) {
         (*certificate)
-            ->emplace_back(
-                Base64Encode(base::as_bytes(base::make_span(cert.Latin1()))));
+            ->push_back(
+                Base64Encode(net::x509_util::CryptoBufferAsSpan(buf.get())));
       }
       return Response::Success();
     }

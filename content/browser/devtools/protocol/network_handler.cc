@@ -1642,6 +1642,8 @@ namespace {
 
 std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
     const net::SSLInfo& ssl_info) {
+  // This function should be kept in sync with the corresponding function in
+  // inspector_network_agent.cc in //third_party/blink.
   if (!ssl_info.cert)
     return nullptr;
   auto signed_certificate_timestamp_list =

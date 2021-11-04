@@ -123,6 +123,10 @@ NET_EXPORT bool CryptoBufferEqual(const CRYPTO_BUFFER* a,
 NET_EXPORT base::StringPiece CryptoBufferAsStringPiece(
     const CRYPTO_BUFFER* buffer);
 
+// Returns a span pointing to the data in |buffer|.
+NET_EXPORT base::span<const uint8_t> CryptoBufferAsSpan(
+    const CRYPTO_BUFFER* buffer);
+
 // Creates a new X509Certificate from the chain in |buffers|, which must have at
 // least one element.
 NET_EXPORT scoped_refptr<X509Certificate> CreateX509CertificateFromBuffers(

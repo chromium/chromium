@@ -144,33 +144,6 @@ net::RequestPriority ConvertWebKitPriorityToNetPriority(
   }
 }
 
-// Convert a net::SignedCertificateTimestampAndStatus object to a
-// WebURLResponse::SignedCertificateTimestamp object.
-WebURLResponse::SignedCertificateTimestamp NetSCTToBlinkSCT(
-    const net::SignedCertificateTimestampAndStatus& sct_and_status) {
-  return WebURLResponse::SignedCertificateTimestamp(
-      WebString::FromASCII(net::ct::StatusToString(sct_and_status.status)),
-      WebString::FromASCII(net::ct::OriginToString(sct_and_status.sct->origin)),
-      WebString::FromUTF8(sct_and_status.sct->log_description),
-      WebString::FromASCII(
-          base::HexEncode(sct_and_status.sct->log_id.c_str(),
-                          sct_and_status.sct->log_id.length())),
-      sct_and_status.sct->timestamp.ToJavaTime(),
-      WebString::FromASCII(net::ct::HashAlgorithmToString(
-          sct_and_status.sct->signature.hash_algorithm)),
-      WebString::FromASCII(net::ct::SignatureAlgorithmToString(
-          sct_and_status.sct->signature.signature_algorithm)),
-      WebString::FromASCII(base::HexEncode(
-          sct_and_status.sct->signature.signature_data.c_str(),
-          sct_and_status.sct->signature.signature_data.length())));
-}
-
-WebString CryptoBufferAsWebString(const CRYPTO_BUFFER* buffer) {
-  base::StringPiece sp = net::x509_util::CryptoBufferAsStringPiece(buffer);
-  return WebString::FromLatin1(reinterpret_cast<const WebLChar*>(sp.begin()),
-                               sp.size());
-}
-
 void SetSecurityStyleAndDetails(const GURL& url,
                                 const network::mojom::URLResponseHead& head,
                                 WebURLResponse* response,
@@ -198,55 +171,11 @@ void SetSecurityStyleAndDetails(const GURL& url,
   }
 
   const net::SSLInfo& ssl_info = *head.ssl_info;
-
-  const char* protocol = "";
-  const char* key_exchange = "";
-  const char* cipher = "";
-  const char* mac = "";
-  const char* key_exchange_group = "";
-
-  if (ssl_info.connection_status) {
-    int ssl_version =
-        net::SSLConnectionStatusToVersion(ssl_info.connection_status);
-    net::SSLVersionToString(&protocol, ssl_version);
-
-    bool is_aead;
-    bool is_tls13;
-    uint16_t cipher_suite =
-        net::SSLConnectionStatusToCipherSuite(ssl_info.connection_status);
-    net::SSLCipherSuiteToStrings(&key_exchange, &cipher, &mac, &is_aead,
-                                 &is_tls13, cipher_suite);
-    if (!key_exchange) {
-      DCHECK(is_tls13);
-      key_exchange = "";
-    }
-
-    if (!mac) {
-      DCHECK(is_aead);
-      mac = "";
-    }
-
-    if (ssl_info.key_exchange_group != 0) {
-      // Historically the field was named 'curve' rather than 'group'.
-      key_exchange_group = SSL_get_curve_name(ssl_info.key_exchange_group);
-      if (!key_exchange_group) {
-        NOTREACHED();
-        key_exchange_group = "";
-      }
-    }
-  }
-
   if (net::IsCertStatusError(head.cert_status)) {
     response->SetSecurityStyle(SecurityStyle::kInsecure);
   } else {
     response->SetSecurityStyle(SecurityStyle::kSecure);
   }
-
-  WebURLResponse::SignedCertificateTimestampList sct_list(
-      ssl_info.signed_certificate_timestamps.size());
-
-  for (size_t i = 0; i < sct_list.size(); ++i)
-    sct_list[i] = NetSCTToBlinkSCT(ssl_info.signed_certificate_timestamps[i]);
 
   if (!ssl_info.cert) {
     NOTREACHED();
@@ -254,35 +183,7 @@ void SetSecurityStyleAndDetails(const GURL& url,
     return;
   }
 
-  std::vector<std::string> san_dns;
-  std::vector<std::string> san_ip;
-  ssl_info.cert->GetSubjectAltName(&san_dns, &san_ip);
-  WebVector<WebString> web_san(san_dns.size() + san_ip.size());
-  std::transform(san_dns.begin(), san_dns.end(), web_san.begin(),
-                 [](const std::string& h) { return WebString::FromLatin1(h); });
-  std::transform(san_ip.begin(), san_ip.end(), web_san.begin() + san_dns.size(),
-                 [](const std::string& h) {
-                   net::IPAddress ip(reinterpret_cast<const uint8_t*>(h.data()),
-                                     h.size());
-                   return WebString::FromLatin1(ip.ToString());
-                 });
-
-  WebVector<WebString> web_cert;
-  web_cert.reserve(ssl_info.cert->intermediate_buffers().size() + 1);
-  web_cert.emplace_back(CryptoBufferAsWebString(ssl_info.cert->cert_buffer()));
-  for (const auto& cert : ssl_info.cert->intermediate_buffers())
-    web_cert.emplace_back(CryptoBufferAsWebString(cert.get()));
-
-  WebURLResponse::WebSecurityDetails webSecurityDetails(
-      WebString::FromASCII(protocol), WebString::FromASCII(key_exchange),
-      WebString::FromASCII(key_exchange_group), WebString::FromASCII(cipher),
-      WebString::FromASCII(mac),
-      WebString::FromUTF8(ssl_info.cert->subject().common_name), web_san,
-      WebString::FromUTF8(ssl_info.cert->issuer().common_name),
-      ssl_info.cert->valid_start().ToDoubleT(),
-      ssl_info.cert->valid_expiry().ToDoubleT(), web_cert, sct_list);
-
-  response->SetSecurityDetails(webSecurityDetails);
+  response->SetSSLInfo(ssl_info);
 }
 
 bool IsBannedCrossSiteAuth(

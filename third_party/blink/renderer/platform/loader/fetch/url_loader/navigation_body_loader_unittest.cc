@@ -22,6 +22,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
 
@@ -352,7 +353,7 @@ TEST_F(NavigationBodyLoaderTest, FillResponseWithSecurityDetails) {
           /*resource_load_info_notifier=*/nullptr),
       /*is_main_frame=*/true, &navigation_params);
   EXPECT_TRUE(
-      navigation_params.response.SecurityDetailsForTesting().has_value());
+      navigation_params.response.ToResourceResponse().GetSSLInfo().has_value());
 }
 
 }  // namespace
