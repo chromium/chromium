@@ -483,9 +483,11 @@ void SequenceManagerImpl::OnExitNestedRunLoop() {
   main_thread_only().nesting_depth--;
   DCHECK_GE(main_thread_only().nesting_depth, 0);
   if (main_thread_only().nesting_depth == 0) {
-    // While we were nested some non-nestable tasks may have been deferred.
-    // We push them back onto the *front* of their original work queues,
-    // that's why we iterate |non_nestable_task_queue| in FIFO order.
+    // While we were nested some non-nestable tasks may have been deferred. We
+    // push them back onto the *front* of their original work queues, that's why
+    // we iterate |non_nestable_task_queue| in LIFO order (we want
+    // |non_nestable_task.front()| to be the last task pushed at the front of
+    // |task_queue|).
     LazyNow exited_nested_now(controller_->GetClock());
     while (!main_thread_only().non_nestable_task_queue.empty()) {
       internal::TaskQueueImpl::DeferredNonNestableTask& non_nestable_task =
