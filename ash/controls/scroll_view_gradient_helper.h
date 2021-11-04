@@ -32,13 +32,23 @@ class ASH_EXPORT ScrollViewGradientHelper {
   // Updates the gradients based on `scroll_view_` bounds and scroll position.
   void UpdateGradientZone();
 
+  // When `hide` is true, hides the gradient mask and destroys its layer. This
+  // may improve animation performance if the layer's bounds are changing.
+  void HideGradient(bool hide);
+
   GradientLayerDelegate* gradient_layer_for_test() {
     return gradient_layer_.get();
   }
 
  private:
+  // Removes the scroll view mask layer.
+  void RemoveMaskLayer();
+
   // The scroll view being decorated.
   views::ScrollView* const scroll_view_;
+
+  // When true, the gradient is forced hidden.
+  bool hide_gradient_ = false;
 
   // Draws the fade in/out gradients via a `scroll_view_` mask layer.
   std::unique_ptr<GradientLayerDelegate> gradient_layer_;

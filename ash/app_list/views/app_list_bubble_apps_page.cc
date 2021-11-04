@@ -21,6 +21,7 @@
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -171,8 +172,8 @@ void AppListBubbleAppsPage::StartShowAnimation() {
             "Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage", value);
       })));
 
-  // TODO(https://crbug.com/1264178): Disable the gradient mask on the scroll
-  // view to improve performance.
+  // Disable the gradient mask on the scroll view to improve performance.
+  gradient_helper_->HideGradient(true);
 
   // Animate the views. Each section is initially offset down, then slides up
   // into its final position. If a section isn't visible, skip it. The further
@@ -196,7 +197,13 @@ void AppListBubbleAppsPage::StartShowAnimation() {
 
   // The apps grid is always visible.
   vertical_offset += kSectionOffset;
-  SlideViewIntoPosition(scrollable_apps_grid_view_, vertical_offset);
+  // Use a special cleanup callback to show the gradient mask at the end of the
+  // animation. No need to use SlideViewIntoPosition() because this view always
+  // has a layer.
+  StartSlideInAnimation(
+      scrollable_apps_grid_view_, vertical_offset,
+      base::BindRepeating(&AppListBubbleAppsPage::OnAppsGridViewAnimationEnded,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
@@ -216,11 +223,6 @@ void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
     view->layer()->SetFillsBoundsOpaquely(false);
   }
 
-  // Set the initial offset via a layer transform.
-  gfx::Transform translate_down;
-  translate_down.Translate(0, vertical_offset);
-  view->layer()->SetTransform(translate_down);
-
   // If we created a layer for the view, undo that when the animation ends.
   // The underlying views don't expose weak pointers directly, so use a weak
   // pointer to this view, which owns its children.
@@ -228,12 +230,25 @@ void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,
                                     &AppListBubbleAppsPage::DestroyLayerForView,
                                     weak_factory_.GetWeakPtr(), view)
                               : base::DoNothing();
+  StartSlideInAnimation(view, vertical_offset, cleanup);
+}
+
+void AppListBubbleAppsPage::StartSlideInAnimation(
+    views::View* view,
+    int vertical_offset,
+    base::RepeatingClosure cleanup) {
+  DCHECK(view->layer());
 
   // Animation spec:
   //
   // Y Position: Down (offset) → End position
   // Duration: 250ms
   // Ease: (0.00, 0.00, 0.20, 1.00)
+
+  // Set the initial offset via a layer transform.
+  gfx::Transform translate_down;
+  translate_down.Translate(0, vertical_offset);
+  view->layer()->SetTransform(translate_down);
 
   // Animate the transform back to the identity transform.
   constexpr gfx::Transform kIdentity;
@@ -318,6 +333,11 @@ void AppListBubbleAppsPage::UpdateSeparatorVisibility() {
 void AppListBubbleAppsPage::DestroyLayerForView(views::View* view) {
   // This function is not static so it can be bound with a weak pointer.
   view->DestroyLayer();
+}
+
+void AppListBubbleAppsPage::OnAppsGridViewAnimationEnded() {
+  // Recreate the gradient mask, if necessary.
+  gradient_helper_->HideGradient(false);
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

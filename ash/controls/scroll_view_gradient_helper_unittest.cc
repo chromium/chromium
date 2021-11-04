@@ -128,5 +128,30 @@ TEST_F(ScrollViewGradientHelperTest, ShowsGradientsBasedOnScrollPosition) {
   EXPECT_FALSE(HasGradientAtBottom());
 }
 
+TEST_F(ScrollViewGradientHelperTest, HideGradientRemovesMaskLayer) {
+  // Create a tall contents view.
+  AddScrollViewContentsWithHeight(500);
+  gradient_helper_->UpdateGradientZone();
+
+  // Precondition: Mask layer and delegate exist.
+  ASSERT_TRUE(scroll_view_->layer()->layer_mask_layer());
+  ASSERT_TRUE(gradient_helper_->gradient_layer_for_test());
+
+  // Hiding the gradient removes the layer and delegate.
+  gradient_helper_->HideGradient(true);
+  EXPECT_FALSE(scroll_view_->layer()->layer_mask_layer());
+  EXPECT_FALSE(gradient_helper_->gradient_layer_for_test());
+
+  // Updating the gradient does not restore the layer.
+  gradient_helper_->UpdateGradientZone();
+  EXPECT_FALSE(scroll_view_->layer()->layer_mask_layer());
+  EXPECT_FALSE(gradient_helper_->gradient_layer_for_test());
+
+  // Showing the gradient restores the layer and delegate.
+  gradient_helper_->HideGradient(false);
+  EXPECT_TRUE(scroll_view_->layer()->layer_mask_layer());
+  EXPECT_TRUE(gradient_helper_->gradient_layer_for_test());
+}
+
 }  // namespace
 }  // namespace ash
