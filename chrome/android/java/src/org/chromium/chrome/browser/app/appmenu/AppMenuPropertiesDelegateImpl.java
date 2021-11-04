@@ -642,12 +642,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (sItemBookmarkedForTesting != null) return sItemBookmarkedForTesting;
 
         if (!mBookmarkBridgeSupplier.hasValue()) return false;
-        BookmarkId existingBookmark =
-                mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
-        if (existingBookmark == null) return false;
-        return existingBookmark.getType() == BookmarkType.NORMAL
-                || (ReadingListFeatures.shouldAllowBookmarkTypeSwapping()
-                        && existingBookmark.getType() == BookmarkType.READING_LIST);
+        return mBookmarkBridgeSupplier.get().hasBookmarkIdForTab(currentTab);
     }
 
     /**
