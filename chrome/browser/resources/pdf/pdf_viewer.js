@@ -653,7 +653,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     }
   }
 
-  /** @return {!Viewport} The viewport. Used for testing. */
   /** @return {!Array<!Bookmark>} The bookmarks. Used for testing. */
   get bookmarks() {
     return this.bookmarks_;
