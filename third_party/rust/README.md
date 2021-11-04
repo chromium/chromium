@@ -5,19 +5,20 @@ should not depend on targets in this directory.
 
 ## Directory structure
 
-We store each third-party crate in a directory suffixed by its epoch version.
-If the crate's verion has a major version greater-than 0, then that is used
-as its version suffix, such as `-v1`. Otherwise, the suffix includes all
-leading zeros in the version, such as `-v0_3` or `-v0_0_6`.
+We store each third-party crate in a directory of the same name. Under
+that directory a folder named based on the crate epoch version is created.
+If the crate's version has a major version greater-than 0, then that is used
+as its version folder, such as `v1`. Otherwise, the name includes all
+leading zeros in the version, such as `v0_3` or `v0_0_6`.
 
 For example, the `tutelage` crate at version **1.4.3** would be stored at
 ```sh
-//third_party/rust/tutelage-v1
+//third_party/rust/tutelage/v1
 ```
 
 Whereas the verion **0.2.8** version would be stored at
 ```sh
-//third_party/rust/tutelage-v0_2
+//third_party/rust/tutelage/v0_2
 ```
 
 ## OWNERS
