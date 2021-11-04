@@ -327,18 +327,13 @@ class DebianBuilder(InstrumentedPackageBuilder):
     files_file = os.path.join(self._source_dir, 'debian/files')
 
     for line in open(files_file, 'r').read().splitlines():
+      if not line.endswith('.deb'):
+        continue
       filename, category, section = line.split(' ')
       pathname = os.path.join(self._source_dir, '..', filename)
       deb_files.append(pathname)
 
     return deb_files
-
-
-class LibcurlBuilder(DebianBuilder):
-  def build_and_install(self):
-    DebianBuilder.build_and_install(self)
-    self.shell_call('ln -rsf %s/libcurl-gnutls.so.4 %s/libcurl.so' %
-                    (self.dest_libdir(), self.dest_libdir()))
 
 
 class LibcapBuilder(InstrumentedPackageBuilder):
@@ -548,8 +543,6 @@ def main():
     builder = NSSBuilder(args, clobber)
   elif args.build_method == 'custom_libcap':
     builder = LibcapBuilder(args, clobber)
-  elif args.build_method == 'custom_libcurl':
-    builder = LibcurlBuilder(args, clobber)
   elif args.build_method == 'custom_libpci3':
     builder = Libpci3Builder(args, clobber)
   elif args.build_method == 'debian':
