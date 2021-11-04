@@ -204,9 +204,6 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   display_info_list.push_back(second_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
-  // Simulate that device can support at most two displays and user
-  // connects it with three displays. Notification should be created to warn
-  // user of it. See issue 827406 (https://crbug.com/827406).
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .set_maximum_display(2u);
   UpdateDisplay("500x400,300x200,200x100");
@@ -360,9 +357,9 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
             GetDisplayNotificationAdditionalText());
-  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_DISPLAY_MIRRORING,
-                                       GetMirroringDisplayNames()),
-            GetDisplayNotificationText());
+  // The tablet should no longer be in mirror mode.
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+  EXPECT_TRUE(GetDisplayNotificationText().empty());
   CloseNotification();
 }
 

@@ -1355,6 +1355,13 @@ void DisplayManager::SetMirrorMode(
   if (num_connected_displays() < 2)
     return;
 
+  // If the user turned off mirror mode, disable
+  // `forced_mirror_mode_for_tablet`.
+  if (mode != MirrorMode::kNormal &&
+      layout_store_->forced_mirror_mode_for_tablet()) {
+    layout_store_->set_forced_mirror_mode_for_tablet(false);
+  }
+
   if (mode == MirrorMode::kMixed) {
     // Set mixed mirror mode parameters. This will be used to do two things:
     // 1. Set the specified source and destination displays in mirror mode
