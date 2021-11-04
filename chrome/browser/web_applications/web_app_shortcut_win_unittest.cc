@@ -298,6 +298,77 @@ TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
   EXPECT_EQ(1u, result.size());
 }
 
+TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcutsAppIdentityChange) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath shortcut_dir = temp_dir.GetPath();
+
+  const base::FilePath::StringType shortcut_name =
+      FILE_PATH_LITERAL("test shortcut");
+
+  const base::FilePath profile_path(FILE_PATH_LITERAL("test/profile/web_app"));
+  const base::FilePath::StringType profile_name =
+      profile_path.BaseName().value();
+
+  ASSERT_NO_FATAL_FAILURE(CreateAndVerifyTestAppShortcut(
+      shortcut_name, shortcut_dir, profile_path));
+
+  // Create a 16x16 icon file for the web app.
+  const base::FilePath icon_file =
+      GetIconFilePath(shortcut_dir, u"test shortcut");
+  gfx::ImageFamily image_family;
+  image_family.Add(gfx::Image(CreateDefaultApplicationIcon(16)));
+  EXPECT_TRUE(CheckAndSaveIcon(icon_file, image_family,
+                               /*refresh_shell_icon_cache=*/false));
+
+  // Update the web app with a new title and a new icon family.
+  ShortcutInfo new_shortcut_info;
+  new_shortcut_info.title = u"new title";
+  new_shortcut_info.profile_path = profile_path;
+  new_shortcut_info.profile_name = base::WideToUTF8(profile_name);
+  new_shortcut_info.extension_id = kWebAppId;
+  gfx::ImageFamily new_image_family;
+  new_image_family.Add(gfx::Image(CreateDefaultApplicationIcon(32)));
+  new_shortcut_info.favicon = std::move(new_image_family);
+
+  UpdatePlatformShortcuts(shortcut_dir, base::WideToUTF16(shortcut_name),
+                          new_shortcut_info);
+
+  // The shortcut with the old title should have been deleted.
+  std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
+      shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
+  EXPECT_EQ(0u, result.size());
+
+  // When an app changes both title and icons, the icon file and shortcuts
+  // should reflect that. For example, the old icon file and its checksum should
+  // have been deleted:
+  EXPECT_FALSE(base::PathExists(icon_file));
+  EXPECT_FALSE(base::PathExists(base::FilePath(
+      icon_file.ReplaceExtension(FILE_PATH_LITERAL(".ico.md5")))));
+
+  // The shortcut with the new title should now be in the shortcut dir.
+  result = FindAppShortcutsByProfileAndTitle(shortcut_dir, profile_path,
+                                             new_shortcut_info.title);
+  EXPECT_EQ(1u, result.size());
+
+  // A new icon file (and checksum) should have been created.
+  const base::FilePath new_icon_file =
+      GetIconFilePath(shortcut_dir, u"new title");
+  EXPECT_TRUE(base::PathExists(base::FilePath(
+      new_icon_file.ReplaceExtension(FILE_PATH_LITERAL(".ico.md5")))));
+
+  // The shortcut should have been updated to use the new icon.
+  using base::win::ShortcutProperties;
+  ShortcutProperties shortcut_properties;
+  base::FilePath shortcut_file =
+      shortcut_dir.Append(FILE_PATH_LITERAL("new title.lnk"));
+  EXPECT_TRUE(base::PathExists(shortcut_file));
+  EXPECT_TRUE(base::win::ResolveShortcutProperties(
+      shortcut_file, ShortcutProperties::IndividualProperties::PROPERTIES_ICON,
+      &shortcut_properties));
+  EXPECT_EQ(new_icon_file, shortcut_properties.icon);
+}
+
 TEST_F(WebAppShortcutWinTest, GetIconFilePath) {
   const base::FilePath web_app_path(FILE_PATH_LITERAL("test\\web\\app\\dir"));
   EXPECT_EQ(GetIconFilePath(web_app_path, u"test app name"),

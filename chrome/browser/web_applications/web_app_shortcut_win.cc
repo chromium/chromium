@@ -275,6 +275,19 @@ std::vector<base::FilePath> FindMatchingShortcuts(
   return matching_shortcuts;
 }
 
+void UpdateIconFileForShortcut(const base::FilePath& web_app_path,
+                               const base::FilePath& shortcut,
+                               const std::u16string& new_app_title) {
+  const base::FilePath icon_file = GetIconFilePath(web_app_path, new_app_title);
+  base::win::ShortcutProperties shortcut_properties;
+  shortcut_properties.set_icon(icon_file, 0);
+  if (!base::win::CreateOrUpdateShortcutLink(
+          shortcut, shortcut_properties,
+          base::win::ShortcutOperation::SHORTCUT_UPDATE_EXISTING)) {
+    DVLOG(1) << "Error updating icon for shortcut " << new_app_title;
+  }
+}
+
 void UpdateShortcuts(const base::FilePath& web_app_path,
                      const base::FilePath& profile_path,
                      const std::u16string& old_app_title,
@@ -287,11 +300,25 @@ void UpdateShortcuts(const base::FilePath& web_app_path,
   const std::vector<base::FilePath> all_shortcuts =
       FindMatchingShortcuts(web_app_path, profile_path, old_app_title);
 
+  const bool title_change = old_app_title != shortcut_info.title;
   for (const auto& shortcut : all_shortcuts) {
     const base::FilePath new_shortcut =
         shortcut.DirName()
             .Append(GetSanitizedFileName(shortcut_info.title))
             .AddExtension(installer::kLnkExt);
+    if (title_change) {
+      // When the title changes, it is not enough to rename the shortcut file,
+      // because it still points to the old icon. Update the icon file before
+      // renaming.
+      UpdateIconFileForShortcut(web_app_path, shortcut, shortcut_info.title);
+      // Let the Windows shell know the item has been updated. SHCNF_FLUSH must
+      // be used, because we will rename the icon below (thereby sending back to
+      // back SHChangeNotify events for the same file) and if the image hasn't
+      // had a chance to update, the end result might be a blank image on the
+      // shortcut.
+      SHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATH | SHCNF_FLUSH,
+                     shortcut.value().c_str(), nullptr);
+    }
 
     base::File::Error error = base::File::Error::FILE_OK;
     bool success = base::ReplaceFile(shortcut, new_shortcut, &error);
@@ -343,6 +370,12 @@ void UpdateShortcuts(const base::FilePath& web_app_path,
         shortcut.DirName()
             .Append(GetSanitizedFileName(shortcut_info.title))
             .AddExtension(installer::kLnkExt);
+
+    if (title_change) {
+      UpdateIconFileForShortcut(web_app_path, shortcut, shortcut_info.title);
+      SHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATH | SHCNF_FLUSH,
+                     shortcut.value().c_str(), nullptr);
+    }
 
     base::File::Error error = base::File::Error::FILE_OK;
     bool success = base::ReplaceFile(shortcut, new_shortcut, &error);
@@ -573,15 +606,25 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
+  // Update the icon if necessary.
+  const base::FilePath icon_file =
+      GetIconFilePath(web_app_path, shortcut_info.title);
+  CheckAndSaveIcon(icon_file, shortcut_info.favicon, true);
+
   if (old_app_title != shortcut_info.title) {
     // The app's title has changed. Rename existing shortcuts.
     UpdateShortcuts(web_app_path, shortcut_info.profile_path, old_app_title,
                     shortcut_info);
-  }
 
-  // Update the icon if necessary.
-  base::FilePath icon_file = GetIconFilePath(web_app_path, shortcut_info.title);
-  CheckAndSaveIcon(icon_file, shortcut_info.favicon, true);
+    // Also delete the old icon file and checksum file, to avoid leaving
+    // orphaned files on disk. The new one was recreated above.
+    const base::FilePath old_icon_file =
+        GetIconFilePath(web_app_path, old_app_title);
+    const base::FilePath old_checksum_file(
+        old_icon_file.ReplaceExtension(kIconChecksumFileExt));
+    base::DeleteFile(old_icon_file);
+    base::DeleteFile(old_checksum_file);
+  }
 }
 
 ShortcutLocations GetAppExistingShortCutLocationImpl(
