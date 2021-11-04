@@ -14,14 +14,12 @@
     {
       "name": "LayoutTableRow TR",
       "position": [8, 28],
-      "bounds": [234, 102],
-      "backgroundColor": "#0000FF"
+      "bounds": [234, 102]
     },
     {
       "name": "LayoutTableRow TR class='shadow-inset'",
       "position": [8, 140],
       "bounds": [234, 102],
-      "backgroundColor": "#0000FF",
       "invalidations": [
         [10, 0, 102, 102]
       ]

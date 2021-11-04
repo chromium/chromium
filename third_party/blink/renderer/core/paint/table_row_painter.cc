@@ -111,12 +111,6 @@ void TableRowPainter::PaintBoxDecorationBackground(
             paint_info_for_cells, layout_table_row_);
       }
     }
-    uint64_t paint_area = base::saturated_cast<uint64_t>(
-        paint_rect.Width().ToUnsigned() * paint_rect.Height().ToUnsigned());
-    paint_info.context.GetPaintController().SetPossibleBackgroundColor(
-        layout_table_row_,
-        layout_table_row_.ResolveColor(GetCSSPropertyBackgroundColor()).Rgb(),
-        paint_area);
   }
 
   if (has_box_shadow) {

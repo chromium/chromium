@@ -166,10 +166,6 @@ class PLATFORM_EXPORT PaintController {
   void RecordSelection(absl::optional<PaintedSelectionBound> start,
                        absl::optional<PaintedSelectionBound> end);
 
-  void SetPossibleBackgroundColor(const DisplayItemClient&,
-                                  Color,
-                                  uint64_t area);
-
   wtf_size_t NumNewChunks() const {
     return new_paint_artifact_->PaintChunks().size();
   }

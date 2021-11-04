@@ -96,12 +96,6 @@ class PLATFORM_EXPORT PaintChunker final {
                                   absl::optional<PaintedSelectionBound> end);
 
   // Returns true if a new chunk is created.
-  bool ProcessBackgroundColorCandidate(const PaintChunk::Id&,
-                                       const DisplayItemClient&,
-                                       Color color,
-                                       float area);
-
-  // Returns true if a new chunk is created.
   bool EnsureChunk() {
     return EnsureCurrentChunk(next_chunk_id_->first, next_chunk_id_->second);
   }
@@ -116,6 +110,11 @@ class PLATFORM_EXPORT PaintChunker final {
  private:
   // Returns true if a new chunk is created.
   bool EnsureCurrentChunk(const PaintChunk::Id&, const DisplayItemClient&);
+
+  void ProcessBackgroundColorCandidate(const PaintChunk::Id&,
+                                       const DisplayItemClient&,
+                                       Color color,
+                                       float area);
 
   void FinalizeLastChunkProperties();
 

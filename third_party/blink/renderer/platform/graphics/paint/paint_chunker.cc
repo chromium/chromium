@@ -276,13 +276,13 @@ void PaintChunker::CreateScrollHitTestChunk(
   SetWillForceNewChunk(true);
 }
 
-bool PaintChunker::ProcessBackgroundColorCandidate(
+void PaintChunker::ProcessBackgroundColorCandidate(
     const PaintChunk::Id& id,
     const DisplayItemClient& client,
     Color color,
     float area) {
   if (color == Color::kTransparent)
-    return false;
+    return;
 
   bool created_new_chunk = EnsureCurrentChunk(id, client);
   float min_background_area = kMinBackgroundColorCoverageRatio *
@@ -296,7 +296,6 @@ bool PaintChunker::ProcessBackgroundColorCandidate(
             : color;
     candidate_background_area_ = area;
   }
-  return created_new_chunk;
 }
 
 void PaintChunker::FinalizeLastChunkProperties() {

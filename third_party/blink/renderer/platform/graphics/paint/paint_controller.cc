@@ -129,20 +129,6 @@ void PaintController::RecordSelection(
   paint_chunker_.AddSelectionToCurrentChunk(start, end);
 }
 
-void PaintController::SetPossibleBackgroundColor(
-    const DisplayItemClient& client,
-    Color color,
-    uint64_t area) {
-  PaintChunk::Id id(client.Id(), DisplayItem::kBoxDecorationBackground,
-                    current_fragment_);
-  CheckNewChunkId(id);
-  ValidateNewChunkClient(client);
-  if (paint_chunker_.ProcessBackgroundColorCandidate(id, client, color, area)) {
-    RecordDebugInfo(client);
-    CheckNewChunk();
-  }
-}
-
 bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
                                               DisplayItem::Type type) {
   if (usage_ == kTransient)
