@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/macros.h"
+#include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 
@@ -47,6 +47,10 @@ void SetHostDispatcher(WindowTreeHost* host,
 
 void DisableIME(WindowTreeHost* host) {
   WindowTreeHostTestApi(host).disable_ime();
+}
+
+void DisableNativeWindowOcclusionTracking(WindowTreeHost* host) {
+  NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(host);
 }
 
 }  // namespace test

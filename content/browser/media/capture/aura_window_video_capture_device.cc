@@ -26,6 +26,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/aura/window_tree_host.h"
 
 namespace content {
 
@@ -92,6 +93,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
     if (target.frame_sink_id.is_valid()) {
       target_ = target;
+      video_capture_lock_ = target_window_->GetHost()->CreateVideoCaptureLock();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       force_visible_.emplace(target_window_);
 #endif
@@ -118,6 +120,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK_EQ(window, target_window_);
 
+    video_capture_lock_.reset();
     target_window_->RemoveObserver(this);
     target_window_ = nullptr;
 
@@ -172,6 +175,8 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
   aura::ScopedWindowCaptureRequest capture_request_;
   FrameSinkVideoCaptureDevice::VideoCaptureTarget target_;
+
+  std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock> video_capture_lock_;
 };
 
 AuraWindowVideoCaptureDevice::AuraWindowVideoCaptureDevice(
