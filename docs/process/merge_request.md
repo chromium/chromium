@@ -266,8 +266,8 @@ Chromium Dash [front-end](https://chromiumdash.appspot.com/branches) and
 | branch                   | M(X) Branch     | M(X) Beta       | Polish issues for Finch-gated features (no workflow changes), any new regressions, any release blockers, any security issues, any string issues (.GRD changes)                           |
 | beta                     | M(X) Beta       | M(X) Stable Cut | Non-functional issues for Finch-gated features (e.g. add metrics, fix crash), noticeable new regressions, any release blockers, any security issues, urgent string issues (.GRD changes) |
 | stable_cut               | M(X) Stable Cut | M(X) Stable     | Urgent new regressions, all release blockers, important security issues (medium severity or higher), emergency string issues (.GRD changes)                                              |
-| stable                   | M(X) Stable     | M(X+1) Stable   | Urgent new regressions (especially user reports), urgent release blockers, important security issues (medium severity or higher)                                                         |
-| extended (if applicable) | M(X+1) Stable   | M(X+2) Stable   | Important security issues (medium severity or higher) applicable to Windows, Mac or Chrome OS                                                                                            |
+| stable                   | M(X) Stable     | M(X+1) Stable   | Urgent new regressions (especially user reports), urgent release blockers, important security issues (medium severity or higher) requested by the security team                          |
+| extended (if applicable) | M(X+1) Stable   | M(X+2) Stable   | Important security issues (medium severity or higher) applicable to any platform supported by Chrome Browser requested by the security team                                              |
 
 ### Merge states and labels
 

@@ -7,21 +7,33 @@
 Chrome ships a new milestone (major version) to the stable channel every four
 weeks. The new milestone is developed on main for four weeks (beginning on
 branch point for the previous milestone) before the milestone's branch is cut,
-which is then stabilized for six weeks before being shipped to stable.
-
-Chrome also maintains every other milestone branch for four additional weeks by
-backporting important security fixes to create an extended stable channel,
-where a new milestone is shipped every eight weeks. During the first four
-weeks of this milestone, both stable and extended stable are shipped identical
-releases; see the [channel lifecycle](#channel-lifecycle) to learn more.
-The extended stable channel is only available to enterprises, who can enable it
-via enterprise policies.
-
-Biweekly updates (called refreshes) are shipped to both the stable and extended
-stable channels to deploy security fixes and keep Chrome's
+which is then stabilized for six weeks before being shipped to stable. Once
+a milestone reaches stable, biweekly updates (called refreshes) are shipped to
+the stable to deploy security fixes and keep Chrome's
 [patch gap](https://groups.google.com/a/chromium.org/g/security-dev/c/fbiuFbW07vI)
-short. Selected regression fixes may also be included in stable channel
-refreshes, but not extended stable refreshes.
+short.
+
+## Extended Stable
+
+Chrome Browser also maintains every other milestone branch for four additional
+weeks by backporting important security fixes to create an extended stable
+channel, where a new milestone is shipped every eight weeks. During the first
+four weeks of this milestone, both stable and extended stable are shipped
+identical releases; see the [channel lifecycle](#channel-lifecycle) to learn
+more. The extended stable channel is only available to enterprises on the
+Windows and Mac platforms, and can be enabled via enterprise policies. Biweekly
+refreshes are shipped to extended stable as well.
+
+While extended stable is only shipped to Windows and Mac, security fixes that
+are relevant to any Chrome Browser platforms will be landed on the extended
+stable branch for use by embedders. It's important to note that while the team
+will make an effort to backport all important security fixes to extended
+stable, complex and risky changes as well as larger features that improve
+security (e.g.
+[Site Isolation](https://www.chromium.org/Home/chromium-security/site-isolation))
+may not be viable to backport and will only be available on the stable channel;
+as such, using the stable channel and stable branches is recommended for any
+team where security is a primary concern.
 
 ## Release Cycle
 The diagram below shows when our different development checkpoints occur as a
