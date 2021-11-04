@@ -38,7 +38,6 @@ class FileSystemDirectoryHandle final : public FileSystemHandle {
   ScriptPromise getDirectoryHandle(ScriptState*,
                                    const String& name,
                                    const FileSystemGetDirectoryOptions*);
-  ScriptValue getEntries(ScriptState*);
   ScriptPromise removeEntry(ScriptState*,
                             const String& name,
                             const FileSystemRemoveOptions*);

@@ -125,32 +125,6 @@ ScriptPromise FileSystemDirectoryHandle::getDirectoryHandle(
   return result;
 }
 
-namespace {
-
-void ReturnDataFunction(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  V8SetReturnValue(info, info.Data());
-}
-
-}  // namespace
-
-ScriptValue FileSystemDirectoryHandle::getEntries(ScriptState* script_state) {
-  auto* iterator = MakeGarbageCollected<FileSystemDirectoryIterator>(
-      this, FileSystemDirectoryIterator::Mode::kValue,
-      ExecutionContext::From(script_state));
-  auto* isolate = script_state->GetIsolate();
-  auto context = script_state->GetContext();
-  v8::Local<v8::Object> result = v8::Object::New(isolate);
-  if (!result
-           ->Set(context, v8::Symbol::GetAsyncIterator(isolate),
-                 v8::Function::New(context, &ReturnDataFunction,
-                                   ToV8(iterator, script_state))
-                     .ToLocalChecked())
-           .ToChecked()) {
-    return ScriptValue();
-  }
-  return ScriptValue(script_state->GetIsolate(), result);
-}
-
 ScriptPromise FileSystemDirectoryHandle::removeEntry(
     ScriptState* script_state,
     const String& name,
