@@ -17,10 +17,6 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/zoom_level_delegate.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace zoom {
 class ZoomEventManager;
 }
@@ -56,10 +52,6 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   base::CallbackListSubscription RegisterDefaultZoomLevelCallback(
       base::RepeatingClosure callback);
 
-  void ExtractPerHostZoomLevels(
-      const base::DictionaryValue* host_zoom_dictionary,
-      bool sanitize_partition_host_zoom_levels);
-
   // content::ZoomLevelDelegate
   void InitHostZoomMap(content::HostZoomMap* host_zoom_map) override;
 
@@ -68,6 +60,9 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   // when per-host zoom levels change. It is used to update the per-host
   // zoom levels (if any) managed by this class (for its associated partition).
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
+
+  void ExtractPerHostZoomLevels(const base::Value* host_zoom_dictionary);
+  base::Value* GetOrCreateHostDictionary(base::Value* pref_dict);
 
   PrefService* pref_service_;
   base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager_;
