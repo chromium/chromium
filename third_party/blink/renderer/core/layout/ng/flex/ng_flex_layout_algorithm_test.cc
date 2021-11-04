@@ -187,7 +187,11 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsRowWrapOrtho) {
 TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsLegacyItem) {
   DevtoolsFlexInfo devtools = LayoutForDevtools(R"HTML(
     <div style="display: flex;" id=flexbox>
-      <div style="columns: 1"></div>
+      <div style="columns: 1">
+        <div style="display:flex;"></div>
+        <div style="display:grid;"></div>
+        <div style="display:table;"></div>
+      </div>
     </div>
   )HTML");
   EXPECT_EQ(devtools.lines.size(), 1u);

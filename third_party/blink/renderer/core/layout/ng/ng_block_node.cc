@@ -1684,12 +1684,16 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
   DCHECK(!constraint_space.HasBlockFragmentation() ||
          box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks);
 
+  scoped_refptr<const NGLayoutResult> old_layout_result =
+      box_->GetCachedLayoutResult();
+  scoped_refptr<const NGLayoutResult> old_measure_result =
+      box_->GetCachedMeasureResult();
+
   scoped_refptr<const NGLayoutResult> layout_result =
-      constraint_space.CacheSlot() == NGCacheSlot::kMeasure
-          ? box_->GetCachedMeasureResult()
-          : box_->GetCachedLayoutResult();
+      constraint_space.CacheSlot() == NGCacheSlot::kMeasure ? old_measure_result
+                                                            : old_layout_result;
   if (constraint_space.CacheSlot() == NGCacheSlot::kLayout && !layout_result)
-    layout_result = box_->GetCachedMeasureResult();
+    layout_result = old_measure_result;
 
   if (UNLIKELY(DevtoolsReadonlyLayoutScope::InDevtoolsLayout())) {
     DCHECK(layout_result);
@@ -1766,6 +1770,15 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::RunLegacyLayout(
     // When side effects are disabled, it's not possible to disable side effects
     // completely for legacy, but at least keep the fragment tree unaffected.
     if (!NGDisableSideEffectsScope::IsDisabled()) {
+      // Legacy layout clears both layout and measure results, in
+      // LayoutBox::UpdateAfterLayout(), because that code has no way of knowing
+      // whether the legacy object is laid out by an NG container or not. We
+      // will now store the new layout result, either the measure result or the
+      // actual layout result, depending on the cache slot selected. Make sure
+      // that we leave the *other* result untouched, by first canceling what
+      // UpdateAfterLayout() did.
+      box_->RestoreLegacyLayoutResults(old_measure_result, old_layout_result);
+
       box_->SetCachedLayoutResult(layout_result);
 
       // If |SetCachedLayoutResult| did not update cached |LayoutResult|,

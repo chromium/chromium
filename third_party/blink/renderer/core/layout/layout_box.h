@@ -1193,6 +1193,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                            const NGPhysicalBoxFragment& old_fragment);
 
   void ShrinkLayoutResults(wtf_size_t results_to_keep);
+  void RestoreLegacyLayoutResults(
+      scoped_refptr<const NGLayoutResult> measure_result,
+      scoped_refptr<const NGLayoutResult> layout_result);
   void ClearLayoutResults();
 
   const NGLayoutResult* GetCachedLayoutResult() const;

@@ -773,7 +773,6 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
   for (LayoutBox* column_box = FirstMultiColumnBox(); column_box;
        column_box = column_box->NextSiblingMultiColumnBox()) {
     column_box->ClearNeedsLayout();
-    column_box->UpdateAfterLayout();
   }
 
   // If we have a trailing column set, finish it.
@@ -785,7 +784,6 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
 
   ValidateColumnSets();
   SetLogicalHeight(flow_thread_offset);
-  UpdateAfterLayout();
   ClearNeedsLayout();
   last_set_worked_on_ = nullptr;
 }

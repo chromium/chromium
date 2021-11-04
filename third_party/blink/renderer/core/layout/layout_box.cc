@@ -1243,12 +1243,13 @@ void LayoutBox::UpdateAfterLayout() {
   // When we've finished layout, if we aren't a LayoutNG object, we need to
   // reset our cached layout result. LayoutNG inside of
   // |NGBlockNode::RunOldLayout| will call |LayoutBox::SetCachedLayoutResult|
-  // with a new synthesized layout result.
+  // with a new synthesized layout result, if we are still being laid out by an
+  // NG container.
   //
   // We also want to make sure that if our entrance point into layout changes,
   // e.g. an OOF-positioned object is laid out by an NG containing block, then
   // Legacy, then NG again, NG won't use a stale layout result.
-  if (IsOutOfFlowPositioned() && !IsLayoutNGObject() &&
+  if (!IsLayoutNGObject() &&
       // When side effects are disabled, it's not possible to disable side
       // effects completely for |RunLegacyLayout|, but at least keep the
       // fragment tree unaffected.
@@ -3420,6 +3421,18 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
   }
   NOTREACHED();
   AddLayoutResult(std::move(result));
+}
+
+void LayoutBox::RestoreLegacyLayoutResults(
+    scoped_refptr<const NGLayoutResult> measure_result,
+    scoped_refptr<const NGLayoutResult> layout_result) {
+  NOT_DESTROYED();
+  DCHECK(!IsLayoutNGObject());
+  measure_result_ = std::move(measure_result);
+  if (layout_result)
+    AddLayoutResult(std::move(layout_result), 0);
+  else
+    DCHECK(layout_results_.IsEmpty());
 }
 
 void LayoutBox::ClearLayoutResults() {
