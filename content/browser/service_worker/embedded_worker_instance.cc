@@ -308,7 +308,7 @@ void EmbeddedWorkerInstance::Start(
           reporting_observer_remote;
       owner_version_->set_reporting_observer_receiver(
           reporting_observer_remote.InitWithNewPipeAndPassReceiver());
-      auto reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
+      coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
           rph->GetStoragePartition(), params->script_url,
           owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
           owner_version_->cross_origin_embedder_policy()
@@ -319,9 +319,7 @@ void EmbeddedWorkerInstance::Start(
           // ServiceWorkers used in iframes.
           net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
               url::Origin::Create(params->script_url)));
-      reporter->BindObserver(std::move(reporting_observer_remote));
-      mojo::MakeSelfOwnedReceiver(std::move(reporter),
-                                  coep_reporter_.BindNewPipeAndPassReceiver());
+      coep_reporter_->BindObserver(std::move(reporting_observer_remote));
 
       coep_reporter_->Clone(
           coep_reporter_for_devtools.InitWithNewPipeAndPassReceiver());
@@ -869,7 +867,7 @@ EmbeddedWorkerInstance::CreateFactoryBundles() {
     owner_version_->set_reporting_observer_receiver(
         reporting_observer_remote.InitWithNewPipeAndPassReceiver());
 
-    auto reporter = std::make_unique<CrossOriginEmbedderPolicyReporter>(
+    coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
         rph->GetStoragePartition(), owner_version_->script_url(),
         owner_version_->cross_origin_embedder_policy()->reporting_endpoint,
         owner_version_->cross_origin_embedder_policy()
@@ -880,9 +878,7 @@ EmbeddedWorkerInstance::CreateFactoryBundles() {
         // used in iframes.
         net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
             url::Origin::Create(owner_version_->script_url())));
-    reporter->BindObserver(std::move(reporting_observer_remote));
-    mojo::MakeSelfOwnedReceiver(std::move(reporter),
-                                coep_reporter_.BindNewPipeAndPassReceiver());
+    coep_reporter_->BindObserver(std::move(reporting_observer_remote));
     coep_reporter_->Clone(
         coep_reporter_for_devtools.InitWithNewPipeAndPassReceiver());
     coep_reporter_->Clone(
