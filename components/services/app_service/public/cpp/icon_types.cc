@@ -26,6 +26,14 @@ constexpr int32_t IconKey::kInvalidResourceId = 0;
 IconValue::IconValue() = default;
 IconValue::~IconValue() = default;
 
+std::unique_ptr<IconKey> ConvertMojomIconKeyToIconKey(
+    apps::mojom::IconKeyPtr mojom_icon_key) {
+  DCHECK(mojom_icon_key);
+  return std::make_unique<IconKey>(mojom_icon_key->timeline,
+                                   mojom_icon_key->resource_id,
+                                   mojom_icon_key->icon_effects);
+}
+
 apps::mojom::IconType ConvertIconTypeToMojomIconType(IconType icon_type) {
   switch (icon_type) {
     case IconType::kUnknown:

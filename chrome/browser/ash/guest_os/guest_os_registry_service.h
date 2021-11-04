@@ -170,12 +170,12 @@ class GuestOsRegistryService : public KeyedService {
   // 4/ Uses |fallback_icon_resource_id| if it is valid (non-zero).
   // 5/ Returns empty.
   void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
+                const apps::IconKey& icon_key,
+                apps::IconType icon_type,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 int fallback_icon_resource_id,
-                apps::mojom::Publisher::LoadIconCallback callback);
+                apps::LoadIconCallback callback);
 
   void LoadIconFromVM(const std::string& app_id,
                       apps::IconType icon_type,
@@ -267,8 +267,8 @@ class GuestOsRegistryService : public KeyedService {
   // Apply container-specific badging to `icon`. This is run after the generic
   // icon loading code.
   void ApplyContainerBadge(SkColor badge_color,
-                           apps::mojom::Publisher::LoadIconCallback callback,
-                           apps::mojom::IconValuePtr icon);
+                           apps::LoadIconCallback callback,
+                           std::unique_ptr<apps::IconValue> icon);
 
   // Owned by the Profile.
   Profile* const profile_;

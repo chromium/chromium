@@ -186,10 +186,18 @@ void PluginVmApps::LoadIcon(const std::string& app_id,
                             int32_t size_hint_in_dip,
                             bool allow_placeholder_icon,
                             LoadIconCallback callback) {
-  registry_->LoadIcon(app_id, std::move(icon_key), icon_type, size_hint_in_dip,
-                      allow_placeholder_icon,
+  if (!icon_key) {
+    // On failure, we still run the callback, with an empty IconValue.
+    std::move(callback).Run(apps::mojom::IconValue::New());
+    return;
+  }
+
+  std::unique_ptr<IconKey> key =
+      ConvertMojomIconKeyToIconKey(std::move(icon_key));
+  registry_->LoadIcon(app_id, *key, ConvertMojomIconTypeToIconType(icon_type),
+                      size_hint_in_dip, allow_placeholder_icon,
                       apps::mojom::IconKey::kInvalidResourceId,
-                      std::move(callback));
+                      IconValueToMojomIconValueCallback(std::move(callback)));
 }
 
 void PluginVmApps::Launch(const std::string& app_id,
