@@ -35,13 +35,13 @@ Here is a simple example to build a CodeNode tree.
 ```python
 # SequenceNode and TextNode are subclasses of CodeNode.
 
-def prologue():
+def make_prologue():
   return SequenceNode([
     TextNode("// Prologue"),
     TextNode("SetUp();"),
   ])
 
-def epilogue():
+def make_epilogue():
   return SequenceNode([
     TextNode("// Epilogue"),
     TextNode("CleanUp();"),
@@ -49,9 +49,9 @@ def epilogue():
 
 def main():
   root_node = SequenceNode([
-    prologue(),
+    make_prologue(),
     TextNode("LOG(INFO) << \"hello, world\";"),
-    epilogue(),
+    make_epilogue(),
   ])
 ```
 The `root_node` above represents the following text.
@@ -160,7 +160,236 @@ So far, the typical code structure of the sub code generators is covered.
 `enumeration.py` consists of several `make_xxx` functions (subtree builders) +
 `generate_enumeration` (the top-level tree builder + file writer).
 
-### Advanced: Auto-completion and declarative style
+### Advanced: Two-step code generation and declarative style
 
-TODO(yukishiino): Write about `SymbolNode`, `SymbolDefinitionNode`,
-`SequenceNode`, and `SymbolScopeNode`.
+#### Typical problems of (simple) code generation
+
+Bindings code generation has the following typical problems.  Suppose we have
+the following simple code generator.
+```python
+# Example of simple code generation
+
+def make_foo():
+  return SequenceNode([
+    TextNode("HeavyResource* res = HeavyFunc();"),
+    TextNode("Foo(res);"),
+  ])
+
+def make_bar():
+  return SequenceNode([
+    TextNode("HeavyResource* res = HeavyFunc();"),
+    TextNode("Bar(res);"),
+  ])
+
+def main():
+  root_node = SequenceNode([
+    make_foo(),
+    make_bar(),
+  ])
+```
+This produces the following C++ code, where we have two major problems.  The
+first problem is a symbol conflict: `res` is defined twice.  Even if we gave
+different names like `res1` and `res2`, we have the second problem: the
+produced code calls `HeavyFunc` twice, which is not efficient.
+```c++
+// Output of simple code generation example
+HeavyResource* res = HeavyFunc();
+Foo(res);
+HeavyResource* res = HeavyFunc();
+Bar(res);
+```
+Ideally we'd like to have the following code, without introducing tight coupling
+between `make_foo` and `make_bar`.
+```c++
+// Ideal generated code
+HeavyResource* res = HeavyFunc();
+Foo(res);
+Bar(res);
+```
+
+#### Two-step code generation as a solution
+
+In order to resolve the above problems, the bindings code generator supports
+two-step code generation.  This way may look like declarative programming.
+```python
+# Example of two-step code generation
+
+def bind_vars(code_node):
+  local_vars = [
+    SymbolNode("heavy_resource",
+               "HeavyResource* ${heavy_resource} = HeavyFunc(${address}, ${phone_number});"),
+    SymbolNode("address",
+               "String ${address} = GetAddress();"),
+    SymbolNode("phone",
+               "String ${phone_number} = GetPhoneNumber();"),
+  ]
+  for symbol_node in local_vars:
+    code_node.register_code_symbol(symbol_node)
+
+def make_foo():
+  return SequenceNode([
+    TextNode("Foo(${heavy_resource});"),
+  ])
+
+def make_bar():
+  return SequenceNode([
+    TextNode("Bar(${heavy_resource});"),
+  ])
+
+def main():
+  root_node = SymbolScopeNode()
+  bind_vars(root_node)
+  root_node.extend([
+    make_foo(),
+    make_bar(),
+  ])
+```
+The above code generator has two kinds of code generation.  One kind is
+`make_foo` and `make_bar`, which are almost the same as before except for use
+of a template variable (`${heavy_resource}`).  The other kind is `bind_vars`,
+which provides a catalogue of symbol definitions.  We can make the definitions
+of `make_foo` and `make_bar` simple with using the catalogue of symbol
+definitions.  This code generator produces the following C++ code
+without producing duplicated function calls.
+```c++
+// Output of two-step code generation example
+String address = GetAddress();
+String phone_number = GetPhoneNumber();
+HeavyResource* heavy_resource = HeavyFunc(address, phone_number);
+Foo(heavy_resource);
+Bar(heavy_resource);
+```
+The mechanism of two-step code generation is simple.
+SymbolNode(name, definition) consists of a symbol name and code fragment that
+defines the symbol.  When a symbol name is referenced as `${symbol_name}`, it's
+simply replaced with `symbol_name`, plus it triggers insertion of the symbol
+definition into a surrounding `SequenceNode`.  This step happens recursively.
+So not only `heavy_resource`'s definition but also `address` and
+`phone_number`'s definitions are inserted, too.
+
+With the two-step code generation, it's possible (and expected) to write code
+generators in the declarative programming style, which works better in general
+than the imperative programming style.
+
+#### Important subclasses of CodeNode for two-step code generation
+
+- SymbolNode
+
+SymbolNode consists of a symbol name and its definition.  You can reference
+a symbol as `${symbol_name}` in TextNode and FormatNode.  It's okay that you
+never reference a symbol.  The symbol definition will be automatically inserted
+only when you reference the symbol.
+
+For simple use cases, a SymbolNode can be constructed from a pair of a symbol
+name and a plain text (which can contain references in the form of `${...}`) as
+the definition.
+```python
+# Example of simple use cases
+addr_symbol = SymbolNode("address",
+                         "void* ${address} = ${base} + ${offset};")
+```
+For more complicated use cases, SymbolNode's definition can be a callable that
+returns a SymbolDefinitionNode instead.  This is useful when the definition has
+a complex structure of code node tree, since a plain text definition cannot
+represent a code node tree structure.
+
+```python
+# Example of complicated use cases
+def create_address(symbol_node):
+  node = SymbolDefinitionNode(symbol_node)
+  node.extend([
+    TextNode("void* ${address} = ${base} + ${offset};"),
+    CxxUnlikelyIfNode(
+      cond="!${address}",
+      body=[
+        TextNode("${exception_state}.ThrowRangeError(\"...\");"),
+        TextNode("return;"),
+      ]),
+  ])
+  return node
+
+addr_symbol = SymbolNode("address",
+                         definition_constructor=create_address)
+```
+where CxxUnlikelyIfNode represents a C++ if statement with an unlikely condition
+(defined in code_node_cxx.py).  This definition is better than a plain text
+definition because it inserts the definition of ${exception_state} at the best
+position depending on how much likely ${exception_state} is actually used.
+```c++
+// Output of the example of complicated use cases
+void* base = ...;  // ${base}'s definition is automatically inserted.
+void* offset = ...;  // ${offset}'s definition is automatically inserted.
+// ${exception_state}'s definition may be inserted here if it's used often or
+// outside of the following if statement.
+// ExceptionState exception_state(...);
+void* address = base + offset;
+if (!address) {
+  // ${exception_state}'s definition may be inserted here if it's not used often
+  // or outside of this if statement.
+  ExceptionState exception_state(...);
+  exception_state.ThrowRangeError("...");
+  return;
+}
+```
+
+- SymbolDefinitionNode
+
+SymbolDefinitionNode represents the code fragment that defines a symbol.
+The code generator automatically inserts symbol definitions at the best
+positions, however it's hard to determine the best position in one path
+calculation.  So, the code generator relocates symbol definitions in order to
+find their best positions.  SymbolDefinitionNode is used to identify a subtree
+of code nodes that defines its symbol (i.e. used to distinguish automatically
+inserted code nodes from the original code node tree).
+
+- SequenceNode
+
+SequenceNode represents not only a list of CodeNodes but also insertion points
+of SymbolDefinitionNode.  SymbolDefinitionNodes will be inserted between
+elements within a SequenceNode.
+
+- ListNode
+
+Compared to SequenceNode, ListNode represents just a list of CodeNodes that does
+not support automatic insertion of symbol definitions, i.e. ListNode is
+indivisible.  SequenceNode should be used when your code nodes represent a
+series of C++ statements, otherwise ListNode is preferred over SequenceNode so
+that nothing will be inserted in between.  See the following example.
+```python
+# Example of SequenceNode vs ListNode
+int_array = ListNode([
+  TextNode("int int_array[] = {"),
+  ListNode([
+    TextNode("${foo}"),
+    TextNode("${bar}"),
+  ], separator=","),
+  TextNode("};"),
+])
+
+node = SequenceNode([
+  int_array,
+  TextNode("PrintIntArray(int_array);"),
+])
+```
+This example produces the following C++ code.  Since symbol definitions are
+inserted only between elements of SequenceNode, ${foo} and ${bar}'s definitions
+won't be inserted within `int_array`'s definition.
+```c++
+// Output of SequenceNode vs ListNode example
+int foo = ...;  // ${foo}'s definition is automatically inserted here.
+int bar = ...;  // ${bar}'s definition is automatically inserted here.
+int array[] = {
+  // ${foo}'s definition is _not_ inserted here.
+  foo,
+  // ${bar}'s definition is _not_ inserted here.
+  bar
+};
+PrintIntArray(int_array);
+```
+
+- SymbolScopeNode
+
+You can register SymbolNodes only into a SymbolScopeNode.  Registered symbols
+are effective only inside the SymbolScopeNode.  This behavior reflects that
+C++ variables are effective only inside the closest containing C++ block
+(`{...}`).
