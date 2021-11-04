@@ -82,6 +82,12 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
     producer_host_->RegisterDataSource(descriptor);
   }
 
+  void UpdateDataSource(
+      const perfetto::DataSourceDescriptor& descriptor) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    NOTREACHED();
+  }
+
   void UnregisterDataSource(const std::string& name) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement data source unregistering. Data sources are

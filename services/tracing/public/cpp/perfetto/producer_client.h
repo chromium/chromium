@@ -100,6 +100,7 @@ class COMPONENT_EXPORT(TRACING_CPP) ProducerClient
   perfetto::SharedMemory* shared_memory() const override;
   void NotifyFlushComplete(perfetto::FlushRequestID) override;
   void RegisterDataSource(const perfetto::DataSourceDescriptor&) override;
+  void UpdateDataSource(const perfetto::DataSourceDescriptor&) override;
   void UnregisterDataSource(const std::string& name) override;
   void NotifyDataSourceStopped(perfetto::DataSourceInstanceID) override;
   void NotifyDataSourceStarted(perfetto::DataSourceInstanceID) override;

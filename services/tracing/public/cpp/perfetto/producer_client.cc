@@ -337,6 +337,10 @@ void ProducerClient::RegisterDataSource(const perfetto::DataSourceDescriptor&) {
   NOTREACHED();
 }
 
+void ProducerClient::UpdateDataSource(const perfetto::DataSourceDescriptor&) {
+  NOTREACHED();
+}
+
 void ProducerClient::UnregisterDataSource(const std::string& name) {
   NOTREACHED();
 }
