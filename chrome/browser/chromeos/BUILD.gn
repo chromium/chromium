@@ -4251,6 +4251,7 @@ source_set("unit_tests") {
     "../ash/policy/core/user_cloud_policy_manager_ash_unittest.cc",
     "../ash/policy/core/user_cloud_policy_store_ash_unittest.cc",
     "../ash/policy/core/user_cloud_policy_token_forwarder_unittest.cc",
+    "../ash/policy/dlp/dlp_confidential_contents_unittest.cc",
     "../ash/policy/dlp/dlp_content_manager_unittest.cc",
     "../ash/policy/dlp/mock_dlp_content_manager.cc",
     "../ash/policy/dlp/mock_dlp_content_manager.h",
