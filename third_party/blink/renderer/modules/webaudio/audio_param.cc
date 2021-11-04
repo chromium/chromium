@@ -447,7 +447,8 @@ float AudioParam::value() const {
 }
 
 void AudioParam::WarnIfOutsideRange(const String& param_method, float value) {
-  if (value < minValue() || value > maxValue()) {
+  if (Context()->GetExecutionContext() &&
+      (value < minValue() || value > maxValue())) {
     Context()->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,
