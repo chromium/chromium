@@ -364,6 +364,11 @@ class BASE_EXPORT TraceLog :
     return process_name_;
   }
 
+  std::unordered_map<int, std::string> process_labels() const {
+    AutoLock lock(lock_);
+    return process_labels_;
+  }
+
   uint64_t MangleEventId(uint64_t id);
 
   // Exposed for unittesting:

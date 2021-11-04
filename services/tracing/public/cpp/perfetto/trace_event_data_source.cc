@@ -1488,8 +1488,11 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   process->set_pid(process_id);
   process->set_start_timestamp_ns(
       process_creation_time_ticks_.since_origin().InNanoseconds());
-  if (!privacy_filtering_enabled && !process_name.empty()) {
+  if (!privacy_filtering_enabled) {
     process->set_process_name(process_name);
+    for (const auto& label : TraceLog::GetInstance()->process_labels()) {
+      process->add_process_labels(label.second);
+    }
   }
 
   ChromeProcessDescriptor* chrome_process =
