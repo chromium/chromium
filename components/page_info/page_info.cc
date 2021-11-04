@@ -43,6 +43,7 @@
 #include "components/resources/android/theme_resources.h"
 #endif
 #include "build/chromeos_buildflags.h"
+#include "components/page_info/features.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
@@ -280,11 +281,20 @@ const PageInfo::ChooserUIInfo kChooserUIInfo[] = {
      IDS_PAGE_INFO_DELETE_BLUETOOTH_DEVICE},
 };
 
+void LogTimeOpenHistogram(const std::string& name, base::TimeTicks start_time) {
+  base::UmaHistogramCustomTimes(name, base::TimeTicks::Now() - start_time,
+                                base::Milliseconds(1), base::Hours(1), 100);
+}
+
 // Time open histogram prefixes.
 const char kPageInfoTimePrefix[] = "Security.PageInfo.TimeOpen";
 const char kPageInfoTimeActionPrefix[] = "Security.PageInfo.TimeOpen.Action";
 const char kPageInfoTimeNoActionPrefix[] =
     "Security.PageInfo.TimeOpen.NoAction";
+const char kPageInfoTimeAboutThisShown[] =
+    "Security.PageInfo.TimeOpen.AboutThisSiteShown";
+const char kPageInfoTimeAboutThisNotShown[] =
+    "Security.PageInfo.TimeOpen.AboutThisSiteNotShown";
 
 }  // namespace
 
@@ -334,38 +344,35 @@ PageInfo::~PageInfo() {
 
   // Record the total time the Page Info UI was open for all opens as well as
   // split between whether any action was taken.
-  base::UmaHistogramCustomTimes(security_state::GetSecurityLevelHistogramName(
-                                    kPageInfoTimePrefix, security_level_),
-                                base::TimeTicks::Now() - start_time_,
-                                base::Milliseconds(1), base::Hours(1), 100);
-  base::UmaHistogramCustomTimes(
-      security_state::GetSafetyTipHistogramName(kPageInfoTimePrefix,
-                                                safety_tip_info_.status),
-      base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
-      base::Hours(1), 100);
-
+  LogTimeOpenHistogram(security_state::GetSecurityLevelHistogramName(
+                           kPageInfoTimePrefix, security_level_),
+                       start_time_);
+  LogTimeOpenHistogram(security_state::GetSafetyTipHistogramName(
+                           kPageInfoTimePrefix, safety_tip_info_.status),
+                       start_time_);
   if (did_perform_action_) {
-    base::UmaHistogramCustomTimes(
-        security_state::GetSecurityLevelHistogramName(kPageInfoTimeActionPrefix,
-                                                      security_level_),
-        base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
-        base::Hours(1), 100);
-    base::UmaHistogramCustomTimes(
+    LogTimeOpenHistogram(security_state::GetSecurityLevelHistogramName(
+                             kPageInfoTimeActionPrefix, security_level_),
+                         start_time_);
+    LogTimeOpenHistogram(
         security_state::GetSafetyTipHistogramName(kPageInfoTimeActionPrefix,
                                                   safety_tip_info_.status),
-        base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
-        base::Hours(1), 100);
+        start_time_);
   } else {
-    base::UmaHistogramCustomTimes(
-        security_state::GetSecurityLevelHistogramName(
-            kPageInfoTimeNoActionPrefix, security_level_),
-        base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
-        base::Hours(1), 100);
-    base::UmaHistogramCustomTimes(
+    LogTimeOpenHistogram(security_state::GetSecurityLevelHistogramName(
+                             kPageInfoTimeNoActionPrefix, security_level_),
+                         start_time_);
+    LogTimeOpenHistogram(
         security_state::GetSafetyTipHistogramName(kPageInfoTimeNoActionPrefix,
                                                   safety_tip_info_.status),
-        base::TimeTicks::Now() - start_time_, base::Milliseconds(1),
-        base::Hours(1), 100);
+        start_time_);
+  }
+  if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
+    if (was_about_this_site_shown_) {
+      LogTimeOpenHistogram(kPageInfoTimeAboutThisShown, start_time_);
+    } else {
+      LogTimeOpenHistogram(kPageInfoTimeAboutThisNotShown, start_time_);
+    }
   }
 }
 

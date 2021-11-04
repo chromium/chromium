@@ -381,6 +381,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.PageInfo.TimeOpen.AboutThisSite{WasShown}" units="ms"
+    expires_after="M101">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Records the amount of time the Page Info bubble is open before the user
+    closes it, for cases where the &quot;About this site&quot; feature is
+    enabled and the data {WasShown} available, and therefore {WasShown} shown.
+  </summary>
+  <token key="WasShown">
+    <variant name="NotShown" summary="is not"/>
+    <variant name="Shown" summary="is"/>
+  </token>
+</histogram>
+
 <histogram name="Security.PageInfo.TimeOpen.Action" units="units"
     expires_after="2022-04-10">
   <owner>cthomp@chromium.org</owner>

@@ -260,6 +260,10 @@ class PageInfo {
   permissions::ObjectPermissionContextBase* GetChooserContextFromUIInfo(
       const ChooserUIInfo& ui_info) const;
 
+  void SetAboutThisSiteShown(bool was_about_this_site_shown) {
+    was_about_this_site_shown_ = was_about_this_site_shown;
+  }
+
   // Accessors.
   const SiteConnectionStatus& site_connection_status() const {
     return site_connection_status_;
@@ -437,6 +441,10 @@ class PageInfo {
   // Description of the Safe Browsing status. Non-empty if
   // MaliciousContentStatus isn't NONE.
   std::u16string safe_browsing_details_;
+
+  // Whether the "About this site" data was available for the site and "About
+  // this site" section was shown in the page info.
+  bool was_about_this_site_shown_ = false;
 
   base::WeakPtrFactory<PageInfo> weak_factory_{this};
 };

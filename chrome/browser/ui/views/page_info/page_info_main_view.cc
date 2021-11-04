@@ -325,6 +325,7 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // security information has higher priority.
     if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
       auto info = ui_delegate_->GetAboutThisSiteInfo();
+      presenter_->SetAboutThisSiteShown(info.has_value());
       if (info.has_value()) {
         about_this_site_section_->RemoveAllChildViews();
         about_this_site_section_->AddChildView(

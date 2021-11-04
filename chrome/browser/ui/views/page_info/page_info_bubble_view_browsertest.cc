@@ -938,6 +938,7 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
                        AboutThisSite) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histograms;
 
   auto url = https_server_.GetURL("a.test", "/title1.html");
   AddHintForTesting(browser(), url, CreateValidSiteInfo());
@@ -959,11 +960,20 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
       static_cast<int>(ProtoValidation::kValid));
+
+  page_info->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  base::RunLoop().RunUntilIdle();
+  histograms.ExpectTotalCount("Security.PageInfo.TimeOpen.AboutThisSiteShown",
+                              1);
+  histograms.ExpectTotalCount(
+      "Security.PageInfo.TimeOpen.AboutThisSiteNotShown", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
                        AboutThisSiteNotValid) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histograms;
 
   auto url = https_server_.GetURL("a.test", "/title1.html");
   page_info::proto::SiteInfo site_info;
@@ -990,11 +1000,20 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
       static_cast<int>(ProtoValidation::kIncompleteDescription));
+
+  page_info->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  base::RunLoop().RunUntilIdle();
+  histograms.ExpectTotalCount("Security.PageInfo.TimeOpen.AboutThisSiteShown",
+                              0);
+  histograms.ExpectTotalCount(
+      "Security.PageInfo.TimeOpen.AboutThisSiteNotShown", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
                        AboutThisSiteNotSecure) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::HistogramTester histograms;
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto url = embedded_test_server()->GetURL("a.test", "/title1.html");
@@ -1014,4 +1033,12 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AboutThisSiteStatus::kEntryName);
   EXPECT_EQ(0u, entries.size());
+
+  page_info->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  base::RunLoop().RunUntilIdle();
+  histograms.ExpectTotalCount("Security.PageInfo.TimeOpen.AboutThisSiteShown",
+                              0);
+  histograms.ExpectTotalCount(
+      "Security.PageInfo.TimeOpen.AboutThisSiteNotShown", 1);
 }
