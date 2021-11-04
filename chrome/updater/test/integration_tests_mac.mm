@@ -300,7 +300,7 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
   EXPECT_FALSE(base::PathIsWritable(*path));
 }
 
-void WaitForServerExit(UpdaterScope scope) {
+void WaitForServerExit(UpdaterScope /*scope*/) {
   ASSERT_TRUE(WaitFor(base::BindRepeating([]() {
     std::string ps_stdout;
     EXPECT_TRUE(base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));

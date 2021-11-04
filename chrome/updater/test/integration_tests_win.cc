@@ -278,6 +278,13 @@ void CheckInstallation(UpdaterScope scope,
   }
 }
 
+// Returns true is any updater process is found running in any session in the
+// system, regardless of its path.
+bool IsUpdaterRunning() {
+  ProcessFilterName filter(kUpdaterProcessName);
+  return base::ProcessIterator(&filter).NextProcessEntry();
+}
+
 }  // namespace
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
@@ -432,9 +439,10 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
   }
 }
 
-void WaitForServerExit(UpdaterScope scope) {
-  // CreateGlobalPrefs will block until it can acquire the prefs lock.
-  CreateGlobalPrefs(scope);
+// Waits for all updater processes to end, including the server process holding
+// the prefs lock.
+void WaitForServerExit(UpdaterScope /*scope*/) {
+  WaitFor(base::BindRepeating([]() { return !IsUpdaterRunning(); }));
 }
 
 // Tests if the typelibs and some of the public, internal, and

@@ -11,6 +11,8 @@
 
 namespace updater {
 
+extern const wchar_t kUpdaterProcessName[];
+
 // The prefix to use for global names in WIN32 API's. The prefix is necessary
 // to avoid collision on kernel object names.
 extern const wchar_t kGlobalPrefix[];

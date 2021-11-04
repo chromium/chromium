@@ -6,6 +6,8 @@
 
 namespace updater {
 
+const wchar_t kUpdaterProcessName[] = L"updater.exe";
+
 const wchar_t kGlobalPrefix[] = L"Global\\G";
 
 // TODO(crbug.com/1097297): need to add branding support.

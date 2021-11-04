@@ -248,6 +248,7 @@ class IntegrationTest : public ::testing::Test {
 
 TEST_F(IntegrationTest, InstallUninstall) {
   Install();
+  WaitForServerExit();
   ExpectInstalled();
   ExpectVersionActive(kUpdaterVersion);
   ExpectActiveUpdater();
