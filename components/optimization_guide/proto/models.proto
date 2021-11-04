@@ -234,6 +234,8 @@ message ModelInfo {
 
 // The scenarios for which the optimization guide has models for.
 enum OptimizationTarget {
+  reserved 13;
+
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
   OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
@@ -259,6 +261,9 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID = 11;
   // Target for segmentation: Query Tiles user.
   OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES = 12;
+  // Target for supplying the Autofill Assistant annotate DOM model via the
+  // model downloader.
+  OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT = 14;
 }
 
 // The types of models that can be evaluated.

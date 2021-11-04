@@ -10802,6 +10802,7 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="OptimizationGuide_OptimizationTargets" separator=".">
+  <suffix name="AutofillAssistant" label="Autofill Assistant"/>
   <suffix name="LanguageDetection" label="Language detection"/>
   <suffix name="ModelValidation" label="Model validation triggered via CLI"/>
   <suffix name="NotificationPermissions" label="Notification permissions"/>
