@@ -144,8 +144,16 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       // intersection rect that is bigger than the rect we started with. Clamp
       // the size of the viewport intersection to the bounds of the iframe's
       // content rect.
-      viewport_intersection.Intersect(IntRect(
-          gfx::Point(), RoundedIntSize(owner_layout_object->ContentSize())));
+      // TODO(crbug.com/1266532): This should be
+      //   viewport_intersection.Intersect(IntRect(gfx::Point(),
+      //       owner_layout_object->ContentSize()));
+      // but it exposes a bug of incorrect origin of viewport_intersection in
+      // multicol.
+      gfx::Point origin = viewport_intersection.origin();
+      origin.SetToMax(gfx::Point());
+      viewport_intersection.set_origin(origin);
+      viewport_intersection.set_size(viewport_intersection.size().ShrunkTo(
+          RoundedIntSize(owner_layout_object->ContentSize())));
     }
 
     PhysicalRect mainframe_intersection_rect;
@@ -160,8 +168,16 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       } else {
         mainframe_intersection = EnclosingIntRect(mainframe_intersection_rect);
       }
-      mainframe_intersection.Intersect(IntRect(
-          gfx::Point(), RoundedIntSize(owner_layout_object->ContentSize())));
+      // TODO(crbug.com/1266532): This should be
+      //   mainframe_intersection.Intersect(IntRect(gfx::Point(),
+      //       owner_layout_object->ContentSize()));
+      // but it exposes a bug of incorrect origin of mainframe_intersection in
+      // multicol.
+      gfx::Point origin = mainframe_intersection.origin();
+      origin.SetToMax(gfx::Point());
+      mainframe_intersection.set_origin(origin);
+      mainframe_intersection.set_size(mainframe_intersection.size().ShrunkTo(
+          RoundedIntSize(owner_layout_object->ContentSize())));
     }
 
     TransformState child_frame_to_root_frame(
