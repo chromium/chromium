@@ -187,9 +187,6 @@ export async function selectWallpaper(
   const {tabletMode} = await provider.isInTabletMode();
   const shouldPreview =
       tabletMode && loadTimeData.getBoolean('fullScreenPreviewEnabled');
-  if (shouldPreview) {
-    store.dispatch(action.setFullscreenEnabledAction(/*enabled=*/ true));
-  }
   store.endBatchUpdate();
   const {success} = await (() => {
     if (image.hasOwnProperty('assetId')) {
@@ -207,6 +204,12 @@ export async function selectWallpaper(
   })();
   store.beginBatchUpdate();
   store.dispatch(action.endSelectImageAction(image, success));
+  // Delay opening full screen preview until done loading. This looks better if
+  // the image load takes a long time, otherwise the user will see the old
+  // wallpaper image for a while.
+  if (success && shouldPreview) {
+    store.dispatch(action.setFullscreenEnabledAction(/*enabled=*/ true));
+  }
   if (!success) {
     console.warn('Error setting wallpaper');
     store.dispatch(action.setSelectedImageAction(store.data.currentSelected));
