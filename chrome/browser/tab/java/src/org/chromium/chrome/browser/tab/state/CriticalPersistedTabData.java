@@ -142,8 +142,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
      */
     public static void from(Tab tab, Callback<CriticalPersistedTabData> callback) {
         PersistedTabData.from(tab,
-                (data, storage, id)
-                        -> { return new CriticalPersistedTabData(tab, data, storage, id); },
+                (data, storage, id, factoryCallback)
+                        -> {
+                    factoryCallback.onResult(new CriticalPersistedTabData(tab, data, storage, id));
+                },
                 (supplierCallback)
                         -> supplierCallback.onResult(
                                 tab.isInitialized() ? CriticalPersistedTabData.build(tab) : null),
@@ -192,9 +194,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * as the storage/retrieval method
      */
     public static void build(Tab tab, ByteBuffer serialized, boolean isStorageRetrievalEnabled) {
-        CriticalPersistedTabData res = PersistedTabData.build(tab, (data, storage, id) -> {
-            return new CriticalPersistedTabData(tab, data, storage, id);
-        }, serialized, CriticalPersistedTabData.class);
+        PersistedTabData.build(tab, (data, storage, id, callback) -> {
+            callback.onResult(new CriticalPersistedTabData(tab, data, storage, id));
+        }, serialized, CriticalPersistedTabData.class, (res) -> {});
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

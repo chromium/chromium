@@ -281,8 +281,10 @@ public class StorePersistedTabData extends PersistedTabData {
         // TODO(crbug.com/995852): Replace NO_TRAFFIC_ANNOTATION_YET with a real traffic
         // annotation.
         PersistedTabData.from(tab,
-                (data, storage, id)
-                        -> { return new StorePersistedTabData(tab, data, storage, id); },
+                (data, storage, id, factoryCallback)
+                        -> {
+                    factoryCallback.onResult(new StorePersistedTabData(tab, storage, id));
+                },
                 (supplierCallback)
                         -> {
                     EndpointFetcher.fetchUsingOAuth(
