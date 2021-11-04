@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.not;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
@@ -19,6 +20,7 @@ import androidx.annotation.IdRes;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +41,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Integration tests for the first run experience with sign-in and sync decoupled.
@@ -48,6 +51,11 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class FirstRunActivitySigninAndSyncTest {
     private static final String TEST_EMAIL = "test.account@gmail.com";
     private static final String CHILD_EMAIL = "child.account@gmail.com";
+
+    // Disable animations to reduce flakiness.
+    @ClassRule
+    public static final DisableAnimationsTestRule sNoAnimationsRule =
+            new DisableAnimationsTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -134,6 +142,35 @@ public class FirstRunActivitySigninAndSyncTest {
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
 
         clickButton(R.id.signin_fre_continue_button);
+
+        ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
+    }
+
+    @Test
+    @MediumTest
+    public void acceptingSyncShowsDataReductionPage() {
+        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivity();
+        ensureCurrentPageIs(SigninFirstRunFragment.class);
+        clickButton(R.id.signin_fre_continue_button);
+        ensureCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        clickButton(R.id.positive_button);
+
+        ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
+    }
+
+    @Test
+    @MediumTest
+    public void refusingSyncShowsDataReductionPage() {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivity();
+        ensureCurrentPageIs(SigninFirstRunFragment.class);
+        clickButton(R.id.signin_fre_continue_button);
+        ensureCurrentPageIs(SyncConsentFirstRunFragment.class);
+
+        clickButton(R.id.negative_button);
 
         ensureCurrentPageIs(DataReductionProxyFirstRunFragment.class);
     }
