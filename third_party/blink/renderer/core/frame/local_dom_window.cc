@@ -1176,7 +1176,11 @@ Element* LocalDOMWindow::frameElement() const {
   if (!GetFrame())
     return nullptr;
 
-  return DynamicTo<HTMLFrameOwnerElement>(GetFrame()->Owner());
+  FrameOwner* owner = GetFrame()->Owner();
+  if (owner && owner->GetFramePolicy().is_fenced)
+    return nullptr;
+
+  return DynamicTo<HTMLFrameOwnerElement>(owner);
 }
 
 void LocalDOMWindow::blur() {}
