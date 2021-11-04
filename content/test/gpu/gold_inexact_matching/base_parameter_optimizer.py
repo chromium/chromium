@@ -251,7 +251,7 @@ class BaseParameterOptimizer(object):
                             sort_keys=True,
                             separators=(',', ':'))
       md5 = hashlib.md5()
-      md5.update(json_str)
+      md5.update(json_str.encode('utf-8'))
       self._DownloadExpectations('%s/json/v1/positivedigestsbygrouping/%s' %
                                  (self._gold_url, md5.hexdigest()))
       self._DownloadImagesForTraceGrouping()

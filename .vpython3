@@ -373,6 +373,9 @@ wheel: <
   match_tag: <
     platform: "macosx_10_10_intel"
   >
+  match_tag: <
+    platform: "macosx_11_0_arm64"
+  >
 >
 
 # Used by:

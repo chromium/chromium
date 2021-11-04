@@ -868,7 +868,7 @@
     ],
     "label": "//content/test:fuchsia_telemetry_gpu_integration_test",
     "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
-    "python3": "true",
+    "python3": True,
     "type": "script",
   },
   "gcm_unit_tests": {
@@ -1687,6 +1687,7 @@
     "label": "//chrome/test:telemetry_gpu_integration_test",
     "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
     "type": "script",
+    "python3": True,
   },
   "telemetry_gpu_integration_test_android_chrome": {
     "args": [
@@ -1695,6 +1696,7 @@
     "label": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
     "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
     "type": "script",
+    "python3": True,
   },
   "telemetry_gpu_integration_test_android_webview": {
     "args": [
@@ -1703,6 +1705,7 @@
     "label": "//chrome/test:telemetry_gpu_integration_test_android_webview",
     "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
     "type": "script",
+    "python3": True,
   },
   "telemetry_gpu_integration_test_scripts_only": {
     "label": "//chrome/test:telemetry_gpu_integration_test_scripts_only",
