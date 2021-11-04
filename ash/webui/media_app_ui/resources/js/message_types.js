@@ -20,6 +20,7 @@ export const Message = {
   NOTIFY_CURRENT_FILE: 'notify-current-file',
   OPEN_FEEDBACK_DIALOG: 'open-feedback-dialog',
   OPEN_FILE: 'open-file',
+  OPEN_FILES_WITH_PICKER: 'open-files-with-picker',
   OVERWRITE_FILE: 'overwrite-file',
   RENAME_FILE: 'rename-file',
   REQUEST_SAVE_FILE: 'request-save-file',
@@ -139,6 +140,19 @@ export let NotifyCurrentFileMessage;
  * }}
  */
 export let RequestSaveFileMessage;
+
+/**
+ * Message sent by the unprivileged context to the privileged context requesting
+ * to show a file picker. Picked files will be sent down the launch path.
+ * The `accept` array contains keys of preconfigured file filters to include on
+ * the file picker file type dropdown. These are keys such as "AUDIO", "IMAGE",
+ * "PDF", etc. that are known on both sides of API boundary.
+ * @typedef {{
+ *   startInToken: number,
+ *   accept: !Array<string>
+ * }}
+ */
+export let OpenFilesWithPickerMessage;
 
 /**
  * Response message sent by the privileged context with a unique identifier for

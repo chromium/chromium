@@ -5,7 +5,7 @@
 import './sandboxed_load_time_data.js';
 
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {FileContext, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {FileContext, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -159,8 +159,8 @@ class ReceivedFile {
 }
 
 /**
- * Source of truth for what files are loaded in the app. This can
- * be appended to via `ReceivedFileList.addFiles()`.
+ * Source of truth for what files are loaded in the app. This can be appended to
+ * via `ReceivedFileList.addFiles()`.
  * @type {?ReceivedFileList}
  */
 let lastLoadedReceivedFileList = null;
@@ -216,8 +216,27 @@ export class ReceivedFileList {
     this.observers.push(observer);
   }
 
+  /** @override */
   async openFile() {
     await parentMessagePipe.sendMessage(Message.OPEN_FILE);
+  }
+
+  /**
+   * @override
+   * @param {!Array<string>} acceptTypeKeys
+   * @param {?mediaApp.AbstractFile} startInFolder
+   * @return {!Promise<undefined>}
+   */
+  async openFilesWithFilePicker(acceptTypeKeys, startInFolder) {
+    // AbstractFile doesn't guarantee tokens. Use one from a ReceivedFile if
+    // there is one.
+    const fileRep = /** @type {{token: (number|undefined)}} */ (startInFolder);
+    /** @type {!OpenFilesWithPickerMessage} */
+    const msg = {
+      startInToken: startInFolder ? (fileRep.token || 0) : 0,
+      accept: acceptTypeKeys,
+    };
+    await parentMessagePipe.sendMessage(Message.OPEN_FILES_WITH_PICKER, msg);
   }
 
   /** @param {!Array<!ReceivedFile>} files */

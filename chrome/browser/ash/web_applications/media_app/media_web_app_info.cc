@@ -60,6 +60,9 @@ constexpr FileHandlerConfig kFileHandlers[] = {
 
     // PDF.
     {"application/pdf", ".pdf"},
+
+    // When updating this list, `FOO_EXTENSIONS` in go/bl-launch should be
+    // updated as well.
 };
 
 constexpr FileHandlerConfig kAudioFileHandlers[] = {
@@ -76,6 +79,9 @@ constexpr FileHandlerConfig kAudioFileHandlers[] = {
     // Note: some extensions appear twice. See mime_util.cc.
     {"audio/mp3", "mp3"},
     {"audio/x-m4a", "m4a"},
+
+    // When updating this list, `AUDIO_EXTENSIONS` in go/bl-launch should be
+    // updated as well.
 };
 
 // Converts a FileHandlerConfig constexpr into the type needed to populate the

@@ -1254,6 +1254,44 @@ MediaAppUIBrowserTest.OpenFileIPC = async () => {
   assertEquals(tokenMap.get(currentFiles[1].token), currentFiles[1].handle);
 };
 
+// Tests the IPC behind the AbstractFileList.openFilesWithFilePicker function to
+// relaunch the app with a new selection of files from a file picker.
+MediaAppUIBrowserTest.OpenFilesWithFilePickerIPC = async () => {
+  const pickedFileHandles = [
+    new FakeFileSystemFileHandle('picked_file1.jpg'),
+    new FakeFileSystemFileHandle('picked_file2.jpg'),
+  ];
+  let lastPickerOptions;
+  window.showOpenFilePicker = (pickerOptions) => {
+    lastPickerOptions = pickerOptions;
+    return Promise.resolve(pickedFileHandles);
+  };
+  const directory = await launchWithFiles(
+      [await createTestImageFile(10, 10, 'original_file.jpg')]);
+
+  let testResponse = await sendTestMessage(
+      {simple: 'openFilesWithFilePicker', simpleArgs: ['VIDEO', 'IMAGE']});
+  assertEquals(
+      testResponse.testQueryResult, 'openFilesWithFilePicker resolved');
+
+  // Spot-check the file picker options. It has lots of file extensions in it.
+  const {multiple, startIn, excludeAcceptAllOption, types} = lastPickerOptions;
+  assertEquals(multiple, true);
+  assertEquals(startIn, directory.files[0]);
+  assertEquals(excludeAcceptAllOption, true);
+  assertEquals(types.length, 2);
+  assertEquals(types[0].description, 'Video Files');
+  assertEquals(types[1].description, 'Image Files');
+
+  testResponse = await sendTestMessage({simple: 'getAllFiles'});
+  console.log(JSON.stringify(testResponse));
+  const clientFiles =
+      /** @type{!Array<!FileSnapshot>} */ (testResponse.testQueryResultData);
+
+  assertEquals(clientFiles[0].name, 'picked_file1.jpg');
+  assertEquals(clientFiles[1].name, 'picked_file2.jpg');
+};
+
 MediaAppUIBrowserTest.RelatedFiles = async () => {
   setSortOrder(SortOrder.A_FIRST);
   // These files all have a last modified time of 0 so the order they end up in

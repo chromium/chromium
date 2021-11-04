@@ -14,6 +14,9 @@ system_app_closure_flags =
       # TODO(crbug/1048973): Remove these when the mojo bindings
       # js is updated to pass a closure compile check.
       "hide_warnings_for=mojo/public/js/",
+
+      # load_time_data.m.js dereferences nulls.
+      "hide_warnings_for=load_time_data.m.js",
     ]
 
 if (enable_system_app_lint_checks) {

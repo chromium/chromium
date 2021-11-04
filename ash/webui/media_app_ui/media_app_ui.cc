@@ -18,10 +18,18 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
 namespace {
+
+constexpr webui::LocalizedString kLocalizedStrings[] = {
+    {"appTitle", IDS_MEDIA_APP_APP_NAME},
+    {"fileFilterAudio", IDS_MEDIA_APP_FILE_FILTER_AUDIO},
+    {"fileFilterImage", IDS_MEDIA_APP_FILE_FILTER_IMAGE},
+    {"fileFilterVideo", IDS_MEDIA_APP_FILE_FILTER_VIDEO},
+};
 
 content::WebUIDataSource* CreateHostDataSource() {
   content::WebUIDataSource* source =
@@ -30,7 +38,9 @@ content::WebUIDataSource* CreateHostDataSource() {
   // Add resources from ash_media_app_resources.pak.
   source->SetDefaultResource(IDR_MEDIA_APP_INDEX_HTML);
   source->AddResourcePath("launch.js", IDR_MEDIA_APP_LAUNCH_JS);
-  source->AddLocalizedString("appTitle", IDS_MEDIA_APP_APP_NAME);
+
+  source->AddLocalizedStrings(kLocalizedStrings);
+  source->UseStringsJs();
 
   // Redirects "system_assets/*" (from manifest.json) to the icons for the
   // gallery app.

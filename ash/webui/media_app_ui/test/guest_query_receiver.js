@@ -129,7 +129,13 @@ const SIMPLE_TEST_QUERIES = {
     const domFile = await handle.openFile();
     handle.updateFile(domFile, domFile.name);
     return 'opened and updated';
-  }
+  },
+  openFilesWithFilePicker: async (data, resultData) => {
+    const existingFile = assertLastReceivedFileList().item(0) || null;
+    await assertLastReceivedFileList().openFilesWithFilePicker(
+        data.simpleArgs, existingFile);
+    return 'openFilesWithFilePicker resolved';
+  },
 };
 
 /**

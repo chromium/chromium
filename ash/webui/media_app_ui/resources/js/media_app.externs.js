@@ -152,11 +152,21 @@ mediaApp.AbstractFileList.prototype.addObserver = function(observer) {};
  * A function that requests for the user to be prompted with an open file
  * picker. Once the user selects a file, the file is inserted into the
  * navigation order after the current file and then navigated to.
- * TODO(b/165720635): Remove the undefined here once we can ensure all file
+ * TODO(b/203466987): Remove the undefined here once we can ensure all file
  * lists implement a openFile function.
  * @type {function(): !Promise<undefined>|undefined}
  */
 mediaApp.AbstractFileList.prototype.openFile = function() {};
+/**
+ * Request for the user to be prompted with an open file dialog. Files chosen
+ * will be added to the last received file list.
+ * TODO(b/203466987): Remove the undefined here once we can ensure all file
+ * lists implement a openFilesWithFilePicker function.
+ * @type {function(!Array<string>, ?mediaApp.AbstractFile):
+ *     !Promise<undefined>|undefined}
+ */
+mediaApp.AbstractFileList.prototype.openFilesWithFilePicker = function(
+    acceptTypeKeys, startInFolder) {};
 
 /**
  * The delegate which exposes open source privileged WebUi functions to

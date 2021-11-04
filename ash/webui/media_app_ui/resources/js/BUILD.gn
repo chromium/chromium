@@ -130,6 +130,7 @@ js_library("launch") {
     ":message_types",
     ":mojo_api_bootstrap",
     "//ash/webui/system_apps/public/js:message_pipe.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 

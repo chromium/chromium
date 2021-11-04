@@ -2,12 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './strings.m.js';
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
 import * as error_reporter from './error_reporter.js';
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {DeleteFileMessage, FileContext, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {DeleteFileMessage, FileContext, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
 
 const EMPTY_WRITE_ERROR_NAME = 'EmptyWriteError';
+
+// Open file picker configurations. Should be kept in sync with launch handler
+// configurations in media_web_app_info.cc.
+const AUDIO_EXTENSIONS =
+    ['.flac', '.m4a', '.mp3', '.oga', '.ogg', '.opus', '.wav', '.weba', '.m4a'];
+const IMAGE_EXTENSIONS = [
+  '.jpg',  '.png', '.webp', '.gif', '.avif', '.bmp',   '.ico', '.svg',
+  '.jpeg', '.jpe', '.jfif', '.jif', '.jfi',  '.pjpeg', '.pjp', '.arw',
+  '.cr2',  '.dng', '.nef',  '.nrw', '.orf',  '.raf',   '.rw2', '.svgz'
+];
+const VIDEO_EXTENSIONS = [
+  '.3gp', '.avi', '.m4v', '.mkv', '.mov', '.mp4', '.mpeg', '.mpeg4', '.mpg',
+  '.mpg4', '.ogv', '.ogx', '.ogm', '.webm'
+];
+const OPEN_ACCEPT_ARGS = {
+  'AUDIO': {
+    description: loadTimeData.getString('fileFilterAudio'),
+    accept: {'audio/*': AUDIO_EXTENSIONS}
+  },
+  'IMAGE': {
+    description: loadTimeData.getString('fileFilterImage'),
+    accept: {'image/*': IMAGE_EXTENSIONS}
+  },
+  'VIDEO': {
+    description: loadTimeData.getString('fileFilterVideo'),
+    accept: {'video/*': VIDEO_EXTENSIONS}
+  },
+  'PDF': {description: 'PDF', accept: {'application/pdf': '.pdf'}},
+};
 
 /**
  * Sort order for files in the navigation ring.
@@ -353,6 +386,45 @@ guestMessagePipe.registerHandler(Message.OPEN_FILE, async () => {
   };
   currentFiles.splice(entryIndex + 1, 0, fileDescriptor);
   advance(1);
+});
+
+guestMessagePipe.registerHandler(Message.OPEN_FILES_WITH_PICKER, async (m) => {
+  const {startInToken, accept} = /** @type {!OpenFilesWithPickerMessage} */ (m);
+  const acceptTypes = accept.map(k => OPEN_ACCEPT_ARGS[k]).filter(a => !!a);
+
+  /** @type {!FilePickerOptions|DraftFilePickerOptions} */
+  const options = {multiple: true};
+
+  if (startInToken) {
+    options.startIn = fileHandleForToken(startInToken);
+  }
+
+  if (acceptTypes.length > 0) {
+    options.excludeAcceptAllOption = true;
+    options.types = acceptTypes;
+  }
+
+  const handles = await window.showOpenFilePicker(options);
+  /** @type {!Array<!FileDescriptor>} */
+  const newDescriptors = [];
+  for (const handle of handles) {
+    newDescriptors.push({
+      token: generateToken(handle),
+      file: null,
+      handle: handle,
+      inCurrentDirectory: false
+    });
+  }
+  if (newDescriptors.length === 0) {
+    // Be defensive against the file picker returning an empty array rather than
+    // throwing an abort exception. Or any filtering we may introduce.
+    return;
+  }
+
+  // Perform a full "relaunch": replace everything and set focus to index 0.
+  currentFiles.splice(0, currentFiles.length, ...newDescriptors);
+  entryIndex = 0;
+  await sendSnapshotToGuest([...currentFiles], ++globalLaunchNumber);
 });
 
 guestMessagePipe.registerHandler(Message.OPEN_ALLOWED_FILE, async (message) => {
