@@ -182,6 +182,9 @@ ui::IMEInputContextHandlerInterface* GetInputContext() {
 const base::flat_map<std::string, Dictation::LocaleData>
 Dictation::GetAllSupportedLocales() {
   base::flat_map<std::string, LocaleData> supported_locales;
+  // If new RTL locales are added, ensure that
+  // accessibility_common/dictation/commands.js RTLLocales is updated
+  // appropriately.
   static const char* kWebSpeechSupportedLocales[] = {
       "af-ZA",       "am-ET",      "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IL",
       "ar-IQ",       "ar-JO",      "ar-KW", "ar-LB", "ar-MA", "ar-OM", "ar-PS",

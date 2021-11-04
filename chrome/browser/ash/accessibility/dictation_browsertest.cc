@@ -58,9 +58,20 @@ const char16_t kFinalSpeechResult16[] = u"hello world";
 const int kNoSpeechTimeoutInSeconds = 10;
 
 static const char* kEnglishDictationCommands[] = {
-    "delete",     "move left",    "move right", "move up", "move down",
-    "copy",       "paste",        "cut",        "undo",    "redo",
-    "select all", "unselect all", "new line"};
+    "delete",
+    "move to the previous character",
+    "move to the next character",
+    "move to the previous line",
+    "move to the next line",
+    "copy",
+    "paste",
+    "cut",
+    "undo",
+    "redo",
+    "select all",
+    "unselect",
+    "help",
+    "new line"};
 
 PrefService* GetActiveUserPrefs() {
   return ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -817,10 +828,10 @@ IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, DeleteCharacter) {
 IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, MoveByCharacter) {
   SendFinalSpeechResultAndWaitForTextAreaValue("Lyra", "Lyra");
 
-  SendFinalSpeechResult("Move left");
+  SendFinalSpeechResult("Move to the Previous character");
   WaitForCaretBoundsChanged();
   SendFinalSpeechResultAndWaitForTextAreaValue(" inserted ", "Lyr inserted a");
-  SendFinalSpeechResult("move Right ");
+  SendFinalSpeechResult("move TO the next character ");
   WaitForCaretBoundsChanged();
   SendFinalSpeechResultAndWaitForTextAreaValue(
       " is a constellation", "Lyr inserted a is a constellation");
@@ -833,11 +844,11 @@ IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, NewLineAndMoveByLine) {
 
   SendFinalSpeechResultAndWaitForTextAreaValue("Line 2", "Line 1\nLine 2");
 
-  SendFinalSpeechResult("Move up");
+  SendFinalSpeechResult("Move to the previous line ");
   WaitForCaretBoundsChanged();
   SendFinalSpeechResultAndWaitForTextAreaValue("up", "Line 1up\nLine 2");
 
-  SendFinalSpeechResult("Move down");
+  SendFinalSpeechResult("Move to the next line");
   WaitForCaretBoundsChanged();
   SendFinalSpeechResultAndWaitForTextAreaValue("down", "Line 1up\nLine 2down");
 }
@@ -855,7 +866,7 @@ IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, UndoAndRedo) {
                                                "The constellation Lyra");
 }
 
-IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, SelectAndUnselectAll) {
+IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, SelectAllAndUnselect) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   SendFinalSpeechResultAndWaitForTextAreaValue(
@@ -870,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, SelectAndUnselectAll) {
       "Vega is the fifth brightest star in the sky");
   SendFinalSpeechResult("Select all");
   WaitForSelectionBoundingBoxUpdate(web_contents);
-  SendFinalSpeechResult("Unselect all");
+  SendFinalSpeechResult("Unselect");
   WaitForSelectionBoundingBoxUpdate(web_contents);
   SendFinalSpeechResultAndWaitForTextAreaValue(
       "!", "Vega is the fifth brightest star in the sky!");
@@ -886,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, CutCopyPaste) {
   SendFinalSpeechResult("Copy");
   WaitForClipboardDataChanged();
   EXPECT_EQ("Star", GetClipboardText());
-  SendFinalSpeechResult("unselect all");
+  SendFinalSpeechResult("unselect");
   WaitForSelectionBoundingBoxUpdate(web_contents);
 
   SendFinalSpeechResultAndWaitForTextAreaValue("paste", "StarStar");
@@ -899,6 +910,18 @@ IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, CutCopyPaste) {
   WaitForTextAreaValue("");
 
   SendFinalSpeechResultAndWaitForTextAreaValue("  PaStE ", "StarStar");
+}
+
+IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, Help) {
+  SendFinalSpeechResult("HELP");
+
+  // Opening a new tab with the help center article toggles Dictation off.
+  WaitForRecognitionEnded();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(web_contents->GetVisibleURL().spec().rfind(
+                  "https://support.google.com/chromebook", /*pos=*/0) != 0);
 }
 
 }  // namespace ash

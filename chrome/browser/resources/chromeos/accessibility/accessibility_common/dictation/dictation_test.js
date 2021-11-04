@@ -33,10 +33,22 @@ DictationE2ETest = class extends E2ETestBase {
     this.dictationEngineId =
         '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
 
-    this.commandStrings = [
-      'delete', 'move left', 'move right', 'move up', 'move down', 'copy',
-      'paste', 'cut', 'undo', 'redo', 'select all', 'unselect all', 'new line'
-    ];
+    this.commandStrings = {
+      DELETE_PREV_CHAR: 'delete',
+      NAV_PREV_CHAR: 'move to the previous character',
+      NAV_NEXT_CHAR: 'move to the next character',
+      NAV_PREV_LINE: 'move to the previous line',
+      NAV_NEXT_LINE: 'move to the next line',
+      COPY_SELECTED_TEXT: 'copy',
+      PASTE_TEXT: 'paste',
+      CUT_SELECTED_TEXT: 'cut',
+      UNDO_TEXT_EDIT: 'undo',
+      REDO_ACTION: 'redo',
+      SELECT_ALL_TEXT: 'select all',
+      UNSELECT_TEXT: 'unselect',
+      LIST_COMMANDS: 'help',
+      NEW_LINE: 'new line',
+    };
 
     this.lastSetTimeoutCallback = null;
     this.lastSetDelay = -1;
@@ -556,7 +568,7 @@ SYNC_TEST_F('DictationE2ETest', 'TimesOutAfterFinalResults', async function() {
 SYNC_TEST_F(
     'DictationE2ETest', 'CommandsCommitWithoutFlagEnabled', async function() {
       await this.toggleDictationAndStartListening(8);
-      for (const command of this.commandStrings) {
+      for (const command of Object.values(this.commandStrings)) {
         this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(command, false);
         this.assertImeCompositionParameters(command, 8);
 
@@ -568,16 +580,22 @@ SYNC_TEST_F(
 
 SYNC_TEST_F(
     'DictationE2ETest', 'CommandsDoNotCommitThemselves', async function() {
+      await this.waitForDictationModule();
+      await this.getPref(Dictation.DICTATION_LOCALE_PREF);
       this.setCommandsEnabledForTest(true);
       await this.toggleDictationAndStartListening(8);
-      for (const command of this.commandStrings) {
+      for (const command of Object.values(this.commandStrings)) {
         this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(command, false);
         // Nothing is added to composition text when commands UI is enabled.
         assertFalse(!!this.mockInputIme.getLastCompositionParameters());
         // TODO(crbug.com/1252037): Check UI shows correct command info.
 
-        this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(command, true);
-        if (command === 'new line') {
+        if (command !== this.commandStrings.LIST_COMMANDS) {
+          // LIST_COMMANDS opens a new tab and ends Dictation. Skip this.
+          this.mockSpeechRecognitionPrivate.fireMockOnResultEvent(
+              command, true);
+        }
+        if (command === this.commandStrings.NEW_LINE) {
           this.assertImeCommitParameters('\n', 8);
         } else {
           // On final result, composition is cleared, nothing is committed

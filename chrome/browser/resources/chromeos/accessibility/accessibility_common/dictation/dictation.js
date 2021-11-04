@@ -29,6 +29,9 @@ export class Dictation {
     /** @private {boolean} */
     this.commandsFeatureEnabled_ = false;
 
+    /** @private {string} */
+    this.localePref_ = '';
+
     /**
      * The state of Dictation.
      * @private {!Dictation.DictationState}
@@ -98,8 +101,8 @@ export class Dictation {
         chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
         (result) => {
           this.commandsFeatureEnabled_ = result;
-          if (this.commandsFeatureEnabled_) {
-            this.commandParser_.setCommandsEnabled();
+          if (this.commandsFeatureEnabled_ && this.localePref_) {
+            this.commandParser_.setCommandsEnabled(this.localePref_);
           }
         });
   }
@@ -232,6 +235,9 @@ export class Dictation {
       const command = this.commandParser_.parse(transcript);
       if (this.commandsFeatureEnabled_) {
         if (command.execute()) {
+          if (command.endsDictation()) {
+            return;
+          }
           this.showCommandExecuted_(command);
         } else {
           this.showCommandExecutionFailed_();
@@ -308,6 +314,10 @@ export class Dictation {
           if (pref.value) {
             this.speechRecognitionOptions_.locale =
                 /** @type {string} */ (pref.value);
+            this.localePref_ = this.speechRecognitionOptions_.locale;
+            if (this.commandsFeatureEnabled_) {
+              this.commandParser_.setCommandsEnabled(this.localePref_);
+            }
           }
           break;
         case Dictation.SPOKEN_FEEDBACK_PREF:

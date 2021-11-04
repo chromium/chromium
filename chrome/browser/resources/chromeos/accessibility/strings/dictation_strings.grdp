@@ -1,45 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grit-part>
-  <message name="DICTATION_COMMAND_DELETE_ONCE" desc="A spoken text-editing command to delete one character." is_accessibility_with_no_ui="true">
+  <message name="DICTATION_COMMAND_DELETE_PREV_CHAR" desc="A spoken text-editing command to delete one character." is_accessibility_with_no_ui="true">
     delete
   </message>
-  <message name="DICTATION_COMMAND_MOVE_LEFT_ONCE" desc="A spoken text-editing command to move the cursor left one character." is_accessibility_with_no_ui="true">
-    move left
+  <message name="DICTATION_COMMAND_NAV_PREV_CHAR" desc="A spoken text-editing command to move the cursor previous one character." is_accessibility_with_no_ui="true">
+    move to the previous character
   </message>
-  <message name="DICTATION_COMMAND_MOVE_RIGHT_ONCE" desc="A spoken text-editing command move the cursor right one character." is_accessibility_with_no_ui="true">
-    move right
+  <message name="DICTATION_COMMAND_NAV_NEXT_CHAR" desc="A spoken text-editing command move the cursor next one character." is_accessibility_with_no_ui="true">
+    move to the next character
   </message>
-    <message name="DICTATION_COMMAND_MOVE_UP_ONCE" desc="A spoken text-editing command to move the cursor up one line." is_accessibility_with_no_ui="true">
-    move up
+    <message name="DICTATION_COMMAND_NAV_PREV_LINE" desc="A spoken text-editing command to move the cursor up one line." is_accessibility_with_no_ui="true">
+    move to the previous line
   </message>
-  <message name="DICTATION_COMMAND_MOVE_DOWN_ONCE" desc="A spoken text-editing command move the cursor down one line." is_accessibility_with_no_ui="true">
-    move down
+  <message name="DICTATION_COMMAND_NAV_NEXT_LINE" desc="A spoken text-editing command move the cursor down one line." is_accessibility_with_no_ui="true">
+    move to the next line
   </message>
-  <message name="DICTATION_COMMAND_COPY" desc="A spoken text-editing command to copy selected text." is_accessibility_with_no_ui="true">
+  <message name="DICTATION_COMMAND_COPY_SELECTED_TEXT" desc="A spoken text-editing command to copy selected text." is_accessibility_with_no_ui="true">
     copy
   </message>
-  <message name="DICTATION_COMMAND_PASTE" desc="A spoken text-editing command to paste clipboard contents." is_accessibility_with_no_ui="true">
+  <message name="DICTATION_COMMAND_PASTE_TEXT" desc="A spoken text-editing command to paste clipboard contents." is_accessibility_with_no_ui="true">
     paste
   </message>
-  <message name="DICTATION_COMMAND_CUT" desc="A spoken text-editing command to cut (copy and delete) selected text." is_accessibility_with_no_ui="true">
+  <message name="DICTATION_COMMAND_CUT_SELECTED_TEXT" desc="A spoken text-editing command to cut (copy and delete) selected text." is_accessibility_with_no_ui="true">
     cut
   </message>
-  <message name="DICTATION_COMMAND_UNDO" desc="A spoken text-editing command to undo the last text edit." is_accessibility_with_no_ui="true">
+  <message name="DICTATION_COMMAND_UNDO_TEXT_EDIT" desc="A spoken text-editing command to undo the last text edit." is_accessibility_with_no_ui="true">
     undo
   </message>
-  <message name="DICTATION_COMMAND_REDO" desc="A spoken text-editing command to redo the last text edit." is_accessibility_with_no_ui="true">
+  <message name="DICTATION_COMMAND_REDO_ACTION" desc="A spoken text-editing command to redo the last text edit." is_accessibility_with_no_ui="true">
     redo
   </message>
-  <message name="DICTATION_COMMAND_SELECT_ALL" desc="A spoken text-editing command to select all the content in the active input." is_accessibility_with_no_ui="true">
+  <message name="DICTATION_COMMAND_SELECT_ALL_TEXT" desc="A spoken text-editing command to select all the content in the active input." is_accessibility_with_no_ui="true">
     select all
   </message>
-  <message name="DICTATION_COMMAND_UNSELECT_ALL" desc="A spoken text-editing command to unselect the current selection, moving the cursor to the end of the selection." is_accessibility_with_no_ui="true">
-    unselect all
+  <message name="DICTATION_COMMAND_UNSELECT_TEXT" desc="A spoken text-editing command to unselect the current selection, moving the cursor to the end of the selection." is_accessibility_with_no_ui="true">
+    unselect
+  </message>
+  <message name="DICTATION_COMMAND_LIST_COMMANDS" desc="A spoken command to display a help page listing possible commands" is_accessibility_with_no_ui="true">
+    help
   </message>
   <message name="DICTATION_COMMAND_NEW_LINE" desc="A spoken text-editing command to enter a new line character." is_accessibility_with_no_ui="true">
     new line
   </message>
-  <message name="DICTATION_COMMAND_TYPE_TEXT" desc="A spoken text-editing command to type another command's keyword. For example, 'type delete' is a command to type the word 'delete'." is_accessibility_with_no_ui="true">
+  <message name="DICTATION_COMMAND_INPUT_TEXT_VIEW" desc="A spoken text-editing command to type another command's keyword. For example, 'type delete' is a command to type the word 'delete'." is_accessibility_with_no_ui="true">
     type <ph name="text">$1<ex>delete</ex></ph>
   </message>
 </grit-part>
