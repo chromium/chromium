@@ -13,18 +13,18 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-// Sets the |x| and |width| components of |popup_bounds| as the x-coordinate
+// Sets the |x| and |width| components of |bubble_bounds| as the x-coordinate
 // of the starting point and the width of the popup, taking into account the
 // direction it's supposed to grow (either to the left or to the right).
-// Components |y| and |height| of |popup_bounds| are not changed.
+// Components |y| and |height| of |bubble_bounds| are not changed.
 // TODO(crbug.com/1247645): Rename content_area_bounds to max_bounding_box.
 void CalculatePopupXAndWidth(int popup_preferred_width,
                              const gfx::Rect& content_area_bounds,
                              const gfx::Rect& element_bounds,
                              bool is_rtl,
-                             gfx::Rect* popup_bounds);
+                             gfx::Rect* bubble_bounds);
 
-// Sets the |width| and |x| component of |popup_bounds|. Without
+// Sets the |width| and |x| component of |bubble_bounds|. Without
 // additional constraints, in LTR the pop-up's is left-aligned with the
 // horizontal center of |element_bounds|. If the space available to the
 // right side it insufficient to achieve the |popup_preferred_width|, the left
@@ -38,17 +38,17 @@ void CalculatePopupXAndWidthHorizontallyCentered(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     bool is_rtl,
-    gfx::Rect* popup_bounds);
+    gfx::Rect* bubble_bounds);
 
-// Sets the |y| and |height| components of |popup_bounds| as the y-coordinate
+// Sets the |y| and |height| components of |bubble_bounds| as the y-coordinate
 // of the starting point and the height of the popup, taking into account the
 // direction it's supposed to grow (either up or down). Components |x| and
-// |width| of |popup_bounds| are not changed.
+// |width| of |bubble_bounds| are not changed.
 // TODO(crbug.com/1247645): Rename content_area_bounds to max_bounding_box.
 void CalculatePopupYAndHeight(int popup_preferred_height,
                               const gfx::Rect& content_area_bounds,
                               const gfx::Rect& element_bounds,
-                              gfx::Rect* popup_bounds);
+                              gfx::Rect* bubble_bounds);
 
 // Convenience method which handles both the vertical and horizontal bounds
 // and returns a new Rect. If |horizontally_centered| is true, the pop-up is
@@ -73,14 +73,14 @@ bool CanShowDropdownHere(int item_height,
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents);
 
-// Returns the total vertical space to place a on |content_area_bounds| on a
-// specific |side| of the |element_bounds|.
+// Returns the total vertical space on |content_area_bounds| on a specific
+// |side| of the |element_bounds|.
 int GetAvailableVerticalSpaceOnSideOfElement(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     views::BubbleArrowSide side);
 
-// Returns the total horizontal space to place on |content_area_bounds| on a
+// Returns the total horizontal space on |content_area_bounds| on a
 // specific |side| of the |element_bounds|.
 int GetAvailableHorizontalSpaceOnSideOfElement(
     const gfx::Rect& content_area_bounds,
@@ -88,9 +88,10 @@ int GetAvailableHorizontalSpaceOnSideOfElement(
     views::BubbleArrowSide side);
 
 // Returns true if there is enough space to place the bubble with
-// |bubble_preferred_size| plus an additional |spacing| on a specific |side| of
-// the |element_bounds| in the |content_area_bounds|. |spacing| defines the
-// number of additional pixels the bubble should be displaced from the element.
+// |bubble_preferred_size| plus an additional |spacing| on a specific
+// |side| of the |element_bounds| in the |content_area_bounds|. |spacing|
+// defines the number of additional pixels the bubble should be displaced from
+// the element.
 bool IsBubblePlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
                                       const gfx::Rect& element_bounds,
                                       const gfx::Size& bubble_preferred_size,
@@ -100,11 +101,28 @@ bool IsBubblePlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
 // Returns the first side within this order kTop, kBottom, kLeft, kRight, for
 // which which the bubble with a |bubble_preferred_size| fits on the side of the
 // |element_bounds| in the |content_area_bounds| taking the arrow length into
-// account. If neither side fits, the function returns kBottom.
+// account. If neither side bits, the function returns kBottom.
 views::BubbleArrowSide GetOptimalBubbleArrowSide(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     const gfx::Size& bubble_preferred_size);
+
+// Determines the optimal position of a bubble with |bubble_preferred_size| next
+// to an UI element with |element_bounds|. |content_area_bounds| are the
+// boundaries of the view port, |right_to_left| indicates if the website uses
+// text written from right to left. |scrollbar_width| is the width of a scroll
+// bar and |maximum_offset_to_center| is the maximum number of pixels the bubble
+// can be moved towards the center of |element_bounds|. |bubble_bounds| is the
+// current rect of the bubble that is modified by this function. The function
+// returns the arrow position that is used on the bubble.
+views::BubbleBorder::Arrow GetOptimalBubblePlacement(
+    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& element_bounds,
+    const gfx::Size& bubble_preferred_size,
+    bool right_to_left,
+    int scrollbar_width,
+    int maximum_offset_to_center,
+    gfx::Rect& bubble_bounds);
 
 // Returns whether there is an open permissions prompt in |web_contents| with
 // bounds that overlap |screen_bounds|.

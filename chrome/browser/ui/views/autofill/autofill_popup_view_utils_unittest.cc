@@ -236,7 +236,7 @@ TEST(AutofillPopupViewUtilsTest, IsBubblePlaceableOnSideOfElement) {
 }
 
 TEST(AutofillPopupViewUtilsTest, GetOptimalBubbleArrowSide) {
-  // For this test we fix the content area and the bubble size.
+  // For this test, we fix the content area and the bubble size.
   gfx::Rect content_area_bounds = {0, 0, 800, 800};
   gfx::Size preferred_bubble_size = {200, 300};
 
@@ -255,5 +255,64 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalBubbleArrowSide) {
         GetOptimalBubbleArrowSide(content_area_bounds, test_case.element_bounds,
                                   preferred_bubble_size),
         test_case.expected_arrow_side);
+  }
+}
+
+TEST(AutofillPopupViewUtilsTest, GetOptimalBubblePlacement) {
+  // For this test, the content area bounds and preferred bubble size is fixed.
+  gfx::Rect content_area_bounds = {0, 0, 800, 800};
+  gfx::Size preferred_bubble_size = {200, 300};
+  int scrollbar_width = 10;
+  int maximum_offset_to_center = 120;
+
+  struct TestCase {
+    bool right_to_left;
+    gfx::Rect element_bounds;
+    gfx::Rect expected_popup_bounds;
+    views::BubbleBorder::Arrow expected_arrow;
+
+  } test_cases[]{
+      // The element is placed in the top corner and the bubble should be shown
+      // below the element, are displaced by half the field width.
+      {false,
+       {0, 0, 100, 20},
+       {50, 20, 200, 300},
+       views::BubbleBorder::Arrow::TOP_LEFT},
+      // The element is placed in the top corner and the bubble should be shown
+      // below the element, displaced by maximum of 120 pixels.
+      {false,
+       {0, 0, 300, 20},
+       {maximum_offset_to_center, 20, 200, 300},
+       views::BubbleBorder::Arrow::TOP_LEFT},
+      // The element is placed in the lower left corner which should create a
+      // bubble on top of the element.
+      {false,
+       {0, 780, 100, 20},
+       {50, 480, 200, 300},
+       views::BubbleBorder::Arrow::BOTTOM_LEFT},
+      // Test a basic right website with an element placed on the upper
+      // right corner. The bubble should be displaced to the left.
+      {true,
+       {700, 0, 100, 20},
+       {550, 20, 200, 300},
+       views::BubbleBorder::Arrow::TOP_RIGHT},
+      // Test a field that is barely visible. This should create a bubble on the
+      // side.
+      {false,
+       {-95, 300, 100, 20},
+       {5, 300, 200, 300},
+       views::BubbleBorder::Arrow::LEFT_TOP},
+  };
+
+  for (TestCase& test_case : test_cases) {
+    gfx::Rect popup_bounds;
+
+    EXPECT_EQ(test_case.expected_arrow,
+              GetOptimalBubblePlacement(
+                  content_area_bounds, test_case.element_bounds,
+                  preferred_bubble_size, test_case.right_to_left,
+                  scrollbar_width, maximum_offset_to_center, popup_bounds));
+
+    EXPECT_EQ(popup_bounds, test_case.expected_popup_bounds);
   }
 }
