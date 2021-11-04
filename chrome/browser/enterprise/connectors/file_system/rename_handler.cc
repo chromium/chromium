@@ -221,8 +221,7 @@ void FileSystemRenameHandler::StartInternal(std::string access_token) {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 FileSystemRenameHandler::GetURLLoaderFactory(content::BrowserContext* context) {
-  content::StoragePartition* partition =
-      context->GetStoragePartitionForUrl(settings_.home);
+  content::StoragePartition* partition = context->GetDefaultStoragePartition();
   return partition->GetURLLoaderFactoryForBrowserProcess();
 }
 
