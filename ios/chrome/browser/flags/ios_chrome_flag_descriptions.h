@@ -126,10 +126,6 @@ extern const char kDownloadVcardDescription[];
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 
-// Title and description for the flag to native restore web states.
-extern const char kRestoreSessionFromCacheName[];
-extern const char kRestoreSessionFromCacheDescription[];
-
 extern const char kEnableAutofillAccountWalletStorageName[];
 extern const char kEnableAutofillAccountWalletStorageDescription[];
 
@@ -365,6 +361,10 @@ extern const char kPasswordReuseDetectionDescription[];
 extern const char kReadingListMessagesName[];
 extern const char kReadingListMessagesDescription[];
 
+// Title and description for the flag to native restore web states.
+extern const char kRestoreSessionFromCacheName[];
+extern const char kRestoreSessionFromCacheDescription[];
+
 // Title and description for the flag that makes Safe Browsing available.
 extern const char kSafeBrowsingAvailableName[];
 extern const char kSafeBrowsingAvailableDescription[];
@@ -423,6 +423,10 @@ extern const char kStartSurfaceDescription[];
 // sandbox servers.
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
+
+// Title and description for the flag to synthesize native restore web states.
+extern const char kSynthesizedRestoreSessionName[];
+extern const char kSynthesizedRestoreSessionDescription[];
 
 // Title and description for the flag to control if Chrome Sync should support
 // trusted vault RPC.

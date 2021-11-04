@@ -802,6 +802,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"single-ntp", flag_descriptions::kSingleNtpName,
      flag_descriptions::kSingleNtpDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSingleNtp)},
+    {"synthesized-restore-session",
+     flag_descriptions::kSynthesizedRestoreSessionName,
+     flag_descriptions::kSynthesizedRestoreSessionDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kSynthesizedRestoreSession)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

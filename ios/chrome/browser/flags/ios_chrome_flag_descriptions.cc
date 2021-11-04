@@ -150,12 +150,6 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
-const char kRestoreSessionFromCacheName[] =
-    "Use native WKWebView sesion restoration (iOS15 only).";
-const char kRestoreSessionFromCacheDescription[] =
-    "Enable instant session restoration for faster web session restoration "
-    "(iOS15 only).";
-
 const char kEnableAutofillAccountWalletStorageName[] =
     "Enable the account data storage for autofill";
 const char kEnableAutofillAccountWalletStorageDescription[] =
@@ -416,6 +410,12 @@ const char kReadingListMessagesDescription[] =
     "When enabled, a Messages prompt may be presented to allow the user to "
     "save the current page to Reading List";
 
+const char kRestoreSessionFromCacheName[] =
+    "Use native WKWebView sesion restoration (iOS15 only).";
+const char kRestoreSessionFromCacheDescription[] =
+    "Enable instant session restoration for faster web session restoration "
+    "(iOS15 only).";
+
 const char kSafeBrowsingAvailableName[] = "Make Safe Browsing available";
 const char kSafeBrowsingAvailableDescription[] =
     "When enabled, navigation URLs are compared to Safe Browsing blocklists, "
@@ -464,6 +464,12 @@ const char kShowAutofillTypePredictionsDescription[] =
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
+
+const char kSynthesizedRestoreSessionName[] =
+    "Use a synthesized native WKWebView sesion restoration (iOS15 only).";
+const char kSynthesizedRestoreSessionDescription[] =
+    "Enable instant session restoration by synthesizing WKWebView session "
+    "restoration data (iOS15 only).";
 
 const char kSyncTrustedVaultPassphraseiOSRPCName[] =
     "Enable RPC for sync trusted vault passphrase.";
