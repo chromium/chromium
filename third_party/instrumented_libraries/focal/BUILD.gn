@@ -229,7 +229,8 @@ instrumented_library("libasound2") {
 }
 
 instrumented_library("libatk-bridge2.0-0") {
-  extra_configure_flags = [ "--disable-static" ]
+  build_method = "meson"
+  package_ldflags = [ "-Wl,-z,undefs" ]
 }
 
 instrumented_library("libatspi2.0-0") {
