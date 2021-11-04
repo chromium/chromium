@@ -59,6 +59,7 @@ class ChromeWebClient : public web::WebClient {
   web::UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
                                          const GURL& url) override;
   bool RestoreSessionFromCache(web::WebState* web_state) const override;
+  void CleanupNativeRestoreURLs(web::WebState* web_state) const override;
 
  private:
   // Reference to a view that is attached to a window.

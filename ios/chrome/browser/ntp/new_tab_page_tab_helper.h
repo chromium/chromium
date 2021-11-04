@@ -49,6 +49,10 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // state.
   bool IgnoreLoadRequests() const;
 
+  // Sets the NTP's NavigationItem title and virtualURL to the appropriate
+  // string and chrome://newtab respectively.
+  static void UpdateItem(web::NavigationItem* item);
+
  private:
   friend class web::WebStateUserData<NewTabPageTabHelper>;
 
@@ -65,10 +69,6 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
   // Enable or disable the tab helper.
   void SetActive(bool active);
-
-  // Sets the NTP's NavigationItem title and virtualURL to the appropriate
-  // string and chrome://newtab respectively.
-  void UpdateItem(web::NavigationItem* item);
 
   // Returns true if an |url| is either chrome://newtab or about://newtab.
   bool IsNTPURL(const GURL& url);

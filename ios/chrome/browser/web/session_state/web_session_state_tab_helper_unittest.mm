@@ -16,6 +16,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/web/chrome_web_client.h"
+#include "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_cache.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
@@ -24,7 +26,6 @@
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
-#include "testing/platform_test.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,20 +37,20 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
-class WebSessionStateTabHelperTest : public PlatformTest {
- protected:
+class WebSessionStateTabHelperTest : public ChromeWebTest {
+ public:
+  WebSessionStateTabHelperTest()
+      : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
+
   void SetUp() override {
-    PlatformTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
+    ChromeWebTest::SetUp();
 
-    web::WebState::CreateParams createParams(chrome_browser_state_.get());
-    web_state_ = web::WebState::Create(createParams);
-    TabIdTabHelper::CreateForWebState(web_state_.get());
-    WebSessionStateTabHelper::CreateForWebState(web_state_.get());
+    TabIdTabHelper::CreateForWebState(web_state());
+    WebSessionStateTabHelper::CreateForWebState(web_state());
 
-    session_cache_directory_ = chrome_browser_state_->GetStatePath().Append(
-        kWebSessionCacheDirectoryName);
+    session_cache_directory_ =
+        web_state()->GetBrowserState()->GetStatePath().Append(
+            kWebSessionCacheDirectoryName);
   }
 
   // Flushes all the runloops internally used by the cache.
@@ -58,9 +59,6 @@ class WebSessionStateTabHelperTest : public PlatformTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  std::unique_ptr<web::WebState> web_state_;
   base::FilePath session_cache_directory_;
 };
 
@@ -70,26 +68,25 @@ TEST_F(WebSessionStateTabHelperTest, DisableFeature) {
   scoped_feature_list.InitAndDisableFeature(web::kRestoreSessionFromCache);
 
   WebSessionStateTabHelper* helper =
-      WebSessionStateTabHelper::FromWebState(web_state_.get());
+      WebSessionStateTabHelper::FromWebState(web_state());
   ASSERT_FALSE(helper->IsEnabled());
 
   // Nothing should be saved or restored when the feature is disabled.
   ASSERT_FALSE(helper->RestoreSessionFromCache());
 
-  web_state_->GetView();
-  web_state_->SetKeepRenderProcessAlive(true);
+  web_state()->GetView();
+  web_state()->SetKeepRenderProcessAlive(true);
   GURL url(kChromeUIAboutNewTabURL);
   web::NavigationManager::WebLoadParams params(url);
-  web_state_->GetNavigationManager()->LoadURLWithParams(params);
+  web_state()->GetNavigationManager()->LoadURLWithParams(params);
   DCHECK(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return !web_state_->IsLoading();
+    return !web_state()->IsLoading();
   }));
   helper->SaveSessionState();
   FlushRunLoops();
 
   // File should not be saved.
-  NSString* sessionID =
-      TabIdTabHelper::FromWebState(web_state_.get())->tab_id();
+  NSString* sessionID = TabIdTabHelper::FromWebState(web_state())->tab_id();
   base::FilePath filePath =
       session_cache_directory_.Append(base::SysNSStringToUTF8(sessionID));
   ASSERT_FALSE(base::PathExists(filePath));
@@ -101,13 +98,13 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   scoped_feature_list.InitAndEnableFeature(web::kRestoreSessionFromCache);
 
   // Make sure the internal WKWebView is live.
-  web_state_->GetView();
-  web_state_->SetKeepRenderProcessAlive(true);
+  web_state()->GetView();
+  web_state()->SetKeepRenderProcessAlive(true);
   GURL url(kChromeUIAboutNewTabURL);
   web::NavigationManager::WebLoadParams params(url);
-  web_state_->GetNavigationManager()->LoadURLWithParams(params);
+  web_state()->GetNavigationManager()->LoadURLWithParams(params);
   DCHECK(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
-    return !web_state_->IsLoading();
+    return !web_state()->IsLoading();
   }));
   // As well as waiting for the page to finish loading, it seems an extra wait
   // is required for some older devices.  If SaveSessionState is called too
@@ -117,19 +114,18 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(2));
 
   // File should not be saved yet.
-  NSString* sessionID =
-      TabIdTabHelper::FromWebState(web_state_.get())->tab_id();
+  NSString* sessionID = TabIdTabHelper::FromWebState(web_state())->tab_id();
   base::FilePath filePath =
       session_cache_directory_.Append(base::SysNSStringToUTF8(sessionID));
   ASSERT_FALSE(base::PathExists(filePath));
 
   WebSessionStateTabHelper* helper =
-      WebSessionStateTabHelper::FromWebState(web_state_.get());
+      WebSessionStateTabHelper::FromWebState(web_state());
   helper->SaveSessionStateIfStale();
   FlushRunLoops();
   if (@available(iOS 15, *)) {
     ASSERT_TRUE(
-        WebSessionStateTabHelper::FromWebState(web_state_.get())->IsEnabled());
+        WebSessionStateTabHelper::FromWebState(web_state())->IsEnabled());
     ASSERT_TRUE(base::PathExists(filePath));
   } else {
     // On iOS 14, the feature is disabled.

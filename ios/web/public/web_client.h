@@ -182,7 +182,12 @@ class WebClient {
   virtual UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
                                             const GURL& url);
 
+  // Returns true if URL was restored via session restoration cache.
   virtual bool RestoreSessionFromCache(web::WebState* web_state) const;
+
+  // Correct missing NTP and reading list virtualURLs and titles. Native session
+  // restoration may not properly restore these items.
+  virtual void CleanupNativeRestoreURLs(web::WebState* web_state) const;
 };
 
 }  // namespace web

@@ -244,6 +244,7 @@ source_set("web_internal") {
     "//ios/chrome/browser:browser_impl",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/link_to_text",
+    "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",

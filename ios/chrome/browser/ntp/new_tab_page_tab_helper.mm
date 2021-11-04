@@ -81,6 +81,14 @@ bool NewTabPageTabHelper::IgnoreLoadRequests() const {
   return ignore_load_requests_;
 }
 
+// static
+void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
+  if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
+    item->SetVirtualURL(GURL(kChromeUINewTabURL));
+    item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
+  }
+}
+
 void NewTabPageTabHelper::EnableIgnoreLoadRequests() {
   if (!base::FeatureList::IsEnabled(kBlockNewTabPagePendingLoad))
     return;
@@ -158,13 +166,6 @@ void NewTabPageTabHelper::SetActive(bool active) {
   // Tell |delegate_| to show or hide the NTP, if necessary.
   if (active_ != was_active) {
     [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
-  }
-}
-
-void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
-  if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
-    item->SetVirtualURL(GURL(kChromeUINewTabURL));
-    item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
   }
 }
 
