@@ -424,7 +424,8 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
   ShutdownHost();
 }
 
-TEST_F(ChromotingHostTest, OnSessionRouteChange) {
+// Flaky on all platforms.  http://crbug.com/1265894
+TEST_F(ChromotingHostTest, DISABLED_OnSessionRouteChange) {
   StartHost();
 
 
