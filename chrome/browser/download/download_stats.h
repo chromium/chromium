@@ -170,13 +170,13 @@ void RecordDownloadShelfDragEvent(DownloadShelfDragEvent drag_event);
 
 void RecordDownloadStartPerProfileType(Profile* profile);
 
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID)
 // Records whether the download dialog is shown to the user.
 void RecordDownloadPromptStatus(DownloadPromptStatus status);
 
 // Records whether the download later dialog is shown to the user.
 void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status);
-#endif  // OS_ANDROID
+#endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Records that a notification for a download was suppressed.

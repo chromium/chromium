@@ -53,19 +53,19 @@ XrBrowserTestBase::XrBrowserTestBase() : env_(base::Environment::Create()) {
 XrBrowserTestBase::~XrBrowserTestBase() = default;
 
 base::FilePath::StringType UTF8ToWideIfNecessary(std::string input) {
-#ifdef OS_WIN
+#if defined(OS_WIN)
   return base::UTF8ToWide(input);
 #else
   return input;
-#endif  // OS_WIN
+#endif  // defined(OS_WIN)
 }
 
 std::string WideToUTF8IfNecessary(base::FilePath::StringType input) {
-#ifdef OS_WIN
+#if defined(OS_WIN)
   return base::WideToUTF8(input);
 #else
   return input;
-#endif  // OS_Win
+#endif  // defined(OS_WIN)
 }
 
 // Returns an std::string consisting of the given path relative to the test

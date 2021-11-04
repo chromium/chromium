@@ -391,7 +391,7 @@ bool DownloadPrefs::PromptForDownload() const {
 }
 
 bool DownloadPrefs::PromptDownloadLater() const {
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID)
   if (prompt_for_download_.IsManaged())
     return false;
 
@@ -405,7 +405,7 @@ bool DownloadPrefs::PromptDownloadLater() const {
 }
 
 bool DownloadPrefs::HasDownloadLaterPromptShown() const {
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
     return *prompt_for_download_later_ !=
            static_cast<int>(DownloadLaterPromptStatus::kShowInitial);

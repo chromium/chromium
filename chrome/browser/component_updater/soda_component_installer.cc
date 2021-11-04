@@ -158,7 +158,7 @@ void SodaComponentInstallerPolicy::OnCustomUninstall() {}
 bool SodaComponentInstallerPolicy::VerifyInstallation(
     const base::Value& manifest,
     const base::FilePath& install_dir) const {
-#ifdef OS_WIN
+#if defined(OS_WIN)
   bool missing_indicator_file =
       !base::PathExists(install_dir.Append(kSodaIndicatorFile));
 

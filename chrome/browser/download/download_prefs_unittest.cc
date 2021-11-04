@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prompt_status.h"
 #include "chrome/common/pref_names.h"
@@ -53,16 +54,16 @@ TEST(DownloadPrefsTest, RegisterPrefs) {
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester;
 
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(download::features::kDownloadLater);
-#endif  // OS_ANDROID
+#endif  // defined(OS_ANDROID)
 
   // Download prefs are registered when creating the profile.
   TestingProfile profile;
   DownloadPrefs prefs(&profile);
 
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID)
   // Download prompt prefs should be registered correctly.
   histogram_tester.ExpectBucketCount("MobileDownload.DownloadPromptStatus",
                                      DownloadPromptStatus::SHOW_INITIAL, 1);
@@ -78,7 +79,7 @@ TEST(DownloadPrefsTest, RegisterPrefs) {
           prefs::kDownloadLaterPromptStatus);
   EXPECT_EQ(download_later_prompt_status,
             static_cast<int>(DownloadLaterPromptStatus::kShowInitial));
-#endif  // OS_ANDROID
+#endif  // defined(OS_ANDROID)
 }
 
 TEST(DownloadPrefsTest, NoAutoOpenByUserForDisallowedFileTypes) {
@@ -525,7 +526,7 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
 }
 #endif  // defined(OS_CHROMEOS)
 
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID)
 TEST(DownloadPrefsTest, DownloadLaterPrefs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(download::features::kDownloadLater);
@@ -577,6 +578,6 @@ TEST(DownloadPrefsTest, ManagedPromptForDownload) {
   EXPECT_FALSE(prefs.PromptForDownload());
 }
 
-#endif  // OS_ANDROID
+#endif  // defined(OS_ANDROID)
 
 }  // namespace
