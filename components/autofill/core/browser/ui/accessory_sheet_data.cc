@@ -82,17 +82,19 @@ std::ostream& operator<<(std::ostream& os, const AccessorySheetField& field) {
 UserInfo::UserInfo() = default;
 
 UserInfo::UserInfo(std::string origin)
-    : UserInfo(std::move(origin), IsPslMatch(false)) {}
+    : UserInfo(std::move(origin), IsExactMatch(true)) {}
 
-UserInfo::UserInfo(std::string origin, IsPslMatch is_psl_match)
-    : UserInfo(std::move(origin), is_psl_match, GURL()) {}
+UserInfo::UserInfo(std::string origin, IsExactMatch is_exact_match)
+    : UserInfo(std::move(origin), is_exact_match, GURL()) {}
 
 UserInfo::UserInfo(std::string origin, GURL icon_url)
-    : UserInfo(std::move(origin), IsPslMatch(false), std::move(icon_url)) {}
+    : UserInfo(std::move(origin), IsExactMatch(true), std::move(icon_url)) {}
 
-UserInfo::UserInfo(std::string origin, IsPslMatch is_psl_match, GURL icon_url)
+UserInfo::UserInfo(std::string origin,
+                   IsExactMatch is_exact_match,
+                   GURL icon_url)
     : origin_(std::move(origin)),
-      is_psl_match_(is_psl_match),
+      is_exact_match_(is_exact_match),
       icon_url_(std::move(icon_url)),
       estimated_dynamic_memory_use_(
           base::trace_event::EstimateMemoryUsage(origin_) +
@@ -110,7 +112,7 @@ UserInfo& UserInfo::operator=(UserInfo&& user_info) = default;
 
 bool UserInfo::operator==(const UserInfo& user_info) const {
   return fields_ == user_info.fields_ && origin_ == user_info.origin_ &&
-         is_psl_match_ == user_info.is_psl_match_ &&
+         is_exact_match_ == user_info.is_exact_match_ &&
          icon_url_ == user_info.icon_url_;
 }
 
@@ -120,7 +122,8 @@ size_t UserInfo::EstimateMemoryUsage() const {
 
 std::ostream& operator<<(std::ostream& os, const UserInfo& user_info) {
   os << "origin: \"" << user_info.origin() << "\", "
-     << "is_psl_match: " << std::boolalpha << user_info.is_psl_match() << ", "
+     << "is_exact_match: " << std::boolalpha << user_info.is_exact_match()
+     << ", "
      << "icon_url: " << user_info.icon_url() << ","
      << "fields: [\n";
   for (const AccessorySheetField& field : user_info.fields()) {
@@ -360,19 +363,19 @@ AccessorySheetData::Builder& AccessorySheetData::Builder::SetOptionToggle(
 
 AccessorySheetData::Builder&& AccessorySheetData::Builder::AddUserInfo(
     std::string origin,
-    UserInfo::IsPslMatch is_psl_match,
+    UserInfo::IsExactMatch is_exact_match,
     GURL icon_url) && {
   // Calls AddUserInfo()& since |this| is an lvalue.
   return std::move(
-      AddUserInfo(std::move(origin), is_psl_match, std::move(icon_url)));
+      AddUserInfo(std::move(origin), is_exact_match, std::move(icon_url)));
 }
 
 AccessorySheetData::Builder& AccessorySheetData::Builder::AddUserInfo(
     std::string origin,
-    UserInfo::IsPslMatch is_psl_match,
+    UserInfo::IsExactMatch is_exact_match,
     GURL icon_url) & {
   accessory_sheet_data_.add_user_info(
-      UserInfo(std::move(origin), is_psl_match, std::move(icon_url)));
+      UserInfo(std::move(origin), is_exact_match, std::move(icon_url)));
   return *this;
 }
 

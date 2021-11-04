@@ -56,7 +56,7 @@ AccessorySheetData empty_passwords_sheet() {
 
 AccessorySheetData filled_passwords_sheet() {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds")
-      .AddUserInfo("example.com", autofill::UserInfo::IsPslMatch(false))
+      .AddUserInfo("example.com", autofill::UserInfo::IsExactMatch(true))
       .AppendField(u"Ben", u"Ben", false, true)
       .AppendField(u"S3cur3", u"Ben's PW", true, false)
       .Build();

@@ -238,15 +238,15 @@ public class KeyboardAccessoryData {
         private final String mOrigin;
         private final GURL mIconUrl;
         private final List<UserInfoField> mFields = new ArrayList<>();
-        private final boolean mIsPslMatch;
+        private final boolean mIsExactMatch;
 
-        public UserInfo(String origin, boolean isPslMatch) {
-            this(origin, isPslMatch, null);
+        public UserInfo(String origin, boolean isExactMatch) {
+            this(origin, isExactMatch, null);
         }
 
-        public UserInfo(String origin, boolean isPslMatch, GURL iconUrl) {
+        public UserInfo(String origin, boolean isExactMatch, GURL iconUrl) {
             mOrigin = origin;
-            mIsPslMatch = isPslMatch;
+            mIsExactMatch = isExactMatch;
             mIconUrl = iconUrl;
         }
 
@@ -273,10 +273,11 @@ public class KeyboardAccessoryData {
         }
 
         /**
-         * @return True iff the user info originates from a PSL match and is not a first-party item.
+         * @return True iff the user info originates from a first-party item and not from a PSL or
+         *         affiliated match.
          */
-        public boolean isPslMatch() {
-            return mIsPslMatch;
+        public boolean isExactMatch() {
+            return mIsExactMatch;
         }
 
         /**

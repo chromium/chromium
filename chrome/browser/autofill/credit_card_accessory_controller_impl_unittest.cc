@@ -542,7 +542,7 @@ TEST_F(CreditCardAccessoryControllerTest, VirtualCreditCardWithCardArtUrl) {
   EXPECT_EQ(
       result,
       CreditCardAccessorySheetDataBuilder()
-          .AddUserInfo(kMasterCard, UserInfo::IsPslMatch(false),
+          .AddUserInfo(kMasterCard, UserInfo::IsExactMatch(true),
                        GURL("http://www.example.com/image.png"))
           .AppendField(virtual_card_label, /*text_to_fill*/ std::u16string(),
                        virtual_card_label, masked_card.guid() + "_vcn",
@@ -553,7 +553,7 @@ TEST_F(CreditCardAccessoryControllerTest, VirtualCreditCardWithCardArtUrl) {
           .AppendSimpleField(
               masked_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))
           .AppendSimpleField(std::u16string())
-          .AddUserInfo(kMasterCard)
+          .AddUserInfo(kMasterCard, UserInfo::IsExactMatch(true))
           .AppendField(masked_card.ObfuscatedLastFourDigits(),
                        /*text_to_fill*/ std::u16string(),
                        masked_card.ObfuscatedLastFourDigits(),

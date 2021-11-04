@@ -156,13 +156,13 @@ public class PasswordAccessorySheetModernViewTest {
                 new UserInfoField("Unused Name", "Unused Password", "", false, cb -> {});
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            UserInfo sameOriginInfo = new UserInfo("", false);
+            UserInfo sameOriginInfo = new UserInfo("", true);
             sameOriginInfo.addField(kUnusedInfoField);
             sameOriginInfo.addField(kUnusedInfoField);
             mModel.add(new AccessorySheetDataPiece(
                     sameOriginInfo, AccessorySheetDataPiece.Type.PASSWORD_INFO));
 
-            UserInfo pslOriginInfo = new UserInfo("other.origin.eg", true);
+            UserInfo pslOriginInfo = new UserInfo("other.origin.eg", false);
             pslOriginInfo.addField(kUnusedInfoField);
             pslOriginInfo.addField(kUnusedInfoField);
             mModel.add(new AccessorySheetDataPiece(

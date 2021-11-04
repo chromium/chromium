@@ -14,10 +14,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace password_manager {
-class IsPublicSuffixMatchTag;
-}  // namespace password_manager
-
 namespace autofill {
 
 // Represents a selectable item within a UserInfo or a PromoCodeInfo in the
@@ -78,18 +74,18 @@ class AccessorySheetField {
 };
 
 // Represents user data to be shown on the manual fallback UI (e.g. a Profile,
-// or a Credit Card, or the credentials for a website).
+// or a Credit Card, or the credentials for a website). For credentials,
+// 'is_exact_match' is used to determine the origin (first-party match, a PSL or
+// affiliated match) of the credential.
 class UserInfo {
  public:
-
-  using IsPslMatch =
-      base::StrongAlias<password_manager::IsPublicSuffixMatchTag, bool>;
+  using IsExactMatch = base::StrongAlias<class IsExactMatchTag, bool>;
 
   UserInfo();
   explicit UserInfo(std::string origin);
-  UserInfo(std::string origin, IsPslMatch is_psl_match);
+  UserInfo(std::string origin, IsExactMatch is_exact_match);
   UserInfo(std::string origin, GURL icon_url);
-  UserInfo(std::string origin, IsPslMatch is_psl_match, GURL icon_url);
+  UserInfo(std::string origin, IsExactMatch is_exact_match, GURL icon_url);
   UserInfo(const UserInfo& user_info);
   UserInfo(UserInfo&& field);
 
@@ -105,7 +101,7 @@ class UserInfo {
 
   const std::vector<AccessorySheetField>& fields() const { return fields_; }
   const std::string& origin() const { return origin_; }
-  IsPslMatch is_psl_match() const { return is_psl_match_; }
+  IsExactMatch is_exact_match() const { return is_exact_match_; }
   const GURL icon_url() const { return icon_url_; }
 
   bool operator==(const UserInfo& user_info) const;
@@ -118,7 +114,8 @@ class UserInfo {
   // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
   // to the memory estimation member!
   std::string origin_;
-  IsPslMatch is_psl_match_{false};
+  // True means it's neither PSL match nor affiliated match, false otherwise.
+  IsExactMatch is_exact_match_{true};
   std::vector<AccessorySheetField> fields_;
   GURL icon_url_;
   size_t estimated_dynamic_memory_use_ = 0;
@@ -339,11 +336,11 @@ class AccessorySheetData::Builder {
   // Adds a new UserInfo object to |accessory_sheet_data_|.
   Builder&& AddUserInfo(
       std::string origin = std::string(),
-      UserInfo::IsPslMatch is_psl_match = UserInfo::IsPslMatch(false),
+      UserInfo::IsExactMatch is_exact_match = UserInfo::IsExactMatch(true),
       GURL icon_url = GURL()) &&;
   Builder& AddUserInfo(
       std::string origin = std::string(),
-      UserInfo::IsPslMatch is_psl_match = UserInfo::IsPslMatch(false),
+      UserInfo::IsExactMatch is_exact_match = UserInfo::IsExactMatch(true),
       GURL icon_url = GURL()) &;
 
   // Appends a selectable, non-obfuscated field to the last UserInfo object.

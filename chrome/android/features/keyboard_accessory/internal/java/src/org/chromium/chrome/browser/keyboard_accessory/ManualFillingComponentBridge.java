@@ -168,8 +168,8 @@ class ManualFillingComponentBridge {
 
     @CalledByNative
     private Object addUserInfoToAccessorySheetData(
-            Object objAccessorySheetData, String origin, boolean isPslMatch, GURL iconUrl) {
-        UserInfo userInfo = new UserInfo(origin, isPslMatch, iconUrl);
+            Object objAccessorySheetData, String origin, boolean isExactMatch, GURL iconUrl) {
+        UserInfo userInfo = new UserInfo(origin, isExactMatch, iconUrl);
         ((AccessorySheetData) objAccessorySheetData).getUserInfoList().add(userInfo);
         return userInfo;
     }
