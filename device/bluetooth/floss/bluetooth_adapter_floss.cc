@@ -390,7 +390,8 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
       base::WrapUnique(new BluetoothDeviceFloss(this, device_found));
 
   if (!base::Contains(devices_, device_floss->GetAddress())) {
-    // TODO(b/202334519): Populate initial device properties first.
+    // TODO(b/204708206): Populate initial device properties first, e.g.
+    // connection state.
 
     // Take copy of pointer before moving ownership.
     BluetoothDeviceFloss* device_ptr = device_floss.get();
@@ -402,8 +403,7 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
     // TODO(abps) - Reset freshness value for device.
   }
 
-  BLUETOOTH_LOG(EVENT) << __func__ << ": Address (" << device_found.address
-                       << "), Name = " << device_found.name;
+  BLUETOOTH_LOG(EVENT) << __func__ << device_found;
 }
 
 void BluetoothAdapterFloss::AdapterSspRequest(
@@ -435,6 +435,44 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
       static_cast<BluetoothDeviceFloss*>(devices_[remote_device.address].get());
   device->SetBondState(bond_state);
   NotifyDevicePairedChanged(device, device->IsPaired());
+}
+
+void BluetoothAdapterFloss::AdapterDeviceConnected(
+    const FlossDeviceId& device_id) {
+  DCHECK(FlossDBusManager::Get());
+  DCHECK(IsPresent());
+
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device_id;
+
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(device_id.address));
+  if (!device) {
+    LOG(WARNING) << "Device connected for an unknown device "
+                 << device_id.address;
+    return;
+  }
+
+  device->SetIsConnected(true);
+  NotifyDeviceChanged(device);
+}
+
+void BluetoothAdapterFloss::AdapterDeviceDisconnected(
+    const FlossDeviceId& device_id) {
+  DCHECK(FlossDBusManager::Get());
+  DCHECK(IsPresent());
+
+  BLUETOOTH_LOG(EVENT) << __func__ << ": " << device_id;
+
+  BluetoothDeviceFloss* device =
+      static_cast<BluetoothDeviceFloss*>(GetDevice(device_id.address));
+  if (!device) {
+    LOG(WARNING) << "Device disconnected for an unknown device "
+                 << device_id.address;
+    return;
+  }
+
+  device->SetIsConnected(false);
+  NotifyDeviceChanged(device);
 }
 
 std::unordered_map<device::BluetoothDevice*, device::BluetoothDevice::UUIDSet>

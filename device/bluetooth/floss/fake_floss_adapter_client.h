@@ -34,6 +34,10 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   // Helper for posting a delayed task.
   void PostDelayedTask(base::OnceClosure callback);
 
+  // Test utility to do fake notification to observers.
+  void NotifyObservers(
+      const base::RepeatingCallback<void(Observer*)>& notify) const;
+
  private:
   base::WeakPtrFactory<FakeFlossAdapterClient> weak_ptr_factory_{this};
 };

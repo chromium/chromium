@@ -131,4 +131,28 @@ TEST_F(BluetoothFlossTest, PairJustWorks) {
   EXPECT_TRUE(device->IsPaired());
 }
 
+TEST_F(BluetoothFlossTest, UpdatesDeviceConnectionState) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
+  ASSERT_TRUE(device != nullptr);
+  EXPECT_FALSE(device->IsConnected());
+
+  fake_floss_adapter_client_->NotifyObservers(
+      base::BindRepeating([](FlossAdapterClient::Observer* observer) {
+        observer->AdapterDeviceConnected(FlossDeviceId{
+            .address = FakeFlossAdapterClient::kJustWorksAddress, .name = ""});
+      }));
+  EXPECT_TRUE(device->IsConnected());
+
+  fake_floss_adapter_client_->NotifyObservers(
+      base::BindRepeating([](FlossAdapterClient::Observer* observer) {
+        observer->AdapterDeviceDisconnected(FlossDeviceId{
+            .address = FakeFlossAdapterClient::kJustWorksAddress, .name = ""});
+      }));
+  EXPECT_FALSE(device->IsConnected());
+}
+
 }  // namespace floss

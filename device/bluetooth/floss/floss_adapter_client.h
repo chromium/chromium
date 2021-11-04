@@ -81,6 +81,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
     virtual void DeviceBondStateChanged(const FlossDeviceId& remote_device,
                                         uint32_t status,
                                         BondState bond_state) {}
+
+    // Notification sent when a remote device becomes connected.
+    virtual void AdapterDeviceConnected(const FlossDeviceId& device) {}
+
+    // Notification sent when a remote device becomes disconnected.
+    virtual void AdapterDeviceDisconnected(const FlossDeviceId& device) {}
   };
 
   // Error: No such adapter.
@@ -158,6 +164,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle callback |OnBondStateChanged| on exported object path.
   void OnBondStateChanged(dbus::MethodCall* method_call,
                           dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnDeviceConnected| on exported object path.
+  void OnDeviceConnected(dbus::MethodCall* method_call,
+                         dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnDeviceDisconnected| on exported object path.
+  void OnDeviceDisconnected(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
 
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;

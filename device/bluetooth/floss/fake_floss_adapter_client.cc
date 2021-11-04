@@ -58,4 +58,11 @@ void FakeFlossAdapterClient::PostDelayedTask(base::OnceClosure callback) {
       FROM_HERE, std::move(callback), base::Milliseconds(kDelayedTaskMs));
 }
 
+void FakeFlossAdapterClient::NotifyObservers(
+    const base::RepeatingCallback<void(Observer*)>& notify) const {
+  for (auto& observer : observers_) {
+    notify.Run(&observer);
+  }
+}
+
 }  // namespace floss

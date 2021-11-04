@@ -171,6 +171,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
       const FlossDeviceId& remote_device,
       uint32_t status,
       FlossAdapterClient::BondState bond_state) override;
+  void AdapterDeviceConnected(const FlossDeviceId& device_id) override;
+  void AdapterDeviceDisconnected(const FlossDeviceId& device_id) override;
 
   // BluetoothAdapter:
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;

@@ -100,7 +100,7 @@ class FlossAdapterClientTest : public testing::Test {
 
     // Make sure we export all callbacks. This will need to be updated once new
     // callbacks are added.
-    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(5);
+    EXPECT_CALL(*exported_callbacks_.get(), ExportMethod).Times(7);
 
     // Handle method calls on the object proxy
     ON_CALL(*adapter_object_proxy_.get(), DoCallMethodWithErrorResponse)

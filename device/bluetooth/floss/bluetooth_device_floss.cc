@@ -110,9 +110,7 @@ bool BluetoothDeviceFloss::IsPaired() const {
 }
 
 bool BluetoothDeviceFloss::IsConnected() const {
-  NOTIMPLEMENTED();
-
-  return false;
+  return is_connected_;
 }
 
 bool BluetoothDeviceFloss::IsGattConnected() const {
@@ -291,6 +289,10 @@ void BluetoothDeviceFloss::SetName(const std::string& name) {
 void BluetoothDeviceFloss::SetBondState(
     FlossAdapterClient::BondState bond_state) {
   bond_state_ = bond_state;
+}
+
+void BluetoothDeviceFloss::SetIsConnected(bool is_connected) {
+  is_connected_ = is_connected;
 }
 
 void BluetoothDeviceFloss::CreateGattConnectionImpl(

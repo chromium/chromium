@@ -5,6 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_FLOSS_FLOSS_DBUS_CLIENT_H_
 #define DEVICE_BLUETOOTH_FLOSS_FLOSS_DBUS_CLIENT_H_
 
+#include <ostream>
 #include <string>
 
 #include "base/callback.h"
@@ -32,7 +33,9 @@ extern DEVICE_BLUETOOTH_EXPORT const char kStartDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCancelDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateBond[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterConnectionCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kConnectionCallbackInterface[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceFound[];
@@ -40,6 +43,8 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnDiscoveringChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnSspRequest[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnBondStateChanged[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceConnected[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceDisconnected[];
 }  // namespace adapter
 
 namespace manager {
@@ -60,6 +65,10 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnHciEnabledChanged[];
 struct FlossDeviceId {
   std::string address;
   std::string name;
+
+  friend std::ostream& operator<<(std::ostream& os, const FlossDeviceId& id) {
+    return os << "FlossDeviceId(" << id.address << ", " << id.name << ")";
+  }
 };
 
 // Represents an error sent through DBus.
