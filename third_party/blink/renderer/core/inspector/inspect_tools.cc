@@ -462,7 +462,7 @@ void PersistentTool::SetIsolatedElementConfigs(IsolatedElementConfigs configs) {
 }
 
 bool PersistentTool::ForwardEventsToOverlay() {
-  return true;
+  return isolated_element_configs_.size();
 }
 
 bool PersistentTool::HideOnHideHighlight() {
