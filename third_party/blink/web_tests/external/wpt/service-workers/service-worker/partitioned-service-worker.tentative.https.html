@@ -38,6 +38,8 @@ function makeMessagePromise() {
 
 // Loads a url for the frame type and then returns a promise for
 // the data that was postMessage'd from the loaded frame.
+// If the frame type is 'window' then `url` is encoded into the search param
+// as the url the 3p window is meant to iframe.
 function loadAndReturnSwData(t, url, frame_type) {
   if (frame_type !== 'iframe' && frame_type !== 'window') {
     return;
@@ -55,7 +57,15 @@ function loadAndReturnSwData(t, url, frame_type) {
   }
   else {
     // 'window' case.
-    const w = window.open(url);
+    const search_param = new URLSearchParams();
+    search_param.append('target', url);
+
+    const third_party_window_url = new URL(
+    './resources/partitioned-service-worker-third-party-window.html' +
+    '?' + search_param,
+    get_host_info().HTTPS_NOTSAMESITE_ORIGIN + self.location.pathname);
+
+    const w = window.open(third_party_window_url);
     t.add_cleanup(() => w.close());
   }
 
@@ -90,13 +100,13 @@ promise_test(async t => {
     'The data for the 1p frame came from the wrong source');
 
   // Now create a 3p iframe that will try to resolve the SW in a 3p context.
-  const third_party_url = new URL(
-    './resources/partitioned-service-worker-third-party-window.html',
-    get_host_info().HTTPS_NOTSAMESITE_ORIGIN + self.location.pathname);
+  const third_party_iframe_url = new URL(
+    './resources/partitioned-service-worker-third-party-iframe.html',
+    get_host_info().HTTPS_ORIGIN + self.location.pathname);
 
   // Create the 3p window (which will in turn create the iframe with the SW)
   // and await on its data.
-  const frame_3p_data = await loadAndReturnSwData(t, third_party_url, 'window');
+  const frame_3p_data = await loadAndReturnSwData(t, third_party_iframe_url, 'window');
   assert_equals(frame_3p_data.source, 'From3pFrame',
     'The data for the 3p frame came from the wrong source');
 
