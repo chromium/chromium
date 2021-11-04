@@ -53,6 +53,20 @@ ScriptWebBundle* ScriptWebBundle::CreateOrReuseInline(
   }
   SubresourceWebBundleList* active_bundles =
       resource_fetcher->GetOrCreateSubresourceWebBundleList();
+  if (active_bundles->GetMatchingBundle(rule->source_url())) {
+    ExecutionContext* context = document.GetExecutionContext();
+    if (!context)
+      return nullptr;
+    context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "A nested bundle is not supported: " +
+            rule->source_url().ElidedString()));
+    document.GetTaskRunner(TaskType::kDOMManipulation)
+        ->PostTask(FROM_HERE, WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
+                                        WrapPersistent(&element)));
+    return nullptr;
+  }
 
   if (SubresourceWebBundle* found =
           active_bundles->FindSubresourceWebBundleWhichWillBeReleased(
