@@ -1112,15 +1112,6 @@ void PrintPreviewUI::SetPdfSavedClosureForTesting(base::OnceClosure closure) {
   handler_->SetPdfSavedClosureForTesting(std::move(closure));
 }
 
-void PrintPreviewUI::SendEnableManipulateSettingsForTest() {
-  handler_->SendEnableManipulateSettingsForTest();
-}
-
-void PrintPreviewUI::SendManipulateSettingsForTest(
-    const base::DictionaryValue& settings) {
-  handler_->SendManipulateSettingsForTest(settings);
-}
-
 void PrintPreviewUI::SetPrintPreviewDataForIndexForTest(
     int index,
     scoped_refptr<base::RefCountedMemory> data) {
