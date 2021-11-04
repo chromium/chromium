@@ -68,6 +68,7 @@
         "master": "tryserver.chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"],
+        "step_name": "blink_web_tests (with patch)",
         "is_try_builder": true
     },
     "linux-wpt-identity-fyi-rel": {
