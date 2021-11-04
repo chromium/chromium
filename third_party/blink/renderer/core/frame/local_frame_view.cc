@@ -97,6 +97,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_object.h"
@@ -3445,31 +3446,27 @@ void LocalFrameView::ForceLayoutForPagination(
       frame_->GetDocument()->UpdateStyleAndLayout(
           DocumentUpdateReason::kPrinting);
 
-      PhysicalRect updated_document_rect(layout_view->DocumentRect());
-      LayoutUnit doc_logical_height = horizontal_writing_mode
-                                          ? updated_document_rect.Height()
-                                          : updated_document_rect.Width();
-      LayoutUnit doc_logical_top = horizontal_writing_mode
-                                       ? updated_document_rect.Y()
-                                       : updated_document_rect.X();
-      LayoutUnit doc_logical_right = horizontal_writing_mode
-                                         ? updated_document_rect.Right()
-                                         : updated_document_rect.Bottom();
+      WritingModeConverter converter(
+          layout_view->StyleRef().GetWritingDirection(),
+          PhysicalSize(layout_view->Size()));
+      LogicalRect logical_rect =
+          converter.ToLogical(layout_view->DocumentRect());
       LayoutUnit clipped_logical_left;
       if (!layout_view->StyleRef().IsLeftToRightDirection()) {
         clipped_logical_left =
-            LayoutUnit(doc_logical_right - page_logical_width);
+            LayoutUnit(logical_rect.InlineEndOffset() - page_logical_width);
       }
-      LayoutRect overflow(clipped_logical_left, doc_logical_top,
-                          LayoutUnit(page_logical_width), doc_logical_height);
+      logical_rect.offset.inline_offset = clipped_logical_left;
+      logical_rect.size.inline_size = LayoutUnit(page_logical_width);
 
-      if (!horizontal_writing_mode)
-        overflow = overflow.TransposedRect();
       AdjustViewSize();
       UpdateStyleAndLayout();
       // This is how we clip in case we overflow again.
       layout_view->ClearLayoutOverflow();
-      layout_view->AddLayoutOverflow(overflow);
+      layout_view->AddLayoutOverflow(
+          converter.ToPhysical(logical_rect)
+              .ToLayoutFlippedRect(layout_view->StyleRef(),
+                                   PhysicalSize(layout_view->Size())));
       return;
     }
   }
