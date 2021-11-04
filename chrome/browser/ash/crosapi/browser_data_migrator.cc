@@ -464,11 +464,6 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
     return {data_wipe_result, ResultValue::kFailed};
   }
 
-  if (!IsMigrationSmallEnough(target_info)) {
-    RecordStatus(FinalStatus::kSizeLimitExceeded, &target_info);
-    return {data_wipe_result, ResultValue::kFailed};
-  }
-
   // Copy files to `tmp_dir`.
   if (!SetupTmpDir(target_info, original_user_dir, tmp_dir, cancel_flag.get(),
                    progress_tracker.get())) {
@@ -638,20 +633,6 @@ bool BrowserDataMigrator::HasEnoughDiskSpace(
   if (free_disk_space < required_space + kBuffer) {
     LOG(ERROR) << "Aborting migration. Need " << required_space
                << " bytes but only have " << free_disk_space << " bytes left.";
-    return false;
-  }
-
-  return true;
-}
-
-// static
-bool BrowserDataMigrator::IsMigrationSmallEnough(
-    const TargetInfo& target_info) {
-  constexpr int64_t max_migration_size = (int64_t)4 * 1024 * 1024 * 1024;
-  if (target_info.TotalCopySize() > max_migration_size) {
-    LOG(ERROR) << "Aborting migration because the data size is too large for "
-                  "migration: "
-               << target_info.TotalCopySize() << " bytes.";
     return false;
   }
 

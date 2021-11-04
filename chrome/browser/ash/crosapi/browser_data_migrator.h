@@ -159,7 +159,7 @@ class BrowserDataMigrator {
     kCopyFailed = 5,
     kMoveFailed = 6,
     kDataWipeFailed = 7,
-    kSizeLimitExceeded = 8,
+    kSizeLimitExceeded = 8,  // No longer in use.
     kCancelled = 9,
     kMaxValue = kCancelled
   };
@@ -275,11 +275,6 @@ class BrowserDataMigrator {
   static bool HasEnoughDiskSpace(const TargetInfo& target_info,
                                  const base::FilePath& original_user_dir,
                                  Mode mode);
-
-  // TODO(crbug.com/1248318):Remove this arbitrary cap for migration once a long
-  // term solution is found. Temporarily limit the migration size to 4GB until
-  // the slow migration speed issue is resolved.
-  static bool IsMigrationSmallEnough(const TargetInfo& target_info);
 
   // Set up the temporary directory `tmp_dir` by copying items into it.
   static bool SetupTmpDir(const TargetInfo& target_info,
