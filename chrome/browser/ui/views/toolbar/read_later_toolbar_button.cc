@@ -238,11 +238,12 @@ void ReadLaterToolbarButton::ButtonPressed() {
 
   if (!side_panel_webview_) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // Hide the Lens side panel if it's showing instead.
     lens::LensSidePanelController* const lens_side_panel_controller =
         browser_view->lens_side_panel_controller();
-    if (lens_side_panel_controller) {
-      // Hide the Lens side panel if showing.
+    if (lens_side_panel_controller && lens_side_panel_controller->IsShowing()) {
       lens_side_panel_controller->Close();
+      return;
     }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

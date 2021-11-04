@@ -84,6 +84,10 @@ void LensSidePanelController::OpenWithURL(
   }
 }
 
+bool LensSidePanelController::IsShowing() const {
+  return side_panel_->GetVisible();
+}
+
 void LensSidePanelController::Close() {
   if (side_panel_->GetVisible()) {
     // Loading an empty URL on close prevents old results from being displayed

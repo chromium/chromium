@@ -33,6 +33,9 @@ class LensSidePanelController : public content::WebContentsObserver,
   // Opens the Lens side panel with the given Lens results URL.
   void OpenWithURL(const content::OpenURLParams& params);
 
+  // Returns whether the Lens side panel is currently showing.
+  bool IsShowing() const;
+
   // Closes the Lens side panel.
   void Close();
 
