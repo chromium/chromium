@@ -225,8 +225,8 @@ def WritePackageBlobsJson(json_path, package_blobs):
     for blob_name in package_blobs[package]:
       blob = package_blobs[package][blob_name]
       blob_data.append({
-          'path': blob.name,
-          'merkle': blob.hash,
+          'path': str(blob.name),
+          'merkle': str(blob.hash),
           'bytes': blob.uncompressed,
           'size': blob.compressed,
           'is_counted': blob.is_counted

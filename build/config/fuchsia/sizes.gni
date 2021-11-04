@@ -14,6 +14,7 @@ template("compute_fuchsia_package_sizes") {
     testonly = true
     executable = "//build/fuchsia/binary_sizes.py"
     wrapper_script = "$root_out_dir/bin/run_${target_name}"
+    use_vpython3 = true
 
     assert(target_cpu == "arm64" || target_cpu == "x64",
            "target_cpu must be arm64 or x64")
