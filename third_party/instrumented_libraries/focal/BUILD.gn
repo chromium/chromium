@@ -21,7 +21,6 @@ group("locally_built") {
     ":libavahi-client3",
     ":libcairo2",
     ":libcap2",
-    ":libcgmanager0",
     ":libcredentialkit_pkcs11",
     ":libcups2",
     ":libcurl3-gnutls",
@@ -270,13 +269,6 @@ instrumented_library("libcairo2") {
 instrumented_library("libcap2") {
   extra_configure_flags = [ "--disable-static" ]
   build_method = "custom_libcap"
-}
-
-instrumented_library("libcgmanager0") {
-  extra_configure_flags = [ "--disable-static" ]
-
-  # Required due to autoconf version mismatch.
-  pre_build = "scripts/pre-build/autoreconf.sh"
 }
 
 instrumented_library("libcredentialkit_pkcs11") {
