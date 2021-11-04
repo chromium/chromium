@@ -899,7 +899,10 @@ def main():
     else:
       cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-apple-darwin')
   elif sys.platform.startswith('linux'):
-    cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-gnu')
+    cmake_args.extend([
+        '-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-unknown-linux-gnu',
+        '-DLLVM_ENABLE_PER_TARGET_RUNTIME_DIR=ON',
+    ])
   elif sys.platform == 'win32':
     cmake_args.append('-DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-pc-windows-msvc')
 
@@ -929,6 +932,10 @@ def main():
     rt_platform = 'linux'
   rt_lib_dst_dir = os.path.join(LLVM_BUILD_DIR, 'lib', 'clang', RELEASE_VERSION,
                                 'lib', rt_platform)
+  # Make sure the directory exists; this will not be implicilty created if
+  # built with per-target runtime directories.
+  if not os.path.exists(rt_lib_dst_dir):
+    os.makedirs(rt_lib_dst_dir)
 
   # Do an out-of-tree build of compiler-rt for 32-bit Win clang_rt.profile.lib.
   if sys.platform == 'win32':
