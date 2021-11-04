@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.feed;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -20,7 +21,14 @@ import org.chromium.components.user_prefs.UserPrefs;
  */
 public final class FeedFeatures {
     private static final String TAG = "FeedFeatures";
+
+    // Finch param constants for controlling the feed tab stickyness logic to use.
+    private static final String FEED_TAB_STICKYNESS_LOGIC_PARAM = "feed_tab_stickyness_logic";
+    private static final String RESET_UPON_CHROME_RESTART = "reset_upon_chrome_restart";
+    private static final String INDEFINITELY_PERSISTED = "indefinitely_persisted";
+
     private static PrefService sFakePrefServiceForTest;
+    private static boolean sIsFirstFeedTabStickinessCheckSinceLaunch = true;
 
     /**
      * @return Whether the feed is allowed to be used. Returns false if the feed is disabled due to
@@ -54,7 +62,7 @@ public final class FeedFeatures {
         return commandLine.hasSwitch("feed-screenshot-mode");
     }
 
-    private static PrefService getPrefService() {
+    public static PrefService getPrefService() {
         if (sFakePrefServiceForTest != null) {
             return sFakePrefServiceForTest;
         }
@@ -64,5 +72,51 @@ public final class FeedFeatures {
     @VisibleForTesting
     public static void setFakePrefsForTest(PrefService fakePref) {
         sFakePrefServiceForTest = fakePref;
+    }
+
+    /**
+     * Returns the feed tab ID to restore depending on the configured logic controlling the
+     * "stickyness" of the selected feed tab. These are the available options:
+     * - reset_for_every_new_ntp: tab choice is reset for each newly opened NTP (default behavior;
+     *   not an actual Finch param).
+     * - indefinitely_persisted: tab choice is kept forever.
+     * - reset_upon_chrome_restart: tab choice is reset upon Chrome relaunch.
+     */
+    public static @StreamTabId int getFeedTabIdToRestore() {
+        String stickinessLogic = ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.WEB_FEED, FEED_TAB_STICKYNESS_LOGIC_PARAM);
+
+        if (RESET_UPON_CHROME_RESTART.equals(stickinessLogic)) {
+            if (sIsFirstFeedTabStickinessCheckSinceLaunch) {
+                sIsFirstFeedTabStickinessCheckSinceLaunch = false;
+                setLastSeenFeedTabId(StreamTabId.FOR_YOU);
+                return StreamTabId.FOR_YOU;
+            }
+            return getLastSeenFeedTabId();
+        }
+        if (INDEFINITELY_PERSISTED.equals(stickinessLogic)) {
+            return getLastSeenFeedTabId();
+        }
+
+        // Default behavior (reset_for_every_new_ntp).
+        setLastSeenFeedTabId(StreamTabId.FOR_YOU);
+        return StreamTabId.FOR_YOU;
+    }
+
+    public static void setLastSeenFeedTabId(@StreamTabId int tabId) {
+        // Note: the "first check" flag is updated here to make sure that if setLastSeenFeedTabId is
+        // called before getFeedTabIdToRestore, the value set here is taken into account in by the
+        // latter at least for some of the restore logic atlernatives.
+        sIsFirstFeedTabStickinessCheckSinceLaunch = false;
+        getPrefService().setInteger(Pref.LAST_SEEN_FEED_TYPE, tabId);
+    }
+
+    private static @StreamTabId int getLastSeenFeedTabId() {
+        return getPrefService().getInteger(Pref.LAST_SEEN_FEED_TYPE);
+    }
+
+    @VisibleForTesting
+    static void resetInternalStateForTesting() {
+        sIsFirstFeedTabStickinessCheckSinceLaunch = true;
     }
 }

@@ -273,6 +273,7 @@ android_library("junit") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/feed/FakeLinearLayoutManager.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedFeaturesTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedPlaceholderLayoutTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSliceViewTrackerTest.java",

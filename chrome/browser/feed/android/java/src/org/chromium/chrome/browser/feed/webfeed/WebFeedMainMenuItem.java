@@ -15,17 +15,17 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 
+import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.LoadingView;
@@ -143,12 +143,10 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         byte[] followId = result.metadata != null ? result.metadata.id : null;
                         mWebFeedSnackbarController.showPostFollowHelp(
                                 mTab, result, followId, mUrl, mTitle);
-                        Profile currentProfile = Profile.getLastUsedRegularProfile();
-                        if (!UserPrefs.get(currentProfile).getBoolean(Pref.ARTICLES_LIST_VISIBLE)) {
-                            UserPrefs.get(currentProfile)
-                                    .setBoolean(Pref.ARTICLES_LIST_VISIBLE, true);
-                            UserPrefs.get(currentProfile)
-                                    .setInteger(Pref.LAST_SEEN_FEED_TYPE, StreamTabId.FOLLOWING);
+                        PrefService prefs = FeedFeatures.getPrefService();
+                        if (!prefs.getBoolean(Pref.ARTICLES_LIST_VISIBLE)) {
+                            prefs.setBoolean(Pref.ARTICLES_LIST_VISIBLE, true);
+                            FeedFeatures.setLastSeenFeedTabId(StreamTabId.FOLLOWING);
                         }
                     });
                     mAppMenuHandler.hideAppMenu();

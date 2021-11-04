@@ -93,7 +93,7 @@ public class FeedSurfaceMediator
             headerList.get(index).set(SectionHeaderProperties.UNREAD_CONTENT_KEY, false);
 
             maybeLogLaunchFinished(DiscoverLaunchResult.SWITCHED_FEED_TABS);
-            getPrefService().setInteger(Pref.LAST_SEEN_FEED_TYPE, index);
+            FeedFeatures.setLastSeenFeedTabId(index);
 
             Stream newStream = mTabToStreamMap.get(index);
             if (newStream.getOptionsView() != null) {
@@ -251,7 +251,7 @@ public class FeedSurfaceMediator
         mPrefChangeRegistrar.addObserver(Pref.ENABLE_SNIPPETS, this::updateContent);
 
         if (openingTabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
-            mRestoreTabId = FeedSurfaceCoordinator.StreamTabId.FOR_YOU;
+            mRestoreTabId = FeedFeatures.getFeedTabIdToRestore();
         } else {
             mRestoreTabId = openingTabId;
         }
@@ -369,7 +369,7 @@ public class FeedSurfaceMediator
      */
     void setTabId(@FeedSurfaceCoordinator.StreamTabId int tabId) {
         if (tabId == FeedSurfaceCoordinator.StreamTabId.DEFAULT) {
-            tabId = getPrefService().getInteger(Pref.LAST_SEEN_FEED_TYPE);
+            tabId = FeedFeatures.getFeedTabIdToRestore();
         }
         if (mTabToStreamMap.size() <= tabId) tabId = 0;
         mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, tabId);
@@ -919,6 +919,7 @@ public class FeedSurfaceMediator
         return mTouchEnabled;
     }
 
+    // TODO(carlosk): replace with FeedFeatures.getPrefService().
     private PrefService getPrefService() {
         if (sPrefServiceForTest != null) return sPrefServiceForTest;
         return UserPrefs.get(Profile.getLastUsedRegularProfile());
