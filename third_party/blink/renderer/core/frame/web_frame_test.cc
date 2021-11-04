@@ -40,7 +40,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/paint_op_buffer.h"
@@ -12965,7 +12964,7 @@ TEST_F(WebFrameTest, ShowVirtualKeyboardOnElementFocus) {
 
   RunPendingTasks();
   // Verify that the right WidgetHost has been notified.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   EXPECT_EQ(0u, widget_host.VirtualKeyboardRequestCount());
 #else
   EXPECT_LT(0u, widget_host.VirtualKeyboardRequestCount());
