@@ -25,7 +25,11 @@ std::string GetProductName();
 // Returns the version number, e.g. "6.0.490.1".
 std::string GetVersionNumber();
 
-// Returns the major component of the version, e.g. "6".
+// Returns the major component (aka the milestone) of the version as an int,
+// e.g. 6 when the version is "6.0.490.1".
+int GetMajorVersionNumberAsInt();
+
+// Like GetMajorVersionNumberAsInt(), but returns a string.
 std::string GetMajorVersionNumber();
 
 // Returns the result of GetVersionNumber() as a base::Version.

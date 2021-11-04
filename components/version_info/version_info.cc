@@ -31,9 +31,13 @@ std::string GetVersionNumber() {
   return PRODUCT_VERSION;
 }
 
-std::string GetMajorVersionNumber() {
+int GetMajorVersionNumberAsInt() {
   DCHECK(GetVersion().IsValid());
-  return base::NumberToString(GetVersion().components()[0]);
+  return GetVersion().components()[0];
+}
+
+std::string GetMajorVersionNumber() {
+  return base::NumberToString(GetMajorVersionNumberAsInt());
 }
 
 const base::Version& GetVersion() {
