@@ -134,6 +134,8 @@ gfx::Rect WebContentsViewMac::GetContainerBounds() const {
   return gfx::ScreenRectFromNSRect(bounds);
 }
 
+void WebContentsViewMac::OnCapturerCountChanged() {}
+
 void WebContentsViewMac::StartDragging(
     const DropData& drop_data,
     DragOperationsMask allowed_operations,

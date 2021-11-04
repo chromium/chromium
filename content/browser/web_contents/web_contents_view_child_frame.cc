@@ -108,6 +108,8 @@ bool WebContentsViewChildFrame::CloseTabAfterEventTrackingIfNeeded() {
 }
 #endif
 
+void WebContentsViewChildFrame::OnCapturerCountChanged() {}
+
 void WebContentsViewChildFrame::RestoreFocus() {
   NOTREACHED();
 }

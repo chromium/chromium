@@ -29,6 +29,7 @@
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
@@ -162,6 +163,7 @@ class CONTENT_EXPORT WebContentsViewAura
   void RenderViewHostChanged(RenderViewHost* old_host,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
+  void OnCapturerCountChanged() override;
 
   // Overridden from RenderViewHostDelegateView:
   void ShowContextMenu(RenderFrameHost& render_frame_host,
@@ -347,6 +349,9 @@ class CONTENT_EXPORT WebContentsViewAura
   bool drag_in_progress_;
 
   bool init_rwhv_with_null_parent_for_testing_;
+
+  // Non-null when the WebContents is being captured for video.
+  std::unique_ptr<aura::WindowTreeHost::VideoCaptureLock> video_capture_lock_;
 
   base::WeakPtrFactory<WebContentsViewAura> weak_ptr_factory_{this};
 };

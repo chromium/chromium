@@ -31,6 +31,14 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+#if defined(OS_WIN)
+#include "base/test/scoped_feature_list.h"
+#include "ui/aura/test/aura_test_utils.h"
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/ui_base_features.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -271,6 +279,50 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   ChangePageContentColor(SK_ColorGREEN);
   WaitForFrameWithColor(SK_ColorGREEN);
 }
+
+#if defined(OS_WIN)
+class WebContentsVideoCaptureDeviceBrowserTestAura
+    : public WebContentsVideoCaptureDeviceBrowserTest {
+ public:
+  // WebContentsVideoCaptureDeviceBrowserTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kApplyNativeOcclusionToCompositor,
+        {{features::kApplyNativeOcclusionToCompositorType,
+          features::kApplyNativeOcclusionToCompositorTypeApplyAndEvict}});
+
+    WebContentsVideoCaptureDeviceBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies capture still works if the WindowTreeHost is occluded.
+IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
+                       CapturesWhenOccluded) {
+  aura::WindowTreeHost* window_tree_host = shell()->window()->GetHost();
+  aura::test::DisableNativeWindowOcclusionTracking(window_tree_host);
+  NavigateToInitialDocument();
+  AllocateAndStartAndWaitForFirstFrame();
+  EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
+
+  // Make a content change in the first page and wait for capture to reflect
+  // that.
+  ChangePageContentColor(SK_ColorRED);
+  WaitForFrameWithColor(SK_ColorRED);
+
+  // Simulate the WindowTreeHost being occluded.
+  window_tree_host->SetNativeWindowOcclusionState(
+      aura::Window::OcclusionState::OCCLUDED, {});
+
+  EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
+
+  // Make a change and ensure it was captured.
+  ChangePageContentColor(SK_ColorGREEN);
+  WaitForFrameWithColor(SK_ColorGREEN);
+}
+#endif
 
 // Tests that capture is re-targetted when a renderer crash is followed by a
 // reload. Regression test for http://crbug.com/916332.

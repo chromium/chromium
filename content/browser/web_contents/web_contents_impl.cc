@@ -1975,6 +1975,8 @@ base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
   if (stay_awake)
     ++stay_awake_capturer_count_;
 
+  view_->OnCapturerCountChanged();
+
   // Note: This provides a hint to upstream code to size the views optimally
   // for quality (e.g., to avoid scaling).
   if (!capture_size.IsEmpty() && preferred_size_for_capture_.IsEmpty()) {
@@ -9122,6 +9124,8 @@ void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
 
   if (IsBeingDestroyed())
     return;
+
+  view_->OnCapturerCountChanged();
 
   const bool is_being_captured = IsBeingCaptured();
   if (!is_being_captured) {

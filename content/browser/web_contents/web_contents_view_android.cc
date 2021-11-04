@@ -260,6 +260,8 @@ void WebContentsViewAndroid::SetFocus(bool focused) {
 void WebContentsViewAndroid::SetOverscrollControllerEnabled(bool enabled) {
 }
 
+void WebContentsViewAndroid::OnCapturerCountChanged() {}
+
 void WebContentsViewAndroid::ShowContextMenu(RenderFrameHost& render_frame_host,
                                              const ContextMenuParams& params) {
   auto* rwhv = static_cast<RenderWidgetHostViewAndroid*>(

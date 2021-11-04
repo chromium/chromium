@@ -88,6 +88,7 @@ class WebContentsViewMac : public WebContentsView,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
   bool CloseTabAfterEventTrackingIfNeeded() override;
+  void OnCapturerCountChanged() override;
 
   // RenderViewHostDelegateView:
   void StartDragging(const DropData& drop_data,
