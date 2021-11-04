@@ -24,6 +24,12 @@ namespace payments {
 
 class ContentPaymentRequestDelegate;
 
+enum class SPCTransactionMode {
+  NONE,
+  AUTOACCEPT,
+  AUTOREJECT,
+};
+
 // This class owns the PaymentRequest associated with a given WebContents.
 //
 // Responsible for creating PaymentRequest's and retaining ownership. No request
@@ -63,7 +69,17 @@ class PaymentRequestWebContentsManager
       content::NavigationHandle* navigation_handle) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
+  // For test automation purposes, set the 'current transaction automation
+  // mode' for Secure Payment Confirmation. See
+  // https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
+  void SetSPCTransactionMode(SPCTransactionMode mode);
+
   base::WeakPtr<PaymentRequestWebContentsManager> GetWeakPtr();
+
+  const std::map<PaymentRequest*, std::unique_ptr<PaymentRequest>>&
+  GetPaymentRequestsForTesting() const {
+    return payment_requests_;
+  }
 
  private:
   explicit PaymentRequestWebContentsManager(content::WebContents* web_contents);
@@ -75,6 +91,10 @@ class PaymentRequestWebContentsManager
   // these requests only get destroyed when the WebContents goes away, or when
   // the requests themselves call DestroyRequest().
   std::map<PaymentRequest*, std::unique_ptr<PaymentRequest>> payment_requests_;
+
+  // The current transaction automation mode for Secure Payment Confirmation.
+  // Used in automated testing.
+  SPCTransactionMode spc_transaction_mode_;
 
   base::WeakPtrFactory<PaymentRequestWebContentsManager> weak_ptr_factory_{
       this};

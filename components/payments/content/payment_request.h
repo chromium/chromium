@@ -34,6 +34,7 @@ namespace payments {
 
 class ContentPaymentRequestDelegate;
 class PaymentRequestWebContentsManager;
+enum class SPCTransactionMode;
 
 // This class manages the interaction between the renderer (through the
 // PaymentRequestClient and Mojo stub implementation) and the desktop Payment UI
@@ -70,6 +71,7 @@ class PaymentRequest : public mojom::PaymentRequest,
                  base::WeakPtr<PaymentRequestWebContentsManager> manager,
                  base::WeakPtr<PaymentRequestDisplayManager> display_manager,
                  mojo::PendingReceiver<mojom::PaymentRequest> receiver,
+                 SPCTransactionMode spc_transaction_mode,
                  base::WeakPtr<ObserverForTest> observer_for_testing);
 
   PaymentRequest(const PaymentRequest&) = delete;
@@ -149,6 +151,9 @@ class PaymentRequest : public mojom::PaymentRequest,
 
   bool skipped_payment_request_ui() { return skipped_payment_request_ui_; }
   bool is_show_user_gesture() const { return is_show_user_gesture_; }
+  SPCTransactionMode spc_transaction_mode() const {
+    return spc_transaction_mode_;
+  }
 
   base::WeakPtr<PaymentRequestSpec> spec() { return spec_->AsWeakPtr(); }
   base::WeakPtr<PaymentRequestState> state() { return state_->AsWeakPtr(); }
@@ -248,6 +253,9 @@ class PaymentRequest : public mojom::PaymentRequest,
   // This can be opaque. Used by security features like 'Sec-Fetch-Site' and
   // 'Cross-Origin-Resource-Policy'.
   const url::Origin frame_security_origin_;
+
+  // The current SPC transaction mode; used in WPT test automation.
+  SPCTransactionMode spc_transaction_mode_;
 
   // May be null, must outlive this object.
   base::WeakPtr<ObserverForTest> observer_for_testing_;

@@ -8,7 +8,7 @@
         "options": [
             {
                 "domain": "Page",
-                "include": [ "enable", "disable", "setAdBlockingEnabled", "getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId" ],
+                "include": [ "enable", "disable", "setAdBlockingEnabled", "getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId", "setSPCTransactionMode" ],
                 "include_events": [],
                 "async": ["getInstallabilityErrors", "getManifestIcons", "printToPDF", "getAppId" ]
             },

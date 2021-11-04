@@ -30,7 +30,7 @@ TestContentPaymentRequestDelegate::GetPaymentManifestWebDataService() const {
 
 PaymentRequestDisplayManager*
 TestContentPaymentRequestDelegate::GetDisplayManager() {
-  return nullptr;
+  return &payment_request_display_manager_;
 }
 
 void TestContentPaymentRequestDelegate::ShowDialog(

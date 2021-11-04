@@ -35,7 +35,7 @@ void PaymentRequestWebContentsManager::CreatePaymentRequest(
   auto new_request = std::make_unique<PaymentRequest>(
       render_frame_host, std::move(delegate), /*manager=*/GetWeakPtr(),
       delegate->GetDisplayManager()->GetWeakPtr(), std::move(receiver),
-      observer_for_testing);
+      spc_transaction_mode_, observer_for_testing);
   PaymentRequest* request_ptr = new_request.get();
   payment_requests_.insert(std::make_pair(request_ptr, std::move(new_request)));
 }
@@ -76,6 +76,11 @@ void PaymentRequestWebContentsManager::RenderFrameDeleted(
   }
 }
 
+void PaymentRequestWebContentsManager::SetSPCTransactionMode(
+    SPCTransactionMode mode) {
+  spc_transaction_mode_ = mode;
+}
+
 base::WeakPtr<PaymentRequestWebContentsManager>
 PaymentRequestWebContentsManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -92,7 +97,8 @@ void PaymentRequestWebContentsManager::DestroyRequest(
 
 PaymentRequestWebContentsManager::PaymentRequestWebContentsManager(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      spc_transaction_mode_(SPCTransactionMode::NONE) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PaymentRequestWebContentsManager);
 

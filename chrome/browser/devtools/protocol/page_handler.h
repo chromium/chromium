@@ -44,6 +44,8 @@ class PageHandler : public protocol::Page::Backend {
   protocol::Response Enable() override;
   protocol::Response Disable() override;
   protocol::Response SetAdBlockingEnabled(bool enabled) override;
+  protocol::Response SetSPCTransactionMode(
+      const protocol::String& mode) override;
   void GetInstallabilityErrors(
       std::unique_ptr<GetInstallabilityErrorsCallback> callback) override;
 

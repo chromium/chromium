@@ -7645,6 +7645,15 @@ domain Page
   # Clears seeded compilation cache.
   experimental command clearCompilationCache
 
+  # Sets the Secure Payment Confirmation transaction mode.
+  # https://w3c.github.io/secure-payment-confirmation/#sctn-automation-set-spc-transaction-mode
+  experimental command setSPCTransactionMode
+    parameters
+      enum mode
+        none
+        autoaccept
+        autoreject
+
   # Generates a report for testing.
   experimental command generateTestReport
     parameters

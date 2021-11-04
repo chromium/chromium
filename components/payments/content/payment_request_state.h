@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/autofill/core/browser/address_normalizer.h"
 #include "components/payments/content/initialization_task.h"
 #include "components/payments/content/payment_app_factory.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -28,6 +27,7 @@
 #include "url/origin.h"
 
 namespace autofill {
+class AddressNormalizer;
 class AutofillProfile;
 class CreditCard;
 class PersonalDataManager;

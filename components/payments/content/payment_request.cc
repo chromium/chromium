@@ -73,6 +73,7 @@ PaymentRequest::PaymentRequest(
     base::WeakPtr<PaymentRequestWebContentsManager> manager,
     base::WeakPtr<PaymentRequestDisplayManager> display_manager,
     mojo::PendingReceiver<mojom::PaymentRequest> receiver,
+    SPCTransactionMode spc_transaction_mode,
     base::WeakPtr<ObserverForTest> observer_for_testing)
     : initiator_frame_routing_id_(render_frame_host->GetGlobalId()),
       log_(web_contents()),
@@ -85,6 +86,7 @@ PaymentRequest::PaymentRequest(
       frame_origin_(url_formatter::FormatUrlForSecurityDisplay(
           render_frame_host->GetLastCommittedURL())),
       frame_security_origin_(render_frame_host->GetLastCommittedOrigin()),
+      spc_transaction_mode_(spc_transaction_mode),
       observer_for_testing_(observer_for_testing),
       journey_logger_(delegate_->IsOffTheRecord(),
                       ukm::GetSourceIdForWebContentsDocument(web_contents())) {

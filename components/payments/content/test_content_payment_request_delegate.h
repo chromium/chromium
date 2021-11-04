@@ -82,6 +82,7 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
 
  private:
   TestPaymentRequestDelegate core_delegate_;
+  PaymentRequestDisplayManager payment_request_display_manager_;
 };
 
 }  // namespace payments

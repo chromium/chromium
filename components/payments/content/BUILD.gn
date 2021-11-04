@@ -230,6 +230,7 @@ source_set("unit_tests") {
       "payment_app_unittest.cc",
       "payment_request_spec_unittest.cc",
       "payment_request_state_unittest.cc",
+      "payment_request_web_contents_manager_unittest.cc",
       "payment_response_helper_unittest.cc",
       "secure_payment_confirmation_app_unittest.cc",
       "service_worker_payment_app_unittest.cc",
