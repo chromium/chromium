@@ -1,8 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.infobar;
+package org.chromium.chrome.browser.permissions;
 
 import android.Manifest;
 import android.support.test.InstrumentationRegistry;
@@ -20,18 +20,19 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.messages.MessageContainer;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -43,25 +44,21 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests for the permission update infobar.
+ * Tests for the permission update message.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_PERMISSION_UPDATE})
-public class PermissionUpdateInfobarTest {
+@EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_PERMISSION_UPDATE})
+public class PermissionUpdateMessageTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String GEOLOCATION_PAGE =
             "/chrome/test/data/geolocation/geolocation_on_load.html";
-    private static final String GEOLOCATION_IFRAME_PAGE =
-            "/chrome/test/data/geolocation/geolocation_iframe_on_load.html";
 
-    private InfoBarTestAnimationListener mListener;
     private EmbeddedTestServer mTestServer;
 
     @Before
@@ -75,31 +72,20 @@ public class PermissionUpdateInfobarTest {
         mTestServer.stopAndDestroyServer();
     }
 
-    // Ensure destroying the permission update infobar does not crash when handling geolocation
+    // Ensure destroying the permission update message UI does not crash when handling geolocation
     // permissions.
     @Test
     @MediumTest
-    public void testInfobarShutsDownCleanlyForGeolocation()
+    public void testMessageShutsDownCleanlyForGeolocation()
             throws IllegalArgumentException, TimeoutException {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
-        // Register for animation notifications
-        CriteriaHelper.pollInstrumentationThread(
-                () -> mActivityTestRule.getInfoBarContainer() != null);
-        InfoBarContainer container = mActivityTestRule.getInfoBarContainer();
-        mListener =  new InfoBarTestAnimationListener();
-        TestThreadUtils.runOnUiThreadBlocking(() -> container.addAnimationListener(mListener));
-
         final String locationUrl = mTestServer.getURL(GEOLOCATION_PAGE);
-        final PermissionInfo geolocationSettings =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<PermissionInfo>() {
-                    @Override
-                    public PermissionInfo call() {
-                        return new PermissionInfo(
-                                ContentSettingsType.GEOLOCATION, locationUrl, null, false);
-                    }
-                });
+        final PermissionInfo geolocationSettings = TestThreadUtils.runOnUiThreadBlockingNoException(
+                ()
+                        -> new PermissionInfo(
+                                ContentSettingsType.GEOLOCATION, locationUrl, null, false));
 
         mActivityTestRule.getActivity().getWindowAndroid().setAndroidPermissionDelegate(
                 new TestAndroidPermissionDelegate(
@@ -114,18 +100,17 @@ public class PermissionUpdateInfobarTest {
                                     ContentSettingValues.ALLOW));
 
             mActivityTestRule.loadUrl(mTestServer.getURL(GEOLOCATION_PAGE));
-            mListener.addInfoBarAnimationFinished("InfoBar not added");
-            Assert.assertEquals(1, mActivityTestRule.getInfoBars().size());
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> mActivityTestRule.getActivity().findViewById(R.id.message_container));
+            MessageContainer container =
+                    (MessageContainer) mActivityTestRule.getActivity().findViewById(
+                            R.id.message_container);
 
-            final WebContents webContents =
-                    TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<WebContents>() {
-                        @Override
-                        public WebContents call() {
-                            return mActivityTestRule.getActivity()
-                                    .getActivityTab()
-                                    .getWebContents();
-                        }
-                    });
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> container.getChildCount() > 0, "Message is not enqueued.");
+
+            final WebContents webContents = TestThreadUtils.runOnUiThreadBlockingNoException(
+                    () -> mActivityTestRule.getActivity().getActivityTab().getWebContents());
             Assert.assertFalse(webContents.isDestroyed());
 
             ChromeTabUtils.closeCurrentTab(
@@ -153,16 +138,16 @@ public class PermissionUpdateInfobarTest {
         private final Set<String> mRequestablePermissions;
         private final Set<String> mPolicyRevokedPermissions;
 
-        public TestAndroidPermissionDelegate(
-                List<String> hasPermissions,
-                List<String> requestablePermissions,
-                List<String> policyRevokedPermissions) {
-            mHasPermissions = new HashSet<>(hasPermissions == null
-                    ? new ArrayList<String>() : hasPermissions);
-            mRequestablePermissions = new HashSet<>(requestablePermissions == null
-                    ? new ArrayList<String>() : requestablePermissions);
-            mPolicyRevokedPermissions = new HashSet<>(policyRevokedPermissions == null
-                    ? new ArrayList<String>() : policyRevokedPermissions);
+        public TestAndroidPermissionDelegate(List<String> hasPermissions,
+                List<String> requestablePermissions, List<String> policyRevokedPermissions) {
+            mHasPermissions = new HashSet<>(
+                    hasPermissions == null ? new ArrayList<String>() : hasPermissions);
+            mRequestablePermissions =
+                    new HashSet<>(requestablePermissions == null ? new ArrayList<String>()
+                                                                 : requestablePermissions);
+            mPolicyRevokedPermissions =
+                    new HashSet<>(policyRevokedPermissions == null ? new ArrayList<String>()
+                                                                   : policyRevokedPermissions);
         }
 
         @Override
@@ -181,8 +166,7 @@ public class PermissionUpdateInfobarTest {
         }
 
         @Override
-        public void requestPermissions(String[] permissions, PermissionCallback callback) {
-        }
+        public void requestPermissions(String[] permissions, PermissionCallback callback) {}
 
         @Override
         public boolean handlePermissionResult(

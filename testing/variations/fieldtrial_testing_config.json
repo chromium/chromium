@@ -526,6 +526,21 @@
             ]
         }
     ],
+    "AndroidMessagesPermissionUpdate": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MessagesForAndroidPermissionUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMessagesPopupBlocked": [
         {
             "platforms": [

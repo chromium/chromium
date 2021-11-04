@@ -391,6 +391,8 @@ public abstract class ChromeFeatureList {
             "MessagesForAndroidChromeSurvey";
     public static final String MESSAGES_FOR_ANDROID_INFRASTRUCTURE =
             "MessagesForAndroidInfrastructure";
+    public static final String MESSAGES_FOR_ANDROID_PERMISSION_UPDATE =
+            "MessagesForAndroidPermissionUpdate";
     public static final String MESSAGES_FOR_ANDROID_READER_MODE = "MessagesForAndroidReaderMode";
     public static final String MESSAGES_FOR_ANDROID_REDUCE_LAYOUT_CHANGES =
             "MessagesForAndroidReduceLayoutChanges";
