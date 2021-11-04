@@ -2,11 +2,9 @@
 
 #include <utility>
 #include "base/base64.h"
-#include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 
 namespace crdtp {
