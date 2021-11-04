@@ -27,8 +27,10 @@ namespace lens {
 
 // Spec states a font size of 14px.
 constexpr int kTextFontSize = 14;
+constexpr int kCloseButtonExtraMargin = 4;
 constexpr int kCloseButtonSize = 17;
 constexpr int kCornerRadius = 18;
+constexpr int kLabelExtraLeftMargin = 2;
 
 LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
     views::View* anchor_view,
@@ -65,11 +67,13 @@ void LensRegionSearchInstructionsView::Init() {
       layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_LABEL_BUTTON)
           .top(),
       layout_provider->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL),
+          views::DistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL) +
+          kLabelExtraLeftMargin,
       layout_provider->GetInsetsMetric(views::InsetsMetric::INSETS_LABEL_BUTTON)
           .bottom(),
       layout_provider->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_CLOSE_BUTTON_MARGIN)));
+          views::DistanceMetric::DISTANCE_CLOSE_BUTTON_MARGIN) +
+          kCloseButtonExtraMargin));
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_close_on_deactivate(false);
   set_corner_radius(kCornerRadius);
@@ -88,6 +92,8 @@ void LensRegionSearchInstructionsView::Init() {
   AddChildView(std::move(label));
 
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  close_button_->SetProperty(views::kMarginsKey,
+                             gfx::Insets(0, kCloseButtonExtraMargin, 0, 0));
   AddChildView(std::move(close_button_));
 }
 
