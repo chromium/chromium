@@ -6,31 +6,44 @@ package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.os.Build;
 import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.content_creation.reactions.LightweightReactionsMediator.GifGeneratorHost;
 import org.chromium.chrome.browser.content_creation.reactions.scene.SceneCoordinator;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarControlsDelegate;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
+import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.components.content_creation.reactions.ReactionService;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Responsible for reactions main UI and its subcomponents.
  */
 public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinator
         implements LightweightReactionsCoordinator, ToolbarControlsDelegate {
+    private static final String GIF_MIME_TYPE = "image/gif";
+
     private final ReactionService mReactionService;
     private final LightweightReactionsMediator mMediator;
     private final LightweightReactionsDialog mDialog;
@@ -119,6 +132,27 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
         mToolbarCoordinator.initReactions(mAvailableReactions, mThumbnails);
     }
 
+    /**
+     * Creates the share sheet title based on a localized title and the current date formatted for
+     * the user's preferred locale.
+     */
+    private String getShareSheetTitle() {
+        Date now = new Date(System.currentTimeMillis());
+        String currentDateString =
+                DateFormat.getDateInstance(DateFormat.SHORT, getPreferredLocale()).format(now);
+        // TODO(crbug.com/1213923): get final string from UX, and localize it here.
+        return "Generated GIF " + currentDateString;
+    }
+
+    /**
+     * Retrieves the user's preferred locale from the app's configurations.
+     */
+    private Locale getPreferredLocale() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                ? mActivity.getResources().getConfiguration().getLocales().get(0)
+                : mActivity.getResources().getConfiguration().locale;
+    }
+
     // LightweightReactionsCoordinator implementation.
     @Override
     public void showDialog() {
@@ -141,7 +175,35 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
 
     @Override
     public void doneButtonTapped() {
-        // For now, simply dismiss the dialog.
-        mDialog.dismiss();
+        GifGeneratorHost gifHost = new GifGeneratorHost() {
+            @Override
+            public void prepareFrame(Callback<Void> cb) {
+                mSceneCoordinator.stepReactions(cb);
+            }
+
+            @Override
+            public void drawFrame(Canvas canvas) {
+                mSceneCoordinator.drawScene(canvas);
+            }
+        };
+
+        mMediator.generateGif(gifHost, mSceneCoordinator.getFrameCount(),
+                mSceneCoordinator.getWidth(), mSceneCoordinator.getHeight(), (imageUri) -> {
+                    final String sheetTitle = getShareSheetTitle();
+                    ShareParams params =
+                            new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, mShareUrl)
+                                    .setFileUris(
+                                            new ArrayList<>(Collections.singletonList(imageUri)))
+                                    .setFileContentType(GIF_MIME_TYPE)
+                                    .build();
+
+                    long shareStartTime = System.currentTimeMillis();
+                    ChromeShareExtras extras =
+                            new ChromeShareExtras.Builder().setSkipPageSharingActions(true).build();
+
+                    // Dismiss current dialog before showing the share sheet.
+                    mDialog.dismiss();
+                    mChromeOptionShareCallback.showShareSheet(params, extras, shareStartTime);
+                });
     }
 }

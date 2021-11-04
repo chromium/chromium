@@ -73,8 +73,9 @@ public class ReactionGifDrawable extends BaseGifDrawable {
         // A frame has just been decoded. If stepping is enabled, notify the listener that a step
         // has completed.
         if (mSteppingEnabled && mStepCallback != null) {
-            mStepCallback.onResult(null);
+            org.chromium.base.Callback<Void> cb = mStepCallback;
             mStepCallback = null;
+            cb.onResult(null);
         }
     }
 

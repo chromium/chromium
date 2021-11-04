@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.content_creation.reactions.scene;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.widget.RelativeLayout;
 
 import org.chromium.base.Callback;
@@ -20,6 +21,8 @@ import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.ViewUtils;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -102,6 +105,44 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                 }
             });
         }
+    }
+
+    /**
+     * Returns the frame count of the reaction with the most frames among those currently added to
+     * the scene.
+     */
+    public int getFrameCount() {
+        if (mReactionLayouts.size() == 0) {
+            // If there are no reactions in the scene, return a frame count of 1 for the screenshot
+            // background.
+            return 1;
+        }
+
+        ReactionLayout maxFramesLayout =
+                Collections.max(mReactionLayouts, new Comparator<ReactionLayout>() {
+                    @Override
+                    public int compare(ReactionLayout rl1, ReactionLayout rl2) {
+                        return Integer.compare(rl1.getReaction().getMetadata().frameCount,
+                                rl2.getReaction().getMetadata().frameCount);
+                    }
+                });
+
+        return maxFramesLayout.getReaction().getMetadata().frameCount;
+    }
+
+    public int getWidth() {
+        return mSceneBackground.getWidth();
+    }
+
+    public int getHeight() {
+        return mSceneBackground.getHeight();
+    }
+
+    /**
+     * Draws the scene view to the provided canvas.
+     */
+    public void drawScene(Canvas canvas) {
+        mSceneBackground.draw(canvas);
     }
 
     private void replaceActiveReaction(ReactionMetadata reaction) {
