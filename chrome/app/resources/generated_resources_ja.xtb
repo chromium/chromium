@@ -1469,6 +1469,7 @@
 <translation id="2489686758589235262">スイッチを 2 つ追加で割り当てる</translation>
 <translation id="2489829450872380594">次回から、新しいスマートフォンでこの <ph name="DEVICE_TYPE" /> のロックを解除できます。Smart Lock を無効にするには [設定] をご利用ください。</translation>
 <translation id="2489918096470125693">フォルダを追加(&amp;F)...</translation>
+<translation id="2489931062851778802"><ph name="DEVICE_NAME" /> で次のキーを入力してください</translation>
 <translation id="2490481887078769936">「<ph name="FILE_NAME" />」をリストから削除しました</translation>
 <translation id="249113932447298600">デバイス <ph name="DEVICE_LABEL" /> は現在サポートされていません。</translation>
 <translation id="2492461744635776704">証明書の署名のリクエストを準備しています</translation>
@@ -2224,11 +2225,13 @@
 <translation id="3288047731229977326">デベロッパー モードで実行される拡張機能はパソコンにダメージを与える恐れがあります。デベロッパーでない場合は、安全のため、デベロッパー モードで実行されているこれらの拡張機能を無効にしてください。</translation>
 <translation id="3289668031376215426">自動大文字変換</translation>
 <translation id="3289856944988573801">アップデートの有無を確認するには、イーサネットまたは Wi-Fi を使用してください。</translation>
+<translation id="3290249595466894471">また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します</translation>
 <translation id="3291436823898732747">ブラウジング機能が向上: たとえば、アドレスバーで文字を入力し始める前に検索候補が表示されます</translation>
 <translation id="3293644607209440645">このページを送信</translation>
 <translation id="32939749466444286">Linux コンテナを起動できませんでした。もう一度お試しください。</translation>
 <translation id="3294437725009624529">ゲスト</translation>
 <translation id="3294686910656423119">使用統計データと障害レポート</translation>
+<translation id="3297536526040732495">ログイン時には、このデータを一時的に Google アカウントにリンクして、すべての Google アプリを安全に利用できるように保護します</translation>
 <translation id="329838636886466101">修復</translation>
 <translation id="3298789223962368867">入力された URL が無効です。</translation>
 <translation id="32991397311664836">デバイス:</translation>
@@ -4333,6 +4336,7 @@
 <translation id="5554489410841842733">このアイコンは、ページで拡張機能が使用できる場合に表示されます。</translation>
 <translation id="5554720593229208774">メール認証局</translation>
 <translation id="5555363196923735206">カメラを切り替え</translation>
+<translation id="5555525474779371165">セーフ ブラウジングの保護設定を選択してください</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5558125320634132440">このサイトは成人向けコンテンツを含んでいる可能性があるためブロックされました</translation>
 <translation id="5558129378926964177">拡大(&amp;I)</translation>
@@ -5699,6 +5703,7 @@
 <translation id="7027258625819743915">{COUNT,plural, =0{すべてをシークレット ウィンドウで開く(&amp;I)}=1{シークレット ウィンドウで開く(&amp;I)}other{すべて（{COUNT} 個）をシークレット ウィンドウで開く(&amp;I)}}</translation>
 <translation id="7029307918966275733">Crostini はインストールされていません。クレジットを表示するには Crostini をインストールしてください。</translation>
 <translation id="7029809446516969842">パスワード</translation>
+<translation id="7030304022046916278">セーフ ブラウジングに URL を送信して安全性を確認します</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - シリアルポートを接続しました</translation>
 <translation id="7034692021407794547">「お支払いの管理」権限のある管理者は、まず管理コンソールの [Google Meet ハードウェア] で Google Meet ハードウェアの利用規約に同意する必要があります。</translation>
 <translation id="7036706669646341689">Linux 用の推奨される空き容量は <ph name="DISK_SIZE" /> です。空き容量を増やすには、デバイスからファイルを削除してください。</translation>
@@ -5879,7 +5884,6 @@
 <translation id="7243784282103630670">Linux のアップグレード中にエラーが発生しました。バックアップを使用してコンテナを復元します。</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />（最適）</translation>
 <translation id="7246230585855757313">セキュリティ キーを挿入し直して、もう一度お試しください</translation>
-<translation id="7249777306773517303">このデバイスは <ph name="DOMAIN" /> によって管理されています。使用するには毎回ログインする必要があります。</translation>
 <translation id="7250616558727237648">共有先のデバイスから応答がありませんでした。もう一度お試しください。</translation>
 <translation id="725109152065019550">このアカウントでの外部ストレージの使用は、管理者によって無効にされています。</translation>
 <translation id="7251346854160851420">デフォルトの壁紙</translation>

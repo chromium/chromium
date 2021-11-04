@@ -58,6 +58,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2885378588091291677">Správca úloh</translation>
 <translation id="2910007522516064972">Informácie o prehliadači &amp;Chromium</translation>
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
+<translation id="2977506796191543575">Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chromium môže odoslať Bezpečnému prehliadaniu aj webové adresy vrátane častí obsahu stránok</translation>
 <translation id="2983934633046890458">Chromium sa pokúša upraviť heslá.</translation>
 <translation id="3032706164202344641">Chromium nemôže skontrolovať heslá. Skúste to neskôr.</translation>
 <translation id="3032787606318309379">Pridáva sa do prehliadača Chromium...</translation>
@@ -169,6 +170,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="6212496753309875659">Tento počítač už obsahuje novšiu verziu prehliadača Chromium. Ak softvér nefunguje, odinštalujte prehliadač Chromium a skúste to znova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sa teraz reštartuje}=1{Chromium sa reštartuje o 1 sekundu}few{Chromium sa reštartuje o # sekundy}many{Chromium sa reštartuje o # sekundy}other{Chromium sa reštartuje o # sekúnd}}</translation>
 <translation id="6241367896540709610">Chromium vyžaduje na sťahovanie súborov povolený prístup k úložisku</translation>
+<translation id="6245734527075554892">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v prehliadači Chromium</translation>
 <translation id="6248213926982192922">Nastavte Chromium ako svoj predvolený prehliadač</translation>
 <translation id="6266342355635466082">Chromium nemôže skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>

@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">ดูข้อมูลเกี่ยวกับหัวข้อในเว็บไซต์โดยไม่ต้องออกจากหน้า การแตะเพื่อค้นหาจะส่งคำและบริบทที่อยู่ข้างเคียงไปยัง Google Search เพื่อแสดงคำจำกัดความ รูปภาพ ผลการค้นหา และรายละเอียดอื่นๆ
 
 แตะคำใดก็ได้ค้างไว้เพื่อค้นหา หากต้องการปรับแต่งการค้นหา ให้เลือกคำมากขึ้นหรือน้อยลง หากต้องการแก้ไขการค้นหา ให้เปิดแผงแล้วแตะไอคอนเพื่อเปิดในแท็บใหม่ จากนั้นทำการเปลี่ยนแปลงในช่องค้นหา</translation>
+<translation id="2451607499823206582">การติดตาม</translation>
 <translation id="2459390580524506445">การค้นหาด้วยเสียงที่ได้รับการปรับปรุง</translation>
 <translation id="2461822463642141190">ปัจจุบัน</translation>
 <translation id="247737702124049222">คำอธิบายรูปภาพเปิดอยู่</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">ซ่อนเนื้อหาในคลิปบอร์ด</translation>
 <translation id="2532336938189706096">มุมมองเว็บ</translation>
 <translation id="2534155362429831547">ลบแล้ว <ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
+<translation id="2534582914273493287">URL ที่คุณเข้าชมจะส่งไปยัง Google</translation>
 <translation id="2536728043171574184">ดูสำเนาแบบออฟไลน์ของหน้านี้</translation>
 <translation id="2546283357679194313">คุกกี้และข้อมูลเว็บไซต์</translation>
 <translation id="2561519700418191927">ตัวอย่างวิดีโอ</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">บันทึกลงในอุปกรณ์</translation>
 <translation id="3236059992281584593">เหลือ 1 นาที</translation>
 <translation id="3244271242291266297">ดด</translation>
+<translation id="3245429137663807393">หากคุณแชร์รายงานการใช้งาน Chrome ด้วย รายงานดังกล่าวจะรวม URL ที่คุณเข้าชม</translation>
 <translation id="3250563604907490871">คำอธิบายรูปภาพจะกลับมาแสดงเมื่อคุณเชื่อมต่อ Wi-Fi</translation>
 <translation id="3254409185687681395">บุ๊กมาร์กหน้านี้</translation>
 <translation id="3259831549858767975">ย่อรายละเอียดทั้งหมดบนหน้า</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">โฟลเดอร์</translation>
 <translation id="3542235761944717775">ใช้ได้ <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">ค้นหาประวัติการเข้าชม</translation>
+<translation id="3557272988124495906">รับการแจ้งเตือนการลดราคา</translation>
 <translation id="3557336313807607643">เพิ่มในรายชื่อติดต่อ</translation>
 <translation id="3563767357928833671">เนื้อหาในคลิปบอร์ดแสดงขึ้น</translation>
 <translation id="3566923219790363270">Chrome ยังคงเตรียมความพร้อมสำหรับ VR อยู่ รีสตาร์ท Chrome ภายหลัง</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">ส่งไปยังอุปกรณ์</translation>
 <translation id="3778956594442850293">เพิ่มในหน้าจอหลักแล้ว</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 แท็บ}other{# แท็บ}}</translation>
+<translation id="3803783897442799486">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการ<ph name="END_LINK1" />\nChrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK2" />จัดการ<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">จัดการการเล่นอัตโนมัติ</translation>
 <translation id="3810838688059735925">วิดีโอ</translation>
 <translation id="3810973564298564668">จัดการ</translation>
@@ -606,6 +611,7 @@
 <translation id="47217992755561375">ดูเว็บไซต์ยอดนิยม</translation>
 <translation id="4732120983431207637">ตัวคลายสแต็ก</translation>
 <translation id="4738836084190194332">ซิงค์ครั้งล่าสุด: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">คุณจะได้รับคำแนะนำที่ดีขึ้นในแถบที่อยู่</translation>
 <translation id="4742970037960872810">นำไฮไลต์ออก</translation>
 <translation id="4749960740855309258">เปิดแท็บใหม่</translation>
 <translation id="4758061975920522644">แชร์รูปภาพเท่านั้น</translation>
@@ -1173,6 +1179,7 @@
 <translation id="7975379999046275268">พรีวิวหน้า <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">โหลดหน้าเว็บล่วงหน้าเพื่อให้เรียกดูและค้นหาได้เร็วขึ้น</translation>
 <translation id="7986497153528221272">หากต้องการดูรหัสผ่าน ให้ตั้งค่าการล็อกหน้าจอในอุปกรณ์ก่อน</translation>
+<translation id="799576009106109668">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>
 <translation id="7998918019931843664">เปิดแท็บที่ปิดไปแล้วขึ้นใหม่</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
 <translation id="8013372441983637696">ล้างข้อมูล Chrome ของคุณออกจากอุปกรณ์นี้ด้วย</translation>
@@ -1220,6 +1227,7 @@
 <translation id="8218052821161047641">หน้าที่โหลดเร็ว</translation>
 <translation id="8218622182176210845">จัดการบัญชีของคุณ</translation>
 <translation id="8223642481677794647">เมนูของการ์ดฟีด</translation>
+<translation id="8242868071038398515">คุณจะได้รับแจ้งหากมีการลดราคาในเว็บไซต์ใดก็ตาม</translation>
 <translation id="8250920743982581267">เอกสาร</translation>
 <translation id="825412236959742607">หน้านี้ใช้หน่วยความจำมากเกินไป Chrome จึงนำเนื้อหาบางส่วนออก</translation>
 <translation id="8260126382462817229">ลองลงชื่อเข้าใช้อีกครั้ง</translation>
@@ -1238,6 +1246,7 @@
 <translation id="8354977102499939946">ค้นหาด้วยเสียงอย่างรวดเร็ว ไปที่การตั้งค่าเพื่อแก้ไขทางลัดนี้</translation>
 <translation id="835847953965672673">คืนค่าการดาวน์โหลด <ph name="NUMBER_OF_DOWNLOADS" /> รายการแล้ว</translation>
 <translation id="8364299278605033898">ดูเว็บไซต์ยอดนิยม</translation>
+<translation id="8368001212524806591">ติดตามราคา</translation>
 <translation id="8387617938027387193">ยืนยันว่าเป็นคุณ</translation>
 <translation id="8393700583063109961">ส่งข้อความ</translation>
 <translation id="8410695015584479363">ติดตามราคา</translation>

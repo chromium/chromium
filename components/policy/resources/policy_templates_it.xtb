@@ -679,15 +679,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, l'host di assistenza remota viene eseguito nel contesto dell'utente e gli utenti remoti non possono interagire con finestre con privilegi più elevati sul desktop.</translation>
 <translation id="1837165432382702436">L'altezza della pagina in micron.</translation>
-<translation id="1839278886947586809">
-      Questo criterio non è più necessario poiché WebDriver è ora compatibile con tutti i criteri esistenti ed è stato pertanto rimosso da M80.
-
-      Questo criterio consente agli utenti della funzionalità WebDriver di eseguire l'override dei criteri che possono interferire con il relativo funzionamento.
-
-      Al momento questo criterio disattiva i criteri SitePerProcess e IsolateOrigins.
-
-      Se il criterio è attivato, WebDriver potrà eseguire l'override dei criteri non compatibili.
-      Se il criterio è disattivato o non configurato, WebDriver non potrà eseguire l'override dei criteri non compatibili.</translation>
 <translation id="1843117931376765605">Frequenza di aggiornamento criteri relativi agli utenti</translation>
 <translation id="1844620919405873871">Consente di configurare le norme relative allo sblocco rapido.</translation>
 <translation id="1844972978764975668">Consenti query al server di Google per recuperare un timestamp accurato</translation>
@@ -1322,15 +1313,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
        Se non viene configurato, la variazione dei picchi energetici rimane disattivata.</translation>
 <translation id="2502467045153796624">Comportamento del downgrade del canale</translation>
-<translation id="2505351097561237268">
-      Il criterio relativo alle autorizzazioni dell'acquisizione ottiene l'accesso a getDisplayMedia() tramite questa specifica: https://www.w3.org/TR/screen-capture/#feature-policy-integration
-Tuttavia, se questo criterio è Disattivato, questo requisito non viene applicato, e getDisplayMedia() è autorizzato da contesti che altrimenti sarebbero proibiti. Questo criterio aziendale è temporaneo, è destinato a essere rimosso dopo la versione 100 di <ph name="PRODUCT_NAME" />.
-      Ha lo scopo di sbloccare gli utenti Enterprise la cui applicazione non è conforme alle specifiche, ma ha bisogno di tempo per essere riparata.
-
-      Quando attivato o non impostato, i siti possono chiamare getDisplayMedia() solo da contesti che sono stati aggiunti alla lista consentita dal criterio relativo alle autorizzazioni dell'acquisizione.
-
-      Quando disattivato, i siti possono chiamare getDisplayMedia() anche da contesti che non sono stati aggiunti alla lista consentita dal criterio relativo alle autorizzazioni dell'acquisizione.
-      Tieni presente che potrebbero essere applicate altre limitazioni.</translation>
 <translation id="250670737672448119">Consente di attivare la funzione di accessibilità di evidenziazione del cursore di testo.
 
           Questa funzione consente di evidenziare l'area che circonda il cursore di testo durante la modifica.
@@ -2540,11 +2522,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
           Se questo criterio non viene impostato, inizialmente i tasti permanenti sono disattivati nella schermata di accesso, ma l'utente può attivarli in qualsiasi momento.</translation>
 <translation id="3927291637826333102">Consenti acquisizione schermate desktop, schede e finestre in base a queste origini</translation>
-<translation id="3932553013632130433">
-      Consente di specificare se è possibile usare SharedArrayBuffers in un contesto senza isolamento multiorigine. Chrome richiede l'isolamento multiorigine se SharedArrayBuffers viene usato con Chrome 91 o versioni successive (dal 25/05/2021) per motivi di compatibilità web. Ulteriori dettagli sono disponibili all'indirizzo:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.
-      Se questo criterio viene impostato su Vero, i siti possono usare SharedArrayBuffer senza limitazioni.
-      Se viene impostato su Falso o se non viene configurato, i siti possono usare SharedArrayBuffers soltanto con isolamento multiorigine.</translation>
 <translation id="3942041691320538491">Se il criterio è impostato su 0 (valore predefinito), è possibile accedere agli strumenti per sviluppatori e alla console JavaScript, ma non se ci sono estensioni installate in base alle norme aziendali. Se il criterio è impostato su 1, è possibile accedere agli strumenti per sviluppatori e alla console JavaScript in ogni caso, anche se ci sono estensioni installate in base alle norme aziendali. Se il criterio è impostato su 2, non è possibile accedere agli strumenti per sviluppatori, né esaminare gli elementi del sito web.
 
       Questa impostazione disattiva anche le scorciatoie da tastiera e le voci dei menu o dei menu contestuali per aprire gli strumenti per sviluppatori o la console JavaScript.</translation>
@@ -2998,16 +2975,6 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
       Per una spiegazione completa, visita la pagina https://www.chromestatus.com/feature/5675755719622656.
       Se questo criterio viene attivato, sarà possibile contemporaneamente navigare nei siti e aprire nuove finestre/schede.
       Se questo criterio viene disattivato o se non viene configurato, non sarà possibile contemporaneamente navigare nei siti e aprire nuove finestre/schede.</translation>
-<translation id="4574215366111396039">Chrome bloccherà le navigazioni verso protocolli esterni all'interno di iframe con sandbox. Visita la pagina https://chromestatus.com/features/5680742077038592.
-
-      Quando il valore è Vero, Chrome può bloccare queste navigazioni.
-
-      Quando il valore è Falso, Chrome non può bloccare queste navigazioni.
-
-      Il valore predefinito è Vero, ossia la funzionalità di sicurezza è attiva.
-
-      Questo criterio può essere utilizzato dagli amministratori che hanno bisogno di più tempo per aggiornare i siti web interni interessati da questa nuova restrizione. Questo criterio aziendale è temporaneo ed è destinato a essere rimosso dopo la versione 104 di <ph name="PRODUCT_NAME" />.
-      </translation>
 <translation id="4578265298946081589">Non riavviare all'uscita dell'utente.</translation>
 <translation id="4581507927311097234">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene disattivato.</translation>
 <translation id="4582338216073557489">Se il criterio viene impostato su Nessuno, <ph name="PRODUCT_NAME" /> usa la dimensione predefinita della cache per l'archiviazione dei file memorizzati nella cache sul disco. Gli utenti non possono modificare l'impostazione.
@@ -4201,18 +4168,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
 <translation id="606742564823687992">Non vengono segnalati i processi di stampa</translation>
-<translation id="6070374129526507093">Criterio ritirato nella versione M69. Usa il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
-
-Questo criterio consente di specificare un elenco di origini (URL) o di pattern di nomi host (ad esempio "*.example.com") a cui non vengono applicate limitazioni di sicurezza previste per le origini non sicure.
-
-Lo scopo è consentire alle organizzazioni di autorizzare le origini per le applicazioni precedenti che non possono eseguire il deployment di TLS o di configurare un server di gestione temporanea per gli sviluppi web interni, affinché gli sviluppatori possano testare le funzionalità che richiedono contesti sicuri senza dover eseguire il deployment di TLS sul server di gestione temporanea. Questo criterio impedisce inoltre che l'origine venga contrassegnata come "Non sicura" nella omnibox.
-
-L'impostazione di un elenco di URL in questo criterio ha lo stesso effetto dell'impostazione del flag della riga di comando "--unsafely-treat-insecure-origin-as-secure" in un elenco separato da virgole degli stessi URL. Se viene impostato, questo criterio sovrascrive il flag della riga di comando.
-
-Questo criterio è stato ritirato nella versione M69 ed è stato sostituito dal criterio OverrideSecurityRestrictionsOnInsecureOrigin. Se sono presenti entrambi i criteri, viene usato il criterio OverrideSecurityRestrictionsOnInsecureOrigin.
-
-Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.org/TR/secure-contexts/.
-      </translation>
 <translation id="6070667616071269965">Layout da tastiera della schermata di accesso del dispositivo</translation>
 <translation id="6074963268421707432">Non consentire la visualizzazione di notifiche desktop da parte dei siti</translation>
 <translation id="6074964551275531965">Imposta il periodo di tempo per le notifiche relative agli aggiornamenti</translation>
@@ -4346,19 +4301,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Per informazioni dettagliate su <ph name="CORS" />, visita la pagina <ph name="CORS_HELP_URL" />.
 
       Tieni presente che, nonostante sia stata comunicata la rimozione di questo criterio nella versione 82 di <ph name="PRODUCT_NAME" />, il criterio è stato rimosso nella versione 84.</translation>
-<translation id="6276624383311206185">
-      Consente di specificare se i moduli WebAssembly possono essere inviati a un'altra finestra o
-      un altro worker tra origini. La condivisione di moduli WebAssembly tra origini sarà
-      deprecata come parte dell'impegno per il ritiro di document.domain, vedi
-      https://github.com/mikewest/deprecating-document-domain. Questo criterio
-      consente di riattivare la condivisione di moduli WebAssembly tra origini per offrire
-      un periodo di transizione più lungo nel contesto del processo di ritiro.
-
-      Se questo criterio viene impostato su Vero, i siti possono inviare i moduli WebAssembly anche tra origini
-      senza restrizioni.
-
-      Se viene impostato su Falso o se non viene configurato, i siti possono inviare moduli WebAssembly solo a
-      finestre e worker nella stessa origine.</translation>
 <translation id="6277314550042130537">Utilizza l'approvazione del criterio KDC durante l'autenticazione HTTP</translation>
 <translation id="6279722058145292462">La configurazione del criterio consente di specificare la frequenza in giorni con cui un client modifica la password dell'account della propria macchina. La password viene generata automaticamente dal client e non può essere visualizzata dall'utente. Se il criterio viene disattivato o se viene impostato su un numero alto di giorni, la sicurezza potrebbe risentirne, poiché i potenziali utenti malintenzionati hanno più tempo a disposizione per scoprire e utilizzare la password dell'account della macchina.
 

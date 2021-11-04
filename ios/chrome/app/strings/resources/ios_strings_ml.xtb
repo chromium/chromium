@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">ഡാറ്റ നിലനിർത്തുക</translation>
 <translation id="1974060860693918893">നൂതനം</translation>
 <translation id="1989112275319619282">ബ്രൗസ് ചെയ്യുക</translation>
+<translation id="199425419756152024">പാസ്‌വേഡ് കാണുക</translation>
 <translation id="2015722694326466240">പാസ്‍വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="2021670401941426298">ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള തിരയൽ യന്ത്രത്തിന്റെ നിർദ്ദേശങ്ങൾ കാണുക.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">1 എടുത്തു</translation>
 <translation id="2421004566762153674">മൂന്നാം കക്ഷി കുക്കികളെ ബ്ലോക്ക് ചെയ്യുന്നു</translation>
 <translation id="2421044535038393232">എഡിറ്റ് ചെയ്യുന്നത് തുടരുക</translation>
+<translation id="2434405374328098816">നിങ്ങൾ "<ph name="USERNAME" />" എന്നതിനുള്ള പാസ്‍വേഡ് <ph name="WEBSITE" /> എന്ന വെബ്സൈറ്റിൽ മുമ്പേ സംരക്ഷിച്ചു</translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
+<translation id="2473876017985765807"><ph name="WEBSITE" /> എന്നതിനുള്ള പാസ്‌വേഡ് നിങ്ങൾ മുമ്പേ സംരക്ഷിച്ചു</translation>
 <translation id="2476359652512522418">തിരഞ്ഞെടുത്തിട്ടില്ല</translation>
 <translation id="2497852260688568942">നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്റർ സമന്വയിപ്പിക്കൽ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="2500374554657206846">പാസ്‌വേഡ് സംരക്ഷിക്കാനുള്ള ഓപ്‌ഷനുകൾ</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">ലിങ്ക് URL പകർത്തുക</translation>
 <translation id="3607167657931203000">സ്വയമേവ പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="3609785682760573515">സമന്വയിപ്പിക്കുന്നു...</translation>
+<translation id="3631443864840848029">ഈ സൈറ്റിനുള്ള നിങ്ങളുടെ നിലവിലെ പാസ്‌വേഡ് സംരക്ഷിക്കുന്നുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="3638472932233958418">മുമ്പ് ലോഡുചെയ്‌ത വെബ്‌പേജുകൾ</translation>
 <translation id="3661160521073045932">കോൺഫിഗറേഷൻ പ്രൊഫൈൽ ലഭ്യമാണ്</translation>
 <translation id="3670030362669914947">നമ്പർ</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> ഫോൾഡറിലേക്ക് ബുക്ക്മാർക്ക് ചെയ്‌തു</translation>
+<translation id="369349502275246497">പാസ്‌വേഡുകൾ സംരക്ഷിക്കുന്നതിനുള്ള നിർദ്ദേശം</translation>
 <translation id="3709582977625132201">വായിച്ചില്ലെന്ന് അടയാളപ്പെടുത്തുക</translation>
 <translation id="3740397331642243698">Google Chrome-ൽ നൽകിയിട്ടുള്ള URL-കൾ അദൃശ്യ മോഡിൽ തുറക്കുന്നു.</translation>
 <translation id="3762232513783804601">നിങ്ങളുടെ iPad-നായി നിർമ്മിച്ചത്</translation>
@@ -509,6 +514,7 @@
 <translation id="5988851877894965432">Chrome-ൽ URL-കൾ തുറക്കുക</translation>
 <translation id="6012140227487808125">എൻക്രിപ്റ്റുചെയ്യുന്നു...</translation>
 <translation id="6021332621416007159">ഇതിൽ തുറക്കുക...</translation>
+<translation id="6027945736510816438"><ph name="WEBSITE" /> ആണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="6036514205982097558">നിങ്ങളുടെ എല്ലാ ടാബുകളും ഒരു ബ്രൗസറിൽ</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
@@ -751,6 +757,7 @@
 <translation id="8080028325999236607">എല്ലാ ടാബുകളും അടയ്‌ക്കുക</translation>
 <translation id="8105368624971345109">ഓഫാക്കുക</translation>
 <translation id="8114753159095730575">ഫയൽ ഡൗൺലോഡ് ചെയ്യൽ ലഭ്യമാണ്. സ്ക്രീനിന്റെ ചുവടെ ഓപ്ഷനുകളുണ്ട്.</translation>
+<translation id="8132598642024322408">ഇപ്പോൾ <ph name="PRICE" />, മുമ്പത്തെ വില <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">പാസ്‌വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">പേജ് വിവർത്തനം ചെയ്യുക</translation>
@@ -823,6 +830,7 @@
 <translation id="8881801611828450202">ഈ ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="8909135823018751308">പങ്കിടുക...</translation>
 <translation id="8917490105272468696">അതെ, ഞാൻ തയ്യാറാണ്</translation>
+<translation id="8952559610785099500">പാസ്‌വേഡ് ചേർക്കുക</translation>
 <translation id="895541991026785598">ഒരു പ്രശ്നം റിപ്പോര്‍ട്ട് ചെയ്യുക</translation>
 <translation id="8976382372951310360">സഹായം</translation>
 <translation id="8976414606286374109">കാർഡുകൾ Google അക്കൗണ്ടിലേക്ക് സംരക്ഷിച്ചു.</translation>

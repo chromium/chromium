@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">نگه داشتن داده‌ها</translation>
 <translation id="1974060860693918893">پیشرفته</translation>
 <translation id="1989112275319619282">مشاهده محتوای موجود در فروشگاه ما</translation>
+<translation id="199425419756152024">مشاهده گذرواژه</translation>
 <translation id="2015722694326466240">برای دیدن گذرنویسه‌ها، اول باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="2021670401941426298">برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید.</translation>
 <translation id="2073572773299281212">آخرین فعالیت: <ph name="DAYS" /> روز قبل</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">۱ مورد انتخاب شد</translation>
 <translation id="2421004566762153674">کوکی‌های شخص ثالث را مسدود می‌کند</translation>
 <translation id="2421044535038393232">ادامه ویرایش</translation>
+<translation id="2434405374328098816">قبلاً گذرواژه‌ای برای «<ph name="USERNAME" />» در <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
+<translation id="2473876017985765807">قبلاً گذرواژه‌ای برای <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="2476359652512522418">انتخاب نشده</translation>
 <translation id="2497852260688568942">سرپرستتان همگام‌سازی را غیرفعال کرده است</translation>
 <translation id="2500374554657206846">گزینه‌هایی برای ذخیره گذرواژه</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">‏کپی URL پیوند</translation>
 <translation id="3607167657931203000">داده‌های تکمیل خودکار</translation>
 <translation id="3609785682760573515">در حال همگام‌سازی...</translation>
+<translation id="3631443864840848029">حتماً گذرواژه فعلی‌تان را برای این سایت ذخیره کنید.</translation>
 <translation id="3638472932233958418">صفحات وب از پیش بارگیری شده</translation>
 <translation id="3661160521073045932">پیکربندی نمایه دردسترس است</translation>
 <translation id="3670030362669914947">عدد</translation>
 <translation id="3691593122358196899">نشانک به <ph name="FOLDER_TITLE" /> اضافه شد</translation>
+<translation id="369349502275246497">پیشنهاد ذخیره شدن گذرواژه‌ها</translation>
 <translation id="3709582977625132201">علامت‌گذاری به‌عنوان خوانده‌نشده</translation>
 <translation id="3740397331642243698">‏نشانی‌های واردشده را در Google Chrome در حالت «ناشناس» باز می‌کند.</translation>
 <translation id="3762232513783804601">‏ساخته‌شده برای iPad شما</translation>
@@ -509,6 +514,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5988851877894965432">‏باز کردن نشانی‌های وب در Chrome</translation>
 <translation id="6012140227487808125">در حال رمزگذاری…</translation>
 <translation id="6021332621416007159">بازکردن در...</translation>
+<translation id="6027945736510816438">منظورتان <ph name="WEBSITE" /> بود؟</translation>
 <translation id="6036514205982097558">همه برگه‌های شما در یک مرورگر</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />، <ph name="PUBLISHER_INFORMATION" />، <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">بستن</translation>
@@ -751,6 +757,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8080028325999236607">بستن همه برگه‌ها</translation>
 <translation id="8105368624971345109">خاموش کردن</translation>
 <translation id="8114753159095730575">بارگیری فایل دردسترس است. گزینه‌ها نزدیک انتهای صفحه دردسترس است.</translation>
+<translation id="8132598642024322408">قیمت فعلی <ph name="PRICE" /> است، قیمت قبلی <ph name="PREVIOUS_PRICE" /> بود.</translation>
 <translation id="8156478151976189188">«همگام‌سازی گذرواژه» کار نمی‌کند</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />دستگاه‌های شما<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ترجمه صفحه</translation>
@@ -823,6 +830,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8881801611828450202">جستجوی <ph name="SEARCH_ENGINE" /> برای این تصویر</translation>
 <translation id="8909135823018751308">اشتراک‌گذاری‌...</translation>
 <translation id="8917490105272468696">بله، موافقم</translation>
+<translation id="8952559610785099500">افزودن گذرواژه</translation>
 <translation id="895541991026785598">گزارش یک مسئله</translation>
 <translation id="8976382372951310360">راهنما</translation>
 <translation id="8976414606286374109">‏کارت‌ها در «حساب Google» شما ذخیره می‌شوند.</translation>

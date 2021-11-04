@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">ডেটা রাখুন</translation>
 <translation id="1974060860693918893">উন্নত</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
+<translation id="199425419756152024">পাসওয়ার্ড দেখুন</translation>
 <translation id="2015722694326466240">পাসওয়ার্ড দেখার জন্য আপনার ডিভাইসে আপনাকে অবশ্যই একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="2021670401941426298">এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মোছার জন্য সার্চ ইঞ্জিনের নির্দেশাবলী দেখুন।</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> দিন আগে ব্যবহার করা হয়েছে</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">১টি নির্বাচিত</translation>
 <translation id="2421004566762153674">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2421044535038393232">এডিট করতে থাকুন</translation>
+<translation id="2434405374328098816">আপনি আগে থেকেই "<ph name="USERNAME" />"-এর জন্য <ph name="WEBSITE" />-এ পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
+<translation id="2473876017985765807">আপনি আগেই <ph name="WEBSITE" />-এর জন্য পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2476359652512522418">বেছে নেওয়া হয়নি</translation>
 <translation id="2497852260688568942">আপনার প্রশাসকের দ্বারা সিঙ্ক অক্ষম করা হয়েছে</translation>
 <translation id="2500374554657206846">পাসওয়ার্ড সেভ করার বিকল্প</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">লিঙ্ক ইউআরএল কপি করুন</translation>
 <translation id="3607167657931203000">ডেটা স্বতঃপূর্ণ করুন</translation>
 <translation id="3609785682760573515">সিঙ্ক হচ্ছে...</translation>
+<translation id="3631443864840848029">এই সাইটের জন্য আপনার বর্তমান পাসওয়ার্ড সেভ করছেন কিনা তা নিশ্চিত করুন।</translation>
 <translation id="3638472932233958418">পূর্বলোড ওয়েবপৃষ্ঠা</translation>
 <translation id="3661160521073045932">কনফিগারেশন প্রোফাইল উপলভ্য আছে</translation>
 <translation id="3670030362669914947">নম্বর</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> এ বুকমার্ক করা হয়েছে</translation>
+<translation id="369349502275246497">পাসওয়ার্ড সেভ করার প্রস্তাব</translation>
 <translation id="3709582977625132201">'পড়া হয়নি' হিসেবে চিহ্নিত করুন</translation>
 <translation id="3740397331642243698">এটি ইনপুট করা ইউআরএলগুলিকে Google Chrome-এ, 'ছদ্মবেশী' মোডে খোলে।</translation>
 <translation id="3762232513783804601">আপনার iPad-এর জন্য তৈরি করা হয়েছে</translation>
@@ -510,6 +515,7 @@
 <translation id="5988851877894965432">Chrome ব্রাউজার থেকে ইউআরএলগুলি খুলুন</translation>
 <translation id="6012140227487808125">এনক্রিপ্ট হচ্ছে...</translation>
 <translation id="6021332621416007159">এতে খুলুন...</translation>
+<translation id="6027945736510816438">আপনি কি <ph name="WEBSITE" /> ডোমেনের কথা বলছেন?</translation>
 <translation id="6036514205982097558">আপনার সব ট্যাব একটি ব্রাউজারেই</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">বন্ধ</translation>
@@ -752,6 +758,7 @@
 <translation id="8080028325999236607">সমস্ত ট্যাব বন্ধ করুন</translation>
 <translation id="8105368624971345109">বন্ধ করুন</translation>
 <translation id="8114753159095730575">ফাইল ডাউনলোড করা যাবে। স্ক্রিনের নিচের দিকে বিকল্পগুলি উপলভ্য।</translation>
+<translation id="8132598642024322408">আগে <ph name="PREVIOUS_PRICE" /> ছিল এখন <ph name="PRICE" />।</translation>
 <translation id="8156478151976189188">'পাসওয়ার্ড সিঙ্ক' ফিচার কাজ করছে না</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />আপনার ডিভাইস<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">পৃষ্ঠাটি অনুবাদ করুন</translation>
@@ -824,6 +831,7 @@
 <translation id="8881801611828450202">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" />-এ খুঁজুন</translation>
 <translation id="8909135823018751308">শেয়ার করুন...</translation>
 <translation id="8917490105272468696">হ্যাঁ, আমি রাজি</translation>
+<translation id="8952559610785099500">পাসওয়ার্ড যোগ করুন</translation>
 <translation id="895541991026785598">কোনও সমস্যা অভিযোগ করুন</translation>
 <translation id="8976382372951310360">সহায়তা</translation>
 <translation id="8976414606286374109">কার্ড আপনার Google অ্যাকাউন্টে সেভ করা হয়।</translation>

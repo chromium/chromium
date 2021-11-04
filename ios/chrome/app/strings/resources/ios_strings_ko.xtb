@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
 <translation id="1989112275319619282">찾아보기</translation>
+<translation id="199425419756152024">비밀번호 보기</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="2021670401941426298">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" />일 전 사용됨</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">1장 선택됨</translation>
 <translation id="2421004566762153674">타사 쿠키 차단</translation>
 <translation id="2421044535038393232">수정 계속</translation>
+<translation id="2434405374328098816"><ph name="USERNAME" />님의 <ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
+<translation id="2473876017985765807"><ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
 <translation id="2476359652512522418">선택되지 않음</translation>
 <translation id="2497852260688568942">관리자가 동기화를 사용 중지했습니다.</translation>
 <translation id="2500374554657206846">비밀번호 저장 옵션</translation>
@@ -282,10 +285,12 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3603009562372709545">링크 URL 복사</translation>
 <translation id="3607167657931203000">데이터 자동 완성</translation>
 <translation id="3609785682760573515">동기화 중...</translation>
+<translation id="3631443864840848029">사이트의 현재 비밀번호를 저장해 두시기 바랍니다.</translation>
 <translation id="3638472932233958418">웹페이지 미리 로드하기</translation>
 <translation id="3661160521073045932">구성 프로필 이용 가능</translation>
 <translation id="3670030362669914947">번호</translation>
 <translation id="3691593122358196899">북마크를 <ph name="FOLDER_TITLE" />에 추가함</translation>
+<translation id="369349502275246497">비밀번호 저장 여부 확인</translation>
 <translation id="3709582977625132201">읽지않음으로 표시</translation>
 <translation id="3740397331642243698">Chrome에서 시크릿 모드로 입력된 URL 열기</translation>
 <translation id="3762232513783804601">iPad를 위한 웹브라우저</translation>
@@ -509,6 +514,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5988851877894965432">Chrome에서 URL 열기</translation>
 <translation id="6012140227487808125">암호화하는 중...</translation>
 <translation id="6021332621416007159">다음에서 열기</translation>
+<translation id="6027945736510816438"><ph name="WEBSITE" /> 도메인을 찾으셨나요?</translation>
 <translation id="6036514205982097558">하나의 브라우저에서 모든 탭 관리</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">닫기</translation>
@@ -751,6 +757,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8080028325999236607">탭 모두 닫기</translation>
 <translation id="8105368624971345109">사용 중지</translation>
 <translation id="8114753159095730575">파일을 다운로드할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
+<translation id="8132598642024322408">정가 <ph name="PREVIOUS_PRICE" />인 제품을 <ph name="PRICE" />에 판매 중</translation>
 <translation id="8156478151976189188">비밀번호 동기화가 작동하지 않음</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">페이지 번역</translation>
@@ -823,6 +830,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
 <translation id="8909135823018751308">공유…</translation>
 <translation id="8917490105272468696">사용</translation>
+<translation id="8952559610785099500">비밀번호 추가</translation>
 <translation id="895541991026785598">문제 신고</translation>
 <translation id="8976382372951310360">도움말</translation>
 <translation id="8976414606286374109">카드가 Google 계정에 저장됩니다.</translation>

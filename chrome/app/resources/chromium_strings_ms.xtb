@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">Pengurus Tugas</translation>
 <translation id="2910007522516064972">Mengenai &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium telah dikemas kini</translation>
+<translation id="2977506796191543575">Jika laman cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chromium juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat</translation>
 <translation id="2983934633046890458">Chromium cuba mengedit kata laluan.</translation>
 <translation id="3032706164202344641">Chromium tidak dapat menyemak kata laluan anda. Cuba lagi nanti.</translation>
 <translation id="3032787606318309379">Menambah ke Chromium...</translation>
@@ -167,6 +168,7 @@
 <translation id="6212496753309875659">Komputer ini telah mempunyai versi Chromium yang lebih baharu. Jika perisian tidak berfungsi, sila nyahpasang Chromium dan cuba lagi.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan dilancarkan semula sekarang}=1{Chromium akan dilancarkan semula dalam masa sesaat}other{Chromium akan dilancarkan semula dalam masa # saat}}</translation>
 <translation id="6241367896540709610">Chromium memerlukan kebenaran akses storan untuk memuat turun fail</translation>
+<translation id="6245734527075554892">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chromium</translation>
 <translation id="6248213926982192922">Jadikan Chromium penyemak imbas lalai</translation>
 <translation id="6266342355635466082">Chromium tidak dapat menyemak kemas kini. Cuba periksa sambungan Internet anda.</translation>
 <translation id="6268381023930128611">Log keluar daripada Chromium?</translation>

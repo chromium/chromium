@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> підключено.</translation>
 <translation id="1246890715821376239">Непідтримувані додатки</translation>
 <translation id="1247372569136754018">Мікрофон (внутрішній)</translation>
+<translation id="1247519845643687288">Нещодавні додатки</translation>
 <translation id="1252999807265626933">Джерело заряджання: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Який прогноз погоди?</translation>
 <translation id="1266097335951928626">Увімкнути камеру для селфі</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">Щоб виконати дію зі сповіщенням, розблокуйте пристрій</translation>
 <translation id="1420408895951708260">Увімкнути або вимкнути нічний екран. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Так</translation>
+<translation id="1438357537418863713">Потокове передавання додатків налаштовано. Коли ви розпочнете, тут з’являтимуться нещодавні додатки.</translation>
 <translation id="144853431011121127">Переглядайте сповіщення з телефона на пристрої <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1455242230282523554">Показати налаштування мови</translation>
 <translation id="1460620680449458626">Гучність вимкнено.</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">Під’єднано іншу клавіатуру</translation>
 <translation id="5147567197700016471">Розблоковано</translation>
 <translation id="5155897006997040331">Швидкість читання</translation>
+<translation id="5166007464919321363">Зберегти робочий стіл як макет</translation>
 <translation id="5166918508782100047">Налаштування швидких відповідей</translation>
 <translation id="5168181903108465623">Доступні пристрої для трансляції</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">Живлення підключених пристроїв USB-C</translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6803622936009808957">Не вдалося дублювати зображення екранів, оскільки не знайдено підтримувані значення роздільної здатності. Натомість запущено режим розширеного робочого столу.</translation>
+<translation id="6811454077060061666">Google Диск для комп’ютера недоступний</translation>
 <translation id="6816797338148849397">Доступна інформація, пов'язана з виділеним текстом. Щоб перейти до неї, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="6818242057446442178">Назад на одне слово</translation>
 <translation id="6820676911989879663">Зробіть перерву!</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Натисніть клавішу Enter, щоб розблокувати екран для користувача <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Видалити</translation>
+<translation id="8281279285293265212">Не вдалося зберегти скрінкаст</translation>
 <translation id="8284362522226889623">Проведіть чотирма пальцями ліворуч, щоб перейти на попередній робочий стіл</translation>
 <translation id="828708037801473432">Вимкнено</translation>
 <translation id="8297006494302853456">Слабкий</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">Налаштування Асистента</translation>
 <translation id="9072519059834302790">Акумулятор розрядиться повністю через <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Макети</translation>
 <translation id="9077515519330855811">Елементи керування медіа, зараз грає <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Щоб перейти на головний екран, проведіть пальцем угору</translation>

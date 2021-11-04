@@ -5901,7 +5901,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7243784282103630670">Det gick inte att uppgradera Linux. Vi återställer behållaren med hjälp av säkerhetskopian.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (bäst)</translation>
 <translation id="7246230585855757313">Sätt i säkerhetsnyckeln en gång till och försök igen</translation>
-<translation id="7249777306773517303">Den här enheten hanteras av <ph name="DOMAIN" /> och du måste logga in varje gång.</translation>
 <translation id="7250616558727237648">Enheten som du delar med svarade inte. Försök igen.</translation>
 <translation id="725109152065019550">Administratören har inaktiverat extern lagring för ditt konto.</translation>
 <translation id="7251346854160851420">Standardbakgrund</translation>

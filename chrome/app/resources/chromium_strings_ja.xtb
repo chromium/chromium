@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2910007522516064972">Chromium について(&amp;C)</translation>
 <translation id="2977470724722393594">Chromium は最新版です</translation>
+<translation id="2977506796191543575">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
 <translation id="2983934633046890458">Chromium でパスワードを編集しようとしています。</translation>
 <translation id="3032706164202344641">Chromium でパスワードを確認できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3032787606318309379">Chromium に追加...</translation>
@@ -167,6 +168,7 @@
 <translation id="6212496753309875659">新しいバージョンの Chromium が既にインストールされています。ソフトウェアが動作しない場合は、Chromium をアンインストールしてからもう一度お試しください。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium は今すぐ再起動されます}=1{Chromium は 1 秒後に再起動されます}other{Chromium は # 秒後に再起動されます}}</translation>
 <translation id="6241367896540709610">ファイルをダウンロードするには、Chromium でストレージへのアクセスを許可する必要があります</translation>
+<translation id="6245734527075554892">Chromium に保存されている安全でないサイトのリストと URL を照合します</translation>
 <translation id="6248213926982192922">Chromium を既定のブラウザにする</translation>
 <translation id="6266342355635466082">Chromium がアップデートを確認できません。インターネット接続を確認してみてください。</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>

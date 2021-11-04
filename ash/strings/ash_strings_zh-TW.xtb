@@ -48,6 +48,7 @@
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1246890715821376239">不支援的應用程式</translation>
 <translation id="1247372569136754018">麥克風 (內部)</translation>
+<translation id="1247519845643687288">最近使用的應用程式</translation>
 <translation id="1252999807265626933">正在使用「<ph name="POWER_SOURCE" />」充電</translation>
 <translation id="1255033239764210633">天氣如何？</translation>
 <translation id="1266097335951928626">啟用自拍鏡頭</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">解鎖裝置即可執行通知動作</translation>
 <translation id="1420408895951708260">切換夜燈模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">是</translation>
+<translation id="1438357537418863713">應用程式串流已設定完成。當你開始使用這項功能時，這裡會顯示最近啟動過的應用程式。</translation>
 <translation id="144853431011121127">在 <ph name="DEVICE_TYPE" /> 上接收手機的通知</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
 <translation id="1460620680449458626">音量已設為靜音。</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
 <translation id="5147567197700016471">已解鎖</translation>
 <translation id="5155897006997040331">朗讀速度</translation>
+<translation id="5166007464919321363">將桌面儲存為範本</translation>
 <translation id="5166918508782100047">快速解答設定</translation>
 <translation id="5168181903108465623">可用的投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">為連接的 USB-C 裝置供電</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
+<translation id="6811454077060061666">無法使用 Google 雲端硬碟電腦版</translation>
 <translation id="6816797338148849397">提供所選內容的相關資訊。請使用向上鍵存取。</translation>
 <translation id="6818242057446442178">移至上一個字詞</translation>
 <translation id="6820676911989879663">目前禁止使用裝置！</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">按下 Enter 鍵即可解除鎖定 <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">刪除</translation>
+<translation id="8281279285293265212">無法儲存螢幕側錄</translation>
 <translation id="8284362522226889623">以四指向左滑動即可切換至上一個桌面</translation>
 <translation id="828708037801473432">關閉</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">個人助理設定</translation>
 <translation id="9072519059834302790">電池剩餘使用時間：<ph name="TIME_LEFT" />。</translation>
 <translation id="9074739597929991885">藍牙</translation>
+<translation id="9077404278023321866">範本</translation>
 <translation id="9077515519330855811">媒體控制項，正在播放「<ph name="MEDIA_TITLE" />」</translation>
 <translation id="9079731690316798640">Wi-Fi：<ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">向上滑動即可開啟主畫面</translation>

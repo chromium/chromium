@@ -3,6 +3,7 @@
 <translationbundle lang="sk">
 <translation id="1113173431709655881">Režim kamery</translation>
 <translation id="1175958423215084756">Bol rozpoznaný odkaz. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Otočiť o 90 stupňov v smere hodinových ručičiek</translation>
 <translation id="1276998909102132017">Obrázky galérie</translation>
 <translation id="1300209025925956156">Skenovanie dokumentu</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Prístup získate stlačením klávesa vyhľadávania + šípky doľava.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Nepodarilo sa nasnímať portrétovú fotku</translation>
 <translation id="3569311554794739032">Naozaj chcete odstrániť <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Prepnúť na režim skenovania</translation>
+<translation id="3789724198583203151">Otočiť o 90 stupňov proti smeru hodinových ručičiek</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenovať čiarový kód</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>

@@ -5901,7 +5901,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7243784282103630670">There was an error while upgrading Linux. We'll restore the container using your backup.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Best)</translation>
 <translation id="7246230585855757313">Reinsert your security key and try again</translation>
-<translation id="7249777306773517303">This device is managed by <ph name="DOMAIN" /> and requires you to sign in every time.</translation>
 <translation id="7250616558727237648">The device that you're sharing with didn't respond. Try again.</translation>
 <translation id="725109152065019550">Sorry, your administrator has disabled external storage on your account.</translation>
 <translation id="7251346854160851420">Default wallpaper</translation>

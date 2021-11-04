@@ -1486,6 +1486,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2489686758589235262">Wys nog 2 skakelaars toe</translation>
 <translation id="2489829450872380594">'n Nuwe foon sal volgende keer hierdie <ph name="DEVICE_TYPE" /> ontsluit. Jy kan Smart Lock in Instellings afskakel.</translation>
 <translation id="2489918096470125693">Voeg vouer by …</translation>
+<translation id="2489931062851778802">Voer hierdie sleutels in op <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">"<ph name="FILE_NAME" />" is van lys verwyder</translation>
 <translation id="249113932447298600">Jammer, die toestel <ph name="DEVICE_LABEL" /> word nie op hierdie tydstip gesteun nie.</translation>
 <translation id="2492461744635776704">Berei tans sertifikaatondertekeningversoek voor</translation>
@@ -2241,11 +2242,13 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3288047731229977326">Uitbreidings wat in ontwikkelaarmodus laat loop word, kan jou rekenaar beskadig. As jy nie 'n ontwikkelaar is nie, moet jy hierdie uitbreidings wat in ontwikkelaarmodus laat loop word, deaktiveer om veilig te bly.</translation>
 <translation id="3289668031376215426">Outohoofletters</translation>
 <translation id="3289856944988573801">Gebruik asseblief Ethernet of Wi-Fi om te kyk of daar opdaterings is.</translation>
+<translation id="3290249595466894471">Stuur ook 'n klein voorbeeld van bladsye, aflaaie, uitbreidingaktiwiteit en stelselinligting om te help om nuwe bedreigings te ontdek</translation>
 <translation id="3291436823898732747">Blaai-ervaring is verbeter: Byvoorbeeld, voorstelle in die Omniboks voordat jy begin tik</translation>
 <translation id="3293644607209440645">Stuur hierdie bladsy</translation>
 <translation id="32939749466444286">Die Linux-houer het nie begin nie. Probeer asseblief weer.</translation>
 <translation id="3294437725009624529">Gas</translation>
 <translation id="3294686910656423119">Gebruikstatistieke en omvalverslae</translation>
+<translation id="3297536526040732495">Koppel hierdie data tydelik aan jou Google-rekening wanneer jy aangemeld is om jou oral in Google-programme te beskerm</translation>
 <translation id="329838636886466101">Herstel</translation>
 <translation id="3298789223962368867">Ongeldige URL ingevoer.</translation>
 <translation id="32991397311664836">Toestelle:</translation>
@@ -4355,6 +4358,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5554489410841842733">Hierdie ikoon sal sigbaar wees wanneer die uitbreiding op die huidige bladsy kan reageer.</translation>
 <translation id="5554720593229208774">E-pos-sertifiseringoutoriteit</translation>
 <translation id="5555363196923735206">Draai kamera</translation>
+<translation id="5555525474779371165">Kies jou Veiligblaai-beskerming</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5558125320634132440">Hierdie werf is geblokkeer omdat dit dalk inhoud vir volwassenes bevat</translation>
 <translation id="5558129378926964177">Zoem in</translation>
@@ -5722,6 +5726,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Maak almal in &amp;incognitovenster oop}=1{Maak in &amp;incognitovenster oop}other{Maak almal ({COUNT}) in &amp;incognitovenster oop}}</translation>
 <translation id="7029307918966275733">Crostini is nie geïnstalleer nie. Installeer Crostini om krediete te bekyk.</translation>
 <translation id="7029809446516969842">Wagwoorde</translation>
+<translation id="7030304022046916278">Stuur URL'e na Veiligblaai toe om hulle na te gaan</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Reekspoort is gekoppel</translation>
 <translation id="7034692021407794547">'n Administrateur met Faktureringbestuursvoorregte moet eers Google Vergader-hardeware se diensbepalings in die Google Vergader-hardewareafdeling van die Adminkonsole aanvaar.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> se spasie word vir Linux aanbeveel. Vee lêers op jou toestel uit om meer spasie beskikbaar te maak.</translation>
@@ -5902,7 +5907,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7243784282103630670">Kon nie Linux opgradeer nie. Ons sal die houer met jou rugsteun terugstel.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
 <translation id="7246230585855757313">Sit jou sekuriteitsleutel weer in en probeer weer</translation>
-<translation id="7249777306773517303">Hierdie toestel word bestuur deur <ph name="DOMAIN" /> en vereis dat jy elke keer aanmeld.</translation>
 <translation id="7250616558727237648">Die toestel waarmee jy deel, het nie geantwoord nie. Probeer weer.</translation>
 <translation id="725109152065019550">Jammer, jou administrateur het eksterne berging op jou rekening gedeaktiveer.</translation>
 <translation id="7251346854160851420">Verstekmuurpapier</translation>

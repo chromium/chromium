@@ -1473,6 +1473,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2489686758589235262">Prideliť dva ďalšie prepínače</translation>
 <translation id="2489829450872380594">Toto zariadenie <ph name="DEVICE_TYPE" /> sa najbližšie odomkne novým telefónom. Smart Lock vypnete v Nastaveniach.</translation>
 <translation id="2489918096470125693">Pridať &amp;priečinok...</translation>
+<translation id="2489931062851778802">Stlačte tieto klávesy na zariadení <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">Súbor <ph name="FILE_NAME" /> bol odstránený zo zoznamu</translation>
 <translation id="249113932447298600">Je nám ľúto, ale zariadenie <ph name="DEVICE_LABEL" /> nie je momentálne podporované.</translation>
 <translation id="2492461744635776704">Pripravuje sa žiadosť o podpísanie certifikátu</translation>
@@ -2228,11 +2229,13 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3288047731229977326">Rozšírenia spustené v režime pre vývojárov môžu poškodiť váš počítač. Ak nie ste vývojár, mali by ste v záujme bezpečnosti rozšírenia spustené v režime vývojára zakázať.</translation>
 <translation id="3289668031376215426">Automatické písanie veľkých písmen</translation>
 <translation id="3289856944988573801">Ak chcete skontrolovať aktualizácie, použite sieť ethernet alebo Wi‑Fi.</translation>
+<translation id="3290249595466894471">Odosiela aj malú vzorku stránok, stiahnutých súborov, aktivity rozšírení a informácií o systéme, čím pomáha zisťovať nové hrozby</translation>
 <translation id="3291436823898732747">Zlepšené prehliadanie: napríklad návrhy vo všeobecnom poli skôr, ako začnete zadávať text</translation>
 <translation id="3293644607209440645">Odoslať túto stránku</translation>
 <translation id="32939749466444286">Kontajner Linux sa nespustil. Skúste to znova.</translation>
 <translation id="3294437725009624529">Hosť</translation>
 <translation id="3294686910656423119">Štatistiky používania a prehľady zrútení</translation>
+<translation id="3297536526040732495">Dočasne prepojí tieto údaje s vaším prihláseným účtom Google, aby vás chránila v aplikáciách Googlu</translation>
 <translation id="329838636886466101">Opraviť</translation>
 <translation id="3298789223962368867">Zadali ste neplatnú webovú adresu.</translation>
 <translation id="32991397311664836">Zariadenia:</translation>
@@ -4341,6 +4344,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5554489410841842733">Táto ikona sa zobrazí, keď bude môcť dané rozšírenie na aktuálnej stránke realizovať akcie.</translation>
 <translation id="5554720593229208774">E-mailová certifikačná autorita</translation>
 <translation id="5555363196923735206">Prepnúť fotoaparát</translation>
+<translation id="5555525474779371165">Výber ochrany v rámci Bezpečného prehliadania</translation>
 <translation id="5556459405103347317">Znova načítať</translation>
 <translation id="5558125320634132440">Tento web je blokovaný, pretože sa na ňom môže nachádzať obsah nevhodný pre deti</translation>
 <translation id="5558129378926964177">Priblíž&amp;iť</translation>
@@ -5707,6 +5711,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Otvoriť všetky v okne inkognito}=1{Otvoriť v okne inkognito}few{Otvoriť všetky ({COUNT}) v okne inkognito}many{Otvoriť všetky ({COUNT}) v okne inkognito}other{Otvoriť všetky ({COUNT}) v okne inkognito}}</translation>
 <translation id="7029307918966275733">Systém Crostini nie je nainštalovaný. Ak si chcete zobraziť poďakovania, nainštalujte si Crostini.</translation>
 <translation id="7029809446516969842">Heslá</translation>
+<translation id="7030304022046916278">Odosiela Bezpečnému prehliadaniu webové adresy na kontrolu</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – sériový port je pripojený</translation>
 <translation id="7034692021407794547">Správca s oprávneniami na správu fakturácie musí najprv prijať zmluvné podmienky súpravy Google Meet hardware v sekcii Google Meet Hardware v správcovskej konzole.</translation>
 <translation id="7036706669646341689">Na používanie systému Linux sa vyžaduje <ph name="DISK_SIZE" /> voľného priestoru. Uvoľníte ho odstránením súborov zo zariadenia.</translation>
@@ -5887,7 +5892,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7243784282103630670">Počas inovácie systému Linux sa vyskytla chyba. Kontajner obnovíme pomocou vašej zálohy.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7246230585855757313">Bezpečnostný kľúč opäť vložte a skúste to znova</translation>
-<translation id="7249777306773517303">Toto zariadenie spravuje doména <ph name="DOMAIN" /> a vyžaduje, aby ste sa vždy prihlásili.</translation>
 <translation id="7250616558727237648">Zariadenie, s ktorým položku zdieľate, neodpovedalo. Skúste to znova.</translation>
 <translation id="725109152065019550">Je nám ľúto, správca vo vašom účte zakázal používanie externých ukladacích priestorov.</translation>
 <translation id="7251346854160851420">Predvolená tapeta</translation>

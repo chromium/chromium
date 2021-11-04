@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="1113173431709655881">カメラモード</translation>
 <translation id="1175958423215084756">リンクが検出されました。<ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">時計回りに 90 度回転</translation>
 <translation id="1276998909102132017">ギャラリー画像</translation>
 <translation id="1300209025925956156">ドキュメントをスキャンします</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。アクセスするには検索+左矢印キーを押します。</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">縦向きの写真を撮影できません</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> を削除してもよろしいですか？</translation>
 <translation id="3573890771273113519">スキャンモードに切り替えます</translation>
+<translation id="3789724198583203151">反時計回りに 90 度回転</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3838931309141338733">バーコード スキャン</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>

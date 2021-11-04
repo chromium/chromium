@@ -714,7 +714,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5342314432463739672">Pedidos de autorização</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> separador aberto, toque para alternar entre separadores}other{<ph name="OPEN_TABS_MANY" /> separadores abertos, toque para alternar entre separadores}}</translation>
-<translation id="5375577065097716013">Pesquisar imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Pesquisar c/ Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Permitir apenas determinados sites</translation>
 <translation id="5409881200985013443">Enviar <ph name="ONE_TIME_CODE" /> no dispositivo <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">A validar…</translation>

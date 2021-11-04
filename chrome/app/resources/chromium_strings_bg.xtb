@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">Диспечер на задачите</translation>
 <translation id="2910007522516064972">Всичко за &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium е актуален</translation>
+<translation id="2977506796191543575">Ако сайт се опита да открадне паролата ви или изтеглите опасен файл, Chromium може също да изпрати до Безопасно сърфиране URL адресите и част от съдържанието на страницата</translation>
 <translation id="2983934633046890458">Chromium се опитва да редактира паролите.</translation>
 <translation id="3032706164202344641">Chromium не може да провери паролите ви. Опитайте пак по-късно.</translation>
 <translation id="3032787606318309379">Добавя се към Chromium...</translation>
@@ -165,6 +166,7 @@
 <translation id="6212496753309875659">На този компютър вече има по-скорошна версия на Chromium. Ако софтуерът не работи, моля, деинсталирайте Chromium и опитайте отново.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ще се стартира отново сега}=1{Chromium ще се стартира отново след 1 секунда}other{Chromium ще се стартира отново след # секунди}}</translation>
 <translation id="6241367896540709610">Chromium се нуждае от разрешение за достъп до хранилището, за да изтегля файлове</translation>
+<translation id="6245734527075554892">URL адресите се проверяват в съхраняван в Chromium списък с опасни сайтове</translation>
 <translation id="6248213926982192922">Нека Chromium да е браузърът по подразбиране</translation>
 <translation id="6266342355635466082">Chromium не може да провери за актуализации. Проверете връзката си с интернет.</translation>
 <translation id="6268381023930128611">Искате ли да излезете от Chromium?</translation>

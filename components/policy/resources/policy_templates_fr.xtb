@@ -684,19 +684,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, l'hôte d'assistance à distance est exécuté dans le contexte de l'utilisateur, et les utilisateurs distants ne peuvent pas interagir avec des fenêtres de niveau administrateur sur le bureau.</translation>
 <translation id="1837165432382702436">Hauteur de la page en micromètres.</translation>
-<translation id="1839278886947586809">
-      Cette règle a été retirée de la version M80, car elle n'est plus nécessaire
-      depuis que WebDriver est compatible avec toutes les règles existantes.
-
-      Elle permet aux utilisateurs de la fonctionnalité WebDriver d'ignorer
-      les règles pouvant affecter son fonctionnement.
-
-      Actuellement, cette règle désactive les règles SitePerProcess et IsolateOrigins.
-
-      Si elle est activée, WebDriver pourra ignorer les règles
-      non compatibles.
-      Si elle est désactivée ou qu'elle n'est pas configurée, la fonctionnalité WebDriver ne sera pas autorisée
-      à ignorer les règles non compatibles.</translation>
 <translation id="1843117931376765605">Fréquence d'actualisation des règles relatives aux utilisateurs</translation>
 <translation id="1844620919405873871">Permet de configurer les règles associées au déverrouillage rapide.</translation>
 <translation id="1844972978764975668">Autoriser l'envoi de requêtes à un serveur Google visant à récupérer un horodatage précis</translation>
@@ -1327,23 +1314,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
        Si cette règle n'est pas configurée, l'alimentation alternée en heures pleines est désactivée.</translation>
 <translation id="2502467045153796624">Comportement de retour à une version antérieure</translation>
-<translation id="2505351097561237268">
-      La règle display-capture permissions-policy restreint l'accès à getDisplayMedia(),
-      conformément à cette spécification :
-      https://www.w3.org/TR/screen-capture/#feature-policy-integration
-      Mais, si cette règle est désactivée, cette exigence n'est pas appliquée,
-      et getDisplayMedia() est autorisé depuis des contextes qui seraient autrement
-      interdits. Cette règle d'entreprise est temporaire et sera normalement
-      supprimée après la version 100 de <ph name="PRODUCT_NAME" />.
-      Elle permet de débloquer les utilisateurs de la version Enterprise dont l'application ne respecte pas les spécifications,
-      mais qui a besoin de temps pour être résolue.
-
-      Si cette règle est activée, ou si elle n'est pas configurée, les sites peuvent uniquement appeler getDisplayMedia() depuis
-      les contextes ajoutés à la liste d'autorisation par la règle display-capture permissions-policy.
-
-      Si cette règle est désactivée, les sites peuvent appeler getDisplayMedia() même depuis les contextes
-      qui ne sont pas ajoutés à la liste d'autorisation par la règle display-capture permissions policy.
-      Notez que d'autres restrictions peuvent quand même s'appliquer.</translation>
 <translation id="250670737672448119">Active la fonctionnalité d'accessibilité de mise en surbrillance du curseur de saisie.
 
           Cette fonctionnalité permet de mettre en surbrillance la zone autour du curseur de saisie lorsque l'utilisateur effectue une modification.
@@ -1860,6 +1830,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3092059499596000593">Définir l'imprimante système par défaut comme celle par défaut dans l'aperçu avant impression</translation>
 <translation id="309416443108680956">Indique ce qu'il se passe lorsqu'un utilisateur qui s'authentifie au moyen d'un jeton de sécurité (carte à puce, par exemple) retire ce jeton alors qu'il est connecté. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> : rien ne se passe. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> : l'écran se verrouille jusqu'à ce que l'utilisateur s'authentifie à nouveau. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> : la session prend fin, et l'utilisateur est déconnecté. Si cette règle n'est pas configurée, elle est définie par défaut sur <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Liste des plug-ins activés</translation>
+<translation id="3101035417394748390">La taille maximale, en octets, qui peut être transférée entre le client et l'hôte via la synchronisation du presse-papiers</translation>
 <translation id="3101501961102569744">Sélectionner le mode de spécification des paramètres de serveur proxy</translation>
 <translation id="3101709781009526431">Date et heure</translation>
 <translation id="3110248563985502478">Cette règle étant obsolète dans la version M88, Flash n'est plus accepté dans Chrome. Si cette règle est activée, les plug-ins obsolètes sont utilisés comme des plug-ins normaux. Si cette règle est désactivée, aucun plug-in obsolète n'est utilisé.
@@ -2551,14 +2522,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
           Si cette règle n'est pas configurée, les touches persistantes sont initialement désactivées sur l'écran de connexion, mais les utilisateurs peuvent les activer à tout moment.</translation>
 <translation id="3927291637826333102">Autoriser les captures d'écran, de fenêtre et d'onglet selon ces origines</translation>
-<translation id="3932553013632130433">
-      Indique si SharedArrayBuffer peut être utilisé
-      dans un contexte non isolé multi-origine. Pour des raisons de compatibilité Web, Chrome nécessitera
-      un contexte isolé multi-origine lors de l'utilisation de SharedArrayBuffer à partir de Chrome 91
-      (25/05/2021). Pour en savoir plus, accédez à la page
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.
-      Lorsque cette règle est définie sur "True", les sites peuvent utiliser SharedArrayBuffer sans aucune restriction.
-      Si cette règle est définie sur "False" ou n'est pas configurée, les sites ne peuvent utiliser SharedArrayBuffer que dans un contexte isolé multi-origine.</translation>
 <translation id="3942041691320538491">Si cette règle est définie sur 0 (valeur par défaut), vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript, sauf si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 1, vous pouvez accéder aux outils pour les développeurs et à la Console JavaScript dans tous les cas, y compris si des extensions ont été installées dans le cadre des règles de l'entreprise. Si cette règle est définie sur 2, vous ne pouvez pas accéder aux outils pour les développeurs ni examiner des éléments de sites Web.
 
       En outre, les raccourcis clavier, ainsi que les options de menu ou de menu contextuel permettant d'ouvrir ces outils ou cette console sont désactivés.</translation>
@@ -3012,20 +2975,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Pour obtenir une explication complète, consultez la page https://www.chromestatus.com/feature/5675755719622656.
       Si cette règle est activée, les sites seront autorisés à parcourir et à ouvrir de nouvelles fenêtres ou de nouveaux onglets simultanément.
       Si cette règle est désactivée ou n'est pas définie, les sites ne seront pas autorisés à parcourir ni à ouvrir une nouvelle fenêtre ou un nouvel onglet simultanément.</translation>
-<translation id="4574215366111396039">Chrome bloquera les navigations vers des protocoles externes dans
-      un iFrame en bac à sable. Consultez https://chromestatus.com/features/5680742077038592.
-
-      Si cette règle est définie sur "True", Chrome bloque ces navigations.
-
-      Si elle est définie sur "False", Chrome ne peut pas les bloquer.
-
-      Elle est définie par défaut sur "True" (fonctionnalité de sécurité activée).
-
-      Les administrateurs qui ont besoin de plus de temps pour mettre à jour leur
-      site interne concerné par cette nouvelle restriction peuvent utiliser cette règle. Cette règle d'entreprise
-      est temporaire et sera normalement supprimée après
-      la version 104 de <ph name="PRODUCT_NAME" />.
-      </translation>
 <translation id="4578265298946081589">Ne pas redémarrer en cas de déconnexion de l'utilisateur.</translation>
 <translation id="4581507927311097234">Délai d'inactivité de l'utilisateur, en millisecondes, au terme duquel l'écran est éteint.</translation>
 <translation id="4582338216073557489">Si cette règle est définie sur "None", <ph name="PRODUCT_NAME" /> utilise la taille de cache par défaut pour stocker les fichiers mis en cache sur le disque. L'utilisateur ne peut pas la modifier.
@@ -4225,33 +4174,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Vous pouvez spécifier cette URL comme suit : <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
 <translation id="606742564823687992">Ne pas transmettre les tâches d'impression</translation>
-<translation id="6070374129526507093">Cette règle a été abandonnée dans la version M69. Veuillez utiliser la règle
-      OverrideSecurityRestrictionsOnInsecureOrigin à la place.
-
-      Cette règle répertorie les origines (URL) ou les modèles de nom d'hôte (par exemple,
-      "*.example.com") non soumis aux restrictions de sécurité applicables
-      aux origines non sécurisées.
-
-      L'objectif est de permettre aux organisations d'autoriser les origines
-      pour les anciennes applications qui ne peuvent pas déployer TLS, ou de configurer
-      un serveur intermédiaire pour les développements Web internes. Cela permet aux développeurs de tester
-      les fonctionnalités nécessitant des contextes sécurisés sans avoir à déployer TLS
-      sur le serveur intermédiaire. Cette règle empêche également que la mention "Non sécurisé"
-      soit attribuée à une origine dans l'omnibox.
-
-      Définir une liste d'URL dans cette règle a le même effet qu'utiliser
-      l'indicateur de ligne de commande "--unsafely-treat-insecure-origin-as-secure"
-      avec une liste des URL en question séparées par une virgule. Si la règle est définie,
-      elle remplace l'indicateur de ligne de commande.
-
-      Cette règle a été abandonnée dans la version M69, au profit de la règle
-      OverrideSecurityRestrictionsOnInsecureOrigin. Elle est remplacée par
-      OverrideSecurityRestrictionsOnInsecureOrigin lorsque les deux règles
-      coexistent.
-
-      Pour en savoir plus sur les contextes sécurisés, consultez
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="6070667616071269965">Dispositions de clavier de l'écran de connexion de l'appareil</translation>
 <translation id="6074963268421707432">Interdire à tous les sites d'afficher des notifications sur le bureau</translation>
 <translation id="6074964551275531965">Définir la période d'affichage des notifications de mise à jour</translation>
@@ -4382,19 +4304,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Pour en savoir plus sur <ph name="CORS" />, consultez la page <ph name="CORS_HELP_URL" />.
 
       La suppression de cette règle avait été annoncée pour la version 82 de <ph name="PRODUCT_NAME" />, mais elle a eu lieu à la version 84.</translation>
-<translation id="6276624383311206185">
-      Indique si les modules WebAssembly peuvent être envoyés vers une autre fenêtre ou
-      un autre nœud de calcul en multi-origine. Le partage de modules WebAssembly en multi-origine deviendra
-      obsolète lors de l'abandon de document.domain. Consultez
-      https://github.com/mikewest/deprecating-document-domain. Cette règle
-      permet de réactiver le partage de modules WebAssembly en multi-origine
-      pour prolonger la période de transition du processus d'abandon.
-
-      Lorsque cette règle est définie sur "True", les sites peuvent aussi envoyer des modules WebAssembly en multi-origine
-      sans restrictions.
-
-      Lorsqu'elle est définie sur "False", les sites peuvent uniquement envoyer des modules WebAssembly
-      vers des fenêtres et des nœuds de calcul dans la même origine.</translation>
 <translation id="6277314550042130537">Utiliser l'approbation par la règle KDC lors de l'authentification HTTP</translation>
 <translation id="6279722058145292462">Cette règle permet de spécifier la fréquence (en jours) à laquelle un client modifie le mot de passe du compte de la machine. Ce mot de passe, généré de manière aléatoire par le client, n'est pas accessible à l'utilisateur. La désactivation de cette règle ou la définition d'un nombre de jours élevé peut nuire à la sécurité, dans la mesure où cela laisse plus de temps aux pirates informatiques pour trouver le mot de passe du compte de la machine et l'exploiter.
 
@@ -6093,6 +6002,17 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
           Si cette règle n'est pas définie, la dictée est désactivée au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="8293414596801971604">Expression régulière correspondant au nom à afficher de l'imprimante.</translation>
+<translation id="8293509904023267821">Si cette règle est définie, les données du presse-papiers envoyées vers et depuis l'hôte seront tronquées à la limite définie dans la règle.
+
+          Si la valeur est 0, la synchronisation du presse-papiers est désactivée.
+
+          Cette règle affecte à la fois les cas d'accès et d'assistance à distance.
+
+          Elle n'a aucun effet si elle n'est pas définie.
+
+          Si la durée définie dans cette règle n'est pas comprise dans les limites indiquées, l'hôte risque de ne pas démarrer.
+
+          Veuillez noter que la taille maximale réelle du presse-papiers est basée sur la taille maximale de message du canal de données WebRTC, qui ne dépend pas de cette règle.</translation>
 <translation id="8294750666104911727">Généralement, les pages dont la balise "X-UA-Compatible" est définie sur "chrome=1" sont rendues dans <ph name="PRODUCT_FRAME_NAME" /> indépendamment de la règle "ChromeFrameRendererSettings".
 
           Si vous activez ce paramètre, les pages ne sont pas analysées pour détecter les balises Meta.

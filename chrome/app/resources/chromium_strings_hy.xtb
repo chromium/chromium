@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">&amp;Chromium-ի մասին</translation>
 <translation id="2977470724722393594">Chromium-ը թարմացված է</translation>
+<translation id="2977506796191543575">Եթե կայքը փորձում է գողանալ ձեր գաղտնաբառը, կամ երբ վնասակար ֆայլ եք ներբեռնում, Chromium-ը կարող է ուղարկել URL-ն ու էջի բովանդակությունը՝ Ապահով դիտարկման միջոցով ստուգելու համար։</translation>
 <translation id="2983934633046890458">Chromium-ը փորձում է փոխել գաղտնաբառերը:</translation>
 <translation id="3032706164202344641">Chromium-ը չի կարող ստուգել ձեր գաղտնաբառերը։ Փորձեք ավելի ուշ։</translation>
 <translation id="3032787606318309379">Ավելացվում է Chromium-ին…</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">Այս համակարգչում արդեն տեղադրված է Chromium-ի ավելի նոր տարբերակը: Եթե ծրագրակազմը չի աշխատում, ապատեղադրեք Chromium-ը և նորից փորձեք:</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium-ը հիմա կվերագործարկվի}=1{Chromium-ը կվերագործարկվի 1 վայրկյանից}one{Chromium-ը կվերագործարկվի # վայրկյանից}other{Chromium-ը կվերագործարկվի # վայրկյանից}}</translation>
 <translation id="6241367896540709610">Ֆայլեր ներբեռնելու համար Chromium-ին անհրաժեշտ է հիշողությունն օգտագործելու թույլտվություն</translation>
+<translation id="6245734527075554892">Ստուգում է URL-ները Chromium-ում պահված վտանգավոր կայքերի ցանկի միջոցով։</translation>
 <translation id="6248213926982192922">Դարձնել Chromium-ը կանխադրված դիտարկիչ</translation>
 <translation id="6266342355635466082">Chromium-ը չի կարող ստուգել թարմացումների առկայությունը։ Ստուգեք ինտերնետ կապը։</translation>
 <translation id="6268381023930128611">Դուրս գա՞լ Chromium-ից:</translation>

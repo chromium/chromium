@@ -234,6 +234,7 @@ Dodirnite bilo koju reč za pretragu. Da biste precizirali pretragu, dodirnite i
 <translation id="2450907520913474542">Saznajte više o temama na veb-sajtovima bez napuštanja stranice. „Dodirnite za pretragu“ šalje reč i njen kontekst u Google pretragu i prikazuje definicije, slike, rezultate pretrage i druge detalje.
 
 Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu, izaberite više ili manje reči. Da biste izmenili pretragu, otvorite okno, dodirnite ikonu za otvaranje na novoj kartici i unesite promene u okviru za pretragu.</translation>
+<translation id="2451607499823206582">Prati se</translation>
 <translation id="2459390580524506445">Poboljšana glasovna pretraga</translation>
 <translation id="2461822463642141190">Aktuelno</translation>
 <translation id="247737702124049222">Opisi slika su uključeni</translation>
@@ -253,6 +254,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="2527779675047087889">Sakrij sadržaj privremene memorije</translation>
 <translation id="2532336938189706096">Veb-prikaz</translation>
 <translation id="2534155362429831547">Izbrisanih stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2534582914273493287">URL-ovi koje posećujete se šalju Google-u</translation>
 <translation id="2536728043171574184">Pregledate oflajn kopiju ove stranice</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
 <translation id="2561519700418191927">Pregledi video snimaka</translation>
@@ -372,6 +374,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3234978181857588512">Sačuvaj na uređaju</translation>
 <translation id="3236059992281584593">Još 1 min</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Ako delite i Chrome izveštaje o korišćenju, ti izveštaji obuhvataju URL-ove koje posećujete</translation>
 <translation id="3250563604907490871">Opisi slika će se nastaviti kada se povežete na WiFi</translation>
 <translation id="3254409185687681395">Obeležite ovu stranicu</translation>
 <translation id="3259831549858767975">Umanjivanje celokupnog prikaza stranice</translation>
@@ -423,6 +426,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775">Dostupno je <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Pretražite svoju istoriju</translation>
+<translation id="3557272988124495906">Dobijajte obaveštenja o sniženju cene</translation>
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
 <translation id="3563767357928833671">Prikazan je sadržaj privremene memorije</translation>
 <translation id="3566923219790363270">Chrome se još priprema za VR. Kasnije restartujte Chrome.</translation>
@@ -458,6 +462,7 @@ Dodirnite i zadržite bilo koju reč za pretragu. Da biste precizirali pretragu,
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
 <translation id="3778956594442850293">Dodato je na početni ekran</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
+<translation id="3803783897442799486">Ako nastavite, prihvatate <ph name="BEGIN_LINK1" />uslove korišćenja usluge<ph name="END_LINK1" />.\nRadi poboljšanja aplikacije Chrome Google-u šalje podatke o korišćenju i otkazivanjima. <ph name="BEGIN_LINK2" />Upravljajte<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Upravljajte autoplejem</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
@@ -606,6 +611,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="47217992755561375">Pogledajte sajtove koje najčešće posećujete</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Poslednja sinhronizacija: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">Dobijaćete poboljšane predloge na traci za adresu</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>
 <translation id="4749960740855309258">Otvorite novu karticu</translation>
 <translation id="4758061975920522644">Delite samo sliku</translation>
@@ -1173,6 +1179,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7975379999046275268">Prikaži stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Stranice se učitavaju unapred radi bržeg pregledanja i pretraživanja</translation>
 <translation id="7986497153528221272">Da biste videli lozinke, prvo podesite zaključavanje ekrana na uređaju</translation>
+<translation id="799576009106109668">Pregledaćete brže jer se sadržaj proaktivno učitava na osnovu aktuelne posete veb-stranici</translation>
 <translation id="7998918019931843664">Ponovo otvorite zatvorenu karticu</translation>
 <translation id="8004582292198964060">Pregledač</translation>
 <translation id="8013372441983637696">Obriši Chrome podatke i sa ovog uređaja</translation>
@@ -1220,6 +1227,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8218052821161047641">Brza stranica</translation>
 <translation id="8218622182176210845">Upravljajte nalogom</translation>
 <translation id="8223642481677794647">Meni kartice fida</translation>
+<translation id="8242868071038398515">Dobićete obaveštenje ako se cena snizi na bilo kom sajtu</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="825412236959742607">Ova stranica koristi previše memorije, pa je Chrome uklonio određeni sadržaj.</translation>
 <translation id="8260126382462817229">Probajte ponovo da se prijavite</translation>
@@ -1238,6 +1246,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8354977102499939946">Brzo pretražujte pomoću glasa. Da biste izmenili ovu prečicu, idite u Podešavanja.</translation>
 <translation id="835847953965672673">Vraćena su preuzimanja (<ph name="NUMBER_OF_DOWNLOADS" />)</translation>
 <translation id="8364299278605033898">Pogledajte popularne veb-sajtove</translation>
+<translation id="8368001212524806591">Prati cenu</translation>
 <translation id="8387617938027387193">Potvrdite svoj identitet</translation>
 <translation id="8393700583063109961">Pošaljite poruku</translation>
 <translation id="8410695015584479363">Pratite cene</translation>

@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />이 연결되었습니다.</translation>
 <translation id="1246890715821376239">지원되지 않는 앱</translation>
 <translation id="1247372569136754018">마이크(내부)</translation>
+<translation id="1247519845643687288">최근 앱</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />에서 충전 중</translation>
 <translation id="1255033239764210633">날씨가 어때?</translation>
 <translation id="1266097335951928626">셀카 카메라 시작</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">알림 작업을 실행하려면 기기의 잠금을 해제하세요.</translation>
 <translation id="1420408895951708260">야간 조명을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">예</translation>
+<translation id="1438357537418863713">앱 스트리밍이 설정되었습니다. 앱 스트리밍을 시작하면 최근에 실행한 앱이 여기 표시됩니다.</translation>
 <translation id="144853431011121127"><ph name="DEVICE_TYPE" />에서 휴대전화 알림을 확인합니다.</translation>
 <translation id="1455242230282523554">언어 설정 표시</translation>
 <translation id="1460620680449458626">음소거되어 있습니다.</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
 <translation id="5147567197700016471">잠금 해제됨</translation>
 <translation id="5155897006997040331">읽기 속도</translation>
+<translation id="5166007464919321363">데스크를 템플릿으로 저장</translation>
 <translation id="5166918508782100047">빠른 답변 설정</translation>
 <translation id="5168181903108465623">전송 기기를 사용할 수 있음</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">연결된 USB-C 기기 전원 공급 중</translation>
 <translation id="6790428901817661496">재생</translation>
 <translation id="6803622936009808957">지원되는 해상도가 없으므로 디스플레이를 그대로 반영할 수 없습니다. 대신 확장 데스크톱을 시작했습니다.</translation>
+<translation id="6811454077060061666">데스크톱용 Google Drive를 사용할 수 없습니다.</translation>
 <translation id="6816797338148849397">선택 항목과 관련된 정보를 이용할 수 있습니다. 액세스하려면 위쪽 화살표 키를 사용하세요.</translation>
 <translation id="6818242057446442178">한 단어 뒤로 이동</translation>
 <translation id="6820676911989879663">잠시 쉬어 가세요.</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />, 휴대전화 배터리 <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Enter 키를 눌러서 <ph name="USER_EMAIL_ADDRESS" /> 잠금 해제</translation>
 <translation id="8261506727792406068">삭제</translation>
+<translation id="8281279285293265212">스크린캐스트를 저장할 수 없습니다.</translation>
 <translation id="8284362522226889623">이전 데스크로 전환하려면 네 손가락을 사용해 왼쪽으로 스와이프하세요.</translation>
 <translation id="828708037801473432">사용 안함</translation>
 <translation id="8297006494302853456">약함</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">어시스턴트 설정</translation>
 <translation id="9072519059834302790">남은 배터리 사용 시간은 <ph name="TIME_LEFT" />입니다.</translation>
 <translation id="9074739597929991885">블루투스</translation>
+<translation id="9077404278023321866">템플릿</translation>
 <translation id="9077515519330855811">미디어 제어 기능, 현재 <ph name="MEDIA_TITLE" /> 재생 중</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">위로 스와이프하여 홈으로 이동</translation>

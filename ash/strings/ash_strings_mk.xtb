@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> е поврзана.</translation>
 <translation id="1246890715821376239">Неподдржани апликации</translation>
 <translation id="1247372569136754018">Микрофон (внатрешен)</translation>
+<translation id="1247519845643687288">Неодамнешни апликации</translation>
 <translation id="1252999807265626933">Се полни од <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво е времето?</translation>
 <translation id="1266097335951928626">Стартувај ја камерата за селфи</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">Отклучете го уредот за да се изврши дејството од известувањето</translation>
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Да</translation>
+<translation id="1438357537418863713">Стримингот на апликации е поставен. Штом ќе започнете, неодамна отворените апликации ќе се појавуваат тука.</translation>
 <translation id="144853431011121127">Добивајте известувања од телефонот на вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
@@ -591,6 +593,7 @@
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
 <translation id="5147567197700016471">Отклучено</translation>
 <translation id="5155897006997040331">Брзина на читање</translation>
+<translation id="5166007464919321363">Зачувај ја работната површина како шаблон</translation>
 <translation id="5166918508782100047">Поставки за „Брзи одговори“</translation>
 <translation id="5168181903108465623">Достапни се уреди за емитување</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
@@ -800,6 +803,7 @@
 <translation id="6777216307882431711">Се напојуваат поврзани USB-C уреди</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6803622936009808957">Не можеа да се отсликаат екрани затоа што не се пронајдени поддржани резолуции. Наместо тоа, влеговме во проширен десктоп.</translation>
+<translation id="6811454077060061666">Google Drive за компјутер е недостапна</translation>
 <translation id="6816797338148849397">Достапни се информации поврзани со вашиот избор. Користете го копчето со стрелка нагоре за да пристапите.</translation>
 <translation id="6818242057446442178">Назад за еден збор</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
@@ -998,6 +1002,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Притиснете Enter за да се отклучи за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Избриши</translation>
+<translation id="8281279285293265212">Неуспешно зачувување снимка на екранот</translation>
 <translation id="8284362522226889623">Повлечете налево со четири прста за да се префрлите на претходната работна површина</translation>
 <translation id="828708037801473432">Исклучено</translation>
 <translation id="8297006494302853456">Слаб</translation>
@@ -1102,6 +1107,7 @@
 <translation id="9070640332319875144">Поставки за „Помошникот“</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> до празна батерија.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Шаблони</translation>
 <translation id="9077515519330855811">Контроли за аудиовизуелни содржини. Сега е пуштено <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Повлечете нагоре за да појдете на почетен екран</translation>

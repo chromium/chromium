@@ -2269,7 +2269,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3335947283844343239">Open gesloten tabblad opnieuw</translation>
 <translation id="3336855445806447827">Weet niet</translation>
 <translation id="3337568642696914359">Niet toestaan dat sites protocollen verwerken</translation>
-<translation id="3340251637492627067">Je organisatie vereist dat in aanmerking komende downloads worden opgeslagen in <ph name="WEB_DRIVE" />. Als je inlogt, wordt een uniek verificatietoken opgeslagen. Dit token wordt gebruikt voor alle toekomstige in aanmerking komende downloads.</translation>
+<translation id="3340251637492627067">Je organisatie vereist dat in aanmerking komende downloads worden opgeslagen in <ph name="WEB_DRIVE" />. Als je inlogt, wordt een unieke verificatietoken opgeslagen. Deze token wordt gebruikt voor alle toekomstige in aanmerking komende downloads.</translation>
 <translation id="3340620525920140773">Download voltooid: <ph name="FILE_NAME" />.</translation>
 <translation id="3341699307020049241">Onjuiste pincode. Je hebt nog <ph name="RETRIES" /> pogingen over.</translation>
 <translation id="3341703758641437857">Toegang tot bestand-URL's toestaan</translation>
@@ -5882,7 +5882,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7243784282103630670">Er is een fout opgetreden bij het upgraden van Linux. We herstellen de container via je back-up.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
 <translation id="7246230585855757313">Plaats de beveiligingssleutel opnieuw en probeer het opnieuw.</translation>
-<translation id="7249777306773517303">Dit apparaat wordt beheerd door <ph name="DOMAIN" /> en vereist dat je elke keer opnieuw inlogt.</translation>
 <translation id="7250616558727237648">Het apparaat waarmee je deelt, reageert niet. Probeer het opnieuw.</translation>
 <translation id="725109152065019550">Je beheerder heeft externe opslag uitgezet voor je account.</translation>
 <translation id="7251346854160851420">Standaardachtergrond</translation>

@@ -114,6 +114,7 @@ Arama motorunuz <ph name="DSE_NAME" />. Arama geçmişinizi silmek için arama m
 <translation id="1973912524893600642">Verileri Koru</translation>
 <translation id="1974060860693918893">Gelişmiş</translation>
 <translation id="1989112275319619282">Göz at</translation>
+<translation id="199425419756152024">Şifreyi Göster</translation>
 <translation id="2015722694326466240">Şifreleri görmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
 <translation id="2021670401941426298">Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatlarını (varsa) inceleyin.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> Gün Önce Etkindi</translation>
@@ -152,7 +153,9 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="2386793615875593361">1 fotoğraf seçildi</translation>
 <translation id="2421004566762153674">Üçüncü taraf çerezler engelleniyor</translation>
 <translation id="2421044535038393232">Düzenlemeye Devam Et</translation>
+<translation id="2434405374328098816"><ph name="WEBSITE" /> adresinde "<ph name="USERNAME" />" için zaten kayıtlı şifreniz var</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
+<translation id="2473876017985765807"><ph name="WEBSITE" /> için zaten kayıtlı şifreniz var</translation>
 <translation id="2476359652512522418">Seçilmedi</translation>
 <translation id="2497852260688568942">Yöneticiniz senkronizasyonu devre dışı bıraktı</translation>
 <translation id="2500374554657206846">Şifre Kaydetme Seçenekleri</translation>
@@ -282,10 +285,12 @@ Aşağıdaki adımları uygulayın:</translation>
 <translation id="3603009562372709545">Bağlantı URL'sini kopyala</translation>
 <translation id="3607167657931203000">Verileri Otomatik Doldur</translation>
 <translation id="3609785682760573515">Senkronize ediliyor...</translation>
+<translation id="3631443864840848029">Bu sitede kullandığınız şifreyi kaydettiğinizden emin olun.</translation>
 <translation id="3638472932233958418">Web Sayfalarını Önceden Yükle</translation>
 <translation id="3661160521073045932">Yapılandırma Profili Mevcut</translation>
 <translation id="3670030362669914947">Numara</translation>
 <translation id="3691593122358196899">Yer işareti <ph name="FOLDER_TITLE" /> klasörüne eklendi</translation>
+<translation id="369349502275246497">Şifreleri kaydetmeyi öner</translation>
 <translation id="3709582977625132201">Okunmadı Olarak İşaretle</translation>
 <translation id="3740397331642243698">Girilen URL'leri Google Chrome'da Gizli modda açar.</translation>
 <translation id="3762232513783804601">iPad'iniz İçin Geliştirildi</translation>
@@ -509,6 +514,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5988851877894965432">URL'leri Chrome'da açar</translation>
 <translation id="6012140227487808125">Şifreleniyor…</translation>
 <translation id="6021332621416007159">Şurada aç:</translation>
+<translation id="6027945736510816438">Şunu mu demek istediniz: <ph name="WEBSITE" /></translation>
 <translation id="6036514205982097558">Tüm Sekmeleriniz Tek Tarayıcıda</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Kapat</translation>
@@ -751,6 +757,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8080028325999236607">Tüm Sekmeleri Kapat</translation>
 <translation id="8105368624971345109">Kapat</translation>
 <translation id="8114753159095730575">Dosya indirme işlevi kullanılabilir. Seçenekler ekranın alt tarafındadır.</translation>
+<translation id="8132598642024322408">Şimdiki fiyat: <ph name="PRICE" />; eski fiyat: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">Şifre Senkronizasyonu Çalışmıyor</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Sayfayı Çevir</translation>
@@ -823,6 +830,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8881801611828450202">Bu Resmi <ph name="SEARCH_ENGINE" /> Üzerinde Ara</translation>
 <translation id="8909135823018751308">Paylaş…</translation>
 <translation id="8917490105272468696">Evet, istiyorum</translation>
+<translation id="8952559610785099500">Şifre Ekleyin</translation>
 <translation id="895541991026785598">Sorun Bildirin</translation>
 <translation id="8976382372951310360">Yardım</translation>
 <translation id="8976414606286374109">Kartlar Google Hesabı'nıza kaydedildi.</translation>

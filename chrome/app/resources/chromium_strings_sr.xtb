@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">Менаџер задатака</translation>
 <translation id="2910007522516064972">О &amp;Chromium-у</translation>
 <translation id="2977470724722393594">Chromium је ажуриран</translation>
+<translation id="2977506796191543575">Ако неки сајт покуша да украде вашу лозинку или пробате да преузмете штетни фајл, Chromium може да пошаље URL-ове, укључујући делове садржаја странице, у Безбедно прегледање</translation>
 <translation id="2983934633046890458">Chromium покушава да измени лозинке.</translation>
 <translation id="3032706164202344641">Chromium не може да вам проверава лозинке. Пробајте поново касније.</translation>
 <translation id="3032787606318309379">Додавање у Chromium...</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">Овај рачунар већ има новију верзију Chromium-а. Ако софтвер не функционише, деинсталирајте Chromium и покушајте поново.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Поново ћемо покренути Chromium}=1{Поново ћемо покренути Chromium за 1 секунду}one{Поново ћемо покренути Chromium за # секунду}few{Поново ћемо покренути Chromium за # секунде}other{Поново ћемо покренути Chromium за # секунди}}</translation>
 <translation id="6241367896540709610">Chromium-у треба приступ меморијском простору да би преузимао фајлове</translation>
+<translation id="6245734527075554892">Проверава URL-ове са листом небезбедних сајтова који се чувају у Chromium-у</translation>
 <translation id="6248213926982192922">Подеси Chromium за подразумевани прегледач</translation>
 <translation id="6266342355635466082">Chromium не може да тражи ажурирања. Проверите интернет везу.</translation>
 <translation id="6268381023930128611">Желите ли да се одјавите из Chromium-а?</translation>

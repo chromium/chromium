@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">Görev Yöneticisi</translation>
 <translation id="2910007522516064972">&amp;Chromium hakkında</translation>
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
+<translation id="2977506796191543575">Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="2983934633046890458">Chromium şifreleri düzenlemeye çalışıyor.</translation>
 <translation id="3032706164202344641">Chromium, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="3032787606318309379">Chromium'a ekleniyor ...</translation>
@@ -165,6 +166,7 @@
 <translation id="6212496753309875659">Bu bilgisayarda Chromium'un daha yeni bir sürümü de var. Yazılım çalışmıyorsa, Chromium'u kaldırın ve tekrar deneyin.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium şimdi yeniden başlatılacak}=1{Chromium 1 saniye içinde yeniden başlatılacak}other{Chromium # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="6241367896540709610">Dosya indirmek için Chromium'un depolama alanına erişmesi gerekiyor</translation>
+<translation id="6245734527075554892">URL'leri, Chromium'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder.</translation>
 <translation id="6248213926982192922">Chromium varsayılan tarayıcı olsun</translation>
 <translation id="6266342355635466082">Chromium güncellemeleri denetleyemiyor. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>

@@ -3,8 +3,10 @@
 <translationbundle lang="ne">
 <translation id="1113173431709655881">क्यामेरा मोड</translation>
 <translation id="1175958423215084756">लिंक भेट्टियो। <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">घडी घुम्ने दिशामा ९० डिग्री घुमाउनुहोस्</translation>
 <translation id="1276998909102132017">ग्यालेरीका फोटो</translation>
 <translation id="1300209025925956156">डकुमेन्ट स्क्यान गर्नुहोस्</translation>
+<translation id="1303487788671416818">पूर्ण आकारको भिडियो स्न्यापहोस्ट अन गरियोस्</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />। प्रयोग गर्न खोज बटन + लेफ्ट एरो थिच्नुहोस्।</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> निकालिएको छ।</translation>
@@ -54,6 +56,7 @@
 <translation id="3517926952904427380">पोर्ट्रेट तस्बिर खिच्न सकिएन</translation>
 <translation id="3569311554794739032">तपाईंले <ph name="FILE" /> हटाउन खोज्नुभएकै हो त?</translation>
 <translation id="3573890771273113519">स्क्यान मोड प्रयोग गर्नुहोस्</translation>
+<translation id="3789724198583203151">घडी घुम्ने दिशाको विपरीत दिशामा ९० डिग्री घुमाउनुहोस्</translation>
 <translation id="3810838688059735925">भिडियो</translation>
 <translation id="3838931309141338733">बारकोड स्क्यान गर्नुहोस्</translation>
 <translation id="3892148308691398805">पाठ कपी गर्नुहोस्</translation>

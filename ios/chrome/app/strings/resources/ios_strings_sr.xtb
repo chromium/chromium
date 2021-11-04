@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">Задржи податке</translation>
 <translation id="1974060860693918893">Напредне опције</translation>
 <translation id="1989112275319619282">Прегледај</translation>
+<translation id="199425419756152024">Прикажи лозинку</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="2021670401941426298">Погледајте упутства претраживача за брисање историје претраге ако је то примењиво.</translation>
 <translation id="2073572773299281212">Последња активност: пре <ph name="DAYS" /> дан/а</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">Изабрана је 1 слика</translation>
 <translation id="2421004566762153674">Блокира колачиће треће стране</translation>
 <translation id="2421044535038393232">Настави изменe</translation>
+<translation id="2434405374328098816">Већ сте сачували лозинку за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
+<translation id="2473876017985765807">Већ сте сачували лозинку за <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Није изабрано</translation>
 <translation id="2497852260688568942">Администратор је онемогућио синхронизацију</translation>
 <translation id="2500374554657206846">Опције за чување лозинке</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">Копирај URL адресу линка</translation>
 <translation id="3607167657931203000">Подаци аутоматског попуњавања</translation>
 <translation id="3609785682760573515">Синхронизовање...</translation>
+<translation id="3631443864840848029">Уверите се да чувате актуелну лозинку за овај сајт.</translation>
 <translation id="3638472932233958418">Унап. учитај веб-странице</translation>
 <translation id="3661160521073045932">Доступан профил конфигурације</translation>
 <translation id="3670030362669914947">Број</translation>
 <translation id="3691593122358196899">Обележивач је додат у <ph name="FOLDER_TITLE" /></translation>
+<translation id="369349502275246497">Понуди да сачуваш лозинке</translation>
 <translation id="3709582977625132201">Означи као непрочитано</translation>
 <translation id="3740397331642243698">Отвара унете URL-ове у Google Chrome-у у режиму без архивирања.</translation>
 <translation id="3762232513783804601">Направљено за iPad</translation>
@@ -509,6 +514,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5988851877894965432">Отварајте URL-ове у Chrome-у</translation>
 <translation id="6012140227487808125">Шифрује се…</translation>
 <translation id="6021332621416007159">Отвори у...</translation>
+<translation id="6027945736510816438">Да ли сте мислили <ph name="WEBSITE" />?</translation>
 <translation id="6036514205982097558">Све картице у једном прегледачу</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затвори</translation>
@@ -751,6 +757,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8080028325999236607">Затвори све картице</translation>
 <translation id="8105368624971345109">Искључи</translation>
 <translation id="8114753159095730575">Преузимање датотеке није доступно. Опције су наведене у дну екрана.</translation>
+<translation id="8132598642024322408">Цена је <ph name="PRICE" />, а била је <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">Синхронизација лозинки не ради</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Уређаји<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Преведи страницу</translation>
@@ -823,6 +830,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8881801611828450202">Претражи ову слику у <ph name="SEARCH_ENGINE" />-у</translation>
 <translation id="8909135823018751308">Дели...</translation>
 <translation id="8917490105272468696">Да, омогући</translation>
+<translation id="8952559610785099500">Додајте лозинку</translation>
 <translation id="895541991026785598">Пријавите проблем</translation>
 <translation id="8976382372951310360">Помоћ</translation>
 <translation id="8976414606286374109">Картице се чувају на Google налогу.</translation>

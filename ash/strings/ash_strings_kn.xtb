@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1246890715821376239">ಬೆಂಬಲಿಸದ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="1247372569136754018">ಮೈಕ್ರೊಫೋನ್ (ಆಂತರಿಕ)</translation>
+<translation id="1247519845643687288">ಇತ್ತೀಚಿನ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> ನಿಂದ ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1255033239764210633">ಹವಾಮಾನ ಹೇಗಿದೆ?</translation>
 <translation id="1266097335951928626">ಸೆಲ್ಫೀ ಕ್ಯಾಮರಾವನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">ಅಧಿಸೂಚನೆ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="1420408895951708260">ನೈಟ್ ಲೈಟ್ ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">ಹೌದು</translation>
+<translation id="1438357537418863713">ಆ್ಯಪ್ ಸ್ಟ್ರೀಮಿಂಗ್ ಅನ್ನು ಈಗ ಸೆಟಪ್ ಮಾಡಲಾಗಿದೆ. ನೀವು ಪ್ರಾರಂಭಿಸಿದ ನಂತರ, ಇತ್ತೀಚೆಗೆ ಪ್ರಾರಂಭಿಸಿದ ಆ್ಯಪ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="144853431011121127">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಅಧಿಸೂಚನೆಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1455242230282523554">ಭಾಷೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1460620680449458626">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">ವಿವಿಧ ಕೀಬೋರ್ಡ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
 <translation id="5147567197700016471">ಅನ್‌ಲಾಕ್ ಆಗಿದೆ</translation>
 <translation id="5155897006997040331">ರೀಡಿಂಗ್ ಸ್ಪೀಡ್</translation>
+<translation id="5166007464919321363">ಡೆಸ್ಕ್ ಅನ್ನು ಟೆಂಪ್ಲೇಟ್ ಆಗಿ ಉಳಿಸಿ</translation>
 <translation id="5166918508782100047">ತ್ವರಿತ ಉತ್ತರಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5168181903108465623">ಬಿತ್ತರಿಸುವಿಕೆಯ ಸಾಧನಗಳು ಲಭ್ಯವಿದೆ</translation>
 <translation id="5170568018924773124">ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
@@ -800,6 +803,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6777216307882431711">ಸಂಪರ್ಕಿತ USB-C ಸಾಧನಗಳನ್ನು ಚಾರ್ಜ್ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
 <translation id="6803622936009808957">ಯಾವುದೇ ಬೆಂಬಲಿತ ಪರಿಹಾರಗಳು ಕಂಡುಬರದ ಕಾರಣ ಪ್ರದರ್ಶನಗಳನ್ನು ಪ್ರತಿಬಿಂಬಿಸಲಾಗಲಿಲ್ಲ. ಬದಲಿಗೆ ವಿಸ್ತರಿತ ಡೆಸ್ಕ್‌ಟಾಪ್ ಅನ್ನು ನಮೂದಿಸಲಾಗಿದೆ.</translation>
+<translation id="6811454077060061666">ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗಾಗಿ Google Drive ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6816797338148849397">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಲಭ್ಯವಿದೆ. ಇದಕ್ಕೆ ಪ್ರವೇಶ ಪಡೆಯಲು, ಅಪ್ ಆ್ಯರೋ ಬಳಸಿ.</translation>
 <translation id="6818242057446442178">ಒಂದು ಪದದಷ್ಟು ಹಿಂದಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="6820676911989879663">ವಿರಾಮ ತೆಗೆದುಕೊಳ್ಳಿ!</translation>
@@ -998,6 +1002,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು Enter ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="8261506727792406068">ಅಳಿಸಿ</translation>
+<translation id="8281279285293265212">ಸ್ಕ್ರೀನ್‌ಕ್ಯಾಸ್ಟ್ ಅನ್ನು ಉಳಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8284362522226889623">ಹಿಂದಿನ ಡೆಸ್ಕ್‌ಗೆ ಬದಲಿಸಲು, ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಎಡಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="828708037801473432">ಆಫ್</translation>
 <translation id="8297006494302853456">ದುರ್ಬಲ</translation>
@@ -1102,6 +1107,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="9070640332319875144">ಅಸಿಸ್ಟೆಂಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="9072519059834302790">ಬ್ಯಾಟರಿ ಖಾಲಿಯಾಗಲು <ph name="TIME_LEFT" /> ಸಮಯವಿದೆ.</translation>
 <translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>
+<translation id="9077404278023321866">ಟೆಂಪ್ಲೇಟ್‌ಗಳು</translation>
 <translation id="9077515519330855811">ಮೀಡಿಯಾ ನಿಯಂತ್ರಣಗಳು, ಇದೀಗ <ph name="MEDIA_TITLE" /> ಅನ್ನು ಪ್ಲೇ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="9079731690316798640">ವೈ-ಫೈ: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">ಮುಖಪುಟಕ್ಕೆ ಹೋಗಲು ಮೇಲೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>

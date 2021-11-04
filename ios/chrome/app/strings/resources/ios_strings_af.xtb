@@ -114,6 +114,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1973912524893600642">Hou data</translation>
 <translation id="1974060860693918893">Gevorderd</translation>
 <translation id="1989112275319619282">Blaai deur</translation>
+<translation id="199425419756152024">Bekyk wagwoord</translation>
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="2021670401941426298">Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodig.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> dae gelede aktief</translation>
@@ -152,7 +153,9 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2386793615875593361">1 gekies</translation>
 <translation id="2421004566762153674">Blokkeer tans derdeparty-webkoekies</translation>
 <translation id="2421044535038393232">Hou wysiging</translation>
+<translation id="2434405374328098816">Jy het reeds 'n wagwoord vir "<ph name="USERNAME" />" op <ph name="WEBSITE" /> gestoor</translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
+<translation id="2473876017985765807">Jy het reeds 'n wagwoord gestoor vir <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nie gekies nie</translation>
 <translation id="2497852260688568942">Jou administrateur het sinkronisering gedeaktiveer</translation>
 <translation id="2500374554657206846">Opsies om wagwoord te stoor</translation>
@@ -282,10 +285,12 @@ Volg die stappe hieronder:</translation>
 <translation id="3603009562372709545">Kopieer skakel se URL</translation>
 <translation id="3607167657931203000">Outovuldata</translation>
 <translation id="3609785682760573515">Sinkroniseer tans …</translation>
+<translation id="3631443864840848029">Maak seker jy stoor jou huidige wagwoord vir hierdie werf.</translation>
 <translation id="3638472932233958418">Laai webbladsye vooraf</translation>
 <translation id="3661160521073045932">Opstellingprofiel is beskikbaar</translation>
 <translation id="3670030362669914947">Nommer</translation>
 <translation id="3691593122358196899">Geboekmerk in <ph name="FOLDER_TITLE" /></translation>
+<translation id="369349502275246497">Bied aan om wagwoorde te stoor</translation>
 <translation id="3709582977625132201">Merk as ongelees</translation>
 <translation id="3740397331642243698">Maak die URL'e wat by Google Chrome ingevoer word in Incognitomodus oop.</translation>
 <translation id="3762232513783804601">Gebou vir jou iPad</translation>
@@ -509,6 +514,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="5988851877894965432">Maak URL'e oop in Chrome</translation>
 <translation id="6012140227487808125">Enkripteer tans …</translation>
 <translation id="6021332621416007159">Maak oop in …</translation>
+<translation id="6027945736510816438">Het jy bedoel <ph name="WEBSITE" />?</translation>
 <translation id="6036514205982097558">Al jou oortjies in een blaaier</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Maak toe</translation>
@@ -583,6 +589,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 Probeer 'n unieke wagwoord vir elke werf gebruik.</translation>
 <translation id="651505212789431520">Kanselleer sinkronisering? Jy kan sinkronisering enige tyd in Instellings aanskakel.</translation>
 <translation id="6524918542306337007">Incognitomodus is onbeskikbaar</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Zoem in</translation>
 <translation id="6585618849026997638">Jy kan 'n boekmerk byvoeg om weer uit te kom by 'n bladsy wat vir jou belangrik is</translation>
 <translation id="6603393121510733479">Jou organisasie het private blaai afgeskakel.
@@ -750,6 +757,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8080028325999236607">Maak alle oortjies toe</translation>
 <translation id="8105368624971345109">Skakel af</translation>
 <translation id="8114753159095730575">Lêer kan afgelaai word. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
+<translation id="8132598642024322408">Nou <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">Wagwoordsinkronisering werk nie</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Jou toestelle<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Vertaal bladsy</translation>
@@ -822,6 +830,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8881801611828450202">Deursoek <ph name="SEARCH_ENGINE" /> vir hierdie prent</translation>
 <translation id="8909135823018751308">Deel …</translation>
 <translation id="8917490105272468696">Ja, ek is in</translation>
+<translation id="8952559610785099500">Voeg wagwoord by</translation>
 <translation id="895541991026785598">Gee 'n kwessie aan</translation>
 <translation id="8976382372951310360">Hulp</translation>
 <translation id="8976414606286374109">Kaarte wat in jou Google-rekening gestoor is.</translation>

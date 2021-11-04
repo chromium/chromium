@@ -183,6 +183,7 @@
 <translation id="5686916850681061684">Налаштовуйте й керуйте Google Chrome. Якщо з’явиться сповіщення, натисніть його, щоб дізнатися більше.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome перезапуститься через 1 секунду}one{Google Chrome перезапуститься через # секунду}few{Google Chrome перезапуститься через # секунди}many{Google Chrome перезапуститься через # секунд}other{Google Chrome перезапуститься через # секунди}}</translation>
+<translation id="5736850870166430177">Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chrome також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки</translation>
 <translation id="573759479754913123">Про ОС Chrome</translation>
 <translation id="5756509061973259733">Профіль Chrome із цим обліковим записом уже існує на цьому пристрої</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
@@ -270,6 +271,7 @@
 <translation id="8290100596633877290">Відбулося аварійне завершення роботи Google Chrome. Перезапустити зараз?</translation>
 <translation id="8342675569599923794">Цей файл небезпечний, тому Chrome заблокував його.</translation>
 <translation id="8370517070665726704">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
+<translation id="8394720698884623075">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chrome</translation>
 <translation id="840084489713044809">Google Chrome хоче експортувати ваші паролі.</translation>
 <translation id="8433638294851456451">Щоб надіслати номер на телефон Android, увійдіть у Chrome на обох пристроях.</translation>
 <translation id="8498858610309223613">Щойно було застосовано спеціальне оновлення для захисту Google Chrome. Перезапустіть веб-переглядач, і ваші вкладки буде відновлено.</translation>

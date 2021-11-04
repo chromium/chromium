@@ -683,15 +683,6 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 
       Ist diese Richtlinie deaktiviert oder nicht konfiguriert, läuft der Host für Remote-Unterstützung nur im Nutzerbereich. Remote-Nutzer können nicht mit geöffneten Fenstern auf dem Desktop arbeiten.</translation>
 <translation id="1837165432382702436">Seitenhöhe in Mikrometern</translation>
-<translation id="1839278886947586809">
-      Diese Richtlinie wurde in M80 entfernt, da WebDriver mittlerweile mit allen vorhandenen Richtlinien kompatibel ist und sie deshalb nicht mehr gebraucht wurde.
-
-      Diese Richtlinie erlaubt es Nutzern der WebDriver-Funktion, Richtlinien zu überschreiben, die die Verwendung von WebDriver beeinträchtigen können.
-
-      Sie deaktiviert aktuell die Richtlinien SitePerProcess und IsolateOrigins.
-
-      Wenn die Richtlinie aktiviert ist, kann WebDriver inkompatible Richtlinien überschreiben.
-      Ist die Richtlinie deaktiviert oder nicht konfiguriert, kann WebDriver inkompatible Richtlinien nicht überschreiben.</translation>
 <translation id="1843117931376765605">Aktualisierungsrate für Nutzerrichtlinien</translation>
 <translation id="1844620919405873871">Konfiguriert Richtlinien zum schnellen Entsperren.</translation>
 <translation id="1844972978764975668">Anfragen an einen Google-Server zulassen, um einen exakten Zeitstempel abzufragen</translation>
@@ -1309,22 +1300,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
        Wenn die Richtlinie nicht konfiguriert ist, ist das Umschalten bei Leistungsspitzen immer deaktiviert.</translation>
 <translation id="2502467045153796624">Verhalten zum Versionsdowngrade</translation>
-<translation id="2505351097561237268">
-      Die Richtlinie für Berechtigungen zur Display-Erfassung ermöglicht Zugriff auf getDisplayMedia(),
-gemäß dieser Spezifikation:
-https://www.w3.org/TR/screen-capture/#feature-policy-integration
-Ist die Richtlinie jedoch deaktiviert, wird diese Anforderung nicht erzwungen
-und getDisplayMedia() wird aus Kontexten zugelassen, die andernfalls nicht zulässig wären. Diese Unternehmensrichtlinie ist vorübergehend.
-Nach Version 100 von <ph name="PRODUCT_NAME" /> wird sie voraussichtlich entfernt.
-      Sie soll Unternehmensnutzer freigeben, deren Anwendung nicht spezifikationskonform ist,
-jedoch erst nach einiger Zeit angepasst werden kann.
-
-      Ist die Richtlinie aktiviert oder nicht konfiguriert, können Websites getDisplayMedia() nur aus
-Kontexten anrufen, die auf der Zulassungsliste der Richtlinie für Berechtigungen zur Display-Erfassung aufgeführt sind.
-
-      Wenn die Richtlinie deaktiviert ist, können Websites getDisplayMedia() auch aus Kontexten anrufen,
-die nicht auf der Zulassungsliste der Richtlinie für Berechtigungen zur Display-Erfassung aufgeführt sind.
-      Andere Einschränkungen können dennoch gültig sein.</translation>
 <translation id="250670737672448119">Mit dieser Richtlinie wird die Bedienungshilfe "Textcursor hervorheben" aktiviert.
 
           Dabei wird der Bereich um den Textcursor beim Bearbeiten hervorgehoben.
@@ -1841,6 +1816,7 @@ die nicht auf der Zulassungsliste der Richtlinie für Berechtigungen zur Display
 <translation id="3092059499596000593">Systemstandarddrucker als Standardeinstellung in der Druckvorschau verwenden</translation>
 <translation id="309416443108680956">Legt fest, was passiert, wenn ein Nutzer der sich über ein Sicherheitstoken (z. B. mit einer Smartcard) authentifiziert hat, dieses Token während einer Sitzung entfernt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Es geschieht gar nichts. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Der Bildschirm ist gesperrt, bis der Nutzer noch einmal eine Authentifizierung durchführt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Die Sitzung wird beendet und der Nutzer abgemeldet. Ist die Richtlinie nicht festgelegt, ist standardmäßig <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> ausgewählt.</translation>
 <translation id="3096595567015595053">Liste der aktivierten Plug-ins</translation>
+<translation id="3101035417394748390">Die maximale Größe in Byte, die zwischen dem Client und dem Host über die Synchronisierung der Zwischenablage übertragen werden kann</translation>
 <translation id="3101501961102569744">Auswählen, wie Proxyserver-Einstellungen angegeben werden</translation>
 <translation id="3101709781009526431">Datum und Uhrzeit</translation>
 <translation id="3110248563985502478">Diese Richtlinie wurde in M88 eingestellt. Flash wird von Chrome nicht mehr unterstützt. Wenn diese Richtlinie aktiviert ist, werden veraltete Plug-ins als normale Plug-ins verwendet. Ist diese Einstellung deaktiviert, werden veraltete Plug-ins nicht verwendet.
@@ -2536,10 +2512,6 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
           Wird sie nicht konfiguriert, ist die Einfingerbedienung auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3927291637826333102">Desktop-, Fenster- und Tabaufnahme für diese Ursprünge zulassen</translation>
-<translation id="3932553013632130433">
-      Legt fest, ob „SharedArrayBuffers“ in einem nicht ursprungsübergreifend isolierten Kontext verwendet werden kann. Chrome setzt bei der Verwendung von „SharedArrayBuffers“ aus Gründen der Webkompatibilität ab Version 91 (25.05.2021) die ursprungsübergreifende Isolierung voraus. Weitere Informationen finden Sie hier: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
-      Bei Auswahl von „true“ können Websites „SharedArrayBuffers“ ohne Einschränkungen verwenden.
-      Wenn Sie die Richtlinie auf „false“ setzen oder nicht konfigurieren, können Websites „SharedArrayBuffers“ nur in einem ursprungsübergreifend isolierten Kontext verwenden.</translation>
 <translation id="3942041691320538491">Wenn die Richtlinie auf "0" gesetzt ist (Standardeinstellung), kann generell auf die Entwicklertools und die JavaScript-Konsole zugegriffen werden. Für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, ist der Zugriff aber nicht möglich. Ist die Richtlinie auf "1" gesetzt, können die Entwicklertools und die JavaScript-Konsole in allen Kontexten aufgerufen und verwendet werden, also auch von Erweiterungen, die über die Unternehmensrichtlinie installiert wurden. Wenn die Richtlinie auf "2" gesetzt ist, kann nicht auf die Entwicklertools zugegriffen werden und Websiteelemente können nicht mehr geprüft werden.
 
       Alle Tastenkombinationen und Einträge im Menü oder Kontextmenü, mit denen die Entwicklertools oder die JavaScript-Konsole aufgerufen werden, werden deaktiviert.</translation>
@@ -2993,16 +2965,6 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Eine vollständige Erläuterung finden Sie unter https://www.chromestatus.com/feature/5675755719622656.
       Wenn diese Richtlinie aktiviert ist, dürfen Websites gleichzeitig mit der Navigation neue Fenster oder Tabs öffnen.
       Wenn diese Richtlinie deaktiviert oder nicht festgelegt ist, dürfen Websites neue Fenster oder Tabs nicht gleichzeitig mit der Navigation öffnen.</translation>
-<translation id="4574215366111396039">Chrome blockiert das Aufrufen externer Protokolle in einem Sandbox-iFrame. Weitere Informationen finden Sie unter https://chromestatus.com/features/5680742077038592.
-
-      Wenn die Richtlinie auf „true“ gesetzt wird, blockiert Chrome diese Aufrufe.
-
-      Wird die Richtlinie auf „false“ gesetzt, kann Chrome diese Aufrufe nicht blockieren.
-
-      Standardmäßig ist der Wert auf „true“ gesetzt, womit die Sicherheitsfunktion aktiviert ist.
-
-      Dies kann von Administratoren genutzt werden, die mehr Zeit für die Aktualisierung ihrer internen Website benötigen, die von dieser neuen Einschränkung betroffen ist. Diese Unternehmensrichtlinie ist vorübergehend. Nach Version 104 von <ph name="PRODUCT_NAME" /> wird sie voraussichtlich entfernt.
-      </translation>
 <translation id="4578265298946081589">Nach Nutzerabmeldung nicht neu starten.</translation>
 <translation id="4581507927311097234">Zeitraum ohne Nutzereingabe, nach dem der Bildschirm ausgeschaltet wird, angegeben in Millisekunden.</translation>
 <translation id="4582338216073557489">Wenn die Richtlinie auf „Keine“ festgelegt ist, verwendet <ph name="PRODUCT_NAME" /> die Cachestandardgröße zum Speichern von Dateien im Cache auf dem Laufwerk. Dies kann vom Nutzer nicht geändert werden.
@@ -4191,33 +4153,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Sie können die Such-URL von Google so angeben: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
 <translation id="606742564823687992">Druckaufträge nicht ausgeben</translation>
-<translation id="6070374129526507093">Eingestellt in M69. Verwenden Sie stattdessen
-      OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      Mit dieser Richtlinie wird eine Liste von Quellen (URLs) oder Hostnamenmustern
-      wie „*.beispiel.de“ festgelegt, für die keine Sicherheitsbeschränkungen
-      für unsichere Quellen gelten.
-
-      Auf diese Weise können Organisationen Quellen für ältere Anwendungen,
-      die kein TLS bereitstellen können, zulassen oder einen
-      Testserver für die interne Webentwicklung einrichten, damit die Entwickler
-      Funktionen testen können, die einen sicheren Kontext erfordern, ohne TLS
-      auf dem Testserver bereitstellen zu müssen. Außerdem wird mit dieser Richtlinie
-      verhindert, dass die Quelle in der Omnibox als „Nicht sicher“ gekennzeichnet wird.
-
-      Das Festlegen einer Liste von URLs in dieser Richtlinie hat den gleichen Effekt
-      wie das Festlegen des Befehlszeilen-Flags --unsafely-treat-insecure-origin-as-secure
-      für eine durch Kommas getrennte Liste mit denselben URLs. Wenn die Richtlinie konfiguriert
-      ist, wird das Befehlszeilen-Flag überschrieben.
-
-      Diese Richtlinie wurde in M69 zugunsten von
-      OverrideSecurityRestrictionsOnInsecureOrigin eingestellt. Wenn beide Richtlinien
-      vorhanden sind, wird diese Richtlinie durch OverrideSecurityRestrictionsOnInsecureOrigin
-      überschrieben.
-
-      Weitere Informationen zu sicheren Kontexten finden Sie unter
-      https://www.w3.org/TR/secure-contexts/.
-      </translation>
 <translation id="6070667616071269965">Tastaturlayouts der Anmeldeseite</translation>
 <translation id="6074963268421707432">Anzeige von Desktop-Benachrichtigungen für keine Website zulassen</translation>
 <translation id="6074964551275531965">Zeitraum für Updatebenachrichtigungen festlegen</translation>
@@ -4351,12 +4286,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Details zu <ph name="CORS" /> erhalten Sie unter <ph name="CORS_HELP_URL" />.
 
       Hinweis: Diese Richtlinie sollte ursprünglich planmäßig in <ph name="PRODUCT_NAME" />-Version 82 entfernt werden, wurde aber erst in Version 84 entfernt.</translation>
-<translation id="6276624383311206185">
-      Legt fest, ob WebAssembly-Module ursprungsübergreifend an ein anderes Fenster oder einen anderen Worker gesendet werden können. Das ursprungsübergreifende Teilen von WebAssembly-Modulen wird im Zuge der Einstellung von document.domain ebenfalls eingestellt, siehe https://github.com/mikewest/deprecating-document-domain. Diese Richtlinie ermöglicht es, das ursprungsübergreifende Teilen von WebAssembly-Modulen wieder zu aktivieren, um den Übergangszeitraum zu verlängern.
-
-      Wenn diese Richtlinie auf „True“ gesetzt wird, können Websites WebAssembly-Module auch ohne Einschränkungen ursprungsübergreifend senden.
-
-      Wird sie auf „False“ gesetzt oder nicht konfiguriert, können Websites WebAssembly-Module nur an Fenster und Worker im selben Ursprung senden.</translation>
 <translation id="6277314550042130537">Genehmigung der KDC-Richtlinie bei der HTTP-Authentifizierung berücksichtigen</translation>
 <translation id="6279722058145292462">Wenn die Richtlinie konfiguriert ist, wird in Tagen angegeben, wie häufig ein Client das Computerpasswort ändert. Das Passwort wird vom Client zufällig generiert und ist für den Nutzer nicht sichtbar. Eine Deaktivierung dieser Richtlinie oder die Auswahl einer hohen Anzahl von Tagen kann sich negativ auf die Sicherheit auswirken, da potenzielle Angreifer so mehr Zeit haben, das Computerpasswort herauszufinden und missbräuchlich zu verwenden.
 
@@ -6044,6 +5973,17 @@ Unter Windows ist es empfehlenswert, Richtlinien über Gruppenrichtlinienobjekte
 
           Ist die Richtlinie nicht konfiguriert, ist die Spracheingabe anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="8293414596801971604">Regulärer Ausdruck für die Suche nach dem angegebenen angezeigten Namen des Druckers.</translation>
+<translation id="8293509904023267821">Wenn diese Richtlinie konfiguriert ist, werden Daten in der Zwischenablage, die an den Host gesendet und von diesem empfangen werden, je nach der durch diese Richtlinie festgelegten Begrenzung abgeschnitten.
+
+          Bei einem Wert von 0 ist die Synchronisierung der Zwischenablage deaktiviert.
+
+          Die Richtlinie betrifft sowohl Szenarien mit Remotezugriff als auch solche mit Remotesupport.
+
+          Sie hat keine Auswirkungen, wenn sie nicht konfiguriert ist.
+
+          Wird die Richtlinie auf einen Wert festgelegt, der nicht zwischen dem Höchst- und dem Mindestwert liegt, kann der Host möglicherweise nicht starten.
+
+          Beachten Sie: Die tatsächliche Obergrenze für die Größe der Zwischenablage hängt von der maximalen Nachrichtengröße für den WebRTC-Datenkanal ab, die nicht durch diese Richtlinie gesteuert wird.</translation>
 <translation id="8294750666104911727">Normalerweise werden Seiten, bei denen das Metatag "X-UA-Compatible" auf "chrome=1" gesetzt ist, unabhängig von der Richtlinie "ChromeFrameRendererSettings" in <ph name="PRODUCT_FRAME_NAME" /> gerendert.
 
           Bei aktivierter Einstellung werden die Seiten nicht nach Metatags durchsucht.

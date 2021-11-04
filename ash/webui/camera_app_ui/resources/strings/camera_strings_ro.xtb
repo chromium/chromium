@@ -3,6 +3,7 @@
 <translationbundle lang="ro">
 <translation id="1113173431709655881">Modul cameră</translation>
 <translation id="1175958423215084756">A fost detectat un link. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Rotește spre dreapta cu 90 de grade</translation>
 <translation id="1276998909102132017">Imagini din galerie</translation>
 <translation id="1300209025925956156">Scanează documentul</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tasta de căutare + săgeată spre stânga pentru acces.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Nu se poate face fotografia portret</translation>
 <translation id="3569311554794739032">Sigur vrei să elimini <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Comută la modul de scanare</translation>
+<translation id="3789724198583203151">Rotește spre stânga cu 90 de grade</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scanează codul de bare</translation>
 <translation id="3892148308691398805">Copiază textul</translation>

@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
 <translation id="2910007522516064972">&amp;Chromium વિશે</translation>
 <translation id="2977470724722393594">Chromium અપ ટૂ ડેટ છે</translation>
+<translation id="2977506796191543575">જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chromium પેજ કન્ટેન્ટના બિટ સહિત URLs પણ Safe Browsingને મોકલી શકે છે</translation>
 <translation id="2983934633046890458">Chromium પાસવર્ડમાં ફેરફાર કરવાનો પ્રયાસ કરે છે.</translation>
 <translation id="3032706164202344641">Chromium તમારા પાસવર્ડ ચેક કરી શકતું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3032787606318309379">Chromium માં ઉમેરી રહ્યું છે...</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">આ કમ્પ્યુટર પર પહેલાંથી જ Chromiumનું સૌથી તાજેતરનું વર્ઝન છે. જો સૉફ્ટવેર કાર્ય કરી રહ્યું નથી, તો કૃપા કરીને Chromiumને અનઇન્સ્ટૉલ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium હમણાં ફરીથી લૉન્ચ થશે}=1{Chromium 1 સેકન્ડમાં ફરીથી લૉન્ચ થશે}one{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}other{Chromium # સેકન્ડમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="6241367896540709610">ફાઇલો ડાઉનલોડ કરવા માટે, Chromiumને સ્ટોરેજના ઍક્સેસની પરવાનગીની જરૂર છે</translation>
+<translation id="6245734527075554892">URLsને Chromiumમાં સ્ટોર કરેલી અસુરક્ષિત સાઇટની સૂચિ સાથે સરખાવીને ચેક કરે છે</translation>
 <translation id="6248213926982192922">Chromium ને ડિફોલ્ટ બ્રાઉઝર બનાવો</translation>
 <translation id="6266342355635466082">Chromium અપડેટ ચેક કરી શકતું નથી. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6268381023930128611">Chromiumમાંથી સાઇન આઉટ કરીએ?</translation>

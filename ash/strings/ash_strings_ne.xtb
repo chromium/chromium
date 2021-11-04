@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट गरिएको छ।</translation>
 <translation id="1246890715821376239">प्रयोग गर्न नमिल्ने एपहरू</translation>
 <translation id="1247372569136754018">माइक्रोफोन (आन्तरिक)</translation>
+<translation id="1247519845643687288">हालसालै चलाइएका एपहरू</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> द्वारा चार्ज हुँदै</translation>
 <translation id="1255033239764210633">मौसम कस्तो छ?</translation>
 <translation id="1266097335951928626">सेल्फी क्यामेरा अन गर्नुहोस्</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">सूचनासम्बन्धी कारबाही गर्न डिभाइस अनलक गर्नुहोस्</translation>
 <translation id="1420408895951708260">रात्रि प्रकाश टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">हो</translation>
+<translation id="1438357537418863713">एप स्ट्रिमिङ सेटअप गरिएको छ। तपाईंले एप स्ट्रिमिङ प्रयोग गरेपछि हालसालै लन्च गरिएका एपहरू यहाँ देखिने छन्।</translation>
 <translation id="144853431011121127">आफ्नो फोनका सूचनाहरू आफ्नो <ph name="DEVICE_TYPE" /> मा प्राप्त गर्नुहोस्</translation>
 <translation id="1455242230282523554">भाषासम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1460620680449458626">भोल्युम म्युट गरिएको छ।</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
 <translation id="5147567197700016471">अनलक गरिएको छ</translation>
 <translation id="5155897006997040331">पढ्ने गति</translation>
+<translation id="5166007464919321363">टेम्प्लेटका रूपमा डेस्क सेभ गर्नुहोस्</translation>
 <translation id="5166918508782100047">द्रुत जवाफसम्बन्धी सेटिङ</translation>
 <translation id="5168181903108465623">Cast यन्त्रहरू उपलब्ध</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">जडान गरिएका USB-C यन्त्रहरू चार्ज गर्दै</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6803622936009808957">समर्थित रिजोलुशन फेला नपारेदेखि मिरर डिस्प्ले गर्न सकेन। सट्टामा विस्तारित डेस्कटप प्रविष्ट गरियो।</translation>
+<translation id="6811454077060061666">Google Drive को डेस्कटप संस्करण उपलब्ध छैन</translation>
 <translation id="6816797338148849397">तपाईंले चयन गर्नुभएको पाठसँग सम्बन्धित जानकारी उपलब्ध छ। उक्त जानकारी प्राप्त गर्न अप एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="6818242057446442178">कर्सरलाई एक शब्द पछाडि लैजानुहोस्</translation>
 <translation id="6820676911989879663">विश्राम लिनुहोस्!</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, फोनको ब्याट्री <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> का लागि अनलक गर्न Enter थिच्नुहोस्</translation>
 <translation id="8261506727792406068">मेट्नुहोस्</translation>
+<translation id="8281279285293265212">स्क्रिनकास्ट सेभ गर्न सकिएन</translation>
 <translation id="8284362522226889623">अघिल्लो डेस्कमा जान टचप्याडमा चारवटा औँलाले बायाँतिर स्वाइप गर्नुहोस्</translation>
 <translation id="828708037801473432">अफ</translation>
 <translation id="8297006494302853456">कमजोर</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">सहायकका सेटिङहरू</translation>
 <translation id="9072519059834302790">ब्याट्री पूरै सकिन <ph name="TIME_LEFT" /> बाँकी छ।</translation>
 <translation id="9074739597929991885">ब्लुटुथ</translation>
+<translation id="9077404278023321866">टेम्पलेटहरू</translation>
 <translation id="9077515519330855811">मिडिया नियन्त्रण सुविधाहरू, अहिले <ph name="MEDIA_TITLE" /> बजिरहेको छ</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">गृहपृष्ठमा जान माथितिर स्वाइप गर्नुहोस्</translation>

@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">Управник со задачи</translation>
 <translation id="2910007522516064972">За &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium е ажуриран</translation>
+<translation id="2977506796191543575">Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chromium може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“</translation>
 <translation id="2983934633046890458">Chromium се обидува да измени лозинки.</translation>
 <translation id="3032706164202344641">Chromium не може да ги провери вашите лозинки. Обидете се пак подоцна.</translation>
 <translation id="3032787606318309379">Се додава на Chromium...</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">Овој компјутер веќе има најнова верзија на Chromium. Доколку софтверот не работи, деинсталирајте го Chromium и обидете се повторно.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ќе се рестартира сега}=1{Chromium ќе се рестартира по 1 секунда}one{Chromium ќе се рестартира по # секунда}other{Chromium ќе се рестартира по # секунди}}</translation>
 <translation id="6241367896540709610">На Chromium му треба дозвола за пристап до капацитетот за да презема датотеки</translation>
+<translation id="6245734527075554892">Ги проверува URL-адресите во список со небезбедни сајтови меморирани во Chromium</translation>
 <translation id="6248213926982192922">Постави го Chromium за стандарден прелистувач</translation>
 <translation id="6266342355635466082">Chromium не може да провери дали се достапни ажурирања. Проверете ја интернет-врската.</translation>
 <translation id="6268381023930128611">Ќе се одјавите од Chromium?</translation>

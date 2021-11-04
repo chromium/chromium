@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">ડેટા રાખો</translation>
 <translation id="1974060860693918893">વિગતવાર</translation>
 <translation id="1989112275319619282">બ્રાઉઝ કરો</translation>
+<translation id="199425419756152024">પાસવર્ડ જુઓ</translation>
 <translation id="2015722694326466240">પાસવર્ડ જોવા માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="2021670401941426298">જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તમારા શોધ એન્જિનની સૂચનાઓ જુઓ.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> દિવસ પહેલાં સક્રિય હતું</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">1 પસંદ કર્યું છે</translation>
 <translation id="2421004566762153674">ત્રીજા પક્ષની કુકી બ્લૉક કરી રહ્યાં છીએ</translation>
 <translation id="2421044535038393232">ફેરફાર કરતા રહો</translation>
+<translation id="2434405374328098816">તમે <ph name="WEBSITE" /> પર "<ph name="USERNAME" />" માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
+<translation id="2473876017985765807">તમે <ph name="WEBSITE" /> માટેનો પાસવર્ડ પહેલેથી સાચવ્યો છે</translation>
 <translation id="2476359652512522418">પસંદ કરેલું નથી</translation>
 <translation id="2497852260688568942">સમન્વયન, તમારા વ્યવસ્થાપક દ્વારા અક્ષમ કરવામાં આવ્યું છે</translation>
 <translation id="2500374554657206846">પાસવર્ડ સાચવવાના વિકલ્પો</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">લિંક URL કૉપિ કરો</translation>
 <translation id="3607167657931203000">સ્વતઃભરણ ડેટા</translation>
 <translation id="3609785682760573515">સમન્વય કરી રહ્યું છે...</translation>
+<translation id="3631443864840848029">તમે આ સાઇટ માટેનો તમારો વર્તમાન પાસવર્ડ સાચવો છો એ વાતની ખાતરી કરો.</translation>
 <translation id="3638472932233958418">વેબપૃષ્ઠો પહેલાથી લોડ કરો</translation>
 <translation id="3661160521073045932">કન્ફિગ્યુરેશન પ્રોફાઇલ ઉપલબ્ધ છે</translation>
 <translation id="3670030362669914947">નંબર</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> પર બુકમાર્ક કર્યું</translation>
+<translation id="369349502275246497">પાસવર્ડ સાચવવાની સુવિધા ઑફર કરો</translation>
 <translation id="3709582977625132201">વાંચ્યા વગરનું તરીકે માર્ક કરો</translation>
 <translation id="3740397331642243698">ઇનપુટ કરેલા URLsને Google Chrome છૂપા મોડમાં ખોલે છે.</translation>
 <translation id="3762232513783804601">તમારા iPad માટે બનાવાયેલું</translation>
@@ -509,6 +514,7 @@
 <translation id="5988851877894965432">URLsને Chromeમાં ખોલો</translation>
 <translation id="6012140227487808125">એન્ક્રિપ્ટ કરી રહ્યું છે...</translation>
 <translation id="6021332621416007159">આમાં ખોલો...</translation>
+<translation id="6027945736510816438">શું તમારો અર્થ <ph name="WEBSITE" /> હતો?</translation>
 <translation id="6036514205982097558">એક જ બ્રાઉઝરમાં તમારી બધી ટૅબ</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
@@ -751,6 +757,7 @@
 <translation id="8080028325999236607">બધા ટૅબ્સ બંધ કરો</translation>
 <translation id="8105368624971345109">બંધ કરો</translation>
 <translation id="8114753159095730575">ફાઇલ ડાઉનલોડ માટે ઉપલબ્ધ છે. સ્ક્રીનના તળિયે વિકલ્પો ઉપલબ્ધ છે.</translation>
+<translation id="8132598642024322408">હવે <ph name="PRICE" /> છે, પહેલાં <ph name="PREVIOUS_PRICE" /> હતી.</translation>
 <translation id="8156478151976189188">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">પેજનો અનુવાદ કરો</translation>
@@ -823,6 +830,7 @@
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> પર આ છબી શોધો</translation>
 <translation id="8909135823018751308">શેર કરો…</translation>
 <translation id="8917490105272468696">હા, હું સંમત છું</translation>
+<translation id="8952559610785099500">પાસવર્ડ ઉમેરો</translation>
 <translation id="895541991026785598">સમસ્યાની જાણ કરો</translation>
 <translation id="8976382372951310360">સહાય</translation>
 <translation id="8976414606286374109">કાર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે.</translation>

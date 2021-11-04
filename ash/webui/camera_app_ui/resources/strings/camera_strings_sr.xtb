@@ -3,6 +3,7 @@
 <translationbundle lang="sr">
 <translation id="1113173431709655881">Режим камере</translation>
 <translation id="1175958423215084756">Линк је откривен. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Ротирај за 90 степени удесно</translation>
 <translation id="1276998909102132017">Слике у галерији</translation>
 <translation id="1300209025925956156">Скенирајте документ</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Тастер за претрагу + стрелица налево да бисте приступили.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Снимање усправне слике није успело</translation>
 <translation id="3569311554794739032">Желите ли стварно да уклоните датотеку <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Пређите на режим скенирања</translation>
+<translation id="3789724198583203151">Ротирај за 90 степени улево</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3838931309141338733">Скенирај бар-код</translation>
 <translation id="3892148308691398805">Копирај текст</translation>

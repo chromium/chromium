@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">කාර්ය කළමණාකරු</translation>
 <translation id="2910007522516064972">&amp;Chromium පිළිබඳ</translation>
 <translation id="2977470724722393594">Chromium යාවත්කාලීනයි</translation>
+<translation id="2977506796191543575">අඩවියක් ඔබගේ මුරපදය සොරා ගැනීමට උත්සාහ කළහොත්, හෝ ඔබ හානිකර ගොනුවක් බාගන්නා විට, Chromium පිටු අන්තර්ගතයේ කැබලි ඇතුළුව, URL සුරක්ෂිත බ්‍රවුස් කිරීම වෙත යැවීමටද හැකිය</translation>
 <translation id="2983934633046890458">Chromium මුරපද සංස්කරණ කිරීමට උත්සාහ කරයි.</translation>
 <translation id="3032706164202344641">Chromium හට ඔබේ මුරපද පරීක්‍ෂා කළ නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="3032787606318309379">Chromium වෙත එක් කෙරෙමින්...</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">මෙම පරිගණකය සතුව දැනටමත් නව Chromium සංස්කරණයක් පවතී. මෘදුකාංගය ක්‍රියා නොකරයි නම් කරුණාකර Chromium ඉවත්කර නැවත උත්සහ කරන්න.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium දැන් යළි දියත් වෙයි}=1{Chromium 1 තත්පරයකින් යළි දියත් වෙයි}one{Chromium තත්පර # කින් යළි දියත් වෙයි}other{Chromium තත්පර # කින් යළි දියත් වෙයි}}</translation>
 <translation id="6241367896540709610">Chromium හට ගොනු බාගැනීමට ගබඩා අවසරය අවශ්‍යයි</translation>
+<translation id="6245734527075554892">Chromium තුළ ගබඩා කර ඇති අනාරක්ෂිත වෙබ් අඩවි ලැයිස්තුවක් සමඟ URL පරීක්ෂා කරයි</translation>
 <translation id="6248213926982192922">Chromium පෙරනිමි බ්‍රව්සරය බවට පත් කරන්න</translation>
 <translation id="6266342355635466082">Chromium හට යාවත්කාලීන පරීක්‍ෂා කළ නොහැක. ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්‍ෂා කිරීමට උත්සාහ කරන්න.</translation>
 <translation id="6268381023930128611">Chromium වෙතින් වරන්නද?</translation>

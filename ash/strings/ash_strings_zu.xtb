@@ -48,6 +48,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1239161794459865856">I-<ph name="FEATURE_NAME" /> ixhunyiwe.</translation>
 <translation id="1246890715821376239">Ama-app angasekelwe</translation>
 <translation id="1247372569136754018">Imakrofoni (okwangaphakathi)</translation>
+<translation id="1247519845643687288">Ama-app wakamuva</translation>
 <translation id="1252999807265626933">Ishaja kusuka ku-<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Sithini isimo sezulu?</translation>
 <translation id="1266097335951928626">Qalisa ikhamera yesithombe ozishuthe sona</translation>
@@ -79,6 +80,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1419738280318246476">Vula idivayisi ukuze wenze isenzo sesaziso</translation>
 <translation id="1420408895951708260">Guqula ukukhanya kwasebusuku. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Yebo</translation>
+<translation id="1438357537418863713">Ukusakaza i-app manje kusethiwe. Uma usuqalile, ama-app asanda kwethulwa azovela lapha.</translation>
 <translation id="144853431011121127">Thola izaziso kusuka efonini yakho ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="1455242230282523554">Bonisa izilungiselelo zolimi</translation>
 <translation id="1460620680449458626">Ivolumu ithulisiwe.</translation>
@@ -590,6 +592,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="5136175204352732067">Ikhibhodi ehlukile ixhunyiwe</translation>
 <translation id="5147567197700016471">Kuvuliwe</translation>
 <translation id="5155897006997040331">Isivinini sokufunda</translation>
+<translation id="5166007464919321363">Londoloza itafula njengesifanekiso</translation>
 <translation id="5166918508782100047">Amasethingi wezimpendulo ezisheshayo</translation>
 <translation id="5168181903108465623">Amadivayisi wabalingisi ayatholakala</translation>
 <translation id="5170568018924773124">Bonisa kufolda</translation>
@@ -799,6 +802,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="6777216307882431711">Inika amandla amadivayisi axhunyiwe e-USB-C</translation>
 <translation id="6790428901817661496">Dlala</translation>
 <translation id="6803622936009808957">Ayikwazanga ukwenza isibuko izibonisi njengoba kungekho ukulungiswa okusekelwe okutholiwe. Ingene kudeskithophu enwetshiwe kunalokho.</translation>
+<translation id="6811454077060061666">I-Google Drive yedeskithophu ayitholakali</translation>
 <translation id="6816797338148849397">Ulwazi oluhlobene nokukhethile okutholakalayo. Sebenzisa umcibisholo Waphezulu ukufinyelela.</translation>
 <translation id="6818242057446442178">Emuva ngegama</translation>
 <translation id="6820676911989879663">Thatha ikhefu!</translation>
@@ -997,6 +1001,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="8247060538831475781">I-<ph name="CONNECTION_STATUS" />, Amandla esignali angu-<ph name="SIGNAL_STRENGTH" />, iphethwe umlawuli wakho <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Cindezela ku-Enter ukuze uvulele i-<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Susa</translation>
+<translation id="8281279285293265212">Yehlulekile ukulondoloza i-screencast</translation>
 <translation id="8284362522226889623">Swayiphela ngakwesokunxele ngeminwe emine ukuze ushintshele kudeski langaphambilini</translation>
 <translation id="828708037801473432">Valiwe</translation>
 <translation id="8297006494302853456">Buthakathaka</translation>
@@ -1101,6 +1106,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="9070640332319875144">Izilungiselelo zesilekeleli</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> ibhethri lize liphele.</translation>
 <translation id="9074739597929991885">I-Bluetooth</translation>
+<translation id="9077404278023321866">Izifanekiso</translation>
 <translation id="9077515519330855811">Izilawuli zemidiya, okudlala manje i-<ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">I-Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Swayiphela phezulu ukuze uye ekhaya</translation>

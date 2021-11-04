@@ -48,6 +48,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1239161794459865856">Der er forbindelse til <ph name="FEATURE_NAME" />.</translation>
 <translation id="1246890715821376239">Apps, der ikke understøttes</translation>
 <translation id="1247372569136754018">Mikrofon (indbygget)</translation>
+<translation id="1247519845643687288">Seneste apps</translation>
 <translation id="1252999807265626933">Oplader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er vejret?</translation>
 <translation id="1266097335951928626">Start kamera til selfies</translation>
@@ -79,6 +80,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1419738280318246476">Lås enheden op for at udføre notifikationshandlingen</translation>
 <translation id="1420408895951708260">Slå Nattelys til/fra. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
+<translation id="1438357537418863713">Appstreaming er nu konfigureret. Når du er kommet i gang med at bruge det, vises de apps, der er åbnet for nylig, her.</translation>
 <translation id="144853431011121127">Få notifikationer fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Vis sprogindstillinger</translation>
 <translation id="1460620680449458626">Lyden er slået fra.</translation>
@@ -590,6 +592,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
 <translation id="5147567197700016471">Låst op</translation>
 <translation id="5155897006997040331">Læsehastighed</translation>
+<translation id="5166007464919321363">Gem skrivebord som en skabelon</translation>
 <translation id="5166918508782100047">Indstillinger for Hurtig info</translation>
 <translation id="5168181903108465623">Tilgængelige Cast-enheder</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
@@ -799,6 +802,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6777216307882431711">Leverer strøm til tilsluttede USB-C-enheder</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6803622936009808957">Skærmene kunne ikke spejles, da der ikke fandtes en understøttet opløsning. I stedet anvendes Udvidet skrivebord.</translation>
+<translation id="6811454077060061666">Google Drev til computer er ikke tilgængelig</translation>
 <translation id="6816797338148849397">Du kan få oplysninger om det, du har markeret. Tryk på pil op for at se oplysningerne.</translation>
 <translation id="6818242057446442178">Et ord tilbage</translation>
 <translation id="6820676911989879663">Hold en pause</translation>
@@ -997,6 +1001,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, telefonbatteri <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Tryk på Enter for at låse op for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Slet</translation>
+<translation id="8281279285293265212">Screencastfilen blev ikke gemt</translation>
 <translation id="8284362522226889623">Stryg mod venstre med fire fingre for at skifte til forrige skrivebord</translation>
 <translation id="828708037801473432">Fra</translation>
 <translation id="8297006494302853456">Svag</translation>
@@ -1101,6 +1106,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="9070640332319875144">Indstillinger for Assistent</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> til batteriet løber tør.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Skabeloner</translation>
 <translation id="9077515519330855811">Mediestyring, afspiller <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Stryg opad for at gå til startsiden</translation>

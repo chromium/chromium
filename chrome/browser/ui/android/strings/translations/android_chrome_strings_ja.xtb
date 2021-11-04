@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">ウェブサイト上のトピックについて、ページを移動せずに調べることができます。「タップして検索」では、単語とその周囲のコンテキストが Google 検索に送信され、定義、画像、検索結果などの情報が返されます。
 
 検索するには、対象の単語を長押しします。検索を絞り込むには、単語の選択範囲を変更します。パネルを開いてアイコンをタップすると、新しいタブで検索ボックスの内容を編集できます。</translation>
+<translation id="2451607499823206582">トラッキング</translation>
 <translation id="2459390580524506445">拡張音声検索</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="247737702124049222">画像の説明をオンにしました</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">クリップボードの内容を非表示</translation>
 <translation id="2532336938189706096">ウェブ表示</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />件の項目を削除しました</translation>
+<translation id="2534582914273493287">アクセスした URL が Google に送信されます</translation>
 <translation id="2536728043171574184">このページのオフライン コピーを表示しています</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="2561519700418191927">動画プレビュー</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">デバイスに保存</translation>
 <translation id="3236059992281584593">残り 1 分</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
 <translation id="3250563604907490871">画像の説明は Wi-Fi に接続すると再開します</translation>
 <translation id="3254409185687681395">このページをブックマークに追加します</translation>
 <translation id="3259831549858767975">ページ上のすべての要素を縮小する</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">フォルダ</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB の空き</translation>
 <translation id="3549657413697417275">履歴を検索</translation>
+<translation id="3557272988124495906">値下げ通知を受け取る</translation>
 <translation id="3557336313807607643">連絡先に追加</translation>
 <translation id="3563767357928833671">クリップボードの内容が表示されています</translation>
 <translation id="3566923219790363270">Chrome はまだ VR の準備中です。しばらく待ってから Chrome を再起動してください。</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">お使いのデバイスに送信</translation>
 <translation id="3778956594442850293">ホーム画面に追加されました</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
+<translation id="3803783897442799486">続行すると、<ph name="BEGIN_LINK1" />利用規約<ph name="END_LINK1" />に同意されたものとみなされます。\nアプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_LINK2" />管理<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">自動再生を管理します</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -606,6 +611,7 @@
 <translation id="47217992755561375">よく使用するサイトを表示します</translation>
 <translation id="4732120983431207637">スタック アンワインダー</translation>
 <translation id="4738836084190194332">最終同期: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">アドレスバーにより関連性の高い候補が表示されます</translation>
 <translation id="4742970037960872810">テキストの選択を解除</translation>
 <translation id="4749960740855309258">新しいタブを開く</translation>
 <translation id="4758061975920522644">画像のみ共有</translation>
@@ -1173,6 +1179,7 @@
 <translation id="7975379999046275268">ページをプレビュー <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ページをプリロードして、閲覧と検索をすばやく行えるようにする</translation>
 <translation id="7986497153528221272">パスワードを表示するには、まずデバイスで画面ロックを設定してください</translation>
+<translation id="799576009106109668">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="7998918019931843664">閉じたタブを開く</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
 <translation id="8013372441983637696">Chrome データもこのデバイスから削除する</translation>
@@ -1220,6 +1227,7 @@
 <translation id="8218052821161047641">高速ページ</translation>
 <translation id="8218622182176210845">アカウントを管理</translation>
 <translation id="8223642481677794647">フィードカード メニュー</translation>
+<translation id="8242868071038398515">値下げしたサイトがある場合に通知します</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
 <translation id="825412236959742607">このページは大量のメモリを使用しているため、Chrome により一部のコンテンツが削除されました。</translation>
 <translation id="8260126382462817229">もう一度ログインしてみてください</translation>
@@ -1238,6 +1246,7 @@
 <translation id="8354977102499939946">音声ですばやく検索します。このショートカットは [設定] で編集できます。</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> 件のダウンロードが復元されました</translation>
 <translation id="8364299278605033898">人気のウェブサイトを表示します</translation>
+<translation id="8368001212524806591">価格のトラッキング</translation>
 <translation id="8387617938027387193">本人確認</translation>
 <translation id="8393700583063109961">メッセージを送信</translation>
 <translation id="8410695015584479363">料金をチェック</translation>

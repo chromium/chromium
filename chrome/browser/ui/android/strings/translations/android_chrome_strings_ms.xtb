@@ -234,6 +234,7 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="2450907520913474542">Ketahui tentang topik pada tapak web tanpa meninggalkan halaman. Sentuh untuk Cari akan menghantar perkataan dan konteks sekitar perkataan itu kepada Google Search, mengembalikan takrif, gambar, hasil carian dan butiran lain.
 
 Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, pilih lebih banyak atau lebih sedikit perkataan. Untuk mengedit carian anda, buka panel, ketik ikon untuk membuka dalam tab baharu dan buat perubahan dalam kotak carian.</translation>
+<translation id="2451607499823206582">Penjejakan</translation>
 <translation id="2459390580524506445">Carian suara dipertingkatkan</translation>
 <translation id="2461822463642141190">Semasa</translation>
 <translation id="247737702124049222">Perihalan imej dihidupkan</translation>
@@ -253,6 +254,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2527779675047087889">Sembunyikan kandungan papan keratan</translation>
 <translation id="2532336938189706096">Paparan Web</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> item dipadamkan</translation>
+<translation id="2534582914273493287">URL yang anda lawati dihantar kepada Google</translation>
 <translation id="2536728043171574184">Melihat salinan luar talian halaman ini</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
 <translation id="2561519700418191927">Pratonton video</translation>
@@ -372,6 +374,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3234978181857588512">Simpan pada peranti</translation>
 <translation id="3236059992281584593">1 minit lagi</translation>
 <translation id="3244271242291266297">BB</translation>
+<translation id="3245429137663807393">Jika anda turut berkongsi laporan penggunaan Chrome, laporan tersebut menyertakan URL yang anda lawati</translation>
 <translation id="3250563604907490871">Perihalan imej akan disambung semula apabila peranti anda disambungkan kepada Wi-Fi</translation>
 <translation id="3254409185687681395">Tanda halaman ini</translation>
 <translation id="3259831549858767975">Jadikan semua yang ada pada halaman lebih kecil</translation>
@@ -423,6 +426,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB tersedia</translation>
 <translation id="3549657413697417275">Cari sejarah anda</translation>
+<translation id="3557272988124495906">Dapatkan pemberitahuan penurunan harga</translation>
 <translation id="3557336313807607643">Tambahkan pada kenalan</translation>
 <translation id="3563767357928833671">Kandungan papan keratan dipaparkan</translation>
 <translation id="3566923219790363270">Chrome masih bersiap bersedia untuk VR. Mulakan semula Chrome kemudian.</translation>
@@ -458,6 +462,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3775705724665058594">Hantar ke peranti anda</translation>
 <translation id="3778956594442850293">Ditambahkan pada Skrin utama</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tab}}</translation>
+<translation id="3803783897442799486">Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan<ph name="END_LINK1" />.\nUntuk membantu dalam usaha meningkatkan apl, Chrome menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK2" />Urus<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Urus automain</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Urus</translation>
@@ -606,6 +611,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="47217992755561375">Lihat tapak web yang paling kerap anda lawati</translation>
 <translation id="4732120983431207637">Pengurai Tindanan</translation>
 <translation id="4738836084190194332">Kali terakhir disegerakkan: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">Anda akan mendapat cadangan yang dipertingkatkan dalam bar alamat</translation>
 <translation id="4742970037960872810">Alih keluar serlahan</translation>
 <translation id="4749960740855309258">Buka tab baharu</translation>
 <translation id="4758061975920522644">Kongsi imej sahaja</translation>
@@ -1173,6 +1179,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="7975379999046275268">Pratonton halaman <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pramuat halaman untuk penyemakan imbas dan pencarian yang lebih cepat</translation>
 <translation id="7986497153528221272">Untuk melihat kata laluan, pertama sekali, tetapkan kunci skrin pada peranti anda</translation>
+<translation id="799576009106109668">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
 <translation id="7998918019931843664">Buka semula tab yang ditutup</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
 <translation id="8013372441983637696">Selain itu, kosongkan data Chrome anda daripada peranti ini</translation>
@@ -1220,6 +1227,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="8218052821161047641">Halaman pantas</translation>
 <translation id="8218622182176210845">Urus akaun anda</translation>
 <translation id="8223642481677794647">Menu kad suapan</translation>
+<translation id="8242868071038398515">Anda akan dimaklumkan jika harga turun di mana-mana laman</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="825412236959742607">Halaman ini menggunakan terlalu banyak memori, jadi Chrome mengalih keluar sesetengah kandungan.</translation>
 <translation id="8260126382462817229">Cuba log masuk semula</translation>
@@ -1238,6 +1246,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="8354977102499939946">Cari menggunakan suara anda dengan pantas. Untuk mengedit pintasan ini, pergi ke Tetapan.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> muat turun dipulihkan</translation>
 <translation id="8364299278605033898">Lihat tapak web popular</translation>
+<translation id="8368001212524806591">Jejak harga</translation>
 <translation id="8387617938027387193">Sahkan itu anda</translation>
 <translation id="8393700583063109961">Hantar mesej</translation>
 <translation id="8410695015584479363">Jejaki harga</translation>

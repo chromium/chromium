@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2910007522516064972">關於 Chromium(&amp;C)</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
+<translation id="2977506796191543575">如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能</translation>
 <translation id="2983934633046890458">Chromium 正在嘗試編輯密碼。</translation>
 <translation id="3032706164202344641">Chromium 無法檢查密碼，請稍後再試。</translation>
 <translation id="3032787606318309379">正在新增至 Chromium…</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">這部電腦已安裝較新的 Chromium 版本。如果軟件無法工作，請解除安裝 Chromium，然後再試一次。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium 將立即重新啟動}=1{Chromium 將於 1 秒後重新啟動}other{Chromium 將於 # 秒後重新啟動}}</translation>
 <translation id="6241367896540709610">Chromium 需要儲存空間存取權才能下載檔案</translation>
+<translation id="6245734527075554892">可使用儲存在 Chromium 中的不安全網站清單檢查網址</translation>
 <translation id="6248213926982192922">將 Chromium 設為預設瀏覽器</translation>
 <translation id="6266342355635466082">Chromium 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>

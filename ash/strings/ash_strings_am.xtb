@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ተገናኝቷል።</translation>
 <translation id="1246890715821376239">የማይደገፉ መተግበሪያዎች</translation>
 <translation id="1247372569136754018">ማይክሮፎን (ውስጣዊ)</translation>
+<translation id="1247519845643687288">የቅርብ ጊዜ መተግበሪያዎች</translation>
 <translation id="1252999807265626933">ኃይል ከ<ph name="POWER_SOURCE" /> በመሙላት ላይ</translation>
 <translation id="1255033239764210633">የአየር ሁኔታው ምንድነው?</translation>
 <translation id="1266097335951928626">የራስ ፎቶ ካሜራን ጀምር</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">የማሳወቅ እርምጃውን ለማከናወን መሣሪያን ይክፈቱ</translation>
 <translation id="1420408895951708260">የምሽት ብርሃንን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">አዎ</translation>
+<translation id="1438357537418863713">የመተግበሪያ ዥረት መልቀቅ አሁን ተዋቅሯል። አንዴ ከጀመሩ በኋላ በቅርብ ጊዜ የተጀመሩ መተግበሪያዎች እዚህ ይታያሉ።</translation>
 <translation id="144853431011121127">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ከእርስዎ ስልክ ማሳወቂያዎችን ያግኙ</translation>
 <translation id="1455242230282523554">የቋንቋ ቅንብሮችን አሳይ</translation>
 <translation id="1460620680449458626">የድምፅ መጠን ድምፀ ከል ተደርጓል።</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">የተለየ የቁልፍ ሰሌዳ ተገናኝቷል</translation>
 <translation id="5147567197700016471">ተከፍቷል</translation>
 <translation id="5155897006997040331">የንባብ ፍጥነት</translation>
+<translation id="5166007464919321363">ዴስክን እንደ ቅንብር ደንብ አስቀምጥ</translation>
 <translation id="5166918508782100047">የፈጣን መልሶች ቅንብሮች</translation>
 <translation id="5168181903108465623">የCast መሣሪያዎች ይገኛሉ</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">የተገናኙ የUSB-C መሣሪያዎችን ኃይል በመሙላት ላይ</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6803622936009808957">ምንም የሚደገፉ ጥራቶች ስላልተገኙ ማሳያዎችን ማሳየት አልተቻለም። ይልቁንስ ወደ የተስፋፋ ዴስክቶፕ ሁነታ ተገብቷል።</translation>
+<translation id="6811454077060061666">Google Drive ለዴስክቶፕ አይገኝም</translation>
 <translation id="6816797338148849397">ከሚገኘው የእርስዎ ምርጫ ጋር የተገናኘ መረጃ ለመድረስ የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
 <translation id="6818242057446442178">በቃል ይመለሱ</translation>
 <translation id="6820676911989879663">እረፍት ይውሰዱ!</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">ለ<ph name="USER_EMAIL_ADDRESS" /> ለመክፈት አስገባን ይጫኑ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
+<translation id="8281279285293265212">ማያገጽ መቅርጽን ማስቀመጥ አልተሳካም</translation>
 <translation id="8284362522226889623">ወደ ቀዳሚው ዴስክ ለመቀየር በአራት ጣቶች ወደ ግራ ያንሸራትቱ</translation>
 <translation id="828708037801473432">ጠፍቷል</translation>
 <translation id="8297006494302853456">ደካማ</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">የረዳት ቅንብሮች</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> ባትሪ ባዶ እስከሚሆን ድረስ።</translation>
 <translation id="9074739597929991885">ብሉቱዝ</translation>
+<translation id="9077404278023321866">ቅንብር ደንብ</translation>
 <translation id="9077515519330855811">የሚዲያ መቆጣጠሪያዎች፣ አሁን <ph name="MEDIA_TITLE" /> በማጫወት ላይ</translation>
 <translation id="9079731690316798640">Wi-Fi፦ <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">ወደ መነሻ ለመሄድ በጣት ወደ ላይ ይጥረጉ</translation>

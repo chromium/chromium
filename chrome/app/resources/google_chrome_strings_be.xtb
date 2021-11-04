@@ -190,6 +190,7 @@
 <translation id="5686916850681061684">Наладжвайце Google Chrome і кіруйце ім. Нешта патрабуе вашай увагі – каб паглядзець падрабязныя звесткі, націсніце тут.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Перазапуск Google Chrome адбудзецца праз 1 секунду}one{Перазапуск Google Chrome адбудзецца праз # секунду}few{Перазапуск Google Chrome адбудзецца праз # секунды}many{Перазапуск Google Chrome адбудзецца праз # секунд}other{Перазапуск Google Chrome адбудзецца праз # секунды}}</translation>
+<translation id="5736850870166430177">Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chrome можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі</translation>
 <translation id="573759479754913123">Пра Chrome OS</translation>
 <translation id="5756509061973259733">Профіль Chrome з такім уліковым запісам ужо існуе на гэтай прыладзе</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
@@ -277,6 +278,7 @@
 <translation id="8290100596633877290">Памылка! Збой браўзера Google Chrome. Перазапусціць яго?</translation>
 <translation id="8342675569599923794">Файл небяспечны, таму Chrome заблакіраваў яго.</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
+<translation id="8394720698884623075">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chrome</translation>
 <translation id="840084489713044809">Google Chrome запытвае дазвол на экспартаванне вашых пароляў.</translation>
 <translation id="8433638294851456451">Каб адпраўляць нумары з гэтай прылады на свой тэлефон Android, увайдзіце ў Chrome на абедзвюх прыладах.</translation>
 <translation id="8498858610309223613">Толькі што было прыменена спецыяльнае абнаўленне бяспекі для Google Chrome. Перазапусціце браўзер, і вашы ўкладкі будуць адноўлены.</translation>

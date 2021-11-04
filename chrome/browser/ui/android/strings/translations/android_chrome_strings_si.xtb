@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">පිටුව හැර යාමෙන් තොරව වෙබ් අඩවිවල මාතෘකා පිළිබඳ හදාරන්න. සෙවීමට ස්පර්ශ කිරීම වචනයක් සහ එහි අවට සන්දර්භය Google සෙවීම වෙත යවයි, නිර්වචන, පින්තූර, සෙවුම් ප්‍රතිඵල, සහ වෙනත් විස්තර ලබා දෙයි.
 
 සෙවීමට ඕනෑම වචනයක් ස්පර්ශ කර අල්ල සිටින්න. ඔබේ සෙවීම ප්‍රතිසාදන කිරීමට, වචන වැඩියෙන් හෝ අඩුවෙන් තෝරන්න. ඔබේ සෙවුම සංස්කරණ කිරීමට, පැනලය විවෘත කර, නව පටිත්තක් තුළ විවෘත කිරීමට නිරූපකයට තට්ටු කර, සෙවුම් කොටුව තුළ ඔබේ වෙනස්කම් කරන්න.</translation>
+<translation id="2451607499823206582">හඹා යමින්</translation>
 <translation id="2459390580524506445">වැඩිදියුණු කළ හඬ සෙවීම</translation>
 <translation id="2461822463642141190">වත්මන්</translation>
 <translation id="247737702124049222">රූප විස්තර ක්‍රියාත්මකයි</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">පසුරු පුවරු අන්තර්ගතය සඟවන්න</translation>
 <translation id="2532336938189706096">ජාල දර්ශනය</translation>
 <translation id="2534155362429831547">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් මකන ලදි</translation>
+<translation id="2534582914273493287">ඔබ පිවිසෙන URL Google වෙත යවනු ලැබේ</translation>
 <translation id="2536728043171574184">මෙම පිටුවෙහි නොබැඳි පිටපතක් බලමින්</translation>
 <translation id="2546283357679194313">කුකීස් සහ අඩවි දත්ත</translation>
 <translation id="2561519700418191927">වීඩියෝ පෙරදසුන්</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">උපාංගය වෙත සුරකින්න</translation>
 <translation id="3236059992281584593">මිනිත්තු 1ක් ඉතිරියි</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">ඔබ Chrome පරිශීලන වාර්තාද බෙදා ගතහොත්, එම වාර්තාවලට ඔබ පිවිසෙන URL ඇතුළත් වේ</translation>
 <translation id="3250563604907490871">ඔබ Wi-Fi වෙත සම්බන්ධ වූ විට රූප විස්තර නැවත ආරම්භ වනු ඇත</translation>
 <translation id="3254409185687681395">මෙම පිටුව පිටු සලකුණු කරන්න</translation>
 <translation id="3259831549858767975">පිටුවේ සැම දෙයක්ම වඩා කුඩා කරන්න</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">ෆෝල්ඩරය</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB තිබේ</translation>
 <translation id="3549657413697417275">ඔබගේ ඉතිහාසය සොයන්න</translation>
+<translation id="3557272988124495906">මිල පහත වැටීම් දැනුම්දීම් ලබා ගන්න</translation>
 <translation id="3557336313807607643">සම්බන්ධතා වලට එක් කරන්න</translation>
 <translation id="3563767357928833671">පසුරු පුවරු අන්තර්ගතය පෙන්වා ඇත</translation>
 <translation id="3566923219790363270">Chrome තවමත් VR සඳහා සූදානම් වෙයි. පසුව Chrome යළි අරඹන්න.</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">ඔබේ උපාංග වෙත යවන්න</translation>
 <translation id="3778956594442850293">මුල් තිරයට එක් කෙරිණි</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{ටැබ 1}one{ටැබ #}other{ටැබ #}}</translation>
+<translation id="3803783897442799486">ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />සේවා නියම<ph name="END_LINK1" /> සමග එකඟ වේ.\nයෙදුම වැඩිදියුණු කිරීමට උදවු කිරීමට, Chrome පරිශීලන සහ බිඳ වැටීම් දත්ත Google වෙත යවයි. <ph name="BEGIN_LINK2" />කළමනාකරණය කරන්න<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">ස්වයං ධාවනය කළමනාකරණය කරන්න</translation>
 <translation id="3810838688059735925">වීඩියෝ</translation>
 <translation id="3810973564298564668">කළමනාකරණය</translation>
@@ -606,6 +611,7 @@
 <translation id="47217992755561375">ඔබගේ ඉහළම අඩවි බලන්න</translation>
 <translation id="4732120983431207637">එතීම ලිහන්නා</translation>
 <translation id="4738836084190194332">අවසන් වරට සමමුහුර්ත කළේ: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">ලිපින තීරුව තුළ ඔබට වැඩිදියුණු කළ යෝජනා ලැබෙනු ඇත</translation>
 <translation id="4742970037960872810">උද්දීපනය ඉවත් කරන්න</translation>
 <translation id="4749960740855309258">නව ටැබයක් විවෘත කරන්න</translation>
 <translation id="4758061975920522644">රූපය පමණක් බෙදා ගන්න</translation>
@@ -1173,6 +1179,7 @@
 <translation id="7975379999046275268">පිටුව පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">වේගවත් බ්‍රවුස් කිරීම සහ සෙවීම සඳහා පිටු පෙර පූරණය කරන්න</translation>
 <translation id="7986497153528221272">මුරපද බැලීමට, ඔබේ උපාංගයේ තිර අගුලක් සකසන්න</translation>
+<translation id="799576009106109668">ඔබගේ වත්මන් වෙබ් පිටුවට පැමිණීම මත පදනම්ව අන්තර්ගතය ප්‍රගාමීව පූරණය කර ඇති නිසා ඔබ වේගයෙන් බ්‍රවුස් කරනු ඇත</translation>
 <translation id="7998918019931843664">වැසූ ටැබය යළි විවෘත කරන්න</translation>
 <translation id="8004582292198964060">බ්‍රවුසරය</translation>
 <translation id="8013372441983637696">මෙම උපාංගයෙන් ඔබගේ Chrome දත්ත හිස් කරන්නද?</translation>
@@ -1220,6 +1227,7 @@
 <translation id="8218052821161047641">වේගවත් පිටුව</translation>
 <translation id="8218622182176210845">ඔබගේ ගිණුම කළමනා කරන්න</translation>
 <translation id="8223642481677794647">සංග්‍රහ කාඩ්පත් මෙනුව</translation>
+<translation id="8242868071038398515">කිනම් හෝ අඩවියක මිල අඩු වුවහොත් ඔබට දැනුම් දෙනු ලැබේ</translation>
 <translation id="8250920743982581267">ලේඛන</translation>
 <translation id="825412236959742607">මෙම පිටුව මතකය බොහෝමයක් භාවිතා කරයි, එබැවින් Chrome ඇතැම් අන්තර්ගතය ඉවත් කළා.</translation>
 <translation id="8260126382462817229">නැවත පිරීම උත්සාහ කරන්න</translation>
@@ -1238,6 +1246,7 @@
 <translation id="8354977102499939946">ඔබගේ කටහඬ සමගින් ඉක්මනින් සොයන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, සැකසීම් වෙත යන්න.</translation>
 <translation id="835847953965672673">බාගැනීම් <ph name="NUMBER_OF_DOWNLOADS" />ක් ප්‍රතිසාධනය කරන ලදි</translation>
 <translation id="8364299278605033898">ජනප්‍රිය වෙබ් අඩවි බලන්න</translation>
+<translation id="8368001212524806591">මිල හඹා යන්න</translation>
 <translation id="8387617938027387193">ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="8393700583063109961">පණිවිඩය යවන්න</translation>
 <translation id="8410695015584479363">මිල ගණන් හඹා යන්න</translation>

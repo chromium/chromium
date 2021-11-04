@@ -48,6 +48,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> bağlı.</translation>
 <translation id="1246890715821376239">Desteklenmeyen uygulamalar</translation>
 <translation id="1247372569136754018">Mikrofon (dahili)</translation>
+<translation id="1247519845643687288">Son uygulamalar</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> güç kaynağından şarj ediliyor</translation>
 <translation id="1255033239764210633">Hava nasıl?</translation>
 <translation id="1266097335951928626">Selfie kamerasını başlat</translation>
@@ -79,6 +80,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1419738280318246476">Bildirim işlemi gerçekleştirmek için cihazın kilidini açın</translation>
 <translation id="1420408895951708260">Gece Işığı'nı aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Evet</translation>
+<translation id="1438357537418863713">Uygulama aktarma ayarlandı. Aktarmayı kullanmaya başladığınızda, son açılan uygulamalar burada görünür.</translation>
 <translation id="144853431011121127">Telefonunuzdaki bildirimleri <ph name="DEVICE_TYPE" /> cihazınızda alın</translation>
 <translation id="1455242230282523554">Dil ayarlarını gösterin</translation>
 <translation id="1460620680449458626">Ses kapalı.</translation>
@@ -590,6 +592,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
 <translation id="5147567197700016471">Kilitli değil</translation>
 <translation id="5155897006997040331">Okuma hızı</translation>
+<translation id="5166007464919321363">Masayı şablon olarak kaydet</translation>
 <translation id="5166918508782100047">Bil bakalım ayarları</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
@@ -800,6 +803,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6777216307882431711">Bağlı USB-C cihazlarına güç sağlıyor</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6803622936009808957">Desteklenen bir çözünürlük bulunamadığı için ekranlar yansıtılamıyor. Bunun yerine genişletilmiş masaüstüne geçiliyor.</translation>
+<translation id="6811454077060061666">Masaüstü için Google Drive kullanılamıyor</translation>
 <translation id="6816797338148849397">Seçiminizle ilgili bilgi mevcut. Erişmek için yukarı ok tuşunu kullanın.</translation>
 <translation id="6818242057446442178">Kelime bazında geri git</translation>
 <translation id="6820676911989879663">Mola verin!</translation>
@@ -998,6 +1002,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, <ph name="BATTERY_STATUS" /> Telefon Pili</translation>
 <translation id="826107067893790409">Enter tuşuna basarak <ph name="USER_EMAIL_ADDRESS" /> için kilidi açın</translation>
 <translation id="8261506727792406068">Sil</translation>
+<translation id="8281279285293265212">Ekran video kaydı kaydedilemedi</translation>
 <translation id="8284362522226889623">Önceki masaya geçmek için dört parmakla sola kaydırın</translation>
 <translation id="828708037801473432">Kapalı</translation>
 <translation id="8297006494302853456">Zayıf</translation>
@@ -1102,6 +1107,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="9070640332319875144">Asistan Ayarları</translation>
 <translation id="9072519059834302790">Şarjın bitmesine <ph name="TIME_LEFT" /> kaldı.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Şablonlar</translation>
 <translation id="9077515519330855811">Medya denetimleri, şimdi çalınan: <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Kablosuz: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Ana ekrana gitmek için yukarı kaydırın</translation>

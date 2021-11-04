@@ -1485,6 +1485,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2489686758589235262">Dodijeli još 2 prekidača</translation>
 <translation id="2489829450872380594">Sljedeći put, novi telefon će otključati ovaj uređaj <ph name="DEVICE_TYPE" />. Pametno zaključavanje možete isključiti u Postavkama.</translation>
 <translation id="2489918096470125693">Dodaj &amp;folder...</translation>
+<translation id="2489931062851778802">Pritisnite ove tipke na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">Fajl "<ph name="FILE_NAME" />" je uklonjen sa spiska</translation>
 <translation id="249113932447298600">Žao nam je, uređaj <ph name="DEVICE_LABEL" /> trenutno nije podržan.</translation>
 <translation id="2492461744635776704">Priprema zahtjeva za potpisivanje certifikata</translation>
@@ -2239,11 +2240,13 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3288047731229977326">Ekstenzije u načinu rada za programere mogu nanijeti štetu vašem računaru. Ako niste programer, radi sigurnosti onemogućite rad ovih ekstenzija u načinu rada za programere.</translation>
 <translation id="3289668031376215426">Automatsko veliko slovo</translation>
 <translation id="3289856944988573801">Da provjerite ima li ažuriranja, koristite Ethernet ili WiFi.</translation>
+<translation id="3290249595466894471">Također šalje mali uzorak stranica, preuzimanja, aktivnosti ekstenzija i informacija o sistemu radi lakšeg otkrivanja novih prijetnji</translation>
 <translation id="3291436823898732747">Poboljšano pregledanje: naprimjer, prijedlozi u višenamjenskom okviru prije nego što počnete pisati</translation>
 <translation id="3293644607209440645">Pošalji ovu stranicu</translation>
 <translation id="32939749466444286">Spremnik Linuxa nije pokrenut. Pokušajte ponovo.</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3294686910656423119">Statistika korištenja i izvještaji o padovima aplikacije</translation>
+<translation id="3297536526040732495">Privremeno povezuje ove podatke s vašim Google računom kada ste prijavljeni da vas zaštiti u svim Googleovim aplikacijama</translation>
 <translation id="329838636886466101">Popravite</translation>
 <translation id="3298789223962368867">Unesen je nevažeći URL.</translation>
 <translation id="32991397311664836">Uređaji:</translation>
@@ -4353,6 +4356,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5554489410841842733">Ikona će biti vidljiva kada ekstenzija može djelovati na trenutnoj stranici.</translation>
 <translation id="5554720593229208774">Tijelo za certifikaciju e-pošte</translation>
 <translation id="5555363196923735206">Obrni kameru</translation>
+<translation id="5555525474779371165">Odaberite zaštitu Sigurno pregledanje</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558125320634132440">Ova web lokacija je blokirana zbog mogućeg sadržaja za odrasle</translation>
 <translation id="5558129378926964177">Uve&amp;ćaj</translation>
@@ -5719,6 +5723,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7027258625819743915">{COUNT,plural, =0{Otvori sve u &amp;anonimnom prozoru}=1{Otvori u &amp;anonimnom prozoru}one{Otvori sve ({COUNT}) u &amp;anonimnom prozoru}few{Otvori sve ({COUNT}) u &amp;anonimnom prozoru}other{Otvori sve ({COUNT}) u &amp;anonimnom prozoru}}</translation>
 <translation id="7029307918966275733">Crostini nije instaliran. Instalirajte Crostini da vidite zahvale.</translation>
 <translation id="7029809446516969842">Lozinke</translation>
+<translation id="7030304022046916278">Šalje URL-ove Sigurnom pregledanju na provjeru</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – serijski priključak je povezan</translation>
 <translation id="7034692021407794547">Administrator s privilegijama upravljanja naplatom najprije mora prihvatiti Uslove korištenja usluge hardvera za Google Meet u odjeljku hardver za Google Meet administratorske konzole.</translation>
 <translation id="7036706669646341689">Preporučuje se <ph name="DISK_SIZE" /> prostora za Linux. Da oslobodite prostor, izbrišite fajlove s uređaja.</translation>
@@ -5899,7 +5904,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7243784282103630670">Došlo je do greške prilikom nadogradnje Linuxa. Spremnik ćemo vratiti pomoću vaše sigurnosne kopije.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (najbolje)</translation>
 <translation id="7246230585855757313">Ponovo umetnite sigurnosni ključ i pokušajte ponovo</translation>
-<translation id="7249777306773517303">Ovim uređajem upravlja domena <ph name="DOMAIN" /> i morate se prijaviti svaki put.</translation>
 <translation id="7250616558727237648">Uređaj s kojim dijelite sadržaj ne odgovara. Pokušajte ponovo.</translation>
 <translation id="725109152065019550">Vaš administrator je onemogućio vanjsku pohranu na vašem računu.</translation>
 <translation id="7251346854160851420">Zadana pozadinska slika</translation>

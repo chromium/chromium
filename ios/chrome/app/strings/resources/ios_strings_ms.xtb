@@ -114,6 +114,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1973912524893600642">Kekalkan Data</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1989112275319619282">Semak Imbas</translation>
+<translation id="199425419756152024">Lihat Kata Laluan</translation>
 <translation id="2015722694326466240">Untuk melihat kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="2021670401941426298">Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berkenaan.</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Yang Lalu</translation>
@@ -152,7 +153,9 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2386793615875593361">1 dipilih</translation>
 <translation id="2421004566762153674">Menyekat kuki pihak ketiga</translation>
 <translation id="2421044535038393232">Teruskan Mengedit</translation>
+<translation id="2434405374328098816">Anda telah pun menyimpan kata laluan untuk "<ph name="USERNAME" />" pada <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
+<translation id="2473876017985765807">Anda telah pun menyimpan kata laluan untuk <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Tidak Dipilih</translation>
 <translation id="2497852260688568942">Penyegerakan dilumpuhkan oleh pentadbir anda</translation>
 <translation id="2500374554657206846">Pilihan untuk Menyimpan Kata Laluan</translation>
@@ -282,10 +285,12 @@ Ikut langkah di bawah:</translation>
 <translation id="3603009562372709545">Salin URL Paut</translation>
 <translation id="3607167657931203000">Autolengkap Data</translation>
 <translation id="3609785682760573515">Menyegerakkan...</translation>
+<translation id="3631443864840848029">Pastikan anda menyimpan kata laluan semasa anda untuk laman ini.</translation>
 <translation id="3638472932233958418">Pramuat Halaman Web</translation>
 <translation id="3661160521073045932">Profil Konfigurasi Tersedia</translation>
 <translation id="3670030362669914947">Nombor</translation>
 <translation id="3691593122358196899">Ditandai halaman ke <ph name="FOLDER_TITLE" /></translation>
+<translation id="369349502275246497">Tawarkan Untuk Menyimpan Kata Laluan</translation>
 <translation id="3709582977625132201">Tandakan Sebagai Belum Dibaca</translation>
 <translation id="3740397331642243698">Buka URL yang dimasukkan di Google Chrome dalam Inkognito.</translation>
 <translation id="3762232513783804601">Dibina untuk iPad Anda</translation>
@@ -509,6 +514,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5988851877894965432">Buka URL dalam Chrome</translation>
 <translation id="6012140227487808125">Menyulitkan...</translation>
 <translation id="6021332621416007159">Buka dalam...</translation>
+<translation id="6027945736510816438">Adakah anda maksudkan <ph name="WEBSITE" />?</translation>
 <translation id="6036514205982097558">Semua Tab Anda dalam Satu Penyemak Imbas</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -583,6 +589,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 Cuba gunakan kata laluan yang unik untuk setiap laman.</translation>
 <translation id="651505212789431520">Batalkan Penyegerakan? Anda boleh menghidupkan penyegerakan pada bila-bila masa dalam Tetapan.</translation>
 <translation id="6524918542306337007">Mod Inkognito Tidak Tersedia</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Zum Masuk</translation>
 <translation id="6585618849026997638">Anda boleh kembali ke halaman yang penting bagi anda dengan menambah penanda halaman</translation>
 <translation id="6603393121510733479">Organisasi anda telah mematikan penyemakan imbas peribadi.
@@ -750,6 +757,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8080028325999236607">Tutup Semua Tab</translation>
 <translation id="8105368624971345109">Matikan</translation>
 <translation id="8114753159095730575">Muat turun fail tersedia. Pilihan tersedia di bahagian bawah skrin.</translation>
+<translation id="8132598642024322408">Kini <ph name="PRICE" />, sebelum ini <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">Penyegerakan Kata Laluan Tidak Berfungsi</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Peranti anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Terjemah Halaman</translation>
@@ -822,6 +830,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8881801611828450202">Cari Imej Ini di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Kongsi…</translation>
 <translation id="8917490105272468696">Ya, Saya Ikut Serta</translation>
+<translation id="8952559610785099500">Tambah Kata Laluan</translation>
 <translation id="895541991026785598">Laporkan Isu</translation>
 <translation id="8976382372951310360">Bantuan</translation>
 <translation id="8976414606286374109">Kad disimpan pada Akaun Google anda.</translation>

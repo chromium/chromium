@@ -191,6 +191,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5686916850681061684">ປັບແຕ່ງ ແລະ ຄວບຄຸມ Google Chrome. ມີບາງຢ່າງທີ່ທ່ານຕ້ອງດຳເນີນການ - ຄລິກສຳລັບລາຍລະອຽດ.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ຈະປິດແລ້ວເປີດໃໝ່ໃນ 1 ວິນາທີ}other{Google Chrome ຈະປິດແລ້ວເປີດໃໝ່ໃນ # ວິນາທີ}}</translation>
+<translation id="5736850870166430177">ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chrome ອາດຈະສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນໃນໜ້າໄປໃຫ້ Safe Browsing ນຳ</translation>
 <translation id="573759479754913123">ກ່ຽວ​ກັບ Chrome OS</translation>
 <translation id="5756509061973259733">ມີໂປຣໄຟລ໌ Chrome ກັບບັນຊີນີ້ຢູ່ອຸປະກອນນີ້ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
@@ -278,6 +279,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8290100596633877290">ໂຮ້! Google Chrome ​ເກີດ​ຂັດຂ້ອງ. ເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
 <translation id="8342675569599923794">ໄຟລ໌ນີ້ເປັນອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>
+<translation id="8394720698884623075">ກວດສອບ URL ກັບລາຍການເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ຈັດເກັບໄວ້ໃນ Chrome</translation>
 <translation id="840084489713044809">Google Chrome ຕ້ອງການສົ່ງອອກລະຫັດຜ່ານຂອງທ່ານ.</translation>
 <translation id="8433638294851456451">ເພື່ອສົ່ງເບີຈາກບ່ອນນີ້ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="8498858610309223613">ຫາກໍນຳໃຊ້ການອັບເດດຄວາມປອດໄພພິເສດສຳລັບ Google Chrome. ກະລຸນາປິດເປີດໃໝ່ຕອນນີ້ເລີຍ ແລ້ວພວກເຮົາຈະກູ້ຄືນແຖບຂອງທ່ານ.</translation>

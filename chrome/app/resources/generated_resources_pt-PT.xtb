@@ -293,7 +293,7 @@
 <translation id="1294807885394205587">Este processo poderá demorar alguns minutos. A iniciar o gestor de contentores…</translation>
 <translation id="1296911687402551044">Fixar o separador selecionado</translation>
 <translation id="1297175357211070620">Destino</translation>
-<translation id="129770436432446029">Envie feedback sobre <ph name="EXPERIMENT_NAME" /></translation>
+<translation id="129770436432446029">Enviar feedback sobre <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> pode editar os seguintes ficheiros</translation>
 <translation id="1302227299132585524">Permitir JavaScript de eventos Apple</translation>
 <translation id="1303101771013849280">Ficheiro HTML de marcadores</translation>
@@ -5589,6 +5589,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6914783257214138813">As suas palavras-passe serão visíveis para todas as pessoas que consigam ver o ficheiro exportado.</translation>
 <translation id="6916590542764765824">Gerir extensões</translation>
 <translation id="6919868320029503575">Palavras-passe fracas</translation>
+<translation id="6919952941889172531">Também pretende ativar a Navegação segura melhorada para este perfil do Chrome?</translation>
 <translation id="6920989436227028121">Abrir como separador normal</translation>
 <translation id="6921104647315081813">Limpar atividades</translation>
 <translation id="692114467174262153">Não foi possível abrir o <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -5887,7 +5888,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7243784282103630670">Ocorreu um erro ao atualizar o Linux. Iremos restaurar o contentor através da sua cópia de segurança.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (a melhor)</translation>
 <translation id="7246230585855757313">Volte a inserir a chave de segurança e tente novamente.</translation>
-<translation id="7249777306773517303">Este dispositivo é gerido por <ph name="DOMAIN" /> e requer que inicie sessão sempre.</translation>
 <translation id="7250616558727237648">O dispositivo com o qual está a efetuar a partilha não respondeu. Tente novamente.</translation>
 <translation id="725109152065019550">Lamentamos, mas o gestor desativou o armazenamento externo na sua conta.</translation>
 <translation id="7251346854160851420">Imagem de fundo predefinida</translation>

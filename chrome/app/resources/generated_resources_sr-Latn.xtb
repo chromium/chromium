@@ -1470,6 +1470,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2489686758589235262">Dodeli još 2 prekidača</translation>
 <translation id="2489829450872380594">Sledeći put će novi telefon otključati ovaj <ph name="DEVICE_TYPE" />. Možete da isključite Smart Lock u podešavanjima.</translation>
 <translation id="2489918096470125693">Dodaj &amp;direktorijum...</translation>
+<translation id="2489931062851778802">Unesite ove tastere na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">Datoteka „<ph name="FILE_NAME" />“ je uklonjena sa liste</translation>
 <translation id="249113932447298600">Žao nam je, uređaj <ph name="DEVICE_LABEL" /> trenutno nije podržan.</translation>
 <translation id="2492461744635776704">Priprema se zahtev za potpisivanje sertifikata</translation>
@@ -2225,11 +2226,13 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3288047731229977326">Dodaci pokrenuti u režimu programera mogu da naškode računaru. Ako niste programer, trebalo bi da onemogućite ove dodatke pokrenute u režimu programera da biste se zaštitili.</translation>
 <translation id="3289668031376215426">Automatsko pisanje velikih početnih slova</translation>
 <translation id="3289856944988573801">Da biste potražili ažuriranja, koristite eternet ili WiFi.</translation>
+<translation id="3290249595466894471">Šalje i mali uzorak stranica, preuzimanja, aktivnosti dodataka i informacija sistema da bi se otkrile nove pretnje</translation>
 <translation id="3291436823898732747">Poboljšano pregledanje: Na primer, predlozi u omniboksu pre nego što počnete da unosite tekst</translation>
 <translation id="3293644607209440645">Pošalji ovu stranicu</translation>
 <translation id="32939749466444286">Linux kontejner se nije pokrenuo. Probajte ponovo.</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3294686910656423119">Statistika korišćenja i izveštaji o otkazivanju</translation>
+<translation id="3297536526040732495">Privremeno povezuje te podatke sa Google nalogom kada ste prijavljeni da biste bili zaštićeni u svim Google aplikacijama</translation>
 <translation id="329838636886466101">Popravi</translation>
 <translation id="3298789223962368867">Uneta je nevažeća URL adresa.</translation>
 <translation id="32991397311664836">Uređaji:</translation>
@@ -4337,6 +4340,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5554489410841842733">Ova ikona će biti vidljiva kada dodatak može da deluje na trenutnoj stranici.</translation>
 <translation id="5554720593229208774">Autoritet za izdavanje sertifikata e-pošte</translation>
 <translation id="5555363196923735206">Obrni kameru</translation>
+<translation id="5555525474779371165">Odaberite zaštitu pomoću Bezbednog pregledanja</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558125320634132440">Ovaj sajt je blokiran jer verovatno ima sadržaj za stariju publiku</translation>
 <translation id="5558129378926964177">Zoom &amp;In (Uvećaj)</translation>
@@ -5704,6 +5708,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Otvori sve u &amp;prozoru bez arhiviranja}=1{Otvori u &amp;prozoru bez arhiviranja}one{Otvori sve ({COUNT}) u &amp;prozoru bez arhiviranja}few{Otvori sve ({COUNT}) u &amp;prozoru bez arhiviranja}other{Otvori sve ({COUNT}) u &amp;prozoru bez arhiviranja}}</translation>
 <translation id="7029307918966275733">Crostini nije instaliran. Instalirajte Crostini da biste videli impresum.</translation>
 <translation id="7029809446516969842">Lozinke</translation>
+<translation id="7030304022046916278">Šalje URL-ove u Bezbedno pregledanje na proveru</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – serijski port je povezan</translation>
 <translation id="7034692021407794547">Administrator sa privilegijama Upravljanje obračunom mora prvo da prihvati uslove korišćenja usluge za Google Meet hardver u odeljku Google Meet hardver na administratorskoj konzoli.</translation>
 <translation id="7036706669646341689">Za Linux se preporučuje <ph name="DISK_SIZE" /> prostora. Da biste oslobodili prostor, izbrišite datoteke sa uređaja.</translation>
@@ -5884,7 +5889,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7243784282103630670">Došlo je do greške pri nadogradnji Linux-a. Vratićemo kontejner pomoću rezervne kopije.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Najbolje)</translation>
 <translation id="7246230585855757313">Ponovo umetnite bezbednosni ključ i probajte ponovo</translation>
-<translation id="7249777306773517303"><ph name="DOMAIN" /> upravlja ovim uređajem i zahteva da se prijavite svaki put.</translation>
 <translation id="7250616558727237648">Uređaj sa kojim delite sadržaj nije odgovorio. Probajte ponovo.</translation>
 <translation id="725109152065019550">Žao nam je, administrator je onemogućio spoljnu memoriju na ovom nalogu.</translation>
 <translation id="7251346854160851420">Podrazumevana pozadina</translation>

@@ -1486,6 +1486,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2489686758589235262">Tetapkan 2 atau beberapa suis</translation>
 <translation id="2489829450872380594">Selepas ini, telefon baharu akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda boleh mematikan Smart Lock dalam Tetapan.</translation>
 <translation id="2489918096470125693">Tambah &amp;Folder...</translation>
+<translation id="2489931062851778802">Masukkan kekunci ini pada <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">'<ph name="FILE_NAME" />' telah dialih keluar daripada senarai</translation>
 <translation id="249113932447298600">Maaf, peranti <ph name="DEVICE_LABEL" /> tidak disokong pada masa ini.</translation>
 <translation id="2492461744635776704">Menyediakan permintaan penandatanganan sijil</translation>
@@ -2241,11 +2242,13 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3288047731229977326">Sambungan yang dijalankan dalam mod pembangun boleh membahayakan komputer anda. Jika anda bukan pembangun, anda harus melumpuhkan sambungan yang dijalankan dalam mod pembangun ini supaya kekal selamat.</translation>
 <translation id="3289668031376215426">Autohuruf besar</translation>
 <translation id="3289856944988573801">Untuk menyemak kemas kini, sila gunakan Ethernet atau Wi-Fi.</translation>
+<translation id="3290249595466894471">Turut menghantar sedikit sampel halaman, muat turun, aktiviti sambungan dan maklumat sistem untuk membantu penemuan ancaman baharu</translation>
 <translation id="3291436823898732747">Penyemakan imbas yang ditingkatkan: Sebagai contoh, cadangan dalam Kotak omni sebelum anda mula menaip</translation>
 <translation id="3293644607209440645">Hantar halaman ini</translation>
 <translation id="32939749466444286">Bekas Linux tidak dimulakan. Sila cuba lagi.</translation>
 <translation id="3294437725009624529">Tetamu</translation>
 <translation id="3294686910656423119">Perangkaan penggunaan dan laporan ranap sistem</translation>
+<translation id="3297536526040732495">Memautkan data ini pada Akaun Google anda secara sementara apabila anda log masuk, untuk melindungi anda pada semua apl Google</translation>
 <translation id="329838636886466101">Baiki</translation>
 <translation id="3298789223962368867">URL tidak sah dimasukkan.</translation>
 <translation id="32991397311664836">Peranti:</translation>
@@ -4355,6 +4358,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5554489410841842733">Ikon ini akan kelihatan apabila sambungan boleh bertindak pada halaman semasa.</translation>
 <translation id="5554720593229208774">Pihak Berkuasa Pensijilan E-mel</translation>
 <translation id="5555363196923735206">Balikkan kamera</translation>
+<translation id="5555525474779371165">Pilih perlindungan Penyemakan Imbas Selamat anda</translation>
 <translation id="5556459405103347317">Muat Semula</translation>
 <translation id="5558125320634132440">Tapak ini disekat kerana mungkin mengandungi kandungan matang</translation>
 <translation id="5558129378926964177">Zum &amp;Masuk</translation>
@@ -5721,6 +5725,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Buka Semua dalam Tetingkap &amp;Inkognito}=1{Buka dalam Tetingkap &amp;Inkognito}other{Buka Semua ({COUNT}) dalam Tetingkap &amp;Inkognito}}</translation>
 <translation id="7029307918966275733">Crostini tidak dipasang. Sila pasang Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Kata laluan</translation>
+<translation id="7030304022046916278">Menghantar URL kepada Penyemakan Imbas Selamat untuk semakan</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Port bersiri disambungkan</translation>
 <translation id="7034692021407794547">Pentadbir yang mempunyai keistimewaan Pengurusan Pengebilan mesti menerima Syarat Perkhidmatan Perkakasan Google Meet di bahagian Perkakasan Google Meet dalam Konsol pentadbir dahulu.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> ruang disyorkan untuk Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
@@ -5901,7 +5906,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7243784282103630670">Terdapat ralat semasa meningkatkan Linux. Kami akan memulihkan bekas menggunakan sandaran anda.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Terbaik)</translation>
 <translation id="7246230585855757313">Masukkan semula kunci keselamatan anda dan cuba lagi</translation>
-<translation id="7249777306773517303">Peranti ini diurus oleh <ph name="DOMAIN" /> dan menghendaki anda log masuk setiap kali.</translation>
 <translation id="7250616558727237648">Peranti yang anda pilih untuk berkongsi fail tidak memberikan respons. Sila cuba lagi.</translation>
 <translation id="725109152065019550">Maaf, pentadbir anda telah melumpuhkan storan luar pada akaun anda.</translation>
 <translation id="7251346854160851420">Kertas dinding lalai</translation>

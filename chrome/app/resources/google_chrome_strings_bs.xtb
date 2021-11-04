@@ -189,6 +189,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="5686916850681061684">Prilagodite i kontrolirajte Google Chrome. Potrebna je vaša pažnja – kliknite za detalje.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome će se ponovo pokrenuti za 1 sekundu.}one{Google Chrome će se ponovo pokrenuti za # sekundu.}few{Google Chrome će se ponovo pokrenuti za # sekunde.}other{Google Chrome će se ponovo pokrenuti za # sekundi.}}</translation>
+<translation id="5736850870166430177">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
 <translation id="573759479754913123">O Chrome OS-u</translation>
 <translation id="5756509061973259733">Chrome profil s ovim računom već postoji na ovom uređaju</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
@@ -276,6 +277,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="8290100596633877290">Joj! Došlo je do pada aplikacije Google Chrome. Ponovo pokrenuti sada?</translation>
 <translation id="8342675569599923794">Ovaj fajl je opasan, pa ga je Chrome blokirao.</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" /> Google LLC. Sva prava su zadržana.</translation>
+<translation id="8394720698884623075">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu</translation>
 <translation id="840084489713044809">Google Chrome želi izvesti vaše lozinke.</translation>
 <translation id="8433638294851456451">Da pošaljete broj s ovog uređaja na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
 <translation id="8498858610309223613">Upravo je izvršeno posebno sigurnosno ažuriranje za Google Chrome. Sada ga ponovo pokrenite i vratićemo vaše kartice.</translation>

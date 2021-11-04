@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2910007522516064972">Om &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium er opdateret</translation>
+<translation id="2977506796191543575">Hvis et website forsøger at stjæle din adgangskode, eller hvis du downloader en skadelig fil, sender Chromium muligvis også webadresser, bl.a. mindre mængder sideindhold, til Beskyttet browsing</translation>
 <translation id="2983934633046890458">Chromium forsøger at redigere adgangskoder.</translation>
 <translation id="3032706164202344641">Chromium kan ikke tjekke dine adgangskoder. Prøv igen senere.</translation>
 <translation id="3032787606318309379">Føjer til Chromium...</translation>
@@ -167,6 +168,7 @@
 <translation id="6212496753309875659">Computeren har allerede en nyere version af Chromium. Hvis softwaren ikke virker, skal du afinstallere Chromium og prøve igen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium genstarter nu}=1{Chromium genstarter om 1 sekund}one{Chromium genstarter om # sekund}other{Chromium genstarter om # sekunder}}</translation>
 <translation id="6241367896540709610">Chromium skal have adgangstilladelse til lagerplads for at downloade filer</translation>
+<translation id="6245734527075554892">Webadresser tjekkes i forhold til en liste over usikre websites, der er gemt i Chromium</translation>
 <translation id="6248213926982192922">Gør Chromium til din standardbrowser</translation>
 <translation id="6266342355635466082">Chromium kan ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="6268381023930128611">Vil du logge ud af Chromium?</translation>

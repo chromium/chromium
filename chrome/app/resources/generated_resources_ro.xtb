@@ -1472,6 +1472,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2489686758589235262">Atribuie încă două comutatoare</translation>
 <translation id="2489829450872380594">Data viitoare, un telefon nou va debloca acest <ph name="DEVICE_TYPE" />. Poți dezactiva Smart Lock în Setări.</translation>
 <translation id="2489918096470125693">Adăugați un &amp;dosar...</translation>
+<translation id="2489931062851778802">Apasă aceste taste pe <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">„<ph name="FILE_NAME" />” a fost eliminat din listă</translation>
 <translation id="249113932447298600">Ne pare rău, dispozitivul <ph name="DEVICE_LABEL" /> nu este acceptat în prezent.</translation>
 <translation id="2492461744635776704">Se pregătește solicitarea de semnare a certificatului</translation>
@@ -2227,11 +2228,13 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3288047731229977326">Extensiile care rulează în modul pentru dezvoltatori pot afecta computerul. Dacă nu sunteți dezvoltator, se recomandă să dezactivați aceste extensii, pentru siguranță.</translation>
 <translation id="3289668031376215426">Scriere automată cu majuscule</translation>
 <translation id="3289856944988573801">Pentru a verifica dacă există actualizări, utilizați Ethernet sau Wi-Fi.</translation>
+<translation id="3290249595466894471">În plus, trimite un mic eșantion cu pagini, descărcări, activități ale extensiilor și informații despre sistem pentru a descoperi noi amenințări</translation>
 <translation id="3291436823898732747">Navigare îmbunătățită: de exemplu, sugestii în caseta polivalentă înainte să începi să introduci text</translation>
 <translation id="3293644607209440645">Trimite pagina</translation>
 <translation id="32939749466444286">Containerul Linux nu a pornit. Încearcă din nou.</translation>
 <translation id="3294437725009624529">Invitat</translation>
 <translation id="3294686910656423119">Statistici de utilizare și rapoarte de blocare</translation>
+<translation id="3297536526040732495">Conectează temporar aceste date la Contul tău Google dacă te-ai conectat, pentru a te proteja în aplicațiile Google</translation>
 <translation id="329838636886466101">Repară</translation>
 <translation id="3298789223962368867">A fost introdusă o adresă URL nevalidă.</translation>
 <translation id="32991397311664836">Dispozitive:</translation>
@@ -4340,6 +4343,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5554489410841842733">Această pictogramă va deveni vizibilă când extensia va putea acționa pe pagina curentă.</translation>
 <translation id="5554720593229208774">Autoritate de certificare e-mail</translation>
 <translation id="5555363196923735206">Comută camera foto</translation>
+<translation id="5555525474779371165">Alege protecția prin Navigarea sigură</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5558125320634132440">Acest site este blocat, deoarece poate include conținut destinat adulților</translation>
 <translation id="5558129378926964177">Măr&amp;ește</translation>
@@ -5706,6 +5710,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Deschide-le pe toate într-o fereastră &amp;incognito}=1{Deschide într-o fereastră &amp;incognito}few{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;incognito}other{Deschide-le pe toate ({COUNT}) într-o fereastră &amp;incognito}}</translation>
 <translation id="7029307918966275733">Crostini nu este instalat. Instalează Crostini pentru a afișa datele de conectare.</translation>
 <translation id="7029809446516969842">Parole</translation>
+<translation id="7030304022046916278">Trimite adresele URL la funcția Navigare sigură, pentru a le verifica</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Portul serial este conectat</translation>
 <translation id="7034692021407794547">Un administrator cu privilegii de gestionare a facturării trebuie întâi să accepte Termenii și condițiile pentru hardware Google Meet din secțiunea Hardware Google Meet a Consolei de administrare.</translation>
 <translation id="7036706669646341689">Pentru Linux, se recomandă un spațiu de <ph name="DISK_SIZE" />. Pentru a elibera spațiu, șterge fișiere de pe dispozitiv.</translation>
@@ -5886,7 +5891,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7243784282103630670">A apărut o eroare în timpul upgrade-ului la Linux. Vom restabili containerul folosind backupul.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (optimă)</translation>
 <translation id="7246230585855757313">Reintrodu cheia de securitate și încearcă din nou</translation>
-<translation id="7249777306773517303">Dispozitivul este gestionat de <ph name="DOMAIN" /> și solicită de fiecare dată conectarea.</translation>
 <translation id="7250616558727237648">Dispozitivul căruia îi trimiți nu a răspuns. Încearcă din nou.</translation>
 <translation id="725109152065019550">Ne pare rău, administratorul a dezactivat stocarea externă pentru contul dvs.</translation>
 <translation id="7251346854160851420">Imagine de fundal prestabilită</translation>

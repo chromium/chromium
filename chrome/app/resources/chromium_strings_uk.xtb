@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2910007522516064972">Про &amp;Chromium</translation>
 <translation id="2977470724722393594">У вас остання версія Chromium</translation>
+<translation id="2977506796191543575">Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chromium також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки</translation>
 <translation id="2983934633046890458">Chromium намагається змінити паролі.</translation>
 <translation id="3032706164202344641">Chromium не може перевірити паролі. Повторіть спробу пізніше.</translation>
 <translation id="3032787606318309379">Додавання в Chromium...</translation>
@@ -167,6 +168,7 @@
 <translation id="6212496753309875659">На цьому комп’ютері вже встановлено новішу версію Chromium. Якщо програмне забезпечення не працює, видаліть Chromium і повторіть спробу.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium перезапуститься зараз}=1{Chromium перезапуститься через 1 секунду}one{Chromium перезапуститься через # секунду}few{Chromium перезапуститься через # секунди}many{Chromium перезапуститься через # секунд}other{Chromium перезапуститься через # секунди}}</translation>
 <translation id="6241367896540709610">Веб-переглядачу Chromium потрібен доступ до пам’яті, щоб завантажувати файли</translation>
+<translation id="6245734527075554892">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chromium</translation>
 <translation id="6248213926982192922">Зробити Chromium переглядачем за умовчанням</translation>
 <translation id="6266342355635466082">Chromium не може перевірити наявність оновлень. Перевірте інтернет-з'єднання.</translation>
 <translation id="6268381023930128611">Вийти з Chromium?</translation>

@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> متصل است.</translation>
 <translation id="1246890715821376239">برنامه‌های پشتیبانی‌نشده</translation>
 <translation id="1247372569136754018">میکروفون (داخلی)</translation>
+<translation id="1247519845643687288">برنامه‌های اخیر</translation>
 <translation id="1252999807265626933">در حال شارژ شدن از <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">‏?‎What's the weather (آب‌وهوا چطور است؟)</translation>
 <translation id="1266097335951928626">اجرای دوربین خودگرفت</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">برای اجرای کنش اعلان، قفل دستگاه را باز کنید</translation>
 <translation id="1420408895951708260">روشن/خاموش کردن «نور شب». <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">بله</translation>
+<translation id="1438357537418863713">جاری‌سازی برنامه اکنون راه‌اندازی شده است. به‌محض اینکه شروع‌به‌کار کنید، برنامه‌هایی که اخیراً راه‌اندازی شده‌اند اینجا نشان داده خواهند شد.</translation>
 <translation id="144853431011121127">دریافت اعلان از تلفنتان در <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">نمایش تنظیمات زبان</translation>
 <translation id="1460620680449458626">دکمه میزان صدا صامت است.</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">صفحه‌کلید دیگری متصل شد</translation>
 <translation id="5147567197700016471">قفل باز شد</translation>
 <translation id="5155897006997040331">سرعت خواندن</translation>
+<translation id="5166007464919321363">ذخیره میزکار به‌عنوان الگو</translation>
 <translation id="5166918508782100047">تنظیمات پاسخ‌های سریع</translation>
 <translation id="5168181903108465623">دستگاه‌های فرستادن موجود هستند</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">‏درحال تأمین برق دستگاه‌های USB-C متصل</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6803622936009808957">نمایش یک تصویر واحد در چند صفحه نمایش ممکن نیست زیرا وضوح تصویر پشتیبانی شده‌ای وجود ندارد. بجای آن حالت نمایش دسک‌تاپ چند بخشی استفاده می‌شود.</translation>
+<translation id="6811454077060061666">‏Google Drive ویژه رایانه دردسترس نیست</translation>
 <translation id="6816797338148849397">اطلاعات مرتبط با انتخاب شما دردسترس است. برای دسترسی، از کلید «پیکان روبه بالا» استفاده کنید.</translation>
 <translation id="6818242057446442178">عقب رفتن کلمه‌به‌کلمه</translation>
 <translation id="6820676911989879663">استراحت کنید!</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، باتری تلفن<ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">‏برای باز کردن قفل <ph name="USER_EMAIL_ADDRESS" />، Enter را فشار دهید</translation>
 <translation id="8261506727792406068">حذف</translation>
+<translation id="8281279285293265212">ضبط ویدیویی از صفحه ذخیره نشد</translation>
 <translation id="8284362522226889623">برای رفتن به میزکار قبلی، با چهار انگشت تند به چپ بکشید</translation>
 <translation id="828708037801473432">خاموش</translation>
 <translation id="8297006494302853456">ضعیف</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">تنظیمات «دستیار»</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> زمان تا تخلیه باتری باقی‌مانده است.</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
+<translation id="9077404278023321866">الگوها</translation>
 <translation id="9077515519330855811">کنترل‌های رسانه، درحال پخش <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">برای رفتن به صفحه اصلی تند به‌بالا بکشید</translation>

@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">Իմացեք ավելին կայքի բովանդակության մասին՝ առանց էջից դուրս գալու։ Հպեք անհրաժեշտ բառին․ Google Որոնումը կփնտրի այն իր համատեքստով և կցուցադրի սահմանումներ, նկարներ, որոնման արդյունքներ և այլ տվյալներ։
 
 Որոնելու համար հպեք որևէ բառի և պահեք։ Հարցումը հստակեցնելու համար ընտրեք ավելի շատ կամ քիչ բառեր։ Որոնումը փոփոխելու համար բացեք վահանակը, բացեք հավելվածը նոր ներդիրում՝ սեղմելով պատկերակին, այնուհետև կատարեք ձեր փոփոխությունները որոնման դաշտում։</translation>
+<translation id="2451607499823206582">Հետագծում</translation>
 <translation id="2459390580524506445">Բարելավված ձայնային որոնում</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
 <translation id="247737702124049222">Պատկերների նկարագրությունները միացված են</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">Թաքցնել սեղմատախտակի բովանդակությունը</translation>
 <translation id="2532336938189706096">Վեբ տարբերակ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> տարր ջնջվեց</translation>
+<translation id="2534582914273493287">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին</translation>
 <translation id="2536728043171574184">Դուք դիտում եք տվյալ էջի անցանց պատճենը</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
 <translation id="2561519700418191927">Տեսանյութերի նախադիտում</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">Պահել սարքում</translation>
 <translation id="3236059992281584593">Մնացել է 1 րոպե</translation>
 <translation id="3244271242291266297">ամիս</translation>
+<translation id="3245429137663807393">Եթե դուք նաև ուղարկում եք Chrome-ի օգտագործման զեկույցներ, դրանցում կներառվեն ձեր այցելած URL-ները</translation>
 <translation id="3250563604907490871">Պատկերի նկարագրությունները կցուցադրվեն, երբ միանաք Wi-Fi-ին</translation>
 <translation id="3254409185687681395">Էջանշել այս էջը</translation>
 <translation id="3259831549858767975">Էջում ամեն ինչ փոքրացնել</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">Պանակ</translation>
 <translation id="3542235761944717775">Հասանելի է <ph name="KILOBYTES" /> ԿԲ</translation>
 <translation id="3549657413697417275">Որոնեք պատմության մեջ</translation>
+<translation id="3557272988124495906">Ստանալ ծանուցումներ գների իջեցման մասին</translation>
 <translation id="3557336313807607643">Ավելացնել կոնտակտներում</translation>
 <translation id="3563767357928833671">Ցուցադրվում է սեղմատախտակի բովանդակությունը</translation>
 <translation id="3566923219790363270">Chrome-ը դեռ նախապատրաստվում է VR-ի համար։ Վերագործարկեք այն ավելի ուշ։</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">Ուղարկել սարքերին</translation>
 <translation id="3778956594442850293">Ավելացվեց հիմնական էկրանին</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ներդիր}one{# ներդիր}other{# ներդիր}}</translation>
+<translation id="3803783897442799486">Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Օգտագործման պայմանները<ph name="END_LINK1" />։\nՀավելվածը բարելավելու նպատակով Chrome-ը ուղարկում է օգտագործման և խափանումների մասին տվյալները Google-ին։ <ph name="BEGIN_LINK2" />Կառավարել<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Կառավարել ավտոմատ նվագարկումը</translation>
 <translation id="3810838688059735925">Տեսանյութ</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
@@ -606,6 +611,7 @@
 <translation id="47217992755561375">Դիտեք ձեր թոփ կայքերը</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Վերջին համաժամացումը՝ <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">Հասցեագոտում կհայտնվեն բարելավված հուշումներ</translation>
 <translation id="4742970037960872810">Հեռացնել ընդգծումը</translation>
 <translation id="4749960740855309258">Բացել նոր ներդիր</translation>
 <translation id="4758061975920522644">Կիսվել միայն պատկերով</translation>
@@ -1173,6 +1179,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7975379999046275268">Նախադիտել էջը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Նախաբեռնել էջերը ավելի արագ դիտարկման և որոնման համար</translation>
 <translation id="7986497153528221272">Գաղտնաբառերը դիտելու համար նախ ձեր սարքում կարգավորեք էկրանի կողպումը</translation>
+<translation id="799576009106109668">Դուք ավելի արագ կդիտեք վեբ էջերը, քանի որ բովանդակությունը նախապես բեռնվում է՝ ընթացիկ բացված վեբ էջի հիման վրա</translation>
 <translation id="7998918019931843664">Նորից բացել փակված ներդիրը</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
 <translation id="8013372441983637696">Նաև մաքրել Chrome-ի ձեր տվյալներն այս սարքից</translation>
@@ -1220,6 +1227,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8218052821161047641">Արագ էջ</translation>
 <translation id="8218622182176210845">Կառավարեք ձեր հաշիվը</translation>
 <translation id="8223642481677794647">Լրահոսի քարտի ընտրացանկ</translation>
+<translation id="8242868071038398515">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>
 <translation id="825412236959742607">Այս էջը չափազանց շատ հիշողություն է օգտագործում, այդ պատճառով Chrome-ը որոշակի բովանդակություն հեռացրել է:</translation>
 <translation id="8260126382462817229">Փորձեք նորից մուտք գործել</translation>
@@ -1238,6 +1246,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8354977102499939946">Արագ որոնեք ձայնային հրահանգների օգնությամբ։ Այս դյուրանցումը փոփոխելու համար անցեք կարգավորումներ։</translation>
 <translation id="835847953965672673">Վերականգնվել է <ph name="NUMBER_OF_DOWNLOADS" /> ներբեռնում</translation>
 <translation id="8364299278605033898">Դիտեք թոփ կայքերը</translation>
+<translation id="8368001212524806591">Հետևել գներին</translation>
 <translation id="8387617938027387193">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8410695015584479363">Հետևել գներին</translation>

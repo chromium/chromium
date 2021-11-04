@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">Зберігати дані</translation>
 <translation id="1974060860693918893">Розширені</translation>
 <translation id="1989112275319619282">Переглянути</translation>
+<translation id="199425419756152024">Показати пароль</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="2021670401941426298">Перегляньте вказівки пошукової системи щодо того, як видалити історію пошуку (якщо вона є).</translation>
 <translation id="2073572773299281212">У мережі <ph name="DAYS" /> дн. тому</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">Вибрано 1</translation>
 <translation id="2421004566762153674">Блокуються сторонні файли cookie</translation>
 <translation id="2421044535038393232">Продовжити редагувати</translation>
+<translation id="2434405374328098816">Ви вже зберегли пароль для користувача <ph name="USERNAME" /> на веб-сайті <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Показати пароль</translation>
+<translation id="2473876017985765807">Ви вже зберегли пароль для сайту <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Не вибрано</translation>
 <translation id="2497852260688568942">Ваш адміністратор вимкнув синхронізацію</translation>
 <translation id="2500374554657206846">Опції для збереження паролів</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">Копіювати URL-адресу посилання</translation>
 <translation id="3607167657931203000">Дані автозаповнення</translation>
 <translation id="3609785682760573515">Синхронізація…</translation>
+<translation id="3631443864840848029">Переконайтеся, що зберігаєте для цього сайту поточний пароль.</translation>
 <translation id="3638472932233958418">Попер.завантаж.стор.</translation>
 <translation id="3661160521073045932">Доступний профіль конфігурації</translation>
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3691593122358196899">Закладку збережено в папці "<ph name="FOLDER_TITLE" />"</translation>
+<translation id="369349502275246497">Пропонувати зберігати паролі</translation>
 <translation id="3709582977625132201">Позначити як непрочитане</translation>
 <translation id="3740397331642243698">Відкриває введені URL-адреси в Google Chrome в анонімному режимі.</translation>
 <translation id="3762232513783804601">Створено для iPad</translation>
@@ -509,6 +514,7 @@
 <translation id="5988851877894965432">Відкривати URL-адреси в Chrome</translation>
 <translation id="6012140227487808125">Шифрування…</translation>
 <translation id="6021332621416007159">Відкрити в...</translation>
+<translation id="6027945736510816438">Можливо, ви мали на увазі <ph name="WEBSITE" />?</translation>
 <translation id="6036514205982097558">Усі ваші вкладки в одному веб-переглядачі</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Закрити</translation>
@@ -751,6 +757,7 @@
 <translation id="8080028325999236607">Закрити всі вкладки</translation>
 <translation id="8105368624971345109">Вимкнути</translation>
 <translation id="8114753159095730575">Доступне завантаження файлу. Параметри можна знайти внизу екрана.</translation>
+<translation id="8132598642024322408">Поточна ціна – <ph name="PRICE" />, попередня – <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">Синхронізація паролів не працює</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Перекласти сторінку</translation>
@@ -823,6 +830,7 @@
 <translation id="8881801611828450202">Пошук цього зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Надіслати…</translation>
 <translation id="8917490105272468696">Так</translation>
+<translation id="8952559610785099500">Додайте пароль</translation>
 <translation id="895541991026785598">Повідомити про проблему</translation>
 <translation id="8976382372951310360">Довідка</translation>
 <translation id="8976414606286374109">Картки зберігаються у вашому обліковому записі Google.</translation>

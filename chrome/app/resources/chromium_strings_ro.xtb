@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">Manager de activități</translation>
 <translation id="2910007522516064972">Despre &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium este actualizat</translation>
+<translation id="2977506796191543575">Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chromium poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură</translation>
 <translation id="2983934633046890458">Chromium încearcă să modifice parolele.</translation>
 <translation id="3032706164202344641">Chromium nu îți poate verifica parolele. Încearcă din nou mai târziu.</translation>
 <translation id="3032787606318309379">Se adaugă la Chromium...</translation>
@@ -167,6 +168,7 @@
 <translation id="6212496753309875659">Acest computer are deja o versiune mai recentă de Chromium. Dacă software-ul nu funcționează, dezinstalați Chromium și încercați din nou.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se va relansa acum}=1{Chromium se va relansa într-o secundă}few{Chromium se va relansa în # secunde}other{Chromium se va relansa în # de secunde}}</translation>
 <translation id="6241367896540709610">Pentru a descărca fișiere, Chromium necesită permisiunea de acces la stocare</translation>
+<translation id="6245734527075554892">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chromium</translation>
 <translation id="6248213926982192922">Setați Chromium ca browser prestabilit</translation>
 <translation id="6266342355635466082">Chromium nu poate căuta actualizări. Verifică-ți conexiunea la internet.</translation>
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>

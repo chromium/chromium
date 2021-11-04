@@ -1480,6 +1480,7 @@
 <translation id="2489686758589235262">2 ተጨማሪ መቀየሪያዎችን ይመድቡ</translation>
 <translation id="2489829450872380594">በሚቀጥለው ጊዜ አዲስ ስልክ ይህን <ph name="DEVICE_TYPE" /> ይከፍተዋል። በቅንብሮች ውስጥ Smart Lockን ማጥፋት ይችላሉ።</translation>
 <translation id="2489918096470125693">&amp;አቃፊ አክል...</translation>
+<translation id="2489931062851778802">እነዚህን ቁልፎች በ<ph name="DEVICE_NAME" /> ላይ ያስገቡ</translation>
 <translation id="2490481887078769936">«<ph name="FILE_NAME" />» ከዝርዝር ተወግዷል</translation>
 <translation id="249113932447298600">ይቅርታ፣ መሣሪያ <ph name="DEVICE_LABEL" /> በአሁኑ ጊዜ አይደገፍም።</translation>
 <translation id="2492461744635776704">የዕውቅና ማረጋገጫ ፊርማ ጥያቄን በማዘጋጀት ላይ</translation>
@@ -2235,11 +2236,13 @@
 <translation id="3288047731229977326">በገንቢ ሁኔታ የሚሄዱ ጥያዎች የእርስዎን ኮምፒውተር ሊጎዱ ይችላሉ። እርስዎ ገንቢ ካልሆኑ ደህንነትዎን ለማረገገጥ በገንቢ ሁኔታ የሚሄዱ ቅጥያዎችን ማሰናከል አለብዎ።</translation>
 <translation id="3289668031376215426">ራስ-ሰር ዓቢይ ሆሄ ማድረጊያ</translation>
 <translation id="3289856944988573801">ዝማኔዎች ካሉ ለማየት እባክዎ Ethernet ወይም Wi-Fi ይጠቀሙ።</translation>
+<translation id="3290249595466894471">አዲስ ስጋቶችን ፈልጎ ለማግኘት እንዲያግዝ በተጨማሪም የገጾች፣ ውርዶች፣ የቅጥያ እንቅስቃሴ እና የሥርዓት መረጃ ትንሽ ናሙና ይልካል</translation>
 <translation id="3291436823898732747">የተሻሻለ አሰሳ፦ ለምሳሌ፣ መተየብ ከመጀመርዎ በፊት በኦምኒቦክስ ውስጥ ያሉ የአስተያየት ጥቆማዎች</translation>
 <translation id="3293644607209440645">ይህን ገጽ ላክ</translation>
 <translation id="32939749466444286">የLinux መያዣ አልጀመረም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="3294437725009624529">እንግዳ</translation>
 <translation id="3294686910656423119">የአጠቃቀም ስታቲስቲክስ እና የብልሽት ሪፖርቶች</translation>
+<translation id="3297536526040732495">እርስዎን በመላው የGoogle መተግበሪያዎች ላይ ለመጠበቅ ይህን ውሂብ ለጊዜው ከGoogle መለያዎ ጋር ያገናኘዋል</translation>
 <translation id="329838636886466101">ይጠግኑ</translation>
 <translation id="3298789223962368867">ልክ ያልሆነ ዩአርኤል ገብቷል።</translation>
 <translation id="32991397311664836">መሣሪያዎች</translation>
@@ -4346,6 +4349,7 @@
 <translation id="5554489410841842733">ቅጥያው በአሁኑ ገጽ ላይ በሚተገበርብት ጊዜ ይህ አዶ የሚታይ ይሆናል።</translation>
 <translation id="5554720593229208774">የኢሜይል እውቅና ማረጋገጫ ባለስልጣን</translation>
 <translation id="5555363196923735206">ካሜራን ይገልብጡ</translation>
+<translation id="5555525474779371165">የእርስዎን ደህንነቱ የተጠበቀ የአሰሳ ጥበቃን ይምረጡ</translation>
 <translation id="5556459405103347317">ዳግም ጫን</translation>
 <translation id="5558125320634132440">ይህ ጣቢያ የአዋቂ ይዘት ሊኖረው ስለሚችል ታግዷል</translation>
 <translation id="5558129378926964177">&amp;አጉላ</translation>
@@ -5712,6 +5716,7 @@
 <translation id="7027258625819743915">{COUNT,plural, =0{ሁሉንም በ&amp;ማንነት የማያሳውቅ መስኮት ውስጥ ክፈት}=1{በ&amp;ማንነትን የማያሳውቅ መስኮት ውስጥ ክፈት}one{ሁሉንም ({COUNT}) በ&amp;ማንነት የማያሳውቅ መስኮት ውስጥ ክፈት}other{ሁሉንም ({COUNT}) በ&amp;ማንነት የማያሳውቅ መስኮት ውስጥ ክፈት}}</translation>
 <translation id="7029307918966275733">Crostini አልተጫነም። ምስጋናዎችን ለመመልከት እባክዎ Crostiniን ይጫኑ።</translation>
 <translation id="7029809446516969842">የይለፍ ቃላት</translation>
+<translation id="7030304022046916278">ዩአርኤሎችን ለመፈተሽ ወደ ደህንነቱ የተጠበቀ አሰሳ ይልካቸዋል</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - ተከታታይ ወደብ ተገናኝቷል</translation>
 <translation id="7034692021407794547">የሒሳብ አከፋፈል አስተዳደር ልዩ መብቶች ያሉት አስተዳዳሪ መጀመሪያ በአስተዳዳሪ መሥሪያው የGoogle Meet ሃርድዌር ክፍል ውስጥ የGoogle Meet ሃርድዌር የአገልግሎት ውልን መቀበል አለባቸው።</translation>
 <translation id="7036706669646341689">ለLinux <ph name="DISK_SIZE" /> ቦታ ይመከራል። ባዶ ቦታን ለመጨመር ከመሣሪያዎ ፋይሎችን ይሰርዙ።</translation>
@@ -5892,7 +5897,6 @@
 <translation id="7243784282103630670">Linuxን በማላቅ ላይ ሳለ አንድ ስህተት ተከስቶ ነበር። ምትኬዎን በመጠቀም መያዣውን ወደነበረበት እንመልሰዋለን።</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ምርጥ)</translation>
 <translation id="7246230585855757313">የእርስዎን የደህንነት ቁልፍ እንደገና ያስገቡ እና ደግመው ይሞክሩ</translation>
-<translation id="7249777306773517303">ይህ መሣሪያ በ<ph name="DOMAIN" /> የሚተዳደር ሲሆን በየጊዜው በመለያ እንዲገቡ ይጠይቀዎታል።</translation>
 <translation id="7250616558727237648">እያጋሩት ያለው መሣሪያ ምላሽ አልሰጠም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="725109152065019550">ይቅርታ፣ አስተዳዳሪዎ በመለያዎ ላይ ውጫዊ ማከማቻን አሰናክሏል።</translation>
 <translation id="7251346854160851420">ነባሪ ልጣፍ</translation>

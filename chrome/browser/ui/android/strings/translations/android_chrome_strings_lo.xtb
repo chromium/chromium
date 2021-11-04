@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">ຮຽນຮູ້ກ່ຽວກັບຫົວຂໍ້ຢູ່ໃນເວັບໄຊໂດຍບໍ່ຕ້ອງອອກໄປຈາກໜ້າ. ແຕະເພື່ອຊອກຫາ ສົ່ງຄຳສັບ ແລະ ບໍລິບົດທີ່ກ່ຽວຂ້ອງຂອງມັນໄປໃຫ້ Google ຊອກຫາ ເຊິ່ງຈະສົ່ງຄຳນິຍາມ, ຮູບ, ຜົນການຊອກຫາ ແລະ ລາຍລະອຽດອື່ນໆຄືນມາ.
 
 ແຕະຄຳສັບໃດໆກໍໄດ້ຄ້າງໄວ້ເພື່ອຊອກຫາ. ເພື່ອປັບປ່ຽນການຊອກຫາຂອງທ່ານ, ກະລຸນາເລືອກຄຳສັບຫຼາຍຂຶ້ນ ຫຼື ໜ້ອຍລົງ. ເພື່ອແກ້ໄຂການຊອກຫາຂອງທ່ານ, ກະລຸນາເປີດແຜງ, ແຕະໄອຄອນເພື່ອເປີດໃນແຖບໃໝ່ ແລ້ວເຮັດການປ່ຽນແປງຂອງທ່ານໃນກ່ອງຊອກຫາ.</translation>
+<translation id="2451607499823206582">ກຳລັງຕິດຕາມ</translation>
 <translation id="2459390580524506445">ການຊອກຫາດ້ວຍສຽງທີ່ປັບປຸງດີຂຶ້ນ</translation>
 <translation id="2461822463642141190">ປັດຈຸບັນ</translation>
 <translation id="247737702124049222">ຄຳອະທິບາຍຮູບພາບເປີດຢູ່</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">ເຊື່ອງເນື້ອຫາຄລິບບອດ</translation>
 <translation id="2532336938189706096">ມຸມມອງເວັບ</translation>
 <translation id="2534155362429831547">ລຶບ <ph name="NUMBER_OF_ITEMS" /> ລາຍ​ການ​​ແລ້ວ</translation>
+<translation id="2534582914273493287">URL ທີ່ທ່ານເຂົ້າຈະຖືກສົ່ງໄປໃຫ້ Google</translation>
 <translation id="2536728043171574184">ກຳ​ລັງ​ເຂົ້າ​ເບິ່ງ​ສຳ​ເນົາ​ອັອບ​ລາຍ​ຂອງ​ໜ້າ​ນີ້</translation>
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
 <translation id="2561519700418191927">ຕົວຢ່າງວິດີໂອ</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">ບັນທຶກໃສ່ອຸປະກອນ</translation>
 <translation id="3236059992281584593">ຍັງເຫຼືອ 1 ນາທີ</translation>
 <translation id="3244271242291266297">ດດ</translation>
+<translation id="3245429137663807393">ຫາກທ່ານແບ່ງປັນລາຍງານການນຳໃຊ້ Chrome ນຳ, ລາຍງານເຫຼົ່ານັ້ນຈະຮວມເອົາ URL ທີ່ທ່ານເຂົ້າໄວ້ພ້ອມ</translation>
 <translation id="3250563604907490871">ຄຳອະທິບາຍຮູບພາບຈະສືບຕໍ່ເມື່ອທ່ານເຊື່ອມຕໍ່ກັບ Wi-Fi</translation>
 <translation id="3254409185687681395">ໃສ່ບຸກມາກສ໌ຫນ້າ​ນີ້...</translation>
 <translation id="3259831549858767975">ເຮັດໃຫ້ທຸກຢ່າງໃນໜ້ານ້ອຍລົງ</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">ໂຟລເດີ</translation>
 <translation id="3542235761944717775">ຍັງເຫຼືອ <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">ຊອກຫາປະຫວັດຂອງທ່ານ</translation>
+<translation id="3557272988124495906">ຮັບການແຈ້ງເຕືອນການຫຼຸດລາຄາ</translation>
 <translation id="3557336313807607643">ເພີ່ມໃສ່ລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
 <translation id="3563767357928833671">ສະແດງເນື້ອຫາຄລິບບອດແລ້ວ</translation>
 <translation id="3566923219790363270">Chrome ຍັງກະກຽມສໍາລັບ VR ຢູ່. ເປີດ Chrome ໃໝ່ໃນພາຍໃໝ່.</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3778956594442850293">ເພີ່ມໃສ່ໜ້າຈໍຫຼັກແລ້ວ</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ແຖບ}other{# ແຖບ}}</translation>
+<translation id="3803783897442799486">ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_LINK1" />ຂໍ້ກຳນົດບໍລິການ<ph name="END_LINK1" />.\nເພື່ອຊ່ວຍປັບປຸງແອັບ, Chrome ຈະສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການຫຼົ້ມໄປໃຫ້ Google. <ph name="BEGIN_LINK2" />ຈັດການ<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">ຈັດການການຫຼິ້ນອັດຕະໂນມັດ</translation>
 <translation id="3810838688059735925">ວິ​ດີ​ໂອ</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
@@ -606,6 +611,7 @@
 <translation id="47217992755561375">ເບິ່ງເວັບໄຊຍອດນິຍົມຂອງທ່ານ</translation>
 <translation id="4732120983431207637">ຕົວມາຍສະແຕັກ</translation>
 <translation id="4738836084190194332">ຊິ້ງຂໍ້ມູນຫຼ້າສຸດ: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">ທ່ານຈະໄດ້ຮັບການແນະນຳທີ່ມີການປັບປຸງໃນແຖບທີ່ຢູ່</translation>
 <translation id="4742970037960872810">ລຶບໄຮໄລ້ອອກ</translation>
 <translation id="4749960740855309258">ເປີດແຖບໃໝ່</translation>
 <translation id="4758061975920522644">ແບ່ງປັນຮູບເທົ່ານັ້ນ</translation>
@@ -1173,6 +1179,7 @@
 <translation id="7975379999046275268">ສະແດງຕົວຢ່າງໜ້າ <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ໂຫຼດໜ້າກ່ອນສຳລັບການທ່ອງເວັບ ແລະ ການຊອກຫາທີ່ໄວກວ່າ</translation>
 <translation id="7986497153528221272">ເພື່ອເບິ່ງລະຫັດຜ່ານ, ກະລຸນາຕັ້ງຄ່າລັອກໜ້າຈໍໃນອຸປະກອນຂອງທ່ານກ່ອນ</translation>
+<translation id="799576009106109668">ທ່ານຈະທ່ອງເວັບໄດ້ໄວຂຶ້ນເນື່ອງຈາກເນື້ອຫາມີການໂຫຼດໄວ້ກ່ອນໂດຍອ້າງອີງໃສ່ການເຂົ້າເບິ່ງໜ້າເວັບປັດຈຸບັນຂອງທ່ານ</translation>
 <translation id="7998918019931843664">ເປີດ​ແຖບ​ປິດຄືນໃໝ່</translation>
 <translation id="8004582292198964060">ບຣາວ​ເຊີ</translation>
 <translation id="8013372441983637696">ລຶບຂໍ້ມູນ Chrome ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ນຳ</translation>
@@ -1220,6 +1227,7 @@
 <translation id="8218052821161047641">ໜ້າທີ່ໂຫຼດໄວ</translation>
 <translation id="8218622182176210845">ຈັດການບັນຊີຂອງທ່ານ</translation>
 <translation id="8223642481677794647">ເມນູບັດຟີດ</translation>
+<translation id="8242868071038398515">ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນຫາກມີການຫຼຸດລາຄາຢູ່ເວັບໄຊໃດກໍຕາມ</translation>
 <translation id="8250920743982581267">ເອກະສານ</translation>
 <translation id="825412236959742607">ໜ້ານີ້ໃຊ້ເງິນຫຼາຍເກີນໄປ, ສະນັ້ນ Chrome ໄດ້ລຶບບາງເນື້ອຫາອອກແລ້ວ.</translation>
 <translation id="8260126382462817229">ລອງເຂົ້າສູ່ລະບົບອີກຄັ້ງ</translation>
@@ -1238,6 +1246,7 @@
 <translation id="8354977102499939946">ຊອກຫາດ້ວຍສຽງຂອງທ່ານແບບໄວໆ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າ.</translation>
 <translation id="835847953965672673">ກູ້ຄືນການດາວໂຫຼດ <ph name="NUMBER_OF_DOWNLOADS" /> ລາຍການແລ້ວ</translation>
 <translation id="8364299278605033898">ເບິ່ງເວັບໄຊຍອດນິຍົມ</translation>
+<translation id="8368001212524806591">ຕິດຕາມລາຄາ</translation>
 <translation id="8387617938027387193">ຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="8393700583063109961">ສົ່ງຂໍ້ຄວາມ</translation>
 <translation id="8410695015584479363">ຕິດຕາມລາຄາ</translation>

@@ -234,6 +234,7 @@ Atinge orice cuvânt pentru a-l căuta. Ca să rafinezi căutarea, atinge lung p
 <translation id="2450907520913474542">Află despre subiectele de pe site-uri fără să părăsești pagina. Funcția Atinge pentru a căuta trimite un cuvânt și contextul aferent către Căutarea Google și returnează definiții, imagini, rezultate ale căutării și alte detalii.
 
 Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectează mai multe sau mai puține cuvinte. Pentru a edita căutarea, deschide panoul, atinge pictograma ca să deschizi într-o filă nouă și fă modificările în caseta de căutare.</translation>
+<translation id="2451607499823206582">Urmărire</translation>
 <translation id="2459390580524506445">Căutare vocală îmbunătățită</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="247737702124049222">Descrierile imaginilor sunt activate</translation>
@@ -253,6 +254,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2527779675047087889">Ascunde conținutul clipboardului</translation>
 <translation id="2532336938189706096">Vizualizare pe web</translation>
 <translation id="2534155362429831547">Elemente șterse: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2534582914273493287">Adresele URL pe care le accesezi sunt trimise la Google</translation>
 <translation id="2536728043171574184">Se afișează o versiune offline a acestei pagini</translation>
 <translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
 <translation id="2561519700418191927">Previzualizările videoclipului</translation>
@@ -372,6 +374,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3234978181857588512">Salvează pe dispozitiv</translation>
 <translation id="3236059992281584593">1 min. rămas</translation>
 <translation id="3244271242291266297">LL</translation>
+<translation id="3245429137663807393">Dacă trimiți rapoarte privind folosirea Chrome, acestea includ adresele URL pe care le accesezi</translation>
 <translation id="3250563604907490871">Descrierile imaginilor vor fi reluate când te conectezi la Wi-Fi</translation>
 <translation id="3254409185687681395">Marcați această pagină</translation>
 <translation id="3259831549858767975">Micșorează întregul conținut al paginii</translation>
@@ -423,6 +426,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3527085408025491307">Dosar</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB disponibili</translation>
 <translation id="3549657413697417275">Caută în istoricul tău</translation>
+<translation id="3557272988124495906">Primește notificări privind scăderea prețurilor</translation>
 <translation id="3557336313807607643">Adaugă în Agendă</translation>
 <translation id="3563767357928833671">Conținutul clipboardului este afișat</translation>
 <translation id="3566923219790363270">Chrome încă se pregătește pentru RV. Repornește Chrome mai târziu.</translation>
@@ -458,6 +462,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3775705724665058594">Trimite pe dispozitivele tale</translation>
 <translation id="3778956594442850293">S-a adăugat pe ecranul de pornire</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{O filă}few{# file}other{# de file}}</translation>
+<translation id="3803783897442799486">Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile<ph name="END_LINK1" />.\nPentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_LINK2" />Gestionează<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Gestionează redarea automată</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Gestionează</translation>
@@ -606,6 +611,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="47217992755561375">Vezi principalele site-uri</translation>
 <translation id="4732120983431207637">Instrument de derulare a stivei</translation>
 <translation id="4738836084190194332">Ultima sincronizare: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">Vei primi sugestii îmbunătățite în bara de adrese</translation>
 <translation id="4742970037960872810">Elimină evidențierea</translation>
 <translation id="4749960740855309258">Deschide o filă nouă</translation>
 <translation id="4758061975920522644">Trimite numai imaginea</translation>
@@ -1173,6 +1179,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7975379999046275268">Previzualizează pagina <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Preîncarcă paginile pentru navigare și căutare mai rapide</translation>
 <translation id="7986497153528221272">Pentru a vedea parolele, mai întâi setează o blocare a ecranului pe dispozitiv</translation>
+<translation id="799576009106109668">Vei naviga mai rapid deoarece conținutul se încarcă proactiv în funcție de pagina web accesată în acel moment</translation>
 <translation id="7998918019931843664">Redeschideți fila închisă</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Șterge și datele Chrome de pe acest dispozitiv</translation>
@@ -1220,6 +1227,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8218052821161047641">Pagină rapidă</translation>
 <translation id="8218622182176210845">Gestionează contul</translation>
 <translation id="8223642481677794647">Meniul cardului din feed</translation>
+<translation id="8242868071038398515">Vei primi notificări dacă prețul scade pe orice site</translation>
 <translation id="8250920743982581267">Documente</translation>
 <translation id="825412236959742607">Această pagină folosește prea multă memorie, prin urmare Chrome a eliminat o parte din conținut.</translation>
 <translation id="8260126382462817229">Încearcă să te conectezi din nou</translation>
@@ -1238,6 +1246,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8354977102499939946">Caută rapid cu ajutorul vocii. Pentru a edita comanda rapidă, accesează setările.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> de descărcări au fost restabilite</translation>
 <translation id="8364299278605033898">Vezi site-urile populare</translation>
+<translation id="8368001212524806591">Urmărește prețul</translation>
 <translation id="8387617938027387193">Confirmă-ți identitatea</translation>
 <translation id="8393700583063109961">Trimite un mesaj</translation>
 <translation id="8410695015584479363">Urmărește prețurile</translation>

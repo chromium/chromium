@@ -1487,6 +1487,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2489686758589235262">Tildel 2 kontakter mere</translation>
 <translation id="2489829450872380594">Næste gang låser en ny telefon op for denne <ph name="DEVICE_TYPE" />. Du kan deaktivere Smart Lock i Indstillinger.</translation>
 <translation id="2489918096470125693">Tilføj &amp;mappe...</translation>
+<translation id="2489931062851778802">Tryk på disse taster på <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">"<ph name="FILE_NAME" />" blev fjernet fra listen</translation>
 <translation id="249113932447298600">Vi beklager, men enheden <ph name="DEVICE_LABEL" /> understøttes ikke på nuværende tidspunkt.</translation>
 <translation id="2492461744635776704">Forbereder anmodning om certifikatsignering</translation>
@@ -2242,11 +2243,13 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3288047731229977326">Udvidelser, der kører i udviklertilstand, kan skade din computer. Hvis du ikke er udvikler, skal du deaktivere udvidelserne, der kører i udviklertilstand, af hensyn til sikkerheden.</translation>
 <translation id="3289668031376215426">Skriv automatisk med stort</translation>
 <translation id="3289856944988573801">Du kan søge efter opdateringer via Ethernet eller Wi-Fi.</translation>
+<translation id="3290249595466894471">Der sendes også et mindre antal sider, downloads, udvidelsesaktivitet og systemoplysninger for at identificere nye trusler</translation>
 <translation id="3291436823898732747">Forbedret browsing: Du får f.eks. forslag i omnifeltet, inden du begynder at skrive</translation>
 <translation id="3293644607209440645">Send denne side</translation>
 <translation id="32939749466444286">Linux-containeren startede ikke. Prøv igen.</translation>
 <translation id="3294437725009624529">Gæst</translation>
 <translation id="3294686910656423119">Brugsstatistikker og nedbrudsrapporter</translation>
+<translation id="3297536526040732495">Disse data knyttes midlertidigt til din Google-konto, når du er logget ind, for at beskytte dig i Google-apps</translation>
 <translation id="329838636886466101">Reparer</translation>
 <translation id="3298789223962368867">Den indtastede webadresse er ugyldig.</translation>
 <translation id="32991397311664836">Enheder:</translation>
@@ -4356,6 +4359,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5554489410841842733">Dette ikon er synligt, når udvidelsen kan fungere på den aktuelle side.</translation>
 <translation id="5554720593229208774">Mail-certificeringsautoritet</translation>
 <translation id="5555363196923735206">Skift kamera</translation>
+<translation id="5555525474779371165">Vælg din beskyttelse i Beskyttet browsing</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5558125320634132440">Dette website er blokeret, fordi indholdet kan være uegnet for børn</translation>
 <translation id="5558129378926964177">Zoom &amp;ind</translation>
@@ -5722,6 +5726,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Åbn alle i &amp;inkognitovindue}=1{Åbn i &amp;inkognitovindue}one{Åbn ({COUNT}) i &amp;inkognitovindue}other{Åbn alle ({COUNT}) i &amp;inkognitovindue}}</translation>
 <translation id="7029307918966275733">Crostini er ikke installeret. Installer Crostini for at se krediteringer.</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
+<translation id="7030304022046916278">Webadresser sendes til tjek i Beskyttet browsing</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – tilsluttet en serieport</translation>
 <translation id="7034692021407794547">En administrator med rettigheden Faktureringsadministration skal først acceptere servicevilkårene for Google Meet-hardware under sektionen for Google Meet-hardware i Administrationskonsol.</translation>
 <translation id="7036706669646341689">Du bør have mindst <ph name="DISK_SIZE" /> plads til Linux. Du kan frigøre plads ved at slette filer fra enheden.</translation>
@@ -5902,7 +5907,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7243784282103630670">Der opstod en fejl under forsøget på at opgradere Linux. Vi gendanner containeren ved hjælp af din backup.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Bedste)</translation>
 <translation id="7246230585855757313">Indsæt nøglen igen, og prøv igen.</translation>
-<translation id="7249777306773517303">Denne enhed er administreret af <ph name="DOMAIN" /> og kræver, at du logger ind hver gang.</translation>
 <translation id="7250616558727237648">Den enhed, du deler med, svarede ikke. Prøv igen.</translation>
 <translation id="725109152065019550">Administratoren har desværre deaktiveret ekstern lagring på din konto.</translation>
 <translation id="7251346854160851420">Standardbaggrund</translation>

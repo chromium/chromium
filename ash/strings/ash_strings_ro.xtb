@@ -48,6 +48,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1239161794459865856">Opțiunea <ph name="FEATURE_NAME" /> s-a conectat.</translation>
 <translation id="1246890715821376239">Aplicații neacceptate</translation>
 <translation id="1247372569136754018">Microfon (intern)</translation>
+<translation id="1247519845643687288">Aplicații recente</translation>
 <translation id="1252999807265626933">Se încarcă de la <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Cum este vremea?</translation>
 <translation id="1266097335951928626">Pornește camera foto pentru selfie</translation>
@@ -79,6 +80,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1419738280318246476">Deblochează dispozitivul pentru efectuarea acțiunii de notificare</translation>
 <translation id="1420408895951708260">Comută Lumina de noapte. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Da</translation>
+<translation id="1438357537418863713">Streamingul de aplicație a fost configurat. Odată ce începi să îl folosești, aplicațiile lansate recent vor apărea aici.</translation>
 <translation id="144853431011121127">Primește notificări de pe telefon pe <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Arată setările pentru limbă</translation>
 <translation id="1460620680449458626">Sunetul este dezactivat.</translation>
@@ -590,6 +592,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
 <translation id="5147567197700016471">Deblocat</translation>
 <translation id="5155897006997040331">Viteza de citire</translation>
+<translation id="5166007464919321363">Salvează desktopul ca șablon</translation>
 <translation id="5166918508782100047">Setări pentru Răspunsuri rapide</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
@@ -799,6 +802,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6777216307882431711">Se încarcă dispozitivele USB-C conectate</translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6803622936009808957">Afișajele nu au putut fi oglindite, deoarece nu au fost găsite rezoluții acceptate. Ați intrat, în schimb, în modul monitor extins.</translation>
+<translation id="6811454077060061666">Google Drive pentru computer nu este disponibil</translation>
 <translation id="6816797338148849397">Sunt disponibile informații despre selecția ta. Folosește tasta săgeată în sus pentru a le accesa.</translation>
 <translation id="6818242057446442178">Înapoi cu un cuvânt</translation>
 <translation id="6820676911989879663">Fă o pauză!</translation>
@@ -997,6 +1001,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, bateria telefonului: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Apasă pe Enter ca să deblochezi pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Șterge</translation>
+<translation id="8281279285293265212">Înregistrarea de ecran nu s-a salvat</translation>
 <translation id="8284362522226889623">Glisează spre stânga cu patru degete pentru a comuta la desktopul anterior</translation>
 <translation id="828708037801473432">Dezactivat</translation>
 <translation id="8297006494302853456">Slab</translation>
@@ -1101,6 +1106,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="9070640332319875144">Setări pentru Asistent</translation>
 <translation id="9072519059834302790">Timp rămas până la descărcarea bateriei: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Șabloane</translation>
 <translation id="9077515519330855811">Comenzi media, se redă <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Glisează în sus pentru a accesa pagina principală</translation>

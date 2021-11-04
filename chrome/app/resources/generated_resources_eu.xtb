@@ -5586,6 +5586,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="6914783257214138813">Esportatutako fitxategia ikus dezaketen guztiek ikusi ahal izango dituzte pasahitzak.</translation>
 <translation id="6916590542764765824">Kudeatu luzapenak</translation>
 <translation id="6919868320029503575">Seguruak ez diren pasahitzak</translation>
+<translation id="6919952941889172531">Arakatze seguru hobetua ere aktibatu nahi duzu Chrome-ko profil honetan?</translation>
 <translation id="6920989436227028121">Ireki ohiko fitxa gisa</translation>
 <translation id="6921104647315081813">Garbitu jarduerak</translation>
 <translation id="692114467174262153">Ezin izan da ireki <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -5884,7 +5885,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7243784282103630670">Errore bat gertatu da Linux bertsio-berritzean. Babeskopia erabiliko dugu edukiontzia leheneratzeko.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (onena)</translation>
 <translation id="7246230585855757313">Sartu segurtasun-giltza eta saiatu berriro</translation>
-<translation id="7249777306773517303"><ph name="DOMAIN" /> domeinuak kudeatzen du gailu hau, eta zatozen bakoitzean saioa hastea eskatzen du.</translation>
 <translation id="7250616558727237648">Edukia partekatzeko erabiltzen ari zaren gailuak ez dio erantzun fitxategia onartu edo baztertzeko eskaerari. Saiatu berriro.</translation>
 <translation id="725109152065019550">Administratzaileak kanpoko memoria kontu honetan erabiltzeko aukera desgaitu du.</translation>
 <translation id="7251346854160851420">Horma-paper lehenetsia</translation>

@@ -187,6 +187,7 @@
 <translation id="5686916850681061684">Google Chrome কাস্টমাইজ ও নিয়ন্ত্রণ করুন। একটি বিষয়ে আপনার নজর দেওয়া দরকার - বিস্তারিত বিবরণের জন্য ক্লিক করুন।</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ১ সেকেন্ডের মধ্যে রিস্টার্ট হবে}one{Google Chrome # সেকেন্ডের মধ্যে রিস্টার্ট হবে}other{Google Chrome # সেকেন্ডের মধ্যে রিস্টার্ট হবে}}</translation>
+<translation id="5736850870166430177">যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Chrome, পৃষ্ঠার কিছু কন্টেন্ট সহ URL ও হয়ত Safe Browsing-এ পাঠাতে পারে</translation>
 <translation id="573759479754913123">Chrome OS সম্পর্কে </translation>
 <translation id="5756509061973259733">এই ডিভাইসে এই অ্যাকাউন্টের সাথে Chrome প্রোফাইল আগে থেকেই আছে</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
@@ -274,6 +275,7 @@
 <translation id="8290100596633877290">হোয়া! Google Chrome ক্র্যাশ হয়েছে৷ এখনই পুনঃলঞ্চ করবেন?</translation>
 <translation id="8342675569599923794">এই ফাইলটি বিপজ্জনক, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>
 <translation id="8370517070665726704">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>
+<translation id="8394720698884623075">Chrome-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সাইটগুলির URL পরীক্ষা করে দেখে</translation>
 <translation id="840084489713044809">Google Chrome আপনার পাসওয়ার্ড এক্সপোর্ট করতে চাইছে।</translation>
 <translation id="8433638294851456451">এখান থেকে আপনার Android ফোনে একটি নম্বর পাঠাতে, উভয় ডিভাইসের Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="8498858610309223613">Google Chrome-এর জন্য একটি বিশেষ নিরাপত্তা আপডেট এইমাত্র প্রয়োগ করা হয়েছে। এখনই রিস্টার্ট করুন এবং আপনার ট্যাব আমরা রিস্টোর করব।</translation>

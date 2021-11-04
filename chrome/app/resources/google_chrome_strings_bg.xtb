@@ -184,6 +184,7 @@
 <translation id="5686916850681061684">Персонализиране и контролиране на Google Chrome. Трябва да обърнете внимание на нещо – кликнете за подробности.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ще се рестартира след 1 секунда}other{Google Chrome ще се рестартира след # секунди}}</translation>
+<translation id="5736850870166430177">Ако сайт се опита да открадне паролата ви или изтеглите опасен файл, Chrome може също да изпрати до Безопасно сърфиране URL адресите и част от съдържанието на страницата</translation>
 <translation id="573759479754913123">Всичко за Chrome OS</translation>
 <translation id="5756509061973259733">На това устройство вече съществува потребителски профил в Chrome за този профил</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
@@ -271,6 +272,7 @@
 <translation id="8290100596633877290">О, не! Google Chrome претърпя срив. Да се стартира ли отново сега?</translation>
 <translation id="8342675569599923794">Chrome блокира този файл, тъй като е опасен.</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> г. Google LLC. Всички права запазени.</translation>
+<translation id="8394720698884623075">URL адресите се проверяват в съхраняван в Chrome списък с опасни сайтове</translation>
 <translation id="840084489713044809">Google Chrome иска да експортира паролите ви.</translation>
 <translation id="8433638294851456451">За да изпратите номер от тук до телефона си с Android, влезте в Chrome и на двете устройства.</translation>
 <translation id="8498858610309223613">Току-що бе приложена специална актуализация за сигурност за Google Chrome. Рестартирайте сега – ще възстановим разделите ви.</translation>

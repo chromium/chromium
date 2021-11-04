@@ -677,15 +677,6 @@
 
       如果此政策已停用或未设置，远程协助主机会在用户的环境中运行，而且远程用户将无法与本地用户的桌面设备上需有较高权限才能使用的窗口交互。</translation>
 <translation id="1837165432382702436">页面的高度（以微米为单位）</translation>
-<translation id="1839278886947586809">
-      此政策已从 M80 中移除，因为 WebDriver 现已与所有现有政策兼容，因而不再需要此政策。
-
-      此政策允许 WebDriver 功能的用户覆盖那些可能会干扰该功能运行的政策。
-
-      目前，此政策可停用 SitePerProcess 和 IsolateOrigins 政策。
-
-      如果此政策已启用，WebDriver 将能够覆盖与之冲突的政策。
-      如果此政策已停用或未配置，WebDriver 将无法覆盖与之冲突的政策。</translation>
 <translation id="1843117931376765605">用户策略的更新频率</translation>
 <translation id="1844620919405873871">配置快速解锁相关政策。</translation>
 <translation id="1844972978764975668">允许向 Google 服务器发送查询以检索准确的时间戳</translation>
@@ -1305,16 +1296,6 @@
 
        如果您未设置此政策，用电高峰期切换电源功能会保持关闭状态。</translation>
 <translation id="2502467045153796624">版本降级行为</translation>
-<translation id="2505351097561237268">
-      显示面截取权限政策会根据以下网址所链接到的规范限制对 getDisplayMedia() 的调用：
-      https://www.w3.org/TR/screen-capture/#feature-policy-integration
-      但是，如果此政策已停用，系统便不会强制执行这项要求，而是会允许从那些未被此政策列入许可名单的上下文中调用 getDisplayMedia()。此企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 100 版之后移除。
-      此政策旨在解除对所用应用不符合规范但需要时间进行修正的企业用户的限制。
-
-      如果此政策已启用或未设置，网站只能从已被显示面截取权限政策列入许可名单的上下文中调用 getDisplayMedia()。
-
-      如果此政策已停用，即使相应上下文未被显示面截取权限政策列入许可名单，网站也能从这些上下文中调用 getDisplayMedia()。
-      请注意，别处设定的限制可能仍然适用。</translation>
 <translation id="250670737672448119">启用“插入符号突出显示”无障碍功能。
 
           此功能负责在修改内容时突出显示插入符号周围的区域。
@@ -2517,10 +2498,6 @@
 
           如果您未设置此政策，粘滞键在登录屏幕上最初会处于停用状态，但用户可随时启用它。</translation>
 <translation id="3927291637826333102">允许这些来源使用桌面、窗口和标签页截取功能</translation>
-<translation id="3932553013632130433">
-      用于指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中。出于网络兼容性方面的原因，从 Chrome 91 (2021-05-25) 开始，Chrome 会要求网站在使用 SharedArrayBuffers 时进行跨域隔离。如需了解更多详情，请访问 https://developer.chrome.com/blog/enabling-shared-array-buffer/。
-      如果此政策设为 True，网站将能够随意使用 SharedArrayBuffer，不受任何限制。
-      如果此政策设为 False 或未设置，则意味着只有在进行了跨域隔离的情况下，网站才能使用 SharedArrayBuffers。</translation>
 <translation id="3942041691320538491">如果此政策设为 0（默认值），您可以访问开发者工具和 JavaScript 控制台，但无法在由企业政策安装的扩展程序中访问。如果此政策设为 1，无论在什么情境下（包括在由企业政策安装的扩展程序中），您都可以访问开发者工具和 JavaScript 控制台。如果此政策设为 2，您既无法访问开发者工具，也无法检查网站元素。
 
       此设置还可关闭用于打开开发者工具或 JavaScript 控制台的键盘快捷键及菜单（或上下文菜单）条目。</translation>
@@ -2974,16 +2951,6 @@
       如需查看完整说明，请访问 https://www.chromestatus.com/feature/5675755719622656。
       如果您启用了此政策，网站将可以在导航的同时打开新窗口/新标签页。
       如果您停用了或未设置此政策，网站将无法在导航的同时打开新窗口/新标签页。</translation>
-<translation id="4574215366111396039">Chrome 将阻止在沙盒化 iframe 内导航到外部协议。请参阅 https://chromestatus.com/features/5680742077038592。
-
-      如果此政策设为 True，Chrome 将会阻止此类导航。
-
-      如果此政策设为 False，Chrome 将无法阻止此类导航。
-
-      此政策默认设为 True：安全功能已启用。
-
-      如果管理员需要更多时间更新受这项新限制影响的内部网站，则可以使用此政策。此企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 104 版之后移除。
-      </translation>
 <translation id="4578265298946081589">不要在用户退出后重新启动。</translation>
 <translation id="4581507927311097234">系统应在设备闲置多久（以毫秒为单位）后关闭屏幕</translation>
 <translation id="4582338216073557489">当此政策设为 None 时，<ph name="PRODUCT_NAME" /> 会使用默认的缓存大小在磁盘中存储缓存文件。用户无法更改此设置。
@@ -4170,18 +4137,6 @@
 
       您可按以下格式指定 Google 的搜索网址：<ph name="GOOGLE_SUGGEST_SEARCH_URL" />。</translation>
 <translation id="606742564823687992">不报告打印任务</translation>
-<translation id="6070374129526507093">已在 M69 中弃用。请改用 OverrideSecurityRestrictionsOnInsecureOrigin。
-
-      此政策让您能够以列表形式指定针对不安全来源的安全性限制不适用于哪些来源（网址）或主机名模式（例如“*.example.com”）。
-
-      此政策意在允许相关组织为无法部署传输层安全协议 (TLS) 的旧式应用设置许可的来源，或允许其设置用于内部 Web 开发的预演服务器以便开发者不必在预演服务器上部署 TLS 就能测试需要在安全情境中运行的功能。此政策还可防止所列来源在多功能框中被标记为“不安全”。
-
-      在此政策中设置一个网址列表的效果等同于设置“--unsafely-treat-insecure-origin-as-secure”命令行标记并为其指定一个包含相同网址的英文逗号分隔列表。如果此政策已设置，则会替换上述命令行标记。
-
-      我们已在 M69 中弃用此政策并改用 OverrideSecurityRestrictionsOnInsecureOrigin。如果这两项政策同时存在，OverrideSecurityRestrictionsOnInsecureOrigin 会覆盖此政策。
-
-      有关安全情境的详情，请访问 https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="6070667616071269965">设备登录屏幕键盘布局</translation>
 <translation id="6074963268421707432">不允许任何网站显示桌面通知</translation>
 <translation id="6074964551275531965">设置一个时间段以用于显示更新通知</translation>
@@ -4312,12 +4267,6 @@
       如需详细了解 <ph name="CORS" />，请访问：<ph name="CORS_HELP_URL" />。
 
       请注意，我们曾宣布将在 <ph name="PRODUCT_NAME" /> 82 版中移除此政策，但已改为在 84 版中移除。</translation>
-<translation id="6276624383311206185">
-      指定能否跨源将 WebAssembly 模块发送到另一窗口或工作器。为了弃用 document.domain，我们采取了诸多举措，其中一项举措便是即将弃用跨源 WebAssembly 模块共享功能。请参见 https://github.com/mikewest/deprecating-document-domain。此政策允许重新启用跨源 WebAssembly 模块共享功能，以延长弃用过程中的过渡期。
-
-      如果此政策设为 True，网站不仅能发送 WebAssembly 模块，而且能不受限制地跨源发送。
-
-      如果此政策设为 False 或未设置，网站只能将 WebAssembly 模块发送到同源的窗口和工作器。</translation>
 <translation id="6277314550042130537">在 HTTP 身份验证期间使用 KDC 政策审批结果</translation>
 <translation id="6279722058145292462">通过设置此政策，您可以指定客户端对其机器帐号密码的更改频率（以天为单位）。密码是由客户端随机生成的，不会显示给用户。停用此政策或设置较多的天数可能会对安全性产生不利影响，因为这会让潜在攻击者有更多时间来找出并使用机器帐号密码。
 

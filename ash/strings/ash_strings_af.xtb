@@ -48,6 +48,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is gekoppel.</translation>
 <translation id="1246890715821376239">Ongesteunde programme</translation>
 <translation id="1247372569136754018">Mikrofoon (intern)</translation>
+<translation id="1247519845643687288">Onlangse programme</translation>
 <translation id="1252999807265626933">Laai vanaf <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hoe lyk die weer?</translation>
 <translation id="1266097335951928626">Begin selfiekamera</translation>
@@ -79,6 +80,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1419738280318246476">Ontsluit toestel om die kennisgewinghandeling uit te voer</translation>
 <translation id="1420408895951708260">Wissel Aandbeligting. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
+<translation id="1438357537418863713">Programstroming is nou opgestel. Sodra jy begin, sal programme wat onlangs oopgemaak is hier verskyn.</translation>
 <translation id="144853431011121127">Kry kennisgewings vanaf jou foon op jou <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Wys taalinstellings</translation>
 <translation id="1460620680449458626">Volume is gedemp.</translation>
@@ -591,6 +593,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5136175204352732067">Ander sleutelbord is gekoppel</translation>
 <translation id="5147567197700016471">Ontsluit</translation>
 <translation id="5155897006997040331">Leesspoed</translation>
+<translation id="5166007464919321363">Stoor lessenaar as 'n templaat</translation>
 <translation id="5166918508782100047">Vinnige Antwoorde-instellings</translation>
 <translation id="5168181903108465623">Uitsaaitoestelle is beskikbaar</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
@@ -800,6 +803,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6777216307882431711">Gee tans krag aan gekoppelde USB-C-toestelle</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6803622936009808957">Kon nie skerms weerspieël nie, omdat daar geen gesteunde resolusies gevind kon word nie. Het eerder by uitgebreide skerm ingegaan.</translation>
+<translation id="6811454077060061666">Google Drive vir Rekenaars is nie beskikbaar nie</translation>
 <translation id="6816797338148849397">Inligting is beskikbaar wat met jou keuse verband hou. Gebruik oppylsleutel om dit te sien.</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6820676911989879663">Geniet 'n blaaskans!</translation>
@@ -998,6 +1002,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, foonbattery <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Druk Enter om <ph name="USER_EMAIL_ADDRESS" /> te ontsluit</translation>
 <translation id="8261506727792406068">Vee uit</translation>
+<translation id="8281279285293265212">Kon nie skermopname stoor nie</translation>
 <translation id="8284362522226889623">Swiep met vier vingers links om na die vorige lessenaar toe te wissel</translation>
 <translation id="828708037801473432">Af</translation>
 <translation id="8297006494302853456">Swak</translation>
@@ -1102,6 +1107,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="9070640332319875144">Assistent-instellings</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> totdat battery leeg is.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Template</translation>
 <translation id="9077515519330855811">Mediakontroles; speel nou <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Swiep op om na die tuisskerm toe te gaan</translation>

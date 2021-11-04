@@ -234,6 +234,7 @@ Dodirnite bilo koju riječ da je pretražite. Za fino podešavanje pretraživanj
 <translation id="2450907520913474542">Saznajte više o temama na web lokacijama bez napuštanja stranice. Kada dodirnete Pretraživanje, poslat ćete riječ i njen kontekst u Google Pretraživanje, a dobit ćete definicije, slike, rezultate pretraživanja i druge detalje.
 
 Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje pretraživanja, odaberite više ili manje riječi. Da uredite pretraživanje, otvorite ploču, dodirnite ikonu da otvorite novu karticu, a zatim izvršite izmjene u okviru za pretraživanje.</translation>
+<translation id="2451607499823206582">Pratite</translation>
 <translation id="2459390580524506445">Poboljšano glasovno pretraživanje</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="247737702124049222">Opisi slika su uključeni</translation>
@@ -253,6 +254,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="2527779675047087889">Sakrijte sadržaj međumemorije</translation>
 <translation id="2532336938189706096">Web prikaz</translation>
 <translation id="2534155362429831547">Broj izbrisanih stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2534582914273493287">URL-ovi koje posjetite šalju se Googleu</translation>
 <translation id="2536728043171574184">Gledate kopiju ove stranice van mreže</translation>
 <translation id="2546283357679194313">Kolačići i podaci web lokacije</translation>
 <translation id="2561519700418191927">Pregledi videozapisa</translation>
@@ -372,6 +374,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3234978181857588512">Sačuvaj na uređaj</translation>
 <translation id="3236059992281584593">Još 1 min</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Ako dijelite i izvještaje o korištenju Chromea, ti izvještaji uključuju URL-ove koje posjećujete</translation>
 <translation id="3250563604907490871">Opisi slika će se nastaviti kada se povežete s WiFi mrežom</translation>
 <translation id="3254409185687681395">Označi ovu stranicu</translation>
 <translation id="3259831549858767975">Umanji sav sadržaj stranice</translation>
@@ -423,6 +426,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775">Dostupno: <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Pretražite svoju historiju</translation>
+<translation id="3557272988124495906">Dobijajte obavještenja o padu cijene</translation>
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
 <translation id="3563767357928833671">Sadržaj međumemorije je prikazan</translation>
 <translation id="3566923219790363270">Chrome se još uvijek priprema za VR. Ponovo pokrenite Chrome kasnije.</translation>
@@ -458,6 +462,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
 <translation id="3778956594442850293">Dodano na Početni ekran</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
+<translation id="3803783897442799486">Ako nastavite, pristajete na <ph name="BEGIN_LINK1" />Uslove korištenja usluge<ph name="END_LINK1" />.\nRadi poboljšanja aplikacije Chrome šalje Googleu podatke o korištenju i padovima aplikacije. <ph name="BEGIN_LINK2" />Upravljajte<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Upravljajte automatskom reprodukcijom</translation>
 <translation id="3810838688059735925">Videozapis</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
@@ -606,6 +611,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="47217992755561375">Pogledajte najpopularnije web lokacije</translation>
 <translation id="4732120983431207637">Rastvarač grupe</translation>
 <translation id="4738836084190194332">Posljednji put sinhronizirano: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">Dobijat ćete poboljšane prijedloge u traci za adresu</translation>
 <translation id="4742970037960872810">Ukloni istaknuti tekst</translation>
 <translation id="4749960740855309258">Otvori novu karticu</translation>
 <translation id="4758061975920522644">Dijeli samo sliku</translation>
@@ -1173,6 +1179,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7975379999046275268">Pregledaj stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Prethodno učitaj stranice za brže pregledavanje i pretraživanje</translation>
 <translation id="7986497153528221272">Da pogledate lozinke, najprije postavite zaključavanje ekrana na uređaju</translation>
+<translation id="799576009106109668">Pregledat ćete brže jer se sadržaj učitava proaktivno na osnovu vaše posjete trenutnoj web stranici</translation>
 <translation id="7998918019931843664">Ponovono otvaranje zatvorenih kartica</translation>
 <translation id="8004582292198964060">Preglednik</translation>
 <translation id="8013372441983637696">Također obriši Chrome podatke s ovog uređaja</translation>
@@ -1220,6 +1227,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8218052821161047641">Brza stranica</translation>
 <translation id="8218622182176210845">Upravljajte svojim računom</translation>
 <translation id="8223642481677794647">Meni kartice za sažetak sadržaja</translation>
+<translation id="8242868071038398515">Dobit ćete obavještenje ako cijena padne na bilo kojoj web lokaciji</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="825412236959742607">Ova stranica koristi previše memorije te je Chrome uklonio neki sadržaj.</translation>
 <translation id="8260126382462817229">Pokušajte se ponovo prijaviti</translation>
@@ -1238,6 +1246,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8354977102499939946">Brzo pretražujte pomoću glasa. Da uredite ovu prečicu, idite u Postavke.</translation>
 <translation id="835847953965672673">Broj vraćenih preuzimanja: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="8364299278605033898">Pogledajte popularne web lokacije</translation>
+<translation id="8368001212524806591">Praćenje cijene</translation>
 <translation id="8387617938027387193">Potvrdite identitet</translation>
 <translation id="8393700583063109961">Pošalji poruku</translation>
 <translation id="8410695015584479363">Prati cijene</translation>

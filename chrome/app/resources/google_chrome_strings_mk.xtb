@@ -191,6 +191,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5686916850681061684">Приспособете го и контролирајте го Google Chrome. Потребно е вашето внимание - кликнете за детали.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome ќе се рестартира за 1 секунда}one{Google Chrome ќе се рестартира за # секунда}other{Google Chrome ќе се рестартира за # секунди}}</translation>
+<translation id="5736850870166430177">Ако некој сајт се обиде да ви ја украде лозинката или кога ќе преземете штетна датотека, Chrome може да испрати и URL-адреси, вклучувајќи и делови од содржините на страницата, во „Безбедно прелистување“</translation>
 <translation id="573759479754913123">За Chrome OS</translation>
 <translation id="5756509061973259733">На уредов веќе постои профил на Chrome со оваа сметка</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
@@ -278,6 +279,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8290100596633877290">Google Chrome падна. Веднаш да се стартува повторно?</translation>
 <translation id="8342675569599923794">Датотекава е опасна, па затоа Chrome ја блокираше.</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
+<translation id="8394720698884623075">Ги проверува URL-адресите во список со небезбедни сајтови меморирани во Chrome</translation>
 <translation id="840084489713044809">Google Chrome сака да ги извезе вашите лозинки.</translation>
 <translation id="8433638294851456451">За да испратите број оттука до телефонот со Android, најавете се на Chrome на двата уреда.</translation>
 <translation id="8498858610309223613">Тукушто применивме посебно безбедносно ажурирање за Google Chrome. Рестартирајте сега и ќе ви ги вратиме картичките.</translation>

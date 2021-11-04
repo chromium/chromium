@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階</translation>
 <translation id="1989112275319619282">瀏覽</translation>
+<translation id="199425419756152024">查看密碼</translation>
 <translation id="2015722694326466240">你必須先在裝置上設定螢幕解鎖密碼才能查看密碼。</translation>
 <translation id="2021670401941426298">如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="2073572773299281212">上次使用時間：<ph name="DAYS" /> 天前</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">已選取 1 張</translation>
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
+<translation id="2434405374328098816">你已儲存過「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
+<translation id="2473876017985765807">你已儲存過 <ph name="WEBSITE" /> 的密碼</translation>
 <translation id="2476359652512522418">未選取</translation>
 <translation id="2497852260688568942">你的管理員停用了同步功能</translation>
 <translation id="2500374554657206846">儲存密碼的選項</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3609785682760573515">同步處理中...</translation>
+<translation id="3631443864840848029">請確認要儲存你目前在這個網站使用的密碼。</translation>
 <translation id="3638472932233958418">預先載入網頁</translation>
 <translation id="3661160521073045932">有可用的設定描述檔</translation>
 <translation id="3670030362669914947">號碼</translation>
 <translation id="3691593122358196899">已將書籤加入「<ph name="FOLDER_TITLE" />」</translation>
+<translation id="369349502275246497">顯示儲存密碼的選項</translation>
 <translation id="3709582977625132201">標示為未讀取</translation>
 <translation id="3740397331642243698">在 Google Chrome 無痕模式中開啟輸入的網址。</translation>
 <translation id="3762232513783804601">專為 iPad 量身打造</translation>
@@ -509,6 +514,7 @@
 <translation id="5988851877894965432">在 Chrome 中開啟網址</translation>
 <translation id="6012140227487808125">加密中…</translation>
 <translation id="6021332621416007159">在其他應用程式中開啟...</translation>
+<translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
 <translation id="6036514205982097558">在同一個瀏覽器集中使用所有分頁</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />，<ph name="PUBLISHER_INFORMATION" />，<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -751,6 +757,7 @@
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="8105368624971345109">關閉</translation>
 <translation id="8114753159095730575">可下載檔案，相關選項位於畫面底部。</translation>
+<translation id="8132598642024322408">原價 <ph name="PREVIOUS_PRICE" />，現在只要 <ph name="PRICE" />，</translation>
 <translation id="8156478151976189188">Password Sync 無法正常運作</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">翻譯網頁</translation>
@@ -823,6 +830,7 @@
 <translation id="8881801611828450202">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="8909135823018751308">分享…</translation>
 <translation id="8917490105272468696">是，我同意</translation>
+<translation id="8952559610785099500">新增密碼</translation>
 <translation id="895541991026785598">回報問題</translation>
 <translation id="8976382372951310360">說明</translation>
 <translation id="8976414606286374109">信用卡會儲存至你的 Google 帳戶。</translation>

@@ -682,19 +682,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, host bantuan jarak jauh akan berjalan dalam konteks pengguna, dan pengguna jarak jauh tidak dapat berinteraksi dengan jendela administrator di desktop.</translation>
 <translation id="1837165432382702436">Tinggi halaman dalam mikrometer.</translation>
-<translation id="1839278886947586809">
-      Kebijakan ini telah dihapus di M80, karena tidak diperlukan lagi karena
-      WebDriver saat ini kompatibel dengan semua kebijakan yang sudah ada.
-
-      Kebijakan ini memungkinkan pengguna fitur WebDriver mengganti
-      kebijakan yang dapat mengganggu pengoperasiannya.
-
-      Saat ini kebijakan ini menonaktifkan kebijakan SitePerProcess dan IsolateOrigins.
-
-      Jika kebijakan tersebut diaktifkan, WebDriver akan dapat menggantikan kebijakan
-      yang tidak kompatibel.
-      Jika kebijakan tersebut dinonaktifkan atau tidak dikonfigurasi, WebDriver tidak akan diizinkan
-      untuk menggantikan kebijakan yang tidak kompatibel.</translation>
 <translation id="1843117931376765605">Segarkan peringkat untuk kebijakan pengguna</translation>
 <translation id="1844620919405873871">Mengonfigurasi kebijakan terkait buka kunci cepat.</translation>
 <translation id="1844972978764975668">Izinkan kueri ke server Google untuk mengambil stempel waktu yang akurat</translation>
@@ -1330,23 +1317,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
        Jika kebijakan tidak disetel, pengaktifan daya baterai akan tetap nonaktif.</translation>
 <translation id="2502467045153796624">Perilaku downgrade saluran rilis</translation>
-<translation id="2505351097561237268">
-      Kebijakan izin perekaman layar mendapat akses ke getDisplayMedia(),
-      sesuai spesifikasi berikut:
-      https://www.w3.org/TR/screen-capture/#feature-policy-integration
-      Namun, jika kebijakan ini disetel ke Nonaktif, persyaratan ini tidak akan diterapkan
-      dan getDisplayMedia() akan diizinkan dari konteks yang seharusnya
-      dilarang. Kebijakan Perusahaan ini bersifat sementara dan akan dihapus
-      setelah <ph name="PRODUCT_NAME" /> versi 100.
-      Kebijakan ini dimaksudkan untuk berhenti memblokir Pengguna versi bisnis yang aplikasinya tidak sesuai spesifikasi,
-      tetapi perlu waktu untuk diperbaiki.
-
-      Jika kebijakan disetel ke aktif atau tidak disetel, situs hanya dapat memanggil getDisplayMedia() dari
-      konteks yang berada dalam daftar yang diizinkan oleh kebijakan izin perekaman layar.
-
-      Jika kebijakan disetel ke nonaktif, situs dapat memanggil getDisplayMedia() bahkan dari konteks
-      yang tidak berada dalam daftar yang diizinkan oleh kebijakan izin perekaman layar.
-      Perlu diperhatikan bahwa pembatasan lain mungkin masih berlaku.</translation>
 <translation id="250670737672448119">Mengaktifkan fitur aksesibilitas sorotan tanda sisipan.
 
           Fitur ini berfungsi untuk menyoroti area yang dikelilingi tanda sisipan selama mengedit.
@@ -2561,15 +2531,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
           Jika kebijakan ini tidak ditetapkan, tombol lekat mula-mula akan dinonaktifkan di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="3927291637826333102">Mengizinkan tangkapan Desktop, Jendela, dan Tab berdasarkan asal berikut</translation>
-<translation id="3932553013632130433">
-      Menentukan apakah SharedArrayBuffer dapat digunakan dalam konteks yang tidak diisolasi
-      lintas asal. Chrome akan memerlukan isolasi lintas asal saat menggunakan
-      SharedArrayBuffer mulai dari Chrome 91 dan selanjutnya (25-05-2021) untuk alasan
-      Kompatibilitas Web. Detail tambahan dapat ditemukan di:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.
-      Jika disetel ke Benar (True), situs dapat menggunakan SharedArrayBuffer tanpa batasan.
-      Jika disetel ke Salah (False) atau tidak disetel, situs hanya dapat menggunakan SharedArrayBuffer saat
-      diisolasi lintas asal.</translation>
 <translation id="3942041691320538491">Jika kebijakan ditetapkan ke 0 (default), Anda akan dapat mengakses alat developer dan konsol JavaScript, tetapi bukan dalam konteks ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan ditetapkan ke 1, Anda akan dapat mengakses alat developer dan konsol JavaScript di semua konteks, termasuk yang berasal dari ekstensi yang diinstal oleh kebijakan perusahaan. Jika kebijakan ditetapkan ke 2, Anda tidak akan dapat mengakses alat developer, dan Anda tidak dapat memeriksa elemen situs.
 
       Setelan ini juga menonaktifkan pintasan keyboard dan entri menu atau menu konteks untuk membuka alat developer atau konsol JavaScript.</translation>
@@ -3023,20 +2984,6 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
       Untuk penjelasan selengkapnya, lihat https://www.chromestatus.com/feature/5675755719622656.
       Jika kebijakan ini disetel ke aktif, situs akan diizinkan untuk menavigasi dan membuka jendela/tab baru secara bersamaan.
       Jika kebijakan ini disetel ke nonaktif atau tidak disetel, situs tidak akan diizinkan untuk menavigasi dan membuka jendela/tab baru secara bersamaan.</translation>
-<translation id="4574215366111396039">Chrome akan memblokir navigasi ke protokol eksternal di dalam
-      iframe sandbox. Lihat https://chromestatus.com/features/5680742077038592.
-
-      Jika kebijakan disetel ke Benar (True), Chrome akan diizinkan memblokir navigasi tersebut.
-
-      Jika kebijakan disetel ke Salah (False), Chrome tidak akan diizinkan memblokir navigasi tersebut.
-
-      Setelan default untuk kebijakan ini adalah Benar (True): fitur keamanan akan diaktifkan.
-
-      Kebijakan ini dapat digunakan oleh administrator yang memerlukan waktu tambahan untuk memperbarui
-      situs internalnya yang terpengaruh oleh pembatasan baru ini. Kebijakan Perusahaan ini
-      bersifat sementara dan akan dihapus setelah
-      <ph name="PRODUCT_NAME" /> versi 104.
-      </translation>
 <translation id="4578265298946081589">Jangan reboot saat pengguna logout.</translation>
 <translation id="4581507927311097234">Durasi waktu tanpa input pengguna sebelum layar dinonaktifkan, dalam milidetik.</translation>
 <translation id="4582338216073557489">Jika kebijakan disetel ke Tidak Ada (None), <ph name="PRODUCT_NAME" /> akan menggunakan ukuran cache default untuk menyimpan file dalam cache di disk. Pengguna tidak dapat mengubahnya.
@@ -4241,33 +4188,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Anda dapat menentukan URL penelusuran Google sebagai: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
 <translation id="606742564823687992">Jangan laporkan tugas pencetakan</translation>
-<translation id="6070374129526507093">Tidak digunakan lagi di M69. Sebagai gantinya,
-      gunakan OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      Kebijakan ini menentukan daftar asal (URL) atau pola nama host (seperti
-      "*.example.com") yang tidak dikenai pembatasan keamanan
-      untuk asal yang tidak aman.
-
-      Tujuannya adalah mengizinkan organisasi memberikan akses ke asal untuk aplikasi
-      lama yang tidak dapat menerapkan TLS, atau menyiapkan server staging untuk
-      pengembangan web internal agar developer mereka dapat menguji fitur
-      yang memerlukan konteks aman tanpa harus menerapkan TLS di server
-      staging. Dengan kebijakan ini, asal tidak akan dilabeli
-      "Not Secure" di omnibox.
-
-     Menetapkan daftar URL dalam kebijakan ini memiliki efek yang sama dengan menetapkan
-      tanda command line '--unsafely-treat-insecure-origin-as-secure' ke
-      daftar yang dipisahkan koma yang berisi URL yang sama. Jika disetel, kebijakan ini akan
-      mengganti tanda command line.
-
-      Kebijakan ini tidak lagi digunakan di M69 dan diganti dengan
-      OverrideSecurityRestrictionsOnInsecureOrigin. Jika kedua kebijakan ini
-      ada, OverrideSecurityRestrictionsOnInsecureOrigin akan menggantikan
-      kebijakan ini.
-
-      Untuk informasi selengkapnya tentang konteks aman, lihat
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="6070667616071269965">Tata letak keyboard layar login perangkat</translation>
 <translation id="6074963268421707432">Jangan izinkan situs apa pun menampilkan pemberitahuan desktop</translation>
 <translation id="6074964551275531965">Setel periode waktu untuk notifikasi update</translation>
@@ -4401,19 +4321,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Untuk mengetahui detail <ph name="CORS" />, buka: <ph name="CORS_HELP_URL" />.
 
       Perlu diketahui bahwa kebijakan ini sebelumnya diumumkan akan dihapus di <ph name="PRODUCT_NAME" /> versi 82, tetapi saat ini telah dihapus di versi 84.</translation>
-<translation id="6276624383311206185">
-      Menentukan apakah modul WebAssembly dapat dikirim ke jendela atau
-      pekerja lain lintas asal. Berbagi modul WebAssembly lintas asal
-      tidak akan digunakan lagi sebagai bagian dari upaya penghentian penggunaan document.domain; lihat
-      https://github.com/mikewest/deprecating-document-domain. Kebijakan ini
-      memungkinkan pengaktifan kembali berbagi modul WebAssembly lintas asal untuk menawarkan
-      periode transisi yang lebih lama dalam proses penghentian penggunaan.
-
-      Jika disetel ke Benar (True), situs dapat mengirim modul WebAssembly serta lintas asal
-      tanpa batasan.
-
-      Jika disetel ke Salah (False) atau tidak disetel, situs hanya dapat mengirim modul WebAssembly ke
-      jendela dan pekerja di asal yang sama.</translation>
 <translation id="6277314550042130537">Gunakan persetujuan kebijakan KDC selama autentikasi HTTP</translation>
 <translation id="6279722058145292462">Menyetel kebijakan akan menentukan seberapa sering klien mengubah sandi akun perangkat mereka dalam hitungan hari. Sandi dibuat oleh klien secara acak dan tidak terlihat oleh pengguna. Menonaktifkan kebijakan ini atau menyetel jumlah hari yang tinggi dapat menimbulkan dampak negatif pada keamanan, karena akan memberi lebih banyak waktu bagi calon penyerang untuk menemukan dan menggunakan sandi akun perangkat.
 

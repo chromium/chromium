@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">ตัวจัดการงาน</translation>
 <translation id="2910007522516064972">เกี่ยวกับ &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium อัปเดตแล้ว</translation>
+<translation id="2977506796191543575">หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chromium อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google Safe Browsing ด้วย</translation>
 <translation id="2983934633046890458">Chromium กำลังพยายามแก้ไขรหัสผ่าน</translation>
 <translation id="3032706164202344641">Chromium ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="3032787606318309379">กำลังเพิ่มลงใน Chromium...</translation>
@@ -167,6 +168,7 @@
 <translation id="6212496753309875659">คอมพิวเตอร์เครื่องนี้ติดตั้ง Chromium รุ่นที่ใหม่กว่าอยู่แล้ว ถ้าซอฟต์แวร์ไม่ทำงาน โปรดถอนการติดตั้ง Chromium และลองอีกครั้ง</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium จะเปิดขึ้นมาใหม่ตอนนี้}=1{Chromium จะเปิดขึ้นมาใหม่ใน 1 วินาที}other{Chromium จะเปิดขึ้นมาใหม่ใน # วินาที}}</translation>
 <translation id="6241367896540709610">Chromium ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>
+<translation id="6245734527075554892">ตรวจสอบ URL กับรายการเว็บไซต์ที่ไม่ปลอดภัยซึ่งจัดเก็บไว้ใน Chromium</translation>
 <translation id="6248213926982192922">ทำให้ Chromium เป็นเบราว์เซอร์เริ่มต้น</translation>
 <translation id="6266342355635466082">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="6268381023930128611">ต้องการออกจาก Chromium ใช่ไหม</translation>

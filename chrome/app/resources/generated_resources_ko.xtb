@@ -1486,6 +1486,7 @@
 <translation id="2489686758589235262">추가 스위치 2개 할당</translation>
 <translation id="2489829450872380594">다음번에는 새로운 휴대전화를 통해 <ph name="DEVICE_TYPE" />이(가) 잠금 해제됩니다. 설정에서 Smart Lock을 사용 중지할 수 없습니다.</translation>
 <translation id="2489918096470125693">폴더 추가(&amp;F)...</translation>
+<translation id="2489931062851778802"><ph name="DEVICE_NAME" />에 다음 키를 입력하세요.</translation>
 <translation id="2490481887078769936">목록에서 <ph name="FILE_NAME" />이(가) 삭제됨</translation>
 <translation id="249113932447298600">죄송합니다. 현재 이 기기(<ph name="DEVICE_LABEL" />)는 지원되지 않습니다.</translation>
 <translation id="2492461744635776704">인증서 로그인 요청 준비 중</translation>
@@ -2241,11 +2242,13 @@
 <translation id="3288047731229977326">개발자 모드로 실행 중인 확장 프로그램은 컴퓨터에 해를 줄 수 있습니다. 개발자가 아닌 경우 컴퓨터를 안전하게 사용하려면 개발자 모드로 실행 중인 확장 프로그램을 사용 중지해야 합니다.</translation>
 <translation id="3289668031376215426">자동 대문자화</translation>
 <translation id="3289856944988573801">업데이트를 확인하려면 이더넷 또는 Wi-Fi를 사용하세요.</translation>
+<translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
 <translation id="3291436823898732747">개선된 탐색: 예를 들어, 사용자가 입력을 시작하기도 전에 검색주소창에 추천 항목이 표시됩니다.</translation>
 <translation id="3293644607209440645">이 페이지 전송</translation>
 <translation id="32939749466444286">Linux 컨테이너가 시작되지 않았습니다. 다시 시도해 주세요.</translation>
 <translation id="3294437725009624529">게스트</translation>
 <translation id="3294686910656423119">사용 통계 및 비정상 종료 보고서</translation>
+<translation id="3297536526040732495">사용자가 로그인하면 이 데이터를 사용자의 Google 계정에 일시적으로 연결하여 Google 앱 전반에서 사용자를 보호합니다.</translation>
 <translation id="329838636886466101">복구</translation>
 <translation id="3298789223962368867">잘못된 URL을 입력했습니다.</translation>
 <translation id="32991397311664836">기기:</translation>
@@ -4352,6 +4355,7 @@
 <translation id="5554489410841842733">현재 페이지에서 확장 프로그램을 실행할 수 있게 되면 아이콘이 표시됩니다.</translation>
 <translation id="5554720593229208774">이메일 인증 기관</translation>
 <translation id="5555363196923735206">카메라 전환</translation>
+<translation id="5555525474779371165">세이프 브라우징 보호 기능을 선택하세요</translation>
 <translation id="5556459405103347317">새로고침</translation>
 <translation id="5558125320634132440">이 사이트는 미성년자 부적합 콘텐츠가 포함되어 있을 수 있어 차단되었습니다</translation>
 <translation id="5558129378926964177">확대(&amp;I)</translation>
@@ -5718,6 +5722,7 @@
 <translation id="7027258625819743915">{COUNT,plural, =0{시크릿 창에서 모두 열기(&amp;I)}=1{시크릿 창에서 열기(&amp;I)}other{시크릿 창에서 {COUNT}개 모두 열기(&amp;I)}}</translation>
 <translation id="7029307918966275733">Crostini가 설치되지 않았습니다. 크레딧을 확인하려면 Crostini를 설치하세요.</translation>
 <translation id="7029809446516969842">비밀번호</translation>
+<translation id="7030304022046916278">세이프 브라우징 서비스에 URL을 전송하여 확인하도록 합니다.</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 직렬 포트 연결됨</translation>
 <translation id="7034692021407794547">먼저 결제 관리 권한을 보유한 관리자가 관리 콘솔의 Google Meet 하드웨어 섹션에서 Google Meet 하드웨어 서비스 약관에 동의해야 합니다.</translation>
 <translation id="7036706669646341689">Linux를 사용하려면 <ph name="DISK_SIZE" />의 여유 공간이 권장됩니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
@@ -5898,7 +5903,6 @@
 <translation id="7243784282103630670">Linux를 업그레이드하는 중에 오류가 발생했습니다. 백업을 사용해 컨테이너를 복원합니다.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />(최고)</translation>
 <translation id="7246230585855757313">보안 키를 다시 삽입하고 한번 더 시도해 보세요.</translation>
-<translation id="7249777306773517303">이 기기는 <ph name="DOMAIN" />에서 관리하며, 사용할 때마다 로그인해야 합니다.</translation>
 <translation id="7250616558727237648">공유하려는 기기가 응답하지 않습니다. 다시 시도해 주세요.</translation>
 <translation id="725109152065019550">관리자가 계정에서 외부 저장소를 사용 중지했습니다.</translation>
 <translation id="7251346854160851420">기본 배경화면</translation>

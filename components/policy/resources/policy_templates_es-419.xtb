@@ -683,15 +683,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si inhabilitas la política o no la estableces, el host de asistencia remota se ejecutará en el contexto del usuario, y los usuarios remotos no podrán interactuar con permisos de administrador en el escritorio.</translation>
 <translation id="1837165432382702436">Altura de la página en micrómetros.</translation>
-<translation id="1839278886947586809">
-      Se quitó esta política en M80. Ya no es necesaria porque WebDriver ahora es compatible con todas las políticas existentes.
-
-      Esta política permite que los usuarios de la función WebDriver anulen las políticas que puedan interferir con su funcionamiento.
-
-      Actualmente, esta política inhabilita las políticas de SitePerProcess y IsolateOrigins.
-
-      Si la política está habilitada, WebDriver puede anular las políticas incompatibles.
-      Si la política está inhabilita o no se configura, WebDriver no puede anular las políticas incompatibles.</translation>
 <translation id="1843117931376765605">Frecuencia de actualización de la política de usuario</translation>
 <translation id="1844620919405873871">Configura políticas relacionadas con el desbloqueo rápido.</translation>
 <translation id="1844972978764975668">Permite que las consultas enviadas a un servidor de Google recuperen una marca de tiempo precisa</translation>
@@ -1325,23 +1316,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
        Si no estableces la política, se mantendrá desactivada la carga fuera del horario pico.</translation>
 <translation id="2502467045153796624">Comportamiento del cambio a una versión inferior del canal</translation>
-<translation id="2505351097561237268">
-      La política de permisos para la captura de pantalla controla el acceso a getDisplayMedia(),
-      según esta especificación:
-      https://www.w3.org/TR/screen-capture/#feature-policy-integration
-      Sin embargo, si inhabilitas esta política, no se aplicará este requisito,
-      y se permitirá getDisplayMedia() en contextos que, de otra forma,
-      estarían prohibidos. Esta política empresarial es temporal; se planea quitar
-      después de la versión 100 de <ph name="PRODUCT_NAME" />.
-      Su objetivo es desbloquear a los usuarios empresariales cuyas aplicaciones no cumplen con las especificaciones
-      y necesitan tiempo para solucionarlo.
-
-      Si habilitas esta política o no la estableces, los sitios solo podrán llamar a getDisplayMedia() desde
-      los contextos permitidos según la política de permisos para la captura de pantalla.
-
-      Si inhabilitas esta política, los sitios podrán invocar getDisplayMedia() incluso desde contextos
-      que no están permitidos por la política de permisos para la captura de pantalla.
-      Ten en cuenta que es posible que todavía se apliquen otras restricciones.</translation>
 <translation id="250670737672448119">Habilita la función de accesibilidad de resaltar el signo de intercalación.
 
           Esta función resalta el área que rodea al cursor de texto mientras se está editando texto.
@@ -2551,15 +2525,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
           Si no la estableces, inicialmente las teclas especiales estarán inhabilitadas en la pantalla de acceso, pero el usuario podrá habilitarlas en cualquier momento.</translation>
 <translation id="3927291637826333102">Permitir que estos orígenes capturen pestañas, ventanas y escritorios</translation>
-<translation id="3932553013632130433">
-      Especifica si puede utilizarse la política SharedArrayBuffers en un contexto que no está aislado
-      de orígenes cruzados. Chrome requerirá el aislamiento de origen cruzado cuando se utilice la política
-      SharedArrayBuffers a partir de Chrome 91 (25-05-2021) por motivos de compatibilidad con
-      la Web. Encontrarás información adicional en el siguiente sitio:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.
-      Si estableces la política como verdadera, los sitios podrán usar la política SharedArrayBuffer sin restricciones.
-      Si la estableces como falsa o no la estableces, los sitios solo podrán usar la política SharedArrayBuffers cuando
-      cuenten con aislamiento de origen cruzado.</translation>
 <translation id="3942041691320538491">Si le asignas a la política el valor "0" (la opción predeterminada), podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript, aunque no podrás hacerlo en el contexto de extensiones instaladas por una política empresarial. Si le asignas a la política el valor "1", podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript en todos los contextos, incluido el de extensiones instaladas por una política empresarial. Si le asignas a la política el valor "2", no podrás acceder a las herramientas para desarrolladores ni inspeccionar elementos de sitios web.
 
       Esta configuración también desactivará las combinaciones de teclas y las entradas del menú contextual o de cualquier menú que permiten abrir las herramientas para desarrolladores o la Consola de JavaScript.</translation>
@@ -3013,20 +2978,6 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Para obtener una explicación completa, consulta https://www.chromestatus.com/feature/5675755719622656.
       Si habilitas esta política, se podrá navegar en los sitios y abrir ventanas o pestañas nuevas al mismo tiempo.
       Si la inhabilitas o no la estableces, no se podrá navegar en los sitios ni abrir ventanas o pestañas nuevas al mismo tiempo.</translation>
-<translation id="4574215366111396039">Chrome bloqueará la navegación a protocolos externos dentro del
-      iframe de la zona de pruebas. Consulta https://chromestatus.com/features/5680742077038592.
-
-      Si estableces esta política como verdadera, Chrome bloqueará la navegación a esos protocolos.
-
-      Si la estableces como falsa, Chrome no bloqueará la navegación a esos protocolos.
-
-      Esta política se establece de forma predeterminada como verdadera: se habilita la función de seguridad.
-
-      Es útil para los administradores que necesitan más tiempo para actualizar sus
-      sitios web internos afectados por esta nueva restricción. Esta política empresarial
-      es temporal; se planea quitarla
-      después de la versión 104 de <ph name="PRODUCT_NAME" />.
-      </translation>
 <translation id="4578265298946081589">No reiniciar el sistema cuando el usuario salga de su cuenta</translation>
 <translation id="4581507927311097234">El período sin intervención del usuario después del cual se apaga la pantalla (en milisegundos).</translation>
 <translation id="4582338216073557489">Si estableces la política como None, <ph name="PRODUCT_NAME" /> usará el tamaño predeterminado para guardar los archivos almacenados en caché que se encuentren en el disco. Los usuarios no podrán cambiar esta configuración.
@@ -4225,33 +4176,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Puedes especificar la URL de búsqueda de Google de la siguiente manera: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
 <translation id="606742564823687992">No informes trabajos de impresión</translation>
-<translation id="6070374129526507093">Dejó de estar disponible en M69. En su lugar, utiliza
-      OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      La política especifica una lista de orígenes (URL) o patrones de nombres de
-      host (como "*.example.com") para los cuales no se aplicarán restricciones de
-      seguridad en orígenes no seguros.
-
-      El objetivo es que las organizaciones puedan permitir
-      orígenes para apps heredadas que no pueden implementar TLS o
-      configurar un servidor de etapa de pruebas para desarrollos web internos
-      con el objeto de que los desarrolladores prueben las funciones que
-      requieren contextos seguros sin tener que implementar TLS en el servidor
-      de etapa de pruebas. Esta política también evitará que el origen se considere "No seguro" en el cuadro multifunción.
-
-      Configurar una lista de URL en esta política tiene el mismo efecto que
-      configurar la función experimental de línea de comandos
-      "--unsafely-treat-insecure-origin-as-secure" en una lista de elementos
-      separados por comas de las mismas URL. Si se establece la política, se anulará la función experimental de línea de comandos.
-
-      Esta política dejó de estar disponible en M69 y se reemplazó por
-      OverrideSecurityRestrictionsOnInsecureOrigin. Si están presentes ambas
-      políticas, OverrideSecurityRestrictionsOnInsecureOrigin anulará esta
-      política.
-
-      Para obtener más información sobre contextos seguros, consulta
-      https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="6070667616071269965">Diseños de teclado de la pantalla de acceso del dispositivo</translation>
 <translation id="6074963268421707432">No permitir que los sitios muestren notificaciones de escritorio.</translation>
 <translation id="6074964551275531965">Establecer el período para las notificaciones de actualización</translation>
@@ -4385,19 +4309,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Para obtener más información sobre <ph name="CORS" />, visita la siguiente página web: <ph name="CORS_HELP_URL" />.
 
       Ten en cuenta que se anunció que esta política se quitaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se quitó en la versión 84.</translation>
-<translation id="6276624383311206185">
-      Especifica si los módulos de WebAssembly se pueden enviar a otra ventana o
-      trabajador de origen cruzado. El uso compartido de módulos de WebAssembly entre orígenes cruzados
-      dejará de estar disponible como parte de las medidas para dar de baja document.domain; consulta
-      https://github.com/mikewest/deprecating-document-domain. Esta política
-      permite volver a habilitar el uso compartido de módulos de WebAssembly entre orígenes cruzados para ofrecer
-      un período de transición más largo en el proceso hasta lograr que se dé de baja.
-
-      Si estableces la política como verdadera, los sitios también podrán enviar módulos de WebAssembly entre orígenes cruzados
-      sin restricciones.
-
-      Si la estableces como falsa o no la estableces, los sitios solo podrán enviar módulos de WebAssembly a
-      ventanas y trabajadores del mismo origen.</translation>
 <translation id="6277314550042130537">Utilizar la aprobación de la política de KDC durante la autenticación de HTTP</translation>
 <translation id="6279722058145292462">Si estableces la política, se especificará la frecuencia (expresada en días) con la que un cliente cambia la contraseña de la cuenta de máquina. El cliente genera la contraseña de forma aleatoria, y el usuario no puede verla. Si inhabilitas esta política o la estableces en una cantidad alta de días, la seguridad puede verse afectada de forma negativa porque los potenciales atacantes tendrán más tiempo para encontrar y usar la contraseña de la cuenta de máquina.
 

@@ -48,6 +48,7 @@
 <translation id="1239161794459865856">Функцията „<ph name="FEATURE_NAME" />“ е свързана.</translation>
 <translation id="1246890715821376239">Неподдържани приложения</translation>
 <translation id="1247372569136754018">Микрофон (вътрешен)</translation>
+<translation id="1247519845643687288">Скорошни приложения</translation>
 <translation id="1252999807265626933">Зарежда се от <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">„What's the weather?“ („Какво е времето?“)</translation>
 <translation id="1266097335951928626">Стартиране на камерата за селфи</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">Отключете устройството, за да се изпълни действието от известието</translation>
 <translation id="1420408895951708260">Превключване на функцията за нощно осветление. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Да</translation>
+<translation id="1438357537418863713">Функцията за поточно предаване на приложения вече е настроена. След като започнете да я използвате, наскоро стартираните приложения ще се показват тук.</translation>
 <translation id="144853431011121127">Получавайте на устройството си <ph name="DEVICE_TYPE" /> известия от телефона си</translation>
 <translation id="1455242230282523554">Показване на езиковите настройки</translation>
 <translation id="1460620680449458626">Звукът е спрян.</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
 <translation id="5147567197700016471">Отключено</translation>
 <translation id="5155897006997040331">Скорост на четене</translation>
+<translation id="5166007464919321363">Запазване на работния кът като шаблон</translation>
 <translation id="5166918508782100047">Настройки за „Бързи отговори“</translation>
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">Свързаните устройства с USB-C се захранват</translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6803622936009808957">Дисплеите не можаха да се дублират, тъй като не бяха намерени поддържани разделителни способности. Вместо това влязохте в режима за разширен работен плот.</translation>
+<translation id="6811454077060061666">Google Диск за компютри не е налице</translation>
 <translation id="6816797338148849397">Има информация, свързана с избраното от вас. За достъп използвайте стрелката нагоре.</translation>
 <translation id="6818242057446442178">Придвижване назад с една дума</translation>
 <translation id="6820676911989879663">Време е за почивка!</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />, батерия на телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Натиснете Enter за отключване за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Изтриване</translation>
+<translation id="8281279285293265212">Запазването на скрийнкаста не бе успешно</translation>
 <translation id="8284362522226889623">Прекарайте четири пръста наляво, за да превключите към предишния работен кът</translation>
 <translation id="828708037801473432">Изключено</translation>
 <translation id="8297006494302853456">Слаб</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">Настройки на Асистент</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> до изразходването на батерията.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Шаблони</translation>
 <translation id="9077515519330855811">Контроли за мултимедия, сега слушате <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Прекарайте пръст нагоре, за да отворите началния екран</translation>

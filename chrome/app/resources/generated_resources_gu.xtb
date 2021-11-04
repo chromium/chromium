@@ -1469,6 +1469,7 @@
 <translation id="2489686758589235262">વધુ 2 સ્વિચની સોંપણી કરો</translation>
 <translation id="2489829450872380594">આગલી વખતે, નવો ફોન આ <ph name="DEVICE_TYPE" />ને અનલૉક કરશે. તમે સેટિંગમાં Smart Lock બંધ કરી શકો છો.</translation>
 <translation id="2489918096470125693">&amp;ફોલ્ડર ઉમેરો...</translation>
+<translation id="2489931062851778802"><ph name="DEVICE_NAME" /> પર આ કી દાખલ કરો</translation>
 <translation id="2490481887078769936"><ph name="FILE_NAME" />ને સૂચિમાંથી કાઢી નાખી</translation>
 <translation id="249113932447298600">માફ કરશો, આ સમયે ઉપકરણ <ph name="DEVICE_LABEL" /> ને સપોર્ટ નથી.</translation>
 <translation id="2492461744635776704">પ્રમાણપત્ર પર સહી કરવાની વિનંતીની પ્રક્રિયા ચાલુ છે</translation>
@@ -2224,11 +2225,13 @@
 <translation id="3288047731229977326">ડેવલપર મોડમાં ચાલી રહેલા એક્સટેન્શન તમારા કમ્પ્યુટરને નુકસાન પહોંચાડી શકે છે. જો તમે ડેવલપર નથી, તો તમે સુરક્ષિત રહેવા માટે ડેવલપર મોડમાં ચાલી રહેલા આ એક્સ્ટેન્શનને બંધ કરવા જોઈએ.</translation>
 <translation id="3289668031376215426">ઑટોમૅટિક રીતે કૅપિટલ કરવાની સુવિધા</translation>
 <translation id="3289856944988573801">અપડેટ તપાસવા માટે, કૃપા કરીને ઇથરનેટ અથવા વાઇ-ફાઇનો ઉપયોગ કરો.</translation>
+<translation id="3290249595466894471">નવા જોખમો શોધવામાં સહાય કરવા માટે પેજનો નાનો નમૂનો, ડાઉનલોડ, એક્સ્ટેન્શનની પ્રવૃત્તિ અને સિસ્ટમની માહિતી પણ મોકલે છે</translation>
 <translation id="3291436823898732747">બ્રાઉઝિંગમા સુધારા: ઉદાહરણ તરીકે, તમે લખવાનું શરૂ કરો તે પહેલાં ઑમ્નિબૉક્સમાં સૂચનો</translation>
 <translation id="3293644607209440645">આ પેજ મોકલો</translation>
 <translation id="32939749466444286">Linux કન્ટેનર શરૂ થયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="3294437725009624529">અતિથિ</translation>
 <translation id="3294686910656423119">વપરાશનાં આંકડા અને ક્રૅશ રિપોર્ટ</translation>
+<translation id="3297536526040732495">તમે સાઇન ઇન કરેલું હોય ત્યારે તમામ Google apps પર તમારું રક્ષણ કરવા માટે, આ ડેટાને હંગામી રીતે તમારા Google એકાઉન્ટ સાથે લિંક કરે છે</translation>
 <translation id="329838636886466101">સુધારો</translation>
 <translation id="3298789223962368867">અમાન્ય URL દાખલ થયો. </translation>
 <translation id="32991397311664836">ઉપકરણો:</translation>
@@ -4337,6 +4340,7 @@
 <translation id="5554489410841842733">જ્યારે એક્સટેન્શન ચાલુ પૃષ્ઠ પર કાર્ય કરી શકે ત્યારે આ આયકન દેખાશે.</translation>
 <translation id="5554720593229208774">ઇમેઇલ પ્રમાણન અધિકારી</translation>
 <translation id="5555363196923735206">કૅમેરાને ફ્લિપ કરો</translation>
+<translation id="5555525474779371165">તમારું Safe Browsing સંરક્ષણ પસંદ કરો</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="5558125320634132440">આ સાઇટમાં પુખ્ય વયના લોકો માટેનું કન્ટેન્ટ હોવાને કારણે તેને બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="5558129378926964177">Zoom &amp;In</translation>
@@ -5705,6 +5709,7 @@ USB ડિવાઇસ</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{તમામ URLને &amp;છૂપી વિન્ડોમાં ખોલો}=1{&amp;છૂપી વિન્ડોમાં ખોલો}one{તમામ ({COUNT}) URLને &amp;છૂપી વિન્ડોમાં ખોલો}other{તમામ ({COUNT}) URLને &amp;છૂપી વિન્ડોમાં ખોલો}}</translation>
 <translation id="7029307918966275733">Crostini ઇન્સ્ટૉલ કરેલી નથી. કૃપા કરીને ક્રેડિટ જોવા માટે Crostini ઇન્સ્ટૉલ કરો.</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
+<translation id="7030304022046916278">URLs ચેક કરવા માટે તેમને Safe Browsing પર મોકલે છે</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - સિરીઅલ પોર્ટ કનેક્ટ કર્યું</translation>
 <translation id="7034692021407794547">બિલિંગ મેનેજમેન્ટના વિશેષાધિકાર ધરાવતા વ્યવસ્થાપકે પહેલાં વ્યવસ્થાપક કન્સોલના Google Meet હાર્ડવેર વિભાગમાં, Google Meet હાર્ડવેરની સેવાની શરતો સ્વીકારવી આવશ્યક છે.</translation>
 <translation id="7036706669646341689">Linux માટે <ph name="DISK_SIZE" /> સ્પેસનો સુઝાવ આપ્યો છે. ખાસી સ્પેસ વધારવા માટે, તમારા ડિવાઇસમાંથી ફાઇલો ડિલીટ કરો.</translation>
@@ -5885,7 +5890,6 @@ USB ડિવાઇસ</translation>
 <translation id="7243784282103630670">Linux અપગ્રેડ કરતી વખતે ભૂલ આવી હતી. તમારા બૅકઅપનો ઉપયોગ કરીને અમે કન્ટેનરને રિસ્ટોર કરીશું.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (શ્રેષ્ઠ)</translation>
 <translation id="7246230585855757313">તમારો સુરક્ષા કોડ ફરી શામેલ કરીને ફરી પ્રયાસ કરો</translation>
-<translation id="7249777306773517303">આ ડિવાઇસ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે અને તમારે દર વખતે સાઇન ઇન કરવું જરૂરી છે.</translation>
 <translation id="7250616558727237648">તમે જે ડિવાઇસ સાથે શેર કરી રહ્યાં છો, તેણે પ્રતિસાદ આપ્યો નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="725109152065019550">માફ કરશો, તમારા એડમિને તમારા એકાઉન્ટ પર બહારના સ્ટોરેજને બંધ કર્યું છે.</translation>
 <translation id="7251346854160851420">ડિફૉલ્ટ વૉલપેપર</translation>

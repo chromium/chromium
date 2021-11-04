@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">পৃষ্ঠাখন এৰি নোযোৱাকৈ ৱেবছাইটত থকা বিষয়বস্তুসমূহৰ বিষয়ে জানক। সন্ধান কৰিবলৈ স্পৰ্শ কৰক সুবিধাটোৱে এটা শব্দ আৰু ইয়াৰ প্ৰসংগ Google Searchলৈ পঠিয়ায় আৰু সংজ্ঞা, চিত্ৰ, সন্ধানৰ ফলাফলসমূহ আৰু অন্য সবিশেষ উভতাই দিয়ে।
 
 সন্ধান কৰিবলৈ যিকোনো শব্দ স্পৰ্শ কৰি ধৰি ৰাখক। আপোনাৰ সন্ধানটো শুদ্ধ কৰিবলৈ অধিক অথবা কম শব্দ বাছনি কৰক। আপোনাৰ সন্ধানটো সম্পাদনা কৰিবলৈ পেনেলটো খোলক, এটা নতুন টেবত খুলিবলৈ আইকনটোত টিপক আৰু সন্ধান বাকচটোত আপোনাৰ কৰিবলগীয়া সালসলনিবোৰ কৰক।</translation>
+<translation id="2451607499823206582">ট্ৰেক কৰা</translation>
 <translation id="2459390580524506445">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান কৰাৰ উচ্চখাপৰ সুবিধা</translation>
 <translation id="2461822463642141190">বৰ্তমান</translation>
 <translation id="247737702124049222">প্ৰতিচ্ছবিৰ বিৱৰণ অন আছে</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">ক্লিপব'ৰ্ডৰ সমল লুকুৱাওক</translation>
 <translation id="2532336938189706096">ৱেব ভিউ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> টা সমল মচা হ’ল</translation>
+<translation id="2534582914273493287">আপুনি চোৱা URLসমূহ Googleলৈ পঠিওৱা হয়</translation>
 <translation id="2536728043171574184">এই পৃষ্ঠাটোৰ এটা অফলাইন প্ৰতিলিপি চাই আছে</translation>
 <translation id="2546283357679194313">কুকি আৰু ছাইট ডেটা</translation>
 <translation id="2561519700418191927">ভিডিঅ'ৰ পূৰ্বদৰ্শন</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">ডিভাইচত ছেভ কৰক</translation>
 <translation id="3236059992281584593">১ মিনিট বাকী আছে</translation>
 <translation id="3244271242291266297">মাহ</translation>
+<translation id="3245429137663807393">যদি আপুনি Chrome ব্যৱহাৰ কৰাৰ ৰিপ’ৰ্টও শ্বেয়াৰ কৰে, সেই ৰিপ’ৰ্টত আপুনি চোৱা URLসমূহ অন্তৰ্ভুক্ত হয়</translation>
 <translation id="3250563604907490871">আপুনি ৱাই-ফাইৰ সৈতে সংযুক্ত হ’লে প্ৰতিচ্ছবিৰ বিৱৰণ পুনৰ আৰম্ভ হ’ব</translation>
 <translation id="3254409185687681395">এই পৃষ্ঠাটো বুকমার্ক কৰক</translation>
 <translation id="3259831549858767975">পৃষ্ঠাটোৰ সকলো সমলৰ আকাৰ সৰু কৰক</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">ফ’ল্ডাৰ</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> কে.বি. উপলব্ধ</translation>
 <translation id="3549657413697417275">আপোনাৰ ব্ৰাউজিং ইতিহাসত সন্ধান কৰক</translation>
+<translation id="3557272988124495906">মূল্য কমাৰ জাননী পাওক</translation>
 <translation id="3557336313807607643">সর্ম্পকসূচীত যোগ কৰক</translation>
 <translation id="3563767357928833671">ক্লিপব'ৰ্ডৰ সমল দেখুওৱা হৈছে</translation>
 <translation id="3566923219790363270">Chromeএ এতিয়াও VR সাজু কৰি আছে। Chrome পিছত ৰিষ্টার্ট কৰক।</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">আপোনাৰ ডিভাইচসমূহলৈ পঠিয়াওক</translation>
 <translation id="3778956594442850293">গৃহ স্ক্ৰীণত যোগ কৰা হ’ল</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{১ টা টেব}one{# টা টেব}other{# টা টেব}}</translation>
+<translation id="3803783897442799486">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_LINK1" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" />ত সন্মত হৈছে।\nএপ্‌টো উন্নত কৰাত সহায় কৰিবলৈ, Chromeএ Googleলৈ ব্যৱহাৰ আৰু ক্ৰেশ্বৰ ডেটা পঠিয়ায়। <ph name="BEGIN_LINK2" />পৰিচালনা কৰক<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">স্বয়ংক্ৰিয়ভাৱে প্লে’ হোৱা সুবিধাটো পৰিচালনা কৰক</translation>
 <translation id="3810838688059735925">ভিডিঅ’</translation>
 <translation id="3810973564298564668">পৰিচালনা কৰক</translation>
@@ -606,6 +611,7 @@
 <translation id="47217992755561375">আপোনাৰ শীৰ্ষ ছাইটসমূহ চাওক</translation>
 <translation id="4732120983431207637">ষ্টেক আনৱিণ্ডাৰ</translation>
 <translation id="4738836084190194332">অন্তিমবাৰ ছিংক কৰা সময়: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">আপুনি ঠিকনাৰ বাৰত উন্নত পৰামৰ্শসমূহ পাব</translation>
 <translation id="4742970037960872810">হাইলাইট আঁতৰাওক</translation>
 <translation id="4749960740855309258">এটা নতুন টেব খোলক</translation>
 <translation id="4758061975920522644">কেৱল প্ৰতিচ্ছবি শ্বেয়াৰ কৰক</translation>
@@ -1173,6 +1179,7 @@
 <translation id="7975379999046275268">পৃষ্ঠাটো পূৰ্বদৰ্শন কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">দ্ৰুতভাৱে ব্ৰাউজ আৰু সন্ধান কৰিবলৈ পৃষ্ঠা আগতীয়াকৈ ল'ড কৰক</translation>
 <translation id="7986497153528221272">পাছৱৰ্ডসমূহ চাবলৈ, আপোনাৰ ডিভাইচত প্ৰথমে এটা স্ক্ৰীন লক ছেট কৰক</translation>
+<translation id="799576009106109668">আপোনাৰ বৰ্তমান চোৱা ৱেবপৃষ্ঠাখনৰ ভিত্তিত সমল আগতীয়াকৈ ল’ড কৰা হয় বাবে আপুনি দ্ৰুতভাৱে ব্ৰাউজ কৰিব পাৰিব</translation>
 <translation id="7998918019931843664">বন্ধ কৰা টেব পুনৰ খোলক</translation>
 <translation id="8004582292198964060">ব্ৰাউজাৰ</translation>
 <translation id="8013372441983637696">লগতে এই ডিভাইচটোৰ পৰা আপোনাৰ Chrome ডেটাও মচক</translation>
@@ -1220,6 +1227,7 @@
 <translation id="8218052821161047641">দ্ৰুত পৃষ্ঠা</translation>
 <translation id="8218622182176210845">আপোনাৰ একাউণ্টটো পৰিচালনা কৰক</translation>
 <translation id="8223642481677794647">ফীড কাৰ্ড মেনু</translation>
+<translation id="8242868071038398515">যিকোনো ছাইটত মূল্য কমিলে আপোনালৈ জাননী পঠিওৱা হ’ব</translation>
 <translation id="8250920743982581267">নথিপত্রসমূহ</translation>
 <translation id="825412236959742607">এই পৃষ্ঠাটোৱে বহুত বেছি মেম’ৰি খৰচ কৰে, সেয়েহে Chromeএ কিছুমান সমল আঁতৰাই পেলাইছে৷</translation>
 <translation id="8260126382462817229">আকৌ ছাইন ইন কৰিবলৈ চেষ্টা কৰক</translation>
@@ -1238,6 +1246,7 @@
 <translation id="8354977102499939946">আপোনাৰ কণ্ঠস্বৰৰ দ্বাৰা ক্ষিপ্ৰভাৱে সন্ধান কৰক। এই শ্বৰ্টকাটটো সম্পাদনা কৰিবলৈ ছেটিঙলৈ যাওক।</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> টা ডাউনল’ড পুনঃস্থাপন কৰা হৈছে</translation>
 <translation id="8364299278605033898">জনপ্ৰিয় ৱেবছাইটসমূহ চাওক</translation>
+<translation id="8368001212524806591">মূল্য ট্ৰেক কৰক</translation>
 <translation id="8387617938027387193">এইয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="8393700583063109961">বাৰ্তা পঠিয়াওক</translation>
 <translation id="8410695015584479363">মূল্য ট্ৰেক কৰক</translation>

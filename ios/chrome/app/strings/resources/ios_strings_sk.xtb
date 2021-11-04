@@ -114,6 +114,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1973912524893600642">Ponechať údaje</translation>
 <translation id="1974060860693918893">Rozšírené</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
+<translation id="199425419756152024">Zobraziť heslo</translation>
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="2021670401941426298">Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
 <translation id="2073572773299281212">Aktívne pred <ph name="DAYS" /> dňami</translation>
@@ -152,7 +153,9 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="2386793615875593361">Počet vybratých fotografií: 1</translation>
 <translation id="2421004566762153674">Blokovanie súborov cookie tretích strán</translation>
 <translation id="2421044535038393232">Ďalej upravovať</translation>
+<translation id="2434405374328098816">Heslo pre používateľské meno <ph name="USERNAME" /> ste už uložili na <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
+<translation id="2473876017985765807">Už ste si uložili heslo pre web <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Nevybrané</translation>
 <translation id="2497852260688568942">Synchronizácia je zakázaná správcom</translation>
 <translation id="2500374554657206846">Možnosti uloženia hesla</translation>
@@ -282,10 +285,12 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="3603009562372709545">Kopírovať webovú adresu odkazu</translation>
 <translation id="3607167657931203000">Údaje automatického dopĺňania</translation>
 <translation id="3609785682760573515">Prebieha synchronizácia...</translation>
+<translation id="3631443864840848029">Uistite sa, že ukladáte aktuálne heslo tohto webu.</translation>
 <translation id="3638472932233958418">Predbežne načítavať webové stránky</translation>
 <translation id="3661160521073045932">K dispozícii je profil konfigurácie</translation>
 <translation id="3670030362669914947">Číslo</translation>
 <translation id="3691593122358196899">Uložené ako záložka v priečinku <ph name="FOLDER_TITLE" /></translation>
+<translation id="369349502275246497">Ponúkať ukladanie hesiel</translation>
 <translation id="3709582977625132201">Označiť ako neprečítané</translation>
 <translation id="3740397331642243698">Otvorí zadané webové adresy v prehliadači Google Chrome v režime inkognito.</translation>
 <translation id="3762232513783804601">Vytvorené pre váš iPad</translation>
@@ -509,6 +514,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5988851877894965432">Otvoriť webové adresy v Chrome</translation>
 <translation id="6012140227487808125">Prebieha šifrovanie…</translation>
 <translation id="6021332621416007159">Otvoriť v...</translation>
+<translation id="6027945736510816438">Mysleli ste <ph name="WEBSITE" />?</translation>
 <translation id="6036514205982097558">Všetky vaše karty v jednom prehliadači</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Zavrieť</translation>
@@ -751,6 +757,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8080028325999236607">Zavrieť všetky karty</translation>
 <translation id="8105368624971345109">Vypnúť</translation>
 <translation id="8114753159095730575">Súbor je k dispozícii na stiahnutie. Možnosti sú k dispozícii v dolnej časti obrazovky.</translation>
+<translation id="8132598642024322408">Teraz za <ph name="PRICE" />, predtým <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">Synchronizácia hesiel nefunguje</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Vaše zariadenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Preložiť stránku</translation>
@@ -823,6 +830,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8881801611828450202">Hľadať tento obrázok v službe <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Zdieľať…</translation>
 <translation id="8917490105272468696">Áno, súhlasím</translation>
+<translation id="8952559610785099500">Pridanie hesla</translation>
 <translation id="895541991026785598">Nahlásiť problém</translation>
 <translation id="8976382372951310360">Pomocník</translation>
 <translation id="8976414606286374109">Karty sa ukladajú do vášho účtu Google.</translation>

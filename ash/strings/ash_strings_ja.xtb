@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> を接続しました。</translation>
 <translation id="1246890715821376239">サポートされていないアプリ</translation>
 <translation id="1247372569136754018">マイク（内蔵）</translation>
+<translation id="1247519845643687288">最近使ったアプリ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> から充電しています</translation>
 <translation id="1255033239764210633">今日の天気は？</translation>
 <translation id="1266097335951928626">自撮りカメラを開始</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">通知に関する操作を行うには、デバイスのロックを解除してください</translation>
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">はい</translation>
+<translation id="1438357537418863713">アプリのストリーミングを設定しました。ご利用を開始すると、最近開いたアプリがここに表示されます。</translation>
 <translation id="144853431011121127">スマートフォンの通知を <ph name="DEVICE_TYPE" /> で確認できます</translation>
 <translation id="1455242230282523554">言語設定を表示</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
+<translation id="5166007464919321363">デスクをテンプレートとして保存</translation>
 <translation id="5166918508782100047">クイック アンサーの設定</translation>
 <translation id="5168181903108465623">キャスト デバイスを利用できます</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">接続された USB-C デバイスを充電中</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6803622936009808957">サポートされている解像度が見つからなかったため、ディスプレイをミラーリングできませんでした。代わりに拡張デスクトップ モードに切り替えました。</translation>
+<translation id="6811454077060061666">パソコン版 Google ドライブを使用できません</translation>
 <translation id="6816797338148849397">選択した項目に関連する情報があります。上矢印キーでアクセスできます。</translation>
 <translation id="6818242057446442178">1 語戻る</translation>
 <translation id="6820676911989879663">休憩の時間です！</translation>
@@ -998,6 +1002,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> に対してロックを解除するには、Enter キーを押します</translation>
 <translation id="8261506727792406068">削除</translation>
+<translation id="8281279285293265212">スクリーンキャストを保存できませんでした</translation>
 <translation id="8284362522226889623">前のデスクに切り替えるには 4 本の指で左にスワイプします</translation>
 <translation id="828708037801473432">オフ</translation>
 <translation id="8297006494302853456">弱い</translation>
@@ -1102,6 +1107,7 @@
 <translation id="9070640332319875144">アシスタントの設定</translation>
 <translation id="9072519059834302790">あと <ph name="TIME_LEFT" />で電池がなくなります。</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">テンプレート</translation>
 <translation id="9077515519330855811">メディア コントロールで <ph name="MEDIA_TITLE" /> を再生しています</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">ホームに移動するには上にスワイプしてください</translation>

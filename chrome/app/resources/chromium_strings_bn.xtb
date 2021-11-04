@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2910007522516064972">&amp;Chromium সম্পর্কে</translation>
 <translation id="2977470724722393594">Chromium আপ-টু-ডেট আছে</translation>
+<translation id="2977506796191543575">যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Chromium, পৃষ্ঠার কিছু কন্টেন্ট সহ URL ও হয়ত Safe Browsing-এ পাঠাতে পারে</translation>
 <translation id="2983934633046890458">Chromium আপনার পাসওয়ার্ড এডিট করার অনুমতি চাইছে।</translation>
 <translation id="3032706164202344641">Chromium আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="3032787606318309379">Chromium-এ জুড়ছে...</translation>
@@ -167,6 +168,7 @@
 <translation id="6212496753309875659">এই কম্পিউটারে ইতিমধ্যে Chromium-এর আরও একটি সাম্প্রতিক ভার্সন রয়েছে৷ যদি সফ্টওয়্যার কাজ না করে, দয়া করে Chromium আনইনস্টল করুন এবং আবার চেষ্টা করুন৷</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium এখন আবার লঞ্চ হবে}=1{Chromium ১ সেকেন্ডের মধ্যে আবার লঞ্চ হবে}one{Chromium # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}other{Chromium # সেকেন্ডের মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="6241367896540709610">ফাইল ডাউনলোড করতে Chromium-এর স্টোরেজ অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
+<translation id="6245734527075554892">Chromium-এ স্টোর করা নিরাপদ নয় এমন সাইটের তালিকা থেকে সেগুলির URL পরীক্ষা করে দেখে</translation>
 <translation id="6248213926982192922">Chromium-কে ডিফল্ট ব্রাউজার করুন</translation>
 <translation id="6266342355635466082">কোনও আপডেট আছে কিনা, Chromium তা চেক করে দেখতে পারছে না। আপনার ইন্টারনেট কানেকশন চেক করে দেখে নিন।</translation>
 <translation id="6268381023930128611">Chromium থেকে সাইন-আউট করবেন?</translation>

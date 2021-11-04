@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> കണക്‌റ്റ് ചെയ്‌തു.</translation>
 <translation id="1246890715821376239">പിന്തുണയില്ലാത്ത ആപ്പുകൾ</translation>
 <translation id="1247372569136754018">മൈക്രോഫോൺ (ഇന്റേണൽ)</translation>
+<translation id="1247519845643687288">അടുത്തിടെ ലോഞ്ച് ചെയ്ത ആപ്പുകൾ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> എന്നതിൽ നിന്നും ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="1255033239764210633">കാലാവസ്ഥ എങ്ങനെയുണ്ട്?</translation>
 <translation id="1266097335951928626">സെൽഫി ക്യാമറ ആരംഭിക്കുക</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">അറിയിപ്പ് പ്രവർത്തനം നിർവഹിക്കുന്നതിന് ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="1420408895951708260">നൈറ്റ് ലൈറ്റ് മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">അതെ</translation>
+<translation id="1438357537418863713">ഇപ്പോൾ ആപ്പ് സ്ട്രീമിംഗ് സജ്ജീകരിച്ചിരിക്കുന്നു. നിങ്ങൾ ആരംഭിച്ചാൽ, അടുത്തിടെ ലോഞ്ച് ചെയ്ത ആപ്പുകൾ ഇവിടെ ദൃശ്യമാകും.</translation>
 <translation id="144853431011121127">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിങ്ങളുടെ ഫോണിൽ നിന്നുള്ള അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="1455242230282523554">ഭാഷാ ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="1460620680449458626">വോളിയം മ്യൂട്ട് ചെയ്‌തിരിക്കുന്നു.</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="5147567197700016471">അൺലോക്ക് ചെയ്തു</translation>
 <translation id="5155897006997040331">വായനാ വേഗത</translation>
+<translation id="5166007464919321363">ഡെസ്‌ക്, ടെംപ്ലേറ്റായി സംക്ഷിക്കുക</translation>
 <translation id="5166918508782100047">'വേഗത്തിലുള്ള ഉത്തരങ്ങൾ' ക്രമീകരണം</translation>
 <translation id="5168181903108465623">Cast ഉപകരണങ്ങൾ ലഭ്യമാണ്.</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">കണക്റ്റ് ചെയ്‍ത USB-C ഉപകരണങ്ങൾ ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
 <translation id="6803622936009808957">പിന്തുണയ്‌ക്കുന്ന മിഴിവുകൾ കണ്ടെത്താത്തതിനാൽ പ്രദർശനങ്ങൾ പ്രതിഫലിപ്പിക്കാനായില്ല. പകരം വിപുലീകൃത ഡെസ്‌ക്‌ടോപ്പ് നൽകി.</translation>
+<translation id="6811454077060061666">ഡെസ്‌ക്‌ടോപ്പിനുള്ള Google Drive ലഭ്യമല്ല</translation>
 <translation id="6816797338148849397">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ലഭ്യമാണ്. ആക്‌സസ് ചെയ്യാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
 <translation id="6818242057446442178">ഒരു വാക്ക് പിന്നിലേക്ക് പോവുക</translation>
 <translation id="6820676911989879663">ഒരു ഇടവേള എടുക്കൂ!</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിനായി അൺലോക്ക് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
+<translation id="8281279285293265212">സ്ക്രീൻകാസ്റ്റ് സംരക്ഷിക്കാനായില്ല</translation>
 <translation id="8284362522226889623">മുമ്പത്തെ ഡെസ്‌ക്കിലേക്ക് മാറാൻ, നാല് വിരലുകൾ ഉപയോഗിച്ച് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="828708037801473432">ഓഫാണ്</translation>
 <translation id="8297006494302853456">ദുര്‍ബലം</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">അസി‌സ്‌റ്റന്റ് ക്രമീകരണം</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" />-ൽ ബാറ്ററി തീരും</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">ടെംപ്ലേറ്റുകൾ</translation>
 <translation id="9077515519330855811">മീഡിയാ നിയന്ത്രണങ്ങൾ, <ph name="MEDIA_TITLE" /> ഇപ്പോൾ പ്ലേ ചെയ്യുന്നു</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">ഹോമിലേക്ക് പോകാൻ മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>

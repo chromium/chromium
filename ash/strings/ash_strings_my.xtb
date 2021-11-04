@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ချိတ်ဆက်ထားသည်။</translation>
 <translation id="1246890715821376239">ထောက်ပံ့ပေးမထားသော အက်ပ်များ</translation>
 <translation id="1247372569136754018">မိုက်ခရိုဖုန်း (စက်တွင်း)</translation>
+<translation id="1247519845643687288">လတ်တလောသုံး အက်ပ်များ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />မှ အားသွင်းနေပါသည်</translation>
 <translation id="1255033239764210633">မိုးလေဝသအခြေအနေ ဘယ်လိုရှိလဲ။</translation>
 <translation id="1266097335951928626">ဆယ်လ်ဖီ ကင်မရာ စတင်ရန်</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">အကြောင်းကြားခြင်း လုပ်ဆောင်ရန်အတွက် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>
 <translation id="1420408895951708260">'ညအလင်းရောင်' အဖွင့်အပိတ် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Yes</translation>
+<translation id="1438357537418863713">အက်ပ် တိုက်ရိုက်လွှင့်ခြင်းကို ယခု သတ်မှတ်လိုက်ပါပြီ။ သင်စတင်သည့်အခါ လတ်တလောဖွင့်ထားသော အက်ပ်များကို ဤနေရာတွင် ပြမည်။</translation>
 <translation id="144853431011121127">သင့် <ph name="DEVICE_TYPE" /> တွင် သင်၏ဖုန်းမှ အကြောင်းကြားချက်များကို ရယူနိုင်သည်</translation>
 <translation id="1455242230282523554">ဘာသာစကားဆက်တင်များကို ပြရန်</translation>
 <translation id="1460620680449458626">အသံ တိတ်ထားသည်။</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">မတူညီသည့် ကီးဘုတ်ကို ချိတ်ဆက်ထားသည်</translation>
 <translation id="5147567197700016471">လော့ခ်ဖွင့်လိုက်သည်</translation>
 <translation id="5155897006997040331">စာဖတ်နှုန်း</translation>
+<translation id="5166007464919321363">မျက်နှာပြင်နေရာကို နမူနာပုံစံအဖြစ် သိမ်းရန်</translation>
 <translation id="5166918508782100047">အမြန်အဖြေများ ဆက်တင်</translation>
 <translation id="5168181903108465623">Cast စက်ကိရိယာများ ရနိုင်၏</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">ချိတ်ဆက်ထားသည့် USB-C ကိရိယာများကို အားသွင်းနေပါသည်</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6803622936009808957">ပံ့ပိုးထားသည့် ပြတ်သားမှုများကို မတွေ့နိုင်ခဲ့၍ ပြကွက်များကို ထင်ဟပ် မပေးနိုင်ခဲ့ပါ။ ၎င်းအစား တိုးချဲ့ ဒက်စ်တော့ကို ထည့်ပေးခဲ့သည်။</translation>
+<translation id="6811454077060061666">ဒက်စ်တော့အတွက် Google Drive သုံး၍မရပါ</translation>
 <translation id="6816797338148849397">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရနိုင်သည်။ ဝင်ကြည့်ရန် အပေါ်ညွှန်မြား အသုံးပြုပါ။</translation>
 <translation id="6818242057446442178">စာလုံးအလိုက် နောက်ပြန်သွားရန်</translation>
 <translation id="6820676911989879663">ခဏနားပါ။</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> ကိုဖွင့်ရန် Enter နှိပ်ပါ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
+<translation id="8281279285293265212">ဖန်သားပြင် ထုတ်လွှင့်ခြင်းကို သိမ်း၍မရပါ</translation>
 <translation id="8284362522226889623">ယခင်မျက်နှာပြင်နေရာသို့ ပြောင်းရန် လက်လေးချောင်းဖြင့် ဘယ်သို့ပွတ်ဆွဲပါ</translation>
 <translation id="828708037801473432">ပိတ်ရန်</translation>
 <translation id="8297006494302853456">အားမကောင်းပါ</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">Assistant ဆက်တင်များ</translation>
 <translation id="9072519059834302790">ဘက်ထရီကုန်ရန် <ph name="TIME_LEFT" /> ကျန်သေးသည်။</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
+<translation id="9077404278023321866">နမူနာပုံစံများ</translation>
 <translation id="9077515519330855811">မီဒီယာ ထိန်းချုပ်မှုများ၊ <ph name="MEDIA_TITLE" /> ကို ယခုဖွင့်နေသည်</translation>
 <translation id="9079731690316798640">Wi−Fi လိပ်စာ− <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">ပင်မစာမျက်နှာသို့သွားရန် အပေါ်သို့ ပွတ်ဆွဲပါ</translation>

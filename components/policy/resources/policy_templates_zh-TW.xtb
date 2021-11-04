@@ -682,15 +682,6 @@
 
       如果將這項政策設為停用或不設定，則遠端協助主機會以使用者的權限層級執行，且遠端使用者無法在桌面上與權限層級較高的視窗互動。</translation>
 <translation id="1837165432382702436">頁面的高度 (以微米為單位)</translation>
-<translation id="1839278886947586809">
-      這項政策已在 M80 版中遭到移除，因為 WebDriver 現階段與所有現有政策相容，因此不再需要使用這項政策。
-
-      這項政策可讓使用 WebDriver 功能的使用者覆寫可能干擾此功能運作的政策。
-
-      目前這項政策停用了 SitePerProcess 和 IsolateOrigins 政策。
-
-      如果啟用這項政策，WebDriver 將可以覆寫不相容的政策。
-      如果停用這項政策或未設定，WebDriver 將無法覆寫不相容的政策。</translation>
 <translation id="1843117931376765605">使用者政策的重新整理頻率</translation>
 <translation id="1844620919405873871">設定快速解鎖相關政策。</translation>
 <translation id="1844972978764975668">允許向 Google 伺服器傳送查詢，以擷取準確的時間戳記</translation>
@@ -1310,15 +1301,6 @@
 
        如果不設定這項政策，系統會將電源尖峰轉移保持停用。</translation>
 <translation id="2502467045153796624">版本降級行為</translation>
-<translation id="2505351097561237268">
-      螢幕擷取權限政策會依據以下網址所列規格，限制 getDisplayMedia() 的存取權：https://www.w3.org/TR/screen-capture/#feature-policy-integration
-不過，如果停用這項政策，系統就不會強制執行相關規範，而會允許透過禁止的結構定義呼叫 getDisplayMedia()。這項 Enterprise 政策僅是暫時性措施，預計將於 <ph name="PRODUCT_NAME" /> 第 100 版之後移除。
-      若 Enterprise 使用者的應用程式不符合規格要求，但需要時間進行修正，本政策即可用於解除封鎖這類使用者。
-
-      如果啟用或不設定這項政策，只有在螢幕擷取權限政策將來源結構定義列入許可清單時，網站才能呼叫 getDisplayMedia()。
-
-      如果停用這項政策，即使螢幕擷取權限政策未將來源結構定義列入許可清單，網站仍可呼叫 getDisplayMedia()。
-      請注意，getDisplayMedia() 的存取權還是有可能受到其他限制。</translation>
 <translation id="250670737672448119">啟用插入點醒目顯示無障礙功能。
 
           這項功能會在使用者編輯時，醒目顯示插入點周圍的區域。
@@ -1972,6 +1954,13 @@
       系統會將裝置上的每個 Google 帳戶與這項政策中儲存的模式互相比對，藉此判定是否要在 <ph name="PRODUCT_NAME" /> 中顯示帳戶。如果帳戶名稱符合清單中的任何模式，系統即會顯示帳戶；反之則會隱藏帳戶。
 
       你可以使用萬用字元「*」來比對零或其他任意字元。因「\」為逸出字元，如果要比對出「*」或「\」字元本身，請在這些字元前插入「\」。如果不設定這項政策，裝置上的所有 Google 帳戶都會在 <ph name="PRODUCT_NAME" /> 中顯示出來。</translation>
+<translation id="3243793808000947475">如果停用這項政策，就無法啟動遠端支援主機，也無法將主機設為接受外來連線。
+
+          這項政策不適用於遠端存取情境。
+
+          這項政策不會禁止企業管理員連線至受管理的 Chrome OS 裝置。
+
+          在啟用、留空或未設定的情況下，這項政策不會有任何作用。</translation>
 <translation id="3251500716404598358">設定政策以便切換瀏覽器。
 
       設定的網站會自動在 <ph name="PRODUCT_NAME" /> 以外的另一個瀏覽器中開啟。</translation>
@@ -2191,6 +2180,7 @@
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3540935459049973317">個別應用程式的時間限制</translation>
 <translation id="3547954654003013442">Proxy 設定</translation>
+<translation id="3548642468619496972">封鎖惡意、罕見或垃圾檔案的下載作業，以及惡意檔案類型。</translation>
 <translation id="3550122827225052130">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />。
 
           指定 AC 供電時的閒置時間長度。如果使用者在這段時間內沒有任何動作，系統就會鎖定螢幕。
@@ -2516,10 +2506,6 @@
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用相黏鍵功能，但使用者隨時可以啟用。</translation>
 <translation id="3927291637826333102">依這些來源允許執行螢幕畫面、視窗和分頁擷取功能</translation>
-<translation id="3932553013632130433">
-      指定 SharedArrayBuffers 是否可用於非跨來源隔離內容。由於網路相容性方面的原因，自 Chrome 91 (2021 年 5 月 25 日推出) 版本起，Chrome 會要求使用 SharedArrayBuffers 的網站進行跨來源隔離。詳情請前往：https://developer.chrome.com/blog/enabling-shared-array-buffer/。
-      如果將這項政策設為 True，網站就可以不受限制地使用 SharedArrayBuffer。
-      如果設為 False 或未設定，網站則需要進行跨來源隔離才能使用 SharedArrayBuffers。</translation>
 <translation id="3942041691320538491">如果將這項政策設為 0 (預設值)，你將可存取開發人員工具和 JavaScript 控制台，但無法在由企業政策安裝的擴充功能中進行存取。如果將這項政策設為 1，你將可在所有情況下存取開發人員工具和 JavaScript 控制台，在由企業政策安裝的擴充功能中也能進行存取。如果將這項政策設為 2，你將無法存取開發人員工具，也無法檢查網站元素。
 
       此外，用來開啟開發人員工具或 JavaScript 控制台的鍵盤快速鍵、選單項目或內容選單項目也會停用。</translation>
@@ -2906,6 +2892,7 @@
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">設定 <ph name="PLUGIN_VM_NAME" /> 的相關政策。</translation>
 <translation id="449784980858429908">自動授權網站連線至所有序列埠。</translation>
+<translation id="450080746522343150">封鎖所有下載作業。</translation>
 <translation id="4510923771103268849">允許使用者擁有 Crostini 容器的 Root 權限</translation>
 <translation id="4513691822411041977">不強制啟用 Google 搜尋的安全搜尋功能和中度以上的 YouTube 嚴格篩選模式</translation>
 <translation id="4515404363392014383">針對信任的來源啟用「安全瀏覽」</translation>
@@ -2972,16 +2959,6 @@
       如需完整說明，請前往 https://www.chromestatus.com/feature/5675755719622656。
       如果啟用這項政策，即可同時在多個網站中進行瀏覽及開啟新視窗/分頁。
       如果停用這項政策或不予設定，則無法同時在多個網站中進行瀏覽及開啟新視窗/分頁。</translation>
-<translation id="4574215366111396039">Chrome 會封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業，詳情請參閱 https://chromestatus.com/features/5680742077038592。
-
-      如果將這項政策設為 True，就代表允許 Chrome 封鎖這類瀏覽作業。
-
-      如果將這項政策設為 False，則表示禁止 Chrome 封鎖這類瀏覽作業。
-
-      本政策預設為 True，也就是啟用安全性功能。
-
-      如果管理員需要更多時間更新受此新限制影響的內部網站，就可以採用這項設定。這項 Enterprise 政策僅是暫時性措施，預計將於 <ph name="PRODUCT_NAME" /> 第 104 版之後移除。
-      </translation>
 <translation id="4578265298946081589">不要在使用者登出時重新啟動。</translation>
 <translation id="4581507927311097234">關閉螢幕前的閒置時間長度 (以毫秒為單位)。如果使用者在這段時間內沒有任何動作，系統就會關閉螢幕</translation>
 <translation id="4582338216073557489">將這項政策設為 None 時，<ph name="PRODUCT_NAME" /> 會使用預設的快取大小將快取檔案儲存在磁碟上，使用者無法變更這項設定。
@@ -3015,6 +2992,7 @@
       如果將這項政策設為 true 或未設定，使用者就可以在裝置上執行網路封包擷取作業。
       如果設為 false，使用者則無法在裝置上執行網路封包擷取作業。</translation>
 <translation id="4600786265870346112">啟用大型游標</translation>
+<translation id="4602988345256038309">允許與這部裝置建立遠端支援連線</translation>
 <translation id="4607416370554533118">你可以透過這項政策建立網址模式清單，用於指定 Chrome 可自動選取用戶端憑證的網站。政策的值是字串化的 JSON 條目陣列，每個條目的格式都是 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />，其中 <ph name="URL_PATTERN_PLACEHOLDER" /> 是內容設定格式。<ph name="FILTER_PLACEHOLDER" /> 會限制瀏覽器可自動選取的用戶端憑證。無論是否設定篩選器，瀏覽器都只會選取符合伺服器憑證要求的憑證。
 
       <ph name="FILTER_PLACEHOLDER" /> 區段的實際應用範例：
@@ -3658,6 +3636,7 @@
           如果將這項政策設為停用，系統會強制停用這項功能。
           </translation>
 <translation id="5435888298115339571">啟用網址列和三點選單中的桌面分享功能</translation>
+<translation id="5441508088704391614">無特殊限制。這是預設設定。</translation>
 <translation id="5442026853063570579">這項政策也可以控制 Android 開發人員選項的存取權。如果將這項政策設為「DeveloperToolsDisallowed」(值 2)，使用者將無法存取開發人員選項。如果將這項政策設為其他值或不予設定，使用者只要在 Android 設定應用程式中輕觸版本號碼七次，即可存取開發人員選項。</translation>
 <translation id="5443582909255996887">如果將這項政策設為 Enabled，系統就會在 Android 裝置上隔離所有網站，讓每個網站以獨立程序執行，並禁止使用者停用這項設定。網站是指加上 eTLD+1 的配置 (例如 https://example.com)。請注意，自 <ph name="PRODUCT_NAME" /> 第 77 版起，Android 會預設隔離某些敏感網站，而這項政策會將這個預設的網站隔離模式應用於所有網站。
 
@@ -4152,19 +4131,6 @@
 
       你可以將 Google 的搜尋網址指定為：<ph name="GOOGLE_SUGGEST_SEARCH_URL" />。</translation>
 <translation id="606742564823687992">不要回報列印工作</translation>
-<translation id="6070374129526507093">這項政策自 M69 起已淘汰，請改用 OverrideSecurityRestrictionsOnInsecureOrigin。
-
-這項政策可指定要視為安全內容的來源 (網址) 或主機名稱模式 (例如「*.example.com」)，清單中的內容來源將不會套用針對不安全來源所設的安全性限制。
-
-這項政策的用途是讓機構為無法部署傳輸層安全標準 (TLS) 的舊版應用程式設定許可來源，或是方便機構設定內部網頁開發所需的暫存伺服器。這樣一來，機構的開發人員就能測試需要安全內容的功能，而不必在暫存伺服器上部署傳輸層安全標準 (TLS)。此外，這項政策也能避免系統在網址列中將指定來源加上「不安全」標籤。
-
-你可以在這項政策中設定網址清單，或是將「--unsafely-treat-insecure-origin-as-secure」指令列旗標設定至相同的網址清單 (以半形逗號分隔)，兩者的效果相同。如果設定這項政策，就會覆寫指令列旗標。
-
-這項政策自 M69 起已淘汰，由 OverrideSecurityRestrictionsOnInsecureOrigin 取代。如果兩項政策同時存在，OverrideSecurityRestrictionsOnInsecureOrigin 
-將會覆寫這項政策。
-
-如要進一步瞭解安全內容，請參閱 https://www.w3.org/TR/secure-contexts/
-      </translation>
 <translation id="6070667616071269965">裝置登入畫面鍵盤配置</translation>
 <translation id="6074963268421707432">不允許任何網站顯示桌面通知</translation>
 <translation id="6074964551275531965">設定更新通知的時間範圍</translation>
@@ -4189,6 +4155,27 @@
 <translation id="6102449843040973938">允許在裝置上執行 <ph name="BOREALIS_NAME" /></translation>
 <translation id="6107642964266628393">控管 Chrome 作業系統的更新方式和更新時間。</translation>
 <translation id="6111936128861357925">允許 Dinosaur Easter Egg Game (恐龍復活節彩蛋遊戲)</translation>
+<translation id="6112524153927257380">如果設定這項政策，使用者就無法略過下載作業安全性判斷機制。
+
+      Chrome 提供多種下載作業警告，大致可分成以下幾個類別 (如要進一步瞭解安全瀏覽功能判斷機制，請前往 https://support.google.com/chrome/?p=ib_download_blocked)：
+
+      * 惡意檔案：由安全瀏覽伺服器所標記
+      * 罕見或垃圾檔案：由安全瀏覽伺服器所標記
+      * 危險檔案類型：例如所有 SWF 下載內容和許多 EXE 下載內容
+
+      視所採用的值而定，設定這項政策會封鎖上述類別的不同組合：
+
+      0：無特殊限制。這是預設設定。
+
+      1：封鎖由安全瀏覽伺服器所標記的惡意檔案，以及所有危險檔案類型。建議你只為較能容許誤判情形的機構單位/瀏覽器/使用者採用這項設定。
+
+      2：封鎖由安全瀏覽伺服器所標記的惡意、罕見或垃圾檔案，以及所有危險檔案類型。建議你只為較能容許誤判情形的機構單位/瀏覽器/使用者採用這項設定。
+
+      3：封鎖所有下載作業。除非是為了特殊用途，否則不建議你採用這項設定。
+
+      4：封鎖由安全瀏覽伺服器所標記的惡意檔案，但不封鎖危險檔案類型。這是建議採用的設定。
+
+      注意：這些限制適用於由網頁內容以及 [下載連結...] 選單選項所觸發的下載作業，但如果是要下載目前顯示的網頁，或是透過列印選項將網頁儲存為 PDF 檔，則不適用這些限制。如要進一步瞭解安全瀏覽功能，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="6123052603197028610">不允許向 Google 伺服器發送擷取時間戳記的查詢</translation>
 <translation id="6132506775968708399">封鎖第三方 Cookie</translation>
 <translation id="6133088669883929098">允許所有網站使用金鑰產生功能</translation>
@@ -4294,12 +4281,7 @@
       如要進一步瞭解 <ph name="CORS" />，請前往：<ph name="CORS_HELP_URL" />。
 
       請注意，我們之前宣布將在 <ph name="PRODUCT_NAME" /> 第 82 版中移除這項政策，但改為在第 84 版中移除。</translation>
-<translation id="6276624383311206185">
-      指定是否可以跨來源傳送 WebAssembly 模組至其他視窗或工作站。跨來源 WebAssembly 模組分享功能將隨著 document.domain 一併淘汰，詳情請參閱 https://github.com/mikewest/deprecating-document-domain。這項政策可以重新啟用跨來源 WebAssembly 模組分享功能，藉此延長淘汰過程中的過渡期。
-
-      如果將這項政策設為 True，網站即可不受限制地跨來源傳送 WebAssembly 模組。
-
-      如果設為 False 或未設定，網站就只能將 WebAssembly 模組傳送到相同來源的視窗和工作站。</translation>
+<translation id="627672037430076089">禁止與這部裝置建立遠端支援連線</translation>
 <translation id="6277314550042130537">在 HTTP 驗證期間使用 KDC 政策的核准結果</translation>
 <translation id="6279722058145292462">你可以透過這項政策，指定用戶端變更本機帳戶密碼的頻率 (以天為單位)。這個密碼是由用戶端隨機產生，不會向使用者顯示。如果停用這項政策或設定較長的天數，潛在的攻擊者就有較多時間找出本機帳戶密碼並加以利用，這樣可能會對安全性造成負面影響。
 
@@ -5915,6 +5897,7 @@
          如果將動作設為暫停，你可以另行設定 <ph name="PRODUCT_OS_NAME" />在暫停前是否要鎖定螢幕。</translation>
 <translation id="8214600119442850823">設定密碼管理員</translation>
 <translation id="8217664958939773083">如將這項政策設為「<ph name="ENABLED" />」或不設定，系統就會允許使用無頭模式；如將這項政策設為「<ph name="DISABLED" />」，則系統會禁止使用無頭模式。</translation>
+<translation id="8219813789911069300">封鎖惡意下載作業。這是建議採用的設定。</translation>
 <translation id="8220023426952118761">理想的下載速率 (kbit/秒)。</translation>
 <translation id="8220156281401380422">設定內建訊息傳遞許可清單</translation>
 <translation id="8229912067600517877">啟用開發人員工具</translation>
@@ -6204,6 +6187,7 @@
 <translation id="8524334245528364388">含有列印伺服器清單的 JSON 檔案的網址。</translation>
 <translation id="8525526490824335042">Linux 容器</translation>
 <translation id="8528951285051082869">禁止任何網頁應用程式透過 File Handling API 存取特定類型的檔案</translation>
+<translation id="8533145294731270627">封鎖惡意下載作業和危險檔案類型。</translation>
 <translation id="8537051350735478658">如果將這項政策設為 True，系統會在 <ph name="PRODUCT_NAME" /> 的網址列中啟用搜尋建議功能。如果將這項政策設為 False，系統會停用這類搜尋建議功能。
 
       如果設定這項政策，使用者將無法變更。如果未設定，系統會先啟用搜尋建議功能，但使用者隨時可以停用。</translation>

@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">পৃষ্ঠা থেকে না বেরিয়েই ওয়েবসাইটের বিষয়গুলির ব্যাপারে জানুন। 'টাচ করে সার্চ করুন' ফিচারটি Google Search-এ একটি শব্দ ও তার আনুষঙ্গিক প্রসঙ্গ পাঠায়, যার উত্তরে Google Search বিভিন্ন সংজ্ঞা, ছবি, সার্চের ফলাফল ও অন্যান্য বিবরণ দেখায়।
 
 সার্চ করার জন্য যেকোনও শব্দ টাচ করে ধরে থাকুন। সার্চ রিফাইন করতে, বেশি বা কম সংখ্যক শব্দ বেছে নিন। আপনার সার্চ এডিট করতে, প্যানেলটি খুলুন। তারপরে, আইকনে ট্যাপ করে একটি নতুন ট্যাবে এটি খুলুন এবং সার্চ বক্সে যা যা পরিবর্তন করতে চান সেগুলি করুন।</translation>
+<translation id="2451607499823206582">ট্র্যাক করা হচ্ছে</translation>
 <translation id="2459390580524506445">উন্নত ভয়েস সার্চ</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
 <translation id="247737702124049222">ছবির বিবরণ চালু করা আছে</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">ক্লিপবোর্ডের কন্টেন্ট লুকান</translation>
 <translation id="2532336938189706096">ওয়েব দর্শন</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />টি আইটেম মোছা হয়েছে</translation>
+<translation id="2534582914273493287">আপনি যেসব URL দেখেন তা Google-এ পাঠানো হয়</translation>
 <translation id="2536728043171574184">এই পৃষ্ঠার একটি অফলাইন কপি দেখছেন</translation>
 <translation id="2546283357679194313">কুকিজ ও সাইট ডেটা</translation>
 <translation id="2561519700418191927">ভিডিওর প্রিভিউ</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">ডিভাইসে সেভ করুন</translation>
 <translation id="3236059992281584593">১ মিনিট বাকি আছে</translation>
 <translation id="3244271242291266297">মিমি</translation>
+<translation id="3245429137663807393">আপনি Chrome ব্যবহারের রিপোর্ট শেয়ার করলেও, আপনার দেখা URL তার মধ্যে অন্তর্ভুক্ত থাকে</translation>
 <translation id="3250563604907490871">আপনি ওয়াই-ফাইতে কানেক্ট করলে, ছবির বিবরণ আবার দেখা যাবে</translation>
 <translation id="3254409185687681395">এই পৃষ্ঠাটি বুকমার্ক করুন</translation>
 <translation id="3259831549858767975">পৃষ্ঠাতে থাকা সবকিছুকে ছোট করুন</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">ফোল্ডার</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> কেবি available</translation>
 <translation id="3549657413697417275">আপনার ইতিহাস খুঁজুন</translation>
+<translation id="3557272988124495906">দাম কমার বিজ্ঞপ্তি পান</translation>
 <translation id="3557336313807607643">পরিচিতিতে যোগ করুন</translation>
 <translation id="3563767357928833671">ক্লিপবোর্ডের কন্টেন্ট দেখানো হয়েছে</translation>
 <translation id="3566923219790363270">ভি আর সমর্থনের জন্য Chrome-এ এখনও কাজ চলছে। পরে Chrome রিস্টার্ট করুন।</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">আপনার ডিভাইসে পাঠান</translation>
 <translation id="3778956594442850293">হোম স্ক্রিনে যোগ করা হয়েছে</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{১টি ট্যাব}one{# টি ট্যাব}other{# টি ট্যাব}}</translation>
+<translation id="3803783897442799486">চালিয়ে যাওয়ার অর্থ হল আপনি, <ph name="BEGIN_LINK1" />পরিষেবার শর্তাবলী<ph name="END_LINK1" />-তে সম্মতি দিচ্ছেন।\nঅ্যাপ উন্নত করার জন্য সাহায্য করতে, Chrome ব্যবহার সম্পর্কিত ও ক্র্যাশ ডেটা Google-এ পাঠায়। <ph name="BEGIN_LINK2" />ম্যানেজ করুন<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">অটোপ্লে ম্যানেজ করুন</translation>
 <translation id="3810838688059735925">ভিডিও</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
@@ -608,6 +613,7 @@
 <translation id="47217992755561375">আপনার জন্য বেছে নেওয়া সেরা সাইট দেখুন</translation>
 <translation id="4732120983431207637">স্ট্যাক আনউইন্ডার</translation>
 <translation id="4738836084190194332">সর্বশেষ সিঙ্ক হয়েছে: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">অ্যাড্রেস বারে উন্নত সাজেশন পাবেন</translation>
 <translation id="4742970037960872810">হাইলাইট সরিয়ে দিন</translation>
 <translation id="4749960740855309258">একটি নতুন ট্যাব খুলুন</translation>
 <translation id="4758061975920522644">শুধুমাত্র ইমেজ শেয়ার করুন</translation>
@@ -1175,6 +1181,7 @@
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> পৃষ্ঠার প্রিভিউ দেখুন</translation>
 <translation id="7981313251711023384">আরও দ্রুত ব্রাউজ করা এবং খোঁজার জন্য পৃষ্ঠা আগে লোড করুন</translation>
 <translation id="7986497153528221272">পাসওয়ার্ড দেখতে, আগে আপনার ডিভাইসে স্ক্রিন লক সেট করুন</translation>
+<translation id="799576009106109668">আপনি আরও দ্রুত ব্রাউজ করবেন কারণ, আপনার বর্তমান ওয়েবপেজ দেখার উপরে ভিত্তি করে কন্টেন্ট নিজে থেকে লোড হয়</translation>
 <translation id="7998918019931843664">বন্ধ হওয়া ট্যাব আবার খুলুন</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
 <translation id="8013372441983637696">এছাড়া এই ডিভাইস থেকে Chrome ডেটা সরিয়ে ফেলুন</translation>
@@ -1222,6 +1229,7 @@
 <translation id="8218052821161047641">অতি দ্রুত লোড হওয়া পৃষ্ঠা</translation>
 <translation id="8218622182176210845">আপনার অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="8223642481677794647">ফিড কার্ডের মেনু</translation>
+<translation id="8242868071038398515">কোনও সাইটে দাম কমলে আপনি সেই সম্পর্কে বিজ্ঞপ্তি পাবেন</translation>
 <translation id="8250920743982581267">দস্তাবেজগুলি</translation>
 <translation id="825412236959742607">এই পৃষ্ঠাটি খুব বেশি মেমরি ব্যবহার করছে তাই Chrome কিছু কন্টেন্ট সরিয়ে দিয়েছে।</translation>
 <translation id="8260126382462817229">আবার সাইন ইন করার চেষ্টা করুন</translation>
@@ -1240,6 +1248,7 @@
 <translation id="8354977102499939946">আপনার ভয়েস ব্যবহার করে দ্রুত সার্চ করুন। এই শর্টকাট এডিট করতে, সেটিংসে যান।</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" />টি ডাউনলোড ফিরিয়ে আনা হয়েছে</translation>
 <translation id="8364299278605033898">জনপ্রিয় ওয়েবসাইট দেখুন</translation>
+<translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>
 <translation id="8387617938027387193">আপনার পরিচয় যাচাই করান</translation>
 <translation id="8393700583063109961">বার্তা পাঠান</translation>
 <translation id="8410695015584479363">দাম ট্র্যাক করুন</translation>

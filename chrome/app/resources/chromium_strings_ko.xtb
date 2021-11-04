@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">작업 관리자</translation>
 <translation id="2910007522516064972">Chromium 정보</translation>
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
+<translation id="2977506796191543575">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="2983934633046890458">Chromium에서 비밀번호를 수정하려고 합니다.</translation>
 <translation id="3032706164202344641">Chromium에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="3032787606318309379">Chromium에 추가하는 중...</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">컴퓨터에 이미 최신 버전의 Chromium이 있습니다. 소프트웨어가 작동하지 않으면 Chromium의 설치를 제거한 뒤 다시 시도하세요.</translation>
 <translation id="6219195342503754812">{0,plural, =0{곧 Chromium이 다시 시작됩니다}=1{1초 후 Chromium이 다시 시작됩니다}other{#초 후 Chromium이 다시 시작됩니다}}</translation>
 <translation id="6241367896540709610">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 필요합니다.</translation>
+<translation id="6245734527075554892">Chromium에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
 <translation id="6248213926982192922">Chromium을 기본 브라우저로 설정</translation>
 <translation id="6266342355635466082">Chromium에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>

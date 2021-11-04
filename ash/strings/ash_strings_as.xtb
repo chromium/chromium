@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />ৰ সৈতে সংযোগ কৰা হ’ল।</translation>
 <translation id="1246890715821376239">অসমৰ্থিত এপ্‌</translation>
 <translation id="1247372569136754018">মাইক্ৰফ’ন (আভ্যন্তৰীণ)</translation>
+<translation id="1247519845643687288">শেহতীয়া এপ্</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />ৰ পৰা চাৰ্জ কৰি থকা হৈছে</translation>
 <translation id="1255033239764210633">বতৰ কেনে?</translation>
 <translation id="1266097335951928626">ছেল্ফী কেমেৰা আৰম্ভ কৰক</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">জাননী সম্পর্কীয় কার্যসমূহ কৰিবলৈ ডিভাইচ আনলক কৰক</translation>
 <translation id="1420408895951708260">ৰাতিৰ লাইট ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">হয়</translation>
+<translation id="1438357537418863713">এতিয়া এপ্‌ ষ্ট্ৰীমিং ছেট আপ কৰা হৈছে। আপুনি আৰম্ভ কৰাৰ পাছত, শেহতীয়াকৈ লঞ্চ কৰা এপ্‌সমূহ ইয়াত প্ৰদৰ্শিত হ’ব।</translation>
 <translation id="144853431011121127">আপোনাৰ <ph name="DEVICE_TYPE" />ত আপোনাৰ ফ’নৰ পৰা জাননী পাওক</translation>
 <translation id="1455242230282523554">ভাষাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="1460620680449458626">ভলিউম মিউট কৰা আছে।</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">বিভিন্ন কীব’র্ড সংযোগ কৰা হৈছে</translation>
 <translation id="5147567197700016471">আনলক কৰা হ’ল</translation>
 <translation id="5155897006997040331">পঢ়াৰ গতিবেগ</translation>
+<translation id="5166007464919321363">এটা টেমপ্লে’ট হিচাপে ডেস্ক ছেভ কৰক</translation>
 <translation id="5166918508782100047">দ্ৰুত উত্তৰৰ ছেটিং</translation>
 <translation id="5168181903108465623">কাষ্ট কৰিব পৰা ডিভাইচ উপলব্ধ</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">সংযোগ হৈ থকা USB-C ডিভাইচসমূহত পাৱাৰ সংযোগ কৰি থকা হৈছে</translation>
 <translation id="6790428901817661496">প্লে’ কৰক</translation>
 <translation id="6803622936009808957">কোনো সমৰ্থিত ৰিজ’লিউছন বিচাৰি নোপোৱাৰ বাবে ডিছপ্লে’ৰ প্ৰতিবিম্বকৰণ কৰিব নোৱাৰি। বিস্তাৰিত ডেস্কটপত প্ৰৱেশ কৰিব পৰা নগ’ল।</translation>
+<translation id="6811454077060061666">ডেস্কটপৰ বাবে Google Drive উপলব্ধ নহয়</translation>
 <translation id="6816797338148849397">আপুনি কৰা বাছনি সম্পৰ্কীয় তথ্য উপলব্ধ। এক্সেছ কৰিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="6818242057446442178">এটা শব্দ পিছলৈ যাওক</translation>
 <translation id="6820676911989879663">বিৰতি লওক!</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে আনলক কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="8261506727792406068">মচক</translation>
+<translation id="8281279285293265212">স্ক্ৰীন কাষ্ট কৰাৰ সুবিধা ছেভ কৰিব পৰা নগ’ল</translation>
 <translation id="8284362522226889623">পূৰ্বৱৰ্তী ডেস্কখনলৈ সলনি কৰিবলৈ চাৰিটা আঙুলিৰে বাওঁফালে ছোৱাইপ কৰক</translation>
 <translation id="828708037801473432">অফ আছে</translation>
 <translation id="8297006494302853456">দুৰ্বল</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">Assistantৰ ছেটিংসমূহ</translation>
 <translation id="9072519059834302790">বেটাৰী খালী হ’বলৈ <ph name="TIME_LEFT" /> বাকী আছে।</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
+<translation id="9077404278023321866">টেমপ্লে’ট</translation>
 <translation id="9077515519330855811">মিডিয়াৰ নিয়ন্ত্ৰণ, এতিয়া <ph name="MEDIA_TITLE" /> প্লে’ হৈ আছে</translation>
 <translation id="9079731690316798640">ৱাই-ফাই: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">গৃহ স্ক্ৰীনলৈ যাবলৈ ওপৰৰ ফালে ছোৱাইপ কৰক</translation>

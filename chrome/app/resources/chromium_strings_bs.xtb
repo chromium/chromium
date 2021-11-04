@@ -58,6 +58,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2885378588091291677">Upravitelj zadataka</translation>
 <translation id="2910007522516064972">O &amp;Chromiumu</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
+<translation id="2977506796191543575">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
 <translation id="2983934633046890458">Chromium pokušava urediti lozinke.</translation>
 <translation id="3032706164202344641">Chromium ne može provjeravati vaše lozinke. Pokušajte ponovo kasnije.</translation>
 <translation id="3032787606318309379">Dodavanje u Chromium…</translation>
@@ -169,6 +170,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="6212496753309875659">Na ovom računaru se već nalazi novija verzija Chromiuma. Ako softver ne funkcionira, deinstalirajte Chromium i pokušajte ponovo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium će se sada ponovo pokrenuti}=1{Chromium će se ponovo pokrenuti za 1 sekundu}one{Chromium će se ponovo pokrenuti za # sekundu}few{Chromium će se ponovo pokrenuti za # sekunde}other{Chromium će se ponovo pokrenuti za # sekundi}}</translation>
 <translation id="6241367896540709610">Chromiumu je potrebno odobrenje za pristup pohrani radi preuzimanja fajlova</translation>
+<translation id="6245734527075554892">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromiumu</translation>
 <translation id="6248213926982192922">Postavi Chromium kao zadani preglednik</translation>
 <translation id="6266342355635466082">Chromium ne može provjeravati ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="6268381023930128611">Odjaviti se iz Chromiuma?</translation>

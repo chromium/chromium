@@ -234,6 +234,7 @@ Tik op enige woord om te soek. Raak en hou om meer of minder woorde te kies as j
 <translation id="2450907520913474542">Kom meer te wete oor onderwerpe op webwerwe sonder om die bladsy te verlaat. Raak om te Soek stuur 'n woord en sy omringende konteks na Google Search toe en wys definisies, prente, soekresultate en ander besonderhede.
 
 Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog wil verfyn. Maak die paneel oop, tik op die ikoon om dit in 'n nuwe oortjie oop te maak en bring jou veranderinge in die soekkassie aan as jy jou soektog wil wysig.</translation>
+<translation id="2451607499823206582">Spoor tans na</translation>
 <translation id="2459390580524506445">Verbeterde stemsoektog</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="247737702124049222">Prentbeskrywings is aan</translation>
@@ -253,6 +254,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2527779675047087889">Versteek knipbordinhoud</translation>
 <translation id="2532336938189706096">Webaansig</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> items is uitgevee</translation>
+<translation id="2534582914273493287">URL'e wat jy besoek, word na Google toe gestuur</translation>
 <translation id="2536728043171574184">Bekyk tans 'n vanlyn kopie van hierdie bladsy</translation>
 <translation id="2546283357679194313">Webkoekies en werfdata</translation>
 <translation id="2561519700418191927">Videovoorskoue</translation>
@@ -372,6 +374,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3234978181857588512">Stoor op toestel</translation>
 <translation id="3236059992281584593">1 minuut oor</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">As jy ook Chrome-gebruiksverslae deel, sluit daardie verslae die URL'e in wat jy besoek</translation>
 <translation id="3250563604907490871">Prentbeskrywings sal hervat wanneer jy aan wi-fi koppel</translation>
 <translation id="3254409185687681395">Boekmerk hierdie bladsy</translation>
 <translation id="3259831549858767975">Maak alles op die bladsy kleiner</translation>
@@ -423,6 +426,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3527085408025491307">Vouer</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB beskikbaar</translation>
 <translation id="3549657413697417275">Deursoek jou geskiedenis</translation>
+<translation id="3557272988124495906">Kry kennisgewings oor prysverlagings</translation>
 <translation id="3557336313807607643">Voeg by kontakte</translation>
 <translation id="3563767357928833671">Knipbordinhoud word gewys</translation>
 <translation id="3566923219790363270">Chrome maak nog gereed vir VR. Herbegin Chrome later.</translation>
@@ -458,6 +462,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3775705724665058594">Stuur na jou toestelle toe</translation>
 <translation id="3778956594442850293">By tuisskerm gevoeg</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 oortjie}other{# oortjies}}</translation>
+<translation id="3803783897442799486">Deur voort te gaan, stem jy in tot die <ph name="BEGIN_LINK1" />diensbepalings<ph name="END_LINK1" />.\nChrome stuur gebruik- en omvaldata na Google toe om die program te help verbeter. <ph name="BEGIN_LINK2" />Bestuur<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Bestuur outospeel</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Bestuur</translation>
@@ -606,6 +611,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="47217992755561375">Sien jou topwerwe</translation>
 <translation id="4732120983431207637">Stapellosdraaier</translation>
 <translation id="4738836084190194332">Laas gesinkroniseer: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">Jy sal verbeterde voorstelle in die adresbalk kry</translation>
 <translation id="4742970037960872810">Verwyder kleurmerk</translation>
 <translation id="4749960740855309258">Maak 'n nuwe oortjie oop</translation>
 <translation id="4758061975920522644">Deel net prent</translation>
@@ -1173,6 +1179,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7975379999046275268">Voorbeskou bladsy <ph name="BEGIN_NEW" />Nuwe<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Laai bladsye vooraf om vinniger te blaai en te soek</translation>
 <translation id="7986497153528221272">Stel eers 'n skermslot op jou toestel om wagwoorde te bekyk</translation>
+<translation id="799576009106109668">Jy sal vinniger kan blaai omdat inhoud proaktief op grond van jou huidige webbladsybesoek gelaai word</translation>
 <translation id="7998918019931843664">Heropen toegemaakte oortjie</translation>
 <translation id="8004582292198964060">Blaaier</translation>
 <translation id="8013372441983637696">Vee ook jou Chrome-data op hierdie toestel uit</translation>
@@ -1220,6 +1227,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8218052821161047641">Vinnige bladsy</translation>
 <translation id="8218622182176210845">Bestuur jou rekening</translation>
 <translation id="8223642481677794647">Stroomkaartkieslys</translation>
+<translation id="8242868071038398515">Jy sal in kennis gestel word as die prys op enige werf verlaag word</translation>
 <translation id="8250920743982581267">Dokumente</translation>
 <translation id="825412236959742607">Hierdie bladsy gebruik te veel berging en daarom het Chrome van die inhoud verwyder.</translation>
 <translation id="8260126382462817229">Probeer weer om aan te meld</translation>
@@ -1238,6 +1246,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8354977102499939946">Soek vinnig met jou stem. Gaan na Instellings om hierdie kortpad te wysig.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> aflaaie is teruggestel</translation>
 <translation id="8364299278605033898">Sien gewilde webwerwe</translation>
+<translation id="8368001212524806591">Spoor prys na</translation>
 <translation id="8387617938027387193">Verifieer dat dit jy is</translation>
 <translation id="8393700583063109961">Stuur boodskap</translation>
 <translation id="8410695015584479363">Spoor pryse na</translation>

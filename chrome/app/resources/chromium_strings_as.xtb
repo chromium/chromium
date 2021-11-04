@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">কাৰ্য পৰিচালক</translation>
 <translation id="2910007522516064972">&amp;Chromiumৰ বিষয়ে</translation>
 <translation id="2977470724722393594">Chromium একেবাৰে শেহতীয়া অৱস্থাত আছে</translation>
+<translation id="2977506796191543575">যদি কোনোবা ছাইটে আপোনাৰ পাছৱৰ্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল’ড কৰাৰ সময়ত Chromiumএ পৃষ্ঠাৰ সমলৰ বিটসমূহকে ধৰি URLসমূহো সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে</translation>
 <translation id="2983934633046890458">Chromiumএ পাছৱর্ডসমূহ সম্পাদনা কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="3032706164202344641">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে। পাছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="3032787606318309379">Chromiumত যোগ কৰি থকা হৈছে...</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">এই কম্পিউটাৰটোত ইতিমধ্যে Chromiumৰ অধিক শেহতীয়া সংস্কৰণ আছে। যদি ছফ্টৱেৰটোৱে কাম কৰা নাই তেন্তে Chromium আনইনষ্টল কৰি আকৌ চেষ্টা কৰক।</translation>
 <translation id="6219195342503754812">{0,plural, =0{এতিয়া Chromium পুনৰ লঞ্চ হ’ব}=1{১ ছেকেণ্ডত Chromium পুনৰ লঞ্চ হ’ব}one{# ছেকেণ্ডত Chromium পুনৰ লঞ্চ হ’ব}other{# ছেকেণ্ডত Chromium পুনৰ লঞ্চ হ’ব}}</translation>
 <translation id="6241367896540709610">Chromiumক ফাইল ডাউনল’ড কৰিবলৈ ষ্ট’ৰেজৰ এক্সেছৰ অনুমতিৰ আৱশ্যক</translation>
+<translation id="6245734527075554892">Chromiumত ষ্ট’ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে</translation>
 <translation id="6248213926982192922">Chromiumক ডিফ’ল্ট ব্ৰাউজাৰ বনাওক</translation>
 <translation id="6266342355635466082">Chromiumএ আপডে'টসমূহ পৰীক্ষা কৰিব নোৱাৰে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰি চাওক।</translation>
 <translation id="6268381023930128611">Chromiumৰ পৰা ছাইন আউট কৰিবনে?</translation>

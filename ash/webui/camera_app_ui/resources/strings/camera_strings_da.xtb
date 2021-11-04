@@ -3,6 +3,7 @@
 <translationbundle lang="da">
 <translation id="1113173431709655881">Kameratilstand</translation>
 <translation id="1175958423215084756">Link registreret. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Roter 90 grader med uret</translation>
 <translation id="1276998909102132017">Galleribilleder</translation>
 <translation id="1300209025925956156">Scan dit dokument</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tryk på søgetasten+venstrepil for at få adgang til dem.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Det var ikke muligt at tage et billede i stående format</translation>
 <translation id="3569311554794739032">Er du sikker på, at du vil fjerne <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Skift til scanningstilstand</translation>
+<translation id="3789724198583203151">Roter 90 grader mod uret</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scan stregkode</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>

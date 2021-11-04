@@ -182,6 +182,7 @@
 <translation id="5686916850681061684">Personalizează și controlează Google Chrome. Ceva are nevoie de atenția ta – dă clic pentru detalii.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome va reporni într-o secundă}few{Google Chrome va reporni în # secunde}other{Google Chrome va reporni în # de secunde}}</translation>
+<translation id="5736850870166430177">Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită adresele URL, inclusiv fragmente din conținutul paginilor, către funcția Navigare sigură</translation>
 <translation id="573759479754913123">Despre sistemul de operare Chrome</translation>
 <translation id="5756509061973259733">Există deja un profil Chrome asociat acestui cont pe dispozitiv</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
@@ -269,6 +270,7 @@
 <translation id="8290100596633877290">Hopa! Google Chrome s-a blocat. Repornești acum?</translation>
 <translation id="8342675569599923794">Fișierul este periculos, așadar Chrome l-a blocat.</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
+<translation id="8394720698884623075">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome</translation>
 <translation id="840084489713044809">Google Chrome vrea să îți exporte parolele.</translation>
 <translation id="8433638294851456451">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
 <translation id="8498858610309223613">Tocmai a fost aplicată o actualizare de securitate specială pentru Google Chrome. Repornește acum și filele vor fi restabilite.</translation>

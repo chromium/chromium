@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা আছে।</translation>
 <translation id="1246890715821376239">কাজ করে না এমন অ্যাপ</translation>
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
+<translation id="1247519845643687288">সাম্প্রতিক অ্যাপ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> থেকে চার্জ হচ্ছে</translation>
 <translation id="1255033239764210633">আবহাওয়া কি রকম?</translation>
 <translation id="1266097335951928626">সেলফি ক্যামেরা চালু করুন</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">বিজ্ঞপ্তি সম্পর্কিত অ্যাকশনের জন্য ডিভাইস আনলক করুন</translation>
 <translation id="1420408895951708260">নাইট লাইট ফিচারটি টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
+<translation id="1438357537418863713">অ্যাপ স্ট্রিমিং এখন সেট আপ করা আছে। আপনি চালু করলে, সাম্প্রতিক ব্যবহার করা অ্যাপ এখানে দেখা যাবে।</translation>
 <translation id="144853431011121127"><ph name="DEVICE_TYPE" />-এ আপনার ফোনের বিজ্ঞপ্তি দেখুন</translation>
 <translation id="1455242230282523554">ভাষার সেটিংস দেখুন</translation>
 <translation id="1460620680449458626">ভলিউম মিউট করা আছে।</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
 <translation id="5147567197700016471">আনলক করা হয়েছে</translation>
 <translation id="5155897006997040331">পড়ার গতি</translation>
+<translation id="5166007464919321363">টেম্পলেট হিসেবে ডেস্ক সেভ করুন</translation>
 <translation id="5166918508782100047">'কুইক আন্সার' সেটিংস</translation>
 <translation id="5168181903108465623">কাস্ট ডিভাইসগুলি উপলব্ধ</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">কানেক্ট করা USB-C ডিভাইসগুলি চার্জ করা হচ্ছে</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6803622936009808957">সমর্থিত রেসুলিউশানগুলি খুঁজে না পাওয়ায় প্রদর্শনগুলি মিরর মানে প্রতিবিম্বিত করতে পারেনি। এর পরিবর্তে প্রসারিত ডেস্কটপে প্রবেশ করেছে।</translation>
+<translation id="6811454077060061666">ডেস্কটপের জন্য Google Drive উপলভ্য নেই</translation>
 <translation id="6816797338148849397">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য উপলভ্য আছে। এটি অ্যাক্সেস করতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="6818242057446442178">শব্দ অনুযায়ী পেছনে যান</translation>
 <translation id="6820676911989879663">বিরতি নিন!</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" /> আনলক করতে এন্টার বোতামে প্রেস করুন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
+<translation id="8281279285293265212">স্ক্রিনকাস্ট সেভ করা যায়নি</translation>
 <translation id="8284362522226889623">পূর্ববর্তী ডেস্কে সুইচ করতে, চার আঙুল ব্যবহার করে বাঁদিকে সোয়াইপ করুন</translation>
 <translation id="828708037801473432">বন্ধ করা আছে</translation>
 <translation id="8297006494302853456">দুর্বল</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">অ্যাসিস্ট্যান্ট সেটিংস</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> পরে ব্যাটারির চার্জ শেষ হয়ে যাবে।</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
+<translation id="9077404278023321866">টেমপ্লেট</translation>
 <translation id="9077515519330855811">এটি মিডিয়া কন্ট্রোল, এখন <ph name="MEDIA_TITLE" /> প্লে করা হচ্ছে</translation>
 <translation id="9079731690316798640">ওয়াই ফাই: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">'হোম' স্ক্রিনে যাওয়ার জন্য উপরের দিকে সোয়াইপ করুন</translation>

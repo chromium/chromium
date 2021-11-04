@@ -48,6 +48,7 @@
 <translation id="1239161794459865856">«<ph name="FEATURE_NAME" />» գործառույթը միացված է։</translation>
 <translation id="1246890715821376239">Չաջակցվող հավելվածներ</translation>
 <translation id="1247372569136754018">Խոսափող (ներքին)</translation>
+<translation id="1247519845643687288">Վերջին օգտագործած հավելվածները</translation>
 <translation id="1252999807265626933">Լիցքավորվում է <ph name="POWER_SOURCE" />-ից</translation>
 <translation id="1255033239764210633">Ի՞նչ եղանակ է հիմա։</translation>
 <translation id="1266097335951928626">Միացնել սելֆիի ֆոտոխցիկը</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">Ծանուցման հետ գործողություն կատարելու համար ապակողպեք սարքը</translation>
 <translation id="1420408895951708260">Միացնել/անջատել գիշերային ռեժիմը: <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Այո</translation>
+<translation id="1438357537418863713">Հավելվածների հեռարձակումը կարգավորված է։ Երբ դուք սկսեք, այստեղ կհայտնվեն վերջերս գործարկված հավելվածները։</translation>
 <translation id="144853431011121127">Ստացեք ծանուցումներ ձեր հեռախոսից <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="1455242230282523554">Ցուցադրել լեզվի կարգավորումները</translation>
 <translation id="1460620680449458626">Ձայնն անջատված է:</translation>
@@ -590,6 +592,7 @@
 <translation id="5136175204352732067">Այլ ստեղնաշար է միացվել</translation>
 <translation id="5147567197700016471">Ապակողպվեց</translation>
 <translation id="5155897006997040331">Ընթերցման արագությունը</translation>
+<translation id="5166007464919321363">Պահել աշխատասեղանը որպես ձևանմուշ</translation>
 <translation id="5166918508782100047">Արագ պատասխանների կարգավորումներ</translation>
 <translation id="5168181903108465623">Առկա են հեռարձակման սարքեր</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
@@ -799,6 +802,7 @@
 <translation id="6777216307882431711">Լիցքավորում է միացված USB-C սարքերը</translation>
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="6803622936009808957">Չհաջողվեց հայելապատճենել մոնիտորները, քանի որ աջակցվող լուծաչափեր չգտնվեցին: Փոխարենը միացվել է ընդարձակված աշխատասեղանը:</translation>
+<translation id="6811454077060061666">Google Drive-ի համակարգչային տարբերակը հասանելի չէ</translation>
 <translation id="6816797338148849397">Ձեր ընտրության վերաբերյալ հասանելի են տեղեկություններ։ Դրանք բացելու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="6818242057446442178">Մեկ բառով հետ</translation>
 <translation id="6820676911989879663">Ընդմիջեք</translation>
@@ -997,6 +1001,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Սեղմեք Enter, որպեսզի ապակողպեք սարքը <ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջ համար</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
+<translation id="8281279285293265212">Չհաջողվեց պահել էկրանի հեռարձակումը</translation>
 <translation id="8284362522226889623">Նախորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք ձախ</translation>
 <translation id="828708037801473432">Անջատված է</translation>
 <translation id="8297006494302853456">Թույլ</translation>
@@ -1101,6 +1106,7 @@
 <translation id="9070640332319875144">Օգնականի կարգավորումներ</translation>
 <translation id="9072519059834302790">Մարտկոցը կդատարկվի <ph name="TIME_LEFT" />ից։</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Ձևանմուշներ</translation>
 <translation id="9077515519330855811">Մեդիա կարգավորումներ, այժմ հնչում է՝ <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi ցանց՝ <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Սահեցրեք վերև՝ հիմնական էկրան անցնելու համար</translation>

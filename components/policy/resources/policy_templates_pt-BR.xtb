@@ -679,15 +679,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Se a política for definida como "Desativada" ou deixada sem definição, o host de assistência remota será executado no contexto do usuário e os usuários remotos não poderão interagir com janelas elevadas no computador.</translation>
 <translation id="1837165432382702436">Altura da página em micrômetros.</translation>
-<translation id="1839278886947586809">
-      Esta política foi removida no M80 porque não é mais necessária já que o WebDriver agora é compatível com todas as políticas existentes.
-
-      Esta política permite que os usuários do recurso WebDriver modifiquem as políticas que podem interferir na operação.
-
-      Atualmente, esta política desativa as políticas SitePerProcess e IsolateOrigins.
-
-      Se a política for ativada, o WebDriver poderá modificar as políticas incompatíveis.
-      Se a política for desativada ou não configurada, o WebDriver não terá permissão para modificar as políticas incompatíveis.</translation>
 <translation id="1843117931376765605">Taxa de atualização da política do usuário</translation>
 <translation id="1844620919405873871">Configura as políticas relacionadas ao desbloqueio rápido.</translation>
 <translation id="1844972978764975668">Permitir consultas a um servidor do Google para recuperar um carimbo de data/hora preciso</translation>
@@ -1323,23 +1314,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
        Se a política não for definida, a economia de energia no período de pico ficará desativada.</translation>
 <translation id="2502467045153796624">Comportamento de downgrade de canal</translation>
-<translation id="2505351097561237268">
-      A política de permissões de captura de tela recebe acesso a getDisplayMedia()
-      de acordo com a especificação apresentada em
-      https://www.w3.org/TR/screen-capture/#feature-policy-integration (link em inglês).
-      No entanto, se ela for desativada, o requisito não será aplicado
-      e getDisplayMedia() receberá permissão de contextos que seriam proibidos
-      em outra situação. A política corporativa é temporária e será
-      removida após a versão 100 do <ph name="PRODUCT_NAME" />.
-      O objetivo é desbloquear usuários corporativos com uma aplicação que não esteja em conformidade com a especificação,
-      mas precise de tempo para ser corrigida.
-
-      Se ela for ativada ou não for definida, os sites só poderão chamar getDisplayMedia() de
-      contextos na lista de permissões da política de permissões de captura de tela.
-
-      Se ela for desativada, os sites poderão chamar getDisplayMedia() até mesmo de contextos
-      fora da lista de permissões da política de permissões de captura de tela.
-      Pode haver outras restrições.</translation>
 <translation id="250670737672448119">Ativar o recurso de acessibilidade que destaca o cursor.
 
           Este recurso é responsável por destacar a área ao redor do cursor durante a edição.
@@ -2555,15 +2529,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
           Se esta política não for definida, as teclas de aderência ficarão inicialmente desativadas na tela de login, mas poderão ser ativadas pelo usuário a qualquer momento.</translation>
 <translation id="3927291637826333102">Permitir captura de área de trabalho, janela e guia por estas origens</translation>
-<translation id="3932553013632130433">
-      Especifica se SharedArrayBuffers pode ser usado em um contexto sem
-      isolamento de origem cruzada. A partir da versão 91 (25/05/2021), o Chrome exigirá o isolamento de origem cruzada ao usar o
-      SharedArrayBuffers por motivos de compatibilidade
-      na Web. Veja mais detalhes em:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/ (link em inglês).
-      Se a política for definida como verdadeira, os sites poderão usar o SharedArrayBuffer sem restrições.
-      Se ela for definida como falsa ou for deixada sem definição, os sites poderão usar o SharedArrayBuffers apenas em
-      isolamento de origem cruzada.</translation>
 <translation id="3942041691320538491">Se a política for definida como 0 (o padrão), você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript, mas não no contexto de extensões instaladas pela política da empresa. Se ela for definida como 1, você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript em todos os contextos, inclusive o das extensões instaladas pela política da empresa. Se ela for definida como 2, não será possível acessar as ferramentas para desenvolvedores nem inspecionar elementos de sites.
 
       Essa definição também desativa atalhos de teclado e entradas do menu de contexto ou do menu para abrir as ferramentas para desenvolvedores e o Console JavaScript.</translation>
@@ -3018,20 +2983,6 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Para ver a explicação detalhada, acesse https://www.chromestatus.com/feature/5675755719622656.
       Se esta política estiver ativada, os sites terão permissão para navegar e abrir novas janelas/guias simultaneamente.
       Se esta política estiver desativada ou for deixada sem definição, os sites não terão permissão para navegar e abrir uma nova janela/guia simultaneamente.</translation>
-<translation id="4574215366111396039">O Chrome bloqueará a navegação para protocolos externos no
-      iframe dentro do sandbox. Consulte https://chromestatus.com/features/5680742077038592.
-
-      Se esta política for definida como verdadeira, o Chrome bloqueará esse tipo de navegação.
-
-      Se ela for definida como falsa, o Chrome não bloqueará esse tipo de navegação.
-
-      Por padrão, a política é definida como verdadeira, com o recurso de segurança ativado.
-
-      Ela pode ser usada por administradores que precisam de mais tempo para atualizar os
-      sites internos afetados pela nova restrição. A política corporativa
-      é temporária e será
-      removida após a versão 104 do <ph name="PRODUCT_NAME" />.
-      </translation>
 <translation id="4578265298946081589">Não é reinicializado quando o usuário sai.</translation>
 <translation id="4581507927311097234">O tempo, em milissegundos, sem entrada do usuário até que a tela seja desligada.</translation>
 <translation id="4582338216073557489">Definir a política como "Nenhuma" faz com que o <ph name="PRODUCT_NAME" /> use o tamanho de cache padrão para o armazenamento de arquivos em cache no disco. Os usuários não podem fazer mudanças.
@@ -4229,33 +4180,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       É possível especificar o URL de pesquisa do Google como: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
 <translation id="606742564823687992">Não informar trabalhos de impressão</translation>
-<translation id="6070374129526507093">Uso suspenso no M69. Use a
-      OverrideSecurityRestrictionsOnInsecureOrigin.
-
-      A política especifica uma lista de origens (URLs) ou padrões de nome de host (como
-      "*.example.com") a que as restrições de segurança sobre origens não seguras
-      não se aplicam.
-
-      O objetivo é permitir que organizações autorizem origens para aplicativos
-      legados que não implantam TLS, ou que elas configurem um servidor de preparo para o
-      desenvolvimento interno da Web, de modo que os desenvolvedores possam testar recursos
-      que exigem contextos seguros sem precisar implantar TLS no servidor
-      de preparo. Esta política também impedirá que a origem seja rotulada
-      como "Não segura" na omnibox.
-
-      Definir uma lista de URLs nesta política tem o mesmo efeito que definir a
-      sinalização de linha de comando "--unsafely-treat-insecure-origin-as-secure" para uma
-      lista com os mesmos URLs separados por vírgula. Se a política for definida, ela
-      substituirá a sinalização de linha de comando.
-
-      O uso desta política foi suspenso no M69 para implementar a
-      OverrideSecurityRestrictionsOnInsecureOrigin. Se as duas políticas estiverem
-      presentes, OverrideSecurityRestrictionsOnInsecureOrigin substituirá
-      esta.
-
-      Para ver mais informações sobre contextos seguros, acesse
-      https://www.w3.org/TR/secure-contexts/ (link em inglês)
-      </translation>
 <translation id="6070667616071269965">Layouts de teclado da tela de login do dispositivo</translation>
 <translation id="6074963268421707432">Não permitir que nenhum site exiba notificações da área de trabalho</translation>
 <translation id="6074964551275531965">Define o período para notificações de atualização</translation>
@@ -4407,19 +4331,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Para ver detalhes sobre <ph name="CORS" />, acesse: <ph name="CORS_HELP_URL" />.
 
       A remoção desta política foi anunciada para o <ph name="PRODUCT_NAME" /> versão 82, mas ela foi removida na versão 84.</translation>
-<translation id="6276624383311206185">
-      Especifica se módulos WebAssembly podem ser enviados em origem cruzada a outra
-      janela ou outro worker. O compartilhamento do módulo WebAssembly em origem cruzada será
-      descontinuado como parte dos esforços para descontinuar document.domain, conforme descrito em
-      https://github.com/mikewest/deprecating-document-domain (link em inglês). Esta política
-      permite que o compartilhamento do módulo WebAssembly em origem cruzada seja reativado para permitir um
-      período de transição maior no processo de descontinuação.
-
-      Se ela for definida como verdadeira, os sites poderão enviar módulos WebAssembly também em origem cruzada,
-      sem restrições.
-
-      Se for definida como falsa ou for deixada sem definição, os sites só poderão enviar módulos WebAssembly para
-      janelas e workers na mesma origem.</translation>
 <translation id="627672037430076089">Impedir conexões de suporte remoto a esta máquina</translation>
 <translation id="6277314550042130537">Usar a aprovação da política de KDC durante a autenticação do HTTP</translation>
 <translation id="6279722058145292462">A definição da política especifica, em dias, com que frequência um cliente muda a senha da conta da máquina. A senha é gerada aleatoriamente pelo cliente e não fica visível para o usuário. Se a política for desativada ou definida com um número alto de dias, poderá haver um impacto negativo na segurança, porque possíveis invasores terão mais tempo para descobrir a senha da conta da máquina e usá-la.

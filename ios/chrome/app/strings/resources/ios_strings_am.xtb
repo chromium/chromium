@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">ውሂብን አቆይ</translation>
 <translation id="1974060860693918893">የላቀ</translation>
 <translation id="1989112275319619282">አስስ</translation>
+<translation id="199425419756152024">የይለፍ ቃልን አሳይ</translation>
 <translation id="2015722694326466240">የይለፍ ቃላትን ለመመልከት በመጀመሪያ በመሣሪያዎ ላይ የይለፍ ኮድ ማዘጋጀት አለብዎት።</translation>
 <translation id="2021670401941426298">መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ የፍለጋ ፕሮግራምዎን መመሪያዎች ይመልከቱ።</translation>
 <translation id="2073572773299281212">ገባሪ ከ<ph name="DAYS" /> ቀናት በፊት</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">1 ተመርጧል</translation>
 <translation id="2421004566762153674">የሶስተኛ ወገን ኩኪዎችን ማገድ</translation>
 <translation id="2421044535038393232">አርትዖቱን ቀጥል</translation>
+<translation id="2434405374328098816"><ph name="WEBSITE" /> ላይ ለ«<ph name="USERNAME" />» የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
+<translation id="2473876017985765807">አስቀድመው ለ<ph name="WEBSITE" /> የይለፍ ቃል አስቀምጠዋል</translation>
 <translation id="2476359652512522418">አልተመረጠም</translation>
 <translation id="2497852260688568942">ስምረት በእርስዎ አስተዳዳሪ ተሰናክሏል</translation>
 <translation id="2500374554657206846">የይለፍ ቃል የሚቀመጡባቸው አማራጮች</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">የአገናኝ ዩአርኤል ገልብጥ</translation>
 <translation id="3607167657931203000">የራስ-ሙላ ውሂብ</translation>
 <translation id="3609785682760573515">በማመሳሰል ላይ...</translation>
+<translation id="3631443864840848029">ለዚህ ጣቢያ የአሁኑን የይለፍ ቃልዎን ማስቀመጥዎን ያረጋግጡ።</translation>
 <translation id="3638472932233958418">ድረ-ገጾችን አስቀድመው ይጫኑ</translation>
 <translation id="3661160521073045932">የውቅረት መገለጫ ይገኛል</translation>
 <translation id="3670030362669914947">ቁጥር</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> ላይ ዕልባት ተደርጓል</translation>
+<translation id="369349502275246497">የይለፍ ቃላትን ለማስቀመጥ ጠይቅ</translation>
 <translation id="3709582977625132201">እንዳልተነበበ ምልክት አድርግ</translation>
 <translation id="3740397331642243698">በGoogle Chrome ውስጥ የገቡትን ዩአርኤሎች ማንነትን በማያሳውቅ ሁነታ ላይ ይከፍታል።</translation>
 <translation id="3762232513783804601">ለእርስዎ iPad የተገነባ</translation>
@@ -509,6 +514,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5988851877894965432">በChrome ውስጥ ዩአርኤሎችን ክፈት</translation>
 <translation id="6012140227487808125">በመመስጠር ላይ…</translation>
 <translation id="6021332621416007159">ክፈት በ...</translation>
+<translation id="6027945736510816438"><ph name="WEBSITE" /> ለማለት ፈልገው ነው?</translation>
 <translation id="6036514205982097558">ሁሉም ትሮችዎ በአንድ አሳሽ ውስጥ</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />፣ <ph name="PUBLISHER_INFORMATION" />፣ <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">ዝጋ</translation>
@@ -751,6 +757,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8080028325999236607">ሁሉንም ትሮች ይዝጉ</translation>
 <translation id="8105368624971345109">አጥፋ</translation>
 <translation id="8114753159095730575">ፋይል ለመውረድ ይገኛል። አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ።</translation>
+<translation id="8132598642024322408">አሁን <ph name="PRICE" /> <ph name="PREVIOUS_PRICE" /> ነበር።</translation>
 <translation id="8156478151976189188">የይለፍ ቃል ስምረት እየሠራ አይደለም</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />የእርስዎ መሣሪያዎች<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ገጽን ተርጉም</translation>
@@ -823,6 +830,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8881801611828450202">ይህን ምስል በ<ph name="SEARCH_ENGINE" /> ውስጥ ፈልግ</translation>
 <translation id="8909135823018751308">አጋራ…</translation>
 <translation id="8917490105272468696">አዎ፣ ገብቼያለሁ</translation>
+<translation id="8952559610785099500">የይለፍ ቃል ያክሉ</translation>
 <translation id="895541991026785598">ችግር ሪፖርት ያድርጉ</translation>
 <translation id="8976382372951310360">እገዛ</translation>
 <translation id="8976414606286374109">ካርዶች ወደ የእርስዎ Google መለያ ተቀምጠዋል።</translation>

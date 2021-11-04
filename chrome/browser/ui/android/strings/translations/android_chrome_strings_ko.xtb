@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">페이지에서 나가지 않고도 웹사이트의 주제에 관해 알아봅니다. 터치하여 검색 기능은 단어와 관련 맥락을 Google 검색으로 전송하여 정의, 사진, 검색결과 등의 세부정보를 제공합니다.
 
 아무 단어나 길게 터치하여 검색하세요. 더욱 상세히 검색하려면 단어를 더 많이 선택하거나 적게 선택합니다. 검색어를 수정하려면 패널을 열고 아이콘을 탭하여 새 탭에서 연 다음, 검색창 내용을 변경하세요.</translation>
+<translation id="2451607499823206582">추적</translation>
 <translation id="2459390580524506445">향상된 음성 검색</translation>
 <translation id="2461822463642141190">현재</translation>
 <translation id="247737702124049222">이미지 설명 사용 설정됨</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">클립보드 내용 숨기기</translation>
 <translation id="2532336938189706096">웹 보기</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" />개 항목 삭제함</translation>
+<translation id="2534582914273493287">내가 방문한 URL이 Google에 전송됩니다.</translation>
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2561519700418191927">동영상 미리보기</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">기기에 저장</translation>
 <translation id="3236059992281584593">1분 남음</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Chrome 사용 보고서를 공유하면, 내가 방문한 URL이 이 보고서에 포함됩니다.</translation>
 <translation id="3250563604907490871">이미지 설명은 Wi-Fi에 연결되면 재개됩니다.</translation>
 <translation id="3254409185687681395">현재 페이지를 북마크에 추가</translation>
 <translation id="3259831549858767975">페이지의 모든 항목 축소</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">폴더</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" />KB 사용 가능</translation>
 <translation id="3549657413697417275">방문 기록 검색</translation>
+<translation id="3557272988124495906">가격 인하 알림 받기</translation>
 <translation id="3557336313807607643">주소록에 추가</translation>
 <translation id="3563767357928833671">클립보드 콘텐츠 표시됨</translation>
 <translation id="3566923219790363270">Chrome에서 아직 VR을 준비하고 있습니다. 나중에 Chrome을 다시 시작하세요.</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3778956594442850293">홈 화면에 추가됨</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
+<translation id="3803783897442799486">계속하면 <ph name="BEGIN_LINK1" />서비스 약관<ph name="END_LINK1" />에 동의하는 것으로 간주됩니다.\n앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK2" />관리<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">자동 재생 관리</translation>
 <translation id="3810838688059735925">동영상</translation>
 <translation id="3810973564298564668">관리</translation>
@@ -606,6 +611,7 @@
 <translation id="47217992755561375">맞춤 인기 사이트 보기</translation>
 <translation id="4732120983431207637">스택 언와인더</translation>
 <translation id="4738836084190194332">마지막 동기화 시간: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">주소 표시줄에 더 개선된 추천 항목이 표시됩니다.</translation>
 <translation id="4742970037960872810">강조표시 삭제</translation>
 <translation id="4749960740855309258">새 탭 열기</translation>
 <translation id="4758061975920522644">이미지만 공유</translation>
@@ -1173,6 +1179,7 @@
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">더 빠른 인터넷 사용과 검색을 위해 페이지 미리 로드</translation>
 <translation id="7986497153528221272">비밀번호를 보려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
+<translation id="799576009106109668">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
 <translation id="7998918019931843664">닫은 탭 다시 열기</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8013372441983637696">이 기기에서 내 Chrome 데이터 삭제</translation>
@@ -1220,6 +1227,7 @@
 <translation id="8218052821161047641">빠른 페이지</translation>
 <translation id="8218622182176210845">계정 관리</translation>
 <translation id="8223642481677794647">피드 카드 메뉴</translation>
+<translation id="8242868071038398515">사이트에서 가격이 낮아지면 알림이 전송됩니다.</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="825412236959742607">페이지에서 너무 많은 메모리를 사용하므로 Chrome에서 일부 콘텐츠를 삭제했습니다.</translation>
 <translation id="8260126382462817229">다시 로그인해 주세요.</translation>
@@ -1238,6 +1246,7 @@
 <translation id="8354977102499939946">음성으로 빠르게 검색합니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
 <translation id="8364299278605033898">인기 웹사이트 보기</translation>
+<translation id="8368001212524806591">가격 추적</translation>
 <translation id="8387617938027387193">본인 인증</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8410695015584479363">가격 추적</translation>

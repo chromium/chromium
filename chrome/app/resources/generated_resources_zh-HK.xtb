@@ -1485,6 +1485,7 @@
 <translation id="2489686758589235262">指派另外 2 個按鈕裝置</translation>
 <translation id="2489829450872380594">手機之後會解鎖呢部 <ph name="DEVICE_TYPE" />。您可以在「設定」中停用 Smart Lock。</translation>
 <translation id="2489918096470125693">新增資料夾(&amp;F)…</translation>
+<translation id="2489931062851778802">請按下「<ph name="DEVICE_NAME" />」上的這幾個鍵</translation>
 <translation id="2490481887078769936">已從清單中移除「<ph name="FILE_NAME" />」</translation>
 <translation id="249113932447298600">很抱歉，系統目前不支援 <ph name="DEVICE_LABEL" /> 裝置。</translation>
 <translation id="2492461744635776704">正在準備憑證簽署要求</translation>
@@ -2240,11 +2241,13 @@
 <translation id="3288047731229977326">在開發人員模式中執行擴充功能可能會損害您的電腦。如果您不是開發人員，最好在開發人員模式中停用這些擴充功能，以策安全。</translation>
 <translation id="3289668031376215426">自動大寫</translation>
 <translation id="3289856944988573801">如要檢查更新，請使用以太網絡或 Wi-Fi。</translation>
+<translation id="3290249595466894471">另外也會傳送少量網頁、下載內容、擴充功能活動和系統資訊，協助找出新的威脅</translation>
 <translation id="3291436823898732747">改善瀏覽體驗：例如，網址列會在您輸入文字前顯示建議</translation>
 <translation id="3293644607209440645">傳送此頁面</translation>
 <translation id="32939749466444286">Linux 容器無法啟動。請再試一次。</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3294686910656423119">使用情況統計和當機報告</translation>
+<translation id="3297536526040732495">當你登入 Google 帳戶後，系統會將這些資料暫時連結至你的帳戶，以便在你使用各個 Google 應用程式時提供保護</translation>
 <translation id="329838636886466101">修復</translation>
 <translation id="3298789223962368867">輸入的網址無效。</translation>
 <translation id="32991397311664836">裝置：</translation>
@@ -4355,6 +4358,7 @@
 <translation id="5554489410841842733">當擴充功能適用於目前網頁時，即會顯示此圖示。</translation>
 <translation id="5554720593229208774">電郵憑證授權單位</translation>
 <translation id="5555363196923735206">切換相機</translation>
+<translation id="5555525474779371165">選擇安全瀏覽防護設定</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558125320634132440">由於此網站含有兒童不宜內容，因此已被封鎖</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
@@ -5721,6 +5725,7 @@
 <translation id="7027258625819743915">{COUNT,plural, =0{在無痕式視窗中開啟所有書籤(&amp;I)}=1{在無痕式視窗中開啟書籤(&amp;I)}other{在無痕式視窗中開啟全部 {COUNT} 個書籤(&amp;I)}}</translation>
 <translation id="7029307918966275733">尚未安裝 Crostini。請安裝 Crostini 來查看製作人員名單。</translation>
 <translation id="7029809446516969842">密碼</translation>
+<translation id="7030304022046916278">系統會將網址傳送給安全瀏覽功能進行檢查</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 連接咗序列連接埠</translation>
 <translation id="7034692021407794547">擁有「管理賬單」權限的管理員必須先前往管理控制台的「Google Meet 硬件」部分接受《Google Meet 硬件服務條款》。</translation>
 <translation id="7036706669646341689">Linux 需要 <ph name="DISK_SIZE" /> 的空間。如要增加可用空間，請刪除裝置內的檔案。</translation>
@@ -5901,7 +5906,6 @@
 <translation id="7243784282103630670">升級 Linux 時發生錯誤。我們會使用您的備份還原容器。</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (最佳)</translation>
 <translation id="7246230585855757313">請重新插入安全密鑰，然後再試一次</translation>
-<translation id="7249777306773517303">此裝置由 <ph name="DOMAIN" /> 管理，每次使用均需要登入。</translation>
 <translation id="7250616558727237648">您要分享檔案的目標裝置沒有回應，請再試一次。</translation>
 <translation id="725109152065019550">很抱歉，您的管理員已停用您帳戶中的外部儲存裝置。</translation>
 <translation id="7251346854160851420">預設桌布</translation>

@@ -189,6 +189,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5686916850681061684">自訂及控制 Google Chrome。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 將於 1 秒後重新啟動}other{Google Chrome 將於 # 秒後重新啟動}}</translation>
+<translation id="5736850870166430177">如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能</translation>
 <translation id="573759479754913123">關於 Chrome 作業系統</translation>
 <translation id="5756509061973259733">此裝置上已有此帳戶的 Chrome 設定檔</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
@@ -276,6 +277,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8290100596633877290">真糟糕！Google Chrome 當機了，要立即重新啟動嗎？</translation>
 <translation id="8342675569599923794">此檔案不安全，因此 Chrome 已封鎖此檔案。</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
+<translation id="8394720698884623075">可使用儲存在 Chrome 中的不安全網站清單檢查網址</translation>
 <translation id="840084489713044809">Google Chrome 想匯出您的密碼。</translation>
 <translation id="8433638294851456451">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8498858610309223613">Google Chrome 剛套用了特別的安全性更新。請立即重新啟動，我們將會還原您的分頁。</translation>
