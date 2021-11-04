@@ -11378,9 +11378,14 @@ Called by update_bad_message_reasons.py.-->
 
 <enum name="CdmSystemCode">
 <!-- System Code is CDM specific. Use this as a placeholder to treat sparse
-histogram as enum -->
+histogram as enum. Values from 1000000 are reserved/reported by Chromium and are
+not CDM specific. See media/base/cdm_promise.h. -->
 
   <int value="0" label="Unknown"/>
+  <int value="1000000" label="kOk"/>
+  <int value="1000001" label="kFailure"/>
+  <int value="1000002" label="kAborted"/>
+  <int value="1000003" label="kConnectionError"/>
 </enum>
 
 <enum name="CellularConnectResult">
