@@ -819,7 +819,8 @@ TEST_F(SystemPerfettoTest, MAYBE_SystemTraceWhileLocalStartupTracing) {
 }
 
 #if defined(OS_ANDROID)
-TEST_F(SystemPerfettoTest, SystemToLowAPILevel) {
+// Failed on Android bot, see crbug.com/1265954.
+TEST_F(SystemPerfettoTest, DISABLED_SystemToLowAPILevel) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P) {
     LOG(INFO) << "Skipping SystemToLowAPILevel test, this phone supports the "
