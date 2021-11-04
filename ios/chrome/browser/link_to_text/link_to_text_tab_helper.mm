@@ -6,7 +6,6 @@
 
 #import "base/bind.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/timer/elapsed_timer.h"
 #import "base/values.h"
 #import "components/shared_highlighting/core/common/disabled_sites.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
@@ -28,7 +27,6 @@
 @end
 
 namespace {
-const char kGetLinkToTextJavaScript[] = "linkToText.getLinkToText";
 
 // Pattern to identify non-whitespace/punctuation characters. Mirrors the regex
 // used in the JS lib to identify non-boundary characters.
@@ -142,37 +140,16 @@ bool LinkToTextTabHelper::ShouldOffer() {
   return true;
 }
 
-void LinkToTextTabHelper::GetLinkToText(LinkToTextCallback callback) {
-  link_generation_timer_ = std::make_unique<base::ElapsedTimer>();
-
-  base::WeakPtr<LinkToTextTabHelper> weak_ptr = weak_ptr_factory_.GetWeakPtr();
-  web_state_->GetWebFramesManager()->GetMainWebFrame()->CallJavaScriptFunction(
-      kGetLinkToTextJavaScript, {},
-      base::BindOnce(^(const base::Value* response) {
-        if (weak_ptr) {
-          weak_ptr->OnJavaScriptResponseReceived(callback, response);
-        }
-      }),
-      base::Milliseconds(link_to_text::kLinkGenerationTimeoutInMs));
+void LinkToTextTabHelper::GetLinkToText(
+    base::OnceCallback<void(LinkToTextResponse*)> callback) {
+  GetJSFeature()->GetLinkToText(
+      web_state_, web_state_->GetWebFramesManager()->GetMainWebFrame(),
+      std::move(callback));
 }
 
-void LinkToTextTabHelper::OnJavaScriptResponseReceived(
-    LinkToTextCallback callback,
-    const base::Value* response) {
-  if (callback) {
-    base::TimeDelta latency;
-    if (link_generation_timer_) {
-      // Compute latency.
-      latency = link_generation_timer_->Elapsed();
-
-      // Reset variable.
-      link_generation_timer_.reset();
-    }
-
-    callback([LinkToTextResponse linkToTextResponseWithValue:response
-                                                    webState:web_state_
-                                                     latency:latency]);
-  }
+void LinkToTextTabHelper::SetJSFeatureForTesting(
+    LinkToTextJavaScriptFeature* js_feature) {
+  js_feature_for_testing_ = js_feature;
 }
 
 bool LinkToTextTabHelper::IsOnlyBoundaryChars(NSString* str) {
@@ -195,6 +172,11 @@ bool LinkToTextTabHelper::IsOnlyBoundaryChars(NSString* str) {
                         options:0
                           range:NSMakeRange(0, max_len)];
   return range.location == NSNotFound;
+}
+
+LinkToTextJavaScriptFeature* LinkToTextTabHelper::GetJSFeature() {
+  return js_feature_for_testing_ ? js_feature_for_testing_
+                                 : LinkToTextJavaScriptFeature::GetInstance();
 }
 
 void LinkToTextTabHelper::WebStateDestroyed(web::WebState* web_state) {

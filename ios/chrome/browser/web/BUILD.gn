@@ -211,7 +211,6 @@ js_compile_bundle("chrome_bundle_main_frame") {
   closure_entry_point = "__crWeb.chromeBundleMainFrame"
   sources = [
     "//components/translate/ios/browser/resources/language_detection.js",
-    "//ios/chrome/browser/link_to_text/resources/link_to_text.js",
     "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
     "resources/chrome_bundle_main_frame.js",
@@ -244,6 +243,7 @@ source_set("web_internal") {
     "//ios/chrome/browser",
     "//ios/chrome/browser:browser_impl",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safe_browsing",
