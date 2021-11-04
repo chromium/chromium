@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
 
@@ -102,6 +103,10 @@ class VIEWS_EXPORT NativeViewHost : public View {
 
   void NativeViewDestroyed();
 
+  // Sets the desired background color for repainting when the view is clipped.
+  // Defaults to transparent color if unset.
+  void SetBackgroundColorWhenClipped(absl::optional<SkColor> color);
+
   // Overridden from View:
   void Layout() override;
   void OnPaint(gfx::Canvas* canvas) override;
@@ -144,6 +149,9 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // True if the native view is being resized using the fast method described
   // in the setter/accessor above.
   bool fast_resize_ = false;
+
+  // The color to use for repainting the background when the view is clipped.
+  absl::optional<SkColor> background_color_when_clipped_;
 };
 
 }  // namespace views

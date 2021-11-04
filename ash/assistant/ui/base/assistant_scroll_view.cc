@@ -45,12 +45,6 @@ class ContentView : public views::View, views::ViewObserver {
   void OnChildViewRemoved(views::View* view, views::View* child) override {
     PreferredSizeChanged();
   }
-
-  // views::View
-  void PaintChildren(const views::PaintInfo& info) override {
-    // Make sure child views are transparent. views::NativeViewHost may
-    // draw a white background when clipped.
-  }
 };
 
 }  // namespace

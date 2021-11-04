@@ -103,6 +103,11 @@ void NativeViewHost::NativeViewDestroyed() {
   Detach(true);
 }
 
+void NativeViewHost::SetBackgroundColorWhenClipped(
+    absl::optional<SkColor> color) {
+  background_color_when_clipped_ = color;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, View overrides:
 
@@ -161,10 +166,14 @@ void NativeViewHost::OnPaint(gfx::Canvas* canvas) {
   // view background color doesn't show up), we need to cover that blackness
   // with something so that fast resizes don't result in black flash.
   //
-  // It would be nice if this used some approximation of the page's
-  // current background color.
-  if (native_wrapper_->HasInstalledClip())
-    canvas->FillRect(GetLocalBounds(), SK_ColorWHITE);
+  // Affected views should set the desired color using
+  // SetBackgroundColorWhenClipped(), otherwise the background is left
+  // transparent to let the lower layers show through.
+  if (native_wrapper_->HasInstalledClip()) {
+    if (background_color_when_clipped_) {
+      canvas->FillRect(GetLocalBounds(), *background_color_when_clipped_);
+    }
+  }
 }
 
 void NativeViewHost::VisibilityChanged(View* starting_from, bool is_visible) {

@@ -30,6 +30,8 @@ class WebContentsSetBackgroundColor
 
   ~WebContentsSetBackgroundColor() override;
 
+  SkColor color() const { return color_; }
+
  private:
   friend class content::WebContentsUserData<WebContentsSetBackgroundColor>;
   WebContentsSetBackgroundColor(content::WebContents* web_contents,
