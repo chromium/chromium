@@ -23,6 +23,7 @@
       aqua: "#00deff"
       yellow: "#FFFF00"
       UltraDark: "#0000"
+      RedGlow: "#FF0000"
     },
   },
   opacities: {
