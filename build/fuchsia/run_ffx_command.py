@@ -25,7 +25,7 @@ def main():
   parser.add_argument('--command',
                       required=True,
                       help='FFX command to run. Runtime arguments are handled '
-                      'using the %args% placeholder.')
+                      'using the %%args%% placeholder.')
   AddCommonArgs(parser)
   AddTargetSpecificArgs(parser)
   args, runtime_args = parser.parse_known_args()
