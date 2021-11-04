@@ -224,7 +224,8 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
     else
       PlaceGridItems(grid_items, grid_geometry, &offsets);
 
-    PlaceGridItemsForFragmentation(grid_items, grid_geometry, offsets);
+    PlaceGridItemsForFragmentation(grid_items, &grid_geometry, &offsets,
+                                   &intrinsic_block_size);
 
     container_builder_.SetGridBreakTokenData(
         std::make_unique<NGGridBreakTokenData>(grid_geometry, offsets,
@@ -3536,8 +3537,11 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
 
 void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     const GridItems& grid_items,
-    const NGGridGeometry& grid_geometry,
-    const Vector<GridItemOffsets>& offsets) {
+    NGGridGeometry* grid_geometry,
+    Vector<GridItemOffsets>* offsets,
+    LayoutUnit* intrinsic_block_size) {
+  DCHECK(grid_geometry && offsets && intrinsic_block_size);
+
   // TODO(ikilpatrick): Update SetHasSeenAllChildren and early exit if true.
   const auto container_writing_direction =
       ConstraintSpace().GetWritingDirection();
@@ -3578,77 +3582,159 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
            Style().LogicalHeight().IsAutoOrContentOrIntrinsic();
   };
 
+  struct ResultAndOffsets {
+    ResultAndOffsets(scoped_refptr<const NGLayoutResult> result,
+                     LogicalOffset offset,
+                     LogicalOffset relative_offset)
+        : result(std::move(result)),
+          offset(offset),
+          relative_offset(relative_offset) {}
+    scoped_refptr<const NGLayoutResult> result;
+    LogicalOffset offset;
+    LogicalOffset relative_offset;
+  };
+
+  Vector<ResultAndOffsets> result_and_offsets;
   BaselineAccumulator baseline_accumulator;
+  LayoutUnit max_row_expansion;
+  wtf_size_t row_set_index;
 
-  LayoutUnit previous_consumed_block_size =
+  const LayoutUnit previous_consumed_block_size =
       BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
-
   base::span<const Member<const NGBreakToken>> child_break_tokens;
   if (BreakToken())
     child_break_tokens = BreakToken()->ChildBreakTokens();
-  auto child_break_token_it = child_break_tokens.begin();
-  auto* offsets_it = offsets.begin();
 
-  for (const auto& grid_item : grid_items.item_data) {
-    // Grab the offsets and break-token (if present) for this child.
-    const GridItemOffsets item_offsets = *(offsets_it++);
-    const NGBlockBreakToken* break_token = nullptr;
-    if (child_break_token_it != child_break_tokens.end()) {
-      if ((*child_break_token_it)->InputNode() == grid_item.node)
-        break_token = To<NGBlockBreakToken>((child_break_token_it++)->Get());
+  auto PlaceItems = [&]() {
+    // Reset our state.
+    result_and_offsets = Vector<ResultAndOffsets>();
+    baseline_accumulator = BaselineAccumulator();
+    max_row_expansion = LayoutUnit();
+    row_set_index = kNotFound;
+
+    auto child_break_token_it = child_break_tokens.begin();
+    auto* offsets_it = offsets->begin();
+
+    for (const auto& grid_item : grid_items.item_data) {
+      // Grab the offsets and break-token (if present) for this child.
+      const GridItemOffsets item_offsets = *(offsets_it++);
+      const NGBlockBreakToken* break_token = nullptr;
+      if (child_break_token_it != child_break_tokens.end()) {
+        if ((*child_break_token_it)->InputNode() == grid_item.node)
+          break_token = To<NGBlockBreakToken>((child_break_token_it++)->Get());
+      }
+
+      const LayoutUnit fragment_relative_block_offset =
+          break_token
+              ? LayoutUnit()
+              : item_offsets.offset.block_offset - previous_consumed_block_size;
+      const LayoutUnit fragmentainer_space =
+          FragmentainerSpaceAtBfcStart(ConstraintSpace());
+
+      // Check to see if this child should be placed within this fragmentainer.
+      // It can either be:
+      //  - Above, we've handled it already in a previous fragment.
+      //  - Below, we'll handle it within a subsequent fragment.
+      if (fragment_relative_block_offset < LayoutUnit())
+        continue;
+      if (fragment_relative_block_offset > fragmentainer_space)
+        continue;
+
+      const bool min_block_size_should_encompass_intrinsic_size =
+          MinBlockSizeShouldEncompassIntrinsicSize(grid_item);
+      LogicalRect grid_area;
+      const NGConstraintSpace space = CreateConstraintSpaceForLayout(
+          *grid_geometry, grid_item, &grid_area, fragment_relative_block_offset,
+          min_block_size_should_encompass_intrinsic_size);
+
+      // TODO(ikilpatrick): Use |BreakBeforeChildIfNeeded|.
+      //  - what to set for has_container_separation?
+      scoped_refptr<const NGLayoutResult> result =
+          grid_item.node.Layout(space, break_token);
+      result_and_offsets.emplace_back(
+          result,
+          LogicalOffset(item_offsets.offset.inline_offset,
+                        fragment_relative_block_offset),
+          item_offsets.relative_offset);
+
+      const NGBoxFragment fragment(
+          container_writing_direction,
+          To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
+      baseline_accumulator.Accumulate(grid_item, fragment,
+                                      fragment_relative_block_offset);
+
+      // Make the grid area relative to this fragment.
+      grid_area.offset.block_offset -= previous_consumed_block_size;
+
+      // This item may want to expand due to fragmentation. Record how much we
+      // should grow the row by (if applicable).
+      // Only do this if this row (currently) ends (but does not start) in this
+      // fragment.
+      if (min_block_size_should_encompass_intrinsic_size &&
+          grid_area.offset.block_offset < LayoutUnit() &&
+          grid_area.BlockEndOffset() <= fragmentainer_space) {
+        if (row_set_index == kNotFound)
+          row_set_index = grid_item.SetIndices(kForRows).begin;
+        else
+          DCHECK_EQ(row_set_index, grid_item.SetIndices(kForRows).begin);
+
+        LayoutUnit item_expansion;
+        if (result->PhysicalFragment().BreakToken()) {
+          // This item may have a break, and will want to expand into the next
+          // fragmentainer, (causing the row to expand into the next
+          // fragmentainer). We can't use the size of the fragment, as we don't
+          // know how large the subsequent fragments will be (and how much
+          // they'll expand the row).
+          //
+          // Instead of using the size of the fragment, expand the row to the
+          // rest of the fragmentainer, with an additional "1px". This "1px"
+          // will ensure that we continue layout for children in this row in
+          // the next fragmentainer. Without it we'd drop those subsequent
+          // fragments.
+          item_expansion =
+              fragmentainer_space - grid_area.BlockEndOffset() + LayoutUnit(1);
+        } else {
+          item_expansion = fragment.BlockSize() - grid_area.BlockEndOffset();
+        }
+
+        max_row_expansion = std::max(max_row_expansion, item_expansion);
+      }
+    }
+  };
+
+  PlaceItems();
+
+  // Adjust our grid break-token data to accommodate the larger item in the row.
+  if (max_row_expansion > LayoutUnit()) {
+    *intrinsic_block_size += max_row_expansion;
+
+    auto* it = grid_geometry->row_geometry.sets.begin() + row_set_index + 1;
+    DCHECK_NE(it, grid_geometry->row_geometry.sets.end());
+    const LayoutUnit row_end_offset = it->offset;
+
+    // Adjust all the pre-computed offsets. Don't adjust anything above the row
+    // which received the increase. An item might have a large negative margin,
+    // and already be partially fragmented.
+    for (auto& offset : *offsets) {
+      if (offset.offset.block_offset >= row_end_offset)
+        offset.offset.block_offset += max_row_expansion;
     }
 
-    const LayoutUnit fragment_relative_block_offset =
-        break_token
-            ? LayoutUnit()
-            : item_offsets.offset.block_offset - previous_consumed_block_size;
+    // Expand the positions of all the sets by the increase.
+    while (it != grid_geometry->row_geometry.sets.end())
+      (it++)->offset += max_row_expansion;
 
-    // Check to see if this child should be placed within this fragmentainer.
-    // It can either be:
-    //  - Above, we've handled it already in a previous fragment.
-    //  - Below, we'll handle it within a subsequent fragment.
-    if (fragment_relative_block_offset < LayoutUnit())
-      continue;
-    if (fragment_relative_block_offset >
-        FragmentainerSpaceAtBfcStart(ConstraintSpace()))
-      continue;
-
-    const bool min_block_size_should_encompass_intrinsic_size =
-        MinBlockSizeShouldEncompassIntrinsicSize(grid_item);
-    LogicalRect unused;
-    const NGConstraintSpace space = CreateConstraintSpaceForLayout(
-        grid_geometry, grid_item, &unused, fragment_relative_block_offset,
-        min_block_size_should_encompass_intrinsic_size);
-
-    // TODO(ikilpatrick): Use |BreakBeforeChildIfNeeded|.
-    //  - what to set for has_container_separation?
-    scoped_refptr<const NGLayoutResult> result =
-        grid_item.node.Layout(space, break_token);
-    container_builder_.AddResult(
-        *result,
-        {item_offsets.offset.inline_offset, fragment_relative_block_offset},
-        item_offsets.relative_offset);
-
-    // TODO(ikilpatrick): Record the maximum row expansion if
-    // |min_block_size_should_encompass_intrinsic_size| is set.
-
-    const NGBoxFragment fragment(
-        container_writing_direction,
-        To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
-    baseline_accumulator.Accumulate(grid_item, fragment,
-                                    fragment_relative_block_offset);
+    // Re-run placing the items so that they receive the increased
+    // grid-geometry. Only do this once.
+    PlaceItems();
   }
 
-  // TODO(ikilpatrick): There (typically) is a row which has been fragmented.
-  // Items in this row may have grown in block-size or pushed down due to
-  // fragmentation.
-  //
-  // If the row's track has an auto min-size, we need to modify the
-  // |grid_geometry|, |offsets|, and |intrinsic_block_size| by the appropriate
-  // amount (the maximum of items growing or being pushed).
-  //
-  // This will have very similar logic to |PropagateSpaceShortage| except we
-  // need to record the "expansion".
+  // Add all the results into the builder.
+  for (auto& result_and_offset : result_and_offsets) {
+    container_builder_.AddResult(*result_and_offset.result,
+                                 result_and_offset.offset,
+                                 result_and_offset.relative_offset);
+  }
 
   // Propagate the baseline from the appropriate child.
   if (auto baseline = baseline_accumulator.Baseline())

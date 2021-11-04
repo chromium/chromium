@@ -1459,6 +1459,9 @@ virtual/layout_ng_flex_frag/external/wpt/css/css-break/flexbox/flex-container-fr
 ### Tests failing with LayoutNGFlexFragmentation enabled:
 crbug.com/660611 virtual/layout_ng_flex_frag/fast/multicol/flexbox/flexbox.html [ Failure ]
 
+### Tests passing with LayoutNGGridFragmentation enabled:
+virtual/layout_ng_grid_frag/external/wpt/css/css-break/grid/grid-item-fragmentation-020.html [ Pass ]
+
 ### With LayoutNGPrinting enabled:
 
 crbug.com/1121942 virtual/layout_ng_printing/printing/fixed-positioned-child-repeats-even-when-html-and-body-are-zero-height.html [ Crash Pass ]
@@ -3984,6 +3987,7 @@ crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation
 crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-004.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-007.tentative.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/forced-break-at-fragmentainer-start-000.html [ Failure ]
+crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-020.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-012.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-029.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-030.html [ Failure ]

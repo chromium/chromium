@@ -413,8 +413,9 @@ struct GridItemIndices {
     // This will go through all the grid_items and place fragments which belong
     // within this fragmentainer.
     void PlaceGridItemsForFragmentation(const GridItems& grid_items,
-                                        const NGGridGeometry& grid_geometry,
-                                        const Vector<GridItemOffsets>& offsets);
+                                        NGGridGeometry* grid_geometry,
+                                        Vector<GridItemOffsets>* offsets,
+                                        LayoutUnit* intrinsic_block_size);
 
     // Computes the static position, grid area and its offset of out of flow
     // elements in the grid.
