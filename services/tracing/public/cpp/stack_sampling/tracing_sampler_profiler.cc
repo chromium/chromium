@@ -371,7 +371,8 @@ TracingSamplerProfiler::TracingProfileBuilder::GetModuleCache() {
 using SampleDebugProto =
     perfetto::protos::pbzero::ChromeSamplingProfilerSampleCollected;
 
-void RecordSampleCompletedEvent(size_t frame_count,
+void RecordSampleCompletedEvent(base::PlatformThreadId sampled_thread_id,
+                                size_t frame_count,
                                 SampleDebugProto::WriteStatus write_status) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
@@ -382,6 +383,7 @@ void RecordSampleCompletedEvent(size_t frame_count,
                 ->set_chrome_sampling_profiler_sample_completed();
         sample_event->set_frame_count(frame_count);
         sample_event->set_write_status(write_status);
+        sample_event->set_sampled_thread_id(sampled_thread_id);
       });
 }
 
@@ -395,20 +397,21 @@ void TracingSamplerProfiler::TracingProfileBuilder::OnSampleCompleted(
       buffered_samples_.emplace_back(
           BufferedSample(sample_timestamp, std::move(frames)));
     }
-    RecordSampleCompletedEvent(frame_size,
+    RecordSampleCompletedEvent(sampled_thread_id_, frame_size,
                                SampleDebugProto::WRITE_STATUS_BUFFERING_SAMPLE);
     return;
   }
   if (!buffered_samples_.empty()) {
     for (const auto& sample : buffered_samples_) {
       RecordSampleCompletedEvent(
-          frame_size, SampleDebugProto::WRITE_STATUS_WRITING_BUFFERED);
+          sampled_thread_id_, frame_size,
+          SampleDebugProto::WRITE_STATUS_WRITING_BUFFERED);
       WriteSampleToTrace(sample);
     }
     buffered_samples_.clear();
   }
   // TODO(b/201276114): Remove this event once the bug is fixed.
-  RecordSampleCompletedEvent(frame_size,
+  RecordSampleCompletedEvent(sampled_thread_id_, frame_size,
                              SampleDebugProto::WRITE_STATUS_WRITING_TO_TRACE);
   WriteSampleToTrace(BufferedSample(sample_timestamp, std::move(frames)));
 

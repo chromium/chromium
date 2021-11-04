@@ -349,6 +349,8 @@ message ChromeSamplingProfilerSampleCollected {
     WRITE_STATUS_WRITING_TO_TRACE = 3;
   }
   optional WriteStatus write_status = 2;
+
+  optional int32 sampled_thread_id = 3;
 }
 
 // Reports the latency caused by each breakdown in the

@@ -309,7 +309,7 @@ constexpr MessageInfo kParkableStringUnpark = {kParkableStringUnparkIndices,
                                                nullptr};
 
 // Proto Message: ChromeSamplingProfilerSampleCollected
-constexpr int kChromeSamplingProfilerSampleCollectedIndices[] = {1, 2, -1};
+constexpr int kChromeSamplingProfilerSampleCollectedIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kChromeSamplingProfilerSampleCollected = {
     kChromeSamplingProfilerSampleCollectedIndices, nullptr};
 
