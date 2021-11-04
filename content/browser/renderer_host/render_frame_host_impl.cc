@@ -5100,8 +5100,14 @@ RenderFrameHostImpl::LifecycleStateToProto() {
   return RFHProto::UNSPECIFIED;
 }
 
-StoragePartition* RenderFrameHostImpl::GetStoragePartition() {
-  return GetBrowserContext()->GetStoragePartition(GetSiteInstance());
+StoragePartitionImpl* RenderFrameHostImpl::GetStoragePartition() {
+  // Both RenderProcessHostImpl and MockRenderProcessHost obtain the
+  // StoragePartition instance through BrowserContext::GetStoragePartition()
+  // call. That method does not support creating TestStoragePartition
+  // instances and always vends StoragePartitionImpl objects. It is therefore
+  // safe to static cast the result here.
+  return static_cast<StoragePartitionImpl*>(
+      GetProcess()->GetStoragePartition());
 }
 
 void RenderFrameHostImpl::RequestTextSurroundingSelection(
@@ -8040,7 +8046,7 @@ void RenderFrameHostImpl::CommitNavigation(
     }
 #endif
 
-    auto* partition = static_cast<StoragePartitionImpl*>(GetStoragePartition());
+    auto* partition = GetStoragePartition();
     non_network_factories.emplace(
         url::kFileSystemScheme, CreateFileSystemURLLoaderFactory(
                                     GetProcess()->GetID(), GetFrameTreeNodeId(),
@@ -8135,8 +8141,7 @@ void RenderFrameHostImpl::CommitNavigation(
       // factories. TODO(kinuko): Consider setting this up only when prefetch
       // is used. Currently we have this here to make sure we have non-racy
       // situation (https://crbug.com/849929).
-      auto* storage_partition =
-          static_cast<StoragePartitionImpl*>(GetStoragePartition());
+      auto* storage_partition = GetStoragePartition();
       storage_partition->GetPrefetchURLLoaderService()->GetFactory(
           prefetch_loader_factory.InitWithNewPipeAndPassReceiver(),
           navigation_request->frame_tree_node()->frame_tree_node_id(),
@@ -9654,12 +9659,11 @@ void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
     const net::IsolationInfo& isolation_info,
     const url::Origin& origin) {
-  static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
-      ->CreateRestrictedCookieManager(
-          network::mojom::RestrictedCookieManagerRole::SCRIPT, origin,
-          isolation_info,
-          /*is_service_worker=*/false, GetProcess()->GetID(), routing_id(),
-          std::move(receiver), CreateCookieAccessObserver());
+  GetStoragePartition()->CreateRestrictedCookieManager(
+      network::mojom::RestrictedCookieManagerRole::SCRIPT, origin,
+      isolation_info,
+      /*is_service_worker=*/false, GetProcess()->GetID(), routing_id(),
+      std::move(receiver), CreateCookieAccessObserver());
 }
 
 void RenderFrameHostImpl::BindHasTrustTokensAnswerer(
@@ -9737,26 +9741,20 @@ void RenderFrameHostImpl::GetManagedConfigurationService(
 
 void RenderFrameHostImpl::GetFontAccessManager(
     mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver) {
-  static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
-      ->GetFontAccessManager()
-      ->BindReceiver(GetLastCommittedOrigin(), GetGlobalId(),
-                     std::move(receiver));
+  GetStoragePartition()->GetFontAccessManager()->BindReceiver(
+      GetLastCommittedOrigin(), GetGlobalId(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindComputePressureHost(
     mojo::PendingReceiver<blink::mojom::ComputePressureHost> receiver) {
-  static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
-      ->GetComputePressureManager()
-      ->BindReceiver(GetLastCommittedOrigin(), GetGlobalId(),
-                     std::move(receiver));
+  GetStoragePartition()->GetComputePressureManager()->BindReceiver(
+      GetLastCommittedOrigin(), GetGlobalId(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::GetFileSystemAccessManager(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* storage_partition =
-      static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
-  auto* manager = storage_partition->GetFileSystemAccessManager();
+  auto* manager = GetStoragePartition()->GetFileSystemAccessManager();
   manager->BindReceiver(
       FileSystemAccessManagerImpl::BindingContext(
           storage_key(), GetLastCommittedURL(), GetGlobalId()),
@@ -9803,9 +9801,7 @@ void RenderFrameHostImpl::GetPushMessaging(
     auto* rph = GetProcess();
     push_messaging_manager_ = std::make_unique<PushMessagingManager>(
         *rph, routing_id_,
-        base::WrapRefCounted(
-            static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
-                ->GetServiceWorkerContext()));
+        base::WrapRefCounted(GetStoragePartition()->GetServiceWorkerContext()));
   }
 
   push_messaging_manager_->AddPushMessagingReceiver(std::move(receiver));
@@ -10904,8 +10900,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       if (!RenderProcessHostImpl::HasDomStorageBinderForTesting()) {
         storage_info = mojom::StorageInfo::New();
         // Bind local storage and session storage areas.
-        auto* partition =
-            static_cast<StoragePartitionImpl*>(GetStoragePartition());
+        auto* partition = GetStoragePartition();
         int process_id = GetProcess()->GetID();
         partition->OpenLocalStorageForProcess(
             process_id, commit_params->storage_key,
@@ -12428,9 +12423,8 @@ void RenderFrameHostImpl::BindReportingObserver(
 
 mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
 RenderFrameHostImpl::CreateURLLoaderNetworkObserver() {
-  return static_cast<StoragePartitionImpl*>(GetStoragePartition())
-      ->CreateURLLoaderNetworkObserverForFrame(GetProcess()->GetID(),
-                                               GetRoutingID());
+  return GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(
+      GetProcess()->GetID(), GetRoutingID());
 }
 
 PeerConnectionTrackerHost& RenderFrameHostImpl::GetPeerConnectionTrackerHost() {

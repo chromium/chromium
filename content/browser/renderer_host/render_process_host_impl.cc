@@ -110,7 +110,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/browser/theme_helper.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/v8_snapshot_files.h"
@@ -2125,9 +2124,7 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
   // This code path is only for workers, hence always pass in
   // MSG_ROUTING_NONE as frame ID. Frames themselves go through
   // RenderFrameHostImpl instead.
-  auto* storage_partition =
-      static_cast<StoragePartitionImpl*>(GetStoragePartition());
-  auto* manager = storage_partition->GetFileSystemAccessManager();
+  auto* manager = storage_partition_impl_->GetFileSystemAccessManager();
   manager->BindReceiver(
       FileSystemAccessManagerImpl::BindingContext(
           storage_key,
@@ -2143,10 +2140,8 @@ void RenderProcessHostImpl::BindNativeIOHost(
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* storage_partition =
-      static_cast<StoragePartitionImpl*>(GetStoragePartition());
   auto* native_io_context = static_cast<NativeIOContextImpl*>(
-      storage_partition->GetNativeIOContext());
+      storage_partition_impl_->GetNativeIOContext());
   native_io_context->BindReceiver(storage_key, std::move(receiver));
 }
 
@@ -2155,10 +2150,7 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  StoragePartitionImpl* storage_partition =
-      static_cast<StoragePartitionImpl*>(GetStoragePartition());
-
-  storage_partition->CreateRestrictedCookieManager(
+  storage_partition_impl_->CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, storage_key.origin(),
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther,
@@ -2169,7 +2161,7 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
                                           : nullptr),
       true /* is_service_worker */, GetID(), MSG_ROUTING_NONE,
       std::move(receiver),
-      storage_partition->CreateCookieAccessObserverForServiceWorker());
+      storage_partition_impl_->CreateCookieAccessObserverForServiceWorker());
 }
 
 void RenderProcessHostImpl::BindVideoDecodePerfHistory(
@@ -2184,11 +2176,9 @@ void RenderProcessHostImpl::BindQuotaManagerHost(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* storage_partition =
-      static_cast<StoragePartitionImpl*>(GetStoragePartition());
   // TODO(crbug.com/1215208): Pass the StorageKey from the function arguments,
   // once migrated.
-  storage_partition->GetQuotaContext()->BindQuotaManagerHost(
+  storage_partition_impl_->GetQuotaContext()->BindQuotaManagerHost(
       GetID(), render_frame_id, blink::StorageKey(origin), std::move(receiver));
 }
 
@@ -2218,8 +2208,7 @@ void RenderProcessHostImpl::CreatePermissionService(
 void RenderProcessHostImpl::CreatePaymentManagerForOrigin(
     const url::Origin& origin,
     mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) {
-  static_cast<StoragePartitionImpl*>(GetStoragePartition())
-      ->GetPaymentAppContext()
+  storage_partition_impl_->GetPaymentAppContext()
       ->CreatePaymentManagerForOrigin(origin, std::move(receiver));
 }
 
@@ -3272,7 +3261,7 @@ bool RenderProcessHostImpl::IsPdf() {
   return !!(flags_ & RenderProcessFlags::kPdf);
 }
 
-StoragePartition* RenderProcessHostImpl::GetStoragePartition() {
+StoragePartitionImpl* RenderProcessHostImpl::GetStoragePartition() {
   return storage_partition_impl_;
 }
 
