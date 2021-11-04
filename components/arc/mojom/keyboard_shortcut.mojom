@@ -18,8 +18,16 @@ interface KeyboardShortcutInstance {
   // Establishes full-duplex communication with the host.
   Init@0(pending_remote<KeyboardShortcutHost> host_remote) => ();
 
-  // Gets the list of keyboard shortcuts from the currently focused ARC app.
-  GetKeyboardShortcuts@1() => (array<KeyboardShortcutGroup> groups);
+  // Gets the list of keyboard shortcuts from the currently opened ARC apps.
+  GetKeyboardShortcuts@1() => (array<AppKeyboardShortcutsList> lists);
+};
+
+// A list of keyboard shortcuts for an app.
+struct AppKeyboardShortcutsList {
+  // The name of the app.
+  string app_name;
+  // The groups of keyboard shortcuts from the app.
+  array<KeyboardShortcutGroup> groups;
 };
 
 // A group of KeyboardShortcutInfo. Maps to android.view.KeyboardShortcutGroup.
