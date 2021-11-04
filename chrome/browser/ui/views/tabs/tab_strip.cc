@@ -1269,25 +1269,6 @@ void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
     tab_at(i)->StepLoadingAnimation(elapsed_time);
 }
 
-void TabStrip::SetStackedLayout(bool stacked_layout) {
-  if (stacked_layout == stacked_layout_)
-    return;
-
-  stacked_layout_ = stacked_layout;
-  SetResetToShrinkOnExit(false);
-  SwapLayoutIfNecessary();
-
-  // When transitioning to stacked try to keep the active tab from moving.
-  const int active_index = controller_->GetActiveIndex();
-  if (touch_layout_ && active_index != -1) {
-    touch_layout_->SetActiveTabLocation(ideal_bounds(active_index).x());
-    AnimateToIdealBounds();
-  }
-
-  for (int i = 0; i < GetTabCount(); ++i)
-    tab_at(i)->Layout();
-}
-
 void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
   Tab* tab = new Tab(this);
   tab->set_context_menu_controller(&context_menu_controller_);
@@ -1323,7 +1304,6 @@ void TabStrip::AddTabAt(int model_index, TabRendererData data, bool is_active) {
     CompleteAnimationAndLayout();
   }
 
-  SwapLayoutIfNecessary();
   UpdateAccessibleTabIndices();
 
   for (TabStripObserver& observer : observers_)
@@ -1389,7 +1369,6 @@ void TabStrip::MoveTab(int from_model_index,
   layout_helper_->SetTabPinned(
       to_model_index, pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
   StartMoveTabAnimation();
-  SwapLayoutIfNecessary();
 
   UpdateAccessibleTabIndices();
 
@@ -1401,8 +1380,6 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
                            int model_index,
                            bool was_active) {
   StartRemoveTabAnimation(model_index, was_active);
-
-  SwapLayoutIfNecessary();
 
   UpdateAccessibleTabIndices();
 
@@ -1501,7 +1478,6 @@ void TabStrip::SetTabData(int model_index, TabRendererData data) {
     else
       CompleteAnimationAndLayout();
   }
-  SwapLayoutIfNecessary();
 }
 
 void TabStrip::AddTabToGroup(absl::optional<tab_groups::TabGroupId> group,
@@ -1525,7 +1501,6 @@ void TabStrip::OnGroupCreated(const tab_groups::TabGroupId& group) {
   auto group_view = std::make_unique<TabGroupViews>(this, group);
   layout_helper_->InsertGroupHeader(group, group_view->header());
   group_views_[group] = std::move(group_view);
-  SetStackedLayout(false);
 }
 
 void TabStrip::OnGroupEditorOpened(const tab_groups::TabGroupId& group) {
@@ -2151,7 +2126,6 @@ void TabStrip::OnMouseEventInTab(views::View* source,
         base::TimeTicks::Now() - mouse_entered_tabstrip_time_.value());
     mouse_entered_tabstrip_time_.reset();
   }
-  UpdateStackedLayoutFromMouseEvent(source, event);
 }
 
 void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
@@ -2313,10 +2287,6 @@ gfx::Rect TabStrip::GetTabAnimationTargetBounds(const Tab* tab) {
 
 void TabStrip::MouseMovedOutOfHost() {
   ResizeLayoutTabs();
-  if (reset_to_shrink_on_exit_) {
-    reset_to_shrink_on_exit_ = false;
-    SetStackedLayout(false);
-  }
 }
 
 float TabStrip::GetHoverOpacityForTab(float range_parameter) const {
@@ -2640,7 +2610,8 @@ void TabStrip::HandleDragExited() {
 
 void TabStrip::Init() {
   SetID(VIEW_ID_TAB_STRIP);
-  // So we get enter/exit on children to switch stacked layout on and off.
+  // So we only get enter/exit messages when the mouse enters/exits the whole
+  // tabstrip, even if it is entering/exiting a specific Tab, too.
   SetNotifyEnterExitOnChild(true);
 
   if (g_drop_indicator_width == 0) {
@@ -2925,7 +2896,6 @@ void TabStrip::CompleteAnimationAndLayout() {
   if (tab_scrolling_animation_)
     tab_scrolling_animation_->SetCurrentValue(1);
 
-  SwapLayoutIfNecessary();
   if (touch_layout_)
     touch_layout_->SetWidth(width());
 
@@ -3122,85 +3092,6 @@ void TabStrip::StoppedDraggingView(TabSlotView* view, bool* is_first_view) {
           this, static_cast<Tab*>(view),
           base::BindRepeating(&TabStrip::OnTabSlotAnimationProgressed,
                               base::Unretained(this))));
-}
-
-void TabStrip::UpdateStackedLayoutFromMouseEvent(views::View* source,
-                                                 const ui::MouseEvent& event) {
-  if (!adjust_layout_)
-    return;
-
-// The following code attempts to switch to shrink (not stacked) layout when
-// the mouse exits the tabstrip (or the mouse is pressed on a stacked tab) and
-// to stacked layout when a touch device is used. This is made problematic by
-// windows generating mouse move events that do not clearly indicate the move
-// is the result of a touch device. This assumes a real mouse is used if
-// |kMouseMoveCountBeforeConsiderReal| mouse move events are received within
-// the time window |kMouseMoveTime|.  At the time we get a mouse press we know
-// whether its from a touch device or not, but we don't layout then else
-// everything shifts. Instead we wait for the release.
-//
-// TODO(sky): revisit this when touch events are really plumbed through.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  constexpr auto kMouseMoveTime = base::Milliseconds(200);
-  constexpr int kMouseMoveCountBeforeConsiderReal = 3;
-#endif
-
-  switch (event.type()) {
-    case ui::ET_MOUSE_PRESSED:
-      mouse_move_count_ = 0;
-      last_mouse_move_time_ = base::TimeTicks();
-      SetResetToShrinkOnExit((event.flags() & ui::EF_FROM_TOUCH) == 0);
-      if (reset_to_shrink_on_exit_ && touch_layout_) {
-        gfx::Point tab_strip_point(event.location());
-        views::View::ConvertPointToTarget(source, this, &tab_strip_point);
-        Tab* tab = FindTabForEvent(tab_strip_point);
-        if (tab && touch_layout_->IsStacked(GetModelIndexOf(tab))) {
-          SetStackedLayout(false);
-        }
-      }
-      break;
-
-    case ui::ET_MOUSE_MOVED: {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // Ash does not synthesize mouse events from touch events.
-      SetResetToShrinkOnExit(true);
-#else
-      gfx::Point location(event.location());
-      ConvertPointToTarget(source, this, &location);
-      if (location == last_mouse_move_location_)
-        return;  // Ignore spurious moves.
-      last_mouse_move_location_ = location;
-      if ((event.flags() & ui::EF_FROM_TOUCH) ||
-          (event.flags() & ui::EF_IS_SYNTHESIZED)) {
-        last_mouse_move_time_ = base::TimeTicks();
-      } else if ((base::TimeTicks::Now() - last_mouse_move_time_) >=
-                 kMouseMoveTime) {
-        mouse_move_count_ = 1;
-        last_mouse_move_time_ = base::TimeTicks::Now();
-      } else if (mouse_move_count_ < kMouseMoveCountBeforeConsiderReal) {
-        ++mouse_move_count_;
-      } else {
-        SetResetToShrinkOnExit(true);
-      }
-#endif
-      break;
-    }
-
-    case ui::ET_MOUSE_RELEASED: {
-      gfx::Point location(event.location());
-      ConvertPointToTarget(source, this, &location);
-      last_mouse_move_location_ = location;
-      mouse_move_count_ = 0;
-      last_mouse_move_time_ = base::TimeTicks();
-      if ((event.flags() & ui::EF_FROM_TOUCH) == ui::EF_FROM_TOUCH) {
-        SetStackedLayout(true);
-      }
-      break;
-    }
-
-    default:
-      break;
-  }
 }
 
 void TabStrip::UpdateContrastRatioValues() {
@@ -3699,87 +3590,6 @@ Tab* TabStrip::FindTabHitByPoint(const gfx::Point& point) {
   return nullptr;
 }
 
-void TabStrip::SwapLayoutIfNecessary() {
-  bool needs_touch = NeedsTouchLayout();
-  bool using_touch = touch_layout_ != nullptr;
-  if (needs_touch == using_touch)
-    return;
-
-  if (needs_touch) {
-    const int overlap = TabStyle::GetTabOverlap();
-    touch_layout_ = std::make_unique<StackedTabStripLayout>(
-        gfx::Size(GetStackableTabWidth(), GetLayoutConstant(TAB_HEIGHT)),
-        overlap, kStackedPadding, kMaxStackedCount, &tabs_);
-    touch_layout_->SetWidth(width());
-    // This has to be after SetWidth() as SetWidth() is going to reset the
-    // bounds of the pinned tabs (since StackedTabStripLayout doesn't yet know
-    // how many pinned tabs there are).
-    touch_layout_->SetXAndPinnedCount(UpdateIdealBoundsForPinnedTabs(nullptr),
-                                      GetPinnedTabCount());
-    touch_layout_->SetActiveIndex(controller_->GetActiveIndex());
-
-    base::RecordAction(
-        base::UserMetricsAction("StackedTab_EnteredStackedLayout"));
-  } else {
-    touch_layout_.reset();
-  }
-  PrepareForAnimation();
-  UpdateIdealBounds();
-  AnimateToIdealBounds();
-  SetTabSlotVisibility();
-}
-
-bool TabStrip::NeedsTouchLayout() const {
-  if (!stacked_layout_)
-    return false;
-
-  if (base::FeatureList::IsEnabled(features::kForceDisableStackedTabs))
-    return false;
-
-  // If a group is active in the tabstrip, the layout will not be swapped to
-  // stacked mode due to incompatibility of the UI.
-  // As an alternative, Tab Groups do interoperate with the WebUI Tab Strip,
-  // which is enabled in situations when stacked tabs are not.
-  if (!group_views_.empty())
-    return false;
-
-  // If tab scrolling is on, the layout will not be swapped; tab scrolling is
-  // a replacement to stacked tabs providing similar functionality across both
-  // touch and non-touch platforms.
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip))
-    return false;
-
-  const int pinned_tab_count = GetPinnedTabCount();
-  const int normal_count = GetTabCount() - pinned_tab_count;
-  if (normal_count <= 1)
-    return false;
-
-  const int tab_overlap = TabStyle::GetTabOverlap();
-  const int normal_width =
-      (GetStackableTabWidth() - tab_overlap) * normal_count + tab_overlap;
-  const int pinned_width =
-      std::max(0, pinned_tab_count * TabStyle::GetPinnedWidth() - tab_overlap);
-  return normal_width > (width() - pinned_width);
-}
-
-void TabStrip::SetResetToShrinkOnExit(bool value) {
-  if (!adjust_layout_)
-    return;
-
-  // We have to be using stacked layout to reset out of it.
-  value &= stacked_layout_;
-
-  if (value == reset_to_shrink_on_exit_)
-    return;
-
-  reset_to_shrink_on_exit_ = value;
-  // Add an observer so we know when the mouse moves out of the tabstrip.
-  if (reset_to_shrink_on_exit_)
-    AddMessageLoopObserver();
-  else
-    RemoveMessageLoopObserver();
-}
-
 void TabStrip::OnTabSlotAnimationProgressed(TabSlotView* view) {
   // The rightmost tab moving might have changed the tabstrip's preferred width.
   PreferredSizeChanged();
@@ -3793,13 +3603,6 @@ void TabStrip::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {
     group_views->second->UpdateBounds();
 }
 
-bool TabStrip::OnMousePressed(const ui::MouseEvent& event) {
-  UpdateStackedLayoutFromMouseEvent(this, event);
-  // We can't return true here, else clicking in an empty area won't drag the
-  // window.
-  return false;
-}
-
 bool TabStrip::OnMouseDragged(const ui::MouseEvent& event) {
   ContinueDrag(this, event);
   return true;
@@ -3807,20 +3610,14 @@ bool TabStrip::OnMouseDragged(const ui::MouseEvent& event) {
 
 void TabStrip::OnMouseReleased(const ui::MouseEvent& event) {
   EndDrag(END_DRAG_COMPLETE);
-  UpdateStackedLayoutFromMouseEvent(this, event);
 }
 
 void TabStrip::OnMouseCaptureLost() {
   EndDrag(END_DRAG_CAPTURE_LOST);
 }
 
-void TabStrip::OnMouseMoved(const ui::MouseEvent& event) {
-  UpdateStackedLayoutFromMouseEvent(this, event);
-}
-
 void TabStrip::OnMouseEntered(const ui::MouseEvent& event) {
   mouse_entered_tabstrip_time_ = base::TimeTicks::Now();
-  SetResetToShrinkOnExit(true);
 }
 
 void TabStrip::OnMouseExited(const ui::MouseEvent& event) {
@@ -3836,15 +3633,11 @@ void TabStrip::RemovedFromWidget() {
 }
 
 void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
-  SetResetToShrinkOnExit(false);
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_END:
     case ui::ET_SCROLL_FLING_START:
     case ui::ET_GESTURE_END:
       EndDrag(END_DRAG_COMPLETE);
-      if (adjust_layout_) {
-        SetStackedLayout(true);
-      }
       break;
 
     case ui::ET_GESTURE_LONG_PRESS:

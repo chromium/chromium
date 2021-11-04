@@ -138,20 +138,13 @@ class TabStrip : public views::View,
   // keep the throbbers in sync.
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time);
 
-  // If |adjust_layout| is true the stacked layout changes based on whether the
-  // user uses a mouse or a touch device with the tabstrip.
-  void set_adjust_layout(bool adjust_layout) { adjust_layout_ = adjust_layout; }
-
   // |stacked_layout_| defines what should happen when the tabs won't fit at
   // their ideal size. When |stacked_layout_| is true the tabs are always sized
   // to their ideal size and stacked on top of each other so that only a certain
   // set of tabs are visible. This is used when the user uses a touch device.
   // When |stacked_layout_| is false the tabs shrink to accommodate the
   // available space. This is the default.
-  bool stacked_layout() const { return stacked_layout_; }
-
-  // Sets |stacked_layout_| and animates if necessary.
-  void SetStackedLayout(bool stacked_layout);
+  bool stacked_layout() const { return false; }
 
   // Adds a tab at the specified index.
   void AddTabAt(int model_index, TabRendererData data, bool is_active);
@@ -506,11 +499,6 @@ class TabStrip : public views::View,
   // |is_first_view| is set to true.
   void StoppedDraggingView(TabSlotView* view, bool* is_first_view);
 
-  // Invoked when a mouse event occurs over |source|. Potentially switches the
-  // |stacked_layout_|.
-  void UpdateStackedLayoutFromMouseEvent(views::View* source,
-                                         const ui::MouseEvent& event);
-
   // Computes and stores values derived from contrast ratios.
   void UpdateContrastRatioValues();
 
@@ -606,17 +594,6 @@ class TabStrip : public views::View,
   // |touch_layout_| is not set.
   Tab* FindTabHitByPoint(const gfx::Point& point);
 
-  // Creates/Destroys |touch_layout_| as necessary.
-  void SwapLayoutIfNecessary();
-
-  // Returns true if |touch_layout_| is needed.
-  bool NeedsTouchLayout() const;
-
-  // Sets the value of |reset_to_shrink_on_exit_|. If true |mouse_watcher_| is
-  // used to track when the mouse truly exits the tabstrip and the stacked
-  // layout is reset.
-  void SetResetToShrinkOnExit(bool value);
-
   // Called whenever a tab animation has progressed.
   void OnTabSlotAnimationProgressed(TabSlotView* view);
 
@@ -625,11 +602,9 @@ class TabStrip : public views::View,
   void UpdateTabGroupVisuals(tab_groups::TabGroupId tab_group_id);
 
   // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
-  void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void AddedToWidget() override;
@@ -703,10 +678,7 @@ class TabStrip : public views::View,
   // Valid for the lifetime of a drag over us.
   std::unique_ptr<DropArrow> drop_arrow_;
 
-  // MouseWatcher is used for two things:
-  // . When a tab is closed to reset the layout.
-  // . When a mouse is used and the layout dynamically adjusts and is currently
-  //   stacked (|stacked_layout_| is true).
+  // MouseWatcher is used when a tab is closed to reset the layout.
   std::unique_ptr<views::MouseWatcher> mouse_watcher_;
 
   // Size we last layed out at.
@@ -724,15 +696,8 @@ class TabStrip : public views::View,
   // Only used while in touch mode.
   std::unique_ptr<StackedTabStripLayout> touch_layout_;
 
-  // If true the |stacked_layout_| is set to false when the mouse exits the
-  // tabstrip (as determined using MouseWatcher).
-  bool reset_to_shrink_on_exit_ = false;
-
   // Location of the mouse at the time of the last move.
   gfx::Point last_mouse_move_location_;
-
-  // Time of the last mouse move event.
-  base::TimeTicks last_mouse_move_time_;
 
   // Used to track the time needed to create a new tab from the new tab button.
   absl::optional<base::TimeTicks> new_tab_button_pressed_start_time_;
