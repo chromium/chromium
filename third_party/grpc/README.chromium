@@ -1,8 +1,8 @@
 Name: grpc
 URL: https://github.com/grpc/grpc
 License: Apache 2.0
-Version: v1.38.0+
-Revision: 54dc182082db941aa67c7c3f93ad858c99a16d7d
+Version: v1.41.1+
+Revision: 09658682c93805d5114a0d638388349c4276f9a3
 Security Critical: yes
 
 Please note that that the use of gRPC is not generally allowed within Chromium.
@@ -24,8 +24,6 @@ Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
    This will use the template in templates/BUILD.chromium.gn.template to
    generate src/BUILD.chromium.gn file.
 6. Run: mv third_party/grpc/src/BUILD.chromium.gn third_party/grpc/BUILD.gn
-7. If the new gRPC version adds new dependencies, this may result in linker
-   errors when building due to some of the gRPC Plugins that have been manually
-   disabled. Manually comment out - not remove - these from the BUILD.gn file,
-   so they may be referenced in future updates.
-8. Run: gn format --in-place BUILD.gn
+7. Run: gn format --in-place BUILD.gn
+
+We have a helper script `generate_gn.sh` does step (4), (5), (6), and (7).
