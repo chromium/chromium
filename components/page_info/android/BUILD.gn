@@ -67,6 +67,7 @@ android_library("java") {
     "java/src/org/chromium/components/page_info/PageInfoDialog.java",
     "java/src/org/chromium/components/page_info/PageInfoDiscoverabilityMetrics.java",
     "java/src/org/chromium/components/page_info/PageInfoFeatures.java",
+    "java/src/org/chromium/components/page_info/PageInfoHighlight.java",
     "java/src/org/chromium/components/page_info/PageInfoMainController.java",
     "java/src/org/chromium/components/page_info/PageInfoPageZoomController.java",
     "java/src/org/chromium/components/page_info/PageInfoPageZoomView.java",
