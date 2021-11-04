@@ -714,13 +714,16 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(FileHandlingGateType::kUsesPermission,
                       FileHandlingGateType::kUsesSetting));
 
+// TODO(estade): remove this test when kDesktopPWAsFileHandlingSettingsGated is
+// removed.
 class WebAppFileHandlingPermissionDialogTest
     : public WebAppFileHandlingBrowserTest {
  public:
-  // This text fixture doesn't parameterize the settings flag because none of
-  // these tests make sense if that feature is enabled.
   WebAppFileHandlingPermissionDialogTest()
-      : WebAppFileHandlingBrowserTest(/*parameterize=*/false) {}
+      : WebAppFileHandlingBrowserTest(/*parameterize=*/false) {
+    feature_list_.InitWithFeatures(
+        {}, {features::kDesktopPWAsFileHandlingSettingsGated});
+  }
 
   void InstallAndLaunchWebApp() {
     InstallFileHandlingPWA();
@@ -745,6 +748,7 @@ class WebAppFileHandlingPermissionDialogTest
 
  protected:
   base::FilePath test_file_path_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingPermissionDialogTest, AllowAlways) {

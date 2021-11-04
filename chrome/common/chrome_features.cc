@@ -276,16 +276,23 @@ const base::Feature kDesktopPWAsElidedExtensionsMenu{
 // Use settings instead of permissions to control access to the PWA File
 // Handling API.
 const base::Feature kDesktopPWAsFileHandlingSettingsGated{
-    "DesktopPWAsFileHandlingSettingsGated", base::FEATURE_DISABLED_BY_DEFAULT};
+  "DesktopPWAsFileHandlingSettingsGated",
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
-// Replaces the origin text flash in web app titlebars with the name of the app.
+// Replaces the origin text flash in web app titlebars with the name of
+// the app.
 const base::Feature kDesktopPWAsFlashAppNameInsteadOfOrigin{
     "DesktopPWAsFlashAppNameInsteadOfOrigin",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Replaces the origin text flash and the icon in web app notifications with
 // the name of the app and the icon of the app.
-const base::Feature kDesktopPWAsNotificationIconAndTitle{
+const base::Feature kDesktopPWAsNotificationIconAndTitle {
   "DesktopPWAsNotificationIconAndTitle",
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       base::FEATURE_ENABLED_BY_DEFAULT

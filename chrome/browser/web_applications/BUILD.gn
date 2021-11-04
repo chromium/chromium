@@ -474,7 +474,6 @@ source_set("web_applications_unit_tests") {
     "preinstalled_web_app_utils_unittest.cc",
     "preinstalled_web_apps/preinstalled_web_app_definition_utils_unittest.cc",
     "protocol_handler_manager_unittest.cc",
-    "system_web_apps/test/system_web_app_manager_unittest.cc",
     "web_app_constants_unittest.cc",
     "web_app_data_retriever_unittest.cc",
     "web_app_database_unittest.cc",
@@ -532,6 +531,10 @@ source_set("web_applications_unit_tests") {
       "url_handler_manager_impl_unittest.cc",
       "url_handler_prefs_unittest.cc",
     ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    sources += [ "system_web_apps/test/system_web_app_manager_unittest.cc" ]
   }
 
   deps = [
@@ -594,7 +597,6 @@ source_set("web_applications_browser_tests") {
     "preinstalled_web_app_manager_browsertest.cc",
     "preinstalled_web_app_migration_browsertest.cc",
     "preinstalled_web_apps_browsertest.cc",
-    "system_web_apps/test/system_web_app_manager_browsertest.cc",
     "web_app_audio_focus_browsertest.cc",
     "web_app_icon_manager_browsertest.cc",
     "web_app_mover_browsertest.cc",
@@ -604,6 +606,10 @@ source_set("web_applications_browser_tests") {
 
   if (is_linux) {
     sources += [ "web_app_file_handler_registration_linux_browsertest.cc" ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    sources += [ "system_web_apps/test/system_web_app_manager_browsertest.cc" ]
   }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
