@@ -325,15 +325,6 @@ void SVGTextContentElement::SvgAttributeChanged(
     return;
   }
 
-  if (attr_name == svg_names::kTransformAttr) {
-    // The "transform" attribute affects scaling factor.
-    if (auto* layout_object = GetLayoutObject()) {
-      if (auto* ng_text = DynamicTo<LayoutNGSVGText>(
-              LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)))
-        ng_text->SetNeedsTextMetricsUpdate();
-    }
-  }
-
   SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
