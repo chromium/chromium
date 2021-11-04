@@ -48,7 +48,6 @@
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc_memory_dump_provider.h"
@@ -259,8 +258,6 @@ void Platform::InitializeMainThreadCommon(Platform* platform,
   // the main thread is not doing any work.
   WTF::Partitions::StartPeriodicReclaim(
       base::MakeRefCounted<IdleDelayedTaskHelper>());
-
-  FontCache::InitializeFontPrewarmer();
 }
 
 void Platform::SetCurrentPlatformForTesting(Platform* platform) {

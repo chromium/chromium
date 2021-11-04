@@ -187,10 +187,8 @@ class PLATFORM_EXPORT FontCache {
   static void SetFontPrewarmer(WebFontPrewarmer* prewarmer) {
     prewarmer_ = prewarmer;
   }
-  static void InitializeFontPrewarmer();
   static void PrewarmFamily(const AtomicString& family_name);
 #else
-  static void InitializeFontPrewarmer() {}
   static void PrewarmFamily(const AtomicString& family_name) {}
 #endif
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -222,6 +223,7 @@ TEST_F(LayoutTextTest, ContainsOnlyWhitespaceOrNbsp) {
 
 #if defined(OS_WIN)
 TEST_F(LayoutTextTest, PrewarmFamily) {
+  base::test::ScopedFeatureList features(kAsyncFontAccess);
   test::ScopedTestFontPrewarmer prewarmer;
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -240,6 +242,7 @@ TEST_F(LayoutTextTest, PrewarmFamily) {
 
 // Test `@font-face` fonts are NOT prewarmed.
 TEST_F(LayoutTextTest, PrewarmFontFace) {
+  base::test::ScopedFeatureList features(kAsyncFontAccess);
   test::ScopedTestFontPrewarmer prewarmer;
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -261,6 +264,7 @@ TEST_F(LayoutTextTest, PrewarmFontFace) {
 }
 
 TEST_F(LayoutTextTest, PrewarmGenericFamily) {
+  base::test::ScopedFeatureList features(kAsyncFontAccess);
   test::ScopedTestFontPrewarmer prewarmer;
   SetBodyInnerHTML(R"HTML(
     <style>

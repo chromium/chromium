@@ -192,20 +192,25 @@ const LayoutLocale* FallbackLocaleForCharacter(
 }  // namespace
 
 // static
-void FontCache::InitializeFontPrewarmer() {
-  DCHECK(IsMainThread());
-  // Platform is initialized before |FeatureList| that we may have a prewarmer
-  // even when the feature is not enabled.
-  if (prewarmer_ && !base::FeatureList::IsEnabled(kAsyncFontAccess))
-    prewarmer_ = nullptr;
-}
-
-// static
 void FontCache::PrewarmFamily(const AtomicString& family_name) {
   DCHECK(IsMainThread());
 
   if (!prewarmer_)
     return;
+
+  // Platform is initialized before |FeatureList| that we may have a prewarmer
+  // even when the feature is not enabled.
+  // TODO(crbug.com/1256946): Review if there is a better timing to set the
+  // prewarmer.
+  static bool is_initialized = false;
+  if (!is_initialized) {
+    is_initialized = true;
+    if (!base::FeatureList::IsEnabled(kAsyncFontAccess)) {
+      prewarmer_ = nullptr;
+      return;
+    }
+  }
+  DCHECK(base::FeatureList::IsEnabled(kAsyncFontAccess));
 
   static HashSet<AtomicString> prewarmed_families;
   const auto result = prewarmed_families.insert(family_name);
