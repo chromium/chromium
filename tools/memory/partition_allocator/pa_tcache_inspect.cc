@@ -190,11 +190,11 @@ std::map<base::PlatformThreadId, std::string> ThreadNames(pid_t pid) {
       continue;
     buffer[bytes_read] = '\0';
 
-    int pid, ppid, pgrp;
+    int process_id, ppid, pgrp;
     char name[256];
     char state;
-    sscanf(buffer, "%d %s %c %d %d", &pid, name, &state, &ppid, &pgrp);
-    result[base::PlatformThreadId(pid)] = std::string(name);
+    sscanf(buffer, "%d %s %c %d %d", &process_id, name, &state, &ppid, &pgrp);
+    result[base::PlatformThreadId(process_id)] = std::string(name);
   }
 
   return result;
