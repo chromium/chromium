@@ -24,7 +24,7 @@
 
 promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
 
     // Ensure we have a valid animation frame time before continuing the test.
     // This is so that we can properly determine frame advancement after the
@@ -53,7 +53,7 @@ promise_test(async t => {
 
 promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
 
     await waitForNextFrame();
 
@@ -80,7 +80,7 @@ promise_test(async t => {
 
 promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const target = animation.effect.target;
 
     await waitForNextFrame();
@@ -118,7 +118,7 @@ promise_test(async t => {
 
 promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     const target = animation.effect.target;
 

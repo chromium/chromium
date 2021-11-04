@@ -431,7 +431,7 @@ test(t => {
 promise_test(async t => {
   const anim = createScrollLinkedAnimationWithTiming(t, { duration: 10000, direction: 'normal' });
 
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   anim.play();
   await anim.ready;
@@ -481,7 +481,7 @@ promise_test(async t => {
   const anim = createScrollLinkedAnimationWithTiming(t, { iterations: 2,
                                       duration: 10000,
                                       direction: 'normal' });
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   anim.play();
   await anim.ready;
@@ -502,7 +502,7 @@ promise_test(async t => {
   const anim = createScrollLinkedAnimationWithTiming(t, { iterations: 2,
                                       duration: 10000,
                                       direction: 'alternate' });
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   anim.play();
   await anim.ready;
@@ -525,7 +525,7 @@ promise_test(async t => {
 // ------------------------------
 
 async function assert_progress(animation, scrollPercent, easingFunction) {
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = maxScroll * scrollPercent
   await waitForNextFrame();
@@ -572,7 +572,7 @@ promise_test(async t => {
   const anim = createScrollLinkedAnimationWithTiming(t,
     { duration: 1000000, fill: 'both', delay: delay, easing: 'steps(2, start)' });
 
-  const scroller = anim.timeline.scrollSource;
+  const scroller = anim.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   anim.play();
   await anim.ready;

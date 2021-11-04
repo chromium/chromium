@@ -27,7 +27,7 @@ promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
   const effect_duration = 350;
   animation.effect.updateTiming({ duration: effect_duration });
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   let maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = 0.2 * maxScroll;
   const initial_progress = (scroller.scrollTop / maxScroll) * 100;
@@ -65,7 +65,7 @@ promise_test(async t => {
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
   animation.effect.updateTiming({ duration: 350 });
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   let maxScroll = scroller.scrollHeight - scroller.clientHeight;
   const scrollOffset = 0.2 * maxScroll
   scroller.scrollTop = scrollOffset;
@@ -101,12 +101,12 @@ promise_test(async t => {
 
 promise_test(async t => {
   const timeline = createScrollTimeline(t);
-  const scroller = timeline.scrollSource;
+  const scroller = timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   // Instantiate scroll animation that resizes its scroll timeline scroller.
   const animation = new Animation(
     new KeyframeEffect(
-      timeline.scrollSource.firstChild,
+      timeline.source.firstChild,
       [{ height: '1000px' }, { height: '2000px' }],
       { duration: 1000, }
     ), timeline);

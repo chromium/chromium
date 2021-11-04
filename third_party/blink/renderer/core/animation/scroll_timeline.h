@@ -44,12 +44,12 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
                                 ExceptionState&);
 
   ScrollTimeline(Document*,
-                 absl::optional<Element*> scroll_source,
+                 absl::optional<Element*> source,
                  ScrollDirection,
                  HeapVector<Member<ScrollTimelineOffset>>);
 
   bool IsScrollTimeline() const override { return true; }
-  // ScrollTimeline is not active if scrollSource is null, does not currently
+  // ScrollTimeline is not active if source is null, does not currently
   // have a CSS layout box, or if its layout box is not a scroll container.
   // https://github.com/WICG/scroll-animations/issues/31
   bool IsActive() const override;
@@ -62,7 +62,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   void ScheduleNextService() override;
 
   // IDL API implementation.
-  Element* scrollSource() const;
+  Element* source() const;
   String orientation();
   const HeapVector<Member<V8ScrollTimelineOffset>> scrollOffsets() const;
 
@@ -71,10 +71,10 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   V8CSSNumberish* ConvertTimeToProgress(AnimationTimeDelta time) const;
 
   // Returns the Node that should actually have the ScrollableArea (if one
-  // exists). This can differ from |scrollSource| when |scroll_source_| is the
+  // exists). This can differ from |source| when |source_| is the
   // Document's scrollingElement, and it may be null if the document was
   // removed before the ScrollTimeline was created.
-  Node* ResolvedScrollSource() const { return resolved_scroll_source_; }
+  Node* ResolvedSource() const { return resolved_source_; }
 
   // Return the latest resolved scroll offsets. This will be empty when
   // timeline is inactive.
@@ -173,10 +173,10 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline {
   // false - regardless of time change.
   void ScheduleNextServiceInternal(bool time_check);
 
-  // Use |scroll_source_| only to implement the web-exposed API but use
-  // resolved_scroll_source_ to actually access the scroll related properties.
-  Member<Element> scroll_source_;
-  Member<Node> resolved_scroll_source_;
+  // Use |source_| only to implement the web-exposed API but use
+  // resolved_source_ to actually access the scroll related properties.
+  Member<Element> source_;
+  Member<Node> resolved_source_;
   ScrollDirection orientation_;
   HeapVector<Member<ScrollTimelineOffset>> scroll_offsets_;
 

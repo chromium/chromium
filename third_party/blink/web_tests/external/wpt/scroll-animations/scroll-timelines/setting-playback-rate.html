@@ -24,7 +24,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     // this forces a layout which results in an active timeline
     scroller.scrollTop = 0;
     // Wait for new animation frame  which allows the timeline to compute new
@@ -41,7 +41,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     // this forces a layout which results in an active timeline
     scroller.scrollTop = 0;
     // Wait for new animation frame  which allows the timeline to compute new
@@ -58,7 +58,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     scroller.scrollTop = 0.2 * maxScroll;
     // Wait for new animation frame  which allows the timeline to compute new
@@ -75,7 +75,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     const playbackRate = 2;
 
@@ -95,7 +95,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     // Set playback rate while the animation is in 'idle' state.
@@ -115,7 +115,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     animation.play();
 
@@ -136,7 +136,7 @@
 
     promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     scroller.scrollTop = 0.25 * maxScroll;
     // Wait for new animation frame  which allows the timeline to compute new
@@ -167,7 +167,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     scroller.scrollTop = 0.25 * maxScroll;
     // Wait for new animation frame  which allows the timeline to compute new
@@ -201,7 +201,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     animation.playbackRate = -1;
     scroller.scrollTop = 0.3 * maxScroll;
@@ -218,7 +218,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     scroller.scrollTop = 0.5 * maxScroll;
     // Wait for new animation frame  which allows the timeline to compute new
@@ -255,7 +255,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     animation.playbackRate = 0;
     scroller.scrollTop = 0.3 * maxScroll;
@@ -271,7 +271,7 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     scroller.scrollTop = 0.2 * maxScroll;
     // Wait for new animation frame  which allows the timeline to compute new

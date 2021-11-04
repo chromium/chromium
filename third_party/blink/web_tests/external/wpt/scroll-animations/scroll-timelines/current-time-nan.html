@@ -27,10 +27,10 @@
 test(function() {
   const scroller = document.querySelector('#inlineScroller');
   const scrollTimeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'block' });
+      { source: scroller, orientation: 'block' });
 
   assert_equals(scrollTimeline.currentTime, null);
-}, 'currentTime should be null for a display: inline scrollSource');
+}, 'currentTime should be null for a display: inline source');
 </script>
 
 <div id='displayNoneScroller' class='scroller' style='display: none;'>
@@ -40,10 +40,10 @@ test(function() {
 test(function() {
   const scroller = document.querySelector('#displayNoneScroller');
   const scrollTimeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'block' });
+      { source: scroller, orientation: 'block' });
 
   assert_equals(scrollTimeline.currentTime, null);
-}, 'currentTime should be null for a display: none scrollSource');
+}, 'currentTime should be null for a display: none source');
 </script>
 
 <script>
@@ -60,10 +60,10 @@ test(function() {
   scroller.appendChild(content);
 
   const scrollTimeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'block' });
+      { source: scroller, orientation: 'block' });
 
   assert_equals(scrollTimeline.currentTime, null);
-}, 'currentTime should be null for an unattached scrollSource');
+}, 'currentTime should be null for an unattached source');
 </script>
 
 <div id='notAScroller' class='scroller' style='overflow: visible;'>
@@ -73,8 +73,8 @@ test(function() {
 test(function() {
   const scroller = document.querySelector('#notAScroller');
   const scrollTimeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'block' });
+      { source: scroller, orientation: 'block' });
 
   assert_equals(scrollTimeline.currentTime, null);
-}, 'currentTime should be null when the scrollSource is not a scroller');
+}, 'currentTime should be null when the source is not a scroller');
 </script>

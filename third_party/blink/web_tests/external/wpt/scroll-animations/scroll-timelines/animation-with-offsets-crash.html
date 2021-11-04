@@ -25,7 +25,7 @@
   const timeline = animation.timeline;
   const duration = timeline.duration;
   const options = {
-    scrollSource: scroller,
+    source: scroller,
     scrollOffsets: [new CSSMathInvert(duration)]
   };
   const scroll_timeline = new ScrollTimeline(options);

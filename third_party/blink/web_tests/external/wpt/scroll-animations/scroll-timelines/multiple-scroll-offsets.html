@@ -17,7 +17,7 @@ promise_test(async t => {
   const scrollerSize = scroller.scrollHeight - scroller.clientHeight;
 
   const scrollTimeline = new ScrollTimeline({
-    scrollSource: scroller,
+    source: scroller,
     orientation: 'block',
     scrollOffsets: [CSS.px(10), CSS.px(20), CSS.px(40), CSS.px(70), CSS.px(90)],
   });
@@ -86,7 +86,7 @@ promise_test(async t => {
   const scrollerSize = scroller.scrollHeight - scroller.clientHeight;
 
   var scrollTimeline = new ScrollTimeline({
-    scrollSource: scroller,
+    source: scroller,
     orientation: 'block',
     scrollOffsets: [CSS.px(300), CSS.px(200), CSS.px(10)],
   });
@@ -102,7 +102,7 @@ promise_test(async t => {
       "current time calculation when scroll = " + scroller.scrollTop);
 
   scrollTimeline = new ScrollTimeline({
-    scrollSource: scroller,
+    source: scroller,
     orientation: 'block',
     scrollOffsets: ['auto', CSS.px(400), CSS.px(200)],
   });
@@ -113,7 +113,7 @@ promise_test(async t => {
       "current time calculation when scroll = " + scroller.scrollTop);
 
   scrollTimeline = new ScrollTimeline({
-    scrollSource: scroller,
+    source: scroller,
     orientation: 'block',
     scrollOffsets: [CSS.px(200), CSS.px(0), CSS.px(400)],
   });

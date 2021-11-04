@@ -54,7 +54,7 @@ promise_test(async t => {
     const end = document.querySelector("#end")
 
     const timeline = createScrollTimeline(t, {
-        scrollSource: scroller,
+        source: scroller,
         orientation: 'block',
         scrollOffsets: [{ target: not_a_descendant }, { target: end }]
     });
@@ -72,7 +72,7 @@ promise_test(async t => {
     const end = document.querySelector("#end")
 
     const timeline = createScrollTimeline(t, {
-        scrollSource: scroller,
+        source: scroller,
         orientation: 'block',
         scrollOffsets: [{ target: start }, { target: end }]
     });

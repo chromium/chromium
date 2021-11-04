@@ -22,7 +22,7 @@
   'use strict';
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     // Wait for new animation frame  which allows the timeline to compute new
@@ -67,7 +67,7 @@
 
 promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     // Advance the scroller.
@@ -101,7 +101,7 @@ promise_test(async t => {
     const timeline = createScrollTimeline(t);
     const animation1 = createScrollLinkedAnimation(t, timeline);
     const animation2 = createScrollLinkedAnimation(t, timeline);
-    const scroller = timeline.scrollSource;
+    const scroller = timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     // Advance the scroller.
@@ -149,7 +149,7 @@ promise_test(async t => {
 
 promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     animation.play();
@@ -179,7 +179,7 @@ promise_test(async t => {
 
 promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     animation.play();

@@ -20,7 +20,7 @@ scoped_refptr<CompositorScrollTimeline> ToCompositorScrollTimeline(
     return nullptr;
 
   auto* scroll_timeline = To<ScrollTimeline>(timeline);
-  Node* scroll_source = scroll_timeline->ResolvedScrollSource();
+  Node* scroll_source = scroll_timeline->ResolvedSource();
   absl::optional<CompositorElementId> element_id =
       GetCompositorScrollElementId(scroll_source);
 

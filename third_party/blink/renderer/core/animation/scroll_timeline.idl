@@ -11,7 +11,7 @@ typedef (ScrollTimelineContainerBasedOffset or ScrollTimelineElementBasedOffset)
     Exposed=Window
 ] interface ScrollTimeline : AnimationTimeline {
     [CallWith=Document, RaisesException, MeasureAs=ScrollTimelineConstructor] constructor(optional ScrollTimelineOptions options = {});
-    readonly attribute Element? scrollSource;
+    readonly attribute Element? source;
     readonly attribute ScrollDirection orientation;
     readonly attribute FrozenArray<ScrollTimelineOffset> scrollOffsets;
 };

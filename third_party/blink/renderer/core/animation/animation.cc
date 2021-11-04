@@ -2065,7 +2065,7 @@ Animation::CheckCanStartAnimationOnCompositorInternal() const {
   // are in the compositor, the animation should be composited.
   if (timeline_ && timeline_->IsScrollTimeline() &&
       !CompositorAnimations::CheckUsesCompositedScrolling(
-          To<ScrollTimeline>(*timeline_).ResolvedScrollSource()))
+          To<ScrollTimeline>(*timeline_).ResolvedSource()))
     reasons |= CompositorAnimations::kTimelineSourceHasInvalidCompositingState;
 
   // An Animation without an effect cannot produce a visual, so there is no

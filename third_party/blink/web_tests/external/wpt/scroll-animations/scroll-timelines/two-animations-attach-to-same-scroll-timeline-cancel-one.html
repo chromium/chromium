@@ -61,7 +61,7 @@
 
   const scroller = document.getElementById('scroller');
   const timeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'block' });
+      { source: scroller, orientation: 'block' });
   const animation = new Animation(effect, timeline);
   const temporary_animation = new Animation(temporary_effect, timeline);
   animation.play();

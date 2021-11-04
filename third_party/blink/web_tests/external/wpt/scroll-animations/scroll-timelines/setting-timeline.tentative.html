@@ -44,8 +44,8 @@ function createPausedCssAnimation(t) {
 }
 
 function updateScrollPosition(timeline, offset) {
-  const scroller = timeline.scrollSource;
-  assert_true(!!scroller, 'scrollSource is resolved');
+  const scroller = timeline.source;
+  assert_true(!!scroller, 'source is resolved');
   scroller.scrollTop = offset;
   // Wait for new animation frame which allows the timeline to compute new
   // current time.

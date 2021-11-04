@@ -24,7 +24,7 @@
 promise_test(async t => {
   const scroller = document.scrollingElement;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
-  const timeline = new ScrollTimeline({scrollSource: scroller});
+  const timeline = new ScrollTimeline({source: scroller});
   scroller.scrollTo(0, 0);
   assert_equals(scroller.scrollTop, 0, "verify test pre-condition");
 

@@ -59,7 +59,7 @@
     const test_case = test_cases[test_case_key];
     promise_test(async t => {
       const timeline = createScrollTimelineWithOffsets(t, CSS.percent(20), CSS.percent(80));
-      const scroller = timeline.scrollSource;
+      const scroller = timeline.source;
       const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
       scroller.scrollTop = test_case.scroll_percent * maxScroll;
@@ -112,7 +112,7 @@
       test_cases_start_offset_greater_than_end_offset[test_case_key];
     promise_test(async t => {
       const timeline = createScrollTimelineWithOffsets(t, CSS.percent(80), CSS.percent(20));
-      const scroller = timeline.scrollSource;
+      const scroller = timeline.source;
       const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
       scroller.scrollTop = test_case.scroll_percent * maxScroll;
@@ -155,7 +155,7 @@
       test_cases_start_offset_equal_to_end_offset[test_case_key];
     promise_test(async t => {
       const timeline = createScrollTimelineWithOffsets(t, CSS.percent(50), CSS.percent(50));
-      const scroller = timeline.scrollSource;
+      const scroller = timeline.source;
       const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
       scroller.scrollTop = test_case.scroll_percent * maxScroll;
@@ -174,7 +174,7 @@
 
   promise_test(async t => {
     const timeline = createScrollTimeline(t);
-    const scroller = timeline.scrollSource;
+    const scroller = timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     scroller.scrollTop = maxScroll;
@@ -192,7 +192,7 @@
 
   promise_test(async t => {
     const timeline = createScrollTimeline(t);
-    const scroller = timeline.scrollSource;
+    const scroller = timeline.source;
     // Setting the scroller to display none should make the timeline inactive
     scroller.style.display = "none";
     scroller.scrollTop;

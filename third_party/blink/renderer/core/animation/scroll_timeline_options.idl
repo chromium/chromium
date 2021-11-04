@@ -12,7 +12,7 @@ enum ScrollDirection {
 };
 
 dictionary ScrollTimelineOptions {
-        Element? scrollSource;
+        Element? source;
         ScrollDirection orientation = "block";
         sequence<ScrollTimelineOffset> scrollOffsets = [];
 };

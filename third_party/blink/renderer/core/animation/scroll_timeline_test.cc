@@ -99,11 +99,11 @@ class ScrollTimelineTest : public RenderingTest {
 class TestScrollTimeline : public ScrollTimeline {
  public:
   TestScrollTimeline(Document* document,
-                     Element* scroll_source,
+                     Element* source,
                      HeapVector<Member<ScrollTimelineOffset>> scroll_offsets =
                          CreateScrollOffsets())
       : ScrollTimeline(document,
-                       scroll_source,
+                       source,
                        ScrollTimeline::Vertical,
                        std::move(scroll_offsets)),
         next_service_scheduled_(false) {}
@@ -122,7 +122,7 @@ class TestScrollTimeline : public ScrollTimeline {
   bool next_service_scheduled_;
 };
 
-TEST_F(ScrollTimelineTest, CurrentTimeIsNullIfScrollSourceIsNotScrollable) {
+TEST_F(ScrollTimelineTest, CurrentTimeIsNullIfSourceIsNotScrollable) {
   SetBodyInnerHTML(R"HTML(
     <style>#scroller { width: 100px; height: 100px; }</style>
     <div id='scroller'></div>
@@ -133,7 +133,7 @@ TEST_F(ScrollTimelineTest, CurrentTimeIsNullIfScrollSourceIsNotScrollable) {
   ASSERT_TRUE(scroller);
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
@@ -160,7 +160,7 @@ TEST_F(ScrollTimelineTest,
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   options->setScrollOffsets(
       {OffsetFromString("10px"), OffsetFromString("90px")});
   ScrollTimeline* scroll_timeline =
@@ -219,7 +219,7 @@ TEST_F(ScrollTimelineTest,
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   options->setScrollOffsets(
       {OffsetFromString("80px"), OffsetFromString("40px")});
   ScrollTimeline* scroll_timeline =
@@ -265,7 +265,7 @@ TEST_F(ScrollTimelineTest, PhasesAreCorrectWhenUsingOffsets) {
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   options->setScrollOffsets(
       {OffsetFromString("10px"), OffsetFromString("90px")});
   ScrollTimeline* scroll_timeline =
@@ -309,10 +309,10 @@ TEST_F(ScrollTimelineTest,
   // Create the ScrollTimeline with Document.scrollingElement() as source. The
   // resolved scroll source should be the Document.
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetDocument().scrollingElement());
+  options->setSource(GetDocument().scrollingElement());
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(&GetDocument(), scroll_timeline->ResolvedScrollSource());
+  EXPECT_EQ(&GetDocument(), scroll_timeline->ResolvedSource());
 }
 
 TEST_F(ScrollTimelineTest,
@@ -332,10 +332,10 @@ TEST_F(ScrollTimelineTest,
   // Create the ScrollTimeline with Document.scrollingElement() as source. The
   // resolved scroll source should be the Document.
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetDocument().scrollingElement());
+  options->setSource(GetDocument().scrollingElement());
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(&GetDocument(), scroll_timeline->ResolvedScrollSource());
+  EXPECT_EQ(&GetDocument(), scroll_timeline->ResolvedSource());
 
   // Now change the Document.scrollingElement(). In NoQuirksMode, the
   // documentElement is the scrolling element and not the body.
@@ -347,12 +347,12 @@ TEST_F(ScrollTimelineTest,
   // scroll source. Note that at this point the scroll timeline's scroll source
   // is still body element which is no longer the scrolling element. So if we
   // were to re-resolve the scroll source, it would not map to Document.
-  EXPECT_EQ(&GetDocument(), scroll_timeline->ResolvedScrollSource());
+  EXPECT_EQ(&GetDocument(), scroll_timeline->ResolvedSource());
 }
 
-TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullScrollSource) {
+TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullSource) {
   // Directly call the constructor to make it easier to pass a null
-  // scrollSource. The alternative approach would require us to remove the
+  // source. The alternative approach would require us to remove the
   // documentElement from the document.
   Element* scroll_source = nullptr;
   Persistent<ScrollTimeline> scroll_timeline =
@@ -361,8 +361,8 @@ TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullScrollSource) {
                                            CreateScrollOffsets());
 
   // Sanity checks.
-  ASSERT_EQ(scroll_timeline->scrollSource(), nullptr);
-  ASSERT_EQ(scroll_timeline->ResolvedScrollSource(), nullptr);
+  ASSERT_EQ(scroll_timeline->source(), nullptr);
+  ASSERT_EQ(scroll_timeline->ResolvedSource(), nullptr);
 
   NonThrowableExceptionState exception_state;
   Timing timing;
@@ -694,7 +694,7 @@ TEST_F(ScrollTimelineTest, CurrentTimeUpdateAfterNewAnimationFrame) {
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
 
   scrollable_area->SetScrollOffset(ScrollOffset(0, 5),
                                    mojom::blink::ScrollType::kProgrammatic);
@@ -899,7 +899,7 @@ TEST_F(ScrollTimelineTest, ResolveScrollOffsets) {
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   // Empty scroll offsets resolve into [0, 100%].
   HeapVector<Member<V8ScrollTimelineOffset>> scroll_offsets = {};
   options->setScrollOffsets(scroll_offsets);
@@ -963,7 +963,7 @@ TEST_F(ScrollTimelineTest, MultipleScrollOffsetsCurrentTimeCalculations) {
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   HeapVector<Member<V8ScrollTimelineOffset>> scroll_offsets;
   scroll_offsets.push_back(OffsetFromString("10px"));
   scroll_offsets.push_back(OffsetFromString("20px"));
@@ -1052,7 +1052,7 @@ TEST_F(ScrollTimelineTest, OverlappingScrollOffsets) {
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   HeapVector<Member<V8ScrollTimelineOffset>> scroll_offsets = {
       OffsetFromString("90px"), OffsetFromString("40px"),
       OffsetFromString("10px")};

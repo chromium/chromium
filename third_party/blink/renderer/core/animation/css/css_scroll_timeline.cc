@@ -223,7 +223,7 @@ const AtomicString& CSSScrollTimeline::Name() const {
 }
 
 bool CSSScrollTimeline::Matches(const Options& options) const {
-  return (scrollSource() == options.source_) &&
+  return (source() == options.source_) &&
          (GetOrientation() == options.direction_) &&
          (ScrollOffsetsEqual(options.offsets_)) && (rule_ == options.rule_);
 }

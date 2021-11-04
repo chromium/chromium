@@ -20,17 +20,17 @@
 test(() => {
   try {
     assert_equals(document.scrollingElement.id, 'body1');
-    assert_equals(new ScrollTimeline({}).scrollSource, body1);
+    assert_equals(new ScrollTimeline({}).source, body1);
 
     // Make #body1 "potentially scrollable". This causes the scrollingElement
     // of the document to become null.
     //
     // https://drafts.csswg.org/cssom-view/#dom-document-scrollingelement
     body1.style = 'overflow:scroll';
-    assert_equals(new ScrollTimeline({}).scrollSource, null);
+    assert_equals(new ScrollTimeline({}).source, null);
   } finally {
     body1.style = '';
   }
-}, 'Style of <body> is reflected in scrollSource attribute in quirks mode');
+}, 'Style of <body> is reflected in source attribute in quirks mode');
 </script>
 </html>

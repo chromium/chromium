@@ -25,9 +25,9 @@ promise_test(async t => {
   await waitForNextFrame();
 
   const blockScrollTimeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'block' });
+      { source: scroller, orientation: 'block' });
   const inlineScrollTimeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'inline' });
+      { source: scroller, orientation: 'inline' });
 
   // Wait for new animation frame which allows the timeline to fully initialize
   await waitForNextFrame();
@@ -45,5 +45,5 @@ promise_test(async t => {
 
   assert_percents_equal(blockScrollTimeline.currentTime, 50);
   assert_percents_equal(inlineScrollTimeline.currentTime, 75);
-}, 'currentTime calculates the correct time for a document.scrollingElement scrollSource');
+}, 'currentTime calculates the correct time for a document.scrollingElement source');
 </script>

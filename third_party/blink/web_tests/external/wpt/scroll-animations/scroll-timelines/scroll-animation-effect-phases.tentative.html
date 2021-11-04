@@ -183,7 +183,7 @@
         }
       );
       const animation = new Animation(effect, timeline);
-      const scroller = timeline.scrollSource;
+      const scroller = timeline.source;
       const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
       animation.play();
@@ -260,7 +260,7 @@
       createScrollTimelineWithOffsets(t, CSS.percent(20), CSS.percent(80))
     );
 
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     animation.play();
@@ -287,7 +287,7 @@
         createKeyframeEffectOpacity(t),
         createScrollTimelineWithOffsets(t, CSS.percent(20), CSS.percent(80)));
 
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     animation.play();
@@ -324,7 +324,7 @@
         createKeyframeEffectOpacity(t),
         createScrollTimelineWithOffsets(t, CSS.percent(20), CSS.percent(80)));
 
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     animation.play();
@@ -387,7 +387,7 @@
     const animation = new Animation(
         createKeyframeEffectOpacity(t),
         createScrollTimelineWithOffsets(t, CSS.percent(20), CSS.percent(80)));
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     animation.play();
@@ -435,7 +435,7 @@
     const animation = new Animation(
         createKeyframeEffectOpacity(t),
         createScrollTimelineWithOffsets(t, CSS.percent(20), CSS.percent(80)));
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     scroller.scrollTop = 0.5 * maxScroll;
     // allow the scroll to finish.
@@ -467,7 +467,7 @@
         createKeyframeEffectOpacity(t),
         createScrollTimelineWithOffsets(t, CSS.percent(20), CSS.percent(80)));
 
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     animation.play();
@@ -491,7 +491,7 @@
         createKeyframeEffectOpacity(t),
         createScrollTimeline(t));
 
-    const scroller = animation.timeline.scrollSource;
+    const scroller = animation.timeline.source;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
 
     animation.play();

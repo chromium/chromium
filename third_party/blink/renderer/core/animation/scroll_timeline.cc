@@ -78,13 +78,11 @@ ScrollOrientation ToPhysicalScrollOrientation(
   }
 }
 
-Node* ResolveScrollSource(Element* scroll_source) {
-  if (scroll_source &&
-      scroll_source ==
-          scroll_source->GetDocument().ScrollingElementNoLayout()) {
-    return &scroll_source->GetDocument();
+Node* ResolveSource(Element* source) {
+  if (source && source == source->GetDocument().ScrollingElementNoLayout()) {
+    return &source->GetDocument();
   }
-  return scroll_source;
+  return source;
 }
 
 }  // namespace
@@ -92,9 +90,9 @@ Node* ResolveScrollSource(Element* scroll_source) {
 ScrollTimeline* ScrollTimeline::Create(Document& document,
                                        ScrollTimelineOptions* options,
                                        ExceptionState& exception_state) {
-  absl::optional<Element*> scroll_source =
-      options->hasScrollSource() ? absl::make_optional(options->scrollSource())
-                                 : absl::nullopt;
+  absl::optional<Element*> source = options->hasSource()
+                                        ? absl::make_optional(options->source())
+                                        : absl::nullopt;
 
   ScrollDirection orientation;
   if (!StringToScrollDirection(options->orientation(), orientation)) {
@@ -130,29 +128,28 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
   if (document.InQuirksMode())
     document.UpdateStyleAndLayoutTree();
 
-  return MakeGarbageCollected<ScrollTimeline>(&document, scroll_source,
-                                              orientation, scroll_offsets);
+  return MakeGarbageCollected<ScrollTimeline>(&document, source, orientation,
+                                              scroll_offsets);
 }
 
 ScrollTimeline::ScrollTimeline(
     Document* document,
-    absl::optional<Element*> scroll_source,
+    absl::optional<Element*> source,
     ScrollDirection orientation,
     HeapVector<Member<ScrollTimelineOffset>> scroll_offsets)
     : AnimationTimeline(document),
-      scroll_source_(
-          scroll_source.value_or(document->ScrollingElementNoLayout())),
-      resolved_scroll_source_(ResolveScrollSource(scroll_source_)),
+      source_(source.value_or(document->ScrollingElementNoLayout())),
+      resolved_source_(ResolveSource(source_)),
       orientation_(orientation),
       scroll_offsets_(std::move(scroll_offsets)) {
-  if (resolved_scroll_source_) {
+  if (resolved_source_) {
     ScrollTimelineSet& set = GetScrollTimelineSet();
-    if (!set.Contains(resolved_scroll_source_)) {
+    if (!set.Contains(resolved_source_)) {
       set.insert(
-          resolved_scroll_source_,
+          resolved_source_,
           MakeGarbageCollected<HeapHashSet<WeakMember<ScrollTimeline>>>());
     }
-    auto it = set.find(resolved_scroll_source_);
+    auto it = set.find(resolved_source_);
     it->value->insert(this);
   }
   SnapshotState();
@@ -167,9 +164,8 @@ void ScrollTimeline::Invalidate() {
 }
 
 bool ScrollTimeline::ComputeIsActive() const {
-  LayoutBox* layout_box = resolved_scroll_source_
-                              ? resolved_scroll_source_->GetLayoutBox()
-                              : nullptr;
+  LayoutBox* layout_box =
+      resolved_source_ ? resolved_source_->GetLayoutBox() : nullptr;
   return layout_box && layout_box->IsScrollContainer();
 }
 
@@ -201,7 +197,7 @@ bool ScrollTimeline::ResolveScrollOffsets(
   // offsets.
   DCHECK(resolved_offsets.IsEmpty());
   DCHECK(ComputeIsActive());
-  LayoutBox* layout_box = resolved_scroll_source_->GetLayoutBox();
+  LayoutBox* layout_box = resolved_source_->GetLayoutBox();
   DCHECK(layout_box);
 
   double current_offset;
@@ -247,7 +243,7 @@ bool ScrollTimeline::ResolveScrollOffsets(
     // resolve a scroll timeline offset for scroll offset with the is first flag
     // set to first offset.
     auto resolved_offset =
-        offset->ResolveOffset(resolved_scroll_source_, orientation, max_offset,
+        offset->ResolveOffset(resolved_source_, orientation, max_offset,
                               first_offset ? 0 : max_offset);
     if (!resolved_offset) {
       // 5.2 If effective offset is null, the effective scroll offsets is empty
@@ -314,7 +310,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
     return {TimelinePhase::kInactive, /*current_time*/ absl::nullopt,
             resolved_offsets};
   }
-  LayoutBox* layout_box = resolved_scroll_source_->GetLayoutBox();
+  LayoutBox* layout_box = resolved_source_->GetLayoutBox();
   // 2. Otherwise, let current scroll offset be the current scroll offset of
   // scrollSource in the direction specified by orientation.
 
@@ -432,8 +428,8 @@ void ScrollTimeline::SnapshotState() {
   timeline_state_snapshotted_ = ComputeTimelineState();
 }
 
-Element* ScrollTimeline::scrollSource() const {
-  return scroll_source_.Get();
+Element* ScrollTimeline::source() const {
+  return source_.Get();
 }
 
 String ScrollTimeline::orientation() {
@@ -504,8 +500,8 @@ void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,
 }
 
 void ScrollTimeline::AnimationAttached(Animation* animation) {
-  if (resolved_scroll_source_ && !HasAnimations())
-    resolved_scroll_source_->RegisterScrollTimeline(this);
+  if (resolved_source_ && !HasAnimations())
+    resolved_source_->RegisterScrollTimeline(this);
 
   AnimationTimeline::AnimationAttached(animation);
 }
@@ -513,19 +509,19 @@ void ScrollTimeline::AnimationAttached(Animation* animation) {
 void ScrollTimeline::AnimationDetached(Animation* animation) {
   AnimationTimeline::AnimationDetached(animation);
 
-  if (resolved_scroll_source_ && !HasAnimations())
-    resolved_scroll_source_->UnregisterScrollTimeline(this);
+  if (resolved_source_ && !HasAnimations())
+    resolved_source_->UnregisterScrollTimeline(this);
 }
 
 void ScrollTimeline::WorkletAnimationAttached(WorkletAnimationBase* worklet) {
-  if (!resolved_scroll_source_)
+  if (!resolved_source_)
     return;
   attached_worklet_animations_.insert(worklet);
 }
 
 void ScrollTimeline::Trace(Visitor* visitor) const {
-  visitor->Trace(scroll_source_);
-  visitor->Trace(resolved_scroll_source_);
+  visitor->Trace(source_);
+  visitor->Trace(resolved_source_);
   visitor->Trace(scroll_offsets_);
   visitor->Trace(attached_worklet_animations_);
   AnimationTimeline::Trace(visitor);
@@ -584,8 +580,7 @@ void ScrollTimeline::UpdateCompositorTimeline() {
   if (!compositor_timeline_)
     return;
   compositor_timeline_->UpdateCompositorTimeline(
-      scroll_timeline_util::GetCompositorScrollElementId(
-          resolved_scroll_source_),
+      scroll_timeline_util::GetCompositorScrollElementId(resolved_source_),
       GetResolvedScrollOffsets());
 }
 

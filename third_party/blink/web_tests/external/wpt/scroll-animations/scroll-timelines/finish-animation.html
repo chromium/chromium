@@ -69,7 +69,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
@@ -127,7 +127,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   // Make the scroll timeline inactive.
   scroller.style.overflow = 'visible';
   scroller.scrollTop;
@@ -243,7 +243,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = 0.25 * maxScroll;
   // Wait for new animation frame which allows the timeline to compute new
@@ -268,7 +268,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   // Make the scroll timeline inactive.
   scroller.style.overflow = 'visible';
   await waitForNextFrame();
@@ -281,7 +281,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = 0.25 * maxScroll;
   // Wait for new animation frame which allows the timeline to compute new
@@ -308,7 +308,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   const animation = createScrollLinkedAnimation(t);
-  const scroller = animation.timeline.scrollSource;
+  const scroller = animation.timeline.source;
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();

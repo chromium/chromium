@@ -212,7 +212,7 @@ TEST_F(WorkletAnimationTest,
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
   WorkletAnimation* worklet_animation = CreateWorkletAnimation(
@@ -326,7 +326,7 @@ TEST_F(WorkletAnimationTest, DISABLED_ScrollTimelineSetPlaybackRate) {
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
   WorkletAnimation* worklet_animation = CreateWorkletAnimation(
@@ -378,7 +378,7 @@ TEST_F(WorkletAnimationTest,
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_TRUE(scrollable_area);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(GetElementById("scroller"));
+  options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
   WorkletAnimation* worklet_animation = CreateWorkletAnimation(
@@ -424,7 +424,7 @@ TEST_F(WorkletAnimationTest, DISABLED_ScrollTimelineNewlyActive) {
   Element* scroller_element = GetElementById("scroller");
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(scroller_element);
+  options->setSource(scroller_element);
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
   ASSERT_FALSE(scroll_timeline->IsActive());
@@ -478,7 +478,7 @@ TEST_F(WorkletAnimationTest, DISABLED_ScrollTimelineNewlyInactive) {
   Element* scroller_element = GetElementById("scroller");
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(scroller_element);
+  options->setSource(scroller_element);
   ScrollTimeline* scroll_timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(scroll_timeline->IsActive());

@@ -57,7 +57,7 @@
   const scroller = document.getElementById('scroller');
   scroller.classList.add('removed');
   const timeline = new ScrollTimeline(
-      { scrollSource: scroller, orientation: 'block' });
+      { source: scroller, orientation: 'block' });
   const animation = new Animation(effect, timeline);
   animation.play();
 

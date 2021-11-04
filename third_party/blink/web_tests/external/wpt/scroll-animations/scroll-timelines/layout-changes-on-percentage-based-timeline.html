@@ -63,7 +63,7 @@ layout changes on percentage-based scroll offset">
 
   const scroller = document.getElementById('scroller');
   const timeline = new ScrollTimeline({
-    scrollSource: scroller,
+    source: scroller,
     scrollOffsets: [CSS.percent(20), CSS.percent(80)]
   });
   const animation = new Animation(effect, timeline);

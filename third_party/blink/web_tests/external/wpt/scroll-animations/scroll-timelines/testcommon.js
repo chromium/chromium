@@ -68,14 +68,14 @@ function createScrollerWithStartAndEnd(test, orientationClass = 'vertical') {
 
 function createScrollTimeline(test, options) {
   options = options || {
-    scrollSource: createScroller(test)
+    source: createScroller(test)
   }
   return new ScrollTimeline(options);
 }
 
 function createScrollTimelineWithOffsets(test, startOffset, endOffset) {
   return createScrollTimeline(test, {
-    scrollSource: createScroller(test),
+    source: createScroller(test),
     orientation: "vertical",
     scrollOffsets: [startOffset, endOffset]
   });
