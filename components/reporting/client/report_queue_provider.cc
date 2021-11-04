@@ -4,6 +4,8 @@
 
 #include "components/reporting/client/report_queue_provider.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -101,15 +103,35 @@ void ReportQueueProvider::CreateNewQueue(
     std::unique_ptr<ReportQueueConfiguration> config,
     CreateReportQueueCallback cb) {
   sequenced_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](ReportQueueProvider* provider,
-                        std::unique_ptr<ReportQueueConfiguration> config,
-                        CreateReportQueueCallback cb) {
-                       ReportQueueImpl::Create(std::move(config),
-                                               provider->storage(),
-                                               std::move(cb));
-                     },
-                     this, std::move(config), std::move(cb)));
+      FROM_HERE,
+      base::BindOnce(
+          [](ReportQueueProvider* provider,
+             std::unique_ptr<ReportQueueConfiguration> config,
+             CreateReportQueueCallback cb) {
+            // Configure report queue config with an appropriate DM token and
+            // proceed to create the queue if configuration was successful
+            auto report_queue_configured_cb = base::BindOnce(
+                [](scoped_refptr<StorageModuleInterface> storage,
+                   CreateReportQueueCallback cb,
+                   StatusOr<std::unique_ptr<ReportQueueConfiguration>>
+                       config_result) {
+                  // If configuration hit an error, we abort and
+                  // report this through the callback
+                  if (!config_result.ok()) {
+                    std::move(cb).Run(config_result.status());
+                    return;
+                  }
+
+                  // proceed to create the queue
+                  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                                          storage, std::move(cb));
+                },
+                provider->storage(), std::move(cb));
+
+            provider->ConfigureReportQueue(
+                std::move(config), std::move(report_queue_configured_cb));
+          },
+          this, std::move(config), std::move(cb)));
 }
 
 StatusOr<std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>>

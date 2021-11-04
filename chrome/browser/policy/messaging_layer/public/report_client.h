@@ -88,6 +88,14 @@ class ReportingClient : public ReportQueueProvider {
   std::unique_ptr<EncryptedReportingUploadProvider> GetDefaultUploadProvider(
       GetCloudPolicyClientCallback build_cloud_policy_client_cb);
 
+  // Configures the report queue config with an appropriate DM token after its
+  // retrieval for downstream processing, and triggers the corresponding
+  // completion callback with the updated config.
+  void ConfigureReportQueue(
+      std::unique_ptr<reporting::ReportQueueConfiguration> report_queue_config,
+      ReportQueueProvider::ReportQueueConfiguredCallback completion_cb)
+      override;
+
   // Cloud policy client (set by constructor, may only be changed for tests).
   GetCloudPolicyClientCallback build_cloud_policy_client_cb_;
 

@@ -4,7 +4,11 @@
 
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 
+#include <memory>
+#include <string>
+
 #include "base/base64.h"
+#include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,7 +19,10 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/reporting/client/dm_token_retriever.h"
+#include "components/reporting/client/mock_dm_token_retriever.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/encryption/decryption.h"
@@ -31,6 +38,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -44,10 +52,14 @@ using ::testing::Eq;
 using ::testing::Invoke;
 using ::testing::Ne;
 using ::testing::SizeIs;
+using ::testing::StrEq;
+using ::testing::StrictMock;
 using ::testing::WithArgs;
 
 namespace reporting {
 namespace {
+
+constexpr char kDMToken[] = "TOKEN";
 
 class ReportClientTest : public ::testing::TestWithParam<bool> {
  protected:
@@ -94,13 +106,17 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
 
     // Provide a mock cloud policy client.
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
-    client_->SetDMToken("FAKE_DM_TOKEN");
+    client_->SetDMToken(kDMToken);
     test_reporting_ = std::make_unique<ReportingClient::TestEnvironment>(
         base::FilePath(location_.GetPath()),
         base::StringPiece(
             reinterpret_cast<const char*>(signature_verification_public_key_),
             kKeySize),
         client_.get());
+
+    // Use MockDMTokenRetriever and configure it to always return the test DM
+    // token by default
+    MockDMTokenRetrieverWithResult(kDMToken);
   }
 
   void TearDown() override {
@@ -155,32 +171,47 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     return signed_encryption_key;
   }
 
-  std::unique_ptr<ReportQueue> CreateQueue() {
+  StatusOr<std::unique_ptr<ReportQueue>> CreateQueue() {
     auto config_result = ReportQueueConfiguration::Create(
-        dm_token_, destination_, policy_checker_callback_);
+        EventType::kUser, destination_, policy_checker_callback_);
     EXPECT_TRUE(config_result.ok()) << config_result.status();
+    return CreateQueueWithConfig(std::move(config_result.ValueOrDie()));
+  }
 
+  StatusOr<std::unique_ptr<ReportQueue>> CreateQueueWithConfig(
+      std::unique_ptr<ReportQueueConfiguration> report_queue_config) {
+    // Save a reference to report queue config so we can validate what DM token
+    // was set later in the test
+    report_queue_config_ = report_queue_config.get();
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
-    ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
+    ReportQueueProvider::CreateQueue(std::move(report_queue_config),
                                      create_queue_event.cb());
-    auto result = create_queue_event.result();
-    EXPECT_OK(result);
-    auto report_queue = std::move(result.ValueOrDie());
+    auto report_queue_result = create_queue_event.result();
 
     // Let everything ongoing to finish.
     task_environment_.RunUntilIdle();
 
-    return report_queue;
+    return std::move(report_queue_result);
   }
 
   std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
   CreateSpeculativeQueue() {
     auto config_result = ReportQueueConfiguration::Create(
-        dm_token_, destination_, policy_checker_callback_);
+        EventType::kUser, destination_, policy_checker_callback_);
     EXPECT_TRUE(config_result.ok()) << config_result.status();
 
-    auto speculative_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
+    return CreateSpeculativeQueueWithConfig(
         std::move(config_result.ValueOrDie()));
+  }
+
+  std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
+  CreateSpeculativeQueueWithConfig(
+      std::unique_ptr<ReportQueueConfiguration> report_queue_config) {
+    // Save a reference to report queue config so we can validate what DM token
+    // was set
+    report_queue_config_ = report_queue_config.get();
+    auto speculative_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
+        std::move(report_queue_config));
     EXPECT_TRUE(speculative_queue_result.ok())
         << speculative_queue_result.status();
     return std::move(speculative_queue_result.ValueOrDie());
@@ -247,6 +278,24 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     };
   }
 
+  // Forces |DMTokenRetrieverProvider| to use the |MockDMTokenRetriever| by
+  // default and return specified result through the completion callback on
+  // trigger.
+  void MockDMTokenRetrieverWithResult(
+      const StatusOr<std::string> dm_token_result) {
+    DMTokenRetrieverProvider::SetDMTokenRetrieverCallbackForTesting(
+        base::BindRepeating(
+            [](const StatusOr<std::string> dm_token_result,
+               EventType event_type) -> std::unique_ptr<DMTokenRetriever> {
+              auto dm_token_retriever =
+                  std::make_unique<StrictMock<MockDMTokenRetriever>>();
+              dm_token_retriever->ExpectRetrieveDMTokenAndReturnResult(
+                  /*times=*/1, dm_token_result);
+              return std::move(dm_token_retriever);
+            },
+            std::move(dm_token_result)));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   // BrowserTaskEnvironment must be instantiated before other classes that posts
   // tasks.
@@ -266,27 +315,62 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
-  const std::string dm_token_ = "TOKEN";
+  ReportQueueConfiguration* report_queue_config_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
 };
 
-// Tests that a ReportQueue can be created using the ReportingClient.
-TEST_P(ReportClientTest, CreatesReportQueue) {
-  auto report_queue = CreateQueue();
-  ASSERT_THAT(report_queue.get(), Ne(nullptr));
+// Tests that a ReportQueue can be created using the ReportingClient with a DM
+// token.
+//
+// This scenario will eventually be deleted once we have migrated all events
+// over to use event types instead.
+TEST_P(ReportClientTest, CreatesReportQueueWithDMToken) {
+  const base::StringPiece random_dm_token = "RANDOM DM TOKEN";
+  auto report_queue_config_result = ReportQueueConfiguration::Create(
+      random_dm_token, destination_, policy_checker_callback_);
+  EXPECT_OK(report_queue_config_result);
+  auto report_queue_result =
+      CreateQueueWithConfig(std::move(report_queue_config_result.ValueOrDie()));
+  ASSERT_OK(report_queue_result);
+  ASSERT_THAT(std::move(report_queue_result.ValueOrDie()).get(), Ne(nullptr));
+  EXPECT_THAT(report_queue_config_->dm_token(), StrEq(random_dm_token));
+}
+
+// Tests that a ReportQueue can be created using the ReportingClient given an
+// event type.
+TEST_P(ReportClientTest, CreatesReportQueueGivenEventType) {
+  auto report_queue_result = CreateQueue();
+  ASSERT_OK(report_queue_result);
+  ASSERT_THAT(std::move(report_queue_result.ValueOrDie()).get(), Ne(nullptr));
+  EXPECT_THAT(report_queue_config_->dm_token(), StrEq(kDMToken));
+}
+
+// Tests that a ReportQueue cannot be created when there is DM token retrieval
+// failure
+TEST_P(ReportClientTest, CreateReportQueueWhenDMTokenRetrievalFailure) {
+  MockDMTokenRetrieverWithResult(
+      Status(error::INTERNAL, "Simulated DM token retrieval failure"));
+  auto report_queue_result = CreateQueue();
+  EXPECT_FALSE(report_queue_result.ok());
+  EXPECT_EQ(report_queue_result.status().error_code(), error::INTERNAL);
 }
 
 // Ensures that created ReportQueues are actually different.
 TEST_P(ReportClientTest, CreatesTwoDifferentReportQueues) {
   // Create first queue.
-  auto report_queue_1 = CreateQueue();
-  ASSERT_THAT(report_queue_1.get(), Ne(nullptr));
+  auto report_queue_result_1 = CreateQueue();
+  ASSERT_OK(report_queue_result_1);
 
   // Create second queue. It will reuse the same ReportClient, so even if
   // encryption is enabled, there will be no roundtrip to server to get the key.
-  auto report_queue_2 = CreateQueue();
+  auto report_queue_result_2 = CreateQueue();
+  ASSERT_OK(report_queue_result_2);
+
+  auto report_queue_1 = std::move(report_queue_result_1.ValueOrDie());
+  auto report_queue_2 = std::move(report_queue_result_2.ValueOrDie());
+  ASSERT_THAT(report_queue_1.get(), Ne(nullptr));
   ASSERT_THAT(report_queue_2.get(), Ne(nullptr));
 
   EXPECT_NE(report_queue_1.get(), report_queue_2.get());
@@ -295,7 +379,8 @@ TEST_P(ReportClientTest, CreatesTwoDifferentReportQueues) {
 // Creates queue, enqueues message and verifies it is uploaded.
 TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
   // Create queue.
-  auto report_queue = CreateQueue();
+  auto report_queue_result = CreateQueue();
+  ASSERT_OK(report_queue_result);
 
   // Enqueue event.
   if (is_encryption_enabled()) {
@@ -313,7 +398,8 @@ TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
   }
 
   test::TestEvent<Status> enqueue_record_event;
-  report_queue->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
+  std::move(report_queue_result.ValueOrDie())
+      ->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
   const auto enqueue_record_result = enqueue_record_event.result();
   EXPECT_OK(enqueue_record_result) << enqueue_record_result;
 

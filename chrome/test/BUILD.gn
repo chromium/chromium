@@ -4675,6 +4675,7 @@ test("unit_tests") {
     "../browser/policy/messaging_layer/upload/record_upload_request_builder_unittest.cc",
     "../browser/policy/messaging_layer/upload/upload_client_unittest.cc",
     "../browser/policy/messaging_layer/upload/upload_provider_unittest.cc",
+    "../browser/policy/messaging_layer/util/dm_token_retriever_provider_unittest.cc",
     "../browser/policy/messaging_layer/util/report_queue_manual_test_context_unittest.cc",
     "../browser/policy/messaging_layer/util/user_dm_token_retriever_unittest.cc",
     "../browser/policy/profile_policy_connector_unittest.cc",

@@ -41,6 +41,12 @@ class MockReportQueueProvider : public ReportQueueProvider {
 
   MOCK_METHOD(void, OnInitCompleted, (), ());
 
+  MOCK_METHOD(void,
+              ConfigureReportQueue,
+              (std::unique_ptr<ReportQueueConfiguration> configuration,
+               ReportQueueProvider::ReportQueueConfiguredCallback callback),
+              (override));
+
  private:
   scoped_refptr<StorageModuleInterface> storage_;
 };

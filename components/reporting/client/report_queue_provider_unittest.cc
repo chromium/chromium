@@ -6,20 +6,14 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/no_destructor.h"
-#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "build/build_config.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/client/mock_report_queue_provider.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider_test_helper.h"
-#include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/util/status.h"
-#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,7 +35,6 @@ class ReportQueueProviderTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  const std::string dm_token_ = "TOKEN";
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
@@ -55,7 +48,7 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
   static constexpr char kTestMessage[] = "TEST MESSAGE";
   // Create configuration.
   auto config_result = ReportQueueConfiguration::Create(
-      dm_token_, destination_, policy_checker_callback_);
+      EventType::kDevice, destination_, policy_checker_callback_);
   ASSERT_OK(config_result);
   EXPECT_CALL(*provider.get(), OnInitCompleted()).Times(1);
   provider->ExpectCreateNewQueueAndReturnNewMockQueue(1);

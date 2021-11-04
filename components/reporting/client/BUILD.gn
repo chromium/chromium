@@ -84,6 +84,8 @@ static_library("report_queue_provider") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "mock_dm_token_retriever.cc",
+    "mock_dm_token_retriever.h",
     "mock_report_queue.cc",
     "mock_report_queue.h",
     "mock_report_queue_provider.cc",

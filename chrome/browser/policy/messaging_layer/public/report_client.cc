@@ -15,12 +15,14 @@
 #include "base/memory/singleton.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
+#include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -28,6 +30,7 @@
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/reporting/client/dm_token_retriever.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_impl.h"
 #include "components/reporting/encryption/encryption_module.h"
@@ -234,6 +237,63 @@ ReportQueueProvider* ReportQueueProvider::GetInstance() {
   // base::Singleton<ReportingClient>::get() cannot be called
   // outside ReportingClient class.
   return ReportingClient::GetInstance();
+}
+
+void ReportingClient::ConfigureReportQueue(
+    std::unique_ptr<ReportQueueConfiguration> configuration,
+    ReportQueueProvider::ReportQueueConfiguredCallback completion_cb) {
+  // If DM token has already been set (only likely for testing purposes or until
+  // pre-existing events are migrated over to use event types instead), we do
+  // nothing and trigger completion callback with report queue config.
+  if (!configuration->dm_token().empty()) {
+    std::move(completion_cb).Run(std::move(configuration));
+    return;
+  }
+
+  auto dm_token_retriever_provider =
+      std::make_unique<DMTokenRetrieverProvider>();
+  auto dm_token_retriever =
+      std::move(dm_token_retriever_provider)
+          ->GetDMTokenRetrieverForEventType(configuration->event_type());
+
+  // Trigger completion callback with an internal error if no DM token retriever
+  // found
+  if (!dm_token_retriever) {
+    std::move(completion_cb)
+        .Run(Status(error::INTERNAL,
+                    base::StrCat({"No DM token retriever found for event type=",
+                                  base::NumberToString(static_cast<int>(
+                                      configuration->event_type()))})));
+    return;
+  }
+
+  std::move(dm_token_retriever)
+      ->RetrieveDMToken(base::BindOnce(
+          [](std::unique_ptr<ReportQueueConfiguration> configuration,
+             ReportQueueProvider::ReportQueueConfiguredCallback completion_cb,
+             StatusOr<std::string> dm_token_result) {
+            // Trigger completion callback with error if there was an error
+            // retrieving DM token.
+            if (!dm_token_result.ok()) {
+              std::move(completion_cb).Run(dm_token_result.status());
+              return;
+            }
+
+            // Set DM token in config and trigger completion callback with the
+            // corresponding result.
+            auto config_result =
+                configuration->SetDMToken(dm_token_result.ValueOrDie());
+
+            // Fail on error
+            if (!config_result.ok()) {
+              std::move(completion_cb).Run(config_result);
+              return;
+            }
+
+            // Success, run completion callback with updated config
+            std::move(completion_cb).Run(std::move(configuration));
+          },
+          std::move(configuration), std::move(completion_cb)));
 }
 
 // static
