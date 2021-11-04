@@ -62,10 +62,8 @@ void SetClientCertProperties(client_cert::ConfigType config_type,
                              base::Value* shill_dictionary) {
   const std::string cert_type =
       FindStringKeyOrEmpty(onc_object, ::onc::client_cert::kClientCertType);
-  if (cert_type != ::onc::client_cert::kPKCS11Id) {
-    client_cert::SetEmptyShillProperties(config_type, shill_dictionary);
+  if (cert_type != ::onc::client_cert::kPKCS11Id)
     return;
-  }
 
   const std::string pkcs11_id =
       FindStringKeyOrEmpty(onc_object, ::onc::client_cert::kClientCertPKCS11Id);

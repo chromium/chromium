@@ -7,9 +7,6 @@
    "Profile": "/profile/user1/shill",
    "Provider": {
       "Host": "vpn.my.domain.com",
-      "L2TPIPsec.ClientCertID": "",
-      "L2TPIPsec.ClientCertSlot": "",
-      "L2TPIPsec.PIN": "",
       "L2TPIPsec.PSK": "my_updated_psk",
       "L2TPIPsec.Password": "my_updated_password",
       "L2TPIPsec.User": "my_username",

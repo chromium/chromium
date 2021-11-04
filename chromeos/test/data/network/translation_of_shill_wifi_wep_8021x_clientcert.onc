@@ -10,8 +10,6 @@
   "Type":"WiFi",
   "WiFi":{
     "EAP": {
-      "ClientCertPKCS11Id": "",
-      "ClientCertType": "PKCS11Id",
       "Identity": "abc ${LOGIN_ID}@my.domain.com",
       "Outer": "EAP-TLS",
       "SaveCredentials": true,
