@@ -56,7 +56,7 @@ const Feature kPartitionAllocSimulateBRPPartitionSplit{
 const base::FeatureParam<BackupRefPtrEnabledProcesses>
     kSimulateBRPPartitionSplitProcessesParam{
         &kPartitionAllocSimulateBRPPartitionSplit, "enabled-processes",
-        BackupRefPtrEnabledProcesses::kBrowserOnly,
+        BackupRefPtrEnabledProcesses::kAllProcesses,
         &kBackupRefPtrEnabledProcessesOptions};
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
