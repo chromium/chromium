@@ -81,7 +81,7 @@ export async function setMetricsEnabled(enabled) {
   await (await gaHelper).setMetricsEnabled(GA_ID, enabled);
 }
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 /**
  * Initializes metrics with parameters.
