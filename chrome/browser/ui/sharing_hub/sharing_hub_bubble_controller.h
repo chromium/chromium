@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
@@ -23,7 +24,7 @@ class Button;
 }  // namespace views
 
 namespace sharesheet {
-class SharesheetController;
+class SharesheetService;
 }  // namespace sharesheet
 
 namespace sharing_hub {
@@ -35,7 +36,8 @@ struct SharingHubAction;
 // Controller component of the Sharing Hub dialog bubble.
 // Responsible for showing and hiding an owned bubble.
 class SharingHubBubbleController
-    : public content::WebContentsUserData<SharingHubBubbleController> {
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<SharingHubBubbleController> {
  public:
   SharingHubBubbleController(const SharingHubBubbleController&) = delete;
   SharingHubBubbleController& operator=(const SharingHubBubbleController&) =
@@ -74,6 +76,11 @@ class SharingHubBubbleController
   // Handler for when the bubble is closed.
   void OnBubbleClosed();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // content::WebContentsObserver:
+  void OnVisibilityChanged(content::Visibility visibility) override;
+#endif
+
  protected:
   SharingHubBubbleController();
   explicit SharingHubBubbleController(content::WebContents* web_contents);
@@ -84,14 +91,18 @@ class SharingHubBubbleController
   SharingHubModel* GetSharingHubModel();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  sharesheet::SharesheetService* GetSharesheetService();
   void ShowSharesheet(views::Button* highlighted_button);
+  void CloseSharesheet();
   void OnShareDelivered(sharesheet::SharesheetResult result);
   void OnSharesheetClosed(views::Widget::ClosedReason reason);
 
   void DeselectIcon();
 
   views::ViewTracker highlighted_button_tracker_;
-  sharesheet::SharesheetController* sharesheet_controller_ = nullptr;
+  sharesheet::SharesheetService* sharesheet_service_ = nullptr;
+  gfx::NativeWindow web_contents_containing_window_ = nullptr;
+  bool bubble_showing_ = false;
 #endif
 
   // The web_contents associated with this controller.
