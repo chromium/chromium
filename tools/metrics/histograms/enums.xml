@@ -70588,13 +70588,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ProxyScheme">
-  <int value="0" label="SCHEME_INVALID"/>
-  <int value="1" label="SCHEME_DIRECT"/>
-  <int value="2" label="SCHEME_HTTP"/>
-  <int value="3" label="SCHEME_SOCKS4"/>
-  <int value="4" label="SCHEME_SOCKS5"/>
-  <int value="5" label="SCHEME_HTTPS"/>
-  <int value="6" label="SCHEME_QUIC"/>
+  <int value="1" label="SCHEME_INVALID"/>
+  <int value="2" label="SCHEME_DIRECT"/>
+  <int value="4" label="SCHEME_HTTP"/>
+  <int value="8" label="SCHEME_SOCKS4"/>
+  <int value="16" label="SCHEME_SOCKS5"/>
+  <int value="32" label="SCHEME_HTTPS"/>
+  <int value="64" label="SCHEME_QUIC"/>
 </enum>
 
 <enum name="ProxyStatus">
