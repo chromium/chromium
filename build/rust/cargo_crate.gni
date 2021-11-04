@@ -134,7 +134,7 @@ template("cargo_crate") {
   if (defined(invoker.build_root)) {
     # Extra targets required to make build script work
     action("${build_script_name}_output") {
-      script = rebase_path("//build/rust/cargo_crate/run_build_script.py")
+      script = rebase_path("//build/rust/run_build_script.py")
       build_script_target = ":${build_script_name}($host_toolchain)"
       deps = [ build_script_target ]
       flags_file = "$target_out_dir/cargo_flags.rs"
