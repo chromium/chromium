@@ -182,17 +182,19 @@ class CORE_EXPORT PaintLayerStackingNode
   //                          |
   //               overlay overflow controls
   //
-  // This map records which PaintLayers (the values of the map) have overlay
-  // overflow controls which should paint after the given PaintLayer (the key of
+  // This map records the PaintLayers (the values of the map) that have overlay
+  // overflow controls that should paint after the given PaintLayer (the key of
   // the map). The value of the map is a list of PaintLayers because there may
   // be more than one scrolling or resizing container in the same stacking
   // context with overlay overflow controls.
+  // For the above example, this map has one entry {child: target} which means
+  // that |target|'s overlay overflow controls should be painted after |child|.
   HeapHashMap<Member<const PaintLayer>, Member<PaintLayers>>
       layer_to_overlay_overflow_controls_painting_after_;
 
   // All PaintLayers (just in current stacking context, child stacking contexts
-  // will have their own list) that have overlay overflow controls which should
-  // paint reordered.
+  // will have their own list) that have overlay overflow controls that should
+  // paint reordered. For the above example, this has one entry {target}.
   PaintLayers overlay_overflow_controls_reordered_list_;
 
   // Indicates whether the z-order lists above are dirty.
