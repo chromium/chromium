@@ -137,10 +137,8 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
   if (![currentLanguage isEqual:@"en-US"])
     return;
 
-  // Language indexes are different on iOS 14.
-  // TODO(crbug.com/1102968): Avoid hard-coding indexes here.
-  const int portuguese_index = base::ios::IsRunningOnIOS14OrLater() ? 67 : 69;
-  const int spanish_index = base::ios::IsRunningOnIOS14OrLater() ? 81 : 83;
+  const int portuguese_index = 67;
+  const int spanish_index = 81;
 
   [mediator_ didSelectSourceLanguageIndex:portuguese_index
                                  withName:@"Portuguese"];

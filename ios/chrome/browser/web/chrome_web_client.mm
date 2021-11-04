@@ -304,8 +304,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   static base::NoDestructor<PrintJavaScriptFeature> print_feature;
   std::vector<web::JavaScriptFeature*> features;
   if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordReuseDetectionEnabled) &&
-      base::ios::IsRunningOnIOS14OrLater()) {
+          password_manager::features::kPasswordReuseDetectionEnabled)) {
     features.push_back(PasswordProtectionJavaScriptFeature::GetInstance());
   }
 

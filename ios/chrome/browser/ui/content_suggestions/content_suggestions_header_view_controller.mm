@@ -48,18 +48,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 }  // namespace
 
-@interface ContentSuggestionsHeaderViewController (Pointer) <
-    UIPointerInteractionDelegate>
-@end
-
-#if defined(__IPHONE_14_0)
-@interface ContentSuggestionsHeaderViewController (Scribble) <
-    UIIndirectScribbleInteractionDelegate>
-@end
-#endif  // defined(__IPHONE14_0)
-
 @interface ContentSuggestionsHeaderViewController () <
     DoodleObserver,
+    UIIndirectScribbleInteractionDelegate,
+    UIPointerInteractionDelegate,
     UserAccountImageUpdateDelegate>
 
 // If YES the animations of the fake omnibox triggered when the collection is

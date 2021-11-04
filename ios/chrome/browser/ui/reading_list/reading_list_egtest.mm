@@ -852,7 +852,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // after delete (using swipe).
 - (void)testVisibleButtonsAfterSwipeDeletion {
   // TODO(crbug.com/1046978): Test fails on iOS 13.3 iPad
-  if ([ChromeEarlGrey isIPadIdiom] && base::ios::IsRunningOnOrLater(13, 3, 0)) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on iOS 13.3 iPad and later.");
   }
 
@@ -1133,7 +1133,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that the VC can be dismissed by swiping down.
 - (void)testSwipeDownDismiss {
   // TODO(crbug.com/1129589): Test disabled on iOS14 iPhones.
-  if (base::ios::IsRunningOnIOS14OrLater() && ![ChromeEarlGrey isIPadIdiom]) {
+  if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS14 iPhones.");
   }
 

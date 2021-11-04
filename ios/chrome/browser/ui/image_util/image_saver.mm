@@ -88,8 +88,7 @@ const base::Feature kPhotoLibrarySaveImage{"PhotoLibrarySaveImage",
       return;
     }
 
-    if (base::FeatureList::IsEnabled(kPhotoLibrarySaveImage) &&
-        base::ios::IsRunningOnIOS14OrLater()) {
+    if (base::FeatureList::IsEnabled(kPhotoLibrarySaveImage)) {
       // Dump |data| into the photo library. Requires the usage of
       // NSPhotoLibraryAddUsageDescription.
       [[PHPhotoLibrary sharedPhotoLibrary]

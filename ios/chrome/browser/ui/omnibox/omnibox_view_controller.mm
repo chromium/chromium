@@ -39,12 +39,8 @@ const CGFloat kClearButtonSize = 28.0f;
 
 }  // namespace
 
-#if defined(__IPHONE_14_0)
-@interface OmniboxViewController (Scribble) <UIScribbleInteractionDelegate>
-@end
-#endif  // defined(__IPHONE14_0)
-
-@interface OmniboxViewController () <OmniboxTextFieldDelegate> {
+@interface OmniboxViewController () <OmniboxTextFieldDelegate,
+                                     UIScribbleInteractionDelegate> {
   // Weak, acts as a delegate
   OmniboxTextChangeDelegate* _textChangeDelegate;
 }
