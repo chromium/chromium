@@ -100,7 +100,6 @@ projectorApp.Account.prototype.pictureURL;
  */
 projectorApp.Account.prototype.isPrimaryUser;
 
-
 /**
  * Structure for OAuthToken information passed.
  * @record
@@ -275,6 +274,24 @@ projectorApp.ClientDelegate.prototype.shouldDownloadSoda = function() {};
  * @return {!Promise<boolean>}
  */
 projectorApp.ClientDelegate.prototype.installSoda = function() {};
+
+/**
+ * Checks if the user has given consent for the creation flow during onboarding.
+ * If the `userPref` is not supported the returned promise will be rejected.
+ * @param {string} userPref
+ * @return {!Promise<Object>}
+ */
+projectorApp.ClientDelegate.prototype.getUserPref = function(userPref) {};
+
+/**
+ * Returns consent given by the user to enable creation flow during onboarding.
+ * @param {string} userPref
+ * @param {Object} value A preference can store multiple types (dictionaries,
+ *     lists, Boolean, etc..); therefore, accept a generic Object value.
+ * @return {!Promise} Promise resolved when the request was handled.
+ */
+projectorApp.ClientDelegate.prototype.setUserPref = function(
+    userPref, value) {};
 
 /**
  * The client Api for interacting with the Projector app instance.
