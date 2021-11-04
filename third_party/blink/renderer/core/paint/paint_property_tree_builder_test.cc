@@ -5729,7 +5729,10 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentPaintOffsetUnderOverflowScroll) {
   ASSERT_NE(nullptr, second_fragment);
 
   EXPECT_EQ(PhysicalOffset(), first_fragment.PaintOffset());
-  EXPECT_EQ(PhysicalOffset(390, -10), second_fragment->PaintOffset());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    EXPECT_EQ(PhysicalOffset(390, 0), second_fragment->PaintOffset());
+  else
+    EXPECT_EQ(PhysicalOffset(390, -10), second_fragment->PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, FragmentClipPixelSnapped) {
