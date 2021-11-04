@@ -173,7 +173,8 @@ void AppListBubbleAppsPage::StartShowAnimation() {
       })));
 
   // Disable the gradient mask on the scroll view to improve performance.
-  gradient_helper_->HideGradient(true);
+  gradient_disabler_ = std::make_unique<ScopedScrollViewGradientDisabler>(
+      gradient_helper_.get());
 
   // Animate the views. Each section is initially offset down, then slides up
   // into its final position. If a section isn't visible, skip it. The further
@@ -337,7 +338,7 @@ void AppListBubbleAppsPage::DestroyLayerForView(views::View* view) {
 
 void AppListBubbleAppsPage::OnAppsGridViewAnimationEnded() {
   // Recreate the gradient mask, if necessary.
-  gradient_helper_->HideGradient(false);
+  gradient_disabler_.reset();
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

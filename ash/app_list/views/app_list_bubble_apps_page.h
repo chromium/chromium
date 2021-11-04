@@ -29,6 +29,7 @@ class AppListFolderController;
 class AppListViewDelegate;
 class ContinueSectionView;
 class RecentAppsView;
+class ScopedScrollViewGradientDisabler;
 class ScrollableAppsGridView;
 class ScrollViewGradientHelper;
 
@@ -115,6 +116,10 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
+
+  // Disables the gradient on `scroll_view_` during animations to improve
+  // performance. Must be destroyed before `gradient_helper_`.
+  std::unique_ptr<ScopedScrollViewGradientDisabler> gradient_disabler_;
 
   base::WeakPtrFactory<AppListBubbleAppsPage> weak_factory_{this};
 };

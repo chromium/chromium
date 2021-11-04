@@ -38,13 +38,8 @@ ScrollViewGradientHelper::ScrollViewGradientHelper(
 
 ScrollViewGradientHelper::~ScrollViewGradientHelper() = default;
 
-void ScrollViewGradientHelper::HideGradient(bool hide) {
-  hide_gradient_ = hide;
-  UpdateGradientZone();
-}
-
 void ScrollViewGradientHelper::UpdateGradientZone() {
-  if (hide_gradient_) {
+  if (disable_count_ > 0) {
     RemoveMaskLayer();
     return;
   }
@@ -99,6 +94,22 @@ void ScrollViewGradientHelper::UpdateGradientZone() {
 void ScrollViewGradientHelper::RemoveMaskLayer() {
   scroll_view_->layer()->SetMaskLayer(nullptr);
   gradient_layer_.reset();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+ScopedScrollViewGradientDisabler::ScopedScrollViewGradientDisabler(
+    ScrollViewGradientHelper* helper)
+    : helper_(helper) {
+  DCHECK(helper_);
+  helper_->disable_count_++;
+  helper_->UpdateGradientZone();
+}
+
+ScopedScrollViewGradientDisabler::~ScopedScrollViewGradientDisabler() {
+  DCHECK_GT(helper_->disable_count_, 0);
+  helper_->disable_count_--;
+  helper_->UpdateGradientZone();
 }
 
 }  // namespace ash
