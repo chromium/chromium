@@ -348,7 +348,7 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #view-crop-document .review-image .dot {
-  --icon-size: 8px;
+  --icon-size: 12px;
   --focus-ring-style: none;
   --focus-size: 32px;
 
@@ -374,13 +374,13 @@ body.enable-scan-barcode .barcode-scan-box {
 }
 
 #view-crop-document .review-image .dot::before {
-  background: var(--blue-500);
+  background: var(--blue-300);
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
 #view-crop-document .review-image .dot::after {
   background: rgba(var(--blue-300-rgb), 0.24);
-  border: 1px solid var(--blue-500);
+  border: 2px solid var(--blue-300);
   box-sizing: border-box;
 }
 
