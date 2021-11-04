@@ -114,12 +114,6 @@ bool GetStatusForSigninPolicy() {
   return false;
 }
 
-bool IsForcedSigninPolicy() {
-  return static_cast<BrowserSigninMode>(
-             GetApplicationContext()->GetLocalState()->GetInteger(
-                 prefs::kBrowserSigninPolicy)) == BrowserSigninMode::kForced;
-}
-
 }  // namespace
 
 @interface GoogleServicesSettingsMediator () <
@@ -241,7 +235,8 @@ bool IsForcedSigninPolicy() {
                          IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
                    detailStringID:
                        IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL
-                           status:GetStatusForSigninPolicy()];
+                           status:GetStatusForSigninPolicy()
+                     controllable:IsSigninControllableByUser()];
 }
 
 #pragma mark - Load non personalized section
@@ -351,7 +346,8 @@ bool IsForcedSigninPolicy() {
                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_TEXT
                        detailStringID:
                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTOCOMPLETE_SEARCHES_AND_URLS_DETAIL
-                               status:self.autocompleteSearchPreference.value];
+                               status:self.autocompleteSearchPreference.value
+                         controllable:self.autocompleteSearchPreference.value];
       [items addObject:autocompleteItem];
     } else {
       SyncSwitchItem* autocompleteItem = [self
@@ -371,7 +367,8 @@ bool IsForcedSigninPolicy() {
                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_TEXT
                        detailStringID:
                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_SAFE_BROWSING_DETAIL
-                               status:self.safeBrowsingPreference.value];
+                               status:self.safeBrowsingPreference.value
+                         controllable:self.safeBrowsingPreference.value];
       [items addObject:safeBrowsingManagedItem];
     } else {
       SyncSwitchItem* safeBrowsingItem = [self
@@ -394,7 +391,8 @@ bool IsForcedSigninPolicy() {
                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_TEXT
                        detailStringID:
                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_IMPROVE_CHROME_DETAIL
-                               status:self.sendDataUsagePreference];
+                               status:self.sendDataUsagePreference
+                         controllable:self.sendDataUsagePreference];
       [items addObject:improveChromeItem];
     } else {
       SyncSwitchItem* improveChromeItem = [self
@@ -414,7 +412,8 @@ bool IsForcedSigninPolicy() {
                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_TEXT
                        detailStringID:
                            IDS_IOS_GOOGLE_SERVICES_SETTINGS_BETTER_SEARCH_AND_BROWSING_DETAIL
-                               status:self.anonymizedDataCollectionPreference];
+                               status:self.anonymizedDataCollectionPreference
+                         controllable:self.anonymizedDataCollectionPreference];
       betterSearchAndBrowsingItem.accessibilityIdentifier =
           kBetterSearchAndBrowsingItemAccessibilityID;
       [items addObject:betterSearchAndBrowsingItem];
@@ -470,7 +469,8 @@ bool IsForcedSigninPolicy() {
 - (TableViewInfoButtonItem*)TableViewInfoButtonItemType:(NSInteger)itemType
                                            textStringID:(int)textStringID
                                          detailStringID:(int)detailStringID
-                                                 status:(BOOL)status {
+                                                 status:(BOOL)status
+                                           controllable:(BOOL)controllable {
   TableViewInfoButtonItem* managedItem =
       [[TableViewInfoButtonItem alloc] initWithType:itemType];
   managedItem.text = GetNSString(textStringID);
@@ -479,12 +479,15 @@ bool IsForcedSigninPolicy() {
                                   : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
   if (!status) {
     managedItem.tintColor = [UIColor colorNamed:kGrey300Color];
-    managedItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  } else if (IsForcedSigninPolicy()) {
-    // Status should be ON for forced sign-in policy, but the text color has to
-    // be gray because the knob is not shown.
-    managedItem.textColor = [UIColor colorNamed:kDisabledTintColor];
-    managedItem.detailTextColor = [UIColor colorNamed:kDisabledTintColor];
+  }
+
+  // When there is no knob (not controllable), then set the color opacity to
+  // 40%.
+  if (!controllable) {
+    managedItem.textColor =
+        [[UIColor colorNamed:kTextPrimaryColor] colorWithAlphaComponent:0.4f];
+    managedItem.detailTextColor =
+        [[UIColor colorNamed:kTextSecondaryColor] colorWithAlphaComponent:0.4f];
   }
   managedItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
