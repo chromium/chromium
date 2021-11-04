@@ -187,6 +187,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
             }
         };
 
+        mSceneCoordinator.clearSelection();
         mMediator.generateGif(gifHost, mSceneCoordinator.getFrameCount(),
                 mSceneCoordinator.getWidth(), mSceneCoordinator.getHeight(), (imageUri) -> {
                     final String sheetTitle = getShareSheetTitle();

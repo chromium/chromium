@@ -55,8 +55,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
     public void setSceneBackground(RelativeLayout sceneBackground) {
         mSceneBackground = sceneBackground;
-        mSceneBackground.setOnClickListener(
-                (view) -> { markActiveStatus(mActiveReaction, false); });
+        mSceneBackground.setOnClickListener((view) -> { clearSelection(); });
     }
 
     public void addReactionInDefaultLocation(ReactionMetadata reaction) {
@@ -130,10 +129,16 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         return maxFramesLayout.getReaction().getMetadata().frameCount;
     }
 
+    /**
+     * Gets the width of the current scene, in pixels.
+     */
     public int getWidth() {
         return mSceneBackground.getWidth();
     }
 
+    /**
+     * Gets the height of the current scene, in pixels.
+     */
     public int getHeight() {
         return mSceneBackground.getHeight();
     }
@@ -143,6 +148,13 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
      */
     public void drawScene(Canvas canvas) {
         mSceneBackground.draw(canvas);
+    }
+
+    /**
+     * Deselects the active reaction, if any.
+     */
+    public void clearSelection() {
+        markActiveStatus(mActiveReaction, false);
     }
 
     private void replaceActiveReaction(ReactionMetadata reaction) {
