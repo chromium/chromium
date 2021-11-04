@@ -84,9 +84,7 @@ bool IsParallelizableDownload(const DownloadCreateInfo& create_info,
 
   bool range_support_allowed =
       create_info.accept_range == RangeRequestSupportType::kSupport ||
-      (base::FeatureList::IsEnabled(
-           features::kUseParallelRequestsForUnknwonRangeSupport) &&
-       create_info.accept_range == RangeRequestSupportType::kUnknown);
+      create_info.accept_range == RangeRequestSupportType::kUnknown;
   bool is_parallelizable = has_strong_validator && range_support_allowed &&
                            has_content_length && satisfy_min_file_size &&
                            satisfy_connection_type && http_get_method &&

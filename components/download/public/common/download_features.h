@@ -52,11 +52,6 @@ COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
     kAllowDownloadResumptionWithoutStrongValidators;
 
-// Whether parallel requests are used if server response doesn't reveal range
-// support.
-COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
-    kUseParallelRequestsForUnknwonRangeSupport;
-
 // Whether parallel download is used for HTTP2 connections.
 COMPONENTS_DOWNLOAD_EXPORT extern const base::Feature
     kUseParallelRequestsForHTTP2;
