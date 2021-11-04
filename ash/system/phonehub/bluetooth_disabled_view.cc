@@ -37,6 +37,7 @@ BluetoothDisabledView::BluetoothDisabledView() {
   auto* content_view = AddChildView(
       std::make_unique<PhoneHubInterstitialView>(/*show_progress=*/false));
 
+  // TODO(crbug.com/1127996): Replace PNG file with vector icon.
   gfx::ImageSkia* image =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_PHONE_HUB_ERROR_STATE_IMAGE);

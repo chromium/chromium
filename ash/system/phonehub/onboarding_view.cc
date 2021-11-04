@@ -68,6 +68,7 @@ class OnboardingMainView : public PhoneHubInterstitialView {
 
  private:
   void InitLayout() {
+    // TODO(crbug.com/1127996): Replace PNG file with vector icon.
     gfx::ImageSkia* image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_PHONE_HUB_ONBOARDING_IMAGE);

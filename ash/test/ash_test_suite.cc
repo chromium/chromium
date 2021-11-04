@@ -16,7 +16,6 @@
 #include "ui/display/display_switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/test/gl_surface_test_support.h"
-#include "ui/lottie/resource.h"
 
 namespace ash {
 
@@ -40,9 +39,6 @@ void AshTestSuite::Initialize() {
   // Force unittests to run using en-US so if we test against string output,
   // it'll pass regardless of the system language.
   base::i18n::SetICUDefaultLocale("en_US");
-
-  ui::ResourceBundle::SetParseLottieAsStillImage(
-      &lottie::ParseLottieAsStillImage);
 
   // Load ash test resources and en-US strings; not 'common' (Chrome) resources.
   base::FilePath path;
