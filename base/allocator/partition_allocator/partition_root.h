@@ -923,7 +923,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
   PA_DCHECK(slot_span);
   PA_DCHECK(slot_span->num_allocated_slots >= 0);
 
-  void* slot_start = slot_span->get_freelist_head();
+  void* slot_start = slot_span->freelist_head;
   // Use the fast path when a slot is readily available on the free list of the
   // first active slot span. However, fall back to the slow path if a
   // higher-order alignment is requested, because an inner slot of an existing
@@ -944,7 +944,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     PA_DCHECK(!slot_span->CanStoreRawSize());
     PA_DCHECK(!slot_span->bucket->is_direct_mapped());
     internal::PartitionFreelistEntry* new_head =
-        slot_span->get_freelist_head()->GetNext(bucket->slot_size);
+        slot_span->freelist_head->GetNext(bucket->slot_size);
     slot_span->SetFreelistHead(new_head);
     slot_span->num_allocated_slots++;
 

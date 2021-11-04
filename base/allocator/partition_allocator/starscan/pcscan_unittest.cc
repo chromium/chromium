@@ -137,7 +137,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
                reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
   EXPECT_EQ(num_slots, static_cast<size_t>(
                            bucket.active_slot_spans_head->num_allocated_slots));
-  EXPECT_EQ(nullptr, bucket.active_slot_spans_head->get_freelist_head());
+  EXPECT_EQ(nullptr, bucket.active_slot_spans_head->freelist_head);
   EXPECT_TRUE(bucket.is_valid());
   EXPECT_TRUE(bucket.active_slot_spans_head !=
               SlotSpan::get_sentinel_slot_span());
@@ -149,7 +149,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
 bool IsInFreeList(void* slot_start) {
   slot_start = memory::RemaskPtr(slot_start);
   auto* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
-  for (auto* entry = slot_span->get_freelist_head(); entry;
+  for (auto* entry = slot_span->freelist_head; entry;
        entry = entry->GetNext(slot_span->bucket->slot_size)) {
     if (entry == slot_start)
       return true;
