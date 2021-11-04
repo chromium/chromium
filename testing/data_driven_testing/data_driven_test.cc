@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_driven_test.h"
+#include "testing/data_driven_testing/data_driven_test.h"
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -11,7 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace autofill {
+namespace testing {
 namespace {
 
 // Reads |file| into |content|, and converts Windows line-endings to Unix ones.
@@ -58,13 +58,10 @@ void DataDrivenTest::RunDataDrivenTest(
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(base::DirectoryExists(input_directory));
   ASSERT_TRUE(base::DirectoryExists(output_directory));
-  base::FileEnumerator input_files(input_directory,
-                                   false,
-                                   base::FileEnumerator::FILES,
-                                   file_name_pattern);
+  base::FileEnumerator input_files(
+      input_directory, false, base::FileEnumerator::FILES, file_name_pattern);
   const bool kIsExpectedToPass = true;
-  for (base::FilePath input_file = input_files.Next();
-       !input_file.empty();
+  for (base::FilePath input_file = input_files.Next(); !input_file.empty();
        input_file = input_files.Next()) {
     RunOneDataDrivenTest(input_file, output_directory, kIsExpectedToPass);
   }
@@ -111,25 +108,26 @@ void DataDrivenTest::RunOneDataDrivenTest(
   }
 }
 
-base::FilePath DataDrivenTest::GetInputDirectory(
-    const base::FilePath::StringType& test_name) {
-  return test_data_directory_.AppendASCII("autofill")
-      .Append(test_name)
+base::FilePath DataDrivenTest::GetInputDirectory() {
+  return test_data_directory_.Append(feature_directory_)
+      .Append(test_name_)
       .AppendASCII("input");
 }
 
-base::FilePath DataDrivenTest::GetOutputDirectory(
-    const base::FilePath::StringType& test_name) {
-  return test_data_directory_.AppendASCII("autofill")
-      .Append(test_name)
+base::FilePath DataDrivenTest::GetOutputDirectory() {
+  return test_data_directory_.Append(feature_directory_)
+      .Append(test_name_)
       .AppendASCII("output");
 }
 
-DataDrivenTest::DataDrivenTest(const base::FilePath& test_data_directory)
-    : test_data_directory_(test_data_directory) {
-}
+DataDrivenTest::DataDrivenTest(
+    const base::FilePath& test_data_directory,
+    const base::FilePath::StringType& feature_directory,
+    const base::FilePath::StringType& test_name)
+    : test_data_directory_(test_data_directory),
+      feature_directory_(feature_directory),
+      test_name_(test_name) {}
 
-DataDrivenTest::~DataDrivenTest() {
-}
+DataDrivenTest::~DataDrivenTest() {}
 
-}  // namespace autofill
+}  // namespace testing

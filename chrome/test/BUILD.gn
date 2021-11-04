@@ -1322,6 +1322,7 @@ if (!is_android && !is_fuchsia) {
       "//services/strings",
       "//skia",
       "//storage/browser:test_support",
+      "//testing/data_driven_testing",
       "//testing/gmock",
       "//testing/gtest",
       "//testing/perf",

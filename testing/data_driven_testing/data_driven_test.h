@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_DRIVEN_TEST_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_DRIVEN_TEST_H_
+#ifndef TESTING_DATA_DRIVEN_TESTING_DATA_DRIVEN_TEST_H_
+#define TESTING_DATA_DRIVEN_TESTING_DATA_DRIVEN_TEST_H_
 
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
 
-namespace autofill {
+namespace testing {
 
 // A convenience class for implementing data-driven tests. Subclassers need only
 // implement the conversion of serialized input data to serialized output data
 // and provide a set of input files. For each input file, on the first run, a
-// gold output file is generated; for subsequent runs, the test ouptut is
+// gold output file is generated; for subsequent runs, the test output is
 // compared to this gold output.
 class DataDrivenTest {
  public:
@@ -45,19 +45,22 @@ class DataDrivenTest {
                                std::string* output) = 0;
 
   // Return |base::FilePath|s to the test input and output subdirectories
-  // ../autofill/|test_name|/input and ../autofill/|test_name|/output.
-  base::FilePath GetInputDirectory(const base::FilePath::StringType& test_name);
-  base::FilePath GetOutputDirectory(
-      const base::FilePath::StringType& test_name);
+  // ../|feature_dir|/|test_name|/input and ../|feature_dir|/|test_name|/output.
+  base::FilePath GetInputDirectory();
+  base::FilePath GetOutputDirectory();
 
  protected:
-  DataDrivenTest(const base::FilePath& test_data_directory);
+  DataDrivenTest(const base::FilePath& test_data_directory,
+                 const base::FilePath::StringType& feature_name,
+                 const base::FilePath::StringType& test_name);
   virtual ~DataDrivenTest();
 
  private:
   base::FilePath test_data_directory_;
+  base::FilePath::StringType feature_directory_;
+  base::FilePath::StringType test_name_;
 };
 
-}  // namespace autofill
+}  // namespace testing
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_DRIVEN_TEST_H_
+#endif  // TESTING_DATA_DRIVEN_TESTING_DATA_DRIVEN_TEST_H_
