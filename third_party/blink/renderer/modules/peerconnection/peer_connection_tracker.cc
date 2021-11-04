@@ -996,7 +996,7 @@ void PeerConnectionTracker::TrackAddIceCandidate(
 
   const char* event =
       (source == SOURCE_LOCAL)
-          ? "onIceCandidate"
+          ? "icecandidate"
           : (succeeded ? "addIceCandidate" : "addIceCandidateFailed");
 
   SendPeerConnectionUpdate(id, event, value);
@@ -1103,9 +1103,7 @@ void PeerConnectionTracker::TrackCreateDataChannel(
   String value = "label: " + String::FromUTF8(data_channel->label()) +
                  ", reliable: " + SerializeBoolean(data_channel->reliable());
   SendPeerConnectionUpdate(
-      id,
-      source == SOURCE_LOCAL ? "createLocalDataChannel" : "onRemoteDataChannel",
-      value);
+      id, source == SOURCE_LOCAL ? "createDataChannel" : "datachannel", value);
 }
 
 void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {
@@ -1123,7 +1121,7 @@ void PeerConnectionTracker::TrackSignalingStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "signalingStateChange",
+  SendPeerConnectionUpdate(id, "signalingstatechange",
                            GetSignalingStateString(state));
 }
 
@@ -1134,7 +1132,7 @@ void PeerConnectionTracker::TrackLegacyIceConnectionStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "legacyIceConnectionStateChange",
+  SendPeerConnectionUpdate(id, "iceconnectionstatechange (legacy)",
                            GetIceConnectionStateString(state));
 }
 
@@ -1145,7 +1143,7 @@ void PeerConnectionTracker::TrackIceConnectionStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "iceConnectionStateChange",
+  SendPeerConnectionUpdate(id, "iceconnectionstatechange",
                            GetIceConnectionStateString(state));
 }
 
@@ -1156,7 +1154,7 @@ void PeerConnectionTracker::TrackConnectionStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "connectionStateChange",
+  SendPeerConnectionUpdate(id, "connectionstatechange",
                            GetConnectionStateString(state));
 }
 
@@ -1167,7 +1165,7 @@ void PeerConnectionTracker::TrackIceGatheringStateChange(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "iceGatheringStateChange",
+  SendPeerConnectionUpdate(id, "icegatheringstatechange",
                            GetIceGatheringStateString(state));
 }
 
@@ -1228,7 +1226,7 @@ void PeerConnectionTracker::TrackOnRenegotiationNeeded(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "onRenegotiationNeeded", String(""));
+  SendPeerConnectionUpdate(id, "negotiationneeded", String(""));
 }
 
 void PeerConnectionTracker::TrackGetUserMedia(

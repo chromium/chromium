@@ -82,18 +82,9 @@ export class PeerConnectionUpdateTable {
     timeItem.textContent = time.toLocaleString();
     row.appendChild(timeItem);
 
-    // map internal event names to spec event names.
-    let type = {
-      onRenegotiationNeeded: 'negotiationneeded',
-      signalingStateChange: 'signalingstatechange',
-      iceGatheringStateChange: 'icegatheringstatechange',
-      legacyIceConnectionStateChange: 'iceconnectionstatechange (legacy)',
-      iceConnectionStateChange: 'iceconnectionstatechange',
-      connectionStateChange: 'connectionstatechange',
-      onIceCandidate: 'icecandidate',
-      stop: 'close'
-    }[update.type] ||
-        update.type;
+    // `type` is a display variant of update.type which does not get serialized
+    // into chrome://webrtc-internals.
+    let type = update.type;
 
     if (update.value.length === 0) {
       const typeItem = document.createElement('td');
@@ -102,7 +93,7 @@ export class PeerConnectionUpdateTable {
       return;
     }
 
-    if (update.type === 'onIceCandidate' || update.type === 'addIceCandidate') {
+    if (update.type === 'icecandidate' || update.type === 'addIceCandidate') {
       // extract ICE candidate type from the field following typ.
       const candidateType = update.value.match(/(?: typ )(host|srflx|relay)/);
       if (candidateType) {
@@ -119,12 +110,12 @@ export class PeerConnectionUpdateTable {
     } else if (update.type === 'setConfiguration') {
       // Update the configuration that is displayed at the top.
       peerConnectionElement.firstChild.children[2].textContent = update.value;
-    } else if (['iceConnectionStateChange', 'connectionStateChange',
-        'signalingStateChange'].includes(update.type)) {
+    } else if (['iceconnectionstatechange', 'connectionstatechange',
+        'signalingstatechange'].includes(update.type)) {
       const fieldName = {
-        'iceConnectionStateChange' : 'iceconnectionstate',
-        'connectionStateChange' : 'connectionstate',
-        'signalingStateChange' : 'signalingstate',
+        'iceconnectionstatechange' : 'iceconnectionstate',
+        'connectionstatechange' : 'connectionstate',
+        'signalingstatechange' : 'signalingstate',
       }[update.type];
       const el = peerConnectionElement.getElementsByClassName(fieldName)[0];
       const numberOfEvents = el.textContent.split(' => ').length;
@@ -145,13 +136,14 @@ export class PeerConnectionUpdateTable {
     details.appendChild(valueContainer);
 
     // Highlight ICE failures and failure callbacks.
-    if ((update.type === 'iceConnectionStateChange' &&
-         update.value === 'ICEConnectionStateFailed') ||
+    if ((update.type === 'iceconnectionstatechange' &&
+         update.value === 'failed') ||
+        (update.type === 'iceconnectionstatechange (legacy)' &&
+         update.value === 'failed') ||
         update.type.indexOf('OnFailure') !== -1 ||
         update.type === 'addIceCandidateFailed') {
       valueContainer.parentElement.classList.add('update-log-failure');
     }
-
 
     // RTCSessionDescription is serialized as 'type: <type>, sdp:'
     if (update.value.indexOf(', sdp:') !== -1) {
