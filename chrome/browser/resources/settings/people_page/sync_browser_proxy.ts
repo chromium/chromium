@@ -92,6 +92,25 @@ export type SyncPrefs = {
   explicitPassphraseTime?: string,
 };
 
+/**
+ * Names of the individual data type properties to be cached from
+ * SyncPrefs when the user checks 'Sync All'.
+ */
+export const syncPrefsIndividualDataTypes: string[] = [
+  'appsSynced',
+  'autofillSynced',
+  'bookmarksSynced',
+  'extensionsSynced',
+  'readingListSynced',
+  'passwordsSynced',
+  'paymentsIntegrationEnabled',
+  'preferencesSynced',
+  'tabsSynced',
+  'themesSynced',
+  'typedUrlsSynced',
+  'wifiConfigurationsSynced',
+];
+
 export enum PageStatus {
   SPINNER = 'spinner',      // Before the page has loaded.
   CONFIGURE = 'configure',  // Preferences ready to be configured.

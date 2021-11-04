@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, SafeBrowsingSetting, SettingsPrivacyReviewPageElement} from 'chrome://settings/lazy_load.js';
-import {Route, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {Route, Router, routes, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -585,43 +585,159 @@ suite('HistorySyncFragment', function() {
   });
 
   /**
-   * @param {boolean} syncAllOnBefore If sync-all is on before the click.
-   * @param {boolean} historySyncOnBefore If history sync is on before the
-   *     click.
-   * @param {boolean} historySyncOnAfter If history sync is expected to be on
-   *     after the click.
+   * @param {!{
+   *   syncAllDataTypes: boolean,
+   *   typedUrlsSynced: boolean,
+   *   passwordsSynced: boolean,
+   * }} destructured1
    */
-  async function assertBrowserProxyCallOnToggleClicked(
-      syncAllOnBefore, historySyncOnBefore, historySyncOnAfterwardsExpected) {
-    const event = {
-      syncAllDataTypes: syncAllOnBefore,
-      typedUrlsSynced: historySyncOnBefore,
-    };
+  function setSyncStatus({
+    syncAllDataTypes,
+    typedUrlsSynced,
+    passwordsSynced,
+  }) {
+    if (syncAllDataTypes) {
+      assertTrue(typedUrlsSynced);
+      assertTrue(passwordsSynced);
+    }
+    const event = {};
+    for (const datatype of syncPrefsIndividualDataTypes) {
+      event[datatype] = true;
+    }
+    // Overwrite datatypes needed in tests.
+    event.syncAllDataTypes = syncAllDataTypes;
+    event.typedUrlsSynced = typedUrlsSynced;
+    event.passwordsSynced = passwordsSynced;
     webUIListenerCallback('sync-prefs-changed', event);
     flush();
-
-    page.shadowRoot.querySelector('#historyToggle').click();
-
-    const syncPrefs = await syncBrowserProxy.whenCalled('setSyncDatatypes');
-    assertFalse(syncPrefs.syncAllDataTypes);
-    assertEquals(historySyncOnAfterwardsExpected, syncPrefs.typedUrlsSynced);
   }
 
-  test('syncAllOnDisableHistorySync', async function() {
-    assertBrowserProxyCallOnToggleClicked(
-        /*syncAllOnBefore=*/ true, /*historySyncOnBefore=*/ true,
-        /*historySyncOnAfterwardsExpected=*/ false);
+  /**
+   * @param {!{
+   *   syncAllDatatypesExpected: boolean,
+   *   typedUrlsSyncedExpected: boolean,
+   * }} destructured1
+   */
+  async function assertBrowserProxyCall({
+    syncAllDatatypesExpected,
+    typedUrlsSyncedExpected,
+  }) {
+    const syncPrefs = await syncBrowserProxy.whenCalled('setSyncDatatypes');
+    assertEquals(syncAllDatatypesExpected, syncPrefs.syncAllDataTypes);
+    assertEquals(typedUrlsSyncedExpected, syncPrefs.typedUrlsSynced);
+    syncBrowserProxy.resetResolver('setSyncDatatypes');
+  }
+
+  test('syncAllOnDisableReenableHistorySync', async function() {
+    setSyncStatus({
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+      passwordsSynced: true,
+    });
+    page.shadowRoot.querySelector('#historyToggle').click();
+    await assertBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: false,
+    });
+
+    // Re-enabling history sync re-enables sync all if sync all was on before
+    // and if all sync datatypes are still enabled.
+    page.shadowRoot.querySelector('#historyToggle').click();
+    return assertBrowserProxyCall({
+      syncAllDatatypesExpected: true,
+      typedUrlsSyncedExpected: true,
+    });
   });
 
-  test('syncAllOffDisableHistorySync', async function() {
-    assertBrowserProxyCallOnToggleClicked(
-        /*syncAllOnBefore=*/ false, /*historySyncOnBefore=*/ true,
-        /*historySyncOnAfterwardsExpected=*/ false);
+  test('syncAllOnDisableReenableHistorySyncOtherDatatypeOff', async function() {
+    setSyncStatus({
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+      passwordsSynced: true,
+    });
+    page.shadowRoot.querySelector('#historyToggle').click();
+    await assertBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: false,
+    });
+
+    // The user disables another datatype in a different tab.
+    setSyncStatus({
+      syncAllDataTypes: false,
+      typedUrlsSynced: false,
+      passwordsSynced: false,
+    });
+
+    // Re-enabling history sync in the privacy review doesn't re-enable sync
+    // all.
+    page.shadowRoot.querySelector('#historyToggle').click();
+    return assertBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: true,
+    });
+  });
+
+  test('syncAllOnDisableReenableHistorySyncWithNavigation', async function() {
+    setSyncStatus({
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+      passwordsSynced: true,
+    });
+    page.shadowRoot.querySelector('#historyToggle').click();
+    await assertBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: false,
+    });
+
+    // The user navigates to another card, then back to the history sync card.
+    Router.getInstance().navigateTo(
+        routes.PRIVACY_REVIEW,
+        /* opt_dynamicParameters */ new URLSearchParams('step=msbb'));
+    Router.getInstance().navigateTo(
+        routes.PRIVACY_REVIEW,
+        /* opt_dynamicParameters */ new URLSearchParams('step=historySync'));
+
+    // Re-enabling history sync in the privacy review doesn't re-enable sync
+    // all.
+    page.shadowRoot.querySelector('#historyToggle').click();
+    return assertBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: true,
+    });
+  });
+
+  test('syncAllOffDisableReenableHistorySync', async function() {
+    setSyncStatus({
+      syncAllDataTypes: false,
+      typedUrlsSynced: true,
+      passwordsSynced: true,
+    });
+    page.shadowRoot.querySelector('#historyToggle').click();
+    await assertBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: false,
+    });
+
+    // Re-enabling history sync doesn't re-enable sync all if sync all wasn't on
+    // originally.
+    page.shadowRoot.querySelector('#historyToggle').click();
+    return assertBrowserProxyCall({
+      syncAllDataTypes: false,
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: true,
+    });
   });
 
   test('syncAllOffEnableHistorySync', async function() {
-    assertBrowserProxyCallOnToggleClicked(
-        /*syncAllOnBefore=*/ false, /*historySyncOnBefore=*/ false,
-        /*historySyncOnAfterwardsExpected=*/ true);
+    setSyncStatus({
+      syncAllDataTypes: false,
+      typedUrlsSynced: false,
+      passwordsSynced: true,
+    });
+    page.shadowRoot.querySelector('#historyToggle').click();
+    return assertBrowserProxyCall({
+      syncAllDatatypesExpected: false,
+      typedUrlsSyncedExpected: true,
+    });
   });
 });

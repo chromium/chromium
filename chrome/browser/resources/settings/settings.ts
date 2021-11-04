@@ -35,7 +35,7 @@ export {AccountManagerBrowserProxyImpl} from './people_page/account_manager_brow
 // </if>
 export {ProfileInfoBrowserProxyImpl} from './people_page/profile_info_browser_proxy.js';
 export {MAX_SIGNIN_PROMO_IMPRESSION} from './people_page/sync_account_control.js';
-export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './people_page/sync_browser_proxy.js';
+export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from './people_page/sync_browser_proxy.js';
 export {prefToString, stringToPrefValue} from './prefs/pref_util.js';
 export {SettingsPrefsElement} from './prefs/prefs.js';
 export {PrefsMixin, PrefsMixinInterface} from './prefs/prefs_mixin.js';

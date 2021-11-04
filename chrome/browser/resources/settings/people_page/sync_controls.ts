@@ -18,26 +18,7 @@ import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bun
 import {loadTimeData} from '../i18n_setup.js';
 import {Route, Router} from '../router.js';
 
-import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
-
-/**
- * Names of the individual data type properties to be cached from
- * SyncPrefs when the user checks 'Sync All'.
- */
-const SyncPrefsIndividualDataTypes: string[] = [
-  'appsSynced',
-  'extensionsSynced',
-  'preferencesSynced',
-  'autofillSynced',
-  'typedUrlsSynced',
-  'themesSynced',
-  'bookmarksSynced',
-  'readingListSynced',
-  'passwordsSynced',
-  'tabsSynced',
-  'paymentsIntegrationEnabled',
-  'wifiConfigurationsSynced',
-];
+import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from './sync_browser_proxy.js';
 
 /**
  * Names of the radio buttons which allow the user to choose their data sync
@@ -162,7 +143,7 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
 
       // Cache the previously selected preference before checking every box.
       this.cachedSyncPrefs_ = {};
-      for (const dataType of SyncPrefsIndividualDataTypes) {
+      for (const dataType of syncPrefsIndividualDataTypes) {
         // These are all booleans, so this shallow copy is sufficient.
         this.cachedSyncPrefs_[dataType] =
             (this.syncPrefs as {[key: string]: any})[dataType];
@@ -171,7 +152,7 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
       }
     } else if (this.cachedSyncPrefs_) {
       // Restore the previously selected preference.
-      for (const dataType of SyncPrefsIndividualDataTypes) {
+      for (const dataType of syncPrefsIndividualDataTypes) {
         this.set(['syncPrefs', dataType], this.cachedSyncPrefs_[dataType]);
       }
     }

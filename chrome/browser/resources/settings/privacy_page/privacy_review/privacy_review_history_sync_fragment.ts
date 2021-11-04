@@ -12,14 +12,21 @@ import './privacy_review_description_item.js';
 import './privacy_review_fragment_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../../base_mixin.js';
-import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs} from '../../people_page/sync_browser_proxy.js';
+import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes} from '../../people_page/sync_browser_proxy.js';
+import {routes} from '../../route.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+
+import {PrivacyReviewStep} from './constants.js';
 
 const PrivacyReviewHistorySyncFragmentElementBase =
-    WebUIListenerMixin(BaseMixin(PolymerElement));
+    RouteObserverMixin(WebUIListenerMixin(BaseMixin(PolymerElement))) as {
+  new (): PolymerElement&RouteObserverMixinInterface&
+      WebUIListenerMixinInterface;
+};
 
 export class PrivacyReviewHistorySyncFragmentElement extends
     PrivacyReviewHistorySyncFragmentElementBase {
@@ -58,6 +65,11 @@ export class PrivacyReviewHistorySyncFragmentElement extends
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
   private syncPrefs_: SyncPrefs;
+  /*
+   * |null| indicates that the value is currently unknown and that it will be
+   * set with the next sync prefs update.
+   */
+  private syncAllCache_: boolean|null = null;
   private historySyncVirtualPref_: chrome.settingsPrivate.PrefObject;
 
   ready() {
@@ -69,8 +81,21 @@ export class PrivacyReviewHistorySyncFragmentElement extends
     this.syncBrowserProxy_.sendSyncPrefsChanged();
   }
 
+  currentRouteChanged(newRoute: Route) {
+    if (newRoute === routes.PRIVACY_REVIEW &&
+        Router.getInstance().getQueryParameters().get('step') ===
+            PrivacyReviewStep.HISTORY_SYNC) {
+      // Sync all should not be re-enabled via the history sync card if there
+      // was a navigation since caching sync all.
+      this.syncAllCache_ = null;
+    }
+  }
+
   private onSyncPrefsChange_(syncPrefs: SyncPrefs) {
     this.syncPrefs_ = syncPrefs;
+    if (this.syncAllCache_ === null) {
+      this.syncAllCache_ = this.syncPrefs_.syncAllDataTypes;
+    }
     this.set(
         'historySyncVirtualPref_.value',
         this.syncPrefs_.syncAllDataTypes || this.syncPrefs_.typedUrlsSynced);
@@ -78,11 +103,35 @@ export class PrivacyReviewHistorySyncFragmentElement extends
 
   private onToggleClick_() {
     this.syncPrefs_.typedUrlsSynced = this.historySyncVirtualPref_.value;
-    // If the user disabled history sync, then sync all also needs to be off.
-    if (!this.syncPrefs_.typedUrlsSynced) {
-      this.syncPrefs_.syncAllDataTypes = false;
-    }
+    this.syncPrefs_.syncAllDataTypes = this.shouldSyncAllBeOn_();
     this.syncBrowserProxy_.setSyncDatatypes(this.syncPrefs_);
+  }
+
+  /**
+   * If sync all was on when the user reached the history sync card, then
+   * disabling and re-enabling history sync while on the card should also
+   * re-enable sync all in case all other sync datatypes are also still on.
+   */
+  private shouldSyncAllBeOn_(): boolean {
+    if (!this.syncAllCache_) {
+      return false;
+    }
+    for (const datatype of syncPrefsIndividualDataTypes) {
+      if ((this.syncPrefs_ as {[key: string]: any})[datatype]) {
+        continue;
+      }
+      if (datatype === 'wifiConfigurationsSynced' &&
+          !this.syncPrefs_.wifiConfigurationsRegistered) {
+        // Non-CrOS: |wifiConfigurationsRegistered| is false.
+        // CrOS: If |wifiConfigurationsRegistered| is false then
+        // |wifiConfigurationsSynced| is not shown in the advanced sync
+        // controls UI. Hence it being false doesn't prevent re-enabling
+        // sync all.
+        continue;
+      }
+      return false;
+    }
+    return true;
   }
 }
 
