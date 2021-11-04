@@ -146,7 +146,7 @@ void PreviewModeClient::DocumentHasUnsupportedFeature(
   NOTREACHED();
 }
 
-void PreviewModeClient::FormTextFieldFocusChange(bool in_focus) {
+void PreviewModeClient::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
   NOTREACHED();
 }
 

@@ -131,7 +131,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void DocumentLoadFailed() override;
   void DocumentHasUnsupportedFeature(const std::string& feature) override;
   void DocumentLoadProgress(uint32_t available, uint32_t doc_size) override;
-  void FormTextFieldFocusChange(bool in_focus) override;
+  void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
   bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() override;
   void SetIsSelecting(bool is_selecting) override;

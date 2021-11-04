@@ -555,9 +555,8 @@ class PDFiumEngine : public PDFEngine,
   // within form text fields.
   void SetSelecting(bool selecting);
 
-  // Sets whether or not focus is in form text field or form combobox text
-  // field.
-  void SetInFormTextArea(bool in_form_text_area);
+  // Sets what type of field has focus.
+  void SetFieldFocus(PDFEngine::FocusFieldType type);
 
   // Sets whether or not left mouse button is currently being held down.
   void SetMouseLeftButtonDown(bool is_mouse_left_button_down);
@@ -715,13 +714,6 @@ class PDFiumEngine : public PDFEngine,
   // Text selection within form text fields and form combobox text fields.
   std::string selected_form_text_;
 
-  // True if focus is in form text field or form combobox text field.
-  bool in_form_text_area_ = false;
-
-  // True if the form text area currently in focus is not read only, and is a
-  // form text field or user-editable form combobox text field.
-  bool editable_form_text_area_ = false;
-
   // True if left mouse button is currently being held down.
   bool mouse_left_button_down_ = false;
 
@@ -759,6 +751,13 @@ class PDFiumEngine : public PDFEngine,
 
   // Set to true when updating plugin focus.
   bool updating_focus_ = false;
+
+  // True if `focus_field_type_` is currently set to `FocusFieldType::kText` and
+  // the focused form text area is not read-only.
+  bool editable_form_text_area_ = false;
+
+  // The type of the currently focused form field.
+  FocusFieldType focus_field_type_ = FocusFieldType::kNoFocus;
 
   // The focus element type for the currently focused object.
   FocusElementType focus_element_type_ = FocusElementType::kNone;

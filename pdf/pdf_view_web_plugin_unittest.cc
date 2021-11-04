@@ -718,15 +718,31 @@ TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
     EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
     EXPECT_CALL(checkpoint, Call);
     EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+    EXPECT_CALL(checkpoint, Call);
+    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
+    EXPECT_CALL(checkpoint, Call);
+    EXPECT_CALL(*wrapper_ptr_, UpdateTextInputState);
   }
 
-  plugin_->FormTextFieldFocusChange(true);
+  plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kText);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeText,
             wrapper_ptr_->widget_text_input_type());
 
   checkpoint.Call();
 
-  plugin_->FormTextFieldFocusChange(false);
+  plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus);
+  EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
+            wrapper_ptr_->widget_text_input_type());
+
+  checkpoint.Call();
+
+  plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kText);
+  EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeText,
+            wrapper_ptr_->widget_text_input_type());
+
+  checkpoint.Call();
+
+  plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kNonText);
   EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
             wrapper_ptr_->widget_text_input_type());
 }

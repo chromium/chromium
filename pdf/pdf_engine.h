@@ -102,6 +102,15 @@ class PDFEngine {
   // Maximum number of parameters a nameddest view can contain.
   static constexpr size_t kMaxViewParams = 4;
 
+  enum class FocusFieldType {
+    // Focus is not on any form field.
+    kNoFocus,
+    // Focus is on a form text field or form combobox text field.
+    kText,
+    // Focus is on a non-text field.
+    kNonText,
+  };
+
   // Named destination in a document.
   struct NamedDestination {
     // 0-based page number.
@@ -254,8 +263,8 @@ class PDFEngine {
     // Notifies the client about document load progress.
     virtual void DocumentLoadProgress(uint32_t available, uint32_t doc_size) {}
 
-    // Notifies the client about focus changes for form text fields.
-    virtual void FormTextFieldFocusChange(bool in_focus) {}
+    // Notifies the client about focus changes for form fields.
+    virtual void FormFieldFocusChange(FocusFieldType type) {}
 
     // Returns true if the plugin has been opened within print preview.
     virtual bool IsPrintPreview() const = 0;

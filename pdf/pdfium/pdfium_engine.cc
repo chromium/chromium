@@ -1040,7 +1040,7 @@ std::vector<uint8_t> PDFiumEngine::PrintPagesAsPdf(
 
 void PDFiumEngine::KillFormFocus() {
   FORM_ForceToKillFocus(form());
-  SetInFormTextArea(false);
+  SetFieldFocus(FocusFieldType::kNoFocus);
 }
 
 void PDFiumEngine::UpdateFocus(bool has_focus) {
@@ -1137,7 +1137,7 @@ void PDFiumEngine::SetFormSelectedText(FPDF_FORMHANDLE form_handle,
   std::string selected_form_text = selected_form_text_;
   selected_form_text_ = base::UTF16ToUTF8(selected_form_text16);
   if (selected_form_text != selected_form_text_) {
-    DCHECK(in_form_text_area_);
+    DCHECK_EQ(focus_field_type_, FocusFieldType::kText);
     client_->SetSelectedText(selected_form_text_);
   }
 }
@@ -1263,10 +1263,10 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
 
     if (form_type != FPDF_FORMFIELD_UNKNOWN) {
       // FORM_OnLButton*() will trigger a callback to
-      // OnFocusedAnnotationUpdated() which will call SetInFormTextArea().
-      // Destroy SelectionChangeInvalidator object before SetInFormTextArea()
-      // changes plugin's focus to be in form text area. This way, regular text
-      // selection can be cleared when a user clicks into a form text area
+      // OnFocusedAnnotationUpdated() which will call SetFieldFocus().
+      // Destroy SelectionChangeInvalidator object before SetFieldFocus()
+      // changes plugin's focus to be `FocusFieldType::kText`. This way, regular
+      // text selection can be cleared when a user clicks into a form text area
       // because the pp::PDF::SetSelectedText() call in
       // ~SelectionChangeInvalidator() still goes to the Mimehandler
       // (not the Renderer).
@@ -1284,7 +1284,7 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
     if (form_type != FPDF_FORMFIELD_UNKNOWN)
       return true;  // Return now before we get into the selection code.
   }
-  SetInFormTextArea(false);
+  SetFieldFocus(FocusFieldType::kNoFocus);
 
   if (area != PDFiumPage::TEXT_AREA)
     return true;  // Return true so WebKit doesn't do its own highlighting.
@@ -1356,13 +1356,12 @@ bool PDFiumEngine::OnRightMouseDown(const blink::WebMouseEvent& event) {
   }
 
   // Handle the case when focus starts inside a form text area.
-  if (in_form_text_area_) {
+  if (focus_field_type_ == FocusFieldType::kText) {
     if (is_form_text_area) {
       FORM_OnFocus(form(), page, 0, page_x, page_y);
     } else {
       // Transition out of a form text area.
-      FORM_ForceToKillFocus(form());
-      SetInFormTextArea(false);
+      KillFormFocus();
     }
     return true;
   }
@@ -1396,7 +1395,7 @@ bool PDFiumEngine::NavigateToLinkDestination(
     WindowOpenDisposition disposition) {
   if (area == PDFiumPage::WEBLINK_AREA) {
     client_->NavigateTo(target.url, disposition);
-    SetInFormTextArea(false);
+    SetFieldFocus(FocusFieldType::kNoFocus);
     return true;
   }
   if (area == PDFiumPage::DOCLINK_AREA) {
@@ -1417,7 +1416,7 @@ bool PDFiumEngine::NavigateToLinkDestination(
 
       client_->NavigateTo(parameters, disposition);
     }
-    SetInFormTextArea(false);
+    SetFieldFocus(FocusFieldType::kNoFocus);
     return true;
   }
   return false;
@@ -1711,7 +1710,7 @@ bool PDFiumEngine::OnKeyUp(const blink::WebKeyboardEvent& event) {
 
   // Check if form text selection needs to be updated.
   FPDF_PAGE page = pages_[last_focused_page_]->GetPage();
-  if (in_form_text_area_)
+  if (focus_field_type_ == FocusFieldType::kText)
     SetFormSelectedText(form(), page);
 
   return !!FORM_OnKeyUp(form(), page, event.windows_key_code,
@@ -2316,7 +2315,7 @@ void PDFiumEngine::SelectAll() {
   if (IsReadOnly())
     return;
 
-  if (in_form_text_area_) {
+  if (focus_field_type_ == FocusFieldType::kText) {
     if (PageIndexInBounds(last_focused_page_))
       FORM_SelectAllText(form(), pages_[last_focused_page_]->GetPage());
     return;
@@ -3709,7 +3708,7 @@ void PDFiumEngine::GetRegion(const gfx::Point& location,
 }
 
 void PDFiumEngine::OnSelectionTextChanged() {
-  DCHECK(!in_form_text_area_);
+  DCHECK_NE(focus_field_type_, FocusFieldType::kText);
   client_->SetSelectedText(GetSelectedText());
 }
 
@@ -3798,20 +3797,21 @@ void PDFiumEngine::EnteredEditMode() {
   client_->EnteredEditMode();
 }
 
-void PDFiumEngine::SetInFormTextArea(bool in_form_text_area) {
+void PDFiumEngine::SetFieldFocus(PDFEngine::FocusFieldType type) {
   // If focus was previously in form text area, clear form text selection.
   // Clearing needs to be done before changing focus to ensure the correct
-  // observer is notified of the change in selection. When `in_form_text_area_`
-  // is true, this is the Renderer. After it flips, the MimeHandler is notified.
-  if (in_form_text_area_) {
+  // observer is notified of the change in selection. When `focus_field_type_`
+  // is set to `FocusFieldType::kText`, this is the Renderer. After it flips,
+  // the MimeHandler is notified.
+  if (focus_field_type_ == FocusFieldType::kText) {
     client_->SetSelectedText("");
   }
 
-  client_->FormTextFieldFocusChange(in_form_text_area);
-  in_form_text_area_ = in_form_text_area;
+  client_->FormFieldFocusChange(type);
+  focus_field_type_ = type;
 
   // Clear `editable_form_text_area_` when focus no longer in form text area.
-  if (!in_form_text_area_)
+  if (focus_field_type_ != FocusFieldType::kText)
     editable_form_text_area_ = false;
 }
 
@@ -3940,7 +3940,7 @@ void PDFiumEngine::OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot,
   SetLinkUnderCursorForAnnotation(annot, page_index);
   int form_type = FPDFAnnot_GetFormFieldType(form(), annot);
   if (form_type <= FPDF_FORMFIELD_UNKNOWN) {
-    SetInFormTextArea(false);
+    SetFieldFocus(FocusFieldType::kNoFocus);
     return;
   }
   bool is_form_text_area =
@@ -3949,7 +3949,8 @@ void PDFiumEngine::OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot,
     SelectionChangeInvalidator selection_invalidator(this);
     selection_.clear();
   }
-  SetInFormTextArea(is_form_text_area);
+  SetFieldFocus(is_form_text_area ? FocusFieldType::kText
+                                  : FocusFieldType::kNonText);
   editable_form_text_area_ =
       is_form_text_area && IsAnnotationAnEditableFormTextArea(annot, form_type);
 

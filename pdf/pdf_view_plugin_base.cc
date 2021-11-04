@@ -423,7 +423,7 @@ void PdfViewPluginBase::DocumentLoadComplete() {
   RecordDocumentMetrics();
 
   // Clear the focus state for on-screen keyboards.
-  FormTextFieldFocusChange(false);
+  FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus);
 
   if (IsPrintPreview())
     OnPrintPreviewLoaded();
@@ -496,13 +496,13 @@ void PdfViewPluginBase::DocumentLoadProgress(uint32_t available,
   SendLoadingProgress(progress);
 }
 
-void PdfViewPluginBase::FormTextFieldFocusChange(bool in_focus) {
+void PdfViewPluginBase::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
   base::Value message(base::Value::Type::DICTIONARY);
   message.SetStringKey("type", "formFocusChange");
-  message.SetBoolKey("focused", in_focus);
+  message.SetBoolKey("focused", type != PDFEngine::FocusFieldType::kNoFocus);
   SendMessage(std::move(message));
 
-  SetFormTextFieldInFocus(in_focus);
+  SetFormTextFieldInFocus(type == PDFEngine::FocusFieldType::kText);
 }
 
 bool PdfViewPluginBase::IsPrintPreview() const {
