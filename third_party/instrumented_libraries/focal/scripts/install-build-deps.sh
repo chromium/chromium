@@ -42,7 +42,7 @@ ido \
 jasper-initramfs \
 libcap2 \
 libdbusmenu \
-libdbusmenu \
+libdbusmenu-gtk3-dev \
 libffi \
 libgpg-error \
 libidn \
