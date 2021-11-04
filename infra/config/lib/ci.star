@@ -340,7 +340,7 @@ def clang_mac_builder(*, name, cores = 24, **kwargs):
     return clang_builder(
         name = name,
         cores = cores,
-        os = builders.os.MAC_10_15,
+        os = builders.os.MAC_DEFAULT,
         ssd = True,
         properties = {
             # The Chromium build doesn't need system Xcode, but the ToT clang
