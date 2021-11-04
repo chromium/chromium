@@ -776,6 +776,19 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   ExpectAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
 
+  // Success: Add account to existing profile (with no callback provided).
+  Account account_d = AccountFromGaiaID("D");
+  ExpectFacadeShowAddAccountDialogCalled(source, account_d);
+  EXPECT_CALL(mock_observer,
+              OnAccountUpserted(other_path, AccountEqual(account_d)));
+  EXPECT_CALL(mock_observer, OnAccountRemoved(testing::_, testing::_)).Times(0);
+  mapper->ShowAddAccountDialog(other_path, source,
+                               AccountProfileMapper::AddAccountCallback());
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  ExpectAccountsInStorage(
+      {{main_path(), {"A"}}, {other_path, {"B", "C", "D"}}});
+
   // Failure: Add account that already exists.
   ExpectFacadeShowAddAccountDialogCalled(source, account_c);
   EXPECT_CALL(account_added_callback, Run(testing::Eq(absl::nullopt)));
@@ -789,13 +802,13 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Failure: Add account to non-existing profile, account is unassigned.
-  Account account_d = AccountFromGaiaID("D");
+  Account account_e = AccountFromGaiaID("E");
   base::FilePath unknown_path = GetProfilePath("UnknownProfile");
-  ExpectFacadeShowAddAccountDialogCalled(source, account_d);
-  result = {base::FilePath(), account_d};
+  ExpectFacadeShowAddAccountDialogCalled(source, account_e);
+  result = {base::FilePath(), account_e};
   EXPECT_CALL(account_added_callback, Run(AddAccountResultEqual(result)));
   EXPECT_CALL(mock_observer,
-              OnAccountUpserted(base::FilePath(), AccountEqual(account_d)));
+              OnAccountUpserted(base::FilePath(), AccountEqual(account_e)));
   EXPECT_CALL(mock_observer, OnAccountRemoved(testing::_, testing::_)).Times(0);
   mapper->ShowAddAccountDialog(unknown_path, source,
                                account_added_callback.Get());
@@ -804,7 +817,7 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Failure: Non-Gaia account.
-  ExpectFacadeShowAddAccountDialogCalled(source, NonGaiaAccountFromID("D"));
+  ExpectFacadeShowAddAccountDialogCalled(source, NonGaiaAccountFromID("E"));
   EXPECT_CALL(account_added_callback, Run(testing::Eq(absl::nullopt)));
   EXPECT_CALL(mock_observer, OnAccountUpserted(testing::_, testing::_))
       .Times(0);
@@ -828,7 +841,8 @@ TEST_F(AccountProfileMapperTest, ShowAddAccountDialog) {
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // No account was assigned by any the failures above.
-  ExpectAccountsInStorage({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+  ExpectAccountsInStorage(
+      {{main_path(), {"A"}}, {other_path, {"B", "C", "D"}}});
 }
 
 TEST_F(AccountProfileMapperTest, ShowAddAccountDialogNewProfile) {
@@ -899,6 +913,26 @@ TEST_F(AccountProfileMapperTest, AddAccount) {
   testing::Mock::VerifyAndClearExpectations(&account_added_callback);
   testing::Mock::VerifyAndClearExpectations(mock_facade());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  ExpectAccountsInStorage({{main_path(), {"A", "C"}}, {other_path, {"B"}}});
+
+  // Failure: Non-Gaia account (with no callback provided).
+  EXPECT_CALL(mock_observer, OnAccountUpserted(testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(mock_observer, OnAccountRemoved(testing::_, testing::_)).Times(0);
+  mapper->AddAccount(main_path(), NonGaiaAccountFromID("D").key,
+                     AccountProfileMapper::AddAccountCallback());
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Failure: Non-existing account (with no callback provided).
+  EXPECT_CALL(mock_observer, OnAccountUpserted(testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(mock_observer, OnAccountRemoved(testing::_, testing::_)).Times(0);
+  mapper->AddAccount(main_path(), AccountFromGaiaID("E").key,
+                     AccountProfileMapper::AddAccountCallback());
+  testing::Mock::VerifyAndClearExpectations(mock_facade());
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
   ExpectAccountsInStorage({{main_path(), {"A", "C"}}, {other_path, {"B"}}});
 }
 

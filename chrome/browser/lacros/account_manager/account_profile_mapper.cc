@@ -267,12 +267,14 @@ void AccountProfileMapper::AddAccountInternal(
   if (const account_manager::AccountKey* account_key =
           absl::get_if<account_manager::AccountKey>(&source_or_accountkey)) {
     if (account_key->account_type() != account_manager::AccountType::kGaia) {
-      std::move(callback).Run(absl::nullopt);
+      if (callback)
+        std::move(callback).Run(absl::nullopt);
       return;
     }
     const auto& it = account_cache_.find(account_key->id());
     if (it == account_cache_.end()) {
-      std::move(callback).Run(absl::nullopt);
+      if (callback)
+        std::move(callback).Run(absl::nullopt);
       return;
     } else {
       source_or_account = it->second;
