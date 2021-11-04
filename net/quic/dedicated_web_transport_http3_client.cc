@@ -663,6 +663,9 @@ void DedicatedWebTransportHttp3Client::OnSessionReady(
   session_ready_ = true;
   http_response_info_ = std::make_unique<HttpResponseInfo>();
   SpdyHeadersToHttpResponse(spdy_headers, http_response_info_.get());
+  // TODO(vasilvv): add support for this header in downstream tests and remove
+  // this.
+  http_response_info_->headers->RemoveHeader("sec-webtransport-http3-draft");
   DCHECK(http_response_info_->headers);
 }
 
