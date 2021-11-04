@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
@@ -84,6 +85,18 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                                handler:handler];
 }
 
+OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
+                                                    int linkID,
+                                                    NSString* imageName,
+                                                    Handler handler) {
+  NSString* name = l10n_util::GetNSString(nameID);
+  NSString* link = l10n_util::GetNSString(linkID);
+  return [[OverflowMenuFooter alloc] initWithName:name
+                                             link:link
+                                        imageName:imageName
+                                          handler:handler];
+}
+
 }  // namespace
 
 @interface OverflowMenuMediator () <BookmarkModelBridgeObserver,
@@ -131,6 +144,7 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
 
 @property(nonatomic, strong) OverflowMenuActionGroup* appActionsGroup;
 @property(nonatomic, strong) OverflowMenuActionGroup* pageActionsGroup;
+@property(nonatomic, strong) OverflowMenuActionGroup* helpActionsGroup;
 
 @property(nonatomic, strong) OverflowMenuAction* reloadAction;
 @property(nonatomic, strong) OverflowMenuAction* stopLoadAction;
@@ -351,7 +365,8 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   // |-updateModel|.
   self.appActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"app_actions"
-                                                 actions:@[]];
+                                                 actions:@[]
+                                                  footer:nil];
 
   self.addBookmarkAction = CreateOverflowMenuAction(
       IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark", ^{
@@ -395,7 +410,8 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   // |-updateModel|.
   self.pageActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"page_actions"
-                                                 actions:@[]];
+                                                 actions:@[]
+                                                  footer:nil];
 
   self.reportIssueAction = CreateOverflowMenuAction(
       IDS_IOS_OPTIONS_REPORT_AN_ISSUE, @"overflow_menu_action_report_issue", ^{
@@ -406,19 +422,22 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                                [weakSelf openHelp];
                                              });
 
-  OverflowMenuActionGroup* helpActionsGroup =
+  // Footer vary based on state, so it's set in -updateModel.
+  self.helpActionsGroup =
       [[OverflowMenuActionGroup alloc] initWithGroupName:@"help_actions"
                                                  actions:@[
                                                    self.reportIssueAction,
                                                    self.helpAction,
-                                                 ]];
+                                                 ]
+                                                  footer:nil];
 
-  // Destinations vary based on state, so they're set in -updateModel.
+  // Destinations and footer vary based on state, so they're set in
+  // -updateModel.
   return [[OverflowMenuModel alloc] initWithDestinations:@[]
                                             actionGroups:@[
                                               self.appActionsGroup,
                                               self.pageActionsGroup,
-                                              helpActionsGroup,
+                                              self.helpActionsGroup,
                                             ]];
 }
 
@@ -487,6 +506,19 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
     self.findInPageAction, self.textZoomAction
   ];
 
+  // Set footer (on last section), if any.
+  if (_browserPolicyConnector &&
+      _browserPolicyConnector->HasMachineLevelPolicies()) {
+    self.helpActionsGroup.footer = CreateOverflowMenuManagedFooter(
+        IDS_IOS_TOOLS_MENU_ENTERPRISE_MANAGED,
+        IDS_IOS_TOOLS_MENU_ENTERPRISE_LEARN_MORE,
+        @"overflow_menu_footer_managed", ^{
+          [self enterpriseLearnMore];
+        });
+  } else {
+    self.helpActionsGroup.footer = nil;
+  }
+
   // Enable/disable items based on page state.
 
   // The "Add to Reading List" functionality requires JavaScript execution,
@@ -505,6 +537,12 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
       [self userAgentType] == web::UserAgentType::MOBILE;
   self.requestMobileAction.enabled =
       [self userAgentType] == web::UserAgentType::DESKTOP;
+
+  // Enable/disable items based on enterprise policies.
+  self.openTabAction.enterpriseDisabled =
+      IsIncognitoModeForced(self.prefService);
+  self.openIncognitoTabAction.enterpriseDisabled =
+      IsIncognitoModeDisabled(self.prefService);
 }
 
 // Returns whether the page can be manually translated. If |forceMenuLogging| is
@@ -938,6 +976,13 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                        : profile_metrics::BrowserProfileType::kRegular;
   UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType", type);
   [self.dispatcher showSettingsFromViewController:self.baseViewController];
+}
+
+- (void)enterpriseLearnMore {
+  [self.dispatcher dismissPopupMenuAnimated:YES];
+  [self.dispatcher
+      openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:
+                                             GURL(kChromeUIManagementURL)]];
 }
 
 @end

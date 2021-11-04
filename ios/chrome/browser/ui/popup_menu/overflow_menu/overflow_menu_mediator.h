@@ -14,6 +14,7 @@ class BookmarkModel;
 }
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
+class BrowserPolicyConnectorIOS;
 @class OverflowMenuModel;
 class OverlayPresenter;
 class PrefService;
@@ -59,6 +60,9 @@ class WebStateList;
 // listens for overlay presentation events to determine whether the "Add to
 // Reading List" button should be enabled.
 @property(nonatomic, assign) OverlayPresenter* webContentAreaOverlayPresenter;
+
+// The current browser policy connector.
+@property(nonatomic, assign) BrowserPolicyConnectorIOS* browserPolicyConnector;
 
 @end
 

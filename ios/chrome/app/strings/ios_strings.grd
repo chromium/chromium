@@ -2764,6 +2764,12 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK" desc="The iOS menu item for editing a bookmark. This is a verb." meaning="Edit the current bookmark [Length: unlimited] [Verb]">
         Edit Bookmark
       </message>
+      <message name="IDS_IOS_TOOLS_MENU_ENTERPRISE_MANAGED" desc="Text displayed to inform the user that the browser is managed by Enterprise policies at the bottom of the overflow menu (without link). [iOS only]">
+        Managed by your organization
+      </message>
+      <message name="IDS_IOS_TOOLS_MENU_ENTERPRISE_LEARN_MORE" desc="Link displayed to allow the user to learn more why the browser is managed by Enterprise policies. Shown at the bottom of the overflow menu. [iOS only]">
+        Learn More
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_TRANSLATE" desc="The iOS menu item for translating the current page [iOS only]" meaning="Open the translate infobar [Length: unlimited]">
         Translate
       </message>

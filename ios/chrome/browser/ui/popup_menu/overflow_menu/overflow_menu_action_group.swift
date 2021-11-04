@@ -14,9 +14,13 @@ import SwiftUI
   /// The actions for this group.
   @Published public var actions: [OverflowMenuAction]
 
-  public init(groupName: String, actions: [OverflowMenuAction]) {
+  /// The footer at bottom.
+  public var footer: OverflowMenuFooter?
+
+  public init(groupName: String, actions: [OverflowMenuAction], footer: OverflowMenuFooter?) {
     self.groupName = groupName
     self.actions = actions
+    self.footer = footer
   }
 }
 

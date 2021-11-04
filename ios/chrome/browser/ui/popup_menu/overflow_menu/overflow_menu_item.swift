@@ -20,7 +20,7 @@ import SwiftUI
   /// Closure to execute when item is selected.
   @Published public var handler: () -> Void
 
-  /// Whether thte action is dsabled by enterprise policy.
+  /// Whether the action is disabled by enterprise policy.
   @Published public var enterpriseDisabled: Bool
 
   public init(

@@ -203,3 +203,13 @@ imageset("overflow_menu_destination_site_info") {
     "overflow_menu_destination_site_info.imageset/overflow_menu_destination_site_info_dark@3x.png",
   ]
 }
+
+imageset("overflow_menu_footer_managed") {
+  sources = [
+    "overflow_menu_footer_managed.imageset/Contents.json",
+    "overflow_menu_footer_managed.imageset/overflow_menu_footer_managed@2x.png",
+    "overflow_menu_footer_managed.imageset/overflow_menu_footer_managed@3x.png",
+    "overflow_menu_footer_managed.imageset/overflow_menu_footer_managed_dark@2x.png",
+    "overflow_menu_footer_managed.imageset/overflow_menu_footer_managed_dark@3x.png",
+  ]
+}
