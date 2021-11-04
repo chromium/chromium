@@ -19,6 +19,9 @@
 
       .second-line {
         margin-top: 0.1em;
+        /* 1.54em is the same as the line-height of 154%. Ensures the line is
+           always present when iron-list is calculating item sizes. */
+        min-height: 1.54em;
       }
 
       /* Data units such as "0 KB" should always read left-to-right. */
