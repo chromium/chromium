@@ -86,6 +86,29 @@ void RecordCastDeviceCountMetrics(
   }
 }
 
+class ExpandDeviceSelectorLabel : public views::Label {
+ public:
+  ExpandDeviceSelectorLabel();
+  ~ExpandDeviceSelectorLabel() override = default;
+
+  void OnColorsChanged(SkColor foreground_color, SkColor background_color);
+};
+
+ExpandDeviceSelectorLabel::ExpandDeviceSelectorLabel()
+    : views::Label(
+          l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_DEVICES_LABEL)) {
+  auto size = GetPreferredSize();
+  size.set_height(kExpandButtonStripSize.height());
+  size.set_width(size.width() + kExpandButtonBorderInsets.width());
+  SetPreferredSize(size);
+}
+
+void ExpandDeviceSelectorLabel::OnColorsChanged(SkColor foreground_color,
+                                                SkColor background_color) {
+  SetEnabledColor(foreground_color);
+  SetBackgroundColor(background_color);
+}
+
 class ExpandDeviceSelectorButton : public IconLabelBubbleView {
  public:
   explicit ExpandDeviceSelectorButton(IconLabelBubbleView::Delegate* delegate);
@@ -156,11 +179,18 @@ MediaItemUIDeviceSelectorView::MediaItemUIDeviceSelectorView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   expand_button_strip_->SetPreferredSize(kExpandButtonStripSize);
 
-  expand_button_ = expand_button_strip_->AddChildView(
-      std::make_unique<ExpandDeviceSelectorButton>(this));
-  expand_button_->SetCallback(
-      base::BindRepeating(&MediaItemUIDeviceSelectorView::ExpandButtonPressed,
-                          base::Unretained(this)));
+  // Show a lebel if entry point is Cast SDK. Otherwise, show the expand button.
+  if (entry_point ==
+      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation) {
+    expand_label_ = expand_button_strip_->AddChildView(
+        std::make_unique<ExpandDeviceSelectorLabel>());
+  } else {
+    expand_button_ = expand_button_strip_->AddChildView(
+        std::make_unique<ExpandDeviceSelectorButton>(this));
+    expand_button_->SetCallback(
+        base::BindRepeating(&MediaItemUIDeviceSelectorView::ExpandButtonPressed,
+                            base::Unretained(this)));
+  }
 
   if (!show_expand_button)
     expand_button_strip_->SetVisible(false);
@@ -279,7 +309,10 @@ void MediaItemUIDeviceSelectorView::OnColorsChanged(SkColor foreground_color,
     it.second->OnColorsChanged(foreground_color_, background_color_);
   }
 
-  expand_button_->OnColorsChanged();
+  if (expand_label_)
+    expand_label_->OnColorsChanged(foreground_color_, background_color_);
+  if (expand_button_)
+    expand_button_->OnColorsChanged();
 
   SchedulePaint();
 }

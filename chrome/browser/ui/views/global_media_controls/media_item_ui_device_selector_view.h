@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace {
+class ExpandDeviceSelectorLabel;
 class ExpandDeviceSelectorButton;
 const char kAudioDevicesCountHistogramName[] =
     "Media.GlobalMediaControls.NumberOfAvailableAudioDevices";
@@ -95,6 +96,8 @@ class MediaItemUIDeviceSelectorView
   FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            DeviceButtonsCreated);
   FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
+                           ExpandButtonOrLabelCreated);
+  FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            ExpandButtonOpensEntryContainer);
   FRIEND_TEST_ALL_PREFIXES(MediaItemUIDeviceSelectorViewTest,
                            DeviceEntryContainerVisibility);
@@ -149,6 +152,7 @@ class MediaItemUIDeviceSelectorView
   // Child views
   AudioDeviceEntryView* current_audio_device_entry_view_ = nullptr;
   views::View* expand_button_strip_ = nullptr;
+  ExpandDeviceSelectorLabel* expand_label_ = nullptr;
   ExpandDeviceSelectorButton* expand_button_ = nullptr;
   views::View* device_entry_views_container_ = nullptr;
 

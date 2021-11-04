@@ -226,6 +226,21 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, DeviceButtonsCreated) {
   EXPECT_EQ(EntryLabelText(container_children.at(3)), kSinkFriendlyName);
 }
 
+TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonOrLabelCreated) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
+  AddAudioDevices(delegate);
+  view_ = CreateDeviceSelectorView(&delegate);
+  EXPECT_TRUE(view_->expand_button_);
+  EXPECT_FALSE(view_->expand_label_);
+
+  view_ = CreateDeviceSelectorView(
+      &delegate, std::make_unique<NiceMock<MockCastDialogController>>(), "1",
+      true,
+      global_media_controls::GlobalMediaControlsEntryPoint::kPresentation);
+  EXPECT_TRUE(view_->expand_label_);
+  EXPECT_FALSE(view_->expand_button_);
+}
+
 TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonOpensEntryContainer) {
   NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
   AddAudioDevices(delegate);
