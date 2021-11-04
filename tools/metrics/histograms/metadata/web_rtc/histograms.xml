@@ -2745,6 +2745,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebRTC.Video.HwCapabilities.{Tier}" units="bitfield"
+    expires_after="2022-04-30">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    A bitfield representing RTC HW encode and decode support. The number is
+    reported one time per frame when the first RTCPeerConnection object is
+    created. The bits in the reported number have the following meaning: H264
+    decode supported (1), VP8 decode supported (2), VP9 decode supported (4),
+    VP9 kSVC decode supported (8), H264 encode supported (16), VP8 encode
+    supported (32), VP9 encode supported (64), VP9 kSVC encode supported (128).
+  </summary>
+  <token key="Tier">
+    <variant name="HIGH_OR_ULTRA"/>
+    <variant name="LOW"/>
+    <variant name="MID"/>
+  </token>
+</histogram>
+
 <histogram name="WebRTC.Video.InputFramesPerSecond" units="fps"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->

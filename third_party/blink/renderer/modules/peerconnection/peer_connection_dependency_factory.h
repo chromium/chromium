@@ -207,6 +207,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   media::GpuVideoAcceleratorFactories* gpu_factories_;
 
+  bool encode_decode_capabilities_reported_ = false;
+
   THREAD_CHECKER(thread_checker_);
 };
 
