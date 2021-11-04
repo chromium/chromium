@@ -140,6 +140,9 @@ template("cargo_crate") {
       flags_file = "$target_out_dir/cargo_flags.rs"
       build_script_out_dir = get_label_info(build_script_target, "root_out_dir")
       build_script = "$build_script_out_dir/${build_script_name}"
+      if (is_win) {
+        build_script = "${build_script}.exe"
+      }
       args = [
         "--build-script",
         rebase_path(build_script),

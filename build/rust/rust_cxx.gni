@@ -48,6 +48,9 @@ template("rust_cxx") {
 
     cxxbridge_obj_dir = get_label_info(cxxbridge_target, "root_out_dir")
     cxxbridge_executable = rebase_path("${cxxbridge_obj_dir}/cxxbridge")
+    if (is_win) {
+      cxxbridge_executable = rebase_path("${cxxbridge_executable}.exe")
+    }
 
     script = rebase_path("//build/rust/run_cxxbridge.py")
     inputs = [
