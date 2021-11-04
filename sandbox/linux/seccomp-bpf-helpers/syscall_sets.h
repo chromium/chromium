@@ -73,6 +73,9 @@ class SANDBOX_EXPORT SyscallSets {
   static bool IsDebug(int sysno);
   static bool IsGlobalSystemStatus(int sysno);
   static bool IsEventFd(int sysno);
+  // System calls used for dlopen(), which loads shared libraries. May overlap
+  // with other syscall sets.
+  static bool IsDlopen(int sysno);
   // Asynchronous I/O API.
   static bool IsAsyncIo(int sysno);
   static bool IsKeyManagement(int sysno);

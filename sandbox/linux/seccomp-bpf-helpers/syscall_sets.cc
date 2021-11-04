@@ -850,6 +850,22 @@ bool SyscallSets::IsEventFd(int sysno) {
   }
 }
 
+bool SyscallSets::IsDlopen(int sysno) {
+  switch (sysno) {
+    // Chrome OS needs fstatfs for supporting a local glibc patch
+    // which hooks into dlopen(), LD_PRELOAD, and --preload.
+    // https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/2910526
+    case __NR_fstatfs:
+#if defined(__i386__) || defined(__arm__) || \
+    (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
+    case __NR_fstatfs64:
+#endif
+      return true;
+    default:
+      return false;
+  }
+}
+
 // Asynchronous I/O API.
 bool SyscallSets::IsAsyncIo(int sysno) {
   switch (sysno) {
