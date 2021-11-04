@@ -13,14 +13,7 @@ namespace base {
 
 namespace {
 
-#if defined(OS_FUCHSIA)
-// TODO(https://crbug.com/1060357): Enable when RTC flake is fixed.
-#define MAYBE_Time DISABLED_Time
-#else
-#define MAYBE_Time Time
-#endif
-
-TEST(ScopedMockClockOverrideTest, MAYBE_Time) {
+TEST(ScopedMockClockOverrideTest, Time) {
   // Choose a reference time that we know to be in the past but close to now.
   Time build_time = GetBuildTime();
 
