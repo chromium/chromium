@@ -172,6 +172,7 @@ class StartSurfaceToolbarMediator {
         updateNewTabViewVisibility();
         updateHomeButtonVisibility();
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
+        updateAppMenuUpdateBadgeSuppression();
         setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
         updateTranslationY(mNonIncognitoHomepageTranslationY);
     }
@@ -461,6 +462,11 @@ class StartSurfaceToolbarMediator {
         mPropertyModel.set(TAB_SWITCHER_BUTTON_IS_VISIBLE, shouldShow);
         // If tab switcher button is visible, we should move identity disc to the left.
         mPropertyModel.set(IDENTITY_DISC_AT_START, shouldShow);
+    }
+
+    private void updateAppMenuUpdateBadgeSuppression() {
+        mMenuButtonCoordinator.setAppMenuUpdateBadgeSuppressed(
+                mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER);
     }
 
     private void updateTranslationY(float transY) {
