@@ -44,9 +44,10 @@ public class PasswordStoreAndroidBackendBridgeTest {
                     .setOrigin("https://www.google.com/")
                     .setSignonRealm("https://accounts.google.com/signin")
                     .setPasswordValue("S3cr3t");
+    private static final PasswordWithLocalData.Builder sTestPwdWithLocalData =
+            PasswordWithLocalData.newBuilder().setPasswordSpecificsData(sTestProfile);
     private static final ListPasswordsResult.Builder sTestLogins =
-            ListPasswordsResult.newBuilder().addPasswordData(
-                    PasswordWithLocalData.newBuilder().setPasswordSpecificsData(sTestProfile));
+            ListPasswordsResult.newBuilder().addPasswordData(sTestPwdWithLocalData);
     private static final long sDummyNativePointer = 4;
 
     @Rule
@@ -136,5 +137,107 @@ public class PasswordStoreAndroidBackendBridgeTest {
         verify(mBridgeJniMock)
                 .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
                         6);
+    }
+
+    @Test
+    public void testAddLoginCallsBridgeOnSuccess() {
+        final int kTestTaskId = 1337;
+
+        // Ensure the backend is called with a valid success callback.
+        byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
+        mBackendBridge.addLogin(kTestTaskId, pwdWithLocalData);
+        ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBackendMock).addLogin(any(), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
+
+        successCallback.getValue().run();
+        verify(mBridgeJniMock).onLoginAdded(sDummyNativePointer, kTestTaskId, pwdWithLocalData);
+    }
+
+    @Test
+    public void testAddLoginCallsBridgeOnFailure() {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
+        mBackendBridge.addLogin(kTestTaskId, pwdWithLocalData);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock).addLogin(any(), any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        Exception kExpectedException = new Exception("Sample failure");
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(mBridgeJniMock)
+                .onError(
+                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
+    }
+
+    @Test
+    public void testUpdateLoginCallsBridgeOnSuccess() {
+        final int kTestTaskId = 1337;
+
+        // Ensure the backend is called with a valid success callback.
+        byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
+        mBackendBridge.updateLogin(kTestTaskId, pwdWithLocalData);
+        ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBackendMock).updateLogin(any(), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
+
+        successCallback.getValue().run();
+        verify(mBridgeJniMock).onLoginUpdated(sDummyNativePointer, kTestTaskId, pwdWithLocalData);
+    }
+
+    @Test
+    public void testUpdateLoginCallsBridgeOnFailure() {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
+        mBackendBridge.updateLogin(kTestTaskId, pwdWithLocalData);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock).updateLogin(any(), any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        Exception kExpectedException = new Exception("Sample failure");
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(mBridgeJniMock)
+                .onError(
+                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
+    }
+
+    @Test
+    public void testRemoveLoginCallsBridgeOnSuccess() {
+        final int kTestTaskId = 1337;
+
+        // Ensure the backend is called with a valid success callback.
+        byte[] pwdSpecificsData = sTestProfile.build().toByteArray();
+        mBackendBridge.removeLogin(kTestTaskId, pwdSpecificsData);
+        ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
+        verify(mBackendMock).removeLogin(any(), successCallback.capture(), any());
+        assertNotNull(successCallback.getValue());
+
+        successCallback.getValue().run();
+        verify(mBridgeJniMock).onLoginDeleted(sDummyNativePointer, kTestTaskId, pwdSpecificsData);
+    }
+
+    @Test
+    public void testRemoveLoginCallsBridgeOnFailure() {
+        final int kTestTaskId = 42069;
+
+        // Ensure the backend is called with a valid failure callback.
+        byte[] pwdSpecificsData = sTestProfile.build().toByteArray();
+        mBackendBridge.removeLogin(kTestTaskId, pwdSpecificsData);
+        ArgumentCaptor<Callback<Exception>> failureCallback =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mBackendMock).removeLogin(any(), any(), failureCallback.capture());
+        assertNotNull(failureCallback.getValue());
+
+        Exception kExpectedException = new Exception("Sample failure");
+        failureCallback.getValue().onResult(kExpectedException);
+        verify(mBridgeJniMock)
+                .onError(
+                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
     }
 }
