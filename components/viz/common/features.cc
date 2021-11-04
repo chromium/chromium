@@ -167,6 +167,16 @@ const base::Feature kDynamicSchedulerForDraw{"DynamicSchedulerForDraw",
 const base::Feature kDynamicSchedulerForClients{
     "DynamicSchedulerForClients", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_MAC)
+const base::Feature kMacCAOverlayQuad{"MacCAOverlayQuads",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+// The maximum supported overlay quad number on Mac CALayerOverlay.
+// The default is set to -1. When MaxNum is < 0, the default in CALayerOverlay
+// will be used instead.
+const base::FeatureParam<int> kMacCAOverlayQuadMaxNum{
+    &kMacCAOverlayQuad, "MacCAOverlayQuadMaxNum", -1};
+#endif
+
 bool IsAdpfEnabled() {
   // TODO(crbug.com/1157620): Limit this to correct android version.
   return base::FeatureList::IsEnabled(kAdpf);

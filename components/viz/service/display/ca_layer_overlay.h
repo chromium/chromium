@@ -95,7 +95,7 @@ typedef std::vector<CALayerOverlay> CALayerOverlayList;
 // CALayerOverlay into OverlayCandidate.
 class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
  public:
-  CALayerOverlayProcessor() = default;
+  CALayerOverlayProcessor();
 
   CALayerOverlayProcessor(const CALayerOverlayProcessor&) = delete;
   CALayerOverlayProcessor& operator=(const CALayerOverlayProcessor&) = delete;
@@ -141,6 +141,7 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
           render_pass_backdrop_filters,
       gfx::ProtectedVideoType protected_video_type,
       CALayerOverlayList* ca_layer_overlays) const;
+  size_t max_quad_list_size_;
 };
 
 }  // namespace viz

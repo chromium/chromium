@@ -47,6 +47,10 @@ VIZ_COMMON_EXPORT extern const base::Feature kUseSurfaceLayerForVideoDefault;
 VIZ_COMMON_EXPORT extern const base::Feature kSurfaceSyncThrottling;
 VIZ_COMMON_EXPORT extern const base::Feature kDynamicSchedulerForDraw;
 VIZ_COMMON_EXPORT extern const base::Feature kDynamicSchedulerForClients;
+#if defined(OS_MAC)
+VIZ_COMMON_EXPORT extern const base::Feature kMacCAOverlayQuad;
+VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kMacCAOverlayQuadMaxNum;
+#endif
 
 VIZ_COMMON_EXPORT extern const base::Feature kDrawPredictedInkPoint;
 VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];

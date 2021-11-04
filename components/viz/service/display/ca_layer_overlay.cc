@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_macros.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/stream_video_draw_quad.h"
@@ -24,7 +25,9 @@ namespace {
 // The CoreAnimation renderer's performance starts suffering when too many
 // quads are promoted to CALayers. At extremes, corruption can occur.
 // https://crbug.com/1022116
-constexpr size_t kTooManyQuads = 128;
+// This number can be assigned by kMacCAOverlayQuadMaxNum when
+// feature kMacCAOverlayQuad is enabled.
+constexpr size_t kTooManyQuads = 200;
 
 // If there are too many RenderPassDrawQuads, we shouldn't use Core
 // Animation to present them as individual layers, since that potentially
@@ -352,6 +355,15 @@ CALayerOverlay::~CALayerOverlay() = default;
 CALayerOverlay& CALayerOverlay::operator=(const CALayerOverlay& other) =
     default;
 
+CALayerOverlayProcessor::CALayerOverlayProcessor() {
+  max_quad_list_size_ = kTooManyQuads;
+  if (base::FeatureList::IsEnabled(features::kMacCAOverlayQuad)) {
+    const int max_num = features::kMacCAOverlayQuadMaxNum.Get();
+    if (max_num > 0)
+      max_quad_list_size_ = max_num;
+  }
+}
+
 bool CALayerOverlayProcessor::AreClipSettingsValid(
     const CALayerOverlay& ca_layer_overlay,
     CALayerOverlayList* ca_layer_overlay_list) const {
@@ -449,7 +461,7 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
       num_visible_quads--;
     }
   }
-  if (num_visible_quads < kTooManyQuads)
+  if (num_visible_quads < max_quad_list_size_)
     ca_layer_overlays->reserve(num_visible_quads);
   else
     result = CA_LAYER_FAILED_TOO_MANY_QUADS;
