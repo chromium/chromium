@@ -70,7 +70,7 @@ class PaintUnderInvalidationChecker {
   // Points to the next new paint chunk which will be checked when it's
   // complete.
   wtf_size_t new_chunk_index_ = kNotFound;
-  Persistent<const DisplayItemClient> subsequence_client_ = nullptr;
+  WeakPersistent<const DisplayItemClient> subsequence_client_ = nullptr;
 };
 
 }  // namespace blink

@@ -416,8 +416,8 @@ class PLATFORM_EXPORT PaintController {
   // CommitNewDisplayItems().
   scoped_refptr<PaintArtifact> new_paint_artifact_;
   PaintChunker paint_chunker_;
-  Persistent<HeapVector<Member<const DisplayItemClient>>> clients_to_validate_ =
-      nullptr;
+  WeakPersistent<HeapVector<Member<const DisplayItemClient>>>
+      clients_to_validate_ = nullptr;
 
   bool cache_is_all_invalid_ = true;
   bool committed_ = false;
