@@ -15,6 +15,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/sync/sync_encryption_keys_tab_helper.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/signin_reauth_view_controller.h"
 #include "chrome/browser/ui/signin_view_controller.h"
@@ -402,6 +405,46 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
               SigninReauthViewController::UserAction::kClickNextButton),
           OnceUserAction(
               SigninReauthViewController::UserAction::kPassGaiaReauth)));
+}
+
+// Tests the sync encryption-related Javascript APIs exercised by the Gaia
+// reauth challenge.
+// Regression test for crbug.com/1266415.
+IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
+                       SetSyncEncryptionKeysDuringReauthChallenge) {
+  // The URL contains a link that navigates to the reauth success URL.
+  const std::string target_path = net::test_server::GetFilePathWithReplacements(
+      "/signin/link_with_replacements.html",
+      {{"REPLACE_WITH_URL", https_server()->GetURL(kReauthDonePath).spec()}});
+  const GURL target_url = https_server()->GetURL(target_path);
+
+  content::TestNavigationObserver target_content_observer(target_url);
+  target_content_observer.StartWatchingNewWebContents();
+  ShowReauthPrompt();
+  RedirectGaiaChallengeTo(target_url);
+
+  ReauthTestObserver reauth_observer(signin_reauth_view_controller());
+  ASSERT_TRUE(login_ui_test_utils::ConfirmReauthConfirmationDialog(
+      browser(), kReauthDialogTimeout));
+  reauth_observer.WaitUntilGaiaReauthPageIsShown();
+  target_content_observer.Wait();
+
+  content::WebContents* target_contents =
+      signin_reauth_view_controller()->GetWebContents();
+
+  SyncEncryptionKeysTabHelper* encryption_keys_tab_helper =
+      SyncEncryptionKeysTabHelper::FromWebContents(target_contents);
+  ASSERT_NE(encryption_keys_tab_helper, nullptr);
+  EXPECT_TRUE(encryption_keys_tab_helper->IsEncryptionKeysApiBoundForTesting());
+
+  // The invocation of the API, even with dummy values, should propagate until
+  // TrustedVaultClient and its observers.
+  TrustedVaultKeysChangedStateChecker keys_added_checker(
+      SyncServiceFactory::GetAsSyncServiceImplForProfile(browser()->profile()));
+  EXPECT_TRUE(content::ExecuteScript(
+      target_contents,
+      "chrome.setSyncEncryptionKeys(() => {}, \"\", [new ArrayBuffer()], 0);"));
+  EXPECT_TRUE(keys_added_checker.Wait());
 }
 
 // Tests that links from the Gaia page are opened in a new tab.
