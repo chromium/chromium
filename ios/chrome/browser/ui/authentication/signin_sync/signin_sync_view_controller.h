@@ -7,7 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SigninSyncViewController : UIViewController
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_consumer.h"
+#import "ios/chrome/browser/ui/authentication/signin_sync/signin_sync_view_controller_delegate.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+
+@interface SigninSyncViewController
+    : PromoStyleViewController <SigninSyncConsumer>
+
+@property(nonatomic, weak) id<SigninSyncViewControllerDelegate> delegate;
+
+@property(nonatomic, assign)
+    EnterpriseSignInRestrictions enterpriseSignInRestrictions;
 
 @end
 

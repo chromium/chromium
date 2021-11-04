@@ -23,9 +23,7 @@
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-
-    NS_UNAVAILABLE;
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 @end
 

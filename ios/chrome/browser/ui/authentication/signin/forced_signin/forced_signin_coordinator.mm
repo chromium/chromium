@@ -114,6 +114,7 @@
           initWithBaseNavigationController:self.navigationController
                                    browser:self.browser
                                   delegate:self];
+    case kSignInAndSync:
     case kSync:
     case kWelcomeAndConsent:
     case kDefaultBrowserPromo:

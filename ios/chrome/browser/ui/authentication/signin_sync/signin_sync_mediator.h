@@ -7,7 +7,41 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
+
+@class AuthenticationFlow;
+class AuthenticationService;
+class ChromeAccountManagerService;
+@class ChromeIdentity;
+@protocol SigninSyncConsumer;
+
 @interface SigninSyncMediator : NSObject
+
+// The designated initializer.
+- (instancetype)initWithAccountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                        authenticationService:
+                            (AuthenticationService*)authenticationService
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Consumer for this mediator.
+@property(nonatomic, weak) id<SigninSyncConsumer> consumer;
+
+// The identity currently selected.
+@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+
+// Whether an account has been added. Must be set externally.
+@property(nonatomic, assign) BOOL addedAccount;
+
+// Disconnect the mediator.
+- (void)disconnect;
+
+// Sign in the selected account.
+- (void)startSignInWithAuthenticationFlow:
+            (AuthenticationFlow*)authenticationFlow
+                               completion:(ProceduralBlock)completion;
 
 @end
 

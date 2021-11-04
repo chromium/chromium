@@ -17,7 +17,7 @@
 
 - (instancetype)init {
   NSMutableArray* screens = [NSMutableArray
-      arrayWithArray:@[ @(kWelcomeAndConsent), @(kSignIn), @(kSync) ]];
+      arrayWithArray:@[ @(kWelcomeAndConsent), @(kSignInAndSync) ]];
 
   if (fre_field_trial::IsFREDefaultBrowserScreenEnabled()) {
     [screens addObject:@(kDefaultBrowserPromo)];
