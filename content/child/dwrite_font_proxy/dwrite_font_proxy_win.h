@@ -136,6 +136,10 @@ class DWriteFontCollectionProxy
   HRESULT FindFamilyName(const std::u16string& family_name,
                          UINT32* index,
                          BOOL* exists) LOCKS_EXCLUDED(families_lock_);
+  DWriteFontFamilyProxy* FindFamily(const std::u16string& family_name)
+      LOCKS_EXCLUDED(families_lock_);
+
+  void PrewarmFamilyOnWorker(const std::u16string family_name);
 
   base::Lock families_lock_;
 

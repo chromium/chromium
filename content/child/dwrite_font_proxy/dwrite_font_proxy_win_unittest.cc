@@ -159,7 +159,6 @@ TEST_F(DWriteFontProxyUnitTest, PrewarmFamilyShouldCreateFamily) {
   collection_->InitializePrewarmerForTesting(fake_collection_->CreateRemote());
 
   collection_->PrewarmFamily("Arial");
-  EXPECT_EQ(2u, fake_collection_->MessageCount());
   // Run posted tasks in |ThreadPool|.
   task_environment_.RunUntilIdle();
   EXPECT_EQ(3u, fake_collection_->MessageCount());

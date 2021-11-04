@@ -250,6 +250,17 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndexLockRequired(
   return absl::nullopt;
 }
 
+DWriteFontFamilyProxy* DWriteFontCollectionProxy::FindFamily(
+    const std::u16string& family_name) {
+  base::AutoLock families_lock(families_lock_);
+  if (const absl::optional<UINT32> family_index =
+          FindFamilyIndexLockRequired(family_name)) {
+    if (DWriteFontFamilyProxy* family = GetFamilyLockRequired(*family_index))
+      return family;
+  }
+  return nullptr;
+}
+
 void DWriteFontCollectionProxy::PrewarmFamily(
     const blink::WebString& family_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -257,19 +268,19 @@ void DWriteFontCollectionProxy::PrewarmFamily(
   if (!prewarm_task_runner_)
     InitializePrewarmer();
 
-  BOOL exists;
-  UINT32 family_index;
-  HRESULT hr = FindFamilyName(family_name.Utf16(), &family_index, &exists);
-  if (FAILED(hr) || !exists)
-    return;
-
-  DWriteFontFamilyProxy* family = GetFamily(family_index);
-  DCHECK(family);
   DCHECK(prewarm_task_runner_);
   prewarm_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DWriteFontFamilyProxy::PrewarmFamilyOnWorker,
-                                // |family| is kept in global, never destructed.
-                                base::Unretained(family)));
+      FROM_HERE,
+      base::BindOnce(&DWriteFontCollectionProxy::PrewarmFamilyOnWorker,
+                     // |this| is kept in global, never destructed.
+                     base::Unretained(this), family_name.Utf16()));
+}
+
+void DWriteFontCollectionProxy::PrewarmFamilyOnWorker(
+    const std::u16string family_name) {
+  base::ScopedAllowBaseSyncPrimitives allow_sync;
+  if (DWriteFontFamilyProxy* family = FindFamily(family_name))
+    family->PrewarmFamilyOnWorker();
 }
 
 HRESULT DWriteFontCollectionProxy::GetFontFamily(
