@@ -189,6 +189,7 @@ extern const char kForceEnableNightMode[];
 extern const char kForceShowUpdateMenuBadge[];
 extern const char kForceShowUpdateMenuItemCustomSummary[];
 extern const char kForceEnableSigninFRE[];
+extern const char kForceDisableSigninFRE[];
 extern const char kForceUpdateMenuType[];
 extern const char kMarketUrlForTesting[];
 #endif  // defined(OS_ANDROID)

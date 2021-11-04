@@ -43,6 +43,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -75,6 +76,7 @@ import java.util.concurrent.TimeoutException;
  * workflow and UI transition.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
 public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     @IntDef({FragmentState.LOADING, FragmentState.NO_POLICY, FragmentState.HAS_POLICY,
             FragmentState.WAITING_UNTIL_NEXT_PAGE})

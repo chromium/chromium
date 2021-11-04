@@ -35,6 +35,9 @@ public class FREMobileIdentityConsistencyFieldTrial {
     @AnyThread
     public static boolean isEnabled() {
         // Switch used for tests. Disabled by default otherwise.
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE)) {
+            return false;
+        }
         return CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE)
                 || ENABLED_GROUP.equals(getFirstRunTrialGroup());
     }

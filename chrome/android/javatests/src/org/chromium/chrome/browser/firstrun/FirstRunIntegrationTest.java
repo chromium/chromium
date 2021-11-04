@@ -44,6 +44,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -92,6 +94,7 @@ import java.util.concurrent.TimeoutException;
  * Integration test suite for the first run experience.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
 public class FirstRunIntegrationTest {
     private static final String TEST_URL = "https://test.com";
     private static final String FOO_URL = "https://foo.com";
