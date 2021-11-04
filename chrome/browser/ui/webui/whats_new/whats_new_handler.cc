@@ -38,11 +38,10 @@ void WhatsNewHandler::OnJavascriptDisallowed() {
 }
 
 void WhatsNewHandler::HandleInitialize(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  bool is_auto;
-  CHECK(args->GetBoolean(1, &is_auto));
+  const auto& list = args->GetList();
+  CHECK_EQ(2U, list.size());
+  const std::string callback_id = list[0].GetString();
+  const bool is_auto = list[1].GetBool();
 
   AllowJavascript();
   if (whats_new::IsRemoteContentDisabled()) {

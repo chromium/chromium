@@ -81,15 +81,12 @@ void GcmInternalsUIMessageHandler::ReturnResults(
 void GcmInternalsUIMessageHandler::RequestAllInfo(
     const base::ListValue* args) {
   AllowJavascript();
-  if (args->GetList().size() != 1) {
+  const auto& list = args->GetList();
+  if (list.size() != 1) {
     NOTREACHED();
     return;
   }
-  bool clear_logs = false;
-  if (!args->GetBoolean(0, &clear_logs)) {
-    NOTREACHED();
-    return;
-  }
+  const bool clear_logs = list[0].GetBool();
 
   gcm::GCMDriver::ClearActivityLogs clear_activity_logs =
       clear_logs ? gcm::GCMDriver::CLEAR_LOGS : gcm::GCMDriver::KEEP_LOGS;
@@ -110,15 +107,12 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
 }
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::ListValue* args) {
-  if (args->GetList().size() != 1) {
+  const auto& list = args->GetList();
+  if (list.size() != 1) {
     NOTREACHED();
     return;
   }
-  bool recording = false;
-  if (!args->GetBoolean(0, &recording)) {
-    NOTREACHED();
-    return;
-  }
+  const bool recording = list[0].GetBool();
 
   Profile* profile = Profile::FromWebUI(web_ui());
   gcm::GCMProfileService* profile_service =

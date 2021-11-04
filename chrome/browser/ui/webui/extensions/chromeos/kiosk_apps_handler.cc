@@ -318,8 +318,9 @@ void KioskAppsHandler::HandleSetDisableBailoutShortcut(
   if (!initialized_ || !is_kiosk_enabled_)
     return;
 
-  bool disable_bailout_shortcut;
-  CHECK(args->GetBoolean(0, &disable_bailout_shortcut));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool disable_bailout_shortcut = list[0].GetBool();
 
   owner_settings_service_->SetBoolean(
       kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled,

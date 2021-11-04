@@ -356,8 +356,10 @@ void InspectMessageHandler::HandleBooleanPrefChanged(
   if (!profile)
     return;
 
-  bool enabled;
-  if (args->GetList().size() == 1 && args->GetBoolean(0, &enabled))
+  const auto& list = args->GetList();
+  const bool enabled =
+      list.size() == 1 && list[0].is_bool() && list[0].GetBool();
+  if (enabled)
     profile->GetPrefs()->SetBoolean(pref_name, enabled);
 }
 

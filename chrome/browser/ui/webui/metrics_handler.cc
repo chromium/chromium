@@ -77,12 +77,13 @@ void MetricsHandler::HandleRecordInHistogram(const base::ListValue* args) {
 }
 
 void MetricsHandler::HandleRecordBooleanHistogram(const base::ListValue* args) {
-  std::string histogram_name;
-  bool value;
-  if (!args->GetString(0, &histogram_name) || !args->GetBoolean(1, &value)) {
+  const auto& list = args->GetList();
+  if (list.size() < 2 || !list[0].is_string() || !list[1].is_bool()) {
     NOTREACHED();
     return;
   }
+  const std::string histogram_name = list[0].GetString();
+  const bool value = list[1].GetBool();
 
   base::HistogramBase* counter = base::BooleanHistogram::FactoryGet(
       histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag);

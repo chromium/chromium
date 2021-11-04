@@ -427,7 +427,8 @@ void ForeignSessionHandler::HandleDeleteForeignSession(
 
 void ForeignSessionHandler::HandleSetForeignSessionCollapsed(
     const base::ListValue* args) {
-  if (args->GetList().size() != 2U) {
+  const auto& list = args->GetList();
+  if (list.size() != 2U) {
     LOG(ERROR) << "Wrong number of args to setForeignSessionCollapsed";
     return;
   }
@@ -439,11 +440,11 @@ void ForeignSessionHandler::HandleSetForeignSessionCollapsed(
     return;
   }
 
-  bool is_collapsed;
-  if (!args->GetBoolean(1, &is_collapsed)) {
+  if (!list[1].is_bool()) {
     LOG(ERROR) << "Unable to extract boolean argument";
     return;
   }
+  const bool is_collapsed = list[1].GetBool();
 
   // Store session tags for collapsed sessions in a preference so that the
   // collapsed state persists.

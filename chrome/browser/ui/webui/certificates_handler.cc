@@ -446,7 +446,8 @@ void CertificatesHandler::HandleGetCATrust(const base::ListValue* args) {
 }
 
 void CertificatesHandler::HandleEditCATrust(const base::ListValue* args) {
-  CHECK_EQ(5U, args->GetList().size());
+  const auto& list = args->GetList();
+  CHECK_EQ(5U, list.size());
   AssignWebUICallbackId(args);
 
   CertificateManagerModel::CertInfo* cert_info =
@@ -463,12 +464,9 @@ void CertificatesHandler::HandleEditCATrust(const base::ListValue* args) {
     return;
   }
 
-  bool trust_ssl = false;
-  bool trust_email = false;
-  bool trust_obj_sign = false;
-  CHECK(args->GetBoolean(2, &trust_ssl));
-  CHECK(args->GetBoolean(3, &trust_email));
-  CHECK(args->GetBoolean(4, &trust_obj_sign));
+  const bool trust_ssl = list[2].GetBool();
+  const bool trust_email = list[3].GetBool();
+  const bool trust_obj_sign = list[4].GetBool();
 
   bool result = certificate_manager_model_->SetCertTrust(
       cert_info->cert(), net::CA_CERT,
@@ -584,9 +582,10 @@ void CertificatesHandler::HandleImportPersonal(const base::ListValue* args) {
     return;
   }
 
-  CHECK_EQ(2U, args->GetList().size());
+  const auto& list = args->GetList();
+  CHECK_EQ(2U, list.size());
   AssignWebUICallbackId(args);
-  CHECK(args->GetBoolean(1, &use_hardware_backed_));
+  use_hardware_backed_ = list[1].GetBool();
 
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.resize(1);
@@ -877,15 +876,13 @@ void CertificatesHandler::ImportCAFileRead(const int* read_errno,
 
 void CertificatesHandler::HandleImportCATrustSelected(
     const base::ListValue* args) {
-  CHECK_EQ(4U, args->GetList().size());
+  const auto& list = args->GetList();
+  CHECK_EQ(4U, list.size());
   AssignWebUICallbackId(args);
 
-  bool trust_ssl = false;
-  bool trust_email = false;
-  bool trust_obj_sign = false;
-  CHECK(args->GetBoolean(1, &trust_ssl));
-  CHECK(args->GetBoolean(2, &trust_email));
-  CHECK(args->GetBoolean(3, &trust_obj_sign));
+  const bool trust_ssl = list[1].GetBool();
+  const bool trust_email = list[2].GetBool();
+  const bool trust_obj_sign = list[3].GetBool();
 
   // TODO(mattm): add UI for setting explicit distrust, too.
   // http://crbug.com/128411

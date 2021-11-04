@@ -115,11 +115,14 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
     // To ensure this gets done, do this before ASSERT* calls.
     RunQuitClosure();
 
-    bool test_succeeded = false;
+    const auto& list = test_result->GetList();
+    ASSERT_FALSE(list.empty());
+    const bool test_succeeded = list[0].is_bool() && list[0].GetBool();
     std::string message;
-    ASSERT_TRUE(test_result->GetBoolean(0, &test_succeeded));
-    if (!test_succeeded)
-      ASSERT_TRUE(test_result->GetString(1, &message));
+    if (!test_succeeded) {
+      ASSERT_EQ(2U, list.size());
+      message = list[1].GetString();
+    }
 
     TestComplete(test_succeeded ? absl::optional<std::string>() : message);
   }

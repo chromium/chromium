@@ -236,8 +236,9 @@ void OfflineInternalsUIMessageHandler::HandleGetStoredPages(
 void OfflineInternalsUIMessageHandler::HandleSetRecordPageModel(
     const base::ListValue* args) {
   AllowJavascript();
-  bool should_record;
-  CHECK(args->GetBoolean(0, &should_record));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool should_record = list[0].GetBool();
   if (offline_page_model_)
     offline_page_model_->GetLogger()->SetIsLogging(should_record);
 }
@@ -378,8 +379,9 @@ void OfflineInternalsUIMessageHandler::HandleDownloadArchive(
 void OfflineInternalsUIMessageHandler::HandleSetRecordRequestQueue(
     const base::ListValue* args) {
   AllowJavascript();
-  bool should_record;
-  CHECK(args->GetBoolean(0, &should_record));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool should_record = list[0].GetBool();
   if (request_coordinator_)
     request_coordinator_->GetLogger()->SetIsLogging(should_record);
 }
@@ -387,8 +389,9 @@ void OfflineInternalsUIMessageHandler::HandleSetRecordRequestQueue(
 void OfflineInternalsUIMessageHandler::HandleSetRecordPrefetchService(
     const base::ListValue* args) {
   AllowJavascript();
-  bool should_record;
-  CHECK(args->GetBoolean(0, &should_record));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool should_record = list[0].GetBool();
   if (prefetch_service_)
     prefetch_service_->GetLogger()->SetIsLogging(should_record);
 }
