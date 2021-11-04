@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/enterprise/connectors/common.h"
+#include "components/crash/core/common/crash_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -270,6 +271,7 @@ TEST_F(DeepScanningUtilsDlpFileSupportedTest, MimeType) {
   }
 }
 
+#if !BUILDFLAG(USE_CRASH_KEY_STUBS)
 class DeepScanningUtilsCrashKeysTest : public testing::Test {
  public:
   void SetUp() override {
@@ -337,5 +339,6 @@ TEST_F(DeepScanningUtilsCrashKeysTest, InvalidModifications) {
   EXPECT_EQ("999999",
             crash_reporter::GetCrashKeyValue("pending-text-upload-scans"));
 }
+#endif  // !BUILDFLAG(USE_CRASH_KEY_STUBS)
 
 }  // namespace safe_browsing

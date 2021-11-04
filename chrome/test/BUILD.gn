@@ -7880,6 +7880,11 @@ test("unit_tests") {
   }
 
   if (is_fuchsia) {
+    # Chrome on Fuchsia uses the system crash handler.
+    # TODO(crbug.com/1186718): Enable when the implementation is capable of
+    # including CrashKeys in reports.
+    sources -= [ "../common/crash_keys_unittest.cc" ]
+
     data += [ "//testing/buildbot/filters/fuchsia.unit_tests.filter" ]
 
     additional_manifest_fragments = [
