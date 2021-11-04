@@ -571,12 +571,23 @@ void SurfaceAggregator::HandleSurfaceQuad(
   if (needs_surface_damage_rect_list_ &&
       (!resolved_frame ||
        (resolved_frame->surface_id() != primary_surface_id))) {
-    gfx::Transform transform(
-        target_transform,
-        surface_quad->shared_quad_state->quad_to_target_transform);
-    AddSurfaceDamageToDamageList(
-        /*default_damage_rect=*/surface_quad->rect, transform, clip_rect,
-        dest_pass, /*resolved_frame=*/nullptr);
+    const SharedQuadState* surface_quad_sqs = surface_quad->shared_quad_state;
+
+    // TODO(crbug.com/1261917, crbug.com/1257765 and crbug.com/1263146):
+    // Integer overflows caused by huge rect sizes in surface_quad->visible_rect
+    // occur in some crash dumps. Use sqs->visible_quad_layer_rect instead
+    // because it seems more accurate in those crash dumps. Revisit this comment
+    // after the huge rect size bug is fixed.
+    gfx::Rect default_damage_rect = cc::MathUtil::MapEnclosingClippedRect(
+        surface_quad_sqs->quad_to_target_transform,
+        surface_quad_sqs->visible_quad_layer_rect);
+    if (surface_quad_sqs->clip_rect) {
+      default_damage_rect.Intersect(surface_quad_sqs->clip_rect.value());
+    }
+
+    AddSurfaceDamageToDamageList(default_damage_rect, target_transform,
+                                 clip_rect, dest_pass,
+                                 /*resolved_frame=*/nullptr);
   }
 
   // If there's no fallback surface ID available, then simply emit a
@@ -642,12 +653,12 @@ void SurfaceAggregator::EmitSurfaceContent(
   // additional scale.
   float extra_content_scale_x, extra_content_scale_y;
   if (surface_quad->stretch_content_to_fill_bounds) {
-    const gfx::Rect& source_rect = surface_quad->rect;
+    const gfx::Rect& surface_quad_rect = surface_quad->rect;
     // Stretches the surface contents to exactly fill the layer bounds,
     // regardless of scale or aspect ratio differences.
-    extra_content_scale_x = source_rect.width() /
+    extra_content_scale_x = surface_quad_rect.width() /
                             static_cast<float>(frame.size_in_pixels().width());
-    extra_content_scale_y = source_rect.height() /
+    extra_content_scale_y = surface_quad_rect.height() /
                             static_cast<float>(frame.size_in_pixels().height());
   } else {
     extra_content_scale_x = extra_content_scale_y =
@@ -656,9 +667,9 @@ void SurfaceAggregator::EmitSurfaceContent(
   float inverse_extra_content_scale_x = SK_Scalar1 / extra_content_scale_x;
   float inverse_extra_content_scale_y = SK_Scalar1 / extra_content_scale_y;
 
-  const SharedQuadState* source_sqs = surface_quad->shared_quad_state;
+  const SharedQuadState* surface_quad_sqs = surface_quad->shared_quad_state;
   gfx::Transform scaled_quad_to_target_transform(
-      source_sqs->quad_to_target_transform);
+      surface_quad_sqs->quad_to_target_transform);
   scaled_quad_to_target_transform.Scale(extra_content_scale_x,
                                         extra_content_scale_y);
 
@@ -668,15 +679,15 @@ void SurfaceAggregator::EmitSurfaceContent(
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "step",
       "SurfaceAggregation", "display_trace", display_trace_id_);
 
-  const gfx::Rect& source_visible_rect = surface_quad->visible_rect;
+  const gfx::Rect& surface_quad_visible_rect = surface_quad->visible_rect;
   if (ignore_undamaged) {
     gfx::Transform quad_to_target_transform(
-        target_transform, source_sqs->quad_to_target_transform);
+        target_transform, surface_quad_sqs->quad_to_target_transform);
     *damage_rect_in_quad_space_valid = CalculateQuadSpaceDamageRect(
         quad_to_target_transform, dest_pass->transform_to_root_target,
         root_damage_rect_, damage_rect_in_quad_space);
     if (*damage_rect_in_quad_space_valid &&
-        !damage_rect_in_quad_space->Intersects(source_visible_rect)) {
+        !damage_rect_in_quad_space->Intersects(surface_quad_visible_rect)) {
       return;
     }
   }
@@ -713,13 +724,13 @@ void SurfaceAggregator::EmitSurfaceContent(
       mask_filter_info.CanMergeMaskFilterInfo(*render_pass_list.back());
 
   absl::optional<gfx::Rect> quads_clip;
-  if (merge_pass) {
-    // Intersect the transformed visible rect and the clip rect to create a
-    // smaller cliprect for the quad.
+  if (merge_pass || needs_surface_damage_rect_list_) {
+    // Intersect the transformed surface visible rect and the clip rect to
+    // create a smaller cliprect for the quad.
     gfx::Rect surface_quad_clip_rect = cc::MathUtil::MapEnclosingClippedRect(
-        source_sqs->quad_to_target_transform, source_visible_rect);
-    if (source_sqs->clip_rect) {
-      surface_quad_clip_rect.Intersect(*source_sqs->clip_rect);
+        surface_quad_sqs->quad_to_target_transform, surface_quad_visible_rect);
+    if (surface_quad_sqs->clip_rect) {
+      surface_quad_clip_rect.Intersect(*surface_quad_sqs->clip_rect);
     }
 
     quads_clip =
@@ -727,9 +738,9 @@ void SurfaceAggregator::EmitSurfaceContent(
   }
 
   if (needs_surface_damage_rect_list_) {
-    AddSurfaceDamageToDamageList(
-        /*default_damage_rect=*/gfx::Rect(), combined_transform, quads_clip,
-        dest_pass, &resolved_frame);
+    AddSurfaceDamageToDamageList(/*default_damage_rect=*/gfx::Rect(),
+                                 combined_transform, quads_clip, dest_pass,
+                                 &resolved_frame);
   }
 
   if (frame.metadata.delegated_ink_metadata) {
@@ -777,9 +788,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     // Contributing passes aggregated in to the pass list need to take the
     // transform of the surface quad into account to update their transform to
     // the root surface.
-    copy_pass->transform_to_root_target.ConcatTransform(
-        scaled_quad_to_target_transform);
-    copy_pass->transform_to_root_target.ConcatTransform(target_transform);
+    copy_pass->transform_to_root_target.ConcatTransform(combined_transform);
     copy_pass->transform_to_root_target.ConcatTransform(
         dest_pass->transform_to_root_target);
 
@@ -814,11 +823,11 @@ void SurfaceAggregator::EmitSurfaceContent(
                     surface, mask_filter_info);
   } else {
     auto* shared_quad_state = CopyAndScaleSharedQuadState(
-        source_sqs, scaled_quad_to_target_transform, target_transform,
-        gfx::ScaleToEnclosingRect(source_sqs->quad_layer_rect,
+        surface_quad_sqs, scaled_quad_to_target_transform, target_transform,
+        gfx::ScaleToEnclosingRect(surface_quad_sqs->quad_layer_rect,
                                   inverse_extra_content_scale_x,
                                   inverse_extra_content_scale_y),
-        gfx::ScaleToEnclosingRect(source_sqs->visible_quad_layer_rect,
+        gfx::ScaleToEnclosingRect(surface_quad_sqs->visible_quad_layer_rect,
                                   inverse_extra_content_scale_x,
                                   inverse_extra_content_scale_y),
         clip_rect, mask_filter_info, dest_pass);
@@ -841,7 +850,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     //   this so that |quad_visible_rect| is in the render pass's content
     //   space.
     gfx::Rect quad_visible_rect(gfx::ScaleToEnclosingRect(
-        source_visible_rect, inverse_extra_content_scale_x,
+        surface_quad_visible_rect, inverse_extra_content_scale_x,
         inverse_extra_content_scale_y));
 
     // |tex_coord_rect| - A rectangle representing the bounds of the texture
@@ -1184,7 +1193,7 @@ void SurfaceAggregator::CopyQuadsToPass(
           dest_shared_quad_state->overlay_damage_index =
               surface_damage_rect_list_->size();
           AddSurfaceDamageToDamageList(damage_rect_in_target_space.value(),
-                                       target_transform, {}, dest_pass,
+                                       target_transform, clip_rect, dest_pass,
                                        /*resolved_frame=*/nullptr);
         } else if (quad == quad_with_overlay_damage_index) {
           dest_shared_quad_state->overlay_damage_index = overlay_damage_index;
