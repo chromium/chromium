@@ -118,16 +118,6 @@
 
 namespace {
 
-// Distance from the next/previous stacked before before we consider the tab
-// close enough to trigger moving.
-const int kStackedDistance = 36;
-
-// Given the bounds of a dragged tab, return the X coordinate to use for
-// computing where in the strip to insert/move the tab.
-int GetDraggedX(const gfx::Rect& dragged_bounds) {
-  return dragged_bounds.x() + TabStyle::GetTabInternalPadding().left();
-}
-
 // Max number of stacked tabs.
 constexpr int kMaxStackedCount = 4;
 
@@ -368,11 +358,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
            drag_controller_->IsDraggingTab(contents);
   }
 
-  void SetMoveBehavior(TabDragController::MoveBehavior move_behavior) {
-    if (drag_controller_)
-      drag_controller_->SetMoveBehavior(move_behavior);
-  }
-
   void MaybeStartDrag(TabSlotView* source,
                       const ui::LocatedEvent& event,
                       const ui::ListSelectionModel& original_selection) {
@@ -420,31 +405,14 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     // as creating the DragController remembers the WebContents delegates and we
     // need to make sure the existing DragController isn't still a delegate.
     drag_controller_.reset();
-    TabDragController::MoveBehavior move_behavior = TabDragController::REORDER;
 
-    // Use MOVE_VISIBLE_TABS in the following conditions:
-    // . Mouse event generated from touch and the left button is down (the right
-    //   button corresponds to a long press, which we want to reorder).
-    // . Gesture tap down and control key isn't down.
-    // . Real mouse event and control is down. This is mostly for testing.
     DCHECK(event.type() == ui::ET_MOUSE_PRESSED ||
            event.type() == ui::ET_GESTURE_TAP_DOWN ||
            event.type() == ui::ET_GESTURE_SCROLL_BEGIN);
-    if (tab_strip_->touch_layout_ &&
-        ((event.type() == ui::ET_MOUSE_PRESSED &&
-          (((event.flags() & ui::EF_FROM_TOUCH) &&
-            static_cast<const ui::MouseEvent&>(event).IsLeftMouseButton()) ||
-           (!(event.flags() & ui::EF_FROM_TOUCH) &&
-            static_cast<const ui::MouseEvent&>(event).IsControlDown()))) ||
-         (event.type() == ui::ET_GESTURE_TAP_DOWN && !event.IsControlDown()) ||
-         (event.type() == ui::ET_GESTURE_SCROLL_BEGIN &&
-          !event.IsControlDown()))) {
-      move_behavior = TabDragController::MOVE_VISIBLE_TABS;
-    }
 
     drag_controller_ = std::make_unique<TabDragController>();
     drag_controller_->Init(this, source, dragging_views, gfx::Point(x, y),
-                           event.x(), std::move(selection_model), move_behavior,
+                           event.x(), std::move(selection_model),
                            EventSourceFromEvent(event));
     if (drag_controller_set_callback_)
       std::move(drag_controller_set_callback_).Run(drag_controller_.get());
@@ -592,10 +560,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
   int GetHorizontalDragThreshold() const override {
     constexpr int kHorizontalMoveThreshold = 16;  // DIPs.
 
-    // Stacked tabs in touch mode don't shrink.
-    if (tab_strip_->touch_layout_)
-      return kHorizontalMoveThreshold;
-
     double ratio = static_cast<double>(tab_strip_->GetInactiveTabWidth()) /
                    TabStyle::GetStandardWidth();
     return base::ClampRound(ratio * kHorizontalMoveThreshold);
@@ -605,51 +569,33 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
       const gfx::Rect& dragged_bounds,
       std::vector<TabSlotView*> dragged_views,
       int num_dragged_tabs,
-      bool mouse_has_ever_moved_left,
-      bool mouse_has_ever_moved_right,
       absl::optional<tab_groups::TabGroupId> group) const override {
     // If the strip has no tabs, the only position to insert at is 0.
     if (!GetTabCount())
       return 0;
 
     absl::optional<int> index;
-    absl::optional<int> touch_index = GetActiveTouchIndex();
-    if (touch_index) {
-      index = GetInsertionIndexForDraggedBoundsStacked(
-          dragged_bounds, mouse_has_ever_moved_left,
-          mouse_has_ever_moved_right);
-      if (index) {
-        // Only move the tab to the left/right if the user actually moved the
-        // mouse that way. This is necessary as tabs with stacked tabs
-        // before/after them have multiple drag positions.
-        if ((index < touch_index && !mouse_has_ever_moved_left) ||
-            (index > touch_index && !mouse_has_ever_moved_right)) {
-          index = *touch_index;
-        }
-      }
+    // If we're dragging a group by its header, the first element of
+    // |dragged_views| is a group header, and the second one is the first tab
+    // in that group.
+    int first_dragged_tab_index = group.has_value() ? 1 : 0;
+    if (static_cast<size_t>(first_dragged_tab_index) >= dragged_views.size()) {
+      // TODO(tbergquist): This shouldn't happen, but we're getting crashes
+      // that indicate that it might be anyways. This logging might help
+      // narrow down exactly which cases it's happening in.
+      NOTREACHED()
+          << "Calculating a drag insertion index from invalid dependencies: "
+          << "Dragging a group: " << group.has_value()
+          << ", dragged_views.size(): " << dragged_views.size()
+          << ", num_dragged_tabs: " << num_dragged_tabs;
     } else {
-      // If we're dragging a group by its header, the first element of
-      // |dragged_views| is a group header, and the second one is the first tab
-      // in that group.
-      int first_dragged_tab_index = group.has_value() ? 1 : 0;
-      if (static_cast<size_t>(first_dragged_tab_index) >=
-          dragged_views.size()) {
-        // TODO(tbergquist): This shouldn't happen, but we're getting crashes
-        // that indicate that it might be anyways. This logging might help
-        // narrow down exactly which cases it's happening in.
-        NOTREACHED()
-            << "Calculating a drag insertion index from invalid dependencies: "
-            << "Dragging a group: " << group.has_value()
-            << ", dragged_views.size(): " << dragged_views.size()
-            << ", num_dragged_tabs: " << num_dragged_tabs;
-      } else {
-        int first_dragged_tab_model_index =
-            tab_strip_->GetModelIndexOf(dragged_views[first_dragged_tab_index]);
-        index = CalculateInsertionIndex(dragged_bounds,
-                                        first_dragged_tab_model_index,
-                                        num_dragged_tabs, std::move(group));
-      }
+      int first_dragged_tab_model_index =
+          tab_strip_->GetModelIndexOf(dragged_views[first_dragged_tab_index]);
+      index =
+          CalculateInsertionIndex(dragged_bounds, first_dragged_tab_model_index,
+                                  num_dragged_tabs, std::move(group));
     }
+
     if (!index) {
       const int last_tab_right = ideal_bounds(GetTabCount() - 1).right();
       index = (dragged_bounds.right() > last_tab_right) ? GetTabCount() : 0;
@@ -664,46 +610,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 
     // Ensure the first dragged tab always stays in the visible index range.
     return std::min(*index, last_insertion_point);
-  }
-
-  bool ShouldDragToNextStackedTab(
-      const gfx::Rect& dragged_bounds,
-      int index,
-      bool mouse_has_ever_moved_right) const override {
-    if (index + 1 >= GetTabCount() ||
-        !tab_strip_->touch_layout_->IsStacked(index + 1) ||
-        !mouse_has_ever_moved_right)
-      return false;
-
-    int active_x = ideal_bounds(index).x();
-    int next_x = ideal_bounds(index + 1).x();
-    int mid_x =
-        std::min(next_x - kStackedDistance, active_x + (next_x - active_x) / 4);
-    return GetDraggedX(dragged_bounds) >= mid_x;
-  }
-
-  bool ShouldDragToPreviousStackedTab(
-      const gfx::Rect& dragged_bounds,
-      int index,
-      bool mouse_has_ever_moved_left) const override {
-    if (index - 1 < tab_strip_->GetPinnedTabCount() ||
-        !tab_strip_->touch_layout_->IsStacked(index - 1) ||
-        !mouse_has_ever_moved_left)
-      return false;
-
-    int active_x = ideal_bounds(index).x();
-    int previous_x = ideal_bounds(index - 1).x();
-    int mid_x = std::max(previous_x + kStackedDistance,
-                         active_x - (active_x - previous_x) / 4);
-    return GetDraggedX(dragged_bounds) <= mid_x;
-  }
-
-  void DragActiveTabStacked(const std::vector<int>& initial_positions,
-                            int delta) override {
-    DCHECK_EQ(GetTabCount(), static_cast<int>(initial_positions.size()));
-    SetIdealBoundsFromPositions(initial_positions);
-    tab_strip_->touch_layout_->DragActiveTab(delta);
-    tab_strip_->CompleteAnimationAndLayout();
   }
 
   std::vector<gfx::Rect> CalculateBoundsForDraggedViews(
@@ -782,17 +688,10 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 
   void StoppedDragging(const std::vector<TabSlotView*>& views,
                        const std::vector<int>& initial_positions,
-                       bool move_only,
                        bool completed) override {
     // Let the controller know that the user stopped dragging tabs.
     tab_strip_->controller_->OnStoppedDragging();
 
-    if (move_only && tab_strip_->touch_layout_) {
-      if (completed)
-        tab_strip_->touch_layout_->SizeToFit();
-      else
-        SetIdealBoundsFromPositions(initial_positions);
-    }
     bool is_first_view = true;
     for (size_t i = 0; i < views.size(); ++i)
       tab_strip_->StoppedDraggingView(views[i], &is_first_view);
@@ -999,98 +898,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
             TabStyle::GetTabOverlap();
         return header_width;
       }
-    }
-
-    return 0;
-  }
-
-  // Used by GetInsertionIndexForDraggedBounds() when the tabstrip is stacked.
-  absl::optional<int> GetInsertionIndexForDraggedBoundsStacked(
-      const gfx::Rect& dragged_bounds,
-      bool mouse_has_ever_moved_left,
-      bool mouse_has_ever_moved_right) const {
-    int active_index = *GetActiveTouchIndex();
-    // Search from the active index to the front of the tabstrip. Do this as
-    // tabs overlap each other from the active index.
-    absl::optional<int> index =
-        GetInsertionIndexFromReversedStacked(dragged_bounds, active_index);
-    if (index != active_index)
-      return index;
-    if (!index)
-      return GetInsertionIndexFromStacked(dragged_bounds, active_index + 1);
-
-    // The position to drag to corresponds to the active tab. If the
-    // next/previous tab is stacked, then shorten the distance used to determine
-    // insertion bounds. We do this as GetInsertionIndexFrom() uses the bounds
-    // of the tabs. When tabs are stacked the next/previous tab is on top of the
-    // tab.
-    if (active_index + 1 < GetTabCount() &&
-        tab_strip_->touch_layout_->IsStacked(active_index + 1)) {
-      index = GetInsertionIndexFromStacked(dragged_bounds, active_index + 1);
-      if (!index && ShouldDragToNextStackedTab(dragged_bounds, active_index,
-                                               mouse_has_ever_moved_right))
-        index = active_index + 1;
-      else if (index == -1)
-        index = active_index;
-    } else if (ShouldDragToPreviousStackedTab(dragged_bounds, active_index,
-                                              mouse_has_ever_moved_left)) {
-      index = active_index - 1;
-    }
-    return index;
-  }
-
-  // Determines the index to insert tabs at. |dragged_bounds| is the bounds of
-  // the tab being dragged and |start| is the index of the tab to start looking
-  // from. The search proceeds to the end of the strip.
-  absl::optional<int> GetInsertionIndexFromStacked(
-      const gfx::Rect& dragged_bounds,
-      int start) const {
-    const int last_tab = GetTabCount() - 1;
-    if (start < 0 || start > last_tab)
-      return absl::nullopt;
-
-    const int dragged_x = GetDraggedX(dragged_bounds);
-    if (dragged_x < ideal_bounds(start).x() ||
-        dragged_x > ideal_bounds(last_tab).right()) {
-      return absl::nullopt;
-    }
-
-    absl::optional<int> insertion_index;
-    for (int i = start; i <= last_tab; ++i) {
-      const gfx::Rect current_bounds = ideal_bounds(i);
-      int current_center = current_bounds.CenterPoint().x();
-
-      if (dragged_bounds.width() > current_bounds.width() &&
-          dragged_bounds.x() < current_bounds.x()) {
-        current_center -= (dragged_bounds.width() - current_bounds.width());
-      }
-
-      if (dragged_x < current_center) {
-        insertion_index = i;
-        break;
-      }
-    }
-
-    if (!insertion_index.has_value())
-      return last_tab + 1;
-
-    return insertion_index;
-  }
-
-  // Like GetInsertionIndexFrom(), but searches backwards from |start| to the
-  // beginning of the strip.
-  absl::optional<int> GetInsertionIndexFromReversedStacked(
-      const gfx::Rect& dragged_bounds,
-      int start) const {
-    const int dragged_x = GetDraggedX(dragged_bounds);
-    if (start < 0 || start >= GetTabCount() ||
-        dragged_x >= ideal_bounds(start).right() ||
-        dragged_x < ideal_bounds(0).x())
-      return absl::nullopt;
-
-    for (int i = start; i >= 0; --i) {
-      if (dragged_x >= ideal_bounds(i).CenterPoint().x())
-        return i + 1;
     }
 
     return 0;
@@ -3638,10 +3445,6 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_SCROLL_FLING_START:
     case ui::ET_GESTURE_END:
       EndDrag(END_DRAG_COMPLETE);
-      break;
-
-    case ui::ET_GESTURE_LONG_PRESS:
-      drag_context_->SetMoveBehavior(TabDragController::REORDER);
       break;
 
     case ui::ET_GESTURE_LONG_TAP: {
