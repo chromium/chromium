@@ -94,9 +94,13 @@ class ReactionLayout extends RelativeLayout {
                         return true;
                     }
                 });
+        int screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+        int screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
         mReaction.setOnTouchListener(new OnTouchListener() {
             private float mBaseX;
             private float mBaseY;
+            private int mHeight;
+            private int mWidth;
 
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -112,10 +116,15 @@ class ReactionLayout extends RelativeLayout {
                     case MotionEvent.ACTION_DOWN:
                         mBaseX = motionEvent.getRawX() - layoutParams.leftMargin;
                         mBaseY = motionEvent.getRawY() - layoutParams.topMargin;
+                        mHeight = layoutParams.height;
+                        mWidth = layoutParams.width;
                         break;
                     case MotionEvent.ACTION_MOVE:
                         layoutParams.leftMargin = (int) (motionEvent.getRawX() - mBaseX);
                         layoutParams.topMargin = (int) (motionEvent.getRawY() - mBaseY);
+                        layoutParams.rightMargin = screenWidth - (layoutParams.leftMargin - mWidth);
+                        layoutParams.bottomMargin =
+                                screenHeight - (layoutParams.topMargin - mHeight);
                         ReactionLayout.this.setLayoutParams(layoutParams);
                         break;
                 }
