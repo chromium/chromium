@@ -85,6 +85,11 @@ class ArcNetHostImpl : public KeyedService,
 
   void AndroidVpnStateChanged(mojom::ConnectionStateType state) override;
 
+  void AddPasspointCredentials(
+      mojom::PasspointCredentialsPtr credentials) override;
+
+  void RemovePasspointCredentials(const std::string& package_name) override;
+
   void SetAlwaysOnVpn(const std::string& vpnPackage, bool lockdown) override;
 
   std::unique_ptr<base::DictionaryValue> TranslateVpnConfigurationToOnc(

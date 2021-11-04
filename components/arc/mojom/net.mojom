@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 16
+// Next MinVersion: 17
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -80,6 +80,147 @@ struct VisibleNetworkDetails {
 struct ConfiguredNetworkDetails {
   string? passphrase;
   bool autoconnect;
+};
+
+// Passpoint credentials used to connect to matching passpoint networks.
+// This struct should be mirroring 1-to-1 the "passpoint properties" names and
+// types defined in src/platform2/dbus/shill/dbus-constants.h.
+struct PasspointCredentials {
+  // All home service provider fully qualified domain name(s).
+  array<string> domains@0;
+
+  // The realm associated with this credential. It will be used to determine
+  // if this credential can be used to authenticate with a given hotspot by
+  // comparing the realm specified in that hotspot's Access Network Query
+  // Protocol (ANQP) element.
+  string realm@1;
+
+  // List of Home Organization Identifiers (OIs) used for determining if this
+  // credentials match a given Hotspot provider. Matching of any OIs in this
+  // list with an OI in the Roaming Consortium advertised by a Hotspot means
+  // that successful authentication with such Hotspot is possible.
+  array<uint64> home_ois@2;
+
+  // List of Home Organization Identifiers (OIs) used for determining if a
+  // provider is a member of a given Hotspot provider. Every OIs in this list
+  // are required to match an OI in the the Roaming Consortium advertised by a
+  // Hotspot in order to support authentication with this credentials.
+  array<uint64> required_home_ois@3;
+
+  // Roaming consortium Organization Identifiers (OIs) used to determine which
+  // access points support authentication with this credentials.
+  array<uint64> roaming_consortium_ois@4;
+
+  // Set of EAP credentials (TLS or TTLS only) used to connect to a network
+  // that matched these credentials.
+  EapCredentials eap@5;
+
+  // True if the user or App specified any network provisioned
+  // with these credentials should be considered as metered.
+  bool metered@6;
+
+  // Package name of the App that provided these credentials.
+  string package_name@7;
+};
+
+// The EAP method that will be used when connecting to a 802.1x WiFi network or
+// Passpoint WiFi network.
+[Extensible]
+enum EapMethod {
+  kNone = 0,
+  kLeap = 1,
+  kPeap = 2,
+  kTls = 3,
+  kTtls = 4,
+};
+
+// The authentication methods that will be on the inside of a PEAP or EAP-TTLS
+// tunnel.
+[Extensible]
+enum EapPhase2Method {
+  kNone = 0,
+  kPap = 1,
+  kMschap = 2,
+  kMschapv2 = 3,
+};
+
+// Recognized key management schemes.
+[Extensible]
+enum KeyManagement {
+  kNone = 0,
+  kIeee8021X = 1,
+  kFtEap = 2,
+  kFtPsk = 3,
+  kFtSae = 4,
+  kWpaEap = 5,
+  kWpaEapSha256 = 6,
+  kWpaPsk = 7,
+  kSae = 8,
+};
+
+// EAP credential used to connect to a 802.1x WiFi network or Passpoint WiFi
+// network that matched the credentials.
+// This struct should be mirroring 1-to-1 the "EAP properties" names and types
+// defined in src/platform2/system_api/dbus/shill/dbus-constants.h.
+// ARC is responsible for filling / hardcoding any field that the Android APIs
+// do not provide directly, so that ArcNetHostImpl can be a dumb data transfer
+// layer with no other logic.
+struct EapCredentials {
+  // The outer or only EAP authentication type.
+  EapMethod method@0;
+
+  // The inner EAP authentication type.
+  EapPhase2Method phase2_method@1;
+
+  // When there is an inner EAP type, use this identity for the outer.
+  string? anonymous_identity@2;
+
+  // Who we identify ourselves as to the EAP authenticator.
+  string? identity@3;
+
+  // Password to use for EAP methods which require one.
+  string? password@4;
+
+  // Key management algorithm to use after EAP succeeds.
+  KeyManagement key_management@5;
+
+  // PEM formatted contents of the CA certificate(s).
+  array<string>? ca_certificate_pem@6;
+
+  // PEM formatted contents of the client certificate(s).
+  array<string>? client_certificate_pem@7;
+
+  // PEM formatted contents of the client private key.
+  string? client_certificate_key@8;
+
+  // If non-empty, string to match remote subject against before connecting.
+  string? subject_match@9;
+
+  // A list of serialized subject alternative names (SANs) to be matched against
+  // the alternative subject name of the authentication server certificate. When
+  // multiple match strings are specified, a match with any one of the values is
+  // considered a sufficient match for the server certificate.
+  array<string>? subject_alternative_name_match_list@10;
+
+  // A list of constraints for the server domain name. If set, the entries will
+  // be used as suffix match requirements against the DNS name element(s) of the
+  // alternative subject name of an authentication server. When multiple match
+  // strings are specified, a match with any one of the values is considered a
+  // sufficient match for the server certificate.
+  array<string>? domain_suffix_match_list@11;
+
+  // The highest TLS version supplicant is allowed to negotiate.
+  string? tls_version_max@12;
+
+  // If true, use the system-wide certificate authority database to authenticate
+  // the remote.
+  bool use_system_cas@13;
+
+  // If true, use per network proactive key caching.
+  bool use_proactive_key_caching@14;
+
+  // If true, use the user's stored login password as the password.
+  bool use_login_password@15;
 };
 
 union NetworkDetails {
@@ -166,6 +307,12 @@ struct WiFi {
   // ARC for connected WiFi networks and should be considered precise only for
   // scanning results.
   int32 signal_strength;
+
+  // True if the network represents a Passpoint network.
+  [MinVersion=16] bool is_passpoint;
+
+  // Fully qualified domain name (FQDN) of a Passpoint configuration.
+  [MinVersion=16] string? fqdn;
 };
 
 // The physical network types exposed to ARC by the host,
@@ -300,6 +447,10 @@ struct WifiConfiguration {
 
   // Deprecated. |hexssid| will be used, going forward.
   string ssid@0;
+
+  // Set of EAP credentials used to connect to a network that matched these
+  // credentials.
+  [MinVersion=16] EapCredentials? eap@8;
 };
 
 // Response object sent back to ARC when it queries existing networks on
@@ -382,7 +533,7 @@ struct ArcPingTestResult {
   int64 duration_ms;
 };
 
-// Next Method ID: 14
+// Next Method ID: 16
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 interface NetHost {
   // Sends a request to get enabled / disabled status of WiFi.
@@ -440,6 +591,15 @@ interface NetHost {
   // unless the lockdown is dictated via policy.
   // Call with empty string as |vpnPackage| to lift the restriction.
   [MinVersion=9] SetAlwaysOnVpn@13(string vpnPackage, bool lockdown);
+
+  // Adds a PasspointCredentials block provided by an Android App onto the host
+  // platform.
+  [MinVersion=16] AddPasspointCredentials@14(PasspointCredentials credentials);
+
+  // Removes all PasspointCredentials blocks provided by an Android App.
+  // Calling this will also revoke all associated WiFi Services provisioned
+  // with the credentials blocks.
+  [MinVersion=16] RemovePasspointCredentials@15(string package_name);
 };
 
 // Next Method ID: 11
