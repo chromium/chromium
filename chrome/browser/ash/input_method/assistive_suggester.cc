@@ -122,12 +122,12 @@ void RecordSuggestionsMatch(const std::vector<TextSuggestion>& suggestions) {
 AssistiveSuggester::AssistiveSuggester(
     InputMethodEngine* engine,
     Profile* profile,
-    std::unique_ptr<AssistiveSuggesterBlocklist> blocklist)
+    std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch)
     : profile_(profile),
       personal_info_suggester_(engine, profile),
       emoji_suggester_(engine, profile),
       multi_word_suggester_(engine),
-      blocklist_(std::move(blocklist)) {
+      suggester_switch_(std::move(suggester_switch)) {
   RecordAssistiveUserPrefForPersonalInfo(
       profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled));
   RecordAssistiveUserPrefForEmoji(
@@ -178,7 +178,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
   if (!profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled)) {
     return DisabledReason::kUserSettingsOff;
   }
-  if (!blocklist_->IsPersonalInfoSuggestionAllowed()) {
+  if (!suggester_switch_->IsPersonalInfoSuggestionAllowed()) {
     return DisabledReason::kUrlOrAppNotAllowed;
   }
   return DisabledReason::kNone;
@@ -195,7 +195,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
   if (!profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled)) {
     return DisabledReason::kUserSettingsOff;
   }
-  if (!blocklist_->IsEmojiSuggestionAllowed()) {
+  if (!suggester_switch_->IsEmojiSuggestionAllowed()) {
     return DisabledReason::kUrlOrAppNotAllowed;
   }
   return DisabledReason::kNone;
@@ -209,7 +209,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord() {
           prefs::kAssistPredictiveWritingEnabled)) {
     return DisabledReason::kUserSettingsOff;
   }
-  if (!blocklist_->IsMultiWordSuggestionAllowed()) {
+  if (!suggester_switch_->IsMultiWordSuggestionAllowed()) {
     return DisabledReason::kUrlOrAppNotAllowed;
   }
   return DisabledReason::kNone;
@@ -287,7 +287,7 @@ void AssistiveSuggester::OnExternalSuggestionsUpdated(
 
   RecordSuggestionsMatch(suggestions);
 
-  if (!blocklist_->IsMultiWordSuggestionAllowed() &&
+  if (!suggester_switch_->IsMultiWordSuggestionAllowed() &&
       !IsExpandedMultiWordSuggestEnabled()) {
     if (IsTopResultMultiWord(suggestions))
       RecordAssistiveDisabledReasonForMultiWord(
@@ -312,7 +312,7 @@ void AssistiveSuggester::RecordAssistiveMatchMetricsForAction(
   RecordAssistiveMatch(action);
   if (!IsActionEnabled(action)) {
     RecordAssistiveDisabled(action);
-  } else if (!blocklist_->IsEmojiSuggestionAllowed()) {
+  } else if (!suggester_switch_->IsEmojiSuggestionAllowed()) {
     RecordAssistiveNotAllowed(action);
   }
 }
@@ -388,7 +388,7 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
       return current_suggester_->Suggest(text, cursor_pos, anchor_pos);
     }
     if (IsAssistPersonalInfoEnabled() &&
-        blocklist_->IsPersonalInfoSuggestionAllowed() &&
+        suggester_switch_->IsPersonalInfoSuggestionAllowed() &&
         personal_info_suggester_.Suggest(text, cursor_pos, anchor_pos)) {
       current_suggester_ = &personal_info_suggester_;
       if (personal_info_suggester_.IsFirstShown()) {
@@ -397,7 +397,7 @@ bool AssistiveSuggester::Suggest(const std::u16string& text,
       return true;
     } else if (IsEmojiSuggestAdditionEnabled() &&
                !IsEnhancedEmojiSuggestEnabled() &&
-               blocklist_->IsEmojiSuggestionAllowed() &&
+               suggester_switch_->IsEmojiSuggestionAllowed() &&
                emoji_suggester_.Suggest(text, cursor_pos, anchor_pos)) {
       current_suggester_ = &emoji_suggester_;
       RecordAssistiveCoverage(current_suggester_->GetProposeActionType());

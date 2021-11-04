@@ -224,5 +224,14 @@ bool AssistiveSuggesterClientFilter::IsPersonalInfoSuggestionAllowed() {
   return IsAllowedUrlOrAppForPersonalInfoSuggestion();
 }
 
+void AssistiveSuggesterClientFilter::GetEnabledSuggestions(
+    GetEnabledSuggestionsCallback callback) {
+  std::move(callback).Run(EnabledSuggestions{
+      .emoji_suggestions = IsEmojiSuggestionAllowed(),
+      .multi_word_suggestions = IsMultiWordSuggestionAllowed(),
+      .personal_info_suggestions = IsPersonalInfoSuggestionAllowed(),
+  });
+}
+
 }  // namespace input_method
 }  // namespace ash

@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_SUGGESTER_CLIENT_FILTER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_ASSISTIVE_SUGGESTER_CLIENT_FILTER_H_
 
-#include "chrome/browser/ash/input_method/assistive_suggester_blocklist.h"
+#include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 
 namespace ash {
 namespace input_method {
 
-class AssistiveSuggesterClientFilter : public AssistiveSuggesterBlocklist {
+class AssistiveSuggesterClientFilter : public AssistiveSuggesterSwitch {
  public:
   AssistiveSuggesterClientFilter() = default;
   ~AssistiveSuggesterClientFilter() override = default;
@@ -19,6 +19,7 @@ class AssistiveSuggesterClientFilter : public AssistiveSuggesterBlocklist {
   bool IsEmojiSuggestionAllowed() override;
   bool IsMultiWordSuggestionAllowed() override;
   bool IsPersonalInfoSuggestionAllowed() override;
+  void GetEnabledSuggestions(GetEnabledSuggestionsCallback callback) override;
 };
 
 }  // namespace input_method

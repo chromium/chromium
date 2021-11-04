@@ -8,8 +8,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/input_method/assistive_suggester_blocklist.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
+#include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/personal_info_suggester.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/test/base/testing_profile.h"
@@ -259,7 +259,7 @@ TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-class FakeBlocklist : public AssistiveSuggesterBlocklist {
+class FakeBlocklist : public AssistiveSuggesterSwitch {
  public:
   explicit FakeBlocklist(bool allowed) : allowed_(allowed) {}
   ~FakeBlocklist() override = default;
@@ -268,6 +268,13 @@ class FakeBlocklist : public AssistiveSuggesterBlocklist {
   bool IsEmojiSuggestionAllowed() override { return allowed_; }
   bool IsMultiWordSuggestionAllowed() override { return allowed_; }
   bool IsPersonalInfoSuggestionAllowed() override { return allowed_; }
+  void GetEnabledSuggestions(GetEnabledSuggestionsCallback callback) override {
+    std::move(callback).Run(EnabledSuggestions{
+        .emoji_suggestions = false,
+        .multi_word_suggestions = false,
+        .personal_info_suggestions = false,
+    });
+  }
 
  private:
   bool allowed_;
