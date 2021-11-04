@@ -228,8 +228,6 @@ BrowserTabStripController::~BrowserTabStripController() {
 void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
   tabstrip_ = tabstrip;
 
-  UpdateStackedLayout();
-
   // Walk the model, calling our insertion observer method for each item within
   // it.
   for (int i = 0; i < model_->count(); ++i)
@@ -474,13 +472,6 @@ void BrowserTabStripController::CreateNewTabWithLocation(
                  &match, nullptr);
   if (match.destination_url.is_valid())
     model_->delegate()->AddTabAt(match.destination_url, -1, true);
-}
-
-void BrowserTabStripController::StackedLayoutMaybeChanged() {
-  bool adjust_layout = false;
-  bool stacked_layout = false;
-  if (!adjust_layout || stacked_layout == tabstrip_->stacked_layout())
-    return;
 }
 
 void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
@@ -805,11 +796,4 @@ void BrowserTabStripController::AddTab(WebContents* contents,
     browser_view_->feature_promo_controller()->MaybeShowPromo(
         feature_engagement::kIPHTabSearchFeature);
   }
-}
-
-void BrowserTabStripController::UpdateStackedLayout() {
-  bool adjust_layout = false;
-  bool stacked_layout = false;
-  tabstrip_->set_adjust_layout(adjust_layout);
-  tabstrip_->SetStackedLayout(stacked_layout);
 }

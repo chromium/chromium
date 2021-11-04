@@ -2316,7 +2316,6 @@ void TabStrip::MouseMovedOutOfHost() {
   if (reset_to_shrink_on_exit_) {
     reset_to_shrink_on_exit_ = false;
     SetStackedLayout(false);
-    controller_->StackedLayoutMaybeChanged();
   }
 }
 
@@ -3157,7 +3156,6 @@ void TabStrip::UpdateStackedLayoutFromMouseEvent(views::View* source,
         Tab* tab = FindTabForEvent(tab_strip_point);
         if (tab && touch_layout_->IsStacked(GetModelIndexOf(tab))) {
           SetStackedLayout(false);
-          controller_->StackedLayoutMaybeChanged();
         }
       }
       break;
@@ -3196,7 +3194,6 @@ void TabStrip::UpdateStackedLayoutFromMouseEvent(views::View* source,
       last_mouse_move_time_ = base::TimeTicks();
       if ((event.flags() & ui::EF_FROM_TOUCH) == ui::EF_FROM_TOUCH) {
         SetStackedLayout(true);
-        controller_->StackedLayoutMaybeChanged();
       }
       break;
     }
@@ -3847,7 +3844,6 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
       EndDrag(END_DRAG_COMPLETE);
       if (adjust_layout_) {
         SetStackedLayout(true);
-        controller_->StackedLayoutMaybeChanged();
       }
       break;
 
