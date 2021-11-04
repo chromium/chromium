@@ -213,6 +213,7 @@ static_library("browser") {
     "shortcuts_provider.h",
     "suggestion_answer.cc",
     "suggestion_answer.h",
+    "tab_matcher.cc",
     "tab_matcher.h",
     "tailored_word_break_iterator.cc",
     "tailored_word_break_iterator.h",

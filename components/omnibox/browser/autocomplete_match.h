@@ -31,6 +31,7 @@
 #include "url/gurl.h"
 
 #if defined(OS_ANDROID)
+#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -235,6 +236,10 @@ struct AutocompleteMatch {
   void UpdateJavaAnswer();
   // Update the Java object description.
   void UpdateJavaDescription();
+  // Update the pointer to corresponding Java tab object.
+  void UpdateMatchingJavaTab(const JavaObjectWeakGlobalRef& tab);
+  // Get the matching Java Tab object.
+  JavaObjectWeakGlobalRef GetMatchingJavaTab() const;
 #endif
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
@@ -774,6 +779,9 @@ struct AutocompleteMatch {
   // See AutocompleteControllerAndroid for more details.
   mutable std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>
       java_match_;
+
+  // When set, holds a weak reference to Java Tab object.
+  JavaObjectWeakGlobalRef matching_java_tab_{};
 
   base::WeakPtrFactory<AutocompleteMatch> weak_ptr_factory_{this};
 #endif

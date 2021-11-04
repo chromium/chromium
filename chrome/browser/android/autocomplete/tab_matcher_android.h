@@ -26,15 +26,11 @@ class TabMatcherAndroid : public TabMatcher {
   bool IsTabOpenWithURL(const GURL& gurl,
                         const AutocompleteInput* input) const override;
 
-  // Returns a TabAndroid has opened same URL as |url|.
-  TabAndroid* GetTabOpenWithURL(const GURL& url,
-                                const AutocompleteInput* input) const;
+  void FindMatchingTabs(GURLToTabInfoMap* map,
+                        const AutocompleteInput* input) const override;
 
  private:
-  // Make a JNI call to get all the hidden tabs and non Custom tabs in
-  // |tab_model|.
-  std::vector<TabAndroid*> GetAllHiddenAndNonCCTTabs(
-      const std::vector<TabModel*>& tab_models) const;
+  GURLToTabInfoMap GetAllHiddenAndNonCCTTabInfos() const;
 
   const AutocompleteProviderClient& client_;
   Profile* profile_;

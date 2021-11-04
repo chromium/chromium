@@ -461,7 +461,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
 
     @Override
     public void onSwitchToTab(AutocompleteMatch suggestion, int position) {
-        Tab tab = mAutocomplete.findMatchingTabWithUrl(suggestion.getUrl());
+        Tab tab = mAutocomplete.getMatchingTabForSuggestion(position);
         if (tab == null || !mTabWindowManagerSupplier.hasValue()) {
             onSuggestionClicked(suggestion, position, suggestion.getUrl());
             return;

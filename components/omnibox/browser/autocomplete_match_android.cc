@@ -152,6 +152,26 @@ void AutocompleteMatch::OnClipboardSuggestionContentUpdated(
   RunRunnableAndroid(j_callback);
 }
 
+void AutocompleteMatch::UpdateMatchingJavaTab(
+    const JavaObjectWeakGlobalRef& tab) {
+  matching_java_tab_ = tab;
+
+  // Default state is: we don't have a matching tab. If that default state has
+  // changed, reflect it in the UI.
+  // TODO(crbug.com/1266558): when Tab.java is relocated to Components, pass the
+  // Tab object directly to Java. This is not possible right now due to
+  // //components being explicitly denied to depend on //chrome targets.
+  if (!java_match_ || !has_tab_match.value_or(false))
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AutocompleteMatch_updateMatchingTab(env, *java_match_, true);
+}
+
+JavaObjectWeakGlobalRef AutocompleteMatch::GetMatchingJavaTab() const {
+  return matching_java_tab_;
+}
+
 void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {
   if (!java_match_)
     return;

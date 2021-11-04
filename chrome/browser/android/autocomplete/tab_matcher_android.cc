@@ -60,28 +60,85 @@ TAB_ANDROID_USER_DATA_KEY_IMPL(AutocompleteClientTabAndroidUserData)
 
 bool TabMatcherAndroid::IsTabOpenWithURL(const GURL& url,
                                          const AutocompleteInput* input) const {
-  return GetTabOpenWithURL(url, input) != nullptr;
-}
-
-TabAndroid* TabMatcherAndroid::GetTabOpenWithURL(
-    const GURL& url,
-    const AutocompleteInput* input) const {
+  DCHECK(input);
   const AutocompleteInput empty_input;
   if (!input)
     input = &empty_input;
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
       url, *input, client_.GetTemplateURLService(), std::u16string());
+  const auto all_tabs = GetAllHiddenAndNonCCTTabInfos();
+  return all_tabs.find(stripped_url) != all_tabs.end();
+}
 
+void TabMatcherAndroid::FindMatchingTabs(GURLToTabInfoMap* map,
+                                         const AutocompleteInput* input) const {
+  DCHECK(map);
+  DCHECK(input);
+  const AutocompleteInput empty_input;
+  if (!input)
+    input = &empty_input;
+  auto all_tabs = GetAllHiddenAndNonCCTTabInfos();
+
+  for (auto& gurl_to_tab_info : *map) {
+    const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
+        gurl_to_tab_info.first, *input, client_.GetTemplateURLService(),
+        std::u16string());
+    auto found_tab = all_tabs.find(stripped_url);
+    if (found_tab != all_tabs.end()) {
+      gurl_to_tab_info.second = found_tab->second;
+    }
+  }
+}
+
+TabMatcher::GURLToTabInfoMap TabMatcherAndroid::GetAllHiddenAndNonCCTTabInfos()
+    const {
+  using chrome::android::ActivityType;
+  GURLToTabInfoMap tab_infos;
+
+  // Collect tab models that host tabs eligible for SwitchToTab.
+  // Ignore:
+  // - tab models for not matching profile (eg. incognito vs non-incognito)
+  // - custom and trusted tabs.
   std::vector<TabModel*> tab_models;
   for (TabModel* model : TabModelList::models()) {
     if (profile_ != model->GetProfile())
       continue;
 
+    auto type = model->activity_type();
+    if (type == ActivityType::kCustomTab ||
+        type == ActivityType::kTrustedWebActivity) {
+      continue;
+    }
+
     tab_models.push_back(model);
   }
 
-  std::vector<TabAndroid*> all_tabs = GetAllHiddenAndNonCCTTabs(tab_models);
+  // Short circuit in the event we have no tab models hosting eligible tabs.
+  if (tab_models.size() == 0)
+    return tab_infos;
 
+  // Create and populate an array of Java TabModels.
+  // The most expensive series of calls that reach to Java for every single tab
+  // at least once start here and span until the end of this method.
+  JNIEnv* env = base::android::AttachCurrentThread();
+  jclass tab_model_clazz = TabModelJniBridge::GetClazz(env);
+  base::android::ScopedJavaLocalRef<jobjectArray> j_tab_model_array(
+      env, env->NewObjectArray(tab_models.size(), tab_model_clazz, nullptr));
+  // Get all the hidden and non CCT tabs. Filter the tabs in CCT tabmodel first.
+  for (size_t i = 0; i < tab_models.size(); ++i) {
+    env->SetObjectArrayElement(j_tab_model_array.obj(), i,
+                               tab_models[i]->GetJavaObject().obj());
+  }
+
+  // Retrieve all Tabs associated with previously built TabModels array.
+  base::android::ScopedJavaLocalRef<jobjectArray> j_tabs =
+      Java_ChromeAutocompleteProviderClient_getAllHiddenTabs(env,
+                                                             j_tab_model_array);
+  if (j_tabs.is_null())
+    return tab_infos;
+
+  // Create a map of tab URLs to their corresponding tab infos.
+  auto all_tabs = TabAndroid::GetAllNativeTabs(env, j_tabs);
   for (TabAndroid* tab : all_tabs) {
     // Browser did not load the tab yet after Chrome started. To avoid
     // reloading WebContents, we just compare URLs.
@@ -95,40 +152,11 @@ TabAndroid* TabMatcherAndroid::GetTabOpenWithURL(
     }
 
     const GURL& tab_stripped_url = user_data->GetStrippedURL();
-    if (tab_stripped_url == stripped_url)
-      return tab;
+    TabInfo info;
+    info.has_matching_tab = true;
+    info.android_tab = JavaObjectWeakGlobalRef(env, tab->GetJavaObject());
+    tab_infos[tab_stripped_url] = info;
   }
 
-  return nullptr;
-}
-
-std::vector<TabAndroid*> TabMatcherAndroid::GetAllHiddenAndNonCCTTabs(
-    const std::vector<TabModel*>& tab_models) const {
-  using chrome::android::ActivityType;
-
-  if (tab_models.size() == 0)
-    return std::vector<TabAndroid*>();
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  jclass tab_model_clazz = TabModelJniBridge::GetClazz(env);
-  base::android::ScopedJavaLocalRef<jobjectArray> j_tab_model_array(
-      env, env->NewObjectArray(tab_models.size(), tab_model_clazz, nullptr));
-  // Get all the hidden and non CCT tabs. Filter the tabs in CCT tabmodel first.
-  for (size_t i = 0; i < tab_models.size(); ++i) {
-    ActivityType type = tab_models[i]->activity_type();
-    if (type == ActivityType::kCustomTab ||
-        type == ActivityType::kTrustedWebActivity) {
-      continue;
-    }
-    env->SetObjectArrayElement(j_tab_model_array.obj(), i,
-                               tab_models[i]->GetJavaObject().obj());
-  }
-
-  base::android::ScopedJavaLocalRef<jobjectArray> j_tabs =
-      Java_ChromeAutocompleteProviderClient_getAllHiddenTabs(env,
-                                                             j_tab_model_array);
-  if (j_tabs.is_null())
-    return std::vector<TabAndroid*>();
-
-  return TabAndroid::GetAllNativeTabs(env, j_tabs);
+  return tab_infos;
 }

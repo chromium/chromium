@@ -422,17 +422,11 @@ ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
 }
 
 ScopedJavaLocalRef<jobject>
-AutocompleteControllerAndroid::FindMatchingTabWithUrl(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_gurl) {
-  // TODO(crbug.com/1176768): Eliminate the need for this cast and possibly the
-  // entire call.
-  const auto& tab_matcher =
-      static_cast<const TabMatcherAndroid&>(provider_client_->GetTabMatcher());
-  TabAndroid* tab = tab_matcher.GetTabOpenWithURL(
-      *url::GURLAndroid::ToNativeGURL(env, j_gurl), nullptr);
-
-  return tab ? tab->GetJavaObject() : nullptr;
+AutocompleteControllerAndroid::GetMatchingTabForSuggestion(JNIEnv* env,
+                                                           jint index) {
+  const AutocompleteMatch& match =
+      autocomplete_controller_->result().match_at(index);
+  return match.GetMatchingJavaTab().get(env);
 }
 
 void AutocompleteControllerAndroid::Shutdown() {

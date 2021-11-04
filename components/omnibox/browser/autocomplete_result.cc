@@ -482,6 +482,10 @@ void AutocompleteResult::ConvertOpenTabMatches(
     AutocompleteProviderClient* client,
     const AutocompleteInput* input) {
   base::TimeTicks start_time = base::TimeTicks::Now();
+
+  // URL matching on Android is expensive, because it triggers a volume of JNI
+  // calls. We improve this situation by batching the lookup.
+  TabMatcher::GURLToTabInfoMap batch_lookup_map;
   for (auto& match : matches_) {
     // If already converted this match, don't re-search through open tabs and
     // possibly re-change the description.
@@ -489,8 +493,26 @@ void AutocompleteResult::ConvertOpenTabMatches(
     // boolean conversion of absl::optional.
     if (match.has_tab_match.has_value())
       continue;
-    match.has_tab_match =
-        client->GetTabMatcher().IsTabOpenWithURL(match.destination_url, input);
+    batch_lookup_map.insert({match.destination_url, {}});
+  }
+
+  if (!batch_lookup_map.empty()) {
+    client->GetTabMatcher().FindMatchingTabs(&batch_lookup_map, input);
+
+    for (auto& match : matches_) {
+      if (match.has_tab_match.has_value())
+        continue;
+
+      auto tab_info = batch_lookup_map.find(match.destination_url);
+      DCHECK(tab_info != batch_lookup_map.end());
+      if (tab_info == batch_lookup_map.end())
+        continue;
+
+      match.has_tab_match = tab_info->second.has_matching_tab;
+#if defined(OS_ANDROID)
+      match.UpdateMatchingJavaTab(tab_info->second.android_tab);
+#endif
+    }
   }
 
   base::TimeDelta time_delta = base::TimeTicks::Now() - start_time;
