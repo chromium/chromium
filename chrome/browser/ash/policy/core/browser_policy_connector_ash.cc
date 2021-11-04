@@ -399,18 +399,13 @@ std::string BrowserPolicyConnectorAsh::GetEnterpriseEnrollmentDomain() const {
   return chromeos::InstallAttributes::Get()->GetDomain();
 }
 
-std::string BrowserPolicyConnectorAsh::GetEnterpriseDisplayDomain() const {
-  const em::PolicyData* policy = GetDevicePolicy();
-  if (policy && policy->has_display_domain())
-    return policy->display_domain();
-  return GetEnterpriseEnrollmentDomain();
-}
-
 std::string BrowserPolicyConnectorAsh::GetEnterpriseDomainManager() const {
   const em::PolicyData* policy = GetDevicePolicy();
   if (policy && policy->has_managed_by())
     return policy->managed_by();
-  return GetEnterpriseDisplayDomain();
+  if (policy && policy->has_display_domain())
+    return policy->display_domain();
+  return GetEnterpriseEnrollmentDomain();
 }
 
 std::string BrowserPolicyConnectorAsh::GetSSOProfile() const {

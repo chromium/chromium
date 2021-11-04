@@ -49,29 +49,51 @@ class BrowserPolicyConnectorAshTest : public DevicePolicyCrosBrowserTest {
   ~BrowserPolicyConnectorAshTest() override = default;
 };
 
-// Test that GetEnterpriseEnrollmentDomain and GetEnterpriseDisplayDomain work
-// as expected.
-IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, EnterpriseDomains) {
+// Test that GetEnterpriseEnrollmentDomain is returned for
+// GetEnterpriseEnrollmentDomain and for GetEnterpriseDomainManager if the
+// policy doesn't have any domain/manager information.
+IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, EnrollmentDomain) {
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   EXPECT_EQ(PolicyBuilder::kFakeDomain,
             connector->GetEnterpriseEnrollmentDomain());
-  // Custom display domain not set at this point and policy not loaded yet so
-  // display domain defaults to enrollment domain.
-  EXPECT_EQ(PolicyBuilder::kFakeDomain,
-            connector->GetEnterpriseDisplayDomain());
-  // If no manager set, EnterpriseDomainManager is equal to
-  // EnterpriseDisplayDomain
-  EXPECT_EQ(connector->GetEnterpriseDisplayDomain(),
+
+  // If no manager or display domain set, EnterpriseDomainManager is equal to
+  // EnterpriseEnrollmentDomain
+  EXPECT_EQ(connector->GetEnterpriseEnrollmentDomain(),
             connector->GetEnterpriseDomainManager());
+}
+
+// Test that GetEnterpriseDomainManager returns the policy display_domain if
+// no managed_by value is set.
+IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, DisplayDomain) {
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   device_policy()->policy_data().set_display_domain(kCustomDisplayDomain);
-  device_policy()->policy_data().set_managed_by(kCustomManager);
   RefreshDevicePolicy();
   WaitUntilPolicyLoaded();
-  // At this point custom display domain is set and policy is loaded so expect
-  // to see the custom display domain.
-  EXPECT_EQ(kCustomDisplayDomain, connector->GetEnterpriseDisplayDomain());
+  // At this point display domain is set and policy is loaded so expect to see
+  /// the display domain.
+  EXPECT_EQ(kCustomDisplayDomain, connector->GetEnterpriseDomainManager());
+
+  // Make sure that enrollment domain stays the same.
+  EXPECT_EQ(PolicyBuilder::kFakeDomain,
+            connector->GetEnterpriseEnrollmentDomain());
+}
+
+// Test that GetEnterpriseDomainManager returns the policy managed_by if
+// it is set.
+IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, ManagedBy) {
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  device_policy()->policy_data().set_display_domain(kCustomDisplayDomain);
+  device_policy()->policy_data().set_managed_by(kCustomManager);
+
+  RefreshDevicePolicy();
+  WaitUntilPolicyLoaded();
+  // Now that the managed_by is set expect to see that.
   EXPECT_EQ(kCustomManager, connector->GetEnterpriseDomainManager());
+
   // Make sure that enrollment domain stays the same.
   EXPECT_EQ(PolicyBuilder::kFakeDomain,
             connector->GetEnterpriseEnrollmentDomain());
@@ -89,8 +111,6 @@ IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, MarketSegment) {
   EXPECT_EQ(MarketSegment::EDUCATION, connector->GetEnterpriseMarketSegment());
 }
 
-// Test that GetEnterpriseEnrollmentDomain and GetEnterpriseDisplayDomain work
-// as expected.
 IN_PROC_BROWSER_TEST_F(BrowserPolicyConnectorAshTest, MachineName) {
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
