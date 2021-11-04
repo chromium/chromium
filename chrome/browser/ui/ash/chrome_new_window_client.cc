@@ -31,6 +31,7 @@
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/web_applications/calculator_app/calculator_app_utils.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
@@ -242,6 +243,18 @@ chrome::FeedbackSource MapToChromeSource(
   }
 }
 
+// When the Files SWA is enabled: Open Files SWA.
+// Returns true if it opens the SWA.
+bool OpenFilesSwa(Profile* const profile) {
+  if (!ash::features::IsFileManagerSwaEnabled()) {
+    return false;
+  }
+
+  web_app::LaunchSystemWebAppAsync(profile,
+                                   web_app::SystemAppType::FILE_MANAGER, {});
+  return true;
+}
+
 }  // namespace
 
 ChromeNewWindowClient::ChromeNewWindowClient()
@@ -406,6 +419,10 @@ void ChromeNewWindowClient::OpenCalculator() {
 
 void ChromeNewWindowClient::OpenFileManager() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
+  if (OpenFilesSwa(profile)) {
+    return;
+  }
+
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   DCHECK(proxy);
@@ -433,6 +450,11 @@ void ChromeNewWindowClient::OpenFileManager() {
 
 void ChromeNewWindowClient::OpenDownloadsFolder() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
+  // TODO(b/204372025): Force to open in the Downloads folder.
+  if (OpenFilesSwa(profile)) {
+    return;
+  }
+
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   auto downloads_path =
