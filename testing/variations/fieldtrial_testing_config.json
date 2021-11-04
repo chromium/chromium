@@ -9326,6 +9326,21 @@
             ]
         }
     ],
+    "Win11StyleMenus": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Win11StyleMenus"
+                    ]
+                }
+            ]
+        }
+    ],
     "XsurfaceMetricsReporting": [
         {
             "platforms": [
