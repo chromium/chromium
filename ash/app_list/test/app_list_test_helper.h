@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/test_app_list_client.h"
 
@@ -116,6 +117,8 @@ class AppListTestHelper {
   TestAppListClient* app_list_client() { return app_list_client_.get(); }
 
  private:
+  test::AppListTestModel model_;
+  SearchModel search_model_;
   AppListControllerImpl* app_list_controller_ = nullptr;
   std::unique_ptr<TestAppListClient> app_list_client_;
 };

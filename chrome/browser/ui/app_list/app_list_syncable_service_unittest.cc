@@ -998,7 +998,6 @@ TEST_F(AppListSyncableServiceTest, UpdateSyncItemRemoveLastItemFromFolder) {
 
   // Move the child_item_1 out of the folder.
   model_updater->SetItemFolderId(child_item_1->id(), "");
-  model_updater->OnItemUpdated(child_item_1->CloneMetadata());
 
   // Verify both child item are moved out of the folder.
   ASSERT_TRUE(GetSyncItem(kChildItemId1));

@@ -66,24 +66,12 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   size_t BadgedItemCount() override;
   void OnSortRequested(ash::AppListSortOrder order) override {}
   void OnSortRevertRequested() override {}
-  void HandleSetPosition(std::string id,
-                         const syncer::StringOrdinal& new_position,
-                         ash::RequestPositionUpdateReason reason) override {}
-  void HandleMoveItemToFolder(std::string id,
-                              const std::string& folder_id) override {}
-  void HandleMoveItemToRoot(std::string id,
-                            syncer::StringOrdinal target_position) override {}
+
   // For SearchModel:
   bool SearchEngineIsGoogle() override;
   const std::vector<ChromeSearchResult*>& search_results() const {
     return search_results_;
   }
-
-  void OnItemAdded(std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnItemUpdated(std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnFolderDeleted(
-      std::unique_ptr<ash::AppListItemMetadata> item) override {}
-  void OnPageBreakItemDeleted(const std::string& id) override {}
 
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;

@@ -5,18 +5,16 @@
 #ifndef ASH_PUBLIC_CPP_APP_LIST_APP_LIST_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_CONTROLLER_H_
 
-#include <memory>
-#include <string>
-
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 
 namespace ash {
 
+class SearchModel;
+class AppListModel;
 class AppListClient;
 class AppListControllerObserver;
 class AppListModel;
@@ -44,79 +42,19 @@ class ASH_PUBLIC_EXPORT AppListController {
   virtual void AddObserver(AppListControllerObserver* observer) = 0;
   virtual void RemoveObserver(AppListControllerObserver* obsever) = 0;
 
-  // Adds an item to AppListModel.
-  virtual void AddItem(std::unique_ptr<AppListItemMetadata> app_item) = 0;
-
-  // Adds an item into a certain folder in AppListModel.
-  virtual void AddItemToFolder(std::unique_ptr<AppListItemMetadata> app_item,
-                               const std::string& folder_id) = 0;
-
-  // Removes an item by its id from AppListModel.
-  virtual void RemoveItem(const std::string& id) = 0;
-
-  // Removes an item by its id, and also cleans up if its parent folder has a
-  // single child left.
-  virtual void RemoveUninstalledItem(const std::string& id) = 0;
-
-  // Tells Ash what the current status of AppListModel should be,
-  // e.g. the model is under synchronization or in normal status.
-  virtual void SetStatus(AppListModelStatus status) = 0;
-
-  // Sets whether the search engine is Google or not.
-  virtual void SetSearchEngineIsGoogle(bool is_google) = 0;
-
-  // Sets the text for the search box's Textfield and the voice search flag.
-  virtual void UpdateSearchBox(const std::u16string& text,
-                               bool initiated_by_user) = 0;
-
-  // Publishes search results to Ash to render them. The order of the
-  // |categories| vector is the order cateogories should be displayed in. Each
-  // result in |results| contains a category as a member, which is guaranteed
-  // to exist in |categories|. However, some values in |categories| may have
-  // no results associated with them.
-  virtual void PublishSearchResults(
-      std::vector<std::unique_ptr<SearchResultMetadata>> results,
-      const std::vector<ash::AppListSearchResultCategory>& categories) = 0;
-
-  // Updates an item's metadata (e.g. name, position, etc).
-  virtual void SetItemMetadata(const std::string& id,
-                               std::unique_ptr<AppListItemMetadata> data) = 0;
-
-  virtual void SetItemIconVersion(const std::string& id, int icon_version) = 0;
-
-  // Updates an item's icon.
-  virtual void SetItemIcon(const std::string& id,
-                           const gfx::ImageSkia& icon) = 0;
-
-  virtual void SetItemNotificationBadgeColor(const std::string& id,
-                                             const SkColor color) = 0;
-
-  // Update the whole model, usually when profile changes happen in Chrome.
-  // DEPRECATED: Usages of `SetModelData()` will be replaced with
-  // `SetActiveModel()` - https://crbug.com/1263604.
-  virtual void SetModelData(
-      int profile_id,
-      std::vector<std::unique_ptr<AppListItemMetadata>> apps,
-      bool is_search_engine_google) = 0;
-
   // Updates the app list model and search model that should be used by the
   // controller.
   // This can be used to update the models represented in the app list UI when
-  // the active user profile changes in Chrome, and is intended to replace
-  // `SetModelData()`. Additionally, it can be used in tests to instantiate
-  // testing models.
-  virtual void SetActiveModel(AppListModel* model,
+  // the active user profile changes in Chrome. Additionally, it can be used in
+  // tests to instantiate testing models.
+  // `profile_id` Identifies the profile with which models are associated - used
+  // as a model identifier passed to various `AppListClient` methods.
+  virtual void SetActiveModel(int profile_id,
+                              AppListModel* model,
                               SearchModel* search_model) = 0;
 
-  // Updates a search rresult's metadata.
-  virtual void SetSearchResultMetadata(
-      std::unique_ptr<SearchResultMetadata> metadata) = 0;
-
-  // Returns a map from each item's id to its shown index in the app list.
-  using GetIdToAppListIndexMapCallback =
-      base::OnceCallback<void(const base::flat_map<std::string, uint16_t>&)>;
-  virtual void GetIdToAppListIndexMap(
-      GetIdToAppListIndexMapCallback callback) = 0;
+  // Clears any previously set app list or search model.
+  virtual void ClearActiveModel() = 0;
 
   // Notifies sync service has finished processing sync changes.
   virtual void NotifyProcessSyncChangesFinished() = 0;

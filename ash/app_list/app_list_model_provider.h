@@ -54,6 +54,9 @@ class ASH_EXPORT AppListModelProvider {
   // shutdown.
   void SetActiveModel(AppListModel* model, SearchModel* search_model);
 
+  // Resets active app list and search model to the default one.
+  void ClearActiveModel();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

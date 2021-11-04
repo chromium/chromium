@@ -705,10 +705,8 @@ TEST_F(AppListAppCountMetricTest, RecordApplistItemCounts) {
   histogram.ExpectTotalCount("Apps.AppList.NumberOfRootLevelItems", 1);
 
   // Create a folder and add 3 items to it.
-  const std::string folder_id = base::StringPrintf("folder_id");
-  auto folder = std::make_unique<AppListFolderItem>(
-      folder_id, Shell::Get()->app_list_controller());
-  model->AddItem(std::move(folder));
+  const std::string folder_id = "folder_id";
+  model->AddFolderItemForTest(folder_id);
   for (int i = 0; i < 3; i++) {
     auto item =
         std::make_unique<AppListItem>(base::StringPrintf("id_in_folder_%d", i));

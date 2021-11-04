@@ -699,13 +699,9 @@ TEST_F(AppListControllerImplTest,
 // https://crbug.com/1130901).
 TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
   // Add a folder, whose AppListItemList the AppListModel will observe.
-  const std::string folder_id("folder_1");
   AppListModel* model = GetAppListModel();
-  AppListControllerImpl* app_list_controller =
-      Shell::Get()->app_list_controller();
-  auto folder =
-      std::make_unique<AppListFolderItem>(folder_id, app_list_controller);
-  model->AddItem(std::move(folder));
+  const std::string folder_id("folder_1");
+  model->AddFolderItemForTest(folder_id);
 
   for (int i = 0; i < 2; ++i) {
     auto item = std::make_unique<AppListItem>(base::StringPrintf("app_%d", i));
@@ -714,9 +710,13 @@ TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
 
   // Set a new model, simulating profile switching in multi-profile mode. This
   // should cleanly drop the reference to the folder added earlier.
-  Shell::Get()->app_list_controller()->SetModelData(
-      /*profile_id=*/12, /*apps=*/{}, /*is_search_engine_google=*/false);
+  auto updated_model = std::make_unique<test::AppListTestModel>();
+  auto update_search_model = std::make_unique<SearchModel>();
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      /*profile_id=*/1, updated_model.get(), update_search_model.get());
 
+  Shell::Get()->app_list_controller()->ClearActiveModel();
+  updated_model.reset();
   // Test that there is no crash on ~AppListModel() when the test finishes.
 }
 
@@ -825,9 +825,7 @@ TEST_F(AppListControllerImplTest, GetItemBoundsForWindow) {
   for (int i = 0; i < 25; ++i) {
     if (folders.count(i)) {
       const std::string folder_id = base::StringPrintf("fake_folder_%d", i);
-      auto folder =
-          std::make_unique<AppListFolderItem>(folder_id, app_list_controller);
-      model->AddItem(std::move(folder));
+      model->AddFolderItemForTest(folder_id);
       auto item = std::make_unique<AppListItem>(
           base::StringPrintf("fake_id_in_folder_%d", i));
       model->AddItemToFolder(std::move(item), folder_id);

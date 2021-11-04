@@ -270,8 +270,8 @@ class AppsGridViewTest : public AshTestBase {
     // Replace the model before the app list views are created, because some
     // views cache pointers to the model.
     model_ = std::make_unique<test::AppListTestModel>();
-    Shell::Get()->app_list_controller()->SetActiveModel(model_.get(),
-                                                        search_model_.get());
+    Shell::Get()->app_list_controller()->SetActiveModel(
+        /*profile_id=*/1, model_.get(), search_model_.get());
 
     // Show the app list.
     auto* helper = GetAppListTestHelper();
@@ -3465,7 +3465,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
   auto search_model_override = std::make_unique<SearchModel>();
 
   Shell::Get()->app_list_controller()->SetActiveModel(
-      model_override.get(), search_model_override.get());
+      /*profile_id=*/1, model_override.get(), search_model_override.get());
   UpdateLayout();
 
   // Verify that the view model size matches the new model.
@@ -3487,8 +3487,8 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
   EXPECT_EQ("Item 4", GetTestAppListClient()->activate_item_last_id());
 
   // Switch model to original one, and verify the folder view gets closed.
-  Shell::Get()->app_list_controller()->SetActiveModel(model_.get(),
-                                                      search_model_.get());
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      /*profile_id=*/1, model_.get(), search_model_.get());
   UpdateLayout();
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
   EXPECT_EQ(2, view_model->view_size());
@@ -3497,7 +3497,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
   SimulateLeftClickOnView(view_model->view_at(1));
   EXPECT_EQ("Item 1", GetTestAppListClient()->activate_item_last_id());
 
-  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  Shell::Get()->app_list_controller()->ClearActiveModel();
   EXPECT_EQ(0, view_model->view_size());
 }
 

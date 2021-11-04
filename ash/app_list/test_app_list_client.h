@@ -15,12 +15,11 @@
 #include "base/macros.h"
 
 namespace ash {
-class AppListControllerImpl;
 
 // A test implementation of AppListClient that records function call counts.
 class TestAppListClient : public AppListClient {
  public:
-  explicit TestAppListClient(AppListControllerImpl* controller);
+  TestAppListClient();
 
   TestAppListClient(const TestAppListClient&) = delete;
   TestAppListClient& operator=(const TestAppListClient&) = delete;
@@ -53,29 +52,11 @@ class TestAppListClient : public AppListClient {
                            GetContextMenuModelCallback callback) override;
   void OnAppListVisibilityWillChange(bool visible) override {}
   void OnAppListVisibilityChanged(bool visible) override {}
-  void OnItemAdded(int profile_id,
-                   std::unique_ptr<AppListItemMetadata> item) override {}
-  void OnItemUpdated(int profile_id,
-                     std::unique_ptr<AppListItemMetadata> item) override {}
-  void OnFolderDeleted(int profile_id,
-                       std::unique_ptr<AppListItemMetadata> item) override {}
-  void OnPageBreakItemDeleted(int profile_id, const std::string& id) override {}
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visibility) override {}
   void OnAppListSortRequested(int profile_id, AppListSortOrder order) override {
   }
   void OnAppListSortRevertRequested(int profile_id) override {}
-  void OnSetPositionRequested(int profile_id,
-                              std::string id,
-                              const syncer::StringOrdinal& new_position,
-                              ash::RequestPositionUpdateReason reason) override;
-  void OnMoveItemToFolderRequested(int profile_id,
-                                   std::string id,
-                                   const std::string& folder_id) override {}
-  void OnMoveItemToRootRequested(
-      int profile_id,
-      std::string id,
-      syncer::StringOrdinal target_position) override {}
   void OnQuickSettingsChanged(
       const std::string& setting_name,
       const std::map<std::string, int>& values) override {}
@@ -109,8 +90,6 @@ class TestAppListClient : public AppListClient {
   int activate_item_count_ = 0;
   std::string activate_item_last_id_;
   std::string last_opened_search_result_;
-
-  AppListControllerImpl* const controller_;
 };
 
 }  // namespace ash

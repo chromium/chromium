@@ -33,11 +33,19 @@ AppListModelProvider* AppListModelProvider::Get() {
 
 void AppListModelProvider::SetActiveModel(AppListModel* model,
                                           SearchModel* search_model) {
-  // If either model is reset, so should be the other one.
-  DCHECK_EQ(!model, !search_model);
+  DCHECK(model);
+  DCHECK(search_model);
 
-  model_ = model ? model : &default_model_;
-  search_model_ = search_model ? search_model : &default_search_model_;
+  model_ = model;
+  search_model_ = search_model;
+
+  for (auto& observer : observers_)
+    observer.OnActiveAppListModelsChanged(model_, search_model_);
+}
+
+void AppListModelProvider::ClearActiveModel() {
+  model_ = &default_model_;
+  search_model_ = &default_search_model_;
 
   for (auto& observer : observers_)
     observer.OnActiveAppListModelsChanged(model_, search_model_);

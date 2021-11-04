@@ -235,34 +235,6 @@ void FakeAppListModelUpdater::UpdateAppItemFromSyncItem(
   }
 }
 
-void FakeAppListModelUpdater::OnItemAdded(
-    std::unique_ptr<ash::AppListItemMetadata> item) {
-  const std::string& id = item->id;
-  ChromeAppListItem* chrome_item = FindItem(id);
-  if (!chrome_item) {
-    DCHECK(item->is_folder || item->is_page_break);
-    std::unique_ptr<ChromeAppListItem> new_item =
-        std::make_unique<ChromeAppListItem>(profile_, id, this);
-    new_item->SetMetadata(std::move(item));
-    AddItem(std::move(new_item));
-    chrome_item = FindItem(id);
-  }
-
-  for (AppListModelUpdaterObserver& observer : observers_)
-    observer.OnAppListItemAdded(chrome_item);
-}
-
-void FakeAppListModelUpdater::OnItemUpdated(
-    std::unique_ptr<ash::AppListItemMetadata> item) {
-  ChromeAppListItem* chrome_item = FindItem(item->id);
-
-  // Ignore the item if it does not exist.
-  if (!chrome_item)
-    return;
-
-  for (AppListModelUpdaterObserver& observer : observers_)
-    observer.OnAppListItemUpdated(chrome_item);
-}
 void FakeAppListModelUpdater::AddObserver(
     AppListModelUpdaterObserver* observer) {
   observers_.AddObserver(observer);

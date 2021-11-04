@@ -10,13 +10,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/model/app_list_model_observer.h"
+#include "ash/app_list/model/search/search_model.h"
+#include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
-
-namespace ash {
-class AppListController;
-}  // namespace ash
 
 namespace app_list {
 class AppListReorderDelegate;
@@ -25,7 +25,9 @@ class AppListReorderDelegate;
 class ChromeAppListItem;
 class ChromeAppListItemManager;
 
-class ChromeAppListModelUpdater : public AppListModelUpdater {
+class ChromeAppListModelUpdater : public AppListModelUpdater,
+                                  public ash::AppListModelDelegate,
+                                  public ash::AppListModelObserver {
  public:
   ChromeAppListModelUpdater(Profile* profile,
                             app_list::AppListReorderDelegate* order_delegate);
@@ -100,24 +102,25 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void NotifyProcessSyncChangesFinished() override;
 
   // Methods to handle model update from ash:
-  void OnItemAdded(std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnItemUpdated(std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnFolderDeleted(std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnPageBreakItemDeleted(const std::string& id) override;
   void OnSortRequested(ash::AppListSortOrder order) override;
   void OnSortRevertRequested() override;
 
-  // Methods to handle app list item updates initiated from ash:
-  void HandleSetPosition(std::string id,
-                         const syncer::StringOrdinal& new_position,
-                         ash::RequestPositionUpdateReason reason) override;
-  void HandleMoveItemToFolder(std::string id,
-                              const std::string& folder_id) override;
-  void HandleMoveItemToRoot(std::string id,
-                            syncer::StringOrdinal target_position) override;
-
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
+
+  // AppListModelObserver:
+  void OnAppListItemAdded(ash::AppListItem* item) override;
+  void OnAppListItemUpdated(ash::AppListItem* item) override;
+  void OnAppListItemWillBeDeleted(ash::AppListItem* item) override;
+
+  // AppListModelDelegate:
+  void RequestPositionUpdate(std::string id,
+                             const syncer::StringOrdinal& new_position,
+                             ash::RequestPositionUpdateReason reason) override;
+  void RequestMoveItemToFolder(std::string id,
+                               const std::string& folder_id) override;
+  void RequestMoveItemToRoot(std::string id,
+                             syncer::StringOrdinal target_position) override;
 
   // Returns the temporary sort order.
   ash::AppListSortOrder GetTemporarySortOrderForTest() const;
@@ -184,10 +187,14 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   // A helper class to manage app list items. It never talks to ash.
   std::unique_ptr<ChromeAppListItemManager> item_manager_;
 
+  ash::AppListModel model_;
+  ash::SearchModel search_model_;
+
+  bool is_active_ = false;
+
   // The most recently list of search results.
   std::vector<ChromeSearchResult*> published_results_;
   base::ObserverList<AppListModelUpdaterObserver> observers_;
-  ash::AppListController* app_list_controller_ = nullptr;
   bool search_engine_is_google_ = false;
 
   // Set when sort is triggered and reset when exiting the temporary sort

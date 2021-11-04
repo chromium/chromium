@@ -187,7 +187,8 @@ TEST_F(ProductivityLauncherSearchViewTest, SearchClearedOnModelUpdate) {
   auto app_list_model_override = std::make_unique<test::AppListTestModel>();
   auto search_model_override = std::make_unique<SearchModel>();
   Shell::Get()->app_list_controller()->SetActiveModel(
-      app_list_model_override.get(), search_model_override.get());
+      /*profile_id=*/1, app_list_model_override.get(),
+      search_model_override.get());
 
   EXPECT_FALSE(test_helper->GetBubbleSearchPage()->GetVisible());
   EXPECT_EQ(u"",
@@ -207,7 +208,7 @@ TEST_F(ProductivityLauncherSearchViewTest, SearchClearedOnModelUpdate) {
   EXPECT_EQ(u"Result 2",
             result_containers[0]->GetResultViewAt(0)->result()->title());
 
-  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  Shell::Get()->app_list_controller()->ClearActiveModel();
 }
 
 }  // namespace

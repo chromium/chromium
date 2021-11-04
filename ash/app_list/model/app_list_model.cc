@@ -316,6 +316,11 @@ void AppListModel::DeleteAllItems() {
   }
 }
 
+void AppListModel::AddFolderItemForTest(const std::string& folder_id) {
+  AddItem(
+      std::make_unique<AppListFolderItem>(folder_id, app_list_model_delegate_));
+}
+
 // Protected methods
 
 AppListFolderItem* AppListModel::FindOrCreateFolderItem(

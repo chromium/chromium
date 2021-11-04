@@ -301,42 +301,6 @@ void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
     search_controller_->AppListShown();
 }
 
-void AppListClientImpl::OnItemAdded(
-    int profile_id,
-    std::unique_ptr<ash::AppListItemMetadata> item) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (!requested_model_updater)
-    return;
-  requested_model_updater->OnItemAdded(std::move(item));
-}
-
-void AppListClientImpl::OnItemUpdated(
-    int profile_id,
-    std::unique_ptr<ash::AppListItemMetadata> item) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (!requested_model_updater)
-    return;
-  requested_model_updater->OnItemUpdated(std::move(item));
-}
-
-void AppListClientImpl::OnFolderDeleted(
-    int profile_id,
-    std::unique_ptr<ash::AppListItemMetadata> item) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (!requested_model_updater)
-    return;
-  DCHECK(item->is_folder);
-  requested_model_updater->OnFolderDeleted(std::move(item));
-}
-
-void AppListClientImpl::OnPageBreakItemDeleted(int profile_id,
-                                               const std::string& id) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (!requested_model_updater)
-    return;
-  requested_model_updater->OnPageBreakItemDeleted(id);
-}
-
 void AppListClientImpl::OnSearchResultVisibilityChanged(const std::string& id,
                                                         bool visibility) {
   if (!search_controller_)
@@ -404,8 +368,10 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
   template_url_service_observation_.Reset();
 
   profile_ = new_profile;
-  if (!profile_)
+  if (!profile_) {
+    GetAppListController()->ClearActiveModel();
     return;
+  }
 
   // If we are in guest mode, the new profile should be an OffTheRecord profile.
   // Otherwise, this may later hit a check (same condition as this one) in
@@ -599,45 +565,6 @@ void AppListClientImpl::OnAppListSortRevertRequested(int profile_id) {
     return;
   }
   requested_model_updater->OnSortRevertRequested();
-}
-
-void AppListClientImpl::OnSetPositionRequested(
-    int profile_id,
-    std::string id,
-    const syncer::StringOrdinal& new_position,
-    ash::RequestPositionUpdateReason reason) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (requested_model_updater != current_model_updater_ ||
-      !requested_model_updater) {
-    return;
-  }
-  requested_model_updater->HandleSetPosition(std::move(id), new_position,
-                                             reason);
-}
-
-void AppListClientImpl::OnMoveItemToFolderRequested(
-    int profile_id,
-    std::string id,
-    const std::string& folder_id) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (requested_model_updater != current_model_updater_ ||
-      !requested_model_updater) {
-    return;
-  }
-  requested_model_updater->HandleMoveItemToFolder(std::move(id), folder_id);
-}
-
-void AppListClientImpl::OnMoveItemToRootRequested(
-    int profile_id,
-    std::string id,
-    syncer::StringOrdinal target_position) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (requested_model_updater != current_model_updater_ ||
-      !requested_model_updater) {
-    return;
-  }
-  requested_model_updater->HandleMoveItemToRoot(std::move(id),
-                                                std::move(target_position));
 }
 
 void AppListClientImpl::MaybeRecordViewShown() {

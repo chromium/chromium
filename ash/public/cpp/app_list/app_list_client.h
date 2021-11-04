@@ -99,18 +99,6 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual void GetContextMenuModel(int profile_id,
                                    const std::string& id,
                                    GetContextMenuModelCallback callback) = 0;
-  // Invoked when an item is added in Ash.
-  virtual void OnItemAdded(int profile_id,
-                           std::unique_ptr<AppListItemMetadata> item) = 0;
-  // Invoked when user changes a folder's name or an item's position.
-  virtual void OnItemUpdated(int profile_id,
-                             std::unique_ptr<AppListItemMetadata> folder) = 0;
-  // Invoked when a folder has only one item left and so gets removed.
-  virtual void OnFolderDeleted(int profile_id,
-                               std::unique_ptr<AppListItemMetadata> folder) = 0;
-  // Invoked when a "page break" item with |id| is deleted.
-  virtual void OnPageBreakItemDeleted(int profile_id,
-                                      const std::string& id) = 0;
   // Invoked when a "quick setting" is changed.
   virtual void OnQuickSettingsChanged(
       const std::string& setting_name,
@@ -142,19 +130,6 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Invoked when the ash side requests to revert the app list temporary sort
   // order (i.e. the order that has not been committed yet).
   virtual void OnAppListSortRevertRequested(int profile_id) = 0;
-
-  // Methods called from Ash to update app list items:
-  virtual void OnSetPositionRequested(int profile_id,
-                                      std::string id,
-                                      const syncer::StringOrdinal& new_position,
-                                      RequestPositionUpdateReason reason) = 0;
-  virtual void OnMoveItemToFolderRequested(int profile_id,
-                                           std::string id,
-                                           const std::string& folder_id) = 0;
-  virtual void OnMoveItemToRootRequested(
-      int profile_id,
-      std::string id,
-      syncer::StringOrdinal target_position) = 0;
 
  protected:
   virtual ~AppListClient() = default;

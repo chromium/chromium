@@ -91,7 +91,9 @@ ProductivityLauncherSearchView::ProductivityLauncherSearchView(
   AppListModelProvider::Get()->AddObserver(this);
 }
 
-ProductivityLauncherSearchView::~ProductivityLauncherSearchView() = default;
+ProductivityLauncherSearchView::~ProductivityLauncherSearchView() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+}
 
 void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanging() {
   // Block any result selection changes while result updates are in flight.

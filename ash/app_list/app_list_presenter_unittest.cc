@@ -336,7 +336,7 @@ class AppListBubbleAndTabletTest
     app_list_test_model_ = std::make_unique<test::AppListTestModel>();
     search_model_ = std::make_unique<SearchModel>();
     Shell::Get()->app_list_controller()->SetActiveModel(
-        app_list_test_model_.get(), search_model_.get());
+        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
 
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
@@ -434,7 +434,7 @@ class PopulatedAppListTest : public AshTestBase,
     app_list_test_model_ = std::make_unique<test::AppListTestModel>();
     search_model_ = std::make_unique<SearchModel>();
     Shell::Get()->app_list_controller()->SetActiveModel(
-        app_list_test_model_.get(), search_model_.get());
+        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
   }
 
  protected:
@@ -2585,14 +2585,14 @@ TEST_P(AppListPresenterTest, SearchBoxDeactivatedOnModelChange) {
   auto model_override = std::make_unique<test::AppListTestModel>();
   auto search_model_override = std::make_unique<SearchModel>();
   Shell::Get()->app_list_controller()->SetActiveModel(
-      model_override.get(), search_model_override.get());
+      /*profile_id=*/1, model_override.get(), search_model_override.get());
 
   EXPECT_FALSE(search_box_view->is_search_box_active());
 
   GetAppListTestHelper()->CheckVisibility(true);
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 
-  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  Shell::Get()->app_list_controller()->ClearActiveModel();
 }
 
 // Tests that search UI gets closed if search model gets changed.
@@ -2638,7 +2638,7 @@ TEST_P(AppListPresenterTest, SearchClearedOnModelChange) {
   auto model_override = std::make_unique<test::AppListTestModel>();
   auto search_model_override = std::make_unique<SearchModel>();
   Shell::Get()->app_list_controller()->SetActiveModel(
-      model_override.get(), search_model_override.get());
+      /*profile_id=*/1, model_override.get(), search_model_override.get());
 
   EXPECT_FALSE(search_box_view->is_search_box_active());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
@@ -2671,7 +2671,7 @@ TEST_P(AppListPresenterTest, SearchClearedOnModelChange) {
   EXPECT_EQ("test_override",
             item_list_container->GetResultViewAt(0)->result()->id());
 
-  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  Shell::Get()->app_list_controller()->ClearActiveModel();
 
   EXPECT_FALSE(search_box_view->is_search_box_active());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);

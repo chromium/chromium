@@ -30,7 +30,7 @@ class AppListFolderViewProductivityLauncherTest : public AshTestBase {
     app_list_test_model_ = std::make_unique<test::AppListTestModel>();
     search_model_ = std::make_unique<SearchModel>();
     Shell::Get()->app_list_controller()->SetActiveModel(
-        app_list_test_model_.get(), search_model_.get());
+        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
   }
 
   base::test::ScopedFeatureList feature_list_{features::kProductivityLauncher};

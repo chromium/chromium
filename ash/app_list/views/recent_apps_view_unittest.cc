@@ -313,7 +313,7 @@ TEST_P(RecentAppsViewTest, UpdateAppsOnModelChange) {
   }
 
   Shell::Get()->app_list_controller()->SetActiveModel(
-      model_override.get(), search_model_override.get());
+      /*profile_id=*/1, model_override.get(), search_model_override.get());
   GetRecentAppsView()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(std::vector<std::string>(
@@ -329,7 +329,7 @@ TEST_P(RecentAppsViewTest, UpdateAppsOnModelChange) {
   EXPECT_EQ("other_id1", GetTestAppListClient()->activate_item_last_id());
 
   // Recent apps should be cleared if app list models get reset.
-  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  Shell::Get()->app_list_controller()->ClearActiveModel();
   EXPECT_EQ(std::vector<std::string>{}, GetRecentAppsIds());
 }
 

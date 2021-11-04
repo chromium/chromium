@@ -9,31 +9,11 @@
 
 namespace test {
 
-TestAppListController::TestAppListController(AppListModelUpdater* model_updater)
-    : model_updater_(model_updater) {}
-
+TestAppListController::TestAppListController() = default;
 TestAppListController::~TestAppListController() = default;
 
 ash::AppListClient* TestAppListController::GetClient() {
   return AppListClientImpl::GetInstance();
-}
-
-void TestAppListController::AddItem(
-    std::unique_ptr<ash::AppListItemMetadata> app_item) {
-  model_updater_->OnItemAdded(std::move(app_item));
-}
-
-void TestAppListController::AddItemToFolder(
-    std::unique_ptr<ash::AppListItemMetadata> app_item,
-    const std::string& folder_id) {
-  app_item->folder_id = folder_id;
-  model_updater_->OnItemUpdated(std::move(app_item));
-}
-
-void TestAppListController::SetItemMetadata(
-    const std::string& id,
-    std::unique_ptr<ash::AppListItemMetadata> data) {
-  model_updater_->OnItemUpdated(std::move(data));
 }
 
 aura::Window* TestAppListController::GetWindow() {

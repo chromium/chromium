@@ -333,7 +333,7 @@ TEST_F(ContinueSectionViewTest, UpdateAppsOnModelChange) {
                          search_model_override.get());
 
   Shell::Get()->app_list_controller()->SetActiveModel(
-      model_override.get(), search_model_override.get());
+      /*profile_id=*/1, model_override.get(), search_model_override.get());
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
 
   EXPECT_EQ(std::vector<std::string>({"id21", "id22", "id23"}), GetResultIds());
@@ -347,7 +347,7 @@ TEST_F(ContinueSectionViewTest, UpdateAppsOnModelChange) {
   EXPECT_EQ("id23", client->last_opened_search_result());
 
   // Results should be cleared if app list models get reset.
-  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  Shell::Get()->app_list_controller()->ClearActiveModel();
   EXPECT_EQ(std::vector<std::string>{}, GetResultIds());
 }
 

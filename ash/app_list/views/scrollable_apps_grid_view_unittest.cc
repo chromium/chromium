@@ -70,7 +70,7 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     app_list_test_model_ = std::make_unique<test::AppListTestModel>();
     search_model_ = std::make_unique<SearchModel>();
     Shell::Get()->app_list_controller()->SetActiveModel(
-        app_list_test_model_.get(), search_model_.get());
+        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
 
     shelf_item_factory_ = std::make_unique<ShelfItemFactoryFake>();
     ShelfModel::Get()->SetShelfItemFactory(shelf_item_factory_.get());

@@ -130,6 +130,9 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Deletes all items. This is used in profile switches.
   void DeleteAllItems();
 
+  // Creates and adds an empty folder item with the provided ID.
+  void AddFolderItemForTest(const std::string& folder_id);
+
   AppListItemList* top_level_item_list() const {
     return top_level_item_list_.get();
   }

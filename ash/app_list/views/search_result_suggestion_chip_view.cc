@@ -208,7 +208,8 @@ const std::u16string& SearchResultSuggestionChipView::GetText() const {
 void SearchResultSuggestionChipView::UpdateSuggestionChipView() {
   if (!result()) {
     SetIcon(gfx::ImageSkia());
-    SetText(std::u16string());
+    if (!GetText().empty())
+      SetText(std::u16string());
     SetAccessibleName(std::u16string());
     return;
   }

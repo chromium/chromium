@@ -98,13 +98,6 @@ class AppListClientImpl
                            GetContextMenuModelCallback callback) override;
   void OnAppListVisibilityWillChange(bool visible) override;
   void OnAppListVisibilityChanged(bool visible) override;
-  void OnItemAdded(int profile_id,
-                   std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnItemUpdated(int profile_id,
-                     std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnFolderDeleted(int profile_id,
-                       std::unique_ptr<ash::AppListItemMetadata> item) override;
-  void OnPageBreakItemDeleted(int profile_id, const std::string& id) override;
   void OnSearchResultVisibilityChanged(const std::string& id,
                                        bool visible) override;
   void OnQuickSettingsChanged(
@@ -119,17 +112,6 @@ class AppListClientImpl
   void OnAppListSortRequested(int profile_id,
                               ash::AppListSortOrder order) override;
   void OnAppListSortRevertRequested(int profile_id) override;
-  void OnSetPositionRequested(int profile_id,
-                              std::string id,
-                              const syncer::StringOrdinal& new_position,
-                              ash::RequestPositionUpdateReason reason) override;
-  void OnMoveItemToFolderRequested(int profile_id,
-                                   std::string id,
-                                   const std::string& folder_id) override;
-  void OnMoveItemToRootRequested(
-      int profile_id,
-      std::string id,
-      syncer::StringOrdinal target_position) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;

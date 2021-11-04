@@ -27,15 +27,17 @@ class TemporaryAppListSortTest : public test::AppListSyncableServiceTestBase {
 
   void SetUp() override {
     AppListSyncableServiceTestBase::SetUp();
-    app_list_controller_ =
-        std::make_unique<test::TestAppListController>(GetModelUpdater());
+    app_list_controller_ = std::make_unique<test::TestAppListController>();
     GetModelUpdater()->SetActive(true);
     content::RunAllTasksUntilIdle();
   }
 
+  ChromeAppListModelUpdater* GetChromeModelUpdater() {
+    return static_cast<ChromeAppListModelUpdater*>(GetModelUpdater());
+  }
+
   ash::AppListSortOrder GetTemporarySortOrder() {
-    return static_cast<ChromeAppListModelUpdater*>(GetModelUpdater())
-        ->GetTemporarySortOrderForTest();
+    return GetChromeModelUpdater()->GetTemporarySortOrderForTest();
   }
 
   // Returns the app list order stored as preference.
@@ -191,7 +193,7 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItem) {
 
   // Sort apps with name alphabetical order, commit the temporary order then
   // verify the state.
-  AppListModelUpdater* model_updater = GetModelUpdater();
+  ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
   model_updater->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
   Commit();
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
@@ -210,8 +212,8 @@ TEST_F(TemporaryAppListSortTest, HandleMoveItem) {
   const syncer::StringOrdinal target_position =
       model_updater->FindItem(kItemId2)->position().CreateBetween(
           model_updater->FindItem(kItemId3)->position());
-  model_updater->HandleSetPosition(kItemId4, target_position,
-                                   ash::RequestPositionUpdateReason::kMoveItem);
+  model_updater->RequestPositionUpdate(
+      kItemId4, target_position, ash::RequestPositionUpdateReason::kMoveItem);
 
   // Verify the following things:
   // (1) The app list is not under temporary sort.

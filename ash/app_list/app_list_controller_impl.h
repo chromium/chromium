@@ -77,8 +77,7 @@ class ASH_EXPORT AppListControllerImpl
       public aura::WindowObserver,
       public AssistantControllerObserver,
       public AssistantUiModelObserver,
-      public apps::AppRegistryCache::Observer,
-      public AppListModelDelegate {
+      public apps::AppRegistryCache::Observer {
  public:
   AppListControllerImpl();
 
@@ -103,33 +102,10 @@ class ASH_EXPORT AppListControllerImpl
   AppListClient* GetClient() override;
   void AddObserver(AppListControllerObserver* observer) override;
   void RemoveObserver(AppListControllerObserver* obsever) override;
-  void SetActiveModel(AppListModel* model, SearchModel* search_model) override;
-  void AddItem(std::unique_ptr<AppListItemMetadata> app_item) override;
-  void AddItemToFolder(std::unique_ptr<AppListItemMetadata> app_item,
-                       const std::string& folder_id) override;
-  void RemoveItem(const std::string& id) override;
-  void RemoveUninstalledItem(const std::string& id) override;
-  void SetStatus(AppListModelStatus status) override;
-  void SetSearchEngineIsGoogle(bool is_google) override;
-  void UpdateSearchBox(const std::u16string& text,
-                       bool initiated_by_user) override;
-  void PublishSearchResults(
-      std::vector<std::unique_ptr<SearchResultMetadata>> results,
-      const std::vector<ash::AppListSearchResultCategory>& categories) override;
-  void SetItemMetadata(const std::string& id,
-                       std::unique_ptr<AppListItemMetadata> data) override;
-  void SetItemIconVersion(const std::string& id, int icon_version) override;
-  void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
-  void SetItemNotificationBadgeColor(const std::string& id,
-                                     const SkColor color) override;
-  void SetModelData(int profile_id,
-                    std::vector<std::unique_ptr<AppListItemMetadata>> apps,
-                    bool is_search_engine_google) override;
-
-  void SetSearchResultMetadata(
-      std::unique_ptr<SearchResultMetadata> metadata) override;
-
-  void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) override;
+  void SetActiveModel(int profile_id,
+                      AppListModel* model,
+                      SearchModel* search_model) override;
+  void ClearActiveModel() override;
   void NotifyProcessSyncChangesFinished() override;
   void DismissAppList() override;
   void GetAppInfoDialogBounds(GetAppInfoDialogBoundsCallback callback) override;
@@ -140,8 +116,6 @@ class ASH_EXPORT AppListControllerImpl
 
   // AppListModelObserver:
   void OnAppListItemAdded(AppListItem* item) override;
-  void OnAppListItemWillBeDeleted(AppListItem* item) override;
-  void OnAppListItemUpdated(AppListItem* item) override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -296,16 +270,6 @@ class ASH_EXPORT AppListControllerImpl
       AssistantVisibility old_visibility,
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
-
-  // AppListModelDelegate:
-  void RequestPositionUpdate(std::string id,
-                             const syncer::StringOrdinal& new_position,
-                             RequestPositionUpdateReason reason) override;
-  void RequestMoveItemToFolder(std::string id,
-                               const std::string& folder_id) override;
-  void RequestMoveItemToRoot(
-      std::string id,
-      syncer::StringOrdinal position_after_move) override;
 
   // Gets the home screen window, if available, or null if the home screen
   // window is being hidden for effects (e.g. when dragging windows or
@@ -492,9 +456,6 @@ class ASH_EXPORT AppListControllerImpl
   // accessed outside AppListModelControllerImpl using
   // `AppListModelController::Get()`.
   std::unique_ptr<AppListModelProvider> model_provider_;
-
-  std::unique_ptr<AppListModel> model_;
-  SearchModel search_model_;
 
   // Used to fetch colors from AshColorProvider. Should be destructed after
   // |presenter_| and UI.
