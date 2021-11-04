@@ -912,7 +912,14 @@ IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, CutCopyPaste) {
   SendFinalSpeechResultAndWaitForTextAreaValue("  PaStE ", "StarStar");
 }
 
-IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, Help) {
+// TODO(1266696): DictationCommandsExtensionTest.Help is failing on
+// linux-chromeos-debug.
+#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_Help DISABLED_Help
+#else
+#define MAYBE_Help Help
+#endif
+IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, MAYBE_Help) {
   SendFinalSpeechResult("HELP");
 
   // Opening a new tab with the help center article toggles Dictation off.
