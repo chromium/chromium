@@ -186,8 +186,7 @@ TEST_F(DownloadManagerCoordinatorTest, DestructionDuringDownload) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task.Start(std::make_unique<net::URLFetcherFileWriter>(
-      base::ThreadTaskRunnerHandle::Get(), path));
+  task.Start(path, web::DownloadTask::Destination::kToDisk);
 
   @autoreleasepool {
     // Calling -downloadManagerViewControllerDidStartDownload will retain and
@@ -251,8 +250,7 @@ TEST_F(DownloadManagerCoordinatorTest, DelegateReplacedDownload) {
   auto task = CreateTestTask();
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(std::make_unique<net::URLFetcherFileWriter>(
-      base::ThreadTaskRunnerHandle::Get(), path));
+  task->Start(path, web::DownloadTask::Destination::kToMemory);
   task->SetDone(true);
 
   [coordinator_ downloadManagerTabHelper:&tab_helper_
@@ -455,8 +453,7 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task->Start(std::make_unique<net::URLFetcherFileWriter>(
-      base::ThreadTaskRunnerHandle::Get(), path));
+  task->Start(path, web::DownloadTask::Destination::kToMemory);
 
   // Stub UIActivityViewController.
   OCMStub([download_view_controller_mock presentViewController:[OCMArg any]
@@ -609,7 +606,7 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
 TEST_F(DownloadManagerCoordinatorTest, CloseInProgressDownload) {
   web::FakeDownloadTask task(GURL(kTestUrl), kTestMimeType);
   task.SetWebState(&web_state_);
-  task.Start(std::make_unique<net::URLFetcherStringWriter>());
+  task.Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
   coordinator_.downloadTask = &task;
   [coordinator_ start];
 
@@ -780,7 +777,7 @@ TEST_F(DownloadManagerCoordinatorTest, StartDownload) {
       }));
 
   // Download file should be located in download directory.
-  base::FilePath file = task.GetResponseWriter()->AsFileWriter()->file_path();
+  base::FilePath file = task.GetResponsePath();
   base::FilePath download_dir;
   ASSERT_TRUE(GetTempDownloadsDirectory(&download_dir));
   EXPECT_TRUE(download_dir.IsParent(file));
@@ -897,8 +894,7 @@ TEST_F(DownloadManagerCoordinatorTest, SucceedingInBackground) {
   // Start the download.
   base::FilePath path;
   ASSERT_TRUE(base::GetTempDir(&path));
-  task.Start(std::make_unique<net::URLFetcherFileWriter>(
-      base::ThreadTaskRunnerHandle::Get(), path));
+  task.Start(path, web::DownloadTask::Destination::kToDisk);
 
   // Start the download.
   @autoreleasepool {

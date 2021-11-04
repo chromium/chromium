@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/web/public/download/download_task.h"
@@ -27,9 +28,10 @@ class FakeDownloadTask : public DownloadTask {
   // DownloadTask overrides:
   WebState* GetWebState() override;
   DownloadTask::State GetState() const override;
-  void Start(std::unique_ptr<net::URLFetcherResponseWriter> writer) override;
+  void Start(const base::FilePath& path, Destination destination_hint) override;
   void Cancel() override;
-  net::URLFetcherResponseWriter* GetResponseWriter() const override;
+  NSData* GetResponseData() const override;
+  const base::FilePath& GetResponsePath() const override;
   NSString* GetIndentifier() const override;
   const GURL& GetOriginalUrl() const override;
   NSString* GetHttpMethod() const override;
@@ -57,6 +59,7 @@ class FakeDownloadTask : public DownloadTask {
   void SetPercentComplete(int percent_complete);
   void SetContentDisposition(const std::string& content_disposition);
   void SetMimeType(const std::string& mime_type);
+  void SetResponseData(NSData* response_data);
   void SetSuggestedFilename(const std::u16string& suggested_file_name);
   void SetPerformedBackgroundDownload(bool flag);
 
@@ -65,10 +68,8 @@ class FakeDownloadTask : public DownloadTask {
   void OnDownloadUpdated();
 
   base::ObserverList<DownloadTaskObserver, true>::Unchecked observers_;
-
   WebState* web_state_ = nullptr;
   State state_ = State::kNotStarted;
-  std::unique_ptr<net::URLFetcherResponseWriter> writer_;
   GURL original_url_;
   int error_code_ = 0;
   int http_code_ = -1;
@@ -81,6 +82,8 @@ class FakeDownloadTask : public DownloadTask {
   std::u16string suggested_file_name_;
   bool has_performed_background_download_ = false;
   __strong NSString* identifier_ = nil;
+  base::FilePath response_path_;
+  __strong NSData* response_data_ = nil;
 };
 
 }  // namespace web

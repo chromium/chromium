@@ -10,9 +10,11 @@
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #import "ios/net/cookies/system_cookie_util.h"
 #import "ios/web/net/cookies/wk_cookie_util.h"
 #include "ios/web/public/browser_state.h"
+#import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task_observer.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -187,19 +189,21 @@ DownloadTaskImpl::DownloadTaskImpl(WebState* web_state,
       mime_type_(mime_type),
       identifier_([identifier copy]),
       web_state_(web_state),
-      delegate_(delegate),
-      weak_factory_(this) {
+      delegate_(delegate) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   DCHECK(web_state_);
   DCHECK(delegate_);
-
+  base::WeakPtr<DownloadTaskImpl> weak_Task = weak_factory_.GetWeakPtr();
   observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:UIApplicationWillResignActiveNotification
                   object:nil
                    queue:nil
               usingBlock:^(NSNotification* _Nonnull) {
-                if (state_ == State::kInProgress) {
-                  has_performed_background_download_ = true;
+                DownloadTaskImpl* task = weak_Task.get();
+                if (task) {
+                  if (task->state_ == State::kInProgress) {
+                    task->has_performed_background_download_ = true;
+                  }
                 }
               }];
 }
@@ -232,16 +236,40 @@ DownloadTask::State DownloadTaskImpl::GetState() const {
   return state_;
 }
 
-void DownloadTaskImpl::Start(
-    std::unique_ptr<net::URLFetcherResponseWriter> writer) {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+void DownloadTaskImpl::Start(const base::FilePath& path,
+                             Destination destination_hint) {
+  DCHECK(path != base::FilePath() ||
+         destination_hint == DownloadTask::Destination::kToMemory);
   DCHECK_NE(state_, State::kInProgress);
-  writer_ = std::move(writer);
+  state_ = State::kInProgress;
   percent_complete_ = 0;
   received_bytes_ = 0;
-  state_ = State::kInProgress;
 
-  if (original_url_.SchemeIs(url::kDataScheme)) {
+  if (destination_hint == Destination::kToMemory) {
+    OnWriterInitialized(std::make_unique<net::URLFetcherStringWriter>(),
+                        net::OK);
+  } else {
+    DCHECK(path != base::FilePath());
+    auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+    auto writer =
+        std::make_unique<net::URLFetcherFileWriter>(task_runner, path);
+    net::URLFetcherFileWriter* writer_ptr = writer.get();
+    writer_ptr->Initialize(
+        base::BindOnce(&DownloadTaskImpl::OnWriterInitialized,
+                       weak_factory_.GetWeakPtr(), std::move(writer)));
+  }
+}
+
+void DownloadTaskImpl::OnWriterInitialized(
+    std::unique_ptr<net::URLFetcherResponseWriter> writer,
+    int writer_initialization_status) {
+  DCHECK_EQ(state_, State::kInProgress);
+  writer_ = std::move(writer);
+
+  if (writer_initialization_status != net::OK) {
+    OnDownloadFinished(writer_initialization_status);
+  } else if (original_url_.SchemeIs(url::kDataScheme)) {
     StartDataUrlParsing();
   } else {
     GetCookies(base::BindRepeating(&DownloadTaskImpl::StartWithCookies,
@@ -257,9 +285,34 @@ void DownloadTaskImpl::Cancel() {
   OnDownloadUpdated();
 }
 
-net::URLFetcherResponseWriter* DownloadTaskImpl::GetResponseWriter() const {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return writer_.get();
+NSData* DownloadTaskImpl::GetResponseData() const {
+  DCHECK(writer_);
+  net::URLFetcherStringWriter* string_writer = writer_->AsStringWriter();
+  if (string_writer) {
+    const std::string& data = string_writer->data();
+    return [NSData dataWithBytes:data.c_str() length:data.size()];
+  }
+
+  net::URLFetcherFileWriter* file_writer = writer_->AsFileWriter();
+  if (file_writer) {
+    const base::FilePath& path = file_writer->file_path();
+    return [NSData
+        dataWithContentsOfFile:base::SysUTF8ToNSString(path.AsUTF8Unsafe())];
+  }
+
+  return nil;
+}
+
+const base::FilePath& DownloadTaskImpl::GetResponsePath() const {
+  DCHECK(writer_);
+  net::URLFetcherFileWriter* file_writer = writer_->AsFileWriter();
+  if (file_writer) {
+    const base::FilePath& path = file_writer->file_path();
+    return path;
+  }
+
+  static const base::FilePath kEmptyPath;
+  return kEmptyPath;
 }
 
 NSString* DownloadTaskImpl::GetIndentifier() const {

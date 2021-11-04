@@ -146,8 +146,8 @@ class DownloadTaskImplTest : public PlatformTest {
   }
 
   // Starts the download and return NSURLSessionDataTask fake for this task.
-  CRWFakeNSURLSessionTask* Start(
-      std::unique_ptr<net::URLFetcherResponseWriter> writer) {
+  CRWFakeNSURLSessionTask* Start(const base::FilePath& path,
+                                 DownloadTask::Destination destination_hint) {
     // Inject fake NSURLSessionDataTask into DownloadTaskImpl.
     NSURL* url = [NSURL URLWithString:@(kUrl)];
     CRWFakeNSURLSessionTask* session_task =
@@ -159,7 +159,7 @@ class DownloadTaskImplTest : public PlatformTest {
         .andReturn(session_task);
 
     // Start the download.
-    task_->Start(std::move(writer));
+    task_->Start(path, destination_hint);
     bool success = WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
       base::RunLoop().RunUntilIdle();
       return session_task.state == NSURLSessionTaskStateRunning;
@@ -170,7 +170,7 @@ class DownloadTaskImplTest : public PlatformTest {
   // Starts the download and return NSURLSessionDataTask fake for this task.
   // Same as above, but uses URLFetcherStringWriter as response writer.
   CRWFakeNSURLSessionTask* Start() {
-    return Start(std::make_unique<net::URLFetcherStringWriter>());
+    return Start(base::FilePath(), DownloadTask::Destination::kToMemory);
   }
 
   // Session and session delegate injected into DownloadTaskImpl for testing.
@@ -229,7 +229,6 @@ class DownloadTaskImplTest : public PlatformTest {
 TEST_F(DownloadTaskImplTest, DefaultState) {
   EXPECT_EQ(&web_state_, task_->GetWebState());
   EXPECT_EQ(DownloadTask::State::kNotStarted, task_->GetState());
-  EXPECT_FALSE(task_->GetResponseWriter());
   EXPECT_NSEQ(task_delegate_.configuration().identifier,
               task_->GetIndentifier());
   EXPECT_EQ(kUrl, task_->GetOriginalUrl());
@@ -290,7 +289,8 @@ TEST_F(DownloadTaskImplTest, UnknownLengthContentDownload) {
   EXPECT_EQ(0, task_->GetErrorCode());
   EXPECT_EQ(-1, task_->GetTotalBytes());
   EXPECT_EQ(-1, task_->GetPercentComplete());
-  EXPECT_EQ(kData, task_->GetResponseWriter()->AsStringWriter()->data());
+  EXPECT_NSEQ(@(kData), [[NSString alloc] initWithData:task_->GetResponseData()
+                                              encoding:NSUTF8StringEncoding]);
 
   // Download has finished.
   EXPECT_CALL(task_observer_, OnDownloadUpdated(task_.get()));
@@ -305,7 +305,8 @@ TEST_F(DownloadTaskImplTest, UnknownLengthContentDownload) {
   EXPECT_EQ(0, task_->GetErrorCode());
   EXPECT_EQ(kDataSize, task_->GetTotalBytes());
   EXPECT_EQ(100, task_->GetPercentComplete());
-  EXPECT_EQ(kData, task_->GetResponseWriter()->AsStringWriter()->data());
+  EXPECT_NSEQ(@(kData), [[NSString alloc] initWithData:task_->GetResponseData()
+                                              encoding:NSUTF8StringEncoding]);
 
   EXPECT_CALL(task_delegate_, OnTaskDestroyed(task_.get()));
 }
@@ -389,7 +390,8 @@ TEST_F(DownloadTaskImplTest, SmallResponseDownload) {
   EXPECT_EQ(kDataSize, task_->GetTotalBytes());
   EXPECT_EQ(kDataSize, task_->GetReceivedBytes());
   EXPECT_EQ(100, task_->GetPercentComplete());
-  EXPECT_EQ(kData, task_->GetResponseWriter()->AsStringWriter()->data());
+  EXPECT_NSEQ(@(kData), [[NSString alloc] initWithData:task_->GetResponseData()
+                                              encoding:NSUTF8StringEncoding]);
 
   // Download has finished.
   EXPECT_CALL(task_observer_, OnDownloadUpdated(task_.get()));
@@ -403,7 +405,8 @@ TEST_F(DownloadTaskImplTest, SmallResponseDownload) {
   EXPECT_EQ(kDataSize, task_->GetTotalBytes());
   EXPECT_EQ(kDataSize, task_->GetReceivedBytes());
   EXPECT_EQ(100, task_->GetPercentComplete());
-  EXPECT_EQ(kData, task_->GetResponseWriter()->AsStringWriter()->data());
+  EXPECT_NSEQ(@(kData), [[NSString alloc] initWithData:task_->GetResponseData()
+                                              encoding:NSUTF8StringEncoding]);
 
   EXPECT_CALL(task_delegate_, OnTaskDestroyed(task_.get()));
 }
@@ -431,9 +434,8 @@ TEST_F(DownloadTaskImplTest, LargeResponseDownload) {
   EXPECT_EQ(kData1Size + kData2Size, task_->GetTotalBytes());
   EXPECT_EQ(kData1Size, task_->GetReceivedBytes());
   EXPECT_EQ(42, task_->GetPercentComplete());
-  net::URLFetcherStringWriter* writer =
-      task_->GetResponseWriter()->AsStringWriter();
-  EXPECT_EQ(kData1, writer->data());
+  EXPECT_NSEQ(@(kData1), [[NSString alloc] initWithData:task_->GetResponseData()
+                                               encoding:NSUTF8StringEncoding]);
 
   // The second part of the response has arrived.
   EXPECT_CALL(task_observer_, OnDownloadUpdated(task_.get()));
@@ -445,7 +447,9 @@ TEST_F(DownloadTaskImplTest, LargeResponseDownload) {
   EXPECT_EQ(kData1Size + kData2Size, task_->GetTotalBytes());
   EXPECT_EQ(kData1Size + kData2Size, task_->GetReceivedBytes());
   EXPECT_EQ(100, task_->GetPercentComplete());
-  EXPECT_EQ(std::string(kData1) + kData2, writer->data());
+  EXPECT_NSEQ([@(kData1) stringByAppendingString:@(kData2)],
+              [[NSString alloc] initWithData:task_->GetResponseData()
+                                    encoding:NSUTF8StringEncoding]);
 
   // Download has finished.
   EXPECT_CALL(task_observer_, OnDownloadUpdated(task_.get()));
@@ -459,7 +463,9 @@ TEST_F(DownloadTaskImplTest, LargeResponseDownload) {
   EXPECT_EQ(kData1Size + kData2Size, task_->GetTotalBytes());
   EXPECT_EQ(kData1Size + kData2Size, task_->GetReceivedBytes());
   EXPECT_EQ(100, task_->GetPercentComplete());
-  EXPECT_EQ(std::string(kData1) + kData2, writer->data());
+  EXPECT_NSEQ([@(kData1) stringByAppendingString:@(kData2)],
+              [[NSString alloc] initWithData:task_->GetResponseData()
+                                    encoding:NSUTF8StringEncoding]);
 
   EXPECT_CALL(task_delegate_, OnTaskDestroyed(task_.get()));
 }
@@ -512,9 +518,9 @@ TEST_F(DownloadTaskImplTest, FailureInTheMiddle) {
   EXPECT_EQ(kExpectedDataSize, task_->GetTotalBytes());
   EXPECT_EQ(kReceivedDataSize, task_->GetReceivedBytes());
   EXPECT_EQ(23, task_->GetPercentComplete());
-  net::URLFetcherStringWriter* writer =
-      task_->GetResponseWriter()->AsStringWriter();
-  EXPECT_EQ(kReceivedData, writer->data());
+  EXPECT_NSEQ(@(kReceivedData),
+              [[NSString alloc] initWithData:task_->GetResponseData()
+                                    encoding:NSUTF8StringEncoding]);
 
   // Download has failed.
   EXPECT_CALL(task_observer_, OnDownloadUpdated(task_.get()));
@@ -531,7 +537,9 @@ TEST_F(DownloadTaskImplTest, FailureInTheMiddle) {
   EXPECT_EQ(kExpectedDataSize, task_->GetTotalBytes());
   EXPECT_EQ(kReceivedDataSize, task_->GetReceivedBytes());
   EXPECT_EQ(100, task_->GetPercentComplete());
-  EXPECT_EQ(kReceivedData, writer->data());
+  EXPECT_NSEQ(@(kReceivedData),
+              [[NSString alloc] initWithData:task_->GetResponseData()
+                                    encoding:NSUTF8StringEncoding]);
 
   EXPECT_CALL(task_delegate_, OnTaskDestroyed(task_.get()));
 }
@@ -574,23 +582,11 @@ TEST_F(DownloadTaskImplTest, FileDeletion) {
   base::FilePath temp_file = temp_dir.GetPath().AppendASCII("DownloadTaskImpl");
   base::DeleteFile(temp_file);
   ASSERT_FALSE(base::PathExists(temp_file));
-  std::unique_ptr<net::URLFetcherResponseWriter> writer =
-      std::make_unique<net::URLFetcherFileWriter>(
-          base::ThreadTaskRunnerHandle::Get(), temp_file);
-  __block bool initialized_file_writer = false;
-  ASSERT_EQ(net::ERR_IO_PENDING,
-            writer->Initialize(base::BindRepeating(^(int error) {
-              ASSERT_FALSE(error);
-              initialized_file_writer = true;
-            })));
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(1.0, ^{
-    base::RunLoop().RunUntilIdle();
-    return initialized_file_writer;
-  }));
 
   // Start the download.
   EXPECT_CALL(task_observer_, OnDownloadUpdated(task_.get()));
-  CRWFakeNSURLSessionTask* session_task = Start(std::move(writer));
+  CRWFakeNSURLSessionTask* session_task =
+      Start(temp_file, web::DownloadTask::Destination::kToDisk);
   ASSERT_TRUE(session_task);
 
   // Deliver the response and verify that download file exists.
@@ -701,7 +697,7 @@ TEST_F(DownloadTaskImplTest, ValidDataUrl) {
       &task_delegate_);
 
   // Start and wait until the download is complete.
-  task->Start(std::make_unique<net::URLFetcherStringWriter>());
+  task->Start(base::FilePath(), web::DownloadTask::Destination::kToMemory);
   DownloadTaskImpl* task_ptr = task.get();
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -716,7 +712,9 @@ TEST_F(DownloadTaskImplTest, ValidDataUrl) {
   EXPECT_EQ(strlen(kTestData), static_cast<size_t>(task->GetReceivedBytes()));
   EXPECT_EQ(100, task->GetPercentComplete());
   EXPECT_EQ("text/plain", task->GetMimeType());
-  EXPECT_EQ(kTestData, task->GetResponseWriter()->AsStringWriter()->data());
+  EXPECT_NSEQ(@(kTestData),
+              [[NSString alloc] initWithData:task->GetResponseData()
+                                    encoding:NSUTF8StringEncoding]);
 
   // One OnTaskDestroyed for |task_| and one for |task|.
   EXPECT_CALL(task_delegate_, OnTaskDestroyed(task_.get()));
@@ -733,7 +731,7 @@ TEST_F(DownloadTaskImplTest, EmptyDataUrl) {
       &task_delegate_);
 
   // Start and wait until the download is complete.
-  task->Start(std::make_unique<net::URLFetcherStringWriter>());
+  task->Start(base::FilePath(), DownloadTask::Destination::kToMemory);
   DownloadTaskImpl* task_ptr = task.get();
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForDownloadTimeout, ^{
     base::RunLoop().RunUntilIdle();
@@ -747,7 +745,8 @@ TEST_F(DownloadTaskImplTest, EmptyDataUrl) {
   EXPECT_EQ(0, task->GetReceivedBytes());
   EXPECT_EQ(0, task->GetPercentComplete());
   EXPECT_EQ("", task->GetMimeType());
-  EXPECT_EQ("", task->GetResponseWriter()->AsStringWriter()->data());
+  EXPECT_NSEQ(@"", [[NSString alloc] initWithData:task->GetResponseData()
+                                         encoding:NSUTF8StringEncoding]);
 
   // One OnTaskDestroyed for |task_| and one for |task|.
   EXPECT_CALL(task_delegate_, OnTaskDestroyed(task_.get()));

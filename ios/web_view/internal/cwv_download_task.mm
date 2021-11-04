@@ -101,21 +101,8 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 }
 
 - (void)startDownloadToLocalFileAtPath:(NSString*)path {
-  scoped_refptr<base::SequencedTaskRunner> taskRunner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  __block auto writer = std::make_unique<net::URLFetcherFileWriter>(
-      taskRunner, base::FilePath(base::SysNSStringToUTF8(path)));
-
-  __weak CWVDownloadTask* weakSelf = self;
-  int errorCode = writer->Initialize(base::BindOnce(^(int blockErrorCode) {
-    [weakSelf startTaskWithWriter:std::move(writer) errorCode:blockErrorCode];
-  }));
-  // When |errorCode| is net::ERR_IO_PENDING, the callback above will be run
-  // later with the result.
-  if (errorCode != net::ERR_IO_PENDING) {
-    [self startTaskWithWriter:std::move(writer) errorCode:errorCode];
-  }
+  _internalTask->Start(base::FilePath(base::SysNSStringToUTF8(path)),
+                       web::DownloadTask::Destination::kToDisk);
 }
 
 - (void)cancel {
@@ -123,15 +110,6 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
 }
 
 #pragma mark - Private
-
-- (void)startTaskWithWriter:(std::unique_ptr<net::URLFetcherFileWriter>)writer
-                  errorCode:(int)errorCode {
-  if (errorCode == net::OK) {
-    _internalTask->Start(std::move(writer));
-  } else {
-    [self notifyFinishWithErrorCode:errorCode];
-  }
-}
 
 - (void)downloadWasUpdated {
   switch (_internalTask->GetState()) {
@@ -144,11 +122,6 @@ class DownloadTaskObserverBridge : public web::DownloadTaskObserver {
     }
     case web::DownloadTask::State::kComplete: {
       int errorCode = _internalTask->GetErrorCode();
-      if (errorCode == net::OK) {
-        // The writer deletes the file on its destructor by default. This
-        // prevents the deletion.
-        _internalTask->GetResponseWriter()->AsFileWriter()->DisownFile();
-      }
       [self notifyFinishWithErrorCode:errorCode];
       break;
     }

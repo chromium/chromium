@@ -18,10 +18,6 @@ namespace base {
 class FilePath;
 }  // namespace base
 
-namespace net {
-class URLFetcherFileWriter;
-}  // namespace net
-
 namespace web {
 class DownloadTask;
 class WebState;
@@ -98,11 +94,6 @@ class ARQuickLookTabHelper
   void DownloadWithDestinationDir(const base::FilePath& destination_dir,
                                   web::DownloadTask* download_task,
                                   bool directory_created);
-
-  // Asynchronously starts download operation with |writer|.
-  void DownloadWithWriter(std::unique_ptr<net::URLFetcherFileWriter> writer,
-                          web::DownloadTask* download_task,
-                          int writer_initialization_status);
 
   // Previews the downloaded USDZ file or confirms the download if download has
   // not started.
