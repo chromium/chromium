@@ -390,7 +390,7 @@ void OutgoingStream::ErrorStreamAbortAndReset(ScriptValue reason) {
 void OutgoingStream::AbortAndReset() {
   DVLOG(1) << "OutgoingStream::AbortAndReset() this=" << this;
 
-  DCHECK_EQ(state_, State::kOpen);
+  DCHECK(state_ == State::kOpen || state_ == State::kSentFin);
   state_ = State::kAborted;
   client_->ForgetStream();
 
