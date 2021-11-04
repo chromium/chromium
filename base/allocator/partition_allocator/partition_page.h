@@ -114,7 +114,10 @@ using AllocationStateMap =
 //   from the empty/decommitted list on to the active list.
 template <bool thread_safe>
 struct __attribute__((packed)) SlotSpanMetadata {
+ private:
   PartitionFreelistEntry* freelist_head = nullptr;
+
+ public:
   SlotSpanMetadata<thread_safe>* next_slot_span = nullptr;
   PartitionBucket<thread_safe>* const bucket = nullptr;
 
@@ -125,7 +128,8 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // -1 if not in the empty cache. < kMaxFreeableSpans.
   int16_t empty_cache_index : kEmptyCacheIndexBits;
   uint16_t can_store_raw_size : 1;
-  uint16_t unused : (16 - kEmptyCacheIndexBits - 1);
+  uint16_t freelist_is_sorted : 1;
+  uint16_t unused : (16 - kEmptyCacheIndexBits - 1 - 1);
   // Cannot use the full 64 bits in this bitfield, as this structure is embedded
   // in PartitionPage, which has other fields as well, and must fit in 32 bytes.
 
@@ -175,6 +179,9 @@ struct __attribute__((packed)) SlotSpanMetadata {
   ALWAYS_INLINE void SetRawSize(size_t raw_size);
   ALWAYS_INLINE size_t GetRawSize() const;
 
+  ALWAYS_INLINE PartitionFreelistEntry* get_freelist_head() const {
+    return freelist_head;
+  }
   ALWAYS_INLINE void SetFreelistHead(PartitionFreelistEntry* new_head);
 
   // Returns size of the region used within a slot. The used region comprises
@@ -258,7 +265,10 @@ struct __attribute__((packed)) SlotSpanMetadata {
   static SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
   constexpr SlotSpanMetadata() noexcept
-      : empty_cache_index(0), can_store_raw_size(false), unused(0) {}
+      : empty_cache_index(0),
+        can_store_raw_size(false),
+        freelist_is_sorted(true),
+        unused(0) {}
 };
 static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");
@@ -594,6 +604,9 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetFreelistHead(
             (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
                 (reinterpret_cast<uintptr_t>(new_head) & kSuperPageBaseMask));
   freelist_head = new_head;
+  // Inserted something new in the freelist, assume that it is not sorted
+  // anymore.
+  freelist_is_sorted = false;
 }
 
 template <bool thread_safe>

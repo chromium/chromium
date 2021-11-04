@@ -225,7 +225,7 @@ static size_t PartitionPurgeSlotSpan(
       internal::SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
-  for (internal::PartitionFreelistEntry* entry = slot_span->freelist_head;
+  for (internal::PartitionFreelistEntry* entry = slot_span->get_freelist_head();
        entry;
        /**/) {
     size_t slot_index =
