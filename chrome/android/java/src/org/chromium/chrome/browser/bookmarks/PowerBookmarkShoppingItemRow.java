@@ -74,11 +74,10 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         BookmarkItem bookmarkItem = super.setBookmarkId(bookmarkId, location);
         PowerBookmarkMeta meta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
         // TODO(crbug.com/1243383): Pull price updates once they're available.
-        // TODO(crbug.com/1243383): Use the cluster_id instead when that's ready.
         ProductPrice currentPrice = meta.getShoppingSpecifics().getCurrentPrice();
         mSubscription = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                Long.toString(meta.getShoppingSpecifics().getOfferId()),
-                SubscriptionManagementType.USER_MANAGED, TrackingIdType.OFFER_ID);
+                Long.toString(meta.getShoppingSpecifics().getProductClusterId()),
+                SubscriptionManagementType.USER_MANAGED, TrackingIdType.PRODUCT_CLUSTER_ID);
 
         mCurrencyFormatter =
                 new CurrencyFormatter(currentPrice.getCurrencyCode(), Locale.getDefault());

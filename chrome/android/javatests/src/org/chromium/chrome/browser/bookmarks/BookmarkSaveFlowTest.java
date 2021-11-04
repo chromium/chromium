@@ -117,7 +117,7 @@ public class BookmarkSaveFlowTest {
                     PowerBookmarkMeta.newBuilder()
                             .setType(PowerBookmarkType.SHOPPING)
                             .setShoppingSpecifics(
-                                    BuyableProduct.newBuilder().setOfferId(1234L).build());
+                                    BuyableProduct.newBuilder().setProductClusterId(1234L).build());
             mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false, meta.build());
             return null;
         });
@@ -136,7 +136,7 @@ public class BookmarkSaveFlowTest {
                     PowerBookmarkMeta.newBuilder()
                             .setType(PowerBookmarkType.SHOPPING)
                             .setShoppingSpecifics(
-                                    BuyableProduct.newBuilder().setOfferId(1234L).build());
+                                    BuyableProduct.newBuilder().setProductClusterId(1234L).build());
             mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/true, meta.build());
             return null;
         });

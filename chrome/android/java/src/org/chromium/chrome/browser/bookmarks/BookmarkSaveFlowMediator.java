@@ -90,8 +90,8 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
 
         if (meta != null) {
             mSubscription = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                    Long.toString(mPowerBookmarkMeta.getShoppingSpecifics().getOfferId()),
-                    SubscriptionManagementType.USER_MANAGED, TrackingIdType.OFFER_ID);
+                    Long.toString(mPowerBookmarkMeta.getShoppingSpecifics().getProductClusterId()),
+                    SubscriptionManagementType.USER_MANAGED, TrackingIdType.PRODUCT_CLUSTER_ID);
         }
         bindBookmarkProperties(mBookmarkId, mPowerBookmarkMeta, mFromExplicitTrackUi);
         bindPowerBookmarkProperties(mBookmarkId, mPowerBookmarkMeta, mFromExplicitTrackUi);
