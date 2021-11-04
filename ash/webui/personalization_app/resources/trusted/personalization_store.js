@@ -5,6 +5,7 @@
 import {Store, StoreObserver} from 'chrome://resources/js/cr/ui/store.js';
 import {StoreClient, StoreClientInterface} from 'chrome://resources/js/cr/ui/store_client.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {emptyState, PersonalizationState, reduce} from './personalization_reducers.js';
 
@@ -96,9 +97,14 @@ export class PersonalizationStoreClientInterface {
  * @implements {StoreClientInterface}
  * @implements {StoreObserver<PersonalizationState>}
  * @implements {I18nBehavior}
+ * @implements {IronResizableBehavior}
  */
-export const PersonalizationStoreClient =
-    [StoreClient, PersonalizationStoreClientImpl, I18nBehavior];
+export const PersonalizationStoreClient = [
+  StoreClient,
+  PersonalizationStoreClientImpl,
+  I18nBehavior,
+  IronResizableBehavior,
+];
 
 /**
  * @constructor

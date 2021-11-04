@@ -8,7 +8,7 @@ import './styles.js';
 import {afterNextRender, html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../common/iframe_api.js';
-import {getLoadingPlaceholderAnimationDelay, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
+import {getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
 
 /**
  * @fileoverview Responds to |SendCollectionsEvent| from trusted. Handles user
@@ -17,9 +17,6 @@ import {getLoadingPlaceholderAnimationDelay, isNullOrArray, isNullOrNumber, isSe
 
 const kGooglePhotosCollectionId = 'google_photos_';
 const kLocalCollectionId = 'local_';
-
-/** Width in pixels of when the app switches from 3 to 4 tiles wide. */
-const k3to4WidthCutoffPx = 688;
 
 /** Height in pixels of a tile. */
 const kTileHeightPx = 136;
@@ -236,7 +233,7 @@ export class CollectionsGrid extends PolymerElement {
         value() {
           // Fill the view with loading tiles. Will be adjusted to the correct
           // number of tiles when collections are received.
-          const x = window.innerWidth > k3to4WidthCutoffPx ? 4 : 3;
+          const x = getNumberOfGridItemsPerRow();
           const y = Math.floor(window.innerHeight / kTileHeightPx);
           return Array.from({length: x * y}, () => ({type: TileType.loading}));
         }

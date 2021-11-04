@@ -59,21 +59,21 @@ suite('Updating local images', () => {
           },
           {
             name: 'set_google_photos_count',
-            count: 0,
+            count: 1000,
           },
           {
             name: 'begin_load_google_photos_albums',
+          },
+          {
+            name: 'begin_load_google_photos_photos',
           },
           {
             name: 'set_google_photos_albums',
             albums: [],
           },
           {
-            name: 'begin_load_google_photos_photos',
-          },
-          {
             name: 'set_google_photos_photos',
-            photos: [],
+            photos: Array.from({length: 1000}),
           },
         ],
         personalizationStore.actions);
@@ -101,7 +101,7 @@ suite('Updating local images', () => {
               photos: false,
             },
             googlePhotos: {
-              count: 0,
+              count: 1000,
               albums: undefined,
               photos: undefined,
             },
@@ -114,7 +114,20 @@ suite('Updating local images', () => {
               photos: false,
             },
             googlePhotos: {
-              count: 0,
+              count: 1000,
+              albums: undefined,
+              photos: undefined,
+            },
+          },
+          // BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS.
+          {
+            'loading.googlePhotos': {
+              count: false,
+              albums: true,
+              photos: true,
+            },
+            googlePhotos: {
+              count: 1000,
               albums: undefined,
               photos: undefined,
             },
@@ -124,23 +137,10 @@ suite('Updating local images', () => {
             'loading.googlePhotos': {
               count: false,
               albums: false,
-              photos: false,
-            },
-            googlePhotos: {
-              count: 0,
-              albums: [],
-              photos: undefined,
-            },
-          },
-          // BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS.
-          {
-            'loading.googlePhotos': {
-              count: false,
-              albums: false,
               photos: true,
             },
             googlePhotos: {
-              count: 0,
+              count: 1000,
               albums: [],
               photos: undefined,
             },
@@ -153,9 +153,9 @@ suite('Updating local images', () => {
               photos: false,
             },
             googlePhotos: {
-              count: 0,
+              count: 1000,
               albums: [],
-              photos: [],
+              photos: Array.from({length: 1000}),
             },
           },
         ],

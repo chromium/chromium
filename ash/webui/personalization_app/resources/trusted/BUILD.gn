@@ -36,6 +36,7 @@ js_library("google_photos_element") {
     ":personalization_store",
     ":styles",
     "../common:styles",
+    "../common:utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

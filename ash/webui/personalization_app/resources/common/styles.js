@@ -14,6 +14,10 @@ styles.innerHTML = `
 <template>
   <style>
     :host {
+      --personalization-app-grid-item-border-radius: 12px;
+      --personalization-app-grid-item-height: 120px;
+      --personalization-app-grid-item-spacing: 16px;
+
       --personalization-app-text-shadow-elevation-1: 0 1px 3px
           rgba(0, 0, 0, 15%), 0 1px 2px rgba(0, 0, 0, 30%);
 
@@ -37,10 +41,11 @@ styles.innerHTML = `
     }
     .photo-container {
       box-sizing: border-box;
-      /* 8 + 120 + 8 */
-      height: 136px;
+      height: calc(
+        var(--personalization-app-grid-item-height) +
+        var(--personalization-app-grid-item-spacing));
       overflow: hidden;
-      padding: 8px;
+      padding: calc(var(--personalization-app-grid-item-spacing) / 2);
       /* Media queries in trusted and untrusted code will resize to 25% at
        * correct widths.  Subtract 0.34px to fix subpixel rounding issues with
        * iron-list. This makes sure all photo containers on a row add up to at
@@ -54,7 +59,7 @@ styles.innerHTML = `
        elements ignoring parent interior padding. */
     .photo-inner-container {
       align-items: center;
-      border-radius: 12px;
+      border-radius: var(--personalization-app-grid-item-border-radius);
       display: flex;
       cursor: pointer;
       height: 100%;

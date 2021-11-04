@@ -13,6 +13,7 @@ js_library("collections_grid") {
     "../../mojom:mojom_js_library_for_compile",
     "../common:constants",
     "../common:iframe_api",
+    "../common:utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

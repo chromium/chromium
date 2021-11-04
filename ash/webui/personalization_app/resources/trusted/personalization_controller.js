@@ -85,9 +85,9 @@ async function getGooglePhotosCount(provider, store) {
   store.dispatch(action.beginLoadGooglePhotosCountAction());
 
   // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
-  // request that returns a zero count of Google Photos photos.
+  // request that returns a count of 1,000 Google Photos photos.
   return new Promise(resolve => setTimeout(() => {
-                       store.dispatch(action.setGooglePhotosCountAction(0));
+                       store.dispatch(action.setGooglePhotosCountAction(1000));
                        resolve();
                      }, 1000));
 }
@@ -101,9 +101,10 @@ async function getGooglePhotosPhotos(provider, store) {
   store.dispatch(action.beginLoadGooglePhotosPhotosAction());
 
   // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
-  // request that returns an empty response list of Google Photos photos.
+  // request that returns a list of 1,000 Google Photos photos.
   return new Promise(resolve => setTimeout(() => {
-                       store.dispatch(action.setGooglePhotosPhotosAction([]));
+                       store.dispatch(action.setGooglePhotosPhotosAction(
+                           Array.from({length: 1000})));
                        resolve();
                      }, 1000));
 }

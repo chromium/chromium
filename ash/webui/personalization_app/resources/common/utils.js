@@ -86,3 +86,30 @@ export function isSelectionEvent(event) {
 export function getLoadingPlaceholderAnimationDelay(index) {
   return `--animation-delay: ${index * 83}ms;`;
 }
+
+/**
+ * Returns the number of grid items to render per row given the current inner
+ * width of the |window|.
+ * @return {number}
+ */
+export function getNumberOfGridItemsPerRow() {
+  return window.innerWidth > 688 ? 4 : 3;
+}
+
+/**
+ * Normalizes the given |key| for RTL.
+ * @param {string} key
+ * @param {boolean} isRTL
+ * @return {string}
+ */
+export function normalizeKeyForRTL(key, isRTL) {
+  if (isRTL) {
+    if (key === 'ArrowLeft') {
+      return 'ArrowRight';
+    }
+    if (key === 'ArrowRight') {
+      return 'ArrowLeft';
+    }
+  }
+  return key;
+}

@@ -4,22 +4,32 @@
   }
 
   #main {
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    overflow-y: auto;
+    overflow: hidden;
     width: 100%;
   }
 
-  cr-button {
+  .tab-strip {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .tab-strip > cr-button {
     border: 0;
   }
 
-  cr-button[aria-pressed=false] {
+  .tab-strip > cr-button[aria-pressed='false'] {
     color: var(--cros-text-color-secondary);
   }
 
   #albumsContent,
   #photosContent {
+    flex: 1 1 auto;
     height: 100%;
+    margin-top: var(--personalization-app-grid-item-spacing);
+    overflow: hidden;
     width: 100%;
   }
 
@@ -28,13 +38,64 @@
     background-color: red;
   }
 
-  #photosContent {
-    /** TODO(dmblack): Remove when implementing UI. */
-    background-color: blue;
+  #photosContent > iron-list {
+    height: 100%;
+    width: 100%;
+  }
+
+  #photosContent > iron-list > .row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  #photosContent > iron-list > .row:focus-visible {
+    outline: 0;
+  }
+
+  #photosContent > iron-list > .row:not([rowindex='0']) {
+    padding-top: var(--personalization-app-grid-item-spacing);
+  }
+
+  #photosContent > iron-list > .row > .photo {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: var(--personalization-app-grid-item-border-radius);
+    display: flex;
+    flex: 1 1 auto;
+    height: var(--personalization-app-grid-item-height);
+    justify-content: center;
+    position: relative;
+    width: 100%;
+  }
+
+  #photosContent > iron-list > .row > .photo:focus-visible {
+    outline: 0;
+  }
+
+  #photosContent > iron-list > .row > .photo:focus-visible::before {
+    border: 2px solid var(--cros-focus-ring-color);
+    border-radius: var(--personalization-app-grid-item-border-radius);
+    box-sizing: border-box;
+    content: '';
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  #photosContent > iron-list > .row > .photo:not(:first-of-type) {
+    margin-inline-start: calc(var(--personalization-app-grid-item-spacing) / 2);
+  }
+
+  #photosContent > iron-list > .row > .photo:not(:last-of-type) {
+    margin-inline-end: calc(var(--personalization-app-grid-item-spacing) / 2);
   }
 </style>
 <main id="main" aria-label$="[[i18n('googlePhotosLabel')]]" tabindex="-1">
-  <div>
+  <div class="tab-strip">
     <cr-button id="photosTab" aria-pressed="[[isPhotosTabSelected_(tab_)]]"
       on-click="onTabSelected_">
       <div class="text">[[i18n('googlePhotosPhotosTabLabel')]]</div>
@@ -44,6 +105,20 @@
       <div class="text">[[i18n('googlePhotosAlbumsTabLabel')]]</div>
     </cr-button>
   </div>
-  <div id="photosContent" hidden$="[[!isPhotosTabSelected_(tab_)]]"></div>
+  <div id="photosContent" hidden$="[[!isPhotosTabSelected_(tab_)]]">
+    <iron-list id="photosGrid" items="[[photosByRow_]]" as="row">
+      <template>
+        <div class="row" rowindex$="[[index]]" tabindex$="[[tabIndex]]"
+          on-focus="onPhotosGridRowFocused_"
+          on-keydown="onPhotosGridRowKeyDown_">
+          <template is="dom-repeat" items="[[row]]" as="photo">
+            <div class="photo" colindex$="[[index]]" tabindex="-1">
+              [[photo]]
+            </div>
+          </template>
+        </div>
+      </template>
+    </iron-list>
+  </div>
   <div id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]"></div>
 </main>
