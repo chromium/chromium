@@ -3464,13 +3464,9 @@ TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
                                            nullptr);
   EXPECT_TRUE(ptr);
 
-  // Create new root to simulate ConfigurePartitionBackupRefPtrSupport(false)
-
-  // Copied from ConfigurePartitionBackupRefPtrSupport()
+  // Create new root and call PurgeMemory to simulate ConfigurePartitions().
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                                 PartitionPurgeDiscardUnusedSystemPages);
-
-  // Create a new root
   auto* new_root = new base::PartitionRoot<base::internal::ThreadSafe>(
       {base::PartitionOptions::AlignedAlloc::kDisallowed,
        base::PartitionOptions::ThreadCache::kDisabled,

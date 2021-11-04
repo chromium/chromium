@@ -27,14 +27,23 @@ extern const BASE_EXPORT Feature kPartitionAllocBackupRefPtrControl;
 extern const BASE_EXPORT Feature kPartitionAllocLargeThreadCacheSize;
 
 enum class BackupRefPtrEnabledProcesses {
-  // BRP enabled only on the browser process.
+  // BRP enabled only in the browser process.
   kBrowserOnly,
-  // BRP enabled only on the browser process and renderer processes.
+  // BRP enabled only in the browser and renderer processes.
   kBrowserAndRenderer,
+  // BRP enabled in all processes.
+  kAllProcesses,
 };
+
 extern const BASE_EXPORT Feature kPartitionAllocBackupRefPtr;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam;
+
+extern const BASE_EXPORT Feature kPartitionAllocSimulateBRPPartitionSplit;
+// Piggy-back the params on the other feature for simplicity, even though not
+// exactly related.
+extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
+    kSimulateBRPPartitionSplitProcessesParam;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 extern const BASE_EXPORT Feature kPartitionAllocPCScanMUAwareScheduler;

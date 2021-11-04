@@ -132,16 +132,14 @@ class MainPartitionConstructor {
   static base::ThreadSafePartitionRoot* New(void* buffer) {
     constexpr base::PartitionOptions::ThreadCache thread_cache =
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-        // With USE_BACKUP_REF_PTR, a BRP-enabled partition may be created
-        // later. Since only one partition can have thread cache enabled, leave
-        // this ability to that partition. If BRP-enabled partition isn't
-        // needed, the thread cache will be then turned on in this one. See
-        // ConfigurePartitionBackupRefPtrSupport().
+        // Additional partitions may be created in ConfigurePartitions(). Since
+        // only one partition can have thread cache enabled, leave this ability
+        // to the new main partition. If such a partition isn't needed, the
+        // thread cache will be then turned on in this one.
+        // TODO(bartekn): Revert crrev.com/c/3240505 once
+        // PartitionAllocSimulateBRPPartitionSplit is no longer needed. The main
+        // reason is to bring back ThreadCache::kEnabled in the default case.
         base::PartitionOptions::ThreadCache::kDisabled;
-#else
-        base::PartitionOptions::ThreadCache::kEnabled;
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 #else   // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         // Other tests, such as the ThreadCache tests create a thread cache,
         // and only one is supported at a time.
@@ -167,8 +165,7 @@ base::ThreadSafePartitionRoot* Allocator() {
   return g_root.Get();
 }
 
-// Original g_root_ if it was replaced by
-// ConfigurePartitionBackupRefPtrSupport().
+// Original g_root_ if it was replaced by ConfigurePartitions().
 std::atomic<base::ThreadSafePartitionRoot*> g_original_root(nullptr);
 
 class AlignedPartitionConstructor {
@@ -469,27 +466,25 @@ void ReconfigurePartitionAllocLazyCommit(bool enabled) {
   AlignedAllocator()->ConfigureLazyCommit(enabled);
 }
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
 alignas(base::ThreadSafePartitionRoot) uint8_t
-    g_allocator_buffer_for_ref_count_config[sizeof(
+    g_allocator_buffer_for_new_main_partition[sizeof(
         base::ThreadSafePartitionRoot)];
 
 alignas(base::ThreadSafePartitionRoot) uint8_t
     g_allocator_buffer_for_aligned_alloc_partition[sizeof(
         base::ThreadSafePartitionRoot)];
 
-void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
+void ConfigurePartitions(EnableBrp enable_brp,
+                         ForceSplitPartitions force_split_partitions) {
   auto* current_root = g_root.Get();
   // Call Get() to ensure g_aligned_root gets initialized. In some cases it is
   // initialized with g_root, and we want to make sure it is the pre-swap
   // value (unless explicitly overwritten below).
   auto* current_aligned_root = g_aligned_root.Get();
 
-  // When enable_brp is false, simply enable thread
-  // cache in the existing root instead of creating a new one -- the only
-  // difference between the current and new partition is the thread cache
-  // setting.
-  if (!enable_brp) {
+  // When there is no need to split partition, simply enable thread cache in the
+  // existing root.
+  if (!enable_brp && !force_split_partitions) {
     PA_DCHECK(!current_root->with_thread_cache);
     current_root->EnableThreadCacheIfSupported();
     return;
@@ -505,16 +500,19 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
   // to handle only aligned allocations, where those extras are disabled.
   // However, if the "previous slot" variant is used, no dedicated partition is
   // needed, as the extras won't interfere with the alignment requirements.
-  constexpr bool use_dedicated_partition_for_aligned_alloc =
+  //
+  // Regardless of everything said above, force_split_partitions==true will
+  // force creating a dedicated partition for aligned allocations.
+  const bool use_dedicated_partition_for_aligned_alloc =
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-      false;
+      force_split_partitions;
 #else
       true;
 #endif
-  constexpr bool allow_aligned_alloc_in_main_root =
+  const bool allow_aligned_alloc_in_main_root =
       !use_dedicated_partition_for_aligned_alloc;
 
-  auto* new_root = new (g_allocator_buffer_for_ref_count_config)
+  auto* new_root = new (g_allocator_buffer_for_new_main_partition)
       base::ThreadSafePartitionRoot({
           allow_aligned_alloc_in_main_root
               ? base::PartitionOptions::AlignedAlloc::kAllowed
@@ -522,7 +520,8 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
           base::PartitionOptions::ThreadCache::kEnabled,
           base::PartitionOptions::Quarantine::kAllowed,
           base::PartitionOptions::Cookie::kAllowed,
-          base::PartitionOptions::BackupRefPtr::kEnabled,
+          enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
+                     : base::PartitionOptions::BackupRefPtr::kDisabled,
           base::PartitionOptions::UseConfigurablePool::kNo,
           base::PartitionOptions::LazyCommit::kEnabled,
       });
@@ -536,8 +535,6 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
 
   base::ThreadSafePartitionRoot* new_aligned_root;
   if (use_dedicated_partition_for_aligned_alloc) {
-    // If BRP is getting enabled, we need to create a new AlignedAlloc
-    // partition now.
     // TODO(bartekn): Use the original root instead of creating a new one. It'd
     // result in one less partition, but come at a cost of commingling types.
     new_aligned_root = new (g_allocator_buffer_for_aligned_alloc_partition)
@@ -559,7 +556,6 @@ void ConfigurePartitionBackupRefPtrSupport(bool enable_brp) {
   // No need for g_original_aligned_root, because in cases where g_aligned_root
   // is replaced, it must've been g_original_root.
 }
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #if defined(PA_ALLOW_PCSCAN)
 void EnablePCScan(base::internal::PCScan::InitConfig config) {

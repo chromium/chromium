@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/bind.h"
@@ -835,10 +836,8 @@ TEST(ThreadPoolWorkerTest, WorkerThreadObserver) {
   Mock::VerifyAndClear(&observer);
 }
 
-// ThreadCache tests disabled when USE_BACKUP_REF_PTR is enabled, because the
-// "original" PartitionRoot has ThreadCache disabled.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED) && !BUILDFLAG(USE_BACKUP_REF_PTR)
+    defined(PA_THREAD_CACHE_SUPPORTED)
 namespace {
 NOINLINE void FreeForTest(void* data) {
   free(data);
@@ -879,6 +878,10 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
 };
 
 TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
+  // Make sure the thread cache is enabled in the main partition.
+  allocator::ConfigurePartitions(allocator::EnableBrp(false),
+                                 allocator::ForceSplitPartitions(false));
+
   TaskTracker task_tracker;
   auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();
   auto* delegate_raw = delegate.get();
@@ -901,7 +904,6 @@ TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
         // defined(PA_THREAD_CACHE_SUPPORTED) &&
-        // !BUILDFLAG(USE_BACKUP_REF_PTR)
 
 }  // namespace internal
 }  // namespace base

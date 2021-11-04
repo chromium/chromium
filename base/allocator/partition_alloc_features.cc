@@ -41,11 +41,21 @@ constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
     kBackupRefPtrEnabledProcessesOptions[] = {
         {BackupRefPtrEnabledProcesses::kBrowserOnly, "browser-only"},
         {BackupRefPtrEnabledProcesses::kBrowserAndRenderer,
-         "browser-and-renderer"}};
+         "browser-and-renderer"},
+        {BackupRefPtrEnabledProcesses::kAllProcesses, "all-processes"}};
 
 const base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam{
         &kPartitionAllocBackupRefPtr, "enabled-processes",
+        BackupRefPtrEnabledProcesses::kBrowserOnly,
+        &kBackupRefPtrEnabledProcessesOptions};
+
+const Feature kPartitionAllocSimulateBRPPartitionSplit{
+    "PartitionAllocSimulateBRPPartitionSplit", FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<BackupRefPtrEnabledProcesses>
+    kSimulateBRPPartitionSplitProcessesParam{
+        &kPartitionAllocSimulateBRPPartitionSplit, "enabled-processes",
         BackupRefPtrEnabledProcesses::kBrowserOnly,
         &kBackupRefPtrEnabledProcessesOptions};
 

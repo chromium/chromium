@@ -214,6 +214,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   CHECK(base::FeatureList::GetInstance());
 
   bool enable_brp = false;
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
@@ -223,11 +224,32 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer) {
       enable_brp |= process_type == switches::kRendererProcess;
     }
+    if (base::features::kBackupRefPtrEnabledProcessesParam.Get() ==
+        base::features::BackupRefPtrEnabledProcesses::kAllProcesses) {
+      enable_brp = true;
+    }
   }
-  base::allocator::ConfigurePartitionBackupRefPtrSupport(enable_brp);
-#endif
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  bool force_split_partitions = false;
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSimulateBRPPartitionSplit)) {
+    // No specified process type means this is the Browser process.
+    force_split_partitions = process_type.empty();
+    if (base::features::kSimulateBRPPartitionSplitProcessesParam.Get() ==
+        base::features::BackupRefPtrEnabledProcesses::kBrowserAndRenderer) {
+      force_split_partitions |= process_type == switches::kRendererProcess;
+    }
+    if (base::features::kSimulateBRPPartitionSplitProcessesParam.Get() ==
+        base::features::BackupRefPtrEnabledProcesses::kAllProcesses) {
+      force_split_partitions = true;
+    }
+  }
+
+  base::allocator::ConfigurePartitions(
+      base::allocator::EnableBrp(enable_brp),
+      base::allocator::ForceSplitPartitions(force_split_partitions));
+
   base::allocator::ReconfigurePartitionAllocLazyCommit(
       base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
