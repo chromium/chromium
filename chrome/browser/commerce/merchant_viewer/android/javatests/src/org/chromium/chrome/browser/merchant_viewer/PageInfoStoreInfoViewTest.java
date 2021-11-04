@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -224,6 +225,7 @@ public class PageInfoStoreInfoViewTest {
         openPageInfo();
         verifyStoreRowShowing(true);
         onView(withId(PageInfoStoreInfoController.STORE_INFO_ROW_ID)).perform(click());
+        onView(withId(R.id.page_info_url_wrapper)).check(doesNotExist());
         verify(mMockStoreInfoActionHandler, times(1))
                 .onStoreInfoClicked(any(MerchantTrustSignalsV2.class));
     }

@@ -322,12 +322,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mDialog.show();
     }
 
-    private void dismiss() {
-        if (mDialog != null) {
-            mDialog.dismiss(true);
-        }
-    }
-
     private void destroy() {
         if (mDialog != null) {
             mDialog.destroy();
@@ -580,5 +574,13 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     @Override
     public GURL getURL() {
         return mFullUrl;
+    }
+
+    /** Dismiss the page info dialog. */
+    @Override
+    public void dismiss() {
+        if (mDialog != null) {
+            mDialog.dismiss(true);
+        }
     }
 }

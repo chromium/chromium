@@ -87,6 +87,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
                             DiscoverabilityAction.STORE_INFO_OPENED);
                 }
                 mMainController.recordAction(PageInfoAction.PAGE_INFO_STORE_INFO_CLICKED);
+                mMainController.dismiss();
                 mActionHandlerSupplier.get().onStoreInfoClicked(trustSignals);
             };
         }
