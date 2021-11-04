@@ -73,9 +73,7 @@ class GEOMETRY_EXPORT Vector2d {
   int y_;
 };
 
-inline constexpr Vector2d operator-(const Vector2d& v) {
-  return Vector2d(-v.x(), -v.y());
-}
+GEOMETRY_EXPORT Vector2d operator-(const Vector2d&);
 
 inline Vector2d operator+(const Vector2d& lhs, const Vector2d& rhs) {
   Vector2d result = lhs;
@@ -85,7 +83,7 @@ inline Vector2d operator+(const Vector2d& lhs, const Vector2d& rhs) {
 
 inline Vector2d operator-(const Vector2d& lhs, const Vector2d& rhs) {
   Vector2d result = lhs;
-  result.Add(-rhs);
+  result.Subtract(rhs);
   return result;
 }
 
