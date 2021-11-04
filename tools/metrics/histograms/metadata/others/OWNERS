@@ -16,3 +16,5 @@ sebsg@chromium.org
 jonross@chromium.org
 # For Privacy* and WebsiteSettings.* histograms:
 dullweber@chromium.org
+# For PerformanceMonitor.* histograms:
+olivierli@chromium.org
