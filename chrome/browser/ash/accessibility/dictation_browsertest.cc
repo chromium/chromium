@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(DictationCommandsExtensionTest, CutCopyPaste) {
 
 // TODO(1266696): DictationCommandsExtensionTest.Help is failing on
 // linux-chromeos-debug.
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+#if defined(OS_CHROMEOS)
 #define MAYBE_Help DISABLED_Help
 #else
 #define MAYBE_Help Help
