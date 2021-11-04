@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<title>INPUT TYPE=FILE and showPicker()</title>
+<input type="file">
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+promise_test(async _ => {
+  const file = document.querySelector('input');
+  const promise = new Promise(
+      resolve => mockFileChooserFactory.addEventListener('open', resolve));
+
+  await test_driver.bless('show picker');
+  file.showPicker();
+
+  const openEvent = await promise;
+  assert_equals(openEvent.detail, 'kOpen');
+}, "File picker: showPicker() should show picker");
+</script>
