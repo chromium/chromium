@@ -486,8 +486,8 @@ public class BookmarkUtils {
 
         if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST
                 && !bookmarkItem.isFolder()) {
-            model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
             openReadingListInCustomTab(context, bookmarkItem.getUrl().getSpec(), isIncognito);
+            model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
         } else {
             openUrl(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName);
         }

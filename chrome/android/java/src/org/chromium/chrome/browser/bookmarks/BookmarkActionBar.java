@@ -26,6 +26,7 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableList
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -247,8 +248,13 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
     private static void openBookmarksInNewTabs(
             List<BookmarkId> bookmarks, TabDelegate tabDelegate, BookmarkModel model) {
         for (BookmarkId id : bookmarks) {
-            tabDelegate.createNewTab(new LoadUrlParams(model.getBookmarkById(id).getUrl()),
-                    TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
+            if (id == null) continue;
+            GURL url = model.getBookmarkById(id).getUrl();
+            tabDelegate.createNewTab(
+                    new LoadUrlParams(url), TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
+            if (id.getType() == BookmarkType.READING_LIST) {
+                model.setReadStatusForReadingList(url, true);
+            }
         }
     }
 
