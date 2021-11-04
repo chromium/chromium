@@ -83,11 +83,11 @@ class SpeechRecognitionPrivateManagerTest
 
 INSTANTIATE_TEST_SUITE_P(Network,
                          SpeechRecognitionPrivateManagerTest,
-                         ::testing::Values(kNetworkRecognition));
+                         ::testing::Values(SpeechRecognitionType::kNetwork));
 
 INSTANTIATE_TEST_SUITE_P(OnDevice,
                          SpeechRecognitionPrivateManagerTest,
-                         ::testing::Values(kOnDeviceRecognition));
+                         ::testing::Values(SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateManagerTest, CreateKey) {
   ASSERT_EQ("Testing", CreateKey("Testing", absl::optional<int>()));

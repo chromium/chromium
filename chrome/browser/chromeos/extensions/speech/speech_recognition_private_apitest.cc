@@ -30,11 +30,11 @@ class SpeechRecognitionPrivateApiTest
 
 INSTANTIATE_TEST_SUITE_P(Network,
                          SpeechRecognitionPrivateApiTest,
-                         ::testing::Values(kNetworkRecognition));
+                         ::testing::Values(SpeechRecognitionType::kNetwork));
 
 INSTANTIATE_TEST_SUITE_P(OnDevice,
                          SpeechRecognitionPrivateApiTest,
-                         ::testing::Values(kOnDeviceRecognition));
+                         ::testing::Values(SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateApiTest, Simple) {
   ASSERT_TRUE(RunExtensionTest("speech/speech_recognition_private/simple"))
