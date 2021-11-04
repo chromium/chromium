@@ -668,10 +668,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceDisableExtendedSyncPromosDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kForceDisableExtendedSyncPromos)},
-    {"download-mobileconfig-file",
-     flag_descriptions::kDownloadMobileConfigFileName,
-     flag_descriptions::kDownloadMobileConfigFileDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kDownloadMobileConfigFile)},
+
     {"sync-trusted-vault-passphrase-ios-rpc",
      flag_descriptions::kSyncTrustedVaultPassphraseiOSRPCName,
      flag_descriptions::kSyncTrustedVaultPassphraseiOSRPCDescription,

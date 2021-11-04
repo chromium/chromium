@@ -126,8 +126,7 @@ void BrowserDownloadService::OnDownloadCreated(
     if (tab_helper) {
       tab_helper->Download(std::move(task));
     }
-  } else if (task->GetMimeType() == kMobileConfigurationType &&
-             base::FeatureList::IsEnabled(kDownloadMobileConfigFile)) {
+  } else if (task->GetMimeType() == kMobileConfigurationType) {
     MobileConfigTabHelper* tab_helper =
         MobileConfigTabHelper::FromWebState(web_state);
     if (tab_helper) {

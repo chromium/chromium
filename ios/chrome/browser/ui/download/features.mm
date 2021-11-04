@@ -8,8 +8,5 @@
 #error "This file requires ARC support."
 #endif
 
-const base::Feature kDownloadMobileConfigFile{
-    "DownloadMobileconfigFile", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDownloadVcard{"DownloadVcardFile",
                                    base::FEATURE_DISABLED_BY_DEFAULT};

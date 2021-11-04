@@ -64,7 +64,6 @@
 #import "ios/chrome/browser/sync/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
-#import "ios/chrome/browser/ui/download/features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/blocked_popup_tab_helper.h"
@@ -135,10 +134,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
   }
 
-  if (base::FeatureList::IsEnabled(kDownloadMobileConfigFile)) {
-    MobileConfigTabHelper::CreateForWebState(web_state);
-  }
-
+  MobileConfigTabHelper::CreateForWebState(web_state);
   SafeBrowsingQueryManager::CreateForWebState(web_state);
   SafeBrowsingTabHelper::CreateForWebState(web_state);
   SafeBrowsingUrlAllowList::CreateForWebState(web_state);

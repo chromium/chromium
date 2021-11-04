@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
 #import "ios/chrome/browser/download/mobileconfig_tab_helper_delegate.h"
 #import "ios/chrome/browser/main/test_browser.h"
-#import "ios/chrome/browser/ui/download/features.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -52,8 +51,6 @@ class MobileConfigCoordinatorTest : public PlatformTest {
             initWithBaseViewController:base_view_controller_
                                browser:browser_.get()]) {
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
-
-    feature_list_.InitAndEnableFeature(kDownloadMobileConfigFile);
 
     // The Coordinator should install itself as delegate for the existing
     // MobileConfigTabHelper instances once started.

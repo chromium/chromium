@@ -3345,21 +3345,6 @@
             ]
         }
     ],
-    "DownloadMobileConfigFile": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DownloadMobileconfigFile"
-                    ]
-                }
-            ]
-        }
-    ],
     "DownloadProgressInfoBar": [
         {
             "platforms": [
