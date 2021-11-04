@@ -137,6 +137,7 @@ void ZipIOTask::Complete(State state) {
 // Generates the destination url for the ZIP file.
 void ZipIOTask::GenerateZipNameAfterGotTotalBytes(int64_t total_bytes) {
   progress_.total_bytes = total_bytes;
+  speedometer_.SetTotalBytes(progress_.total_bytes);
 
   // TODO(crbug.com/1238237) Localize the name.
   base::FilePath zip_name("Archive.zip");
@@ -173,6 +174,15 @@ void ZipIOTask::ZipItems(
 void ZipIOTask::OnZipProgress() {
   DCHECK(zip_file_creator_);
   progress_.bytes_transferred = zip_file_creator_->GetProgress().bytes;
+  speedometer_.Update(progress_.bytes_transferred);
+  const double remaining_seconds = speedometer_.GetRemainingSeconds();
+
+  // Speedometer can produce infinite result which can't be serialized to JSON
+  // when sending the status via private API.
+  if (std::isfinite(remaining_seconds)) {
+    progress_.remaining_seconds = remaining_seconds;
+  }
+
   progress_callback_.Run(progress_);
   if (zip_file_creator_->GetResult() == ZipFileCreator::kInProgress) {
     zip_file_creator_->SetProgressCallback(base::BindOnce(

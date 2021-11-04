@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/speedometer.h"
 #include "chrome/services/file_util/public/cpp/zip_file_creator.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -51,6 +52,10 @@ class ZipIOTask : public IOTask {
   std::vector<base::FilePath> source_relative_paths_;
 
   scoped_refptr<ZipFileCreator> zip_file_creator_;
+
+  // Speedometer for this operation, used to calculate the remaining time to
+  // finish the operation.
+  Speedometer speedometer_;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;
