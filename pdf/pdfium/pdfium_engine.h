@@ -639,9 +639,9 @@ class PDFiumEngine : public PDFEngine,
   bool HandleTabForward(int modifiers);
   bool HandleTabBackward(int modifiers);
 
-  // Updates the currently focused object stored in `focus_item_type_`. Notifies
-  // `client_` about document focus change, if any.
-  void UpdateFocusItemType(FocusElementType focus_item_type);
+  // Updates the currently focused object stored in `focus_element_type_`.
+  // Notifies `client_` about document focus change, if any.
+  void UpdateFocusElementType(FocusElementType focus_element_type);
 
   void UpdateLinkUnderCursor(const std::string& target_url);
   void SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot, int page_index);
@@ -760,11 +760,11 @@ class PDFiumEngine : public PDFEngine,
   // Set to true when updating plugin focus.
   bool updating_focus_ = false;
 
-  // The focus item type for the currently focused object.
-  FocusElementType focus_item_type_ = FocusElementType::kNone;
+  // The focus element type for the currently focused object.
+  FocusElementType focus_element_type_ = FocusElementType::kNone;
 
-  // Stores the last focused object's focus item type before PDF loses focus.
-  FocusElementType last_focused_item_type_ = FocusElementType::kNone;
+  // Stores the last focused object's focus element type before PDF loses focus.
+  FocusElementType last_focused_element_type_ = FocusElementType::kNone;
 
   // Stores the last focused annotation's index before PDF loses focus.
   int last_focused_annot_index_ = -1;

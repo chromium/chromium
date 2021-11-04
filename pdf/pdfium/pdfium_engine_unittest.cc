@@ -689,7 +689,7 @@ class PDFiumEngineTabbingTest : public PDFiumTestBase {
   }
 
   PDFiumEngine::FocusElementType GetFocusedElementType(PDFiumEngine* engine) {
-    return engine->focus_item_type_;
+    return engine->focus_element_type_;
   }
 
   int GetLastFocusedPage(PDFiumEngine* engine) {
@@ -698,7 +698,7 @@ class PDFiumEngineTabbingTest : public PDFiumTestBase {
 
   PDFiumEngine::FocusElementType GetLastFocusedElementType(
       PDFiumEngine* engine) {
-    return engine->last_focused_item_type_;
+    return engine->last_focused_element_type_;
   }
 
   int GetLastFocusedAnnotationIndex(PDFiumEngine* engine) {
@@ -981,7 +981,7 @@ TEST_F(PDFiumEngineTabbingTest, TabbingWithModifiers) {
       HandleTabEvent(engine.get(), blink::WebInputEvent::Modifiers::kAltKey));
 }
 
-TEST_F(PDFiumEngineTabbingTest, NoFocusableItemTabbingTest) {
+TEST_F(PDFiumEngineTabbingTest, NoFocusableElementTabbingTest) {
   /*
    * Document structure
    * Document

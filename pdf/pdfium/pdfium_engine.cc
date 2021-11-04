@@ -1046,8 +1046,8 @@ void PDFiumEngine::KillFormFocus() {
 void PDFiumEngine::UpdateFocus(bool has_focus) {
   base::AutoReset<bool> updating_focus_guard(&updating_focus_, true);
   if (has_focus && !IsReadOnly()) {
-    UpdateFocusItemType(last_focused_item_type_);
-    if (focus_item_type_ == FocusElementType::kPage &&
+    UpdateFocusElementType(last_focused_element_type_);
+    if (focus_element_type_ == FocusElementType::kPage &&
         PageIndexInBounds(last_focused_page_) &&
         last_focused_annot_index_ != -1) {
       ScopedFPDFAnnotation last_focused_annot(FPDFPage_GetAnnot(
@@ -1058,10 +1058,10 @@ void PDFiumEngine::UpdateFocus(bool has_focus) {
       }
     }
   } else {
-    last_focused_item_type_ = focus_item_type_;
-    if (focus_item_type_ == FocusElementType::kDocument) {
-      UpdateFocusItemType(FocusElementType::kNone);
-    } else if (focus_item_type_ == FocusElementType::kPage) {
+    last_focused_element_type_ = focus_element_type_;
+    if (focus_element_type_ == FocusElementType::kDocument) {
+      UpdateFocusElementType(FocusElementType::kNone);
+    } else if (focus_element_type_ == FocusElementType::kPage) {
       FPDF_ANNOTATION last_focused_annot = nullptr;
       FPDF_BOOL ret = FORM_GetFocusedAnnot(form(), &last_focused_page_,
                                            &last_focused_annot);
@@ -1080,7 +1080,7 @@ void PDFiumEngine::UpdateFocus(bool has_focus) {
 AccessibilityFocusInfo PDFiumEngine::GetFocusInfo() {
   AccessibilityFocusInfo focus_info = {FocusObjectType::kNone, 0, 0};
 
-  switch (focus_item_type_) {
+  switch (focus_element_type_) {
     case FocusElementType::kNone: {
       break;
     }
@@ -1255,7 +1255,7 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
     return true;
 
   if (page_index != -1) {
-    UpdateFocusItemType(FocusElementType::kPage);
+    UpdateFocusElementType(FocusElementType::kPage);
     last_focused_page_ = page_index;
     double page_x;
     double page_y;
@@ -4157,7 +4157,7 @@ bool PDFiumEngine::HandleTabEvent(int modifiers) {
 
 bool PDFiumEngine::HandleTabEventWithModifiers(int modifiers) {
   // Only handle cases when a page is focused, else return false.
-  switch (focus_item_type_) {
+  switch (focus_element_type_) {
     case FocusElementType::kNone:
     case FocusElementType::kDocument:
       return false;
@@ -4170,8 +4170,8 @@ bool PDFiumEngine::HandleTabEventWithModifiers(int modifiers) {
 }
 
 bool PDFiumEngine::HandleTabForward(int modifiers) {
-  if (focus_item_type_ == FocusElementType::kNone) {
-    UpdateFocusItemType(FocusElementType::kDocument);
+  if (focus_element_type_ == FocusElementType::kNone) {
+    UpdateFocusElementType(FocusElementType::kDocument);
     return true;
   }
 
@@ -4189,17 +4189,17 @@ bool PDFiumEngine::HandleTabForward(int modifiers) {
 
   if (did_tab_forward) {
     last_focused_page_ = page_index;
-    UpdateFocusItemType(FocusElementType::kPage);
+    UpdateFocusElementType(FocusElementType::kPage);
   } else {
     last_focused_page_ = -1;
-    UpdateFocusItemType(FocusElementType::kNone);
+    UpdateFocusElementType(FocusElementType::kNone);
   }
   return did_tab_forward;
 }
 
 bool PDFiumEngine::HandleTabBackward(int modifiers) {
-  if (focus_item_type_ == FocusElementType::kDocument) {
-    UpdateFocusItemType(FocusElementType::kNone);
+  if (focus_element_type_ == FocusElementType::kDocument) {
+    UpdateFocusElementType(FocusElementType::kNone);
     return false;
   }
 
@@ -4217,37 +4217,38 @@ bool PDFiumEngine::HandleTabBackward(int modifiers) {
 
   if (did_tab_backward) {
     last_focused_page_ = page_index;
-    UpdateFocusItemType(FocusElementType::kPage);
+    UpdateFocusElementType(FocusElementType::kPage);
   } else {
     // No focusable annotation found in pages. Possible scenarios:
-    // Case 1: `focus_item_type_` is None. Since no object in any page can take
-    // the focus, the document should take focus.
-    // Case 2: `focus_item_type_` is Page. Since there aren't any objects that
-    // could take focus, the document should take focus.
-    // Case 3: `focus_item_type_` is Document. Move focus_item_type_ to None.
-    switch (focus_item_type_) {
+    // Case 1: `focus_element_type_` is `kNone`. Since no object in any page can
+    // take the focus, the document should take focus.
+    // Case 2: `focus_element_type_` is `kPage`. Since there aren't any objects
+    // that could take focus, the document should take focus.
+    // Case 3: `focus_element_type_` is `kDocument`. Move `focus_element_type_`
+    // to `kNone`.
+    switch (focus_element_type_) {
       case FocusElementType::kPage:
       case FocusElementType::kNone:
         did_tab_backward = true;
         last_focused_page_ = -1;
-        UpdateFocusItemType(FocusElementType::kDocument);
+        UpdateFocusElementType(FocusElementType::kDocument);
         KillFormFocus();
         break;
       case FocusElementType::kDocument:
-        UpdateFocusItemType(FocusElementType::kNone);
+        UpdateFocusElementType(FocusElementType::kNone);
         break;
     }
   }
   return did_tab_backward;
 }
 
-void PDFiumEngine::UpdateFocusItemType(FocusElementType focus_item_type) {
-  if (focus_item_type_ == focus_item_type)
+void PDFiumEngine::UpdateFocusElementType(FocusElementType focus_element_type) {
+  if (focus_element_type_ == focus_element_type)
     return;
-  if (focus_item_type_ == FocusElementType::kDocument)
+  if (focus_element_type_ == FocusElementType::kDocument)
     client_->DocumentFocusChanged(false);
-  focus_item_type_ = focus_item_type;
-  if (focus_item_type_ == FocusElementType::kDocument)
+  focus_element_type_ = focus_element_type;
+  if (focus_element_type_ == FocusElementType::kDocument)
     client_->DocumentFocusChanged(true);
 }
 
