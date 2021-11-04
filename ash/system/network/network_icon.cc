@@ -393,12 +393,13 @@ void NetworkIconImpl::GetBadges(const NetworkStateProperties* network,
   } else if (type == NetworkType::kCellular) {
     // technology_badge_ is set in UpdateCellularState.
     if (is_connected && network->type_state->get_cellular()->roaming) {
-      badges->center_left = {&kNetworkBadgeRoamingIcon, icon_color};
+      badges->top_left = {&kNetworkBadgeRoamingIcon, icon_color};
+    } else if (is_connected && !features::IsSeparateNetworkIconsEnabled()) {
+      // Only show technology badge when connected and roaming is not active.
+      badges->top_left = technology_badge_;
     }
   }
-  // Only show technology badge when connected.
-  if (is_connected && !features::IsSeparateNetworkIconsEnabled())
-    badges->top_left = technology_badge_;
+
   if (show_vpn_badge_)
     badges->bottom_left = {&kUnifiedNetworkBadgeVpnIcon, icon_color};
   if (connection_state_ == ConnectionStateType::kPortal)

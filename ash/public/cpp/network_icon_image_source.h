@@ -41,7 +41,6 @@ struct Badge {
 struct Badges {
   Badge top_left;
   Badge center;
-  Badge center_left;
   Badge bottom_left;
   Badge bottom_right;
 };

@@ -44,7 +44,7 @@ generate_grd("build_grdp") {
       "chromeos/network/cellular_off.svg",
       "chromeos/network/cellular_locked.svg",
       "chromeos/network/ethernet.svg",
-      "chromeos/network/globe_badge.svg",
+      "chromeos/network/roaming_badge.svg",
       "chromeos/network/vpn.svg",
       "chromeos/network/wifi_0_with_x.svg",
       "chromeos/network/wifi_0.svg",

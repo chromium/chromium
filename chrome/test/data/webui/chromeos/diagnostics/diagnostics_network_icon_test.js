@@ -162,9 +162,8 @@ export function diagnosticsNetworkIconTestSuite() {
       assertTrue(isVisible(getPrimaryIcon()));
       assertTextContains(getPrimaryIcon().className, 'cellular-locked');
       assertTrue(isVisible(getNetworkIcon()));
-      assertTrue(isVisible(getNetworkTechnologyIcon()));
       assertTrue(isVisible(getRoamingIcon()));
-      assertEquals('network:badge-lte', getNetworkTechnologyIcon().icon);
+      assertFalse(isVisible(getNetworkTechnologyIcon()));
       assertFalse(isVisible(getConnectingIcon()));
     });
   });
