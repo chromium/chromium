@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SUPPRESS_KEYBOARD_RAII_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SUPPRESS_KEYBOARD_RAII_H_
 
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 

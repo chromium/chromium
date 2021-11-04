@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "content/public/browser/render_frame_host.h"
 
 namespace autofill_assistant {
 namespace {

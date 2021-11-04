@@ -87,7 +87,7 @@ class WebController {
 
   // Find the element given by |selector|. If multiple elements match
   // |selector| and if |strict_mode| is false, return the first one that is
-  // found. Otherwise if |strict-mode| is true, do not return any.
+  // found. Otherwise if |strict_mode| is true, do not return any.
   //
   // To check multiple elements, use a BatchElementChecker.
   virtual void FindElement(const Selector& selector,
