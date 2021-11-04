@@ -4918,4 +4918,14 @@ if (use_libfuzzer) {
 
     link_deps = [ "//components/policy/proto/fuzzer" ]
   }
+
+  fuzzer_test("policy_single_install_event_log_fuzzer") {
+    sources = [ "../ash/policy/reporting/single_install_event_log_fuzzer.cc" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser/chromeos",
+    ]
+  }
 }
