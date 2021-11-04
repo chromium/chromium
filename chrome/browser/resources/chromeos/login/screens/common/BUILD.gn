@@ -25,6 +25,7 @@ group("polymer3_elements") {
     ":sync_consent_module",
     ":tpm_error_module",
     ":user_creation_module",
+    ":wrong_hwid_module",
   ]
 }
 
@@ -57,6 +58,7 @@ js_type_check("closure_compile_module") {
     ":sync_consent.m",
     ":tpm_error.m",
     ":user_creation.m",
+    ":wrong_hwid.m",
   ]
 }
 
@@ -255,6 +257,18 @@ js_library("user_creation.m") {
   extra_deps = [ ":user_creation_module" ]
 }
 
+js_library("wrong_hwid.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/wrong_hwid.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+  ]
+  extra_deps = [ ":wrong_hwid_module" ]
+}
+
 polymer_modulizer("app_downloading") {
   js_file = "app_downloading.js"
   html_file = "app_downloading.html"
@@ -355,6 +369,14 @@ polymer_modulizer("sync_consent") {
 polymer_modulizer("tpm_error") {
   js_file = "tpm_error.js"
   html_file = "tpm_error.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("wrong_hwid") {
+  js_file = "wrong_hwid.js"
+  html_file = "wrong_hwid.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
