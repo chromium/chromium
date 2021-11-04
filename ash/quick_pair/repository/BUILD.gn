@@ -19,6 +19,8 @@ source_set("repository") {
     "fast_pair/footprints_fetcher.h",
     "fast_pair/pairing_metadata.cc",
     "fast_pair/pairing_metadata.h",
+    "fast_pair/pending_write_store.cc",
+    "fast_pair/pending_write_store.h",
     "fast_pair/proto_conversions.cc",
     "fast_pair/proto_conversions.h",
     "fast_pair/saved_device_registry.cc",
@@ -83,6 +85,7 @@ source_set("unit_tests") {
 
   sources = [
     "fast_pair/device_metadata_fetcher_unittest.cc",
+    "fast_pair/pending_write_store_unittest.cc",
     "fast_pair/saved_device_registry_unittest.cc",
   ]
 

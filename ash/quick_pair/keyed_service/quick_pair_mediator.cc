@@ -14,6 +14,7 @@
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
 #include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
+#include "ash/quick_pair/repository/fast_pair/pending_write_store.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
 #include "ash/quick_pair/scanning/scanner_broker_impl.h"
@@ -86,6 +87,7 @@ Mediator::~Mediator() {
 void Mediator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   FastPairPrefEnabledProvider::RegisterProfilePrefs(registry);
   SavedDeviceRegistry::RegisterProfilePrefs(registry);
+  PendingWriteStore::RegisterProfilePrefs(registry);
 }
 
 chromeos::bluetooth_config::FastPairDelegate* Mediator::GetFastPairDelegate() {
