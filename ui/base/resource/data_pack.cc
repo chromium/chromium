@@ -119,7 +119,7 @@ void MaybePrintResourceId(uint16_t resource_id) {
 class ScopedFileWriter {
  public:
   // Constructor takes a |path| parameter and tries to open the file.
-  // Call valid() to check if the operation was succesful.
+  // Call valid() to check if the operation was successful.
   explicit ScopedFileWriter(const base::FilePath& path)
       : valid_(true), file_(base::OpenFile(path, "wb")) {
     if (!file_) {
@@ -134,7 +134,7 @@ class ScopedFileWriter {
   // Destructor.
   ~ScopedFileWriter() { Close(); }
 
-  // Return true if the last i/o operation was succesful.
+  // Return true if the last i/o operation was successful.
   bool valid() const { return valid_; }
 
   // Try to write |data_size| bytes from |data| into the file, if a previous
