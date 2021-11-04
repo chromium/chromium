@@ -315,17 +315,10 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       source, base::make_span(kNewTabPageResources, kNewTabPageResourcesSize),
       IDR_NEW_TAB_PAGE_NEW_TAB_PAGE_HTML);
 
-  // Allows creating <script> and inlining as well as network requests to
-  // support inlining the OneGoogleBar.
-  // TODO(crbug.com/1076506): remove when changing to iframed OneGoogleBar.
-  // Needs to happen after |webui::SetupWebUIDataSource()| since also overrides
-  // script-src.
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test "
-      "'self' 'unsafe-inline' https:;");
-  // Allow embedding of iframes from the One Google Bar and
+  // Allow embedding of iframes for the doodle and
   // chrome-untrusted://new-tab-page for other external content and resources.
+  // NOTE: Use caution when overriding content security policies as that cean
+  // lead to subtle security bugs such as https://crbug.com/1251541.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
       base::StringPrintf("child-src https: %s %s;",
