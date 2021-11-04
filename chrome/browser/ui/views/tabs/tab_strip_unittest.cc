@@ -185,10 +185,6 @@ class TabStripTestBase : public ChromeViewsTestBase {
     return tab->HitTestPoint(point_in_tab_coords);
   }
 
-  Tab* FindTabForEvent(const gfx::Point& point) {
-    return tab_strip_->FindTabForEvent(point);
-  }
-
   void CompleteAnimationAndLayout() {
     // Complete animations and lay out *within the current tabstrip width*.
     tab_strip_->CompleteAnimationAndLayout();

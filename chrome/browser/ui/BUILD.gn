@@ -4460,8 +4460,6 @@ static_library("ui") {
       "views/tabs/new_tab_button.h",
       "views/tabs/overflow_view.cc",
       "views/tabs/overflow_view.h",
-      "views/tabs/stacked_tab_strip_layout.cc",
-      "views/tabs/stacked_tab_strip_layout.h",
       "views/tabs/tab.cc",
       "views/tabs/tab.h",
       "views/tabs/tab_animation.cc",

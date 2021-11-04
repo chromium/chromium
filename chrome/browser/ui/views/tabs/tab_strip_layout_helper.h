@@ -119,11 +119,6 @@ class TabStripLayoutHelper {
   // bounds.
   int UpdateIdealBounds(int available_width);
 
-  // Generates and sets the ideal bounds for |tabs|. Updates
-  // the cached values in |first_non_pinned_tab_index_| and
-  // |first_non_pinned_tab_x_|.
-  void UpdateIdealBoundsForPinnedTabs();
-
  private:
   struct TabSlot;
 

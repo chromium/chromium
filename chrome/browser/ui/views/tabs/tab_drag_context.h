@@ -42,10 +42,6 @@ class TabDragContext {
       const tab_groups::TabGroupId& group) const = 0;
   virtual TabStripModel* GetTabStripModel() = 0;
 
-  // Returns the index of the active tab in touch mode, or no value if not in
-  // touch mode.
-  virtual absl::optional<int> GetActiveTouchIndex() const = 0;
-
   // Returns the tab drag controller owned by this delegate, or null if none.
   virtual TabDragController* GetDragController() = 0;
 

@@ -53,8 +53,6 @@ class FakeTabController : public TabController {
   const ui::ListSelectionModel& GetSelectionModel() const override {
     return selection_model_;
   }
-  bool SupportsMultipleSelection() override { return false; }
-  bool ShouldHideCloseButtonForTab(Tab* tab) const override { return false; }
   void SelectTab(Tab* tab, const ui::Event& event) override {}
   void ExtendSelectionTo(Tab* tab) override {}
   void ToggleSelected(Tab* tab) override {}

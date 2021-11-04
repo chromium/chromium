@@ -43,7 +43,6 @@
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
-class StackedTabStripLayout;
 class Tab;
 class TabHoverCardController;
 class TabStripController;
@@ -137,14 +136,6 @@ class TabStrip : public views::View,
   // next frame. The |elapsed_time| parameter is shared between tabs and used to
   // keep the throbbers in sync.
   void UpdateLoadingAnimations(const base::TimeDelta& elapsed_time);
-
-  // |stacked_layout_| defines what should happen when the tabs won't fit at
-  // their ideal size. When |stacked_layout_| is true the tabs are always sized
-  // to their ideal size and stacked on top of each other so that only a certain
-  // set of tabs are visible. This is used when the user uses a touch device.
-  // When |stacked_layout_| is false the tabs shrink to accommodate the
-  // available space. This is the default.
-  bool stacked_layout() const { return false; }
 
   // Adds a tab at the specified index.
   void AddTabAt(int model_index, TabRendererData data, bool is_active);
@@ -278,8 +269,6 @@ class TabStrip : public views::View,
 
   // TabController:
   const ui::ListSelectionModel& GetSelectionModel() const override;
-  bool SupportsMultipleSelection() override;
-  bool ShouldHideCloseButtonForTab(Tab* tab) const override;
   void SelectTab(Tab* tab, const ui::Event& event) override;
   void ExtendSelectionTo(Tab* tab) override;
   void ToggleSelected(Tab* tab) override;
@@ -555,11 +544,6 @@ class TabStrip : public views::View,
   // use this information for other purposes - see AnimateToIdealBounds.
   void UpdateIdealBounds();
 
-  // Generates and sets the ideal bounds for the pinned tabs. Returns the index
-  // to position the first non-pinned tab and sets |first_non_pinned_index| to
-  // the index of the first non-pinned tab.
-  int UpdateIdealBoundsForPinnedTabs(int* first_non_pinned_index);
-
   // Calculates the width that can be occupied by the tabs in the strip. This
   // can differ from GetAvailableWidthForTabStrip() when in tab closing mode.
   int CalculateAvailableWidthForTabs() const;
@@ -575,23 +559,11 @@ class TabStrip : public views::View,
   // hit-test region of the specified Tab.
   bool IsPointInTab(Tab* tab, const gfx::Point& point_in_tabstrip_coords);
 
-  // -- Touch Layout ----------------------------------------------------------
-
-  // Returns the tab to use for event handling. This uses FindTabForEventFrom()
-  // to do the actual searching.  This method should be called when
-  // |touch_layout_| is set.
-  Tab* FindTabForEvent(const gfx::Point& point);
-
-  // Helper for FindTabForEvent().  Returns the tab to use for event handling
-  // starting at index |start| and iterating by |delta|.
-  Tab* FindTabForEventFrom(const gfx::Point& point, int start, int delta);
-
   // For a given point, finds a tab that is hit by the point. If the point hits
   // an area on which two tabs are overlapping, the tab is selected as follows:
   // - If one of the tabs is active, select it.
   // - Select the left one.
-  // If no tabs are hit, returns null.  This method should be called when
-  // |touch_layout_| is not set.
+  // If no tabs are hit, returns null.
   Tab* FindTabHitByPoint(const gfx::Point& point);
 
   // Called whenever a tab animation has progressed.
@@ -686,15 +658,6 @@ class TabStrip : public views::View,
 
   // The width available for tabs at the time of last layout.
   int last_available_width_ = 0;
-
-  // See description above stacked_layout().
-  bool stacked_layout_ = false;
-
-  // Should the layout dynamically adjust?
-  bool adjust_layout_ = false;
-
-  // Only used while in touch mode.
-  std::unique_ptr<StackedTabStripLayout> touch_layout_;
 
   // Location of the mouse at the time of the last move.
   gfx::Point last_mouse_move_location_;

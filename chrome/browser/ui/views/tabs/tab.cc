@@ -482,20 +482,15 @@ bool Tab::OnMousePressed(const ui::MouseEvent& event) {
     // event in the parents coordinate, which won't change, and recreate an
     // event after changing so the coordinates are correct.
     ui::MouseEvent event_in_parent(event, static_cast<View*>(this), parent());
-    if (controller_->SupportsMultipleSelection()) {
-      if (event.IsShiftDown() && IsSelectionModifierDown(event)) {
-        controller_->AddSelectionFromAnchorTo(this);
-      } else if (event.IsShiftDown()) {
-        controller_->ExtendSelectionTo(this);
-      } else if (IsSelectionModifierDown(event)) {
-        controller_->ToggleSelected(this);
-        if (!IsSelected()) {
-          // Don't allow dragging non-selected tabs.
-          return false;
-        }
-      } else if (!IsSelected()) {
-        controller_->SelectTab(this, event);
-        base::RecordAction(UserMetricsAction("SwitchTab_Click"));
+    if (event.IsShiftDown() && IsSelectionModifierDown(event)) {
+      controller_->AddSelectionFromAnchorTo(this);
+    } else if (event.IsShiftDown()) {
+      controller_->ExtendSelectionTo(this);
+    } else if (IsSelectionModifierDown(event)) {
+      controller_->ToggleSelected(this);
+      if (!IsSelected()) {
+        // Don't allow dragging non-selected tabs.
+        return false;
       }
     } else if (!IsSelected()) {
       controller_->SelectTab(this, event);
@@ -971,11 +966,10 @@ void Tab::UpdateIconVisibility() {
       available_width >= (touch_ui ? kTouchMinimumContentsWidthForCloseButtons
                                    : kMinimumContentsWidthForCloseButtons);
 
-  showing_close_button_ = !controller_->ShouldHideCloseButtonForTab(this);
   if (IsActive()) {
     // Close button is shown on active tabs regardless of the size.
-    if (showing_close_button_)
-      available_width -= close_button_width;
+    showing_close_button_ = true;
+    available_width -= close_button_width;
 
     showing_alert_indicator_ =
         has_alert_icon && alert_icon_width <= available_width;
@@ -995,7 +989,7 @@ void Tab::UpdateIconVisibility() {
     if (showing_icon_)
       available_width -= favicon_width;
 
-    showing_close_button_ &= large_enough_for_close_button;
+    showing_close_button_ = large_enough_for_close_button;
     if (showing_close_button_)
       available_width -= close_button_width;
 

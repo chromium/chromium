@@ -178,10 +178,3 @@ std::vector<gfx::Rect> CalculateTabBounds(
 
   return bounds;
 }
-
-std::vector<gfx::Rect> CalculatePinnedTabBounds(
-    const TabLayoutConstants& layout_constants,
-    const std::vector<TabWidthConstraints>& pinned_tabs) {
-  // Pinned tabs are always the same size regardless of the available width.
-  return CalculateTabBounds(layout_constants, pinned_tabs, 0, absl::nullopt);
-}
