@@ -84,6 +84,9 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // aren't any to load.
   bool AreInlineTextBoxesLoaded() const;
 
+  // Returns a relative score of how likely a node is to be clickable.
+  int ClickableScore() const;
+
   bool CanOpenPopup() const;
 
   bool HasAriaCurrent() const;

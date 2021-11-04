@@ -52,6 +52,15 @@ enum {
 // android.view.accessibility.AccessibilityNodeInfo.RangeInfo in Java:
 enum { ANDROID_VIEW_ACCESSIBILITY_RANGE_TYPE_FLOAT = 1 };
 
+// These define reasons a node may be marked as clickable and provide a
+// relative score to AT. Higher means more likely to be the clickable node.
+enum {
+  kNotClickable = 0,
+  kHasClickAncestor = 100,
+  kHasClickListener = 200,
+  kHasClickListenerAndIsControl = 300
+};
+
 }  // namespace
 
 namespace content {
@@ -458,6 +467,37 @@ bool BrowserAccessibilityAndroid::AreInlineTextBoxesLoaded() const {
   // Otherwise return true - either they're all loaded, or there aren't
   // any descendants that need to load inline text boxes.
   return true;
+}
+
+int BrowserAccessibilityAndroid::ClickableScore() const {
+  // For nodes that do not have the default action verb, return not clickable.
+  if (!HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb))
+    return kNotClickable;
+
+  switch (GetData().GetDefaultActionVerb()) {
+    // Differentiate between nodes that are clickable because of an ancestor.
+    case ax::mojom::DefaultActionVerb::kClickAncestor:
+      return kHasClickAncestor;
+
+    // For all other clickable nodes, check whether the node is also a control
+    // on Android, and return score based on the result.
+    case ax::mojom::DefaultActionVerb::kActivate:
+    case ax::mojom::DefaultActionVerb::kCheck:
+    case ax::mojom::DefaultActionVerb::kClick:
+    case ax::mojom::DefaultActionVerb::kJump:
+    case ax::mojom::DefaultActionVerb::kOpen:
+    case ax::mojom::DefaultActionVerb::kPress:
+    case ax::mojom::DefaultActionVerb::kSelect:
+    case ax::mojom::DefaultActionVerb::kUncheck: {
+      return ui::IsControlOnAndroid(GetRole(), IsFocusable())
+                 ? kHasClickListenerAndIsControl
+                 : kHasClickListener;
+    }
+
+    case ax::mojom::DefaultActionVerb::kNone:
+    default:
+      return kNotClickable;
+  }
 }
 
 bool BrowserAccessibilityAndroid::CanOpenPopup() const {

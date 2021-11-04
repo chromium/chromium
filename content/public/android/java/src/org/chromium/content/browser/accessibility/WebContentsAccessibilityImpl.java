@@ -119,6 +119,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     // Constants defined for AccessibilityNodeInfo Bundle extras keys.
     public static final String EXTRAS_KEY_CHROME_ROLE = "AccessibilityNodeInfo.chromeRole";
+    public static final String EXTRA_KEY_CLICKABLE_SCORE = "AccessibilityNodeInfo.clickableScore";
     public static final String EXTRAS_KEY_HAS_IMAGE = "AccessibilityNodeInfo.hasImage";
     public static final String EXTRAS_KEY_HINT = "AccessibilityNodeInfo.hint";
     public static final String EXTRAS_KEY_OFFSCREEN = "AccessibilityNodeInfo.offscreen";
@@ -1759,7 +1760,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
     private void setAccessibilityNodeInfoBaseAttributes(AccessibilityNodeInfo node, boolean isRoot,
             String className, String role, String roleDescription, String hint, String targetUrl,
             boolean canOpenPopup, boolean dismissable, boolean multiLine, int inputType,
-            int liveRegion, String errorMessage) {
+            int liveRegion, String errorMessage, int clickableScore) {
         node.setClassName(className);
 
         Bundle bundle = node.getExtras();
@@ -1787,6 +1788,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         // set |contentInvalid| to true based on throttle delay.
         if (node.isContentInvalid()) {
             node.setError(errorMessage);
+        }
+
+        // For non-zero clickable scores, add to the Bundle extras.
+        if (clickableScore > 0) {
+            bundle.putInt(EXTRA_KEY_CLICKABLE_SCORE, clickableScore);
         }
     }
 

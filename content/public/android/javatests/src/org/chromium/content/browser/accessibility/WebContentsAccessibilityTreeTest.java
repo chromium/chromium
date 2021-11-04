@@ -328,4 +328,11 @@ public class WebContentsAccessibilityTreeTest {
         performTest(
                 "table-simple.html", "table-simple-expected-android-external.txt", BASE_FILE_PATH);
     }
+
+    @Test
+    @SmallTest
+    public void test_clickableScore() {
+        performTest("clickable-score.html", "clickable-score-expected-android-external.txt",
+                BASE_FILE_PATH);
+    }
 }
