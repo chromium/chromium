@@ -73,20 +73,23 @@ bool AreSubtreeUpdateReasonsIsolationPiercing(unsigned reasons) {
              SubtreePaintPropertyUpdateReason::kContainerChainMayChange));
 }
 
-DocumentTransitionSharedElementId GetSharedElementId(
-    const LayoutObject& object) {
+void PopulateSharedElementAndResourceId(
+    const LayoutObject& object,
+    DocumentTransitionSharedElementId* shared_element_id,
+    viz::SharedElementResourceId* resource_id) {
   Element* element = DynamicTo<Element>(object.GetNode());
   // If we're not compositing this element for document transition, then it has
   // no shared element id.
   if (!element || !element->ShouldCompositeForDocumentTransition())
-    return {};
+    return;
 
   auto* document_transition_supplement =
       DocumentTransitionSupplement::FromIfExists(element->GetDocument());
   if (!document_transition_supplement)
-    return {};
-  return document_transition_supplement->GetTransition()->GetSharedElementId(
-      element);
+    return;
+  document_transition_supplement->GetTransition()
+      ->PopulateSharedElementAndResourceId(element, shared_element_id,
+                                           resource_id);
 }
 
 }  // namespace
@@ -1400,7 +1403,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       state.has_active_backdrop_filter_animation =
           style.HasCurrentBackdropFilterAnimation();
 
-      state.document_transition_shared_element_id = GetSharedElementId(object_);
+      PopulateSharedElementAndResourceId(
+          object_, &state.document_transition_shared_element_id,
+          &state.shared_element_resource_id);
 
       EffectPaintPropertyNode::AnimationState animation_state;
       animation_state.is_running_opacity_animation_on_compositor =

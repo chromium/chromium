@@ -364,6 +364,7 @@ BLINK_COMMON_EXPORT extern const base::Feature kScopeMemoryCachePerContext;
 BLINK_COMMON_EXPORT extern const base::Feature kEnablePenetratingImageSelection;
 
 BLINK_COMMON_EXPORT extern const base::Feature kDocumentTransition;
+BLINK_COMMON_EXPORT extern const base::Feature kDocumentTransitionRenderer;
 
 // Used to configure a per-origin allowlist of performance.mark events that are
 // permitted to be included in slow reports traces. See crbug.com/1181774.

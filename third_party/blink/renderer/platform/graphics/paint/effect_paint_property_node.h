@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_EFFECT_PAINT_PROPERTY_NODE_H_
 
 #include <algorithm>
+
+#include "components/viz/common/shared_element_resource_id.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
@@ -131,6 +133,11 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     // returns true if this has been set, and false otherwise.
     DocumentTransitionSharedElementId document_transition_shared_element_id;
 
+    // An identifier to tag shared element resources generated and cached in the
+    // Viz process. This generated resource can be used as content for other
+    // elements.
+    viz::SharedElementResourceId shared_element_resource_id;
+
     // TODO(crbug.com/900241): Use direct_compositing_reasons to check for
     // active animations when we can track animations for each property type.
     bool has_active_opacity_animation = false;
@@ -141,10 +148,10 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
         const State& other,
         const AnimationState& animation_state) {
       if (local_transform_space != other.local_transform_space ||
-          output_clip != other.output_clip ||
-          blend_mode != other.blend_mode ||
+          output_clip != other.output_clip || blend_mode != other.blend_mode ||
           document_transition_shared_element_id !=
-              other.document_transition_shared_element_id) {
+              other.document_transition_shared_element_id ||
+          shared_element_resource_id != other.shared_element_resource_id) {
         return PaintPropertyChangeType::kChangedOnlyValues;
       }
       bool opacity_changed = opacity != other.opacity;
@@ -319,6 +326,10 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
   const blink::DocumentTransitionSharedElementId&
   DocumentTransitionSharedElementId() const {
     return state_.document_transition_shared_element_id;
+  }
+
+  const viz::SharedElementResourceId& SharedElementResourceId() const {
+    return state_.shared_element_resource_id;
   }
 
   std::unique_ptr<JSONObject> ToJSON() const;

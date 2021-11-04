@@ -26,6 +26,10 @@ namespace viz {
 namespace {
 constexpr gfx::Size kDefaultTextureSizeForTesting = gfx::Size(20, 20);
 
+constexpr auto kResultFormat = CopyOutputRequest::ResultFormat::RGBA;
+constexpr auto kResultDestination =
+    CopyOutputRequest::ResultDestination::kNativeTextures;
+
 SurfaceSavedFrame::RenderPassDrawData GetRootRenderPassDrawData(
     Surface* surface) {
   const auto& frame = surface->GetActiveFrame();
@@ -78,14 +82,10 @@ bool SurfaceSavedFrame::IsValid() const {
 void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
   DCHECK(surface->HasActiveFrame());
 
-  constexpr auto result_format = CopyOutputRequest::ResultFormat::RGBA;
-  constexpr auto result_destination =
-      CopyOutputRequest::ResultDestination::kNativeTextures;
-
   const auto& root_draw_data = GetRootRenderPassDrawData(surface);
   // Bind kRoot and root geometry information to the callback.
   auto root_request = std::make_unique<CopyOutputRequest>(
-      result_format, result_destination,
+      kResultFormat, kResultDestination,
       base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
                      weak_factory_.GetWeakPtr(), ResultType::kRoot, 0,
                      root_draw_data));
@@ -100,6 +100,20 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
     return;
   }
 
+  if (surface->GetActiveFrame().metadata.has_shared_element_resources) {
+    // TODO(khushalsagar) : This should be the only mode once renderer based SET
+    // lands.
+    CopyUsingOriginalFrame(surface, std::move(root_request));
+  } else {
+    CopyUsingCleanFrame(surface, std::move(root_request));
+  }
+
+  DCHECK_EQ(copy_request_count_, ExpectedResultCount());
+}
+
+void SurfaceSavedFrame::CopyUsingCleanFrame(
+    Surface* surface,
+    std::unique_ptr<CopyOutputRequest> root_request) {
   // If the directive includes shared elements then we need to create a new
   // CompositorFrame with render passes that remove these elements. The strategy
   // is as follows :
@@ -155,19 +169,8 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
       pass_for_clean_copy = duplicate_pass.get();
     clean_frame.render_pass_list.push_back(std::move(duplicate_pass));
 
-    auto shared_pass_index = GetSharedPassIndex(directive_.shared_elements(),
-                                                original_render_pass_id);
-    if (shared_pass_index < directive_.shared_elements().size()) {
-      RenderPassDrawData draw_data(
-          *render_pass,
-          TransitionUtils::ComputeAccumulatedOpacity(
-              active_frame.render_pass_list, original_render_pass_id));
-      auto request = std::make_unique<CopyOutputRequest>(
-          result_format, result_destination,
-          base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
-                         weak_factory_.GetWeakPtr(), ResultType::kShared,
-                         shared_pass_index, draw_data));
-      request->set_result_task_runner(base::ThreadTaskRunnerHandle::Get());
+    if (auto request = CreateCopyRequestIfNeeded(
+            *render_pass, active_frame.render_pass_list)) {
       pass_for_clean_copy->copy_requests.push_back(std::move(request));
       copy_request_count_++;
     }
@@ -182,8 +185,46 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
   }
 
   clean_surface_.emplace(surface, std::move(clean_frame));
+}
 
-  DCHECK_EQ(copy_request_count_, ExpectedResultCount());
+void SurfaceSavedFrame::CopyUsingOriginalFrame(
+    Surface* surface,
+    std::unique_ptr<CopyOutputRequest> root_request) {
+  const auto& active_frame = surface->GetActiveFrame();
+  for (const auto& render_pass : active_frame.render_pass_list) {
+    if (auto request = CreateCopyRequestIfNeeded(
+            *render_pass, active_frame.render_pass_list)) {
+      surface->RequestCopyOfOutputOnActiveFrameRenderPassId(std::move(request),
+                                                            render_pass->id);
+      copy_request_count_++;
+    }
+  }
+
+  // TODO(khushalsagar) : The root element should be an intermediate render pass
+  // in the renderer's frame. We could optimize it if there are no shared
+  // elements. See crbug.com/1265700.
+  surface->RequestCopyOfOutputOnRootRenderPass(std::move(root_request));
+  copy_request_count_++;
+}
+
+std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
+    const CompositorRenderPass& render_pass,
+    const CompositorRenderPassList& render_pass_list) const {
+  auto shared_pass_index =
+      GetSharedPassIndex(directive_.shared_elements(), render_pass.id);
+  if (shared_pass_index >= directive_.shared_elements().size())
+    return nullptr;
+
+  RenderPassDrawData draw_data(
+      render_pass, TransitionUtils::ComputeAccumulatedOpacity(render_pass_list,
+                                                              render_pass.id));
+  auto request = std::make_unique<CopyOutputRequest>(
+      kResultFormat, kResultDestination,
+      base::BindOnce(&SurfaceSavedFrame::NotifyCopyOfOutputComplete,
+                     weak_factory_.GetWeakPtr(), ResultType::kShared,
+                     shared_pass_index, draw_data));
+  request->set_result_task_runner(base::ThreadTaskRunnerHandle::Get());
+  return request;
 }
 
 void SurfaceSavedFrame::ReleaseSurface() {

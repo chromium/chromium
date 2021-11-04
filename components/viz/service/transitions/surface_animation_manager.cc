@@ -1207,7 +1207,7 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
 }
 
 void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
-  const auto& active_frame = surface->GetActiveOrInterpolatedFrame();
+  const auto& active_frame = surface->GetActiveFrame();
   if (!active_frame.metadata.has_shared_element_resources)
     return;
 
@@ -1218,11 +1218,16 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
   //    are represented using cached copy results while elements in the new DOM
   //    use a render pass from the same frame.
   // We shouldn't need to replace elements during a Viz driven animation.
-  if (state_ == State::kAnimating || state_ == State::kLastFrame)
+  if (state_ == State::kAnimating || state_ == State::kLastFrame) {
+    LOG(ERROR) << "Unexpected frame with shared element resources during viz "
+                  "animation";
     return;
+  }
 
   // A frame created by resolving SharedElementResourceIds to their
   // corresponding static or live snapshot.
+  DCHECK(!surface->HasInterpolatedFrame())
+      << "Can not override interpolated frame";
   CompositorFrame resolved_frame;
   resolved_frame.metadata = active_frame.metadata.Clone();
   resolved_frame.resource_list = active_frame.resource_list;
@@ -1236,17 +1241,19 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
 
   for (auto& render_pass : active_frame.render_pass_list) {
     auto copy_requests = std::move(render_pass->copy_requests);
-
-    if (render_pass->shared_element_resource_id.IsValid()) {
-      DCHECK(element_id_to_pass.find(render_pass->shared_element_resource_id) ==
-             element_id_to_pass.end());
-      element_id_to_pass[render_pass->shared_element_resource_id] =
-          render_pass.get();
-    }
-
     auto pass_copy = TransitionUtils::CopyPassWithQuadFiltering(
         *render_pass, filter_callback);
     pass_copy->copy_requests = std::move(copy_requests);
+
+    // This must be done after copying the render pass so we use the render pass
+    // id of |pass_copy| when replacing SharedElementDrawQuads.
+    if (pass_copy->shared_element_resource_id.IsValid()) {
+      DCHECK(element_id_to_pass.find(pass_copy->shared_element_resource_id) ==
+             element_id_to_pass.end());
+      element_id_to_pass.emplace(pass_copy->shared_element_resource_id,
+                                 pass_copy.get());
+    }
+
     resolved_frame.render_pass_list.push_back(std::move(pass_copy));
   }
 

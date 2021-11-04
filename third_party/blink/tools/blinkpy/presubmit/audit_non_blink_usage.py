@@ -427,6 +427,8 @@ _CONFIG = [
 
             # Document transitions
             'cc::DocumentTransitionRequest',
+            'cc::SharedElementLayer',
+            'viz::SharedElementResourceId',
 
             # base/types/strong_alias.h
             'base::StrongAlias',

@@ -1634,7 +1634,10 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
 
     if (pass->quad_list.empty() && pass->copy_requests.empty() &&
         !pass->subtree_capture_id.is_valid() && pass->filters.IsEmpty() &&
-        pass->backdrop_filters.IsEmpty()) {
+        pass->backdrop_filters.IsEmpty() &&
+        // TODO(khushalsagar) : Send information about no-op passes to viz to
+        // retain this optimization for shared elements. See crbug.com/1265178.
+        !pass->shared_element_resource_id.IsValid()) {
       // Remove the pass and decrement |i| to counter the for loop's increment,
       // so we don't skip the next pass in the loop.
       frame->render_passes.erase(frame->render_passes.begin() + i);
@@ -1653,8 +1656,10 @@ void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
     // drop references to earlier RenderPasses allowing them to be removed to.
     viz::CompositorRenderPass* pass =
         frame->render_passes[frame->render_passes.size() - 2 - i].get();
-    if (!pass->copy_requests.empty())
+    if (!pass->copy_requests.empty() ||
+        pass->shared_element_resource_id.IsValid()) {
       continue;
+    }
     if (pass_references[pass->id])
       continue;
 
@@ -2552,7 +2557,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
 
-  std::map<DocumentTransitionSharedElementId, viz::CompositorRenderPassId>
+  std::map<DocumentTransitionSharedElementId,
+           DocumentTransitionRequest::SharedElementInfo>
       shared_element_render_pass_id_map;
   for (RenderSurfaceImpl* render_surface : *frame->render_surface_list) {
     const auto& shared_element_id =
@@ -2561,8 +2567,10 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       continue;
     DCHECK(
         !base::Contains(shared_element_render_pass_id_map, shared_element_id));
-    shared_element_render_pass_id_map[shared_element_id] =
+    shared_element_render_pass_id_map[shared_element_id].render_pass_id =
         render_surface->render_pass_id();
+    shared_element_render_pass_id_map[shared_element_id].resource_id =
+        render_surface->OwningEffectNode()->shared_element_resource_id;
   }
 
   for (auto& request : active_tree_->TakeDocumentTransitionRequests()) {
