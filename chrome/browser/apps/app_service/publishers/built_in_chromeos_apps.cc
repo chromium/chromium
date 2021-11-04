@@ -91,11 +91,10 @@ apps::mojom::AppPtr Convert(const app_list::InternalApp& internal_app) {
 
 namespace apps {
 
-BuiltInChromeOsApps::BuiltInChromeOsApps(
-    const mojo::Remote<apps::mojom::AppService>& app_service,
-    AppServiceProxy* proxy)
+BuiltInChromeOsApps::BuiltInChromeOsApps(AppServiceProxy* proxy)
     : AppPublisher(proxy), profile_(proxy->profile()) {
-  PublisherBase::Initialize(app_service, apps::mojom::AppType::kBuiltIn);
+  PublisherBase::Initialize(proxy->AppService(),
+                            apps::mojom::AppType::kBuiltIn);
 
   std::vector<std::unique_ptr<App>> apps;
   for (const auto& internal_app : app_list::GetInternalAppList(profile_)) {

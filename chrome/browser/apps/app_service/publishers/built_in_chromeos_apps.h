@@ -22,10 +22,13 @@ namespace apps {
 // An app publisher (in the App Service sense) of built-in Chrome OS apps.
 //
 // See components/services/app_service/README.md.
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
 class BuiltInChromeOsApps : public apps::PublisherBase, public AppPublisher {
  public:
-  BuiltInChromeOsApps(const mojo::Remote<apps::mojom::AppService>& app_service,
-                      AppServiceProxy* proxy);
+  explicit BuiltInChromeOsApps(AppServiceProxy* proxy);
   BuiltInChromeOsApps(const BuiltInChromeOsApps&) = delete;
   BuiltInChromeOsApps& operator=(const BuiltInChromeOsApps&) = delete;
   ~BuiltInChromeOsApps() override;
