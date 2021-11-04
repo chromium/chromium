@@ -1052,6 +1052,18 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_FOUR" desc="Fourth bullet point that describes the details of the MSBB toggle.">
         If you also share Chrome usage reports, those reports include the URLs you visit
       </message>
+      <message name="IDS_PRIVACY_REVIEW_SYNC_TOGGLE" desc="Title for the history sync toggle.">
+        History sync
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_ONE" desc="First bullet point that describes the details of the history sync toggle.">
+        You’ll have your history on all your synced devices, so you can continue what you were doing
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_TWO" desc="Second bullet point that describes the details of the history sync toggle.">
+        If Google is also your default search engine, you’ll see better, contextually relevant suggestions
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_THREE" desc="Third bullet point that describes the details of the history sync toggle.">
+        The URLs you visit are saved to your Google account
+      </message>
 
       <!-- Safety check -->
       <message name="IDS_PREFS_SAFETY_CHECK" desc="Title of the Safety check element in settings, allowing the user to check multiple areas of browser safety. [CHAR_LIMIT=32]">

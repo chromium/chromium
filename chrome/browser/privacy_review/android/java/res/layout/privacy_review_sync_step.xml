@@ -5,6 +5,7 @@
 
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -24,6 +25,42 @@
             android:layout_width="@dimen/privacy_review_illustration_width"
             android:src="@drawable/privacy_review_sync_image"
             android:importantForAccessibility="no" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/sync_switch"
+            android:layout_marginHorizontal="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:showText="false"
+            android:text="@string/privacy_review_sync_toggle" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleText="@string/privacy_review_what_you_get" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_flash_on_24dp"
+            app:summaryText="@string/privacy_review_sync_item_one" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_lightbulb_24dp"
+            app:summaryText="@string/privacy_review_sync_item_two" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:titleText="@string/privacy_review_what_you_share" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_link_24dp"
+            app:summaryText="@string/privacy_review_sync_item_three" />
 
     </LinearLayout>
 
