@@ -261,9 +261,9 @@ class ManagePasswordsUIController
   // it shouldn't anymore.
   void ClearPopUpFlagForBubble();
 
-  // Closes the account chooser gracefully so the callback is called. Then sets
-  // the state to MANAGE_STATE.
-  void DestroyAccountChooser();
+  // Closes the account chooser gracefully so the callback is called. Closes the
+  // password bubble. Then sets the state to MANAGE_STATE.
+  void DestroyPopups();
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;

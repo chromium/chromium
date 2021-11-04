@@ -130,7 +130,7 @@ ManagePasswordsUIController::~ManagePasswordsUIController() = default;
 void ManagePasswordsUIController::OnPasswordSubmitted(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
   bool show_bubble = !form_manager->IsBlocklisted();
-  DestroyAccountChooser();
+  DestroyPopups();
   save_fallback_timer_.Stop();
   passwords_data_.OnPendingPassword(std::move(form_manager));
   if (show_bubble) {
@@ -148,7 +148,7 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
 
 void ManagePasswordsUIController::OnUpdatePasswordSubmitted(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
-  DestroyAccountChooser();
+  DestroyPopups();
   save_fallback_timer_.Stop();
   passwords_data_.OnUpdatePassword(std::move(form_manager));
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
@@ -159,7 +159,7 @@ void ManagePasswordsUIController::OnShowManualFallbackForSaving(
     std::unique_ptr<PasswordFormManagerForUI> form_manager,
     bool has_generated_password,
     bool is_update) {
-  DestroyAccountChooser();
+  DestroyPopups();
   if (has_generated_password)
     passwords_data_.OnAutomaticPasswordSave(std::move(form_manager));
   else if (is_update)
@@ -226,7 +226,7 @@ void ManagePasswordsUIController::OnAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {
   DCHECK(!local_forms.empty());
-  DestroyAccountChooser();
+  DestroyPopups();
   passwords_data_.OnAutoSignin(std::move(local_forms), origin);
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
@@ -244,7 +244,7 @@ void ManagePasswordsUIController::OnPromptEnableAutoSignin() {
 
 void ManagePasswordsUIController::OnAutomaticPasswordSave(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
-  DestroyAccountChooser();
+  DestroyPopups();
   save_fallback_timer_.Stop();
   passwords_data_.OnAutomaticPasswordSave(std::move(form_manager));
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
@@ -772,7 +772,7 @@ void ManagePasswordsUIController::DidFinishNavigation(
   }
 
   // Otherwise, reset the password manager.
-  DestroyAccountChooser();
+  DestroyPopups();
   ClearPopUpFlagForBubble();
   passwords_data_.OnInactive();
   UpdateBubbleAndIconVisibility();
@@ -805,7 +805,8 @@ void ManagePasswordsUIController::ClearPopUpFlagForBubble() {
     bubble_status_ = BubbleStatus::NOT_SHOWN;
 }
 
-void ManagePasswordsUIController::DestroyAccountChooser() {
+void ManagePasswordsUIController::DestroyPopups() {
+  HidePasswordBubble();
   if (dialog_controller_ && dialog_controller_->IsShowingAccountChooser()) {
     dialog_controller_.reset();
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
