@@ -162,6 +162,9 @@ crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-selects-word-wh
 crbug.com/1219915 [ Linux ] touchadjustment/focusout-on-touch.html [ Failure ]
 crbug.com/1219915 [ Linux ] touchadjustment/touch-links-longpress.html [ Failure ]
 
+# Sheriff 2021-11-04
+crbug.com/1266635 [ Linux ] external/wpt/html/semantics/forms/the-input-element/show-picker.tentative.html [ Failure ]
+
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
 # culprit CLs instead of suppressing the leaks. If you have any question, #
