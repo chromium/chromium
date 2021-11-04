@@ -26,7 +26,7 @@ enum CpuArchitectureEnum {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// NextMinVersion: 1, NextIndex: 18
+// NextMinVersion: 1, NextIndex: 19
 [Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
@@ -47,6 +47,7 @@ enum ProbeCategoryEnum {
   kTpm = 14,
   kGraphics = 15,
   kDisplay = 17,
+  kNetworkInterface = 18,
 
   // TODO(b/190459636): Rename it to kSystem after migration.
   kSystem2 = 0x10000,
@@ -707,6 +708,48 @@ union NetworkResult {
   ProbeError error;
 };
 
+union NetworkInterfaceResult {
+  // Valid network interfaces.
+  array<NetworkInterfaceInfo> network_interface_info;
+  // Error occurred while fetching network interface data.
+  ProbeError error;
+};
+
+// Will expand to beyond wireless interface.
+// NextMinVersion: 1, NextIndex: 1
+union NetworkInterfaceInfo {
+  // Wireless interfaces.
+  WirelessInterfaceInfo wireless_interface_info@0;
+};
+
+// NextMinVersion: 1, NextIndex: 3
+struct WirelessInterfaceInfo {
+  // Interface name.
+  string interface_name@0;
+  // Is power management enabled for wifi or not.
+  bool power_management_on@1;
+  // Link info only available when device is connected to an access point.
+  WirelessLinkInfo? wireless_link_info@2;
+};
+
+// NextMinVersion: 1, NextIndex: 7
+struct WirelessLinkInfo {
+  // Access point address.
+  string access_point_address_str@0;
+  // Tx bit rate measured in Mbps.
+  uint32 tx_bit_rate_mbps@1;
+  // Rx bit rate measured in Mbps.
+  uint32 rx_bit_rate_mbps@2;
+  // Transmission power measured in dBm.
+  int32 tx_power_dBm@3;
+  // Is wifi encryption key on or not.
+  bool encyption_on@4;
+  // Wifi link quality.
+  uint32 link_quality@5;
+  // Wifi signal level in dBm.
+  int32 signal_level_dBm@6;
+};
+
 // Audio probe result. Can either be populated with the AudioInfo or an
 // error retrieving the information.
 union AudioResult {
@@ -1097,7 +1140,7 @@ struct ThunderboltBusInfo {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// NextMinVersion: 2, NextIndex: 18
+// NextMinVersion: 3, NextIndex: 19
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
@@ -1157,4 +1200,8 @@ struct TelemetryInfo {
   // Information about the display. Only present when kDisplay was included in
   // the categories input to ProbeTelemetryInfo.
   [MinVersion=1] DisplayResult? display_result@17;
+  // Information about the network interfaces. Only present when
+  // kNetworkInterface was included in the categories input to
+  // ProbeTelemetryInfo.
+  [MinVersion=2] NetworkInterfaceResult? network_interface_result@18;
 };
