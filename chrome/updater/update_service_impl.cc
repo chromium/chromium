@@ -223,8 +223,14 @@ void UpdateServiceImpl::RegisterApp(
     return;
   }
   persisted_data_->RegisterApp(request);
+  update_client::CrxComponent crx_component;
+  crx_component.app_id = request.app_id;
+  crx_component.version = request.version;
+  crx_component.requires_network_encryption = false;
+  crx_component.ap = request.ap;
+  // TODO(crbug.com/1259972): Set brand.
   update_client_->SendRegistrationPing(
-      request.app_id, request.version, false,
+      crx_component,
       base::BindOnce(
           [](base::OnceCallback<void(const RegistrationResponse&)> callback,
              update_client::Error /*error*/) {

@@ -203,8 +203,12 @@ void CheckForUpdatesTask::RemoveAppIDsAndSendUninstallPings(
       VLOG(1) << "Uninstall ping for app id: " << app_id
               << ". Ping reason: " << ping_reason;
       ++number_of_pings_remaining_;
+      update_client::CrxComponent crx_component;
+      crx_component.app_id = app_id;
+      crx_component.version = app_version;
+      crx_component.requires_network_encryption = false;
       update_client_->SendUninstallPing(
-          app_id, app_version, ping_reason, false,
+          crx_component, ping_reason,
           base::BindOnce(&CheckForUpdatesTask::UninstallPingSent, this));
     } else {
       VLOG(0) << "Could not remove registration of app " << app_id;

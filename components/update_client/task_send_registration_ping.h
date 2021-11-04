@@ -14,10 +14,6 @@
 #include "components/update_client/task.h"
 #include "components/update_client/update_client.h"
 
-namespace base {
-class Version;
-}
-
 namespace update_client {
 
 class UpdateEngine;
@@ -36,9 +32,7 @@ class TaskSendRegistrationPing : public Task {
   // |id| represents the CRX to send the ping for.
   // |callback| is posted when the task is done.
   TaskSendRegistrationPing(scoped_refptr<UpdateEngine> update_engine,
-                           const std::string& id,
-                           const base::Version& version,
-                           bool requires_network_encryption,
+                           const CrxComponent& crx_component,
                            Callback callback);
 
   void Run() override;
@@ -59,9 +53,7 @@ class TaskSendRegistrationPing : public Task {
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdateEngine> update_engine_;
-  const std::string id_;
-  const base::Version version_;
-  const bool requires_network_encryption_;
+  const CrxComponent crx_component_;
   Callback callback_;
 };
 

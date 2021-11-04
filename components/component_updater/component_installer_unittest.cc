@@ -90,20 +90,16 @@ class MockUpdateClient : public UpdateClient {
     std::move(callback).Run(update_client::Error::NONE);
   }
 
-  void SendUninstallPing(const std::string& id,
-                         const base::Version& version,
+  void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
-                         bool requires_network_encryption,
                          Callback callback) override {
-    DoSendUninstallPing(id, version, reason);
+    DoSendUninstallPing(crx_component, reason);
     std::move(callback).Run(update_client::Error::NONE);
   }
 
-  void SendRegistrationPing(const std::string& id,
-                            const base::Version& version,
-                            bool requires_network_encryption,
+  void SendRegistrationPing(const CrxComponent& crx_component,
                             Callback callback) override {
-    DoSendRegistrationPing(id, version);
+    DoSendRegistrationPing(crx_component);
     std::move(callback).Run(update_client::Error::NONE);
   }
 
@@ -119,12 +115,9 @@ class MockUpdateClient : public UpdateClient {
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD3(DoSendUninstallPing,
-               void(const std::string& id,
-                    const base::Version& version,
-                    int reason));
-  MOCK_METHOD2(DoSendRegistrationPing,
-               void(const std::string& id, const base::Version& version));
+  MOCK_METHOD2(DoSendUninstallPing,
+               void(const CrxComponent& crx_component, int reason));
+  MOCK_METHOD1(DoSendRegistrationPing, void(const CrxComponent& crx_component));
 
  private:
   ~MockUpdateClient() override = default;

@@ -55,13 +55,10 @@ class Component {
   CrxUpdateItem GetCrxUpdateItem() const;
 
   // Sets the uninstall state for this component.
-  void Uninstall(const base::Version& cur_version,
-                 int reason,
-                 bool requires_network_encryption);
+  void Uninstall(const CrxComponent& crx_component, int reason);
 
   // Set the registration state for this component.
-  void Registration(const base::Version& cur_version,
-                    bool requires_network_encryption);
+  void Registration(const CrxComponent& crx_component);
 
   // Called by the UpdateEngine when an update check for this component is done.
   void SetUpdateCheckResult(

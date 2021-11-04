@@ -52,14 +52,10 @@ class UpdateClientImpl : public UpdateClient {
                          CrxUpdateItem* update_item) const override;
   bool IsUpdating(const std::string& id) const override;
   void Stop() override;
-  void SendUninstallPing(const std::string& id,
-                         const base::Version& version,
+  void SendUninstallPing(const CrxComponent& crx_component,
                          int reason,
-                         bool requires_network_encryption,
                          Callback callback) override;
-  void SendRegistrationPing(const std::string& id,
-                            const base::Version& version,
-                            bool requires_network_encryption,
+  void SendRegistrationPing(const CrxComponent& crx_component,
                             Callback callback) override;
 
  private:

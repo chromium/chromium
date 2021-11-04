@@ -15,10 +15,6 @@
 #include "components/update_client/task.h"
 #include "components/update_client/update_client.h"
 
-namespace base {
-class Version;
-}
-
 namespace update_client {
 
 class UpdateEngine;
@@ -30,15 +26,14 @@ class TaskSendUninstallPing : public Task {
   using Callback =
       base::OnceCallback<void(scoped_refptr<Task> task, Error error)>;
 
-  // |update_engine| is injected here to handle the task.
-  // |id| represents the CRX to send the ping for.
-  // |callback| is called to return the execution flow back to creator of
+  // `update_engine` is injected here to handle the task.
+  // `crx_component` represents the CRX to send the ping for.
+  // `reason` is the reason for the uninstall ping
+  // `callback` is called to return the execution flow back to creator of
   //    this task when the task is done.
   TaskSendUninstallPing(scoped_refptr<UpdateEngine> update_engine,
-                        const std::string& id,
-                        const base::Version& version,
+                        const CrxComponent& crx_component,
                         int reason,
-                        bool requires_network_encryption,
                         Callback callback);
 
   TaskSendUninstallPing(const TaskSendUninstallPing&) = delete;
@@ -59,10 +54,8 @@ class TaskSendUninstallPing : public Task {
 
   base::ThreadChecker thread_checker_;
   scoped_refptr<UpdateEngine> update_engine_;
-  const std::string id_;
-  const base::Version version_;
+  const CrxComponent crx_component_;
   const int reason_;
-  const bool requires_network_encryption_;
   Callback callback_;
 };
 

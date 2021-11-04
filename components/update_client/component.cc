@@ -346,36 +346,21 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
   }
 }
 
-void Component::Uninstall(const base::Version& version,
-                          int reason,
-                          bool requires_network_encryption) {
+void Component::Uninstall(const CrxComponent& crx_component, int reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   DCHECK_EQ(ComponentState::kNew, state());
-
-  crx_component_ = CrxComponent();
-  crx_component_->version = version;
-  crx_component_->requires_network_encryption = requires_network_encryption;
-
-  previous_version_ = version;
+  crx_component_ = crx_component;
+  previous_version_ = crx_component_->version;
   next_version_ = base::Version("0");
   extra_code1_ = reason;
-
   state_ = std::make_unique<StateUninstalled>(this);
 }
 
-void Component::Registration(const base::Version& version,
-                             bool requires_network_encryption) {
+void Component::Registration(const CrxComponent& crx_component) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   DCHECK_EQ(ComponentState::kNew, state());
-
-  crx_component_ = CrxComponent();
-  crx_component_->version = version;
-  crx_component_->requires_network_encryption = requires_network_encryption;
-
-  next_version_ = version;
-
+  crx_component_ = crx_component;
+  next_version_ = crx_component_->version;
   state_ = std::make_unique<StateRegistration>(this);
 }
 
