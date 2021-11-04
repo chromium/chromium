@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/display/de_jelly.h"
@@ -235,7 +234,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     default_tile_size += 32;
   if (default_tile_size == 384 && std::abs(portrait_width - 1200) < tolerance)
     default_tile_size += 32;
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
+#elif defined(OS_CHROMEOS) || defined(OS_MAC)
   // Use 512 for high DPI (dsf=2.0f) devices.
   if (initial_device_scale_factor >= 2.0f)
     default_tile_size = 512;
