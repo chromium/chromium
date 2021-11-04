@@ -9130,23 +9130,6 @@
             ]
         }
     ],
-    "WebUIJavaScriptErrorReporting": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210311",
-                    "enable_features": [
-                        "SendWebUIJavaScriptErrorReports"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebUITabStrip": [
         {
             "platforms": [

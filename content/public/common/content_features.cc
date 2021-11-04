@@ -1135,7 +1135,7 @@ const base::Feature kRetryGetVideoCaptureDeviceInfos{
 // exception), report that error back the crash reporting infrastructure, same
 // as we do for program crashes.
 const base::Feature kSendWebUIJavaScriptErrorReports{
-    "SendWebUIJavaScriptErrorReports", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SendWebUIJavaScriptErrorReports", base::FEATURE_ENABLED_BY_DEFAULT};
 // Parameter: Should we send the error reports to the production server? If
 // false, we send to the staging server, which is useful for developers (doesn't
 // pollute the report database).
