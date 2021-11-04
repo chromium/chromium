@@ -3924,10 +3924,11 @@ hooks = [
                '--package=clang-tidy'],
   },
   {
-    # Should run after the clang hook.
-    'name': 'objdump/mac',
+    # Should run after the clang hook. Used on mac, as well as for orderfile
+    # generation on Android.
+    'name': 'objdump',
     'pattern': '.',
-    'condition': 'checkout_mac and host_os != "mac"',
+    'condition': 'checkout_mac or checkout_android and host_os != "mac"',
     'action': ['python3', 'src/tools/clang/scripts/update.py',
                '--package=objdump'],
   },
