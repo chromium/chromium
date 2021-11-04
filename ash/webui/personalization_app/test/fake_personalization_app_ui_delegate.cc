@@ -54,6 +54,8 @@ void FakePersonalizationAppUiDelegate::FetchImagesForCollection(
   image.set_asset_id(1);
   image.set_image_url("about:blank");
   image.add_attribution()->set_text("test");
+  image.set_unit_id(3);
+  image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_UNKNOWN);
   images.push_back(image);
   std::move(callback).Run(std::move(images));
 }

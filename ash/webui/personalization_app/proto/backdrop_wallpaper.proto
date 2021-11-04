@@ -18,7 +18,6 @@ message Attribution {
   optional string text = 1;
 }
 
-// Next Id: 7
 message Image {
   // A unique ID for the image. Useful for analytics.
   optional fixed64 asset_id = 1;
@@ -33,6 +32,19 @@ message Image {
 
   // An attribution list for the image.
   repeated Attribution attribution = 4;
+
+  // The unit this image belongs to. The unit can be the collection of
+  // dark/light theme for the same wallpaper.
+  optional int32 unit_id = 6;
+
+  enum ImageType {
+    IMAGE_TYPE_UNKNOWN = 0;
+    IMAGE_TYPE_LIGHT_MODE = 1;
+    IMAGE_TYPE_DARK_MODE = 2;
+  }
+
+  // The type of this image in the unit.
+  optional ImageType image_type = 7;
 }
 
 // A logical grouping of images e.g. landscapes or space photography.
