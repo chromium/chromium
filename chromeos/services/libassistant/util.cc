@@ -200,6 +200,7 @@ std::string CreateLibAssistantConfig(
     Value libas_server(Type::DICTIONARY);
     libas_server.SetKey("libas_server_address",
                         Value(assistant::kLibassistantServiceAddress));
+    libas_server.SetKey("enable_display_service", Value(true));
     config.SetKey("libas_server", std::move(libas_server));
   }
 

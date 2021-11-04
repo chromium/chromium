@@ -104,9 +104,14 @@ void AssistantClientImpl::SendDisplayRequest(
       kDefaultStateConfig);
 }
 
+void AssistantClientImpl::AddDisplayEventObserver(
+    GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) {
+  grpc_services_.AddAssistantDisplayEventObserver(observer);
+}
+
 void AssistantClientImpl::AddDeviceStateEventObserver(
     GrpcServicesObserver<OnDeviceStateEventRequest>* observer) {
-  grpc_services_.AddObserver(observer);
+  grpc_services_.AddDeviceStateEventObserver(observer);
 }
 
 void AssistantClientImpl::SendVoicelessInteraction(

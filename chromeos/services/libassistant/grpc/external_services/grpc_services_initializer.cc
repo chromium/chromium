@@ -6,12 +6,9 @@
 
 #include <memory>
 
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_service.grpc.pb.h"
 #include "chromeos/services/libassistant/grpc/external_services/action_service.h"
 #include "chromeos/services/libassistant/grpc/external_services/customer_registration_client.h"
 #include "chromeos/services/libassistant/grpc/external_services/heartbeat_event_handler_driver.h"
@@ -54,8 +51,6 @@ GrpcServicesInitializer::GrpcServicesInitializer(
 }
 
 GrpcServicesInitializer::~GrpcServicesInitializer() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (assistant_grpc_server_)
     assistant_grpc_server_->Shutdown();
 
@@ -63,8 +58,6 @@ GrpcServicesInitializer::~GrpcServicesInitializer() {
 }
 
 bool GrpcServicesInitializer::Start() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // Starts the server after all drivers have been initiated.
   assistant_grpc_server_ = server_builder_.BuildAndStart();
 
@@ -81,19 +74,16 @@ bool GrpcServicesInitializer::Start() {
   return true;
 }
 
-// AddObserver and RemoveObserver for each handler driver
-void GrpcServicesInitializer::AddObserver(
-    GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest>*
+void GrpcServicesInitializer::AddAssistantDisplayEventObserver(
+    GrpcServicesObserver<::assistant::api::OnAssistantDisplayEventRequest>*
         observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  device_state_event_handler_driver_->AddObserver(observer);
+  assistant_display_event_handler_driver_->AddObserver(observer);
 }
 
-void GrpcServicesInitializer::RemoveObserver(
+void GrpcServicesInitializer::AddDeviceStateEventObserver(
     GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest>*
         observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  device_state_event_handler_driver_->RemoveObserver(observer);
+  device_state_event_handler_driver_->AddObserver(observer);
 }
 
 ActionService* GrpcServicesInitializer::GetActionService() {
@@ -101,7 +91,6 @@ ActionService* GrpcServicesInitializer::GetActionService() {
 }
 
 GrpcLibassistantClient& GrpcServicesInitializer::GrpcLibassistantClient() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return *libassistant_client_;
 }
 
@@ -112,21 +101,24 @@ void GrpcServicesInitializer::InitDrivers(grpc::ServerBuilder* server_builder) {
   heartbeat_event_observation_.Observe(heartbeat_driver_.get());
   service_drivers_.emplace_back(heartbeat_driver_.get());
 
-  // Inits other event handler drivers.
-  device_state_event_handler_driver_ = std::make_unique<
-      EventHandlerDriver<::assistant::api::DeviceStateEventHandlerInterface>>(
-      &server_builder_, libassistant_client_.get(), assistant_service_address_);
-  service_drivers_.emplace_back(device_state_event_handler_driver_.get());
-
   // Inits action service.
   action_handler_driver_ = std::make_unique<ActionService>(
       &server_builder_, libassistant_client_.get(), assistant_service_address_);
   service_drivers_.emplace_back(action_handler_driver_.get());
+
+  // Inits other event handler drivers.
+  assistant_display_event_handler_driver_ = std::make_unique<EventHandlerDriver<
+      ::assistant::api::AssistantDisplayEventHandlerInterface>>(
+      &server_builder_, libassistant_client_.get(), assistant_service_address_);
+  service_drivers_.emplace_back(assistant_display_event_handler_driver_.get());
+
+  device_state_event_handler_driver_ = std::make_unique<
+      EventHandlerDriver<::assistant::api::DeviceStateEventHandlerInterface>>(
+      &server_builder_, libassistant_client_.get(), assistant_service_address_);
+  service_drivers_.emplace_back(device_state_event_handler_driver_.get());
 }
 
 void GrpcServicesInitializer::InitLibassistGrpcClient() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   grpc::ChannelArguments channel_args;
   channel_args.SetInt(GRPC_ARG_INITIAL_RECONNECT_BACKOFF_MS, 200);
   channel_args.SetInt(GRPC_ARG_MIN_RECONNECT_BACKOFF_MS, 200);
@@ -152,6 +144,7 @@ void GrpcServicesInitializer::InitAssistantGrpcServer() {
 }
 
 void GrpcServicesInitializer::RegisterEventHandlers() {
+  assistant_display_event_handler_driver_->StartRegistration();
   device_state_event_handler_driver_->StartRegistration();
 }
 

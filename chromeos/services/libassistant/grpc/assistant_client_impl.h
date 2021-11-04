@@ -36,6 +36,8 @@ class AssistantClientImpl : public AssistantClientV1 {
   bool StartGrpcServices() override;
   void ResetAllDataAndShutdown() override;
   void SendDisplayRequest(const OnDisplayRequestRequest& request) override;
+  void AddDisplayEventObserver(
+      GrpcServicesObserver<OnAssistantDisplayEventRequest>* observer) override;
   void AddDeviceStateEventObserver(
       GrpcServicesObserver<OnDeviceStateEventRequest>* observer) override;
   void SendVoicelessInteraction(

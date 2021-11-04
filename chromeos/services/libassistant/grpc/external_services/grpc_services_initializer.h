@@ -8,9 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/sequence_checker.h"
 #include "chromeos/services/libassistant/grpc/external_services/customer_registration_client.h"
 #include "chromeos/services/libassistant/grpc/external_services/event_handler_driver.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
@@ -22,8 +20,8 @@
 
 namespace assistant {
 namespace api {
+class AssistantDisplayEventHandlerInterface;
 class DeviceStateEventHandlerInterface;
-class OnDeviceStateEventRequest;
 }  // namespace api
 }  // namespace assistant
 
@@ -50,11 +48,11 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   // call. Returns false if the attempt to start a gRPC server failed.
   bool Start();
 
-  // Add/Remove observer for each handler driver.
-  void AddObserver(
-      GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest>*
+  // Add observer for each handler driver.
+  void AddAssistantDisplayEventObserver(
+      GrpcServicesObserver<::assistant::api::OnAssistantDisplayEventRequest>*
           observer);
-  void RemoveObserver(
+  void AddDeviceStateEventObserver(
       GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest>*
           observer);
 
@@ -105,20 +103,20 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
       GrpcServicesObserver<::assistant::api::OnHeartbeatEventRequest>>
       heartbeat_event_observation_{&services_status_provider_};
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   std::unique_ptr<chromeos::libassistant::CustomerRegistrationClient>
       customer_registration_client_;
 
   std::unique_ptr<HeartbeatEventHandlerDriver> heartbeat_driver_;
 
+  std::unique_ptr<ActionService> action_handler_driver_;
+
+  std::unique_ptr<EventHandlerDriver<
+      ::assistant::api::AssistantDisplayEventHandlerInterface>>
+      assistant_display_event_handler_driver_;
+
   std::unique_ptr<
       EventHandlerDriver<::assistant::api::DeviceStateEventHandlerInterface>>
       device_state_event_handler_driver_;
-
-  std::unique_ptr<ActionService> action_handler_driver_;
-
-  base::WeakPtrFactory<GrpcServicesInitializer> weak_factory_{this};
 };
 
 }  // namespace libassistant
