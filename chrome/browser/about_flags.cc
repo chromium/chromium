@@ -3626,7 +3626,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chromeos::features::kTerminalSSH)},
     {"crostini-use-lxd-4", flag_descriptions::kCrostiniUseLxd4Name,
      flag_descriptions::kCrostiniUseLxd4Description, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCrostiniResetLxdDb)},
+     FEATURE_VALUE_TYPE(chromeos::features::kCrostiniUseLxd4)},
     {"crostini-multi-container", flag_descriptions::kCrostiniMultiContainerName,
      flag_descriptions::kCrostiniMultiContainerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrostiniMultiContainer)},
