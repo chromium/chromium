@@ -47,8 +47,10 @@ void ReturnLaunchResult(Profile* profile,
           ->BrowserAppInstanceTracker();
   auto launch_result = crosapi::mojom::LaunchResult::New();
   if (app_instance_tracker) {
+    const apps::BrowserAppInstance* app_instance =
+        app_instance_tracker->GetAppInstance(web_contents);
     launch_result->instance_id =
-        app_instance_tracker->GetAppInstance(web_contents)->id;
+        app_instance ? app_instance->id : base::UnguessableToken::Create();
   } else {
     // TODO(crbug.com/1144877): This part of code should not be reached
     // after the instance tracker flag is turn on. Replaced with DCHECK when
