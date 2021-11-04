@@ -79,17 +79,8 @@ class PermissionPromptBubbleViewBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   PermissionPromptBubbleViewBrowserTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          {permissions::features::kPermissionChip},
-          {permissions::features::kPermissionChipGestureSensitive,
-           permissions::features::kPermissionChipRequestTypeSensitive});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {permissions::features::kPermissionChip,
-               permissions::features::kPermissionChipGestureSensitive,
-               permissions::features::kPermissionChipRequestTypeSensitive});
-    }
+    feature_list_.InitWithFeatureState(permissions::features::kPermissionChip,
+                                       GetParam());
   }
 
   PermissionPromptBubbleViewBrowserTest(
