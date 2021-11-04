@@ -243,6 +243,8 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
 
   Client* attached_client() const { return client_; }
 
+  const FrameSinkId& GetFrameSinkId() const override { return kFrameSinkId; }
+
   void AttachCaptureClient(Client* client) override {
     ASSERT_FALSE(client_);
     ASSERT_TRUE(client);

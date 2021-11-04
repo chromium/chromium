@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/in_process_launched_video_capture_device.h"
@@ -208,6 +209,12 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 
 #if defined(USE_AURA) || defined(OS_MAC)
       if (desktop_id.window_id != DesktopMediaID::kNullId) {
+        // For the other capturers, when a bug reports the type of capture it's
+        // easy enough to determine which capturer was used, but it's a little
+        // fuzzier with window capture.
+        TRACE_EVENT_INSTANT0(
+            TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+            "UsingVizFrameSinkCapturer", TRACE_EVENT_SCOPE_THREAD);
         start_capture_closure = base::BindOnce(
             &InProcessVideoCaptureDeviceLauncher::
                 DoStartVizFrameSinkWindowCaptureOnDeviceThread,
@@ -218,6 +225,8 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 #endif  // defined(USE_AURA) || defined(OS_MAC)
 
       // All cases other than tab capture or Aura desktop/window capture.
+      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+                           "UsingDesktopCapturer", TRACE_EVENT_SCOPE_THREAD);
       start_capture_closure = base::BindOnce(
           &InProcessVideoCaptureDeviceLauncher::
               DoStartDesktopCaptureOnDeviceThread,

@@ -49,6 +49,8 @@ class CapturableFrameSink {
 
   virtual ~CapturableFrameSink() = default;
 
+  virtual const FrameSinkId& GetFrameSinkId() const = 0;
+
   // Attach/Detach a video capture client to the frame sink. The client will
   // receive frame begin and draw events, and issue copy requests, when
   // appropriate.

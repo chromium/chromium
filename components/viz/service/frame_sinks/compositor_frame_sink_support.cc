@@ -906,6 +906,10 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
   }
 }
 
+const FrameSinkId& CompositorFrameSinkSupport::GetFrameSinkId() const {
+  return frame_sink_id_;
+}
+
 void CompositorFrameSinkSupport::AttachCaptureClient(
     CapturableFrameSink::Client* client) {
   DCHECK(!base::Contains(capture_clients_, client));

@@ -106,6 +106,11 @@ void FrameSinkVideoCapturerImpl::SetResolvedTarget(
     return;
   }
 
+  TRACE_EVENT_INSTANT2(
+      "gpu.capture", "SetResolvedTarget", TRACE_EVENT_SCOPE_THREAD, "current",
+      resolved_target_ ? resolved_target_->GetFrameSinkId().ToString() : "None",
+      "new", target ? target->GetFrameSinkId().ToString() : "None");
+
   if (resolved_target_) {
     resolved_target_->DetachCaptureClient(this);
   }

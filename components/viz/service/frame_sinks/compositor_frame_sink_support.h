@@ -195,6 +195,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
       mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback);
 
   // CapturableFrameSink implementation.
+  const FrameSinkId& GetFrameSinkId() const override;
   void AttachCaptureClient(CapturableFrameSink::Client* client) override;
   void DetachCaptureClient(CapturableFrameSink::Client* client) override;
   gfx::Rect GetCopyOutputRequestRegion(
