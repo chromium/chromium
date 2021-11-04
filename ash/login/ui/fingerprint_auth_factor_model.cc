@@ -140,15 +140,17 @@ void FingerprintAuthFactorModel::UpdateIcon(AuthIconView* icon) {
               state_ == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING
           ? icon_color
           : AshColorProvider::Get()->GetDisabledColor(icon_color);
+
   switch (state_) {
-    case FingerprintState::UNAVAILABLE:
-      FALLTHROUGH;
     case FingerprintState::AVAILABLE_DEFAULT:
       FALLTHROUGH;
     case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
+      icon->SetIcon(kLockScreenFingerprintIcon);
+      break;
+    case FingerprintState::UNAVAILABLE:
       FALLTHROUGH;
     case FingerprintState::DISABLED_FROM_TIMEOUT:
-      icon->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintIcon,
+      icon->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintDisabledIcon,
                                            kFingerprintIconSizeDp, color));
       break;
     case FingerprintState::DISABLED_FROM_ATTEMPTS:
