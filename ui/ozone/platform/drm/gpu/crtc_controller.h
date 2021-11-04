@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
@@ -60,6 +61,9 @@ class CrtcController {
   void MoveCursor(const gfx::Point& location);
 
  private:
+  const std::vector<uint64_t> internal_diplay_only_modifiers_ = {
+      I915_FORMAT_MOD_Y_TILED_CCS, I915_FORMAT_MOD_Yf_TILED_CCS};
+
   const scoped_refptr<DrmDevice> drm_;
 
   const uint32_t crtc_;

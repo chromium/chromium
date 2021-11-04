@@ -282,7 +282,11 @@ bool MockDrmDevice::DisableCrtc(uint32_t crtc_id) {
 }
 
 ScopedDrmConnectorPtr MockDrmDevice::GetConnector(uint32_t connector_id) {
-  return ScopedDrmConnectorPtr(DrmAllocator<drmModeConnector>());
+  ScopedDrmConnectorPtr connector =
+      ScopedDrmConnectorPtr(DrmAllocator<drmModeConnector>());
+  connector->connector_id = connector_id;
+  connector->connector_type = connector_type_;
+  return connector;
 }
 
 bool MockDrmDevice::AddFramebuffer2(uint32_t width,

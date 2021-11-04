@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -227,8 +228,17 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic) {
             {/* .id = */ pair.first, /*.value = */ value});
       }
 
+      drm_format_modifier y_css = {.formats = 1UL,
+                                   .modifier = I915_FORMAT_MOD_Y_TILED_CCS};
+      drm_format_modifier yf_css = {.formats = 1UL,
+                                    .modifier = I915_FORMAT_MOD_Yf_TILED_CCS};
+      drm_format_modifier x = {.formats = 1UL,
+                               .modifier = I915_FORMAT_MOD_X_TILED};
+      drm_format_modifier linear = {.formats = 1UL,
+                                    .modifier = DRM_FORMAT_MOD_LINEAR};
       drm_->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
-          kInFormatsBlobPropId, {DRM_FORMAT_XRGB8888}, {}));
+          kInFormatsBlobPropId, {DRM_FORMAT_XRGB8888},
+          {y_css, yf_css, x, linear}));
 
       plane_properties.emplace_back(std::move(plane));
     }
@@ -322,6 +332,53 @@ TEST_F(HardwareDisplayControllerTest, CheckModesettingResult) {
   EXPECT_TRUE(ModesetWithPlanes(modeset_planes));
   EXPECT_FALSE(ui::DrmOverlayPlane::GetPrimaryPlane(modeset_planes)
                    ->buffer->HasOneRef());
+}
+
+TEST_F(HardwareDisplayControllerTest, ModifiersWithConnectorType) {
+  ui::DrmOverlayPlane plane(CreateBuffer(), nullptr);
+
+  // With internal displays, all modifiers including compressed (css) should be
+  // there.
+  drm_->set_connector_type(DRM_MODE_CONNECTOR_eDP);
+
+  std::vector<uint64_t> internal_modifiers =
+      controller_->GetFormatModifiersForTestModeset(DRM_FORMAT_XRGB8888);
+
+  ASSERT_FALSE(internal_modifiers.empty());
+
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      I915_FORMAT_MOD_Y_TILED_CCS),
+            internal_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      I915_FORMAT_MOD_Yf_TILED_CCS),
+            internal_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      I915_FORMAT_MOD_X_TILED),
+            internal_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      DRM_FORMAT_MOD_LINEAR),
+            internal_modifiers.end());
+
+  // With external displays, *_CSS modifiers (2 of them) should not exist.
+  drm_->set_connector_type(DRM_MODE_CONNECTOR_DisplayPort);
+
+  std::vector<uint64_t> external_modifiers =
+      controller_->GetFormatModifiersForTestModeset(DRM_FORMAT_XRGB8888);
+  ASSERT_FALSE(external_modifiers.empty());
+  EXPECT_EQ(external_modifiers.size(), internal_modifiers.size() - 2);
+
+  EXPECT_EQ(std::find(external_modifiers.begin(), external_modifiers.end(),
+                      I915_FORMAT_MOD_Y_TILED_CCS),
+            external_modifiers.end());
+  EXPECT_EQ(std::find(external_modifiers.begin(), external_modifiers.end(),
+                      I915_FORMAT_MOD_Yf_TILED_CCS),
+            external_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      I915_FORMAT_MOD_X_TILED),
+            internal_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      DRM_FORMAT_MOD_LINEAR),
+            internal_modifiers.end());
 }
 
 TEST_F(HardwareDisplayControllerTest, CrtcPropsAfterModeset) {

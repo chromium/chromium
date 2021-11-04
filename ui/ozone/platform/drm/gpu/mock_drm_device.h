@@ -112,6 +112,8 @@ class MockDrmDevice : public DrmDevice {
     return it != crtc_cursor_map_.end() ? it->second : 0;
   }
 
+  void set_connector_type(uint32_t type) { connector_type_ = type; }
+
   void InitializeState(
       const std::vector<CrtcProperties>& crtc_properties,
       const std::vector<ConnectorProperties>& connector_properties,
@@ -271,6 +273,8 @@ class MockDrmDevice : public DrmDevice {
 
   uint64_t system_watermark_limitations_ = std::numeric_limits<uint64_t>::max();
   base::flat_map<uint64_t /*modifier*/, int /*overhead*/> modifiers_overhead_;
+
+  uint32_t connector_type_;
 };
 
 }  // namespace ui

@@ -79,6 +79,9 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
     const display::DisplayMode** out_current_mode,
     const display::DisplayMode** out_native_mode);
 
+display::DisplayConnectionType GetDisplayType(
+    const drmModeConnector* connector);
+
 // |info| provides the DRM information related to the display, |fd| is the
 // connection to the DRM device.
 std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
