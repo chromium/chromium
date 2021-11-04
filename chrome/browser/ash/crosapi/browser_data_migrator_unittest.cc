@@ -12,8 +12,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using user_manager::User;
@@ -96,12 +99,16 @@ class BrowserDataMigratorTest : public ::testing::Test {
             .Append(
                 kDataFile) /* .../user/Affiliation Database/Downloads/data */,
         kDataContent, kFileSize));
+
+    BrowserDataMigrator::RegisterLocalStatePrefs(pref_service_.registry());
+    crosapi::browser_util::RegisterLocalStatePrefs(pref_service_.registry());
   }
 
   void TearDown() override { EXPECT_TRUE(user_data_dir_.Delete()); }
 
   base::ScopedTempDir user_data_dir_;
   base::FilePath from_dir_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnWorker) {
@@ -119,6 +126,31 @@ TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnWorker) {
   // Lacros UDD exists.
   EXPECT_FALSE(BrowserDataMigrator::IsMigrationRequiredOnWorker(
       user_data_dir_path, user_id_hash));
+}
+
+TEST_F(BrowserDataMigratorTest, ManipulateMigrationAttemptCount) {
+  const std::string user_id_hash = "user";
+
+  EXPECT_EQ(BrowserDataMigrator::GetMigrationAttemptCountForUser(&pref_service_,
+                                                                 user_id_hash),
+            0);
+  BrowserDataMigrator::UpdateMigrationAttemptCountForUser(&pref_service_,
+                                                          user_id_hash);
+  EXPECT_EQ(BrowserDataMigrator::GetMigrationAttemptCountForUser(&pref_service_,
+                                                                 user_id_hash),
+            1);
+
+  BrowserDataMigrator::UpdateMigrationAttemptCountForUser(&pref_service_,
+                                                          user_id_hash);
+  EXPECT_EQ(BrowserDataMigrator::GetMigrationAttemptCountForUser(&pref_service_,
+                                                                 user_id_hash),
+            2);
+
+  BrowserDataMigrator::ClearMigrationAttemptCountForUser(&pref_service_,
+                                                         user_id_hash);
+  EXPECT_EQ(BrowserDataMigrator::GetMigrationAttemptCountForUser(&pref_service_,
+                                                                 user_id_hash),
+            0);
 }
 
 TEST_F(BrowserDataMigratorTest, GetTargetInfo) {

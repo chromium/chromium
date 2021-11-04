@@ -19,7 +19,8 @@
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -76,6 +77,16 @@ constexpr char kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace[] =
 // 3. Restart ash to run migration.
 // 4. Restart ash again to show the home screen.
 constexpr char kMigrationStep[] = "ash.browser_data_migrator.migration_step";
+
+// Local state pref name to keep track of the number of migration attempts a
+// user has gone through before. It is a dictionary of the form
+// `{<user_id_hash>: <count>}`.
+constexpr char kMigrationAttemptCountPref[] =
+    "ash.browser_data_migrator.migration_attempt_count";
+
+// Maximum number of migration attempts. Migration will be skipped for the user
+// after
+constexpr int kMaxMigrationAttemptCount = 3;
 
 // CancelFlag
 class CancelFlag : public base::RefCountedThreadSafe<CancelFlag> {
@@ -222,6 +233,8 @@ class BrowserDataMigrator {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
+                           ManipulateMigrationAttemptCount);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
                            IsMigrationRequiredOnWorker);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, CopyDirectory);
@@ -240,6 +253,24 @@ class BrowserDataMigrator {
   // already exists or not. Check if lacros is enabled or not beforehand.
   static bool IsMigrationRequiredOnWorker(base::FilePath user_data_dir,
                                           const std::string& user_id_hash);
+
+  // Increments the migration attempt count stored in
+  // `kMigrationAttemptCountPref` by 1 for the user identified by
+  // `user_id_hash`.
+  static void UpdateMigrationAttemptCountForUser(
+      PrefService* local_state,
+      const std::string& user_id_hash);
+
+  // Gets the number of migration attempts for the user stored in
+  // `kMigrationAttemptCountPref.
+  static int GetMigrationAttemptCountForUser(PrefService* local_state,
+                                             const std::string& user_id_hash);
+
+  // Resets the number of migration attempts for the user stored in
+  // `kMigrationAttemptCountPref.
+  static void ClearMigrationAttemptCountForUser(
+      PrefService* local_state,
+      const std::string& user_id_hash);
 
   // Handles the migration on a worker thread. Returns the end status of data
   // wipe and migration. `progress_callback` gets posted on UI thread whenever

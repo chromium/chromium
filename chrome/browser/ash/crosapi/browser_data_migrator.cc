@@ -25,6 +25,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -33,6 +34,8 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -261,8 +264,14 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
   if (!user)
     return;
   // Check if lacros is enabled. If not immediately return.
-  if (!crosapi::browser_util::IsLacrosEnabledForMigration(user))
+  if (!crosapi::browser_util::IsLacrosEnabledForMigration(user)) {
+    // If lacros is not enabled other than reaching the maximum retry count of
+    // profile migration, clear the retry count. This will allow users to reset
+    // the retry count by disabling lacros and re-enabling lacros back.
+    ClearMigrationAttemptCountForUser(g_browser_process->local_state(),
+                                      user_id_hash);
     return;
+  }
 
   //  Currently we turn on profile migration only for Googlers. To test profile
   //  migration without @google.com account, enable feature
@@ -277,6 +286,12 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
   if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
     crosapi::browser_util::SetProfileMigrationCompletedForUser(
         g_browser_process->local_state(), user_id_hash);
+    return;
+  }
+
+  int attempts = GetMigrationAttemptCountForUser(
+      g_browser_process->local_state(), user_id_hash);
+  if (attempts >= kMaxMigrationAttemptCount) {
     return;
   }
 
@@ -324,6 +339,9 @@ void BrowserDataMigrator::MaybeRestartToMigrateCallback(
 
   SetMigrationStep(g_browser_process->local_state(),
                    MigrationStep::kRestartCalled);
+
+  UpdateMigrationAttemptCountForUser(g_browser_process->local_state(),
+                                     user_id_hash);
 
   crosapi::browser_util::ClearProfileMigrationCompletedForUser(
       g_browser_process->local_state(), user_id_hash);
@@ -514,6 +532,9 @@ void BrowserDataMigrator::MigrateInternalFinishedUIThread(
   if (result.data_migration == ResultValue::kSucceeded) {
     crosapi::browser_util::SetProfileMigrationCompletedForUser(
         g_browser_process->local_state(), user_id_hash);
+
+    ClearMigrationAttemptCountForUser(g_browser_process->local_state(),
+                                      user_id_hash);
   }
   // If migration has failed or skipped, we silently relaunch ash and send them
   // to their home screen. In that case lacros will be disabled.
@@ -762,6 +783,8 @@ void BrowserDataMigrator::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kMigrationStep,
                                 static_cast<int>(MigrationStep::kCheckStep));
+  registry->RegisterDictionaryPref(kMigrationAttemptCountPref,
+                                   base::DictionaryValue());
 }
 
 // static
@@ -780,6 +803,32 @@ void BrowserDataMigrator::ClearMigrationStep(PrefService* local_state) {
 BrowserDataMigrator::MigrationStep BrowserDataMigrator::GetMigrationStep(
     PrefService* local_state) {
   return static_cast<MigrationStep>(local_state->GetInteger(kMigrationStep));
+}
+
+void BrowserDataMigrator::UpdateMigrationAttemptCountForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash) {
+  int count = GetMigrationAttemptCountForUser(local_state, user_id_hash);
+  count += 1;
+  DictionaryPrefUpdate update(local_state, kMigrationAttemptCountPref);
+  base::DictionaryValue* dict = update.Get();
+  dict->SetKey(user_id_hash, base::Value(count));
+}
+
+int BrowserDataMigrator::GetMigrationAttemptCountForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash) {
+  return local_state->GetDictionary(kMigrationAttemptCountPref)
+      ->FindIntPath(user_id_hash)
+      .value_or(0);
+}
+
+void BrowserDataMigrator::ClearMigrationAttemptCountForUser(
+    PrefService* local_state,
+    const std::string& user_id_hash) {
+  DictionaryPrefUpdate update(local_state, kMigrationAttemptCountPref);
+  base::DictionaryValue* dict = update.Get();
+  dict->RemoveKey(user_id_hash);
 }
 
 // static
