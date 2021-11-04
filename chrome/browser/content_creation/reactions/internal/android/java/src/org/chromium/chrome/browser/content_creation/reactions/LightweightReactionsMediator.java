@@ -44,8 +44,9 @@ public class LightweightReactionsMediator {
     // GIF encoding constants
     private static final String GIF_FILE_EXT = ".gif";
     private static final int GIF_FPS = 24;
-    private static final int GIF_QUALITY = 10; // Range is 1 (best) to 20 (worst/fastest).
+    private static final int GIF_QUALITY = 15; // Range is 1 (best) to 20 (worst/fastest).
     private static final int GIF_REPEAT = 0; // Infinite repeat.
+    private static final int GIF_MAX_DIMENSION_PX = 900;
 
     private final ImageFetcher mImageFetcher;
 
@@ -145,13 +146,24 @@ public class LightweightReactionsMediator {
             encoder.start(fos);
             mFramesGenerated = 0;
 
+            // For performance reasons, the scene might need to be scaled down in the final
+            // GIF. Determine the scale factor based on the largest scene dimension.
+            int largestDimension = Math.max(width, height);
+            float scaleFactor = largestDimension <= GIF_MAX_DIMENSION_PX
+                    ? 1f
+                    : (float) GIF_MAX_DIMENSION_PX / largestDimension;
+            int scaledWidth = (int) (width * scaleFactor);
+            int scaledHeight = (int) (height * scaleFactor);
+
             Callback<Void> prepareFrameCallback = new Callback<Void>() {
                 @Override
                 public void onResult(Void v) {
                     // The next frame is ready to be drawn and encoded. Use ARGB_8888 config for the
                     // bitmap, which is a standard configuration that allows transparency.
-                    Bitmap frame = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    Bitmap frame =
+                            Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888);
                     Canvas canvas = new Canvas(frame);
+                    canvas.scale(scaleFactor, scaleFactor);
                     host.drawFrame(canvas);
                     encoder.addFrame(frame);
                     ++mFramesGenerated;
