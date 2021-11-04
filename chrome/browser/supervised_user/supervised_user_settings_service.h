@@ -18,13 +18,14 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_store.h"
 #include "components/sync/model/syncable_service.h"
+#include "url/gurl.h"
 
 class PersistentPrefStore;
 
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 // This class syncs supervised user settings from a server, which are mapped to
 // preferences. The downloaded settings are persisted in a PrefStore (which is
@@ -62,6 +63,15 @@ class SupervisedUserSettingsService : public KeyedService,
   using SettingsCallbackList =
       base::RepeatingCallbackList<SettingsCallbackType>;
 
+  // Called when a new host is remotely approved for this supervised user. The
+  // first param is newly approved host, which might be a pattern containing
+  // wildcards (e.g. "*.google.*"").
+  using WebsiteApprovalCallbackType = void(const std::string& hostname);
+  using WebsiteApprovalCallback =
+      base::RepeatingCallback<WebsiteApprovalCallbackType>;
+  using WebsiteApprovalCallbackList =
+      base::RepeatingCallbackList<WebsiteApprovalCallbackType>;
+
   using ShutdownCallbackType = void();
   using ShutdownCallback = base::RepeatingCallback<ShutdownCallbackType>;
   using ShutdownCallbackList =
@@ -92,6 +102,11 @@ class SupervisedUserSettingsService : public KeyedService,
   // available, or when they change.
   base::CallbackListSubscription SubscribeForSettingsChange(
       const SettingsCallback& callback) WARN_UNUSED_RESULT;
+
+  // Subscribes to be notified when a new website is remotely approved for this
+  // user.
+  base::CallbackListSubscription SubscribeForNewWebsiteApproval(
+      const WebsiteApprovalCallback& callback) WARN_UNUSED_RESULT;
 
   // Subscribe for a notification when the keyed service is shut down. The
   // subscription can be destroyed to unsubscribe.
@@ -188,6 +203,8 @@ class SupervisedUserSettingsService : public KeyedService,
   base::Value local_settings_;
 
   SettingsCallbackList settings_callback_list_;
+
+  WebsiteApprovalCallbackList website_approval_callback_list_;
 
   ShutdownCallbackList shutdown_callback_list_;
 

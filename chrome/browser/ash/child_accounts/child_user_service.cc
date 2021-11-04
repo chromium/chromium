@@ -89,7 +89,8 @@ ChildUserService::ChildUserService(content::BrowserContext* context)
       app_time_controller_(std::make_unique<app_time::AppTimeController>(
           profile_,
           base::BindRepeating(&ChildUserService::ReportTimeLimitPolicy,
-                              base::Unretained(this)))) {
+                              base::Unretained(this)))),
+      website_approval_notifier_(profile_) {
   DCHECK(profile_);
   app_time_controller_->Init();
 

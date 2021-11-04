@@ -33,6 +33,17 @@
     Time limit removed for <ph name="APP_NAME">$1<ex>Gmail</ex></ph>
   </message>
 
+  <!-- Website Permission -->
+  <message name="IDS_WEBSITE_APPROVED_NOTIFICATION_TITLE" desc="Title of system notification for remote website approvals. This is shown to a child user when a parent has remotely approved their request to access a certain website.">
+    Website request approved
+  </message>
+  <message name="IDS_WEBSITE_APPROVED_NOTIFICATION_MESSAGE" desc="Message in system notification for remote website approvals. This is shown to a child user when a parent has remotely approved their request to access a certain website.">
+    Click here to visit <ph name="APPROVED_URL">$1<ex>www.google.com</ex></ph>
+  </message>
+  <message name="IDS_WEBSITE_APPROVED_NOTIFICATION_DISPLAY_SOURCE" desc="The string shown as the display source of website approval notifications. Family Link is the name of a Google app.">
+    Family Link
+  </message>
+
   <!-- Wallpaper Manager (Deprecated Chrome App Version) -->
   <message name="IDS_WALLPAPER_MANAGER_APP_NAME" desc="Name of the app which allows users to pick their wallpaper.">
     Wallpaper Picker

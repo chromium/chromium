@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/prefs/json_pref_store.h"
@@ -53,6 +54,36 @@ namespace {
 bool SettingShouldApplyToPrefs(const std::string& name) {
   return !base::StartsWith(name, kSupervisedUserInternalItemPrefix,
                            base::CompareCase::INSENSITIVE_ASCII);
+}
+
+bool SyncChangeIsNewWebsiteApproval(const std::string& name,
+                                    SyncChange::SyncChangeType change_type,
+                                    base::Value* old_value,
+                                    base::Value* new_value) {
+  bool is_host_permission_change =
+      base::StartsWith(name, supervised_users::kContentPackManualBehaviorHosts,
+                       base::CompareCase::INSENSITIVE_ASCII);
+  if (!is_host_permission_change)
+    return false;
+  switch (change_type) {
+    case SyncChange::ACTION_ADD:
+    case SyncChange::ACTION_UPDATE: {
+      DCHECK(new_value && new_value->is_bool());
+      // The change is a new approval if the new value is true, i.e. a new host
+      // is manually allowlisted.
+      return new_value->GetIfBool().value_or(false);
+    }
+    case SyncChange::ACTION_DELETE: {
+      DCHECK(old_value && old_value->is_bool());
+      // The change is a new approval if the old value was false, i.e. a host
+      // that was manually blocked isn't anymore.
+      return !old_value->GetIfBool().value_or(true);
+    }
+    default: {
+      NOTREACHED();
+      return false;
+    }
+  }
 }
 
 }  // namespace
@@ -97,6 +128,12 @@ SupervisedUserSettingsService::SubscribeForSettingsChange(
   }
 
   return settings_callback_list_.Add(callback);
+}
+
+base::CallbackListSubscription
+SupervisedUserSettingsService::SubscribeForNewWebsiteApproval(
+    const WebsiteApprovalCallback& callback) {
+  return website_approval_callback_list_.Add(callback);
 }
 
 base::CallbackListSubscription
@@ -325,28 +362,38 @@ SupervisedUserSettingsService::ProcessSyncChanges(
         data.GetSpecifics().managed_user_setting();
     std::string key = supervised_user_setting.name();
     base::Value* dict = GetDictionaryAndSplitKey(&key);
+    base::Value* old_value = dict->FindKey(key);
     SyncChange::SyncChangeType change_type = sync_change.change_type();
+    base::Value* new_value = nullptr;
+
     switch (change_type) {
       case SyncChange::ACTION_ADD:
       case SyncChange::ACTION_UPDATE: {
         std::unique_ptr<base::Value> value =
             JSONReader::ReadDeprecated(supervised_user_setting.value());
-        if (dict->FindKey(key)) {
+        if (old_value) {
           DLOG_IF(WARNING, change_type == SyncChange::ACTION_ADD)
               << "Value for key " << key << " already exists";
         } else {
           DLOG_IF(WARNING, change_type == SyncChange::ACTION_UPDATE)
               << "Value for key " << key << " doesn't exist yet";
         }
-        dict->SetKey(key, base::Value::FromUniquePtrValue(std::move(value)));
+        new_value = dict->SetKey(
+            key, base::Value::FromUniquePtrValue(std::move(value)));
         break;
       }
       case SyncChange::ACTION_DELETE: {
-        DLOG_IF(WARNING, !dict->FindKey(key)) << "Trying to delete nonexistent "
-                                              << "key " << key;
+        DLOG_IF(WARNING, !old_value)
+            << "Trying to delete nonexistent key " << key;
+        old_value = old_value->DeepCopy();
         dict->RemoveKey(key);
         break;
       }
+    }
+
+    if (SyncChangeIsNewWebsiteApproval(supervised_user_setting.name(),
+                                       change_type, old_value, new_value)) {
+      website_approval_callback_list_.Notify(key);
     }
   }
   store_->ReportValueChanged(kAtomicSettings,
