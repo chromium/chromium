@@ -147,6 +147,32 @@ void ParseNotDiscoverableAdvertisement(
               std::move(process_reference), std::move(callback)));
 }
 
+void ParseMessageStreamMessages(
+    const std::vector<uint8_t>& message_bytes,
+    ParseMessageStreamMessagesCallback callback,
+    ProcessStoppedCallback process_stopped_callback) {
+  std::unique_ptr<QuickPairProcessManager::ProcessReference> process_reference =
+      GetProcessReference(std::move(process_stopped_callback));
+
+  if (!process_reference) {
+    QP_LOG(WARNING) << __func__ << ": Failed to get new process reference.";
+    std::move(callback).Run({});
+    return;
+  }
+
+  auto* raw_process_reference = process_reference.get();
+
+  raw_process_reference->GetFastPairDataParser()->ParseMessageStreamMessages(
+      message_bytes,
+      base::BindOnce(
+          [](std::unique_ptr<QuickPairProcessManager::ProcessReference>,
+             ParseMessageStreamMessagesCallback callback,
+             std::vector<mojom::MessageStreamMessagePtr> result) {
+            std::move(callback).Run(std::move(result));
+          },
+          std::move(process_reference), std::move(callback)));
+}
+
 }  // namespace quick_pair_process
 
 }  // namespace quick_pair

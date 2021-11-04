@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/services/quick_pair/public/mojom/fast_pair_data_parser.mojom.h"
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -60,7 +61,34 @@ class FastPairDataParser : public mojom::FastPairDataParser {
       const std::vector<uint8_t>& service_data,
       ParseNotDiscoverableAdvertisementCallback callback) override;
 
+  // Attempts to parse MessageStreamMessage instances from |message_bytes| and
+  // stores results in array to pass to callback on success.
+  void ParseMessageStreamMessages(
+      const std::vector<uint8_t>& message_bytes,
+      ParseMessageStreamMessagesCallback callback) override;
+
  private:
+  mojom::MessageStreamMessagePtr ParseMessageStreamMessage(
+      mojom::MessageGroup message_group,
+      uint8_t message_code,
+      const base::span<uint8_t>& additional_data);
+
+  mojom::MessageStreamMessagePtr ParseBluetoothEvent(uint8_t message_code);
+
+  mojom::MessageStreamMessagePtr ParseCompanionAppEvent(uint8_t message_code);
+
+  mojom::MessageStreamMessagePtr ParseDeviceInformationEvent(
+      uint8_t message_code,
+      const base::span<uint8_t>& additional_data);
+
+  mojom::MessageStreamMessagePtr ParseDeviceActionEvent(
+      uint8_t message_code,
+      const base::span<uint8_t>& additional_data);
+
+  mojom::MessageStreamMessagePtr ParseAcknowledgementEvent(
+      uint8_t message_code,
+      const base::span<uint8_t>& additional_data);
+
   mojo::Receiver<mojom::FastPairDataParser> receiver_;
 };
 

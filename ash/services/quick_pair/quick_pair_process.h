@@ -59,6 +59,14 @@ void ParseNotDiscoverableAdvertisement(
     ParseNotDiscoverableAdvertisementCallback callback,
     ProcessStoppedCallback process_stopped_callback);
 
+using ParseMessageStreamMessagesCallback =
+    base::OnceCallback<void(std::vector<mojom::MessageStreamMessagePtr>)>;
+
+void ParseMessageStreamMessages(
+    const std::vector<uint8_t>& message_bytes,
+    ParseMessageStreamMessagesCallback callback,
+    ProcessStoppedCallback process_stopped_callback);
+
 }  // namespace quick_pair_process
 
 }  // namespace quick_pair

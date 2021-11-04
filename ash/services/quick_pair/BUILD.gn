@@ -30,6 +30,7 @@ source_set("quick_pair") {
     "//ash/services/quick_pair/public/cpp",
     "//ash/services/quick_pair/public/mojom",
     "//crypto:crypto",
+    "//device/bluetooth",
     "//mojo/public/cpp/bindings",
     "//third_party/abseil-cpp:absl",
   ]
