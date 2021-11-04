@@ -2517,7 +2517,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, NewWindowFromBrowserContext) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
 }
 
-IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
+// TODO(1266640): fix the test upstream and re-ebable.
+IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, DISABLED_InspectElement) {
   GURL url(embedded_test_server()->GetURL("a.com", "/devtools/oopif.html"));
   GURL iframe_url(
       embedded_test_server()->GetURL("b.com", "/devtools/oopif_frame.html"));
