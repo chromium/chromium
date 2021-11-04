@@ -737,7 +737,7 @@ bool PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   // The spec mandates matching the referrer policy, and not the referrer URL
   // itself, so we only compare the referrer policy here. Referrer policy is a
   // more predictable value to match than referrer URL.
-  // https://jeremyroman.github.io/alternate-loading-modes/#navigate-activation
+  // https://wicg.github.io/nav-speculation/prerendering.html#navigate-activation
   if (potential_activation.referrer->policy !=
       common_params_->referrer->policy) {
     return false;

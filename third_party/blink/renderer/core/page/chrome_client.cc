@@ -327,7 +327,7 @@ bool ChromeClient::Print(LocalFrame* frame) {
   }
 
   // print() returns quietly during prerendering.
-  // https://jeremyroman.github.io/alternate-loading-modes/#patch-modals
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-modals
   if (frame->GetDocument()->IsPrerendering()) {
     frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kJavaScript,

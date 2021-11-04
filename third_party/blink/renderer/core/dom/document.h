@@ -1910,7 +1910,7 @@ class CORE_EXPORT Document : public ContainerNode,
   Vector<base::OnceClosure> will_dispatch_prerenderingchange_callbacks_;
 
   // The callback list for post-prerendering activation step.
-  // https://jeremyroman.github.io/alternate-loading-modes/#document-post-prerendering-activation-steps-list
+  // https://wicg.github.io/nav-speculation/prerendering.html#document-post-prerendering-activation-steps-list
   Vector<base::OnceClosure> post_prerendering_activation_callbacks_;
 
   bool evaluate_media_queries_on_style_recalc_;

@@ -13,7 +13,7 @@
 namespace content {
 
 enum class PrerenderTriggerType {
-  // https://jeremyroman.github.io/alternate-loading-modes/#speculation-rules
+  // https://wicg.github.io/nav-speculation/prerendering.html#speculation-rules
   kSpeculationRule,
 };
 

@@ -203,7 +203,7 @@ void ScreenOrientationController::lock(
   if (!screen_orientation_service_.is_bound())
     return;
 
-  // https://jeremyroman.github.io/alternate-loading-modes/#patch-orientation-lock
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-orientation-lock
   // Step 7.3.10. Screen Orientation API.
   // Defer to lock with |orientation| until the prerendering page is activated
   // via appending lock operation to the post-prerendering activation steps
@@ -223,7 +223,7 @@ void ScreenOrientationController::unlock() {
   if (!screen_orientation_service_.is_bound())
     return;
 
-  // https://jeremyroman.github.io/alternate-loading-modes/#patch-orientation-lock
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-orientation-lock
   // Step 7.3.10. Screen Orientation API.
   // Defer to unlock with |orientation| until the prerendering page is activated
   // via appending unlock operation to the post-prerendering activation steps

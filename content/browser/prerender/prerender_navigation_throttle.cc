@@ -111,7 +111,7 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   }
 
   // Allow only HTTP(S) schemes.
-  // https://jeremyroman.github.io/alternate-loading-modes/#no-bad-navs
+  // https://wicg.github.io/nav-speculation/prerendering.html#no-bad-navs
   GURL prerendering_url = navigation_handle()->GetURL();
   if (!prerendering_url.SchemeIsHTTPOrHTTPS()) {
     prerender_host_registry->CancelHost(

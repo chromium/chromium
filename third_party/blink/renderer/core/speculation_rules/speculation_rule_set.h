@@ -20,7 +20,7 @@ class SpeculationRule;
 // provides rules to identify URLs and corresponding conditions for speculation,
 // grouped by the action that is suggested.
 //
-// https://jeremyroman.github.io/alternate-loading-modes/#speculation-rule-set
+// https://wicg.github.io/nav-speculation/speculation-rules.html#speculation-rule-set
 class CORE_EXPORT SpeculationRuleSet final
     : public GarbageCollected<SpeculationRuleSet> {
  public:

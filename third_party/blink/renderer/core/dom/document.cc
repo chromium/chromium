@@ -8101,7 +8101,7 @@ void Document::ActivateForPrerendering(base::TimeTicks activation_start) {
     std::move(callback).Run();
   }
 
-  // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
+  // https://wicg.github.io/nav-speculation/prerendering.html#prerendering-browsing-context-activate
   // Step 8.3.4 "Fire an event named prerenderingchange at doc."
   if (RuntimeEnabledFeatures::Prerender2RelatedFeaturesEnabled(
           GetExecutionContext())) {

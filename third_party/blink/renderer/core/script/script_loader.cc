@@ -769,7 +769,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
       }
 
       case ScriptTypeAtPrepare::kSpeculationRules: {
-        // https://jeremyroman.github.io/alternate-loading-modes/#speculation-rules-prepare-a-script-patch
+        // https://wicg.github.io/nav-speculation/speculation-rules.html
         // Let result be the result of parsing speculation rules given source
         // text and base URL.
         // Set the script’s result to result.

@@ -20,7 +20,7 @@ promise_test(async t => {
 
   // Start prerendering a page that attempts to invoke the Web Share API.
   // This API is activated-gated so it's expected to fail:
-  // https://jeremyroman.github.io/alternate-loading-modes/#activation-gated
+  // https://wicg.github.io/nav-speculation/prerendering.html#activation-gated
   startPrerendering(`resources/web-share.https.html`);
   const result = await gotMessage;
   assert_equals(result, 'NotAllowedError');

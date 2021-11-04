@@ -89,7 +89,7 @@ void CopyElementValueToOtherInputElements(
 // need to set up the mojo connection as before (i.e., we can't defer binding
 // the interface). Instead, we enqueue our messages here as post-activation
 // tasks. See post-prerendering activation steps here:
-// https://jeremyroman.github.io/alternate-loading-modes/#prerendering-bcs-subsection
+// https://wicg.github.io/nav-speculation/prerendering.html#prerendering-bcs-subsection
 class PasswordGenerationAgent::DeferringPasswordGenerationDriver
     : public mojom::PasswordGenerationDriver {
  public:

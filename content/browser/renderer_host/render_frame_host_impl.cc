@@ -3292,7 +3292,7 @@ void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
   // browser now runs any binders that were deferred during prerendering. This
   // corresponds to the following steps of the activate algorithm:
   //
-  // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
+  // https://wicg.github.io/nav-speculation/prerendering.html#prerendering-browsing-context-activate
   // Step 8.3.4. "For each steps in doc's post-prerendering activation steps
   // list:"
   // Step 8.3.4.1. "Run steps."
@@ -10533,7 +10533,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     if (navigation_request->IsPrerenderedPageActivation()) {
       // Set the NavigationStart time for
       // PerformanceNavigationTiming.activationStart.
-      // https://jeremyroman.github.io/alternate-loading-modes/#performance-navigation-timing-extension
+      // https://wicg.github.io/nav-speculation/prerendering.html#performance-navigation-timing-extension
       GetPage().SetActivationStartTime(navigation_request->NavigationStart());
     }
 
