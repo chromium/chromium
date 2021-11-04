@@ -312,8 +312,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kNightLight;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kMinorModeRestriction;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kNoteTakingForEnabledWebApps;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kNotificationExpansionAnimation;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kNotificationExperimentalShortTimeouts;
