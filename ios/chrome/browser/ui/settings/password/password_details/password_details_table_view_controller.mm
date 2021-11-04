@@ -748,15 +748,11 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     }
   }
 
-  // TODO(crbug.com/1226006): Figure out what this code is supposed to do and
-  // remove the #pragma here.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wbitwise-instead-of-logical"
-  self.shouldEnableSave = [self checkIfValidSite] &
-                          [self checkIfValidUsername] &
-                          [self checkIfValidPassword];
-#pragma GCC diagnostic pop
+  BOOL siteValid = [self checkIfValidSite];
+  BOOL usernameValid = [self checkIfValidUsername];
+  BOOL passwordValid = [self checkIfValidPassword];
 
+  self.shouldEnableSave = (siteValid && usernameValid && passwordValid);
   [self toggleNavigationBarRightButtonItem];
 
   if (self.credentialType == CredentialTypeNew) {
