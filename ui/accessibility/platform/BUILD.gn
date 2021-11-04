@@ -59,6 +59,8 @@ source_set("platform") {
     "ax_platform_node_test_helper.h",
 
     # Used by DumpAccTree testsuite and a11y tools
+    "inspect/ax_api_type.cc",
+    "inspect/ax_api_type.h",
     "inspect/ax_event_recorder.cc",
     "inspect/ax_event_recorder.h",
     "inspect/ax_inspect.cc",

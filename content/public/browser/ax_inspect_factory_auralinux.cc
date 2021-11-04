@@ -14,7 +14,7 @@ namespace content {
 // static
 std::unique_ptr<ui::AXTreeFormatter>
 AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateFormatter(kLinux);
+  return AXInspectFactory::CreateFormatter(ui::AXApiType::kLinux);
 }
 
 // static
@@ -22,16 +22,17 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(kLinux, manager, pid, selector);
+  return AXInspectFactory::CreateRecorder(ui::AXApiType::kLinux, manager, pid,
+                                          selector);
 }
 
 // static
 std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
-    AXInspectFactory::Type type) {
+    ui::AXApiType::Type type) {
   switch (type) {
-    case kBlink:
+    case ui::AXApiType::kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
-    case kLinux:
+    case ui::AXApiType::kLinux:
       return std::make_unique<AccessibilityTreeFormatterAuraLinux>();
     default:
       NOTREACHED() << "Unsupported inspect type " << type;
@@ -41,12 +42,12 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
 
 // static
 std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
-    AXInspectFactory::Type type,
+    ui::AXApiType::Type type,
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
   switch (type) {
-    case kLinux:
+    case ui::AXApiType::kLinux:
       return std::make_unique<AccessibilityEventRecorderAuraLinux>(manager, pid,
                                                                    selector);
     default:

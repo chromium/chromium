@@ -129,6 +129,7 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -3700,11 +3701,10 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
   RunTextExtractionTest(FILE_PATH_LITERAL("overlapping-annots.pdf"));
 }
 
-using AXInspectType = AXInspectFactory::Type;
-
 class PDFExtensionAccessibilityTreeDumpTest
     : public PDFExtensionTestWithoutUnseasonedOverride,
-      public ::testing::WithParamInterface<std::tuple<AXInspectType, bool>> {
+      public ::testing::WithParamInterface<
+          std::tuple<ui::AXApiType::Type, bool>> {
  public:
   PDFExtensionAccessibilityTreeDumpTest() : test_helper_(ax_inspect_type()) {}
   ~PDFExtensionAccessibilityTreeDumpTest() override = default;
@@ -3717,7 +3717,9 @@ class PDFExtensionAccessibilityTreeDumpTest
   }
 
  protected:
-  AXInspectType ax_inspect_type() const { return std::get<0>(GetParam()); }
+  ui::AXApiType::Type ax_inspect_type() const {
+    return std::get<0>(GetParam());
+  }
   bool should_enable_unseasoned() const { return std::get<1>(GetParam()); }
 
   std::vector<base::Feature> GetEnabledFeatures() const override {
@@ -3867,7 +3869,7 @@ class PDFExtensionAccessibilityTreeDumpTest
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<std::tuple<AXInspectType, bool>>& i)
+      const ::testing::TestParamInfo<std::tuple<ui::AXApiType::Type, bool>>& i)
       const {
     return (std::get<1>(i.param) ? "Unseasoned_" : "") +
            std::string(std::get<0>(i.param));
@@ -3876,8 +3878,8 @@ struct DumpAccessibilityTreeTestPassToString {
 
 // Constructs a list of accessibility tests, one for each accessibility tree
 // formatter testpasses.
-const std::vector<AXInspectFactory::Type> GetAXTestValues() {
-  std::vector<AXInspectFactory::Type> passes =
+const std::vector<ui::AXApiType::Type> GetAXTestValues() {
+  std::vector<ui::AXApiType::Type> passes =
       content::DumpAccessibilityTestHelper::TreeTestPasses();
   return passes;
 }

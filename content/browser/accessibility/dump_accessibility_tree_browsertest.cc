@@ -27,6 +27,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/escape.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 
 #if defined(OS_MAC)
 #include "base/mac/mac_util.h"
@@ -47,7 +48,7 @@ using ui::AXTreeFormatter;
 std::vector<ui::AXPropertyFilter> DumpAccessibilityTreeTest::DefaultFilters()
     const {
   std::vector<AXPropertyFilter> property_filters;
-  if (GetParam() == AXInspectFactory::kMac)
+  if (GetParam() == ui::AXApiType::kMac)
     return property_filters;
 
   property_filters.emplace_back("value='*'", AXPropertyFilter::ALLOW);
@@ -168,7 +169,7 @@ class DumpAccessibilityTreeWithoutLayoutNGTest
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityTreeTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<AXInspectFactory::Type>& i) const {
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
     return std::string(i.param);
   }
 };

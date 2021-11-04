@@ -19,6 +19,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/dump_accessibility_test_helper.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 
 namespace content {
@@ -37,7 +38,7 @@ class DumpAccessibilityTestHelper;
 // See content/test/data/accessibility/readme.md for an overview.
 class DumpAccessibilityTestBase
     : public ContentBrowserTest,
-      public ::testing::WithParamInterface<AXInspectFactory::Type> {
+      public ::testing::WithParamInterface<ui::AXApiType::Type> {
  public:
   DumpAccessibilityTestBase();
   ~DumpAccessibilityTestBase() override;

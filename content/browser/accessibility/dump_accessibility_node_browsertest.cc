@@ -11,6 +11,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/base/escape.h"
 #include "ui/accessibility/accessibility_switches.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 
 namespace content {
 
@@ -32,7 +33,7 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
 
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
-    if (GetParam() == AXInspectFactory::kMac)
+    if (GetParam() == ui::AXApiType::kMac)
       return property_filters;
 
     property_filters.emplace_back("value='*'", AXPropertyFilter::ALLOW);
@@ -106,7 +107,7 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<AXPropertyFilter> property_filters;
-    if (GetParam() == AXInspectFactory::kMac)
+    if (GetParam() == ui::AXApiType::kMac)
       return property_filters;
 
     property_filters.emplace_back("name*", AXPropertyFilter::ALLOW_EMPTY);
@@ -139,7 +140,7 @@ class DumpAccessibilityAccNameTest : public DumpAccessibilityNodeTest {
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<AXInspectFactory::Type>& i) const {
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
     return std::string(i.param);
   }
 };

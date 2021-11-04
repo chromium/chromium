@@ -10,6 +10,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 
 namespace content {
@@ -125,7 +126,7 @@ std::vector<ui::AXPropertyFilter> DumpAccessibilityScriptTest::DefaultFilters()
 // Parameterize the tests so that each test-pass is run independently.
 struct TestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<AXInspectFactory::Type>& i) const {
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
     return std::string(i.param);
   }
 };
@@ -138,7 +139,7 @@ struct TestPassToString {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DumpAccessibilityScriptTest,
-                         ::testing::Values(AXInspectFactory::kMac),
+                         ::testing::Values(ui::AXApiType::kMac),
                          TestPassToString());
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {

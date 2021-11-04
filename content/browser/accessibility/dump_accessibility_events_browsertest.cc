@@ -31,6 +31,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/base/escape.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 #if defined(OS_WIN)
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
@@ -164,7 +165,7 @@ void DumpAccessibilityEventsTest::RunEventTest(
 // Parameterize the tests so that each test-pass is run independently.
 struct DumpAccessibilityEventsTestPassToString {
   std::string operator()(
-      const ::testing::TestParamInfo<AXInspectFactory::Type>& i) const {
+      const ::testing::TestParamInfo<ui::AXApiType::Type>& i) const {
     return std::string(i.param);
   }
 };
