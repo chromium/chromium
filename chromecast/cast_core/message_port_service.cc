@@ -11,13 +11,9 @@
 namespace chromecast {
 
 MessagePortService::MessagePortService(
-    CreatePairCallback create_pair,
     grpc::CompletionQueue* grpc_cq,
     cast::v2::CoreApplicationService::Stub* core_app_stub)
-    : create_pair_(std::move(create_pair)),
-      grpc_cq_(grpc_cq),
-      core_app_stub_(core_app_stub) {
-  DCHECK(create_pair_);
+    : grpc_cq_(grpc_cq), core_app_stub_(core_app_stub) {
   DCHECK(grpc_cq_);
   DCHECK(core_app_stub_);
 }
@@ -39,12 +35,6 @@ void MessagePortService::HandleMessage(const cast::web::Message& message,
   } else {
     response->set_status(cast::web::MessagePortStatus_Status_ERROR);
   }
-}
-
-void MessagePortService::CreatePair(
-    std::unique_ptr<cast_api_bindings::MessagePort>* client,
-    std::unique_ptr<cast_api_bindings::MessagePort>* server) {
-  create_pair_.Run(client, server);
 }
 
 bool MessagePortService::ConnectToPort(

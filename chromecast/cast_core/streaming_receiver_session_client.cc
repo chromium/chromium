@@ -10,7 +10,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/shared/platform_info_serializer.h"
-#include "components/cast/message_port/cast_core/create_message_port_core.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
 #include "components/cast_streaming/public/mojom/cast_streaming_session.mojom.h"
@@ -231,7 +230,7 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
   cast_streaming::SetNetworkContextGetter(std::move(network_context_getter));
 
   std::unique_ptr<cast_api_bindings::MessagePort> server;
-  cast_api_bindings::CreateMessagePortCorePair(&message_port_, &server);
+  cast_api_bindings::CreatePlatformMessagePortPair(&message_port_, &server);
 
   DCHECK(message_port_);
   message_port_->SetReceiver(this);

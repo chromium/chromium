@@ -10,7 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/cast_core/message_port_handler.h"
-#include "components/cast/message_port/cast/message_port_cast.h"
+#include "components/cast/message_port/blink_message_port_adapter.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -19,11 +19,7 @@ namespace chromecast {
 BindingsManagerWebRuntime::BindingsManagerWebRuntime(
     grpc::CompletionQueue* grpc_cq,
     cast::v2::CoreApplicationService::Stub* core_app_stub)
-    : message_port_service_(
-          base::BindRepeating(
-              &cast_api_bindings::CreatePlatformMessagePortPair),
-          grpc_cq,
-          core_app_stub) {}
+    : message_port_service_(grpc_cq, core_app_stub) {}
 
 BindingsManagerWebRuntime::~BindingsManagerWebRuntime() = default;
 
@@ -73,7 +69,9 @@ void BindingsManagerWebRuntime::GetAll(GetAllCallback callback) {
 void BindingsManagerWebRuntime::Connect(const std::string& port_name,
                                         blink::MessagePortDescriptor port) {
   message_port_service_.ConnectToPort(
-      port_name, cast_api_bindings::MessagePortCast::Create(std::move(port)));
+      port_name,
+      cast_api_bindings::BlinkMessagePortAdapter::ToClientPlatformMessagePort(
+          blink::WebMessagePort::Create(std::move(port))));
 }
 
 }  // namespace chromecast

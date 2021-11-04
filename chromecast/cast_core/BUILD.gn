@@ -170,7 +170,7 @@ if (is_linux) {
       "//chromecast/bindings/public/mojom",
       "//components/cast/api_bindings:manager",
       "//components/cast/message_port",
-      "//components/cast/message_port:message_port_cast",
+      "//components/cast/message_port:blink_message_port_adapter",
       "//mojo/public/cpp/bindings",
       "//third_party/cast_core/public/src/proto/v2:core_application_service_proto",
       "//third_party/cast_core/public/src/proto/web:message_channel_proto",
@@ -212,7 +212,7 @@ if (is_linux) {
       ":streaming_receiver_session_client",
       ":url_rewrite",
       "//chromecast/browser:browser_base",
-      "//components/cast/message_port:message_port_core",
+      "//components/cast/message_port",
       "//components/cast_streaming/browser",
       "//components/cast_streaming/public",
       "//content/public/browser",
@@ -350,10 +350,10 @@ cast_executable("core_runtime_simple") {
 
   deps = [
     ":cast_core",
-    "//chromecast/base:default_create_sys_info",
-    "//chromecast/browser:simple_main_parts",
     "//chromecast:cast_shell_pak",
     "//chromecast:chromecast_locales_pak",
+    "//chromecast/base:default_create_sys_info",
+    "//chromecast/browser:simple_main_parts",
     "//chromecast/utility:simple_client",
     "//content/public/app",
   ]
