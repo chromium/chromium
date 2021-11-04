@@ -8,6 +8,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -45,6 +47,8 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @VisibleForTesting
     static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
+    // Used as a view holder for the current orientation of the device.
+    private FrameLayout mFragmentView;
     private ModalDialogManager mModalDialogManager;
     private @Nullable SigninFirstRunCoordinator mSigninFirstRunCoordinator;
     private boolean mNativeInitialized;
@@ -61,16 +65,29 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     }
 
     @Override
+    public void onDetach() {
+        super.onDetach();
+        mFragmentView = null;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Inflate the view required for the current configuration and set it as the fragment view.
+        mFragmentView.removeAllViews();
+        mFragmentView.addView(inflateFragmentView(
+                (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
+                newConfig));
+    }
+
+    @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.signin_first_run_view, container, false);
-        mSigninFirstRunCoordinator =
-                new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
-        notifyCoordinatorWhenNativeAndPolicyAreLoaded();
-
         mAllowCrashUpload = true;
-        setUpFooter(view.findViewById(R.id.signin_fre_footer));
-        return view;
+        mFragmentView = new FrameLayout(getActivity());
+        mFragmentView.addView(inflateFragmentView(inflater, getResources().getConfiguration()));
+
+        return mFragmentView;
     }
 
     @Override
@@ -148,6 +165,19 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
             mSigninFirstRunCoordinator.onNativeAndPolicyLoaded(
                     getPageDelegate().getPolicyLoadListener().get());
         }
+    }
+
+    private View inflateFragmentView(LayoutInflater inflater, Configuration configuration) {
+        final View view =
+                inflater.inflate(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                                ? R.layout.signin_first_run_landscape_view
+                                : R.layout.signin_first_run_portrait_view,
+                        null, false);
+        mSigninFirstRunCoordinator =
+                new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
+        notifyCoordinatorWhenNativeAndPolicyAreLoaded();
+        setUpFooter(view.findViewById(R.id.signin_fre_footer));
+        return view;
     }
 
     private void setUpFooter(TextViewWithClickableSpans footerView) {

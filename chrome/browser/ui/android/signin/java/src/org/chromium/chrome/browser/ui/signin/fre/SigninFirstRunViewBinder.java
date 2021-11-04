@@ -40,6 +40,7 @@ class SigninFirstRunViewBinder {
                     .setEnabled(!isSelectedAccountSupervised);
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED) {
+            // TODO(https://crbug.com/1248931): Add a transition animation for the spinner
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.FRE_POLICY) {
             view.findViewById(R.id.fre_browser_managed_by_organization)
