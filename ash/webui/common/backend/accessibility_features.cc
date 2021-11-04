@@ -46,7 +46,15 @@ AccessibilityFeatures::AccessibilityFeatures() {
   accessibility_controller->AddObserver(this);
 }
 
-AccessibilityFeatures::~AccessibilityFeatures() = default;
+AccessibilityFeatures::~AccessibilityFeatures() {
+  AccessibilityControllerImpl* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  if (!accessibility_controller) {
+    return;
+  }
+
+  accessibility_controller->RemoveObserver(this);
+}
 
 void AccessibilityFeatures::ObserveForceHiddenElementsVisible(
     mojo::PendingRemote<common::mojom::ForceHiddenElementsVisibleObserver>

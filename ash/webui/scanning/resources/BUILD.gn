@@ -184,6 +184,7 @@ js_library("scanning_browser_proxy") {
 
 js_library("mojo_interface_provider") {
   deps = [
+    "//ash/webui/common/mojom:mojom_js_library_for_compile",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]

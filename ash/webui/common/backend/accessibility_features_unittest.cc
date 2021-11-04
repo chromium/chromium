@@ -105,7 +105,10 @@ class AccessibilityFeaturesTest : public AshTestBase {
         accessibility_features_remote_.BindNewPipeAndPassReceiver());
   }
 
-  void TearDown() override { AshTestBase::TearDown(); }
+  void TearDown() override {
+    accessibility_features_ = nullptr;
+    AshTestBase::TearDown();
+  }
 
  protected:
   std::unique_ptr<AccessibilityFeatures> accessibility_features_;

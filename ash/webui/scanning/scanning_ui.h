@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/webui/common/mojom/accessibility_features.mojom.h"
 #include "ash/webui/scanning/mojom/scanning.mojom-forward.h"
 #include "ash/webui/scanning/scanning_handler.h"
 #include "base/callback.h"
@@ -18,6 +19,8 @@ class WebUI;
 }  // namespace content
 
 namespace ash {
+
+class AccessibilityFeatures;
 
 class ScanningAppDelegate;
 
@@ -43,8 +46,16 @@ class ScanningUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<scanning::mojom::ScanService> pending_receiver);
 
+  // Instantiates the implementor of the
+  // ash::common::mojom::AccessibilityFeatures Mojo interface by passing the
+  // pending receiver that will be internally bound.
+  void BindInterface(mojo::PendingReceiver<common::mojom::AccessibilityFeatures>
+                         pending_receiver);
+
  private:
   const BindScanServiceCallback bind_pending_receiver_callback_;
+
+  std::unique_ptr<AccessibilityFeatures> accessibility_features_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

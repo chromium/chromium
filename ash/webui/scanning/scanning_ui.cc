@@ -11,6 +11,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/grit/ash_scanning_app_resources.h"
 #include "ash/grit/ash_scanning_app_resources_map.h"
+#include "ash/webui/common/backend/accessibility_features.h"
+#include "ash/webui/common/mojom/accessibility_features.mojom.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_app_delegate.h"
 #include "ash/webui/scanning/scanning_metrics_handler.h"
@@ -174,6 +176,8 @@ ScanningUI::ScanningUI(
       "script-src chrome://resources chrome://test 'self';");
   html_source->DisableTrustedTypesCSP();
 
+  accessibility_features_ = std::make_unique<AccessibilityFeatures>();
+
   const auto resources =
       base::make_span(kAshScanningAppResources, kAshScanningAppResourcesSize);
   SetUpWebUIDataSource(html_source.get(), resources,
@@ -183,6 +187,8 @@ ScanningUI::ScanningUI(
                                IDR_SCANNING_MOJO_LITE_JS);
   html_source->AddResourcePath("file_path.mojom-lite.js",
                                IDR_SCANNING_APP_FILE_PATH_MOJO_LITE_JS);
+  html_source->AddResourcePath("accessibility_features.mojom-lite.js",
+                               IDR_ACCESSIBILITY_FEATURES_MOJO_LITE_JS);
 
   AddFeatureFlags(html_source.get());
 
@@ -203,6 +209,12 @@ ScanningUI::~ScanningUI() = default;
 void ScanningUI::BindInterface(
     mojo::PendingReceiver<scanning::mojom::ScanService> pending_receiver) {
   bind_pending_receiver_callback_.Run(std::move(pending_receiver));
+}
+
+void ScanningUI::BindInterface(
+    mojo::PendingReceiver<common::mojom::AccessibilityFeatures>
+        pending_receiver) {
+  accessibility_features_->BindInterface(std::move(pending_receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ScanningUI)

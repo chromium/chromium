@@ -86,3 +86,8 @@ export let ScanSettings;
                      ?ash.scanning.mojom.MultiPageScanControllerRemote}}
  */
 export let StartMultiPageScanResponse;
+
+/**
+ * @typedef {!ash.common.mojom.ForceHiddenElementsVisibleObserverInterface}
+ */
+export let ForceHiddenElementsVisibleObserverInterface;

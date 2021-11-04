@@ -178,6 +178,7 @@
 #include "ash/services/network_health/public/mojom/network_health.mojom.h"  // nogncheck
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
+#include "ash/webui/common/mojom/accessibility_features.mojom.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
@@ -928,6 +929,9 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<ash::scanning::mojom::ScanService,
                                          ash::ScanningUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      ash::common::mojom::AccessibilityFeatures, ash::ScanningUI>(map);
 
   // TODO(crbug.com/1218492): When boot RMA state is available disable this when
   // not in RMA.

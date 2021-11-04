@@ -6,6 +6,7 @@ import 'chrome://scanning/scan_preview.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {setAccessibilityFeaturesForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
@@ -14,10 +15,41 @@ import {flushTasks, isVisible, waitAfterNextRender} from '../../test_util.js';
 
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 
+/** @implements {ash.common.mojom.AccessibilityFeaturesInterface} */
+class FakeAccessibilityFeatures {
+  constructor() {
+    /** @private {?ash.common.mojom.ForceHiddenElementsVisibleObserverRemote} */
+    this.forceHiddenElementsVisibleObserverRemote_ = null;
+  }
+
+  /**
+   * @param {!ash.common.mojom.ForceHiddenElementsVisibleObserverRemote} remote
+   * @return {!Promise<{forceVisible: boolean}>}
+   */
+  observeForceHiddenElementsVisible(remote) {
+    return new Promise(resolve => {
+      this.forceHiddenElementsVisibleObserverRemote_ = remote;
+      resolve({forceVisible: false});
+    });
+  }
+
+  /**
+   * @param {boolean} forceVisible
+   * @return {!Promise}
+   */
+  simulateObserverChange(forceVisible) {
+    this.forceHiddenElementsVisibleObserverRemote_
+        .onForceHiddenElementsVisibleChange(forceVisible);
+    return flushTasks();
+  }
+}
+
 export function scanPreviewTest() {
   /** @type {?ScanPreviewElement} */
   let scanPreview = null;
 
+  /** @type {?FakeAccessibilityFeatures} */
+  let fakeAccessibilityFeatures_ = null;
 
   /** @type {!HTMLElement} */
   let helpOrProgress;
@@ -31,6 +63,8 @@ export function scanPreviewTest() {
   let cancelingProgress;
 
   setup(() => {
+    fakeAccessibilityFeatures_ = new FakeAccessibilityFeatures();
+    setAccessibilityFeaturesForTesting(fakeAccessibilityFeatures_);
     scanPreview = /** @type {!ScanPreviewElement} */ (
         document.createElement('scan-preview'));
     assertTrue(!!scanPreview);
@@ -349,6 +383,33 @@ export function scanPreviewTest() {
               '', scanPreview.style.getPropertyValue('--action-toolbar-top'));
           assertEquals(
               '', scanPreview.style.getPropertyValue('--action-toolbar-left'));
+        });
+  });
+
+  // Tests that the action toolbar will be forced visible when the accessibility
+  // features are enabled.
+  test('showActionToolbarWhenAccessibilityEnabled', () => {
+    scanPreview.objectUrls = ['image'];
+    scanPreview.appState = AppState.DONE;
+    return flushTasks()
+        .then(() => {
+          scanPreview.appState = AppState.MULTI_PAGE_NEXT_ACTION;
+          flush();
+          const actionToolbar =
+              /** @type {!HTMLElement} */ (scanPreview.$$('action-toolbar'));
+          assertEquals(
+              'hidden',
+              getComputedStyle(actionToolbar).getPropertyValue('visibility'));
+
+          return fakeAccessibilityFeatures_.simulateObserverChange(
+              /*forceVisible=*/ true);
+        })
+        .then(() => {
+          const actionToolbar =
+              /** @type {!HTMLElement} */ (scanPreview.$$('action-toolbar'));
+          assertEquals(
+              'visible',
+              getComputedStyle(actionToolbar).getPropertyValue('visibility'));
         });
   });
 }
