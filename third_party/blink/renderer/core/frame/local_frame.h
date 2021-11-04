@@ -121,6 +121,7 @@ class LocalWindowProxy;
 class LocalFrameClient;
 class LocalFrameMojoHandler;
 class BackgroundColorPaintImageGenerator;
+class BoxShadowPaintImageGenerator;
 class ClipPathPaintImageGenerator;
 class Node;
 class NodeTraversal;
@@ -260,6 +261,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
   SpellChecker& GetSpellChecker() const;
   FrameConsole& Console() const;
   BackgroundColorPaintImageGenerator* GetBackgroundColorPaintImageGenerator();
+  BoxShadowPaintImageGenerator* GetBoxShadowPaintImageGenerator();
   ClipPathPaintImageGenerator* GetClipPathPaintImageGenerator();
 
   // A local root is the root of a connected subtree that contains only
@@ -909,6 +911,13 @@ class CORE_EXPORT LocalFrame final : public Frame,
   // root and reused among sub frames.
   Member<BackgroundColorPaintImageGenerator>
       background_color_paint_image_generator_;
+
+  // TODO(crbug.com/1264553) : use a map from property id to
+  // NativePaintImageGenerator, then we could avoid needing to switch on the
+  // property in compositor_animations.cc
+  // Access to box shadow paint image
+  // generator. Initialized per local root and reused among sub frames.
+  Member<BoxShadowPaintImageGenerator> box_shadow_paint_image_generator_;
 
   // Access to clip-path paint image generator. Initialized per local root and
   // reused among sub frames.

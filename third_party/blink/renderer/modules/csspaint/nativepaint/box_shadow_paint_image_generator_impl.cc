@@ -30,6 +30,11 @@ scoped_refptr<Image> BoxShadowPaintImageGeneratorImpl::Paint() {
   return box_shadow_paint_definition_->Paint();
 }
 
+Animation* BoxShadowPaintImageGeneratorImpl::GetAnimationIfCompositable(
+    const Element* element) {
+  return BoxShadowPaintDefinition::GetAnimationIfCompositable(element);
+}
+
 void BoxShadowPaintImageGeneratorImpl::Shutdown() {
   box_shadow_paint_definition_->UnregisterProxyClient();
 }

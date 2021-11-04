@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/box_shadow_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -222,13 +223,14 @@ CompositorAnimations::CompositorElementNamespaceForProperty(
     case CSSPropertyID::kFilter:
       return CompositorElementIdNamespace::kEffectFilter;
     case CSSPropertyID::kBackgroundColor:
+    case CSSPropertyID::kBoxShadow:
     case CSSPropertyID::kClipPath:
     case CSSPropertyID::kVariable:
-      // TODO(crbug.com/883721): Variables and background color should not
-      // require the target element to have any composited property tree nodes -
-      // i.e. should not need to check for existence of a property tree node.
-      // For now, variable animations target the primary animation target
-      // node - the effect namespace.
+      // TODO(crbug.com/883721): Variables and these raster-inducing properties
+      // should not require the target element to have any composited property
+      // tree nodes - i.e. should not need to check for existence of a property
+      // tree node. For now, variable animations target the primary animation
+      // target node - the effect namespace.
       return CompositorElementIdNamespace::kPrimaryEffect;
     default:
       NOTREACHED();
@@ -327,41 +329,37 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
           // Backdrop-filter pixel moving filters do not change the layer bounds
           // like regular filters do, so they can still be composited.
           break;
-        case CSSPropertyID::kBackgroundColor: {
-          bool background_transfers_to_view = false;
-          Animation* compositable_animation = nullptr;
-          if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
-            // Not having a layout object is a reason for not compositing marked
-            // in CompositorAnimations::CheckCanStartElementOnCompositor.
-            if (!layout_object)
-              continue;
-            BackgroundColorPaintImageGenerator* generator =
-                target_element.GetDocument()
-                    .GetFrame()
-                    ->GetBackgroundColorPaintImageGenerator();
-            // The generator may be null in tests.
-            if (generator) {
-              compositable_animation =
-                  generator->GetAnimationIfCompositable(&target_element);
-            }
-            // When this is true, we have a background-color animation in the
-            // body element, while the view is responsible for painting the
-            // body's background. In this case, we need to let the
-            // background-color animation run on the main thread because the
-            // wbody is not painted ith BackgroundColorPaintWorklet.
-            background_transfers_to_view =
-                target_element.GetLayoutBoxModelObject() &&
-                target_element.GetLayoutBoxModelObject()
-                    ->BackgroundTransfersToView();
+        case CSSPropertyID::kBackgroundColor:
+        case CSSPropertyID::kBoxShadow: {
+          NativePaintImageGenerator* generator = nullptr;
+          // Not having a layout object is a reason for not compositing marked
+          // in CompositorAnimations::CheckCanStartElementOnCompositor.
+          if (!layout_object) {
+            continue;
           }
-          // The table rows and table cols are painted into table cells, which
-          // means their background is never painted using
-          // BackgroundColorPaintWorklet, as a result, we should not composite
-          // the background color animation on the table rows or cols.
-          if (!RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() ||
-              layout_object->IsLayoutTableCol() ||
-              layout_object->IsTableRow() || background_transfers_to_view ||
-              !compositable_animation) {
+          if (property.GetCSSProperty().PropertyID() ==
+                  CSSPropertyID::kBackgroundColor &&
+              RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled()) {
+            generator = target_element.GetDocument()
+                            .GetFrame()
+                            ->GetBackgroundColorPaintImageGenerator();
+          } else if (property.GetCSSProperty().PropertyID() ==
+                         CSSPropertyID::kBoxShadow &&
+                     RuntimeEnabledFeatures ::
+                         CompositeBoxShadowAnimationEnabled()) {
+            generator = target_element.GetDocument()
+                            .GetFrame()
+                            ->GetBoxShadowPaintImageGenerator();
+          }
+          Animation* compositable_animation = nullptr;
+
+          // The generator may be null in tests.
+          if (generator) {
+            compositable_animation =
+                generator->GetAnimationIfCompositable(&target_element);
+          }
+
+          if (!compositable_animation) {
             DefaultToUnsupportedProperty(unsupported_properties, property,
                                          &reasons);
           }

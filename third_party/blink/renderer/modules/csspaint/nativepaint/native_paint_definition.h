@@ -5,7 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_NATIVE_PAINT_DEFINITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_NATIVE_PAINT_DEFINITION_H_
 
+#include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/keyframe.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_definition.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_proxy_client.h"

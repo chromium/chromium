@@ -7,7 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
-#include "third_party/blink/renderer/modules/csspaint/nativepaint/native_paint_definition.h"
+#include "third_party/blink/renderer/modules/csspaint/nativepaint/native_css_paint_definition.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
@@ -21,7 +21,7 @@ class Node;
 
 class MODULES_EXPORT BackgroundColorPaintDefinition final
     : public GarbageCollected<BackgroundColorPaintDefinition>,
-      public NativePaintDefinition {
+      public NativeCssPaintDefinition {
  public:
   static BackgroundColorPaintDefinition* Create(LocalFrame&);
   explicit BackgroundColorPaintDefinition(LocalFrame&);
@@ -55,7 +55,6 @@ class MODULES_EXPORT BackgroundColorPaintDefinition final
                                            Vector<double>* offsets,
                                            absl::optional<double>* progress);
 
-  // Shared code that is being called in multiple places.
   static Animation* GetAnimationIfCompositable(const Element* element);
 
   void Trace(Visitor* visitor) const override;

@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_BOX_SHADOW_PAINT_IMAGE_GENERATOR_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_BOX_SHADOW_PAINT_IMAGE_GENERATOR_IMPL_H_
 
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/css/box_shadow_paint_image_generator.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 
@@ -23,6 +25,8 @@ class MODULES_EXPORT BoxShadowPaintImageGeneratorImpl final
   ~BoxShadowPaintImageGeneratorImpl() override = default;
 
   scoped_refptr<Image> Paint() final;
+
+  Animation* GetAnimationIfCompositable(const Element* element) final;
 
   void Shutdown() final;
 

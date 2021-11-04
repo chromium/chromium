@@ -162,27 +162,6 @@ void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
   offsets.push_back(value.ToDouble());
 }
 
-// TODO(crbug.com/1248605): Introduce helper functions commonly used by
-// background-color and clip-path animations.
-bool CanGetValueFromKeyframe(const PropertySpecificKeyframe* frame,
-                             const KeyframeEffectModelBase* model) {
-  if (model->IsStringKeyframeEffectModel()) {
-    DCHECK(frame->IsCSSPropertySpecificKeyframe());
-    const CSSValue* value = To<CSSPropertySpecificKeyframe>(frame)->Value();
-    if (!value)
-      return false;
-  } else {
-    DCHECK(frame->IsTransitionPropertySpecificKeyframe());
-    const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
-        To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
-    InterpolableValue* value =
-        keyframe->GetValue()->Value().interpolable_value.get();
-    if (!value)
-      return false;
-  }
-  return true;
-}
-
 }  // namespace
 
 template <>
@@ -202,40 +181,7 @@ struct DowncastTraits<ClipPathPaintWorkletInput> {
 // background-color and clip-path animations.
 Animation* ClipPathPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
-  if (!element->GetElementAnimations())
-    return nullptr;
-  Animation* compositable_animation = nullptr;
-  // We'd composite the clip-path only if it is the only clip-path
-  // animation on this element.
-  unsigned count = 0;
-  for (const auto& animation : element->GetElementAnimations()->Animations()) {
-    if (animation.key->CalculateAnimationPlayState() == Animation::kIdle ||
-        !animation.key->Affects(*element, GetCSSPropertyClipPath()))
-      continue;
-    count++;
-    compositable_animation = animation.key;
-  }
-  if (!compositable_animation || count > 1)
-    return nullptr;
-
-  // If we are here, then this element must have one clip path animation
-  // only. Fall back to the main thread if it is not composite:replace.
-  const AnimationEffect* effect = compositable_animation->effect();
-  DCHECK(effect->IsKeyframeEffect());
-  const KeyframeEffectModelBase* model =
-      static_cast<const KeyframeEffect*>(effect)->Model();
-  if (model->AffectedByUnderlyingAnimations())
-    return nullptr;
-  const PropertySpecificKeyframeVector* frames =
-      model->GetPropertySpecificKeyframes(
-          PropertyHandle(GetCSSPropertyClipPath()));
-  DCHECK_GE(frames->size(), 2u);
-  for (const auto& frame : *frames) {
-    if (!CanGetValueFromKeyframe(frame, model)) {
-      return nullptr;
-    }
-  }
-  return compositable_animation;
+  return GetAnimationForProperty(element, GetCSSPropertyClipPath());
 }
 
 // static
@@ -245,7 +191,7 @@ ClipPathPaintDefinition* ClipPathPaintDefinition::Create(
 }
 
 ClipPathPaintDefinition::ClipPathPaintDefinition(LocalFrame& local_root)
-    : NativePaintDefinition(
+    : NativeCssPaintDefinition(
           &local_root,
           PaintWorkletInput::PaintWorkletInputType::kClipPath) {}
 

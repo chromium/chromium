@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_CLIP_PATH_PAINT_DEFINITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_NATIVEPAINT_CLIP_PATH_PAINT_DEFINITION_H_
 
-#include "third_party/blink/renderer/modules/csspaint/nativepaint/native_paint_definition.h"
+#include "third_party/blink/renderer/modules/csspaint/nativepaint/native_css_paint_definition.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -18,7 +18,7 @@ class Node;
 
 class MODULES_EXPORT ClipPathPaintDefinition final
     : public GarbageCollected<ClipPathPaintDefinition>,
-      public NativePaintDefinition {
+      public NativeCssPaintDefinition {
  public:
   static ClipPathPaintDefinition* Create(LocalFrame& local_root);
 
@@ -35,7 +35,6 @@ class MODULES_EXPORT ClipPathPaintDefinition final
   scoped_refptr<Image> Paint(float zoom,
                              const FloatRect& reference_box,
                              const Node&);
-  // Shared code that is being called in multiple places.
   static Animation* GetAnimationIfCompositable(const Element* element);
   void Trace(Visitor* visitor) const override;
 };
