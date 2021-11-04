@@ -1383,3 +1383,13 @@ crbug.com/626703 external/wpt/css/CSS2/borders/border-right-width-applies-to-014
 crbug.com/1254921 svg/as-image/image-respects-deviceScaleFactor.html [ Failure ]
 
 crbug.com/674631 external/wpt/css/css-color/inline-opacity-float-child.html [ Failure ]
+
+# Off by one errors cause by SwiftShader update
+crbug.com/1266821 compositing/gestures/gesture-tapHighlight-pixel-rotated-div.html [ Failure ]
+crbug.com/1266821 media/video-zoom-controls.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/12-55.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/182.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/2-dht.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/23-55.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/55.html [ Failure ]
+crbug.com/1266821 virtual/gpu-rasterization/images/imagemap-focus-ring-zoom.html [ Failure ]

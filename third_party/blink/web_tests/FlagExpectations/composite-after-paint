@@ -55,3 +55,16 @@ crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pend
 # These tests expect fragment stitching when composited, which isn't correct rendering.
 crbug.com/1058792 fast/multicol/composited-layer-with-transform.html [ Skip ]
 crbug.com/1058792 fast/multicol/composited-with-child-layer-vertical-rl.html [ Skip ]
+
+# Off by one errors cause by SwiftShader update
+crbug.com/1266821 compositing/3d-cube.html [ Failure ]
+crbug.com/1266821 compositing/reflections/reflection-in-composited.html [ Failure ]
+crbug.com/1266821 css3/blending/background-blend-mode-overlapping-accelerated-elements.html [ Failure ]
+crbug.com/1266821 fast/frames/frame-set-scaling-rotate.html [ Failure ]
+crbug.com/1266821 fast/frames/frame-set-scaling-skew.html [ Failure ]
+crbug.com/1266821 fast/table/multiple-captions-display.xhtml [ Failure ]
+crbug.com/1266821 virtual/scalefactor200/css3/filters/backdrop-filter-browser-zoom.html [ Failure ]
+crbug.com/1266821 virtual/scalefactor200/css3/filters/backdrop-filter-clip-rect-zoom.html [ Failure ]
+crbug.com/1266821 virtual/scalefactor200/css3/filters/effect-blur-hw.html [ Failure ]
+crbug.com/1266821 virtual/scalefactor200/css3/filters/effect-reference-colorspace-hw.html [ Failure ]
+crbug.com/1266821 virtual/scalefactor200/css3/filters/effect-reference-hw.html [ Failure ]
