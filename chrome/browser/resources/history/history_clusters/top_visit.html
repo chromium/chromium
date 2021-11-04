@@ -60,12 +60,15 @@
     box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 
-  #toggle-icon {
+  #toggle-button .icon {
     --cr-icon-button-margin-start: 0;
+    --cr-icon-color: var(--icon-color);
+    --cr-icon-ripple-margin: 0;
+    --cr-icon-ripple-size: 20px;
     transition: transform 300ms;
   }
 
-  :host([expanded_]) #toggle-icon {
+  :host([expanded_]) #toggle-button .icon {
     transform: rotate(180deg);
   }
 </style>
@@ -99,6 +102,6 @@
   <div id="toggle-button" class="pill pill-icon-end" tabindex="0"
       on-click="onToggleButtonClick_" on-keydown="onToggleButtonKeyDown_">
     <span>[[getToggleButtonLabel_(expanded_)]]</span>
-    <span id="toggle-icon" class="cr-icon icon-expand-more"></span>
+    <span id="toggle-icon" class="icon cr-icon icon-expand-more"></span>
   </div>
 </div>

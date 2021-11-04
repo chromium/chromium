@@ -81,7 +81,7 @@
         -webkit-mask-position: center;
         -webkit-mask-repeat: no-repeat;
         -webkit-mask-size: var(--cr-icon-size);
-        background-color: var(--google-grey-refresh-700);
+        background-color: var(--cr-icon-color, var(--google-grey-refresh-700));
         flex-shrink: 0;
         height: var(--cr-icon-ripple-size);
         margin-inline-end: var(--cr-icon-ripple-margin);
@@ -101,7 +101,7 @@
 
       @media (prefers-color-scheme: dark) {
         .cr-icon {
-          background-color: var(--google-grey-refresh-500);
+          background-color: var(--cr-icon-color, var(--google-grey-refresh-500));
         }
       }
     </style>

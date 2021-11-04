@@ -24,22 +24,16 @@
     box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
 
-  #icon {
-    -webkit-mask-image: url(chrome://resources/images/icon_search.svg);
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: 100%;
-    background-color: var(--icon-color);
-    flex-shrink: 0;
-    height: var(--cr-icon-size);
-    width: var(--cr-icon-size);
-  }
-
-  #text {
-    margin-inline-start: 8px;
+  .icon {
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-color: var(--icon-color);
+    --cr-icon-image: url(chrome://resources/images/icon_search.svg);
+    --cr-icon-ripple-margin: 0;
+    --cr-icon-ripple-size: 20px;
   }
 </style>
 <a class="pill pill-icon-start" href$="[[searchQuery.url.url]]"
     on-click="onClick_" on-auxclick="onAuxClick_" on-keydown="onKeydown_">
-  <div id="icon"></div>
-  <div id="text" class="truncate">[[searchQuery.query]]</div>
+  <span class="icon cr-icon"></span>
+  <span class="truncate">[[searchQuery.query]]</span>
 </a>
