@@ -555,7 +555,7 @@ class PDFiumEngine : public PDFEngine,
   // within form text fields.
   void SetSelecting(bool selecting);
 
-  // Sets what type of field has focus.
+  // Sets the type of field that has focus.
   void SetFieldFocus(PDFEngine::FocusFieldType type);
 
   // Sets whether or not left mouse button is currently being held down.

@@ -1263,7 +1263,7 @@ bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
 
     if (form_type != FPDF_FORMFIELD_UNKNOWN) {
       // FORM_OnLButton*() will trigger a callback to
-      // OnFocusedAnnotationUpdated() which will call SetFieldFocus().
+      // OnFocusedAnnotationUpdated(), which will call SetFieldFocus().
       // Destroy SelectionChangeInvalidator object before SetFieldFocus()
       // changes plugin's focus to be `FocusFieldType::kText`. This way, regular
       // text selection can be cleared when a user clicks into a form text area
@@ -3803,9 +3803,8 @@ void PDFiumEngine::SetFieldFocus(PDFEngine::FocusFieldType type) {
   // observer is notified of the change in selection. When `focus_field_type_`
   // is set to `FocusFieldType::kText`, this is the Renderer. After it flips,
   // the MimeHandler is notified.
-  if (focus_field_type_ == FocusFieldType::kText) {
+  if (focus_field_type_ == FocusFieldType::kText)
     client_->SetSelectedText("");
-  }
 
   client_->FormFieldFocusChange(type);
   focus_field_type_ = type;
