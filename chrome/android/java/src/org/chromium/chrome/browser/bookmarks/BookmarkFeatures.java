@@ -44,8 +44,7 @@ public class BookmarkFeatures {
 
     private static final boolean BOOKMARK_VISUALS_ENABLED_DEFAULT = false;
     private static final boolean IMPROVED_SAVE_FLOW_AUTODISMISS_ENABLED_DEFAULT = true;
-    // This is the same as the default dismiss time for snackbars.
-    private static final int IMPROVED_SAVE_FLOW_AUTODISMISS_TIME_MS_DEFAULT = 3000;
+    private static final int IMPROVED_SAVE_FLOW_AUTODISMISS_TIME_MS_DEFAULT = 6000;
 
     static final String BOOKMARK_VISUALS_ENABLED = "bookmark_visuals_enabled";
     static final String AUTODISMISS_ENABLED_PARAM_NAME = "autodismiss_enabled";
