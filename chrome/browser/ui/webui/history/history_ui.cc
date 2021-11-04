@@ -50,6 +50,8 @@
 namespace {
 
 constexpr char kIsHistoryClustersVisibleKey[] = "isHistoryClustersVisible";
+constexpr char kIsHistoryClustersVisibleManagedByPolicyKey[] =
+    "isHistoryClustersVisibleManagedByPolicy";
 
 constexpr char kIsUserSignedInKey[] = "isUserSignedIn";
 
@@ -135,6 +137,9 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean(
       kIsHistoryClustersVisibleKey,
       profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
+  source->AddBoolean(kIsHistoryClustersVisibleManagedByPolicyKey,
+                     profile->GetPrefs()->IsManagedPreference(
+                         history_clusters::prefs::kVisible));
   source->AddBoolean(
       "isHistoryClustersDebug",
       base::FeatureList::IsEnabled(history_clusters::kUserVisibleDebug));
@@ -231,6 +236,9 @@ void HistoryUI::UpdateDataSource() {
   update->SetBoolean(
       kIsHistoryClustersVisibleKey,
       profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
+  update->SetBoolean(kIsHistoryClustersVisibleManagedByPolicyKey,
+                     profile->GetPrefs()->IsManagedPreference(
+                         history_clusters::prefs::kVisible));
 
   content::WebUIDataSource::Update(profile, chrome::kChromeUIHistoryHost,
                                    std::move(update));

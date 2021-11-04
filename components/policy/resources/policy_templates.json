@@ -2064,6 +2064,45 @@
       Setting the policy to Disabled means browser history and download history can't be deleted. Even with this policy off, the browsing and download history are not guaranteed to be retained. Users may be able to edit or delete the history database files directly, and the browser itself may expire or archive any or all history items at any time.''',
     },
     {
+      'name': 'HistoryClustersVisible',
+      'owners': ['file://components/history_clusters/OWNERS', 'mahmadi@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'History clusters will be visible at chrome://history/journeys.',
+        },
+        {
+          'value': False,
+          'caption': 'History clusters will not be visible at chrome://history/journeys.',
+        },
+        {
+          'value': None,
+          'caption': 'History clusters will be visible at chrome://history/journeys by default and users can change the visibility of history clusters.',
+        },
+      ],
+      'example_value': False,
+      'default': None,
+      'id': 926,
+      'caption': '''Show history clusters on the Chrome history page''',
+      'tags': [],
+      'desc':
+      '''This policy controls the visibility of history clusters on the Chrome history page.
+
+      If the policy is set to Enabled, history clusters will be visible at chrome://history/journeys.
+
+      If the policy is set to Disabled, history clusters will not be visible at chrome://history/journeys.
+
+      If the policy is left unset, history clusters will be visible at chrome://history/journeys by default and users can change the visibility of history clusters.
+      ''',
+    },
+    {
       'name': 'AllowDinosaurEasterEgg',
       'owners': ['file://components/policy/resources/OWNERS', 'poromov@chromium.org'],
       'type': 'main',
@@ -29689,6 +29728,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 925,
+  'highest_id_currently_used': 926,
   'highest_atomic_group_id_currently_used': 41
 }

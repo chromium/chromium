@@ -119,6 +119,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
 #endif  // defined(OS_ANDROID)
 
 #if !defined(OS_CHROMEOS)
@@ -768,6 +769,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kPromotionalTabsEnabled,
     prefs::kPromotionalTabsEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kHistoryClustersVisible,
+    history_clusters::prefs::kVisible,
     base::Value::Type::BOOLEAN },
 #endif  // defined(OS_ANDROID)
 

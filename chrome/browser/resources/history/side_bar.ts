@@ -70,6 +70,14 @@ export class HistorySideBarElement extends PolymerElement {
 
       guestSession_: Boolean,
 
+      historyClustersVisibleManagedByPolicy_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean(
+              'isHistoryClustersVisibleManagedByPolicy');
+        },
+      },
+
       /**
        * Used to display notices for profile sign-in status and managed status.
        */
@@ -84,6 +92,12 @@ export class HistorySideBarElement extends PolymerElement {
         computed: 'computeShowHistoryClusters_(' +
             'historyClustersEnabled, historyClustersVisible)',
       },
+
+      showToggleHistoryClusters_: {
+        type: Boolean,
+        computed: 'computeShowToggleHistoryClusters_(' +
+            'historyClustersEnabled, historyClustersVisibleManagedByPolicy_)',
+      },
     };
   }
 
@@ -93,6 +107,7 @@ export class HistorySideBarElement extends PolymerElement {
   selectedPage: Page;
   selectedTab: number;
   private guestSession_ = loadTimeData.getBoolean('isGuestSession');
+  private historyClustersVisibleManagedByPolicy_: boolean;
   private showFooter_: boolean;
   private showHistoryClusters_: boolean;
 
@@ -203,6 +218,11 @@ export class HistorySideBarElement extends PolymerElement {
 
   private computeShowHistoryClusters_(): boolean {
     return this.historyClustersEnabled && this.historyClustersVisible;
+  }
+
+  private computeShowToggleHistoryClusters_(): boolean {
+    return this.historyClustersEnabled &&
+        !this.historyClustersVisibleManagedByPolicy_;
   }
 }
 

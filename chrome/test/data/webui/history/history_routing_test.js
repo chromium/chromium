@@ -10,12 +10,12 @@ import {flushTasks} from 'chrome://test/test_util.js';
 import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
 
 [true, false].forEach(isHistoryClustersEnabled => {
-  suite('routing-test', function() {
+  const suitSuffix = isHistoryClustersEnabled ? 'enabled' : 'disabled';
+  suite(`routing-test-with-history-clusters-${suitSuffix}`, function() {
     let app;
     let list;
     let sidebar;
     let toolbar;
-
 
     function navigateTo(route) {
       window.history.replaceState({}, '', route);
@@ -46,6 +46,24 @@ import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
       sidebar = app.$['content-side-bar'];
       toolbar = app.$['toolbar'];
       return flushTasks();
+    });
+
+    [true, false].forEach(isHistoryClustersVisibleManagedByPolicy => {
+      const suiteSuffix =
+          isHistoryClustersVisibleManagedByPolicy ? 'managed' : 'not-managed';
+      suite(`toggle-history-clusters-sidebar-menu-item-${suiteSuffix}`, () => {
+        suiteSetup(() => {
+          loadTimeData.overrideValues({
+            isHistoryClustersVisibleManagedByPolicy,
+          });
+        });
+
+        test('menu item visiblity', () => {
+          const visible = isHistoryClustersEnabled &&
+              !isHistoryClustersVisibleManagedByPolicy;
+          assertEquals(!visible, sidebar.$['toggle-history-clusters'].hidden);
+        });
+      });
     });
 
     test('changing route changes active view', function() {
@@ -132,15 +150,14 @@ import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
     });
 
     test('toggle history clusters on/off from sidebar menu item', async () => {
+      if (!isHistoryClustersEnabled) {
+        return;
+      }
+
       const handler = BrowserProxyImpl.getInstance().handler;
 
       assertEquals('history', sidebar.$.menu.selected);
       assertEquals('chrome://history/', window.location.href);
-
-      if (!isHistoryClustersEnabled) {
-        assertTrue(sidebar.$['toggle-history-clusters'].hidden);
-        return;
-      }
 
       // Navigate to chrome://history/journeys.
       app.$$('cr-tabs').selected = 1;
