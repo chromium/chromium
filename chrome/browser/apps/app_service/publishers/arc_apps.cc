@@ -48,9 +48,11 @@
 #include "components/arc/mojom/app_permissions.mojom.h"
 #include "components/arc/mojom/compatibility_mode.mojom.h"
 #include "components/arc/mojom/file_system.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission_utils.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -1358,6 +1360,58 @@ void ArcApps::OnPreferredAppsChanged() {
     app_service->RemovePreferredAppForFilter(
         apps::mojom::AppType::kArc, app_id,
         apps_util::ConvertArcToAppServiceIntentFilter(deleted_preferred_app));
+  }
+}
+
+// This method calls App Service directly with a list of intent filters received
+// from ARC, rather than going through AppServiceProxy's
+// SetSupportedlinksPreference method. This is because recent changes to app
+// intent filters (such as after an install or update) may not have propagated
+// to AppServiceProxy's AppRegistryCache yet.
+// TODO(crbug.com/1265315): Use AppServiceProxy to set the preference once app
+// changes are synchronous within Ash.
+void ArcApps::OnArcSupportedLinksChanged(
+    const std::vector<arc::mojom::SupportedLinksPtr>& added,
+    const std::vector<arc::mojom::SupportedLinksPtr>& removed) {
+  mojo::Remote<apps::mojom::AppService>& app_service =
+      apps::AppServiceProxyFactory::GetForProfile(profile_)->AppService();
+  if (!app_service.is_bound()) {
+    return;
+  }
+
+  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
+  if (!prefs) {
+    return;
+  }
+
+  for (const auto& supported_link : added) {
+    std::string app_id =
+        prefs->GetAppIdByPackageName(supported_link->package_name);
+    if (app_id.empty() || !supported_link->filters.has_value()) {
+      continue;
+    }
+
+    std::vector<apps::mojom::IntentFilterPtr> app_service_filters;
+    for (const auto& arc_filter : supported_link->filters.value()) {
+      auto converted =
+          apps_util::ConvertArcToAppServiceIntentFilter(arc_filter);
+      if (apps_util::IsSupportedLinkForApp(app_id, converted)) {
+        app_service_filters.push_back(std::move(converted));
+      }
+    }
+
+    app_service->SetSupportedLinksPreference(apps::mojom::AppType::kArc, app_id,
+                                             std::move(app_service_filters));
+  }
+
+  for (const auto& supported_link : removed) {
+    std::string app_id =
+        prefs->GetAppIdByPackageName(supported_link->package_name);
+    if (app_id.empty()) {
+      continue;
+    }
+    app_service->RemoveSupportedLinksPreference(apps::mojom::AppType::kArc,
+                                                app_id);
   }
 }
 

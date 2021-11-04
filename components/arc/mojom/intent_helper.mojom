@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 47
+// Next MinVersion: 48
 
 module arc.mojom;
 
@@ -240,6 +240,17 @@ struct LaunchIntent {
   array<LaunchFileInfo>? files;
 };
 
+// Contains information about an app's supported links.
+struct SupportedLinks {
+  // Android package name of the app.
+  string package_name;
+  // A list of all the link intent filters handled by the app. Should only
+  // include, link intents. That is, filters must have an http/https scheme and
+  // at least one authority. This field can be omitted when deleting supported
+  // links for an app.
+  array<IntentFilter>? filters;
+};
+
 // Interface to interact with a custom tab.
 // Close the interface pointer to close the custom tab.
 // Next method ID: 1
@@ -249,8 +260,8 @@ interface CustomTabSession {
 };
 
 // Handles intents from ARC in Chrome.
-// Deprecated method ID: 4, 9, 10
-// Next method ID: 20
+// Deprecated method ID: 4, 9, 10, 16
+// Next method ID: 21
 interface IntentHelperHost {
   // Called when icons associated with the package are no longer up to date.
   [MinVersion=3] OnIconInvalidated@1(string package_name);
@@ -319,9 +330,18 @@ interface IntentHelperHost {
   // Checks if given chrome app is enabled.
   [MinVersion=33] IsChromeAppEnabled@15(ChromeApp app) => (bool is_enabled);
 
-  // Send the preferred app changes from ARC to Chrome.
-  [MinVersion=34] OnPreferredAppsChanged@16(array<IntentFilter> added,
-                                            array<IntentFilter> deleted);
+  // DEPRECATED. Use OnSupportedLinksChanged() instead.
+  // TODO(crbug.com/1265318): Remove this method.
+  [MinVersion=34] OnPreferredAppsChangedDeprecated@16(
+      array<IntentFilter> added, array<IntentFilter> deleted);
+
+  // Called when the link capturing preference for one or more apps has changed.
+  // Set the apps in |added_packages| as handling their supported link
+  // IntentFilters, and removes the apps in |removed_packages| from handling
+  // supported links.
+  [MinVersion=47] OnSupportedLinksChanged@20(
+      array<SupportedLinks> added_packages,
+      array<SupportedLinks> removed_packages);
 
   // Called when a new entry has been added to the MediaStore.Downloads
   // collection of downloaded items with the specified metadata.

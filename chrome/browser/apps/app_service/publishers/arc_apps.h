@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
+#include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
@@ -169,6 +170,9 @@ class ArcApps : public KeyedService,
   void OnIntentFiltersUpdated(
       const absl::optional<std::string>& package_name) override;
   void OnPreferredAppsChanged() override;
+  void OnArcSupportedLinksChanged(
+      const std::vector<arc::mojom::SupportedLinksPtr>& added,
+      const std::vector<arc::mojom::SupportedLinksPtr>& removed) override;
 
   // ash::ArcNotificationsHostInitializer::Observer overrides.
   void OnSetArcNotificationsInstance(

@@ -317,13 +317,20 @@ void ArcIntentHelperBridge::IsChromeAppEnabled(
   std::move(callback).Run(false);
 }
 
-void ArcIntentHelperBridge::OnPreferredAppsChanged(
+void ArcIntentHelperBridge::OnPreferredAppsChangedDeprecated(
     std::vector<IntentFilter> added,
     std::vector<IntentFilter> deleted) {
   added_preferred_apps_ = std::move(added);
   deleted_preferred_apps_ = std::move(deleted);
   for (auto& observer : observer_list_)
     observer.OnPreferredAppsChanged();
+}
+
+void ArcIntentHelperBridge::OnSupportedLinksChanged(
+    std::vector<arc::mojom::SupportedLinksPtr> added_packages,
+    std::vector<arc::mojom::SupportedLinksPtr> removed_packages) {
+  for (auto& observer : observer_list_)
+    observer.OnArcSupportedLinksChanged(added_packages, removed_packages);
 }
 
 void ArcIntentHelperBridge::OnDownloadAdded(

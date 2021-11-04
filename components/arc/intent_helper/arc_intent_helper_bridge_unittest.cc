@@ -14,8 +14,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
+#include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -207,6 +209,12 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
                 (const absl::optional<std::string>& package_name),
                 (override));
     MOCK_METHOD(void, OnPreferredAppsChanged, (), (override));
+    MOCK_METHOD(
+        void,
+        OnArcSupportedLinksChanged,
+        (const std::vector<arc::mojom::SupportedLinksPtr>& added_packages,
+         const std::vector<arc::mojom::SupportedLinksPtr>& removed_packages),
+        (override));
   };
 
   // Create and add observer.
@@ -243,7 +251,15 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
   {
     // Observer should be called when preferred apps change.
     EXPECT_CALL(observer, OnPreferredAppsChanged);
-    instance_->OnPreferredAppsChanged(/*added=*/{}, /*deleted=*/{});
+    instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*deleted=*/{});
+    testing::Mock::VerifyAndClearExpectations(&observer);
+  }
+
+  {
+    // Observer should be called when supported links change.
+    EXPECT_CALL(observer, OnArcSupportedLinksChanged);
+    instance_->OnSupportedLinksChanged(/*added_packages=*/{},
+                                       /*removed_packages=*/{});
     testing::Mock::VerifyAndClearExpectations(&observer);
   }
 
@@ -252,7 +268,9 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
   instance_->OnDownloadAdded(/*relative_path=*/"Download/foo/bar.pdf",
                              /*owner_package_name=*/"owner_package_name");
   instance_->OnIntentFiltersUpdated(/*filters=*/{});
-  instance_->OnPreferredAppsChanged(/*added=*/{}, /*removed=*/{});
+  instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*removed=*/{});
+  instance_->OnSupportedLinksChanged(/*added_packages=*/{},
+                                     /*removed_packages=*/{});
 }
 
 // Tests that ShouldChromeHandleUrl returns true by default.
