@@ -52,7 +52,7 @@ AutofillStatesComponentInstallerPolicy::
 
 bool AutofillStatesComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool AutofillStatesComponentInstallerPolicy::RequiresNetworkEncryption() const {
