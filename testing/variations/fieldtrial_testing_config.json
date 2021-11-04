@@ -4547,6 +4547,22 @@
             ]
         }
     ],
+    "IncognitoBrandConsistencyForDesktop": [
+        {
+            "platforms": [
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IncognitoBrandConsistencyForDesktop",
+                        "InheritNativeThemeFromParentWidget"
+                    ]
+                }
+            ]
+        }
+    ],
     "IncompatibleApplicationsWarning": [
         {
             "platforms": [
