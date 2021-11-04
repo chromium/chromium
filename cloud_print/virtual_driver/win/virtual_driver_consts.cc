@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// THIS IS A ZOMBIEFILE!!! RUN!!
+// This is a resurrected file. May cause some issues with modern software/hardware
 #include "cloud_print/virtual_driver/win/virtual_driver_consts.h"
 
 #include <windows.h>
