@@ -75,10 +75,14 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
             RelativeLayout.LayoutParams lp =
                     new RelativeLayout.LayoutParams(reactionSizePx, reactionSizePx);
             Resources res = mActivity.getResources();
-            int leftPx = res.getDisplayMetrics().widthPixels / 2 - reactionSizePx / 2;
-            int topPx = res.getDisplayMetrics().heightPixels / 2 - reactionSizePx / 2
+            int screenWidth = res.getDisplayMetrics().widthPixels;
+            int screenHeight = res.getDisplayMetrics().heightPixels;
+            int leftPx = screenWidth / 2 - reactionSizePx / 2;
+            int topPx = screenHeight / 2 - reactionSizePx / 2
                     - res.getDimensionPixelSize(R.dimen.toolbar_total_height);
-            lp.setMargins(leftPx, topPx, 0, 0);
+            int rightPx = screenWidth - (leftPx - reactionSizePx);
+            int bottomPx = screenHeight - (topPx - reactionSizePx);
+            lp.setMargins(leftPx, topPx, rightPx, bottomPx);
 
             addReactionLayoutToScene(reactionLayout, lp);
         });
@@ -184,7 +188,6 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                 mActivity, R.layout.reaction_layout, null);
         newReactionLayout.init(reactionLayout.getReaction(), this);
 
-        // TODO(crbug/1257738): Make sure the reaction is within bounds.
         RelativeLayout.LayoutParams oldLayoutParams =
                 (RelativeLayout.LayoutParams) reactionLayout.getLayoutParams();
         RelativeLayout.LayoutParams newLayoutParams =
@@ -192,8 +195,16 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         int offsetPx = ViewUtils.dpToPx(mActivity, REACTION_OFFSET_DP);
         newLayoutParams.leftMargin = oldLayoutParams.leftMargin + offsetPx;
         newLayoutParams.topMargin = oldLayoutParams.topMargin + offsetPx;
+        newLayoutParams.rightMargin = oldLayoutParams.rightMargin + offsetPx;
+        newLayoutParams.bottomMargin = oldLayoutParams.bottomMargin + offsetPx;
         newReactionLayout.setRotation(reactionLayout.getRotation());
 
+        if (isOutOfBoundsToTheBottomRight(newLayoutParams, reactionLayout.getRotation())) {
+            newLayoutParams.leftMargin = oldLayoutParams.leftMargin - offsetPx;
+            newLayoutParams.topMargin = oldLayoutParams.topMargin - offsetPx;
+            newLayoutParams.rightMargin = oldLayoutParams.rightMargin - offsetPx;
+            newLayoutParams.bottomMargin = oldLayoutParams.bottomMargin - offsetPx;
+        }
         addReactionLayoutToScene(newReactionLayout, newLayoutParams);
     }
 
@@ -226,5 +237,32 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         } else {
             addReactionInDefaultLocation(reaction);
         }
+    }
+
+    private boolean isOutOfBoundsToTheBottomRight(
+            RelativeLayout.LayoutParams layoutParams, float rotation) {
+        Resources res = mActivity.getResources();
+        int buttonPadding = (int) Math.ceil(res.getDimensionPixelSize(R.dimen.button_size) / 2.0);
+        int screenWidth = res.getDisplayMetrics().widthPixels - buttonPadding;
+        int screenHeight = res.getDisplayMetrics().heightPixels
+                - res.getDimensionPixelSize(R.dimen.toolbar_total_height) - buttonPadding;
+        double centerX = layoutParams.leftMargin + layoutParams.width / 2.0;
+        double centerY = layoutParams.topMargin + layoutParams.height / 2.0;
+        double sin = Math.sin(Math.toRadians(rotation)) / 2;
+        double cos = Math.cos(Math.toRadians(rotation)) / 2;
+
+        double bottomRightX = centerX + layoutParams.width * cos - layoutParams.height * sin;
+        double bottomRightY = centerY + layoutParams.width * sin + layoutParams.height * cos;
+        double bottomLeftX = centerX - layoutParams.width * cos - layoutParams.height * sin;
+        double bottomLeftY = centerY - layoutParams.width * sin + layoutParams.height * cos;
+        double topRightX = centerX + layoutParams.width * cos + layoutParams.height * sin;
+        double topRightY = centerY + layoutParams.width * sin - layoutParams.height * cos;
+        double topLeftX = centerX - layoutParams.width * cos + layoutParams.height * sin;
+        double topLeftY = centerY - layoutParams.width * sin - layoutParams.height * cos;
+
+        return screenWidth < bottomRightX || screenHeight < bottomRightY
+                || screenWidth < bottomLeftX || screenHeight < bottomLeftY
+                || screenWidth < topRightX || screenHeight < topRightY || screenWidth < topLeftX
+                || screenHeight < topLeftY;
     }
 }
