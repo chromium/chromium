@@ -39,10 +39,6 @@
 #include "ui/aura/native_window_occlusion_tracker_win.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/base/x/x11_util.h"  // nogncheck
-#endif
-
 #if defined(USE_OZONE)
 #include "ui/events/ozone/events_ozone.h"
 #endif

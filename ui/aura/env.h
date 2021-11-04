@@ -24,7 +24,7 @@ class EventObserver;
 class GestureRecognizer;
 class PlatformEventSource;
 
-#if defined(OS_WIN) || defined(USE_X11)
+#if defined(OS_WIN)
 class CursorFactory;
 #endif
 }  // namespace ui
@@ -184,7 +184,7 @@ class AURA_EXPORT Env : public ui::EventTarget,
 
   std::unique_ptr<ui::GestureRecognizer> gesture_recognizer_;
 
-#if defined(OS_WIN) || defined(USE_X11)
+#if defined(OS_WIN)
   std::unique_ptr<ui::CursorFactory> cursor_factory_;
 #endif
 

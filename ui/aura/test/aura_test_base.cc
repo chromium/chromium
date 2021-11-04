@@ -10,7 +10,6 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/init/input_method_initializer.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_sink.h"

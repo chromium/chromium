@@ -151,14 +151,6 @@ component("aura") {
     ]
   }
 
-  if (use_x11) {
-    public_deps += [ "//ui/base/x" ]
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/platform_window/x11",
-    ]
-  }
-
   if (is_win) {
     sources -= [ "input_state_lookup.cc" ]
 
@@ -255,23 +247,6 @@ static_library("test_support") {
     sources += [ "test/ui_controls_factory_aurawin.cc" ]
   }
 
-  if (is_linux || is_chromeos) {
-    sources += [ "test/ui_controls_factory_aura_linux.cc" ]
-  }
-
-  if (use_x11) {
-    sources += [
-      "test/ui_controls_aurax11.cc",
-      "test/ui_controls_aurax11.h",
-      "test/x11_event_sender.h",
-    ]
-
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
-  }
-
   if (use_ozone) {
     if (is_fuchsia) {
       deps += [ "//ui/ozone" ]
@@ -314,10 +289,6 @@ executable("aura_demo") {
     "//ui/gl",
     "//ui/gl/init",
   ]
-
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
 }
 
 test("aura_unittests") {

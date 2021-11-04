@@ -29,17 +29,12 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if defined(OS_WIN)
 #include "ui/platform_window/win/win_window.h"
-#endif
-
-#if defined(USE_X11)
-#include "ui/platform_window/x11/x11_window.h"  // nogncheck
 #endif
 
 namespace aura {
@@ -74,24 +69,9 @@ void WindowTreeHostPlatform::CreateAndSetPlatformWindow(
   // through OnBoundsChanged, which may lead to unneeded re-layouts, etc.
   bounds_in_pixels_ = properties.bounds;
 
-#if defined(USE_OZONE) || defined(USE_X11)
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    platform_window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
-        this, std::move(properties));
-    return;
-  }
-#endif
-#if defined(USE_X11)
-  auto platform_window = std::make_unique<ui::X11Window>(this);
-  auto* x11_window = platform_window.get();
-  // platform_window() may be called during Initialize(), so call
-  // SetPlatformWindow() now.
-  SetPlatformWindow(std::move(platform_window));
-  x11_window->Initialize(std::move(properties));
-  return;
-#endif
-  NOTREACHED();
+  platform_window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
+      this, std::move(properties));
 #elif defined(OS_WIN)
   platform_window_ = std::make_unique<ui::WinWindow>(this, properties.bounds);
 #else
@@ -178,12 +158,11 @@ bool WindowTreeHostPlatform::IsKeyLocked(ui::DomCode dom_code) {
 base::flat_map<std::string, std::string>
 WindowTreeHostPlatform::GetKeyboardLayoutMap() {
 #if defined(USE_OZONE)
-  // USE_X11 supports keyboard layout map through LinuxUI.
-  if (features::IsUsingOzonePlatform())
-    return ui::GenerateDomKeyboardLayoutMap();
-#endif
+  return ui::GenerateDomKeyboardLayoutMap();
+#else
   NOTIMPLEMENTED();
   return {};
+#endif
 }
 
 void WindowTreeHostPlatform::SetCursorNative(gfx::NativeCursor cursor) {
