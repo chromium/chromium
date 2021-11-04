@@ -88,6 +88,7 @@ component("x") {
     "//ui/events/platform/x11",
     "//ui/events/x:x",
     "//ui/gfx",
+    "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry",
     "//ui/gfx/x",
     "//ui/platform_window/common",

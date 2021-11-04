@@ -23,8 +23,8 @@
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/switches.h"
 #include "ui/gfx/x/extension_manager.h"
-#include "ui/gfx/x/x11_switches.h"
 
 namespace ui {
 

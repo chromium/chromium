@@ -98,8 +98,8 @@
 #include "ui/ozone/public/ozone_switches.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/gfx/x/x11_switches.h"  // nogncheck
+#if defined(OS_LINUX)
+#include "ui/gfx/switches.h"
 #endif
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
@@ -295,7 +295,7 @@ static const char* const kSwitchNames[] = {
     switches::kOzoneDumpFile,
     switches::kDisableBufferBWCompression,
 #endif
-#if defined(USE_X11)
+#if defined(OS_LINUX)
     switches::kX11Display,
     switches::kNoXshm,
 #endif

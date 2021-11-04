@@ -163,8 +163,6 @@ source_set("xproto") {
     "ref_counted_fd.h",
     "scoped_ignore_errors.cc",
     "scoped_ignore_errors.h",
-    "x11_switches.cc",
-    "x11_switches.h",
     "xlib_support.cc",
     "xlib_support.h",
     "xproto_internal.cc",
@@ -180,6 +178,7 @@ source_set("xproto") {
     "//base",
     "//base:i18n",
     "//ui/events/platform",
+    "//ui/gfx:gfx_switches",
   ]
   public_deps = [
     ":build_xprotos",
