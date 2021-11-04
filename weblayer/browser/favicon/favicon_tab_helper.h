@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -39,8 +38,8 @@ class FaviconTabHelper : public content::WebContentsUserData<FaviconTabHelper>,
     ObserverSubscription(FaviconTabHelper* helper,
                          FaviconFetcherDelegate* delegate);
 
-    raw_ptr<FaviconTabHelper> helper_;
-    raw_ptr<FaviconFetcherDelegate> delegate_;
+    FaviconTabHelper* helper_;
+    FaviconFetcherDelegate* delegate_;
   };
 
   FaviconTabHelper(const FaviconTabHelper&) = delete;
@@ -74,7 +73,7 @@ class FaviconTabHelper : public content::WebContentsUserData<FaviconTabHelper>,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   // Number of observers attached.
   int observer_count_ = 0;
   base::ObserverList<FaviconFetcherDelegate> delegates_;

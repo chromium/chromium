@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -65,17 +64,17 @@ class ExtensionsMenuItemView : public views::View {
   // background.
   SkColor GetAdjustedIconColor(SkColor icon_color) const;
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 
-  const raw_ptr<ExtensionsMenuButton> primary_action_button_;
+  ExtensionsMenuButton* const primary_action_button_;
 
   std::unique_ptr<ToolbarActionViewController> controller_;
 
-  raw_ptr<HoverButton> context_menu_button_ = nullptr;
+  HoverButton* context_menu_button_ = nullptr;
 
-  const raw_ptr<ToolbarActionsModel> model_;
+  ToolbarActionsModel* const model_;
 
-  raw_ptr<HoverButton> pin_button_ = nullptr;
+  HoverButton* pin_button_ = nullptr;
 
   // This controller is responsible for showing the context menu for an
   // extension.

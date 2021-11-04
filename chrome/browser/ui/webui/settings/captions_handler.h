@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CAPTIONS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CAPTIONS_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
@@ -41,7 +40,7 @@ class CaptionsHandler : public SettingsPageUIHandler,
   void OnSodaLanguagePackProgress(int language_progress,
                                   speech::LanguageCode language_code) override;
 
-  raw_ptr<PrefService> prefs_;
+  PrefService* prefs_;
   bool soda_available_ = true;
 };
 

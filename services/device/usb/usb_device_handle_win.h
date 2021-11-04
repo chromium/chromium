@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -112,7 +111,7 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
     // interfaces. In that case the Windows API still considers the device to
     // have a single function which is represented here by initializing
     // |interface_number| and |first_interface| to create a fake interface 0.
-    raw_ptr<const mojom::UsbInterfaceInfo> info = nullptr;
+    const mojom::UsbInterfaceInfo* info = nullptr;
 
     // These fields are copied from |info| and initialized to 0 in case it is
     // nullptr.
@@ -140,7 +139,7 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
   };
 
   struct Endpoint {
-    raw_ptr<const mojom::UsbInterfaceInfo> interface;
+    const mojom::UsbInterfaceInfo* interface;
     mojom::UsbTransferType type;
   };
 

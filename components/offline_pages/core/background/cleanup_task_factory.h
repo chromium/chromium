@@ -9,7 +9,6 @@
 
 #include <set>
 
-#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/core/background/cleanup_task.h"
 
 namespace offline_pages {
@@ -31,11 +30,11 @@ class CleanupTaskFactory {
 
  private:
   // Unowned pointer to the Policy
-  raw_ptr<OfflinerPolicy> policy_;
+  OfflinerPolicy* policy_;
   // Unowned pointer to the notifier
-  raw_ptr<RequestNotifier> notifier_;
+  RequestNotifier* notifier_;
   // Unowned pointer to the EventLogger
-  raw_ptr<RequestCoordinatorEventLogger> event_logger_;
+  RequestCoordinatorEventLogger* event_logger_;
 };
 
 }  // namespace offline_pages

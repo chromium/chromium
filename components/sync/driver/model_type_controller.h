@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
@@ -84,7 +83,7 @@ class ModelTypeController : public DataTypeController {
   State state_ = NOT_RUNNING;
 
   // Owned by |delegate_map_|. Null while NOT_RUNNING.
-  raw_ptr<ModelTypeControllerDelegate> delegate_ = nullptr;
+  ModelTypeControllerDelegate* delegate_ = nullptr;
 
   // Callback for use when starting the datatype (usually MODEL_STARTING, but
   // STOPPING if abort requested while starting).

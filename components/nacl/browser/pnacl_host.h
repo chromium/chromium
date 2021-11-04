@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -131,7 +130,7 @@ class PnaclHost {
     PendingTranslation(const PendingTranslation& other);
     ~PendingTranslation();
     base::ProcessHandle process_handle;
-    raw_ptr<base::File> nexe_fd;
+    base::File* nexe_fd;
     bool got_nexe_fd;
     bool got_cache_reply;
     bool got_cache_hit;

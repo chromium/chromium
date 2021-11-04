@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
@@ -44,7 +43,7 @@ class UrgentPageDiscardingPolicyTest
   }
 
  private:
-  raw_ptr<UrgentPageDiscardingPolicy> policy_;
+  UrgentPageDiscardingPolicy* policy_;
 };
 
 TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {

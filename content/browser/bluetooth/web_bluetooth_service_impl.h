@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
@@ -483,7 +482,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       characteristic_id_to_deferred_start_;
 
   // The RFH that owns this instance.
-  raw_ptr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* render_frame_host_;
 
   // Keeps track of our BLE scanning session.
   std::unique_ptr<device::BluetoothDiscoverySession>

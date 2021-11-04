@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/web_test/browser/web_test_background_fetch_delegate.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <utility>
@@ -59,7 +58,7 @@ class TestBlobContextGetterFactory : public download::BlobContextGetterFactory {
     std::move(callback).Run(blob_context_getter);
   }
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 };
 
 // Implementation of a Download Service client that will be servicing

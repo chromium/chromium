@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
 
 namespace vr {
@@ -55,9 +54,9 @@ class VectorElementBinding : public BindingBase {
   }
 
  private:
-  raw_ptr<std::vector<M>> models_ = nullptr;
+  std::vector<M>* models_ = nullptr;
   size_t index_ = 0;
-  raw_ptr<V> view_;
+  V* view_;
   std::vector<std::unique_ptr<BindingBase>> bindings_;
 };
 

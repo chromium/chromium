@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
 #include "net/http/http_request_info.h"
@@ -110,7 +109,7 @@ class NET_EXPORT Http2PushPromiseIndex {
   // An unclaimed pushed stream entry.
   struct NET_EXPORT UnclaimedPushedStream {
     GURL url;
-    raw_ptr<Delegate> delegate;
+    Delegate* delegate;
     spdy::SpdyStreamId stream_id;
   };
 

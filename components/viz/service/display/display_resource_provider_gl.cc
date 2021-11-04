@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -43,7 +42,7 @@ class ScopedSetActiveTexture {
   }
 
  private:
-  raw_ptr<GLES2Interface> gl_;
+  GLES2Interface* gl_;
   GLenum unit_;
 };
 

@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/prefs/default_pref_store.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
+#include "components/prefs/default_pref_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Value;
@@ -29,7 +28,7 @@ class MockPrefStoreObserver : public PrefStore::Observer {
   void OnInitializationCompleted(bool succeeded) override {}
 
  private:
-  raw_ptr<DefaultPrefStore> pref_store_;
+  DefaultPrefStore* pref_store_;
 
   int change_count_;
 };

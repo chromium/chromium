@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 class Log;
@@ -35,7 +34,7 @@ class ConsoleLogger : public DevToolsEventListener {
                  const base::DictionaryValue& params) override;
 
  private:
-  raw_ptr<Log> log_;  // The log where to create entries.
+  Log* log_;  // The log where to create entries.
 
   Status OnLogEntryAdded(const base::DictionaryValue& params);
   Status OnRuntimeConsoleApiCalled(const base::DictionaryValue& params);

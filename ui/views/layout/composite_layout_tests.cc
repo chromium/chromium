@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_container.h"
@@ -368,8 +367,8 @@ class SimulatedToolbar : public View {
   // views::View:
   const char* GetClassName() const override { return "SimulatedToolbar"; }
 
-  raw_ptr<SimulatedExtensionsContainer> extensions_;
-  raw_ptr<SimulatedAvatarButton> avatar_;
+  SimulatedExtensionsContainer* extensions_;
+  SimulatedAvatarButton* avatar_;
 };
 
 }  // anonymous namespace

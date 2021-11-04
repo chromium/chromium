@@ -12,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -163,8 +162,8 @@ class TesterForType {
   }
 
  private:
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
-  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  sync_preferences::TestingPrefServiceSyncable* prefs_;
+  HostContentSettingsMap* host_content_settings_map_;
   ContentSettingsType content_type_;
   const char* policy_default_setting_;
 };

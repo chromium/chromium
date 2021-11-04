@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -110,7 +109,7 @@ class TestFeedbackUploaderDelegate
   void OnStartDispatchingReport() override { quit_on_dispatch_->Quit(); }
 
  private:
-  raw_ptr<base::RunLoop> quit_on_dispatch_;
+  base::RunLoop* quit_on_dispatch_;
 };
 
 // TODO(crbug.com/1241504): disable tests.

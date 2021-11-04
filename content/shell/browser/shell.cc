@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -76,7 +75,7 @@ class Shell::DevToolsWebContentsObserver : public WebContentsObserver {
   }
 
  private:
-  raw_ptr<Shell> shell_;
+  Shell* shell_;
 };
 
 Shell::Shell(std::unique_ptr<WebContents> web_contents,

@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -760,8 +759,8 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
   // The set of isolated filesystems the child process is permitted to access.
   FileSystemMap filesystem_permissions_;
 
-  raw_ptr<BrowserContext> browser_context_;
-  raw_ptr<ResourceContext> resource_context_;
+  BrowserContext* browser_context_;
+  ResourceContext* resource_context_;
 };
 
 // IsolatedOriginEntry implementation.

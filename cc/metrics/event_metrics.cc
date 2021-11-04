@@ -251,10 +251,9 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateFromExisting(
     absl::optional<GestureParams> gesture_params,
     DispatchStage last_dispatch_stage,
     const EventMetrics* existing) {
-  std::unique_ptr<EventMetrics> metrics =
-      CreateInternal(type, gesture_params, base::TimeTicks(),
-                     existing ? existing->tick_clock_.get()
-                              : base::DefaultTickClock::GetInstance());
+  std::unique_ptr<EventMetrics> metrics = CreateInternal(
+      type, gesture_params, base::TimeTicks(),
+      existing ? existing->tick_clock_ : base::DefaultTickClock::GetInstance());
   if (!metrics)
     return nullptr;
 

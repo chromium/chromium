@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -245,14 +244,14 @@ class ModelTypeWorker : public UpdateHandler,
 
   const ModelType type_;
 
-  const raw_ptr<Cryptographer> cryptographer_;
+  Cryptographer* const cryptographer_;
 
   // Interface used to access and send nudges to the sync scheduler. Not owned.
-  const raw_ptr<NudgeHandler> nudge_handler_;
+  NudgeHandler* const nudge_handler_;
 
   // Cancellation signal is used to cancel blocking operation on engine
   // shutdown.
-  const raw_ptr<CancelationSignal> cancelation_signal_;
+  CancelationSignal* const cancelation_signal_;
 
   // Pointer to the ModelTypeProcessor associated with this worker. Initialized
   // with ConnectSync().
@@ -347,7 +346,7 @@ class GetLocalChangesRequest
   friend class base::RefCountedThreadSafe<GetLocalChangesRequest>;
   ~GetLocalChangesRequest() override;
 
-  raw_ptr<CancelationSignal> cancelation_signal_;
+  CancelationSignal* cancelation_signal_;
   base::WaitableEvent response_accepted_;
   CommitRequestDataList response_;
 };

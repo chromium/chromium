@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -112,7 +111,7 @@ class TrustSafetySentimentServiceTest : public testing::Test {
   TestingProfile profile_;
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
-  raw_ptr<MockHatsService> mock_hats_service_;
+  MockHatsService* mock_hats_service_;
 };
 
 TEST_F(TrustSafetySentimentServiceTest, Eligibility_NtpOpens) {

@@ -4,7 +4,6 @@
 
 #include "services/audio/device_listener_output_stream.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/audio/fake_audio_log_factory.h"
@@ -62,7 +61,7 @@ class MockAudioOutputStream : public AudioOutputStream {
   }
 
  private:
-  raw_ptr<AudioOutputStream::AudioSourceCallback> provided_callback_ = nullptr;
+  AudioOutputStream::AudioSourceCallback* provided_callback_ = nullptr;
 };
 
 class FakeAudioManagerForDeviceChange : public media::FakeAudioManager {

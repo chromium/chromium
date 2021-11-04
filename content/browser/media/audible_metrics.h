@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "content/common/content_export.h"
 
@@ -61,7 +60,7 @@ class CONTENT_EXPORT AudibleMetrics {
 
   base::TimeTicks concurrent_web_contents_start_time_;
   size_t max_concurrent_audible_web_contents_in_session_;
-  raw_ptr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 
   // This stores the audible web contents in insertion order. We add a
   // web contents to the list when it becomes audible and remove it is

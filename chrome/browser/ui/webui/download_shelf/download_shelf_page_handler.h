@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_DOWNLOAD_SHELF_DOWNLOAD_SHELF_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_DOWNLOAD_SHELF_DOWNLOAD_SHELF_PAGE_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_handler.h"
@@ -54,7 +53,7 @@ class DownloadShelfPageHandler : public download_shelf::mojom::PageHandler,
   mojo::Receiver<download_shelf::mojom::PageHandler> receiver_;
   mojo::Remote<download_shelf::mojom::Page> page_;
 
-  const raw_ptr<DownloadShelfUI> download_shelf_ui_;
+  DownloadShelfUI* const download_shelf_ui_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOWNLOAD_SHELF_DOWNLOAD_SHELF_PAGE_HANDLER_H_

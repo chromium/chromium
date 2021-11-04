@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
@@ -916,19 +915,19 @@ class ExtensionPrefs : public KeyedService {
   // Clears the bit indicating that an external extension was uninstalled.
   void ClearExternalUninstallBit(const ExtensionId& extension_id);
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   // The pref service specific to this set of extension prefs. Owned by the
   // BrowserContext.
-  raw_ptr<PrefService> prefs_;
+  PrefService* prefs_;
 
   // Base extensions install directory.
   base::FilePath install_directory_;
 
   // Weak pointer, owned by BrowserContext.
-  raw_ptr<ExtensionPrefValueMap> extension_pref_value_map_;
+  ExtensionPrefValueMap* extension_pref_value_map_;
 
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   bool extensions_disabled_;
 

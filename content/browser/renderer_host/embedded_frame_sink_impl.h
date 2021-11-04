@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_bundle_id.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -81,7 +80,7 @@ class CONTENT_EXPORT EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
       mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client,
       mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver);
 
-  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
+  viz::HostFrameSinkManager* const host_frame_sink_manager_;
 
   mojo::Remote<blink::mojom::EmbeddedFrameSinkClient> client_;
 

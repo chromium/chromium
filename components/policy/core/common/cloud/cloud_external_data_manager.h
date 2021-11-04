@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/external_data_manager.h"
@@ -82,7 +81,7 @@ class POLICY_EXPORT CloudExternalDataManager : public ExternalDataManager {
   virtual void Disconnect() = 0;
 
  protected:
-  raw_ptr<CloudPolicyStore> policy_store_;  // Not owned.
+  CloudPolicyStore* policy_store_;  // Not owned.
 
   base::WeakPtrFactory<CloudExternalDataManager> weak_factory_{this};
 };

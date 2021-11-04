@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
@@ -145,7 +144,7 @@ class ReadingListStore : public ReadingListModelStorage {
     ~ScopedBatchUpdate() override;
 
    private:
-    raw_ptr<ReadingListStore> store_;
+    ReadingListStore* store_;
   };
 
  private:
@@ -163,14 +162,14 @@ class ReadingListStore : public ReadingListModelStorage {
                        const ReadingListEntry& entry);
 
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  raw_ptr<ReadingListModel> model_;
-  raw_ptr<ReadingListStoreDelegate> delegate_;
+  ReadingListModel* model_;
+  ReadingListStoreDelegate* delegate_;
   syncer::OnceModelTypeStoreFactory create_store_callback_;
 
   int pending_transaction_count_;
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch_;
 
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

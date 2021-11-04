@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
@@ -152,7 +151,7 @@ class SystemWebAppDelegate {
   SystemAppType type_;
   std::string internal_name_;
   GURL install_url_;
-  raw_ptr<const Profile> profile_;
+  const Profile* profile_;
   OriginTrialsMap origin_trials_map_;
 };
 

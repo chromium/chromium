@@ -15,7 +15,6 @@
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
@@ -148,8 +147,8 @@ class URLLoaderPostInterceptor {
 
   base::queue<PendingExpectation> pending_expectations_;
 
-  raw_ptr<network::TestURLLoaderFactory> url_loader_factory_ = nullptr;
-  raw_ptr<net::test_server::EmbeddedTestServer> embedded_test_server_ = nullptr;
+  network::TestURLLoaderFactory* url_loader_factory_ = nullptr;
+  net::test_server::EmbeddedTestServer* embedded_test_server_ = nullptr;
 
   bool is_paused_ = false;
 

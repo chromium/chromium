@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
 
 #include "base/base_export.h"
@@ -46,7 +45,7 @@ class BASE_EXPORT ChromeUnwinderAndroid : public Unwinder {
   static bool StepUsingLrRegister(RegisterContext* thread_context,
                                   uintptr_t stack_top);
 
-  raw_ptr<const ArmCFITable> cfi_table_;
+  const ArmCFITable* cfi_table_;
   const uintptr_t chrome_module_base_address_;
 };
 

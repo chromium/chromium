@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -185,8 +184,8 @@ class TestFileSystemAccessDirectoryEntriesListener
   }
 
  private:
-  raw_ptr<std::vector<blink::mojom::FileSystemAccessEntryPtr>> entries_;
-  raw_ptr<blink::mojom::FileSystemAccessErrorPtr> final_result_;
+  std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries_;
+  blink::mojom::FileSystemAccessErrorPtr* final_result_;
   base::OnceClosure done_;
 };
 }  // namespace

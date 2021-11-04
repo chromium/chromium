@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
 #define COMPONENTS_SEARCH_SEARCH_PROVIDER_OBSERVER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
@@ -29,7 +28,7 @@ class SearchProviderObserver : public TemplateURLServiceObserver {
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       service_observation_{this};
   // May be nullptr in tests.
-  raw_ptr<TemplateURLService> service_;
+  TemplateURLService* service_;
   bool is_google_;
   base::RepeatingClosure callback_;
 };

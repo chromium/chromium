@@ -10,7 +10,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/resources/ui_resource_client.h"
@@ -141,10 +140,10 @@ class CompositorView : public content::CompositorClient,
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
   std::unique_ptr<content::Compositor> compositor_;
-  raw_ptr<TabContentManager> tab_content_manager_;
+  TabContentManager* tab_content_manager_;
 
   scoped_refptr<cc::SolidColorLayer> root_layer_;
-  raw_ptr<SceneLayer> scene_layer_;
+  SceneLayer* scene_layer_;
   scoped_refptr<cc::Layer> scene_layer_layer_;
 
   int current_surface_format_;

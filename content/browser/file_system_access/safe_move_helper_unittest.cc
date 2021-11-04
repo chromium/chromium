@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -188,9 +187,9 @@ class SafeMoveHelperTest : public testing::Test {
 
   base::ScopedTempDir dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  raw_ptr<TestFileSystemBackend> test_file_system_backend_;
+  TestFileSystemBackend* test_file_system_backend_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
-  raw_ptr<storage::BlobStorageContext> blob_context_;
+  storage::BlobStorageContext* blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
   FileSystemURL test_dest_url_;

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -116,10 +115,10 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   gfx::NativeView container_view();
 
   // Controller for this popup. Weak reference.
-  raw_ptr<AutofillPopupViewDelegate> delegate_;
+  AutofillPopupViewDelegate* delegate_;
 
   // The widget of the window that triggered this popup. Weak reference.
-  raw_ptr<views::Widget> parent_widget_;
+  views::Widget* parent_widget_;
 
   // The time when the popup was shown.
   base::Time show_time_;

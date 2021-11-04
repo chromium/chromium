@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -115,7 +114,7 @@ class XboxHidControllerTest : public testing::Test {
   const std::vector<uint8_t> stop_vibration_report_;
   int callback_count_;
   mojom::GamepadHapticsResult callback_result_;
-  raw_ptr<FakeHidWriter> fake_hid_writer_;
+  FakeHidWriter* fake_hid_writer_;
   std::unique_ptr<XboxHidController> gamepad_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

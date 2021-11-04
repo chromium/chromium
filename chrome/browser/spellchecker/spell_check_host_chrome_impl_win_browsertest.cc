@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -92,7 +91,7 @@ class SpellCheckHostChromeImplWinBrowserTest : public InProcessBrowserTest {
   void RunSpellCheckReturnMessageTest();
 
  protected:
-  raw_ptr<PlatformSpellChecker> platform_spell_checker_;
+  PlatformSpellChecker* platform_spell_checker_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::MockRenderProcessHost> renderer_;
   mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host_;

@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -191,7 +190,7 @@ class RenderFrameHostAdapter
   uintptr_t GetId() const override { return frame_->GetRoutingID(); }
 
  private:
-  const raw_ptr<content::RenderFrameHost> frame_;
+  content::RenderFrameHost* const frame_;
 };
 
 // This function approximates ScriptContext::GetEffectiveDocumentURLForInjection

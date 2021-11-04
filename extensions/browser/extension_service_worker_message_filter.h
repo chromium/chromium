@@ -10,7 +10,6 @@
 
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
@@ -88,14 +87,14 @@ class ExtensionServiceWorkerMessageFilter
   void DidFailDecrementInflightEvent();
 
   // Only accessed from the UI thread.
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   const int render_process_id_;
 
   base::CallbackListSubscription shutdown_notifier_subscription_;
 
   // Owned by the StoragePartition of our profile.
-  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
+  content::ServiceWorkerContext* service_worker_context_;
 
   std::unique_ptr<ExtensionFunctionDispatcher,
                   content::BrowserThread::DeleteOnUIThread>

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "components/reporting/storage/storage_queue.h"
 
 #include <cstdint>
@@ -117,7 +116,7 @@ class TestUploadClient : public UploaderInterface {
 
  private:
   absl::optional<int64_t> generation_id_;
-  const raw_ptr<LastRecordDigestMap> last_record_digest_map_;
+  LastRecordDigestMap* const last_record_digest_map_;
 
   Sequence test_upload_sequence_;
 };

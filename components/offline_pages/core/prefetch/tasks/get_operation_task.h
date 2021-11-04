@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -46,8 +45,8 @@ class GetOperationTask : public Task {
   void Run() override;
   void StartGetOperationRequests(OperationResultList list);
 
-  raw_ptr<PrefetchStore> prefetch_store_;
-  raw_ptr<PrefetchNetworkRequestFactory> request_factory_;
+  PrefetchStore* prefetch_store_;
+  PrefetchNetworkRequestFactory* request_factory_;
   GetOperationFinishedCallback callback_;
 
   base::WeakPtrFactory<GetOperationTask> weak_factory_{this};

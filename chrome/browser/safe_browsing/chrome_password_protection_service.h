@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -553,9 +552,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       const password_manager::MatchingReusedCredential& reused_credential);
 
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
-  raw_ptr<TriggerManager> trigger_manager_;
+  TriggerManager* trigger_manager_;
   // Profile associated with this instance.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   // Current sync password hash.
   std::string sync_password_hash_;
   base::ObserverList<Observer>::Unchecked observer_list_;
@@ -568,7 +567,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   base::CallbackListSubscription hash_password_manager_subscription_;
 
   // Reference to the current profile's VerdictCacheManager. This is unowned.
-  raw_ptr<VerdictCacheManager> cache_manager_;
+  VerdictCacheManager* cache_manager_;
 
   // Schedules the next time to log the PasswordCaptured event.
   base::OneShotTimer log_password_capture_timer_;
@@ -585,7 +584,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   bool bypass_probability_for_tests_ = false;
 
   // Can be set for testing.
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Used to inject a different password hash, for testing. It's done as a
   // member callback rather than a virtual function because it's needed in the

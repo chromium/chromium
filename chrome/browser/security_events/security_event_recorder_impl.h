@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "chrome/browser/security_events/security_event_recorder.h"
 #include "chrome/browser/security_events/security_event_sync_bridge.h"
@@ -37,7 +36,7 @@ class SecurityEventRecorderImpl : public SecurityEventRecorder {
 
  private:
   std::unique_ptr<SecurityEventSyncBridge> security_event_sync_bridge_;
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 };
 
 #endif  // CHROME_BROWSER_SECURITY_EVENTS_SECURITY_EVENT_RECORDER_IMPL_H_

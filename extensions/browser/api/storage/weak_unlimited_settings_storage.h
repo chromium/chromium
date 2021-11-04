@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/value_store/value_store.h"
 
 namespace extensions {
@@ -49,7 +48,7 @@ class WeakUnlimitedSettingsStorage : public value_store::ValueStore {
 
  private:
   // The delegate storage area, NOT OWNED.
-  const raw_ptr<value_store::ValueStore> delegate_;
+  value_store::ValueStore* const delegate_;
 };
 
 }  // namespace extensions

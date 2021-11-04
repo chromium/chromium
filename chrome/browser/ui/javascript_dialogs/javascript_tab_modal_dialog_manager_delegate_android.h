@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_JAVASCRIPT_DIALOGS_JAVASCRIPT_TAB_MODAL_DIALOG_MANAGER_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_UI_JAVASCRIPT_DIALOGS_JAVASCRIPT_TAB_MODAL_DIALOG_MANAGER_DELEGATE_ANDROID_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager_delegate.h"
 
 namespace content {
@@ -40,7 +39,7 @@ class JavaScriptTabModalDialogManagerDelegateAndroid
   bool IsApp() override;
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_JAVASCRIPT_DIALOGS_JAVASCRIPT_TAB_MODAL_DIALOG_MANAGER_DELEGATE_ANDROID_H_

@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "build/chromeos_buildflags.h"
@@ -299,7 +298,7 @@ class FrameSinkVideoCaptureDeviceForTest : public FrameSinkVideoCaptureDevice {
             capturer_, std::move(receiver)));
   }
 
-  const raw_ptr<MockFrameSinkVideoCapturer> capturer_;
+  MockFrameSinkVideoCapturer* const capturer_;
 };
 
 // Convenience macros to make a non-blocking FrameSinkVideoCaptureDevice method

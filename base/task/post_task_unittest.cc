@@ -5,7 +5,6 @@
 #include "base/task/post_task.h"
 
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/task_executor.h"
 #include "base/task/test_task_traits_extension.h"
@@ -168,7 +167,7 @@ class FlagOnDelete {
   }
 
  private:
-  raw_ptr<bool> deleted_;
+  bool* deleted_;
 };
 
 }  // namespace

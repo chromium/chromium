@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -53,7 +52,7 @@ class Listener : public WebSocketListener {
 
  private:
   std::vector<std::string> messages_;
-  raw_ptr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
 };
 
 class CloseListener : public WebSocketListener {
@@ -72,7 +71,7 @@ class CloseListener : public WebSocketListener {
   }
 
  private:
-  raw_ptr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
 };
 
 class MessageReceivedListener : public WebSocketListener {

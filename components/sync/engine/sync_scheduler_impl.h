@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -271,7 +270,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   // Invoked to run through the sync cycle.
   const std::unique_ptr<Syncer> syncer_;
 
-  raw_ptr<SyncCycleContext> cycle_context_;
+  SyncCycleContext* cycle_context_;
 
   // TryJob might get called for multiple reasons. It should only call
   // DoPollSyncCycleJob after some time since the last attempt.

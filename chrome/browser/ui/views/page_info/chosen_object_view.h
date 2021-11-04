@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -42,8 +41,8 @@ class ChosenObjectView : public views::View {
 
   void ExecuteDeleteCommand();
 
-  raw_ptr<views::ImageButton> delete_button_ = nullptr;
-  raw_ptr<PageInfoRowView> row_view_ = nullptr;
+  views::ImageButton* delete_button_ = nullptr;
+  PageInfoRowView* row_view_ = nullptr;
 
   base::ObserverList<ChosenObjectViewObserver>::Unchecked observer_list_;
   std::unique_ptr<PageInfoUI::ChosenObjectInfo> info_;

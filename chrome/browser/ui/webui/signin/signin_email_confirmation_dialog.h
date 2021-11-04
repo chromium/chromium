@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -102,8 +101,8 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate,
   content::WebContents* GetDialogWebContents() const;
 
   // Web contents from which the "Learn more" link should be opened.
-  const raw_ptr<content::WebContents> web_contents_;
-  const raw_ptr<Profile> profile_;
+  content::WebContents* const web_contents_;
+  Profile* const profile_;
 
   const std::string last_email_;
   const std::string new_email_;

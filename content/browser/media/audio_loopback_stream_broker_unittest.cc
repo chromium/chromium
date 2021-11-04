@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
 #include "content/public/test/browser_task_environment.h"
@@ -161,7 +160,7 @@ class MockStreamFactory final : public audio::FakeStreamFactory {
     IsMuting(group_id);
   }
 
-  raw_ptr<StreamRequestData> stream_request_data_;
+  StreamRequestData* stream_request_data_;
 };
 
 const bool kMuteSource = true;

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -64,7 +63,7 @@ class DestructionIndicator {
   void DoNothing(Args...) {}
 
  private:
-  raw_ptr<bool> destructed_;
+  bool* destructed_;
 };
 
 TEST(BarrierCallbackTest, ReleasesDoneCallbackWhenDone) {

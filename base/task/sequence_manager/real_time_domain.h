@@ -6,7 +6,6 @@
 #define BASE_TASK_SEQUENCE_MANAGER_REAL_TIME_DOMAIN_H_
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,7 +34,7 @@ class BASE_EXPORT RealTimeDomain : public TimeDomain {
   const char* GetName() const override;
 
  private:
-  raw_ptr<const TickClock> tick_clock_ = nullptr;
+  const TickClock* tick_clock_ = nullptr;
 };
 
 }  // namespace internal

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 
 namespace base {
@@ -59,7 +58,7 @@ class ApplicationBreadcrumbsLogger {
   static bool IsUserTriggeredAction(const std::string& action);
 
   // The BreadcrumbManager to log events.
-  raw_ptr<breadcrumbs::BreadcrumbManager> breadcrumb_manager_;
+  breadcrumbs::BreadcrumbManager* breadcrumb_manager_;
   // The callback invoked whenever a user action is registered.
   base::ActionCallback user_action_callback_;
   // A memory pressure listener which observes memory pressure events.

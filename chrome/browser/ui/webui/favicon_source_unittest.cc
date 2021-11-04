@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -89,7 +88,7 @@ class TestFaviconSource : public FaviconSource {
   }
 
  private:
-  const raw_ptr<ui::NativeTheme> theme_;
+  ui::NativeTheme* const theme_;
 };
 
 class FaviconSourceTestBase : public testing::Test {
@@ -154,9 +153,9 @@ class FaviconSourceTestBase : public testing::Test {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   ui::TestNativeTheme theme_;
   TestingProfile profile_;
-  raw_ptr<NiceMock<MockHistoryUiFaviconRequestHandler>>
+  NiceMock<MockHistoryUiFaviconRequestHandler>*
       mock_history_ui_favicon_request_handler_;
-  raw_ptr<NiceMock<favicon::MockFaviconService>> mock_favicon_service_;
+  NiceMock<favicon::MockFaviconService>* mock_favicon_service_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   WebContentsGetter test_web_contents_getter_;
   NiceMock<TestFaviconSource> source_;

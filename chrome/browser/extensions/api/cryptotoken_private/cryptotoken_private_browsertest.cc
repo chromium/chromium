@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/base_switches.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -99,7 +98,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
   // methods below. Uses the main frame by default or
   // |frame_to_use_for_connecting_| if a test overrides it.
   content::RenderFrameHost* FrameToUseForConnecting() {
-    return frame_to_use_for_connecting_ ? frame_to_use_for_connecting_.get()
+    return frame_to_use_for_connecting_ ? frame_to_use_for_connecting_
                                         : browser()
                                               ->tab_strip_model()
                                               ->GetActiveWebContents()
@@ -228,7 +227,7 @@ class CryptotokenBrowserTest : public base::test::WithFeatureOverride,
 
   net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  raw_ptr<content::RenderFrameHost> frame_to_use_for_connecting_ = nullptr;
+  content::RenderFrameHost* frame_to_use_for_connecting_ = nullptr;
 
  private:
   // content::URLLoaderInterceptor callback

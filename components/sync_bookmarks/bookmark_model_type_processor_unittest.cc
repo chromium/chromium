@@ -11,7 +11,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
@@ -239,7 +238,7 @@ class ProxyCommitQueue : public syncer::CommitQueue {
   void NudgeForCommit() override { commit_queue_->NudgeForCommit(); }
 
  private:
-  raw_ptr<CommitQueue> commit_queue_ = nullptr;
+  CommitQueue* commit_queue_ = nullptr;
 };
 
 class BookmarkModelTypeProcessorTest : public testing::Test {

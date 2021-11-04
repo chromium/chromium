@@ -15,7 +15,6 @@
 
 #include "base/macros.h"
 #include "base/memory/free_deleter.h"
-#include "base/memory/raw_ptr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -105,7 +104,7 @@ class TargetProcess {
   // Reference to the IPC subsystem.
   std::unique_ptr<SharedMemIPCServer> ipc_server_;
   // Provides the threads used by the IPC. This class does not own this pointer.
-  raw_ptr<ThreadPool> thread_pool_;
+  ThreadPool* thread_pool_;
   // Base address of the main executable
   void* base_address_;
   // Full name of the target executable.

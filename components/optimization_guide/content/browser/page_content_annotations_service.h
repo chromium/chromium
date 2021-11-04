@@ -10,7 +10,6 @@
 #include "base/callback_forward.h"
 #include "base/containers/lru_cache.h"
 #include "base/hash/hash.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -157,7 +156,7 @@ class PageContentAnnotationsService : public KeyedService,
 
   // The history service to write content annotations to. Not owned. Guaranteed
   // to outlive |this|.
-  raw_ptr<history::HistoryService> history_service_;
+  history::HistoryService* history_service_;
   // The task tracker to keep track of tasks to query |history_service|.
   base::CancelableTaskTracker history_service_task_tracker_;
   // The client of continuous_search::mojom::SearchResultExtractor interface

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_TLS_CLIENT_CONNECTION_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_TLS_CLIENT_CONNECTION_H_
 
-#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -51,7 +50,7 @@ class TlsClientConnection final : public openscreen::TlsConnection {
       MojoResult result,
       openscreen::Error::Code error_code_if_fatal);
 
-  const raw_ptr<openscreen::TaskRunner> task_runner_ = nullptr;
+  openscreen::TaskRunner* const task_runner_ = nullptr;
   const openscreen::IPEndpoint local_address_;
   const openscreen::IPEndpoint remote_address_;
   const mojo::ScopedDataPipeConsumerHandle receive_stream_;
@@ -61,7 +60,7 @@ class TlsClientConnection final : public openscreen::TlsConnection {
 
   mojo::SimpleWatcher receive_stream_watcher_;
 
-  raw_ptr<Client> client_ = nullptr;
+  Client* client_ = nullptr;
 };
 
 }  // namespace openscreen_platform

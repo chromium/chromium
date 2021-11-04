@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -144,7 +143,7 @@ class Me2MeNativeMessagingHost : public extensions::NativeMessageHost {
   intptr_t parent_window_handle_;
 #endif  // defined(OS_WIN)
 
-  raw_ptr<extensions::NativeMessageHost::Client> client_;
+  extensions::NativeMessageHost::Client* client_;
   std::unique_ptr<ChromotingHostContext> host_context_;
 
   std::unique_ptr<LogMessageHandler> log_message_handler_;

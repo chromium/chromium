@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -81,13 +80,13 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
   void OnWaiting(WaitingReason reason);
 
   const std::unique_ptr<Renderer> renderer_;
-  const raw_ptr<MediaLog> media_log_;
+  MediaLog* const media_log_;
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
 
   bool waiting_for_cdm_ = false;
-  raw_ptr<CdmContext> cdm_context_ = nullptr;
-  raw_ptr<RendererClient> client_;
-  raw_ptr<MediaResource> media_resource_;
+  CdmContext* cdm_context_ = nullptr;
+  RendererClient* client_;
+  MediaResource* media_resource_;
   PipelineStatusCallback init_cb_;
 
   std::unique_ptr<DecryptingMediaResource> decrypting_media_resource_;

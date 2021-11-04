@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_FACTORY_TEST_UTIL_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 class TemplateURLService;
 class TestingProfile;
@@ -31,7 +30,7 @@ class TemplateURLServiceFactoryTestUtil {
   TemplateURLService* model() const;
 
  private:
-  raw_ptr<TestingProfile> profile_;
+  TestingProfile* profile_;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_FACTORY_TEST_UTIL_H_

@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -203,8 +202,8 @@ class TestDesktopWidgetDelegate : public WidgetDelegate {
   bool OnCloseRequested(Widget::ClosedReason close_reason) override;
 
  private:
-  raw_ptr<Widget> widget_;
-  raw_ptr<View> contents_view_ = nullptr;
+  Widget* widget_;
+  View* contents_view_ = nullptr;
   int window_closing_count_ = 0;
   gfx::Rect initial_bounds_ = gfx::Rect(100, 100, 200, 200);
   bool can_close_ = true;
@@ -230,7 +229,7 @@ class TestInitialFocusWidgetDelegate : public TestDesktopWidgetDelegate {
   View* GetInitiallyFocusedView() override;
 
  private:
-  raw_ptr<View> view_;
+  View* view_;
 };
 
 // Use in tests to wait until a Widget's activation change to a particular
@@ -276,7 +275,7 @@ class WidgetDestroyedWaiter : public WidgetObserver {
   // views::WidgetObserver
   void OnWidgetDestroyed(Widget* widget) override;
 
-  raw_ptr<Widget> widget_;
+  Widget* widget_;
   base::RunLoop run_loop_;
 };
 
@@ -298,7 +297,7 @@ class WidgetVisibleWaiter : public WidgetObserver {
   void OnWidgetVisibilityChanged(Widget* widget, bool visible) override;
   void OnWidgetDestroying(Widget* widget) override;
 
-  const raw_ptr<Widget> widget_;
+  Widget* const widget_;
   base::RunLoop run_loop_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };

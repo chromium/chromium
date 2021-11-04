@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 
@@ -51,8 +50,8 @@ class ChromeClientSideDetectionHostDelegate
       SafeBrowsingNavigationObserverManager::AttributionResult result);
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<SafeBrowsingNavigationObserverManager> observer_manager_for_testing_ =
+  content::WebContents* web_contents_;
+  SafeBrowsingNavigationObserverManager* observer_manager_for_testing_ =
       nullptr;
 };
 

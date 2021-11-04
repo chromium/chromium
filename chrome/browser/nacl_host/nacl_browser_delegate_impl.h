@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/nacl/browser/nacl_browser_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -57,7 +56,7 @@ class NaClBrowserDelegateImpl : public NaClBrowserDelegate {
   std::vector<URLPattern> debug_patterns_;
 #endif
 
-  raw_ptr<ProfileManager> profile_manager_;
+  ProfileManager* profile_manager_;
   bool inverse_debug_patterns_;
   std::set<std::string> allowed_nonsfi_origins_;
 };

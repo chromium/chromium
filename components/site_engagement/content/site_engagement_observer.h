@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 namespace content {
 class WebContents;
@@ -53,7 +52,7 @@ class SiteEngagementObserver {
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, Observers);
   friend class SiteEngagementService;
 
-  raw_ptr<SiteEngagementService> service_;
+  SiteEngagementService* service_;
 };
 
 }  // namespace site_engagement

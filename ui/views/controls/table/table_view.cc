@@ -17,7 +17,6 @@
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
@@ -128,7 +127,7 @@ struct TableView::GroupSortHelper {
     return table->CompareRows(range1, range2) < 0;
   }
 
-  raw_ptr<TableView> table;
+  TableView* table;
   std::map<int, int> model_index_to_range_start;
 };
 

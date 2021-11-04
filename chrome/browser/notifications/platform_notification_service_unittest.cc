@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -139,7 +138,7 @@ class PlatformNotificationServiceTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
   // Owned by the |profile_| as a keyed service.
-  raw_ptr<MockNotificationMetricsLogger> mock_logger_;
+  MockNotificationMetricsLogger* mock_logger_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
 };

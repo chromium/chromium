@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_decoder_config.h"
@@ -201,7 +200,7 @@ class MockSender {
   }
 
  private:
-  const raw_ptr<RpcMessenger> rpc_messenger_;
+  RpcMessenger* const rpc_messenger_;
   const int rpc_handle_;
   const int remote_handle_;
 };
@@ -297,12 +296,12 @@ class ReceiverTest : public ::testing::Test {
   int receiver_renderer_handle_ = RpcMessenger::kInvalidHandle;
 
   MockMediaResource mock_media_resource_;
-  raw_ptr<MockRenderer> mock_renderer_ = nullptr;
+  MockRenderer* mock_renderer_ = nullptr;
   std::unique_ptr<MockSender> mock_sender_;
 
-  raw_ptr<RpcMessenger> rpc_messenger_ = nullptr;
-  raw_ptr<MockRemotee> mock_remotee_;
-  raw_ptr<MockReceiverController> mock_controller_ = nullptr;
+  RpcMessenger* rpc_messenger_ = nullptr;
+  MockRemotee* mock_remotee_;
+  MockReceiverController* mock_controller_ = nullptr;
   std::unique_ptr<Receiver> receiver_;
 
   base::WeakPtrFactory<ReceiverTest> weak_factory_{this};

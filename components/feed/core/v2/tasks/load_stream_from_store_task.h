@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/enums.h"
@@ -85,7 +84,7 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
   LoadType load_type_;
   FeedStream& feed_stream_;
   StreamType stream_type_;
-  raw_ptr<FeedStore> store_;  // Unowned.
+  FeedStore* store_;  // Unowned.
   bool ignore_staleness_ = false;
   bool missed_last_refresh_ = false;
   base::OnceCallback<void(Result)> result_callback_;

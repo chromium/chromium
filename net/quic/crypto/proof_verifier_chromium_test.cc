@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -105,7 +104,7 @@ class SignatureSaver : public quic::ProofSource::Callback {
     *signature_ = proof.signature;
   }
 
-  raw_ptr<std::string> signature_;
+  std::string* signature_;
 };
 
 class DummyProofVerifierCallback : public quic::ProofVerifierCallback {

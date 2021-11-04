@@ -5,7 +5,6 @@
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 
 #include "base/format_macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
@@ -76,7 +75,7 @@ class BreadcrumbManagerTabHelperTest : public ChromeRenderViewHostTestHarness {
   }
 
   std::unique_ptr<content::WebContents> second_web_contents_;
-  raw_ptr<breadcrumbs::BreadcrumbManagerKeyedService> breadcrumb_service_;
+  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_;
 };
 
 // Tests that the identifiers returned for different WebContents are unique.

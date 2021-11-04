@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
@@ -46,7 +45,7 @@ class GPU_GLES2_EXPORT GpuCommandBufferMemoryTracker : public MemoryTracker {
   const CommandBufferId command_buffer_id_;
   const uint64_t client_tracing_id_;
 
-  const raw_ptr<MemoryTracker::Observer> observer_;
+  MemoryTracker::Observer* const observer_;
 };
 
 }  // namespace gpu

@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -82,12 +81,12 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
   }
 
  protected:
-  raw_ptr<ChooserDialogView> dialog_ = nullptr;
-  raw_ptr<FakeBluetoothChooserController> controller_ = nullptr;
+  ChooserDialogView* dialog_ = nullptr;
+  FakeBluetoothChooserController* controller_ = nullptr;
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
-  raw_ptr<views::Widget> widget_ = nullptr;
+  views::Widget* widget_ = nullptr;
 };
 
 TEST_F(ChooserDialogViewTest, ButtonState) {

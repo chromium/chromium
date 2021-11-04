@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/browser/protocol_util.h"
@@ -91,7 +90,7 @@ class ProtocolPageLoadMetricsObserverTest
         prefix + ".DocumentTiming.NavigationToLoadEventFired", 1);
   }
 
-  raw_ptr<ProtocolPageLoadMetricsObserver> observer_;
+  ProtocolPageLoadMetricsObserver* observer_;
 };
 
 TEST_F(ProtocolPageLoadMetricsObserverTest, H11Navigation) {

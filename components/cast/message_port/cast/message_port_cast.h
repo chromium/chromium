@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAST_MESSAGE_PORT_CAST_MESSAGE_PORT_CAST_H_
 #define COMPONENTS_CAST_MESSAGE_PORT_CAST_MESSAGE_PORT_CAST_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/cast/message_port/message_port.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
 
@@ -54,7 +53,7 @@ class MessagePortCast : public cast_api_bindings::MessagePort,
   bool OnMessage(blink::WebMessagePort::Message message) final;
   void OnPipeError() final;
 
-  raw_ptr<cast_api_bindings::MessagePort::Receiver> receiver_;
+  cast_api_bindings::MessagePort::Receiver* receiver_;
   blink::WebMessagePort port_;
 };
 

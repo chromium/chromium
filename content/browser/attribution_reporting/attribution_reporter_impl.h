@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -97,13 +96,13 @@ class CONTENT_EXPORT AttributionReporterImpl
                       ReportComparator>
       report_queue_;
 
-  raw_ptr<const base::Clock> clock_;
+  const base::Clock* clock_;
 
   base::RepeatingCallback<void(SentReportInfo)> callback_;
 
   // Should never be nullptr, since StoragePartition owns the AttributionManager
   // which owns |this|.
-  raw_ptr<StoragePartitionImpl> partition_;
+  StoragePartitionImpl* partition_;
 
   // Timer which signals the next report in |report_queue_| should be sent.
   base::OneShotTimer send_report_timer_;
@@ -115,8 +114,7 @@ class CONTENT_EXPORT AttributionReporterImpl
   std::unique_ptr<NetworkSender> network_sender_;
 
   // Lazily initialized to track network availability.
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_ =
-      nullptr;
+  network::NetworkConnectionTracker* network_connection_tracker_ = nullptr;
 
   // Assume that there is a network connection unless we hear otherwise.
   bool offline_ = false;

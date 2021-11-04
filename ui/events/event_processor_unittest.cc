@@ -7,7 +7,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target_iterator.h"
@@ -154,8 +153,8 @@ class ReDispatchEventHandler : public TestEventHandler {
   }
 
  private:
-  raw_ptr<EventProcessor> processor_;
-  raw_ptr<EventTarget> expected_target_;
+  EventProcessor* processor_;
+  EventTarget* expected_target_;
 };
 
 // Verifies that the phase and target information of an event is not mutated

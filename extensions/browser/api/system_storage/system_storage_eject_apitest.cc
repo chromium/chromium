@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/storage_info.h"
@@ -86,7 +85,7 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
   }
 
  protected:
-  raw_ptr<TestStorageMonitor> monitor_;
+  TestStorageMonitor* monitor_;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemStorageEjectApiTest, EjectTest) {

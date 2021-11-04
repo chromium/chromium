@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 namespace gpu {
 
@@ -42,7 +41,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanCommandPool {
   void IncrementCommandBufferCount();
   void DecrementCommandBufferCount();
 
-  raw_ptr<VulkanDeviceQueue> device_queue_;
+  VulkanDeviceQueue* device_queue_;
   VkCommandPool handle_ = VK_NULL_HANDLE;
   uint32_t command_buffer_count_ = 0;
   bool use_protected_memory_ = false;

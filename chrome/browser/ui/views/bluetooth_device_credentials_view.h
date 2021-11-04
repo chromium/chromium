@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "content/public/browser/bluetooth_delegate.h"
@@ -49,9 +48,9 @@ class BluetoothDeviceCredentialsView : public views::DialogDelegateView,
                        const std::u16string& new_contents) override;
 
   content::BluetoothDelegate::CredentialsCallback close_callback_;
-  raw_ptr<views::Textfield> passkey_text_ = nullptr;
-  raw_ptr<views::View> icon_view_ = nullptr;
-  raw_ptr<views::View> contents_wrapper_ = nullptr;
+  views::Textfield* passkey_text_ = nullptr;
+  views::View* icon_view_ = nullptr;
+  views::View* contents_wrapper_ = nullptr;
   base::WeakPtrFactory<BluetoothDeviceCredentialsView> weak_ptr_factory_{this};
 };
 

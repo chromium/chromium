@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/graphics_delegate.h"
@@ -129,7 +128,7 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
 
   std::unique_ptr<PlatformUiInputDelegate> vr_dialog_input_delegate_;
 
-  raw_ptr<BrowserRendererBrowserInterface> browser_;
+  BrowserRendererBrowserInterface* browser_;
 
   std::unique_ptr<UiTestState> ui_test_state_;
   std::unique_ptr<UiVisibilityState> ui_visibility_state_;

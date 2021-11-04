@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
@@ -159,12 +158,12 @@ class WebApps : public apps::PublisherBase,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 
-  const raw_ptr<WebAppProvider> provider_;
+  WebAppProvider* const provider_;
 
   // app_service_ is owned by the object that owns this object.
-  raw_ptr<apps::mojom::AppService> app_service_;
+  apps::mojom::AppService* app_service_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.

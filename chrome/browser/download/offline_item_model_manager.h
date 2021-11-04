@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/offline_item_model_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -38,7 +37,7 @@ class OfflineItemModelManager : public KeyedService {
   content::BrowserContext* browser_context() { return browser_context_; }
 
  private:
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   std::map<ContentId, std::unique_ptr<OfflineItemModelData>>
       offline_item_model_data_;
 };

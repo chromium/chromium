@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -57,8 +56,8 @@ class RemoteSafeBrowsingDatabaseManager::ClientRequest {
   }
 
  private:
-  raw_ptr<Client> client_;
-  raw_ptr<RemoteSafeBrowsingDatabaseManager> db_manager_;
+  Client* client_;
+  RemoteSafeBrowsingDatabaseManager* db_manager_;
   GURL url_;
   base::ElapsedTimer timer_;
   base::WeakPtrFactory<ClientRequest> weak_factory_{this};

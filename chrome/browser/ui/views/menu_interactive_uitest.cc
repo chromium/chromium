@@ -4,7 +4,6 @@
 #include "ui/views/controls/menu/menu_controller.h"
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
@@ -101,7 +100,7 @@ class MenuControllerUITest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<MenuItemView> first_item_ = nullptr;
+  MenuItemView* first_item_ = nullptr;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<MenuDelegate> menu_delegate_;
   // Middle of first menu item.

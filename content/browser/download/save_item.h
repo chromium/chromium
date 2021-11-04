@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/browser/download/save_types.h"
 #include "content/public/common/referrer.h"
 #include "url/gurl.h"
@@ -106,7 +105,7 @@ class SaveItem {
   SaveFileCreateInfo::SaveFileSource save_source_;
 
   // Our owning object.
-  raw_ptr<SavePackage> package_;
+  SavePackage* package_;
 };
 
 }  // namespace content

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_PROFILE_OBSERVER_H_
 #define CHROME_BROWSER_SEGMENTATION_PLATFORM_SEGMENTATION_PLATFORM_PROFILE_OBSERVER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,8 +47,8 @@ class SegmentationPlatformProfileObserver : public base::SupportsUserData::Data,
  private:
   void NotifyExistenceOfOTRProfile(bool has_otr_profiles);
 
-  raw_ptr<SegmentationPlatformService> segmentation_platform_service_;
-  raw_ptr<ProfileManager> profile_manager_;
+  SegmentationPlatformService* segmentation_platform_service_;
+  ProfileManager* profile_manager_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       observed_profiles_{this};

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/buildflag.h"
 #include "net/base/net_export.h"
@@ -108,7 +107,7 @@ class NET_EXPORT URLRequestContextStorage {
 
  private:
   // Not owned.
-  const raw_ptr<URLRequestContext> context_;
+  URLRequestContext* const context_;
 
   // Owned members.
   std::unique_ptr<HostResolver> host_resolver_;

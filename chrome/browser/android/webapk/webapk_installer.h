@@ -13,7 +13,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
@@ -210,7 +209,7 @@ class WebApkInstaller {
   // Returns the WebAPK server URL based on the command line.
   GURL GetServerUrl();
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   base::WeakPtr<content::WebContents> web_contents_;
 

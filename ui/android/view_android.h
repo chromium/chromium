@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -227,7 +226,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
  protected:
   void RemoveAllChildren(bool attached_to_window);
 
-  raw_ptr<ViewAndroid> parent_;
+  ViewAndroid* parent_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ViewAndroidBoundsTest, MatchesViewInFront);
@@ -300,7 +299,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
   scoped_refptr<cc::Layer> layer_;
   JavaObjectWeakGlobalRef delegate_;
 
-  raw_ptr<EventHandlerAndroid> event_handler_ = nullptr;  // Not owned
+  EventHandlerAndroid* event_handler_ = nullptr;  // Not owned
 
   // Basic view layout information. Used to do hit testing deciding whether
   // the passed events should be processed by the view. Unit in DIP.

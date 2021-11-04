@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/removable_storage_observer.h"
 #include "components/storage_monitor/transient_device_ids.h"
@@ -39,7 +38,7 @@ class StorageMonitor::ReceiverImpl : public StorageMonitor::Receiver {
   void MarkInitialized() override;
 
  private:
-  raw_ptr<StorageMonitor> notifications_;
+  StorageMonitor* notifications_;
 };
 
 void StorageMonitor::ReceiverImpl::ProcessAttach(const StorageInfo& info) {

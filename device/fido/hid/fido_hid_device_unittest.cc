@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -234,7 +233,7 @@ class FidoDeviceEnumerateCallbackReceiver
   }
 
  private:
-  raw_ptr<device::mojom::HidManager> hid_manager_;
+  device::mojom::HidManager* hid_manager_;
 };
 
 using TestDeviceCallbackReceiver =

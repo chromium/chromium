@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -289,8 +288,8 @@ class TestingOmniboxEditController : public ChromeOmniboxEditController {
       omnibox_view_->Update();
   }
 
-  raw_ptr<LocationBarModel> location_bar_model_;
-  raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
+  LocationBarModel* location_bar_model_;
+  OmniboxViewViews* omnibox_view_ = nullptr;
 };
 
 }  // namespace
@@ -391,7 +390,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 
   // Owned by |widget_|.
-  raw_ptr<TestingOmniboxView> omnibox_view_;
+  TestingOmniboxView* omnibox_view_;
 
   std::unique_ptr<views::TextfieldTestApi> test_api_;
 };

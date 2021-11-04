@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verify_result.h"
@@ -118,12 +117,12 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
   std::map<Job*, std::unique_ptr<Job>> active_jobs_;
 
   // Underlying verifier used to verify certificates.
-  const raw_ptr<CertVerifier> cert_verifier_;
-  const raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
+  CertVerifier* const cert_verifier_;
+  CTPolicyEnforcer* const ct_policy_enforcer_;
 
-  const raw_ptr<TransportSecurityState> transport_security_state_;
+  TransportSecurityState* const transport_security_state_;
 
-  const raw_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
+  SCTAuditingDelegate* const sct_auditing_delegate_;
 
   std::set<std::string> hostnames_to_allow_unknown_roots_;
 

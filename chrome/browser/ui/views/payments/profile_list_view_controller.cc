@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/payments/profile_list_view_controller.h"
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
@@ -102,7 +101,7 @@ class ProfileItem : public PaymentRequestItemList::Item {
   void EditButtonPressed() override { controller_->ShowEditor(profile_); }
 
   base::WeakPtr<ProfileListViewController> controller_;
-  raw_ptr<autofill::AutofillProfile> profile_;
+  autofill::AutofillProfile* profile_;
 };
 
 // The ProfileListViewController subtype for the Shipping address list

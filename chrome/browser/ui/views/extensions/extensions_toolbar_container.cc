@@ -92,7 +92,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   // The container shouldn't show unless / until we have extensions available.
   SetVisible(false);
 
-  model_observation_.Observe(model_.get());
+  model_observation_.Observe(model_);
 
   const views::FlexSpecification hide_icon_flex_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -168,7 +168,7 @@ void ExtensionsToolbarContainer::UpdateAllIcons() {
 // redesigned menu and toolbar with access control is released.
 ExtensionsToolbarButton* ExtensionsToolbarContainer::GetExtensionsButton()
     const {
-  return extensions_button_ ? extensions_button_.get()
+  return extensions_button_ ? extensions_button_
                             : extensions_controls_->extensions_button();
 }
 
@@ -196,7 +196,7 @@ ExtensionsToolbarContainer::GetAnchoredWidgetForExtensionForTesting(
                            [extension_id](const auto& info) {
                              return info.extension_id == extension_id;
                            });
-  return iter == anchored_widgets_.end() ? nullptr : iter->widget.get();
+  return iter == anchored_widgets_.end() ? nullptr : iter->widget;
 }
 
 bool ExtensionsToolbarContainer::ShouldForceVisibility(

@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -123,10 +122,10 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   mojo::Receiver<tab_strip::mojom::PageHandler> receiver_;
   mojo::Remote<tab_strip::mojom::Page> page_;
 
-  const raw_ptr<content::WebUI> web_ui_;
+  content::WebUI* const web_ui_;
 
-  const raw_ptr<Browser> browser_;
-  const raw_ptr<TabStripUIEmbedder> embedder_;
+  Browser* const browser_;
+  TabStripUIEmbedder* const embedder_;
   ThumbnailTracker thumbnail_tracker_;
   tab_strip_ui::TabBeforeUnloadTracker tab_before_unload_tracker_;
 

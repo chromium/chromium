@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
@@ -58,7 +57,7 @@ class LocalDeviceInfoProviderImpl : public MutableLocalDeviceInfoProvider {
 
   void ResetFullHardwareClassIfUmaDisabled() const;
 
-  const raw_ptr<const DeviceInfoSyncClient> sync_client_;
+  const DeviceInfoSyncClient* const sync_client_;
 
   bool IsUmaEnabledOnCrOSDevice() const;
 

@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 
 #include "base/test/metrics/histogram_tester.h"
@@ -42,7 +41,7 @@ class TestSyncService : public syncer::TestSyncService {
   }
 
  private:
-  raw_ptr<syncer::SyncServiceObserver> observer_ = nullptr;
+  syncer::SyncServiceObserver* observer_ = nullptr;
 };
 
 }  // namespace

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
 class ChromeExtensionChooserDialog;
@@ -48,8 +47,7 @@ class ChromeExtensionBluetoothChooser : public content::BluetoothChooser {
 
  private:
   // Weak. DeviceChooserContentView[Cocoa] owns it.
-  raw_ptr<permissions::BluetoothChooserController>
-      bluetooth_chooser_controller_;
+  permissions::BluetoothChooserController* bluetooth_chooser_controller_;
   std::unique_ptr<ChromeExtensionChooserDialog> chooser_dialog_;
 };
 

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_host.h"
@@ -125,9 +124,9 @@ class CC_EXPORT ProxyMain : public Proxy {
   void InitializeOnImplThread(CompletionEvent* completion_event);
   void DestroyProxyImplOnImplThread(CompletionEvent* completion_event);
 
-  raw_ptr<LayerTreeHost> layer_tree_host_;
+  LayerTreeHost* layer_tree_host_;
 
-  raw_ptr<TaskRunnerProvider> task_runner_provider_;
+  TaskRunnerProvider* task_runner_provider_;
 
   const int layer_tree_host_id_;
 

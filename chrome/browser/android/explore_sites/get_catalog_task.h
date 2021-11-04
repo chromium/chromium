@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "components/offline_pages/task/task.h"
@@ -54,7 +53,7 @@ class GetCatalogTask : public Task {
   void FinishedExecuting(
       std::pair<GetCatalogStatus, std::unique_ptr<CategoryList>> result);
 
-  raw_ptr<ExploreSitesStore> store_;  // outlives this class.
+  ExploreSitesStore* store_;  // outlives this class.
 
   bool update_current_;
   CatalogCallback callback_;

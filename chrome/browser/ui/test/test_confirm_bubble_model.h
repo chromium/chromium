@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
 // A test version of the model for confirmation bubbles.
@@ -34,10 +33,10 @@ class TestConfirmBubbleModel : public ConfirmBubbleModel {
   void OpenHelpPage() override;
 
  private:
-  raw_ptr<bool> model_deleted_;
-  raw_ptr<bool> accept_clicked_;
-  raw_ptr<bool> cancel_clicked_;
-  raw_ptr<bool> link_clicked_;
+  bool* model_deleted_;
+  bool* accept_clicked_;
+  bool* cancel_clicked_;
+  bool* link_clicked_;
 };
 
 #endif  // CHROME_BROWSER_UI_TEST_TEST_CONFIRM_BUBBLE_MODEL_H_

@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/cronet/cronet_upload_data_stream.h"
@@ -175,7 +174,7 @@ class VerifyDestructionRunnable : public Cronet_Runnable {
 
  private:
   // Event indicating destructor is called.
-  const raw_ptr<base::WaitableEvent> destroyed_;
+  base::WaitableEvent* const destroyed_;
 };
 #endif  // DCHECK_IS_ON()
 
@@ -303,7 +302,7 @@ class Cronet_UrlRequestImpl::NetworkTasks : public CronetURLRequest::Callback {
       LOCKS_EXCLUDED(url_request_->lock_) override;
 
   // The UrlRequest which owns context that owns the callback.
-  const raw_ptr<Cronet_UrlRequestImpl> url_request_ = nullptr;
+  Cronet_UrlRequestImpl* const url_request_ = nullptr;
 
   // URL chain contains the URL currently being requested, and
   // all URLs previously requested. New URLs are added before
@@ -515,7 +514,7 @@ void Cronet_UrlRequestImpl::GetStatus(
       status_listeners_.insert(listener);
       request_->GetStatus(
           base::BindOnce(&Cronet_UrlRequestImpl::NetworkTasks::OnStatus,
-                         base::Unretained(network_tasks_.get()), listener));
+                         base::Unretained(network_tasks_), listener));
       return;
     }
   }
@@ -696,7 +695,7 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnReceivedRedirect(
   // Invoke Cronet_UrlRequestCallback_OnRedirectReceived on client executor.
   url_request_->PostTaskToExecutor(
       base::BindOnce(&Cronet_UrlRequestImpl::InvokeCallbackOnRedirectReceived,
-                     base::Unretained(url_request_.get()), new_location));
+                     base::Unretained(url_request_), new_location));
 }
 
 void Cronet_UrlRequestImpl::NetworkTasks::OnResponseStarted(
@@ -722,7 +721,7 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnResponseStarted(
   // Invoke Cronet_UrlRequestCallback_OnResponseStarted on client executor.
   url_request_->PostTaskToExecutor(
       base::BindOnce(&Cronet_UrlRequestImpl::InvokeCallbackOnResponseStarted,
-                     base::Unretained(url_request_.get())));
+                     base::Unretained(url_request_)));
 }
 
 void Cronet_UrlRequestImpl::NetworkTasks::OnReadCompleted(
@@ -741,10 +740,9 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnReadCompleted(
   }
 
   // Invoke Cronet_UrlRequestCallback_OnReadCompleted on client executor.
-  url_request_->PostTaskToExecutor(
-      base::BindOnce(&Cronet_UrlRequestImpl::InvokeCallbackOnReadCompleted,
-                     base::Unretained(url_request_.get()),
-                     std::move(cronet_buffer), bytes_read));
+  url_request_->PostTaskToExecutor(base::BindOnce(
+      &Cronet_UrlRequestImpl::InvokeCallbackOnReadCompleted,
+      base::Unretained(url_request_), std::move(cronet_buffer), bytes_read));
 }
 
 void Cronet_UrlRequestImpl::NetworkTasks::OnSucceeded(
@@ -759,7 +757,7 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnSucceeded(
   // Invoke Cronet_UrlRequestCallback_OnSucceeded on client executor.
   url_request_->PostTaskToExecutor(
       base::BindOnce(&Cronet_UrlRequestImpl::InvokeCallbackOnSucceeded,
-                     base::Unretained(url_request_.get())));
+                     base::Unretained(url_request_)));
   final_callback_posted_ = true;
 }
 
@@ -784,7 +782,7 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnError(
   // Invoke Cronet_UrlRequestCallback_OnFailed on client executor.
   url_request_->PostTaskToExecutor(
       base::BindOnce(&Cronet_UrlRequestImpl::InvokeCallbackOnFailed,
-                     base::Unretained(url_request_.get())));
+                     base::Unretained(url_request_)));
   final_callback_posted_ = true;
 }
 
@@ -796,7 +794,7 @@ void Cronet_UrlRequestImpl::NetworkTasks::OnCanceled() {
   // Invoke Cronet_UrlRequestCallback_OnCanceled on client executor.
   url_request_->PostTaskToExecutor(
       base::BindOnce(&Cronet_UrlRequestImpl::InvokeCallbackOnCanceled,
-                     base::Unretained(url_request_.get())));
+                     base::Unretained(url_request_)));
   final_callback_posted_ = true;
 }
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 #include "chrome/browser/autofill/mock_address_accessory_controller.h"
@@ -48,7 +47,7 @@ class AutofillSnackbarControllerImplTest
   }
 
  private:
-  raw_ptr<AutofillSnackbarControllerImpl> controller_ = nullptr;
+  AutofillSnackbarControllerImpl* controller_ = nullptr;
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;

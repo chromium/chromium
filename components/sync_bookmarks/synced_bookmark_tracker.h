@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -104,7 +103,7 @@ class SyncedBookmarkTracker {
 
    private:
     // Null for tombstones.
-    raw_ptr<const bookmarks::BookmarkNode> bookmark_node_;
+    const bookmarks::BookmarkNode* bookmark_node_;
 
     // Serializable Sync metadata.
     const std::unique_ptr<sync_pb::EntityMetadata> metadata_;

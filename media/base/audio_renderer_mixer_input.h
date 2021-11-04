@@ -20,7 +20,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
@@ -76,7 +75,7 @@ class MEDIA_EXPORT AudioRendererMixerInput
   friend class AudioRendererMixerInputTest;
 
   // Pool to obtain mixers from / return them to.
-  const raw_ptr<AudioRendererMixerPool> mixer_pool_;
+  AudioRendererMixerPool* const mixer_pool_;
 
   // Protect |volume_|, accessed by separate threads in ProvideInput() and
   // SetVolume().
@@ -116,10 +115,10 @@ class MEDIA_EXPORT AudioRendererMixerInput
 
   // AudioRendererMixer obtained from mixer pool during Initialize(),
   // guaranteed to live (at least) until it is returned to the pool.
-  raw_ptr<AudioRendererMixer> mixer_ = nullptr;
+  AudioRendererMixer* mixer_ = nullptr;
 
   // Source of audio data which is provided to the mixer.
-  raw_ptr<AudioRendererSink::RenderCallback> callback_ = nullptr;
+  AudioRendererSink::RenderCallback* callback_ = nullptr;
 
   // SwitchOutputDevice() and GetOutputDeviceInfoAsync() must be mutually
   // exclusive when executing; these flags indicate whether one or the other is

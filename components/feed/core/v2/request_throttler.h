@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_REQUEST_THROTTLER_H_
 #define COMPONENTS_FEED_CORE_V2_REQUEST_THROTTLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/feed/core/v2/enums.h"
 
 class PrefService;
@@ -28,7 +27,7 @@ class RequestThrottler {
   void ResetCountersIfDayChanged();
 
   // Provides durable storage.
-  raw_ptr<PrefService> pref_service_;
+  PrefService* pref_service_;
 };
 
 }  // namespace feed

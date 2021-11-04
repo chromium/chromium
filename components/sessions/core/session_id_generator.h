@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
 #include "components/sessions/core/session_id.h"
@@ -54,7 +53,7 @@ class SESSIONS_EXPORT SessionIdGenerator {
   void IncrementValueBy(int increment);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  raw_ptr<PrefService> local_state_;
+  PrefService* local_state_;
   SessionID::id_type last_value_;
 
   // Used to override the random number generator for tests.

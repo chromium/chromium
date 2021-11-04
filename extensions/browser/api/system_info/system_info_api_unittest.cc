@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -88,7 +87,7 @@ class FakeExtensionsBrowserClient : public TestExtensionsBrowserClient {
   }
 
  private:
-  raw_ptr<content::BrowserContext> second_context_ = nullptr;
+  content::BrowserContext* second_context_ = nullptr;
   base::flat_map<std::string, std::vector<Broadcast>>
       event_name_to_broadcasts_map_;
 };
@@ -297,10 +296,10 @@ class SystemInfoAPITest : public testing::Test {
   content::TestBrowserContext context1_;
   content::TestBrowserContext context2_;
   FakeExtensionsBrowserClient client_;
-  raw_ptr<EventRouter> router1_ = nullptr;
-  raw_ptr<EventRouter> router2_ = nullptr;
+  EventRouter* router1_ = nullptr;
+  EventRouter* router2_ = nullptr;
   FakeDisplayInfoProvider display_info_provider_;
-  raw_ptr<storage_monitor::TestStorageMonitor> storage_monitor_;
+  storage_monitor::TestStorageMonitor* storage_monitor_;
 };
 
 /******************************************************************************/

@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,7 +54,7 @@ class WidgetCloser {
       widget_->CloseNow();
   }
 
-  raw_ptr<views::Widget> widget_;
+  views::Widget* widget_;
 
   base::WeakPtrFactory<WidgetCloser> weak_ptr_factory_{this};
 };

@@ -4,7 +4,6 @@
 
 #include <map>
 
-#include "base/memory/raw_ptr.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -217,7 +216,7 @@ class RecursiveObserver : public apps::AppRegistryCache::Observer {
     EXPECT_EQ(outer.Name(), inner.Name());
   }
 
-  raw_ptr<apps::AppRegistryCache> cache_;
+  apps::AppRegistryCache* cache_;
   std::string expected_name_for_p_;
   int expected_num_apps_;
   int num_apps_seen_on_app_update_;

@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sys_byteorder.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
@@ -84,7 +83,7 @@ class CharBufferWriter {
   }
 
  private:
-  raw_ptr<char> buf_;
+  char* buf_;
   const int max_size_;
   int size_;
 };

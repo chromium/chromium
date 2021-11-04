@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -741,7 +740,7 @@ class GetDisplayMediaVideoTrackBrowserTest
   const DisplaySurfaceType display_surface_type_;
 
  private:
-  raw_ptr<content::WebContents> tab_ = nullptr;
+  content::WebContents* tab_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(

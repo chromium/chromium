@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,7 +93,7 @@ class CookieControlsBubbleViewTest : public DialogBrowserTest {
   PageActionIconView* cookie_controls_icon() { return cookie_controls_icon_; }
 
  private:
-  raw_ptr<PageActionIconView> cookie_controls_icon_;
+  PageActionIconView* cookie_controls_icon_;
 };
 
 // Test that cookie icon is not shown when cookies are not blocked.

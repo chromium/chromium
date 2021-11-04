@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
@@ -40,7 +39,7 @@ class ProxyResolverImpl::Job {
 
   void GetProxyDone(int error);
 
-  raw_ptr<ProxyResolverImpl> resolver_;
+  ProxyResolverImpl* resolver_;
 
   mojo::Remote<mojom::ProxyResolverRequestClient> client_;
   net::ProxyInfo result_;

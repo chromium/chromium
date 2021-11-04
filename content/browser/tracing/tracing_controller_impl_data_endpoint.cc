@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/pattern.h"
 #include "base/task/sequenced_task_runner.h"
@@ -144,7 +143,7 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   base::FilePath file_path_;
   base::FilePath pending_file_path_;
   base::OnceClosure completion_callback_;
-  raw_ptr<FILE> file_ = nullptr;
+  FILE* file_ = nullptr;
   const scoped_refptr<base::SequencedTaskRunner> may_block_task_runner_;
 };
 

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
@@ -182,13 +181,13 @@ class DownloadUIAdapter : public OfflineContentProvider,
   void OpenItemByGuid(const std::string& guid);
 
   // A valid offline content aggregator, supplied at construction.
-  raw_ptr<OfflineContentAggregator> aggregator_;
+  OfflineContentAggregator* aggregator_;
 
   // Always valid, this class is a member of the model.
-  raw_ptr<OfflinePageModel> model_;
+  OfflinePageModel* model_;
 
   // Always valid, a service.
-  raw_ptr<RequestCoordinator> request_coordinator_;
+  RequestCoordinator* request_coordinator_;
 
   // May be null if thumbnails are not required.
   std::unique_ptr<VisualsDecoder> visuals_decoder_;

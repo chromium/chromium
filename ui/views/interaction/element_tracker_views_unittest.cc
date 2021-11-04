@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -85,7 +84,7 @@ class ElementEventWatcher {
   const ui::ElementIdentifier id_;
   ui::ElementTracker::Subscription subscription_;
   int event_count_ = 0;
-  raw_ptr<View> last_view_ = nullptr;
+  View* last_view_ = nullptr;
 };
 
 ElementTrackerViews::ViewList ElementsToViews(

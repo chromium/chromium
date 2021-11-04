@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/decoded_draw_image.h"
@@ -1264,7 +1263,7 @@ class SimpleSerializer {
       if (!bytes_written)
         return;
 
-      PaintOp* written = reinterpret_cast<PaintOp*>(current_.get());
+      PaintOp* written = reinterpret_cast<PaintOp*>(current_);
       EXPECT_EQ(op->GetType(), written->GetType());
       EXPECT_EQ(bytes_written, written->skip);
 
@@ -1285,7 +1284,7 @@ class SimpleSerializer {
   TestOptionsProvider* options_provider() { return &options_provider_; }
 
  private:
-  raw_ptr<char> current_ = nullptr;
+  char* current_ = nullptr;
   size_t output_size_ = 0u;
   size_t remaining_ = 0u;
   std::vector<size_t> bytes_written_;
@@ -1371,14 +1370,14 @@ class DeserializerIterator {
                                             &last_bytes_read_, options_);
   }
 
-  raw_ptr<const void> input_ = nullptr;
+  const void* input_ = nullptr;
   const char* current_ = nullptr;
   size_t input_size_ = 0u;
   size_t remaining_ = 0u;
   size_t last_bytes_read_ = 0u;
   PaintOp::DeserializeOptions options_;
   std::unique_ptr<char, base::AlignedFreeDeleter> data_;
-  raw_ptr<PaintOp> deserialized_op_ = nullptr;
+  PaintOp* deserialized_op_ = nullptr;
 };
 
 void PushAnnotateOps(PaintOpBuffer* buffer) {

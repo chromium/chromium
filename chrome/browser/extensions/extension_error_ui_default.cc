@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/extension_error_ui_default.h"
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -196,8 +195,8 @@ class ExtensionGlobalError : public GlobalErrorWithStandardBubble {
     delegate_->OnAlertDetails();
   }
 
-  raw_ptr<ExtensionErrorUI::Delegate> delegate_;
-  raw_ptr<ManagementPolicy> management_policy_;
+  ExtensionErrorUI::Delegate* delegate_;
+  ManagementPolicy* management_policy_;
   int app_count_ = 0;
   int extension_count_ = 0;
   bool item_blocked_by_policy_exists_ = false;

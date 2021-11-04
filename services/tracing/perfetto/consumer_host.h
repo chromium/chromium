@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
@@ -96,7 +95,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
     void MaybeSendEnableTracingAck();
     bool IsExpectedPid(base::ProcessId pid) const;
 
-    const raw_ptr<ConsumerHost> host_;
+    ConsumerHost* const host_;
     mojo::Remote<mojom::TracingSessionClient> tracing_session_client_;
     mojo::Receiver<mojom::TracingSessionHost> receiver_;
     bool privacy_filtering_enabled_ = false;
@@ -171,7 +170,7 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
  private:
   void DestructTracingSession();
 
-  const raw_ptr<PerfettoService> service_;
+  PerfettoService* const service_;
   std::unique_ptr<TracingSession> tracing_session_;
 
   SEQUENCE_CHECKER(sequence_checker_);

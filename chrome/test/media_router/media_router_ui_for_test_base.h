@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_view.h"
@@ -98,8 +97,8 @@ class MediaRouterUiForTestBase {
       WatchType watch_type,
       absl::optional<std::string> sink_name = absl::nullopt) = 0;
 
-  const raw_ptr<content::WebContents> web_contents_;
-  const raw_ptr<MediaRouterDialogControllerViews> dialog_controller_;
+  content::WebContents* const web_contents_;
+  MediaRouterDialogControllerViews* const dialog_controller_;
   absl::optional<std::string> watch_sink_name_;
   WatchType watch_type_ = WatchType::kNone;
   absl::optional<base::OnceClosure> watch_callback_;

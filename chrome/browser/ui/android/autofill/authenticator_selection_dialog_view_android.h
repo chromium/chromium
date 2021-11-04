@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "ui/android/window_android.h"
 
@@ -50,7 +49,7 @@ class AuthenticatorSelectionDialogViewAndroid
   bool ShowDialog(ui::WindowAndroid* window_android);
 
  private:
-  raw_ptr<CardUnmaskAuthenticationSelectionDialogController> controller_;
+  CardUnmaskAuthenticationSelectionDialogController* controller_;
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 

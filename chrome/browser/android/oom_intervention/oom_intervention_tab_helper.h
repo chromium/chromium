@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_OOM_INTERVENTION_OOM_INTERVENTION_TAB_HELPER_H_
 #define CHROME_BROWSER_ANDROID_OOM_INTERVENTION_OOM_INTERVENTION_TAB_HELPER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -96,7 +95,7 @@ class OomInterventionTabHelper
   base::OneShotTimer renderer_detection_timer_;
 
   // Not owned. This will be nullptr in incognito mode.
-  raw_ptr<OomInterventionDecider> decider_;
+  OomInterventionDecider* decider_;
 
   mojo::Remote<blink::mojom::OomIntervention> intervention_;
 

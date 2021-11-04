@@ -19,7 +19,6 @@
 #include "base/debug/activity_tracker.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/platform_thread_internal_posix.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_id_name_manager.h"
@@ -57,7 +56,7 @@ struct ThreadParams {
   ThreadParams()
       : delegate(nullptr), joinable(false), priority(ThreadPriority::NORMAL) {}
 
-  raw_ptr<PlatformThread::Delegate> delegate;
+  PlatformThread::Delegate* delegate;
   bool joinable;
   ThreadPriority priority;
 };

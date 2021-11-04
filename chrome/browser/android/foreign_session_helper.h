@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 
 using base::android::ScopedJavaLocalRef;
@@ -50,7 +49,7 @@ class ForeignSessionHelper {
   // Fires |callback_| if it is not null.
   void FireForeignSessionCallback();
 
-  raw_ptr<Profile> profile_;  // weak
+  Profile* profile_;  // weak
   base::android::ScopedJavaGlobalRef<jobject> callback_;
   base::CallbackListSubscription foreign_session_updated_subscription_;
 };

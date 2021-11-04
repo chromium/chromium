@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/memory/weak_ptr.h"
@@ -81,8 +80,8 @@ class VIZ_SERVICE_EXPORT InProcessGpuMemoryBufferManager
 
   scoped_refptr<base::UnsafeSharedMemoryPool> pool_;
 
-  const raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
-  const raw_ptr<gpu::SyncPointManager> sync_point_manager_;
+  gpu::GpuMemoryBufferFactory* const gpu_memory_buffer_factory_;
+  gpu::SyncPointManager* const sync_point_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::flat_map<gfx::GpuMemoryBufferId, AllocatedBufferInfo>

@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -138,9 +137,9 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
   void NotifySubscriptionChannelStateChange(
       SubscriptionChannelState invalidator_state);
 
-  const raw_ptr<PrefService> pref_service_;
-  const raw_ptr<IdentityProvider> identity_provider_;
-  const raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
+  PrefService* const pref_service_;
+  IdentityProvider* const identity_provider_;
+  network::mojom::URLLoaderFactory* const url_loader_factory_;
 
   const std::string project_id_;
 

@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/cast/net/cast_transport_defines.h"
@@ -84,7 +83,7 @@ class CastTransportImpl::RtcpClient : public RtcpObserver {
   const uint32_t rtp_sender_ssrc_;
   const std::unique_ptr<RtcpObserver> rtcp_observer_;
   const EventMediaType media_type_;
-  const raw_ptr<CastTransportImpl> cast_transport_impl_;
+  CastTransportImpl* const cast_transport_impl_;
 };
 
 struct CastTransportImpl::RtpStreamSession {

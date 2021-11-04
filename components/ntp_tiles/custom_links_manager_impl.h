@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
@@ -87,7 +86,7 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   // and notifies |closure_list_|.
   void OnPreferenceChanged();
 
-  const raw_ptr<PrefService> prefs_;
+  PrefService* const prefs_;
   CustomLinksStore store_;
   std::vector<Link> current_links_;
   // The state of the current list of links before the last action was

@@ -5,7 +5,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -78,7 +77,7 @@ class FileAnalyzerBrowserTest : public InProcessBrowserTest {
     }
 
     base::OnceClosure done_closure_;
-    raw_ptr<DocumentAnalyzerResults> results_;
+    DocumentAnalyzerResults* results_;
   };
 };
 

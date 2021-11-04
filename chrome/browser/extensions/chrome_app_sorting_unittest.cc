@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
@@ -612,8 +611,8 @@ class ChromeAppSortingPreinstalledAppsBase : public PrefsPrepopulatedTestBase {
 
  protected:
   // Weak references, for convenience.
-  raw_ptr<Extension> app1_;
-  raw_ptr<Extension> app2_;
+  Extension* app1_;
+  Extension* app2_;
 
  private:
   scoped_refptr<Extension> app1_scoped_;

@@ -5,7 +5,6 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_INPUT_CONTAINER_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_INPUT_CONTAINER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/box_layout.h"
@@ -100,15 +99,15 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
   virtual void UpdateButtonImage();
 
   // Unowned.
-  const raw_ptr<NotificationInputDelegate> delegate_;
+  NotificationInputDelegate* const delegate_;
 
   // Owned by view hierarchy.
-  const raw_ptr<views::Textfield> textfield_;
+  views::Textfield* const textfield_;
   // Owned by view hierarchy.
-  const raw_ptr<views::ImageButton> button_;
+  views::ImageButton* const button_;
   // Owned by the view hierarchy. Used to show an inkdrop effect during
   // animation.
-  raw_ptr<views::InkDropContainerView> ink_drop_container_ = nullptr;
+  views::InkDropContainerView* ink_drop_container_ = nullptr;
 };
 
 }  // namespace message_center

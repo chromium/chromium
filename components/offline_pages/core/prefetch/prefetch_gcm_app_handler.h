@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/offline_pages/core/prefetch/prefetch_gcm_handler.h"
@@ -50,7 +49,7 @@ class PrefetchGCMAppHandler : public gcm::GCMAppHandler,
 
  private:
   // Not owned, PrefetchService owns |this|.
-  raw_ptr<PrefetchService> prefetch_service_ = nullptr;
+  PrefetchService* prefetch_service_ = nullptr;
 };
 
 }  // namespace offline_pages

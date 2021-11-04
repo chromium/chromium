@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/test/task_environment.h"
@@ -61,7 +60,7 @@ class MockVizCompositorThreadRunner : public VizCompositorThreadRunner {
                     GpuServiceImpl*,
                     gfx::RenderingPipeline*));
  private:
-  const raw_ptr<base::SingleThreadTaskRunner> task_runner_;
+  base::SingleThreadTaskRunner* const task_runner_;
 };
 
 class MockPowerMonitorSource : public base::PowerMonitorSource {
@@ -78,7 +77,7 @@ class MockPowerMonitorSource : public base::PowerMonitorSource {
  private:
   // An external flag to signal as to whether or not this object is still
   // alive.
-  raw_ptr<bool> leak_guard_;
+  bool* leak_guard_;
 };
 
 TEST(VizMainImplTest, OopVizDependencyInjection) {

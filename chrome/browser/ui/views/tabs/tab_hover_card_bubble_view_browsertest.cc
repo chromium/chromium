@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -99,7 +98,7 @@ class TabHoverCardBubbleViewBrowserTest : public DialogBrowserTest {
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
 
-  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  TabStrip* tab_strip_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewBrowserTest,

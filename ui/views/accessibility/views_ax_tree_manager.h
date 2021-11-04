@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_action_handler.h"
@@ -116,7 +115,7 @@ class VIEWS_EXPORT ViewsAXTreeManager : public ui::AXTreeManager,
   // The Widget for which this class manages an AXTree.
   //
   // Weak, a Widget doesn't own this class.
-  raw_ptr<Widget> widget_;
+  Widget* widget_;
 
   // Set to true if we are still waiting for a task to serialize all previously
   // modified nodes.

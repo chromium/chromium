@@ -10,7 +10,6 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 
@@ -87,7 +86,7 @@ class GL_EXPORT GLImageD3D : public GLImage {
  private:
   ~GLImageD3D() override;
 
-  raw_ptr<void> egl_image_ = nullptr;  // EGLImageKHR
+  void* egl_image_ = nullptr;  // EGLImageKHR
 };
 
 }  // namespace gl

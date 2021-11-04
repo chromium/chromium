@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -34,7 +33,7 @@ class WebDialogDelegateUserData : public base::SupportsUserData::Data {
   WebDialogDelegate* delegate() { return delegate_; }
 
  private:
-  raw_ptr<WebDialogDelegate> delegate_;  // unowned
+  WebDialogDelegate* delegate_;  // unowned
 };
 
 }  // namespace

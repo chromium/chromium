@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/strong_alias.h"
@@ -73,7 +72,7 @@ class PasswordStoreAndroidBackend
         const override;
     void RecordMemoryUsageAndCountsHistograms() override;
 
-    const raw_ptr<PasswordStoreAndroidBackendBridge> bridge_;
+    PasswordStoreAndroidBackendBridge* const bridge_;
     base::WeakPtrFactory<SyncModelTypeControllerDelegate> weak_ptr_factory_{
         this};
   };

@@ -697,11 +697,11 @@ bool ViewAndroid::HitTest(EventHandlerCallback<E> handler_callback,
                           const gfx::PointF& point) {
   if (event_handler_) {
     if (bounds_.origin().IsOrigin()) {  // (x, y) == (0, 0)
-      if (handler_callback.Run(event_handler_.get(), event))
+      if (handler_callback.Run(event_handler_, event))
         return true;
     } else {
       std::unique_ptr<E> e(event.CreateFor(point));
-      if (handler_callback.Run(event_handler_.get(), *e))
+      if (handler_callback.Run(event_handler_, *e))
         return true;
     }
   }

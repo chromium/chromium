@@ -5,7 +5,6 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/notification_view_base.h"
 
@@ -71,19 +70,19 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   std::vector<views::View*> GetChildrenForLayerAdjustment();
 
   // Notification title, which is dynamically created inside view hierarchy.
-  raw_ptr<views::Label> title_view_ = nullptr;
+  views::Label* title_view_ = nullptr;
 
   // Views for inline settings.
-  raw_ptr<views::RadioButton> block_all_button_ = nullptr;
-  raw_ptr<views::RadioButton> dont_block_button_ = nullptr;
-  raw_ptr<views::LabelButton> settings_done_button_ = nullptr;
+  views::RadioButton* block_all_button_ = nullptr;
+  views::RadioButton* dont_block_button_ = nullptr;
+  views::LabelButton* settings_done_button_ = nullptr;
 
   // Ink drop container used in background animations.
-  const raw_ptr<views::InkDropContainerView> ink_drop_container_;
+  views::InkDropContainerView* const ink_drop_container_;
 
   // Owned by views properties. Guaranteed to be not null for the lifetime of
   // |this| because views properties are the last thing cleaned up.
-  raw_ptr<NotificationViewPathGenerator> highlight_path_generator_ = nullptr;
+  NotificationViewPathGenerator* highlight_path_generator_ = nullptr;
 };
 
 }  // namespace message_center

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_BROWSERTEST_BASE_H_
 
 #include <string>
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -97,7 +96,7 @@ class BrowsingDataRemoverBrowserTestBase : public PlatformBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 #if !defined(OS_ANDROID)
-  raw_ptr<Browser> incognito_browser_ = nullptr;
+  Browser* incognito_browser_ = nullptr;
 #endif
 };
 

@@ -5,7 +5,6 @@
 #ifndef NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLUTION_SERVICE_H_
 #define NET_PROXY_RESOLUTION_WIN_WINDOWS_SYSTEM_PROXY_RESOLUTION_SERVICE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 
 #include <memory>
@@ -107,7 +106,7 @@ class NET_EXPORT WindowsSystemProxyResolutionService
   std::unique_ptr<WindowsSystemProxyResolver> windows_system_proxy_resolver_;
 
   // This is the log for any generated events.
-  raw_ptr<NetLog> net_log_;
+  NetLog* net_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

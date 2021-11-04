@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -47,7 +46,7 @@ class AXComputedNodeDataTest : public ::testing::Test,
   AXNodeData static_text_2_0_0_;
   AXNodeData static_text_2_0_1_;
 
-  raw_ptr<AXNode> root_node_;
+  AXNode* root_node_;
 };
 
 AXComputedNodeDataTest::AXComputedNodeDataTest() = default;

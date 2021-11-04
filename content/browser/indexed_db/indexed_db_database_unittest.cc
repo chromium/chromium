@@ -12,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -103,7 +102,7 @@ class IndexedDBDatabaseTest : public ::testing::Test {
   std::unique_ptr<IndexedDBFakeBackingStore> backing_store_;
   std::unique_ptr<MockIndexedDBFactory> factory_;
   std::unique_ptr<IndexedDBDatabase> db_;
-  raw_ptr<FakeIndexedDBMetadataCoding> metadata_coding_ = nullptr;
+  FakeIndexedDBMetadataCoding* metadata_coding_ = nullptr;
   bool error_called_ = false;
 
  private:
@@ -551,10 +550,10 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
  protected:
   std::unique_ptr<IndexedDBFakeBackingStore> backing_store_;
   std::unique_ptr<IndexedDBDatabase> db_;
-  raw_ptr<FakeIndexedDBMetadataCoding> metadata_coding_ = nullptr;
+  FakeIndexedDBMetadataCoding* metadata_coding_ = nullptr;
   scoped_refptr<MockIndexedDBCallbacks> request_;
   scoped_refptr<MockIndexedDBDatabaseCallbacks> callbacks_;
-  raw_ptr<IndexedDBTransaction> transaction_ = nullptr;
+  IndexedDBTransaction* transaction_ = nullptr;
   DisjointRangeLockManager lock_manager_;
   bool error_called_ = false;
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 
 class GURL;
@@ -133,11 +132,11 @@ class ScriptingPermissionsModifier {
   // Revokes any granted host permissions.
   void WithholdHostPermissions();
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 
   scoped_refptr<const Extension> extension_;
 
-  raw_ptr<ExtensionPrefs> extension_prefs_;
+  ExtensionPrefs* extension_prefs_;
 };
 
 }  // namespace extensions

@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -322,8 +321,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   base::test::ScopedFeatureList feature_list_;
 
   AllowInterestGroupContentBrowserClient content_browser_client_;
-  raw_ptr<ContentBrowserClient> old_content_browser_client_ = nullptr;
-  raw_ptr<InterestGroupManager> manager_;
+  ContentBrowserClient* old_content_browser_client_ = nullptr;
+  InterestGroupManager* manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   // Must be destroyed before RenderViewHostTestHarness::TearDown().

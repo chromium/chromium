@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -78,7 +77,7 @@ class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
 
   // AutofillWalletOfferSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.
-  const raw_ptr<AutofillWebDataBackend> web_data_backend_;
+  AutofillWebDataBackend* const web_data_backend_;
 
   // The bridge should be used on the same sequence where it is constructed.
   SEQUENCE_CHECKER(sequence_checker_);

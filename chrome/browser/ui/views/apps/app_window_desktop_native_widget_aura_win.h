@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_DESKTOP_NATIVE_WIDGET_AURA_WIN_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 
 class ChromeNativeAppWindowViewsWin;
@@ -38,10 +37,10 @@ class AppWindowDesktopNativeWidgetAuraWin
 
  private:
   // Ownership managed by the views system.
-  raw_ptr<ChromeNativeAppWindowViewsWin> app_window_;
+  ChromeNativeAppWindowViewsWin* app_window_;
 
   // Owned by superclass DesktopNativeWidgetAura.
-  raw_ptr<views::DesktopWindowTreeHost> tree_host_;
+  views::DesktopWindowTreeHost* tree_host_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_WINDOW_DESKTOP_NATIVE_WIDGET_AURA_WIN_H_

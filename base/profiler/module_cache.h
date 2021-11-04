@@ -13,7 +13,6 @@
 #include "base/base_export.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -187,7 +186,7 @@ class BASE_EXPORT ModuleCache {
   std::vector<std::unique_ptr<const Module>> inactive_non_native_modules_;
 
   // Auxiliary module provider, for lazily creating native modules.
-  raw_ptr<AuxiliaryModuleProvider> auxiliary_module_provider_ = nullptr;
+  AuxiliaryModuleProvider* auxiliary_module_provider_ = nullptr;
 };
 
 }  // namespace base

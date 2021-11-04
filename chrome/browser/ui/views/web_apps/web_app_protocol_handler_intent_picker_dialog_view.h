@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -65,10 +64,10 @@ class WebAppProtocolHandlerIntentPickerView : public views::DialogDelegateView {
   void RunCloseCallback(bool allowed, bool remember_user_choice);
 
   const GURL url_;
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
   const web_app::AppId app_id_;
-  raw_ptr<views::Checkbox> remember_selection_checkbox_;
-  raw_ptr<views::ImageView> icon_image_view_;
+  views::Checkbox* remember_selection_checkbox_;
+  views::ImageView* icon_image_view_;
   chrome::WebAppProtocolHandlerAcceptanceCallback close_callback_;
   base::WeakPtrFactory<WebAppProtocolHandlerIntentPickerView> weak_ptr_factory_{
       this};

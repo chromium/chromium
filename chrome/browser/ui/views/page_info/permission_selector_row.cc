@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/page_info/permission_menu_model.h"
@@ -61,7 +60,7 @@ class ComboboxModelAdapter : public ui::ComboboxModel {
   std::u16string GetItemAt(int index) const override;
 
  private:
-  raw_ptr<PermissionMenuModel> model_;
+  PermissionMenuModel* model_;
 };
 
 void ComboboxModelAdapter::OnPerformAction(int index) {
@@ -116,7 +115,7 @@ class PermissionCombobox : public views::Combobox {
  private:
   void PermissionChanged();
 
-  raw_ptr<ComboboxModelAdapter> model_;
+  ComboboxModelAdapter* model_;
 
   // Minimum width for |PermissionCombobox|.
   int min_width_ = 0;

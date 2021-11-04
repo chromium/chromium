@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_system_test_util.h"
 #include "media/audio/mock_audio_manager.h"
@@ -55,7 +54,7 @@ class ServiceTestHelper {
     friend class base::RefCountedThreadSafe<AudioThreadContext>;
     virtual ~AudioThreadContext() = default;
 
-    const raw_ptr<media::AudioManager> audio_manager_;
+    media::AudioManager* const audio_manager_;
     std::unique_ptr<Service> service_;
   };
 
@@ -80,7 +79,7 @@ class ServiceTestHelper {
   mojom::AudioService& service() { return *service_remote_.get(); }
 
  private:
-  const raw_ptr<media::AudioManager> audio_manager_;
+  media::AudioManager* const audio_manager_;
   mojo::Remote<mojom::AudioService> service_remote_;
   scoped_refptr<AudioThreadContext> audio_thread_context_;
 };

@@ -14,7 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -112,7 +111,7 @@ class DefaultObserver : public SettingsObserver {
   }
 
  private:
-  const raw_ptr<BrowserContext> browser_context_;
+  BrowserContext* const browser_context_;
 };
 
 }  // namespace

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -84,7 +83,7 @@ class PostingThread : public SimpleThread {
   }
 
  private:
-  const raw_ptr<WaitableEvent> start_event_;
+  WaitableEvent* const start_event_;
   base::OnceClosure action_;
   base::OnceClosure completion_;
 };

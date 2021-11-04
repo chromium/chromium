@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/zoom/zoom_controller.h"
 #include "components/zoom/zoom_observer.h"
 
@@ -52,7 +51,7 @@ class ZoomChangedWatcher : public zoom::ZoomObserver {
       const ZoomController::ZoomChangedEventData& event_data) override;
 
  private:
-  raw_ptr<ZoomController> zoom_controller_;
+  ZoomController* zoom_controller_;
   ZoomEventPred predicate_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   bool change_received_ = false;

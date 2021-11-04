@@ -7,7 +7,6 @@
 #include <limits>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -40,7 +39,7 @@ class SampleCountPickleIterator : public SampleCountIterator {
            HistogramBase::Count* count) const override;
 
  private:
-  const raw_ptr<PickleIterator> iter_;
+  PickleIterator* const iter_;
 
   HistogramBase::Sample min_;
   int64_t max_;

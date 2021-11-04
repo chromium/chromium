@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -181,7 +180,7 @@ class ProfileOAuth2TokenServiceDelegate {
     ~ScopedBatchChange();
 
    private:
-    raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;  // Weak.
+    ProfileOAuth2TokenServiceDelegate* delegate_;  // Weak.
   };
 
  private:

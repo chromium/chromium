@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -113,7 +112,7 @@ class ActivationStateComputingNavigationThrottle
 
   // Must outlive this class. For main frame navigations, this member will be
   // nullptr until NotifyPageActivationWithRuleset is called.
-  raw_ptr<VerifiedRuleset::Handle> ruleset_handle_;
+  VerifiedRuleset::Handle* ruleset_handle_;
 
   // Will be set to true when DEFER is called in WillProcessResponse.
   bool deferred_ = false;

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/browser/eye_dropper.h"
@@ -51,7 +50,7 @@ class EyeDropperView : public content::EyeDropper,
    private:
     void OnMouseEvent(ui::MouseEvent* event) override;
 
-    raw_ptr<EyeDropperView> view_;
+    EyeDropperView* view_;
 #if defined(USE_AURA)
     class KeyboardHandler;
     std::unique_ptr<KeyboardHandler> keyboard_handler_;
@@ -76,13 +75,13 @@ class EyeDropperView : public content::EyeDropper,
   void OnColorSelected();
   void OnColorSelectionCanceled();
 
-  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
 
   gfx::Size GetSize() const;
   float GetDiameter() const;
 
   // Receives the color selection.
-  raw_ptr<content::EyeDropperListener> listener_;
+  content::EyeDropperListener* listener_;
 
   std::unique_ptr<PreEventDispatchHandler> pre_dispatch_handler_;
   std::unique_ptr<ViewPositionHandler> view_position_handler_;

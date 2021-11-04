@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 namespace crypto {
 class ECPrivateKey;
@@ -59,8 +58,8 @@ class VapidKeyManager {
   bool InitWithPreference();
 
   // Used for storing and fetching VAPID key from preferences.
-  raw_ptr<SharingSyncPreference> sharing_sync_preference_;
-  raw_ptr<syncer::SyncService> sync_service_;
+  SharingSyncPreference* sharing_sync_preference_;
+  syncer::SyncService* sync_service_;
   std::unique_ptr<crypto::ECPrivateKey> vapid_key_;
   std::vector<uint8_t> vapid_key_info_;
 };

@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
@@ -107,7 +106,7 @@ class AutoDidCommitTransaction {
   ~AutoDidCommitTransaction() { backing_store_->DidCommitTransaction(); }
 
  private:
-  const raw_ptr<IndexedDBBackingStore> backing_store_;
+  IndexedDBBackingStore* const backing_store_;
 };
 
 namespace {
@@ -3033,7 +3032,7 @@ IndexedDBBackingStore::Transaction::Transaction(
     blink::mojom::IDBTransactionMode mode)
     : backing_store_(std::move(backing_store)),
       transactional_leveldb_factory_(
-          backing_store_ ? backing_store_->transactional_leveldb_factory_.get()
+          backing_store_ ? backing_store_->transactional_leveldb_factory_
                          : nullptr),
       durability_(durability),
       mode_(mode) {

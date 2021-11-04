@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/common/content_export.h"
@@ -37,7 +36,7 @@ class CONTENT_EXPORT BroadcastChannelProvider
   // Note: We store a raw pointer to the BroadcastChannelService since it's
   // owned by the StoragePartitionImpl and should outlive any created
   // BroadcastChannelProvider instance.
-  raw_ptr<BroadcastChannelService> broadcast_channel_service_;
+  BroadcastChannelService* broadcast_channel_service_;
 };
 
 }  // namespace content

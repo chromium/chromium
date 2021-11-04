@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -186,7 +185,7 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   const std::string session_id;
 
   // Persists data using the prefs service. Not owned by this class.
-  raw_ptr<PersistedData> persisted_data = nullptr;
+  PersistedData* persisted_data = nullptr;
 
  private:
   friend class base::RefCountedThreadSafe<UpdateContext>;

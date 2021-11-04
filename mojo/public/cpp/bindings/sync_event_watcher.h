@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
@@ -54,7 +53,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncEventWatcher {
   void IncrementRegisterCount();
   void DecrementRegisterCount();
 
-  const raw_ptr<base::WaitableEvent> event_;
+  base::WaitableEvent* const event_;
   const base::RepeatingClosure callback_;
 
   // Must outlive (and thus be declared before) |subscription_|, since

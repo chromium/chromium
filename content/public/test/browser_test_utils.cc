@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/public/test/browser_test_utils.h"
-#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -600,7 +599,7 @@ class ResizeObserver : public RenderWidgetHostObserver {
   }
 
  private:
-  raw_ptr<RenderWidgetHost> widget_host_;
+  RenderWidgetHost* widget_host_;
   base::RunLoop run_loop_;
   base::RepeatingCallback<bool()> is_complete_callback_;
 };
@@ -633,9 +632,9 @@ class BoundingBoxUpdateWaiter : public TextInputManager::Observer {
     run_loop_.Quit();
   }
 
-  const raw_ptr<TextInputManager> text_input_manager_;
+  TextInputManager* const text_input_manager_;
   const gfx::Rect original_bounding_box_;
-  const raw_ptr<RenderWidgetHostViewAura> rwhva_;
+  RenderWidgetHostViewAura* const rwhva_;
 
   base::RunLoop run_loop_;
 };
@@ -2927,7 +2926,7 @@ class FrameFocusedObserver::FrameTreeNodeObserverImpl
   }
 
  private:
-  raw_ptr<FrameTreeNode> owner_;
+  FrameTreeNode* owner_;
   base::RunLoop run_loop_;
 };
 
@@ -2958,7 +2957,7 @@ class FrameDeletedObserver::FrameTreeNodeObserverImpl
       run_loop_.Quit();
   }
 
-  raw_ptr<FrameTreeNode> owner_;
+  FrameTreeNode* owner_;
   base::RunLoop run_loop_;
 };
 
@@ -3361,7 +3360,7 @@ class EvictionStateWaiter : public DelegatedFrameHost::Observer {
   }
 
  private:
-  raw_ptr<DelegatedFrameHost> delegated_frame_host_;
+  DelegatedFrameHost* delegated_frame_host_;
   DelegatedFrameHost::FrameEvictionState waited_eviction_state_;
   base::OnceClosure quit_closure_;
 };

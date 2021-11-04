@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -37,7 +36,7 @@ class GeolocationWifiPollingPolicyTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<WifiPollingPolicy> polling_policy_ = nullptr;
+  WifiPollingPolicy* polling_policy_ = nullptr;
 };
 
 TEST_F(GeolocationWifiPollingPolicyTest, CreateDestroy) {

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
@@ -113,8 +112,8 @@ class FacetManager {
   static void ServeRequestWithFailure(RequestInfo request_info);
 
   FacetURI facet_uri_;
-  raw_ptr<FacetManagerHost> backend_;
-  raw_ptr<base::Clock> clock_;
+  FacetManagerHost* backend_;
+  base::Clock* clock_;
 
   // The last time affiliation information was fetched for this facet, i.e. the
   // freshness of the data in the cache. If there is no corresponding data in

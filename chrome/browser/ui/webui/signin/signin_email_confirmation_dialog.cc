@@ -10,7 +10,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,8 +64,7 @@ class SigninEmailConfirmationDialog::DialogWebContentsObserver
     signin_email_confirmation_dialog_->CloseDialog();
   }
 
-  const raw_ptr<SigninEmailConfirmationDialog>
-      signin_email_confirmation_dialog_;
+  SigninEmailConfirmationDialog* const signin_email_confirmation_dialog_;
 };
 
 SigninEmailConfirmationDialog::SigninEmailConfirmationDialog(

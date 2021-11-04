@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
@@ -181,7 +180,7 @@ class CertVerifyProcTrustStore {
   }
 
  private:
-  raw_ptr<SystemTrustStore> system_trust_store_;
+  SystemTrustStore* system_trust_store_;
   TrustStoreInMemory additional_trust_store_;
   TrustStoreCollection trust_store_;
 };
@@ -374,14 +373,14 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
   }
 
   // The CRLSet may be null.
-  raw_ptr<const CRLSet> crl_set_;
-  raw_ptr<CertNetFetcher> net_fetcher_;
+  const CRLSet* crl_set_;
+  CertNetFetcher* net_fetcher_;
   const VerificationType verification_type_;
   const int flags_;
-  raw_ptr<const CertVerifyProcTrustStore> trust_store_;
+  const CertVerifyProcTrustStore* trust_store_;
   const base::StringPiece stapled_leaf_ocsp_response_;
-  raw_ptr<const EVRootCAMetadata> ev_metadata_;
-  raw_ptr<bool> checked_revocation_for_some_path_;
+  const EVRootCAMetadata* ev_metadata_;
+  bool* checked_revocation_for_some_path_;
 };
 
 class CertVerifyProcBuiltin : public CertVerifyProc {

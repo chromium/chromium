@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -317,7 +316,7 @@ class CdmVideoFrameAdapter : public cdm::VideoFrame_2 {
   }
 
  private:
-  const raw_ptr<cdm::VideoFrame> video_frame_ = nullptr;
+  cdm::VideoFrame* const video_frame_ = nullptr;
 };
 
 }  // namespace

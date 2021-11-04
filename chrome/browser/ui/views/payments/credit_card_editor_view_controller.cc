@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
@@ -150,7 +149,7 @@ class ExpirationDateValidationDelegate : public ValidationDelegate {
   void ComboboxModelChanged(ValidatingCombobox* combobox) override {}
 
  private:
-  raw_ptr<EditorViewController> controller_;
+  EditorViewController* controller_;
   const std::string app_locale_;
   bool initially_valid_;
 };

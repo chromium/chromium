@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ADS_INTERVENTION_MANAGER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -102,9 +101,9 @@ class AdsInterventionManager {
  private:
   // The SubresourceFilterContentSettingsManager is guaranteed to outlive the
   // AdsInterventionManager. Both are bound to the profile.
-  raw_ptr<SubresourceFilterContentSettingsManager> settings_manager_ = nullptr;
+  SubresourceFilterContentSettingsManager* settings_manager_ = nullptr;
 
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 };
 
 }  // namespace subresource_filter

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_utterance.h"
 
@@ -59,7 +58,7 @@ class AutofillAssistantTtsController : public content::UtteranceEventDelegate {
                   const std::string& error_message) override;
 
  private:
-  raw_ptr<content::TtsController> tts_controller_ = nullptr;
+  content::TtsController* tts_controller_ = nullptr;
 
   base::WeakPtr<TtsEventDelegate> tts_event_delegate_;
 };

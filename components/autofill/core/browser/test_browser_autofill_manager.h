@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -77,7 +76,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   using BrowserAutofillManager::pending_form_data;
 
  private:
-  raw_ptr<TestPersonalDataManager> personal_data_;  // Weak reference.
+  TestPersonalDataManager* personal_data_;  // Weak reference.
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;
   bool call_parent_upload_form_data_ = false;

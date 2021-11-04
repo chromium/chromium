@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -89,7 +88,7 @@ class PreferredAppsListHandle {
     void Observe(PreferredAppsListHandle* handle);
 
    private:
-    raw_ptr<PreferredAppsListHandle> handle_ = nullptr;
+    PreferredAppsListHandle* handle_ = nullptr;
   };
 
   void AddObserver(Observer* observer);

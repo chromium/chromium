@@ -11,7 +11,6 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
@@ -78,7 +77,7 @@ class DiscardableImageGenerator {
     }
 
    private:
-    raw_ptr<DiscardableImageGenerator> generator_;
+    DiscardableImageGenerator* generator_;
     gfx::Rect op_rect_;
   };
 

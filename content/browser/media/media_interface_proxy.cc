@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -207,7 +206,7 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
 #endif  // defined(OS_WIN)
 
  private:
-  const raw_ptr<RenderFrameHost> render_frame_host_;
+  RenderFrameHost* const render_frame_host_;
   const std::string cdm_file_system_id_;
 
 #if defined(OS_WIN)

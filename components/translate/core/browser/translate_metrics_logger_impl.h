@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -257,7 +256,7 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
 
   // Tracks the amount of time the page is in the foreground and either
   // translated or not translated.
-  raw_ptr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
   base::TimeTicks time_of_last_state_change_;
   base::TimeDelta total_time_translated_;
   base::TimeDelta total_time_not_translated_;

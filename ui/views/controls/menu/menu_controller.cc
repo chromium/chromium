@@ -14,7 +14,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -410,7 +409,7 @@ class MenuController::MenuScrollTask {
   }
 
   // SubmenuView being scrolled.
-  raw_ptr<SubmenuView> submenu_ = nullptr;
+  SubmenuView* submenu_ = nullptr;
 
   // Direction scrolling.
   bool is_scrolling_up_ = false;
@@ -655,7 +654,7 @@ bool MenuController::OnMousePressed(SubmenuView* source,
   // is the same root view we've been forwarding to. Otherwise, it's the root
   // view of the target.
   MenuHostRootView* forward_to_root =
-      current_mouse_pressed_state_ ? current_mouse_event_target_.get()
+      current_mouse_pressed_state_ ? current_mouse_event_target_
                                    : GetRootView(source, event.location());
 
   current_mouse_pressed_state_ |= event.changed_button_flags();
@@ -726,8 +725,7 @@ bool MenuController::OnMouseDragged(SubmenuView* source,
         part.menu = source->GetMenuItem();
       else
         mouse_menu = part.menu;
-      SetSelection(part.menu ? part.menu : state_.item.get(),
-                   SELECTION_OPEN_SUBMENU);
+      SetSelection(part.menu ? part.menu : state_.item, SELECTION_OPEN_SUBMENU);
     }
   } else if (part.type == MenuPart::Type::kNone) {
     // If there is a sibling menu, show it. Otherwise, if the user has selected
@@ -830,7 +828,7 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     }
   } else if (part.type == MenuPart::Type::kMenuItem) {
     // User either clicked on empty space, or a menu that has children.
-    SetSelection(part.menu ? part.menu : state_.item.get(),
+    SetSelection(part.menu ? part.menu : state_.item,
                  SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
   }
   SendMouseCaptureLostToActiveView();
@@ -886,7 +884,7 @@ bool MenuController::OnMouseWheel(SubmenuView* source,
                                   const ui::MouseWheelEvent& event) {
   MenuPart part = GetMenuPart(source, event.location());
 
-  SetSelection(part.menu ? part.menu : state_.item.get(),
+  SetSelection(part.menu ? part.menu : state_.item,
                SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
 
   return part.submenu && part.submenu->OnMouseWheel(event);
@@ -944,7 +942,7 @@ void MenuController::OnGestureEvent(SubmenuView* source,
       event->StopPropagation();
     } else if (part.type == MenuPart::Type::kMenuItem) {
       // User either tapped on empty space, or a menu that has children.
-      SetSelection(part.menu ? part.menu : state_.item.get(),
+      SetSelection(part.menu ? part.menu : state_.item,
                    SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
       event->StopPropagation();
     }
@@ -2191,7 +2189,7 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
       params.menu_type = ui::MenuType::kChildMenu;
     } else if (state_.context_menu) {
       if (!menu_stack_.empty()) {
-        auto* last_menu_item = menu_stack_.back().first.item.get();
+        auto* last_menu_item = menu_stack_.back().first.item;
         if (last_menu_item->SubmenuIsShowing())
           params.context = last_menu_item->GetSubmenu()->GetWidget();
         else

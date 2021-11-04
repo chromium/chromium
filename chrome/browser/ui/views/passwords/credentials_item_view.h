@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_CREDENTIALS_ITEM_VIEW_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/branding_buildflags.h"
 #include "build/buildflag.h"
@@ -62,15 +61,15 @@ class CredentialsItemView : public AccountAvatarFetcherDelegate,
   // views::View:
   void OnPaintBackground(gfx::Canvas* canvas) override;
 
-  raw_ptr<views::ImageView> image_view_;
+  views::ImageView* image_view_;
 
   // Optional right-aligned icon to distinguish account store credentials and
   // profile store ones.
-  raw_ptr<views::ImageView> store_indicator_icon_view_ = nullptr;
+  views::ImageView* store_indicator_icon_view_ = nullptr;
 
-  raw_ptr<views::Label> upper_label_ = nullptr;
-  raw_ptr<views::Label> lower_label_ = nullptr;
-  raw_ptr<views::ImageView> info_icon_ = nullptr;
+  views::Label* upper_label_ = nullptr;
+  views::Label* lower_label_ = nullptr;
+  views::ImageView* info_icon_ = nullptr;
 
   base::WeakPtrFactory<CredentialsItemView> weak_ptr_factory_{this};
 };

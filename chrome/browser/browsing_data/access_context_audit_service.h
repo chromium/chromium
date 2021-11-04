@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BROWSING_DATA_ACCESS_CONTEXT_AUDIT_SERVICE_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
@@ -65,7 +64,7 @@ class AccessContextAuditService
     // audit service for persisting to disk.
     void FlushCookieRecords();
 
-    raw_ptr<AccessContextAuditService> service_;
+    AccessContextAuditService* service_;
     canonical_cookie::CookieHashSet accessed_cookies_;
     url::Origin last_seen_top_frame_origin_;
     base::ScopedObservation<AccessContextAuditService, CookieAccessHelper>
@@ -182,8 +181,8 @@ class AccessContextAuditService
 
   int user_visible_tasks_in_progress = 0;
 
-  raw_ptr<base::Clock> clock_;
-  raw_ptr<Profile> profile_;
+  base::Clock* clock_;
+  Profile* profile_;
 
   base::ObserverList<CookieAccessHelper> cookie_access_helpers_;
 

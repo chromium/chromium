@@ -16,7 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/kill.h"
 #include "base/time/time.h"
@@ -576,7 +575,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // The model object. Access is protected to allow access to
   // RenderWidgetHostViewChildFrame.
-  raw_ptr<RenderWidgetHostImpl> host_;
+  RenderWidgetHostImpl* host_;
 
   // Whether this view is a frame or a popup.
   WidgetType widget_type_ = WidgetType::kFrame;
@@ -595,7 +594,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // with. This is initially nullptr until the first time the view calls
   // GetTextInputManager(). It also becomes nullptr when TextInputManager is
   // destroyed before the RWHV is destroyed.
-  raw_ptr<TextInputManager> text_input_manager_ = nullptr;
+  TextInputManager* text_input_manager_ = nullptr;
 
   // The background color used in the current renderer.
   absl::optional<SkColor> content_background_color_;
@@ -606,7 +605,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   bool is_currently_scrolling_viewport_ = false;
 
-  raw_ptr<TooltipObserver> tooltip_observer_for_testing_ = nullptr;
+  TooltipObserver* tooltip_observer_for_testing_ = nullptr;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(

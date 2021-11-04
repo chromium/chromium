@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/ui_input_manager.h"
 
 #include <memory>
@@ -54,7 +53,7 @@ class TextInputSceneTest : public UiTest {
   }
 
  protected:
-  raw_ptr<TextInput> text_input_;
+  TextInput* text_input_;
   std::unique_ptr<StrictMock<MockTextInputDelegate>> text_input_delegate_;
   std::unique_ptr<EditedText> edited_text_;
   testing::Sequence in_sequence_;

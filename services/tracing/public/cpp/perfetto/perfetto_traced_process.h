@@ -6,7 +6,6 @@
 #define SERVICES_TRACING_PUBLIC_CPP_PERFETTO_PERFETTO_TRACED_PROCESS_H_
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -122,7 +121,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
    private:
     uint64_t data_source_id_ = 0;
     std::string name_;
-    raw_ptr<PerfettoProducer> producer_ = nullptr;
+    PerfettoProducer* producer_ = nullptr;
   };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

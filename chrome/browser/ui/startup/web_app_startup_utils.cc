@@ -16,7 +16,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -302,7 +301,7 @@ class StartupWebAppCreator
   // Command line for this launch.
   const base::CommandLine command_line_;
   const base::FilePath cur_dir_;
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 
   // The app id for this launch, corresponding to --app-id on the command line.
   const AppId app_id_;

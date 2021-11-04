@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -60,7 +59,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) UdpSocketClient final
                          const absl::optional<net::IPEndPoint>& addr);
 
   const net::IPEndPoint remote_endpoint_;
-  const raw_ptr<network::mojom::NetworkContext> network_context_;
+  network::mojom::NetworkContext* const network_context_;
   base::OnceClosure error_callback_;
 
   mojo::Receiver<network::mojom::UDPSocketListener> receiver_{this};

@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -296,7 +295,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
   base::OnceClosure connection_error_handler_;
 
   ScopedMessagePipeHandle message_pipe_;
-  raw_ptr<MessageReceiver> incoming_receiver_ = nullptr;
+  MessageReceiver* incoming_receiver_ = nullptr;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<SimpleWatcher> handle_watcher_;
@@ -341,7 +340,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Connector : public MessageReceiver {
 
   // A cached pointer to the RunLoopNestingObserver for the thread on which this
   // Connector was created.
-  raw_ptr<RunLoopNestingObserver> nesting_observer_ = nullptr;
+  RunLoopNestingObserver* nesting_observer_ = nullptr;
 
   // |true| iff the Connector is currently dispatching a message. Used to detect
   // nested dispatch operations.

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
@@ -122,7 +121,7 @@ class NativeUnwinderCreator {
   }
 
  private:
-  const raw_ptr<stack_unwinder::Module> module_;
+  stack_unwinder::Module* const module_;
   const std::unique_ptr<stack_unwinder::MemoryRegionsMap> memory_regions_map_;
 };
 
@@ -235,7 +234,7 @@ class ThreadProfiler::WorkIdRecorder : public metrics::WorkIdRecorder {
   WorkIdRecorder& operator=(const WorkIdRecorder&) = delete;
 
  private:
-  const raw_ptr<base::WorkIdProvider> work_id_provider_;
+  base::WorkIdProvider* const work_id_provider_;
 };
 
 ThreadProfiler::~ThreadProfiler() {

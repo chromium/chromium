@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
@@ -119,7 +118,7 @@ class MenuItemFactory : public views::BubbleDialogModelHost::CustomViewFactory {
  private:
   const std::u16string name_;
   const views::Button::PressedCallback callback_;
-  const raw_ptr<const gfx::VectorIcon> icon_;
+  const gfx::VectorIcon* const icon_;
 };
 
 class TabGroupEditorBubbleDelegate : public ui::DialogModelDelegate {
@@ -196,7 +195,7 @@ class TabGroupEditorBubbleDelegate : public ui::DialogModelDelegate {
   }
 
  private:
-  const raw_ptr<const Browser> browser_;
+  const Browser* const browser_;
   const tab_groups::TabGroupId group_;
 };
 

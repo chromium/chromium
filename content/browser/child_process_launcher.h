@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
@@ -244,7 +243,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
   void Notify(internal::ChildProcessLauncherHelper::Process process,
               int error_code);
 
-  raw_ptr<Client> client_;
+  Client* client_;
 
   // The process associated with this ChildProcessLauncher. Set in Notify by
   // ChildProcessLauncherHelper once the process was started.

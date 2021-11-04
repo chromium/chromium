@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -201,8 +200,8 @@ class CertIssuersIter {
   void SortRemainingIssuers();
 
   scoped_refptr<ParsedCertificate> cert_;
-  raw_ptr<CertIssuerSources> cert_issuer_sources_;
-  raw_ptr<const TrustStore> trust_store_;
+  CertIssuerSources* cert_issuer_sources_;
+  const TrustStore* trust_store_;
 
   // The list of issuers for |cert_|. This is added to incrementally (first
   // synchronous results, then possibly multiple times as asynchronous results
@@ -236,7 +235,7 @@ class CertIssuersIter {
   std::vector<std::unique_ptr<CertIssuerSource::Request>>
       pending_async_requests_;
 
-  raw_ptr<base::SupportsUserData> debug_data_;
+  base::SupportsUserData* debug_data_;
 };
 
 CertIssuersIter::CertIssuersIter(scoped_refptr<ParsedCertificate> in_cert,
@@ -496,9 +495,9 @@ class CertPathIter {
   // The CertIssuerSources for retrieving candidate issuers.
   CertIssuerSources cert_issuer_sources_;
   // The TrustStore for checking if a path ends in a trust anchor.
-  raw_ptr<const TrustStore> trust_store_;
+  const TrustStore* trust_store_;
 
-  raw_ptr<base::SupportsUserData> debug_data_;
+  base::SupportsUserData* debug_data_;
 };
 
 CertPathIter::CertPathIter(scoped_refptr<ParsedCertificate> cert,

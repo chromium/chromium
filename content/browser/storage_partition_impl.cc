@@ -20,7 +20,6 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
@@ -813,7 +812,7 @@ class StoragePartitionImpl::URLLoaderFactoryForBrowserProcess
   friend class base::RefCounted<URLLoaderFactoryForBrowserProcess>;
   ~URLLoaderFactoryForBrowserProcess() override = default;
 
-  raw_ptr<StoragePartitionImpl> storage_partition_;
+  StoragePartitionImpl* storage_partition_;
   const bool corb_enabled_;
 };
 
@@ -1058,7 +1057,7 @@ class StoragePartitionImpl::ServiceWorkerCookieAccessObserver
 
   // `storage_partition_` owns this object via UniqueReceiverSet
   // (service_worker_cookie_observers_).
-  raw_ptr<StoragePartitionImpl> storage_partition_;
+  StoragePartitionImpl* storage_partition_;
 };
 
 StoragePartitionImpl::StoragePartitionImpl(

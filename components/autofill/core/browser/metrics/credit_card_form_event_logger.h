@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
@@ -121,8 +120,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool card_selected_has_offer_ = false;
 
   // Weak references.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
-  raw_ptr<AutofillClient> client_;
+  PersonalDataManager* personal_data_manager_;
+  AutofillClient* client_;
 };
 
 }  // namespace autofill

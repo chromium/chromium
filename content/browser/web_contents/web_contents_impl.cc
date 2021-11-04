@@ -27,7 +27,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -675,8 +674,8 @@ class WebContentsImpl::RenderWidgetHostDestructionObserver
   }
 
  private:
-  raw_ptr<WebContentsImpl> owner_;
-  raw_ptr<RenderWidgetHost> watched_host_;
+  WebContentsImpl* owner_;
+  RenderWidgetHost* watched_host_;
 };
 
 // WebContentsImpl::WebContentsDestructionObserver ----------------------------
@@ -700,7 +699,7 @@ class WebContentsImpl::WebContentsDestructionObserver
   }
 
  private:
-  raw_ptr<WebContentsImpl> owner_;
+  WebContentsImpl* owner_;
 };
 
 #if defined(OS_ANDROID)

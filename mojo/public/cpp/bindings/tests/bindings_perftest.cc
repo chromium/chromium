@@ -6,7 +6,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -185,7 +184,7 @@ class PingPongPaddle : public MessageReceiverWithResponderStatus {
   base::TimeTicks start_time_;
   base::TimeTicks end_time_;
   uint32_t expected_count_ = 0;
-  raw_ptr<MessageReceiver> sender_;
+  MessageReceiver* sender_;
   base::RepeatingClosure quit_closure_;
 };
 

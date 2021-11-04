@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_impl.h"
 #include "sandbox/linux/bpf_dsl/errorcode.h"
 #include "sandbox/linux/bpf_dsl/policy_compiler.h"
@@ -72,7 +71,7 @@ class TrapResultExprImpl : public internal::ResultExprImpl {
 
  private:
   TrapRegistry::TrapFnc func_;
-  raw_ptr<const void> arg_;
+  const void* arg_;
   bool safe_;
 };
 

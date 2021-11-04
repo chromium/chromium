@@ -14,7 +14,6 @@
 #include "base/cpu.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -123,7 +122,7 @@ class TransportClient final : public media::cast::CastTransport::Client {
   }
 
  private:
-  const raw_ptr<Session> session_;  // Outlives this class.
+  Session* const session_;  // Outlives this class.
 };
 
 // Generates a string with cryptographically secure random bytes.

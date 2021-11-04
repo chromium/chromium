@@ -5,7 +5,6 @@
 #ifndef NET_QUIC_DEDICATED_WEB_TRANSPORT_HTTP3_CLIENT_H_
 #define NET_QUIC_DEDICATED_WEB_TRANSPORT_HTTP3_CLIENT_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
@@ -140,13 +139,13 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   const GURL url_;
   const url::Origin origin_;
   const NetworkIsolationKey isolation_key_;
-  const raw_ptr<URLRequestContext> context_;          // Unowned.
-  const raw_ptr<WebTransportClientVisitor> visitor_;  // Unowned.
+  URLRequestContext* const context_;          // Unowned.
+  WebTransportClientVisitor* const visitor_;  // Unowned.
 
-  const raw_ptr<ClientSocketFactory> client_socket_factory_;  // Unowned.
-  const raw_ptr<QuicContext> quic_context_;                   // Unowned.
+  ClientSocketFactory* const client_socket_factory_;  // Unowned.
+  QuicContext* const quic_context_;                   // Unowned.
   NetLogWithSource net_log_;
-  raw_ptr<base::SequencedTaskRunner> task_runner_;  // Unowned.
+  base::SequencedTaskRunner* task_runner_;  // Unowned.
 
   quic::ParsedQuicVersionVector supported_versions_;
   // TODO(vasilvv): move some of those into QuicContext.
@@ -166,10 +165,10 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;
 
   std::unique_ptr<DatagramClientSocket> socket_;
-  raw_ptr<quic::QuicConnection> connection_;  // owned by |session_|
+  quic::QuicConnection* connection_;  // owned by |session_|
   std::unique_ptr<quic::QuicSpdyClientSession> session_;
-  raw_ptr<quic::QuicSpdyStream> connect_stream_ = nullptr;
-  raw_ptr<quic::WebTransportSession> web_transport_session_ = nullptr;
+  quic::QuicSpdyStream* connect_stream_ = nullptr;
+  quic::WebTransportSession* web_transport_session_ = nullptr;
   std::unique_ptr<QuicChromiumPacketReader> packet_reader_;
   std::unique_ptr<QuicEventLogger> event_logger_;
   quic::QuicClientPushPromiseIndex push_promise_index_;

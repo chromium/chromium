@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -178,7 +177,7 @@ class EventReportValidator {
                      const std::string& field_key,
                      const absl::optional<bool>& expected_value);
 
-  raw_ptr<policy::MockCloudPolicyClient> client_;
+  policy::MockCloudPolicyClient* client_;
 
   std::string event_key_;
   absl::optional<std::string> url_;
@@ -186,7 +185,7 @@ class EventReportValidator {
   absl::optional<std::string> threat_type_ = absl::nullopt;
   absl::optional<std::string> unscanned_reason_ = absl::nullopt;
   absl::optional<int> content_size_ = absl::nullopt;
-  raw_ptr<const std::set<std::string>> mimetypes_ = nullptr;
+  const std::set<std::string>* mimetypes_ = nullptr;
   std::string username_;
   absl::optional<bool> is_federated_ = absl::nullopt;
   absl::optional<std::string> federated_origin_ = absl::nullopt;

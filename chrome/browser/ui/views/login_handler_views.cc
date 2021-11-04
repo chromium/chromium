@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/login/login_handler.h"
 
 #include <string>
@@ -163,13 +162,13 @@ class LoginHandlerViews : public LoginHandler {
         handler_->OnDialogDestroyed();
     }
 
-    raw_ptr<LoginHandlerViews> handler_;
+    LoginHandlerViews* handler_;
     // The LoginView that contains the user's login information.
-    raw_ptr<LoginView> login_view_;
-    raw_ptr<views::Widget> widget_;
+    LoginView* login_view_;
+    views::Widget* widget_;
   };
 
-  raw_ptr<Dialog> dialog_ = nullptr;
+  Dialog* dialog_ = nullptr;
   std::unique_ptr<PopunderPreventer> popunder_preventer_;
 };
 

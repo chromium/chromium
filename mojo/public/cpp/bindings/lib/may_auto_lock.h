@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,7 +34,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoLock {
   }
 
  private:
-  raw_ptr<base::Lock> lock_;
+  base::Lock* lock_;
 };
 
 // Similar to base::AutoUnlock, except that it does nothing if |lock| passed
@@ -59,7 +58,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MayAutoUnlock {
   }
 
  private:
-  raw_ptr<base::Lock> lock_;
+  base::Lock* lock_;
 };
 
 }  // namespace internal

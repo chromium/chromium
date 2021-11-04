@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -843,7 +842,7 @@ class AdsPageLoadMetricsObserverTest
   std::unique_ptr<base::SimpleTestTickClock> clock_;
 
   // A pointer to the AdsPageLoadMetricsObserver used by the tests.
-  raw_ptr<AdsPageLoadMetricsObserver> ads_observer_ = nullptr;
+  AdsPageLoadMetricsObserver* ads_observer_ = nullptr;
 };
 
 TEST_F(AdsPageLoadMetricsObserverTest, PageWithNoAds) {

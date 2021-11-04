@@ -4,7 +4,6 @@
 
 #include "chrome/browser/accessibility/accessibility_labels_service.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -119,7 +118,7 @@ class ImageAnnotatorClient : public image_annotation::Annotator::Client {
   }
 
  private:
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
   data_decoder::DataDecoder data_decoder_;
 };
 

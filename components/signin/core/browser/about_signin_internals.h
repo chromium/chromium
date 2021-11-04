@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -236,16 +235,16 @@ class AboutSigninInternals : public KeyedService,
   void OnUnblockReconcile() override;
 
   // Weak pointer to the identity manager.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   // Weak pointer to the client.
-  raw_ptr<SigninClient> client_;
+  SigninClient* client_;
 
   // Weak pointer to the SigninErrorController
-  raw_ptr<SigninErrorController> signin_error_controller_;
+  SigninErrorController* signin_error_controller_;
 
   // Weak pointer to the AccountReconcilor.
-  raw_ptr<AccountReconcilor> account_reconcilor_;
+  AccountReconcilor* account_reconcilor_;
 
   // Encapsulates the actual signin and token related values.
   // Most of the values are mirrored in the prefs for persistence.

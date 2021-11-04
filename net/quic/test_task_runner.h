@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/test/test_pending_task.h"
@@ -68,7 +67,7 @@ class TestTaskRunner : public base::SequencedTaskRunner {
  private:
   std::vector<PostedTask>::iterator FindNextTask();
 
-  const raw_ptr<quic::MockClock> clock_;
+  quic::MockClock* const clock_;
   std::vector<PostedTask> tasks_;
 };
 

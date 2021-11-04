@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
@@ -215,7 +214,7 @@ class FakeContainerWrapper : public PdfViewWebPlugin::ContainerWrapper {
   // Represents the frame widget's text input type.
   blink::WebTextInputType widget_text_input_type_;
 
-  raw_ptr<PdfViewWebPlugin> web_plugin_;
+  PdfViewWebPlugin* web_plugin_;
 };
 
 class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
@@ -266,7 +265,7 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
 
   void TearDown() override { plugin_.reset(); }
 
-  raw_ptr<FakePdfViewWebPluginClient> client_ptr_;
+  FakePdfViewWebPluginClient* client_ptr_;
   std::unique_ptr<PdfViewWebPlugin, PluginDeleter> plugin_;
 };
 
@@ -366,8 +365,8 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
         << window_rect.ToString();
   }
 
-  raw_ptr<TestPDFiumEngine> engine_ptr_;
-  raw_ptr<FakeContainerWrapper> wrapper_ptr_;
+  TestPDFiumEngine* engine_ptr_;
+  FakeContainerWrapper* wrapper_ptr_;
 
   // Provides the cc::PaintCanvas for painting.
   gfx::Canvas canvas_{kCanvasSize, /*image_scale=*/1.0f, /*is_opaque=*/true};

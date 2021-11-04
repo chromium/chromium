@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_MANIFEST_UPDATE_TASK_H_
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
@@ -236,7 +235,7 @@ class ManifestUpdateTask final
   WebAppUiManager& ui_manager_;
   WebAppInstallFinalizer& install_finalizer_;
   OsIntegrationManager& os_integration_manager_;
-  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  WebAppSyncBridge* sync_bridge_ = nullptr;
 
   Stage stage_;
   absl::optional<WebApplicationInfo> web_application_info_;
@@ -254,7 +253,7 @@ class ManifestUpdateTask final
   bool app_identity_update_allowed_ = false;
 
 #if DCHECK_IS_ON()
-  raw_ptr<bool> destructor_called_ptr_ = nullptr;
+  bool* destructor_called_ptr_ = nullptr;
 #endif
 };
 

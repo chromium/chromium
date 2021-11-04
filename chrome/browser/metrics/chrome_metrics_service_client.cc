@@ -20,7 +20,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -450,7 +449,7 @@ class ChromeComponentMetricsProviderDelegate
   }
 
  private:
-  raw_ptr<component_updater::ComponentUpdateService> component_updater_service_;
+  component_updater::ComponentUpdateService* component_updater_service_;
 };
 
 }  // namespace

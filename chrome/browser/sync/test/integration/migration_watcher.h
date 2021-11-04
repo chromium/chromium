@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_MIGRATION_WATCHER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/backend_migrator.h"
 
@@ -40,7 +39,7 @@ class MigrationWatcher : public syncer::MigrationObserver {
 
  private:
   // The SyncServiceImplHarness to watch.
-  const raw_ptr<SyncServiceImplHarness> harness_;
+  SyncServiceImplHarness* const harness_;
 
   // The set of data types currently undergoing migration.
   syncer::ModelTypeSet pending_types_;
@@ -50,7 +49,7 @@ class MigrationWatcher : public syncer::MigrationObserver {
   syncer::ModelTypeSet migrated_types_;
 
   // The MigrationWatier that is waiting for this migration to complete.
-  raw_ptr<MigrationWaiter> migration_waiter_;
+  MigrationWaiter* migration_waiter_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_MIGRATION_WATCHER_H_

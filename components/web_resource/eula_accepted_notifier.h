@@ -6,7 +6,6 @@
 #define COMPONENTS_WEB_RESOURCE_EULA_ACCEPTED_NOTIFIER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -53,13 +52,13 @@ class EulaAcceptedNotifier {
   void OnPrefChanged();
 
   // Local state pref service for querying the EULA accepted pref.
-  raw_ptr<PrefService> local_state_;
+  PrefService* local_state_;
 
   // Used to listen for the EULA accepted pref change notification.
   PrefChangeRegistrar registrar_;
 
   // Observer of the EULA accepted notification.
-  raw_ptr<Observer> observer_;
+  Observer* observer_;
 };
 
 }  // namespace web_resource

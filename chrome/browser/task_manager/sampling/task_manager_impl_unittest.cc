@@ -6,7 +6,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/sampling/task_manager_impl.h"
@@ -53,7 +52,7 @@ class FakeTask : public Task {
 
  private:
   Type type_;
-  raw_ptr<Task> parent_;
+  Task* parent_;
   SessionID tab_id_;
 };
 

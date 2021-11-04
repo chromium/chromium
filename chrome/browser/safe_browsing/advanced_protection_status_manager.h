@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -138,8 +137,8 @@ class AdvancedProtectionStatusManager
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<PrefService> pref_service_ = nullptr;
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+  PrefService* pref_service_ = nullptr;
+  signin::IdentityManager* identity_manager_ = nullptr;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
 

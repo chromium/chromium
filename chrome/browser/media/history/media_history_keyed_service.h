@@ -7,7 +7,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/history/media_history_store.mojom.h"
@@ -107,7 +106,7 @@ class MediaHistoryKeyedService : public KeyedService,
 
   std::unique_ptr<StoreHolder> store_;
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -47,7 +46,7 @@ class DeferredInitializationRunner : public PolicyService::Observer {
   void OnFirstPoliciesLoaded(PolicyDomain domain) override;
 
  private:
-  raw_ptr<PolicyService> policy_service_ = nullptr;
+  PolicyService* policy_service_ = nullptr;
   // If set, a callback to be invoked by |OnPolicyServiceInitialized|.
   base::OnceClosure callback_;
 };
