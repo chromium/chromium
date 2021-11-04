@@ -15,6 +15,7 @@
 #include "chrome/browser/webshare/win/show_share_ui_for_window_operation.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -22,6 +23,8 @@
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_writer_delegate.h"
 #include "storage/common/file_system/file_system_mount_option.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/views/win/hwnd_util.h"
 #include "url/gurl.h"
 
@@ -423,8 +426,34 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
     }
   }
 
-  HWND hwnd =
-      views::HWNDForNativeWindow(web_contents()->GetTopLevelNativeWindow());
+  // Attempt to fetch the accessibility HWND for these WebContents. For the
+  // sake of better communication with screen readers this HWND is (virtually)
+  // scoped to just the WebContents (rather than the entire actual window), so
+  // allows the resulting Share dialog to also better position/associate itself
+  // with the WebContents.
+  HWND hwnd = nullptr;
+  content::RenderWidgetHostView* host_view =
+      web_contents()->GetRenderWidgetHostView();
+  if (host_view) {
+    ui::AXPlatformNode* platform_node =
+        ui::AXPlatformNode::FromNativeViewAccessible(
+            host_view->GetNativeViewAccessible());
+    if (platform_node) {
+      ui::AXPlatformNodeDelegate* delegate = platform_node->GetDelegate();
+      if (delegate) {
+        hwnd = delegate->GetTargetForNativeAccessibilityEvent();
+      }
+    }
+  }
+  // If we were unable to fetch the accessibility HWND, fall-back to the
+  // top-level HWND, which will still function appropriately, it just may not
+  // position as nicely. This is unexpected in most cases, but can happen if,
+  // for example, Windows has explicitly destroyed said HWND.
+  if (!hwnd) {
+    hwnd =
+        views::HWNDForNativeWindow(web_contents()->GetTopLevelNativeWindow());
+  }
+
   show_share_ui_for_window_operation_ =
       std::make_unique<ShowShareUIForWindowOperation>(hwnd);
   show_share_ui_for_window_operation_->Run(base::BindOnce(
