@@ -12,22 +12,20 @@
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
 
+// TODO(crbug/1265443): Update this file's function comments to provide more
+// detail, like histogram_macros.h.
+//
 // Functions for recording metrics.
 //
 // For best practices on deciding when to emit to a histogram and what form
 // the histogram should take, see
 // https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
-
-// Functions for recording UMA histograms. These can be used for cases
-// when the histogram name is generated at runtime. The functionality is
-// equivalent to macros defined in histogram_macros.h but allowing non-constant
-// histogram names. These functions are slower but result in smaller code size
-// compared to their macro equivalent because the histogram objects are not
-// cached between calls. So, these should be used in non-performance-critical
-// code that is called rarely (not more than once per second).
 //
-// Every function is duplicated to take both std::string and char* for the
-// name. This avoids ctor/dtor instantiation for constant strigs to std::string
+// For deciding whether to use the function or macro APIs, see
+// https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#coding-emitting-to-histograms"
+//
+// Every function is duplicated to take both std::string and char* for the name.
+// This avoids ctor/dtor instantiation for constant strings to std::string,
 // which makes the call be larger than caching macros (which do accept char*)
 // in those cases.
 namespace base {
@@ -151,12 +149,12 @@ BASE_EXPORT void UmaHistogramPercentageObsoleteDoNotUse(const char* name,
 BASE_EXPORT void UmaHistogramCustomCounts(const std::string& name,
                                           int sample,
                                           int min,
-                                          int max,
+                                          int exclusive_max,
                                           int buckets);
 BASE_EXPORT void UmaHistogramCustomCounts(const char* name,
                                           int sample,
                                           int min,
-                                          int max,
+                                          int exclusive_max,
                                           int buckets);
 
 // Counts specialization for maximum counts 100, 1000, 10k, 100k, 1M and 10M.

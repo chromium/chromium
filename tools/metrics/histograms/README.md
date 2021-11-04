@@ -265,34 +265,34 @@ from previous Chrome versions.
 ### Count Histograms
 
 [histogram_macros.h](https://cs.chromium.org/chromium/src/base/metrics/histogram_macros.h)
-provides macros for some common count types such as memory or elapsed time, in
+provides macros for some common count types, such as memory or elapsed time, in
 addition to general count macros. These have reasonable default values; you
 seldom need to choose the number of buckets or histogram min. However, you still
 need to choose the histogram max (use the advice below).
 
-If none of the default macros work well for you, please thoughtfully choose
-a min, max, and bucket count for your histogram using the advice below.
+If none of the default macros work well for you, please thoughtfully choose a
+min, max, and bucket count for your histogram using the advice below.
 
 #### Count Histograms: Choosing Min and Max
 
-For histogram max, choose a value such that very few emissions to the histogram
-exceed the max. If a metric emission is above the max value, it will get put
-into an "overflow" bucket. If this bucket is too large, it can be difficult to
-compute statistics. One rule of thumb is at most 1% of samples should be in the
+For the max, choose a value such that very few histogram samples exceed the max.
+If a sample is greater than or equal to the max value, it is put in an
+"overflow" bucket. If this bucket is too large, it can be difficult to compute
+statistics. One rule of thumb is that at most 1% of samples should be in the
 overflow bucket (and ideally, less). This allows analysis of the 99th
 percentile. Err on the side of too large a range versus too short a range.
-(Remember that if you choose poorly, you'll have to wait for another release
-cycle to fix it.)
+Remember that if you choose poorly, you'll have to wait for another release
+cycle to fix it.
 
-For histogram min, if you care about all possible values (zero and above),
-choose a min of 1. All histograms have an underflow bucket for emitted zeros,
-so a min of 1 is appropriate. Otherwise, choose the min appropriate for your
-particular situation.
+For the min, use 1 if you care about all possible values (zero and above). All
+histograms have an underflow bucket for emitted zeros, so a min of 1 is
+appropriate. Otherwise, choose the min appropriate for your particular
+situation.
 
 #### Count Histograms: Choosing Number of Buckets
 
 Choose the smallest number of buckets that give you the granularity you need. By
-default, count histogram bucket sizes scale exponentially so you can get fine
+default, count histogram bucket sizes scale exponentially, so you can get fine
 granularity when the numbers are small yet still reasonable resolution for
 larger numbers. The macros default to 50 buckets (or 100 buckets for histograms
 with wide ranges), which is appropriate for most purposes. Because histograms

@@ -196,19 +196,18 @@
 #define UMA_HISTOGRAM_COUNTS_10M(name, sample) UMA_HISTOGRAM_CUSTOM_COUNTS(    \
     name, sample, 1, 10000000, 50)
 
-// This can be used when the default ranges are not sufficient. This macro lets
-// the metric developer customize the min and max of the sampled range, as well
-// as the number of buckets recorded.
-// Any data outside the range here will be put in underflow and overflow
-// buckets. Min values should be >=1 as emitted 0s will still go into the
-// underflow bucket.
+// This macro allows the min, max, and number of buckets to be customized. Any
+// samples whose values are outside of [min, exclusive_max-1] are put in the
+// underflow or overflow buckets. Note that |min| should be >=1 as emitted 0s go
+// into the underflow bucket.
 
 // Sample usage:
 //   UMA_HISTOGRAM_CUSTOM_COUNTS("My.Histogram", sample, 1, 100000000, 50);
-#define UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, min, max, bucket_count)      \
-    INTERNAL_HISTOGRAM_CUSTOM_COUNTS_WITH_FLAG(                                \
-        name, sample, min, max, bucket_count,                                  \
-        base::HistogramBase::kUmaTargetedHistogramFlag)
+#define UMA_HISTOGRAM_CUSTOM_COUNTS(name, sample, min, exclusive_max, \
+                                    bucket_count)                     \
+  INTERNAL_HISTOGRAM_CUSTOM_COUNTS_WITH_FLAG(                         \
+      name, sample, min, exclusive_max, bucket_count,                 \
+      base::HistogramBase::kUmaTargetedHistogramFlag)
 
 //------------------------------------------------------------------------------
 // Timing histograms. These are used for collecting timing data (generally

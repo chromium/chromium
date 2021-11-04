@@ -91,16 +91,36 @@ TEST(HistogramFunctionsTest, Percentage) {
 TEST(HistogramFunctionsTest, Counts) {
   std::string histogram("Testing.UMA.HistogramCount.Custom");
   HistogramTester tester;
-  UmaHistogramCustomCounts(histogram, 10, 1, 100, 10);
-  tester.ExpectUniqueSample(histogram, 10, 1);
+
+  // Add a sample that should go into the underflow bucket.
+  UmaHistogramCustomCounts(histogram, 0, 1, 100, 10);
+
+  // Add a sample that should go into the first bucket.
+  UmaHistogramCustomCounts(histogram, 1, 1, 100, 10);
+
+  // Add multiple samples that should go into the same bucket.
   UmaHistogramCustomCounts(histogram, 20, 1, 100, 10);
   UmaHistogramCustomCounts(histogram, 20, 1, 100, 10);
-  UmaHistogramCustomCounts(histogram, 20, 1, 100, 10);
-  tester.ExpectBucketCount(histogram, 20, 3);
-  tester.ExpectTotalCount(histogram, 4);
-  UmaHistogramCustomCounts(histogram, 110, 1, 100, 10);
-  tester.ExpectBucketCount(histogram, 101, 1);
-  tester.ExpectTotalCount(histogram, 5);
+  UmaHistogramCustomCounts(histogram, 21, 1, 100, 10);
+
+  // Add a sample that should go into the last bucket.
+  UmaHistogramCustomCounts(histogram, 99, 1, 100, 10);
+
+  // Add some samples that should go into the overflow bucket.
+  UmaHistogramCustomCounts(histogram, 100, 1, 100, 10);
+  UmaHistogramCustomCounts(histogram, 101, 1, 100, 10);
+
+  // Verify the number of samples.
+  tester.ExpectTotalCount(histogram, 8);
+
+  // Verify the following:
+  // (a) The underflow bucket [0, 1) contains one sample.
+  // (b) The first and last buckets each contain one sample.
+  // (c) The bucket for values in [16, 29) contains three samples.
+  // (d) The overflow bucket contains two samples.
+  EXPECT_THAT(tester.GetAllSamples(histogram),
+              testing::ElementsAre(Bucket(0, 1), Bucket(1, 1), Bucket(16, 3),
+                                   Bucket(54, 1), Bucket(100, 2)));
 }
 
 TEST(HistogramFunctionsTest, Times) {

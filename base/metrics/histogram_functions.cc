@@ -59,20 +59,22 @@ void UmaHistogramPercentageObsoleteDoNotUse(const char* name, int percent) {
 void UmaHistogramCustomCounts(const std::string& name,
                               int sample,
                               int min,
-                              int max,
+                              int exclusive_max,
                               int buckets) {
-  HistogramBase* histogram = Histogram::FactoryGet(
-      name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
+  HistogramBase* histogram =
+      Histogram::FactoryGet(name, min, exclusive_max, buckets,
+                            HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }
 
 void UmaHistogramCustomCounts(const char* name,
                               int sample,
                               int min,
-                              int max,
+                              int exclusive_max,
                               int buckets) {
-  HistogramBase* histogram = Histogram::FactoryGet(
-      name, min, max, buckets, HistogramBase::kUmaTargetedHistogramFlag);
+  HistogramBase* histogram =
+      Histogram::FactoryGet(name, min, exclusive_max, buckets,
+                            HistogramBase::kUmaTargetedHistogramFlag);
   histogram->Add(sample);
 }
 
