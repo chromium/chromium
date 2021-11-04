@@ -1495,6 +1495,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NavigationSuggestion.UpdateEngagedSitesDeferTime" units="ms"
+    expires_after="2022-05-03">
+  <owner>meacer@chromium.org</owner>
+  <owner>cduvall@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Records the time duration the navigation was deferred while waiting for
+    engaged sites data. Recorded whenever a navigation is deferred waiting for
+    engaged sites.
+  </summary>
+</histogram>
+
 <histogram name="Prerender.Experimental.PrerenderCancelledInterface"
     enum="PrerenderCancelledInterface" expires_after="2022-01-27">
   <owner>nhiroki@chromium.org</owner>

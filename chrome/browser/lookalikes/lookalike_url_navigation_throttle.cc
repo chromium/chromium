@@ -49,6 +49,10 @@ bool IsInterstitialReload(const GURL& current_url,
          stored_redirect_chain[stored_redirect_chain.size() - 1] == current_url;
 }
 
+const base::Feature kOptimizeLookalikeUrlNavigationThrottle{
+    "OptimizeLookalikeUrlNavigationThrottle",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace
 
 LookalikeUrlNavigationThrottle::LookalikeUrlNavigationThrottle(
@@ -58,6 +62,18 @@ LookalikeUrlNavigationThrottle::LookalikeUrlNavigationThrottle(
           navigation_handle->GetWebContents()->GetBrowserContext())) {}
 
 LookalikeUrlNavigationThrottle::~LookalikeUrlNavigationThrottle() {}
+
+ThrottleCheckResult LookalikeUrlNavigationThrottle::WillStartRequest() {
+  if (profile_->AsTestingProfile())
+    return content::NavigationThrottle::PROCEED;
+
+  auto* service = LookalikeUrlService::Get(profile_);
+  if (base::FeatureList::IsEnabled(kOptimizeLookalikeUrlNavigationThrottle) &&
+      service->EngagedSitesNeedUpdating()) {
+    service->ForceUpdateEngagedSites(base::DoNothing());
+  }
+  return content::NavigationThrottle::PROCEED;
+}
 
 ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
   // Ignore if running unit tests. Some tests use
@@ -121,7 +137,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
   if (!use_test_profile_ && service->EngagedSitesNeedUpdating()) {
     service->ForceUpdateEngagedSites(
         base::BindOnce(&LookalikeUrlNavigationThrottle::PerformChecksDeferred,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
     return content::NavigationThrottle::DEFER;
   }
   return PerformChecks(service->GetLatestEngagedSites());
@@ -246,7 +262,10 @@ void LookalikeUrlNavigationThrottle::OnManifestValidationResult(
 }
 
 void LookalikeUrlNavigationThrottle::PerformChecksDeferred(
+    base::TimeTicks start,
     const std::vector<DomainInfo>& engaged_sites) {
+  UMA_HISTOGRAM_TIMES("NavigationSuggestion.UpdateEngagedSitesDeferTime",
+                      base::TimeTicks::Now() - start);
   ThrottleCheckResult result = PerformChecks(engaged_sites);
   if (result.action() == NavigationThrottle::DEFER) {
     // Already deferred by PerformChecks(), don't defer again. PerformChecks()
