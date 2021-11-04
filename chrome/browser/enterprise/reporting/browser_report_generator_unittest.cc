@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device_management_backend.pb.h"
@@ -149,8 +151,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
  public:
   BrowserReportGeneratorTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
-        generator_(&delegate_factory_) {
-  }
+        generator_(&delegate_factory_) {}
 
   BrowserReportGeneratorTest(const BrowserReportGeneratorTest&) = delete;
   BrowserReportGeneratorTest& operator=(const BrowserReportGeneratorTest&) =
@@ -212,10 +213,13 @@ class BrowserReportGeneratorTest : public ::testing::Test {
   void GenerateAndVerify() {
     base::RunLoop run_loop;
     generator_.Generate(
+        ReportType::kFull,
         base::BindLambdaForTesting(
             [&run_loop](std::unique_ptr<em::BrowserReport> report) {
-              EXPECT_TRUE(report.get());
-              EXPECT_NE(std::string(), report->executable_path());
+              ASSERT_TRUE(report.get());
+              EXPECT_EQ(
+                  base::PathService::CheckedGet(base::DIR_EXE).AsUTF8Unsafe(),
+                  report->executable_path());
 
               VerifyBrowserVersionAndChannel(report.get());
               VerifyBuildState(report.get());
@@ -228,6 +232,30 @@ class BrowserReportGeneratorTest : public ::testing::Test {
     run_loop.Run();
   }
 
+  void GenerateProfileReportAndVerify() {
+    base::RunLoop run_loop;
+    generator_.Generate(
+        ReportType::kProfileReport,
+        base::BindLambdaForTesting(
+            [&run_loop](std::unique_ptr<em::BrowserReport> report) {
+              ASSERT_TRUE(report.get());
+              EXPECT_EQ(
+                  ObfuscateFilePath(base::PathService::CheckedGet(base::DIR_EXE)
+                                        .AsUTF8Unsafe()),
+                  report->executable_path());
+
+              VerifyBrowserVersionAndChannel(report.get());
+              VerifyBuildState(report.get());
+              VerifyExtendedStableChannel(report.get());
+              VerifyPlugins(report.get());
+
+              // There should be no profile information.
+              EXPECT_EQ(0, report->chrome_user_profile_infos_size());
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+  }
+
   TestingProfileManager* profile_manager() { return &profile_manager_; }
 
  private:
@@ -235,7 +263,6 @@ class BrowserReportGeneratorTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   BrowserReportGenerator generator_;
-
 };
 
 TEST_F(BrowserReportGeneratorTest, GenerateBasicReport) {
@@ -243,6 +270,13 @@ TEST_F(BrowserReportGeneratorTest, GenerateBasicReport) {
   InitializeIrregularProfiles();
   InitializePlugin();
   GenerateAndVerify();
+}
+
+TEST_F(BrowserReportGeneratorTest, GenerateBasicReportForProfileReporting) {
+  InitializeProfile();
+  InitializeIrregularProfiles();
+  InitializePlugin();
+  GenerateProfileReportAndVerify();
 }
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

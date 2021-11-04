@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -23,10 +25,12 @@ BrowserReportGenerator::BrowserReportGenerator(
 
 BrowserReportGenerator::~BrowserReportGenerator() = default;
 
-void BrowserReportGenerator::Generate(ReportCallback callback) {
+void BrowserReportGenerator::Generate(ReportType report_type,
+                                      ReportCallback callback) {
   auto report = std::make_unique<em::BrowserReport>();
-  GenerateProfileInfo(report.get());
-  GenerateBasicInfo(report.get());
+  if (report_type != ReportType::kProfileReport)
+    GenerateProfileInfo(report.get());
+  GenerateBasicInfo(report.get(), report_type);
 
   // std::move is required here because the function completes the report
   // asynchronously.
@@ -43,7 +47,8 @@ void BrowserReportGenerator::GenerateProfileInfo(em::BrowserReport* report) {
   }
 }
 
-void BrowserReportGenerator::GenerateBasicInfo(em::BrowserReport* report) {
+void BrowserReportGenerator::GenerateBasicInfo(em::BrowserReport* report,
+                                               ReportType report_type) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   report->set_browser_version(version_info::GetVersionNumber());
   report->set_channel(policy::ConvertToProtoChannel(delegate_->GetChannel()));
@@ -52,7 +57,18 @@ void BrowserReportGenerator::GenerateBasicInfo(em::BrowserReport* report) {
   delegate_->GenerateBuildStateInfo(report);
 #endif
 
-  report->set_executable_path(delegate_->GetExecutablePath());
+  switch (report_type) {
+    case ReportType::kFull:
+      report->set_executable_path(delegate_->GetExecutablePath());
+      break;
+    case ReportType::kProfileReport:
+      report->set_executable_path(
+          ObfuscateFilePath(delegate_->GetExecutablePath()));
+      break;
+    case ReportType::kBrowserVersion:
+      NOTREACHED();
+      break;
+  }
 }
 
 }  // namespace enterprise_reporting

@@ -140,6 +140,7 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
     base::RunLoop run_loop;
 
     browser_report_generator_.Generate(
+        ReportType::kFull,
         base::BindLambdaForTesting(
             [&run_loop, &request](std::unique_ptr<em::BrowserReport> report) {
               request->set_allocated_browser_report(report.release()),

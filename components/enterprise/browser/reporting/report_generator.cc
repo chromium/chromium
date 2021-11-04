@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 
@@ -100,6 +101,7 @@ void ReportGenerator::GenerateReport(
     ReportCallback callback,
     std::unique_ptr<ReportRequest> basic_request) {
   browser_report_generator_.Generate(
+      ReportType::kFull,
       base::BindOnce(&ReportGenerator::OnBrowserReportReady,
                      weak_ptr_factory_.GetWeakPtr(), std::move(basic_request),
                      report_type, std::move(callback)));

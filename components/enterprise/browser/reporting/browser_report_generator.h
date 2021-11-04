@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 
 namespace enterprise_management {
 class BrowserReport;
@@ -61,7 +62,7 @@ class BrowserReportGenerator {
   // - browser_version, channel, executable_path
   // - user profiles: id, name, is_detail_available (always be false).
   // - plugins: name, version, filename, description.
-  void Generate(ReportCallback callback);
+  void Generate(ReportType report_type, ReportCallback callback);
 
   // Generates user profiles info in the given report instance.
   void GenerateProfileInfo(enterprise_management::BrowserReport* report);
@@ -71,7 +72,8 @@ class BrowserReportGenerator {
 
   // Generates browser_version, channel, executable_path info in the given
   // report instance.
-  void GenerateBasicInfo(enterprise_management::BrowserReport* report);
+  void GenerateBasicInfo(enterprise_management::BrowserReport* report,
+                         ReportType report_type);
 };
 
 }  // namespace enterprise_reporting

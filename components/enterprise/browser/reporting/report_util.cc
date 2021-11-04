@@ -8,8 +8,8 @@
 
 namespace enterprise_reporting {
 
-std::string ObfuscateFilePath(const base::FilePath& file_path) {
-  return crypto::SHA256HashString(file_path.AsUTF8Unsafe());
+std::string ObfuscateFilePath(const std::string& file_path) {
+  return crypto::SHA256HashString(file_path);
 }
 
 }  // namespace enterprise_reporting
