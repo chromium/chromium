@@ -55,6 +55,8 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
         kwargs.get("package_name", "org.chromium.webview_shell")
     capabilities["goog:chromeOptions"]["androidActivity"] = \
         "org.chromium.webview_shell.WebPlatformTestsActivity"
+    capabilities["goog:chromeOptions"]["androidKeepAppDataDir"] = \
+        kwargs.get("keep_app_data_directory")
     if kwargs.get("device_serial"):
         capabilities["goog:chromeOptions"]["androidDeviceSerial"] = kwargs["device_serial"]
 

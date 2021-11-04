@@ -191,6 +191,16 @@ scheme host and port.""")
     debugging_group.add_argument("--pdb", action="store_true",
                                  help="Drop into pdb on python exception")
 
+    android_group = parser.add_argument_group("Android specific arguments")
+    android_group.add_argument("--adb-binary", action="store",
+                        help="Path to adb binary to use")
+    android_group.add_argument("--package-name", action="store",
+                        help="Android package name to run tests against")
+    android_group.add_argument("--keep-app-data-directory", action="store_true",
+                        help="Don't delete the app data directory")
+    android_group.add_argument("--device-serial", action="store",
+                              help="Running Android instance to connect to, if not emulator-5554")
+
     config_group = parser.add_argument_group("Configuration")
     config_group.add_argument("--binary", action="store",
                               type=abs_path, help="Desktop binary to run tests against")
@@ -202,12 +212,6 @@ scheme host and port.""")
     config_group.add_argument('--webdriver-arg',
                               default=[], action="append", dest="webdriver_args",
                               help="Extra argument for the WebDriver binary")
-    config_group.add_argument("--adb-binary", action="store",
-                              help="Path to adb binary to use")
-    config_group.add_argument("--package-name", action="store",
-                              help="Android package name to run tests against")
-    config_group.add_argument("--device-serial", action="store",
-                              help="Running Android instance to connect to, if not emulator-5554")
     config_group.add_argument("--metadata", action="store", type=abs_path, dest="metadata_root",
                               help="Path to root directory containing test metadata"),
     config_group.add_argument("--tests", action="store", type=abs_path, dest="tests_root",

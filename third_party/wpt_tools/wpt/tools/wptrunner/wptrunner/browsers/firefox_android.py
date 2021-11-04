@@ -133,7 +133,7 @@ class FirefoxAndroidBrowser(Browser):
     init_timeout = 300
     shutdown_timeout = 60
 
-    def __init__(self, logger, prefs_root, test_type, package_name="org.mozilla.geckoview.test",
+    def __init__(self, logger, prefs_root, test_type, package_name="org.mozilla.geckoview.test_runner",
                  device_serial="emulator-5444", extra_prefs=None, debug_info=None,
                  symbols_path=None, stackwalk_binary=None, certutil_binary=None,
                  ca_certificate_path=None, e10s=False, enable_webrender=False, stackfix_dir=None,

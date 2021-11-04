@@ -203,6 +203,7 @@ class WebTransportH3Protocol(QuicConnectionProtocol):
 
         response_headers = [
             (b"server", SERVER_NAME.encode()),
+            (b"sec-webtransport-http3-draft", b"draft02"),
         ]
         self._handler.connect_received(response_headers=response_headers)
 
