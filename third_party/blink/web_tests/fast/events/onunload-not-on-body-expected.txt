@@ -1,3 +1,2 @@
-CONSOLE WARNING: Triggering window.alert from cross origin iframes has been deprecated and will be removed in the future.
 CONSOLE ERROR: Blocked alert('unload') during unload.
 You should only see one unload alert appear.

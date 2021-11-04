@@ -1,4 +1,3 @@
-CONSOLE WARNING: 'webkitRequestAnimationFrame' is vendor-specific. Please use the standard 'requestAnimationFrame' instead.
 Tests the timestamps provided to prefixed webkitRequestAnimationFrame callbacks
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

@@ -18,7 +18,7 @@
   Common.settingForTest('monitoringXHREnabled').set(true);
 
   TestRunner.evaluateInPage(`requestHelper('GET', 'resources/xhr-exists.html')`);
-  await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
+  await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
   await dumpConsoleMessagesSorted();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');

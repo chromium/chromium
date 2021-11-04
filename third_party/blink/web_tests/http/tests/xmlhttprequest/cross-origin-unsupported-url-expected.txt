@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 8: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 CONSOLE ERROR: line 13: Access to XMLHttpRequest at 'mailto:foo@bar.com' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-untrusted, https.
 CONSOLE ERROR: line 13: Access to XMLHttpRequest at 'mailto:foo@bar.com' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-untrusted, https.
 CONSOLE ERROR: line 13: Access to XMLHttpRequest at 'localhost:8080/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-untrusted, https.
