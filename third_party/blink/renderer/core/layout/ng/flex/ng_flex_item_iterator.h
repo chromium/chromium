@@ -60,14 +60,18 @@ struct NGFlexItemIterator::Entry {
   STACK_ALLOCATED();
 
  public:
-  Entry(FlexItem* flex_item, const NGBlockBreakToken* token)
-      : flex_item(flex_item), token(token) {}
+  Entry(FlexItem* flex_item,
+        wtf_size_t flex_line_idx,
+        const NGBlockBreakToken* token)
+      : flex_item(flex_item), flex_line_idx(flex_line_idx), token(token) {}
 
   FlexItem* flex_item;
+  wtf_size_t flex_line_idx;
   const NGBlockBreakToken* token;
 
   bool operator==(const NGFlexItemIterator::Entry& other) const {
-    return flex_item == other.flex_item && token == other.token;
+    return flex_item == other.flex_item &&
+           flex_line_idx == other.flex_line_idx && token == other.token;
   }
 };
 

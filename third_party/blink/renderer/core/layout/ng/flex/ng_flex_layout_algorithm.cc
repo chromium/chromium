@@ -1046,7 +1046,8 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
   for (auto entry = item_iterator.NextItem();
        FlexItem* flex_item = entry.flex_item;
        entry = item_iterator.NextItem()) {
-    FlexLine& line_context = line_contexts[flex_item->line_number_];
+    wtf_size_t flex_line_idx = entry.flex_line_idx;
+    FlexLine& line_context = line_contexts[flex_line_idx];
     const NGBreakToken* item_break_token = entry.token;
 
     // flex_item.desired_location_ stores the main axis offset in X and the
@@ -1129,8 +1130,7 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
       DevtoolsFlexInfo::Item item;
       item.rect = item_rect;
       item.baseline = flex_item->MarginBoxAscent();
-      layout_info_for_devtools_->lines[flex_item->line_number_].items.push_back(
-          item);
+      layout_info_for_devtools_->lines[flex_line_idx].items.push_back(item);
     }
 
     flex_item->ng_input_node_.StoreMargins(flex_item->physical_margins_);

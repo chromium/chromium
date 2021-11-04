@@ -37,6 +37,7 @@ NGFlexItemIterator::NGFlexItemIterator(const Vector<FlexLine>& flex_lines,
 NGFlexItemIterator::Entry NGFlexItemIterator::NextItem() {
   const NGBlockBreakToken* current_child_break_token = nullptr;
   FlexItem* current_item = next_unstarted_item_;
+  wtf_size_t current_line_idx = flex_line_idx_;
 
   if (break_token_) {
     // If we're resuming layout after a fragmentainer break, we'll first resume
@@ -62,7 +63,7 @@ NGFlexItemIterator::Entry NGFlexItemIterator::NextItem() {
     next_unstarted_item_ = FindNextItem();
   }
 
-  return Entry(current_item, current_child_break_token);
+  return Entry(current_item, current_line_idx, current_child_break_token);
 }
 
 FlexItem* NGFlexItemIterator::FindNextItem(
