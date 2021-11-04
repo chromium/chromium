@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -245,13 +246,39 @@ chrome::FeedbackSource MapToChromeSource(
 
 // When the Files SWA is enabled: Open Files SWA.
 // Returns true if it opens the SWA.
-bool OpenFilesSwa(Profile* const profile) {
+// `target_directory` is optional, if provided it opens the Files SWA in the
+// given directory, instead of the default directory.
+bool OpenFilesSwa(Profile* const profile,
+                  base::FilePath target_directory = {}) {
   if (!ash::features::IsFileManagerSwaEnabled()) {
     return false;
   }
 
-  web_app::LaunchSystemWebAppAsync(profile,
-                                   web_app::SystemAppType::FILE_MANAGER, {});
+  GURL directory_url;
+  if (!target_directory.empty() &&
+      !file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+          profile, target_directory, file_manager::util::GetFileManagerURL(),
+          &directory_url)) {
+    LOG(WARNING) << "Failed to convert the path to FileSystemURL: "
+                 << target_directory << " using the default directory";
+  }
+
+  std::u16string title;
+  GURL files_swa_url =
+      ::file_manager::util::GetFileManagerMainPageUrlWithParams(
+          ui::SelectFileDialog::SELECT_NONE, title,
+          /*current_directory_url=*/directory_url,
+          /*selection_url=*/{},
+          /*target_name=*/{},
+          /*file_types=*/nullptr,
+          /*file_type_index=*/0,
+          /*search_query=*/{},
+          /*show_android_picker_apps=*/false);
+
+  web_app::SystemAppLaunchParams params;
+  params.url = files_swa_url;
+  web_app::LaunchSystemWebAppAsync(
+      profile, web_app::SystemAppType::FILE_MANAGER, params);
   return true;
 }
 
@@ -450,8 +477,9 @@ void ChromeNewWindowClient::OpenFileManager() {
 
 void ChromeNewWindowClient::OpenDownloadsFolder() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  // TODO(b/204372025): Force to open in the Downloads folder.
-  if (OpenFilesSwa(profile)) {
+  base::FilePath target_directory =
+      file_manager::util::GetDownloadsFolderForProfile(profile);
+  if (OpenFilesSwa(profile, target_directory)) {
     return;
   }
 
