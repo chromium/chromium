@@ -6,10 +6,12 @@
 
 import abc
 import enum
+import logging
 import re
 import collections
 import struct
-from typing import Dict, Iterable, List, NamedTuple, Sequence, TextIO, Tuple
+from typing import (Dict, Iterable, List, NamedTuple, Sequence, TextIO, Tuple,
+                    Union)
 
 _STACK_CFI_INIT_REGEX = re.compile(
     r'^STACK CFI INIT ([0-9a-f]+) ([0-9a-f]+) (.+)$')
@@ -777,3 +779,107 @@ def EncodePageTableAndFunctionTable(
   page_table = struct.pack(f'{len(raw_page_table)}I', *raw_page_table)
 
   return page_table, bytes(function_table)
+
+
+ALL_PARSERS: Tuple[UnwindInstructionsParser, ...] = (
+    NullParser(),
+    PushOrSubSpParser(),
+    StoreSpParser(),
+    VPushParser(),
+)
+
+
+def ParseAddressCfi(address_cfi: AddressCfi, function_start_address: int,
+                    parsers: Tuple[UnwindInstructionsParser, ...],
+                    prev_cfa_sp_offset: int
+                    ) -> Tuple[Union[AddressUnwind, None], bool, int]:
+  """Parses address CFI with given parsers.
+
+  Arguments:
+    address_cfi: The CFI for an address in the function.
+    function_start_address: The start address of the function.
+    parsers: Available parsers to try on CFI data.
+    prev_cfa_sp_offset: Previous CFA stack pointer offset.
+
+  Returns:
+    A tuple containing:
+    - An `AddressUnwind` object when the parse is successful, None otherwise.
+    - Whether the address is in function epilogue.
+    - The new cfa_sp_offset.
+  """
+  for parser in parsers:
+    match = parser.GetBreakpadInstructionsRegex().search(
+        address_cfi.unwind_instructions)
+    if not match:
+      continue
+
+    address_unwind, cfa_sp_offset = parser.ParseFromMatch(
+        address_cfi.address - function_start_address, prev_cfa_sp_offset, match)
+
+    in_epilogue = (
+        prev_cfa_sp_offset > cfa_sp_offset
+        and address_unwind.unwind_type != UnwindType.RESTORE_SP_FROM_REGISTER)
+
+    return (address_unwind if not in_epilogue else None, in_epilogue,
+            cfa_sp_offset)
+
+  return None, False, prev_cfa_sp_offset
+
+
+def GenerateUnwinds(function_cfis: Iterable[FunctionCfi],
+                    parsers: Tuple[UnwindInstructionsParser, ...]
+                    ) -> Iterable[FunctionUnwind]:
+  """Generates parsed function unwind states from breakpad CFI data.
+
+  This function parses `FunctionCfi`s to `FunctionUnwind`s using
+  `UnwindInstructionParser`.
+
+  Argument:
+    function_cfis: An iterable of function CFI data.
+    parsers: Available parsers to try on CFI address data.
+
+  Returns:
+    An iterable of parsed function unwind states.
+  """
+  functions = 0
+  addresses = 0
+  handled_addresses = 0
+  epilogues_seen = 0
+
+  for function_cfi in function_cfis:
+    functions += 1
+    address_unwinds: List[AddressUnwind] = []
+    cfa_sp_offset = 0
+    for address_cfi in function_cfi.address_cfi:
+      addresses += 1
+
+      address_unwind, in_epilogue, cfa_sp_offset = ParseAddressCfi(
+          address_cfi, function_cfi.address_cfi[0].address, parsers,
+          cfa_sp_offset)
+
+      if address_unwind:
+        handled_addresses += 1
+        address_unwinds.append(address_unwind)
+        continue
+
+      if in_epilogue:
+        epilogues_seen += 1
+        break
+
+      logging.info('unrecognized CFI: %x %s.' %
+                   (address_cfi.address, address_cfi.unwind_instructions))
+
+    if address_unwinds:
+      # We expect that the unwind information for every function starts with a
+      # trivial unwind (RETURN_TO_LR) prior to the execution of any code in the
+      # function. This is required by the arm calling convention which involves
+      # setting lr to the return address on calling into a function.
+      assert address_unwinds[0].address_offset == 0
+      assert address_unwinds[0].unwind_type == UnwindType.RETURN_TO_LR
+
+      yield FunctionUnwind(function_cfi.address_cfi[0].address,
+                           function_cfi.size, tuple(address_unwinds))
+
+  logging.info('%d functions.', functions)
+  logging.info('%d/%d addresses handled.', handled_addresses, addresses)
+  logging.info('epilogues_seen: %d.', epilogues_seen)

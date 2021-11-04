@@ -13,6 +13,7 @@ import struct
 
 import unittest
 import unittest.mock
+import re
 
 from create_unwind_table import (
     AddressCfi, AddressUnwind, FilterToNonTombstoneCfi, FunctionCfi,
@@ -20,8 +21,9 @@ from create_unwind_table import (
     EncodedAddressUnwind, EncodeAsBytes, EncodeFunctionOffsetTable,
     EncodedFunctionUnwind, EncodeFunctionUnwinds, EncodeStackPointerUpdate,
     EncodePop, EncodePageTableAndFunctionTable, EncodeUnwindInstructionTable,
-    NullParser, PushOrSubSpParser, ReadFunctionCfi, REFUSE_TO_UNWIND,
-    StoreSpParser, TRIVIAL_UNWIND, Uleb128Encode, UnwindType, VPushParser)
+    GenerateUnwinds, NullParser, ParseAddressCfi, PushOrSubSpParser,
+    ReadFunctionCfi, REFUSE_TO_UNWIND, StoreSpParser, TRIVIAL_UNWIND,
+    Uleb128Encode, UnwindInstructionsParser, UnwindType, VPushParser)
 
 
 class _TestReadFunctionCfi(unittest.TestCase):
@@ -867,3 +869,176 @@ class _TestEncodePageTableAndFunctionTable(unittest.TestCase):
     self.assertEqual(6 * 2, len(function_table))
     self.assertEqual((0, 0x100, 0x8000, 0x200, 0x8000, 0x300),
                      struct.unpack('6H', function_table))
+
+
+class MockReturnParser(UnwindInstructionsParser):
+  def GetBreakpadInstructionsRegex(self):
+    return re.compile(r'^RETURN$')
+
+  def ParseFromMatch(self, address_offset, cfa_sp_offset, match):
+    return AddressUnwind(address_offset, UnwindType.RETURN_TO_LR, 0, ()), 0
+
+
+class MockEpilogueUnwindParser(UnwindInstructionsParser):
+  def GetBreakpadInstructionsRegex(self):
+    return re.compile(r'^EPILOGUE_UNWIND$')
+
+  def ParseFromMatch(self, address_offset, cfa_sp_offset, match):
+    return AddressUnwind(address_offset,
+                         UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS, 0, ()), -100
+
+
+class MockWildcardParser(UnwindInstructionsParser):
+  def GetBreakpadInstructionsRegex(self):
+    return re.compile(r'.*')
+
+  def ParseFromMatch(self, address_offset, cfa_sp_offset, match):
+    return AddressUnwind(address_offset,
+                         UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS, 0, ()), -200
+
+
+class _TestParseAddressCfi(unittest.TestCase):
+  def testSuccessParse(self):
+    address_unwind = AddressUnwind(
+        address_offset=0x300,
+        unwind_type=UnwindType.RETURN_TO_LR,
+        sp_offset=0,
+        registers=(),
+    )
+
+    self.assertEqual((address_unwind, False, 0),
+                     ParseAddressCfi(AddressCfi(address=0x800,
+                                                unwind_instructions='RETURN'),
+                                     function_start_address=0x500,
+                                     parsers=(MockReturnParser(), ),
+                                     prev_cfa_sp_offset=0))
+
+  def testUnhandledAddress(self):
+    self.assertEqual((None, False, 100),
+                     ParseAddressCfi(AddressCfi(address=0x800,
+                                                unwind_instructions='UNKNOWN'),
+                                     function_start_address=0x500,
+                                     parsers=(MockReturnParser(), ),
+                                     prev_cfa_sp_offset=100))
+
+  def testEpilogueUnwind(self):
+    self.assertEqual(
+        (None, True, -100),
+        ParseAddressCfi(AddressCfi(address=0x800,
+                                   unwind_instructions='EPILOGUE_UNWIND'),
+                        function_start_address=0x500,
+                        parsers=(MockEpilogueUnwindParser(), ),
+                        prev_cfa_sp_offset=100))
+
+  def testParsePrecedence(self):
+    address_unwind = AddressUnwind(
+        address_offset=0x300,
+        unwind_type=UnwindType.RETURN_TO_LR,
+        sp_offset=0,
+        registers=(),
+    )
+
+    self.assertEqual(
+        (address_unwind, False, 0),
+        ParseAddressCfi(AddressCfi(address=0x800, unwind_instructions='RETURN'),
+                        function_start_address=0x500,
+                        parsers=(MockReturnParser(), MockWildcardParser()),
+                        prev_cfa_sp_offset=0))
+
+
+class _TestGenerateUnwinds(unittest.TestCase):
+  def testSuccessUnwind(self):
+    self.assertEqual(
+        [
+            FunctionUnwind(address=0x100,
+                           size=1024,
+                           address_unwinds=(
+                               AddressUnwind(
+                                   address_offset=0x0,
+                                   unwind_type=UnwindType.RETURN_TO_LR,
+                                   sp_offset=0,
+                                   registers=(),
+                               ),
+                               AddressUnwind(
+                                   address_offset=0x200,
+                                   unwind_type=UnwindType.RETURN_TO_LR,
+                                   sp_offset=0,
+                                   registers=(),
+                               ),
+                           ))
+        ],
+        list(
+            GenerateUnwinds([
+                FunctionCfi(
+                    size=1024,
+                    address_cfi=(
+                        AddressCfi(address=0x100, unwind_instructions='RETURN'),
+                        AddressCfi(address=0x300, unwind_instructions='RETURN'),
+                    ))
+            ],
+                            parsers=[MockReturnParser()])))
+
+  def testUnhandledAddress(self):
+    self.assertEqual(
+        [
+            FunctionUnwind(address=0x100,
+                           size=1024,
+                           address_unwinds=(AddressUnwind(
+                               address_offset=0x0,
+                               unwind_type=UnwindType.RETURN_TO_LR,
+                               sp_offset=0,
+                               registers=(),
+                           ), ))
+        ],
+        list(
+            GenerateUnwinds([
+                FunctionCfi(size=1024,
+                            address_cfi=(
+                                AddressCfi(address=0x100,
+                                           unwind_instructions='RETURN'),
+                                AddressCfi(address=0x300,
+                                           unwind_instructions='UNKNOWN'),
+                            ))
+            ],
+                            parsers=[MockReturnParser()])))
+
+  def testEpilogueUnwind(self):
+    self.assertEqual(
+        [
+            FunctionUnwind(address=0x100,
+                           size=1024,
+                           address_unwinds=(AddressUnwind(
+                               address_offset=0x0,
+                               unwind_type=UnwindType.RETURN_TO_LR,
+                               sp_offset=0,
+                               registers=(),
+                           ), ))
+        ],
+        list(
+            GenerateUnwinds([
+                FunctionCfi(
+                    size=1024,
+                    address_cfi=(
+                        AddressCfi(address=0x100, unwind_instructions='RETURN'),
+                        AddressCfi(address=0x300,
+                                   unwind_instructions='EPILOGUE_UNWIND'),
+                    ))
+            ],
+                            parsers=[
+                                MockReturnParser(),
+                                MockEpilogueUnwindParser()
+                            ])))
+
+  def testInvalidInitialUnwindInstructionAsserts(self):
+    self.assertRaises(
+        AssertionError, lambda: list(
+            GenerateUnwinds([
+                FunctionCfi(size=1024,
+                            address_cfi=(
+                                AddressCfi(address=0x100,
+                                           unwind_instructions='UNKNOWN'),
+                                AddressCfi(address=0x200,
+                                           unwind_instructions='RETURN'),
+                            ))
+            ],
+                            parsers=[MockReturnParser()])))
