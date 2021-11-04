@@ -63,6 +63,11 @@ extern const base::Feature kFeedInteractiveRefresh;
 // load.
 extern const base::Feature kFeedLoadingPlaceholder;
 
+// Param allowing animations to be disabled when showing the placeholder on
+// instant start.
+extern const base::FeatureParam<bool>
+    kEnableFeedLoadingPlaceholderAnimationOnInstantStart;
+
 // Feature that allows tuning the size of the image memory cache. Value is a
 // percentage of the maximum size calculated for the device.
 extern const base::Feature kFeedImageMemoryCacheSizePercentage;

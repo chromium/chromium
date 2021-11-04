@@ -66,6 +66,9 @@ const base::Feature kFeedInteractiveRefresh{"FeedInteractiveRefresh",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedLoadingPlaceholder{"FeedLoadingPlaceholder",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<bool>
+    kEnableFeedLoadingPlaceholderAnimationOnInstantStart{
+        &kFeedLoadingPlaceholder, "enable_animation_on_instant_start", false};
 const base::Feature kFeedImageMemoryCacheSizePercentage{
     "FeedImageMemoryCacheSizePercentage", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedClearImageMemoryCache{
