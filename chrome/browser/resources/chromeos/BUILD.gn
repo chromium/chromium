@@ -53,6 +53,7 @@ group("closure_compile") {
     "multidevice_internals:closure_compile",
     "multidevice_setup:closure_compile",
     "network_ui:closure_compile",
+    "parent_access:closure_compile",
     "password_change:closure_compile",
     "set_time_dialog:closure_compile",
     "smb_shares:closure_compile",

@@ -119,10 +119,14 @@ void ParentAccessUI::SetUpResources() {
   source->AddResourcePath("parent_access_app.js", IDR_PARENT_ACCESS_APP_JS);
   source->AddResourcePath("parent_access_ui.js", IDR_PARENT_ACCESS_UI_JS);
   source->AddResourcePath("parent_access_after.js", IDR_PARENT_ACCESS_AFTER_JS);
-
-  source->AddLocalizedString("pageTitle", IDS_PARENT_ACCESS_PAGE_TITLE);
+  source->AddResourcePath("flows/local_web_approvals_after.js",
+                          IDR_LOCAL_WEB_APPROVALS_AFTER_JS);
   source->AddResourcePath("parent_access_ui.mojom-lite.js",
                           IDR_PARENT_ACCESS_UI_MOJOM_LITE_JS);
+  source->AddResourcePath("images/parent_access_illustration_light_theme.svg",
+                          IDR_PARENT_ACCESS_ILLUSTRATION_LIGHT_THEME_SVG);
+  source->AddResourcePath("images/parent_access_illustration_dark_theme.svg",
+                          IDR_PARENT_ACCESS_ILLUSTRATION_DARK_THEME_SVG);
 
   source->UseStringsJs();
   source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
@@ -130,6 +134,19 @@ void ParentAccessUI::SetUpResources() {
   // Set the filter to accept postMessages from the webviewURL's origin only.
   source->AddString("eventOriginFilter",
                     web_content_url_.GetWithEmptyPath().spec());
+
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"pageTitle", IDS_PARENT_ACCESS_PAGE_TITLE},
+      {"approveButtonText", IDS_PARENT_ACCESS_AFTER_APPROVE_BUTTON},
+      {"denyButtonText", IDS_PARENT_ACCESS_AFTER_DENY_BUTTON},
+      {"localWebApprovalsAfterTitle",
+       IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_TITLE},
+      {"localWebApprovalsAfterSubtitle",
+       IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_SUBTITLE},
+      {"localWebApprovalsAfterDetails",
+       IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_DETAILS},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
 
   // Enables use of test_loader.html
   webui::SetJSModuleDefaults(source.get());

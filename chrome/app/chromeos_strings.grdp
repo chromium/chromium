@@ -5716,7 +5716,23 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_PARENT_ACCESS_PAGE_TITLE" desc="Title for the Chrome OS Parent Access screen.">
     Parent Access
   </message>
-    <!-- Strings for gnubby U2FD authentication UI -->
+  <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_TITLE" desc="Title for the local web approvals dialog.">
+    Approve web request?
+  </message>
+  <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_SUBTITLE" desc="Subtitle for the local web approvals dialog describing that a supervised user is requesting access to a site.">
+    <ph name="SUPERVISED_USER_NAME">$1<ex>Child 1</ex></ph> wants to access the following content:
+  </message>
+  <message name="IDS_PARENT_ACCESS_LOCAL_WEB_APPROVALS_AFTER_DETAILS" desc="Details about the local web approvals request, including the domain that access is requested for.">
+    All pages of <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph>
+  </message>
+  <message name="IDS_PARENT_ACCESS_AFTER_APPROVE_BUTTON" desc="Approve button on the local web approvals dialog.">
+    Approve
+  </message>
+  <message name="IDS_PARENT_ACCESS_AFTER_DENY_BUTTON" desc="Deny button on the local web approvals dialog.">
+    Deny
+  </message>
+
+  <!-- Strings for gnubby U2FD authentication UI -->
   <message name="IDS_GNUBBY_NOTIFICATION_TITLE" desc="Title for notification informing user to press power button for gnubby U2FD.">
     A security key is being requested
   </message>

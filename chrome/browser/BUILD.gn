@@ -7275,6 +7275,7 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/emulator:web_components",
       "//chrome/browser/resources/chromeos/gaia_action_buttons:web_components",
       "//chrome/browser/resources/chromeos/parent_access:web_components",
+      "//chrome/browser/resources/chromeos/parent_access/flows:web_components",
       "//chrome/browser/resources/chromeos/set_time_dialog:web_components",
       "//chrome/browser/resources/chromeos/smb_shares:web_components",
       "//chrome/browser/resources/chromeos/vm:web_components",
