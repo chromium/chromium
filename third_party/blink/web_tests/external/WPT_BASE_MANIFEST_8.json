@@ -2307,6 +2307,13 @@
          {}
         ]
        ],
+       "auto-expand-window-find-crash.html": [
+        "d24b4634cd3e557216386058d846e43cbc2b6c38",
+        [
+         null,
+         {}
+        ]
+       ],
        "details-findstring-crash.html": [
         "dc8686b216106cacacbda36db3895339e2aa55e8",
         [
@@ -78464,6 +78471,110 @@
         ],
         {}
        ]
+      ],
+      "grid-item-fragmentation-010.html": [
+       "bd57ef797ad2eb85b0566dc8f4afa9d75f8381b9",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-011.html": [
+       "e353537827bcb98a70c67d6078294ee0e3ebcf77",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-012.html": [
+       "c3b206e26c59436ccfbf00b002915b501e202348",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-013.html": [
+       "a1e7106e239b124a118c8a4fb58bedabe4358dc7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-014.html": [
+       "09c95d1840fee99a60ca1c4ded390369331f5a03",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-015.html": [
+       "6dd82de5822e3d77cb12965200a8a01113b58948",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-016.html": [
+       "c16f740bd51dab61fe9ee86f3d6a23dd34d64c18",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-017.html": [
+       "a5c1abeb1223395ed3b701af82853bbb6ee85e43",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "ink-overflow-002.html": [
@@ -80561,6 +80672,19 @@
        {}
       ]
      ],
+     "layer-slotted-rule.html": [
+      "a33a5a6787a3f26d12079ac03c915797d65bd48a",
+      [
+       null,
+       [
+        [
+         "/css/css-cascade/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "layer-stylesheet-sharing.html": [
       "c172baaf8185b5ddcfb1f7231186d4008227c29f",
       [
@@ -81324,6 +81448,19 @@
        [
         [
          "/css/css-color/hwb-005-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "inline-opacity-float-child.html": [
+      "98afcbcc2d8f3aad53ca95689a505297ab994d3b",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -277138,6 +277275,12 @@
         []
        ]
       },
+      "document-reporting": {
+       "report-only-four-reports.https.html.sub.headers": [
+        "de48445f38fafc0c8c76c089f79d63e46b8ce488",
+        []
+       ]
+      },
       "navigation-reporting": {
        "report-only-four-reports.https.html.sub.headers": [
         "9e864109a1e6218f0f91ef85245e52590d1407ad",
@@ -277190,7 +277333,7 @@
       },
       "resources": {
        "reporting-common.js": [
-        "246c9224a3aed467d126a65b6129921c7b14199f",
+        "48d48aa3884710ee89682812a8badd15df320b4f",
         []
        ],
        "test-access-property.js": [
@@ -283991,7 +284134,7 @@
        ],
        "support": {
         "validator.js": [
-         "33508fb3289be3736f6f467957dc6614bec2bc9b",
+         "48e56488e283960e7aa890c50a280842fbb6850b",
          []
         ]
        }
@@ -284186,6 +284329,10 @@
        "resources": {
         "image-submit-click.html": [
          "8461a03d7a5221d6d9899deeb63405d71a641872",
+         []
+        ],
+        "show-picker-child-iframe.html": [
+         "f298c3a9376dad75916920d421ae99ec863399cb",
          []
         ]
        },
@@ -324854,7 +325001,7 @@
        ]
       ],
       "goTo-cross-document-preventDefault.html": [
-       "a7571a7caf7116f3afda49186b81a209c89d1ce6",
+       "9c2301728deef44e0e5e8e76d1a419c408ff1648",
        [
         null,
         {}
@@ -325381,14 +325528,14 @@
       ]
      ],
      "navigate-appHistory-back-cross-document.html": [
-      "da68ea4765ed69ab441ca99f487241dfface02b2",
+      "2be9cb9b889ace4c9576b67d24093eb0dc2ba0c5",
       [
        null,
        {}
       ]
      ],
      "navigate-appHistory-back-same-document.html": [
-      "b4bbd3718964a8ced9f6d85037a67029b23ef95b",
+      "acc71ad3fe2cda228d91ade85e162af0d23266c3",
       [
        null,
        {}
@@ -325467,14 +325614,21 @@
       ]
      ],
      "navigate-history-back-after-fragment.html": [
-      "54791d898642bf6801fd494ae434d67d5badf637",
+      "f0a423a47b43b5452ca9535171945e7d12345c09",
       [
        null,
        {}
       ]
      ],
      "navigate-history-back-after-pushState.html": [
-      "3d94855e799d31962b303c03faf5773db370b111",
+      "40c41ee3b7098ce58c2c97a83b082096e106cecf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "navigate-history-back-cross-document.html": [
+      "c6c8322a35ace2358157607e6a7a7774961e8a0e",
       [
        null,
        {}
@@ -428231,6 +428385,44 @@
         ]
        ]
       },
+      "document-reporting": {
+       "report-only-four-reports.https.html": [
+        "7bfdab133070e950b917242fe09a4cc5ffe6db8e",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "report-to-both_coop-ro.https.html": [
+        "43da4b79b30243bdb8ab2fb6b334e01054fcdab3",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "reporting-redirect-with-same-origin-allow-popups.https.html": [
+        "764b4128ff773ceb65b2ae67c8b8184193daab6b",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
+       "reporting-redirect-with-unsafe-none.https.html": [
+        "ae94d6871a77c6315083d79d7584ede0edc18744",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ]
+      },
       "navigation-reporting": {
        "report-only-four-reports.https.html": [
         "ca1471ccc0ab82ec343ff9990fb52961755ee6de",
@@ -428296,7 +428488,7 @@
         ]
        ],
        "reporting-coop-navigated-popup.https.html": [
-        "68ecd913756fa254b29e12c434e0519206c7fda1",
+        "ae91e7dc04b1cb6c7931b86e17a4f061d20cdb95",
         [
          null,
          {}
@@ -428348,7 +428540,7 @@
         ]
        ],
        "reporting-redirect-with-same-origin-allow-popups.https.html": [
-        "d337541dfff01e860ee64267fda3438b09d3b373",
+        "b19cdd5a9c1e131711e832237daa90a85b5bf1dd",
         [
          null,
          {
@@ -436451,6 +436643,13 @@
          {}
         ]
        ],
+       "form-validation-willValidate-datalist.html": [
+        "b6b14c6304368e5638f96f8cc7e0c37790a860cd",
+        [
+         null,
+         {}
+        ]
+       ],
        "form-validation-willValidate.html": [
         "ccd1cf09b907bf91f0454f8bb84d04cdf83a18bd",
         [
@@ -437718,6 +437917,22 @@
         [
          null,
          {}
+        ]
+       ],
+       "show-picker-cross-origin-iframe.tentative.html": [
+        "4dd9dfce0ccab826a178aa04668fa46837dddf95",
+        [
+         null,
+         {}
+        ]
+       ],
+       "show-picker.tentative.html": [
+        "11cac872d9b843350e2d1cd30d740c801b768933",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "telephone.html": [
@@ -505849,6 +506064,13 @@
       ]
      },
      "the-periodicwave-interface": {
+      "createPeriodicWaveInfiniteValuesThrows.html": [
+       "928f45bd8feb70fbc7d59da367a08028a456477c",
+       [
+        null,
+        {}
+       ]
+      ],
       "periodicWave.html": [
        "9048b7f5dad775cfa55e4749ad7057bf1636efc5",
        [
