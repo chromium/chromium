@@ -169,7 +169,7 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
                                 media::AudioBus* dest) {
   TRACE_EVENT_BEGIN2(TRACE_DISABLED_BY_DEFAULT("audio"),
                      "MixingGraphImpl::OnMoreData", "delay", delay,
-                     "delay_taimestamp", delay_timestamp);
+                     "delay_timestamp", delay_timestamp);
 
   base::TimeDelta total_delay =
       base::TimeTicks::Now() - delay_timestamp + delay;
@@ -186,8 +186,8 @@ int MixingGraphImpl::OnMoreData(base::TimeDelta delay,
   on_more_data_cb_.Run(*dest, total_delay);
 
   TRACE_EVENT_END2(TRACE_DISABLED_BY_DEFAULT("audio"),
-                   "MixingGraphImpl::OnMoreData", "total_delay", "total_delay",
-                   "frane_delayed", frames_delayed);
+                   "MixingGraphImpl::OnMoreData", "total_delay", total_delay,
+                   "frames_delayed", frames_delayed);
   return dest->frames();
 }
 
