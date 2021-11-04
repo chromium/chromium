@@ -423,6 +423,29 @@ TEST(OutgoingStreamTest, AbortWithWebTransportErrorWithCode) {
   writer->abort(script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
 }
 
+TEST(OutgoingStreamTest, CloseAndConnectionError) {
+  V8TestingScope scope;
+  StreamCreator stream_creator;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  auto* outgoing_stream = stream_creator.Create(scope);
+
+  testing::InSequence s;
+  EXPECT_CALL(stream_creator.GetMockClient(), SendFin());
+  EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
+
+  auto* writer =
+      outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
+
+  // Run microtasks to ensure that the underlying sink's close function is
+  // called immediately.
+  v8::MicrotasksScope::PerformCheckpoint(scope.GetIsolate());
+
+  writer->close(script_state, ASSERT_NO_EXCEPTION);
+  outgoing_stream->Error(ScriptValue(isolate, v8::Undefined(isolate)));
+}
+
 }  // namespace
 
 }  // namespace blink

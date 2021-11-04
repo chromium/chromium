@@ -79,11 +79,9 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
     // by streams so we don't care.
     outgoing_stream_->close_promise_resolver_->SuppressDetachCheck();
 
-    if (outgoing_stream_->client_) {
-      outgoing_stream_->state_ = State::kSentFin;
-      outgoing_stream_->client_->SendFin();
-      outgoing_stream_->client_ = nullptr;
-    }
+    DCHECK_EQ(outgoing_stream_->state_, State::kOpen);
+    outgoing_stream_->state_ = State::kSentFin;
+    outgoing_stream_->client_->SendFin();
 
     // Close the data pipe to signal to the network service that no more data
     // will be sent.
