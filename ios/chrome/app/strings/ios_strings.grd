@@ -1379,7 +1379,7 @@ See your search engine’s instructions for deleting your search history, if app
         Sign Out and Turn Off Sync
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES" desc="Message shown in the settings account switcher when enterprise policy has restricted some unseen identities. [iOS only]">
-          Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+          Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_OPTIONS_ADVANCED_TAB_LABEL" desc="The title of the Advanced section of the Settings page.  [Length: 20em] [iOS only]">
         Advanced
