@@ -829,7 +829,7 @@ bool MetricsService::PrepareInitialStabilityLog(
   log_manager_.current_log()->RecordPreviousSessionData(&delegating_provider_);
   RecordCurrentStabilityHistograms();
 
-  DVLOG(1) << "Generated an stability log.";
+  DVLOG(1) << "Generated a stability log.";
   log_manager_.FinishCurrentLog(log_store());
   log_manager_.ResumePausedLog();
 
