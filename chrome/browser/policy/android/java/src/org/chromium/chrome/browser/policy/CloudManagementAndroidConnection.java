@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.policy;
 
-import android.os.Build;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
+
+import java.util.UUID;
 
 /**
  * Allows access to cloud management functionalities implemented downstream.
@@ -42,8 +42,13 @@ public class CloudManagementAndroidConnection {
             return clientId;
         }
 
-        // Generate a new ID and save it in Shared Preferences, so it can be reused.
-        String newClientId = getDelegate().generateClientId();
+        // Use the Gservices Android ID as the client ID. If the Android ID can't be obtained, then
+        // a randomly generated ID is used instead (e.g. for non-Chrome official builds).
+        // Save the ID in Shared Preferences, so it can be reused.
+        String newClientId = getDelegate().getGservicesAndroidId();
+        if (newClientId == null || newClientId.isEmpty()) {
+            newClientId = UUID.randomUUID().toString();
+        }
         CloudManagementSharedPreferences.saveClientId(newClientId);
 
         return newClientId;
@@ -58,9 +63,7 @@ public class CloudManagementAndroidConnection {
      */
     @CalledByNative
     public String getGservicesAndroidId() {
-        return Build.VERSION.SDK_INT <= Build.VERSION_CODES.S
-                ? getDelegate().getGservicesAndroidId()
-                : "";
+        return getDelegate().getGservicesAndroidId();
     }
 
     /** Overrides {@link mDelegate} if not null. */

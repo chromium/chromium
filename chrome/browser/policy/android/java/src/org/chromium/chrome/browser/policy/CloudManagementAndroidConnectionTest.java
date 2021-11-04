@@ -52,8 +52,8 @@ public final class CloudManagementAndroidConnectionTest {
 
         CloudManagementAndroidConnection connection =
                 CloudManagementAndroidConnection.getInstance();
-        Assert.assertEquals(connection.getClientId(), CLIENT_ID);
-        Assert.assertEquals(CloudManagementSharedPreferences.readClientId(), CLIENT_ID);
+        Assert.assertEquals(connection.getClientId(), GSERVICES_ANDROID_ID);
+        Assert.assertEquals(CloudManagementSharedPreferences.readClientId(), GSERVICES_ANDROID_ID);
     }
 
     @Test
