@@ -176,6 +176,7 @@ class MEDIA_EXPORT AudioManager {
  protected:
   FRIEND_TEST_ALL_PREFIXES(AudioManagerTest, AudioDebugRecording);
   friend class AudioDeviceInfoAccessorForTests;
+  friend class AudioManagerPowerUser;
 
   explicit AudioManager(std::unique_ptr<AudioThread> audio_thread);
 
