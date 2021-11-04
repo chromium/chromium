@@ -2097,6 +2097,14 @@ EVENT_TYPE(QUIC_SESSION_TRANSPORT_PARAMETERS_SENT)
 //   }
 EVENT_TYPE(QUIC_SESSION_TRANSPORT_PARAMETERS_RESUMED)
 
+// A WebTransport client state has changed.
+//   {
+//     "last_state": <The last client state>
+//     "next_state": <The next client state>
+//     "error": <Optionally, error codes and details when an error happened>
+//   }
+EVENT_TYPE(QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED)
+
 // QUIC with TLS gets 0-RTT rejected.
 EVENT_TYPE(QUIC_SESSION_ZERO_RTT_REJECTED)
 

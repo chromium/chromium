@@ -11,6 +11,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/port_util.h"
 #include "net/base/url_util.h"
+#include "net/log/net_log_values.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/quic/address_utils.h"
@@ -66,6 +67,27 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
     }
   }
   return verifier;
+}
+
+void RecordNetLogQuicSessionClientStateChanged(
+    NetLogWithSource& net_log,
+    WebTransportState last_state,
+    WebTransportState next_state,
+    const absl::optional<WebTransportError>& error) {
+  net_log.AddEvent(
+      NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED, [&] {
+        base::Value dict(base::Value::Type::DICTIONARY);
+        dict.SetStringKey("last_state", WebTransportStateString(last_state));
+        dict.SetStringKey("next_state", WebTransportStateString(next_state));
+        if (error.has_value()) {
+          base::Value error_dict(base::Value::Type::DICTIONARY);
+          error_dict.SetIntKey("net_error", error->net_error);
+          error_dict.SetIntKey("quic_error", error->quic_error);
+          error_dict.SetStringKey("details", error->details);
+          dict.SetKey("error", std::move(error_dict));
+        }
+        return dict;
+      });
 }
 
 // The stream associated with an extended CONNECT request for the WebTransport
@@ -581,6 +603,8 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
   DCHECK_NE(state_, next_state);
   const WebTransportState last_state = state_;
   state_ = next_state;
+  RecordNetLogQuicSessionClientStateChanged(net_log_, last_state, next_state,
+                                            error_);
   switch (next_state) {
     case WebTransportState::CONNECTING:
       DCHECK_EQ(last_state, WebTransportState::NEW);

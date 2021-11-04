@@ -64,6 +64,9 @@ struct NET_EXPORT WebTransportCloseInfo final {
   bool operator==(const WebTransportCloseInfo& other) const;
 };
 
+// Returns the string representation of `state`.
+const char* WebTransportStateString(WebTransportState state);
+
 // A visitor that gets notified about events that happen to a WebTransport
 // client.
 class NET_EXPORT WebTransportClientVisitor {
