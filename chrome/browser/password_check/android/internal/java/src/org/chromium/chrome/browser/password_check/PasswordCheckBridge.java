@@ -25,12 +25,6 @@ class PasswordCheckBridge {
      */
     interface PasswordCheckObserver {
         /**
-         * Called when a new compromised credential is found by the password check
-         * @param credential The newly found compromised credential.
-         */
-        void onCompromisedCredentialFound(CompromisedCredential credential);
-
-        /**
          * Called when the compromised credentials found in a previous check are read from disk.
          * @param count The number of compromised credentials that were found in a previous check.
          */
@@ -61,21 +55,6 @@ class PasswordCheckBridge {
         // credentials stored in the database by the last check.
         mNativePasswordCheckBridge = PasswordCheckBridgeJni.get().create(this);
         mPasswordCheckObserver = passwordCheckObserver;
-    }
-
-    // TODO(crbug.com/1102025): Add call from native.
-    void onCompromisedCredentialFound(String signonRealm, GURL associatedUrl, String username,
-            String displayOrigin, String displayUsername, String password, String passwordChangeUrl,
-            String associatedApp, long creationTime, long lastUsedTime, boolean hasStartableScript,
-            boolean hasAutoChangeButton) {
-        assert signonRealm != null;
-        assert displayOrigin != null;
-        assert username != null;
-        assert password != null;
-        mPasswordCheckObserver.onCompromisedCredentialFound(
-                new CompromisedCredential(signonRealm, associatedUrl, username, displayOrigin,
-                        displayUsername, password, passwordChangeUrl, associatedApp, creationTime,
-                        lastUsedTime, true, false, hasStartableScript, hasAutoChangeButton));
     }
 
     @CalledByNative

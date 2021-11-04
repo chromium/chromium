@@ -250,15 +250,6 @@ class PasswordCheckMediator
     }
 
     @Override
-    public void onCompromisedCredentialFound(CompromisedCredential leakedCredential) {
-        assert leakedCredential != null;
-        ListModel<ListItem> items = mModel.get(ITEMS);
-        assert items.size() >= 1 : "Needs to initialize list with header before adding items!";
-        updateStatusHeaderWhenCredentialsChange();
-        items.add(createEntryForCredential(leakedCredential));
-    }
-
-    @Override
     public void onEdit(CompromisedCredential credential, Context context) {
         PasswordCheckMetricsRecorder.recordUiUserAction(
                 PasswordCheckUserAction.EDIT_PASSWORD_CLICK);

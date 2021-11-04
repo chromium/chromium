@@ -20,7 +20,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.BuildConfig;
-import org.chromium.chrome.browser.password_check.CompromisedCredential;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckReferrer;
@@ -333,9 +332,6 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
             determinePasswordStateOnLoadComplete();
         }
     }
-
-    @Override
-    public void onCompromisedCredentialFound(CompromisedCredential leakedCredential) {}
 
     @Override
     public void onPasswordCheckProgressChanged(int alreadyProcessed, int remainingInQueue) {}
