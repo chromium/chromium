@@ -31,6 +31,7 @@
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
+#include "ios/web_view/internal/sync/web_view_trusted_vault_client.h"
 #include "ios/web_view/internal/webdata_services/web_view_web_data_service_wrapper_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -107,6 +108,7 @@ WebViewSyncClient::WebViewSyncClient(
           profile_web_data_service_, account_web_data_service_,
           profile_password_store_, account_password_store_,
           /*bookmark_sync_service=*/nullptr);
+  trusted_vault_client_ = std::make_unique<WebViewTrustedVaultClient>();
 }
 
 WebViewSyncClient::~WebViewSyncClient() {}
@@ -180,7 +182,7 @@ WebViewSyncClient::GetSyncInvalidationsService() {
 }
 
 syncer::TrustedVaultClient* WebViewSyncClient::GetTrustedVaultClient() {
-  return nullptr;
+  return trusted_vault_client_.get();
 }
 
 scoped_refptr<syncer::ExtensionsActivity>

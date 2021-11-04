@@ -80,6 +80,7 @@ class WebViewSyncClient : public browser_sync::BrowserSyncClient {
 
   std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
       component_factory_;
+  std::unique_ptr<syncer::TrustedVaultClient> trusted_vault_client_;
 };
 
 }  // namespace ios_web_view
