@@ -53,7 +53,7 @@ constexpr base::TimeDelta kImpressionThreshold = base::Seconds(3);
 
 // TODO(crbug.com/1199206): Move this into SharedAppListConfig once the UI for
 // categories is more developed.
-constexpr size_t kMaxResultsWithCategoricalSearch = 12;
+constexpr size_t kMaxResultsWithCategoricalSearch = 3;
 
 SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     std::vector<SearchResultView*> search_result_views) {
@@ -120,11 +120,59 @@ void SearchResultListView::SetListType(SearchResultListType list_type) {
   switch (list_type_) {
     case SearchResultListType::kUnified:
       // Classic SearchResultListView does not have category labels.
-      title_label_->SetVisible(false);
       break;
     case SearchResultListType::kBestMatch:
       title_label_->SetText(l10n_util::GetStringUTF16(
           IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_BEST_MATCH));
+      break;
+    case SearchResultListType::kApps:
+      title_label_->SetText(
+          l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_APPS));
+      break;
+    case SearchResultListType::kAppShortcuts:
+      title_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_APP_SHORTCUTS));
+      break;
+    case SearchResultListType::kWeb:
+      title_label_->SetText(
+          l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_WEB));
+      break;
+    case SearchResultListType::kFiles:
+      title_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_FILES));
+      break;
+    case SearchResultListType::kSettings:
+      title_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_SETTINGS));
+      break;
+    case SearchResultListType::kHelp:
+      title_label_->SetText(
+          l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_HELP));
+      break;
+    case SearchResultListType::kPlayStore:
+      title_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_PLAY_STORE));
+      break;
+    case SearchResultListType::kSearchAndAssistant:
+      title_label_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_SEARCH_AND_ASSISTANT));
+      break;
+  }
+
+  switch (list_type_) {
+    case SearchResultListType::kUnified:
+      // Classic SearchResultListView does not have category labels.
+      title_label_->SetVisible(false);
+      break;
+    case SearchResultListType::kBestMatch:
+    case SearchResultListType::kApps:
+    case SearchResultListType::kAppShortcuts:
+    case SearchResultListType::kWeb:
+    case SearchResultListType::kFiles:
+    case SearchResultListType::kSettings:
+    case SearchResultListType::kHelp:
+    case SearchResultListType::kPlayStore:
+    case SearchResultListType::kSearchAndAssistant:
       title_label_->SetVisible(true);
       break;
   }
@@ -143,6 +191,20 @@ SearchResultView* SearchResultListView::GetResultViewAt(size_t index) {
   DCHECK(index >= 0 && index < search_result_views_.size());
   return search_result_views_[index];
 }
+std::vector<SearchResultListView::SearchResultListType>
+SearchResultListView::GetAllListTypesForCategoricalSearch() {
+  static const std::vector<SearchResultListType> categorical_search_types = {
+      SearchResultListType::kBestMatch,
+      SearchResultListType::kApps,
+      SearchResultListType::kAppShortcuts,
+      SearchResultListType::kWeb,
+      SearchResultListType::kFiles,
+      SearchResultListType::kSettings,
+      SearchResultListType::kHelp,
+      SearchResultListType::kPlayStore,
+      SearchResultListType::kSearchAndAssistant};
+  return categorical_search_types;
+}
 
 int SearchResultListView::DoUpdate() {
   if (!GetWidget() || !GetWidget()->IsVisible()) {
@@ -153,11 +215,11 @@ int SearchResultListView::DoUpdate() {
     return 0;
   }
 
-  std::vector<SearchResult*> display_results = GetSearchResults();
-
+  std::vector<SearchResult*> display_results = GetCategorizedSearchResults();
+  size_t num_results = display_results.size();
   for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
-    if (i < display_results.size()) {
+    if (i < num_results) {
       result_view->SetResult(display_results[i]);
       result_view->SizeToPreferredSize();
       result_view->SetVisible(true);
@@ -166,8 +228,12 @@ int SearchResultListView::DoUpdate() {
       result_view->SetVisible(false);
     }
   }
+  // the search_result_list_view should be hidden if there are no results.
+  SetVisible(num_results > 0);
 
   auto* notifier = view_delegate_->GetNotifier();
+
+  // TODO(crbug/1216097): replace metrics with something more meaningful.
   if (notifier) {
     std::vector<AppListNotifier::Result> notifier_results;
     for (const auto* result : display_results)
@@ -312,6 +378,66 @@ std::vector<SearchResult*> SearchResultListView::GetSearchResults() {
                         assistant_results.end());
 
   return search_results;
+}
+
+SearchResult::Category SearchResultListView::GetSearchCategory() {
+  switch (list_type_) {
+    case SearchResultListType::kUnified:
+    case SearchResultListType::kBestMatch:
+      // Categories are undefined for |kUnified| and |KBestMatch| list types.
+      NOTREACHED();
+      return SearchResult::Category::kUnknown;
+    case SearchResultListType::kApps:
+      return SearchResult::Category::kApps;
+    case SearchResultListType::kAppShortcuts:
+      return SearchResult::Category::kAppShortcuts;
+    case SearchResultListType::kWeb:
+      return SearchResult::Category::kWeb;
+    case SearchResultListType::kFiles:
+      return SearchResult::Category::kFiles;
+    case SearchResultListType::kSettings:
+      return SearchResult::Category::kSettings;
+    case SearchResultListType::kHelp:
+      return SearchResult::Category::kHelp;
+    case SearchResultListType::kPlayStore:
+      return SearchResult::Category::kPlayStore;
+    case SearchResultListType::kSearchAndAssistant:
+      return SearchResult::Category::kSearchAndAssistant;
+  }
+}
+
+std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
+  switch (list_type_) {
+    case SearchResultListType::kUnified:
+      // Use classic search results for the kUnified list view.
+      return GetSearchResults();
+    case SearchResultListType::kBestMatch:
+      // Filter results based on whether they have the best_match label.
+      return SearchModel::FilterSearchResultsByFunction(
+          results(), base::BindRepeating([](const SearchResult& result) {
+            return result.best_match();
+          }),
+          GetMaxSearchResultListItems());
+    case SearchResultListType::kApps:
+    case SearchResultListType::kAppShortcuts:
+    case SearchResultListType::kWeb:
+    case SearchResultListType::kFiles:
+    case SearchResultListType::kSettings:
+    case SearchResultListType::kHelp:
+    case SearchResultListType::kPlayStore:
+    case SearchResultListType::kSearchAndAssistant:
+      // filter results based on category. Filter out best match items to avoid
+      // duplication between different types of search_result_list_views.
+      SearchResult::Category search_category = GetSearchCategory();
+      auto filter_function = base::BindRepeating(
+          [](const SearchResult::Category& search_category,
+             const SearchResult& result) -> bool {
+            return result.category() == search_category && !result.best_match();
+          },
+          search_category);
+      return SearchModel::FilterSearchResultsByFunction(
+          results(), filter_function, GetMaxSearchResultListItems());
+  }
 }
 
 }  // namespace ash

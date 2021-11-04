@@ -72,17 +72,17 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
   search_box_view_->SetResultSelectionController(
       result_selection_controller_.get());
 
-  // TODO(https://crbug.com/1204551): Provide a custom search result list view,
-  // instead of recycling this one from fullscreen launcher.
-  auto* result_container =
-      scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
-          /*main_view=*/nullptr, view_delegate));
-  result_container->SetListType(
-      SearchResultListView::SearchResultListType::kBestMatch);
-  result_container->SetResults(
-      AppListModelProvider::Get()->search_model()->results());
-  result_container->set_delegate(this);
-  result_container_views_.push_back(result_container);
+  for (SearchResultListView::SearchResultListType list_type :
+       SearchResultListView::GetAllListTypesForCategoricalSearch()) {
+    auto* result_container =
+        scroll_contents->AddChildView(std::make_unique<SearchResultListView>(
+            /*main_view=*/nullptr, view_delegate));
+    result_container->SetListType(list_type);
+    result_container->SetResults(
+        AppListModelProvider::Get()->search_model()->results());
+    result_container->set_delegate(this);
+    result_container_views_.push_back(result_container);
+  }
 
   scroll->SetContents(std::move(scroll_contents));
 

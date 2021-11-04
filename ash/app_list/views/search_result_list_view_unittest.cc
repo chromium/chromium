@@ -34,6 +34,14 @@ constexpr int kClassicViewHeight = 48;
 constexpr int kDefaultViewHeight = 40;
 constexpr int kInlineAnswerViewHeight = 80;
 
+// SearchResultListType::kUnified and SearchResultListType::kBestMatch do not
+// have associated categories.
+constexpr int num_list_types_not_in_category = 2;
+// SearchResult::Category::kUnknown does not have an associated list type.
+constexpr int num_category_without_list_type = 1;
+// SearchResultListType::kUnified is used for categorical search.
+constexpr int num_list_types_not_used_for_categorical_search = 1;
+
 }  // namespace
 
 class SearchResultListViewTest : public views::test::WidgetTest {
@@ -163,6 +171,24 @@ TEST_F(SearchResultListViewTest, SpokenFeedback) {
 
   // Result 2 has no detail text.
   EXPECT_EQ(u"Result 2", GetResultViewAt(2)->ComputeAccessibleName());
+}
+
+TEST_F(SearchResultListViewTest, CorrectEnumLength) {
+  EXPECT_EQ(
+      // Check that all types except for SearchResultListType::kUnified are
+      // included in GetAllListTypesForCategoricalSearch.
+      static_cast<int>(SearchResultListView::SearchResultListType::kMaxValue) +
+          1 /*0 indexing offset*/,
+      static_cast<int>(
+          SearchResultListView::GetAllListTypesForCategoricalSearch().size() +
+          num_list_types_not_used_for_categorical_search));
+  // Check that all types in AppListSearchResultCategory are included in
+  // SearchResultListType.
+  DCHECK(
+      static_cast<int>(SearchResultListView::SearchResultListType::kMaxValue) +
+          1 /*0 indexing offset*/ - num_list_types_not_in_category ==
+      static_cast<int>(SearchResult::Category::kMaxValue) +
+          1 /*0 indexing offset*/ - num_category_without_list_type);
 }
 
 TEST_F(SearchResultListViewTest, SearchResultViewPreferredSize) {

@@ -12,6 +12,7 @@
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/app_list/views/search_result_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -26,7 +27,9 @@ namespace ash {
 
 namespace {
 
-int kDefaultSearchItems = 5;
+int kDefaultSearchItems = 3;
+const int kResultContainersCount =
+    static_cast<int>(SearchResultListView::SearchResultListType::kMaxValue);
 
 class AppListBubbleSearchPageTest : public AshTestBase {
  public:
@@ -47,6 +50,7 @@ class AppListBubbleSearchPageTest : public AshTestBase {
           base::UTF8ToUTF16(base::StringPrintf("Result %d", init_id + i)));
       result->set_display_score(100);
       result->set_details(u"Detail");
+      result->set_best_match(true);
       results->Add(std::move(result));
     }
     // Adding results will schedule Update().
@@ -63,10 +67,10 @@ TEST_F(AppListBubbleSearchPageTest, ResultContainerIsVisible) {
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
 
-  // The single result container is visible.
+  // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
       test_helper->GetBubbleSearchPage()->result_container_views_for_test();
-  ASSERT_EQ(result_containers.size(), 1u);
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
 }
 
@@ -83,10 +87,10 @@ TEST_F(AppListBubbleSearchPageTest, SearchResultA11y) {
   SetUpSearchResults(results, 1, kDefaultSearchItems);
   test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
 
-  // The single result container is visible.
+  // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
       test_helper->GetBubbleSearchPage()->result_container_views_for_test();
-  ASSERT_EQ(result_containers.size(), 1u);
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
 
   views::test::AXEventCounter ax_counter(views::AXEventManager::Get());
@@ -104,11 +108,11 @@ TEST_F(AppListBubbleSearchPageTest, SearchResultA11y) {
   // Successive up/down key presses should generate additional selection events.
   PressAndReleaseKey(ui::VKEY_DOWN);
   EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kSelection));
-  PressAndReleaseKey(ui::VKEY_DOWN);
+  PressAndReleaseKey(ui::VKEY_UP);
   EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kSelection));
   PressAndReleaseKey(ui::VKEY_DOWN);
   EXPECT_EQ(4, ax_counter.GetCount(ax::mojom::Event::kSelection));
-  PressAndReleaseKey(ui::VKEY_UP);
+  PressAndReleaseKey(ui::VKEY_DOWN);
   EXPECT_EQ(5, ax_counter.GetCount(ax::mojom::Event::kSelection));
 }
 
@@ -125,10 +129,10 @@ TEST_F(AppListBubbleSearchPageTest, SearchPageA11y) {
   AppListModelProvider::Get()->search_model()->DeleteAllResults();
   test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
 
-  // The single result container is visible.
+  // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
       test_helper->GetBubbleSearchPage()->result_container_views_for_test();
-  ASSERT_EQ(result_containers.size(), 1u);
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
   EXPECT_TRUE(test_helper->GetBubbleSearchPage()->GetVisible());
 
@@ -148,7 +152,7 @@ TEST_F(AppListBubbleSearchPageTest, SearchPageA11y) {
   test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
   ui::AXNodeData data2;
   test_helper->GetBubbleSearchPage()->GetAccessibleNodeData(&data);
-  EXPECT_EQ("Displaying 5 results for a",
+  EXPECT_EQ("Displaying 3 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
@@ -164,10 +168,10 @@ TEST_F(AppListBubbleSearchPageTest, SearchClearedOnModelUpdate) {
   SetUpSearchResults(results, 1, kDefaultSearchItems);
   test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
 
-  // The single result container is visible.
+  // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
       test_helper->GetBubbleSearchPage()->result_container_views_for_test();
-  ASSERT_EQ(result_containers.size(), 1u);
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
 
   // Update the app list and search model, and verify the results page gets
@@ -188,7 +192,7 @@ TEST_F(AppListBubbleSearchPageTest, SearchClearedOnModelUpdate) {
 
   result_containers =
       test_helper->GetBubbleSearchPage()->result_container_views_for_test();
-  ASSERT_EQ(result_containers.size(), 1u);
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
   EXPECT_EQ(1, result_containers[0]->num_results());
   EXPECT_EQ(u"Result 2",

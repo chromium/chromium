@@ -1154,6 +1154,7 @@ class SearchBoxViewAppListBubbleTest : public AshTestBase {
     search_result->set_result_id(id);
     search_result->set_display_type(SearchResultDisplayType::kList);
     search_result->set_title(title);
+    search_result->set_best_match(true);
     search_results->Add(std::move(search_result));
   }
 

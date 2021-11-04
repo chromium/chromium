@@ -1609,6 +1609,30 @@ This file contains the strings for ash.
       <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_BEST_MATCH" desc="Category title for the list of search result shown in launcher search that are a best match for the query in the search box.">
         Best Match
       </message>
+      <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_APPS" desc="Category title for the list of installed apps shown in launcher search that are relevant to but not the best match for the query in the search box.">
+        Apps
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_APP_SHORTCUTS" desc="Category title for the list of shortcut actions for installed apps shown in launcher search that are relevent to to but not the best match for the query in the search box.">
+        App Shortcuts
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_WEB" desc="Category title for the list of webpages shown in launcher search that are relevant to but not the best match for the query in the search box.">
+        Websites
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_FILES" desc="Category title for the list of local and Google Drive files shown in launcher search that are relevant to but not the best match for the query in the search box.">
+        Files
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_SETTINGS" desc="Category title for the list of system settings shown in launcher search that are relevant to but not the best match for the query in the search box.">
+        Settings
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_HELP" desc="Category title for the list of help articles from Showoff and Keyboard Shortcuts shown in launcher search that are relevant to but not the best match for the query in the search box.">
+        Help
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_PLAY_STORE" desc="Category title for the list of play store suggestions shown in launcher search that are relevant to but not the best match for the query in the search box.">
+        Play Store
+      </message>
+      <message name="IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_SEARCH_AND_ASSISTANT" desc="Category title for the list of suggestions from the search provider and Google Assistant shown in launcher search that are relevant to but not the best match for the query in the search box.">
+        Search and Assistant
+      </message>
       <message name="IDS_ASH_SEARCH_RESULT_SEPARATOR" desc="Separator between the title and details text in ash search result view.">
         ''' - '''
       </message>

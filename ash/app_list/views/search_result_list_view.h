@@ -10,6 +10,7 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_view.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -36,13 +37,33 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
     // kUnified list view contains all search results with the display type
     // SearchResultDisplayType::kList. No category labels are shown. This should
     // be used when productivity launcher is disabled.
-    kUnified,
+    kUnified = 0,
     // kBestMatch list view contains the results that are the best match for the
     // current query. This category should be used when productivity launcher is
     // enabled. All search results will show up under this category until search
     // metadata is updated with the other category labels.
-    // TODO(crbug/1216097) add other SearchResultListTypes.
-    kBestMatch,
+    kBestMatch = 1,
+    // kApps list view contains existing non-game ARC and PWA apps that are
+    // installed and are relevant to but not the best match for the current
+    // query.
+    kApps = 2,
+    // kAppShortcuts list view contains shortcuts to actions for existing apps.
+    kAppShortcuts = 3,
+    // kWeb list view contains links to relevant websites.
+    kWeb = 4,
+    // kFiles list view contains relevant local and Google Drive files.
+    kFiles = 5,
+    // kSettings list view contains relevant system settings.
+    kSettings = 6,
+    // kHelp list view contains help articles from Showoff and Keyboard
+    // Shortcuts.
+    kHelp = 7,
+    // kPlayStore contains suggested apps from the playstore that are not
+    // currently installed.
+    kPlayStore = 8,
+    // kSearchAndAssistant contain suggestions from Search and Google Assistant.
+    kSearchAndAssistant = 9,
+    kMaxValue = kSearchAndAssistant,
   };
 
   SearchResultListView(AppListMainView* main_view,
@@ -74,6 +95,11 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   AppListMainView* app_list_main_view() const { return main_view_; }
 
+  // Gets all the SearchResultListTypes that should be used when categorical
+  // search is enabled.
+  static std::vector<SearchResultListType>
+  GetAllListTypesForCategoricalSearch();
+
  protected:
   // Overridden from views::View:
   void VisibilityChanged(View* starting_from, bool is_visible) override;
@@ -98,6 +124,12 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   // Returns regular search results with Assistant search results appended.
   std::vector<SearchResult*> GetSearchResults();
+
+  // Fetches the category of results this view should show.
+  SearchResult::Category GetSearchCategory();
+
+  // Returns search results for the class's current list_type_.
+  std::vector<SearchResult*> GetCategorizedSearchResults();
 
   AppListMainView* main_view_;          // Owned by views hierarchy.
   AppListViewDelegate* view_delegate_;  // Not owned.
