@@ -18,10 +18,8 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_delegate_interface.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
-#include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
-#include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -110,7 +108,7 @@ void LeakDetectionRequest::LookupSingleLeak(
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = BuildLookupSingleLeakURL();
+  resource_request->url = GURL(kLookupSingleLeakEndpoint);
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = kPostMethod;
@@ -186,12 +184,6 @@ void LeakDetectionRequest::OnLookupSingleLeakResponse(
       "PasswordManager.LeakDetection.SingleLeakResponsePrefixes",
       single_lookup_response->encrypted_leak_match_prefixes.size());
   std::move(callback).Run(std::move(single_lookup_response), absl::nullopt);
-}
-
-GURL BuildLookupSingleLeakURL() {
-  return net::AppendQueryParameter(
-      GURL(LeakDetectionRequest::kLookupSingleLeakEndpoint), "key",
-      google_apis::GetAPIKey());
 }
 
 }  // namespace password_manager

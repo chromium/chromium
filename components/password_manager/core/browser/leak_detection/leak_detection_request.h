@@ -62,9 +62,6 @@ class LeakDetectionRequest : public LeakDetectionRequestInterface {
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
 };
 
-// Builds the URL for the PasswordsLeakCheckService API's lookupSingle method.
-GURL BuildLookupSingleLeakURL();
-
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_REQUEST_H_
