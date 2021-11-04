@@ -91,7 +91,7 @@ export let PowerManagementSettings;
 
 /**
  * A note app's availability for running as note handler app from lock screen.
- * Mirrors chromeos::NoteTakingLockScreenSupport.
+ * Mirrors `ash::NoteTakingLockScreenSupport`.
  * @enum {number}
  */
 export const NoteAppLockScreenSupport = {

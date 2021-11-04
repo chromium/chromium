@@ -15,7 +15,7 @@
 #include "net/base/network_change_notifier_posix.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 NetworkChangeManagerClient::NetworkChangeManagerClient(
     net::NetworkChangeNotifierPosix* network_change_notifier)
@@ -258,4 +258,4 @@ NetworkChangeManagerClient::GetConnectionSubtype(
   return net::NetworkChangeNotifier::SUBTYPE_UNKNOWN;
 }
 
-}  // namespace chromeos
+}  // namespace ash

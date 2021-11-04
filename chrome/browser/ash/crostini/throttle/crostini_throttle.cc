@@ -27,7 +27,7 @@ class DefaultDelegateImpl : public CrostiniThrottle::Delegate {
   ~DefaultDelegateImpl() override = default;
 
   void SetCpuRestriction(bool do_restrict) override {
-    chromeos::ConciergeHelperService::GetForBrowserContext(context_)
+    ash::ConciergeHelperService::GetForBrowserContext(context_)
         ->SetTerminaVmCpuRestriction(do_restrict);
   }
 

@@ -242,7 +242,7 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(&ArcSessionFactory)));
-    chromeos::NoteTakingHelper::Initialize();
+    ash::NoteTakingHelper::Initialize();
 
     AddTestUserProfile();
 
@@ -254,7 +254,7 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   void TearDown() override {
     lock_screen_profile_creator_.reset();
     arc_session_manager_.reset();
-    chromeos::NoteTakingHelper::Shutdown();
+    ash::NoteTakingHelper::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 
     chromeos::ConciergeClient::Shutdown();
@@ -322,9 +322,9 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   void SetAppEnabledOnLockScreen(Profile* profile,
                                  const extensions::Extension* app,
                                  bool enabled) {
-    chromeos::NoteTakingHelper::Get()->SetPreferredApp(profile, app->id());
-    chromeos::NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(
-        profile, enabled);
+    ash::NoteTakingHelper::Get()->SetPreferredApp(profile, app->id());
+    ash::NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(profile,
+                                                                     enabled);
   }
 
   // Marks extension system as ready.
@@ -361,7 +361,7 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
                                              false /*add_to_storage*/);
     InitExtensionSystem(primary_profile_);
 
-    chromeos::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(
+    ash::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(
         primary_profile_);
   }
 

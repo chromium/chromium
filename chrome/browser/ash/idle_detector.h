@@ -12,7 +12,7 @@
 #include "base/timer/timer.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 class IdleDetector : public ui::UserActivityObserver {
  public:
@@ -40,12 +40,6 @@ class IdleDetector : public ui::UserActivityObserver {
   base::TimeDelta timeout_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::IdleDetector;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_IDLE_DETECTOR_H_

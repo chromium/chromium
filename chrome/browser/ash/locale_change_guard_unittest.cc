@@ -12,6 +12,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace ash {
+
 namespace {
 
 // These languages require user notification when locale is automatically
@@ -149,9 +151,7 @@ const char* const kShowNotificationLanguages[] = {
     "zu",   // Zulu
 };
 
-}  // anonymous namespace
-
-namespace chromeos {
+}  // namespace
 
 TEST(LocaleChangeGuardTest, ShowNotificationLocaleChanged) {
   // "en" is used as "global default" in many places.
@@ -236,4 +236,4 @@ TEST(LocaleChangeGuardTest, ShowNotificationLocaleChangedList) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

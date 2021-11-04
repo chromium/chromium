@@ -756,7 +756,7 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault() {
       // If the preferred keyboard for the login screen has been saved, use it.
       PrefService* prefs = g_browser_process->local_state();
       std::string initial_input_method_id =
-          prefs->GetString(chromeos::language_prefs::kPreferredKeyboardLayout);
+          prefs->GetString(language_prefs::kPreferredKeyboardLayout);
       if (initial_input_method_id.empty()) {
         // If kPreferredKeyboardLayout is not specified, use the hardware
         // layout.
@@ -1226,7 +1226,7 @@ scoped_refptr<InputMethodManager::State> InputMethodManagerImpl::CreateNewState(
   }
   if (initial_input_method_id.empty()) {
     initial_input_method_id =
-        prefs->GetString(chromeos::language_prefs::kPreferredKeyboardLayout);
+        prefs->GetString(language_prefs::kPreferredKeyboardLayout);
   }
 
   const InputMethodDescriptor* descriptor =

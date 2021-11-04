@@ -27,7 +27,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 constexpr char kLogFileName[] = "chrome.log";
@@ -62,7 +62,7 @@ class LoggingBrowserTest : public LoginManagerTest {
     login_mixin_.AppendRegularUsers(1);
     CHECK(system_temp_dir_.CreateUniqueTempDir());
     CHECK(user_temp_dir_.CreateUniqueTempDir());
-    logging::ForceLogRedirectionForTesting();
+    ForceLogRedirectionForTesting();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -119,4 +119,4 @@ IN_PROC_BROWSER_TEST_F(LoggingBrowserTest, NetworkServiceLogsRedirect) {
   EXPECT_NE(std::string::npos, user_logs.find(kLogMessageNetworkRedirected));
 }
 
-}  // namespace chromeos
+}  // namespace ash

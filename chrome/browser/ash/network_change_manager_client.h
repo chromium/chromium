@@ -19,7 +19,7 @@ namespace net {
 class NetworkChangeNotifierPosix;
 }
 
-namespace chromeos {
+namespace ash {
 
 // This class listens to Shill for network change events and notifies both
 // the local NetworkChangeNotifierPosix, and the network service via
@@ -96,12 +96,6 @@ class NetworkChangeManagerClient
   mojo::Remote<network::mojom::NetworkChangeManager> network_change_manager_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::NetworkChangeManagerClient;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NETWORK_CHANGE_MANAGER_CLIENT_H_

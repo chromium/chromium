@@ -53,7 +53,7 @@ void OnArcHandled(const GURL& url,
       return;
     }
   }
-  new ExternalProtocolNoHandlersDialog(web_contents, url);
+  new ash::ExternalProtocolNoHandlersDialog(web_contents, url);
 }
 
 }  // namespace
@@ -82,6 +82,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
       base::BindOnce(&OnArcHandled, url, initiating_origin,
                      render_process_host_id, routing_id));
 }
+
+namespace ash {
 
 ///////////////////////////////////////////////////////////////////////////////
 // ExternalProtocolNoHandlersDialog
@@ -136,3 +138,5 @@ const views::Widget* ExternalProtocolNoHandlersDialog::GetWidget() const {
 views::Widget* ExternalProtocolNoHandlersDialog::GetWidget() {
   return message_box_view_->GetWidget();
 }
+
+}  // namespace ash

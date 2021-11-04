@@ -745,7 +745,7 @@ DownloadItemNotification::GetExtraActions() const {
       actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
       if (!notification_->image().IsEmpty()) {
         actions->push_back(DownloadCommands::COPY_TO_CLIPBOARD);
-        if (chromeos::NoteTakingHelper::Get()->IsAppAvailable(profile()))
+        if (ash::NoteTakingHelper::Get()->IsAppAvailable(profile()))
           actions->push_back(DownloadCommands::ANNOTATE);
       }
       break;

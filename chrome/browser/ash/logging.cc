@@ -20,7 +20,7 @@
 #include "content/public/common/network_service_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-namespace logging {
+namespace ash {
 
 namespace {
 
@@ -39,13 +39,13 @@ void SymlinkSetUp(const base::CommandLine& command_line,
   // ChromeOS always logs through the symlink, so it shouldn't be
   // deleted if it already exists.
   logging::LoggingSettings settings;
-  settings.logging_dest = DetermineLoggingDestination(command_line);
+  settings.logging_dest = logging::DetermineLoggingDestination(command_line);
   settings.log_file_path = log_path.value().c_str();
   if (!logging::InitLogging(settings)) {
     DLOG(ERROR) << "Unable to initialize logging to " << log_path.value();
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&RemoveSymlinkAndLog, log_path, target_path));
+        base::BindOnce(&logging::RemoveSymlinkAndLog, log_path, target_path));
     return;
   }
 
@@ -94,13 +94,13 @@ void RedirectChromeLogging(const base::CommandLine& command_line) {
 
   // Redirect logs to the session log directory, if set.  Otherwise
   // defaults to the profile dir.
-  const base::FilePath log_path = GetSessionLogFile(command_line);
+  const base::FilePath log_path = logging::GetSessionLogFile(command_line);
 
   // Always force a new symlink when redirecting.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&SetUpSymlinkIfNeeded, log_path, true),
+      base::BindOnce(&logging::SetUpSymlinkIfNeeded, log_path, true),
       base::BindOnce(&SymlinkSetUp, command_line, log_path));
 }
 
-}  // namespace logging
+}  // namespace ash

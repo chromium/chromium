@@ -10,6 +10,8 @@
 
 class GURL;
 
+namespace ash {
+
 class ChromeContentBrowserClientAshPart
     : public ChromeContentBrowserClientParts {
  public:
@@ -28,5 +30,7 @@ class ChromeContentBrowserClientAshPart
 
   static bool UseDefaultFontSizeForTest(const GURL& url);
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHROME_CONTENT_BROWSER_CLIENT_ASH_PART_H_

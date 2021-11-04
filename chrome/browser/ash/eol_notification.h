@@ -19,7 +19,7 @@ namespace base {
 class Clock;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 // EolNotification is created when user logs in. It is used to check current
 // EndOfLife date of the device, and show warning notifications accordingly.
@@ -78,12 +78,6 @@ class EolNotification final : public message_center::NotificationObserver {
   base::WeakPtrFactory<EolNotification> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::EolNotification;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_EOL_NOTIFICATION_H_

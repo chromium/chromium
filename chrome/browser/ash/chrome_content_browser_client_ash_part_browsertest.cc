@@ -15,7 +15,9 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-using ChromeContentBrowserClientAshPartTest = InProcessBrowserTest;
+namespace ash {
+
+using ChromeContentBrowserClientAshPartTest = ::InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientAshPartTest,
                        SettingsWindowFontSize) {
@@ -52,3 +54,5 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientAshPartTest,
   EXPECT_EQ(kDefaultFontSize, window_prefs.default_font_size);
   EXPECT_EQ(kDefaultFixedFontSize, window_prefs.default_fixed_font_size);
 }
+
+}  // namespace ash

@@ -25,6 +25,8 @@
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
+namespace ash {
+
 namespace {
 
 GURL GetURL(content::WebContents* contents) {
@@ -73,7 +75,7 @@ void OverrideWebkitPrefsForTabletMode(
     content::WebContents* contents,
     blink::web_pref::WebPreferences* web_prefs) {
   // Enable some mobile-like behaviors when in tablet mode on Chrome OS.
-  if (!ash::TabletMode::Get() || !ash::TabletMode::Get()->InTabletMode())
+  if (!TabletMode::Get() || !TabletMode::Get()->InTabletMode())
     return;
 
   // Do this only for webcontents displayed in browsers and are not of hosted
@@ -135,3 +137,5 @@ bool ChromeContentBrowserClientAshPart::UseDefaultFontSizeForTest(
     const GURL& url) {
   return UseDefaultFontSize(url);
 }
+
+}  // namespace ash

@@ -14,7 +14,7 @@
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 void OnSetVmCpuRestriction(
@@ -123,4 +123,4 @@ KeyedService* ConciergeHelperServiceFactory::BuildServiceInstanceFor(
   return new ConciergeHelperService();
 }
 
-}  // namespace chromeos
+}  // namespace ash

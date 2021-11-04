@@ -23,7 +23,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
-namespace chromeos {
+namespace ash {
 
 class EolNotificationTest : public BrowserWithTestWindowTest {
  public:
@@ -35,7 +35,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
     DBusThreadManager::Initialize();
     DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         base::WrapUnique<UpdateEngineClient>(fake_update_engine_client_));
-    chromeos::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BrowserWithTestWindowTest::SetUp();
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
@@ -59,7 +59,7 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
     eol_notification_.reset();
     tester_.reset();
     BrowserWithTestWindowTest::TearDown();
-    chromeos::ConciergeClient::Shutdown();
+    ConciergeClient::Shutdown();
     DBusThreadManager::Shutdown();
   }
 
@@ -294,4 +294,4 @@ TEST_F(EolNotificationTest, TestBackwardsCompatibilityFinalUpdateAlreadyShown) {
   ASSERT_FALSE(notification);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -34,10 +34,10 @@ class PrefService;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace ash {
 class KioskTest;
+class LocaleChangeGuard;
 }
 
 namespace chromeos {
-class LocaleChangeGuard;
 class Preferences;
 }  // namespace chromeos
 #endif
@@ -293,7 +293,7 @@ class ProfileImpl : public Profile {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::Preferences> chromeos_preferences_;
 
-  std::unique_ptr<chromeos::LocaleChangeGuard> locale_change_guard_;
+  std::unique_ptr<ash::LocaleChangeGuard> locale_change_guard_;
 #endif
 
   // TODO(mmenke):  This should be removed from the Profile, and use a

@@ -416,7 +416,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
         std::make_unique<arc::ArcSessionRunner>(
             base::BindRepeating(&ArcSessionFactory)));
 
-    chromeos::NoteTakingHelper::Initialize();
+    ash::NoteTakingHelper::Initialize();
 
     InitExtensionSystem(profile());
 
@@ -455,7 +455,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     app_manager_ = nullptr;
     lock_screen_profile_creator_ = nullptr;
     extensions::ExtensionSystem::Get(profile())->Shutdown();
-    chromeos::NoteTakingHelper::Shutdown();
+    ash::NoteTakingHelper::Shutdown();
     arc_session_manager_.reset();
     session_manager_.reset();
     app_window_.reset();

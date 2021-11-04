@@ -49,7 +49,7 @@ struct ActionData;
 }  // namespace api
 }  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 
 class NoteTakingControllerClient;
 
@@ -350,6 +350,12 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   base::WeakPtrFactory<NoteTakingHelper> weak_ptr_factory_{this};
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::NoteTakingAppInfo;
+using ::ash::NoteTakingHelper;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NOTE_TAKING_HELPER_H_

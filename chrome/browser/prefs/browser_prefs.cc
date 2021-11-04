@@ -1028,7 +1028,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::KerberosCredentialsManager::RegisterLocalStatePrefs(registry);
   ash::KioskAppManager::RegisterPrefs(registry);
   ash::KioskCryptohomeRemover::RegisterPrefs(registry);
-  chromeos::language_prefs::RegisterPrefs(registry);
+  ash::language_prefs::RegisterPrefs(registry);
   chromeos::local_search_service::SearchMetricsReporter::
       RegisterLocalStatePrefs(registry);
   ash::login::SecurityTokenSessionController::RegisterLocalStatePrefs(registry);

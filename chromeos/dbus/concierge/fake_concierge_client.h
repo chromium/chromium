@@ -435,4 +435,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::FakeConciergeClient;
+}
+
 #endif  // CHROMEOS_DBUS_CONCIERGE_FAKE_CONCIERGE_CLIENT_H_

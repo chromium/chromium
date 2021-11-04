@@ -71,15 +71,14 @@
 #include "third_party/skia/include/core/SkTypes.h"
 #include "url/gurl.h"
 
+namespace ash {
+
 namespace app_runtime = extensions::api::app_runtime;
 
-using arc::mojom::IntentHandlerInfo;
-using arc::mojom::IntentHandlerInfoPtr;
-using base::HistogramTester;
-using HandledIntent = arc::FakeIntentHelperInstance::HandledIntent;
-
-namespace chromeos {
-
+using ::arc::mojom::IntentHandlerInfo;
+using ::arc::mojom::IntentHandlerInfoPtr;
+using ::base::HistogramTester;
+using HandledIntent = ::arc::FakeIntentHelperInstance::HandledIntent;
 using LaunchResult = NoteTakingHelper::LaunchResult;
 
 namespace {
@@ -254,7 +253,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
 
     if (flags & ENABLE_PALETTE) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          ash::switches::kAshForceEnableStylusTools);
+          switches::kAshForceEnableStylusTools);
     }
 
     // TODO(derat): Sigh, something in ArcAppTest appears to be re-enabling ARC.
@@ -842,7 +841,7 @@ TEST_F(NoteTakingHelperTest, LaunchHardcodedWebApp) {
   // Fire a "Create Note" action and check the app is launched.
   HistogramTester histogram_tester;
   SetNoteTakingClientProfile(profile());
-  ash::NoteTakingClient::GetInstance()->CreateNote();
+  NoteTakingClient::GetInstance()->CreateNote();
   base::RunLoop().RunUntilIdle();
 
   // Web app, so no launched_chrome_apps.
@@ -877,7 +876,7 @@ TEST_F(NoteTakingHelperTest, LaunchWebApp) {
   // Fire a "Create Note" action and check the app is launched.
   HistogramTester histogram_tester;
   SetNoteTakingClientProfile(profile());
-  ash::NoteTakingClient::GetInstance()->CreateNote();
+  NoteTakingClient::GetInstance()->CreateNote();
   base::RunLoop().RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
@@ -1653,7 +1652,7 @@ TEST_F(NoteTakingHelperTest, NoteTakingControllerClient) {
   Init(ENABLE_PALETTE);
 
   auto has_note_taking_apps = [&]() {
-    auto* client = ash::NoteTakingClient::GetInstance();
+    auto* client = NoteTakingClient::GetInstance();
     return client && client->CanCreateNote();
   };
 
@@ -1696,7 +1695,7 @@ TEST_F(NoteTakingHelperTest, NoteTakingControllerClient) {
   SetNoteTakingClientProfile(profile());
   EXPECT_TRUE(has_note_taking_apps());
 
-  ash::NoteTakingClient::GetInstance()->CreateNote();
+  NoteTakingClient::GetInstance()->CreateNote();
   ASSERT_EQ(1u, launched_chrome_apps_.size());
   ASSERT_EQ(NoteTakingHelper::kProdKeepExtensionId,
             launched_chrome_apps_[0].id);
@@ -1707,4 +1706,4 @@ TEST_F(NoteTakingHelperTest, NoteTakingControllerClient) {
   profile_manager()->DeleteTestingProfile(kSecondProfileName);
 }
 
-}  // namespace chromeos
+}  // namespace ash

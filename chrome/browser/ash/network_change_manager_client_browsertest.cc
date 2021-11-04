@@ -16,7 +16,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -169,4 +169,4 @@ IN_PROC_BROWSER_TEST_F(NetworkChangeManagerClientBrowserTest,
   EXPECT_EQ(2, network_service_observer.change_count_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

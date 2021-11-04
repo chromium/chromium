@@ -8,7 +8,7 @@
 #include "base/time/default_tick_clock.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
-namespace chromeos {
+namespace ash {
 
 IdleDetector::IdleDetector(const base::RepeatingClosure& on_idle_callback,
                            const base::TickClock* tick_clock)
@@ -39,4 +39,4 @@ void IdleDetector::ResetTimer() {
     timer_.Start(FROM_HERE, timeout_, idle_callback_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

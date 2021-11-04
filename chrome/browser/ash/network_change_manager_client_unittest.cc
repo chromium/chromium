@@ -18,7 +18,7 @@
 #include "net/base/network_change_notifier_posix.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -409,4 +409,4 @@ TEST_F(NetworkChangeManagerClientUpdateTest, UpdateDefaultNetwork) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

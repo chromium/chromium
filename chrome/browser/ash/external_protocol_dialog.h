@@ -21,6 +21,8 @@ namespace views {
 class MessageBoxView;
 }
 
+namespace ash {
+
 // The external protocol dialog for Chrome OS shown when there are no handlers.
 class ExternalProtocolNoHandlersDialog : public views::DialogDelegate {
  public:
@@ -50,5 +52,7 @@ class ExternalProtocolNoHandlersDialog : public views::DialogDelegate {
   // The scheme of the url.
   std::string scheme_;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_EXTERNAL_PROTOCOL_DIALOG_H_

@@ -1241,7 +1241,7 @@ ChromeContentBrowserClient::ChromeContentBrowserClient() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  extra_parts_.push_back(new ChromeContentBrowserClientAshPart);
+  extra_parts_.push_back(new ash::ChromeContentBrowserClientAshPart);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)

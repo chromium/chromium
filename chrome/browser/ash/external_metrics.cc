@@ -26,7 +26,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -182,9 +182,8 @@ void ExternalMetrics::CollectEventsAndReschedule() {
 void ExternalMetrics::ScheduleCollector() {
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&chromeos::ExternalMetrics::CollectEventsAndReschedule,
-                     this),
+      base::BindOnce(&ExternalMetrics::CollectEventsAndReschedule, this),
       collection_interval_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

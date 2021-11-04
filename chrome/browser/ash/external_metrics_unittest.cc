@@ -17,7 +17,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {  // Need this because of the FRIEND_TEST
+namespace ash {
 
 class ExternalMetricsTest : public testing::Test {
  public:
@@ -82,4 +82,4 @@ TEST_F(ExternalMetricsTest, IncorrectHistogramsAreDiscarded) {
   histogram_tester.ExpectTotalCount("bar", 0);
 }
 
-}  // namespace chromeos
+}  // namespace ash

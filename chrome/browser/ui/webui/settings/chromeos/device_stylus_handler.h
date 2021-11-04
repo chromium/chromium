@@ -39,7 +39,7 @@ class StylusHandler : public ::settings::SettingsPageUIHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-  // chromeos::NoteTakingHelper::Observer implementation.
+  // NoteTakingHelper::Observer implementation.
   void OnAvailableNoteTakingAppsUpdated() override;
   void OnPreferredNoteTakingAppUpdated(Profile* profile) override;
 

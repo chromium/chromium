@@ -82,6 +82,9 @@ namespace chromeos {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace language_prefs = ::ash::language_prefs;
+
 // The keyboard preferences that determine how we remap modifier keys. These
 // preferences will be saved in global user preferences dictionary so that they
 // can be used on signin screen.

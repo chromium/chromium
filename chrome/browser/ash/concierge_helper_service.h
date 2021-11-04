@@ -10,7 +10,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class starts Concierge on construction and provides functions to
 // enable/disable throttling for various VMs (crostini, arc, plugin, etc).
@@ -53,6 +53,6 @@ class ConciergeHelperServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CONCIERGE_HELPER_SERVICE_H_

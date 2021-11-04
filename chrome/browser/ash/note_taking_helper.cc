@@ -60,10 +60,10 @@
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
-namespace app_runtime = extensions::api::app_runtime;
-
-namespace chromeos {
+namespace ash {
 namespace {
+
+namespace app_runtime = ::extensions::api::app_runtime;
 
 // Pointer to singleton instance.
 NoteTakingHelper* g_helper = nullptr;
@@ -416,8 +416,7 @@ bool NoteTakingHelper::SetPreferredAppEnabledOnLockScreen(Profile* profile,
 bool NoteTakingHelper::IsAppAvailable(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile);
-  return ash::stylus_utils::HasStylusInput() &&
-         !GetAvailableApps(profile).empty();
+  return stylus_utils::HasStylusInput() && !GetAvailableApps(profile).empty();
 }
 
 void NoteTakingHelper::LaunchAppForNewNote(Profile* profile,
@@ -900,4 +899,4 @@ void NoteTakingHelper::UpdateAllowedLockScreenAppsList() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

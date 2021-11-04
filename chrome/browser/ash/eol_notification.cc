@@ -28,10 +28,10 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-using l10n_util::GetStringUTF16;
-
-namespace chromeos {
+namespace ash {
 namespace {
+
+using ::l10n_util::GetStringUTF16;
 
 const char kEolNotificationId[] = "chrome://product_eol";
 
@@ -125,7 +125,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
 
   if (now < eol_date) {
     // Notifies user that updates will stop occurring at a month and year.
-    notification = ash::CreateSystemNotification(
+    notification = CreateSystemNotification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kEolNotificationId,
         l10n_util::GetStringFUTF16(
             IDS_PENDING_EOL_NOTIFICATION_TITLE,
@@ -146,7 +146,7 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
     data.buttons.emplace_back(GetStringUTF16(IDS_EOL_DISMISS_BUTTON));
 
     // Notifies user that updates will no longer occur after this final update.
-    notification = ash::CreateSystemNotification(
+    notification = CreateSystemNotification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kEolNotificationId,
         GetStringUTF16(IDS_EOL_NOTIFICATION_TITLE),
         l10n_util::GetStringFUTF16(IDS_EOL_NOTIFICATION_EOL,
@@ -209,4 +209,4 @@ void EolNotification::Click(const absl::optional<int>& button_index,
       NotificationHandler::Type::TRANSIENT, kEolNotificationId);
 }
 
-}  // namespace chromeos
+}  // namespace ash

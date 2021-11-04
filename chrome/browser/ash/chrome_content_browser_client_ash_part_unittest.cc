@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+namespace ash {
 namespace {
 
 bool UseDefaultFontSize(const std::string& url) {
@@ -60,3 +61,4 @@ TEST(ChromeContentBrowserClientAshPartTest, FontSizeForApps) {
 }
 
 }  // namespace
+}  // namespace ash

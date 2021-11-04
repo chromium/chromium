@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
-namespace chromeos {
+namespace ash {
 
 NoteTakingControllerClient::NoteTakingControllerClient(NoteTakingHelper* helper)
     : helper_(helper) {
@@ -50,4 +50,4 @@ void NoteTakingControllerClient::SetProfileByUser(
   profile_observation_.Observe(profile_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

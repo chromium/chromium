@@ -660,8 +660,8 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::ANNOTATE:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (HasSupportedImageMimeType()) {
-        chromeos::NoteTakingHelper::Get()->LaunchAppForNewNote(
-            profile(), GetTargetFilePath());
+        ash::NoteTakingHelper::Get()->LaunchAppForNewNote(profile(),
+                                                          GetTargetFilePath());
       }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       break;

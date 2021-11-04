@@ -1152,7 +1152,7 @@ void UserSessionManager::CreateUserSession(const UserContext& user_context,
 
 void UserSessionManager::PreStartSession(StartSessionType start_session_type) {
   // Switch log file as soon as possible.
-  logging::RedirectChromeLogging(*base::CommandLine::ForCurrentProcess());
+  RedirectChromeLogging(*base::CommandLine::ForCurrentProcess());
 
   UserSessionInitializer::Get()->PreStartSession(start_session_type ==
                                                  StartSessionType::kPrimary);

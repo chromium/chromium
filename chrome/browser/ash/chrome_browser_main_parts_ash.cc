@@ -256,8 +256,6 @@
 namespace ash {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove when in ash::.
-using ::chromeos::NoteTakingHelper;
 namespace startup_settings_cache = ::chromeos::startup_settings_cache;
 
 void ChromeOSVersionCallback(const std::string& version) {
@@ -783,7 +781,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   bool immediate_login = parsed_command_line().HasSwitch(switches::kLoginUser);
   if (immediate_login) {
     // Redirects Chrome logging to the user data dir.
-    logging::RedirectChromeLogging(parsed_command_line());
+    RedirectChromeLogging(parsed_command_line());
 
     // Load the default app order synchronously for restarting case.
     app_order_loader_ =

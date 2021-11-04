@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/language_preferences.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
+namespace ash {
 namespace language_prefs {
 
 // ---------------------------------------------------------------------------
@@ -28,4 +28,4 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 }  // namespace language_prefs
-}  // namespace chromeos
+}  // namespace ash

@@ -27,12 +27,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::UserMetricsAction;
-using content::WebContents;
-
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::base::UserMetricsAction;
+using ::content::WebContents;
 
 // This is the list of languages that do not require user notification when
 // locale is switched automatically between regions within the same language.
@@ -130,16 +130,15 @@ void LocaleChangeGuard::Check() {
   std::string to_locale = prefs->GetString(language::prefs::kApplicationLocale);
   // Ensure that synchronization does not change the locale to a value not
   // allowed by enterprise policy.
-  if (!chromeos::locale_util::IsAllowedUILanguage(to_locale, prefs)) {
-    prefs->SetString(
-        language::prefs::kApplicationLocale,
-        chromeos::locale_util::GetAllowedFallbackUILanguage(prefs));
+  if (!locale_util::IsAllowedUILanguage(to_locale, prefs)) {
+    prefs->SetString(language::prefs::kApplicationLocale,
+                     locale_util::GetAllowedFallbackUILanguage(prefs));
   }
 
   language::ConvertToActualUILocale(&to_locale);
 
   if (to_locale != cur_locale && locale_changed_during_login_) {
-    ash::LocaleUpdateController::Get()->OnLocaleChanged();
+    LocaleUpdateController::Get()->OnLocaleChanged();
     return;
   }
 
@@ -149,9 +148,9 @@ void LocaleChangeGuard::Check() {
     // If the locale changed during login (e.g. from the owner's locale), just
     // notify ash about the change, so system UI gets updated.
     // If the change also requires user confirmation, the UI will be updates as
-    // part of ash::LocaleUpdateController::ConfirmLocaleChange.
+    // part of `LocaleUpdateController::ConfirmLocaleChange`.
     if (locale_changed_during_login_)
-      ash::LocaleUpdateController::Get()->OnLocaleChanged();
+      LocaleUpdateController::Get()->OnLocaleChanged();
     return;
   }
 
@@ -163,17 +162,17 @@ void LocaleChangeGuard::Check() {
     PrepareChangingLocale(from_locale, to_locale);
   }
 
-  ash::LocaleUpdateController::Get()->ConfirmLocaleChange(
+  LocaleUpdateController::Get()->ConfirmLocaleChange(
       cur_locale, from_locale_, to_locale_,
       base::BindOnce(&LocaleChangeGuard::OnResult, AsWeakPtr()));
 }
 
-void LocaleChangeGuard::OnResult(ash::LocaleNotificationResult result) {
+void LocaleChangeGuard::OnResult(LocaleNotificationResult result) {
   switch (result) {
-    case ash::LocaleNotificationResult::kAccept:
+    case LocaleNotificationResult::kAccept:
       AcceptLocaleChange();
       break;
-    case ash::LocaleNotificationResult::kRevert:
+    case LocaleNotificationResult::kRevert:
       RevertLocaleChange();
       break;
   }
@@ -253,4 +252,4 @@ size_t LocaleChangeGuard::GetSkipShowNotificationLanguagesSizeForTesting() {
   return base::size(kSkipShowNotificationLanguages);
 }
 
-}  // namespace chromeos
+}  // namespace ash

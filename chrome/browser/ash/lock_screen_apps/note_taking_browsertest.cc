@@ -113,9 +113,9 @@ class LockScreenNoteTakingTest : public extensions::ExtensionBrowserTest {
   }
 
   bool EnableLockScreenAppLaunch(const std::string& app_id) {
-    chromeos::NoteTakingHelper::Get()->SetPreferredApp(profile(), app_id);
-    chromeos::NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(
-        profile(), true);
+    ash::NoteTakingHelper::Get()->SetPreferredApp(profile(), app_id);
+    ash::NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(profile(),
+                                                                     true);
 
     session_manager::SessionManager::Get()->SetSessionState(
         session_manager::SessionState::LOCKED);

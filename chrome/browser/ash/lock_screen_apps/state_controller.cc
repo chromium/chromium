@@ -201,8 +201,7 @@ void StateController::InitializeWithCryptoKey(Profile* profile,
           base_path.AppendASCII("lock_screen_app_data_v2"));
   lock_screen_data_->SetSessionLocked(false);
 
-  chromeos::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(
-      profile);
+  ash::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(profile);
 
   // Lock screen profile creator might have been set by a test.
   if (!lock_screen_profile_creator_) {
