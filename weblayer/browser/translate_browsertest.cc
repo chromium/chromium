@@ -7,6 +7,7 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_error_details.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -16,8 +17,10 @@
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/browser/translate_client_impl.h"
+#include "weblayer/public/navigation_controller.h"
 #include "weblayer/public/tab.h"
 #include "weblayer/shell/browser/shell.h"
+#include "weblayer/test/test_navigation_observer.h"
 #include "weblayer/test/weblayer_browser_test.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
@@ -238,6 +241,30 @@ IN_PROC_BROWSER_TEST_F(TranslateBrowserTest, PageLanguageDetection) {
       GURL(embedded_test_server()->GetURL("/french_page.html")), shell());
   language_determination_waiter_->Wait();
   EXPECT_EQ("fr", translate_client->GetLanguageState().source_language());
+}
+
+// Tests that firing the page language determined notification for a
+// failed-but-committed navigation does not cause a crash. Regression test for
+// crbug.com/1262047.
+IN_PROC_BROWSER_TEST_F(TranslateBrowserTest,
+                       PageLanguageDetectionInFailedButCommittedNavigation) {
+  TranslateClientImpl* translate_client = GetTranslateClient(shell());
+
+  auto url = embedded_test_server()->GetURL("/empty404.html");
+  TestNavigationObserver navigation_failed_observer(
+      url, TestNavigationObserver::NavigationEvent::kFailure, shell());
+  shell()->tab()->GetNavigationController()->Navigate(url);
+  navigation_failed_observer.Wait();
+
+  // Fire the OnLanguageDetermined() notification manually to mimic the
+  // production flow in which this is crashing (crbug.com/1262047).
+  // TODO(blundell): Replace this manual triggering by doing a
+  // failed-but-committed navigation that results in the OnLanguageDetermined()
+  // notification firing once I determine which navigations result in that flow
+  // in production.
+  translate::LanguageDetectionDetails language_details;
+  language_details.adopted_language = "en";
+  translate_client->OnLanguageDetermined(language_details);
 }
 
 // Test that the translation was successful.

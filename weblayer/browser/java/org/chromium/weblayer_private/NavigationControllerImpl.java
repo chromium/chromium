@@ -20,7 +20,6 @@ import org.chromium.weblayer_private.interfaces.INavigationController;
 import org.chromium.weblayer_private.interfaces.INavigationControllerClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.NavigateParams;
-import org.chromium.weblayer_private.interfaces.NavigationState;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 
@@ -241,17 +240,12 @@ public final class NavigationControllerImpl extends INavigationController.Stub {
     }
 
     @CalledByNative
+    private void getOrCreatePageForNavigation(NavigationImpl navigation) throws RemoteException {
+        navigation.getPage();
+    }
+
+    @CalledByNative
     private void navigationCompleted(NavigationImpl navigation) throws RemoteException {
-        if (navigation.getState() == NavigationState.COMPLETE) {
-            // Ensure that the Java-side Page object for this navigation is populated from and
-            // linked to the native Page object (which is guaranteed to exist at this point, since
-            // this is a committed navigation). Without this call, the Java-side navigation object
-            // won't be created and linked to the native object until/unless the client calls
-            // Navigation#getPage(), which is problematic when implementation-side callers need to
-            // bridge the C++ Page object into Java (e.g., to fire
-            // NavigationCallback#onPageLanguageDetermined()).
-            navigation.getPage();
-        }
         mNavigationControllerClient.navigationCompleted(navigation.getClientNavigation());
     }
 
