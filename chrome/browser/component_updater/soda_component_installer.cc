@@ -31,7 +31,8 @@
 #include <windows.h>
 
 #include "base/metrics/histogram_functions.h"
-#include "sandbox/win/src/sid.h"
+#include "base/win/scoped_localalloc.h"
+#include "base/win/sid.h"
 #endif
 
 using content::BrowserThread;
@@ -102,7 +103,12 @@ update_client::CrxInstaller::Result
 SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
     const base::FilePath& install_dir) {
 #if defined(OS_WIN)
-  sandbox::Sid users_sid = sandbox::Sid(WinBuiltinUsersSid);
+  const absl::optional<base::win::Sid> users_sid =
+      base::win::Sid::FromKnownSid(base::win::WellKnownSid::kBuiltinUsers);
+  if (!users_sid) {
+    return update_client::CrxInstaller::Result(
+        update_client::InstallError::SET_PERMISSIONS_FAILED);
+  }
 
   // Initialize an EXPLICIT_ACCESS structure for an ACE.
   EXPLICIT_ACCESS explicit_access[1] = {};
@@ -112,22 +118,22 @@ SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
   explicit_access[0].Trustee.TrusteeForm = TRUSTEE_IS_SID;
   explicit_access[0].Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
   explicit_access[0].Trustee.ptstrName =
-      reinterpret_cast<LPTSTR>(users_sid.GetPSID());
+      reinterpret_cast<LPTSTR>(users_sid->GetPSID());
 
-  PACL acl = nullptr;
+  PACL acl_ptr = nullptr;
   if (::SetEntriesInAcl(base::size(explicit_access), explicit_access, nullptr,
-                        &acl) != ERROR_SUCCESS) {
+                        &acl_ptr) != ERROR_SUCCESS) {
     return update_client::CrxInstaller::Result(
         update_client::InstallError::SET_PERMISSIONS_FAILED);
   }
+  base::win::ScopedLocalAllocTyped<ACL> acl =
+      base::win::TakeLocalAlloc(acl_ptr);
 
   // Change the security attributes.
   LPWSTR file_name = const_cast<LPWSTR>(install_dir.value().c_str());
-  bool success = ::SetNamedSecurityInfo(file_name, SE_FILE_OBJECT,
-                                        DACL_SECURITY_INFORMATION, nullptr,
-                                        nullptr, acl, nullptr) == ERROR_SUCCESS;
-  ::LocalFree(acl);
-  if (!success) {
+  if (::SetNamedSecurityInfo(file_name, SE_FILE_OBJECT,
+                             DACL_SECURITY_INFORMATION, nullptr, nullptr,
+                             acl.get(), nullptr) != ERROR_SUCCESS) {
     return update_client::CrxInstaller::Result(
         update_client::InstallError::SET_PERMISSIONS_FAILED);
   }
