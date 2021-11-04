@@ -57,7 +57,7 @@ HTMLSelectMenuElement::SelectMutationCallback::SelectMutationCallback(
   init->setAttributeOldValue(true);
   init->setAttributes(true);
   // TODO(crbug.com/1121840) There are more attributes that affect <selectmenu>.
-  init->setAttributeFilter({"part", "slot"});
+  init->setAttributeFilter({"behavior", "slot"});
   init->setChildList(true);
   init->setSubtree(true);
   observer_->observe(select_, init, ASSERT_NO_EXCEPTION);
@@ -81,12 +81,12 @@ void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
     MutationObserver&) {
   for (const auto& record : records) {
     if (record->type() == "attributes") {
-      if (record->attributeName() == html_names::kPartAttr) {
+      if (record->attributeName() == html_names::kBehaviorAttr) {
         auto* target = DynamicTo<Element>(record->target());
-        if (target &&
-            record->oldValue() != target->getAttribute(html_names::kPartAttr)) {
+        if (target && record->oldValue() !=
+                          target->getAttribute(html_names::kBehaviorAttr)) {
           PartRemoved(record->oldValue(), target);
-          PartInserted(target->getAttribute(html_names::kPartAttr), target);
+          PartInserted(target->getAttribute(html_names::kBehaviorAttr), target);
         }
       } else if (record->attributeName() == html_names::kSlotAttr) {
         auto* target = DynamicTo<Element>(record->target());
@@ -102,7 +102,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
           continue;
         }
 
-        const AtomicString& part = element->getAttribute(html_names::kPartAttr);
+        const AtomicString& part =
+            element->getAttribute(html_names::kBehaviorAttr);
         PartInserted(part, element);
         SlotChanged(element->SlotName());
       }
@@ -113,7 +114,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::Deliver(
           continue;
         }
 
-        const AtomicString& part = element->getAttribute(html_names::kPartAttr);
+        const AtomicString& part =
+            element->getAttribute(html_names::kBehaviorAttr);
         PartRemoved(part, element);
         SlotChanged(element->SlotName());
       }
@@ -209,19 +211,16 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   Document& document = GetDocument();
 
   // TODO(crbug.com/1121840) Where to put the styles for the default elements in
-  // the shadow tree? We'd like to have them in the UA styles (html.css), but
-  // the -webkit pseudo-id selectors only work if this is a UA shadow DOM.  We
-  // can't use a UA shadow DOMs because these don't currently support named
-  // slots. For now, just set the style attributes with raw inline strings, but
-  // we should be able to do something better than this. Probably the solution
-  // is to get named slots working in UA shadow DOM (crbug.com/1179356), and
-  // then we can switch to that and use the -webkit pseudo-id selectors.
+  // the shadow tree? For now, just set the style attributes with raw inline
+  // strings, but we should be able to do something better than this. Probably
+  // the solution is to have them in the UA styles (html.css).
 
   button_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   button_slot_->setAttribute(html_names::kNameAttr, kButtonPartName);
 
   button_part_ = MakeGarbageCollected<HTMLButtonElement>(document);
   button_part_->setAttribute(html_names::kPartAttr, kButtonPartName);
+  button_part_->setAttribute(html_names::kBehaviorAttr, kButtonPartName);
   button_part_->setAttribute(html_names::kStyleAttr,
                              R"CSS(
       display: inline-flex;
@@ -242,6 +241,8 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   selected_value_part_ = MakeGarbageCollected<HTMLDivElement>(document);
   selected_value_part_->setAttribute(html_names::kPartAttr,
+                                     kSelectedValuePartName);
+  selected_value_part_->setAttribute(html_names::kBehaviorAttr,
                                      kSelectedValuePartName);
 
   auto* button_icon = MakeGarbageCollected<HTMLDivElement>(document);
@@ -271,6 +272,7 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   SetListboxPart(MakeGarbageCollected<HTMLPopupElement>(document));
   listbox_part_->setAttribute(html_names::kPartAttr, kListboxPartName);
+  listbox_part_->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
 
   auto* options_slot = MakeGarbageCollected<HTMLSlotElement>(document);
 
@@ -363,7 +365,7 @@ bool HTMLSelectMenuElement::IsValidButtonPart(const Node* node,
                                               bool show_warning) const {
   auto* element = DynamicTo<Element>(node);
   if (!element ||
-      element->getAttribute(html_names::kPartAttr) != kButtonPartName) {
+      element->getAttribute(html_names::kBehaviorAttr) != kButtonPartName) {
     return false;
   }
 
@@ -386,7 +388,7 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Node* node,
                                                bool show_warning) const {
   auto* element = DynamicTo<Element>(node);
   if (!element ||
-      element->getAttribute(html_names::kPartAttr) != kListboxPartName) {
+      element->getAttribute(html_names::kBehaviorAttr) != kListboxPartName) {
     return false;
   }
 
@@ -508,7 +510,7 @@ Element* HTMLSelectMenuElement::FirstValidSelectedValuePart() const {
       continue;
     }
 
-    if (element->getAttribute(html_names::kPartAttr) ==
+    if (element->getAttribute(html_names::kBehaviorAttr) ==
         kSelectedValuePartName) {
       return element;
     }

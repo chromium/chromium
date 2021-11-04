@@ -11,8 +11,8 @@
 
 <selectmenu id="selectmenu1">
   <template shadowroot=open>
-    <button part="button">Custom button</button>
-    <popup part="listbox">
+    <button behavior="button">Custom button</button>
+    <popup behavior="listbox">
       <slot></slot>
     </popup>
   </template>
@@ -56,13 +56,13 @@
         }
 
       </style>
-      <button part="button">Open select!</button>
-      <div id="value" part="selected-value"></div>
-      <popup part="listbox">
+      <button behavior="button">Open select!</button>
+      <div id="value" behavior="selected-value"></div>
+      <popup behavior="listbox">
         <input type="text" placeholder="Filter options">
         <option>Thing 1</option>
         <option>Thing 2</option>
-        <div part="option" id="option3">Thing 3</div>
+        <div behavior="option" id="option3">Thing 3</div>
     </popup>`;
     assert_equals(selectMenu.shadowRoot.querySelectorAll("option").length, 2);
     assert_equals(selectMenu.open, false);

@@ -15,10 +15,10 @@
 </selectmenu>
 
 <selectmenu id="selectMenu1">
-  <div slot="button" part="button" id="selectMenu1-button">
+  <div slot="button" behavior="button" id="selectMenu1-button">
     Custom button
   </div>
-  <popup slot="listbox" part="listbox">
+  <popup slot="listbox" behavior="listbox">
     <option>one</option>
     <option id="selectMenu1-child2">two</option>
     <option id="selectMenu1-child3">three</option>
@@ -32,7 +32,7 @@
 
 <selectmenu id="selectMenu3">
   <div slot="listbox">
-    <popup part="listbox" id="selectMenu3-listbox">
+    <popup behavior="listbox" id="selectMenu3-listbox">
       <option>one</option>
     </popup>
   </div>
