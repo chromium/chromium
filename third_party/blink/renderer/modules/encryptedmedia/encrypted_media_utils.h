@@ -39,6 +39,12 @@ enum class EmeApiType {
   kRemove = 8,
 };
 
+// Config associated with a MediaKeys and its sessions.
+struct MediaKeysConfig {
+  String key_system;
+  bool use_hardware_secure_codecs = false;
+};
+
 constexpr const char* kEncryptedMediaPermissionsPolicyConsoleWarning =
     "Encrypted Media access has been blocked because of a Feature Policy "
     "applied to the current document. See https://goo.gl/EuHzyv for more "

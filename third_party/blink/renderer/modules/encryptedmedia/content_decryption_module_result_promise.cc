@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/encryptedmedia/content_decryption_module_result_promise.h"
 
+#include "media/base/key_systems.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -38,9 +39,11 @@ ExceptionCode WebCdmExceptionToExceptionCode(
 
 ContentDecryptionModuleResultPromise::ContentDecryptionModuleResultPromise(
     ScriptState* script_state,
-    EmeApiType type)
+    const MediaKeysConfig& config,
+    EmeApiType api_type)
     : resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-      type_(type) {}
+      config_(config),
+      api_type_(api_type) {}
 
 ContentDecryptionModuleResultPromise::~ContentDecryptionModuleResultPromise() =
     default;
@@ -93,7 +96,11 @@ void ContentDecryptionModuleResultPromise::CompleteWithError(
     if (document) {
       ukm::builders::Media_EME_ApiPromiseRejection builder(
           document->UkmSourceID());
-      builder.SetApi(static_cast<int>(type_));
+      builder.SetKeySystem(
+          media::GetKeySystemIntForUKM(config_.key_system.Ascii()));
+      builder.SetUseHardwareSecureCodecs(
+          static_cast<int>(config_.use_hardware_secure_codecs));
+      builder.SetApi(static_cast<int>(api_type_));
       builder.SetSystemCode(system_code);
       builder.Record(document->UkmRecorder());
     }
@@ -124,10 +131,11 @@ void ContentDecryptionModuleResultPromise::Reject(ExceptionCode code,
   DCHECK(IsValidToFulfillPromise());
 
   ScriptState::Scope scope(resolver_->GetScriptState());
-  ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
-                                 ExceptionState::kExecutionContext,
-                                 EncryptedMediaUtils::GetInterfaceName(type_),
-                                 EncryptedMediaUtils::GetPropertyName(type_));
+  ExceptionState exception_state(
+      resolver_->GetScriptState()->GetIsolate(),
+      ExceptionState::kExecutionContext,
+      EncryptedMediaUtils::GetInterfaceName(api_type_),
+      EncryptedMediaUtils::GetPropertyName(api_type_));
   exception_state.ThrowException(code, error_message);
   resolver_->Reject(exception_state);
 

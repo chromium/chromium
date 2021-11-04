@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_session_closed_reason.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_status_map.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -79,7 +80,10 @@ class MediaKeySession final
   USING_PRE_FINALIZER(MediaKeySession, Dispose);
 
  public:
-  MediaKeySession(ScriptState*, MediaKeys*, WebEncryptedMediaSessionType);
+  MediaKeySession(ScriptState*,
+                  MediaKeys*,
+                  WebEncryptedMediaSessionType,
+                  const MediaKeysConfig&);
   ~MediaKeySession() override;
 
   String sessionId() const;
@@ -150,9 +154,11 @@ class MediaKeySession final
   // Used to determine if MediaKeys is still active.
   WeakMember<MediaKeys> media_keys_;
 
+  const WebEncryptedMediaSessionType session_type_;
+  const MediaKeysConfig config_;
+
   // Session properties.
   String session_id_;
-  WebEncryptedMediaSessionType session_type_;
   double expiration_;
   Member<MediaKeyStatusMap> key_statuses_map_;
 

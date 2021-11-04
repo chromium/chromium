@@ -43,9 +43,12 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
  public:
   NewCdmResultPromise(
       ScriptState* script_state,
-      const WebVector<WebEncryptedMediaSessionType>& supported_session_types,
-      EmeApiType type)
-      : ContentDecryptionModuleResultPromise(script_state, type),
+      const MediaKeysConfig& config,
+      const WebVector<WebEncryptedMediaSessionType>& supported_session_types)
+      : ContentDecryptionModuleResultPromise(script_state,
+                                             config,
+                                             EmeApiType::kCreateMediaKeys),
+        config_(config),
         supported_session_types_(supported_session_types) {}
 
   NewCdmResultPromise(const NewCdmResultPromise&) = delete;
@@ -63,13 +66,15 @@ class NewCdmResultPromise : public ContentDecryptionModuleResultPromise {
 
     // 2.9. Let media keys be a new MediaKeys object.
     auto* media_keys = MakeGarbageCollected<MediaKeys>(
-        GetExecutionContext(), supported_session_types_, base::WrapUnique(cdm));
+        GetExecutionContext(), supported_session_types_, base::WrapUnique(cdm),
+        config_);
 
     // 2.10. Resolve promise with media keys.
     Resolve(media_keys);
   }
 
  private:
+  MediaKeysConfig config_;
   WebVector<WebEncryptedMediaSessionType> supported_session_types_;
 };
 
@@ -207,8 +212,9 @@ ScriptPromise MediaKeySystemAccess::createMediaKeys(ScriptState* script_state) {
   WebMediaKeySystemConfiguration configuration = access_->GetConfiguration();
 
   // 1. Let promise be a new promise.
+  MediaKeysConfig config = {key_system_, UseHardwareSecureCodecs()};
   NewCdmResultPromise* helper = MakeGarbageCollected<NewCdmResultPromise>(
-      script_state, configuration.session_types, EmeApiType::kCreateMediaKeys);
+      script_state, config, configuration.session_types);
   ScriptPromise promise = helper->Promise();
 
   // 2. Asynchronously create and initialize the MediaKeys object.
