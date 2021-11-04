@@ -143,11 +143,11 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
         *select_challenge_option_request_timestamp_);
   }
 
+  bool server_success = result == AutofillClient::PaymentsRpcResult::kSuccess;
   // Dismiss the pending authentication selection dialog so that other dialogs
   // can be shown.
-  autofill_client_->DismissUnmaskAuthenticatorSelectionDialog();
-
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  autofill_client_->DismissUnmaskAuthenticatorSelectionDialog(server_success);
+  if (server_success) {
     DCHECK(!context_token.empty());
     // Update the |context_token_| with the new one.
     context_token_ = context_token;

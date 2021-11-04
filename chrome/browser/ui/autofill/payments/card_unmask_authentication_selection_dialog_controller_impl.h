@@ -39,10 +39,15 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
       base::OnceCallback<void(const std::string&)>
           confirm_unmasking_method_callback,
       base::OnceClosure cancel_unmasking_closure);
-  void DismissDialogUponServerAcceptAuthenticationMethod();
+  // Called when we receive a server response after the user accepts (clicks the
+  // ok button) on a challenge option. |server_success| represents a successful
+  // server response, where true means success and false means an error was
+  // returned by the server.
+  void DismissDialogUponServerProcessedAuthenticationMethodRequest(
+      bool server_success);
 
   // CardUnmaskAuthenticationSelectionDialogController:
-  void OnDialogClosed(bool user_closed_dialog) override;
+  void OnDialogClosed(bool user_closed_dialog, bool server_success) override;
   void OnOkButtonClicked(
       const std::string& selected_challenge_option_id) override;
   std::u16string GetWindowTitle() const override;
@@ -58,13 +63,16 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   std::u16string GetProgressLabel() const override;
 
 #if defined(UNIT_TEST)
-  CardUnmaskAuthenticationSelectionDialogView* GetDialogViewForTesting();
+  CardUnmaskAuthenticationSelectionDialogView* GetDialogViewForTesting() {
+    return dialog_view_;
+  }
 #endif
 
- private:
+ protected:
   explicit CardUnmaskAuthenticationSelectionDialogControllerImpl(
       content::WebContents* web_contents);
 
+ private:
   friend class content::WebContentsUserData<
       CardUnmaskAuthenticationSelectionDialogControllerImpl>;
 
@@ -79,6 +87,10 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
 
   // Callback invoked when the user cancelled the card unmasking.
   base::OnceClosure cancel_unmasking_closure_;
+
+  // Tracks whether a challenge option was selected in the current
+  // |dialog_view_|.
+  bool challenge_option_selected_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

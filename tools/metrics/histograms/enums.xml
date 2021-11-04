@@ -5702,6 +5702,18 @@ others/histograms.xml -->
   <int value="3" label="Closed without user interaction"/>
 </enum>
 
+<enum name="AutofillCardUnmaskAuthenticationSelectionDialogResult">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="User canceled before selecting a challenge option"/>
+  <int value="2"
+      label="User canceled after selecting a challenge option, while the
+             dialog was in pending state"/>
+  <int value="3"
+      label="A challenge option was selected and the server returned success"/>
+  <int value="4"
+      label="A challenge option was selected and the server returned failure"/>
+</enum>
+
 <enum name="AutofillCardUploadDecision">
   <obsolete>
     Deprecated as of 2/2016, replaced by AutofillCardUploadDecisionExpanded.

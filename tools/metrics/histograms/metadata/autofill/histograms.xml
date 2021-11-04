@@ -730,6 +730,32 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.CardUnmaskAuthenticationSelectionDialog.Result"
+    enum="AutofillCardUnmaskAuthenticationSelectionDialogResult"
+    expires_after="2022-04-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>siashah@chromium.org</owner>
+  <summary>
+    Records the result of the Card Unmask Authentication Selection Dialog, such
+    as user cancelation before/after selecting a challenge option, or automatic
+    dismissal after a server success/failure for a selected option was returned.
+    The metric is recorded any time the dialog is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.CardUnmaskAuthenticationSelectionDialog.Shown"
+    enum="BooleanShown" expires_after="2022-04-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>siashah@chromium.org</owner>
+  <summary>
+    Records true every time the card unmask challenge option selection dialog
+    was shown. This dialog is shown when a user needs to select a challenge
+    option to authenticate a card for payments autofill.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.CardUploadDecisionMetric"
     enum="AutofillCardUploadDecisionMetric" expires_after="2022-04-10">
   <owner>jsaul@google.com</owner>

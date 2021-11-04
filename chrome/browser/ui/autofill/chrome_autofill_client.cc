@@ -362,10 +362,12 @@ void ChromeAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
                    std::move(cancel_unmasking_closure));
 }
 
-void ChromeAutofillClient::DismissUnmaskAuthenticatorSelectionDialog() {
+void ChromeAutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
+    bool server_success) {
   CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOrCreate(
       web_contents())
-      ->DismissDialogUponServerAcceptAuthenticationMethod();
+      ->DismissDialogUponServerProcessedAuthenticationMethodRequest(
+          server_success);
 }
 
 #if !defined(OS_ANDROID)
