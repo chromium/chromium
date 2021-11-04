@@ -805,7 +805,7 @@ void PdfViewWebPlugin::InitImageData(const gfx::Size& size) {
   mutable_image_data() = CreateN32PremulSkBitmap(gfx::SizeToSkISize(size));
 }
 
-void PdfViewWebPlugin::SetFormFieldInFocus(bool in_focus) {
+void PdfViewWebPlugin::SetFormTextFieldInFocus(bool in_focus) {
   text_input_type_ = in_focus ? blink::WebTextInputType::kWebTextInputTypeText
                               : blink::WebTextInputType::kWebTextInputTypeNone;
   container_wrapper_->UpdateTextInputState();

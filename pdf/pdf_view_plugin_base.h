@@ -297,7 +297,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   int GetDocumentPixelHeight() const;
 
   // Sets the text input type for this plugin based on `in_focus`.
-  virtual void SetFormFieldInFocus(bool in_focus) = 0;
+  virtual void SetFormTextFieldInFocus(bool in_focus) = 0;
 
   // Sets the accessibility information about the PDF document in the renderer.
   virtual void SetAccessibilityDocInfo(

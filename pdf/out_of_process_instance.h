@@ -121,7 +121,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   void SaveAs() override;
   void InitImageData(const gfx::Size& size) override;
   Image GetPluginImageData() const override;
-  void SetFormFieldInFocus(bool in_focus) override;
+  void SetFormTextFieldInFocus(bool in_focus) override;
   void SetAccessibilityDocInfo(const AccessibilityDocInfo& doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
                                 std::vector<AccessibilityTextRunInfo> text_runs,

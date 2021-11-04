@@ -223,7 +223,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
 
   MOCK_METHOD(void, InitImageData, (const gfx::Size&), (override));
 
-  MOCK_METHOD(void, SetFormFieldInFocus, (bool), (override));
+  MOCK_METHOD(void, SetFormTextFieldInFocus, (bool), (override));
 
   MOCK_METHOD(void,
               SetAccessibilityDocInfo,
@@ -567,7 +567,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
             fake_plugin_.accessibility_state());
 
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, PluginDidStopLoading());
   EXPECT_CALL(fake_plugin_,
               SetContentRestrictions(fake_plugin_.GetContentRestrictions()));
@@ -606,7 +606,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
             fake_plugin_.accessibility_state());
 
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, PluginDidStopLoading());
   EXPECT_CALL(fake_plugin_,
               SetContentRestrictions(fake_plugin_.GetContentRestrictions()));
@@ -642,7 +642,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
             fake_plugin_.document_load_state_for_testing());
 
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, PluginDidStopLoading()).Times(0);
   EXPECT_CALL(fake_plugin_,
               SetContentRestrictions(fake_plugin_.GetContentRestrictions()))
@@ -671,7 +671,7 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
   ASSERT_EQ(PdfViewPluginBase::DocumentLoadState::kLoading,
             fake_plugin_.document_load_state_for_testing());
   EXPECT_CALL(fake_plugin_, UserMetricsRecordAction("PDF.LoadSuccess"));
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
 
   fake_plugin_.DocumentLoadComplete();
   EXPECT_EQ(PdfViewPluginBase::DocumentLoadState::kComplete,
@@ -808,7 +808,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInNonEditMode) {
       CreateExpectedSaveToBufferResponse(kSaveAnnotInNonEditModeToken,
                                          /*edit_mode=*/false);
 
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
   fake_plugin_.HandleMessage(message);
   ASSERT_FALSE(fake_plugin_.sent_messages().empty());
@@ -828,7 +828,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInEditMode) {
       CreateExpectedSaveToBufferResponse(kSaveAnnotInEditModeToken,
                                          /*edit_mode=*/true);
 
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
   fake_plugin_.HandleMessage(message);
   ASSERT_FALSE(fake_plugin_.sent_messages().empty());
@@ -848,7 +848,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInNonEditMode) {
       CreateExpectedSaveToFileResponse(kSaveOriginalInNonEditModeToken);
 
   EXPECT_CALL(fake_plugin_, SaveAs());
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(false)).Times(2);
 
   fake_plugin_.HandleMessage(message);
@@ -869,7 +869,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInEditMode) {
       CreateExpectedSaveToFileResponse(kSaveOriginalInEditModeToken);
 
   EXPECT_CALL(fake_plugin_, SaveAs());
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(false));
   EXPECT_CALL(fake_plugin_, SetPluginCanSave(true));
 
@@ -891,7 +891,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInNonEditMode) {
       CreateExpectedSaveToBufferResponse(kSaveEditedInNonEditModeToken,
                                          /*edit_mode=*/false);
 
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
   fake_plugin_.HandleMessage(message);
   ASSERT_FALSE(fake_plugin_.sent_messages().empty());
   EXPECT_EQ(expected_response, fake_plugin_.sent_messages().back());
@@ -910,7 +910,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInEditMode) {
       CreateExpectedSaveToBufferResponse(kSaveEditedInEditModeToken,
                                          /*edit_mode=*/true);
 
-  EXPECT_CALL(fake_plugin_, SetFormFieldInFocus(false));
+  EXPECT_CALL(fake_plugin_, SetFormTextFieldInFocus(false));
   fake_plugin_.HandleMessage(message);
   ASSERT_FALSE(fake_plugin_.sent_messages().empty());
   EXPECT_EQ(expected_response, fake_plugin_.sent_messages().back());

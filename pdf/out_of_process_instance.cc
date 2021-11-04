@@ -668,7 +668,7 @@ void OutOfProcessInstance::InitImageData(const gfx::Size& size) {
       std::make_unique<pp::ImageData>(pepper_image_data_));
 }
 
-void OutOfProcessInstance::SetFormFieldInFocus(bool in_focus) {
+void OutOfProcessInstance::SetFormTextFieldInFocus(bool in_focus) {
   if (!text_input_)
     return;
 

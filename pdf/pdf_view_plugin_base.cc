@@ -502,7 +502,7 @@ void PdfViewPluginBase::FormTextFieldFocusChange(bool in_focus) {
   message.SetBoolKey("focused", in_focus);
   SendMessage(std::move(message));
 
-  SetFormFieldInFocus(in_focus);
+  SetFormTextFieldInFocus(in_focus);
 }
 
 bool PdfViewPluginBase::IsPrintPreview() const {
