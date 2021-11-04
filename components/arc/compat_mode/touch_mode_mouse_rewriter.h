@@ -29,6 +29,10 @@ class TouchModeMouseRewriter : public ui::EventRewriter {
   void SendReleaseEvent(const ui::MouseEvent& original_event,
                         const Continuation continuation);
 
+  bool release_event_scheduled_ = false;
+  bool left_pressed_ = false;
+  bool discard_next_left_release_ = false;
+
   base::WeakPtrFactory<TouchModeMouseRewriter> weak_ptr_factory_{this};
 };
 
