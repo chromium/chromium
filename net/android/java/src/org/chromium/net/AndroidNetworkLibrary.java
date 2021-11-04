@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
@@ -150,20 +151,16 @@ class AndroidNetworkLibrary {
 
     /**
      * Returns the MCC+MNC (mobile country code + mobile network code) as
-     * the numeric name of the current registered operator.
+     * the numeric name of the current registered operator. This function
+     * potentially blocks the thread, so use with care.
      */
     @CalledByNative
     private static String getNetworkOperator() {
-        return AndroidTelephonyManagerBridge.getInstance().getNetworkOperator();
-    }
-
-    /**
-     * Returns the MCC+MNC (mobile country code + mobile network code) as
-     * the numeric name of the current SIM operator.
-     */
-    @CalledByNative
-    private static String getSimOperator() {
-        return AndroidTelephonyManagerBridge.getInstance().getSimOperator();
+        TelephonyManager telephonyManager =
+                (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.TELEPHONY_SERVICE);
+        if (telephonyManager == null) return "";
+        return telephonyManager.getNetworkOperator();
     }
 
     /**

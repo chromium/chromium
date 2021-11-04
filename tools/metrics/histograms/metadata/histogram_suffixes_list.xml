@@ -1264,38 +1264,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Autofill.WalletCards2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Availability_Prober_Clients" separator=".">
-  <suffix name="IsolatedPrerenderCanaryCheck"
-      label="(M85 only) Canary check for Isolated Prerenders probing"/>
-  <suffix name="IsolatedPrerenderDNSCanaryCheck"
-      label="DNS canary check for Isolated Prerenders probing"/>
-  <suffix name="IsolatedPrerenderOriginCheck"
-      label="Origin check for Isolated Prerenders"/>
-  <suffix name="IsolatedPrerenderTLSCanaryCheck"
-      label="TLS canary check for Isolated Prerenders probing"/>
-  <suffix name="Litepages" label="Lite page HTTPS Server Previews">
-    <obsolete>
-      Removed in M84.
-    </obsolete>
-  </suffix>
-  <suffix name="LitepagesOriginCheck"
-      label="Origin check for Litepage previews">
-    <obsolete>
-      Removed in M84.
-    </obsolete>
-  </suffix>
-  <affected-histogram name="Availability.Prober.CacheEntryAge"/>
-  <affected-histogram name="Availability.Prober.DidSucceed"/>
-  <affected-histogram
-      name="Availability.Prober.DidSucceed.AfterReportedFailure"/>
-  <affected-histogram name="Availability.Prober.FinalState"/>
-  <affected-histogram name="Availability.Prober.NetError"/>
-  <affected-histogram name="Availability.Prober.NumAttemptsBeforeSuccess"/>
-  <affected-histogram name="Availability.Prober.ResponseCode"/>
-  <affected-histogram name="Availability.Prober.TimeUntilFailure2"/>
-  <affected-histogram name="Availability.Prober.TimeUntilSuccess2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BackgroundDownload" separator=".">
   <suffix name="BackgroundDownload"
       label="Download that started in background."/>

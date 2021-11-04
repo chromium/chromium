@@ -10,7 +10,6 @@ android_library("net_java") {
     "java/src/org/chromium/net/AndroidCertVerifyResult.java",
     "java/src/org/chromium/net/AndroidKeyStore.java",
     "java/src/org/chromium/net/AndroidNetworkLibrary.java",
-    "java/src/org/chromium/net/AndroidTelephonyManagerBridge.java",
     "java/src/org/chromium/net/AndroidTrafficStats.java",
     "java/src/org/chromium/net/DnsStatus.java",
     "java/src/org/chromium/net/GURLUtils.java",

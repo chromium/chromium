@@ -990,3 +990,12 @@ TEST_F(AvailabilityProberTest, ReportExternalFailure_WhileActive) {
       "IsolatedPrerenderOriginCheck",
       true, 1);
 }
+
+TEST_F(AvailabilityProberTest, GenerateCacheEntryHistogram) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<AvailabilityProber> prober = NewProber();
+  EXPECT_EQ(prober->LastProbeWasSuccessful(), absl::nullopt);
+
+  histogram_tester.ExpectTotalCount(
+      "Availability.Prober.GenerateCacheKey.IsolatedPrerenderOriginCheck", 1);
+}

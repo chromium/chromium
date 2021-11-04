@@ -22,6 +22,28 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AvailabilityProberClient">
+  <variant name="IsolatedPrerenderCanaryCheck"
+      summary="(M85 only) Canary check for Isolated Prerenders probing"/>
+  <variant name="IsolatedPrerenderDNSCanaryCheck"
+      summary="DNS canary check for Isolated Prerenders probing"/>
+  <variant name="IsolatedPrerenderOriginCheck"
+      summary="Origin check for Isolated Prerenders"/>
+  <variant name="IsolatedPrerenderTLSCanaryCheck"
+      summary="TLS canary check for Isolated Prerenders probing"/>
+  <variant name="Litepages" summary="Lite page HTTPS Server Previews">
+    <obsolete>
+      Removed in M84.
+    </obsolete>
+  </variant>
+  <variant name="LitepagesOriginCheck"
+      summary="Origin check for Litepage previews">
+    <obsolete>
+      Removed in M84.
+    </obsolete>
+  </variant>
+</variants>
+
 <variants name="ProcessName">
   <variant name="BrowserProcess" summary=""/>
   <variant name="GPUProcess" summary=""/>
@@ -1391,26 +1413,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Availability.Prober.CacheEntryAge" units="hours"
-    expires_after="M95">
+<histogram base="true"
+    name="Availability.Prober.CacheEntryAge.{AvailabilityProberClient}"
+    units="hours" expires_after="M95">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
     How old a cached probe result was when it was used, in hours.
   </summary>
-</histogram>
-
-<histogram base="true" name="Availability.Prober.DidSucceed"
-    enum="BooleanSuccess" expires_after="M95">
-  <owner>robertogden@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records the completion status of a probe when it completes each attempt.
-  </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
 </histogram>
 
 <histogram base="true"
-    name="Availability.Prober.DidSucceed.AfterReportedFailure"
+    name="Availability.Prober.DidSucceed.AfterReportedFailure.{AvailabilityProberClient}"
     enum="BooleanSuccess" expires_after="M95">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
@@ -1418,9 +1433,22 @@ chromium-metrics-reviews@google.com.
     Records the completion status of a probe retry after an externally reported
     failure.
   </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
 </histogram>
 
-<histogram base="true" name="Availability.Prober.FinalState"
+<histogram base="true"
+    name="Availability.Prober.DidSucceed.{AvailabilityProberClient}"
+    enum="BooleanSuccess" expires_after="M95">
+  <owner>robertogden@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    Records the completion status of a probe when it completes each attempt.
+  </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
+</histogram>
+
+<histogram base="true"
+    name="Availability.Prober.FinalState.{AvailabilityProberClient}"
     enum="BooleanSuccess" expires_after="M95">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
@@ -1429,10 +1457,25 @@ chromium-metrics-reviews@google.com.
     when the prober succeeds, fails and has no more retries, or the delegate
     stops probing.
   </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
 </histogram>
 
-<histogram base="true" name="Availability.Prober.NetError" enum="NetErrorCodes"
-    expires_after="M95">
+<histogram base="true"
+    name="Availability.Prober.GenerateCacheKey.{AvailabilityProberClient}"
+    units="ms" expires_after="M99">
+  <owner>spelchat@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <summary>
+    Records the amount of time spent generating a cache key for the availability
+    prober. In particular, this tracks how much getNetworkOperator calls might
+    be slowing down this method. See crbug.com/1266018 for more details.
+  </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
+</histogram>
+
+<histogram base="true"
+    name="Availability.Prober.NetError.{AvailabilityProberClient}"
+    enum="NetErrorCodes" expires_after="M95">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -1440,9 +1483,11 @@ chromium-metrics-reviews@google.com.
     response does not occur within the probe's TTL, when a sample will also be
     added to the ERR_TIMED_OUT bucket.
   </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
 </histogram>
 
-<histogram base="true" name="Availability.Prober.NumAttemptsBeforeSuccess"
+<histogram base="true"
+    name="Availability.Prober.NumAttemptsBeforeSuccess.{AvailabilityProberClient}"
     units="count" expires_after="M95">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
@@ -1451,9 +1496,11 @@ chromium-metrics-reviews@google.com.
     result. Only recorded on success. This metric is 1-based so if a probe
     succeeds the first time, a sample of 1 will be recorded.
   </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
 </histogram>
 
-<histogram base="true" name="Availability.Prober.ResponseCode"
+<histogram base="true"
+    name="Availability.Prober.ResponseCode.{AvailabilityProberClient}"
     enum="HttpResponseCode" expires_after="M95">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
@@ -1461,26 +1508,31 @@ chromium-metrics-reviews@google.com.
     Records the HTTP response code of a completed probe, when a HTTP response is
     received.
   </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
 </histogram>
 
-<histogram base="true" name="Availability.Prober.TimeUntilFailure2" units="ms"
-    expires_after="M95">
+<histogram base="true"
+    name="Availability.Prober.TimeUntilFailure2.{AvailabilityProberClient}"
+    units="ms" expires_after="M95">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
     Records the amount of time spent working on a single probe attempt to get to
     a failed state. Recorded every time a probe fails.
   </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
 </histogram>
 
-<histogram base="true" name="Availability.Prober.TimeUntilSuccess2" units="ms"
-    expires_after="M95">
+<histogram base="true"
+    name="Availability.Prober.TimeUntilSuccess2.{AvailabilityProberClient}"
+    units="ms" expires_after="M95">
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
     Records the amount of time spent working on a single probe attempt to get to
     a successful state. Recorded every time a probe succeeds.
   </summary>
+  <token key="AvailabilityProberClient" variants="AvailabilityProberClient"/>
 </histogram>
 
 <histogram name="Badging.AppBadgeUpdate.Mac.Result"
