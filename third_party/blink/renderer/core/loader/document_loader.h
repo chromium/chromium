@@ -594,8 +594,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // See WebNavigationParams for definition.
   const bool was_discarded_ = false;
 
-  bool listing_ftp_directory_ = false;
-
   // True when loading the main document from the MHTML archive. It implies an
   // |archive_| to be created. Nested documents will also inherit from the same
   // |archive_|, but won't have |loading_main_document_from_mhtml_archive_| set.
