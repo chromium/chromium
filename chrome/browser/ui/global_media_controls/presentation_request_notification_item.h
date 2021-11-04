@@ -51,6 +51,9 @@ class PresentationRequestNotificationItem final
   const content::PresentationRequest request() const { return request_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PresentationRequestNotificationItemTest,
+                           NotificationHeader);
+
   // media_message_center::MediaNotificationItem
   void SetView(media_message_center::MediaNotificationView* view) final;
   void OnMediaSessionActionButtonPressed(

@@ -10,6 +10,7 @@
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/media_message_center/media_notification_view.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "ui/gfx/image/image_skia.h"
@@ -52,13 +53,8 @@ void PresentationRequestNotificationItem::SetView(
   }
 
   media_session::MediaMetadata data;
-  data.source_title = url_formatter::FormatUrl(
-      web_contents->GetVisibleURL().DeprecatedGetOriginAsURL(),
-      url_formatter::kFormatUrlOmitUsernamePassword |
-          url_formatter::kFormatUrlOmitTrailingSlashOnBareHostname |
-          url_formatter::kFormatUrlOmitHTTPS |
-          url_formatter::kFormatUrlOmitTrivialSubdomains,
-      net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+  data.source_title = url_formatter::FormatOriginForSecurityDisplay(
+      request_.frame_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
   data.artist = web_contents->GetTitle();
 
   view_->UpdateWithMediaMetadata(data);
