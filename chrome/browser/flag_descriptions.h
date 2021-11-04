@@ -1285,6 +1285,9 @@ extern const char kSharedClipboardUIDescription[];
 extern const char kSharingDesktopScreenshotsName[];
 extern const char kSharingDesktopScreenshotsDescription[];
 
+extern const char kSharingDesktopScreenshotsEditName[];
+extern const char kSharingDesktopScreenshotsEditDescription[];
+
 extern const char kSharingHubDesktopAppMenuName[];
 extern const char kSharingHubDesktopAppMenuDescription[];
 
