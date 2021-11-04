@@ -10,7 +10,9 @@
     </div>
     <div class="cr-row first" hidden="[[!showKeywordTriggerSetting_]]">
       <div class="flex cr-padded-text">
-        $i18n{searchEnginesKeyboardShortcutsTitle}
+        <div id="keyboardShortcutsTitle">
+          $i18n{searchEnginesKeyboardShortcutsTitle}
+        </div>
         <div class="secondary">
           $i18n{searchEnginesKeyboardShortcutsDescription}
         </div>
@@ -22,11 +24,13 @@
         <controlled-radio-button class="list-item" name="true"
             pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
             label="$i18n{searchEnginesKeyboardShortcutsSpaceOrTab}"
+            aria-labelledby="keyboardShortcutsTitle"
             no-extension-indicator>
         </controlled-radio-button>
         <controlled-radio-button class="list-item" name="false"
             pref="{{prefs.omnibox.keyword_space_triggering_enabled}}"
             label="$i18n{searchEnginesKeyboardShortcutsTab}"
+            aria-labelledby="keyboardShortcutsTitle"
             no-extension-indicator>
         </controlled-radio-button>
       </settings-radio-group>

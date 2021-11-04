@@ -336,17 +336,15 @@ suite('SearchEnginePageTests', function() {
         page.shadowRoot!.querySelectorAll('settings-search-engines-list');
     assertEquals(2, searchEnginesLists.length);
 
-    // Note: iron-list may create hidden children, so test the length
-    // if IronList.items instead of the child nodes.
     flush();
     const defaultsList = searchEnginesLists[0]!;
-    const defaultsEntries =
-        defaultsList.shadowRoot!.querySelector('iron-list')!.items!;
+    const defaultsEntries = defaultsList.shadowRoot!.querySelectorAll(
+        'settings-search-engine-entry');
     assertEquals(searchEnginesInfo.defaults.length, defaultsEntries.length);
 
     const othersList = searchEnginesLists[1]!;
     const othersEntries =
-        othersList.shadowRoot!.querySelector('iron-list')!.items!;
+        othersList.shadowRoot!.querySelectorAll('settings-search-engine-entry');
     assertEquals(searchEnginesInfo.others.length, othersEntries.length);
 
     // Ensure that the search engines have reverse alphabetical order in the
@@ -355,8 +353,10 @@ suite('SearchEnginePageTests', function() {
         searchEnginesInfo.others[0]!.name > searchEnginesInfo.others[1]!.name);
 
     // Ensure that they are displayed in alphabetical order.
-    assertEquals(searchEnginesInfo.others[1]!.name, othersEntries[0]!.name);
-    assertEquals(searchEnginesInfo.others[0]!.name, othersEntries[1]!.name);
+    assertEquals(
+        searchEnginesInfo.others[1]!.name, othersEntries[0]!.engine.name);
+    assertEquals(
+        searchEnginesInfo.others[0]!.name, othersEntries[1]!.engine.name);
 
     const extensionEntries = page.shadowRoot!.querySelector('iron-list')!.items;
     assertEquals(searchEnginesInfo.extensions.length, extensionEntries!.length);
@@ -428,20 +428,20 @@ suite('SearchEnginePageTests', function() {
     flush();
 
     function getListItems(listIndex: number) {
-      const ironList = listIndex === 2 /* extensions */ ?
-          page.shadowRoot!.querySelector('iron-list') :
+      const list = listIndex === 2 /* extensions */ ?
+          page.shadowRoot!.querySelector('iron-list')!.items :
           page.shadowRoot!
               .querySelectorAll('settings-search-engines-list')[listIndex]!
-              .shadowRoot!.querySelector('iron-list');
+              .shadowRoot!.querySelectorAll('settings-search-engine-entry');
 
-      return ironList!.items!;
+      return list;
     }
 
     function assertSearchResults(
         defaultsCount: number, othersCount: number, extensionsCount: number) {
-      assertEquals(defaultsCount, getListItems(0).length);
-      assertEquals(othersCount, getListItems(1).length);
-      assertEquals(extensionsCount, getListItems(2).length);
+      assertEquals(defaultsCount, getListItems(0)!.length);
+      assertEquals(othersCount, getListItems(1)!.length);
+      assertEquals(extensionsCount, getListItems(2)!.length);
 
       const noResultsElements = Array.from(
           page.shadowRoot!.querySelectorAll<HTMLElement>('.no-search-results'));

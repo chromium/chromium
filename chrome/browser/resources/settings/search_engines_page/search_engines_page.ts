@@ -41,7 +41,6 @@ export interface SettingsSearchEnginesPageElement {
   $: {
     addSearchEngine: HTMLElement,
     extensions: IronListElement,
-    otherEngines: SettingsSearchEnginesListElement,
   };
 }
 
@@ -173,11 +172,6 @@ export class SettingsSearchEnginesPageElement extends
         this.enginesChanged_.bind(this));
     this.addWebUIListener(
         'search-engines-changed', this.enginesChanged_.bind(this));
-
-    // Sets offset in iron-list that uses the page as a scrollTarget.
-    afterNextRender(this, () => {
-      this.$.otherEngines.scrollOffset = this.$.otherEngines.offsetTop;
-    });
 
     this.addEventListener(
         'edit-search-engine',
