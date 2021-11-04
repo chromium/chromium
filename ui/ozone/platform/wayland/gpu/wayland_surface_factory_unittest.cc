@@ -182,11 +182,12 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
     window_->set_apply_pending_state_on_update_visual_size(false);
 
     auto manager_ptr = connection_->buffer_manager_host()->BindInterface();
-    buffer_manager_gpu_->Initialize(std::move(manager_ptr),
-                                    kSupportedFormatsWithModifiers,
-                                    /*supports_dma_buf=*/false,
-                                    /*supports_viewporter=*/true,
-                                    /*supports_acquire_fence=*/false);
+    buffer_manager_gpu_->Initialize(
+        std::move(manager_ptr), kSupportedFormatsWithModifiers,
+        /*supports_dma_buf=*/false,
+        /*supports_viewporter=*/true,
+        /*supports_acquire_fence=*/false,
+        /*supports_non_backed_solid_color_buffers*/ false);
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();

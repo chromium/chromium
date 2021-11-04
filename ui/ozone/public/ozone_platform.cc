@@ -153,7 +153,7 @@ OzonePlatform::GetPlatformProperties() {
 
 const OzonePlatform::PlatformRuntimeProperties&
 OzonePlatform::GetPlatformRuntimeProperties() {
-  DCHECK(initialized_ui_);
+  DCHECK(initialized_ui_ || initialized_gpu_);
 
   static const PlatformRuntimeProperties properties;
   return properties;

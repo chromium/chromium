@@ -32,7 +32,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       gpu::SharedImageRepresentationFactory* representation_factory,
       gpu::MemoryTracker* memory_tracker,
       const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
-      bool needs_background_image);
+      bool needs_background_image,
+      bool supports_non_backed_solid_color_images);
 
   ~SkiaOutputDeviceBufferQueue() override;
 
@@ -147,6 +148,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
   // Whether the platform needs an occluded background image. Wayland needs it
   // for opaque accelerated widgets and event wiring.
   bool needs_background_image_ = false;
+  // Whether the platform supports non-backed solid color overlays. The Wayland
+  // backend is able to delegate these overlays without buffer backings
+  // depending on the availability of a certain protocol.
+  bool supports_non_backed_solid_color_images_ = false;
   // A 4x4 small image that will be scaled to cover an opaque region.
   std::unique_ptr<OutputPresenter::Image> background_image_;
   // Set to true if background has been scheduled in a frame.

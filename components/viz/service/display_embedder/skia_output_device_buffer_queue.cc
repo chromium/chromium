@@ -125,14 +125,17 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
     gpu::SharedImageRepresentationFactory* representation_factory,
     gpu::MemoryTracker* memory_tracker,
     const DidSwapBufferCompleteCallback& did_swap_buffer_complete_callback,
-    bool needs_background_image)
+    bool needs_background_image,
+    bool supports_non_backed_solid_color_images)
     : SkiaOutputDevice(deps->GetSharedContextState()->gr_context(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       presenter_(std::move(presenter)),
       context_state_(deps->GetSharedContextState()),
       representation_factory_(representation_factory),
-      needs_background_image_(needs_background_image) {
+      needs_background_image_(needs_background_image),
+      supports_non_backed_solid_color_images_(
+          supports_non_backed_solid_color_images) {
   capabilities_.uses_default_gl_framebuffer = false;
   capabilities_.preserve_buffer_content = true;
   capabilities_.only_invalidates_damage_rect = false;
@@ -327,9 +330,15 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
     auto& overlay = overlays[i];
 
 #if defined(USE_OZONE)
-    // TODO(petermcneeley) : Remove this code when http://crbug/1204102 is done.
     if (overlay.solid_color.has_value()) {
-      overlay.mailbox = GetImageMailboxForColor(overlay.solid_color.value());
+      // TODO(msisov): reconsider this once Linux Wayland compositors also
+      // support that. See https://bit.ly/2ZqUO0w.
+      if (!supports_non_backed_solid_color_images_) {
+        overlay.mailbox = GetImageMailboxForColor(overlay.solid_color.value());
+      } else {
+        accesses[i] = nullptr;
+        continue;
+      }
     }
 #endif
 

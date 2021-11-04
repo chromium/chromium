@@ -412,16 +412,27 @@ void OutputPresenterGL::ScheduleOverlays(
     const auto& overlay = overlays[i];
     auto* gl_image = accesses[i] ? accesses[i]->gl_image() : nullptr;
 #if defined(OS_ANDROID) || defined(USE_OZONE)
-    if (gl_image) {
+    // TODO(msisov): Once shared image factory allows creating a non backed
+    // images and ScheduleOverlayPlane does not rely on GLImage, remove the if
+    // condition that checks if this is a solid color overlay plane.
+    //
+    // Solid color overlays can be non-backed and are delegated for processing
+    // to underlying backend. The only backend that uses them is Wayland - it
+    // may have a protocol that asks Wayland compositor to create a solid color
+    // buffer for a client. OverlayProcessorDelegated decides if a solid color
+    // overlay is an overlay candidate and should be scheduled.
+    if (gl_image || overlay.solid_color.has_value()) {
       DCHECK(!overlay.gpu_fence_id);
       gl_surface_->ScheduleOverlayPlane(
-          gl_image, TakeGpuFence(accesses[i]->TakeAcquireFences()),
+          gl_image,
+          accesses[i] ? TakeGpuFence(accesses[i]->TakeAcquireFences())
+                      : nullptr,
           gfx::OverlayPlaneData(
               overlay.plane_z_order, overlay.transform,
               ToNearestRect(overlay.display_rect), overlay.uv_rect,
               !overlay.is_opaque, ToEnclosingRect(overlay.damage_rect),
               overlay.opacity, overlay.priority_hint, overlay.rounded_corners,
-              overlay.color_space, overlay.hdr_metadata));
+              overlay.color_space, overlay.hdr_metadata, overlay.solid_color));
     }
 #elif defined(OS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied

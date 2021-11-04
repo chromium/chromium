@@ -19,7 +19,8 @@ OverlayPlaneData::OverlayPlaneData(
     OverlayPriorityHint priority_hint,
     const gfx::RRectF& rounded_corners,
     const gfx::ColorSpace& color_space,
-    const absl::optional<HDRMetadata>& hdr_metadata)
+    const absl::optional<HDRMetadata>& hdr_metadata,
+    absl::optional<SkColor> solid_color)
     : z_order(z_order),
       plane_transform(plane_transform),
       display_bounds(display_bounds),
@@ -30,7 +31,8 @@ OverlayPlaneData::OverlayPlaneData(
       priority_hint(priority_hint),
       rounded_corners(rounded_corners),
       color_space(color_space),
-      hdr_metadata(hdr_metadata) {}
+      hdr_metadata(hdr_metadata),
+      solid_color(solid_color) {}
 
 OverlayPlaneData::~OverlayPlaneData() = default;
 

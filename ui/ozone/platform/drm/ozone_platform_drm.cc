@@ -276,7 +276,7 @@ class OzonePlatformDrm : public OzonePlatform {
   }
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
-    DCHECK(has_initialized_ui());
+    DCHECK(has_initialized_ui() || has_initialized_gpu());
     return host_properties_;
   }
 

@@ -52,4 +52,20 @@ wl::Object<augmented_surface> SurfaceAugmenter::CreateAugmentedSurface(
       surface_augmenter_get_augmented_surface(augmenter_.get(), surface));
 }
 
+wl::Object<wl_buffer> SurfaceAugmenter::CreateSolidColorBuffer(
+    SkColor color,
+    const gfx::Size& size) {
+  wl_array color_data;
+  wl_array_init(&color_data);
+  SkColor4f precise_color = SkColor4f::FromColor(color);
+  for (float component : precise_color.array()) {
+    float* ptr = static_cast<float*>(wl_array_add(&color_data, sizeof(float)));
+    DCHECK(ptr);
+    *ptr = component;
+  }
+
+  return wl::Object<wl_buffer>(surface_augmenter_create_solid_color_buffer(
+      augmenter_.get(), &color_data, size.width(), size.height()));
+}
+
 }  // namespace ui

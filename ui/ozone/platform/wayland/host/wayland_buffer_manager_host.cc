@@ -23,6 +23,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_dmabuf.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_shm.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_backing_solid_color.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_drm.h"
@@ -773,6 +774,10 @@ bool WaylandBufferManagerHost::SupportsViewporter() const {
   return !!connection_->viewporter();
 }
 
+bool WaylandBufferManagerHost::SupportsNonBackedSolidColorBuffers() const {
+  return !!connection_->surface_augmenter();
+}
+
 void WaylandBufferManagerHost::SetWaylandBufferManagerGpu(
     mojo::PendingAssociatedRemote<ozone::mojom::WaylandBufferManagerGpu>
         buffer_manager_gpu_associated) {
@@ -843,6 +848,45 @@ void WaylandBufferManagerHost::CreateShmBasedBuffer(mojo::PlatformHandle shm_fd,
   auto result = buffer_backings_.emplace(
       buffer_id, std::make_unique<WaylandBufferBackingShm>(
                      connection_, std::move(fd), length, size, buffer_id));
+
+  if (!result.second) {
+    error_message_ = base::StrCat(
+        {"A buffer with id= ", NumberToString(buffer_id), " already exists"});
+    TerminateGpuProcess();
+    return;
+  }
+
+  auto* backing = result.first->second.get();
+  backing->EnsureBufferHandle();
+}
+
+void WaylandBufferManagerHost::CreateSolidColorBuffer(const gfx::Size& size,
+                                                      SkColor color,
+                                                      uint32_t buffer_id) {
+  DCHECK(base::CurrentUIThread::IsSet());
+  DCHECK(error_message_.empty());
+  TRACE_EVENT1("wayland", "WaylandBufferManagerHost::CreateSolidColorBuffer",
+               "Buffer id", buffer_id);
+
+  // Validate data and create a buffer associated with the |buffer_id|.
+  if (!ValidateDataFromGpu(size, buffer_id)) {
+    TerminateGpuProcess();
+    return;
+  }
+
+  // OzonePlatform::PlatformInitProperties has a control variable that tells
+  // viz to create a backing solid color buffers if the protocol is not
+  // available. But in order to avoid a missusage of that variable and this
+  // method (malformed requests), explicitly terminate the gpu.
+  if (!connection_->surface_augmenter()) {
+    error_message_ = "Surface augmenter protocol is not available.";
+    TerminateGpuProcess();
+    return;
+  }
+
+  auto result = buffer_backings_.emplace(
+      buffer_id, std::make_unique<WaylandBufferBackingSolidColor>(
+                     connection_, color, size, buffer_id));
 
   if (!result.second) {
     error_message_ = base::StrCat(
@@ -1031,15 +1075,12 @@ bool WaylandBufferManagerHost::ValidateDataFromGpu(
     uint32_t format,
     uint32_t planes_count,
     uint32_t buffer_id) {
-  if (!ValidateBufferIdFromGpu(buffer_id))
+  if (!ValidateDataFromGpu(size, buffer_id))
     return false;
 
   std::string reason;
   if (!fd.is_valid())
     reason = "Buffer fd is invalid";
-
-  if (size.IsEmpty())
-    reason = "Buffer size is invalid";
 
   if (planes_count < 1)
     reason = "Planes count cannot be less than 1";
@@ -1085,7 +1126,7 @@ bool WaylandBufferManagerHost::ValidateDataFromGpu(const base::ScopedFD& fd,
                                                    size_t length,
                                                    const gfx::Size& size,
                                                    uint32_t buffer_id) {
-  if (!ValidateBufferIdFromGpu(buffer_id))
+  if (!ValidateDataFromGpu(size, buffer_id))
     return false;
 
   std::string reason;
@@ -1095,15 +1136,24 @@ bool WaylandBufferManagerHost::ValidateDataFromGpu(const base::ScopedFD& fd,
   if (length == 0)
     reason = "The shm pool length cannot be less than 1";
 
-  if (size.IsEmpty())
-    reason = "Buffer size is invalid";
-
   if (!reason.empty()) {
     error_message_ = std::move(reason);
     return false;
   }
 
   return true;
+}
+
+bool WaylandBufferManagerHost::ValidateDataFromGpu(const gfx::Size& size,
+                                                   uint32_t buffer_id) {
+  if (!ValidateBufferIdFromGpu(buffer_id))
+    return false;
+
+  std::string reason;
+  if (size.IsEmpty())
+    error_message_ = "Buffer size is invalid";
+
+  return error_message_.empty();
 }
 
 void WaylandBufferManagerHost::OnSubmission(gfx::AcceleratedWidget widget,

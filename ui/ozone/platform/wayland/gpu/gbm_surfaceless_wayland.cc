@@ -23,12 +23,93 @@ namespace ui {
 
 namespace {
 
+// A test run showed only 9 inflight solid color buffers at the same time. Thus,
+// allow to store max 12 buffers (including some margin) of solid color buffers
+// and remove the rest.
+static constexpr size_t kMaxSolidColorBuffers = 12;
+
+static constexpr gfx::Size kSolidColorBufferSize{4, 4};
+
 void WaitForGpuFences(std::vector<std::unique_ptr<gfx::GpuFence>> fences) {
   for (auto& fence : fences)
     fence->Wait();
 }
 
 }  // namespace
+
+GbmSurfacelessWayland::SolidColorBufferHolder::SolidColorBufferHolder() =
+    default;
+GbmSurfacelessWayland::SolidColorBufferHolder::~SolidColorBufferHolder() =
+    default;
+
+BufferId
+GbmSurfacelessWayland::SolidColorBufferHolder::GetOrCreateSolidColorBuffer(
+    SkColor color,
+    WaylandBufferManagerGpu* buffer_manager) {
+  BufferId next_buffer_id = 0;
+
+  // First try for an existing buffer.
+  auto it = std::find_if(available_solid_color_buffers_.begin(),
+                         available_solid_color_buffers_.end(),
+                         [&color](const SolidColorBuffer& solid_color_buffer) {
+                           return solid_color_buffer.color == color;
+                         });
+  if (it != available_solid_color_buffers_.end()) {
+    // This is a prefect color match so use this directly.
+    next_buffer_id = it->buffer_id;
+    inflight_solid_color_buffers_.emplace_back(std::move(*it));
+    available_solid_color_buffers_.erase(it);
+  } else {
+    // Worst case allocate a new buffer. This definitely will occur on
+    // startup.
+    next_buffer_id = buffer_manager->AllocateBufferID();
+    // Create wl_buffer on the browser side.
+    buffer_manager->CreateSolidColorBuffer(color, kSolidColorBufferSize,
+                                           next_buffer_id);
+    // Allocate a backing structure that will be used to figure out if such
+    // buffer has already existed.
+    inflight_solid_color_buffers_.emplace_back(
+        SolidColorBuffer(color, next_buffer_id));
+  }
+  DCHECK_GT(next_buffer_id, 0u);
+  return next_buffer_id;
+}
+
+void GbmSurfacelessWayland::SolidColorBufferHolder::OnSubmission(
+    BufferId buffer_id,
+    WaylandBufferManagerGpu* buffer_manager,
+    gfx::AcceleratedWidget widget) {
+  // Solid color buffers do not require on submission as skia doesn't track
+  // them. Instead, they are tracked by GbmSurfacelessWayland. In the future,
+  // when SharedImageFactory allows to create non-backed shared images, this
+  // should be removed from here.
+  auto it =
+      std::find_if(inflight_solid_color_buffers_.begin(),
+                   inflight_solid_color_buffers_.end(),
+                   [&buffer_id](const SolidColorBuffer& solid_color_buffer) {
+                     return solid_color_buffer.buffer_id == buffer_id;
+                   });
+  if (it != inflight_solid_color_buffers_.end()) {
+    available_solid_color_buffers_.emplace_back(std::move(*it));
+    inflight_solid_color_buffers_.erase(it);
+    // Keep track of the number of created buffers and erase the least used
+    // ones until the maximum number of available solid color buffer.
+    while (available_solid_color_buffers_.size() > kMaxSolidColorBuffers) {
+      buffer_manager->DestroyBuffer(
+          widget, available_solid_color_buffers_.begin()->buffer_id);
+      available_solid_color_buffers_.erase(
+          available_solid_color_buffers_.begin());
+    }
+  }
+}
+
+void GbmSurfacelessWayland::SolidColorBufferHolder::EraseBuffers(
+    WaylandBufferManagerGpu* buffer_manager,
+    gfx::AcceleratedWidget widget) {
+  for (const auto& buffer : available_solid_color_buffers_)
+    buffer_manager->DestroyBuffer(widget, buffer.buffer_id);
+  available_solid_color_buffers_.clear();
+}
 
 GbmSurfacelessWayland::GbmSurfacelessWayland(
     WaylandBufferManagerGpu* buffer_manager,
@@ -38,6 +119,7 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
       widget_(widget),
       has_implicit_external_sync_(
           HasEGLExtension("EGL_ARM_implicit_external_sync")),
+      solid_color_buffers_holder_(std::make_unique<SolidColorBufferHolder>()),
       weak_factory_(this) {
   buffer_manager_->RegisterSurface(widget_, this);
   unsubmitted_frames_.push_back(std::make_unique<PendingFrame>());
@@ -54,8 +136,20 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
     gl::GLImage* image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
-  unsubmitted_frames_.back()->overlays.emplace_back(image, std::move(gpu_fence),
-                                                    overlay_plane_data);
+  if (!image) {
+    // Only solid color overlays can be non-backed.
+    if (!overlay_plane_data.solid_color.has_value()) {
+      LOG(WARNING) << "Only solid color overlay planes are allowed to be "
+                      "scheduled without GLImage.";
+      return false;
+    }
+    DCHECK(!gpu_fence);
+    unsubmitted_frames_.back()->non_backed_overlays.emplace_back(
+        overlay_plane_data);
+  } else {
+    unsubmitted_frames_.back()->overlays.emplace_back(
+        image, std::move(gpu_fence), overlay_plane_data);
+  }
   return true;
 }
 
@@ -104,7 +198,7 @@ void GbmSurfacelessWayland::SwapBuffersAsync(
   PendingFrame* frame = unsubmitted_frames_.back().get();
   frame->completion_callback = std::move(completion_callback);
   frame->presentation_callback = std::move(presentation_callback);
-  frame->ScheduleOverlayPlanes(widget_);
+  frame->ScheduleOverlayPlanes(this);
 
   unsubmitted_frames_.push_back(std::make_unique<PendingFrame>());
 
@@ -198,6 +292,10 @@ bool GbmSurfacelessWayland::Resize(const gfx::Size& size,
                                    const gfx::ColorSpace& color_space,
                                    bool has_alpha) {
   surface_scale_factor_ = scale_factor;
+
+  // Remove all the buffers.
+  solid_color_buffers_holder_->EraseBuffers(buffer_manager_, widget_);
+
   return gl::SurfacelessEGL::Resize(size, scale_factor, color_space, has_alpha);
 }
 
@@ -210,11 +308,36 @@ GbmSurfacelessWayland::PendingFrame::PendingFrame() = default;
 GbmSurfacelessWayland::PendingFrame::~PendingFrame() = default;
 
 void GbmSurfacelessWayland::PendingFrame::ScheduleOverlayPlanes(
-    gfx::AcceleratedWidget widget) {
+    GbmSurfacelessWayland* surfaceless) {
+  DCHECK(surfaceless);
   for (auto& overlay : overlays) {
-    if (!overlay.ScheduleOverlayPlane(widget))
+    if (!overlay.ScheduleOverlayPlane(surfaceless->widget_))
       return;
   }
+
+  // Solid color overlays are non-backed. Thus, queue them directly.
+  // TODO(msisov): reconsider this once Linux Wayland compositors also support
+  // creation of non-backed solid color wl_buffers.
+  for (auto& overlay_data : non_backed_overlays) {
+    // This mustn't happen, but let's be explicit here and fail scheduling if
+    // it is not a solid color overlay.
+    if (!overlay_data.solid_color.has_value()) {
+      schedule_planes_succeeded = false;
+      return;
+    }
+
+    BufferId buf_id =
+        surfaceless->solid_color_buffers_holder_->GetOrCreateSolidColorBuffer(
+            overlay_data.solid_color.value(), surfaceless->buffer_manager_);
+    // Invalid buffer id.
+    if (buf_id == 0) {
+      schedule_planes_succeeded = false;
+      return;
+    }
+    surfaceless->QueueOverlayPlane(OverlayPlane(nullptr, nullptr, overlay_data),
+                                   buf_id);
+  }
+
   schedule_planes_succeeded = true;
   return;
 }
@@ -294,6 +417,10 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
   // submitted_frames_ may temporarily have more than one buffer in it if
   // buffers are released out of order by the Wayland server.
   DCHECK(!submitted_frames_.empty() || background_buffer_id_ == buffer_id);
+
+  // Let the holder mark this buffer as free to reuse.
+  solid_color_buffers_holder_->OnSubmission(buffer_id, buffer_manager_,
+                                            widget_);
 
   size_t erased = 0;
   for (auto& submitted_frame : submitted_frames_) {

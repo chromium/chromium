@@ -326,6 +326,9 @@ class OzonePlatformWayland : public OzonePlatform,
 
     static OzonePlatform::PlatformRuntimeProperties properties;
     if (connection_) {
+      DCHECK(has_initialized_ui());
+      // These properties are set when GetPlatformRuntimeProperties is called on
+      // the browser process side.
       properties.supports_server_side_window_decorations =
           override_supports_ssd_for_test == SupportsSsdForTest::kNotSet
               ? (connection_->xdg_decoration_manager_v1() != nullptr)
@@ -334,6 +337,17 @@ class OzonePlatformWayland : public OzonePlatform,
                      : true);
       properties.supports_overlays =
           ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
+      properties.supports_non_backed_solid_color_buffers =
+          ui::IsWaylandOverlayDelegationEnabled() &&
+          connection_->buffer_manager_host()
+              ->SupportsNonBackedSolidColorBuffers();
+    } else if (buffer_manager_) {
+      DCHECK(has_initialized_gpu());
+      // These properties are set when the GetPlatformRuntimeProperties is
+      // called on the gpu process side.
+      properties.supports_non_backed_solid_color_buffers =
+          ui::IsWaylandOverlayDelegationEnabled() &&
+          buffer_manager_->supports_non_backed_solid_color_buffers();
     }
     return properties;
   }

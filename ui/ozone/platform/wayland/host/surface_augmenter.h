@@ -5,7 +5,12 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_SURFACE_AUGMENTER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_SURFACE_AUGMENTER_H_
 
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+
+namespace gfx {
+class Size;
+}
 
 namespace ui {
 
@@ -30,6 +35,9 @@ class SurfaceAugmenter : public wl::GlobalObjectRegistrar<SurfaceAugmenter> {
   ~SurfaceAugmenter();
 
   wl::Object<augmented_surface> CreateAugmentedSurface(wl_surface* surface);
+
+  wl::Object<wl_buffer> CreateSolidColorBuffer(SkColor color,
+                                               const gfx::Size& size);
 
  private:
   // Wayland object wrapped by this class.

@@ -71,6 +71,8 @@ source_set("wayland") {
     "host/wayland_buffer_backing_dmabuf.h",
     "host/wayland_buffer_backing_shm.cc",
     "host/wayland_buffer_backing_shm.h",
+    "host/wayland_buffer_backing_solid_color.cc",
+    "host/wayland_buffer_backing_solid_color.h",
     "host/wayland_buffer_handle.cc",
     "host/wayland_buffer_handle.h",
     "host/wayland_buffer_manager_connector.cc",
@@ -305,6 +307,7 @@ source_set("wayland") {
       "//third_party/wayland:wayland_client",
       "//third_party/wayland:wayland_cursor",
       "//third_party/wayland:wayland_egl",
+      "//third_party/wayland:wayland_util",
     ]
   }
 

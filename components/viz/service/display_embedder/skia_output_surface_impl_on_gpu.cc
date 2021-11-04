@@ -1505,8 +1505,13 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
         bool needs_background_image = ui::OzonePlatform::GetInstance()
                                           ->GetPlatformProperties()
                                           .needs_background_image;
+        bool supports_non_backed_solid_color_images =
+            ui::OzonePlatform::GetInstance()
+                ->GetPlatformRuntimeProperties()
+                .supports_non_backed_solid_color_buffers;
 #else   // defined(USE_OZONE)
         bool needs_background_image = false;
+        bool supports_non_backed_solid_color_images = false;
 #endif  // !defined(USE_OZONE)
 
 #if !defined(OS_WIN)
@@ -1516,10 +1521,12 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
                 shared_image_representation_factory_.get()),
             dependency_, shared_image_representation_factory_.get(),
             shared_gpu_deps_->memory_tracker(),
-            GetDidSwapBuffersCompleteCallback(), needs_background_image);
+            GetDidSwapBuffersCompleteCallback(), needs_background_image,
+            supports_non_backed_solid_color_images);
 #else   // !defined(OS_WIN)
         NOTIMPLEMENTED();
-        (void)needs_background_image;
+        ALLOW_UNUSED_LOCAL(needs_background_image);
+        ALLOW_UNUSED_LOCAL(supports_non_backed_solid_color_images);
 #endif  // defined(OS_WIN)
       } else {
         if (dependency_->NeedsSupportForExternalStencil()) {
@@ -1578,8 +1585,13 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   bool needs_background_image = ui::OzonePlatform::GetInstance()
                                     ->GetPlatformProperties()
                                     .needs_background_image;
+  bool supports_non_backed_solid_color_images =
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_non_backed_solid_color_buffers;
 #else   // defined(USE_OZONE)
   bool needs_background_image = false;
+  bool supports_non_backed_solid_color_images = false;
 #endif  // !defined(USE_OZONE)
 
 #if !defined(OS_WIN)
@@ -1601,11 +1613,12 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
         std::move(output_presenter), dependency_,
         shared_image_representation_factory_.get(),
         shared_gpu_deps_->memory_tracker(), GetDidSwapBuffersCompleteCallback(),
-        needs_background_image);
+        needs_background_image, supports_non_backed_solid_color_images);
     return true;
   }
 #endif  // !defined(OS_WIN)
-  (void)needs_background_image;
+  ALLOW_UNUSED_LOCAL(needs_background_image);
+  ALLOW_UNUSED_LOCAL(supports_non_backed_solid_color_images);
 
   std::unique_ptr<SkiaOutputDeviceVulkan> output_device;
   if (!gpu_preferences_.disable_vulkan_surface) {

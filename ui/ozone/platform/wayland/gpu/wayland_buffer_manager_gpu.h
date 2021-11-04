@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/public/mojom/wayland/wayland_buffer_manager.mojom.h"
@@ -56,7 +57,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
           buffer_formats_with_modifiers,
       bool supports_dma_buf,
       bool supports_viewporter,
-      bool supports_acquire_fence) override;
+      bool supports_acquire_fence,
+      bool supports_non_backed_solid_color_buffers) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the
@@ -99,6 +101,12 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                             gfx::Size size,
                             uint32_t buffer_id);
 
+  // Asks Wayland to create a solid color wl_buffer that is not backed by
+  // anything on the gpu side. Requires surface-augmenter protocol.
+  void CreateSolidColorBuffer(SkColor color,
+                              const gfx::Size& size,
+                              uint32_t buf_id);
+
   // Asks Wayland to find a wl_buffer with the |buffer_id| and attach the
   // buffer to the WaylandWindow's surface, which backs the following |widget|.
   // Once the buffer is submitted and presented, the OnSubmission and
@@ -136,6 +144,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
 
   bool supports_acquire_fence() const { return supports_acquire_fence_; }
   bool supports_viewporter() const { return supports_viewporter_; }
+  bool supports_non_backed_solid_color_buffers() const {
+    return supports_non_backed_solid_color_buffers_;
+  }
 
   // Adds a WaylandBufferManagerGpu binding.
   void AddBindingWaylandBufferManagerGpu(
@@ -161,6 +172,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                     size_t length,
                                     gfx::Size size,
                                     uint32_t buffer_id);
+  void CreateSolidColorBufferInternal(SkColor color,
+                                      const gfx::Size& size,
+                                      uint32_t buf_id);
   void CommitOverlaysInternal(
       gfx::AcceleratedWidget widget,
       std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);
@@ -195,6 +209,10 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Whether Wayland server implements wp_viewporter extension to support
   // cropping and scaling buffers.
   bool supports_viewporter_ = false;
+
+  // Determines whether solid color overlays can be delegated without a backing
+  // image via a wayland protocol.
+  bool supports_non_backed_solid_color_buffers_ = false;
 
   mojo::ReceiverSet<ozone::mojom::WaylandBufferManagerGpu> receiver_set_;
 
