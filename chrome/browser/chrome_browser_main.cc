@@ -1641,8 +1641,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   PreBrowserStart();
 
   if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
-    component_updater::RegisterComponentsForUpdate(
-        profile_->IsOffTheRecord(), profile_->GetPrefs(), profile_->GetPath());
+    component_updater::RegisterComponentsForUpdate();
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     // Exclude Android: SODA is not supported.
     // Exclude ChromeOS: SODA is independent of Component Updater.

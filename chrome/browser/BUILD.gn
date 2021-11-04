@@ -6728,8 +6728,6 @@ static_library("browser") {
 
   if (enable_plugins) {
     sources += [
-      "component_updater/pepper_flash_component_installer.cc",
-      "component_updater/pepper_flash_component_installer.h",
       "metrics/plugin_metrics_provider.cc",
       "metrics/plugin_metrics_provider.h",
       "plugins/chrome_content_browser_client_plugins_part.cc",
