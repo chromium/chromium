@@ -24,6 +24,7 @@ for (const inputType of inputTypes) {
 
     await test_driver.bless('show picker');
     input.showPicker();
+    await test_driver.bless('close picker');
   }, `input[type=${inputType}] showPicker() does not throw when user activation is active`);
 }
 </script>
