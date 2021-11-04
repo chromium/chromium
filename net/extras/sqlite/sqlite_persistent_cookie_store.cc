@@ -1163,18 +1163,9 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
   }
 
   if (cur_version == 12) {
-    const char kMigrationSuccessHistogram[] =
-        "Cookie.TimeDatabaseMigrationToV13Success";
-    const char kMigrationFailureHistogram[] =
-        "Cookie.TimeDatabaseMigrationToV13Failure";
-    const base::TimeTicks start_time = base::TimeTicks::Now();
-
     sql::Transaction transaction(db());
-    if (!transaction.Begin()) {
-      base::UmaHistogramTimes(kMigrationFailureHistogram,
-                              base::TimeTicks::Now() - start_time);
+    if (!transaction.Begin())
       return absl::nullopt;
-    }
 
     std::string update_stmt(
         base::StringPrintf("ALTER TABLE cookies ADD COLUMN source_port "
@@ -1182,19 +1173,14 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
                            "ALTER TABLE cookies ADD COLUMN is_same_party "
                            "INTEGER NOT NULL DEFAULT 0;",
                            kDefaultUnknownPort));
-    if (!db()->Execute(update_stmt.c_str())) {
-      base::UmaHistogramTimes(kMigrationFailureHistogram,
-                              base::TimeTicks::Now() - start_time);
+    if (!db()->Execute(update_stmt.c_str()))
       return absl::nullopt;
-    }
 
     ++cur_version;
     meta_table()->SetVersionNumber(cur_version);
     meta_table()->SetCompatibleVersionNumber(
         std::min(cur_version, kCompatibleVersionNumber));
     transaction.Commit();
-    base::UmaHistogramTimes(kMigrationSuccessHistogram,
-                            base::TimeTicks::Now() - start_time);
   }
 
   if (cur_version == 13) {

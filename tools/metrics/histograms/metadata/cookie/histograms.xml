@@ -942,6 +942,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV13Failure" units="ms"
     expires_after="2021-10-30">
+  <obsolete>
+    Removed Nov 2021: no longer needed and expired.
+  </obsolete>
   <owner>bingler@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
@@ -953,6 +956,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cookie.TimeDatabaseMigrationToV13Success" units="ms"
     expires_after="2021-10-30">
+  <obsolete>
+    Removed Nov 2021: no longer needed and expired.
+  </obsolete>
   <owner>bingler@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>
