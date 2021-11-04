@@ -684,19 +684,19 @@
       },
     },
   },
-  'mac_11_beta_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'os': 'Mac-11.5',
-      },
-    },
-  },
   'mac_11_x64': {
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
         'os': 'Mac-11|Mac-10.16',
+      },
+    },
+  },
+  'mac_12_beta_arm64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'os': 'Mac-12',
       },
     },
   },
