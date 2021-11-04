@@ -148,6 +148,12 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
 
   inner_root->current_frame_host()->PropagateEmbeddingTokenToParentFrame();
 
+  // We need to set the `proxy_to_inner_main_frame_` as created because the
+  // renderer side of this object is live. It is live because the creation of
+  // the FencedFrame object occurs in a sync request from the renderer where the
+  // other end of `proxy_to_inner_main_frame_` lives.
+  proxy_to_inner_main_frame_->SetRenderFrameProxyCreated(true);
+
   RenderFrameHostManager* inner_render_manager = inner_root->render_manager();
 
   // For the newly minted FrameTree (in the constructor) we will have a new

@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/public/test/browser_test.h"
@@ -69,6 +70,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CreateFromScriptAndDestroy) {
       fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
                                                    main_url));
   FrameTreeNode* fenced_frame_root_node = fenced_frame_rfh->frame_tree_node();
+  EXPECT_TRUE(fenced_frame_root_node->render_manager()
+                  ->GetProxyToOuterDelegate()
+                  ->is_render_frame_proxy_live());
 
   // Test `RenderFrameHostImpl::IsInPrimaryMainFrame`.
   EXPECT_TRUE(primary_rfh->IsInPrimaryMainFrame());
@@ -173,6 +177,53 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, FrameIteration) {
         }
       }));
   EXPECT_TRUE(visited_fenced_frame_frame_tree);
+}
+
+// Test that ensures we can post from an cross origin iframe into the
+// fenced frame root.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CrossOriginMessagePost) {
+  const GURL main_url = embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html");
+  const GURL cross_origin_iframe_url =
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "fencedframe.test", "/title1.html")));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   main_url));
+
+  constexpr char kAddIframeScript[] = R"({
+        (()=>{
+            return new Promise((resolve) => {
+              const frame = document.createElement('iframe');
+              frame.addEventListener('load', () => {resolve();});
+              frame.src = $1;
+              document.body.appendChild(frame);
+            });
+        })();
+        })";
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh.get(),
+                     JsReplace(kAddIframeScript, cross_origin_iframe_url)));
+
+  RenderFrameHostImpl* iframe = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(fenced_frame_rfh.get(), 0));
+
+  EXPECT_TRUE(
+      EvalJs(iframe->GetParent(), R"(window.addEventListener('message', (e) => {
+                e.source.postMessage('echo ' + e.data, "*");
+              }, false); true)")
+          .ExtractBool());
+  EXPECT_EQ("echo test", EvalJs(iframe, R"((async() => {
+                      let promise = new Promise(function(resolve, reject) {
+                        window.addEventListener('message', (e) => {
+                          resolve(e.data)
+                        }, false);
+                        window.parent.postMessage('test', "*");
+                      });
+                      let result = await promise;
+                      return result;
+                    })())"));
 }
 
 namespace {
