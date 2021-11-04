@@ -66469,6 +66469,7 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PasswordStoreAndroidBackendAPIError">
+  <int value="7" label="NETWORK_ERROR"/>
   <int value="8" label="INTERNAL_ERROR"/>
   <int value="17" label="API_NOT_CONNECTED"/>
   <int value="20" label="CONNECTION_SUSPENDED_DURING_CALL"/>

@@ -2207,8 +2207,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordStoreAndroidBackend.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core ChromeSync 1P API. Recorded when
+    the asynchronous job has returned.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordStoreAndroidBackend.APIErros"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
+  <obsolete>
+    Deleted due to a typo in the name. Changed to
+    PasswordManager.PasswordStoreAndroidBackend.APIError on 2021-11-03.
+  </obsolete>
   <owner>fhorschig@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

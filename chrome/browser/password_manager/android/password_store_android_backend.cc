@@ -307,7 +307,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   if (error.type == AndroidBackendErrorType::kExternalError) {
     DCHECK(error.api_error_code.has_value());
     base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
-        "PasswordManager.PasswordStoreAndroidBackend.APIErros",
+        "PasswordManager.PasswordStoreAndroidBackend.APIError",
         base::HistogramBase::kUmaTargetedHistogramFlag);
     histogram->Add(error.api_error_code.value());
   }

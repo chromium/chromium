@@ -197,7 +197,7 @@ TEST_F(PasswordStoreAndroidBackendTest, OnExternalError) {
   const char kErrorCodeMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
   const char kAPIErrorMetric[] =
-      "PasswordManager.PasswordStoreAndroidBackend.APIErros";
+      "PasswordManager.PasswordStoreAndroidBackend.APIError";
 
   histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kAPIErrorMetric, 11004, 1);
