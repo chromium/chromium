@@ -830,13 +830,19 @@ TEST_F(BitmapHistogramTest, DecodedImageType) {
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 }
 
-TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted_JpegDensity) {
-  // Test a 64x64 image, which should be too small to report any metrics.
+TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted) {
   {
+    // Test images that don't report any density metrics.
     base::HistogramTester histogram_tester;
-    LoadImage("rgb-jpeg-red.jpg");
+    LoadImage("rgb-jpeg-red.jpg");           // 64x64
+    LoadImage("red-full-ranged-8bpc.avif");  // 3x3
+    LoadImage("animated-10color.gif");       // 100x100 but GIF is not reported.
     histogram_tester.ExpectTotalCount(
         "Blink.DecodedImage.JpegDensity.KiBWeighted", 0);
+    histogram_tester.ExpectTotalCount(
+        "Blink.DecodedImage.WebPDensity.KiBWeighted", 0);
+    histogram_tester.ExpectTotalCount(
+        "Blink.DecodedImage.AvifDensity.KiBWeighted", 0);
   }
 
   // 439x154, 23220 bytes --> 2.74 bpp, 23 KiB (rounded up)
@@ -848,6 +854,11 @@ TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted_JpegDensity) {
   ExpectImageRecordsSample("blue-wheel-srgb-color-profile.jpg",
                            "Blink.DecodedImage.JpegDensity.KiBWeighted", 578,
                            72);
+
+  // 800x800, 19436 bytes --> 0.24, 19 KiB
+  ExpectImageRecordsSample("webp-color-profile-lossy.webp",
+                           "Blink.DecodedImage.WebPDensity.KiBWeighted", 24,
+                           19);
 }
 
 }  // namespace blink

@@ -1041,6 +1041,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.DecodedImage.AvifDensity.KiBWeighted"
+    units="0.01 bits per pixel" expires_after="2022-10-01">
+  <owner>jyrki@google.com</owner>
+  <owner>compression-dev@google.com</owner>
+  <summary>
+    The compressed image size in KiB per image density measured in 0.01 bits per
+    pixel. This is logged once per image load after the whole image is loaded
+    and only for AVIFs with at least 100 pixels on the smallest dimension (width
+    or height). The reported count for a sample represents the image size
+    rounded to the nearest KiB.
+  </summary>
+</histogram>
+
 <histogram name="Blink.DecodedImage.DensitySizeCorrectionDetected"
     enum="BooleanPresent" expires_after="2021-01-03">
   <obsolete>
@@ -1056,8 +1069,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.DecodedImage.JpegDensity.KiBWeighted"
-    units="0.01 bits per pixel" expires_after="2022-05-01">
-  <owner>deymo@google.com</owner>
+    units="0.01 bits per pixel" expires_after="2022-10-01">
+  <owner>jyrki@google.com</owner>
   <owner>compression-dev@google.com</owner>
   <summary>
     The compressed image size in KiB per image density measured in 0.01 bits per
@@ -1076,6 +1089,19 @@ chromium-metrics-reviews@google.com.
   <owner>andrescj@chromium.org</owner>
   <owner>rob.buis@samsung.org</owner>
   <summary>Image orientation inferred during decode.</summary>
+</histogram>
+
+<histogram name="Blink.DecodedImage.WebPDensity.KiBWeighted"
+    units="0.01 bits per pixel" expires_after="2022-10-01">
+  <owner>jyrki@google.com</owner>
+  <owner>compression-dev@google.com</owner>
+  <summary>
+    The compressed image size in KiB per image density measured in 0.01 bits per
+    pixel. This is logged once per image load after the whole image is loaded
+    and only for WebPs with at least 100 pixels on the smallest dimension (width
+    or height). The reported count for a sample represents the image size
+    rounded to the nearest KiB.
+  </summary>
 </histogram>
 
 <histogram name="Blink.DecodedImage.WebPFileFormat" enum="WebPFileFormat"

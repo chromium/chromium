@@ -146,27 +146,53 @@ void BitmapImageMetrics::CountDecodedImageType(const String& type,
   }
 }
 
-void BitmapImageMetrics::CountImageJpegDensity(int image_min_side,
-                                               uint64_t density_centi_bpp,
-                                               size_t image_size_bytes) {
+void BitmapImageMetrics::CountDecodedImageDensity(const String& type,
+                                                  int image_min_side,
+                                                  uint64_t density_centi_bpp,
+                                                  size_t image_size_bytes) {
   // All bpp samples are reported in the range 0.01 to 10 bpp as integer number
   // of 0.01 bpp. We don't report for any sample for small images (0 to 99px on
   // the smallest dimension).
   //
   // The histogram JpegDensity.KiBWeighted reports the number of KiB decoded for
   // a given bpp value.
+  if (image_min_side < 100)
+    return;
+  int image_size_kib = static_cast<int>((image_size_bytes + 512) / 1024);
+  if (image_size_kib <= 0)
+    return;
 
-  if (image_min_side >= 100) {
-    DEFINE_THREAD_SAFE_STATIC_LOCAL(
-        CustomCountHistogram, density_histogram,
-        ("Blink.DecodedImage.JpegDensity.KiBWeighted", 1, 1000, 100));
-    int image_size_kib = static_cast<int>((image_size_bytes + 512) / 1024);
-    if (image_size_kib > 0) {
-      density_histogram.CountMany(
-          base::saturated_cast<base::Histogram::Sample>(density_centi_bpp),
-          image_size_kib);
-    }
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, jpeg_density_histogram,
+      ("Blink.DecodedImage.JpegDensity.KiBWeighted", 1, 1000, 100));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, webp_density_histogram,
+      ("Blink.DecodedImage.WebPDensity.KiBWeighted", 1, 1000, 100));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, avif_density_histogram,
+      ("Blink.DecodedImage.AvifDensity.KiBWeighted", 1, 1000, 100));
+
+  CustomCountHistogram* density_histogram = nullptr;
+  BitmapImageMetrics::DecodedImageType decoded_image_type =
+      StringToDecodedImageType(type);
+  switch (decoded_image_type) {
+    case BitmapImageMetrics::DecodedImageType::kJPEG:
+      density_histogram = &jpeg_density_histogram;
+      break;
+    case BitmapImageMetrics::DecodedImageType::kWebP:
+      density_histogram = &webp_density_histogram;
+      break;
+    case BitmapImageMetrics::DecodedImageType::kAVIF:
+      density_histogram = &avif_density_histogram;
+      break;
+    default:
+      // All other formats are not reported.
+      return;
   }
+
+  density_histogram->CountMany(
+      base::saturated_cast<base::Histogram::Sample>(density_centi_bpp),
+      image_size_kib);
 }
 
 void BitmapImageMetrics::CountJpegArea(const IntSize& size) {

@@ -228,9 +228,9 @@ Image::SizeAvailability BitmapImage::DataChanged(bool all_data_received) {
   // Report the image density metric right after we received all the data. The
   // SetData() call on the decoder_ (if there is one) should have decoded the
   // images and we should know the image size at this point.
-  if (ShouldReportByteSizeUMAs(all_data_received) &&
-      decoder_->FilenameExtension() == "jpg") {
-    BitmapImageMetrics::CountImageJpegDensity(
+  if (ShouldReportByteSizeUMAs(all_data_received)) {
+    BitmapImageMetrics::CountDecodedImageDensity(
+        decoder_->FilenameExtension(),
         std::min(Size().width(), Size().height()),
         ImageDensityInCentiBpp(Size(), decoder_->ByteSize()),
         decoder_->ByteSize());
