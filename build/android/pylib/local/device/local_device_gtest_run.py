@@ -54,6 +54,9 @@ _EXTRA_TEST_LIST = (
     'org.chromium.native_test.NativeTestInstrumentationTestRunner'
         '.TestList')
 
+# Used to identify the prefix in gtests.
+_GTEST_PRETEST_PREFIX = 'PRE_'
+
 _SECONDS_TO_NANOS = int(1e9)
 
 # Tests that use SpawnedTestServer must run the LocalTestServerSpawner on the
@@ -656,6 +659,42 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         tests, self._test_instance.external_shard_index,
         self._test_instance.total_external_shards)
     return tests
+
+  #override
+  def _GroupTests(self, tests):
+    pre_tests = dict()
+    other_tests = []
+    for test in tests:
+      test_name_start = max(test.find('.') + 1, 0)
+      test_name = test[test_name_start:]
+      if test_name_start == 0 or not test_name.startswith(
+          _GTEST_PRETEST_PREFIX):
+        other_tests.append(test)
+      else:
+        test_suite = test[:test_name_start - 1]
+        trim_test = test
+        trim_tests = [test]
+
+        while test_name.startswith(_GTEST_PRETEST_PREFIX):
+          test_name = test_name[len(_GTEST_PRETEST_PREFIX):]
+          trim_test = '%s.%s' % (test_suite, test_name)
+          trim_tests.append(trim_test)
+
+        if not trim_test in pre_tests or len(
+            pre_tests[trim_test]) < len(trim_tests):
+          pre_tests[trim_test] = trim_tests
+
+    all_tests = []
+    for other_test in other_tests:
+      if not other_test in pre_tests:
+        all_tests.append(other_test)
+
+    # TODO(crbug.com/1257820): Add logic to support grouping tests.
+    # Once grouping logic is added, switch to 'append' from 'extend'.
+    for _, test_list in pre_tests.items():
+      all_tests.extend(test_list)
+
+    return all_tests
 
   def _UploadTestArtifacts(self, device, test_artifacts_dir):
     # TODO(jbudorick): Reconcile this with the output manager once
