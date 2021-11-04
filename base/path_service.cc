@@ -182,9 +182,9 @@ bool PathService::Get(int key, FilePath* result) {
   PathData* path_data = GetPathData();
   DCHECK(path_data);
   DCHECK(result);
-  DCHECK_GE(key, DIR_CURRENT);
+  DCHECK_GT(key, PATH_START);
 
-  // special case the current directory because it can never be cached
+  // Special case the current directory because it can never be cached.
   if (key == DIR_CURRENT)
     return GetCurrentDirectory(result);
 
@@ -250,7 +250,7 @@ bool PathService::OverrideAndCreateIfNeeded(int key,
                                             bool create) {
   PathData* path_data = GetPathData();
   DCHECK(path_data);
-  DCHECK_GT(key, DIR_CURRENT) << "invalid path key";
+  DCHECK_GT(key, PATH_START) << "invalid path key";
 
   FilePath file_path = path;
 

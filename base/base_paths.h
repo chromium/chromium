@@ -18,8 +18,6 @@
 #include "base/base_paths_mac.h"
 #elif defined(OS_ANDROID)
 #include "base/base_paths_android.h"
-#elif defined(OS_FUCHSIA)
-#include "base/base_paths_fuchsia.h"
 #endif
 
 #if defined(OS_POSIX)
@@ -31,20 +29,25 @@ namespace base {
 enum BasePathKey {
   PATH_START = 0,
 
-  DIR_CURRENT,       // Current directory.
-  DIR_EXE,           // Directory containing FILE_EXE.
-  DIR_MODULE,        // Directory containing FILE_MODULE.
-  DIR_ASSETS,        // Directory that contains application assets.
-  DIR_TEMP,          // Temporary directory.
+  // The following refer to the current application.
+  FILE_EXE,     // Path and filename of the current executable.
+  FILE_MODULE,  // Path and filename of the module containing the code for
+                // the PathService (which could differ from FILE_EXE if the
+                // PathService were compiled into a shared object, for
+                // example).
+  DIR_EXE,      // Directory containing FILE_EXE.
+  DIR_MODULE,   // Directory containing FILE_MODULE.
+  DIR_ASSETS,   // Directory that contains application assets.
+
+  // The following refer to system and system user directories.
+  DIR_TEMP,          // Temporary directory for the system and/or user.
   DIR_HOME,          // User's root home directory. On Windows this will look
                      // like "C:\Users\<user>"  which isn't necessarily a great
                      // place to put files.
   DIR_USER_DESKTOP,  // The current user's Desktop.
-  FILE_EXE,          // Path and filename of the current executable.
-  FILE_MODULE,       // Path and filename of the module containing the code for
-                     // the PathService (which could differ from FILE_EXE if the
-                     // PathService were compiled into a shared object, for
-                     // example).
+
+  // The following refer to the applications current environment.
+  DIR_CURRENT,  // Current directory.
 
   // The following are only for use in tests.
   // On some platforms, such as Android and Fuchsia, tests do not have access to
@@ -62,6 +65,8 @@ enum BasePathKey {
                            // not bundle test files, this is usually the
                            // directory containing the test binary.
   DIR_TEST_DATA,           // Directory containing test data for //base tests.
+                           // Only for use in base_unittests. Equivalent to
+                           // DIR_SRC_TEST_DATA_ROOT + "/base/test/data".
 
   PATH_END
 };
