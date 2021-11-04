@@ -7,15 +7,14 @@ import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SearchEnginesBrowserProxyImpl, SettingsSearchPageElement} from 'chrome://settings/settings.js';
-
+import {SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
 // clang-format on
 
-function generateSearchEngineInfo() {
+function generateSearchEngineInfo(): SearchEnginesInfo {
   const searchEngines0 = createSampleSearchEngine(true, false, false);
   searchEngines0.default = true;
   const searchEngines1 = createSampleSearchEngine(true, false, false);
@@ -25,25 +24,22 @@ function generateSearchEngineInfo() {
 
   return {
     defaults: [searchEngines0, searchEngines1, searchEngines2],
+    actives: [],
     others: [],
     extensions: [],
   };
 }
 
 suite('SearchPageTests', function() {
-  /** @type {?SettingsSearchPageElement} */
-  let page = null;
-
-  /** @type {?TestSearchEnginesBrowserProxy} */
-  let browserProxy = null;
+  let page: SettingsSearchPageElement;
+  let browserProxy: TestSearchEnginesBrowserProxy;
 
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     browserProxy.setSearchEnginesInfo(generateSearchEngineInfo());
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
-    page = /** @type {!SettingsSearchPageElement} */ (
-        document.createElement('settings-search-page'));
+    page = document.createElement('settings-search-page');
     page.prefs = {
       default_search_provider_data: {
         template_url_data: {},
@@ -59,7 +55,7 @@ suite('SearchPageTests', function() {
   // Tests that the page is querying and displaying search engine info on
   // startup.
   test('Initialization', function() {
-    const selectElement = page.shadowRoot.querySelector('select');
+    const selectElement = page.shadowRoot!.querySelector('select')!;
 
     return browserProxy.whenCalled('getSearchEnginesList')
         .then(function() {
@@ -76,9 +72,9 @@ suite('SearchPageTests', function() {
 
           // Simulate a change that happened in a different tab.
           const searchEnginesInfo = generateSearchEngineInfo();
-          searchEnginesInfo.defaults[0].default = false;
-          searchEnginesInfo.defaults[1].default = false;
-          searchEnginesInfo.defaults[2].default = true;
+          searchEnginesInfo.defaults[0]!.default = false;
+          searchEnginesInfo.defaults[1]!.default = false;
+          searchEnginesInfo.defaults[2]!.default = true;
 
           browserProxy.resetResolver('setDefaultSearchEngine');
           webUIListenerCallback('search-engines-changed', searchEnginesInfo);
@@ -95,10 +91,10 @@ suite('SearchPageTests', function() {
 
   test('ControlledByExtension', function() {
     return browserProxy.whenCalled('getSearchEnginesList').then(function() {
-      const selectElement = page.shadowRoot.querySelector('select');
+      const selectElement = page.shadowRoot!.querySelector('select')!;
       assertFalse(selectElement.disabled);
       assertFalse(
-          !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+          !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
 
       page.set('prefs.default_search_provider_data.template_url_data', {
         controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
@@ -112,17 +108,17 @@ suite('SearchPageTests', function() {
 
       assertTrue(selectElement.disabled);
       assertTrue(
-          !!page.shadowRoot.querySelector('extension-controlled-indicator'));
-      assertFalse(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
+          !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
+      assertFalse(!!page.shadowRoot!.querySelector('cr-policy-pref-indicator'));
     });
   });
 
   test('ControlledByPolicy', function() {
     return browserProxy.whenCalled('getSearchEnginesList').then(function() {
-      const selectElement = page.shadowRoot.querySelector('select');
+      const selectElement = page.shadowRoot!.querySelector('select')!;
       assertFalse(selectElement.disabled);
       assertFalse(
-          !!page.shadowRoot.querySelector('extension-controlled-indicator'));
+          !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
 
       page.set('prefs.default_search_provider_data.template_url_data', {
         controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
@@ -133,8 +129,8 @@ suite('SearchPageTests', function() {
 
       assertTrue(selectElement.disabled);
       assertFalse(
-          !!page.shadowRoot.querySelector('extension-controlled-indicator'));
-      assertTrue(!!page.shadowRoot.querySelector('cr-policy-pref-indicator'));
+          !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
+      assertTrue(!!page.shadowRoot!.querySelector('cr-policy-pref-indicator'));
     });
   });
 });

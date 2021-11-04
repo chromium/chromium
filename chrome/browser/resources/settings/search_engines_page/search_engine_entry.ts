@@ -20,11 +20,19 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
+export interface SettingsSearchEngineEntryElement {
+  $: {
+    delete: HTMLButtonElement,
+    makeDefault: HTMLButtonElement,
+    edit: HTMLButtonElement,
+  };
+}
+
 const SettingsSearchEngineEntryElementBase =
     mixinBehaviors([FocusRowBehavior], PolymerElement) as
     {new (): PolymerElement & FocusRowBehavior};
 
-class SettingsSearchEngineEntryElement extends
+export class SettingsSearchEngineEntryElement extends
     SettingsSearchEngineEntryElementBase {
   static get is() {
     return 'settings-search-engine-entry';
@@ -123,6 +131,12 @@ class SettingsSearchEngineEntryElement extends
     this.closePopupMenu_();
     this.browserProxy_.setIsActiveSearchEngine(
         this.engine.modelIndex, /*is_active=*/ false);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-search-engine-entry': SettingsSearchEngineEntryElement;
   }
 }
 

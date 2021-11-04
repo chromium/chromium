@@ -71,6 +71,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     };
   }
 
+  prefs: Object;
   searchEnginesPageTitle_: String;
   private isActiveSearchEnginesFlagEnabled_: boolean;
   private searchEngines_: Array<SearchEngine>;
@@ -129,6 +130,12 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     return this.isActiveSearchEnginesFlagEnabled_ ?
         this.i18n('searchEnginesManageSiteSearch') :
         this.i18n('searchEnginesManage');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-search-page': SettingsSearchPageElement;
   }
 }
 

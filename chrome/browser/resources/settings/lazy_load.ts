@@ -55,9 +55,9 @@ import './system_page/system_page.js';
 
 // <if expr="not chromeos and not is_macosx">
 import './languages_page/edit_dictionary_page.js';
-
 // </if>
 
+export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 export {FontsBrowserProxy, FontsBrowserProxyImpl} from './appearance_page/fonts_browser_proxy.js';
 export {CountryDetailManagerImpl} from './autofill_page/address_edit_dialog.js';
@@ -102,6 +102,10 @@ export {CredentialManagementDialogPage} from './privacy_page/security_keys_crede
 export {ResetDialogPage} from './privacy_page/security_keys_reset_dialog.js';
 export {SetPINDialogPage} from './privacy_page/security_keys_set_pin_dialog.js';
 export {SafeBrowsingSetting, SettingsSecurityPageElement} from './privacy_page/security_page.js';
+export {SettingsOmniboxExtensionEntryElement} from './search_engines_page/omnibox_extension_entry.js';
+export {SettingsSearchEngineDialogElement} from './search_engines_page/search_engine_dialog.js';
+export {SettingsSearchEngineEntryElement} from './search_engines_page/search_engine_entry.js';
+export {SettingsSearchEnginesPageElement} from './search_engines_page/search_engines_page.js';
 export {AddSiteDialogElement} from './site_settings/add_site_dialog.js';
 // <if expr="chromeos">
 export {AndroidInfoBrowserProxy, AndroidInfoBrowserProxyImpl, AndroidSmsInfo} from './site_settings/android_info_browser_proxy.js';

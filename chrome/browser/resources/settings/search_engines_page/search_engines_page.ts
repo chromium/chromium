@@ -37,7 +37,7 @@ type SearchEngineEditEvent = CustomEvent<{
   anchorElement: HTMLElement,
 }>;
 
-interface SettingsSearchEnginesPageElement {
+export interface SettingsSearchEnginesPageElement {
   $: {
     addSearchEngine: HTMLElement,
     extensions: IronListElement,
@@ -49,7 +49,7 @@ const SettingsSearchEnginesPageElementBase =
     GlobalScrollTargetMixin(WebUIListenerMixin(PolymerElement)) as
     {new (): PolymerElement & WebUIListenerMixinInterface};
 
-class SettingsSearchEnginesPageElement extends
+export class SettingsSearchEnginesPageElement extends
     SettingsSearchEnginesPageElementBase {
   static get is() {
     return 'settings-search-engines-page';
@@ -255,6 +255,12 @@ class SettingsSearchEnginesPageElement extends
   private showNoResultsMessage_(
       list: Array<SearchEngine>, filteredList: Array<SearchEngine>): boolean {
     return list.length > 0 && filteredList.length === 0;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-search-engines-page': SettingsSearchEnginesPageElement;
   }
 }
 

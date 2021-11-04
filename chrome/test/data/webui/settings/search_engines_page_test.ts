@@ -7,27 +7,25 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ExtensionControlBrowserProxyImpl, SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrInputElement, SettingsOmniboxExtensionEntryElement, SettingsSearchEngineDialogElement, SettingsSearchEngineEntryElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
+import { ExtensionControlBrowserProxyImpl, SearchEngine, SearchEnginesBrowserProxyImpl,SearchEnginesInfo} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestExtensionControlBrowserProxy} from './test_extension_control_browser_proxy.js';
 import {TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+
 // clang-format on
 
-/**
- * @param {number} id
- * @param {string} name
- * @param {boolean} canBeDefault
- * @param {boolean} canBeEdited
- * @param {boolean} canBeRemoved
- * @return {!SearchEngine}
- */
 function createSampleSearchEngine(
-    id, name, canBeDefault, canBeEdited, canBeRemoved) {
+    id: number, name: string, canBeDefault: boolean, canBeEdited: boolean,
+    canBeRemoved: boolean): SearchEngine {
   return {
     canBeDefault: canBeDefault,
     canBeEdited: canBeEdited,
     canBeRemoved: canBeRemoved,
+    canBeActivated: false,
+    canBeDeactivated: false,
     default: false,
     displayName: name + ' displayName',
     iconURL: 'http://www.google.com/favicon.ico',
@@ -41,18 +39,20 @@ function createSampleSearchEngine(
   };
 }
 
-/** @return {!SearchEngine} */
-function createSampleOmniboxExtension() {
+function createSampleOmniboxExtension(): SearchEngine {
   return {
     canBeDefault: false,
     canBeEdited: false,
     canBeRemoved: false,
+    canBeActivated: false,
+    canBeDeactivated: false,
     default: false,
     displayName: 'Omnibox extension displayName',
     extension: {
       icon: 'chrome://extension-icon/some-extension-icon',
       id: 'dummyextensionid',
-      name: 'Omnibox extension'
+      name: 'Omnibox extension',
+      canBeDisabled: false,
     },
     id: 0,
     isOmniboxExtension: true,
@@ -65,14 +65,13 @@ function createSampleOmniboxExtension() {
 }
 
 suite('AddSearchEngineDialogTests', function() {
-  /** @type {?SettingsAddSearchEngineDialog} */
-  let dialog = null;
-  let browserProxy = null;
+  let dialog: SettingsSearchEngineDialogElement;
+  let browserProxy: TestSearchEnginesBrowserProxy;
 
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     dialog = document.createElement('settings-search-engine-dialog');
     document.body.appendChild(dialog);
   });
@@ -100,18 +99,18 @@ suite('AddSearchEngineDialogTests', function() {
     /**
      * Triggers an 'input' event on the cr-input element and checks that
      * validation is triggered.
-     * @param {string} inputId
-     * @return {!Promise}
      */
-    const inputAndValidate = inputId => {
-      const inputElement = dialog.$[inputId];
+    function inputAndValidate(inputId: string): Promise<void> {
+      const inputElement =
+          dialog.shadowRoot!.querySelector<CrInputElement>(`#${inputId}`)!;
       browserProxy.resetResolver('validateSearchEngineInput');
-      inputElement.fire('input');
+      inputElement.dispatchEvent(
+          new CustomEvent('input', {bubbles: true, composed: true}));
       return inputElement.value !== '' ?
           // Expecting validation only on non-empty values.
           browserProxy.whenCalled('validateSearchEngineInput') :
           Promise.resolve();
-    };
+    }
 
     const actionButton = dialog.$.actionButton;
 
@@ -167,19 +166,15 @@ suite('AddSearchEngineDialogTests', function() {
 });
 
 suite('SearchEngineEntryTests', function() {
-  /** @type {?SettingsSearchEngineEntryElement} */
-  let entry = null;
+  let entry: SettingsSearchEngineEntryElement;
+  let browserProxy: TestSearchEnginesBrowserProxy;
 
-  /** @type {!TestSearchEnginesBrowserProxy} */
-  let browserProxy = null;
-
-  /** @type {!SearchEngine} */
   const searchEngine = createSampleSearchEngine(0, 'G', true, true, true);
 
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     entry = document.createElement('settings-search-engine-entry');
     entry.set('engine', searchEngine);
     document.body.appendChild(entry);
@@ -194,18 +189,19 @@ suite('SearchEngineEntryTests', function() {
   test('Initialization', function() {
     assertEquals(
         searchEngine.displayName,
-        entry.root.querySelector('#name-column').textContent.trim());
+        entry.shadowRoot!.querySelector('#name-column')!.textContent!.trim());
     assertEquals(
         searchEngine.keyword,
-        entry.root.querySelector('#keyword-column').textContent);
+        entry.shadowRoot!.querySelector('#keyword-column')!.textContent);
     assertEquals(
-        searchEngine.url, entry.root.querySelector('#url-column').textContent);
+        searchEngine.url,
+        entry.shadowRoot!.querySelector('#url-column')!.textContent);
   });
 
   test('Remove_Enabled', function() {
     // Open action menu.
-    entry.$$('cr-icon-button').click();
-    const menu = entry.$$('cr-action-menu');
+    entry.shadowRoot!.querySelector('cr-icon-button')!.click();
+    const menu = entry.shadowRoot!.querySelector('cr-action-menu')!;
     assertTrue(menu.open);
 
     const deleteButton = entry.$.delete;
@@ -221,8 +217,8 @@ suite('SearchEngineEntryTests', function() {
 
   test('MakeDefault_Enabled', function() {
     // Open action menu.
-    entry.$$('cr-icon-button').click();
-    const menu = entry.$$('cr-action-menu');
+    entry.shadowRoot!.querySelector('cr-icon-button')!.click();
+    const menu = entry.shadowRoot!.querySelector('cr-action-menu')!;
     assertTrue(menu.open);
 
     const makeDefaultButton = entry.$.makeDefault;
@@ -238,8 +234,9 @@ suite('SearchEngineEntryTests', function() {
   // Test that clicking the "edit" menu item fires an edit event.
   test('Edit_Enabled', function() {
     // Open action menu.
-    entry.$$('cr-icon-button.icon-more-vert').click();
-    const menu = entry.$$('cr-action-menu');
+    entry.shadowRoot!
+        .querySelector<HTMLElement>('cr-icon-button.icon-more-vert')!.click();
+    const menu = entry.shadowRoot!.querySelector('cr-action-menu')!;
     assertTrue(menu.open);
 
     const engine = entry.engine;
@@ -249,7 +246,9 @@ suite('SearchEngineEntryTests', function() {
 
     const promise = eventToPromise('edit-search-engine', entry).then(e => {
       assertEquals(engine, e.detail.engine);
-      assertEquals(entry.$$('cr-icon-button'), e.detail.anchorElement);
+      assertEquals(
+          entry.shadowRoot!.querySelector('cr-icon-button'),
+          e.detail.anchorElement);
     });
     editButton.click();
     return promise;
@@ -257,14 +256,13 @@ suite('SearchEngineEntryTests', function() {
 
   /**
    * Checks that the given button is hidden for the given search engine.
-   * @param {!SearchEngine} searchEngine
-   * @param {string} buttonId
    */
-  function testButtonHidden(searchEngine, buttonId) {
+  function testButtonHidden(searchEngine: SearchEngine, buttonId: string) {
     entry.engine = searchEngine;
-    const button = entry.$[buttonId];
+    const button =
+        entry.shadowRoot!.querySelector<HTMLButtonElement>(`#${buttonId}`);
     assertTrue(!!button);
-    assertTrue(button.hidden);
+    assertTrue(button!.hidden);
   }
 
   test('Remove_Hidden', function() {
@@ -274,14 +272,13 @@ suite('SearchEngineEntryTests', function() {
 
   /**
    * Checks that the given button is disabled for the given search engine.
-   * @param {!SearchEngine} searchEngine
-   * @param {string} buttonId
    */
-  function testButtonDisabled(searchEngine, buttonId) {
+  function testButtonDisabled(searchEngine: SearchEngine, buttonId: string) {
     entry.engine = searchEngine;
-    const button = entry.$[buttonId];
+    const button =
+        entry.shadowRoot!.querySelector<HTMLButtonElement>(`#${buttonId}`);
     assertTrue(!!button);
-    assertTrue(button.disabled);
+    assertTrue(button!.disabled);
   }
 
   test('MakeDefault_Disabled', function() {
@@ -296,13 +293,10 @@ suite('SearchEngineEntryTests', function() {
 });
 
 suite('SearchEnginePageTests', function() {
-  /** @type {?SettingsSearchEnginesPageElement} */
-  let page = null;
+  let page: SettingsSearchEnginesPageElement;
+  let browserProxy: TestSearchEnginesBrowserProxy;
 
-  let browserProxy = null;
-
-  /** @type {!SearchEnginesInfo} */
-  const searchEnginesInfo = {
+  const searchEnginesInfo: SearchEnginesInfo = {
     defaults:
         [createSampleSearchEngine(0, 'search_engine_G', false, false, false)],
     actives: [],
@@ -325,7 +319,7 @@ suite('SearchEnginePageTests', function() {
       extensions: searchEnginesInfo.extensions.slice(),
     });
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     page = document.createElement('settings-search-engines-page');
     document.body.appendChild(page);
     return browserProxy.whenCalled('getSearchEnginesList');
@@ -339,33 +333,33 @@ suite('SearchEnginePageTests', function() {
   // startup.
   test('Initialization', function() {
     const searchEnginesLists =
-        page.shadowRoot.querySelectorAll('settings-search-engines-list');
+        page.shadowRoot!.querySelectorAll('settings-search-engines-list');
     assertEquals(2, searchEnginesLists.length);
 
     // Note: iron-list may create hidden children, so test the length
     // if IronList.items instead of the child nodes.
     flush();
-    const defaultsList = searchEnginesLists[0];
+    const defaultsList = searchEnginesLists[0]!;
     const defaultsEntries =
-        defaultsList.shadowRoot.querySelector('iron-list').items;
+        defaultsList.shadowRoot!.querySelector('iron-list')!.items!;
     assertEquals(searchEnginesInfo.defaults.length, defaultsEntries.length);
 
-    const othersList = searchEnginesLists[1];
+    const othersList = searchEnginesLists[1]!;
     const othersEntries =
-        othersList.shadowRoot.querySelector('iron-list').items;
+        othersList.shadowRoot!.querySelector('iron-list')!.items!;
     assertEquals(searchEnginesInfo.others.length, othersEntries.length);
 
     // Ensure that the search engines have reverse alphabetical order in the
     // model.
     assertTrue(
-        searchEnginesInfo.others[0].name > searchEnginesInfo.others[1].name);
+        searchEnginesInfo.others[0]!.name > searchEnginesInfo.others[1]!.name);
 
     // Ensure that they are displayed in alphabetical order.
-    assertEquals(searchEnginesInfo.others[1].name, othersEntries[0].name);
-    assertEquals(searchEnginesInfo.others[0].name, othersEntries[1].name);
+    assertEquals(searchEnginesInfo.others[1]!.name, othersEntries[0]!.name);
+    assertEquals(searchEnginesInfo.others[0]!.name, othersEntries[1]!.name);
 
-    const extensionEntries = page.shadowRoot.querySelector('iron-list').items;
-    assertEquals(searchEnginesInfo.extensions.length, extensionEntries.length);
+    const extensionEntries = page.shadowRoot!.querySelector('iron-list')!.items;
+    assertEquals(searchEnginesInfo.extensions.length, extensionEntries!.length);
   });
 
   // Test that the "no other search engines" message is shown/hidden as
@@ -378,9 +372,9 @@ suite('SearchEnginePageTests', function() {
       extensions: [],
     });
 
-    const message = page.root.querySelector('#noOtherEngines');
+    const message = page.shadowRoot!.querySelector('#noOtherEngines');
     assertTrue(!!message);
-    assertFalse(message.hasAttribute('hidden'));
+    assertFalse(message!.hasAttribute('hidden'));
 
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
@@ -388,25 +382,25 @@ suite('SearchEnginePageTests', function() {
       others: [createSampleSearchEngine(0, 'G', false, false, false)],
       extensions: [],
     });
-    assertTrue(message.hasAttribute('hidden'));
+    assertTrue(message!.hasAttribute('hidden'));
   });
 
   // Tests that the add search engine dialog opens when the corresponding
   // button is tapped.
   test('AddSearchEngineDialog', function() {
     assertFalse(
-        !!page.shadowRoot.querySelector('settings-search-engine-dialog'));
+        !!page.shadowRoot!.querySelector('settings-search-engine-dialog'));
     const addSearchEngineButton = page.$.addSearchEngine;
     assertTrue(!!addSearchEngineButton);
 
     addSearchEngineButton.click();
     flush();
     assertTrue(
-        !!page.shadowRoot.querySelector('settings-search-engine-dialog'));
+        !!page.shadowRoot!.querySelector('settings-search-engine-dialog'));
   });
 
   test('EditSearchEngineDialog', function() {
-    const engine = searchEnginesInfo.others[0];
+    const engine = searchEnginesInfo.others[0]!;
     page.dispatchEvent(new CustomEvent('edit-search-engine', {
       bubbles: true,
       composed: true,
@@ -416,7 +410,7 @@ suite('SearchEnginePageTests', function() {
         .then(modelIndex => {
           assertEquals(engine.modelIndex, modelIndex);
           const dialog =
-              page.shadowRoot.querySelector('settings-search-engine-dialog');
+              page.shadowRoot!.querySelector('settings-search-engine-dialog')!;
           assertTrue(!!dialog);
 
           // Check that the cr-input fields are pre-populated.
@@ -433,49 +427,43 @@ suite('SearchEnginePageTests', function() {
   test('FilterSearchEngines', function() {
     flush();
 
-    function getListItems(listIndex) {
+    function getListItems(listIndex: number) {
       const ironList = listIndex === 2 /* extensions */ ?
-          page.shadowRoot.querySelector('iron-list') :
-          page.shadowRoot
-              .querySelectorAll('settings-search-engines-list')[listIndex]
-              .shadowRoot.querySelector('iron-list');
+          page.shadowRoot!.querySelector('iron-list') :
+          page.shadowRoot!
+              .querySelectorAll('settings-search-engines-list')[listIndex]!
+              .shadowRoot!.querySelector('iron-list');
 
-      return ironList.items;
+      return ironList!.items!;
     }
 
-    function getDefaultEntries() {
-      return getListItems(0);
-    }
-    function getOtherEntries() {
-      return getListItems(1);
-    }
-
-    function assertSearchResults(defaultsCount, othersCount, extensionsCount) {
+    function assertSearchResults(
+        defaultsCount: number, othersCount: number, extensionsCount: number) {
       assertEquals(defaultsCount, getListItems(0).length);
       assertEquals(othersCount, getListItems(1).length);
       assertEquals(extensionsCount, getListItems(2).length);
 
-      const noResultsElements =
-          Array.from(page.shadowRoot.querySelectorAll('.no-search-results'));
-      assertEquals(defaultsCount > 0, noResultsElements[0].hidden);
-      assertEquals(othersCount > 0, noResultsElements[1].hidden);
-      assertEquals(extensionsCount > 0, noResultsElements[2].hidden);
+      const noResultsElements = Array.from(
+          page.shadowRoot!.querySelectorAll<HTMLElement>('.no-search-results'));
+      assertEquals(defaultsCount > 0, noResultsElements[0]!.hidden);
+      assertEquals(othersCount > 0, noResultsElements[1]!.hidden);
+      assertEquals(extensionsCount > 0, noResultsElements[2]!.hidden);
     }
 
     assertSearchResults(1, 2, 1);
 
     // Search by name
-    page.filter = searchEnginesInfo.defaults[0].name;
+    page.filter = searchEnginesInfo.defaults[0]!.name;
     flush();
     assertSearchResults(1, 0, 0);
 
     // Search by displayName
-    page.filter = searchEnginesInfo.others[0].displayName;
+    page.filter = searchEnginesInfo.others[0]!.displayName;
     flush();
     assertSearchResults(0, 1, 0);
 
     // Search by keyword
-    page.filter = searchEnginesInfo.others[1].keyword;
+    page.filter = searchEnginesInfo.others[1]!.keyword;
     flush();
     assertSearchResults(0, 1, 0);
 
@@ -497,21 +485,19 @@ suite('SearchEnginePageTests', function() {
 });
 
 suite('OmniboxExtensionEntryTests', function() {
-  /** @type {?SettingsOmniboxExtensionEntryElement} */
-  let entry = null;
-
-  let browserProxy = null;
+  let entry: SettingsOmniboxExtensionEntryElement;
+  let browserProxy: TestExtensionControlBrowserProxy;
 
   setup(function() {
     browserProxy = new TestExtensionControlBrowserProxy();
     ExtensionControlBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     entry = document.createElement('settings-omnibox-extension-entry');
     entry.set('engine', createSampleOmniboxExtension());
     document.body.appendChild(entry);
 
     // Open action menu.
-    entry.$$('cr-icon-button').click();
+    entry.shadowRoot!.querySelector('cr-icon-button')!.click();
   });
 
   teardown(function() {
@@ -524,7 +510,7 @@ suite('OmniboxExtensionEntryTests', function() {
     manageButton.click();
     return browserProxy.whenCalled('manageExtension')
         .then(function(extensionId) {
-          assertEquals(entry.engine.extension.id, extensionId);
+          assertEquals(entry.engine.extension!.id, extensionId);
         });
   });
 
@@ -534,7 +520,7 @@ suite('OmniboxExtensionEntryTests', function() {
     disableButton.click();
     return browserProxy.whenCalled('disableExtension')
         .then(function(extensionId) {
-          assertEquals(entry.engine.extension.id, extensionId);
+          assertEquals(entry.engine.extension!.id, extensionId);
         });
   });
 });

@@ -21,11 +21,18 @@ import {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '..
 
 import {SearchEngine} from './search_engines_browser_proxy.js';
 
+export interface SettingsOmniboxExtensionEntryElement {
+  $: {
+    disable: HTMLButtonElement,
+    manage: HTMLButtonElement,
+  };
+}
+
 const SettingsOmniboxExtensionEntryElementBase =
     mixinBehaviors([FocusRowBehavior], PolymerElement) as
     {new (): PolymerElement & FocusRowBehavior};
 
-class SettingsOmniboxExtensionEntryElement extends
+export class SettingsOmniboxExtensionEntryElement extends
     SettingsOmniboxExtensionEntryElementBase {
   static get is() {
     return 'settings-omnibox-extension-entry';
@@ -64,6 +71,12 @@ class SettingsOmniboxExtensionEntryElement extends
         assert(this.shadowRoot!.querySelector('cr-icon-button')!), {
           anchorAlignmentY: AnchorAlignment.AFTER_END,
         });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-omnibox-extension-entry': SettingsOmniboxExtensionEntryElement;
   }
 }
 
