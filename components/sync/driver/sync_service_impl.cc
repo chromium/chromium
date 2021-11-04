@@ -1786,7 +1786,9 @@ void SyncServiceImpl::RemoveClientFromServer() const {
   const std::string birthday = engine_->GetBirthday();
   DCHECK(!cache_guid.empty());
   const std::string& access_token = auth_manager_->access_token();
-  if (!access_token.empty() && !birthday.empty()) {
+  const bool report_sync_stopped = !access_token.empty() && !birthday.empty();
+  base::UmaHistogramBoolean("Sync.SyncStoppedReported", report_sync_stopped);
+  if (report_sync_stopped) {
     sync_stopped_reporter_->ReportSyncStopped(access_token, cache_guid,
                                               birthday);
   }

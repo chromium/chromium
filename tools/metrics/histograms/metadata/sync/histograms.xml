@@ -1419,6 +1419,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncStoppedReported" enum="Boolean"
+    expires_after="2022-04-03">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Counts the number of Sync stopped events broken down by whether it was
+    reported to the server. The event may be reported only if an access token
+    and a birthday are not empty. Recorded when sync engine is stopped or
+    disabled (it doesn't include regular browser shutdown).
+  </summary>
+</histogram>
+
+<histogram name="Sync.SyncStoppedURLFetchResponse"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-04-03">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Counts of responses (both http code and net error code) for Sync stopped
+    event URL fetches. Note that requests that timed out are not covered by this
+    histogram; see Sync.SyncStoppedURLFetchTimedOut for that.
+  </summary>
+</histogram>
+
+<histogram name="Sync.SyncStoppedURLFetchTimedOut" enum="BooleanTimedOut"
+    expires_after="2022-04-03">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Whether a Sync stopped event URL fetch timed out or not. Note that this
+    records true on timeout and false on success, but doesn't record anything if
+    the fetch failed for any other reason.
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultAccessTokenFetchSuccess" enum="Boolean"
     expires_after="2022-05-01">
   <owner>mmoskvitin@google.com</owner>
