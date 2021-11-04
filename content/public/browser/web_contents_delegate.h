@@ -68,7 +68,6 @@ struct DropData;
 struct MediaPlayerWatchTime;
 struct NativeWebKeyboardEvent;
 struct Referrer;
-struct SecurityStyleExplanations;
 }  // namespace content
 
 namespace device {
@@ -592,12 +591,11 @@ class CONTENT_EXPORT WebContentsDelegate {
                          content::RenderFrameHost* rfh);
 
   // Can be overridden by a delegate to return the security style of the
-  // given |web_contents|, populating |security_style_explanations| to
-  // explain why the SecurityStyle was downgraded. Returns
-  // SecurityStyleUnknown if not overriden.
-  virtual blink::SecurityStyle GetSecurityStyle(
-      WebContents* web_contents,
-      SecurityStyleExplanations* security_style_explanations);
+  // given |web_contents|. Returns SecurityStyleUnknown if not overridden.
+  //
+  // TODO(crbug.com/1262378): This is only used by unused parts of the DevTools
+  // protocol and can probably be removed altogether.
+  virtual blink::SecurityStyle GetSecurityStyle(WebContents* web_contents);
 
   // Called when a suspicious navigation of the main frame has been blocked.
   // Allows the delegate to provide some UI to let the user know about the

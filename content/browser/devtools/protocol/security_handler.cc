@@ -17,7 +17,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -48,62 +47,6 @@ std::string SecurityStyleToProtocolSecurityState(
     default:
       NOTREACHED();
       return Security::SecurityStateEnum::Unknown;
-  }
-}
-
-std::string MixedContentTypeToProtocolMixedContentType(
-    blink::mojom::MixedContentContextType mixed_content_type) {
-  switch (mixed_content_type) {
-    case blink::mojom::MixedContentContextType::kNotMixedContent:
-      return Security::MixedContentTypeEnum::None;
-    case blink::mojom::MixedContentContextType::kBlockable:
-      return Security::MixedContentTypeEnum::Blockable;
-    case blink::mojom::MixedContentContextType::kOptionallyBlockable:
-      return Security::MixedContentTypeEnum::OptionallyBlockable;
-    case blink::mojom::MixedContentContextType::kShouldBeBlockable:
-      // kShouldBeBlockable is not used for explanations.
-      NOTREACHED();
-      return Security::MixedContentTypeEnum::OptionallyBlockable;
-    default:
-      NOTREACHED();
-      return Security::MixedContentTypeEnum::None;
-  }
-}
-
-void AddExplanations(
-    const std::string& security_style,
-    const std::vector<SecurityStyleExplanation>& explanations_to_add,
-    Explanations* explanations) {
-  for (const auto& it : explanations_to_add) {
-    auto certificate = std::make_unique<protocol::Array<String>>();
-    if (it.certificate) {
-      certificate->emplace_back();
-      base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
-                             it.certificate->cert_buffer()),
-                         &certificate->back());
-
-      for (const auto& cert : it.certificate->intermediate_buffers()) {
-        certificate->emplace_back();
-        base::Base64Encode(
-            net::x509_util::CryptoBufferAsStringPiece(cert.get()),
-            &certificate->back());
-      }
-    }
-
-    auto recommendations =
-        std::make_unique<protocol::Array<String>>(it.recommendations);
-
-    explanations->emplace_back(
-        Security::SecurityStateExplanation::Create()
-            .SetSecurityState(security_style)
-            .SetTitle(it.title)
-            .SetSummary(it.summary)
-            .SetDescription(it.description)
-            .SetCertificate(std::move(certificate))
-            .SetMixedContentType(MixedContentTypeToProtocolMixedContentType(
-                it.mixed_content_type))
-            .SetRecommendations(std::move(recommendations))
-            .Build());
   }
 }
 
@@ -150,27 +93,12 @@ void SecurityHandler::DidChangeVisibleSecurityState() {
   if (!web_contents()->GetDelegate())
     return;
 
-  SecurityStyleExplanations security_style_explanations;
+  // TODO(crbug.com/1262378): Remove this event altogether.
   blink::SecurityStyle security_style =
-      web_contents()->GetDelegate()->GetSecurityStyle(
-          web_contents(), &security_style_explanations);
+      web_contents()->GetDelegate()->GetSecurityStyle(web_contents());
 
   const std::string security_state =
       SecurityStyleToProtocolSecurityState(security_style);
-
-  auto explanations = std::make_unique<Explanations>();
-  AddExplanations(Security::SecurityStateEnum::Insecure,
-                  security_style_explanations.insecure_explanations,
-                  explanations.get());
-  AddExplanations(Security::SecurityStateEnum::Neutral,
-                  security_style_explanations.neutral_explanations,
-                  explanations.get());
-  AddExplanations(Security::SecurityStateEnum::Secure,
-                  security_style_explanations.secure_explanations,
-                  explanations.get());
-  AddExplanations(Security::SecurityStateEnum::Info,
-                  security_style_explanations.info_explanations,
-                  explanations.get());
 
   // We can set everything to default values because this field is ignored by
   // the frontend, though it's still required by the protocol. Once the field is
@@ -187,12 +115,16 @@ void SecurityHandler::DidChangeVisibleSecurityState() {
               Security::SecurityStateEnum::Unknown)
           .Build();
 
-  frontend_->SecurityStateChanged(
-      security_state,
-      security_style_explanations.scheme_is_cryptographic,
-      std::move(explanations),
-      std::move(insecure_status),
-      Maybe<std::string>(security_style_explanations.summary));
+  GURL visible_url =
+      web_contents()->GetController().GetVisibleEntry()->GetURL();
+  bool scheme_is_cryptographic =
+      visible_url.is_valid() && visible_url.SchemeIsCryptographic();
+
+  frontend_->SecurityStateChanged(security_state, scheme_is_cryptographic,
+                                  // Explanations are no longer used.
+                                  std::make_unique<Explanations>(),
+                                  std::move(insecure_status),
+                                  Maybe<std::string>());
 }
 
 void SecurityHandler::DidFinishNavigation(NavigationHandle* navigation_handle) {

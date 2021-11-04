@@ -99,7 +99,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -115,6 +114,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
@@ -1512,32 +1512,24 @@ namespace {
 class SecurityStyleTestObserver : public content::WebContentsObserver {
  public:
   explicit SecurityStyleTestObserver(content::WebContents* web_contents)
-      : content::WebContentsObserver(web_contents),
-        latest_security_style_(blink::SecurityStyle::kUnknown),
-        latest_security_style_explanations_() {}
+      : content::WebContentsObserver(web_contents) {}
 
   SecurityStyleTestObserver(const SecurityStyleTestObserver&) = delete;
   SecurityStyleTestObserver& operator=(const SecurityStyleTestObserver&) =
       delete;
 
-  blink::SecurityStyle latest_security_style() const {
-    return latest_security_style_;
-  }
-
-  content::SecurityStyleExplanations latest_security_style_explanations()
-      const {
-    return latest_security_style_explanations_;
+  absl::optional<security_state::SecurityLevel> latest_security_level() const {
+    return latest_security_level_;
   }
 
   // WebContentsObserver:
   void DidChangeVisibleSecurityState() override {
-    latest_security_style_ = web_contents()->GetDelegate()->GetSecurityStyle(
-        web_contents(), &latest_security_style_explanations_);
+    auto* helper = SecurityStateTabHelper::FromWebContents(web_contents());
+    latest_security_level_ = helper->GetSecurityLevel();
   }
 
  private:
-  blink::SecurityStyle latest_security_style_;
-  content::SecurityStyleExplanations latest_security_style_explanations_;
+  absl::optional<security_state::SecurityLevel> latest_security_level_;
 };
 
 }  // namespace
@@ -1553,11 +1545,8 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   // The security indicator should be downgraded while the interstitial shows.
   SetupThreatIframeWarningAndNavigate();
   ExpectSecurityIndicatorDowngrade(error_tab, 0u);
-  EXPECT_EQ(blink::SecurityStyle::kInsecureBroken,
-            observer.latest_security_style());
-  // Security style summary for Developer Tools should contain a warning.
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFEBROWSING_WARNING),
-            observer.latest_security_style_explanations().summary);
+  EXPECT_EQ(security_state::SecurityLevel::DANGEROUS,
+            observer.latest_security_level());
 
   // The security indicator should still be downgraded post-interstitial.
   EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
@@ -1693,20 +1682,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   SetupWarningAndNavigateToValidHTTPS();
   ExpectSecurityIndicatorDowngrade(error_tab, 0u);
 
-  // Security style summary for Developer Tools should contain a warning.
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFEBROWSING_WARNING),
-            observer.latest_security_style_explanations().summary);
-
   // The security indicator should still be downgraded post-interstitial.
   EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
   AssertNoInterstitial(true);
   WebContents* post_tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(post_tab);
   ExpectSecurityIndicatorDowngrade(post_tab, 0u);
-
-  // Security style summary for Developer Tools should still contain a warning.
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFEBROWSING_WARNING),
-            observer.latest_security_style_explanations().summary);
 }
 
 // Test that the security indicator is still downgraded after two interstitials

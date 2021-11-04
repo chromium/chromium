@@ -431,7 +431,7 @@ component("headless_non_renderer") {
     "//components/cookie_config",
     "//components/embedder_support",
     "//components/keyed_service/content",
-    "//components/policy:policy_code_generate",
+    "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",

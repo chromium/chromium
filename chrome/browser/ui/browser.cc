@@ -1358,15 +1358,11 @@ bool Browser::CanDragEnter(content::WebContents* source,
   return true;
 }
 
-blink::SecurityStyle Browser::GetSecurityStyle(
-    WebContents* web_contents,
-    content::SecurityStyleExplanations* security_style_explanations) {
+blink::SecurityStyle Browser::GetSecurityStyle(WebContents* web_contents) {
   SecurityStateTabHelper* helper =
       SecurityStateTabHelper::FromWebContents(web_contents);
   DCHECK(helper);
-  return security_state::GetSecurityStyle(helper->GetSecurityLevel(),
-                                          *helper->GetVisibleSecurityState(),
-                                          security_style_explanations);
+  return security_state::GetSecurityStyle(helper->GetSecurityLevel());
 }
 
 void Browser::CreateSmsPrompt(content::RenderFrameHost*,

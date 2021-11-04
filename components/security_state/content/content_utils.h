@@ -11,7 +11,6 @@
 #include "third_party/blink/public/common/security/security_style.h"
 
 namespace content {
-struct SecurityStyleExplanations;
 class WebContents;
 }  // namespace content
 
@@ -21,14 +20,13 @@ namespace security_state {
 std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
     content::WebContents* web_contents);
 
-// Returns the SecurityStyle that should be applied to a WebContents
-// with the given |security_level| and |visible_security_state|. Populates
-// |security_style_explanations| to explain why the returned
-// SecurityStyle was chosen.
+// Returns the SecurityStyle that should be applied to a WebContents with the
+// given |security_level|.
+//
+// TODO(crbug.com/1262378): This is only used by unused parts of the DevTools
+// protocol and can probably be removed altogether.
 blink::SecurityStyle GetSecurityStyle(
-    security_state::SecurityLevel security_level,
-    const security_state::VisibleSecurityState& visible_security_state,
-    content::SecurityStyleExplanations* security_style_explanations);
+    security_state::SecurityLevel security_level);
 
 }  // namespace security_state
 

@@ -8343,13 +8343,13 @@ domain Security
       SecurityState securityState
       # True if the page was loaded over cryptographic transport such as HTTPS.
       deprecated boolean schemeIsCryptographic
-      # List of explanations for the security state. If the overall security state is `insecure` or
-      # `warning`, at least one corresponding explanation should be included.
-      array of SecurityStateExplanation explanations
+      # Previously a list of explanations for the security state. Now always
+      # empty.
+      deprecated array of SecurityStateExplanation explanations
       # Information about insecure content on the page.
       deprecated InsecureContentStatus insecureContentStatus
-      # Overrides user-visible description of the state.
-      optional string summary
+      # Overrides user-visible description of the state. Always omitted.
+      deprecated optional string summary
 
 experimental domain ServiceWorker
   depends on Target

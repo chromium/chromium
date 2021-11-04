@@ -16,7 +16,6 @@
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/url_constants.h"
@@ -285,8 +284,7 @@ bool WebContentsDelegate::SaveFrame(const GURL& url,
 }
 
 blink::SecurityStyle WebContentsDelegate::GetSecurityStyle(
-    WebContents* web_contents,
-    SecurityStyleExplanations* security_style_explanations) {
+    WebContents* web_contents) {
   return blink::SecurityStyle::kUnknown;
 }
 

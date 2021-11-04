@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -160,13 +159,7 @@ DevToolsProtocolTest::WaitForNotification(const std::string& notification,
 }
 
 blink::SecurityStyle DevToolsProtocolTest::GetSecurityStyle(
-    content::WebContents* web_contents,
-    content::SecurityStyleExplanations* security_style_explanations) {
-  security_style_explanations->secure_explanations.push_back(
-      SecurityStyleExplanation(
-          "an explanation title", "an explanation summary",
-          "an explanation description", cert_,
-          blink::mojom::MixedContentContextType::kNotMixedContent));
+    content::WebContents* web_contents) {
   return blink::SecurityStyle::kNeutral;
 }
 

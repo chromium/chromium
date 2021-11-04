@@ -37,8 +37,7 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
                               const std::u16string& source_id) override;
 
   blink::SecurityStyle GetSecurityStyle(
-      content::WebContents* web_contents,
-      content::SecurityStyleExplanations* security_style_explanations) override;
+      content::WebContents* web_contents) override;
 
   base::DictionaryValue* SendCommand(const std::string& method,
                                      std::unique_ptr<base::Value> params) {
@@ -125,11 +124,6 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
 
   void set_agent_host_can_close() { agent_host_can_close_ = true; }
 
-  void SetSecurityExplanationCert(
-      const scoped_refptr<net::X509Certificate>& cert) {
-    cert_ = cert;
-  }
-
   void SetAllowUnsafeOperations(bool allow) {
     allow_unsafe_operations_ = allow;
   }
@@ -156,7 +150,6 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
   int waiting_for_command_result_id_;
   bool in_dispatch_;
   bool agent_host_can_close_;
-  scoped_refptr<net::X509Certificate> cert_;
   base::OnceClosure run_loop_quit_closure_;
   bool allow_unsafe_operations_ = true;
 };
