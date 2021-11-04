@@ -494,3 +494,33 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'InterjectUtterances', function() {
     {textString: 'How are you?', queueMode: QueueMode.QUEUE}
   ]);
 });
+
+SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Mute', function() {
+  // Fake out setTimeout for our purposes.
+  let lastSetTimeoutCallback;
+  window.setTimeout = (callback, delay) => {
+    lastSetTimeoutCallback = callback;
+  };
+
+  // Mock this to ensure no events are triggered.
+  chrome.tts.speak = () => {};
+  // Push some text into the speech queue and verify state.
+  tts.speak('Hello', QueueMode.FLUSH, {});
+  tts.speak('world.', QueueMode.QUEUE, {});
+  this.expectUtteranceQueueIsLike([
+    {textString: 'Hello', queueMode: QueueMode.FLUSH},
+    {textString: 'world.', queueMode: QueueMode.QUEUE}
+  ]);
+
+  // Toggle speech off.
+  tts.toggleSpeechOnOrOff();
+
+  // The above call should have resulted in a setTimeout; call it.
+  assertTrue(!!lastSetTimeoutCallback);
+  lastSetTimeoutCallback();
+  lastSetTimeoutCallback = undefined;
+
+  // Make assertions.
+  assertEquals(null, tts.currentUtterance_);
+  this.expectUtteranceQueueIsLike([]);
+});

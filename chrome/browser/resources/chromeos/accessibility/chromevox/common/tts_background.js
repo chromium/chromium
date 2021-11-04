@@ -677,13 +677,14 @@ TtsBackground = class extends ChromeTtsBase {
   /** @override */
   toggleSpeechOnOrOff() {
     const previousValue = this.ttsProperties[AbstractTts.VOLUME];
-    const toggle = function() {
+    const toggle = () => {
       if (previousValue === 0) {
         this.ttsProperties[AbstractTts.VOLUME] = 1;
       } else {
         this.ttsProperties[AbstractTts.VOLUME] = 0;
+        this.stop();
       }
-    }.bind(this);
+    };
 
     if (previousValue === 0) {
       toggle();
