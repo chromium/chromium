@@ -76,6 +76,18 @@ const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
              : base::UnguessableToken::Create().ToString();
 }
 
+const user_manager::User* GetUser(const Profile* profile) {
+  auto* profile_helper = chromeos::ProfileHelper::Get();
+  DCHECK(profile_helper);
+  const user_manager::User* user = profile_helper->GetUserByProfile(profile);
+  DCHECK(user);
+  return user;
+}
+
+AccountId GetAccountId(const Profile* profile) {
+  return GetUser(profile)->GetAccountId();
+}
+
 }  // namespace
 
 ChromePersonalizationAppUiDelegate::ChromePersonalizationAppUiDelegate(
@@ -259,9 +271,11 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
     std::move(pending_select_wallpaper_callback_).Run(/*success=*/false);
   pending_select_wallpaper_callback_ = std::move(callback);
 
+  SetMinimizedWindowStateForPreview(preview_mode);
+
   client->SetOnlineWallpaper(
       ash::OnlineWallpaperParams(
-          GetAccountId(), absl::make_optional(image_asset_id),
+          GetAccountId(profile_), absl::make_optional(image_asset_id),
           GURL(it->second.image_url.spec()), it->second.collection_id,
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
           /*from_user=*/true,
@@ -284,29 +298,31 @@ void ChromePersonalizationAppUiDelegate::SelectLocalImage(
     std::move(pending_select_local_image_callback_).Run(/*success=*/false);
   pending_select_local_image_callback_ = std::move(callback);
 
+  SetMinimizedWindowStateForPreview(preview_mode);
+
   WallpaperController::Get()->SetCustomWallpaper(
-      GetAccountId(), path, layout, preview_mode,
+      GetAccountId(profile_), path, layout, preview_mode,
       base::BindOnce(&ChromePersonalizationAppUiDelegate::OnLocalImageSelected,
                      backend_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChromePersonalizationAppUiDelegate::SetCustomWallpaperLayout(
     ash::WallpaperLayout layout) {
-  WallpaperController::Get()->UpdateCustomWallpaperLayout(GetAccountId(),
-                                                          layout);
+  WallpaperController::Get()->UpdateCustomWallpaperLayout(
+      GetAccountId(profile_), layout);
 }
 
 void ChromePersonalizationAppUiDelegate::SetDailyRefreshCollectionId(
     const std::string& collection_id) {
-  WallpaperController::Get()->SetDailyRefreshCollectionId(GetAccountId(),
-                                                          collection_id);
+  WallpaperController::Get()->SetDailyRefreshCollectionId(
+      GetAccountId(profile_), collection_id);
 }
 
 void ChromePersonalizationAppUiDelegate::GetDailyRefreshCollectionId(
     GetDailyRefreshCollectionIdCallback callback) {
   auto* controller = WallpaperController::Get();
   std::move(callback).Run(
-      controller->GetDailyRefreshCollectionId(GetAccountId()));
+      controller->GetDailyRefreshCollectionId(GetAccountId(profile_)));
 }
 
 void ChromePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(
@@ -327,10 +343,12 @@ void ChromePersonalizationAppUiDelegate::IsInTabletMode(
 }
 
 void ChromePersonalizationAppUiDelegate::ConfirmPreviewWallpaper() {
+  SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
   WallpaperController::Get()->ConfirmPreviewWallpaper();
 }
 
 void ChromePersonalizationAppUiDelegate::CancelPreviewWallpaper() {
+  SetMinimizedWindowStateForPreview(/*preview_mode=*/false);
   WallpaperController::Get()->CancelPreviewWallpaper();
 }
 
@@ -496,11 +514,14 @@ void ChromePersonalizationAppUiDelegate::FindAttributionInCollection(
   wallpaper_attribution_info_fetcher_ = std::move(fetcher);
 }
 
-AccountId ChromePersonalizationAppUiDelegate::GetAccountId() const {
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
-  return user->GetAccountId();
+void ChromePersonalizationAppUiDelegate::SetMinimizedWindowStateForPreview(
+    bool preview_mode) {
+  auto* wallpaper_controller = WallpaperController::Get();
+  const std::string& user_id_hash = GetUser(profile_)->username_hash();
+  if (preview_mode)
+    wallpaper_controller->MinimizeInactiveWindows(user_id_hash);
+  else
+    wallpaper_controller->RestoreMinimizedWindows(user_id_hash);
 }
 
 void ChromePersonalizationAppUiDelegate::NotifyWallpaperChanged(

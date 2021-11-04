@@ -167,7 +167,11 @@ class ChromePersonalizationAppUiDelegate
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);
 
-  AccountId GetAccountId() const;
+  // Called when the user sets an image, or cancels/confirms preview wallpaper.
+  // If a new image is set in preview mode, will minimize all windows except the
+  // wallpaper SWA. When canceling or confirming preview mode, will restore the
+  // minimized windows to their previous state.
+  void SetMinimizedWindowStateForPreview(bool preview_mode);
 
   void NotifyWallpaperChanged(
       ash::personalization_app::mojom::CurrentWallpaperPtr current_wallpaper);

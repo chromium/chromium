@@ -1404,8 +1404,7 @@ void WallpaperControllerImpl::MinimizeInactiveWindows(
 void WallpaperControllerImpl::RestoreMinimizedWindows(
     const std::string& user_id_hash) {
   if (!window_state_manager_) {
-    NOTREACHED() << "This should only be called after calling "
-                 << "MinimizeInactiveWindows.";
+    DVLOG(1) << "No minimized window state saved";
     return;
   }
   window_state_manager_->RestoreMinimizedWindows(user_id_hash);
