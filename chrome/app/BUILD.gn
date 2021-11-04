@@ -262,6 +262,8 @@ if (is_fuchsia) {
       ":chrome_component",
       ":chrome_component_v1",
     ]
+
+    excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
   }
 
   fuchsia_package_installer("chrome_fuchsia_installer") {

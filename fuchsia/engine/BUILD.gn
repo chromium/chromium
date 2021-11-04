@@ -345,8 +345,8 @@ source_set("webui_resources") {
 _web_engine_excluded_files = [
   # TODO(crbug.com/1022542): SwiftShader is used only in tests. It should
   # not be included in the WebEngine package.
-  # Whenever this list is update the exclusions in cast_runner package should
-  # be updated as well (see fuchsia/runners/BUILD.gn).
+  # Whenever this list is updated the exclusions in the cast_runner package
+  # should be updated as well (see fuchsia/runners/BUILD.gn).
   "lib/libswiftshader_libEGL.so",
   "lib/libswiftshader_libGLESv2.so",
   "lib/libvk_swiftshader.so",
@@ -381,6 +381,7 @@ fuchsia_package("web_engine") {
     ":web_instance_component",
   ]
   excluded_files = _web_engine_excluded_files
+  excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
 }
 
 fuchsia_package_installer("web_engine_installer") {
@@ -418,6 +419,7 @@ fuchsia_package("web_engine_with_webui") {
     ":webui_resources",
   ]
   excluded_files = _web_engine_excluded_files
+  excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
 }
 
 fuchsia_package_installer("web_engine_with_webui_installer") {

@@ -8,6 +8,7 @@
 
 import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/devtools.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/rts.gni")
 import("//build_overrides/build.gni")
@@ -390,9 +391,18 @@ template("test") {
     # Define the package target that will bundle the test and additional
     # components and their data.
     fuchsia_package(_pkg_target) {
-      forward_variables_from(invoker, [ "excluded_files" ])
+      forward_variables_from(invoker,
+                             [
+                               "excluded_files",
+                               "excluded_dirs",
+                             ])
       package_name = _output_name
       deps = _test_component_targets
+
+      if (!defined(excluded_dirs)) {
+        excluded_dirs = []
+      }
+      excluded_dirs += [ devtools_root_location ]
     }
 
     # |target_name| refers to the package-runner rule, so that building
