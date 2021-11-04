@@ -48,6 +48,8 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationChromeStartAndroid";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
       return "SegmentationQueryTiles";
+    case proto::OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT:
+      return "AutofillAssistant";
   }
   NOTREACHED();
   return std::string();
