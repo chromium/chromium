@@ -92,8 +92,6 @@ PaymentRequest::PaymentRequest(
   // TerminateConnection will be called when the Mojo pipe is closed. This
   // will happen as a result of many renderer-side events (both successful and
   // erroneous in nature).
-  // TODO(crbug.com/683636): Investigate using
-  // set_connection_error_with_reason_handler with Binding::CloseWithReason.
   receiver_.set_disconnect_handler(base::BindOnce(
       &PaymentRequest::TerminateConnection, weak_ptr_factory_.GetWeakPtr()));
 
