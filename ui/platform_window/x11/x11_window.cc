@@ -676,6 +676,13 @@ void X11Window::Maximize() {
   // save this one for later too.
   should_maximize_after_map_ = !window_mapped_in_client_;
 
+  // Some WMs keep respecting the frame extents even if the window is maximised.
+  // Remove the insets when maximising.  The extents will be set again when the
+  // window is restored to normal state.
+  // See https://crbug.com/1260821
+  if (CanSetDecorationInsets())
+    SetDecorationInsets(nullptr);
+
   SetWMSpecState(true, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
                  x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
 }
