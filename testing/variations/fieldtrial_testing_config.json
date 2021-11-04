@@ -7447,6 +7447,7 @@
                 {
                     "name": "ShrinkLogo",
                     "params": {
+                        "ReturnToStartSurfaceInactiveDurationInSeconds": "43200",
                         "show_return_to_recent_tab": "true",
                         "shrink_logo": "true"
                     },
