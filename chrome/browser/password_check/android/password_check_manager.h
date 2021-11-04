@@ -191,6 +191,10 @@ class PasswordCheckManager
   // in the account if the quota limit was reached.
   bool CanUseAccountCheck() const;
 
+  // Returns true if there is auto change button for given credential.
+  bool IsEligibleForAutoChange(
+      const password_manager::CredentialWithPassword& credenital) const;
+
   // Returns true if the password scripts fetching (kPasswordScriptsFetching) is
   // enabled. To have precise metrics about user actions on credentials with
   // scripts, scripts are fetched only for the users who can start a script,

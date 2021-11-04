@@ -572,6 +572,72 @@ TEST_F(PasswordCheckManagerTest,
                   /*has_auto_change_button=*/false)));
 }
 
+TEST_F(PasswordCheckManagerTest,
+       CorrectlyCreatesUIStructWithCredentialAgeCheckOn) {
+  InitializeManager();
+  // Enable password sync
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  feature_list().InitWithFeatures(
+      {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordChangeInSettings,
+       password_manager::features::kPasswordChangeOnlyRecentCredentials},
+      {});
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  // Credential just used.
+  form.date_last_used = base::Time::Now();
+  AddIssueToForm(&form);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
+      .WillOnce(Invoke(
+          [](base::OnceClosure callback) { std::move(callback).Run(); }));
+
+  manager().RefreshScripts();
+
+  EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(true));
+  EXPECT_THAT(manager().GetCompromisedCredentials(),
+              ElementsAre(ExpectCompromisedCredentialForUI(
+                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
+                  "https://example.com/.well-known/change-password",
+                  InsecureCredentialTypeFlags::kCredentialLeaked,
+                  /*has_startable_script=*/true,
+                  /*has_auto_change_button=*/true)));
+}
+
+TEST_F(PasswordCheckManagerTest,
+       CorrectlyCreatesUIStructWithCredentialAgeCheckOnButCredentialIsOld) {
+  InitializeManager();
+  // Enable password sync
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  feature_list().InitWithFeatures(
+      {password_manager::features::kPasswordScriptsFetching,
+       password_manager::features::kPasswordChangeInSettings,
+       password_manager::features::kPasswordChangeOnlyRecentCredentials},
+      {});
+  PasswordForm form = MakeSavedPassword(kExampleCom, kUsername1);
+  // Credential used more than 2 years ago.
+  form.date_last_used = base::Time::Now() - base::Days(1000);
+  AddIssueToForm(&form);
+  store().AddLogin(form);
+  RunUntilIdle();
+
+  EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
+      .WillOnce(Invoke(
+          [](base::OnceClosure callback) { std::move(callback).Run(); }));
+
+  manager().RefreshScripts();
+
+  EXPECT_CALL(fetcher(), IsScriptAvailable).WillOnce(Return(true));
+  EXPECT_THAT(manager().GetCompromisedCredentials(),
+              ElementsAre(ExpectCompromisedCredentialForUI(
+                  kUsername1, u"example.com", GURL(kExampleCom), absl::nullopt,
+                  "https://example.com/.well-known/change-password",
+                  InsecureCredentialTypeFlags::kCredentialLeaked,
+                  /*has_startable_script=*/true,
+                  /*has_auto_change_button=*/false)));
+}
+
 TEST_F(PasswordCheckManagerTest, UpdatesProgressCorrectly) {
   identity_test_env().MakeAccountAvailable(kTestEmail);
   InitializeManager();
