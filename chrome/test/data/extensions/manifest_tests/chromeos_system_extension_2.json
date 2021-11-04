@@ -5,9 +5,7 @@
     "manifest_version": 3,
     "permissions": [
       "os.diagnostics",
-      "os.telemetry"
-    ],
-    "optional_permissions": [
+      "os.telemetry",
       "os.telemetry.serial_number"
     ],
     "chromeos_system_extension": {},

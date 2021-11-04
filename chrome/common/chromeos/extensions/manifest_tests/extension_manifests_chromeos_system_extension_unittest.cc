@@ -19,13 +19,6 @@ TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
 }
 
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
-       InvalidSerialNumberPermissionInRequiredPermissions) {
-  LoadAndExpectError(
-      "chromeos_system_extension_invalid_serial_number_permission.json",
-      chromeos::kSerialNumberPermissionMustBeOptional);
-}
-
-TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
        ValidChromeOSSystemExtension_Allowlisted_1) {
   scoped_refptr<extensions::Extension> extension(
       LoadAndExpectSuccess("chromeos_system_extension.json"));

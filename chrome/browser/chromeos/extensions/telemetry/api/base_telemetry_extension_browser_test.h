@@ -34,9 +34,6 @@ class BaseTelemetryExtensionBrowserTest
  public:
   static const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams;
 
-  static std::string GetManifestFile(const std::string& public_key,
-                                     const std::string& matches_origin);
-
   BaseTelemetryExtensionBrowserTest();
   ~BaseTelemetryExtensionBrowserTest() override;
 
@@ -51,6 +48,8 @@ class BaseTelemetryExtensionBrowserTest
  protected:
   void CreateExtensionAndRunServiceWorker(
       const std::string& service_worker_content);
+  virtual std::string GetManifestFile(const std::string& public_key,
+                                      const std::string& matches_origin);
 
   std::unique_ptr<HardwareInfoDelegate::Factory>
       hardware_info_delegate_factory_;

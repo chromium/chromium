@@ -81,7 +81,6 @@ source_set("browser_tests") {
     "//chromeos/services/cros_healthd/public/cpp",
     "//chromeos/services/cros_healthd/public/mojom",
     "//extensions:test_support",
-    "//extensions/browser",
     "//extensions/browser:test_support",
     "//extensions/common",
     "//url",

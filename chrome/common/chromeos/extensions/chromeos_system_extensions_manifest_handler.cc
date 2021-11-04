@@ -58,16 +58,6 @@ bool ChromeOSSystemExtensionHandler::Parse(extensions::Extension* extension,
     return false;
   }
 
-  // Verifies that chromeos_system_extension's serial number permission is not
-  // declared as a required permission. It can only be declared in the
-  // "optional_permissions" key. It is a privacy requirement to prompt the user
-  // with a warning the first time the serial number is accessed.
-  if (PermissionsParser::HasAPIPermission(
-          extension, APIPermissionID::kChromeOSTelemetrySerialNumber)) {
-    *error = base::ASCIIToUTF16(kSerialNumberPermissionMustBeOptional);
-    return false;
-  }
-
   // Verifies that chromeos_system_extension's externally_connectable key exists
   // and contains one origin only.
   if (!VerifyExternallyConnectableDefinition(extension)) {

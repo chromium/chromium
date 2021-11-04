@@ -8,8 +8,6 @@ namespace chromeos {
 
 const char kInvalidChromeOSSystemExtensionDeclaration[] =
     "Invalid value for 'chromeos_system_extension'. Must be a dictionary.";
-const char kSerialNumberPermissionMustBeOptional[] =
-    "'os.telemetry.serial_number' must be declared in 'optional_permissions'.";
 const char kInvalidExternallyConnectableDeclaration[] =
     "chromeos_system_extension's 'externally_connectable' key must be present "
     "and its value must contain exactly one allowlisted origin in 'matches' "

@@ -10,9 +10,6 @@ namespace chromeos {
 // Error message returned when chromeos_system_extension's value is of incorrect
 // type.
 extern const char kInvalidChromeOSSystemExtensionDeclaration[];
-// Error message returned when a runtime permission is declared as a required
-// permission.
-extern const char kSerialNumberPermissionMustBeOptional[];
 // Error message returned when a chromeos_system_extension's
 // externally_connectable key contains other than one origin.
 extern const char kInvalidExternallyConnectableDeclaration[];

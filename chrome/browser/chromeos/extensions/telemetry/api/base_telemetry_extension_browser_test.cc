@@ -56,32 +56,6 @@ const std::vector<ExtensionInfoTestParams>
             /*pwa_page_url=*/"http://hpcs-appschr.hpcloud.hp.com",
             /*matches_origin=*/"*://hpcs-appschr.hpcloud.hp.com/*")};
 
-// static
-std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
-    const std::string& public_key,
-    const std::string& matches_origin) {
-  return base::StringPrintf(R"(
-      {
-        "key": "%s",
-        "name": "Test Telemetry Extension",
-        "version": "1",
-        "manifest_version": 3,
-        "chromeos_system_extension": {},
-        "background": {
-          "service_worker": "sw.js"
-        },
-        "permissions": [ "os.diagnostics", "os.telemetry" ],
-        "optional_permissions": [ "os.telemetry.serial_number" ],
-        "externally_connectable": {
-          "matches": [
-            "%s"
-          ]
-        },
-        "options_page": "options.html"
-      }
-    )", public_key.c_str(), matches_origin.c_str());
-}
-
 BaseTelemetryExtensionBrowserTest::BaseTelemetryExtensionBrowserTest() =
     default;
 BaseTelemetryExtensionBrowserTest::~BaseTelemetryExtensionBrowserTest() =
@@ -127,6 +101,34 @@ void BaseTelemetryExtensionBrowserTest::CreateExtensionAndRunServiceWorker(
   ASSERT_TRUE(extension);
 
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+std::string BaseTelemetryExtensionBrowserTest::GetManifestFile(
+    const std::string& public_key,
+    const std::string& matches_origin) {
+  return base::StringPrintf(R"(
+      {
+        "key": "%s",
+        "name": "Test Telemetry Extension",
+        "version": "1",
+        "manifest_version": 3,
+        "chromeos_system_extension": {},
+        "background": {
+          "service_worker": "sw.js"
+        },
+        "permissions": [
+          "os.diagnostics",
+          "os.telemetry",
+          "os.telemetry.serial_number"
+        ],
+        "externally_connectable": {
+          "matches": [
+            "%s"
+          ]
+        },
+        "options_page": "options.html"
+      }
+    )", public_key.c_str(), matches_origin.c_str());
 }
 
 TEST(BaseTelemetryExtensionBrowserTest, VerifyAllExtensionInfoTestParams) {
