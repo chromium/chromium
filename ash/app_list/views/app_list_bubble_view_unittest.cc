@@ -33,9 +33,12 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -88,6 +91,19 @@ views::View* GetSearchBoxSeparator() {
 // Simulates the Assistant being enabled.
 void SimulateAssistantEnabled() {
   GetSearchModel()->search_box()->SetShowAssistantButton(true);
+}
+
+// Waits for a layer animation to complete.
+void WaitForLayerAnimation(ui::Layer* layer) {
+  auto* compositor = layer->GetCompositor();
+  while (layer->GetAnimator()->is_animating()) {
+    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+  }
+
+  // Ensure there is one more frame presented after animation finishes
+  // to allow animation throughput data is passed from cc to ui.
+  ignore_result(
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200)));
 }
 
 class AppListBubbleViewTest : public AshTestBase {
@@ -209,6 +225,101 @@ TEST_F(AppListBubbleViewTest, Layout) {
   views::View::ConvertPointToWidget(GetSearchBoxSeparator(), &separator_origin);
   EXPECT_EQ(0, separator_origin.x());
   EXPECT_EQ(search_box_view->height(), separator_origin.y());
+}
+
+TEST_F(AppListBubbleViewTest, OpeningBubbleTriggersAnimations) {
+  // Enable animations.
+  base::test::ScopedFeatureList feature(
+      features::kProductivityLauncherAnimation);
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show an app list with all sections.
+  AddContinueSuggestionResult(4);
+  AddRecentApps(5);
+  AddAppItems(5);
+  ShowAppList();
+
+  // The bubble view starts animating.
+  auto* app_list_bubble_view = GetAppListTestHelper()->GetBubbleView();
+  auto* bubble_animator = app_list_bubble_view->layer()->GetAnimator();
+  ASSERT_TRUE(bubble_animator);
+  EXPECT_TRUE(bubble_animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::BOUNDS));
+  EXPECT_TRUE(bubble_animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+
+  // Each section view starts animating.
+  auto* animator = GetContinueSectionView()->layer()->GetAnimator();
+  ASSERT_TRUE(animator);
+  EXPECT_TRUE(animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+
+  animator = GetRecentAppsView()->layer()->GetAnimator();
+  ASSERT_TRUE(animator);
+  EXPECT_TRUE(animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+
+  animator = GetAppsGridView()->layer()->GetAnimator();
+  ASSERT_TRUE(animator);
+  EXPECT_TRUE(animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+}
+
+TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
+  // Enable animations.
+  base::test::ScopedFeatureList feature(
+      features::kProductivityLauncherAnimation);
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show an app list with all sections.
+  AddContinueSuggestionResult(4);
+  AddRecentApps(5);
+  AddAppItems(5);
+  ShowAppList();
+
+  // The animating sections have layers created.
+  auto* continue_section = GetAppListTestHelper()->GetContinueSectionView();
+  EXPECT_TRUE(continue_section->layer());
+  auto* recent_apps = GetRecentAppsView();
+  EXPECT_TRUE(recent_apps->layer());
+  auto* separator = GetAppsPage()->separator_for_test();
+  EXPECT_TRUE(separator->layer());
+  auto* apps_grid_view = GetAppsGridView();
+  EXPECT_TRUE(apps_grid_view->layer());
+
+  // Finish the animation.
+  WaitForLayerAnimation(apps_grid_view->layer());
+
+  // Temporary layers are cleaned up.
+  EXPECT_FALSE(continue_section->layer());
+  EXPECT_FALSE(recent_apps->layer());
+  EXPECT_FALSE(separator->layer());
+
+  // The apps grid view always has a layer, it still exists.
+  EXPECT_TRUE(apps_grid_view->layer());
+}
+
+TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
+  base::HistogramTester histograms;
+
+  // Enable animations.
+  base::test::ScopedFeatureList feature(
+      features::kProductivityLauncherAnimation);
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show an app list with just the apps grid.
+  AddAppItems(5);
+  ShowAppList();
+
+  // Wait for the animation to finish.
+  WaitForLayerAnimation(GetAppsGridView()->layer());
+
+  // Smoothness was recorded.
+  histograms.ExpectTotalCount(
+      "Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage", 1);
 }
 
 TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {

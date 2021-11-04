@@ -11,6 +11,7 @@
 #include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/ash_export.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -55,6 +56,14 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // view to handle focus.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
+  // Starts the launcher show animation.
+  void StartShowAnimation();
+
+  // Animates `view` using a layer animation. The layer is pushed down by
+  // `vertical_offset` at the start of the animation and animates back to its
+  // original position. Public for testing.
+  void SlideViewIntoPosition(views::View* view, int vertical_offset);
+
   // views::View:
   void Layout() override;
   void ChildVisibilityChanged(views::View* child) override;
@@ -83,14 +92,20 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   void UpdateSeparatorVisibility();
 
+  // Destroys the layer for `view`. Not static so it can be used with weak
+  // pointers.
+  void DestroyLayerForView(views::View* view);
+
+  views::ScrollView* scroll_view_ = nullptr;
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::Separator* separator_ = nullptr;
-  views::ScrollView* scroll_view_ = nullptr;
   ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
+
+  base::WeakPtrFactory<AppListBubbleAppsPage> weak_factory_{this};
 };
 
 }  // namespace ash

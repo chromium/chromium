@@ -1991,6 +1991,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage"
+    units="%" expires_after="2022-09-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Emitted when the clamshell launcher open animation completes. Reports the
+    smoothness of this animation. 100% represents the ideally smooth 60 frames
+    per second.
+  </summary>
+</histogram>
+
 <histogram name="Apps.ContextMenuExecuteCommand{ContextMenuFromApp}"
     enum="ChromeOSUICommands" expires_after="2021-01-31">
   <owner>newcomer@chromium.org</owner>

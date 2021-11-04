@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_drag_and_drop_host.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/home_button.h"
@@ -171,6 +172,9 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   bubble_widget_->AddObserver(this);
   controller_->OnVisibilityWillChange(/*visible=*/true, display_id);
   bubble_widget_->Show();
+  if (features::IsProductivityLauncherAnimationEnabled()) {
+    bubble_view_->StartShowAnimation();
+  }
   controller_->OnVisibilityChanged(/*visible=*/true, display_id);
   bubble_view_->FocusSearchBox();  // Must happen after widget creation.
 

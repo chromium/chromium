@@ -39,6 +39,9 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   AppListBubbleView& operator=(const AppListBubbleView&) = delete;
   ~AppListBubbleView() override;
 
+  // Starts the bubble show animation.
+  void StartShowAnimation();
+
   // Handles back action if it we have a use for it besides dismissing.
   bool Back();
 

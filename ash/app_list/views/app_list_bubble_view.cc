@@ -22,6 +22,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/search_box/search_box_constants.h"
@@ -31,13 +32,17 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
+#include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
@@ -179,6 +184,51 @@ void AppListBubbleView::InitFolderView(
   folder_view_ = AddChildView(std::move(folder_view));
   // Folder view will be set visible by its show animation.
   folder_view_->SetVisible(false);
+}
+
+void AppListBubbleView::StartShowAnimation() {
+  // Ensure layout is up-to-date before animating views.
+  if (needs_layout())
+    Layout();
+  DCHECK(!needs_layout());
+
+  // Bubble animation specification:
+  //
+  // Y Position: Down 8px → End position
+  // Duration: 150ms
+  // Ease: (0.00, 0.00, 0.20, 1.00)
+  //
+  // Height: 75% → 100%
+  // Duration: 150ms
+  // Ease: (0.00, 0.00, 0.20, 1.00)
+  //
+  // Opacity: 0% → 100%
+  // Duration: 150ms
+  // Ease: Linear
+
+  // Start by making the layer shorter, pushed down, and transparent.
+  const gfx::Rect target_bounds = layer()->GetTargetBounds();
+  const int delta_height = target_bounds.height() / 4;  // 25% of height
+  const int y_offset = 8;
+  layer()->SetBounds(
+      gfx::Rect(target_bounds.x(), target_bounds.y() + delta_height + y_offset,
+                target_bounds.width(), target_bounds.height() - delta_height));
+  layer()->SetOpacity(0.f);
+
+  // Animate the layer to fully opaque at its target bounds.
+  views::AnimationBuilder()
+      .Once()
+      .SetDuration(base::Milliseconds(150))
+      .SetBounds(layer(), target_bounds, gfx::Tween::LINEAR_OUT_SLOW_IN)
+      .SetOpacity(layer(), 1.f, gfx::Tween::LINEAR);
+
+  // AppListBubbleAppsPage handles moving the individual views. It also handles
+  // smoothness reporting, because the view movement animation has a longer
+  // duration.
+  if (apps_page_->GetVisible())
+    apps_page_->StartShowAnimation();
+
+  // Note: The assistant page handles its own show animation internally.
 }
 
 bool AppListBubbleView::Back() {
