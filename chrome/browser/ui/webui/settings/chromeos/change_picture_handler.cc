@@ -149,6 +149,9 @@ void ChangePictureHandler::OnJavascriptDisallowed() {
   DCHECK(camera_observation_.IsObservingSource(
       CameraPresenceNotifier::GetInstance()));
   camera_observation_.Reset();
+
+  if (select_file_dialog_.get())
+    select_file_dialog_->ListenerDestroyed();
 }
 
 void ChangePictureHandler::SendDefaultImages() {
@@ -394,6 +397,10 @@ void ChangePictureHandler::FileSelected(const base::FilePath& path,
       user_manager::User::USER_IMAGE_EXTERNAL));
   user_image_manager->SaveUserImageFromFile(path);
   VLOG(1) << "Selected image from file";
+}
+
+void ChangePictureHandler::FileSelectionCanceled(void* params) {
+  SendSelectedImage();
 }
 
 void ChangePictureHandler::SetImageFromCamera(

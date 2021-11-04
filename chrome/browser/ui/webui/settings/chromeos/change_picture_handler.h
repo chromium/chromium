@@ -100,10 +100,11 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   // Requests the currently selected image.
   void HandleRequestSelectedImage(const base::ListValue* args);
 
-  // SelectFileDialog::Delegate implementation.
+  // ui::SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
                     int index,
                     void* params) override;
+  void FileSelectionCanceled(void* params) override;
 
   // user_manager::UserManager::Observer implementation.
   void OnUserImageChanged(const user_manager::User& user) override;
