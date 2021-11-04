@@ -79,6 +79,14 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Whether to show Saml Notice Message.
+     */
+    showSamlNoticeMessage_: {
+      type: Boolean,
+      value: false,
+    },
+
     passwordConfirmAttempt_: {
       type: Number,
       value: 0,
@@ -126,6 +134,7 @@ Polymer({
     this.isConfirmPassword_ = false;
     this.isManualInput_ = false;
     this.isPasswordChanged_ = false;
+    this.showSamlNoticeMessage_ = false;
   },
 
   /**
@@ -177,6 +186,9 @@ Polymer({
     }
     this.authenticatorParams_ = params;
     this.email_ = data.email;
+    if (!data['doSamlRedirect']) {
+      this.doGaiaRedirect_();
+    }
     chrome.send('authenticatorLoaded');
   },
 
@@ -289,9 +301,12 @@ Polymer({
     this.authenticator_.load(
       cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
     this.resetState_();
-    /** This statement override resetStates_ calls.
-     * Thus have to be AFTER resetState_. */
+    /**
+     * These statements override resetStates_ calls.
+     * Thus have to be AFTER resetState_.
+     */
     this.isSamlPage_ = true;
+    this.showSamlNoticeMessage_ = true;
   },
 
   /** @private */
@@ -323,6 +338,7 @@ Polymer({
     chrome.send('dialogClose');
   },
 
+  /** @private */
   onResetAndClose_() {
     this.signinFrame_.clearData({since: 0}, clearDataType, () => {
       onCloseTap_();
@@ -337,6 +353,18 @@ Polymer({
     }
     chrome.send('updateUserPassword', [this.$.oldPasswordInput.value]);
     this.$.oldPasswordInput.value = '';
+  },
+
+  /** @private */
+  doGaiaRedirect_() {
+    this.authenticator_.load(
+        cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
+    this.resetState_();
+    /**
+     * These statements override resetStates_ calls.
+     * Thus have to be AFTER resetState_.
+     */
+    this.isSamlPage_ = true;
   },
 
   /** @private */

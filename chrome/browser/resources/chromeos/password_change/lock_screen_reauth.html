@@ -100,15 +100,20 @@
           width: 100%;
         }
 
-        #saml-container {
-          /* #F1F3F4 */
-          background: rgb(241, 243, 244);
+        #samlContainer {
+          /* #FFFFFF */
+          background: rgb(255, 255, 255);
           /* #000000 */
           box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
           display: flex;
           height: 44px;
           justify-content: flex-end;
           text-align: center;
+        }
+
+        #samlContainer[saml-notice-message] {
+          /* #F1F3F4 */
+          background: rgb(241, 243, 244);
         }
 
         #samlNoticeMessage {
@@ -292,8 +297,10 @@
       </div>
 
       <div id="body" hidden="[[!isSamlPage_]]">
-        <div id="saml-container">
-          <span id="samlNoticeMessage"></span>
+        <div id="samlContainer"
+            saml-notice-message$="[[showSamlNoticeMessage_]]">
+          <span id="samlNoticeMessage" hidden="[[!showSamlNoticeMessage_]]">
+          </span>
           <cr-icon-button id="saml-close-button" iron-icon="cr:close"
               on-click="onCloseTap_" aria-label="$i18n{lockScreenCloseButton}">
           </cr-icon-button>
