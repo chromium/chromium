@@ -89,7 +89,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
-#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets.h"
@@ -5383,6 +5382,14 @@ TEST_F(CaptureModeAdvancedSettingsTest, NudgeDoesNotShowForAllUserTypes) {
 
     controller->Stop();
   }
+}
+
+// Tests that it's possbile to take a screenshot using the keyboard shortcut at
+// the login screen without any crashes. https://crbug.com/1266728.
+TEST_F(CaptureModeAdvancedSettingsTest, TakeScreenshotAtLoginScreen) {
+  ClearLogin();
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
+  WaitForCaptureFileToBeSaved();
 }
 
 // Tests that clicking on audio input buttons updates the state in the

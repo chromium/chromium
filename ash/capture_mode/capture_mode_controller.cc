@@ -356,6 +356,13 @@ PrefService* GetActiveUserPrefService() {
   return pref_service;
 }
 
+base::FilePath GetTempDir() {
+  base::FilePath temp_dir;
+  if (!base::GetTempDir(&temp_dir))
+    LOG(ERROR) << "Failed to find the temporary directory.";
+  return temp_dir;
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -617,15 +624,11 @@ base::FilePath CaptureModeController::GetCustomCaptureFolder() const {
 
 CaptureModeController::CaptureFolder
 CaptureModeController::GetCurrentCaptureFolder() const {
-  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted()) {
-    base::FilePath temp_dir;
-    if (!base::GetTempDir(&temp_dir))
-      LOG(ERROR) << "Failed to find the temporary directory.";
-    return {temp_dir, /*is_default_downloads_folder=*/false};
-  }
+  auto* session_controller = Shell::Get()->session_controller();
+  if (!session_controller->IsActiveUserSessionStarted())
+    return {GetTempDir(), /*is_default_downloads_folder=*/false};
 
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
+  auto* pref_service = session_controller->GetActivePrefService();
   const auto default_downloads_folder =
       delegate_->GetUserDefaultDownloadsFolder();
   if (pref_service &&
@@ -1167,7 +1170,8 @@ void CaptureModeController::OnImageFileSaved(
   const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
   CopyImageToClipboard(image);
   ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage);
-  RecordSaveToLocation(GetSaveToOption(file_saved_path));
+  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
+    RecordSaveToLocation(GetSaveToOption(file_saved_path));
   HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
   if (client)  // May be `nullptr` in tests.
     client->AddScreenshot(file_saved_path);
@@ -1195,7 +1199,8 @@ void CaptureModeController::OnVideoFileSaved(
     RecordCaptureModeRecordTime(
         (base::TimeTicks::Now() - recording_start_time_).InSeconds());
   }
-  RecordSaveToLocation(GetSaveToOption(saved_video_file_path));
+  if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
+    RecordSaveToLocation(GetSaveToOption(saved_video_file_path));
 
   if (on_file_saved_callback_for_test_)
     std::move(on_file_saved_callback_for_test_).Run(saved_video_file_path);
@@ -1309,7 +1314,11 @@ base::FilePath CaptureModeController::BuildPathNoExtension(
 
 base::FilePath CaptureModeController::GetFallbackFilePathFromFile(
     const base::FilePath& path) {
-  return delegate_->GetUserDefaultDownloadsFolder().Append(path.BaseName());
+  auto* session_controller = Shell::Get()->session_controller();
+  const auto fallback_dir = session_controller->IsActiveUserSessionStarted()
+                                ? delegate_->GetUserDefaultDownloadsFolder()
+                                : GetTempDir();
+  return fallback_dir.Append(path.BaseName());
 }
 
 void CaptureModeController::RecordAndResetScreenshotsTakenInLastDay() {
@@ -1485,6 +1494,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
 
 CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
     const base::FilePath& path) {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   const auto dir_path = path.DirName();
   if (dir_path == delegate_->GetUserDefaultDownloadsFolder())
     return CaptureModeSaveToLocation::kDefault;
