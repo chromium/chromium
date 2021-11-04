@@ -9,14 +9,12 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/scanning/scanning_app_delegate.h"
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -185,8 +183,6 @@ class ScanningHandlerTest : public testing::Test {
     base::ListValue args;
     web_ui_.HandleReceivedMessage("initialize", &args);
 
-    scoped_feature_list_.InitWithFeatures({features::kScanAppMediaLink}, {});
-
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     my_files_path_ = temp_dir_.GetPath().Append("MyFiles");
     EXPECT_TRUE(base::CreateDirectory(my_files_path_));
@@ -216,7 +212,6 @@ class ScanningHandlerTest : public testing::Test {
   content::TestWebUI web_ui_;
   std::unique_ptr<ScanningHandler> scanning_handler_;
   FakeScanningAppDelegate* fake_scanning_app_delegate_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath my_files_path_;
 };

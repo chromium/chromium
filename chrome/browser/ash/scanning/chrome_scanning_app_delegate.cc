@@ -97,9 +97,6 @@ bool ChromeScanningAppDelegate::IsFilePathSupported(
 
 void ChromeScanningAppDelegate::OpenFilesInMediaApp(
     const std::vector<base::FilePath>& file_paths) {
-  if (!base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink))
-    return;
-
   DCHECK(!file_paths.empty());
 
   web_app::SystemAppLaunchParams params;

@@ -6515,9 +6515,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"scan-app-media-link", flag_descriptions::kScanAppMediaLinkName,
-     flag_descriptions::kScanAppMediaLinkDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kScanAppMediaLink)},
     {"scan-app-multi-page-scan", flag_descriptions::kScanAppMultiPageScanName,
      flag_descriptions::kScanAppMultiPageScanDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kScanAppMultiPageScan)},

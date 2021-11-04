@@ -4962,11 +4962,6 @@ const char kArcInputOverlayDescription[] =
     "Enables the input overlay feature for some Android game apps, "
     "so it can play with a keyboard and a mouse instead of touch screen";
 
-const char kScanAppMediaLinkName[] = "Show Media app link in Scan app";
-const char kScanAppMediaLinkDescription[] =
-    "Enables showing a link in the Scan app to open scanned images in the Media"
-    " app.";
-
 const char kScanAppMultiPageScanName[] =
     "Enable multi-page scanning in Scan app";
 const char kScanAppMultiPageScanDescription[] =

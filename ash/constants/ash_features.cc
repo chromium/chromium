@@ -1002,10 +1002,6 @@ const base::Feature kReverseScrollGestures{"EnableReverseScrollGestures",
 const base::Feature kScalableStatusArea{"ScalableStatusArea",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables showing a link to the Media app in the Scan app.
-const base::Feature kScanAppMediaLink{"ScanAppMediaLink",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables flatbed multi-page scanning.
 const base::Feature kScanAppMultiPageScan{"ScanAppMultiPageScan",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

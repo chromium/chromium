@@ -383,7 +383,6 @@ extern const base::Feature kRevenLogSource;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kReverseScrollGestures;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kScalableStatusArea;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kScanAppMediaLink;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kScanAppMultiPageScan;
 COMPONENT_EXPORT(ASH_CONSTANTS)

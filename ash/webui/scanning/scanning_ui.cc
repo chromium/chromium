@@ -152,9 +152,6 @@ void AddScanningAppPluralStrings(ScanningHandler* handler) {
 
 void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
-      "scanAppMediaLinkEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kScanAppMediaLink));
-  html_source->AddBoolean(
       "scanAppMultiPageScanEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kScanAppMultiPageScan));
   html_source->AddBoolean(

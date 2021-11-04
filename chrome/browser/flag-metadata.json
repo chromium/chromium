@@ -4699,11 +4699,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "scan-app-media-link",
-    "owners": [ "gavinwill", "cros-peripherals@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "scan-app-multi-page-scan",
     "owners": [ "gavinwill", "cros-peripherals@google.com" ],
     "expiry_milestone": 100

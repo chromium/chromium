@@ -2864,9 +2864,6 @@ extern const char kArcGhostWindowDescription[];
 extern const char kArcInputOverlayName[];
 extern const char kArcInputOverlayDescription[];
 
-extern const char kScanAppMediaLinkName[];
-extern const char kScanAppMediaLinkDescription[];
-
 extern const char kScanAppMultiPageScanName[];
 extern const char kScanAppMultiPageScanDescription[];
 
