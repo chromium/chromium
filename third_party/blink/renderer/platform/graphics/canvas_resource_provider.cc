@@ -331,14 +331,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     }
   }
 
-  void RestoreBackBuffer(const cc::PaintImage& image) override {
-    if (!use_oop_rasterization_) {
-      CanvasResourceProvider::RestoreBackBuffer(image);
-      return;
-    }
-    RestoreBackBufferOOP(image);
-  }
-
  protected:
   scoped_refptr<CanvasResource> ProduceCanvasResource() override {
     TRACE_EVENT0("blink",
@@ -827,15 +819,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     RasterRecordOOP(last_recording, initial_needs_clear_,
                     resource_->GetBackBufferMailbox(), preserve_recording);
     initial_needs_clear_ = false;
-  }
-
-  void RestoreBackBuffer(const cc::PaintImage& image) override {
-    TRACE_EVENT0("blink", "CanvasResourceProviderSwapChain::RestoreBackBuffer");
-    if (!use_oop_rasterization_) {
-      CanvasResourceProvider::RestoreBackBuffer(image);
-      return;
-    }
-    RestoreBackBufferOOP(image);
   }
 
   bool UseOopRasterization() final { return use_oop_rasterization_; }
@@ -1612,15 +1595,6 @@ void CanvasResourceProvider::SetRestoreClipStackCallback(
 }
 
 void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
-  DCHECK_EQ(image.height(), Size().height());
-  DCHECK_EQ(image.width(), Size().width());
-  EnsureSkiaCanvas();
-  cc::PaintFlags copy_paint;
-  copy_paint.setBlendMode(SkBlendMode::kSrc);
-  skia_canvas_->drawImage(image, 0, 0, SkSamplingOptions(), &copy_paint);
-}
-
-void CanvasResourceProvider::RestoreBackBufferOOP(const cc::PaintImage& image) {
   DCHECK_EQ(image.height(), Size().height());
   DCHECK_EQ(image.width(), Size().width());
 

@@ -241,7 +241,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void SkipQueuedDrawCommands();
   void SetRestoreClipStackCallback(RestoreMatrixClipStackCb);
-  virtual void RestoreBackBuffer(const cc::PaintImage&);
+  void RestoreBackBuffer(const cc::PaintImage&);
 
   ResourceProviderType GetType() const { return type_; }
   bool HasRecordedDrawOps() const;
@@ -303,7 +303,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                        bool needs_clear,
                        gpu::Mailbox mailbox,
                        bool preserve_recording);
-  void RestoreBackBufferOOP(const cc::PaintImage&);
 
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   void TearDownSkSurface();
