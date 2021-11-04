@@ -1043,6 +1043,7 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
   NGFlexItemIterator item_iterator(line_contexts, BreakToken());
 
   bool success = true;
+  bool add_layout_result = true;
   for (auto entry = item_iterator.NextItem();
        FlexItem* flex_item = entry.flex_item;
        entry = item_iterator.NextItem()) {
@@ -1071,7 +1072,7 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
       // TODO(almaher): Take fragmentation into account when performing the
       // layout for stretch.
       ApplyStretchAlignmentToChild(*flex_item);
-    } else if (has_block_fragmentation_) {
+    } else if (has_block_fragmentation_ && add_layout_result) {
       LayoutWithBlockFragmentation(*flex_item, location.Y(),
                                    To<NGBlockBreakToken>(item_break_token));
 
@@ -1080,7 +1081,14 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
       if (container_builder_.HasInflowChildBreakInside()) {
         // But if the break happened in the same flow, we'll now just finish
         // layout of the fragment. No more siblings should be processed.
-        break;
+        // Unless this is the first parent fragment. In which case, continue
+        // iterating over the flex children as if fragmentation is disabled and
+        // avoid adding further child layout results to the builder. This is
+        // done to allow propagation of FlexItem info that won't be available in
+        // the next fragment's layout pass.
+        if (IsResumingLayout(BreakToken()))
+          break;
+        add_layout_result = false;
       }
     }
 
@@ -1089,74 +1097,37 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
 
     NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
                            physical_fragment);
-    // Only propagate baselines from children on the first flex-line.
-    if (&line_context == line_contexts.begin()) {
-      // TODO(almaher): How will this work with fragmentation?
-      PropagateBaselineFromChild(*flex_item, fragment, location.Y(),
-                                 &fallback_baseline);
+    if (add_layout_result) {
+      if (has_block_fragmentation_) {
+        // TODO(almaher): What to do in the case where the line extends past
+        // the last item? Should that be included when fragmenting?
+        intrinsic_block_size_ +=
+            (location.Y() + fragment.BlockSize() - intrinsic_block_size_)
+                .ClampNegativeToZero();
+      }
+
+      container_builder_.AddResult(*flex_item->layout_result_,
+                                   {location.X(), location.Y()});
+
+      // Only propagate baselines from children on the first flex-line.
+      if (&line_context == line_contexts.begin()) {
+        // TODO(almaher): How will this work with fragmentation?
+        PropagateBaselineFromChild(*flex_item, fragment, location.Y(),
+                                   &fallback_baseline);
+      }
     }
 
-    if (has_block_fragmentation_) {
-      // TODO(almaher): What to do in the case where the line extends past
-      // the last item? Should that be included when fragmenting?
-      intrinsic_block_size_ +=
-          (location.Y() + fragment.BlockSize() - intrinsic_block_size_)
-              .ClampNegativeToZero();
-    }
-
-    container_builder_.AddResult(*flex_item->layout_result_,
-                                 {location.X(), location.Y()});
-
-    // TODO(almaher): How should devtools be handled for multiple fragments?
-    if (UNLIKELY(layout_info_for_devtools_)) {
-      // If this is a "devtools layout", execution speed isn't critical but we
-      // have to not adversely affect execution speed of a regular layout.
-      PhysicalRect item_rect;
-      item_rect.size = physical_fragment.Size();
-
-      // TODO(almaher): Is using |total_block_size_| correct in the case of
-      // fragmentation?
-      LogicalSize logical_flexbox_size =
-          LogicalSize(container_builder_.InlineSize(), total_block_size_);
-      PhysicalSize flexbox_size = ToPhysicalSize(
-          logical_flexbox_size, ConstraintSpace().GetWritingMode());
-      item_rect.offset =
-          LogicalOffset(location.X(), location.Y())
-              .ConvertToPhysical(ConstraintSpace().GetWritingDirection(),
-                                 flexbox_size, item_rect.size);
-      // devtools uses margin box.
-      item_rect.Expand(flex_item->physical_margins_);
-      DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
-      DevtoolsFlexInfo::Item item;
-      item.rect = item_rect;
-      item.baseline = flex_item->MarginBoxAscent();
-      layout_info_for_devtools_->lines[flex_line_idx].items.push_back(item);
-    }
-
-    flex_item->ng_input_node_.StoreMargins(flex_item->physical_margins_);
-
-    // Detect if the flex-item had its scrollbar state change. If so we need
-    // to relayout as the input to the flex algorithm is incorrect.
-    if (!ignore_child_scrollbar_changes_) {
-      if (flex_item->scrollbars_ !=
-          ComputeScrollbarsForNonAnonymous(flex_item->ng_input_node_))
-        success = false;
-
-      // The flex-item scrollbars may not have changed, but an descendant's
-      // scrollbars might have causing the min/max sizes to be incorrect.
-      if (flex_item->depends_on_min_max_sizes_ &&
-          flex_item->ng_input_node_.GetLayoutBox()
-              ->IntrinsicLogicalWidthsDirty())
-        success = false;
-    } else {
-      DCHECK_EQ(flex_item->scrollbars_,
-                ComputeScrollbarsForNonAnonymous(flex_item->ng_input_node_));
+    // Some FlexItem info will only be available in the first layout pass.
+    if (!IsResumingLayout(BreakToken())) {
+      success &= PropagateFlexItemInfo(flex_item, flex_line_idx, location,
+                                       physical_fragment.Size());
     }
   }
 
-  if (!container_builder_.HasInflowChildBreakInside() &&
-      !item_iterator.NextItem().flex_item)
+  if (add_layout_result && !container_builder_.HasInflowChildBreakInside() &&
+      !item_iterator.NextItem().flex_item) {
     container_builder_.SetHasSeenAllChildren();
+  }
 
   // Set the baseline to the fallback, if we didn't find any children with
   // baseline alignment.
@@ -1172,6 +1143,59 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
   }
 
   // Signal if we need to relayout with new child scrollbar information.
+  return success;
+}
+
+bool NGFlexLayoutAlgorithm::PropagateFlexItemInfo(FlexItem* flex_item,
+                                                  wtf_size_t flex_line_idx,
+                                                  LayoutPoint location,
+                                                  PhysicalSize fragment_size) {
+  bool success = true;
+
+  // TODO(almaher): How should devtools be handled for multiple fragments?
+  if (UNLIKELY(layout_info_for_devtools_)) {
+    // If this is a "devtools layout", execution speed isn't critical but we
+    // have to not adversely affect execution speed of a regular layout.
+    PhysicalRect item_rect;
+    item_rect.size = fragment_size;
+
+    // TODO(almaher): Is using |total_block_size_| correct in the case of
+    // fragmentation?
+    LogicalSize logical_flexbox_size =
+        LogicalSize(container_builder_.InlineSize(), total_block_size_);
+    PhysicalSize flexbox_size = ToPhysicalSize(
+        logical_flexbox_size, ConstraintSpace().GetWritingMode());
+    item_rect.offset =
+        LogicalOffset(location.X(), location.Y())
+            .ConvertToPhysical(ConstraintSpace().GetWritingDirection(),
+                               flexbox_size, item_rect.size);
+    // devtools uses margin box.
+    item_rect.Expand(flex_item->physical_margins_);
+    DCHECK_GE(layout_info_for_devtools_->lines.size(), 1u);
+    DevtoolsFlexInfo::Item item;
+    item.rect = item_rect;
+    item.baseline = flex_item->MarginBoxAscent();
+    layout_info_for_devtools_->lines[flex_line_idx].items.push_back(item);
+  }
+
+  flex_item->ng_input_node_.StoreMargins(flex_item->physical_margins_);
+
+  // Detect if the flex-item had its scrollbar state change. If so we need
+  // to relayout as the input to the flex algorithm is incorrect.
+  if (!ignore_child_scrollbar_changes_) {
+    if (flex_item->scrollbars_ !=
+        ComputeScrollbarsForNonAnonymous(flex_item->ng_input_node_))
+      success = false;
+
+    // The flex-item scrollbars may not have changed, but an descendant's
+    // scrollbars might have causing the min/max sizes to be incorrect.
+    if (flex_item->depends_on_min_max_sizes_ &&
+        flex_item->ng_input_node_.GetLayoutBox()->IntrinsicLogicalWidthsDirty())
+      success = false;
+  } else {
+    DCHECK_EQ(flex_item->scrollbars_,
+              ComputeScrollbarsForNonAnonymous(flex_item->ng_input_node_));
+  }
   return success;
 }
 
