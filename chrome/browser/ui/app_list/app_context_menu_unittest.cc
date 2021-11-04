@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -669,6 +670,7 @@ class AppContextMenuLacrosTest : public AppContextMenuTest {
  public:
   AppContextMenuLacrosTest() {
     feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    crosapi::browser_util::SetProfileMigrationCompletedForTest(true);
   }
   AppContextMenuLacrosTest(const AppContextMenuLacrosTest&) = delete;
   AppContextMenuLacrosTest& operator=(const AppContextMenuLacrosTest&) = delete;

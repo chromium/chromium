@@ -114,11 +114,6 @@ const int64_t kBuffer = (int64_t)1024 * 1024 * 1024;
 constexpr char kLacrosCategory[] = "lacros";
 constexpr char kCommonCategory[] = "common";
 
-// Enable this to turn on profile migration for non-googlers. Currently the
-// feature is only limited to googlers only.
-const base::Feature kLacrosProfileMigrationForAnyUser{
-    "LacrosProfileMigrationForAnyUser", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enable these to fallback to an older version of paths lists.
 const base::Feature kLacrosProfileMigrationUseDeprecatedNoCopyPaths{
     "LacrosProfileMigrationUseDeprecatedNoCopyPaths",
@@ -243,20 +238,6 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
     return;
   }
 
-  // If the user is a new user, then there shouldn't be anything to migrate.
-  if (user_manager::UserManager::Get()->IsCurrentUserNew())
-    return;
-
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->FindUser(account_id);
-
-  // Check if user exists i.e. not a guest session.
-  if (!user)
-    return;
-  // Check if lacros is enabled. If not immediately return.
-  if (!crosapi::browser_util::IsLacrosEnabledWithUser(user))
-    return;
-
   // Check if the switch for testing is present.
   const std::string force_migration_switch =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -264,51 +245,90 @@ void BrowserDataMigrator::MaybeRestartToMigrate(
   if (force_migration_switch == kBrowserDataMigrationForceSkip)
     return;
   if (force_migration_switch == kBrowserDataMigrationForceMigration) {
-    MaybeRestartToMigrateCallback(account_id, true /* is_required */);
+    MaybeRestartToMigrateCallback(account_id, user_id_hash,
+                                  true /* is_required */);
     return;
   }
-
-  //  Currently we turn on profile migration only for Googlers.
-  //  `kLacrosProfileMigrationForAnyUser` can be enabled to allow testing with
-  //  non-googler accounts.
-  if (!gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()) &&
-      !base::FeatureList::IsEnabled(kLacrosProfileMigrationForAnyUser))
-    return;
 
   // Emergency switch to turn off profile migration. Turn this on via Finch in
   // case profile migration needs to be turned off after launch.
   if (base::FeatureList::IsEnabled(kLacrosProfileMigrationForceOff))
     return;
 
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+  // Check if user exists i.e. not a guest session.
+  if (!user)
+    return;
+  // Check if lacros is enabled. If not immediately return.
+  if (!crosapi::browser_util::IsLacrosEnabledForMigration(user))
+    return;
+
+  //  Currently we turn on profile migration only for Googlers. To test profile
+  //  migration without @google.com account, enable feature
+  //  `kLacrosProfileMigrationForAnyUser` defined in browser_util.
+  // TODO(crbug.com/1266669): Remove this check once profile migration is
+  // enabled for all users.
+  if (!crosapi::browser_util::IsProfileMigrationEnabled(account_id))
+    return;
+
+  // If the user is a new user, then there shouldn't be anything to migrate.
+  // Also mark the user as migration completed.
+  if (user_manager::UserManager::Get()->IsCurrentUserNew()) {
+    crosapi::browser_util::SetProfileMigrationCompletedForUser(
+        g_browser_process->local_state(), user_id_hash);
+    return;
+  }
+
   if (crosapi::browser_util::IsDataWipeRequired(user_id_hash)) {
     // If data wipe is required, no need for a further check to determine if
     // lacros data dir exists or not.
-    MaybeRestartToMigrateCallback(account_id, true /* is_required */);
+    MaybeRestartToMigrateCallback(account_id, user_id_hash,
+                                  true /* is_required */);
     return;
   }
 
-  base::FilePath user_data_dir;
-  if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
-    LOG(ERROR) << "Could not get the original user data dir path.";
+  if (!crosapi::browser_util::IsProfileMigrationCompletedForUser(
+          g_browser_process->local_state(), user_id_hash)) {
+    MaybeRestartToMigrateCallback(account_id, user_id_hash,
+                                  true /* is_required */);
     return;
-  }
+  } else {
+    // Check if profile migration is required by checking if lacros data
+    // directory exists even if profile migration is marked as completed. This
+    // is needed because until the official release because lacros user data
+    // directory can be wiped by disabling and re-enabling lacros.
+    base::FilePath user_data_dir;
+    if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
+      LOG(ERROR) << "Could not get the original user data dir path.";
+      return;
+    }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(&BrowserDataMigrator::IsMigrationRequiredOnWorker,
-                     user_data_dir, user_id_hash),
-      base::BindOnce(&MaybeRestartToMigrateCallback, account_id));
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+        base::BindOnce(&BrowserDataMigrator::IsMigrationRequiredOnWorker,
+                       user_data_dir, user_id_hash),
+        base::BindOnce(&MaybeRestartToMigrateCallback, account_id,
+                       user_id_hash));
+  }
 }
 
 // static
 void BrowserDataMigrator::MaybeRestartToMigrateCallback(
     const AccountId& account_id,
+    const std::string& user_id_hash,
     bool is_required) {
   if (!is_required)
     return;
 
   SetMigrationStep(g_browser_process->local_state(),
                    MigrationStep::kRestartCalled);
+
+  crosapi::browser_util::ClearProfileMigrationCompletedForUser(
+      g_browser_process->local_state(), user_id_hash);
+
+  g_browser_process->local_state()->CommitPendingWrite();
 
   SessionManagerClient::Get()->RequestBrowserDataMigration(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id),
@@ -497,17 +517,14 @@ void BrowserDataMigrator::MigrateInternalFinishedUIThread(
   }
 
   if (result.data_migration == ResultValue::kSucceeded) {
-    // If we did a migration, then we should set kClearUserDataDir1Pref. Note
-    // that if we did the migration, then the new user-data-dir has the ash
-    // profile as the main lacros profile.
-    //
-    // We only needed to delete old user-data-dirs because of the possibility
-    // that the main profile might not match the ash profile.
-    //
-    // TODO(https://crbug.com/1197220): Set the preference
-    // kClearUserDataDir1Pref to true. It's unclear whether the profile is
-    // ready for use at this point in the startup cycle.
+    crosapi::browser_util::SetProfileMigrationCompletedForUser(
+        g_browser_process->local_state(), user_id_hash);
   }
+  // If migration has failed or skipped, we silently relaunch ash and send them
+  // to their home screen. In that case lacros will be disabled.
+
+  g_browser_process->local_state()->CommitPendingWrite();
+
   std::move(callback).Run();
 }
 

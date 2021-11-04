@@ -28,6 +28,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/browser_version_service_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
@@ -92,6 +93,7 @@
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/exo/shell_surface_util.h"
@@ -127,6 +129,8 @@ namespace browser_util {
 namespace {
 
 bool g_lacros_enabled_for_test = false;
+
+bool g_profile_migration_completed_for_test = false;
 
 absl::optional<bool> g_lacros_primary_browser_for_test;
 
@@ -195,8 +199,8 @@ LacrosLaunchSwitch GetLaunchSwitch() {
 }
 
 // Gets called from IsLacrosAllowedToBeEnabled with primary user or from
-// IsLacrosEnabledWithUser with the user that the IsLacrosEnabledWithUser was
-// passed.
+// IsLacrosEnabledForMigration with the user that the
+// IsLacrosEnabledForMigration was passed.
 bool IsLacrosAllowedToBeEnabledWithUser(const User* user, Channel channel) {
   if (g_lacros_enabled_for_test)
     return true;
@@ -445,6 +449,11 @@ const base::Feature kLacrosDisableChromeApps{"LacrosDisableChromeApps",
 const base::Feature kLacrosGooglePolicyRollout{
     "LacrosGooglePolicyRollout", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable this to turn on profile migration for non-googlers. Currently the
+// feature is only limited to googlers only.
+const base::Feature kLacrosProfileMigrationForAnyUser{
+    "LacrosProfileMigrationForAnyUser", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const Channel kLacrosDefaultChannel = Channel::DEV;
 
 const char kLacrosStabilitySwitch[] = "lacros-stability";
@@ -461,6 +470,8 @@ const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
 const char kClearUserDataDir1Pref[] = "lacros.clear_user_data_dir_1";
 const char kDataVerPref[] = "lacros.data_version";
 const char kRequiredDataVersion[] = "92.0.0.0";
+const char kProfileMigrationCompletedForUserPref[] =
+    "lacros.profile_migration_completed_for_user";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLaunchOnLoginPref, /*default_value=*/false);
@@ -470,6 +481,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kDataVerPref);
+  registry->RegisterDictionaryPref(kProfileMigrationCompletedForUserPref,
+                                   base::DictionaryValue());
 }
 
 base::FilePath GetUserDataDir() {
@@ -520,6 +533,21 @@ bool IsLacrosEnabled(Channel channel) {
   if (!IsLacrosAllowedToBeEnabled(channel))
     return false;
 
+  // If profile migration is enabled for the user, then make profile migration a
+  // requirement to enable lacros.
+  if (IsProfileMigrationEnabled(
+          user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId())) {
+    PrefService* local_state = g_browser_process->local_state();
+    // Note that local_state can be nullptr in tests.
+    if (local_state && !IsProfileMigrationCompletedForUser(
+                           local_state, user_manager::UserManager::Get()
+                                            ->GetPrimaryUser()
+                                            ->username_hash())) {
+      // If migration has not been completed, do not enable lacros.
+      return false;
+    }
+  }
+
   switch (GetLaunchSwitch()) {
     case LacrosLaunchSwitch::kUserChoice:
       break;
@@ -535,7 +563,18 @@ bool IsLacrosEnabled(Channel channel) {
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
-bool IsLacrosEnabledWithUser(const User* user) {
+bool IsProfileMigrationEnabled(const AccountId& account_id) {
+  //  Currently we turn on profile migration only for Googlers.
+  //  `kLacrosProfileMigrationForAnyUser` can be enabled to allow testing with
+  //  non-googler accounts.
+  if (gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()) ||
+      base::FeatureList::IsEnabled(kLacrosProfileMigrationForAnyUser))
+    return true;
+
+  return false;
+}
+
+bool IsLacrosEnabledForMigration(const User* user) {
   if (g_lacros_enabled_for_test)
     return true;
 
@@ -1113,6 +1152,54 @@ LacrosLaunchSwitch GetLaunchSwitchForTesting() {
 
 void ClearLacrosLaunchSwitchCacheForTest() {
   g_lacros_launch_switch_cache.reset();
+}
+
+bool IsProfileMigrationCompletedForUser(PrefService* local_state,
+                                        const std::string& user_id_hash) {
+  // Allows tests to avoid marking profile migration as completed by getting
+  // user_id_hash of the logged in user and updating
+  // g_browser_process->local_state() etc.
+  if (g_profile_migration_completed_for_test)
+    return true;
+
+  if (base::FeatureList::IsEnabled(
+          ash::features::kForceProfileMigrationCompletion)) {
+    return true;
+  }
+
+  const auto* pref =
+      local_state->FindPreference(kProfileMigrationCompletedForUserPref);
+  // Return if the pref is not registered. This can happen in browsertests. In
+  // such a case, assume that migration was completed.
+  if (!pref)
+    return true;
+
+  const base::Value* value = pref->GetValue();
+  DCHECK(value->is_dict());
+  absl::optional<bool> is_completed = value->FindBoolKey(user_id_hash);
+
+  // If migration was skipped or failed, disable lacros.
+  return is_completed.value_or(false);
+}
+
+void SetProfileMigrationCompletedForUser(PrefService* local_state,
+                                         const std::string& user_id_hash) {
+  DictionaryPrefUpdate update(local_state,
+                              kProfileMigrationCompletedForUserPref);
+  base::DictionaryValue* dict = update.Get();
+  dict->SetBoolKey(user_id_hash, true);
+}
+
+void ClearProfileMigrationCompletedForUser(PrefService* local_state,
+                                           const std::string& user_id_hash) {
+  DictionaryPrefUpdate update(local_state,
+                              kProfileMigrationCompletedForUserPref);
+  base::DictionaryValue* dict = update.Get();
+  dict->RemoveKey(user_id_hash);
+}
+
+void SetProfileMigrationCompletedForTest(bool is_completed) {
+  g_profile_migration_completed_for_test = is_completed;
 }
 
 }  // namespace browser_util

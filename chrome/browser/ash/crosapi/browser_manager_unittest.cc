@@ -82,6 +82,10 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
   AddRegularUser("user@test.com");
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+  browser_util::SetProfileMigrationCompletedForUser(
+      local_state_.Get(), chromeos::ProfileHelper::Get()
+                              ->GetUserByProfile(&testing_profile_)
+                              ->username_hash());
   EXPECT_TRUE(browser_util::IsLacrosEnabled());
   EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
 

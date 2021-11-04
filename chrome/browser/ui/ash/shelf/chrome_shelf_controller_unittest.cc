@@ -47,6 +47,7 @@
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -1191,6 +1192,7 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
  public:
   ChromeShelfControllerLacrosTest() {
     feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+    crosapi::browser_util::SetProfileMigrationCompletedForTest(true);
   }
   ChromeShelfControllerLacrosTest(const ChromeShelfControllerLacrosTest&) =
       delete;

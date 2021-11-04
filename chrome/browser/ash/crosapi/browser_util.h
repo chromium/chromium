@@ -18,6 +18,7 @@
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
+class AccountId;
 
 namespace aura {
 class Window;
@@ -142,9 +143,13 @@ bool IsLacrosEnabled();
 // As above, but takes a channel. Exposed for testing.
 bool IsLacrosEnabled(version_info::Channel channel);
 
-// As above, but takes a user. It can be called before primary user is set by
-// UserManager.
-bool IsLacrosEnabledWithUser(const user_manager::User* user);
+// Similar to `IsLacrosEnabled()` but does not check if profile migration has
+// been completed. This is to be used inside `BrowserDataMigrator`. Unlike
+// `IsLacrosEnabled()` it can be called before the primary user profile is
+// created.
+// TODO(crbug.com/1265800): Refactor `IsLacrosEnabled()` and
+// `IsLacrosEnabledForMigration()` to reduce duplicated code.
+bool IsLacrosEnabledForMigration(const user_manager::User* user);
 
 // Returns true if |chromeos::features::kLacrosSupport| flag is allowed.
 bool IsLacrosSupportFlagAllowed(version_info::Channel channel);
@@ -293,6 +298,29 @@ LacrosLaunchSwitch GetLaunchSwitchForTesting();
 
 // Clears the cached values for policy data.
 void ClearLacrosLaunchSwitchCacheForTest();
+
+bool IsProfileMigrationEnabled(const AccountId& account_id);
+
+// Checks if profile migration has been completed. This is reset if profile
+// migration is initiated for example due to lacros data directory being wiped.
+bool IsProfileMigrationCompletedForUser(PrefService* local_state,
+                                        const std::string& user_id_hash);
+
+// Sets the value of `kProfileMigrationCompletedForUser1Pref` to be true
+// for the user identified by `user_id_hash`.
+void SetProfileMigrationCompletedForUser(PrefService* local_state,
+                                         const std::string& user_id_hash);
+
+// Clears the value of `kProfileMigrationCompletedForUser1Pref` for user
+// identified by `user_id_hash`.
+void ClearProfileMigrationCompletedForUser(PrefService* local_state,
+                                           const std::string& user_id_hash);
+
+// Makes `IsProfileMigrationCompletedForUser()` return true without actually
+// updating Local State. It allows tests to avoid marking profile migration as
+// completed by getting user_id_hash of the logged in user and updating
+// g_browser_process->local_state() etc.
+void SetProfileMigrationCompletedForTest(bool is_completed);
 
 }  // namespace browser_util
 }  // namespace crosapi

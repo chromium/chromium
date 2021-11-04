@@ -252,6 +252,7 @@ class BrowserDataMigrator {
   // This will be posted with `IsMigrationRequiredOnWorker()` as the reply on UI
   // thread or called directly from `MaybeRestartToMigrate()`.
   static void MaybeRestartToMigrateCallback(const AccountId& account_id,
+                                            const std::string& user_id_hash,
                                             bool is_required);
 
   // Called on UI thread once migration is finished.
