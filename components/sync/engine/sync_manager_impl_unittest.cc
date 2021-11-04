@@ -107,10 +107,7 @@ class SyncEncryptionHandlerObserverMock
   MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
-  MOCK_METHOD(void,
-              OnBootstrapTokenUpdated,
-              (const std::string&, BootstrapTokenType type),
-              (override));
+  MOCK_METHOD(void, OnBootstrapTokenUpdated, (const std::string&), (override));
   MOCK_METHOD(void, OnEncryptedTypesChanged, (ModelTypeSet, bool), (override));
   MOCK_METHOD(void,
               OnCryptographerStateChanged,

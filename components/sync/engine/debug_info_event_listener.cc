@@ -83,15 +83,9 @@ void DebugInfoEventListener::OnTrustedVaultKeyAccepted() {
 }
 
 void DebugInfoEventListener::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token,
-    BootstrapTokenType type) {
+    const std::string& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (type == PASSPHRASE_BOOTSTRAP_TOKEN) {
-    CreateAndAddEvent(sync_pb::SyncEnums::BOOTSTRAP_TOKEN_UPDATED);
-    return;
-  }
-  DCHECK_EQ(type, KEYSTORE_BOOTSTRAP_TOKEN);
-  CreateAndAddEvent(sync_pb::SyncEnums::KEYSTORE_TOKEN_UPDATED);
+  CreateAndAddEvent(sync_pb::SyncEnums::BOOTSTRAP_TOKEN_UPDATED);
 }
 
 void DebugInfoEventListener::OnEncryptedTypesChanged(

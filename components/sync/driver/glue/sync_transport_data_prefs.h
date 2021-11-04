@@ -55,11 +55,6 @@ class SyncTransportDataPrefs {
   base::TimeDelta GetPollInterval() const;
   void SetPollInterval(base::TimeDelta interval);
 
-  // Use this keystore bootstrap token if we're not using an explicit
-  // passphrase.
-  std::string GetKeystoreEncryptionBootstrapToken() const;
-  void SetKeystoreEncryptionBootstrapToken(const std::string& token);
-
   // Get/set for the last known sync invalidation versions.
   std::map<ModelType, int64_t> GetInvalidationVersions() const;
   void UpdateInvalidationVersions(
@@ -71,6 +66,8 @@ class SyncTransportDataPrefs {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+void ClearObsoleteKeystoreBootstrapTokenPref(PrefService* pref_service);
 
 }  // namespace syncer
 

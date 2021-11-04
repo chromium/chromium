@@ -223,10 +223,8 @@ void SyncManagerImpl::OnTrustedVaultKeyAccepted() {
 }
 
 void SyncManagerImpl::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token,
-    BootstrapTokenType type) {
-  if (type == KEYSTORE_BOOTSTRAP_TOKEN)
-    sync_status_tracker_->SetHasKeystoreKey(true);
+    const std::string& bootstrap_token) {
+  // Does nothing.
 }
 
 void SyncManagerImpl::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
@@ -242,6 +240,8 @@ void SyncManagerImpl::OnCryptographerStateChanged(Cryptographer* cryptographer,
       sync_encryption_handler_->GetKeystoreMigrationTime());
   sync_status_tracker_->SetTrustedVaultDebugInfo(
       sync_encryption_handler_->GetTrustedVaultDebugInfo());
+  sync_status_tracker_->SetHasKeystoreKey(
+      !sync_encryption_handler_->GetKeystoreKeysHandler()->NeedKeystoreKey());
 }
 
 void SyncManagerImpl::OnPassphraseTypeChanged(

@@ -32,11 +32,6 @@ const char kSyncLastPollTime[] = "sync.last_poll_time";
 // "short_poll_interval", but it's not worth the hassle to rename it.
 const char kSyncPollIntervalSeconds[] = "sync.short_poll_interval";
 
-// Same as kSyncEncryptionBootstrapToken, but derived from the keystore key,
-// so we don't have to do a GetKey command at restart.
-const char kSyncKeystoreEncryptionBootstrapToken[] =
-    "sync.keystore_encryption_bootstrap_token";
-
 const char kSyncGaiaId[] = "sync.gaia_id";
 const char kSyncCacheGuid[] = "sync.cache_guid";
 const char kSyncBirthday[] = "sync.birthday";
@@ -44,6 +39,10 @@ const char kSyncBagOfChips[] = "sync.bag_of_chips";
 
 // Dictionary of last seen invalidation versions for each model type.
 const char kSyncInvalidationVersions[] = "sync.invalidation_versions";
+
+// Obsolete pref.
+const char kSyncObsoleteKeystoreEncryptionBootstrapToken[] =
+    "sync.keystore_encryption_bootstrap_token";
 
 }  // namespace
 
@@ -62,9 +61,11 @@ void SyncTransportDataPrefs::RegisterProfilePrefs(
   registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
   registry->RegisterTimePref(kSyncLastPollTime, base::Time());
   registry->RegisterTimeDeltaPref(kSyncPollIntervalSeconds, base::TimeDelta());
-  registry->RegisterStringPref(kSyncKeystoreEncryptionBootstrapToken,
-                               std::string());
   registry->RegisterDictionaryPref(kSyncInvalidationVersions);
+
+  // Obsolete pref.
+  registry->RegisterStringPref(kSyncObsoleteKeystoreEncryptionBootstrapToken,
+                               std::string());
 }
 
 void SyncTransportDataPrefs::ClearAll() {
@@ -73,7 +74,6 @@ void SyncTransportDataPrefs::ClearAll() {
   pref_service_->ClearPref(kSyncLastSyncedTime);
   pref_service_->ClearPref(kSyncLastPollTime);
   pref_service_->ClearPref(kSyncPollIntervalSeconds);
-  pref_service_->ClearPref(kSyncKeystoreEncryptionBootstrapToken);
   pref_service_->ClearPref(kSyncInvalidationVersions);
   pref_service_->ClearPref(kSyncGaiaId);
   pref_service_->ClearPref(kSyncCacheGuid);
@@ -120,18 +120,6 @@ base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
 void SyncTransportDataPrefs::SetPollInterval(base::TimeDelta interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->SetTimeDelta(kSyncPollIntervalSeconds, interval);
-}
-
-std::string SyncTransportDataPrefs::GetKeystoreEncryptionBootstrapToken()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pref_service_->GetString(kSyncKeystoreEncryptionBootstrapToken);
-}
-
-void SyncTransportDataPrefs::SetKeystoreEncryptionBootstrapToken(
-    const std::string& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetString(kSyncKeystoreEncryptionBootstrapToken, token);
 }
 
 void SyncTransportDataPrefs::SetGaiaId(const std::string& gaia_id) {
@@ -212,6 +200,10 @@ void SyncTransportDataPrefs::UpdateInvalidationVersions(
                                        version_str);
   }
   pref_service_->Set(kSyncInvalidationVersions, *invalidation_dictionary);
+}
+
+void ClearObsoleteKeystoreBootstrapTokenPref(PrefService* pref_service) {
+  pref_service->ClearPref(kSyncObsoleteKeystoreEncryptionBootstrapToken);
 }
 
 }  // namespace syncer

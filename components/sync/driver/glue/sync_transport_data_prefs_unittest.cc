@@ -68,16 +68,11 @@ TEST_F(SyncTransportDataPrefsTest, LastSyncTime) {
 
 TEST_F(SyncTransportDataPrefsTest, ClearAll) {
   sync_prefs_->SetLastSyncedTime(base::Time::Now());
-  sync_prefs_->SetKeystoreEncryptionBootstrapToken("keystore_token");
-
   ASSERT_NE(base::Time(), sync_prefs_->GetLastSyncedTime());
-  ASSERT_EQ("keystore_token",
-            sync_prefs_->GetKeystoreEncryptionBootstrapToken());
 
   sync_prefs_->ClearAll();
 
   EXPECT_EQ(base::Time(), sync_prefs_->GetLastSyncedTime());
-  EXPECT_TRUE(sync_prefs_->GetKeystoreEncryptionBootstrapToken().empty());
 }
 
 }  // namespace

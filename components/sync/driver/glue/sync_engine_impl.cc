@@ -48,8 +48,6 @@ namespace {
 SyncEngineBackend::RestoredLocalTransportData
 RestoreLocalTransportDataFromPrefs(const SyncTransportDataPrefs& prefs) {
   SyncEngineBackend::RestoredLocalTransportData result;
-  result.keystore_encryption_bootstrap_token =
-      prefs.GetKeystoreEncryptionBootstrapToken();
   result.cache_guid = prefs.GetCacheGuid();
   result.birthday = prefs.GetBirthday();
   result.bag_of_chips = prefs.GetBagOfChips();
@@ -258,12 +256,6 @@ void SyncEngineImpl::SetDecryptionPassphrase(const std::string& passphrase) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetDecryptionPassphrase,
                                 backend_, passphrase));
-}
-
-void SyncEngineImpl::SetKeystoreEncryptionBootstrapToken(
-    const std::string& token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  prefs_->SetKeystoreEncryptionBootstrapToken(token);
 }
 
 void SyncEngineImpl::AddTrustedVaultDecryptionKeys(

@@ -43,8 +43,8 @@ message SyncEnums {
     ENCRYPTED_TYPES_CHANGED = 9;
     // The encryption passphrase state changed.
     PASSPHRASE_TYPE_CHANGED = 10;
-    // A new keystore encryption token was persisted.
-    KEYSTORE_TOKEN_UPDATED = 11;
+    // A new keystore encryption token was persisted. Deprecated 11/2021.
+    DEPRECATED_KEYSTORE_TOKEN_UPDATED = 11;
     // The datatype manager has finished an at least partially successful
     // configuration and is once again syncing with the server.
     CONFIGURE_COMPLETE = 12;

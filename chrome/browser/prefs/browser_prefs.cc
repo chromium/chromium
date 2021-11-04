@@ -1766,6 +1766,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 10/2021.
   profile_prefs->ClearPref(kAppCacheForceEnabled);
 
+  // Added 11/2021.
+  syncer::ClearObsoleteKeystoreBootstrapTokenPref(profile_prefs);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 }

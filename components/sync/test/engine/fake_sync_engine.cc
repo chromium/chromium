@@ -75,9 +75,6 @@ void FakeSyncEngine::SetEncryptionPassphrase(const std::string& passphrase) {}
 
 void FakeSyncEngine::SetDecryptionPassphrase(const std::string& passphrase) {}
 
-void FakeSyncEngine::SetKeystoreEncryptionBootstrapToken(
-    const std::string& token) {}
-
 void FakeSyncEngine::AddTrustedVaultDecryptionKeys(
     const std::vector<std::vector<uint8_t>>& keys,
     base::OnceClosure done_cb) {

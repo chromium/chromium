@@ -115,13 +115,12 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
             observer_));
   }
 
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
-                               BootstrapTokenType type) override {
+  void OnBootstrapTokenUpdated(const std::string& bootstrap_token) override {
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &SyncEncryptionHandler::Observer::OnBootstrapTokenUpdated,
-            observer_, bootstrap_token, type));
+            observer_, bootstrap_token));
   }
 
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
@@ -504,15 +503,10 @@ void SyncServiceCrypto::OnTrustedVaultKeyAccepted() {
 }
 
 void SyncServiceCrypto::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token,
-    BootstrapTokenType type) {
+    const std::string& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_.engine);
-  if (type == PASSPHRASE_BOOTSTRAP_TOKEN) {
-    delegate_->EncryptionBootstrapTokenChanged(bootstrap_token);
-  } else {
-    state_.engine->SetKeystoreEncryptionBootstrapToken(bootstrap_token);
-  }
+  delegate_->EncryptionBootstrapTokenChanged(bootstrap_token);
 }
 
 void SyncServiceCrypto::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,

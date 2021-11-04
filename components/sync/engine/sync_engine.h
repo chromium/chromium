@@ -125,11 +125,6 @@ class SyncEngine : public ModelTypeConfigurer {
   // are no pending keys.
   virtual void SetDecryptionPassphrase(const std::string& passphrase) = 0;
 
-  // Legacy bootstrap token stored in preferences.
-  // TODO(crbug.com/1010397): Delete this API together with the preferences.
-  virtual void SetKeystoreEncryptionBootstrapToken(
-      const std::string& token) = 0;
-
   // Analogous to SetDecryptionPassphrase but specifically for
   // TRUSTED_VAULT_PASSPHRASE: it provides new decryption keys that could
   // allow decrypting pending Nigori keys. Notifies observers of the result of
