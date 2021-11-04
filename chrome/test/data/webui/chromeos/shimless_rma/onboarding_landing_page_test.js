@@ -136,8 +136,7 @@ export function onboardingLandingPageTest() {
     const error = component.shadowRoot.querySelector('#errorMessage');
     assertFalse(isVisible(busy));
     assertTrue(isVisible(verification));
-    // TODO(gavindodd): replace with correct icon when implemented.
-    assertEquals('shimless-icon:wifi', verification.icon);
+    assertEquals('shimless-icon:check', verification.icon);
     assertFalse(isVisible(error));
   });
 
@@ -152,8 +151,7 @@ export function onboardingLandingPageTest() {
     const error = component.shadowRoot.querySelector('#errorMessage');
     assertTrue(busy.hidden);
     assertTrue(isVisible(verification));
-    // TODO(gavindodd): replace with correct icon when implemented.
-    assertEquals('shimless-icon:info', verification.icon);
+    assertEquals('shimless-icon:warning', verification.icon);
     assertTrue(isVisible(error));
     assertEquals('FAILURE', error.innerHTML);
   });

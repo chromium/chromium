@@ -196,8 +196,7 @@ export class OnboardingUpdatePageElement extends
    * @return {string}
    */
   getUpdateNoticeIcon_() {
-    // TODO(gavindodd): Replace wifi with check icon.
-    return this.updateAvailable_ ? 'shimless-icon:info' : 'shimless-icon:wifi';
+    return this.updateAvailable_ ? 'shimless-icon:info' : 'shimless-icon:check';
   }
 
   /** @protected */

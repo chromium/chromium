@@ -97,8 +97,7 @@ export class OnboardingLandingPage extends PolymerElement {
    * @return {string}
    */
   getVerificationIcon_() {
-    // TODO(gavindodd): Replace with check and warning icons.
-    return this.isCompliant_ ? 'shimless-icon:wifi' : 'shimless-icon:info';
+    return this.isCompliant_ ? 'shimless-icon:check' : 'shimless-icon:warning';
   }
 
   /**
