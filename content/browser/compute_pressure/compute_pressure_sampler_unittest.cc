@@ -103,8 +103,9 @@ namespace {
 // TestDouble for CpuProbe that produces a different value after every Update().
 class StreamingCpuProbe : public CpuProbe {
  public:
-  explicit StreamingCpuProbe(std::vector<ComputePressureSample> samples)
-      : samples_(std::move(samples)) {
+  explicit StreamingCpuProbe(std::vector<ComputePressureSample> samples,
+                             base::OnceClosure callback)
+      : samples_(std::move(samples)), callback_(std::move(callback)) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
     DCHECK_GT(samples_.size(), 0u);
   }
@@ -116,15 +117,22 @@ class StreamingCpuProbe : public CpuProbe {
   void Update() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    ++sample_index_;
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
-
-    ++sample_index_;
-    DCHECK_LT(sample_index_, samples_.size());
   }
+
   ComputePressureSample LastSample() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return samples_.at(sample_index_);
+    if (sample_index_ < samples_.size()) {
+      return samples_.at(sample_index_);
+    }
+
+    if (!callback_.is_null()) {
+      std::move(callback_).Run();
+    }
+
+    return samples_.back();
   }
 
  private:
@@ -133,6 +141,10 @@ class StreamingCpuProbe : public CpuProbe {
   std::vector<ComputePressureSample> samples_
       GUARDED_BY_CONTEXT(sequence_checker_);
   size_t sample_index_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
+  // This closure is called on a LastSample call after expected number of
+  // samples has been taken by ComputePressureSampler.
+  base::OnceClosure callback_;
 };
 
 }  // namespace
@@ -146,27 +158,23 @@ TEST_F(ComputePressureSamplerTest, EnsureStarted_SkipsFirstSample) {
       // Value after first Update(), should be discarded.
       {.cpu_utilization = 0.2, .cpu_speed = 0.4},
       // Value after second Update(), should be reported.
-      {.cpu_utilization = 0.3, .cpu_speed = 0.6},
-      // A couple of extra values so the test doesn't crash on off-by-one
-      // errors.
-      {.cpu_utilization = 0.4, .cpu_speed = 0.8},
-      {.cpu_utilization = 0.5, .cpu_speed = 1.0},
+      {.cpu_utilization = 0.4, .cpu_speed = 0.6},
   };
 
+  base::RunLoop run_loop;
   sampler_ = std::make_unique<ComputePressureSampler>(
-      std::make_unique<StreamingCpuProbe>(samples), base::Milliseconds(1),
+      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+      base::Milliseconds(1),
       base::BindRepeating(&ComputePressureSamplerTest::SamplerCallback,
                           base::Unretained(this)));
   sampler_->EnsureStarted();
-  WaitForUpdate();
+  run_loop.Run();
 
   EXPECT_THAT(samples_, testing::SizeIs(testing::Ge(1u)));
   EXPECT_THAT(samples_, testing::Not(testing::Contains(ComputePressureSample(
-                            {.cpu_utilization = 0.1, .cpu_speed = 0.2}))));
-  EXPECT_THAT(samples_, testing::Not(testing::Contains(ComputePressureSample(
                             {.cpu_utilization = 0.2, .cpu_speed = 0.4}))));
   EXPECT_THAT(samples_, testing::Contains(ComputePressureSample(
-                            {.cpu_utilization = 0.3, .cpu_speed = 0.6})));
+                            {.cpu_utilization = 0.4, .cpu_speed = 0.6})));
 }
 
 TEST_F(ComputePressureSamplerTest, Stop_Delayed_EnsureStarted_Immediate) {
