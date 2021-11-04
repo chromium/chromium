@@ -17,13 +17,14 @@ found in the LICENSE file.-->
   <ImageView
     android:id="@+id/authenticator_option_icon"
     android:layout_width="wrap_content"
-    android:src="@drawable/ic_settings_gear_24dp"
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
-    tools:ignore="ContentDescription"/>
+    tools:ignore="ContentDescription"
+    tools:src="@drawable/ic_settings_gear_24dp"/>
   <LinearLayout
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
+    android:layout_marginStart="@dimen/authenticator_option_details_margin_start"
     android:orientation="vertical">
       <TextView
         android:id="@+id/authenticator_option_title"
@@ -34,6 +35,7 @@ found in the LICENSE file.-->
         android:id="@+id/authenticator_option_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/authenticator_option_description_margin_top"
         android:gravity="center_vertical"/>
     </LinearLayout>
 </LinearLayout>
