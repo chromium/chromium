@@ -163,6 +163,10 @@ bool MediaSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
+bool MediaSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
 bool MediaSystemAppDelegate::ShouldShowInSearch() const {
   return false;
 }

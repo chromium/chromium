@@ -18,6 +18,7 @@ class MediaSystemAppDelegate : public web_app::SystemWebAppDelegate {
   std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
   bool ShouldIncludeLaunchDirectory() const override;
   bool ShouldShowInLauncher() const override;
+  bool ShouldCaptureNavigations() const override;
   bool ShouldShowInSearch() const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldBeSingleWindow() const override;
