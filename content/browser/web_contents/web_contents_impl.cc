@@ -1443,7 +1443,7 @@ void WebContentsImpl::ForEachFrameTree(
 
 std::vector<FrameTree*> WebContentsImpl::GetOutermostFrameTrees() {
   std::vector<FrameTree*> result;
-  result.push_back(GetFrameTree());
+  result.push_back(&GetPrimaryFrameTree());
 
   if (blink::features::IsPrerender2Enabled()) {
     const std::vector<FrameTree*> prerender_frame_trees =
@@ -7534,7 +7534,7 @@ void WebContentsImpl::EnsureOpenerProxiesExist(
 }
 
 void WebContentsImpl::SetAsFocusedWebContentsIfNecessary() {
-  SetFocusedFrameTree(GetFrameTree());
+  SetFocusedFrameTree(&GetPrimaryFrameTree());
 }
 
 void WebContentsImpl::SetFocusedFrameTree(FrameTree* frame_tree_to_focus) {

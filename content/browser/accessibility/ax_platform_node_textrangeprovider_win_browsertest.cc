@@ -2518,8 +2518,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                                                 "Text in iframe");
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
   ASSERT_EQ(1U, root->child_count());
 
   // Navigate oopif to URL.

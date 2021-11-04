@@ -1476,7 +1476,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, NavigateFrameDuringFind) {
   // new document on the unfinished subframe, and removes the result from the
   // old document.
   FindRequestManagerTestObserver observer(contents());
-  FrameTreeNode* root = contents()->GetFrameTree()->root();
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
   GURL url(
       embedded_test_server()->GetURL("a.com", "/find_in_simple_page.html"));
   TestNavigationObserver navigation_observer(contents());
@@ -1610,7 +1610,7 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, CrashDuringFind) {
   // 5) Crash the subframe that hasn't finished the find-in-page
   // session. This will remove the result from the crashed document.
   {
-    FrameTreeNode* root = contents()->GetFrameTree()->root();
+    FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
     content::RenderFrameDeletedObserver crash_observer(
         root->child_at(0)->current_frame_host());

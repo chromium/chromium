@@ -4119,7 +4119,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Intentionally exclude inner frame trees based on multi-WebContents.
   web_contents->ForEachFrameTree(
       base::BindLambdaForTesting([&](FrameTree* frame_tree) {
-        EXPECT_NE(frame_tree, inner_contents->GetFrameTree());
+        EXPECT_NE(frame_tree, &inner_contents->GetPrimaryFrameTree());
       }));
 }
 

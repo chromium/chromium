@@ -539,8 +539,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
       embedded_test_server()->GetURL("example.com", "/input_in_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), page));
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Ensure both the main page and the iframe are loaded.
   ASSERT_EQ("OUTER_LOADED",

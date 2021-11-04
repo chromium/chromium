@@ -1480,8 +1480,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckSecFetchDestHeader) {
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_TRUE(ExecJs(root,
                      "var fenced_frame = document.createElement('fencedframe');"

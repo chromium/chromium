@@ -214,8 +214,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   ASSERT_NE(nullptr, target);
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  auto* root = web_contents->GetFrameTree()->root();
-  web_contents->GetFrameTree()->SetFocusedFrame(
+  auto* root = web_contents->GetPrimaryFrameTree().root();
+  web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance());
 
   AccessibilityNotificationWaiter waiter2(
@@ -240,8 +240,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  auto* root = web_contents->GetFrameTree()->root();
-  web_contents->GetFrameTree()->SetFocusedFrame(
+  auto* root = web_contents->GetPrimaryFrameTree().root();
+  web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
@@ -306,8 +306,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  auto* root = web_contents->GetFrameTree()->root();
-  web_contents->GetFrameTree()->SetFocusedFrame(
+  auto* root = web_contents->GetPrimaryFrameTree().root();
+  web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
@@ -344,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  auto* root = web_contents->GetFrameTree()->root();
-  web_contents->GetFrameTree()->SetFocusedFrame(
+  auto* root = web_contents->GetPrimaryFrameTree().root();
+  web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the
@@ -404,8 +404,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  auto* root = web_contents->GetFrameTree()->root();
-  web_contents->GetFrameTree()->SetFocusedFrame(
+  auto* root = web_contents->GetPrimaryFrameTree().root();
+  web_contents->GetPrimaryFrameTree().SetFocusedFrame(
       root, root->current_frame_host()->GetSiteInstance());
 
   // Send a touch event so that RenderWidgetHostViewAura will create the

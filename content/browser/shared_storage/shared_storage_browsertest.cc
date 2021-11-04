@@ -480,8 +480,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, TwoWorklets) {
 
   RenderFrameHost* iframe =
       static_cast<WebContentsImpl*>(shell()->web_contents())
-          ->GetFrameTree()
-          ->root()
+          ->GetPrimaryFrameTree()
+          .root()
           ->child_at(0)
           ->current_frame_host();
 

@@ -4209,7 +4209,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_FALSE(controller.GetLastCommittedEntry());
 
     // The window should be on the initial empty document.
-    FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
+    FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to about:blank will be classified as NEW_ENTRY
@@ -4249,7 +4249,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_FALSE(controller.GetLastCommittedEntry());
 
     // The window should be on the initial empty document.
-    FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
+    FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to about:blank#foo will be classified as a same-
@@ -4281,7 +4281,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_TRUE(last_entry);
 
     // The window should be on the initial empty document.
-    FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
+    FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Do a navigation on the window to about:blank#foo, creating a
@@ -4326,7 +4326,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_FALSE(controller.GetLastCommittedEntry());
 
     // The window should be on the initial empty document.
-    FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
+    FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigate to |url_2|, and ensure that we won't wait for the |hung_url|
@@ -4401,7 +4401,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_FALSE(controller.GetLastCommittedEntry());
 
     // The window should be on its initial empty document.
-    FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
+    FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
@@ -16338,8 +16338,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_FALSE(root->HasStickyUserActivation());
   EXPECT_FALSE(root->HasTransientUserActivation());
@@ -16480,8 +16480,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_FALSE(root->HasStickyUserActivation());
   EXPECT_FALSE(root->HasTransientUserActivation());

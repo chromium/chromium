@@ -2281,7 +2281,7 @@ TEST_P(RenderFrameHostManagerTest, TraverseComplexOpenerChain) {
   std::unique_ptr<TestWebContents> tab2(
       TestWebContents::Create(browser_context(), nullptr));
   tab2->NavigateAndCommit(GURL("http://tab2.com"));
-  FrameTree* tree2 = tab2->GetFrameTree();
+  FrameTree* tree2 = &tab2->GetPrimaryFrameTree();
   FrameTreeNode* root2 = tree2->root();
   process_id = root2->current_frame_host()->GetProcess()->GetID();
   tree2->AddFrame(
@@ -2305,13 +2305,13 @@ TEST_P(RenderFrameHostManagerTest, TraverseComplexOpenerChain) {
 
   std::unique_ptr<TestWebContents> tab3(
       TestWebContents::Create(browser_context(), nullptr));
-  FrameTree* tree3 = tab3->GetFrameTree();
+  FrameTree* tree3 = &tab3->GetPrimaryFrameTree();
   FrameTreeNode* root3 = tree3->root();
 
   std::unique_ptr<TestWebContents> tab4(
       TestWebContents::Create(browser_context(), nullptr));
   tab4->NavigateAndCommit(GURL("http://tab4.com"));
-  FrameTree* tree4 = tab4->GetFrameTree();
+  FrameTree* tree4 = &tab4->GetPrimaryFrameTree();
   FrameTreeNode* root4 = tree4->root();
   process_id = root4->current_frame_host()->GetProcess()->GetID();
   tree4->AddFrame(

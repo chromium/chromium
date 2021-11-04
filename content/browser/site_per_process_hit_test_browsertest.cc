@@ -2188,7 +2188,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   GURL main_url(
       embedded_test_server()->GetURL("/frame_tree/page_with_janky_frame.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
-  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1U, root->child_count());
   GURL frame_url(embedded_test_server()->GetURL(
       "baz.com", "/page_with_touch_start_janking_main_thread.html"));
@@ -3413,8 +3413,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"

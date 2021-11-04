@@ -230,8 +230,8 @@ IN_PROC_BROWSER_TEST_P(
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
-                            ->GetFrameTree()
-                            ->root();
+                            ->GetPrimaryFrameTree()
+                            .root();
 
   // Load cross-site page into iframe and wait for text from that
   // page to appear in the accessibility tree.
