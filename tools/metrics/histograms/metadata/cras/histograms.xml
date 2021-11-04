@@ -44,6 +44,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cras.A2dpExitCode" enum="CrasA2dpExitCode"
+    expires_after="2022-04-10">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Track all different paths causing bluetooth A2DP drop from audio output
+    settings. Collect this metrics to help investigate possible issues and
+    monitor the trend to catch regressions.
+  </summary>
+</histogram>
+
 <histogram name="Cras.Busyloop" units="units" expires_after="2022-04-17">
 <!-- Name completed by histogram_suffixes
      name="Cras.TimePeriod" -->

@@ -15883,6 +15883,32 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Version"/>
 </enum>
 
+<enum name="CrasA2dpExitCode">
+  <summary>
+    List of codes to indicate why Bluetooth A2DP audio session exits the
+    connected state. CRAS side definition in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="A2DP_EXIT_IDLE">
+    Disconnected while idle. The default exit code without anything special.
+  </int>
+  <int value="1" label="A2DP_EXIT_WHILE_STREAMING">
+    Disconnected while a2dp is streaming and audio thread didn't catch any
+    socket error.
+  </int>
+  <int value="2" label="A2DP_EXIT_CONN_RESET">
+    Disconnected while streaming and receiving ECONNRESET code.
+  </int>
+  <int value="3" label="A2DP_EXIT_LONG_TX_FAILURE">
+    CRAS request the disconnection because of longer than 5 seconds of
+    consecutive packet Tx failure.
+  </int>
+  <int value="4" label="A2DP_EXIT_TX_FATAL_ERROR">
+    CRAS request the disconnection because kernel socket returns error code that
+    CRAS treats as fatal error.
+  </int>
+</enum>
+
 <enum name="CrasClientType">
   <summary>
     List of the client type of CRAS. The list can be found in
