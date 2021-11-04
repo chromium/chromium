@@ -165,6 +165,9 @@ class ServiceConnectionImpl : public ServiceConnection {
           pending_observer) override;
   void AddAudioObserver(mojo::PendingRemote<mojom::CrosHealthdAudioObserver>
                             pending_observer) override;
+  void AddThunderboltObserver(
+      mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver>
+          pending_observer) override;
   void ProbeTelemetryInfo(
       const std::vector<mojom::ProbeCategoryEnum>& categories_to_test,
       mojom::CrosHealthdProbeService::ProbeTelemetryInfoCallback callback)
@@ -593,6 +596,15 @@ void ServiceConnectionImpl::AddAudioObserver(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();
   cros_healthd_event_service_->AddAudioObserver(std::move(pending_observer));
+}
+
+void ServiceConnectionImpl::AddThunderboltObserver(
+    mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver>
+        pending_observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdEventServiceIfNeeded();
+  cros_healthd_event_service_->AddThunderboltObserver(
+      std::move(pending_observer));
 }
 
 void ServiceConnectionImpl::ProbeTelemetryInfo(

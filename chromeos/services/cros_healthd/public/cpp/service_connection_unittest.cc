@@ -193,6 +193,28 @@ class MockCrosHealthdAudioObserver : public mojom::CrosHealthdAudioObserver {
   mojo::Receiver<mojom::CrosHealthdAudioObserver> receiver_;
 };
 
+class MockCrosHealthdThunderboltObserver
+    : public mojom::CrosHealthdThunderboltObserver {
+ public:
+  MockCrosHealthdThunderboltObserver() : receiver_{this} {}
+  MockCrosHealthdThunderboltObserver(
+      const MockCrosHealthdThunderboltObserver&) = delete;
+  MockCrosHealthdThunderboltObserver& operator=(
+      const MockCrosHealthdThunderboltObserver&) = delete;
+
+  MOCK_METHOD(void, OnAdd, (), (override));
+  MOCK_METHOD(void, OnRemove, (), (override));
+  MOCK_METHOD(void, OnAuthorized, (), (override));
+  MOCK_METHOD(void, OnUnAuthorized, (), (override));
+
+  mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+ private:
+  mojo::Receiver<mojom::CrosHealthdThunderboltObserver> receiver_;
+};
+
 class MockNetworkHealthService : public NetworkHealthService {
  public:
   MockNetworkHealthService() : receiver_{this} {}
@@ -839,6 +861,20 @@ TEST_F(CrosHealthdServiceConnectionTest, AddAudioObserver) {
     run_loop.Quit();
   }));
   FakeCrosHealthdClient::Get()->EmitAudioUnderrunEventForTesting();
+
+  run_loop.Run();
+}
+
+// Test that we can add a Thunderbolt observer.
+TEST_F(CrosHealthdServiceConnectionTest, AddThunderboltObserver) {
+  MockCrosHealthdThunderboltObserver observer;
+  ServiceConnection::GetInstance()->AddThunderboltObserver(
+      observer.pending_remote());
+
+  // Send out an event to make sure the observer is connected.
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnAdd()).WillOnce(Invoke([&]() { run_loop.Quit(); }));
+  FakeCrosHealthdClient::Get()->EmitThunderboltAddEventForTesting();
 
   run_loop.Run();
 }

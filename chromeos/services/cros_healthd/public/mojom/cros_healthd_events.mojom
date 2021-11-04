@@ -61,3 +61,18 @@ interface CrosHealthdAudioObserver {
   // Fired when the audio severe underrun happens.
   OnSevereUnderrun@1();
 };
+
+// Implemented by clients who desire Thunderbolt notifications.
+//
+// NextMinVersion: 1, NextIndex: 4
+interface CrosHealthdThunderboltObserver {
+  // Fired when the Thunderbolt plug in.
+  OnAdd@0();
+  // Fired when the Thunderbolt plug out.
+  OnRemove@1();
+  // Fired when the Thunderbolt device is authorized.
+  OnAuthorized@2();
+  // Fired when the Thunderbolt device is unauthorized.
+  OnUnAuthorized@3();
+};
+

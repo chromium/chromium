@@ -785,6 +785,7 @@ enum BusDeviceClass {
   kEthernetController = 2,
   kWirelessController = 3,
   kBluetoothAdapter = 4,
+  kThunderboltController = 5,
 };
 
 // The bus device info.
@@ -808,6 +809,8 @@ union BusInfo {
   PciBusInfo pci_bus_info;
   // The info related to usb.
   UsbBusInfo usb_bus_info;
+  // The info related to thunderbolt.
+  ThunderboltBusInfo thunderbolt_bus_info;
 };
 
 // The info related to pci.
@@ -1043,6 +1046,47 @@ struct EmbeddedDisplayInfo {
   bool privacy_screen_supported@0;
   // Privacy screen is enabled or not.
   bool privacy_screen_enabled@1;
+};
+
+// Information related to a Thunderbolt device.
+//
+// NextMinVersion: 1, NextIndex: 8
+struct ThunderboltBusInterfaceInfo {
+  // Vendor name of connected device interface.
+  string vendor_name@0;
+  // Product name of connected device interface.
+  string device_name@1;
+  // Type of device.
+  string device_type@2;
+  // The device unique id.
+  string device_uuid@3;
+  // Transmit link speed for thunderbolt interface.
+  uint32 tx_speed_gbs@4;
+  // Receive link speed for thunderbolt interface.
+  uint32 rx_speed_gbs@5;
+  // Connection is authorized or not.
+  bool authorized@6;
+  // nvm firmware version.
+  string device_fw_version@7;
+};
+
+// NextMinVersion: 1, NextIndex: 6
+[Extensible]
+enum ThunderboltSecurityLevel {
+  [Default] kNone = 0,
+  kUserLevel = 1,
+  kSecureLevel = 2,
+  kDpOnlyLevel = 3,
+  kUsbOnlyLevel = 4,
+  kNoPcieLevel = 5,
+};
+
+// NextMinVersion: 1, NextIndex: 2
+struct ThunderboltBusInfo {
+  // Security level none, user, secure, dponly.
+  ThunderboltSecurityLevel security_level@0;
+  // Info of devices attached to the controller.
+  array<ThunderboltBusInterfaceInfo> thunderbolt_interfaces@1;
 };
 
 // A collection of all the device's telemetry information that cros_healthd is

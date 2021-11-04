@@ -114,6 +114,9 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
   // Calls the audio event OnUnderrun on all registered audio observers.
   void EmitAudioUnderrunEventForTesting();
 
+  // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
+  void EmitThunderboltAddEventForTesting();
+
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
   void EmitConnectionStateChangedEventForTesting(

@@ -156,6 +156,9 @@ class FakeCrosHealthdService final
           observer) override;
   void AddAudioObserver(
       mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) override;
+  void AddThunderboltObserver(
+      mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer)
+      override;
 
   // CrosHealthdProbeService overrides:
   void ProbeTelemetryInfo(
@@ -238,6 +241,9 @@ class FakeCrosHealthdService final
   // Calls the audio event OnUnderrun for all registered audio observers.
   void EmitAudioUnderrunEventForTesting();
 
+  // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
+  void EmitThunderboltAddEventForTesting();
+
   // Calls the network event OnConnectionStateChangedEvent on all registered
   // network observers.
   void EmitConnectionStateChangedEventForTesting(
@@ -306,6 +312,8 @@ class FakeCrosHealthdService final
       network_observers_;
   // Collection of registered audio observers.
   mojo::RemoteSet<mojom::CrosHealthdAudioObserver> audio_observers_;
+  // Collection of registered Thunderbolt observers.
+  mojo::RemoteSet<mojom::CrosHealthdThunderboltObserver> thunderbolt_observers_;
 
   // Contains the most recent params passed to `GetRoutineUpdate`, if it has
   // been called.
