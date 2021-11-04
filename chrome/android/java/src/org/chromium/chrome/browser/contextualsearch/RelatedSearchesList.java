@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.contextualsearch;
 
 import android.net.Uri;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -34,16 +35,19 @@ class RelatedSearchesList {
 
     /**
      * Constructs an instance from a JSON string.
-     * @param jsonString The JSON string for all the suggestions typically returned by the server.
+     * @param jsonString The JSON string for all the suggestions typically returned by the server,
+     *        or an empty or {@code null} string.
      */
-    RelatedSearchesList(String jsonString) {
-        JSONObject suggestions;
-        try {
-            suggestions = new JSONObject(jsonString);
-        } catch (JSONException e) {
-            Log.w(TAG,
-                    "RelatedSearchesList cannot parse JSON: " + jsonString + "\n" + e.getMessage());
-            suggestions = new JSONObject();
+    RelatedSearchesList(@Nullable String jsonString) {
+        JSONObject suggestions = new JSONObject();
+        if (!TextUtils.isEmpty(jsonString)) {
+            try {
+                suggestions = new JSONObject(jsonString);
+            } catch (JSONException e) {
+                Log.w(TAG,
+                        "RelatedSearchesList cannot parse JSON: " + jsonString + "\n"
+                                + e.getMessage());
+            }
         }
         mJsonSuggestions = suggestions;
     }
