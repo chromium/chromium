@@ -26,8 +26,7 @@ TEST_MACROS = {
 
 
 # TODO: Also run clang-format on the file afterwards?
-def disabler(full_test_name: str, lines: List[str],
-             new_cond: Condition) -> List[str]:
+def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   """Disable a GTest test within the given file.
 
   Args:
@@ -40,6 +39,8 @@ def disabler(full_test_name: str, lines: List[str],
   Returns:
     The new contents to write into the file, with the test disabled.
   """
+
+  lines = source_file.split('\n')
 
   test_name = full_test_name.split('.')[1]
 
@@ -84,7 +85,7 @@ def disabler(full_test_name: str, lines: List[str],
     if src_range:
       del lines[src_range[0]:src_range[1] + 1]
 
-    return lines
+    return '\n'.join(lines)
 
   if merged == conditions.NEVER:
     lines[test_name_index] = lines[test_name_index].replace(
@@ -93,7 +94,7 @@ def disabler(full_test_name: str, lines: List[str],
     if src_range:
       del lines[src_range[0]:src_range[1] + 1]
 
-    return lines
+    return '\n'.join(lines)
 
   # => now conditionally disabled
   lines[test_name_index] = lines[test_name_index].replace(current_name, maybe)
@@ -104,11 +105,11 @@ def disabler(full_test_name: str, lines: List[str],
   # whatever the limit is in the style guide). Or just use clang-format to do
   # it.
   condition_block = [
-      f'#if {condition_impl}\n',
-      f'#define {maybe} {disabled}\n',
-      '#else\n',
-      f'#define {maybe} {test_name}\n',
-      '#endif\n',
+      f'#if {condition_impl}',
+      f'#define {maybe} {disabled}',
+      '#else',
+      f'#define {maybe} {test_name}',
+      '#endif',
   ]
 
   if src_range:
@@ -189,9 +190,9 @@ def disabler(full_test_name: str, lines: List[str],
   # higher to lower indices, so we don't need to adjust later positions to
   # account for previously-inserted lines.
   for path, i in sorted(to_insert.items(), key=lambda x: x[1], reverse=True):
-    lines.insert(i, f'#include "{path}"\n')
+    lines.insert(i, f'#include "{path}"')
 
-  return lines
+  return '\n'.join(lines)
 
 
 def find_conditions(lines: List[str], start_line: int, test_name: str):
@@ -299,7 +300,7 @@ def get_directive(lines: List[str], i: int) -> Optional[Tuple[str, Any]]:
   full_line = lines[i]
 
   # Handle any backslash line continuations to get the full line.
-  while full_line.endswith('\\\n'):
+  while full_line.endswith('\\'):
     i += 1
     full_line = full_line[:-2] + lines[i]
 

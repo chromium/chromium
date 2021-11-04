@@ -31,7 +31,7 @@ NEVER = BaseCondition()
 class Terminal:
   """A boolean variable, the value of which depends on the configuration."""
 
-  def __init__(self, name: str, group: Optional[str], gtest_info=None):
+  def __init__(self, name: str, group: Optional[str]):
     """
     Args:
       name: The generic name for this terminal. Used to specify conditions on
@@ -39,12 +39,15 @@ class Terminal:
       group: The group to which this condition belongs. Every Terminal with the
         same group is mutually exclusive. For example, "os" - we can't be
         compiling for Linux and Mac at the same time.
-      gtest_info: GTest specific data for this terminal. Added in gtest.py.
+
+    We also add fields for each test format, initialised to None. It's up to the
+    file defining the relevant code to fill these out.
     """
 
     self.name: str = name
     self.group: Optional[str] = group
-    self.gtest_info = gtest_info
+    self.gtest_info = None
+    self.expectations_info = None
 
   def __str__(self):
     return (f"Terminal('{self.name}')")

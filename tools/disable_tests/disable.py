@@ -16,6 +16,7 @@ import urllib.parse
 
 import conditions
 import errors
+import expectations
 import gtest
 import resultdb
 
@@ -90,28 +91,34 @@ def disable_test(test_id: str, cond_strs: List[str]):
   if '/' not in test_id and test_id.count('.') == 1:
     test_id = f'ninja://.*/{test_id}(/.*)?'
 
-  name, filename = resultdb.get_test_metadata(test_id)
+  test_name, filename = resultdb.get_test_metadata(test_id)
 
   # Paths returned from ResultDB look like //foo/bar, where // refers to the
   # root of the chromium/src repo.
   full_path = os.path.join(SRC_ROOT, filename.lstrip('/'))
   _, extension = os.path.splitext(full_path)
   extension = extension.lstrip('.')
+
+  if extension == 'html':
+    full_path = expectations.search_for_expectations(full_path, test_name)
+
   try:
     with open(full_path, 'r') as f:
-      lines = f.readlines()
+      source_file = f.read()
   except FileNotFoundError as e:
     raise errors.UserError(
         f"Couldn't open file {filename}. Either this test has moved file very" +
         "recently, or your checkout isn't up-to-date.") from e
 
   if extension == 'cc':
-    new_lines = gtest.disabler(name, lines, conds)
+    disabler = gtest.disabler
+  elif extension == 'html':
+    disabler = expectations.disabler
   else:
     raise errors.UserError(
         f"Don't know how to disable tests for this file format ({extension})")
 
-  new_content = ''.join(new_lines)
+  new_content = disabler(test_name, source_file, conds)
   with open(full_path, 'w') as f:
     f.write(new_content)
 

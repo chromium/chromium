@@ -19,10 +19,8 @@ class GtestTest(unittest.TestCase):
       new_cond = conditions.parse(new_cond)
     else:
       assert isinstance(new_cond, conditions.BaseCondition)
-    input_lines = [l + '\n' for l in input_file.split('\n')]
 
-    resulting_lines = gtest.disabler(test_name, input_lines, new_cond)
-    resulting_file = ''.join(resulting_lines)
+    resulting_file = gtest.disabler(test_name, input_file, new_cond)
 
     self.assertEqual(expected_result.strip(), resulting_file.strip())
 
