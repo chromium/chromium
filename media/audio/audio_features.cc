@@ -48,11 +48,6 @@ const base::Feature kCrOSEnforceSystemAec{"CrOSEnforceSystemAec",
 
 #endif
 
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kForceEnableSystemAec{"ForceEnableSystemAec",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 #if defined(OS_WIN)
 const base::Feature kAllowIAudioClient3{"AllowIAudioClient3",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
