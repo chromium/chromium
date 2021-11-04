@@ -250,6 +250,7 @@ instrumented_library("libavahi-client3") {
     "--disable-mono",
     "--disable-monodoc",
     "--disable-qt3",
+    "--disable-qt4",
     "--with-systemdsystemunitdir=/lib/systemd/system",
   ]
   patches = [ "patches/libavahi-client3.diff" ]
