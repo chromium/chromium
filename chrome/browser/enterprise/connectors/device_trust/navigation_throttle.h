@@ -56,8 +56,6 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  ThrottleCheckResult GetUrlThrottleResult(const GURL& url);
-
   void OnTrustedUrlPatternsChanged(const base::ListValue& origins);
 
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
