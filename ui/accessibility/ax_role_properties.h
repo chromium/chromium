@@ -56,6 +56,9 @@ AX_BASE_EXPORT bool IsCellOrTableHeader(const ax::mojom::Role role);
 // so that users will know that they could activate them if they so choose.
 AX_BASE_EXPORT bool IsClickable(const ax::mojom::Role role);
 
+// Returns true if the provided role is any of the checkbox-related roles.
+AX_BASE_EXPORT bool IsCheckBox(ax::mojom::Role role);
+
 // Returns true if the provided role is any of the combobox-related roles.
 AX_BASE_EXPORT bool IsComboBox(ax::mojom::Role role);
 

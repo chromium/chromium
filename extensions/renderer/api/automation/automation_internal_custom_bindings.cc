@@ -1547,6 +1547,27 @@ void AutomationInternalCustomBindings::AddRoutes() {
         bool value = ui::IsButton(node->GetRole());
         result.Set(v8::Boolean::New(isolate, value));
       });
+  RouteNodeIDFunction(
+      "GetIsCheckBox",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        bool value = ui::IsCheckBox(node->GetRole());
+        result.Set(v8::Boolean::New(isolate, value));
+      });
+  RouteNodeIDFunction(
+      "GetIsComboBox",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        bool value = ui::IsComboBox(node->GetRole());
+        result.Set(v8::Boolean::New(isolate, value));
+      });
+  RouteNodeIDFunction(
+      "GetIsImage",
+      [](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,
+         AutomationAXTreeWrapper* tree_wrapper, ui::AXNode* node) {
+        bool value = ui::IsImage(node->GetRole());
+        result.Set(v8::Boolean::New(isolate, value));
+      });
   RouteNodeIDPlusStringBoolFunction(
       "GetNextTextMatch",
       [this](v8::Isolate* isolate, v8::ReturnValue<v8::Value> result,

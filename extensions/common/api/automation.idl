@@ -1245,6 +1245,15 @@ enum SortDirectionType {
     // Whether or not this node is a button.
     boolean isButton;
 
+  // Whether or not this node is a checkbox.
+    boolean isCheckBox;
+
+    // Whether or not this node is a combobox.
+    boolean isComboBox;
+
+    // Whether or not this node is an image.
+    boolean isImage;
+
     // Aria auto complete.
     DOMString? autoComplete;
 

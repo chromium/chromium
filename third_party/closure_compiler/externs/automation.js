@@ -514,7 +514,6 @@ chrome.automation.AriaCurrentState = {
 chrome.automation.InvalidState = {
   FALSE: 'false',
   TRUE: 'true',
-  OTHER: 'other',
 };
 
 /**
@@ -1894,6 +1893,27 @@ chrome.automation.AutomationNode.prototype.containerLiveBusy;
 chrome.automation.AutomationNode.prototype.isButton;
 
 /**
+ * Whether or not this node is a checkbox.
+ * @type {boolean}
+ * @see https://developer.chrome.com/extensions/automation#type-isCheckBox
+ */
+chrome.automation.AutomationNode.prototype.isCheckBox;
+
+/**
+ * Whether or not this node is a combobox.
+ * @type {boolean}
+ * @see https://developer.chrome.com/extensions/automation#type-isComboBox
+ */
+chrome.automation.AutomationNode.prototype.isComboBox;
+
+/**
+ * Whether or not this node is an image.
+ * @type {boolean}
+ * @see https://developer.chrome.com/extensions/automation#type-isImage
+ */
+chrome.automation.AutomationNode.prototype.isImage;
+
+/**
  * Aria auto complete.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-autoComplete
@@ -1934,6 +1954,13 @@ chrome.automation.AutomationNode.prototype.inputType;
  * @see https://developer.chrome.com/extensions/automation#type-accessKey
  */
 chrome.automation.AutomationNode.prototype.accessKey;
+
+/**
+ * The value of the aria-invalid attribute, indicating the error type.
+ * @type {(string|undefined)}
+ * @see https://developer.chrome.com/extensions/automation#type-ariaInvalidValue
+ */
+chrome.automation.AutomationNode.prototype.ariaInvalidValue;
 
 /**
  * The CSS display attribute for this node, if applicable.

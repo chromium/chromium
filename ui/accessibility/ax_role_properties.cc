@@ -144,6 +144,16 @@ bool IsClickable(const ax::mojom::Role role) {
   }
 }
 
+bool IsCheckBox(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kCheckBox:
+    case ax::mojom::Role::kSwitch:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsComboBox(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kComboBoxMenuButton:

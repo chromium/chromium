@@ -158,6 +158,22 @@ AutomationPredicate = class {
    * @param {!AutomationNode} node
    * @return {boolean}
    */
+  static comboBox(node) {
+    return node.isComboBox;
+  }
+
+  /**
+   * @param {!AutomationNode} node
+   * @return {boolean}
+   */
+  static checkBox(node) {
+    return node.isCheckBox;
+  }
+
+  /**
+   * @param {!AutomationNode} node
+   * @return {boolean}
+   */
   static editText(node) {
     return node.role === Role.TEXT_FIELD ||
         (node.state[State.EDITABLE] && !!node.parent &&
@@ -169,7 +185,7 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static image(node) {
-    return node.role === Role.IMAGE && !!(node.name || node.url);
+    return node.isImage && !!(node.name || node.url);
   }
 
   /**
@@ -768,14 +784,6 @@ AutomationPredicate.Unary;
 AutomationPredicate.Binary;
 
 
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.checkBox =
-    AutomationPredicate.roles([Role.CHECK_BOX, Role.SWITCH]);
-/** @type {AutomationPredicate.Unary} */
-AutomationPredicate.comboBox = AutomationPredicate.roles([
-  Role.COMBO_BOX_GROUPING, Role.COMBO_BOX_MENU_BUTTON,
-  Role.TEXT_FIELD_WITH_COMBO_BOX, Role.POP_UP_BUTTON, Role.MENU_LIST_POPUP
-]);
 /** @type {AutomationPredicate.Unary} */
 AutomationPredicate.heading = AutomationPredicate.roles([Role.HEADING]);
 /** @type {AutomationPredicate.Unary} */

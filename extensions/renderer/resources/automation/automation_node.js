@@ -410,6 +410,27 @@ const GetIsButton = natives.GetIsButton;
 /**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
+ * @return {boolean}
+ */
+const GetIsCheckBox = natives.GetIsCheckBox;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {boolean}
+ */
+const GetIsComboBox = natives.GetIsComboBox;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
+ * @return {boolean}
+ */
+const GetIsImage = natives.GetIsImage;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
  * @return {?Array<automation.CustomAction>} List of custom actions of the
  *     node.
  */
@@ -886,6 +907,18 @@ AutomationNodeImpl.prototype = {
 
   get isButton() {
     return GetIsButton(this.treeID, this.id);
+  },
+
+  get isCheckBox() {
+    return GetIsCheckBox(this.treeID, this.id);
+  },
+
+  get isComboBox() {
+    return GetIsComboBox(this.treeID, this.id);
+  },
+
+  get isImage() {
+    return GetIsImage(this.treeID, this.id);
   },
 
   get detectedLanguage() {
