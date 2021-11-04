@@ -120,9 +120,11 @@ void AppServiceProxyLacros::Initialize() {
 
   browser_app_launcher_ = std::make_unique<apps::BrowserAppLauncher>(profile_);
 
-  web_apps_publisher_host_ =
-      std::make_unique<web_app::WebAppsPublisherHost>(profile_);
-  web_apps_publisher_host_->Init();
+  if (profile_->IsMainProfile()) {
+    web_apps_publisher_host_ =
+        std::make_unique<web_app::WebAppsPublisherHost>(profile_);
+    web_apps_publisher_host_->Init();
+  }
 
   // Make the chrome://app-icon/ resource available.
   content::URLDataSource::Add(profile_,
