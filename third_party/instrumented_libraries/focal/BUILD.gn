@@ -276,7 +276,6 @@ instrumented_library("libcredentialkit_pkcs11") {
 }
 
 instrumented_library("libcups2") {
-  patches = [ "patches/libcups2.diff" ]
   extra_configure_flags = [
     "--disable-static",
 
