@@ -373,7 +373,8 @@ instrumented_library("libdbusmenu-glib4") {
 }
 
 instrumented_library("libexpat1") {
-  extra_configure_flags = [ "--disable-static" ]
+  build_method = "debian"
+  patches = [ "patches/libexpat1.diff" ]
 }
 
 instrumented_library("libffi6") {
