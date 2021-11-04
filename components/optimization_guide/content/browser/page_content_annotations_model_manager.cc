@@ -154,7 +154,7 @@ void PageContentAnnotationsModelManager::ExecutePageEntitiesModel(
       "PageEntitiesModelExecutionRequested",
       true);
   if (page_entities_model_executor_) {
-    page_entities_model_executor_->ExecuteModelWithInput(
+    page_entities_model_executor_->HumanReadableExecuteModelWithInput(
         text,
         base::BindOnce(&PageContentAnnotationsModelManager::
                            OnPageEntitiesModelExecutionCompleted,
@@ -175,17 +175,15 @@ void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
     base::TimeTicks execution_start,
     PageContentAnnotatedCallback callback,
     size_t current_model_index,
-    const absl::optional<std::vector<tflite::task::core::Category>>& output) {
+    const absl::optional<std::vector<ScoredEntityMetadata>>& output) {
   if (output) {
     current_annotations = GetOrCreateCurrentContentModelAnnotations(
         std::move(current_annotations));
 
     // Determine the entities with the highest weights.
-    std::vector<tflite::task::core::Category> entity_candidates =
-        std::move(*output);
+    std::vector<ScoredEntityMetadata> entity_candidates = std::move(*output);
     std::sort(entity_candidates.begin(), entity_candidates.end(),
-              [](const tflite::task::core::Category& a,
-                 const tflite::task::core::Category& b) {
+              [](const ScoredEntityMetadata& a, const ScoredEntityMetadata& b) {
                 return a.score > b.score;
               });
 
@@ -200,7 +198,7 @@ void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
       DCHECK(entity.score >= 0.0 && entity.score <= 1.0);
       current_annotations->entities.emplace_back(
           history::VisitContentModelAnnotations::Category(
-              entity.class_name, static_cast<int>(100 * entity.score)));
+              entity.metadata.entity_id, static_cast<int>(100 * entity.score)));
     }
     base::UmaHistogramTimes(
         "OptimizationGuide.PageContentAnnotationsService."

@@ -49,15 +49,15 @@ class ModelObserverTracker : public TestOptimizationGuideModelProvider {
 class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
  public:
   explicit FakePageEntitiesModelExecutor(
-      const base::flat_map<std::string,
-                           std::vector<tflite::task::core::Category>>& entries,
+      const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
+          entries,
       const base::flat_map<std::string, EntityMetadata>& entity_metadata)
       : entries_(entries), entity_metadata_(entity_metadata) {}
   ~FakePageEntitiesModelExecutor() override = default;
 
-  void ExecuteModelWithInput(
+  void HumanReadableExecuteModelWithInput(
       const std::string& text,
-      PageEntitiesModelExecutedCallback callback) override {
+      PageEntitiesMetadataModelExecutedCallback callback) override {
     auto it = entries_.find(text);
     std::move(callback).Run(
         it != entries_.end() ? absl::make_optional(it->second) : absl::nullopt);
@@ -73,8 +73,7 @@ class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
   }
 
  private:
-  base::flat_map<std::string, std::vector<tflite::task::core::Category>>
-      entries_;
+  base::flat_map<std::string, std::vector<ScoredEntityMetadata>> entries_;
   base::flat_map<std::string, EntityMetadata> entity_metadata_;
 };
 
@@ -121,8 +120,8 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
   }
 
   void SetPageEntitiesModelExecutor(
-      const base::flat_map<std::string,
-                           std::vector<tflite::task::core::Category>>& entries,
+      const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
+          entries,
       const base::flat_map<std::string, EntityMetadata>& entity_metadata) {
     model_manager()->OverridePageEntitiesModelExecutorForTesting(
         std::make_unique<FakePageEntitiesModelExecutor>(entries,
@@ -606,14 +605,16 @@ TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
 
 TEST_F(PageContentAnnotationsModelManagerEntitiesOnlyTest,
        AnnotateNoModelsFinishedExecuting) {
-  SetPageEntitiesModelExecutor({{"sometext",
-                                 {{"entity1", 0.1},
-                                  {"entity2", 0.2},
-                                  {"entity3", 0.3},
-                                  {"entity4", 0.4},
-                                  {"entity5", 0.5},
-                                  {"entity6", 0.6}}}},
-                               /*entity_metadata=*/{});
+  SetPageEntitiesModelExecutor(
+      {{"sometext",
+        {
+            ScoredEntityMetadata(0.6, EntityMetadata("entity6", "entity6", {})),
+            ScoredEntityMetadata(0.5, EntityMetadata("entity5", "entity5", {})),
+            ScoredEntityMetadata(0.4, EntityMetadata("entity4", "entity4", {})),
+            ScoredEntityMetadata(0.3, EntityMetadata("entity3", "entity3", {})),
+            ScoredEntityMetadata(0.2, EntityMetadata("entity2", "entity2", {})),
+        }}},
+      /*entity_metadata=*/{});
 
   absl::optional<history::VisitContentModelAnnotations> annotations =
       Annotate("sometext");
@@ -673,14 +674,16 @@ class PageContentAnnotationsModelManagerMultipleModelsTest
 
 TEST_F(PageContentAnnotationsModelManagerMultipleModelsTest,
        AnnotateRequestBothModels) {
-  SetPageEntitiesModelExecutor({{"sometext",
-                                 {{"entity1", 0.1},
-                                  {"entity2", 0.2},
-                                  {"entity3", 0.3},
-                                  {"entity4", 0.4},
-                                  {"entity5", 0.5},
-                                  {"entity6", 0.6}}}},
-                               /*entity_metadata=*/{});
+  SetPageEntitiesModelExecutor(
+      {{"sometext",
+        {
+            ScoredEntityMetadata(0.6, EntityMetadata("entity6", "entity6", {})),
+            ScoredEntityMetadata(0.5, EntityMetadata("entity5", "entity5", {})),
+            ScoredEntityMetadata(0.4, EntityMetadata("entity4", "entity4", {})),
+            ScoredEntityMetadata(0.3, EntityMetadata("entity3", "entity3", {})),
+            ScoredEntityMetadata(0.2, EntityMetadata("entity2", "entity2", {})),
+        }}},
+      /*entity_metadata=*/{});
 
   Annotate("sometext");
 

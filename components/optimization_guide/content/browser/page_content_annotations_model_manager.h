@@ -138,7 +138,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
       base::TimeTicks execution_start,
       PageContentAnnotatedCallback callback,
       size_t current_model_index,
-      const absl::optional<std::vector<tflite::task::core::Category>>& output);
+      const absl::optional<std::vector<ScoredEntityMetadata>>& output);
 
   // Set up the machinery for execution of the page topics model. This should
   // only be run at construction.
