@@ -82,7 +82,7 @@ void UpdateRequiredScreen::ShowImpl() {
   LoginScreen::Get()->SetAllowLoginAsGuest(false);
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDisplayDomain(),
+  view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDomainManager(),
                                     ui::GetChromeOSDeviceName());
 
   is_shown_ = true;
