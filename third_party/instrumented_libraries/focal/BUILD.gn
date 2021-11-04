@@ -194,7 +194,6 @@ instrumented_library("dee") {
 }
 
 instrumented_library("freetype") {
-  pre_build = "scripts/pre-build/freetype.sh"
   extra_configure_flags = [ "--disable-static" ]
 }
 
