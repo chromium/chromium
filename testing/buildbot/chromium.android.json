@@ -11865,7 +11865,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
           "--timeout-scale=2.0"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--bucket",
@@ -11931,7 +11930,7 @@
             }
           ],
           "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 30
+          "shards": 20
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
