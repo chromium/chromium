@@ -614,7 +614,7 @@ Polymer({
   },
 
   /**
-   * Scrolls down until the page at |pageIndex| is at the top of the viewport.
+   * Scrolls the image specified by |pageIndex| into view.
    * @param {number} pageIndex
    * @private
    */
@@ -628,12 +628,7 @@ Polymer({
     }
 
     assert(pageIndex >= 0 && pageIndex < scannedImages.length);
-    const imageHeight = scannedImages[0].offsetHeight;
-
-    // Use |pageIndex| to calculate the number of pages needed to scroll by to
-    // get to our desired page. Ex: If we want to scroll to the page with
-    // |pageIndex| = 3, we should scroll past 3 pages.
-    this.$$('#previewDiv').scrollTop = imageHeight * pageIndex;
+    scannedImages[pageIndex].scrollIntoView();
   },
 
   /** @private */
