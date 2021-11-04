@@ -99,16 +99,11 @@ ui::Compositor* TestCompositorHostOzone::GetCompositor() {
   return &compositor_;
 }
 
-// To avoid multiple definitions when use_x11 && use_ozone is true, disable this
-// factory method for OS_LINUX as Linux has a factory method that decides what
-// screen to use based on IsUsingOzonePlatform feature flag.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
 // static
 TestCompositorHost* TestCompositorHost::Create(
     const gfx::Rect& bounds,
     ui::ContextFactory* context_factory) {
   return new TestCompositorHostOzone(bounds, context_factory);
 }
-#endif
 
 }  // namespace ui
