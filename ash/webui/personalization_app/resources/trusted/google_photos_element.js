@@ -304,6 +304,15 @@ export class GooglePhotos extends WithPersonalizationStore {
   }
 
   /**
+   * Whether the list of albums is empty.
+   * @return {boolean}
+   * @private
+   */
+  isAlbumsEmpty_() {
+    return !isNonEmptyArray(this.albums_);
+  }
+
+  /**
    * Whether the albums tab is currently selected.
    * @return {boolean}
    * @private

@@ -31,6 +31,7 @@ js_type_check("closure_compile") {
 js_library("google_photos_element_test") {
   deps = [
     ":personalization_app_test_utils",
+    ":test_personalization_store",
     "../..:chai_assert",
     "../..:test_util",
     "//ash/webui/personalization_app/resources/trusted:google_photos_element",

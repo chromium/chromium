@@ -13,6 +13,7 @@
 
   .tab-strip {
     flex: 0 0 auto;
+    margin-bottom: var(--personalization-app-grid-item-spacing);
     width: 100%;
   }
 
@@ -28,7 +29,6 @@
   #photosContent {
     flex: 1 1 auto;
     height: 100%;
-    margin-top: var(--personalization-app-grid-item-spacing);
     overflow: hidden;
     width: 100%;
   }
@@ -95,16 +95,18 @@
   }
 </style>
 <main id="main" aria-label$="[[i18n('googlePhotosLabel')]]" tabindex="-1">
-  <div class="tab-strip">
-    <cr-button id="photosTab" aria-pressed="[[isPhotosTabSelected_(tab_)]]"
-      on-click="onTabSelected_">
-      <div class="text">[[i18n('googlePhotosPhotosTabLabel')]]</div>
-    </cr-button>
-    <cr-button id="albumsTab" aria-pressed="[[isAlbumsTabSelected_(tab_)]]"
-      on-click="onTabSelected_">
-      <div class="text">[[i18n('googlePhotosAlbumsTabLabel')]]</div>
-    </cr-button>
-  </div>
+  <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
+    <div class="tab-strip">
+      <cr-button id="photosTab" aria-pressed="[[isPhotosTabSelected_(tab_)]]"
+        on-click="onTabSelected_">
+        <div class="text">[[i18n('googlePhotosPhotosTabLabel')]]</div>
+      </cr-button>
+      <cr-button id="albumsTab" aria-pressed="[[isAlbumsTabSelected_(tab_)]]"
+        on-click="onTabSelected_">
+        <div class="text">[[i18n('googlePhotosAlbumsTabLabel')]]</div>
+      </cr-button>
+    </div>
+  </template>
   <div id="photosContent" hidden$="[[!isPhotosTabSelected_(tab_)]]">
     <iron-list id="photosGrid" items="[[photosByRow_]]" as="row">
       <template>
@@ -120,5 +122,7 @@
       </template>
     </iron-list>
   </div>
-  <div id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]"></div>
+  <template is="dom-if" if="[[!isAlbumsEmpty_(albums_)]]">
+    <div id="albumsContent" hidden$="[[!isAlbumsTabSelected_(tab_)]]"></div>
+  </template>
 </main>
