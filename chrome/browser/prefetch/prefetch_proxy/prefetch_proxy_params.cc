@@ -150,6 +150,15 @@ bool PrefetchProxyCanaryCheckEnabled() {
       features::kIsolatePrerendersMustProbeOrigin, "do_canary", true);
 }
 
+bool PrefetchProxyTLSCanaryCheckEnabled() {
+  if (!PrefetchProxyCanaryCheckEnabled()) {
+    return false;
+  }
+
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kIsolatePrerendersMustProbeOrigin, "do_tls_canary", false);
+}
+
 GURL PrefetchProxyTLSCanaryCheckURL() {
   GURL url(base::GetFieldTrialParamValueByFeature(
       features::kIsolatePrerendersMustProbeOrigin, "tls_canary_url"));

@@ -282,19 +282,27 @@ PrefetchProxyOriginProber::PrefetchProxyOriginProber(Profile* profile)
   AvailabilityProber::RetryPolicy retry_policy;
   retry_policy.max_retries = 0;
 
-  tls_canary_check_ = std::make_unique<AvailabilityProber>(
-      GetCanaryCheckDelegate(),
-      profile_->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      profile_->GetPrefs(),
-      AvailabilityProber::ClientName::kIsolatedPrerenderTLSCanaryCheck,
-      PrefetchProxyTLSCanaryCheckURL(), AvailabilityProber::HttpMethod::kGet,
-      net::HttpRequestHeaders(), retry_policy, timeout_policy,
-      traffic_annotation, 10 /* max_cache_entries */,
-      PrefetchProxyCanaryCheckCacheLifetime());
-  tls_canary_check_->SetOnCompleteCallback(
-      base::BindOnce(&PrefetchProxyOriginProber::OnTLSCanaryCheckComplete,
-                     weak_factory_.GetWeakPtr()));
+  if (PrefetchProxyTLSCanaryCheckEnabled()) {
+    tls_canary_check_ = std::make_unique<AvailabilityProber>(
+        GetCanaryCheckDelegate(),
+        profile_->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess(),
+        profile_->GetPrefs(),
+        AvailabilityProber::ClientName::kIsolatedPrerenderTLSCanaryCheck,
+        PrefetchProxyTLSCanaryCheckURL(), AvailabilityProber::HttpMethod::kGet,
+        net::HttpRequestHeaders(), retry_policy, timeout_policy,
+        traffic_annotation, 10 /* max_cache_entries */,
+        PrefetchProxyCanaryCheckCacheLifetime());
+
+    // This code is running at browser startup. Start the canary checks when we
+    // get the chance, but there's no point in it being ready for the first
+    // navigation since the check won't be done by then anyways.
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&StartCanaryCheck, tls_canary_check_->AsWeakPtr()),
+            base::Seconds(1));
+  }
 
   dns_canary_check_ = std::make_unique<AvailabilityProber>(
       GetCanaryCheckDelegate(),
@@ -307,25 +315,17 @@ PrefetchProxyOriginProber::PrefetchProxyOriginProber(Profile* profile)
       traffic_annotation, 10 /* max_cache_entries */,
       PrefetchProxyCanaryCheckCacheLifetime());
 
-  // This code is running at browser startup. Start the canary check when we get
-  // the chance, but there's no point in it being ready for the first navigation
-  // since the check won't be done by then anyways.
+  // This code is running at browser startup. Start the canary checks when we
+  // get the chance, but there's no point in it being ready for the first
+  // navigation since the check won't be done by then anyways.
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&StartCanaryCheck, tls_canary_check_->AsWeakPtr()),
+          base::BindOnce(&StartCanaryCheck, dns_canary_check_->AsWeakPtr()),
           base::Seconds(1));
 }
 
 PrefetchProxyOriginProber::~PrefetchProxyOriginProber() = default;
-
-void PrefetchProxyOriginProber::OnTLSCanaryCheckComplete(bool success) {
-  // If the TLS check was not successful, don't bother with the DNS check.
-  if (!success)
-    return;
-
-  StartCanaryCheck(dns_canary_check_->AsWeakPtr());
-}
 
 bool PrefetchProxyOriginProber::ShouldProbeOrigins() const {
   if (!PrefetchProxyProbingEnabled()) {
@@ -334,17 +334,18 @@ bool PrefetchProxyOriginProber::ShouldProbeOrigins() const {
   if (!PrefetchProxyCanaryCheckEnabled()) {
     return true;
   }
-  DCHECK(tls_canary_check_);
+
+  // We call LastProbeWasSuccessful on all enabled canary checks to make sure
+  // their cache gets refreshed if necessary.
   DCHECK(dns_canary_check_);
+  bool dns_failure =
+      !dns_canary_check_->LastProbeWasSuccessful().value_or(false);
+  bool tls_failure =
+      tls_canary_check_ &&
+      !tls_canary_check_->LastProbeWasSuccessful().value_or(false);
 
-  bool tls_success =
-      tls_canary_check_->LastProbeWasSuccessful().value_or(false);
-  bool dns_success =
-      dns_canary_check_->LastProbeWasSuccessful().value_or(false);
-
-  // If both checks have completed and succeeded, then no probing is needed. In
-  // every other case, probe.
-  return !(tls_success && dns_success);
+  // If either check has failed or not completed in time, probe.
+  return tls_failure || dns_failure;
 }
 
 void PrefetchProxyOriginProber::SetProbeURLOverrideDelegateOverrideForTesting(
@@ -352,29 +353,26 @@ void PrefetchProxyOriginProber::SetProbeURLOverrideDelegateOverrideForTesting(
   override_delegate_ = delegate;
 }
 
+bool PrefetchProxyOriginProber::IsDNSCanaryCheckCompleteForTesting() const {
+  return dns_canary_check_->LastProbeWasSuccessful().has_value();
+}
+
 bool PrefetchProxyOriginProber::IsTLSCanaryCheckCompleteForTesting() const {
   return tls_canary_check_->LastProbeWasSuccessful().has_value();
 }
 
-bool PrefetchProxyOriginProber::IsDNSCanaryCheckActiveForTesting() const {
-  return dns_canary_check_->is_active();
-}
-
 void PrefetchProxyOriginProber::Probe(const GURL& url,
                                       OnProbeResultCallback callback) {
-  DCHECK(ShouldProbeOrigins());
-
   GURL probe_url = url;
   if (override_delegate_) {
     probe_url = override_delegate_->OverrideProbeURL(probe_url);
   }
 
-  bool tls_canary_check_success =
-      tls_canary_check_
-          ? tls_canary_check_->LastProbeWasSuccessful().value_or(false)
-          : false;
-
-  if (!tls_canary_check_success) {
+  // If canary checks are disabled, or if the TLS canary check is enabled and
+  // failed (or did not complete), do TLS/HTTP probing.
+  if (!PrefetchProxyCanaryCheckEnabled() ||
+      (tls_canary_check_ &&
+       !tls_canary_check_->LastProbeWasSuccessful().value_or(false))) {
     if (PrefetchProxyMustHTTPProbeInsteadOfTLS()) {
       HTTPProbe(probe_url, std::move(callback));
       return;

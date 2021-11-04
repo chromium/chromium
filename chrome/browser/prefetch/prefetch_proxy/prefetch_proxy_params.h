@@ -66,6 +66,12 @@ bool PrefetchProxyProbingEnabled();
 // Whether an ISP filtering canary check should be made on browser startup.
 bool PrefetchProxyCanaryCheckEnabled();
 
+// Whether the TLS ISP filtering canary check should enabled. Only has effect if
+// canary checks are enabled (PrefetchProxyCanaryCheckEnabled is true). When
+// false, only the DNS canary check will be performed. When true, both the DNS
+// and TLS canary checks will be enabled.
+bool PrefetchProxyTLSCanaryCheckEnabled();
+
 // The URL to use for the TLS canary check.
 GURL PrefetchProxyTLSCanaryCheckURL();
 
