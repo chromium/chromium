@@ -11,11 +11,9 @@ import android.webkit.WebViewRenderProcess;
 import android.webkit.WebViewRenderProcessClient;
 
 import org.chromium.android_webview.AwRenderProcess;
-import org.chromium.base.annotations.VerifiesOnQ;
 
 import java.util.concurrent.Executor;
 
-@VerifiesOnQ
 @TargetApi(Build.VERSION_CODES.Q)
 class WebViewRenderProcessClientAdapter extends SharedWebViewRendererClientAdapter {
     private Executor mExecutor;

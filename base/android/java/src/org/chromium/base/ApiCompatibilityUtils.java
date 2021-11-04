@@ -47,13 +47,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.ImageViewCompat;
 
-import org.chromium.base.annotations.VerifiesOnLollipopMR1;
-import org.chromium.base.annotations.VerifiesOnM;
-import org.chromium.base.annotations.VerifiesOnN;
-import org.chromium.base.annotations.VerifiesOnO;
-import org.chromium.base.annotations.VerifiesOnP;
-import org.chromium.base.annotations.VerifiesOnQ;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -69,7 +62,6 @@ public class ApiCompatibilityUtils {
     private ApiCompatibilityUtils() {
     }
 
-    @VerifiesOnQ
     @TargetApi(Build.VERSION_CODES.Q)
     private static class ApisQ {
         static boolean isRunningInUserTestHarness() {
@@ -96,7 +88,6 @@ public class ApiCompatibilityUtils {
         }
     }
 
-    @VerifiesOnP
     @TargetApi(Build.VERSION_CODES.P)
     private static class ApisP {
         static String getProcessName() {
@@ -108,7 +99,6 @@ public class ApiCompatibilityUtils {
         }
     }
 
-    @VerifiesOnO
     @TargetApi(Build.VERSION_CODES.O)
     private static class ApisO {
         static void initNotificationSettingsIntent(Intent intent, String packageName) {
@@ -127,7 +117,6 @@ public class ApiCompatibilityUtils {
         }
     }
 
-    @VerifiesOnN
     @TargetApi(Build.VERSION_CODES.N)
     private static class ApisN {
         static String toHtml(Spanned spanned, int option) {
@@ -152,7 +141,6 @@ public class ApiCompatibilityUtils {
         }
     }
 
-    @VerifiesOnM
     @TargetApi(Build.VERSION_CODES.M)
     private static class ApisM {
         public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
@@ -166,7 +154,6 @@ public class ApiCompatibilityUtils {
         }
     }
 
-    @VerifiesOnLollipopMR1
     @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
     private static class ApisLmr1 {
         static void setAccessibilityTraversalBefore(View view, int viewFocusedAfter) {

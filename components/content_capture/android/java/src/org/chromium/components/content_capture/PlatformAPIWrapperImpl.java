@@ -13,12 +13,9 @@ import android.view.autofill.AutofillId;
 import android.view.contentcapture.ContentCaptureContext;
 import android.view.contentcapture.ContentCaptureSession;
 
-import org.chromium.base.annotations.VerifiesOnQ;
-
 /**
  * The implementation of PlatformAPIWrapper.
  */
-@VerifiesOnQ
 @TargetApi(Build.VERSION_CODES.Q)
 public class PlatformAPIWrapperImpl extends PlatformAPIWrapper {
     @Override

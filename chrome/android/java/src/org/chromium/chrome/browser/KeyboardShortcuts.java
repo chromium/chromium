@@ -11,7 +11,6 @@ import android.view.KeyEvent;
 import android.view.KeyboardShortcutGroup;
 import android.view.KeyboardShortcutInfo;
 
-import org.chromium.base.annotations.VerifiesOnN;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -122,7 +121,6 @@ public class KeyboardShortcuts {
      * @return a list of shortcuts organized into groups.
      */
     @TargetApi(Build.VERSION_CODES.N)
-    @VerifiesOnN
     public static List<KeyboardShortcutGroup> createShortcutGroup(Context context) {
         final int ctrlShift = KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON;
 

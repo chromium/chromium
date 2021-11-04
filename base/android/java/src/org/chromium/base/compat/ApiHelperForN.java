@@ -26,14 +26,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.RemoteViews;
 
-import org.chromium.base.annotations.VerifiesOnN;
-
 /**
  * Utility class to use new APIs that were added in N (API level 24). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@VerifiesOnN
 @TargetApi(Build.VERSION_CODES.N)
 public final class ApiHelperForN {
     private ApiHelperForN() {}

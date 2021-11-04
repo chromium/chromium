@@ -14,7 +14,6 @@ import android.view.WindowInsets;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.VerifiesOnP;
 
 /**
  * Display cutout controller for WebView.
@@ -23,7 +22,6 @@ import org.chromium.base.annotations.VerifiesOnP;
  * Android P and above.
  */
 @TargetApi(Build.VERSION_CODES.P)
-@VerifiesOnP
 public class AwDisplayCutoutController {
     private static final boolean DEBUG = false;
     private static final String TAG = "DisplayCutout";

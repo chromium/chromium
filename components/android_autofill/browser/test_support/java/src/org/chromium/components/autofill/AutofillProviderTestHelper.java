@@ -9,13 +9,11 @@ import android.os.Build;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.VerifiesOnO;
 import org.chromium.content_public.browser.WebContents;
 
 /**
  * The help class for Autofill Provider test to access the native code.
  */
-@VerifiesOnO
 @TargetApi(Build.VERSION_CODES.O)
 @JNINamespace("autofill")
 public class AutofillProviderTestHelper {

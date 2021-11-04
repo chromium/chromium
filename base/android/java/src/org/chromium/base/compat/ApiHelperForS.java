@@ -20,14 +20,12 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.VerifiesOnS;
 
 /**
  * Utility class to use new APIs that were added in S (API level 31). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@VerifiesOnS
 @TargetApi(Build.VERSION_CODES.S)
 public final class ApiHelperForS {
     private static final String TAG = "ApiHelperForS";

@@ -15,14 +15,12 @@ import android.view.contentcapture.ContentCaptureSession;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.VerifiesOnQ;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
 /**
  * The background task to talk to the ContentCapture Service.
  */
-@VerifiesOnQ
 @TargetApi(Build.VERSION_CODES.Q)
 abstract class NotificationTask extends AsyncTask<Boolean> {
     private static final String TAG = "ContentCapture";
