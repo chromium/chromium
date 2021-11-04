@@ -177,7 +177,9 @@ TEST_F(TraceEventPerfTest, Submit_10000_TRACE_EVENT0_multithreaded) {
   }
 }
 
-TEST_F(TraceEventPerfTest, Submit_10000_TRACE_EVENT0_in_traceable_tasks) {
+// Disabled due to consistent failure crbug.com/1266164.
+TEST_F(TraceEventPerfTest,
+       DISABLED_Submit_10000_TRACE_EVENT0_in_traceable_tasks) {
   BeginTrace();
   IterableStopwatch task_sw(kMetricEventSubmitTimeMs);
   base::TaskAnnotator task_annotator;
