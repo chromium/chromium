@@ -527,6 +527,44 @@ class EncodedAddressUnwind(NamedTuple):
   complete_instruction_sequence: bytes
 
 
+def EncodeAddressUnwinds(address_unwinds: Tuple[AddressUnwind, ...]
+                         ) -> Tuple[EncodedAddressUnwind, ...]:
+  """Encodes the unwind instructions and offset for the addresses within a
+  function.
+
+  Argument:
+    address_unwinds: A tuple of unwind state for addresses within a function.
+
+  Returns:
+    The encoded unwind instructions and offsets for the addresses within a
+    function, ordered by decreasing offset.
+  """
+  sorted_address_unwinds: List[AddressUnwind] = sorted(
+      address_unwinds,
+      key=lambda address_unwind: address_unwind.address_offset,
+      reverse=True)
+  unwind_instructions: List[bytes] = [
+      EncodeAddressUnwind(address_unwind)
+      for address_unwind in sorted_address_unwinds
+  ]
+
+  # A complete instruction sequence contains all the unwind instructions
+  # necessary to unwind from an offset within a function. For a given offset
+  # this includes the offset's instructions plus the instructions for all
+  # earlier offsets. The offsets are stored in reverse order, hence the i:
+  # range rather than :i+1.
+  complete_instruction_sequences = [
+      b''.join(unwind_instructions[i:]) for i in range(len(unwind_instructions))
+  ]
+
+  encoded_unwinds: List[EncodedAddressUnwind] = []
+  for address_unwind, sequence in zip(sorted_address_unwinds,
+                                      complete_instruction_sequences):
+    encoded_unwinds.append(
+        EncodedAddressUnwind(address_unwind.address_offset, sequence))
+  return tuple(encoded_unwinds)
+
+
 def EncodeFunctionOffsetTable(
     encoded_address_unwind_sequences: Iterable[
         Tuple[EncodedAddressUnwind, ...]],

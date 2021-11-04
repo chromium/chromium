@@ -10,12 +10,13 @@ arm builds.
 
 import io
 import unittest
+import unittest.mock
 
 from create_unwind_table import (
     AddressCfi, AddressUnwind, FilterToNonTombstoneCfi, FunctionCfi,
-    EncodeAddressUnwind, EncodedAddressUnwind, EncodeAsBytes,
-    EncodeFunctionOffsetTable, EncodeStackPointerUpdate, EncodePop,
-    EncodeUnwindInstructionTable, NullParser, PushOrSubSpParser,
+    EncodeAddressUnwind, EncodeAddressUnwinds, EncodedAddressUnwind,
+    EncodeAsBytes, EncodeFunctionOffsetTable, EncodeStackPointerUpdate,
+    EncodePop, EncodeUnwindInstructionTable, NullParser, PushOrSubSpParser,
     ReadFunctionCfi, StoreSpParser, Uleb128Encode, UnwindType, VPushParser)
 
 
@@ -252,6 +253,34 @@ class _TestEncodeAddressUnwind(unittest.TestCase):
                           unwind_type=UnwindType.RESTORE_SP_FROM_REGISTER,
                           sp_offset=0x4,
                           registers=tuple())))
+
+
+class _TestEncodeAddressUnwinds(unittest.TestCase):
+  def testEncodeOrder(self):
+    address_unwind1 = AddressUnwind(address_offset=0,
+                                    unwind_type=UnwindType.RETURN_TO_LR,
+                                    sp_offset=0,
+                                    registers=tuple())
+    address_unwind2 = AddressUnwind(
+        address_offset=4,
+        unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+        sp_offset=0,
+        registers=(4, 14))
+
+    def MockEncodeAddressUnwind(address_unwind):
+      return {
+          address_unwind1: bytes([1]),
+          address_unwind2: bytes([2]),
+      }[address_unwind]
+
+    with unittest.mock.patch("create_unwind_table.EncodeAddressUnwind",
+                             side_effect=MockEncodeAddressUnwind):
+      encoded_unwinds = EncodeAddressUnwinds((address_unwind1, address_unwind2))
+      self.assertEqual((
+          EncodedAddressUnwind(4,
+                               bytes([2]) + bytes([1])),
+          EncodedAddressUnwind(0, bytes([1])),
+      ), encoded_unwinds)
 
 
 class _TestNullParser(unittest.TestCase):
