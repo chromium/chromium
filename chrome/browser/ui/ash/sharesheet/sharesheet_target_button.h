@@ -35,9 +35,6 @@ class SharesheetTargetButton : public views::Button {
 
  private:
   void SetLabelProperties(views::Label* label);
-
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
 };
 
 }  // namespace sharesheet

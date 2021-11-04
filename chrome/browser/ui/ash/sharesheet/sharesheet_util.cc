@@ -12,12 +12,10 @@ namespace sharesheet {
 std::unique_ptr<views::Label> CreateShareLabel(
     const std::u16string& text,
     const int text_context,
-    const int line_height,
     const SkColor color,
     const gfx::HorizontalAlignment alignment,
     const int text_style) {
   auto label = std::make_unique<views::Label>(text, text_context, text_style);
-  label->SetLineHeight(line_height);
   label->SetEnabledColor(color);
   label->SetHorizontalAlignment(alignment);
   return label;

@@ -35,7 +35,6 @@ enum SharesheetViewID {
 std::unique_ptr<views::Label> CreateShareLabel(
     const std::u16string& text,
     const int text_context,
-    const int line_height,
     const SkColor color,
     const gfx::HorizontalAlignment alignment,
     const int text_style = ash::STYLE_SHARESHEET);
