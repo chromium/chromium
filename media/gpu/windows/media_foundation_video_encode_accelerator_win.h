@@ -48,6 +48,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // VideoEncodeAccelerator implementation.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles() override;
+  VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesLight()
+      override;
   bool Initialize(const Config& config, Client* client) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
@@ -72,7 +74,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Get supported profiles for specific codec.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedProfilesForCodec(
-      VideoCodec codec);
+      VideoCodec codec,
+      bool populate_svc_info);
 
   // Enumerates all hardware encoder backed IMFTransform instances for given
   // codec.

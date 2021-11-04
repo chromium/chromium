@@ -182,6 +182,8 @@ struct MediaFoundationVideoEncodeAccelerator::BitstreamBufferRef {
 MediaFoundationVideoEncodeAccelerator::MediaFoundationVideoEncodeAccelerator(
     bool compatible_with_win7)
     : compatible_with_win7_(compatible_with_win7),
+      frame_rate_(kMaxFrameRateNumerator / kMaxFrameRateDenominator),
+      bitrate_(Bitrate::ConstantBitrate(kDefaultTargetBitrate)),
       input_required_(false),
       main_client_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       encoder_thread_("MFEncoderThread") {}
@@ -203,24 +205,45 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
   DCHECK(main_client_task_runner_->BelongsToCurrentThread());
 
   SupportedProfiles profiles;
-  bitrate_ = Bitrate::ConstantBitrate(kDefaultTargetBitrate);
-  frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
 
-  auto h264_profiles = GetSupportedProfilesForCodec(VideoCodec::kH264);
-  profiles.insert(profiles.end(), h264_profiles.begin(), h264_profiles.end());
-
-  if (base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding)) {
-    auto av1_profiles = GetSupportedProfilesForCodec(VideoCodec::kAV1);
-    profiles.insert(profiles.end(), av1_profiles.begin(), av1_profiles.end());
+  for (auto codec : {VideoCodec::kH264, VideoCodec::kAV1}) {
+    auto codec_profiles = GetSupportedProfilesForCodec(codec, true);
+    profiles.insert(profiles.end(), codec_profiles.begin(),
+                    codec_profiles.end());
   }
+
+  ReleaseEncoderResources();
+  return profiles;
+}
+
+VideoEncodeAccelerator::SupportedProfiles
+MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesLight() {
+  TRACE_EVENT0(
+      "gpu,startup",
+      "MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesLight");
+  DCHECK(main_client_task_runner_->BelongsToCurrentThread());
+
+  SupportedProfiles profiles;
+
+  for (auto codec : {VideoCodec::kH264, VideoCodec::kAV1}) {
+    auto codec_profiles = GetSupportedProfilesForCodec(codec, false);
+    profiles.insert(profiles.end(), codec_profiles.begin(),
+                    codec_profiles.end());
+  }
+
   ReleaseEncoderResources();
   return profiles;
 }
 
 VideoEncodeAccelerator::SupportedProfiles
 MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
-    VideoCodec codec) {
+    VideoCodec codec,
+    bool populate_svc_info) {
   SupportedProfiles profiles;
+  if (codec == VideoCodec::kAV1 &&
+      !base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding))
+    return profiles;
+
   IMFActivate** pp_activate = nullptr;
   uint32_t encoder_count = EnumerateHardwareEncoders(codec, &pp_activate);
   if (!encoder_count) {
@@ -233,7 +256,7 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   if (pp_activate) {
     for (UINT32 i = 0; i < encoder_count; i++) {
       if (pp_activate[i]) {
-        if (IsSvcSupported(pp_activate[i]))
+        if (populate_svc_info && IsSvcSupported(pp_activate[i]))
           svc_supported = true;
 
         // Release the enumerated instances if any.

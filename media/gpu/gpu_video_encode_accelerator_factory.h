@@ -35,9 +35,12 @@ class MEDIA_GPU_EXPORT GpuVideoEncodeAcceleratorFactory {
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   // Gets the supported codec profiles for video encoding on the platform.
+  // If |populate_extended_info| it false, this function will only populate:
+  // codec, framerate range and resolution range. It's faster.
   static VideoEncodeAccelerator::SupportedProfiles GetSupportedProfiles(
       const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+      bool populate_extended_info = true);
 };
 
 }  // namespace media
