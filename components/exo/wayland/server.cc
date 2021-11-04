@@ -6,7 +6,6 @@
 
 #include <alpha-compositing-unstable-v1-server-protocol.h>
 #include <aura-shell-server-protocol.h>
-#include <color-space-unstable-v1-server-protocol.h>
 #include <cursor-shapes-unstable-v1-server-protocol.h>
 #include <extended-drag-unstable-v1-server-protocol.h>
 #include <gaming-input-unstable-v2-server-protocol.h>
@@ -78,7 +77,6 @@
 #include "base/system/sys_info.h"
 #include "components/exo/wayland/wl_shell.h"
 #include "components/exo/wayland/xdg_shell.h"
-#include "components/exo/wayland/zcr_color_space.h"
 #include "components/exo/wayland/zcr_cursor_shapes.h"
 #include "components/exo/wayland/zcr_extended_drag.h"
 #include "components/exo/wayland/zcr_gaming_input.h"
@@ -259,8 +257,6 @@ void Server::Initialize() {
   wl_global_create(wl_display_.get(), &zwp_color_manager_v1_interface, 1,
                    display_, bind_zwp_color_manager);
 #endif
-  wl_global_create(wl_display_.get(), &zcr_color_space_v1_interface, 1,
-                   display_, bind_color_space);
   wl_global_create(wl_display_.get(), &zxdg_decoration_manager_v1_interface, 1,
                    display_, bind_zxdg_decoration_manager);
   wl_global_create(wl_display_.get(), &zcr_extended_drag_v1_interface, 1,

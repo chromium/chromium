@@ -67,7 +67,6 @@ DEFAULT_DELETER(zwp_linux_explicit_synchronization_v1,
                 zwp_linux_explicit_synchronization_v1_destroy)
 DEFAULT_DELETER(zwp_linux_surface_synchronization_v1,
                 zwp_linux_surface_synchronization_v1_destroy)
-DEFAULT_DELETER(zcr_color_space_v1, zcr_color_space_v1_destroy)
 DEFAULT_DELETER(zcr_vsync_feedback_v1, zcr_vsync_feedback_v1_destroy)
 DEFAULT_DELETER(zcr_vsync_timing_v1, zcr_vsync_timing_v1_destroy)
 DEFAULT_DELETER(wl_data_device_manager, wl_data_device_manager_destroy)

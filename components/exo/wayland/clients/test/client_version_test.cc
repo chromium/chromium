@@ -71,7 +71,6 @@ struct Globals {
   std::unique_ptr<zwp_linux_explicit_synchronization_v1>
       zwp_linux_explicit_synchronization_v1;
   std::unique_ptr<zcr_vsync_feedback_v1> zcr_vsync_feedback_v1;
-  std::unique_ptr<zcr_color_space_v1> zcr_color_space_v1;
   std::unique_ptr<wl_data_device_manager> wl_data_device_manager;
   std::unique_ptr<wp_viewporter> wp_viewporter;
   std::unique_ptr<zxdg_shell_v6> zxdg_shell_v6;
@@ -159,7 +158,6 @@ void RegistryHandler(void* data,
           REGISTRY_CALLBACK(zwp_linux_explicit_synchronization_v1,
                             zwp_linux_explicit_synchronization_v1),
           REGISTRY_CALLBACK(zcr_vsync_feedback_v1, zcr_vsync_feedback_v1),
-          REGISTRY_CALLBACK(zcr_color_space_v1, zcr_color_space_v1),
           REGISTRY_CALLBACK(wl_data_device_manager, wl_data_device_manager),
           REGISTRY_CALLBACK(wp_viewporter, wp_viewporter),
           REGISTRY_CALLBACK(zxdg_shell_v6, zxdg_shell_v6),
