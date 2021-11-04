@@ -125,6 +125,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.AdaptiveIconLoad.FromArcAppIcon"
     enum="BooleanIsAdaptiveIcon" expires_after="2020-12-31">
+  <obsolete>
+    Obsoleted in November 2021.
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>lgcheng@google.com</owner>
   <owner>nancylingwang@chromium.org</owner>
@@ -136,6 +139,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.AdaptiveIconLoad.FromArcDefaultAppIcon"
     enum="BooleanIsAdaptiveIcon" expires_after="2020-12-31">
+  <obsolete>
+    Obsoleted in November 2021.
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>lgcheng@google.com</owner>
   <owner>nancylingwang@chromium.org</owner>
@@ -147,6 +153,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.AdaptiveIconLoad.FromNonArcAppIcon"
     enum="BooleanIsAdaptiveIcon" expires_after="2020-12-31">
+  <obsolete>
+    Obsoleted in November 2021.
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>lgcheng@google.com</owner>
   <owner>nancylingwang@chromium.org</owner>

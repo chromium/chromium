@@ -298,8 +298,6 @@ void ArcRawIconPngDataToImageSkia(
 
   // For non-adaptive icons, add the white color background, and apply the mask.
   if (!icon->is_adaptive_icon) {
-    base::UmaHistogramBoolean("Arc.AdaptiveIconLoad.FromNonArcAppIcon", false);
-
     if (!icon->icon_png_data.has_value()) {
       std::move(callback).Run(gfx::ImageSkia());
       return;
@@ -311,8 +309,6 @@ void ArcRawIconPngDataToImageSkia(
     icon_loader->LoadArcIconPngData(icon->icon_png_data.value());
     return;
   }
-
-  base::UmaHistogramBoolean("Arc.AdaptiveIconLoad.FromNonArcAppIcon", true);
 
   if (!icon->foreground_icon_png_data.has_value() ||
       icon->foreground_icon_png_data.value().empty() ||
