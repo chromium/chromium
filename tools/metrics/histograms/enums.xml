@@ -78263,10 +78263,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="8" label="User turned off sync from DICE UI.">
     User turned off sync from the Desktop Identity Consistency internals UI.
   </int>
-  <int value="9" label="[Android] Account removed from device">
+  <int value="9" label="Account removed from device">
     Signout forced because account was removed from device.
   </int>
-  <int value="10" label="Account removed from device">
+  <int value="10" label="Signout forced on profile load">
     Signout forced when profile is loaded as browser sign-in is no longer
     allowed.
   </int>
