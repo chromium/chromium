@@ -26,6 +26,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/search_box/search_box_view_base.h"
@@ -80,8 +81,6 @@ void AppListMainView::AddContentsViews() {
   contents_view_ = AddChildView(std::move(contents_view));
 
   search_box_view_->set_contents_view(contents_view_);
-  search_box_view_->SetResultSelectionController(
-      contents_view_->search_result_page_view()->result_selection_controller());
 }
 
 void AppListMainView::ShowAppListWhenReady() {
@@ -135,6 +134,7 @@ void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {
                                     !query.empty());
 
   delegate_->StartSearch(raw_query);
+  contents_view_->search_result_page_view()->UpdateResultContainersVisibility();
 }
 
 void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {

@@ -28,6 +28,7 @@
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/privacy_container_view.h"
+#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_actions_view.h"
@@ -358,19 +359,6 @@ class AppListBubbleAndTabletTest
     return !productivity_launcher_param();
   }
 
-  void MaybeRefreshAppListSearchResultPage() {
-    // Bubble launcher has an AppListBubbleSearchPage which does not need to be
-    // refreshed like the SearchResultViewPage.
-    if (!should_show_bubble_launcher()) {
-      GetAppListTestHelper()
-          ->GetAppListView()
-          ->app_list_main_view()
-          ->contents_view()
-          ->search_result_page_view()
-          ->OnSearchResultContainerResultsChanged();
-    }
-  }
-
   bool AppListSearchResultPageVisible() {
     return should_show_bubble_launcher()
                ? GetAppListTestHelper()->GetBubbleSearchPage()->GetVisible()
@@ -571,17 +559,14 @@ TEST_P(AppListBubbleAndTabletTest, LauncherSearchZeroState) {
 
   // Tap Search Box to activate it and check search result view visibility.
   generator->GestureTapAt(SearchBoxCenterPoint());
-  MaybeRefreshAppListSearchResultPage();
   EXPECT_EQ(should_show_zero_state_search(), AppListSearchResultPageVisible());
 
   // Type a character into the textfield and check visibility.
   generator->PressKey(ui::VKEY_A, 0);
-  MaybeRefreshAppListSearchResultPage();
   EXPECT_TRUE(AppListSearchResultPageVisible());
 
   // Delete the character in the textfield and check visibility.
   generator->PressKey(ui::VKEY_BACK, 0);
-  MaybeRefreshAppListSearchResultPage();
   EXPECT_EQ(should_show_zero_state_search(), AppListSearchResultPageVisible());
 }
 

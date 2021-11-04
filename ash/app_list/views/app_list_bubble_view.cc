@@ -18,6 +18,7 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/folder_background_view.h"
+#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -345,7 +346,8 @@ void AppListBubbleView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
 }
 
 bool AppListBubbleView::CanSelectSearchResults() {
-  return search_page_->GetVisible() && search_page_->CanSelectSearchResults();
+  return search_page_->GetVisible() &&
+         search_page_->search_view()->CanSelectSearchResults();
 }
 
 void AppListBubbleView::ShowFolderForItemView(

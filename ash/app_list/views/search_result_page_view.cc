@@ -13,6 +13,7 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/privacy_container_view.h"
+#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
@@ -185,28 +186,37 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   // set transparent so that the rounded corner is not overwritten.
   SetBackground(std::make_unique<SearchResultPageBackground>(
       AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor()));
-  auto scroller = std::make_unique<views::ScrollView>();
-  // Leaves a placeholder area for the search box and the separator below it.
-  scroller->SetBorder(views::CreateEmptyBorder(gfx::Insets(
-      kSearchBoxHeight + kSearchBoxBottomSpacing + kSeparatorThickness, 0, 0,
-      0)));
-  scroller->SetDrawOverflowIndicator(false);
-  scroller->SetContents(base::WrapUnique(contents_view_));
-  // Setting clip height is necessary to make ScrollView take into account its
-  // contents' size. Using zeroes doesn't prevent it from scrolling and sizing
-  // correctly.
-  scroller->ClipHeightTo(0, 0);
-  scroller->SetVerticalScrollBar(
-      std::make_unique<ZeroWidthVerticalScrollBar>());
-  scroller->SetBackgroundColor(absl::nullopt);
-  AddChildView(std::move(scroller));
-
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  result_selection_controller_ = std::make_unique<ResultSelectionController>(
-      &result_container_views_,
-      base::BindRepeating(&SearchResultPageView::SelectedResultChanged,
-                          base::Unretained(this)));
+  // App list bubble search page has its own scroller and result selection
+  // controller so we do not need to construct new ones here.
+  if (features::IsProductivityLauncherEnabled()) {
+    contents_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+        kSearchBoxHeight + kSearchBoxBottomSpacing + kSeparatorThickness, 0, 0,
+        0)));
+    AddChildView(contents_view_);
+  } else {
+    auto scroller = std::make_unique<views::ScrollView>();
+    // Leaves a placeholder area for the search box and the separator below it.
+    scroller->SetBorder(views::CreateEmptyBorder(gfx::Insets(
+        kSearchBoxHeight + kSearchBoxBottomSpacing + kSeparatorThickness, 0, 0,
+        0)));
+    scroller->SetDrawOverflowIndicator(false);
+    scroller->SetContents(base::WrapUnique(contents_view_));
+    // Setting clip height is necessary to make ScrollView take into account its
+    // contents' size. Using zeroes doesn't prevent it from scrolling and sizing
+    // correctly.
+    scroller->ClipHeightTo(0, 0);
+    scroller->SetVerticalScrollBar(
+        std::make_unique<ZeroWidthVerticalScrollBar>());
+    scroller->SetBackgroundColor(absl::nullopt);
+    AddChildView(std::move(scroller));
+
+    result_selection_controller_ = std::make_unique<ResultSelectionController>(
+        &result_container_views_,
+        base::BindRepeating(&SearchResultPageView::SelectedResultChanged,
+                            base::Unretained(this)));
+  }
 
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
   model_provider->AddObserver(this);
@@ -220,21 +230,31 @@ SearchResultPageView::~SearchResultPageView() {
 void SearchResultPageView::InitializeContainers(
     AppListViewDelegate* view_delegate,
     AppListMainView* app_list_main_view,
-    views::Textfield* search_box) {
-  privacy_container_view_ = AddSearchResultContainerView(
-      std::make_unique<PrivacyContainerView>(view_delegate));
-  search_result_tile_item_list_view_ = AddSearchResultContainerView(
-      std::make_unique<SearchResultTileItemListView>(search_box,
-                                                     view_delegate));
-  result_lists_separator_ = contents_view_->AddChildView(
-      std::make_unique<HorizontalSeparator>(bounds().width()));
-  search_result_list_view_ =
-      AddSearchResultContainerView(std::make_unique<SearchResultListView>(
-          app_list_main_view, view_delegate));
-  search_result_list_view_->SetListType(
-      features::IsProductivityLauncherEnabled()
-          ? SearchResultListView::SearchResultListType::kBestMatch
-          : SearchResultListView::SearchResultListType::kUnified);
+    SearchBoxView* search_box_view) {
+  if (features::IsProductivityLauncherEnabled()) {
+    std::unique_ptr<ProductivityLauncherSearchView> search_view_ptr =
+        std::make_unique<ProductivityLauncherSearchView>(view_delegate,
+                                                         search_box_view);
+    productivity_launcher_search_view_ = search_view_ptr.get();
+    contents_view_->AddChildView(
+        std::make_unique<SearchCardView>(std::move(search_view_ptr)));
+  } else {
+    privacy_container_view_ = AddSearchResultContainerView(
+        std::make_unique<PrivacyContainerView>(view_delegate));
+    search_result_tile_item_list_view_ = AddSearchResultContainerView(
+        std::make_unique<SearchResultTileItemListView>(
+            search_box_view->search_box(), view_delegate));
+    result_lists_separator_ = contents_view_->AddChildView(
+        std::make_unique<HorizontalSeparator>(bounds().width()));
+    search_result_list_view_ =
+        AddSearchResultContainerView(std::make_unique<SearchResultListView>(
+            app_list_main_view, view_delegate));
+    search_result_list_view_->SetListType(
+        SearchResultListView::SearchResultListType::kUnified);
+
+    search_box_view->SetResultSelectionController(
+        result_selection_controller());
+  }
 }
 
 void SearchResultPageView::AddSearchResultContainerViewInternal(
@@ -267,6 +287,7 @@ const char* SearchResultPageView::GetClassName() const {
 }
 
 gfx::Size SearchResultPageView::CalculatePreferredSize() const {
+  // TODO(https://crbug.com/1216097) Update height based on available space.
   return gfx::Size(kWidth, kHeight);
 }
 
@@ -298,6 +319,8 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
           base::NumberToString16(last_search_result_count_), query);
     }
   } else {
+    // TODO(https://crbug.com/1216097) Zero state is removed for bubble launcher
+    // so we need a new A11y announcement.
     value = l10n_util::GetStringUTF16(
         IDS_APP_LIST_SEARCHBOX_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_ZERO_STATE);
   }
@@ -313,31 +336,37 @@ void SearchResultPageView::OnThemeChanged() {
 
 void SearchResultPageView::UpdateResultContainersVisibility() {
   bool should_show_page_view = false;
-
-  for (auto* container : result_container_views_) {
-    // Containers are wrapped by a `SearchCardView`, so update the parent
-    // visibility.
-    bool should_show_container_view =
-        container->num_results() && ShouldShowSearchResultView();
-    container->parent()->SetVisible(should_show_container_view);
-    container->SetVisible(should_show_container_view);
-    should_show_page_view = should_show_page_view || should_show_container_view;
-  }
-
-  result_lists_separator_->SetVisible(
-      search_result_tile_item_list_view_->num_results() &&
-      search_result_list_view_->num_results() && ShouldShowSearchResultView());
-
-  if (features::IsProductivityLauncherEnabled())
+  if (features::IsProductivityLauncherEnabled()) {
+    should_show_page_view = ShouldShowSearchResultView();
     SetVisible(should_show_page_view);
+  } else {
+    bool should_show_search_result_view = ShouldShowSearchResultView();
+    for (auto* container : result_container_views_) {
+      // Containers are wrapped by a `SearchCardView`, so update the parent
+      // visibility.
+      bool should_show_container_view =
+          container->num_results() && should_show_search_result_view;
+      container->parent()->SetVisible(should_show_container_view);
+      container->SetVisible(should_show_container_view);
+      should_show_page_view =
+          should_show_page_view || should_show_container_view;
+    }
 
+    result_lists_separator_->SetVisible(
+        search_result_tile_item_list_view_->num_results() &&
+        search_result_list_view_->num_results() &&
+        ShouldShowSearchResultView());
+  }
   InvalidateLayout();
+
   AppListPage::contents_view()
       ->GetSearchBoxView()
       ->OnResultContainerVisibilityChanged(should_show_page_view);
 }
 
 void SearchResultPageView::SelectedResultChanged() {
+  // Result selection should be handled by |productivity_launcher_search_page_|.
+  DCHECK(!features::IsProductivityLauncherEnabled());
   if (!result_selection_controller_->selected_location_details() ||
       !result_selection_controller_->selected_result()) {
     return;
@@ -389,6 +418,8 @@ void SearchResultPageView::NotifyA11yResultsChanged() {
 }
 
 void SearchResultPageView::NotifySelectedResultChanged() {
+  // Result selection should be handled by |productivity_launcher_search_page_|.
+  DCHECK(!features::IsProductivityLauncherEnabled());
   if (ignore_result_changes_for_a11y_ ||
       !result_selection_controller_->selected_location_details() ||
       !result_selection_controller_->selected_result()) {
@@ -421,6 +452,8 @@ void SearchResultPageView::OnActiveAppListModelsChanged(
 }
 
 void SearchResultPageView::OnSearchResultContainerResultsChanging() {
+  // Result selection should be handled by |productivity_launcher_search_page_|.
+  DCHECK(!features::IsProductivityLauncherEnabled());
   // Block any result selection changes while result updates are in flight.
   // The selection will be reset once the results are all updated.
   result_selection_controller_->set_block_selection_changes(true);
@@ -430,6 +463,8 @@ void SearchResultPageView::OnSearchResultContainerResultsChanging() {
 }
 
 void SearchResultPageView::OnSearchResultContainerResultsChanged() {
+  // Result selection should be handled by |productivity_launcher_search_page_|.
+  DCHECK(!features::IsProductivityLauncherEnabled());
   DCHECK(!result_container_views_.empty());
 
   int result_count = 0;
@@ -546,7 +581,8 @@ void SearchResultPageView::OnShown() {
   AppListPage::contents_view()
       ->GetSearchBoxView()
       ->OnResultContainerVisibilityChanged(ShouldShowSearchResultView());
-  ScheduleResultsChangedA11yNotification();
+  if (!features::IsProductivityLauncherEnabled())
+    ScheduleResultsChangedA11yNotification();
 }
 
 void SearchResultPageView::AnimateYPosition(AppListViewState target_view_state,

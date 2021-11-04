@@ -23,13 +23,14 @@
 
 namespace views {
 class DialogDelegateView;
-class Textfield;
 }
 
 namespace ash {
 
 class AppListMainView;
+class ProductivityLauncherSearchView;
 class PrivacyContainerView;
+class SearchBoxView;
 class SearchResultBaseView;
 class SearchResultListView;
 class SearchResultTileItemListView;
@@ -52,7 +53,7 @@ class ASH_EXPORT SearchResultPageView
 
   void InitializeContainers(AppListViewDelegate* view_delegate,
                             AppListMainView* app_list_main_view,
-                            views::Textfield* search_box);
+                            SearchBoxView* search_box_view);
 
   const std::vector<SearchResultContainerView*>& result_container_views() {
     return result_container_views_;
@@ -129,6 +130,10 @@ class ASH_EXPORT SearchResultPageView
   // Hide zero state search result view when ProductivityLauncher is enabled.
   bool ShouldShowSearchResultView() const;
 
+  // Sets visibility of result container and separator views so only containers
+  // that contain some results are shown.
+  void UpdateResultContainersVisibility();
+
   PrivacyContainerView* GetPrivacyContainerViewForTest();
   SearchResultTileItemListView* GetSearchResultTileItemListViewForTest();
   SearchResultListView* GetSearchResultListViewForTest();
@@ -136,10 +141,6 @@ class ASH_EXPORT SearchResultPageView
  private:
   // Separator between SearchResultContainerView.
   class HorizontalSeparator;
-
-  // Sets visibility of result container and separator views so only containers
-  // that contain some results are shown.
-  void UpdateResultContainersVisibility();
 
   // Passed to |result_selection_controller_| as a callback that gets called
   // when the currently selected result changes.
@@ -199,6 +200,8 @@ class ASH_EXPORT SearchResultPageView
   PrivacyContainerView* privacy_container_view_ = nullptr;
   SearchResultTileItemListView* search_result_tile_item_list_view_ = nullptr;
   SearchResultListView* search_result_list_view_ = nullptr;
+  // Search result container used for productivity launcher.
+  ProductivityLauncherSearchView* productivity_launcher_search_view_ = nullptr;
 
   // Separator view shown between search result tile item list and search
   // results list.

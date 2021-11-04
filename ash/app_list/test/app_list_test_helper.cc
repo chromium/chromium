@@ -14,11 +14,14 @@
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
+#include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/productivity_launcher_search_view.h"
+#include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "base/guid.h"
@@ -205,6 +208,13 @@ AppListBubbleAssistantPage* AppListTestHelper::GetBubbleAssistantPage() {
 
 SearchModel::SearchResults* AppListTestHelper::GetSearchResults() {
   return AppListModelProvider::Get()->search_model()->results();
+}
+
+ProductivityLauncherSearchView*
+AppListTestHelper::GetProductivityLauncherSearchView() {
+  return app_list_controller_->bubble_presenter_for_test()
+      ->bubble_view_for_test()
+      ->search_page_->search_view();
 }
 
 }  // namespace ash

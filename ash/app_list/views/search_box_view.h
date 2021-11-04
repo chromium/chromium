@@ -213,7 +213,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   bool a11y_selection_on_search_result_ = false;
 
   // Owned by SearchResultPageView (for fullscreen launcher) or
-  // AppListBubbleSearchPage (for bubble launcher).
+  // ProductivityLauncherSearchPage (for bubble launcher).
   ResultSelectionController* result_selection_controller_ = nullptr;
 
   base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>

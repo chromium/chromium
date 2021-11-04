@@ -126,7 +126,7 @@ void ContentsView::Init() {
   // Search results UI.
   auto search_result_page_view = std::make_unique<SearchResultPageView>();
   search_result_page_view->InitializeContainers(
-      view_delegate, GetAppListMainView(), GetSearchBoxView()->search_box());
+      view_delegate, GetAppListMainView(), GetSearchBoxView());
 
   expand_arrow_view_ =
       AddChildView(std::make_unique<ExpandArrowView>(this, app_list_view_));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/views/app_list_bubble_search_page.h"
+#include "ash/app_list/views/productivity_launcher_search_view.h"
 
 #include <utility>
 
@@ -11,6 +11,7 @@
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/constants/ash_features.h"
@@ -31,13 +32,13 @@ int kDefaultSearchItems = 3;
 const int kResultContainersCount =
     static_cast<int>(SearchResultListView::SearchResultListType::kMaxValue);
 
-class AppListBubbleSearchPageTest : public AshTestBase {
+class ProductivityLauncherSearchViewTest : public AshTestBase {
  public:
-  AppListBubbleSearchPageTest()
+  ProductivityLauncherSearchViewTest()
       : AshTestBase((base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
     scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
-  ~AppListBubbleSearchPageTest() override = default;
+  ~ProductivityLauncherSearchViewTest() override = default;
 
   void SetUpSearchResults(SearchModel::SearchResults* results,
                           int init_id,
@@ -60,7 +61,7 @@ class AppListBubbleSearchPageTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AppListBubbleSearchPageTest, ResultContainerIsVisible) {
+TEST_F(ProductivityLauncherSearchViewTest, ResultContainerIsVisible) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
@@ -69,12 +70,13 @@ TEST_F(AppListBubbleSearchPageTest, ResultContainerIsVisible) {
 
   // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
-      test_helper->GetBubbleSearchPage()->result_container_views_for_test();
+      test_helper->GetProductivityLauncherSearchView()
+          ->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
 }
 
-TEST_F(AppListBubbleSearchPageTest, SearchResultA11y) {
+TEST_F(ProductivityLauncherSearchViewTest, SearchResultA11y) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
@@ -85,11 +87,13 @@ TEST_F(AppListBubbleSearchPageTest, SearchResultA11y) {
 
   // Create |kDefaultSearchItems| new search results for us to cycle through.
   SetUpSearchResults(results, 1, kDefaultSearchItems);
-  test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
+  test_helper->GetProductivityLauncherSearchView()
+      ->OnSearchResultContainerResultsChanged();
 
   // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
-      test_helper->GetBubbleSearchPage()->result_container_views_for_test();
+      test_helper->GetProductivityLauncherSearchView()
+          ->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
 
@@ -116,7 +120,7 @@ TEST_F(AppListBubbleSearchPageTest, SearchResultA11y) {
   EXPECT_EQ(5, ax_counter.GetCount(ax::mojom::Event::kSelection));
 }
 
-TEST_F(AppListBubbleSearchPageTest, SearchPageA11y) {
+TEST_F(ProductivityLauncherSearchViewTest, SearchPageA11y) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
@@ -126,37 +130,39 @@ TEST_F(AppListBubbleSearchPageTest, SearchPageA11y) {
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
 
   // Delete all results and verify the bubble search page's A11yNodeData.
+
   AppListModelProvider::Get()->search_model()->DeleteAllResults();
-  test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
+  auto* search_view = test_helper->GetProductivityLauncherSearchView();
+  search_view->OnSearchResultContainerResultsChanged();
 
   // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
-      test_helper->GetBubbleSearchPage()->result_container_views_for_test();
+      search_view->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
-  EXPECT_TRUE(test_helper->GetBubbleSearchPage()->GetVisible());
+  EXPECT_TRUE(search_view->GetVisible());
 
   ui::AXNodeData data;
-  test_helper->GetBubbleSearchPage()->GetAccessibleNodeData(&data);
+  search_view->GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 0 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
   // Create a single search result and and verify A11yNodeData.
   SetUpSearchResults(results, 1, 1);
-  test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
-  test_helper->GetBubbleSearchPage()->GetAccessibleNodeData(&data);
+  search_view->OnSearchResultContainerResultsChanged();
+  search_view->GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 1 result for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 
   // Create new search results and and and verify A11yNodeData.
   SetUpSearchResults(results, 2, kDefaultSearchItems - 1);
-  test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
+  search_view->OnSearchResultContainerResultsChanged();
   ui::AXNodeData data2;
-  test_helper->GetBubbleSearchPage()->GetAccessibleNodeData(&data);
+  search_view->GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 3 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
-TEST_F(AppListBubbleSearchPageTest, SearchClearedOnModelUpdate) {
+TEST_F(ProductivityLauncherSearchViewTest, SearchClearedOnModelUpdate) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
@@ -166,11 +172,13 @@ TEST_F(AppListBubbleSearchPageTest, SearchClearedOnModelUpdate) {
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
   // Create |kDefaultSearchItems| new search results for us to cycle through.
   SetUpSearchResults(results, 1, kDefaultSearchItems);
-  test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
+  test_helper->GetProductivityLauncherSearchView()
+      ->OnSearchResultContainerResultsChanged();
 
   // Check result container visibility.
   std::vector<SearchResultContainerView*> result_containers =
-      test_helper->GetBubbleSearchPage()->result_container_views_for_test();
+      test_helper->GetProductivityLauncherSearchView()
+          ->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
 
@@ -188,10 +196,11 @@ TEST_F(AppListBubbleSearchPageTest, SearchClearedOnModelUpdate) {
   // Press a key to start a search.
   PressAndReleaseKey(ui::VKEY_A);
   SetUpSearchResults(search_model_override->results(), 2, 1);
-  test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
+  test_helper->GetProductivityLauncherSearchView()
+      ->OnSearchResultContainerResultsChanged();
 
-  result_containers =
-      test_helper->GetBubbleSearchPage()->result_container_views_for_test();
+  result_containers = test_helper->GetProductivityLauncherSearchView()
+                          ->result_container_views_for_test();
   ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
   EXPECT_TRUE(result_containers[0]->GetVisible());
   EXPECT_EQ(1, result_containers[0]->num_results());

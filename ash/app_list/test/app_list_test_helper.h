@@ -23,6 +23,7 @@ class AppListView;
 class AppsContainerView;
 class ContinueSectionView;
 class PagedAppsGridView;
+class ProductivityLauncherSearchView;
 class RecentAppsView;
 class ScrollableAppsGridView;
 class SearchBoxView;
@@ -95,6 +96,7 @@ class AppListTestHelper {
   AppsContainerView* GetAppsContainerView();
   AppListFolderView* GetFullscreenFolderView();
   RecentAppsView* GetFullscreenRecentAppsView();
+  ProductivityLauncherSearchView* GetProductivityLauncherSearchView();
 
   // Paged launcher helpers.
   PagedAppsGridView* GetRootPagedAppsGridView();
