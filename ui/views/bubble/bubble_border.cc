@@ -29,6 +29,7 @@
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/bubble/bubble_border_arrow_utils.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -39,37 +40,6 @@ namespace {
 // values depend on both the shadow elevation and color, so we create a tuple to
 // key the cache.
 using ShadowCacheKey = std::tuple<int, SkColor>;
-
-enum class BubbleArrowSide { kLeft, kRight, kTop, kBottom };
-
-BubbleArrowSide GetBubbleArrowSide(BubbleBorder::Arrow arrow) {
-  DCHECK(BubbleBorder::has_arrow(arrow));
-  // Note: VERTICAL arrows are on the sides of the bubble, while !VERTICAL are
-  // on the top or bottom.
-  if (arrow & BubbleBorder::VERTICAL) {
-    return (arrow & BubbleBorder::RIGHT) ? BubbleArrowSide::kRight
-                                         : BubbleArrowSide::kLeft;
-  }
-  return (arrow & BubbleBorder::BOTTOM) ? BubbleArrowSide::kBottom
-                                        : BubbleArrowSide::kTop;
-}
-
-// Utility functions for getting alignment points on the edge of a rectangle.
-gfx::Point CenterTop(const gfx::Rect& rect) {
-  return gfx::Point(rect.CenterPoint().x(), rect.y());
-}
-
-gfx::Point CenterBottom(const gfx::Rect& rect) {
-  return gfx::Point(rect.CenterPoint().x(), rect.bottom());
-}
-
-gfx::Point LeftCenter(const gfx::Rect& rect) {
-  return gfx::Point(rect.x(), rect.CenterPoint().y());
-}
-
-gfx::Point RightCenter(const gfx::Rect& rect) {
-  return gfx::Point(rect.right(), rect.CenterPoint().y());
-}
 
 SkColor GetKeyShadowColor(int elevation,
                           const ui::ColorProvider* color_provider) {
@@ -105,29 +75,6 @@ SkColor GetAmbientShadowColor(int elevation,
       // deprecated style.
       return color_provider->GetColor(ui::kColorShadowBase);
   }
-}
-
-gfx::Insets GetVisibleArrowInsets(BubbleBorder::Arrow arrow, bool include_gap) {
-  DCHECK(BubbleBorder::has_arrow(arrow));
-  const int arrow_size = include_gap ? BubbleBorder::kVisibleArrowGap +
-                                           BubbleBorder::kVisibleArrowLength
-                                     : BubbleBorder::kVisibleArrowLength;
-  gfx::Insets result;
-  switch (GetBubbleArrowSide(arrow)) {
-    case BubbleArrowSide::kRight:
-      result.set_right(arrow_size);
-      break;
-    case BubbleArrowSide::kLeft:
-      result.set_left(arrow_size);
-      break;
-    case BubbleArrowSide::kTop:
-      result.set_top(arrow_size);
-      break;
-    case BubbleArrowSide::kBottom:
-      result.set_bottom(arrow_size);
-      break;
-  }
-  return result;
 }
 
 enum BubbleArrowPart { kFill, kBorder };
@@ -276,102 +223,6 @@ void DrawBorderAndShadowImpl(
       rect, GetBorderAndShadowFlags(color_provider, shadow_elevation));
 }
 
-// Returns the appropriate anchor point on the edge of the |anchor_rect| for a
-// given |arrow| position.
-gfx::Point GetArrowAnchorPointFromAnchorRect(BubbleBorder::Arrow arrow,
-                                             const gfx::Rect& anchor_rect) {
-  switch (arrow) {
-    case BubbleBorder::TOP_LEFT:
-      return anchor_rect.bottom_left();
-
-    case BubbleBorder::TOP_RIGHT:
-      return anchor_rect.bottom_right();
-
-    case BubbleBorder::BOTTOM_LEFT:
-      return anchor_rect.origin();
-
-    case BubbleBorder::BOTTOM_RIGHT:
-      return anchor_rect.top_right();
-
-    case BubbleBorder::LEFT_TOP:
-      return anchor_rect.top_right();
-
-    case BubbleBorder::RIGHT_TOP:
-      return anchor_rect.origin();
-
-    case BubbleBorder::LEFT_BOTTOM:
-      return anchor_rect.bottom_right();
-
-    case BubbleBorder::RIGHT_BOTTOM:
-      return anchor_rect.bottom_left();
-
-    case BubbleBorder::TOP_CENTER:
-      return CenterBottom(anchor_rect);
-
-    case BubbleBorder::BOTTOM_CENTER:
-      return CenterTop(anchor_rect);
-
-    case BubbleBorder::LEFT_CENTER:
-      return RightCenter(anchor_rect);
-
-    case BubbleBorder::RIGHT_CENTER:
-      return LeftCenter(anchor_rect);
-
-    default:
-      NOTREACHED();
-      return gfx::Point();
-  }
-}
-
-// Returns the origin offset to move the |contents_bounds| to be placed
-// appropriately for a given |arrow| at the |anchor_point|.
-gfx::Vector2d GetContentBoundsOffsetToArrowAnchorPoint(
-    const gfx::Rect& contents_bounds,
-    BubbleBorder::Arrow arrow,
-    const gfx::Point& anchor_point) {
-  switch (arrow) {
-    case BubbleBorder::TOP_LEFT:
-      return anchor_point - contents_bounds.origin();
-
-    case BubbleBorder::TOP_RIGHT:
-      return anchor_point - contents_bounds.top_right();
-
-    case BubbleBorder::BOTTOM_LEFT:
-      return anchor_point - contents_bounds.bottom_left();
-
-    case BubbleBorder::BOTTOM_RIGHT:
-      return anchor_point - contents_bounds.bottom_right();
-
-    case BubbleBorder::LEFT_TOP:
-      return anchor_point - contents_bounds.origin();
-
-    case BubbleBorder::RIGHT_TOP:
-      return anchor_point - contents_bounds.top_right();
-
-    case BubbleBorder::LEFT_BOTTOM:
-      return anchor_point - contents_bounds.bottom_left();
-
-    case BubbleBorder::RIGHT_BOTTOM:
-      return anchor_point - contents_bounds.bottom_right();
-
-    case BubbleBorder::TOP_CENTER:
-      return anchor_point - CenterTop(contents_bounds);
-
-    case BubbleBorder::BOTTOM_CENTER:
-      return anchor_point - CenterBottom(contents_bounds);
-
-    case BubbleBorder::LEFT_CENTER:
-      return anchor_point - LeftCenter(contents_bounds);
-
-    case BubbleBorder::RIGHT_CENTER:
-      return anchor_point - RightCenter(contents_bounds);
-
-    default:
-      NOTREACHED();
-      return gfx::Vector2d();
-  }
-}
-
 }  // namespace
 
 constexpr int BubbleBorder::kBorderThicknessDip;
@@ -408,16 +259,6 @@ gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
 
 void BubbleBorder::SetCornerRadius(int corner_radius) {
   corner_radius_ = corner_radius;
-}
-
-// static
-gfx::Size BubbleBorder::GetVisibleArrowSize(BubbleBorder::Arrow arrow) {
-  constexpr int kVisibleArrowDiameter = 2 * BubbleBorder::kVisibleArrowRadius;
-
-  return IsVerticalArrow(arrow) ? gfx::Size(kVisibleArrowDiameter,
-                                            BubbleBorder::kVisibleArrowLength)
-                                : gfx::Size(BubbleBorder::kVisibleArrowLength,
-                                            kVisibleArrowDiameter);
 }
 
 gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
@@ -497,7 +338,7 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
   // each side (only one side will be nonzero) to create space for the visible
   // arrow.
   contents_bounds +=
-      GetContentsBoundsOffsetToPlaceVisibleArrow(contents_bounds);
+      GetContentsBoundsOffsetToPlaceVisibleArrow(arrow_, /*include_gap=*/true);
 
   // We have an anchor point which is appropriate for the arrow type, but
   // when anchoring to a small view it looks better to track from the middle
@@ -557,24 +398,17 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
   return contents_bounds;
 }
 
+// static
 gfx::Vector2d BubbleBorder::GetContentsBoundsOffsetToPlaceVisibleArrow(
-    const gfx::Rect& contents_bounds) const {
-  if (!visible_arrow_)
-    return gfx::Vector2d();
+    BubbleBorder::Arrow arrow,
+    bool include_gap) {
+  DCHECK(has_arrow(arrow));
 
   const gfx::Insets visible_arrow_insets =
-      GetVisibleArrowInsets(arrow_, /*include_gap=*/true);
-  // Since the arrow is placed on one specific side, only one side of the inset
-  // will contribute.
+      GetVisibleArrowInsets(arrow, include_gap);
   return gfx::Vector2d(
       visible_arrow_insets.left() - visible_arrow_insets.right(),
       visible_arrow_insets.top() - visible_arrow_insets.bottom());
-}
-
-// static
-bool BubbleBorder::IsVerticalArrow(BubbleBorder::Arrow arrow) {
-  const BubbleArrowSide side = GetBubbleArrowSide(arrow);
-  return side == BubbleArrowSide::kTop || side == BubbleArrowSide::kBottom;
 }
 
 void BubbleBorder::Paint(const views::View& view, gfx::Canvas* canvas) {
@@ -610,8 +444,9 @@ void BubbleBorder::DrawBorderAndShadow(
 gfx::Insets BubbleBorder::GetInsets() const {
   // Visible arrow is not compatible with OS-drawn shadow or with manual insets.
   DCHECK((!insets_ && shadow_ != NO_SHADOW) || !visible_arrow_);
-  if (insets_.has_value())
+  if (insets_.has_value()) {
     return insets_.value();
+  }
   gfx::Insets insets;
   if (shadow_ == NO_SHADOW_LEGACY)
     insets = gfx::Insets(kBorderThicknessDip);
@@ -638,6 +473,82 @@ gfx::Size BubbleBorder::GetSizeForContentsSize(
   const gfx::Insets insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());
   return size;
+}
+
+void BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
+    const gfx::Rect& anchor_rect,
+    bool move_bubble_to_add_arrow,
+    gfx::Rect& popup_bounds) {
+  // Set the arrow as visible.
+  set_visible_arrow(true);
+
+  // This function should only be called for a visible arrow.
+  DCHECK(arrow_ != Arrow::NONE && arrow_ != Arrow::FLOAT);
+
+  // The total size of the arrow in its normal direction.
+  const int kVisibleArrowDiamater = 2 * kVisibleArrowRadius;
+  // The minimum distance the arrow needs to have from the edge of the bubble in
+  // normal direction.
+  const int kArrowEdgeSpacing = kVisibleArrowRadius;
+  const gfx::Insets insets = GetInsets();
+
+  // To store the resulting x and y position of the arrow.
+  int x_position, y_position;
+
+  // The definition of an vertical arrow is inconsistent.
+  if (IsVerticalArrow(arrow_)) {
+    // The optimal x position depends on the |arrow_|.
+    // For a center-aligned arrow, the optimal position of the arrow points
+    // towards the center of the element. If the arrow is right-aligned, it
+    // points towards the right edge of the element, and to the left otherwise.
+    int x_optimal_position =
+        (arrow_ & ArrowMask::CENTER)
+            ? anchor_rect.CenterPoint().x() - kVisibleArrowRadius
+            : ((arrow_ & ArrowMask::RIGHT)
+                   ? anchor_rect.right() - kVisibleArrowDiamater
+                   : anchor_rect.x());
+
+    // Make sure the x position is limited to the range defined by the bubble.
+    x_position = base::clamp(
+        x_optimal_position,
+        // The most left position for the arrow is the left edge of the bubble
+        // plus the inset and the minimum spacing of the arrow from the edge.
+        popup_bounds.x() + insets.left() + kArrowEdgeSpacing,
+        // Analogous, the most right position is the right side minus the inset,
+        // the diameter of the arrow and the spacing of the arrow from the edge.
+        popup_bounds.right() - insets.right() - kVisibleArrowDiamater -
+            kArrowEdgeSpacing);
+
+    // Calculate the y position of the arrow to be either on top of below the
+    // bubble.
+    y_position = (arrow_ & ArrowMask::BOTTOM)
+                     ? popup_bounds.bottom() - insets.bottom()
+                     : popup_bounds.y() + insets.top() - kVisibleArrowLength;
+  } else {
+    // For an horizontal arrow, the x position is either the left or the right
+    // edge of the bubble, taking the inset of the bubble and the length of the
+    // arrow into account.
+    x_position = (arrow_ & ArrowMask::RIGHT)
+                     ? popup_bounds.right() - insets.right()
+                     : popup_bounds.x() + insets.left() - kVisibleArrowLength;
+
+    // Align the arrow with the horizontal center of the element.
+    // Here, there is no differentiation between the different positions of a
+    // left or right aligned arrow.
+    y_position = base::clamp(
+        anchor_rect.CenterPoint().y() - kVisibleArrowRadius,
+        popup_bounds.y() + insets.top() + kArrowEdgeSpacing,
+        popup_bounds.bottom() - insets.bottom() - kArrowEdgeSpacing);
+  }
+
+  visible_arrow_rect_.set_size(GetVisibleArrowSize(arrow_));
+  visible_arrow_rect_.set_origin({x_position, y_position});
+
+  if (move_bubble_to_add_arrow) {
+    popup_bounds.set_origin(
+        popup_bounds.origin() +
+        GetContentsBoundsOffsetToPlaceVisibleArrow(arrow_, false));
+  }
 }
 
 void BubbleBorder::CalculateVisibleArrowRect(

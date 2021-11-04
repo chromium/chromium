@@ -204,28 +204,59 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   // Returns the corner radius of the current image set.
   int corner_radius() const { return corner_radius_; }
 
-  // Returns the size of the bounding rectangle of the visible |arrow|.
-  static gfx::Size GetVisibleArrowSize(Arrow arrow);
-
-  // Returns the translation vector for |contents_bounds| to make space for
-  // inserting the visible arrow at the right position for |arrow_|.
-  gfx::Vector2d GetContentsBoundsOffsetToPlaceVisibleArrow(
-      const gfx::Rect& contents_bounds) const;
-
-  // Returns true if the arrow is vertical meaning that it is either placed on
-  // the top of the bottom of the border.
-  static bool IsVerticalArrow(BubbleBorder::Arrow arrow);
-
   // Overridden from Border:
   void Paint(const View& view, gfx::Canvas* canvas) override;
   gfx::Insets GetInsets() const override;
   gfx::Size GetMinimumSize() const override;
+
+  // Sets and activates the visible |arrow|. The position of the visible arrow
+  // on the edge of the |bubble_bounds| is determined using the
+  // |anchor_rect|. While the side of the arrow is already determined by
+  // |arrow|, the placement along the side is chosen to point towards the
+  // |anchor_rect|. For a horizontal bubble with an arrow on either the left
+  // or right side, the arrow is placed to point towards the vertical center of
+  // |anchor_rect|. For a vertical arrow that is either on top of below the
+  // bubble, the placement depends on the specifics of |arrow|:
+  //
+  //  * A right-aligned arrow (TOP_RIGHT, BOTTOM_RIGHT) optimizes the arrow
+  //  position to point at the right edge of the |element_bounds|.
+  //  * A center-aligned arrow (TOP_CENTER, BOTTOM_CENTER) points towards the
+  //  horizontal center of |element_bounds|.
+  //  * Otherwise, the arrow points towards the left edge of |element_bounds|.
+  //
+  // If it is not possible for the arrow to point towards the targeted point
+  // because there is no overlap between the bubble and the element in the
+  // significant direction, the arrow is placed at the most extreme allowed
+  // position that is closest to the targeted point.
+  //
+  // If |move_bubble_to_add_arrow| is true, the |bubble_bounds| are displaced to
+  // account for the size of the arrow.
+  void AddArrowToBubbleCornerAndPointTowardsAnchor(
+      const gfx::Rect& anchor_rect,
+      bool move_bubble_to_add_arrow,
+      gfx::Rect& bubble_bounds);
+
+  // Returns a constant reference to the |visible_arrow_rect_| for teseting
+  // purposes.
+  const gfx::Rect& GetVisibibleArrowRectForTesting() {
+    return visible_arrow_rect_;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, GetSizeForContentsSizeTest);
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, GetBoundsOriginTest);
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, ShadowTypes);
   FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest, VisibleArrowSizesAreConsistent);
+  FRIEND_TEST_ALL_PREFIXES(BubbleBorderTest,
+                           MoveContentsBoundsToPlaceVisibleArrow);
+
+  // Returns the translation vector for a bubble to make space for
+  // inserting the visible arrow at the right position for |arrow_|.
+  // |include_gap| controls if the displacement accounts for the
+  // kVisibleArrowGap.
+  static gfx::Vector2d GetContentsBoundsOffsetToPlaceVisibleArrow(
+      BubbleBorder::Arrow arrow,
+      bool include_gap = true);
 
   // The border and arrow stroke size used in image assets, in pixels.
   static constexpr int kStroke = 1;
