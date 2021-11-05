@@ -43,7 +43,9 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
         mojom::blink::HoverType::kHoverNone;
     // Bitmask of |ui::HoverType|
     int available_hover_types = ui::HOVER_TYPE_NONE;
-    int default_font_size = 16;
+    float em_size = 16.f;
+    float ex_size = 8.f;
+    float ch_size = 8.f;
     bool three_d_enabled = false;
     bool immersive_mode = false;
     bool strict_mode = true;
@@ -81,7 +83,9 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.available_pointer_types = available_pointer_types;
       data.primary_hover_type = primary_hover_type;
       data.available_hover_types = available_hover_types;
-      data.default_font_size = default_font_size;
+      data.em_size = em_size;
+      data.ex_size = ex_size;
+      data.ch_size = ch_size;
       data.three_d_enabled = three_d_enabled;
       data.immersive_mode = immersive_mode;
       data.strict_mode = strict_mode;
@@ -106,12 +110,6 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   explicit MediaValuesCached(const MediaValuesCachedData&);
 
   MediaValues* Copy() const;
-  bool ComputeLength(double value,
-                     CSSPrimitiveValue::UnitType,
-                     int& result) const override;
-  bool ComputeLength(double value,
-                     CSSPrimitiveValue::UnitType,
-                     double& result) const override;
 
   int DeviceWidth() const override;
   int DeviceHeight() const override;
@@ -146,6 +144,9 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
  protected:
   double ViewportWidth() const override;
   double ViewportHeight() const override;
+  float EmSize() const override;
+  float ExSize() const override;
+  float ChSize() const override;
 
   MediaValuesCachedData data_;
 };

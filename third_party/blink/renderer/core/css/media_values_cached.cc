@@ -41,7 +41,17 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
         MediaValues::CalculateAvailablePointerTypes(frame);
     primary_hover_type = MediaValues::CalculatePrimaryHoverType(frame);
     available_hover_types = MediaValues::CalculateAvailableHoverTypes(frame);
-    default_font_size = MediaValues::CalculateDefaultFontSize(frame);
+    em_size = MediaValues::CalculateEmSize(frame);
+    // Use 0.5em as the fallback for ex and ch units. CalculateEx/ChSize() would
+    // trigger unconditional font metrics retrieval for MediaValuesCached
+    // regardless of whether they are being used in a media query. In addition
+    // to unnecessary load font data, it also causes these two tests to fail for
+    // some reason:
+    //
+    // virtual/text-antialias/sub-pixel/text-scaling-pixel.html
+    // virtual/highdpi-threaded/external/wpt/css/css-paint-api/hidpi/device-pixel-ratio.https.html
+    ex_size = em_size / 2.0;
+    ch_size = em_size / 2.0;
     three_d_enabled = MediaValues::CalculateThreeDEnabled(frame);
     immersive_mode = MediaValues::CalculateInImmersiveMode(frame);
     strict_mode = MediaValues::CalculateStrictMode(frame);
@@ -73,28 +83,24 @@ MediaValues* MediaValuesCached::Copy() const {
   return MakeGarbageCollected<MediaValuesCached>(data_);
 }
 
-bool MediaValuesCached::ComputeLength(double value,
-                                      CSSPrimitiveValue::UnitType type,
-                                      int& result) const {
-  return MediaValues::ComputeLength(value, type, data_.default_font_size,
-                                    data_.viewport_width, data_.viewport_height,
-                                    result);
-}
-
-bool MediaValuesCached::ComputeLength(double value,
-                                      CSSPrimitiveValue::UnitType type,
-                                      double& result) const {
-  return MediaValues::ComputeLength(value, type, data_.default_font_size,
-                                    data_.viewport_width, data_.viewport_height,
-                                    result);
-}
-
 double MediaValuesCached::ViewportWidth() const {
   return data_.viewport_width;
 }
 
 double MediaValuesCached::ViewportHeight() const {
   return data_.viewport_height;
+}
+
+float MediaValuesCached::EmSize() const {
+  return data_.em_size;
+}
+
+float MediaValuesCached::ExSize() const {
+  return data_.ex_size;
+}
+
+float MediaValuesCached::ChSize() const {
+  return data_.ch_size;
 }
 
 int MediaValuesCached::DeviceWidth() const {

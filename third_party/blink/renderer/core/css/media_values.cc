@@ -151,8 +151,35 @@ int MediaValues::CalculateMonochromeBitsPerComponent(LocalFrame* frame) {
   return screen_info.depth_per_component;
 }
 
-int MediaValues::CalculateDefaultFontSize(LocalFrame* frame) {
-  return frame->GetPage()->GetSettings().GetDefaultFontSize();
+float MediaValues::CalculateEmSize(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetDocument());
+  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
+  DCHECK(style);
+  CSSToLengthConversionData::FontSizes font_sizes(style, style);
+  return font_sizes.Em();
+}
+
+float MediaValues::CalculateExSize(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetDocument());
+  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
+  DCHECK(style);
+  CSSToLengthConversionData::FontSizes font_sizes(style, style);
+  // Font metrics are based on the used font which is scaled to match the size
+  // of CSS pixels. Need to scale back to CSS pixels.
+  return font_sizes.Ex() / font_sizes.Zoom();
+}
+
+float MediaValues::CalculateChSize(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetDocument());
+  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
+  DCHECK(style);
+  CSSToLengthConversionData::FontSizes font_sizes(style, style);
+  // Font metrics are based on the used font which is scaled to match the size
+  // of CSS pixels. Need to scale back to CSS pixels.
+  return font_sizes.Ch() / font_sizes.Zoom();
 }
 
 const String MediaValues::CalculateMediaType(LocalFrame* frame) {
@@ -340,10 +367,7 @@ device::mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
 
 bool MediaValues::ComputeLengthImpl(double value,
                                     CSSPrimitiveValue::UnitType type,
-                                    unsigned default_font_size,
-                                    double viewport_width,
-                                    double viewport_height,
-                                    double& result) {
+                                    double& result) const {
   // The logic in this function is duplicated from
   // CSSToLengthConversionData::ZoomedComputedPixels() because
   // MediaValues::ComputeLength() needs nearly identical logic, but we haven't
@@ -354,30 +378,29 @@ bool MediaValues::ComputeLengthImpl(double value,
   switch (type) {
     case CSSPrimitiveValue::UnitType::kEms:
     case CSSPrimitiveValue::UnitType::kRems:
-      result = value * default_font_size;
+      result = value * EmSize();
       return true;
     case CSSPrimitiveValue::UnitType::kPixels:
     case CSSPrimitiveValue::UnitType::kUserUnits:
       result = value;
       return true;
     case CSSPrimitiveValue::UnitType::kExs:
+      result = value * ExSize();
+      return true;
     case CSSPrimitiveValue::UnitType::kChs:
-      // TODO(crbug.com/1264962): We don't seem to be able to cache FontMetrics
-      // related values. Trying to access them is triggering some sort of
-      // microtask. Serving the spec's default instead.
-      result = (value * default_font_size) / 2.0;
+      result = value * ChSize();
       return true;
     case CSSPrimitiveValue::UnitType::kViewportWidth:
-      result = (value * viewport_width) / 100.0;
+      result = (value * ViewportWidth()) / 100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kViewportHeight:
-      result = (value * viewport_height) / 100.0;
+      result = (value * ViewportHeight()) / 100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kViewportMin:
-      result = (value * std::min(viewport_width, viewport_height)) / 100.0;
+      result = (value * std::min(ViewportWidth(), ViewportHeight())) / 100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kViewportMax:
-      result = (value * std::max(viewport_width, viewport_height)) / 100.0;
+      result = (value * std::max(ViewportWidth(), ViewportHeight())) / 100.0;
       return true;
     case CSSPrimitiveValue::UnitType::kCentimeters:
       result = value * kCssPixelsPerCentimeter;

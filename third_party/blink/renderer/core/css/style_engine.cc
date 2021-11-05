@@ -1379,10 +1379,12 @@ void StyleEngine::InitialStyleChanged() {
   if (viewport_resolver_)
     viewport_resolver_->InitialStyleChanged();
 
-  // Media queries may rely on the initial font size relative lengths which may
-  // have changed.
-  MediaQueryAffectingValueChanged(MediaValueChange::kOther);
   MarkViewportStyleDirty();
+  // We need to update the viewport style immediately because media queries
+  // evaluated in MediaQueryAffectingValueChanged() below may rely on the
+  // initial font size relative lengths which may have changed.
+  UpdateViewportStyle();
+  MediaQueryAffectingValueChanged(MediaValueChange::kOther);
   MarkAllElementsForStyleRecalc(
       StyleChangeReasonForTracing::Create(style_change_reason::kSettings));
 }
