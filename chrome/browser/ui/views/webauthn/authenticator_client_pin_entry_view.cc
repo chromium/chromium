@@ -18,8 +18,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 
 namespace {
@@ -49,26 +49,24 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
     bool show_confirmation_text_field)
     : delegate_(delegate),
       show_confirmation_text_field_(show_confirmation_text_field) {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(0);
+  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
 
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columns->AddPaddingColumn(views::GridLayout::kFixedSize, 10);
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  layout
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kStart,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::GridLayout::kFixedSize, 10)
+      .AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(2, views::TableLayout::kFixedSize);
 
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-
-  auto pin_label = std::make_unique<views::Label>(
+  auto* pin_label = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_PIN_LABEL),
-      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
+      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
   pin_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   pin_label->SetEnabledColor(gfx::kGoogleBlue500);
-  auto* pin_label_ptr = layout->AddView(std::move(pin_label));
 
   views::View* confirmation_label_ptr = nullptr;
   if (show_confirmation_text_field_) {
@@ -77,23 +75,22 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
         views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
     confirmation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     confirmation_label->SetEnabledColor(gfx::kGoogleBlue500);
-    confirmation_label_ptr = confirmation_label.get();
-    layout->AddView(std::move(confirmation_label));
+    confirmation_label_ptr = AddChildView(std::move(confirmation_label));
+  } else {
+    // For TableLayout, we must add a filler view to the empty cell.
+    AddChildView(std::make_unique<views::View>());
   }
 
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-
-  pin_text_field_ = layout->AddView(MakePinTextField(this, pin_label_ptr));
+  pin_text_field_ = AddChildView(MakePinTextField(this, pin_label));
 
   if (show_confirmation_text_field_) {
     DCHECK(confirmation_label_ptr);
     auto confirmation_text_field =
         MakePinTextField(this, confirmation_label_ptr);
-    confirmation_text_field_ = confirmation_text_field.get();
-    layout->AddView(std::move(confirmation_text_field));
+    confirmation_text_field_ = AddChildView(std::move(confirmation_text_field));
+  } else {
+    AddChildView(std::make_unique<views::View>());
   }
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
 }
 
 AuthenticatorClientPinEntryView::~AuthenticatorClientPinEntryView() = default;
