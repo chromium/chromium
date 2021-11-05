@@ -3,16 +3,8 @@ include_rules = [
   "+chromeos/ui/base/window_state_type.h",
   "+components/account_id/account_id.h",
   "+components/services/app_service/public",
+  "+components/sessions/core/session_id.h",
   "+content/public/test",
   "+extensions/common/constants.h",
   "+ui",
 ]
-
-specific_include_rules = {
-  "full_restore_(read|save)_handler\.cc": [
-    "+components/sessions/core/session_id.h",
-  ],
-  "full_restore_save_handler\.cc": [
-    "+extensions/common/constants.h",
-  ],
-}

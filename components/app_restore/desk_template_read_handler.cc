@@ -4,6 +4,8 @@
 
 #include "components/app_restore/desk_template_read_handler.h"
 
+#include "ash/constants/app_types.h"
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "components/app_restore/app_launch_info.h"
@@ -11,10 +13,16 @@
 #include "components/app_restore/features.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
+#include "components/app_restore/window_properties.h"
+#include "ui/aura/client/aura_constants.h"
 
 namespace app_restore {
 
-DeskTemplateReadHandler::DeskTemplateReadHandler() = default;
+DeskTemplateReadHandler::DeskTemplateReadHandler() {
+  if (aura::Env::HasInstance())
+    env_observer_.Observe(aura::Env::GetInstance());
+  arc_info_observer_.Observe(app_restore::AppRestoreArcInfo::GetInstance());
+}
 
 DeskTemplateReadHandler::~DeskTemplateReadHandler() = default;
 
@@ -92,6 +100,57 @@ void DeskTemplateReadHandler::SetNextRestoreWindowIdForChromeApp(
     restore_data_->SetNextRestoreWindowIdForChromeApp(app_id);
 }
 
+int32_t DeskTemplateReadHandler::GetArcSessionId() {
+  return arc_read_handler_ ? arc_read_handler_->GetArcSessionId() : 0;
+}
+
+void DeskTemplateReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
+                                                         int32_t window_id) {
+  if (arc_read_handler_)
+    arc_read_handler_->SetArcSessionIdForWindowId(arc_session_id, window_id);
+}
+
+int32_t DeskTemplateReadHandler::GetArcRestoreWindowIdForTaskId(
+    int32_t task_id) {
+  return arc_read_handler_
+             ? arc_read_handler_->GetArcRestoreWindowIdForTaskId(task_id)
+             : 0;
+}
+
+int32_t DeskTemplateReadHandler::GetArcRestoreWindowIdForSessionId(
+    int32_t session_id) {
+  return arc_read_handler_
+             ? arc_read_handler_->GetArcRestoreWindowIdForSessionId(session_id)
+             : 0;
+}
+
+void DeskTemplateReadHandler::OnWindowInitialized(aura::Window* window) {
+  // If there isn't restore data for ARC apps, we don't need to handle ARC app
+  // windows restoration.
+  if (!arc_read_handler_)
+    return;
+
+  if (window->GetProperty(aura::client::kAppType) !=
+      static_cast<int>(ash::AppType::ARC_APP)) {
+    return;
+  }
+
+  const int32_t window_id = window->GetProperty(kRestoreWindowIdKey);
+  if (window_id == app_restore::kParentToHiddenContainer ||
+      arc_read_handler_->HasRestoreData(window_id)) {
+    observed_windows_.AddObservation(window);
+    arc_read_handler_->AddArcWindowCandidate(window);
+  }
+}
+
+void DeskTemplateReadHandler::OnWindowDestroyed(aura::Window* window) {
+  DCHECK(observed_windows_.IsObservingSource(window));
+  observed_windows_.RemoveObservation(window);
+
+  if (arc_read_handler_)
+    arc_read_handler_->OnWindowDestroyed(window);
+}
+
 std::unique_ptr<app_restore::AppLaunchInfo>
 DeskTemplateReadHandler::GetAppLaunchInfo(const base::FilePath& profile_path,
                                           const std::string& app_id,
@@ -127,35 +186,6 @@ void DeskTemplateReadHandler::OnTaskCreated(const std::string& app_id,
 void DeskTemplateReadHandler::OnTaskDestroyed(int32_t task_id) {
   if (arc_read_handler_)
     arc_read_handler_->OnTaskDestroyed(task_id);
-}
-
-int32_t DeskTemplateReadHandler::GetArcSessionId() {
-  NOTREACHED();
-  DCHECK(arc_read_handler_);
-  return arc_read_handler_ ? arc_read_handler_->GetArcSessionId() : 0;
-}
-
-void DeskTemplateReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
-                                                         int32_t window_id) {
-  NOTREACHED();
-  if (arc_read_handler_)
-    arc_read_handler_->SetArcSessionIdForWindowId(arc_session_id, window_id);
-}
-
-int32_t DeskTemplateReadHandler::GetArcRestoreWindowIdForTaskId(
-    int32_t task_id) {
-  NOTREACHED();
-  return arc_read_handler_
-             ? arc_read_handler_->GetArcRestoreWindowIdForTaskId(task_id)
-             : 0;
-}
-
-int32_t DeskTemplateReadHandler::GetArcRestoreWindowIdForSessionId(
-    int32_t session_id) {
-  NOTREACHED();
-  return arc_read_handler_
-             ? arc_read_handler_->GetArcRestoreWindowIdForSessionId(session_id)
-             : 0;
 }
 
 }  // namespace app_restore

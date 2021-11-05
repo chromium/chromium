@@ -11,8 +11,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
-#include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/app_launch_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/app_restore/desk_template_read_handler.h"
+#include "components/app_restore/features.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "extensions/common/extension.h"
@@ -57,6 +59,8 @@ void DeskTemplateAppLaunchHandler::SetRestoreDataAndLaunch(
 
   read_handler_->SetRestoreData(restore_data()->Clone());
 
+  // Launch the different types of apps. They can be done in any order.
+  MaybeLaunchArcApps();
   LaunchApps();
   LaunchBrowsers();
 
@@ -75,7 +79,7 @@ bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
   // multiple instances are:
   //   1) System web apps which can open multiple windows
   //   2) Non platform app type Chrome apps
-  // TODO(crubg.com/1239089): Investigate if we can have a way to handle moving
+  // TODO(crbug.com/1239089): Investigate if we can have a way to handle moving
   // single instance windows without all these heuristics.
 
   bool is_multi_instance_window = false;
@@ -196,6 +200,21 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
     }
   }
   restore_data()->RemoveApp(extension_misc::kChromeAppId);
+}
+
+void DeskTemplateAppLaunchHandler::MaybeLaunchArcApps() {
+  if (!app_restore::features::IsArcAppsForDesksTemplatesEnabled())
+    return;
+
+  auto* arc_task_handler =
+      ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile());
+  if (!arc_task_handler)
+    return;
+
+  if (auto* launch_handler =
+          arc_task_handler->desks_templates_arc_app_launch_handler()) {
+    launch_handler->RestoreArcApps(this);
+  }
 }
 
 void DeskTemplateAppLaunchHandler::ClearDeskTemplateReadHandlerRestoreData() {

@@ -46,6 +46,9 @@ class DeskTemplateAppLaunchHandler : public ash::AppLaunchHandler {
   // Go through the restore data launch list and launches the browser windows.
   void LaunchBrowsers();
 
+  // Launches ARC apps if they are supported.
+  void MaybeLaunchArcApps();
+
   // Resets the restore data in `read_handler_`. Callback for a timeout after
   // `SetRestoreDataAndLaunch()` sets new RestoreData. Once this is called, the
   // current desk template launch is considered done.

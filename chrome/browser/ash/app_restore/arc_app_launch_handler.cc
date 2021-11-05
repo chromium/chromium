@@ -35,8 +35,9 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/system/scheduler_configuration_manager_base.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
-#include "components/app_restore/full_restore_read_handler.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/arc/arc_util.h"
@@ -286,13 +287,13 @@ void ArcAppLaunchHandler::OnWindowActivated(
   if (!session_id.has_value())
     return;
 
+  auto it = session_id_to_window_id_.find(session_id.value());
+  if (it == session_id_to_window_id_.end())
+    return;
+
   const std::string* arc_app_id =
       new_active->GetProperty(::app_restore::kAppIdKey);
   if (!arc_app_id || arc_app_id->empty() || !IsAppReady(*arc_app_id))
-    return;
-
-  auto it = session_id_to_window_id_.find(session_id.value());
-  if (it == session_id_to_window_id_.end())
     return;
 
   RemoveWindow(*arc_app_id, it->second);
@@ -413,9 +414,9 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
 
     DCHECK(data_it.second->event_flag.has_value());
 
-    // Set an ARC session id to find the restore window id based on the new
-    // created ARC task id in FullRestoreReadHandler.
-    int32_t arc_session_id = ::app_restore::GetArcSessionId();
+    // Set an ARC session id to find the restore window id based on the newly
+    // created ARC task id.
+    const int32_t arc_session_id = ::app_restore::GetArcSessionId();
     ::app_restore::SetArcSessionIdForWindowId(arc_session_id, data_it.first);
     window_id_to_session_id_[data_it.first] = arc_session_id;
     session_id_to_window_id_[arc_session_id] = data_it.first;
@@ -528,6 +529,7 @@ bool ArcAppLaunchHandler::IsUnderCPUUsageLimiting() {
 }
 
 bool ArcAppLaunchHandler::IsAppReady(const std::string& app_id) {
+  DCHECK(handler_);
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(handler_->profile());
   if (!prefs)
     return false;
@@ -619,9 +621,9 @@ void ArcAppLaunchHandler::LaunchApp(const std::string& app_id,
     window_info->window_id = window_it->second;
     window_id_to_session_id_.erase(window_it);
   } else {
-    // Set an ARC session id to find the restore window id based on the new
-    // created ARC task id in FullRestoreReadHandler.
-    int32_t arc_session_id = ::app_restore::GetArcSessionId();
+    // Set an ARC session id to find the restore window id based on the newly
+    // created ARC task id.
+    const int32_t arc_session_id = ::app_restore::GetArcSessionId();
     window_info->window_id = arc_session_id;
     ::app_restore::SetArcSessionIdForWindowId(arc_session_id, window_id);
     window_id_to_session_id_[window_id] = arc_session_id;
