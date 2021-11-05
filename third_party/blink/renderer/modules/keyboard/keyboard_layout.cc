@@ -80,11 +80,6 @@ ScriptPromise KeyboardLayout::GetKeyboardLayoutMap(
     return ScriptPromise();
   }
 
-  if (!CalledFromSupportedContext(ExecutionContext::From(script_state))) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
-    return ScriptPromise();
-  }
-
   if (!EnsureServiceConnected()) {
     if (IdentifiabilityStudySettings::Get()->ShouldSample(
             kGetKeyboardLayoutMapSurface)) {
@@ -121,18 +116,6 @@ bool KeyboardLayout::EnsureServiceConnected() {
   return true;
 }
 
-bool KeyboardLayout::CalledFromSupportedContext(ExecutionContext* context) {
-  DCHECK(context);
-  DCHECK(DomWindow());
-  // This API is only accessible from a top level, secure browsing context or
-  // if the keyboard-map has been added to allowlist attribute of an iframe.
-  return context->IsSecureContext() &&
-         (DomWindow()->GetFrame()->IsMainFrame() ||
-          context->IsFeatureEnabled(
-              mojom::blink::PermissionsPolicyFeature::kKeyboardMap,
-              ReportOptions::kReportOnFailure));
-}
-
 void KeyboardLayout::GotKeyboardLayoutMap(
     ScriptPromiseResolver* resolver,
     mojom::blink::GetKeyboardLayoutMapResultPtr result) {
@@ -157,6 +140,10 @@ void KeyboardLayout::GotKeyboardLayoutMap(
       script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           kKeyboardMapRequestFailedErrorMsg));
+      break;
+    case mojom::blink::GetKeyboardLayoutMapStatus::kDenied:
+      script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kSecurityError, kFeaturePolicyBlocked));
       break;
   }
 

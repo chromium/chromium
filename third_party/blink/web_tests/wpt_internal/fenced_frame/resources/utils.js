@@ -53,6 +53,8 @@ const KEYS = {
   "navigate_ancestor_from_nested"               : "00000000-0000-0000-0000-000000000018",
 
   "window.frameElement"                         : "00000000-0000-0000-0000-000000000019",
+
+  "keyboard.getLayoutMap"                       : "00000000-0000-0000-0000-00000000001A",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

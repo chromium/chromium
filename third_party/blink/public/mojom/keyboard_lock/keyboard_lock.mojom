@@ -15,6 +15,7 @@ enum KeyboardLockRequestResult {
 enum GetKeyboardLayoutMapStatus {
   kSuccess = 0,
   kFail = 1,
+  kDenied = 2,
 };
 
 struct GetKeyboardLayoutMapResult {

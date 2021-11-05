@@ -20,6 +20,7 @@
 #include "content/public/common/content_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -124,6 +125,15 @@ void KeyboardLockServiceImpl::CancelKeyboardLock() {
 void KeyboardLockServiceImpl::GetKeyboardLayoutMap(
     GetKeyboardLayoutMapCallback callback) {
   auto response = GetKeyboardLayoutMapResult::New();
+  // The keyboard layout map is only accessible from the outermost main frame or
+  // with the permission policy enabled.
+  if (render_frame_host_->GetParentOrOuterDocument() &&
+      !render_frame_host_->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kKeyboardMap)) {
+    response->status = blink::mojom::GetKeyboardLayoutMapStatus::kDenied;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
   response->status = blink::mojom::GetKeyboardLayoutMapStatus::kSuccess;
   response->layout_map = render_frame_host_->GetKeyboardLayoutMap();
 
