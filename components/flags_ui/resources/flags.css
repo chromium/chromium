@@ -463,18 +463,10 @@ html:not(.focus-outline-visible) .tab:focus {
   /* Bottom padding should be greater than evaluated height of needs-restart */
   padding-bottom: 200px;
   position: relative;
-  /* iOS does not show unsupported experiments. */
-<if expr="not is_ios">
-  width: 200%;
-</if>
 }
 
-.tabs li:nth-child(2) .tab-content {
-  margin-inline-start: -100%;
-}
-
-.selected .tab-content,
-.selected .tab-content .template {
+.tab-content.selected,
+.tab-content.selected .template {
   display: block;
 }
 
