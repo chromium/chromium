@@ -11,11 +11,13 @@ self.addEventListener('message', e => {
   }
 
   switch (e.data.op) {
-  case 'request':
+  case 'request': {
+    const controller = new AbortController();
     navigator.locks.request(
       e.data.name, {
         mode: e.data.mode || 'exclusive',
-        ifAvailable: e.data.ifAvailable || false
+        ifAvailable: e.data.ifAvailable || false,
+        signal: e.data.abortImmediately ? controller.signal : undefined,
       }, lock => {
         if (lock === null) {
           respond({ack: 'request', failed: true});
@@ -27,8 +29,14 @@ self.addEventListener('message', e => {
         held.set(lock_id, release);
         respond({ack: 'request', lock_id: lock_id});
         return promise;
+      }).catch(e => {
+        respond({ack: 'request', error: e.name});
       });
+    if (e.data.abortImmediately) {
+      controller.abort();
+    }
     break;
+  }
 
   case 'release':
     held.get(e.data.lock_id)();

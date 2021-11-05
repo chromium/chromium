@@ -8,6 +8,10 @@
   self.uniqueName = (testCase, prefix) => {
     return `${self.location.pathname}-${prefix}-${testCase.name}-${++res_num}`;
   };
+  self.uniqueNameByQuery = () => {
+    const prefix = new URL(location.href).searchParams.get('prefix');
+    return `${prefix}-${++res_num}`;
+  }
 
   // Inject an iframe showing the given url into the page, and resolve
   // the returned promise when the frame is loaded.

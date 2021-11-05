@@ -33,7 +33,7 @@ async function assert_bfcached(target) {
 
 async function assert_not_bfcached(target) {
   const status = await getBFCachedStatus(target);
-  assert_implements_optional(status !== 'BFCached',
+  assert_implements(status !== 'BFCached',
       'Should not be BFCached but actually was');
 }
 
@@ -78,9 +78,13 @@ const waitForPageShow = () => window.pageShowPromise;
 // Parameters can be omitted. See `defaultParams` below for default.
 function runEventTest(params, description) {
   const defaultParams = {
-    openFunc: url => window.open(url, '_blank', 'noopener'),
-    funcBeforeNavigation: () => {},
-    targetOrigin: originCrossSite,
+    openFunc(url) {
+      window.open(
+        `${url}&events=${this.events.join(',')}`,
+        '_blank',
+        'noopener'
+      )
+    },
     events: ['pagehide', 'pageshow', 'load'],
     expectedEvents: [
       'window.load',
@@ -88,21 +92,49 @@ function runEventTest(params, description) {
       'window.pagehide.persisted',
       'window.pageshow.persisted'
     ],
+    async funcAfterAssertion(pageA) {
+      assert_array_equals(
+        await pageA.execute_script(() => getRecordedEvents()),
+        this.expectedEvents);
+    }
   }
   // Apply defaults.
-  params = {...defaultParams, ...params};
+  params = { ...defaultParams, ...params };
+
+  runBfcacheTest(params, description);
+}
+
+function runBfcacheTest(params, description) {
+  const defaultParams = {
+    openFunc: url => window.open(url, '_blank', 'noopener'),
+    scripts: [],
+    funcBeforeNavigation: () => {},
+    targetOrigin: originCrossSite,
+    shouldBeCached: true,
+    funcAfterAssertion: () => {},
+  }
+  // Apply defaults.
+  params = {...defaultParams, ...params };
 
   promise_test(async t => {
     const pageA = new RemoteContext(token());
     const pageB = new RemoteContext(token());
 
-    const urlA = executorPath + pageA.context_id +
-                 '&events=' + params.events.join(',');
+    const urlA = executorPath + pageA.context_id;
     const urlB = params.targetOrigin + executorPath + pageB.context_id;
 
     params.openFunc(urlA);
 
     await pageA.execute_script(waitForPageShow);
+
+    for (const src of params.scripts) {
+      await pageA.execute_script((src) => {
+        const script = document.createElement("script");
+        script.src = src;
+        document.head.append(script);
+      }, [src]);
+    }
+
     await pageA.execute_script(params.funcBeforeNavigation);
     await pageA.execute_script(
       (url) => {
@@ -121,10 +153,15 @@ function runEventTest(params, description) {
     );
 
     await pageA.execute_script(waitForPageShow);
-    await assert_bfcached(pageA);
 
-    assert_array_equals(
-      await pageA.execute_script(() => getRecordedEvents()),
-      params.expectedEvents);
+    if (params.shouldBeCached) {
+      await assert_bfcached(pageA);
+    } else {
+      await assert_not_bfcached(pageA);
+    }
+
+    if (params.funcAfterAssertion) {
+      await params.funcAfterAssertion(pageA, pageB);
+    }
   }, description);
 }
