@@ -32,7 +32,7 @@ ColorRecipe& ColorMixer::operator[](ColorId id) {
 
 void ColorMixer::AddSet(ColorSet&& set) {
   DCHECK(FindSetWithId(set.id) == sets_.cend());
-  DVLOG(2) << "ColorSet " << ColorSetIdName(set.id) << " added successfully.";
+  DVLOG(2) << "Set of Colors " << ColorSetIdName(set.id) << " added successfully.";
   sets_.push_front(std::move(set));
 }
 
