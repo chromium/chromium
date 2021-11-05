@@ -238,17 +238,23 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Can be called on any thread, but only after OnThreadPoolAvailable().
   void ActivateSystemTriggers(const std::vector<std::string>& triggers);
 
-  // Sets the task runner used by the tracing infrastructure in this process. Be
-  // sure to call TearDownForTesting to clean up at the end of the test.
+  // Sets the task runner used by the tracing infrastructure in this process.
+  // The returned handle will automatically tear down tracing when destroyed, so
+  // it should be kept valid until the test terminates.
   //
-  // Be careful when using ResetTaskRunnerForTesting. There is a PostTask in the
+  // Be careful when using SetupForTesting. There is a PostTask in the
   // constructor of PerfettoTracedProcess, so before this class is constructed
   // is the only safe time to call this.
-  static void ResetTaskRunnerForTesting(
+  struct COMPONENT_EXPORT(TRACING_CPP) TestHandle {
+    TestHandle() = default;
+    ~TestHandle();
+    TestHandle(const TestHandle&) = delete;
+    TestHandle(TestHandle&&) = default;
+    TestHandle& operator=(const TestHandle&) = delete;
+    TestHandle& operator=(TestHandle&&) = default;
+  };
+  static std::unique_ptr<TestHandle> SetupForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
-
-  // Clean up tracing state at the end of a test.
-  static void TearDownForTesting();
 
   // Sets the ProducerClient (or SystemProducer) and returns the old pointer. If
   // tests want to restore the state of the world they should store the pointer

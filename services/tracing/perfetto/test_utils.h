@@ -241,6 +241,7 @@ class TracingUnitTest : public testing::Test {
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<base::test::TracingEnvironment> tracing_environment_;
+  std::unique_ptr<PerfettoTracedProcess::TestHandle> test_handle_;
   bool setup_called_ = false;
   bool teardown_called_ = false;
 };

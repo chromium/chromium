@@ -259,11 +259,13 @@ base::tracing::PerfettoTaskRunner* PerfettoTracedProcess::GetTaskRunner() {
 }
 
 // static
-void PerfettoTracedProcess::ResetTaskRunnerForTesting(
+std::unique_ptr<PerfettoTracedProcess::TestHandle>
+PerfettoTracedProcess::SetupForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   // Make sure Perfetto was properly torn down in any prior tests.
   DCHECK(!perfetto::Tracing::IsInitialized());
   GetTaskRunner()->ResetTaskRunnerForTesting(task_runner);
+  Get()->ClearDataSourcesForTesting();  // IN-TEST
   // On the first call within the process's lifetime, this will call
   // PerfettoTracedProcess::Get(), ensuring PerfettoTracedProcess is created.
   InitTracingPostThreadPoolStartAndFeatureList();
@@ -283,13 +285,7 @@ void PerfettoTracedProcess::ResetTaskRunnerForTesting(
               ->ResetSequenceForTesting();
         }
       }));
-}
-
-// static
-void PerfettoTracedProcess::TearDownForTesting() {
-  // TODO(skyostil): We only uninitialize Perfetto for now, but there may also
-  // be other tracing-related state which should not leak between tests.
-  perfetto::Tracing::ResetForTesting();
+  return std::make_unique<TestHandle>();
 }
 
 void PerfettoTracedProcess::AddDataSource(DataSourceBase* data_source) {
@@ -516,6 +512,12 @@ ProducerClient* PerfettoTracedProcess::producer_client() const {
 
 SystemProducer* PerfettoTracedProcess::system_producer() const {
   return system_producer_.get();
+}
+
+PerfettoTracedProcess::TestHandle::~TestHandle() {
+  // TODO(skyostil): We only uninitialize Perfetto for now, but there may also
+  // be other tracing-related state which should not leak between tests.
+  perfetto::Tracing::ResetForTesting();
 }
 
 }  // namespace tracing

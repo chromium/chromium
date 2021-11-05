@@ -40,8 +40,7 @@ double BusyLoopFor(base::TimeDelta duration) {
 class ReachedCodeDataSourceTest : public testing::Test {
  public:
   void SetUp() override {
-    PerfettoTracedProcess::ResetTaskRunnerForTesting();
-    PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
+    test_handle_ = tracing::PerfettoTracedProcess::SetupForTesting();
 
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         task_environment_.GetMainThreadTaskRunner());
@@ -53,7 +52,6 @@ class ReachedCodeDataSourceTest : public testing::Test {
   void TearDown() override {
     // Be sure there is no pending/running tasks.
     task_environment_.RunUntilIdle();
-    PerfettoTracedProcess::TearDownForTesting();
   }
 
   void BeginTrace() {
@@ -71,7 +69,7 @@ class ReachedCodeDataSourceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
+  std::unique_ptr<tracing::PerfettoTracedProcess::TestHandle> test_handle_;
   std::unique_ptr<TestProducerClient> producer_;
 };
 
