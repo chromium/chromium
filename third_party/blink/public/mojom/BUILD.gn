@@ -304,7 +304,7 @@ mojom("mojom_platform") {
   if (is_linux || is_chromeos) {
     enabled_features += [ "renderer_pref_system_font_family_name" ]
   }
-  if (use_x11 || use_ozone) {
+  if (use_ozone) {
     enabled_features += [ "is_selection_clipboard_buffer_possible" ]
   }
 
