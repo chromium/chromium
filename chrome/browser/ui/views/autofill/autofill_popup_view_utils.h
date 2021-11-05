@@ -112,16 +112,19 @@ views::BubbleArrowSide GetOptimalBubbleArrowSide(
 // boundaries of the view port, |right_to_left| indicates if the website uses
 // text written from right to left. |scrollbar_width| is the width of a scroll
 // bar and |maximum_offset_to_center| is the maximum number of pixels the bubble
-// can be moved towards the center of |element_bounds|. |bubble_bounds| is the
-// current rect of the bubble that is modified by this function. The function
-// returns the arrow position that is used on the bubble.
+// can be moved towards the center of |element_bounds| and
+// |maximum_width_percentage_to_center| is the maxmum percentage of the
+// element's width for the bubble to move towards the center. |bubble_bounds| is
+// the current rect of the bubble that is modified by this function. The
+// function returns the arrow position that is used on the bubble.
 views::BubbleBorder::Arrow GetOptimalBubblePlacement(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     const gfx::Size& bubble_preferred_size,
     bool right_to_left,
     int scrollbar_width,
-    int maximum_offset_to_center,
+    int maximum_pixel_offset_to_center,
+    int maximum_width_percentage_to_center,
     gfx::Rect& bubble_bounds);
 
 // Returns whether there is an open permissions prompt in |web_contents| with

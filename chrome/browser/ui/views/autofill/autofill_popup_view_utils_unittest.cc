@@ -260,10 +260,11 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalBubbleArrowSide) {
 
 TEST(AutofillPopupViewUtilsTest, GetOptimalBubblePlacement) {
   // For this test, the content area bounds and preferred bubble size is fixed.
-  gfx::Rect content_area_bounds = {0, 0, 800, 800};
-  gfx::Size preferred_bubble_size = {200, 300};
-  int scrollbar_width = 10;
-  int maximum_offset_to_center = 120;
+  const gfx::Rect kContentsAreaBounds = {0, 0, 800, 800};
+  const gfx::Size kPreferredBubbleSize = {200, 300};
+  const int kScrollbarWidth = 10;
+  const int kMaximumPixelOffsetTowardsCenter = 120;
+  const int kMaximumWidthPercentageTowardsCenter = 50;
 
   struct TestCase {
     bool right_to_left;
@@ -282,7 +283,7 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalBubblePlacement) {
       // below the element, displaced by maximum of 120 pixels.
       {false,
        {0, 0, 300, 20},
-       {maximum_offset_to_center, 20, 200, 300},
+       {kMaximumPixelOffsetTowardsCenter, 20, 200, 300},
        views::BubbleBorder::Arrow::TOP_LEFT},
       // The element is placed in the lower left corner which should create a
       // bubble on top of the element.
@@ -309,9 +310,10 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalBubblePlacement) {
 
     EXPECT_EQ(test_case.expected_arrow,
               GetOptimalBubblePlacement(
-                  content_area_bounds, test_case.element_bounds,
-                  preferred_bubble_size, test_case.right_to_left,
-                  scrollbar_width, maximum_offset_to_center, popup_bounds));
+                  kContentsAreaBounds, test_case.element_bounds,
+                  kPreferredBubbleSize, test_case.right_to_left,
+                  kScrollbarWidth, kMaximumPixelOffsetTowardsCenter,
+                  kMaximumWidthPercentageTowardsCenter, popup_bounds));
 
     EXPECT_EQ(popup_bounds, test_case.expected_popup_bounds);
   }
