@@ -207,15 +207,10 @@ class HostZoomMapBrowserTestWithPrefs : public HostZoomMapBrowserTest {
 // persisted.
 const char kSanitizationTestPrefs[] =
     "{'partition': {"
-    "   'default_zoom_level': { '" PARTITION_KEY_PLACEHOLDER
-    "': 1.2 },"
+    "   'default_zoom_level': { '" PARTITION_KEY_PLACEHOLDER "': 1.2 },"
     "   'per_host_zoom_levels': {"
-    "     '" PARTITION_KEY_PLACEHOLDER
-    "': {"
-    "       '': { 'zoom_level': 1.1, 'last_modified': '1' },"
-    "       'host1': { 'zoom_level': 1.20001, 'last_modified': '2' },"
-    "       'host2': { 'zoom_level': 1.3, 'last_modified': '3' }"
-    "     }"
+    "     '" PARTITION_KEY_PLACEHOLDER "': {"
+    "       '': 1.1, 'host1': 1.20001, 'host2': 1.3 }"
     "   }"
     "}}";
 
