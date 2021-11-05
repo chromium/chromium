@@ -1137,8 +1137,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
     bool previous_document_was_activated,
     NavigationRequest* navigation_request) {
   DCHECK(navigation_request);
-  if (ShouldMaintainTrivialSessionHistory(rfh->frame_tree_node()) &&
-      GetLastCommittedEntry()) {
+  if (ShouldMaintainTrivialSessionHistory() && GetLastCommittedEntry()) {
     // Ensure that this navigation does not add a navigation entry, since
     // ShouldMaintainTrivialSessionHistory() means we should not add an entry
     // beyond the last committed one. Therefore, `should_replace_current_entry`
@@ -3140,10 +3139,9 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
   //
   // If there is an entry, an entry replacement must happen if the current
   // browsing context should maintain a trivial session history.
-  bool should_replace_current_entry =
-      (params.should_replace_current_entry ||
-       ShouldMaintainTrivialSessionHistory(node)) &&
-      entries_.size();
+  bool should_replace_current_entry = (params.should_replace_current_entry ||
+                                       ShouldMaintainTrivialSessionHistory()) &&
+                                      entries_.size();
 
   // Javascript URLs should not create NavigationEntries. All other navigations
   // do, including navigations to chrome renderer debug URLs.
@@ -4259,13 +4257,11 @@ void NavigationControllerImpl::NavigateToAppHistoryKey(FrameTreeNode* node,
   }
 }
 
-bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(
-    const FrameTreeNode* frame_tree_node) const {
-  // TODO(https://crbug.com/1197384): We may have to add portals in addition to
-  // prerender and fenced frames. This should be kept in sync with
+bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory() const {
+  // TODO(https://crbug.com/1197384): We may have to add portals and fenced
+  // frames in addition to prerender. This should be kept in sync with
   // LocalFrame version, LocalFrame::ShouldMaintainTrivialSessionHistory.
-  return frame_tree_.is_prerendering() ||
-         frame_tree_node->IsInFencedFrameTree();
+  return frame_tree_.is_prerendering();
 }
 
 }  // namespace content

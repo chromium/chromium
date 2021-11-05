@@ -512,27 +512,12 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
 }
 
 bool LocalFrame::ShouldMaintainTrivialSessionHistory() const {
-  // This should be kept in sync with
+  // TODO(https://crbug.com/1197384): We may have to add fenced frames. This
+  // should be kept in sync with NavigationControllerImpl version,
   // NavigationControllerImpl::ShouldMaintainTrivialSessionHistory.
   //
   // TODO(mcnee): Similarly, we need to restrict orphaned contexts.
-  return GetPage()->InsidePortal() || GetDocument()->IsPrerendering() ||
-         IsInFencedFrameTree();
-}
-
-bool LocalFrame::IsInFencedFrameTree() const {
-  if (!blink::features::IsFencedFramesEnabled())
-    return false;
-
-  switch (blink::features::kFencedFramesImplementationTypeParam.Get()) {
-    case blink::features::FencedFramesImplementationType::kMPArch:
-      return GetPage()->IsMainFrameFencedFrameRoot();
-    case blink::features::FencedFramesImplementationType::kShadowDOM:
-      return Tree().Top(FrameTreeBoundary::kFenced) !=
-             Tree().Top(FrameTreeBoundary::kIgnoreFence);
-    default:
-      return false;
-  }
+  return GetPage()->InsidePortal() || GetDocument()->IsPrerendering();
 }
 
 bool LocalFrame::DetachImpl(FrameDetachType type) {

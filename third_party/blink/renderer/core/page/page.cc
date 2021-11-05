@@ -1079,14 +1079,6 @@ bool Page::InsidePortal() const {
   return inside_portal_;
 }
 
-void Page::SetIsMainFrameFencedFrameRoot() {
-  is_fenced_frame_tree_ = true;
-}
-
-bool Page::IsMainFrameFencedFrameRoot() const {
-  return is_fenced_frame_tree_;
-}
-
 void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
                                    const String& value) {
   if (!media_feature_overrides_) {

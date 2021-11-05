@@ -101,7 +101,6 @@ class WebView {
   // |is_prerendering| defines whether the page is being prerendered by the
   // Prerender2 feature (see content/browser/prerender/README.md).
   // [is_inside_portal] defines whether the page is inside_portal.
-  // [is_fenced_frame] defines whether the page is for a fenced frame.
   // |compositing_enabled| dictates whether accelerated compositing should be
   // enabled for the page. It must be false if no clients are provided, or if a
   // LayerTreeView will not be set for the WebWidget.
@@ -126,7 +125,6 @@ class WebView {
       bool is_hidden,
       bool is_prerendering,
       bool is_inside_portal,
-      bool is_fenced_frame,
       bool compositing_enabled,
       bool widgets_never_composited,
       WebView* opener,

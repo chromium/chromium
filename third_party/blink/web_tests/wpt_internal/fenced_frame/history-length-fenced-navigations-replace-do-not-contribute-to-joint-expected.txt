@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL All fenced navigations should be replace-only and not contribute to joint session history assert_equals: Navigations inside of a fenced frame are always replacement navigations and never increase `history.length` inside the fence: top-level-fenced-frame expected "PASS > top-level-fenced-frame" but got "FAIL > top-level-fenced-frame history.length: 10"
+Harness: the test ran to completion.
+
