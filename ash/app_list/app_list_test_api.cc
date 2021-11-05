@@ -7,18 +7,24 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
+#include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
+#include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ui/views/view_model.h"
 
@@ -149,6 +155,20 @@ views::View* AppListTestApi::GetViewForAppListSort(AppListSortOrder order) {
     case AppListSortOrder::kNameReverseAlphabetical:
       return sort_button_container->children()[1];
   }
+}
+
+AppsGridView* AppListTestApi::GetTopLevelAppsGridView() {
+  if (features::IsProductivityLauncherEnabled() &&
+      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    return Shell::Get()
+        ->app_list_controller()
+        ->bubble_presenter_for_test()
+        ->bubble_view_for_test()
+        ->apps_page_for_test()
+        ->scrollable_apps_grid_view();
+  }
+
+  return GetAppsGridView();
 }
 
 }  // namespace ash

@@ -37,6 +37,11 @@ void TestAppListClient::InvokeSearchResultAction(
   invoked_result_actions_.push_back(std::make_pair(result_id, action));
 }
 
+void TestAppListClient::OnAppListSortRequested(int profile_id,
+                                               AppListSortOrder order) {
+  requested_sort_order_ = order;
+}
+
 void TestAppListClient::GetSearchResultContextMenuModel(
     const std::string& result_id,
     GetContextMenuModelCallback callback) {

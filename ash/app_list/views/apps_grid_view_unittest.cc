@@ -62,6 +62,8 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -253,8 +255,19 @@ class AppsGridViewTest : public AshTestBase {
   void SetUp() override {
     if (is_rtl_)
       base::i18n::SetICUDefaultLocale("he");
-    feature_list_.InitWithFeatureState(features::kProductivityLauncher,
-                                       is_productivity_launcher_enabled_);
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+    if (is_productivity_launcher_enabled_) {
+      enabled_features.push_back(features::kProductivityLauncher);
+    } else {
+      disabled_features.push_back(features::kProductivityLauncher);
+    }
+    if (is_app_sort_enabled_) {
+      enabled_features.push_back(features::kLauncherAppSort);
+    } else {
+      disabled_features.push_back(features::kLauncherAppSort);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
@@ -442,6 +455,36 @@ class AppsGridViewTest : public AshTestBase {
     return gesture_event;
   }
 
+  // Simulates a tap on the point `location` if the test is in tablet mode.
+  // Simulates a left click on the point otherwise.
+  void SimulateLeftClickOrTapAt(const gfx::Point& location) {
+    auto* event_generator = GetEventGenerator();
+    if (create_as_tablet_mode_) {
+      event_generator->GestureTapAt(location);
+      return;
+    }
+
+    event_generator->MoveMouseTo(location);
+    event_generator->ClickLeftButton();
+  }
+
+  // Simulates a long press on the point `location` if the test is in tablet
+  // mode. Simulates a right click on the point otherwise. This function can be
+  // used to open the context menu.
+  void SimulateRightClickOrLongPressAt(const gfx::Point& location) {
+    auto* event_generator = GetEventGenerator();
+    if (create_as_tablet_mode_) {
+      ui::GestureEvent gesture_event(
+          location.x(), location.y(), 0, base::TimeTicks(),
+          ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+      event_generator->Dispatch(&gesture_event);
+      return;
+    }
+
+    event_generator->MoveMouseTo(location);
+    event_generator->ClickRightButton();
+  }
+
   // Sends left mouse button press and release events to `view`. The events will
   // be located at the view center point.
   void SimulateLeftClickOnView(views::View* view) {
@@ -619,6 +662,8 @@ class AppsGridViewTest : public AshTestBase {
   bool is_rtl_ = false;
   // True if feature ProductivityLauncher should be enabled.
   bool is_productivity_launcher_enabled_ = false;
+  // True if feature LauncherAppSort should be enabled.
+  bool is_app_sort_enabled_ = false;
   // True if we set the test on tablet mode.
   bool create_as_tablet_mode_ = false;
 
@@ -749,6 +794,23 @@ class AppsGridViewTabletTest
 };
 INSTANTIATE_TEST_SUITE_P(All,
                          AppsGridViewTabletTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+// Test suite that tests apps sort works on all apps grid, parameterized by
+// RTL locale and clamshell/tablet mode.
+class AppsGridViewAppSortTest
+    : public AppsGridViewTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  AppsGridViewAppSortTest() {
+    is_rtl_ = std::get<0>(GetParam());
+    is_productivity_launcher_enabled_ = true;
+    is_app_sort_enabled_ = true;
+    create_as_tablet_mode_ = std::get<1>(GetParam());
+  }
+};
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppsGridViewAppSortTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
 // This does not test the font name or weight because ash_unittests returns
@@ -3963,6 +4025,70 @@ TEST_P(AppsGridViewCardifiedStateTest,
   EXPECT_FALSE(paged_apps_grid_view_->cardified_state_for_testing());
   test_api_->WaitForItemMoveAnimationDone();
   test_api_->LayoutToIdealBounds();
+}
+
+TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
+  // In this test, the sort algorithm is not tested. Instead, the context menu
+  // that contains the options to sort is verified to be shown in apps grid
+  // view. The menu option selecting is also simulated to ensure the sorting is
+  // called. The actual sort algorithm is tested in
+  // chrome/browser/ui/app_list/app_list_sort_browsertest.cc.
+  model_->PopulateApps(1);
+  EXPECT_FALSE(apps_grid_view_->IsMenuShowing());
+  EXPECT_EQ(AppListSortOrder::kCustom,
+            GetTestAppListClient()->requested_sort_order());
+
+  // Get a point in `apps_grid_view_` that doesn't have an item on it.
+  const gfx::Point empty_space =
+      apps_grid_view_->GetBoundsInScreen().CenterPoint();
+
+  // Open the menu to test the alphabetical sort option.
+  SimulateRightClickOrLongPressAt(empty_space);
+  EXPECT_TRUE(apps_grid_view_->IsMenuShowing());
+
+  // Cache the current context menu view.
+  views::MenuItemView* reorder_option =
+      apps_grid_view_->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
+  ASSERT_TRUE(reorder_option->title() == u"Name");
+
+  // Open the Reorder by Name submenu.
+  const gfx::Point reorder_option_point =
+      reorder_option->GetBoundsInScreen().CenterPoint();
+  SimulateLeftClickOrTapAt(reorder_option_point);
+  ASSERT_TRUE(reorder_option->SubmenuIsShowing());
+
+  // Sort the apps by their name in alphabetical order.
+  const gfx::Point alphabetical_option = reorder_option->GetSubmenu()
+                                             ->GetMenuItemAt(0)
+                                             ->GetBoundsInScreen()
+                                             .CenterPoint();
+  SimulateLeftClickOrTapAt(alphabetical_option);
+  EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
+            GetTestAppListClient()->requested_sort_order());
+  EXPECT_FALSE(apps_grid_view_->IsMenuShowing());
+
+  // Open the menu again to test the reverse alphabetical sort option.
+  SimulateRightClickOrLongPressAt(empty_space);
+  EXPECT_TRUE(apps_grid_view_->IsMenuShowing());
+
+  // Cache the current context menu view.
+  reorder_option =
+      apps_grid_view_->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
+  ASSERT_TRUE(reorder_option->title() == u"Name");
+
+  // Open the Reorder by Name submenu.
+  SimulateLeftClickOrTapAt(reorder_option_point);
+  ASSERT_TRUE(reorder_option->SubmenuIsShowing());
+
+  // Sort the apps by their name in reverse alphabetical order.
+  const gfx::Point reverse_option = reorder_option->GetSubmenu()
+                                        ->GetMenuItemAt(1)
+                                        ->GetBoundsInScreen()
+                                        .CenterPoint();
+  SimulateLeftClickOrTapAt(reverse_option);
+  EXPECT_EQ(AppListSortOrder::kNameReverseAlphabetical,
+            GetTestAppListClient()->requested_sort_order());
+  EXPECT_FALSE(apps_grid_view_->IsMenuShowing());
 }
 
 }  // namespace test

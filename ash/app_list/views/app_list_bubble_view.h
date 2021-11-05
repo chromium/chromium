@@ -81,6 +81,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   views::View* separator_for_test() { return separator_; }
   bool showing_folder_for_test() { return showing_folder_; }
+  AppListBubbleAppsPage* apps_page_for_test() { return apps_page_; }
 
  private:
   friend class AppListTestHelper;

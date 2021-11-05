@@ -24,14 +24,19 @@
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model_observer.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/animation/bounds_animator_observer.h"
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 
 namespace views {
 class BoundsAnimator;
+class MenuItemView;
+class MenuModelAdapter;
+class MenuRunner;
 }  // namespace views
 
 namespace ash {
@@ -79,13 +84,29 @@ struct ASH_EXPORT GridIndex {
 // AppsGridView displays a grid of app icons. It is used for:
 // - The main grid of apps in the launcher
 // - The grid of apps in a folder
+// TODO(crbug.com/1267405): Refactor the AppsGridView to clean up context menu
+// functions and data by wrapping them up in a AppsGridContextMenu class.
 class ASH_EXPORT AppsGridView : public views::View,
                                 public AppListItemView::GridDelegate,
                                 public AppListItemListObserver,
                                 public AppListModelObserver,
-                                public views::BoundsAnimatorObserver {
+                                public ui::SimpleMenuModel::Delegate,
+                                public views::BoundsAnimatorObserver,
+                                public views::ContextMenuController {
  public:
   METADATA_HEADER(AppsGridView);
+
+  // List of command id used in apps grid context menu.
+  enum AppsGridCommandId {
+    // Command Id that contains a submenu with app name reorder options.
+    kReorderByName,
+
+    // Command that will sort the name in alphabetical order.
+    kReorderByNameAlphabetical,
+
+    // Command that will sort the name in reverse alphabetical order.
+    kReorderByNameReverseAlphabetical
+  };
 
   enum Pointer {
     NONE,
@@ -195,6 +216,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool CanDrop(const OSExchangeData& data) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
 
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
+
   // Updates the visibility of app list items according to |app_list_state| and
   // |is_in_drag|.
   void UpdateControlVisibility(AppListViewState app_list_state,
@@ -296,6 +320,9 @@ class ASH_EXPORT AppsGridView : public views::View,
     folder_delegate_ = folder_delegate;
   }
 
+  // Returns true if the apps grid context menu is showing.
+  bool IsMenuShowing() const;
+
   const AppListModel* model() const { return model_; }
 
   bool FireFolderItemReparentTimerForTest();
@@ -316,6 +343,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   }
 
   base::OneShotTimer* reorder_timer_for_test() { return &reorder_timer_; }
+
+  views::MenuItemView* root_menu_item_view() const {
+    return root_menu_item_view_;
+  }
 
  protected:
   // The cardified apps grid should be scaled down by this factor.
@@ -648,6 +679,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Overridden from AppListModelObserver:
   void OnAppListModelStatusChanged() override;
 
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(views::View* source,
+                                  const gfx::Point& point,
+                                  ui::MenuSourceType source_type) override;
+
   // Animates `drag_icon_proxy_` to drop it into appropriate target bounds in
   // the apps grid when the item drag ends. Expects `drag_icon_proxy_` to be
   // set.
@@ -775,6 +811,13 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Invoked when |host_drag_start_timer_| fires.
   void OnHostDragStartTimerFired();
 
+  // Builds and saves a SimpleMenuModel to `context_menu_model_`;
+  void BuildMenuModel();
+
+  // Called when the context menu is closed. Used as a callback for
+  // `menu_model_adapter_`.
+  void OnMenuClosed();
+
   class ScopedModelUpdate;
 
   AppListModel* model_ = nullptr;         // Owned by AppListView.
@@ -901,6 +944,18 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // The location when |current_ghost_view_| was shown.
   GridIndex current_ghost_location_;
+
+  // Data members to support apps grid context menu.
+  // The context menu model and its adapter for AppsGridView.
+  std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
+  std::unique_ptr<views::MenuModelAdapter> menu_model_adapter_;
+  // The menu runner that is responsible to run the menu.
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+  // The root menu item view of `context_menu_model_`. Cached for testing.
+  views::MenuItemView* root_menu_item_view_ = nullptr;
+  // The submenu model that contains name reorder options used in
+  // `context_menu_model_`.
+  std::unique_ptr<ui::SimpleMenuModel> reorder_name_submenu_;
 };
 
 }  // namespace ash

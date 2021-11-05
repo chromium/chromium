@@ -4284,6 +4284,14 @@ Here are some things you can try to get started.
         Remove Suggestion
       </message>
 
+      <!-- Productivity Launcher strings -->
+      <message name="IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE" desc="Title of the context menu in apps grid view in Productivity Launcher.">
+        Reorder by
+      </message>
+      <message name="IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_NAME" desc="Title of the context menu item in apps grid view in Productivity Launcher that contains a submenu with options describing how the apps will be reordered by their names.">
+        Name
+      </message>
+
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">
         Picture-in-picture started, Alt+Shift+V to focus

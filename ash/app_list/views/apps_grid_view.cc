@@ -34,6 +34,8 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
@@ -47,7 +49,9 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -60,6 +64,7 @@
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
@@ -318,6 +323,7 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
   bounds_animator_ = std::make_unique<views::BoundsAnimator>(
       items_container_, /*use_transforms=*/true);
   bounds_animator_->AddObserver(this);
+  set_context_menu_controller(this);
 }
 
 AppsGridView::~AppsGridView() {
@@ -1766,6 +1772,25 @@ bool AppsGridView::FireDragToShelfTimerForTest() {
   return true;
 }
 
+bool AppsGridView::IsMenuShowing() const {
+  return menu_runner_ && menu_runner_->IsRunning();
+}
+
+void AppsGridView::ExecuteCommand(int command_id, int event_flags) {
+  switch (command_id) {
+    case AppsGridCommandId::kReorderByNameAlphabetical:
+      app_list_view_delegate()->SortAppList(
+          AppListSortOrder::kNameAlphabetical);
+      break;
+    case AppsGridCommandId::kReorderByNameReverseAlphabetical:
+      app_list_view_delegate()->SortAppList(
+          AppListSortOrder::kNameReverseAlphabetical);
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 void AppsGridView::StartDragAndDropHostDrag() {
   // When a drag and drop host is given, the item can be dragged out of the app
   // list window. In that case a proxy widget needs to be used.
@@ -2623,6 +2648,59 @@ void AppsGridView::OnHostDragStartTimerFired() {
     // From now on we forward the drag events.
     forward_events_to_drag_and_drop_host_ = true;
   }
+}
+
+void AppsGridView::ShowContextMenuForViewImpl(views::View* source,
+                                              const gfx::Point& point,
+                                              ui::MenuSourceType source_type) {
+  if (!features::IsProductivityLauncherEnabled() ||
+      !features::IsLauncherAppSortEnabled()) {
+    return;
+  }
+
+  // Build the menu model and save it to `context_menu_model_`.
+  BuildMenuModel();
+  menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
+      context_menu_model_.get(),
+      base::BindRepeating(&AppsGridView::OnMenuClosed, base::Unretained(this)));
+  root_menu_item_view_ = menu_model_adapter_->CreateMenu();
+
+  int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                  views::MenuRunner::CONTEXT_MENU |
+                  views::MenuRunner::FIXED_ANCHOR;
+  menu_runner_ =
+      std::make_unique<views::MenuRunner>(root_menu_item_view_, run_types);
+  menu_runner_->RunMenuAt(
+      source->GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
+      views::MenuAnchorPosition::kBubbleBottomRight, source_type);
+}
+
+void AppsGridView::BuildMenuModel() {
+  context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+  reorder_name_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
+
+  // As both of the submenu items are not planned to be launched, the option
+  // strings are directly written as the parameters.
+  reorder_name_submenu_->AddItem(kReorderByNameAlphabetical, u"Alphabetical");
+  reorder_name_submenu_->AddItem(kReorderByNameReverseAlphabetical,
+                                 u"Reverse alphabetical");
+
+  context_menu_model_->AddTitle(l10n_util::GetStringUTF16(
+      IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE));
+  context_menu_model_->AddSubMenuWithIcon(
+      AppsGridCommandId::kReorderByName,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_BY_NAME),
+      reorder_name_submenu_.get(),
+      ui::ImageModel::FromVectorIcon(kSortAlphabeticalIcon));
+}
+
+void AppsGridView::OnMenuClosed() {
+  menu_runner_.reset();
+  reorder_name_submenu_.reset();
+  context_menu_model_.reset();
+  root_menu_item_view_ = nullptr;
+  menu_model_adapter_.reset();
 }
 
 BEGIN_METADATA(AppsGridView, views::View)

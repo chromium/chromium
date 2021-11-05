@@ -235,6 +235,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "shelf_unlock_button.icon",
     "show_closed_caption.icon",
     "six_files.icon",
+    "sort_alphabetical.icon",
     "stylus_battery_status_unknown.icon",
     "switch_access.icon",
     "switch_access_back.icon",

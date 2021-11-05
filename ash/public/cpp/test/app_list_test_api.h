@@ -16,6 +16,7 @@ class View;
 }
 
 namespace ash {
+class AppsGridView;
 class PaginationModel;
 
 // Accesses ash data for app list view testing.
@@ -62,6 +63,10 @@ class ASH_EXPORT AppListTestApi {
 
   // Returns the view able to trigger app list sort with `order`.
   views::View* GetViewForAppListSort(AppListSortOrder order);
+
+  // Returns the top level apps grid view. Could be ScrollableAppsGridView if
+  // bubble launcher is enabled or PagedAppsGridView otherwise.
+  AppsGridView* GetTopLevelAppsGridView();
 };
 
 }  // namespace ash

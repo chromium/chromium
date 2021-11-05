@@ -12,6 +12,8 @@ specific_include_rules = {
   ],
 
   "app_list_sort_browsertest\.cc": [
+    "+ash/app_list/views/apps_grid_menu_model_adapter.h",
+    "+ash/app_list/views/apps_grid_view.h",
     "+ash/shell.h",
   ],
 }
