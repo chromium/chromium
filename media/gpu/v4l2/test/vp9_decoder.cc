@@ -219,8 +219,11 @@ bool Vp9Decoder::Initialize() {
       LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
   }
 
-  if (!v4l2_ioctl_->MediaIocRequestAlloc())
+  int media_request_fd;
+  if (!v4l2_ioctl_->MediaIocRequestAlloc(&media_request_fd))
     LOG(ERROR) << "MEDIA_IOC_REQUEST_ALLOC failed";
+
+  OUTPUT_queue_->set_media_request_fd(media_request_fd);
 
   if (!v4l2_ioctl_->StreamOn(OUTPUT_queue_->type()))
     LOG(ERROR) << "StreamOn for OUTPUT queue failed.";

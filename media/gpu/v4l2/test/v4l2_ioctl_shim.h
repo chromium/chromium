@@ -53,6 +53,11 @@ class V4L2Queue {
   uint32_t num_planes() const { return num_planes_; }
   void set_num_planes(uint32_t num_planes) { num_planes_ = num_planes; }
 
+  int media_request_fd() const { return media_request_fd_; }
+  void set_media_request_fd(int media_request_fd) {
+    media_request_fd_ = media_request_fd;
+  }
+
  private:
   const enum v4l2_buf_type type_;
   const uint32_t fourcc_;
@@ -64,6 +69,9 @@ class V4L2Queue {
   gfx::Size coded_size_;
   uint32_t num_planes_;
   const enum v4l2_memory memory_;
+  // File descriptor returned by MEDIA_IOC_REQUEST_ALLOC ioctl call
+  // to submit requests.
+  int media_request_fd_;
 };
 
 // V4L2IoctlShim is a shallow wrapper which wraps V4L2 ioctl requests
@@ -110,7 +118,7 @@ class V4L2IoctlShim {
 
   // Allocates requests (likely one per OUTPUT buffer) via
   // MEDIA_IOC_REQUEST_ALLOC on the media device.
-  bool MediaIocRequestAlloc() const WARN_UNUSED_RESULT;
+  bool MediaIocRequestAlloc(int* req_fd) const WARN_UNUSED_RESULT;
 
   // Verifies |v4l_fd| supports |compressed_format| for OUTPUT queues
   // and |uncompressed_format| for CAPTURE queues, respectively.

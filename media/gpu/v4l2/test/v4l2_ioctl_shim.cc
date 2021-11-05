@@ -321,12 +321,20 @@ bool V4L2IoctlShim::StreamOn(const enum v4l2_buf_type type) const {
   return Ioctl(VIDIOC_STREAMON, &arg);
 }
 
-bool V4L2IoctlShim::MediaIocRequestAlloc() const {
+bool V4L2IoctlShim::MediaIocRequestAlloc(int* media_request_fd) const {
   // TODO(stevecho): need to use the file descriptor representing the request
   // for MEDIA_REQUEST_IOC_QUEUE() call to queue to the request.
-  int req_fd;
+  LOG_ASSERT(media_request_fd != nullptr)
+      << "|media_request_fd| check failed.\n";
 
-  return Ioctl(MEDIA_IOC_REQUEST_ALLOC, &req_fd);
+  int allocated_req_fd;
+
+  const bool ret = Ioctl(MEDIA_IOC_REQUEST_ALLOC, &allocated_req_fd);
+
+  if (ret)
+    *media_request_fd = allocated_req_fd;
+
+  return ret;
 }
 
 bool V4L2IoctlShim::QueryFormat(enum v4l2_buf_type type,
