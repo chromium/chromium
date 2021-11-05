@@ -69,6 +69,8 @@ using IconId = int;
 typedef const gfx::VectorIcon& IconId;
 #endif
 
+bool IsRequestablePermissionType(ContentSettingsType content_settings_type);
+
 RequestType ContentSettingsTypeToRequestType(
     ContentSettingsType content_settings_type);
 
