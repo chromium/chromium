@@ -335,6 +335,21 @@
     },
     menu_item_background_hover: "$ripple_color",
 
+    /* slider */
+    slider_color_active: "$color_prominent",
+    slider_color_inactive: "$color_secondary",
+    slider_track_color_active: "rgba($slider_color_active_rgb, $second_tone_opacity)",
+    slider_track_color_inactive: "rgba($slider_color_inactive_rgb, $second_tone_opacity)",
+
+    /* switch */
+    switch_knob_color_active: "$color_prominent",
+    switch_knob_color_inactive: {
+      light: "$white",
+      dark: "$google_grey_400",
+    },
+    switch_track_color_active: "$slider_track_color_active",
+    switch_track_color_inactive: "$slider_track_color_inactive",
+
     /* tab */
     tab_label_color_active: {
       light: "$google_blue_600",
