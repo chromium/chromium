@@ -10,6 +10,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -267,6 +269,11 @@ void PopulateGraphicsInfo(std::string* log, const TelemetryInfoPtr& info) {
   base::StrAppend(log, {"\n"});
 }
 
+std::string FetchTouchpadLibraryName() {
+  return ash::cros_healthd::ServiceConnection::GetInstance()
+      ->FetchTouchpadLibraryName();
+}
+
 }  // namespace
 
 RevenLogSource::RevenLogSource() : SystemLogsSource("Reven") {
@@ -289,8 +296,6 @@ void RevenLogSource::Fetch(SysLogsSourceCallback callback) {
 void RevenLogSource::OnTelemetryInfoProbeResponse(
     SysLogsSourceCallback callback,
     TelemetryInfoPtr info_ptr) {
-  auto response = std::make_unique<SystemLogsResponse>();
-
   std::string log_val;
 
   if (info_ptr.is_null()) {
@@ -305,8 +310,22 @@ void RevenLogSource::OnTelemetryInfoProbeResponse(
     PopulateGraphicsInfo(&log_val, info_ptr);
   }
 
-  response->emplace(kRevenLogKey, log_val);
-  std::move(callback).Run(std::move(response));
+  base::OnceCallback<void(const std::string&)> reply_cb = base::BindOnce(
+      [](SysLogsSourceCallback callback, const std::string& log_val,
+         const std::string& touchpad_lib_name) {
+        std::string log_final = log_val;
+        AddLogEntry(&log_final, "touchpad_stack", touchpad_lib_name);
+
+        auto response = std::make_unique<SystemLogsResponse>();
+        response->emplace(kRevenLogKey, std::move(log_final));
+
+        std::move(callback).Run(std::move(response));
+      },
+      std::move(callback), log_val);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&FetchTouchpadLibraryName), std::move(reply_cb));
 }
 
 }  // namespace system_logs

@@ -362,8 +362,7 @@ class ServiceConnection {
       BindNetworkDiagnosticsRoutinesCallback callback) = 0;
 
   // Fetch touchpad stack driver library name.
-  virtual void FetchTouchpadLibraryName(
-      base::OnceCallback<void(const std::string&)>) = 0;
+  virtual std::string FetchTouchpadLibraryName() = 0;
 
   // Calls FlushForTesting method on all mojo::Remote objects owned by
   // ServiceConnection. This method can be used for example to gracefully

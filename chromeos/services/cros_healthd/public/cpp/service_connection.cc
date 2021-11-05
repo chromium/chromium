@@ -182,8 +182,7 @@ class ServiceConnectionImpl : public ServiceConnection {
       BindNetworkHealthServiceCallback callback) override;
   void SetBindNetworkDiagnosticsRoutinesCallback(
       BindNetworkDiagnosticsRoutinesCallback callback) override;
-  void FetchTouchpadLibraryName(
-      base::OnceCallback<void(const std::string&)> callback) override;
+  std::string FetchTouchpadLibraryName() override;
   void FlushForTesting() override;
 
   // Uses |bind_network_health_callback_| if set to bind a remote to the
@@ -647,8 +646,7 @@ void ServiceConnectionImpl::SetBindNetworkDiagnosticsRoutinesCallback(
 
 // This is a short-term solution for CloudReady. We should remove this work
 // around after cros_healthd team develop a healthier input telemetry approach.
-void ServiceConnectionImpl::FetchTouchpadLibraryName(
-    base::OnceCallback<void(const std::string&)> callback) {
+std::string ServiceConnectionImpl::FetchTouchpadLibraryName() {
 #if defined(USE_LIBINPUT)
   base::FileEnumerator file_enum(base::FilePath("/dev/input/"), false,
                                  base::FileEnumerator::FileType::FILES);
@@ -671,16 +669,15 @@ void ServiceConnectionImpl::FetchTouchpadLibraryName(
     }
 
     if (devinfo->UseLibinput()) {
-      std::move(callback).Run("libinput");
-      return;
+      return "libinput";
     }
   }
 #endif
 
 #if defined(USE_EVDEV_GESTURES)
-  std::move(callback).Run("gestures");
+  return "gestures";
 #else
-  std::move(callback).Run("Default EventConverterEvdev");
+  return "Default EventConverterEvdev";
 #endif
 }
 

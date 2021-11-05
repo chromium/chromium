@@ -731,4 +731,21 @@ TEST_F(RevenLogSourceTest, GraphicsInfoTwoExtensions) {
   VerifyOutputContains(Fetch(), expected_output);
 }
 
+TEST_F(RevenLogSourceTest, TouchpadStack) {
+  auto info = healthd::TelemetryInfo::New();
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::unique_ptr<SystemLogsResponse> response = Fetch();
+  ASSERT_NE(response, nullptr);
+  const auto revenlog_iter = response->find(kRevenLogKey);
+  ASSERT_NE(revenlog_iter, response->end());
+
+  EXPECT_THAT(
+      revenlog_iter->second,
+      AnyOf(HasSubstr("touchpad_stack: libinput\n"),
+            HasSubstr("touchpad_stack: gestures\n"),
+            HasSubstr("touchpad_stack: Default EventConverterEvdev\n")));
+}
+
 }  // namespace system_logs
