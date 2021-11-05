@@ -2345,7 +2345,7 @@ ci.cipd_builder(
                 "sdk_package_name": "system-images;android-30;google_apis_playstore;x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis_playstore/x86.yaml",
             },
-            # sdkmanager don't have x86 for android-31 so use x86_64.
+            # use x86_64 since sdkmanager don't ship x86 for android-31 and above.
             {
                 "sdk_package_name": "system-images;android-31;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-31/google_apis/x86_64.yaml",
@@ -2353,6 +2353,16 @@ ci.cipd_builder(
             {
                 "sdk_package_name": "system-images;android-31;google_apis_playstore;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-31/google_apis_playstore/x86_64.yaml",
+            },
+            # Preview system images for Android 12L.
+            # Should be updated once it is fully released.
+            {
+                "sdk_package_name": "system-images;android-Sv2;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-Sv2/google_apis/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-Sv2;google_apis_playstore;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-Sv2/google_apis_playstore/x86_64.yaml",
             },
         ],
     },
