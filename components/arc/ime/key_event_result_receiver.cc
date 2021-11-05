@@ -44,13 +44,6 @@ bool KeyEventResultReceiver::DispatchKeyEventPostIME(ui::KeyEvent* event) {
   DLOG_IF(WARNING, !callback_)
       << "DispatchKeyEventPostIME is called without setting a callback";
 
-  if (!expected_key_event_ || event->type() != expected_key_event_->type() ||
-      event->key_code() != expected_key_event_->key_code() ||
-      event->time_stamp() != expected_key_event_->time_stamp()) {
-    // Another key event was dispatched from IME before the expected key event.
-    return false;
-  }
-
   if (event->stopped_propagation()) {
     // The host IME wants to stop propagation of the event.
     RunCallbackIfNeeded(true);
@@ -61,6 +54,13 @@ bool KeyEventResultReceiver::DispatchKeyEventPostIME(ui::KeyEvent* event) {
     // This event is consumed by IME.
     RunCallbackIfNeeded(true);
     return true;
+  }
+
+  if (!expected_key_event_ || event->type() != expected_key_event_->type() ||
+      event->key_code() != expected_key_event_->key_code() ||
+      event->time_stamp() != expected_key_event_->time_stamp()) {
+    // Another key event was dispatched from IME before the expected key event.
+    return false;
   }
 
   if (!event->GetCharacter()) {

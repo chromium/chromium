@@ -228,4 +228,20 @@ TEST_F(KeyEventResultReceiverTest, DifferentEvent) {
   EXPECT_TRUE(result.value());
 }
 
+TEST_F(KeyEventResultReceiverTest, ProcessedKey) {
+  absl::optional<bool> result;
+  ui::KeyEvent event{'a', ui::VKEY_A, ui::DomCode::NONE, ui::EF_NONE};
+  ui::KeyEvent event2{'b', ui::VKEY_PROCESSKEY, ui::DomCode::NONE, ui::EF_NONE};
+  auto callback =
+      base::BindLambdaForTesting([&result](bool res) { result = res; });
+
+  receiver()->SetCallback(std::move(callback), &event);
+  EXPECT_FALSE(result.has_value());
+
+  receiver()->DispatchKeyEventPostIME(&event2);
+
+  // The callback should be called with a VKEY_PROCESSKEY event.
+  EXPECT_TRUE(result.has_value());
+}
+
 }  // namespace arc
