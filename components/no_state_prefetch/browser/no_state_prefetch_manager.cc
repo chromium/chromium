@@ -179,9 +179,6 @@ NoStatePrefetchManager::AddPrerenderFromLinkRelPrerender(
     case blink::mojom::PrerenderTriggerType::kLinkRelNext:
       origin = ORIGIN_LINK_REL_NEXT;
       break;
-    case blink::mojom::PrerenderTriggerType::kSpeculationRule:
-      // SpeculationRule is not routed to NoStatePrefetchManager.
-      NOTREACHED();
   }
 
   SessionStorageNamespace* session_storage_namespace = nullptr;

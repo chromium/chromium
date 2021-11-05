@@ -14,9 +14,6 @@ enum PrerenderTriggerType {
 
   // https://html.spec.whatwg.org/C/#link-type-next
   kLinkRelNext,
-
-  // https://wicg.github.io/nav-speculation/prerendering.html#speculation-rules
-  kSpeculationRule,
 };
 
 struct PrerenderAttributes {
