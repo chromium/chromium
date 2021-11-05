@@ -126,6 +126,25 @@ void CopyInstallResult(HermesResponseStatus* dest_status,
   }
 }
 
+// Test observer for HermesEuiccClient.
+class TestHermesEuiccClientObserver : public HermesEuiccClient::Observer {
+ public:
+  TestHermesEuiccClientObserver() = default;
+  TestHermesEuiccClientObserver(const TestHermesEuiccClientObserver&) = delete;
+  ~TestHermesEuiccClientObserver() override = default;
+
+  void OnEuiccReset(const dbus::ObjectPath& euicc_path) override {
+    on_euicc_reset_calls_.push_back(euicc_path);
+  }
+
+  const std::vector<dbus::ObjectPath>& on_euicc_reset_calls() {
+    return on_euicc_reset_calls_;
+  }
+
+ private:
+  std::vector<dbus::ObjectPath> on_euicc_reset_calls_;
+};
+
 }  // namespace
 
 class HermesEuiccClientTest : public HermesClientTestBase {
@@ -146,6 +165,7 @@ class HermesEuiccClientTest : public HermesClientTestBase {
 
     HermesEuiccClient::Initialize(GetMockBus());
     client_ = HermesEuiccClient::Get();
+    client_->AddObserver(&test_observer_);
 
     base::RunLoop().RunUntilIdle();
   }
@@ -158,6 +178,7 @@ class HermesEuiccClientTest : public HermesClientTestBase {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
 
   HermesEuiccClient* client_;
+  TestHermesEuiccClientObserver test_observer_;
 };
 
 TEST_F(HermesEuiccClientTest, TestInstallProfileFromActivationCode) {
@@ -364,6 +385,8 @@ TEST_F(HermesEuiccClientTest, TestResetMemory) {
       .WillRepeatedly(Invoke(this, &HermesEuiccClientTest::OnMethodCalled));
 
   HermesResponseStatus status;
+  const std::vector<dbus::ObjectPath>& on_euicc_reset_calls =
+      test_observer_.on_euicc_reset_calls();
 
   // Verify that client makes corresponding dbus method call with
   // correct arguments.
@@ -373,6 +396,8 @@ TEST_F(HermesEuiccClientTest, TestResetMemory) {
       base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kSuccess);
+  EXPECT_EQ(1u, on_euicc_reset_calls.size());
+  EXPECT_EQ(test_euicc_path, on_euicc_reset_calls.front());
 
   // Verify that error responses are returned properly.
   std::unique_ptr<dbus::ErrorResponse> error_response =
@@ -384,6 +409,7 @@ TEST_F(HermesEuiccClientTest, TestResetMemory) {
       base::BindOnce(&hermes_test_utils::CopyHermesStatus, &status));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(status, HermesResponseStatus::kErrorUnknown);
+  EXPECT_EQ(1u, on_euicc_reset_calls.size());
 }
 
 }  // namespace chromeos

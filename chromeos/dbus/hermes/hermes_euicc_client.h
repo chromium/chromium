@@ -149,7 +149,10 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
 
     // Called when an euicc property changes.
     virtual void OnEuiccPropertyChanged(const dbus::ObjectPath& euicc_path,
-                                        const std::string& property_name) = 0;
+                                        const std::string& property_name) {}
+
+    // Called when an Euicc reset operation completes successfully.
+    virtual void OnEuiccReset(const dbus::ObjectPath& euicc_path) {}
   };
 
   // Adds an observer for carrier profile lists changes on Hermes manager.

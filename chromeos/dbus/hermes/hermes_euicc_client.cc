@@ -134,8 +134,9 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     dbus::ObjectProxy* object_proxy = GetOrCreateProperties(euicc_path).first;
     object_proxy->CallMethodWithErrorResponse(
         &method_call, hermes_constants::kHermesNetworkOperationTimeoutMs,
-        base::BindOnce(&HermesEuiccClientImpl::OnHermesStatusResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+        base::BindOnce(&HermesEuiccClientImpl::OnResetMemoryResponse,
+                       weak_ptr_factory_.GetWeakPtr(), euicc_path,
+                       std::move(callback)));
   }
 
   Properties* GetProperties(const dbus::ObjectPath& euicc_path) override {
@@ -212,6 +213,21 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
       return;
     }
     std::move(callback).Run(HermesResponseStatus::kSuccess);
+  }
+
+  void OnResetMemoryResponse(const dbus::ObjectPath& euicc_path,
+                             HermesResponseCallback callback,
+                             dbus::Response* response,
+                             dbus::ErrorResponse* error_response) {
+    OnHermesStatusResponse(std::move(callback), response, error_response);
+
+    if (error_response) {
+      return;
+    }
+
+    for (auto& observer : observers()) {
+      observer.OnEuiccReset(euicc_path);
+    }
   }
 
   dbus::Bus* bus_;
