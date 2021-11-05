@@ -6,7 +6,6 @@
 
 #import "ios/web/text_fragments/text_fragments_manager_impl.h"
 
-#import "base/json/json_writer.h"
 #import "base/strings/string_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
@@ -67,6 +66,18 @@ TextFragmentsManagerImpl* TextFragmentsManagerImpl::FromWebState(
       TextFragmentsManager::FromWebState(web_state));
 }
 
+void TextFragmentsManagerImpl::RemoveHighlights() {
+  // Remove the fragments that are visible on the page and update the URL.
+  GetJSFeature()->RemoveHighlights(web_state_,
+                                   shared_highlighting::RemoveTextFragments(
+                                       web_state_->GetLastCommittedURL()));
+}
+
+void TextFragmentsManagerImpl::RegisterDelegate(
+    id<TextFragmentsDelegate> delegate) {
+  delegate_ = delegate;
+}
+
 void TextFragmentsManagerImpl::OnProcessingComplete(int success_count,
                                                     int fragment_count) {
   shared_highlighting::LogTextFragmentMatchRate(success_count, fragment_count);
@@ -79,10 +90,11 @@ void TextFragmentsManagerImpl::OnProcessingComplete(int success_count,
 }
 
 void TextFragmentsManagerImpl::OnClick() {
-  // Remove the fragments that are visible on the page and update the URL.
-  GetJSFeature()->RemoveHighlights(web_state_,
-                                   shared_highlighting::RemoveTextFragments(
-                                       web_state_->GetLastCommittedURL()));
+  if (delegate_) {
+    [delegate_ userTappedTextFragmentInWebState:web_state_];
+  } else {
+    RemoveHighlights();
+  }
 }
 
 void TextFragmentsManagerImpl::DidFinishNavigation(

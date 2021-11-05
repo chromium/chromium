@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/gtest_prod_util.h"
+#import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/public/text_fragments/text_fragments_manager.h"
 #import "ios/web/public/web_state_observer.h"
@@ -32,6 +32,10 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   // WebStateUserData methods:
   static void CreateForWebState(WebState* web_state);
   static TextFragmentsManagerImpl* FromWebState(WebState* web_state);
+
+  // TextFragmentsManager methods:
+  void RemoveHighlights() override;
+  void RegisterDelegate(id<TextFragmentsDelegate> delegate) override;
 
   // Invokes post-processing hooks such as metrics logging. |fragment_count|
   // is the number of text fragments that were searched for in the page text;
@@ -80,7 +84,6 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   TextFragmentsJavaScriptFeature* GetJSFeature();
 
   web::WebState* web_state_ = nullptr;
-  base::CallbackListSubscription subscription_;
   TextFragmentsJavaScriptFeature* js_feature_for_testing_ = nullptr;
 
   // Cached value of the source ID representing the last navigation to have text
@@ -95,6 +98,8 @@ class TextFragmentsManagerImpl : public TextFragmentsManager,
   // right away. In those cases, the params needed to complete processing are
   // cached here until a frame becomes available.
   absl::optional<TextFragmentProcessingParams> deferred_processing_params_;
+
+  __weak id<TextFragmentsDelegate> delegate_;
 };
 
 }  // namespace web
