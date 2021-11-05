@@ -314,10 +314,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Returns the primary FrameTree for this WebContents (as opposed to the
   // ones held by MPArch features like Prerender or Portal).
   FrameTree& GetPrimaryFrameTree() { return frame_tree_; }
-  // Deprecated.
-  // TODO(https://crbug.com/1251094): Remove once callers have been migrated to
-  // the above.
-  FrameTree* GetFrameTree() { return &GetPrimaryFrameTree(); }
 
   // Whether the initial empty page of this view has been accessed by another
   // page, making it unsafe to show the pending URL. Always false after the
