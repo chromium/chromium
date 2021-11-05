@@ -245,7 +245,9 @@ bool AccountChooserDialogAndroid::HandleCredentialChosen(
 
   scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
       client_->GetBiometricAuthenticator();
-  if (password_manager_util::CanUseBiometricAuth(authenticator.get())) {
+  if (password_manager_util::CanUseBiometricAuth(
+          authenticator.get(),
+          device_reauth::BiometricAuthRequester::kAccountChooserDialog)) {
     authenticator_ = std::move(authenticator);
     authenticator_->Authenticate(
         device_reauth::BiometricAuthRequester::kAccountChooserDialog,

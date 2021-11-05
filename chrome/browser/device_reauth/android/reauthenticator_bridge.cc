@@ -38,7 +38,7 @@ ReauthenticatorBridge::~ReauthenticatorBridge() {
 
 bool ReauthenticatorBridge::CanUseAuthentication(JNIEnv* env) {
   return authenticator_ &&
-         authenticator_->CanAuthenticate() ==
+         authenticator_->CanAuthenticate(requester_) ==
              device_reauth::BiometricsAvailability::kAvailable;
 }
 

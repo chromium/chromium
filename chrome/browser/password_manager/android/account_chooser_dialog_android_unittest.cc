@@ -189,7 +189,8 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthNotAvailable) {
 
   EXPECT_CALL(client_, GetBiometricAuthenticator)
       .WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+  EXPECT_CALL(*authenticator_.get(),
+              CanAuthenticate(BiometricAuthRequester::kAccountChooserDialog))
       .WillOnce(Return(BiometricsAvailability::kNotEnrolled));
   std::unique_ptr<password_manager::PasswordForm> form =
       FillPasswordFormWithData(kFormData2);
@@ -206,7 +207,8 @@ TEST_F(AccountChooserDialogAndroidTest, SendsCredentialIfAuthSuccessful) {
 
   EXPECT_CALL(client_, GetBiometricAuthenticator)
       .WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+  EXPECT_CALL(*authenticator_.get(),
+              CanAuthenticate(BiometricAuthRequester::kAccountChooserDialog))
       .WillOnce(Return(BiometricsAvailability::kAvailable));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(BiometricAuthRequester::kAccountChooserDialog, _))
@@ -226,7 +228,8 @@ TEST_F(AccountChooserDialogAndroidTest, DoesntSendCredentialIfAuthFailed) {
 
   EXPECT_CALL(client_, GetBiometricAuthenticator)
       .WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+  EXPECT_CALL(*authenticator_.get(),
+              CanAuthenticate(BiometricAuthRequester::kAccountChooserDialog))
       .WillOnce(Return(BiometricsAvailability::kAvailable));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(BiometricAuthRequester::kAccountChooserDialog, _))
@@ -246,7 +249,8 @@ TEST_F(AccountChooserDialogAndroidTest, CancelsAuthIfDestroyed) {
 
   EXPECT_CALL(client_, GetBiometricAuthenticator)
       .WillOnce(Return(authenticator_));
-  EXPECT_CALL(*authenticator_.get(), CanAuthenticate())
+  EXPECT_CALL(*authenticator_.get(),
+              CanAuthenticate(BiometricAuthRequester::kAccountChooserDialog))
       .WillOnce(Return(BiometricsAvailability::kAvailable));
   EXPECT_CALL(*authenticator_.get(),
               Authenticate(BiometricAuthRequester::kAccountChooserDialog, _));

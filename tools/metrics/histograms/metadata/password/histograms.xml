@@ -902,7 +902,9 @@ chromium-metrics-reviews@google.com.
   <owner>fhorschig@chromium.org</owner>
   <summary>
     Records the result of the attempt to re-auth the user via biometrics when
-    filling a password or signing in from the account chooser dialog.
+    filling a password or signing in from the account chooser dialog. From M97,
+    CancelledByChrome is recorded when the auth is cancelled and before the auth
+    result actually returns.
   </summary>
 </histogram>
 

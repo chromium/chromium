@@ -16,7 +16,10 @@ class MockBiometricAuthenticator : public BiometricAuthenticator {
  public:
   MockBiometricAuthenticator();
 
-  MOCK_METHOD(BiometricsAvailability, CanAuthenticate, (), (override));
+  MOCK_METHOD(BiometricsAvailability,
+              CanAuthenticate,
+              (BiometricAuthRequester),
+              (override));
   MOCK_METHOD(void,
               Authenticate,
               (BiometricAuthRequester, AuthenticateCallback),

@@ -526,7 +526,9 @@ bool PasswordAccessoryControllerImpl::ShouldTriggerBiometricReauth(
 
   scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
       password_client_->GetBiometricAuthenticator();
-  return password_manager_util::CanUseBiometricAuth(authenticator.get());
+  return password_manager_util::CanUseBiometricAuth(
+      authenticator.get(),
+      device_reauth::BiometricAuthRequester::kFallbackSheet);
 }
 
 void PasswordAccessoryControllerImpl::OnReauthCompleted(

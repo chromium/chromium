@@ -444,7 +444,9 @@ void PasswordAutofillManager::DidAcceptSuggestion(const std::u16string& value,
         password_client_->GetBiometricAuthenticator();
     // Note: this is currently only implemented on Android. For desktop,
     // the `authenticator` will be null.
-    if (!password_manager_util::CanUseBiometricAuth(authenticator.get())) {
+    if (!password_manager_util::CanUseBiometricAuth(
+            authenticator.get(),
+            device_reauth::BiometricAuthRequester::kAutofillSuggestion)) {
       bool success =
           FillSuggestion(GetUsernameFromSuggestion(value), frontend_id);
       DCHECK(success);

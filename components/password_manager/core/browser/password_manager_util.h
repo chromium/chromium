@@ -159,7 +159,8 @@ password_manager::PasswordForm MakeNormalizedBlocklistedForm(
     password_manager::PasswordFormDigest digest);
 
 // Helper which checks if biometric authentication is available.
-bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator);
+bool CanUseBiometricAuth(device_reauth::BiometricAuthenticator* authenticator,
+                         device_reauth::BiometricAuthRequester requester);
 
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);

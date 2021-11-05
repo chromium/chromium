@@ -8236,9 +8236,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Success with device lock"/>
   <int value="3" label="Cancelled by user"/>
   <int value="4" label="Failed"/>
-  <int value="5" label="Success, but cancelled by Chrome"/>
-  <int value="6" label="Failed and cancelled by Chrome"/>
+  <int value="5" label="Success, but cancelled by Chrome. Deprecated in M97."/>
+  <int value="6" label="Failed and cancelled by Chrome. Deprecated in M97."/>
   <int value="7" label="Auth still valid"/>
+  <int value="8" label="Cancelled by Chrome"/>
 </enum>
 
 <enum name="BiometricsAvailability">

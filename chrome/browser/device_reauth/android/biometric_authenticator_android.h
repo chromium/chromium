@@ -18,7 +18,8 @@ class BiometricAuthenticatorAndroid
     : public device_reauth::BiometricAuthenticator {
  public:
   // Checks whether biometrics are available.
-  device_reauth::BiometricsAvailability CanAuthenticate() override;
+  device_reauth::BiometricsAvailability CanAuthenticate(
+      device_reauth::BiometricAuthRequester requester) override;
 
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication
