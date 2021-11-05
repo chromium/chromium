@@ -73,6 +73,8 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
     return search_results_;
   }
 
+  void OnAppListHidden() override {}
+
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
 

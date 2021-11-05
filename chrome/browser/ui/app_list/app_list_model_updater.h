@@ -132,6 +132,9 @@ class AppListModelUpdater {
   virtual void OnSortRequested(ash::AppListSortOrder order) = 0;
   virtual void OnSortRevertRequested() = 0;
 
+  // Notifies when the app list gets hidden.
+  virtual void OnAppListHidden() = 0;
+
   virtual void AddObserver(AppListModelUpdaterObserver* observer) = 0;
   virtual void RemoveObserver(AppListModelUpdaterObserver* observer) = 0;
 

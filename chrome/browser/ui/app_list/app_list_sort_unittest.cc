@@ -280,3 +280,47 @@ TEST_F(TemporaryAppListSortTest, RevertNameOrder) {
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
 }
+
+// Verifies that the app list under temporary sort works as expected when the
+// app list is hidden.
+TEST_F(TemporaryAppListSortTest, AppListHidden) {
+  RemoveAllExistingItems();
+
+  // Install Three apps.
+  const std::string kItemId1 = CreateNextAppId(GenerateId("app_id1"));
+  scoped_refptr<extensions::Extension> app1 =
+      MakeApp("A", kItemId1, extensions::Extension::NO_FLAGS);
+  InstallExtension(app1.get());
+
+  const std::string kItemId2 = CreateNextAppId(GenerateId("app_id2"));
+  scoped_refptr<extensions::Extension> app2 =
+      MakeApp("B", kItemId2, extensions::Extension::NO_FLAGS);
+  InstallExtension(app2.get());
+
+  const std::string kItemId3 = CreateNextAppId(GenerateId("app_id3"));
+  scoped_refptr<extensions::Extension> app3 =
+      MakeApp("C", kItemId3, extensions::Extension::NO_FLAGS);
+  InstallExtension(app3.get());
+
+  // Sort with name alphabetical order.
+  AppListModelUpdater* model_updater = GetModelUpdater();
+  model_updater->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+
+  // Verify that the permanent sort order and the permanent app positions do
+  // not change.
+  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
+  EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
+            std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
+
+  // Emulate that the app list is hidden.
+  model_updater->OnAppListHidden();
+
+  // Verify the following things:
+  // (1) The temporary sort ends, and
+  // (2) The sort order is committed, and
+  // (3) The item positions are committed.
+  EXPECT_FALSE(IsUnderTemporarySort());
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
+  EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
+            std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
+}

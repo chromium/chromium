@@ -297,8 +297,12 @@ void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
 
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {
   app_list_visible_ = visible;
-  if (visible && search_controller_)
-    search_controller_->AppListShown();
+  if (visible) {
+    if (search_controller_)
+      search_controller_->AppListShown();
+  } else if (current_model_updater_) {
+    current_model_updater_->OnAppListHidden();
+  }
 }
 
 void AppListClientImpl::OnSearchResultVisibilityChanged(const std::string& id,

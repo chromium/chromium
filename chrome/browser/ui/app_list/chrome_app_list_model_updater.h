@@ -105,6 +105,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void OnSortRequested(ash::AppListSortOrder order) override;
   void OnSortRevertRequested() override;
 
+  void OnAppListHidden() override;
+
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
 

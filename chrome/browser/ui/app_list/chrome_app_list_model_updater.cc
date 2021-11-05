@@ -675,6 +675,14 @@ void ChromeAppListModelUpdater::RequestMoveItemToRoot(
   SetItemPosition(id, target_position);
 }
 
+void ChromeAppListModelUpdater::OnAppListHidden() {
+  if (!is_under_temporary_sort())
+    return;
+
+  // Commit the temporary sort order if app list gets hidden.
+  EndTemporarySortAndTakeAction(EndAction::kCommit);
+}
+
 // Private methods -------------------------------------------------------------
 
 void ChromeAppListModelUpdater::MaybeNotifyObserversOfItemChange(
