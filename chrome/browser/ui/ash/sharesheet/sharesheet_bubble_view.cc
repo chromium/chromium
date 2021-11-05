@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
@@ -253,6 +252,7 @@ void SharesheetBubbleView::ShowBubble(
   ShowWidgetWithAnimateFadeIn();
 
   UpdateAnchorPosition();
+  tablet_mode_observation_.Observe(TabletMode::Get());
 }
 
 void SharesheetBubbleView::ShowNearbyShareBubbleForArc(
@@ -564,6 +564,18 @@ void SharesheetBubbleView::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
+void SharesheetBubbleView::OnTabletModeStarted() {
+  UpdateAnchorPosition();
+}
+
+void SharesheetBubbleView::OnTabletModeEnded() {
+  UpdateAnchorPosition();
+}
+
+void SharesheetBubbleView::OnTabletControllerDestroyed() {
+  tablet_mode_observation_.Reset();
+}
+
 void SharesheetBubbleView::CreateBubble() {
   set_close_on_deactivate(false);
   SetButtons(ui::DIALOG_BUTTON_NONE);
@@ -698,6 +710,9 @@ void SharesheetBubbleView::CloseWidgetWithAnimateFadeOut(
     views::Widget::ClosedReason closed_reason) {
   constexpr auto kSharesheetOpacityFadeOutTime = base::Milliseconds(80);
 
+  // Don't attempt to react to tablet mode changes while the sharesheet is
+  // closing.
+  tablet_mode_observation_.Reset();
   is_bubble_closing_ = true;
   ui::Layer* layer = View::GetWidget()->GetLayer();
 

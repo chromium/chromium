@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
@@ -28,7 +30,8 @@ namespace sharesheet {
 class SharesheetHeaderView;
 class SharesheetExpandButton;
 
-class SharesheetBubbleView : public views::BubbleDialogDelegateView {
+class SharesheetBubbleView : public views::BubbleDialogDelegateView,
+                             public TabletModeObserver {
  public:
   METADATA_HEADER(SharesheetBubbleView);
   using TargetInfo = ::sharesheet::TargetInfo;
@@ -69,6 +72,11 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
 
   // views::BubbleDialogDelegateView:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
+  void OnTabletControllerDestroyed() override;
 
   void CreateBubble();
   std::unique_ptr<views::View> MakeScrollableTargetView(
@@ -120,6 +128,8 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   SharesheetExpandButton* expand_button_ = nullptr;
 
   std::unique_ptr<SharesheetParentWidgetObserver> parent_widget_observer_;
+  base::ScopedObservation<TabletMode, TabletModeObserver>
+      tablet_mode_observation_{this};
 };
 
 }  // namespace sharesheet
