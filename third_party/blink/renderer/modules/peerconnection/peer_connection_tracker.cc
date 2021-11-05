@@ -956,8 +956,7 @@ void PeerConnectionTracker::TrackSetSessionDescriptionImplicit(
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "setLocalDescriptionImplicitCreateOfferOrAnswer",
-                           "");
+  SendPeerConnectionUpdate(id, "setLocalDescription", "");
 }
 
 void PeerConnectionTracker::TrackSetConfiguration(
@@ -1184,7 +1183,7 @@ void PeerConnectionTracker::TrackSessionDescriptionCallback(
       update_type = "setLocalDescription";
       break;
     case ACTION_SET_LOCAL_DESCRIPTION_IMPLICIT:
-      update_type = "setLocalDescriptionImplicitCreateOfferOrAnswer";
+      update_type = "setLocalDescription";
       break;
     case ACTION_SET_REMOTE_DESCRIPTION:
       update_type = "setRemoteDescription";
