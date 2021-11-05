@@ -178,9 +178,9 @@ class VariationsFieldTrialCreator {
   // Returns the locale that was used for evaluating trials.
   const std::string& application_locale() const { return application_locale_; }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !defined(OS_ANDROID)
   // TODO(crbug/1248239, crbug/1255305): Remove ifdef once the Extended
-  // Variations Safe Mode experiment is enabled on Clank and re-enabled on iOS.
+  // Variations Safe Mode experiment is enabled on Android Chrome.
  protected:
   // If the client is in an Extended Variations Safe Mode experiment group,
   // applies group-specific behavior. Does nothing if the client is not in the
@@ -188,7 +188,7 @@ class VariationsFieldTrialCreator {
   // Protected and virtual for testing.
   virtual void MaybeExtendVariationsSafeMode(
       metrics::MetricsStateManager* metrics_state_manager);
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !defined(OS_ANDROID)
 
  private:
   // Returns true if the loaded VariationsSeed has expired. An expired seed is

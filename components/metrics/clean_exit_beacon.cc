@@ -173,7 +173,7 @@ version_info::Channel GetChannel(version_info::Channel channel) {
   return channel;
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !defined(OS_ANDROID)
 // Sets up the Extended Variations Safe Mode experiment, which is enabled on
 // only some channels. If assigned to an experiment group, returns the name of
 // the group name, e.g. "Control"; otherwise, returns the empty string.
@@ -194,7 +194,7 @@ std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
   trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 50);
   return trial->group_name();
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !defined(OS_ANDROID)
 
 }  // namespace
 
@@ -219,17 +219,15 @@ void CleanExitBeacon::Initialize() {
   DCHECK(!initialized_);
 
   std::string group;
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !defined(OS_ANDROID)
   // TODO(crbug/1248239): Allow the file to be used once the Extended Variations
   // Safe Mode experiment is enabled on Clank.
-  // TODO(crbug/1255305): Re-enable this on iOS once a couple EG tests are
-  // updated.
   if (!user_data_dir_.empty()) {
     // Platforms that pass an empty path do so deliberately. They should not
     // participate in this experiment.
     group = SetUpExtendedSafeModeTrial(channel_);
   }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !defined(OS_ANDROID)
 
   if (group == kSignalAndWriteViaFileUtilGroup)
     beacon_file_path_ = user_data_dir_.Append(variations::kVariationsFilename);
