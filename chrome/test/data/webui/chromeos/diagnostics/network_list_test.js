@@ -269,4 +269,12 @@ export function networkListTestSuite() {
               (DiagnosticsBrowserProxy.getArgs('recordNavigation')[0]));
         });
   });
+
+  test('TastIdentifierPresent', () => {
+    return initializeNetworkList(fakeNetworkGuidInfoList)
+        .then(
+            () => assertTrue(isVisible(
+                /** @type {!HTMLElement} */ (networkListElement.$$(
+                    '.diagnostics-network-list-container')))));
+  });
 }
