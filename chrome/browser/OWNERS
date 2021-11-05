@@ -56,6 +56,8 @@ per-file exo_parts.*=oshima@chromium.org
 per-file flag-never-expire-list.json=avi@chromium.org
 per-file flag-never-expire-list.json=ellyjones@chromium.org
 
+per-file load_library_perf_test.*=xhwang@chromium.org
+
 per-file *.mm=avi@chromium.org
 per-file *.mm=mark@chromium.org
 per-file *.mm=rsesek@chromium.org
