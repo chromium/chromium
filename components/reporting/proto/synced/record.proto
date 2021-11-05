@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -84,14 +84,15 @@ message SequenceInformation {
   // when previous record digest is not found at startup (e.g. after powerwash).
   optional int64 generation_id = 2;
 
-  // Priority (required).
+  // Priority (required)
+  // Generation IDs are per Priority.
   optional Priority priority = 3;
 }
 
 // Envelope for the |WrappedRecord| and associated metadata as it is stored on
 // disk and sent to the server.
 message EncryptedRecord {
-  // Encrypted Wrapped Record
+  // Encrypted Wrapped Record (required)
   // |WrappedRecord| encrypted with the |encryption_key| in |encryption_info|.
   // When absent, indicates gap - respective record is irreparably corrupt or
   // missing from Storage, and server side should log it as such and no longer
@@ -100,15 +101,16 @@ message EncryptedRecord {
 
   // Must be present to facilitate decryption of encrypted record.
   // If missing, the record is either not encrypted or missing.
-  // TODO(b/153651358): Disable an option to send record not encrypted.
   optional EncryptionInfo encryption_info = 2;
+
+  optional SequenceInformation sequencing_information = 3 [deprecated = true];
 
   // Sequencing information (required). Must be present to allow
   // tracking and confirmation of the events by server.
-  optional SequenceInformation sequence_information = 3;
+  optional SequenceInformation sequence_information = 4;
 
   // Compression information (optional).
-  optional CompressionInformation compression_information = 4;
+  optional CompressionInformation compression_information = 5;
 }
 
 // Tracking information for what compression is used.

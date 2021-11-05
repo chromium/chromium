@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Describes a user affiliated with a Chrome OS Session.
+
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;

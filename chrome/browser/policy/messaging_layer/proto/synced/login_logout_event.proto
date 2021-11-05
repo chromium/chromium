@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Events related to logging into and out of Chrome.
+
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
@@ -11,7 +13,7 @@ import "session_affiliated_user.proto";
 package ash.reporting;
 
 enum LoginFailureReason {
-  UNKNOWN = 0;
+  UNKNOWN_LOGIN_FAILURE_REASON = 0;
   AUTHENTICATION_ERROR = 1;
   COULD_NOT_MOUNT_TMPFS = 2;
   OWNER_REQUIRED = 3;
@@ -32,7 +34,7 @@ message LoginEvent {
 message LogoutEvent {}
 
 message LoginLogoutRecord {
-  optional int64 event_timestamp = 1;
+  optional int64 event_timestamp_sec = 1;
 
   optional .reporting.SessionAffiliatedUser affiliated_user = 2;
 

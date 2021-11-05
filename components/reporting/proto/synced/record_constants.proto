@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,37 +12,37 @@ package reporting;
 enum Destination {
   UNDEFINED_DESTINATION = 0;
 
-  // |UPLOAD_EVENTS| sends records to the Eventing pipeline.
+  // |UPLOAD_EVENTS| handler sends records to the Eventing pipeline.
   UPLOAD_EVENTS = 1;
 
-  // |MEET_DEVICE_TELEMETRY| is for telemetry data events sent by Meet
+  // |MEET_DEVICE_TELEMETRY| handler is for telemetry data sent by Meet
   // Devices. For more information, see go/reliable-meet-device-telemetry.
   MEET_DEVICE_TELEMETRY = 2;
 
-  // |WEB_PROTECT| legacy web protect events.
+  // |WEB_PROTECT| legacy web protect event handler
   WEB_PROTECT = 3;
 
-  // |ARC_INSTALL| legacy arc app installation events.
+  // |ARC_INSTALL| legacy arc app installation event handler
   ARC_INSTALL = 4;
 
-  // |POLICY_VALIDATION| legacy policy validation events.
+  // |POLICY_VALIDATION| legacy policy validation event handler
   POLICY_VALIDATION = 5;
 
-  // |EXTENSION_INSTALL| legacy extension installation events.
+  // |EXTENSION_INSTALL| legacy extension installation event handler
   EXTENSION_INSTALL = 6;
 
-  // |REPORTING_RECORD| Temporary group for Encrypted Reporting Pipeline.
+  // |REPORTING_RECORD| Temporary group for Encrypted Reporting Pipeline
   REPORTING_RECORD = 7;
 
-  // |DEVICE_TRUST_REPORTS| is for reporting data updates related to the
+  // |DEVICE_TRUST_REPORTS| handler is for reporting data updates related to the
   // Device Trust connector, sent by Chrome browsers for Chrome Browser Cloud
   // Management (CBCM).
   DEVICE_TRUST_REPORTS = 8;
 
-  // |PRINT_JOBS| print jobs events.
+  // |PRINT_JOBS| handler is for print jobs.
   PRINT_JOBS = 9;
 
-  // |EXTENSIONS_WORKFLOW| is for sending extension requests events,
+  // |EXTENSIONS_WORKFLOW| handler is for sending extension requests events,
   // sent for Chrome Browser Cloud Management (CBCM).
   EXTENSIONS_WORKFLOW = 10;
 
@@ -56,19 +56,21 @@ enum Destination {
   // that messages are being uploaded and processed correctly.
   HEARTBEAT_EVENTS = 13;
 
-  // |INFO_METRIC| device info events which are sent by ChromeOS devices.
+  // |INFO_METRIC| handler for device info which is sent by ChromeOS devices.
   INFO_METRIC = 14;
 
-  // |TELEMETRY_METRIC| for device telemetry events which are sent by ChromeOS
+  // |TELEMETRY_METRIC| handler for device telemetry which is sent by ChromeOS
   // devices.
   TELEMETRY_METRIC = 15;
 
-  // |EVENT_METRIC| for device events which are sent by ChromeOS devices.
+  // |EVENT_METRIC| handler for device event which is sent by ChromeOS devices.
   EVENT_METRIC = 16;
 
-  // |ADDED_REMOVED_EVENTS| is for reporting events where a user has
-  // been added or removed.
+  // |ADDED_REMOVED_EVENTS| is for events when a user is added or removed.
   ADDED_REMOVED_EVENTS = 17;
+
+  // |CRD_EVENTS| are sent for Chrome remote desktop connect and disconnect.
+  CRD_EVENTS = 18;
 }
 
 // |Priority| is used to determine when items from the queue should be rate
