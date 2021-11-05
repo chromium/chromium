@@ -1741,6 +1741,7 @@
     "label": "//chrome/test:telemetry_perf_unittests",
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
     "type": "script",
+    "python3": True,
   },
   "telemetry_perf_unittests_android_chrome": {
     "args": [
@@ -1750,6 +1751,7 @@
     "label": "//chrome/test:telemetry_perf_unittests_android_chrome",
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
     "type": "script",
+    "python3": True,
   },
   "telemetry_perf_unittests_android_monochrome": {
     "args": [
@@ -1759,6 +1761,7 @@
     "label": "//chrome/test:telemetry_perf_unittests_android_monochrome",
     "script": "//testing/scripts/run_telemetry_as_googletest.py",
     "type": "script",
+    "python3": True,
   },
   "telemetry_unittests": {
     "args": [
