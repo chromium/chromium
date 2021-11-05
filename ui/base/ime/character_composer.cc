@@ -234,12 +234,17 @@ ComposeChecker::CheckSequenceResult TreeComposeChecker::CheckSequence(
   for (const auto& keystroke : sequence) {
     DCHECK(tree_index < data_.tree_entries);
 
-    // If we are looking up a dead key, skip over the character tables.
+    // If we are looking up a dead key or the Compose key, skip over the
+    // character tables.
     int32_t character = -1;
-    if (keystroke.IsDeadKey()) {
+    if (keystroke.IsDeadKey() || keystroke.IsComposeKey()) {
       tree_index += 2 * data_.tree[tree_index] + 1;  // internal unicode table
       tree_index += 2 * data_.tree[tree_index] + 1;  // leaf unicode table
-      character = keystroke.ToDeadKeyCombiningCharacter();
+      // The generate_character_composer_data.py script assigns 0 to the Compose
+      // key.
+      character = keystroke.IsComposeKey()
+                      ? 0
+                      : keystroke.ToDeadKeyCombiningCharacter();
     } else if (keystroke.IsCharacter()) {
       character = keystroke.ToCharacter();
     }
