@@ -1988,7 +1988,7 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
   SetBodyInnerHTML(R"HTML(
     <span id='span' style='opacity: 0.1'>
       <div id='target' style='overflow: hidden; float: left;
-          column-width: 10px'>
+          position: relative;'>
       </div>
     </span>
   )HTML");
@@ -1998,24 +1998,19 @@ TEST_P(PaintLayerTest, NeedsRepaintOnSelfPaintingStatusChange) {
   auto* target_object = target_element->GetLayoutObject();
   auto* target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
 
-  // Target layer is self painting because it is a multicol container.
+  // Target layer is self painting because it is relatively positioned.
   EXPECT_TRUE(target_layer->IsSelfPaintingLayer());
   EXPECT_EQ(span_layer, target_layer->CompositingContainer());
   EXPECT_FALSE(target_layer->SelfNeedsRepaint());
   EXPECT_FALSE(span_layer->SelfNeedsRepaint());
 
-  // Removing column-width: 10px makes target layer no longer self-painting,
+  // Removing position:relative makes target layer no longer self-painting,
   // and change its compositing container. The original compositing container
   // span_layer should be marked SelfNeedsRepaint.
   target_element->setAttribute(html_names::kStyleAttr,
                                "overflow: hidden; float: left");
 
   UpdateAllLifecyclePhasesExceptPaint();
-  // TODO(yosin): Once multicol in LayoutNG, we should remove following
-  // assignments. This is because the layout tree maybe reattached. In LayoutNG
-  // phase 1, layout tree is reattached because multicol forces legacy layout.
-  target_object = target_element->GetLayoutObject();
-  target_layer = To<LayoutBoxModelObject>(target_object)->Layer();
   EXPECT_FALSE(target_layer->IsSelfPaintingLayer());
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_EQ(span_layer, target_layer->CompositingContainer());
