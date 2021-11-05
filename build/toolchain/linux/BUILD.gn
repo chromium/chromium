@@ -80,30 +80,6 @@ clang_toolchain("clang_x86") {
   }
 }
 
-clang_toolchain("clang_x86_v8_arm") {
-  toolchain_args = {
-    current_cpu = "x86"
-    v8_current_cpu = "arm"
-    current_os = "linux"
-  }
-}
-
-clang_toolchain("clang_x86_v8_mipsel") {
-  toolchain_args = {
-    current_cpu = "x86"
-    v8_current_cpu = "mipsel"
-    current_os = "linux"
-  }
-}
-
-clang_toolchain("clang_x86_v8_mips") {
-  toolchain_args = {
-    current_cpu = "x86"
-    v8_current_cpu = "mips"
-    current_os = "linux"
-  }
-}
-
 gcc_toolchain("x86") {
   cc = "gcc"
   cxx = "g++"
@@ -136,43 +112,69 @@ clang_toolchain("clang_x64") {
   }
 }
 
-clang_toolchain("clang_x64_v8_arm64") {
+template("clang_v8_toolchain") {
+  clang_toolchain(target_name) {
+    toolchain_args = {
+      current_os = "linux"
+      use_glib = false
+      forward_variables_from(invoker.toolchain_args, "*")
+    }
+  }
+}
+
+clang_v8_toolchain("clang_x86_v8_arm") {
+  toolchain_args = {
+    current_cpu = "x86"
+    v8_current_cpu = "arm"
+  }
+}
+
+clang_v8_toolchain("clang_x86_v8_mipsel") {
+  toolchain_args = {
+    current_cpu = "x86"
+    v8_current_cpu = "mipsel"
+  }
+}
+
+clang_v8_toolchain("clang_x86_v8_mips") {
+  toolchain_args = {
+    current_cpu = "x86"
+    v8_current_cpu = "mips"
+  }
+}
+
+clang_v8_toolchain("clang_x64_v8_arm64") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "arm64"
-    current_os = "linux"
   }
 }
 
-clang_toolchain("clang_x64_v8_mips64el") {
+clang_v8_toolchain("clang_x64_v8_mips64el") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "mips64el"
-    current_os = "linux"
   }
 }
 
-clang_toolchain("clang_x64_v8_mips64") {
+clang_v8_toolchain("clang_x64_v8_mips64") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "mips64"
-    current_os = "linux"
   }
 }
 
-clang_toolchain("clang_x64_v8_riscv64") {
+clang_v8_toolchain("clang_x64_v8_riscv64") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "riscv64"
-    current_os = "linux"
   }
 }
 
-clang_toolchain("clang_x64_v8_loong64") {
+clang_v8_toolchain("clang_x64_v8_loong64") {
   toolchain_args = {
     current_cpu = "x64"
     v8_current_cpu = "loong64"
-    current_os = "linux"
   }
 }
 
