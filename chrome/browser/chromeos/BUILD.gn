@@ -4934,4 +4934,14 @@ if (use_libfuzzer) {
       "//chrome/browser/chromeos",
     ]
   }
+
+  fuzzer_test("policy_remote_commands_fuzzer") {
+    sources = [ "../ash/policy/remote_commands/remote_commands_fuzzer.cc" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser/chromeos",
+    ]
+  }
 }
