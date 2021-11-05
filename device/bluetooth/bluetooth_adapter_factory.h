@@ -132,6 +132,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFactory {
   std::unique_ptr<GlobalValuesForTesting> InitGlobalValuesForTesting();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      SerialPortManagerImplTest,
+      BluetoothSerialDeviceEnumerator_DeleteBeforeAdapterInit);
+
   void AdapterInitialized();
 #if defined(OS_WIN)
   void ClassicAdapterInitialized();

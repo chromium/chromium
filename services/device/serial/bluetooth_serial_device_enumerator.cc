@@ -19,7 +19,7 @@ BluetoothSerialDeviceEnumerator::BluetoothSerialDeviceEnumerator() {
       switches::kEnableBluetoothSerialPortProfileInSerialApi));
   device::BluetoothAdapterFactory::Get()->GetClassicAdapter(
       base::BindOnce(&BluetoothSerialDeviceEnumerator::OnGotClassicAdapter,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 BluetoothSerialDeviceEnumerator::~BluetoothSerialDeviceEnumerator() = default;

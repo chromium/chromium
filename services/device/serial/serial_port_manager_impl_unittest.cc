@@ -69,6 +69,15 @@ class MockSerialPortManagerClient : public mojom::SerialPortManagerClient {
   mojo::Receiver<mojom::SerialPortManagerClient> receiver_{this};
 };
 
+class TestingBluetoothAdapter : public device::MockBluetoothAdapter {
+ public:
+  bool IsInitialized() const override { return false; }
+  MOCK_METHOD1(Initialize, void(base::OnceClosure callback));
+
+ private:
+  ~TestingBluetoothAdapter() override = default;
+};
+
 }  // namespace
 
 class SerialPortManagerImplTest : public DeviceServiceTestBase {
@@ -171,9 +180,7 @@ TEST_F(SerialPortManagerImplTest, SimpleEnumerationTest) {
 
   base::RunLoop loop;
   port_manager->GetDevices(base::BindLambdaForTesting(
-      [&](std::vector<mojom::SerialPortInfoPtr> results) {
-        loop.Quit();
-      }));
+      [&](std::vector<mojom::SerialPortInfoPtr> results) { loop.Quit(); }));
   loop.Run();
 }
 
@@ -373,6 +380,34 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
         }));
     run_loop.Run();
   }
+}
+
+TEST_F(SerialPortManagerImplTest,
+       BluetoothSerialDeviceEnumerator_DeleteBeforeAdapterInit) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableBluetoothSerialPortProfileInSerialApi);
+
+  auto adapter = base::MakeRefCounted<TestingBluetoothAdapter>();
+  BluetoothAdapterFactory::SetAdapterForTesting(adapter);
+
+  // BluetoothAdapterFactory does not initialize the test adapter. Instead it
+  // holds on to the GetAdapter callback until adapter initialization is
+  // complete.
+  EXPECT_CALL(*adapter, Initialize).Times(0);
+
+  // Create the enumerator, which calls GetAdapter(), which is blocked waiting
+  // on adapter initialization.
+  auto enumerator = std::make_unique<BluetoothSerialDeviceEnumerator>();
+
+  // Delete the enumerator before adapter initialization completes.
+  enumerator.reset();
+
+  // Directly call the adapter initialization callback, which calls any saved
+  // GetAdapter() callbacks - i.e. the one made by the
+  // BluetoothSerialDeviceEnumerator constructor.
+  BluetoothAdapterFactory::Get()->AdapterInitialized();
+
+  // We didn't crash? yay \o/ test passed.
 }
 
 }  // namespace device

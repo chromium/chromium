@@ -136,6 +136,8 @@ void BluetoothAdapterFactory::Shutdown() {
 void BluetoothAdapterFactory::SetAdapterForTesting(
     scoped_refptr<BluetoothAdapter> adapter) {
   Get()->adapter_ = adapter->GetWeakPtrForTesting();
+  if (!adapter->IsInitialized())
+    Get()->adapter_under_initialization_ = adapter;
 #if defined(OS_WIN)
   Get()->classic_adapter_ = adapter->GetWeakPtrForTesting();
 #endif

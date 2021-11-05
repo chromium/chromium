@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "services/device/public/mojom/serial.mojom-forward.h"
 #include "services/device/serial/serial_device_enumerator.h"
@@ -43,6 +44,8 @@ class BluetoothSerialDeviceEnumerator : public BluetoothAdapter::Observer,
   void OnGotClassicAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
   std::unordered_map<std::string, base::UnguessableToken> bluetooth_ports_;
+
+  base::WeakPtrFactory<BluetoothSerialDeviceEnumerator> weak_ptr_factory_{this};
 };
 
 }  // namespace device
