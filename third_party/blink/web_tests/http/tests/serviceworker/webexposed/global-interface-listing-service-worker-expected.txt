@@ -2999,6 +2999,7 @@ interface WorkerGlobalScope : EventTarget
     method reportError
     method setInterval
     method setTimeout
+    method structuredClone
     setter onerror
     setter onlanguagechange
     setter onrejectionhandled

@@ -34,6 +34,8 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_for_context_dispose.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -43,6 +45,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/page_dismissal_scope.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -221,6 +224,44 @@ void WindowOrWorkerGlobalScope::clearInterval(EventTarget& event_target,
 bool WindowOrWorkerGlobalScope::crossOriginIsolated(
     const ExecutionContext& execution_context) {
   return execution_context.CrossOriginIsolatedCapability();
+}
+
+ScriptValue WindowOrWorkerGlobalScope::structuredClone(
+    ScriptState* script_state,
+    EventTarget& event_target,
+    const ScriptValue& message,
+    const StructuredSerializeOptions* options,
+    ExceptionState& exception_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+
+  Transferables transferables;
+  scoped_refptr<SerializedScriptValue> serialized_message =
+      PostMessageHelper::SerializeMessageByMove(isolate, message, options,
+                                                transferables, exception_state);
+
+  if (exception_state.HadException()) {
+    return ScriptValue();
+  }
+
+  DCHECK(serialized_message);
+
+  auto ports = MessagePort::DisentanglePorts(
+      ExecutionContext::From(script_state), transferables.message_ports,
+      exception_state);
+  if (exception_state.HadException()) {
+    return ScriptValue();
+  }
+
+  UnpackedSerializedScriptValue* unpacked =
+      SerializedScriptValue::Unpack(std::move(serialized_message));
+  DCHECK(unpacked);
+
+  SerializedScriptValue::DeserializeOptions deserialize_options;
+  deserialize_options.message_ports = MessagePort::EntanglePorts(
+      *ExecutionContext::From(script_state), std::move(ports));
+
+  return ScriptValue(isolate,
+                     unpacked->Deserialize(isolate, deserialize_options));
 }
 
 }  // namespace blink

@@ -16,6 +16,7 @@ namespace blink {
 class ExecutionContext;
 class ExceptionState;
 class PostMessageOptions;
+class StructuredSerializeOptions;
 class ScriptValue;
 class SecurityOrigin;
 class SerializedScriptValue;
@@ -29,14 +30,14 @@ class CORE_EXPORT PostMessageHelper {
   static scoped_refptr<SerializedScriptValue> SerializeMessageByMove(
       v8::Isolate*,
       const ScriptValue& message,
-      const PostMessageOptions* options,
+      const StructuredSerializeOptions* options,
       Transferables& transferables,
       ExceptionState&);
 
   static scoped_refptr<SerializedScriptValue> SerializeMessageByCopy(
       v8::Isolate*,
       const ScriptValue& message,
-      const PostMessageOptions* options,
+      const StructuredSerializeOptions* options,
       Transferables& transferables,
       ExceptionState&);
 

@@ -10246,6 +10246,7 @@ namespace CSS
     method showOpenFilePicker
     method showSaveFilePicker
     method stop
+    method structuredClone
     method webkitCancelAnimationFrame
     method webkitRequestAnimationFrame
     method webkitRequestFileSystem

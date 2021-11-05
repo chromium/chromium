@@ -3239,6 +3239,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method reportError
 [Worker]     method setInterval
 [Worker]     method setTimeout
+[Worker]     method structuredClone
 [Worker]     setter onerror
 [Worker]     setter onlanguagechange
 [Worker]     setter onrejectionhandled

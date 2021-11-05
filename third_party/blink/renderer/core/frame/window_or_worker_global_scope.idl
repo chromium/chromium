@@ -47,4 +47,6 @@
 
     [RuntimeEnabled=CrossOriginIsolation]
         readonly attribute boolean crossOriginIsolated;
+
+    [RaisesException, CallWith=ScriptState] any structuredClone(any value, optional StructuredSerializeOptions options = {});
 };

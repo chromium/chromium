@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 816 tests; 801 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 816 tests; 804 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -650,7 +650,7 @@ PASS WorkerGlobalScope interface: operation clearInterval(optional long)
 PASS WorkerGlobalScope interface: operation queueMicrotask(VoidFunction)
 PASS WorkerGlobalScope interface: operation createImageBitmap(ImageBitmapSource, optional ImageBitmapOptions)
 PASS WorkerGlobalScope interface: operation createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions)
-FAIL WorkerGlobalScope interface: operation structuredClone(any, optional StructuredSerializeOptions) assert_own_property: interface prototype object missing non-static operation expected property "structuredClone" missing
+PASS WorkerGlobalScope interface: operation structuredClone(any, optional StructuredSerializeOptions)
 PASS DedicatedWorkerGlobalScope interface: existence and properties of interface object
 PASS DedicatedWorkerGlobalScope interface object length
 PASS DedicatedWorkerGlobalScope interface object name
@@ -725,8 +725,8 @@ PASS WorkerGlobalScope interface: self must inherit property "createImageBitmap(
 PASS WorkerGlobalScope interface: calling createImageBitmap(ImageBitmapSource, optional ImageBitmapOptions) on self with too few arguments must throw TypeError
 PASS WorkerGlobalScope interface: self must inherit property "createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions)" with the proper type
 PASS WorkerGlobalScope interface: calling createImageBitmap(ImageBitmapSource, long, long, long, long, optional ImageBitmapOptions) on self with too few arguments must throw TypeError
-FAIL WorkerGlobalScope interface: self must inherit property "structuredClone(any, optional StructuredSerializeOptions)" with the proper type assert_inherits: property "structuredClone" not found in prototype chain
-FAIL WorkerGlobalScope interface: calling structuredClone(any, optional StructuredSerializeOptions) on self with too few arguments must throw TypeError assert_inherits: property "structuredClone" not found in prototype chain
+PASS WorkerGlobalScope interface: self must inherit property "structuredClone(any, optional StructuredSerializeOptions)" with the proper type
+PASS WorkerGlobalScope interface: calling structuredClone(any, optional StructuredSerializeOptions) on self with too few arguments must throw TypeError
 PASS SharedWorkerGlobalScope interface: existence and properties of interface object
 PASS Worker interface: existence and properties of interface object
 PASS Worker interface object length

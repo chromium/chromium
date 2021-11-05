@@ -289,6 +289,8 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_portal_activate_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_post_message_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_structured_serialize_options.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_structured_serialize_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_profiler_frame.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_profiler_frame.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_profiler_init_options.cc",

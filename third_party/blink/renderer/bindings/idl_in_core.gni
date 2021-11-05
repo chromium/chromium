@@ -488,6 +488,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/messaging/message_channel.idl",
           "//third_party/blink/renderer/core/messaging/message_port.idl",
           "//third_party/blink/renderer/core/messaging/post_message_options.idl",
+          "//third_party/blink/renderer/core/messaging/structured_serialize_options.idl",
           "//third_party/blink/renderer/core/mojo/mojo.idl",
           "//third_party/blink/renderer/core/mojo/mojo_create_data_pipe_options.idl",
           "//third_party/blink/renderer/core/mojo/mojo_create_data_pipe_result.idl",
