@@ -64,6 +64,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/idle_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "content/public/test/mock_web_contents_observer.h"
@@ -13422,6 +13423,56 @@ IN_PROC_BROWSER_TEST_F(
 
   // Make sure the grandchild is live.
   EXPECT_TRUE(ExecuteScript(rfh_a->child_at(0)->child_at(0), "true"));
+}
+
+class BackForwardCacheFencedFrameBrowserTest
+    : public BackForwardCacheBrowserTest {
+ public:
+  BackForwardCacheFencedFrameBrowserTest() = default;
+  ~BackForwardCacheFencedFrameBrowserTest() override = default;
+  BackForwardCacheFencedFrameBrowserTest(
+      const BackForwardCacheFencedFrameBrowserTest&) = delete;
+
+  BackForwardCacheFencedFrameBrowserTest& operator=(
+      const BackForwardCacheFencedFrameBrowserTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
+  }
+
+  test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return *fenced_frame_helper_;
+  }
+
+ private:
+  std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheFencedFrameBrowserTest,
+                       FencedFramePageNotStoredInBackForwardCache) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // 2) Create a fenced frame.
+  content::RenderFrameHostImpl* fenced_frame_host =
+      static_cast<content::RenderFrameHostImpl*>(
+          fenced_frame_test_helper().CreateFencedFrame(
+              web_contents()->GetMainFrame(), url_b));
+  RenderFrameHostWrapper fenced_frame_host_wrapper(fenced_frame_host);
+
+  // 3) Navigate to C on the fenced frame host.
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
+                                                            url_c);
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  if (!fenced_frame_host_wrapper.IsRenderFrameDeleted())
+    EXPECT_FALSE(fenced_frame_host->IsInBackForwardCache());
 }
 
 }  // namespace content

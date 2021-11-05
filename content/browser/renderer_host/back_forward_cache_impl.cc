@@ -657,7 +657,7 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult result;
 
   // Use the BackForwardCache only for the main frame.
-  if (rfh->GetParent())
+  if (rfh->GetParentOrOuterDocument())
     result.No(BackForwardCacheMetrics::NotRestoredReason::kNotMainFrame);
 
   // If the the delegate doesn't support back forward cache, disable it.
@@ -670,7 +670,7 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
       rfh->lifecycle_state() ==
       RenderFrameHostImpl::LifecycleStateImpl::kPrerendering;
   if (!IsBackForwardCacheEnabled() || is_disabled_for_testing_ ||
-      is_prerendering) {
+      is_prerendering || rfh->IsFencedFrameRoot()) {
     result.No(
         BackForwardCacheMetrics::NotRestoredReason::kBackForwardCacheDisabled);
 
@@ -916,7 +916,8 @@ void BackForwardCacheImpl::CheckDynamicBlocklistedFeaturesOnSubtree(
   }
 
   // Do not cache if we have navigations in any of the subframes.
-  if (rfh->GetParent() && rfh->frame_tree_node()->HasNavigation()) {
+  if (rfh->GetParentOrOuterDocument() &&
+      rfh->frame_tree_node()->HasNavigation()) {
     result->No(
         BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
   }
