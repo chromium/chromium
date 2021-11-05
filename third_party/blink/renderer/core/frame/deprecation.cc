@@ -4,20 +4,16 @@
 
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 
-#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation_report_body.h"
-#include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -798,18 +794,9 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
   context->CountUse(feature);
   const DeprecationInfo info = GetDeprecationInfo(feature);
 
-  // Send the deprecation message to the console as a warning.
+  // Send the deprecation message as a DevTools issue.
   DCHECK(!info.message_.IsEmpty());
-  if (base::FeatureList::IsEnabled(features::kDeprecationWillLogToConsole)) {
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kDeprecation,
-        mojom::blink::ConsoleMessageLevel::kWarning, info.message_);
-    context->AddConsoleMessage(console_message);
-  }
-  if (base::FeatureList::IsEnabled(
-          features::kDeprecationWillLogToDevToolsIssue)) {
-    AuditsIssue::ReportDeprecationIssue(context, info.message_);
-  }
+  AuditsIssue::ReportDeprecationIssue(context, info.message_);
 
   Report* report = CreateReportInternal(context->Url(), info);
 

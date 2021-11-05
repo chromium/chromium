@@ -525,10 +525,6 @@ BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 // Browser.Tabs.TotalSwitchDuration.*.
 BLINK_COMMON_EXPORT extern const base::Feature kTabSwitchMetrics2;
 
-BLINK_COMMON_EXPORT extern const base::Feature kDeprecationWillLogToConsole;
-BLINK_COMMON_EXPORT extern const base::Feature
-    kDeprecationWillLogToDevToolsIssue;
-
 BLINK_COMMON_EXPORT extern const base::Feature kLCPAnimatedImagesReporting;
 
 BLINK_COMMON_EXPORT extern const base::Feature

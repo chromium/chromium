@@ -1123,12 +1123,6 @@ bool IsSetTimeoutWithoutClampEnabled() {
 const base::Feature kTabSwitchMetrics2{"TabSwitchMetrics2",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls where third_party/blink/renderer/core/frame/deprecation.cc logs to.
-const base::Feature kDeprecationWillLogToConsole{
-    "DeprecationWillLogToConsole", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kDeprecationWillLogToDevToolsIssue{
-    "DeprecationWillLogToDevToolsIssue", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables reporting and web-exposure (respectively) of the time the first frame
 // of an animated image was painted.
 const base::Feature kLCPAnimatedImagesReporting{
