@@ -5,13 +5,18 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_FIND_HELPER_H_
 #define ANDROID_WEBVIEW_BROWSER_FIND_HELPER_H_
 
+#include <string>
+
 #include "base/macros.h"
-#include "content/public/browser/web_contents_observer.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace android_webview {
 
 // Handles the WebView find-in-page API requests.
-class FindHelper : public content::WebContentsObserver {
+class FindHelper {
  public:
   class Listener {
    public:
@@ -29,7 +34,7 @@ class FindHelper : public content::WebContentsObserver {
   FindHelper(const FindHelper&) = delete;
   FindHelper& operator=(const FindHelper&) = delete;
 
-  ~FindHelper() override;
+  ~FindHelper();
 
   // Sets the listener to receive find result updates.
   // Does not own the listener and must set to nullptr when invalid.
@@ -51,25 +56,27 @@ class FindHelper : public content::WebContentsObserver {
   bool MaybeHandleEmptySearch(const std::u16string& search_string);
   void NotifyResults(int active_ordinal, int match_count, bool finished);
 
+  content::WebContents* const web_contents_;
+
   // Listener results are reported to.
-  Listener* listener_;
+  Listener* listener_ = nullptr;
 
   // Used to check the validity of FindNext operations.
-  bool async_find_started_;
+  bool async_find_started_ = false;
 
   // Used to provide different IDs to each request and for result
   // verification in asynchronous calls.
-  int find_request_id_counter_;
-  int current_request_id_;
+  int find_request_id_counter_ = 0;
+  int current_request_id_ = 0;
 
   // Used to mark the beginning of the current find session. This is the ID of
   // the first find request in the current session.
-  int current_session_id_;
+  int current_session_id_ = 0;
 
   // Required by FindNext and the incremental find replies.
   std::u16string last_search_string_;
-  int last_match_count_;
-  int last_active_ordinal_;
+  int last_match_count_ = -1;
+  int last_active_ordinal_ = -1;
 };
 
 }  // namespace android_webview
