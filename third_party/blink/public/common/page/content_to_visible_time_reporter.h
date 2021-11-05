@@ -17,12 +17,6 @@ struct PresentationFeedback;
 
 namespace blink {
 
-// Merges the |from| request to the |to| request to include all the flags set
-// and minimum start time.
-BLINK_COMMON_EXPORT void UpdateRecordContentToVisibleTimeRequest(
-    mojom::RecordContentToVisibleTimeRequest const& from,
-    mojom::RecordContentToVisibleTimeRequest& to);
-
 // Generates UMA metric to track the duration of tab switching from when the
 // active tab is changed until the frame presentation time. The metric will be
 // separated into two whether the tab switch has saved frames or not.

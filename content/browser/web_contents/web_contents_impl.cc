@@ -9170,10 +9170,10 @@ void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
   auto* trigger = GetVisibleTimeRequestTrigger();
   if (!trigger)
     return;
-  trigger->SetRecordContentToVisibleTimeRequest(
-      start_time, destination_is_loaded, /*show_reason_tab_switching=*/true,
-      /*show_reason_unoccluded=*/false,
-      /*show_reason_bfcache_restore=*/false);
+  trigger->UpdateRequest(start_time, destination_is_loaded,
+                         /*show_reason_tab_switching=*/true,
+                         /*show_reason_unoccluded=*/false,
+                         /*show_reason_bfcache_restore=*/false);
 }
 
 VisibleTimeRequestTrigger* WebContentsImpl::GetVisibleTimeRequestTrigger() {

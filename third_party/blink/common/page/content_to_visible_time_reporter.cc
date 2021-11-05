@@ -60,16 +60,6 @@ void RecordBackForwardCacheRestoreMetric(
 
 }  // namespace
 
-void UpdateRecordContentToVisibleTimeRequest(
-    mojom::RecordContentToVisibleTimeRequest const& from,
-    mojom::RecordContentToVisibleTimeRequest& to) {
-  to.event_start_time = std::min(to.event_start_time, from.event_start_time);
-  to.destination_is_loaded |= from.destination_is_loaded;
-  to.show_reason_tab_switching |= from.show_reason_tab_switching;
-  to.show_reason_unoccluded |= from.show_reason_unoccluded;
-  to.show_reason_bfcache_restore |= from.show_reason_bfcache_restore;
-}
-
 ContentToVisibleTimeReporter::ContentToVisibleTimeReporter()
     : is_tab_switch_metric2_feature_enabled_(
           base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2)) {}

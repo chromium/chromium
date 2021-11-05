@@ -451,8 +451,7 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
   auto* visible_time_request_trigger = host()->GetVisibleTimeRequestTrigger();
   // The only way this should be null is if there is no RenderWidgetHostView.
   DCHECK(visible_time_request_trigger);
-  auto tab_switch_start_state =
-      visible_time_request_trigger->TakeRecordContentToVisibleTimeRequest();
+  auto tab_switch_start_state = visible_time_request_trigger->TakeRequest();
 
   const bool renderer_should_record_presentation_time = !has_saved_frame;
   host()->WasShown(renderer_should_record_presentation_time

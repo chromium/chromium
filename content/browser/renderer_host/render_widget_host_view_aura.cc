@@ -563,17 +563,20 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
   auto* visible_time_request_trigger = host_->GetVisibleTimeRequestTrigger();
   // The only way this should be null is if there is no RenderWidgetHostView.
   DCHECK(visible_time_request_trigger);
+  auto tab_switch_start_state = visible_time_request_trigger->TakeRequest();
 
   if (old_visibility == Visibility::OCCLUDED) {
-    visible_time_request_trigger->SetRecordContentToVisibleTimeRequest(
-        base::TimeTicks::Now(), false /* destination_is_loaded */,
-        false /* show_reason_tab_switching */,
-        true /* show_reason_unoccluded */,
-        false /* show_reason_bfcache_restore */);
+    // Add an unocclusion timing request. If `tab_switch_start_state` is null,
+    // this will return the new request unchanged.
+    tab_switch_start_state = VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
+        std::move(tab_switch_start_state),
+        blink::mojom::RecordContentToVisibleTimeRequest::New(
+            base::TimeTicks::Now(), false /* destination_is_loaded */,
+            false /* show_reason_tab_switching */,
+            true /* show_reason_unoccluded */,
+            false /* show_reason_bfcache_restore */));
   }
 
-  auto tab_switch_start_state =
-      visible_time_request_trigger->TakeRecordContentToVisibleTimeRequest();
   bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
 
   bool show_reason_bfcache_restore =

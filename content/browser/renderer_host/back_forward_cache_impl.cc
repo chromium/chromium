@@ -365,11 +365,10 @@ void RequestRecordTimeToVisible(RenderFrameHostImpl* rfh,
     // The only way this should be null is if there is no RenderWidgetHostView.
     DCHECK(rfh->GetView());
     DCHECK(trigger);
-    trigger->SetRecordContentToVisibleTimeRequest(
-        navigation_start, false /* destination_is_loaded */,
-        false /* show_reason_tab_switching */,
-        false /* show_reason_unoccluded */,
-        true /* show_reason_bfcache_restore */);
+    trigger->UpdateRequest(navigation_start, false /* destination_is_loaded */,
+                           false /* show_reason_tab_switching */,
+                           false /* show_reason_unoccluded */,
+                           true /* show_reason_bfcache_restore */);
   }
 }
 
