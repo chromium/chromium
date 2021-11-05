@@ -66,9 +66,12 @@ bool ManifestPermissionSet::ParseFromJSON(
     std::string permission_name;
     const base::Value* permission_value = NULL;
     if (!permissions->GetString(i, &permission_name)) {
-      const base::DictionaryValue* dict = NULL;
+      const base::Value& value = permissions->GetList()[i];
+      const base::DictionaryValue* dict = nullptr;
+      if (value.is_dict())
+        dict = static_cast<const base::DictionaryValue*>(&value);
       // permission should be a string or a single key dict.
-      if (!permissions->GetDictionary(i, &dict) || dict->DictSize() != 1) {
+      if (!dict || dict->DictSize() != 1) {
         if (error) {
           *error = ErrorUtils::FormatErrorMessageUTF16(
               errors::kInvalidPermission, base::NumberToString(i));

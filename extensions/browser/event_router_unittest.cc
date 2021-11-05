@@ -237,13 +237,12 @@ class EventRouterFilterTest : public ExtensionsTest,
       return false;
     }
 
-    for (size_t i = 0; i < filter_list->GetList().size(); ++i) {
-      const DictionaryValue* filter = nullptr;
-      if (!filter_list->GetDictionary(i, &filter)) {
+    for (const base::Value& filter : filter_list->GetList()) {
+      if (!filter.is_dict()) {
         ADD_FAILURE();
         return false;
       }
-      if (filter->Equals(&to_check))
+      if (filter.Equals(&to_check))
         return true;
     }
     return false;

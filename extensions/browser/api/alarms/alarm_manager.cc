@@ -72,13 +72,12 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
                                         bool is_unpacked,
                                         const base::ListValue* list) {
   AlarmManager::AlarmList alarms;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    const base::DictionaryValue* alarm_dict = nullptr;
+  for (const base::Value& alarm_value : list->GetList()) {
     std::unique_ptr<Alarm> alarm(new Alarm());
-    if (list->GetDictionary(i, &alarm_dict) &&
-        alarms::Alarm::Populate(*alarm_dict, alarm->js_alarm.get())) {
+    if (alarm_value.is_dict() &&
+        alarms::Alarm::Populate(alarm_value, alarm->js_alarm.get())) {
       absl::optional<base::TimeDelta> delta =
-          base::ValueToTimeDelta(alarm_dict->FindKey(kAlarmGranularity));
+          base::ValueToTimeDelta(alarm_value.FindKey(kAlarmGranularity));
       if (delta) {
         alarm->granularity = *delta;
         // No else branch. It's okay to ignore the failure since we have

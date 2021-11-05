@@ -290,10 +290,11 @@ void EventListenerMap::LoadFilteredLazyListeners(
     const base::ListValue* filter_list = nullptr;
     if (!it.value().GetAsList(&filter_list))
       continue;
-    for (size_t i = 0; i < filter_list->GetList().size(); i++) {
-      const DictionaryValue* filter = nullptr;
-      if (!filter_list->GetDictionary(i, &filter))
+    for (const base::Value& filter_value : filter_list->GetList()) {
+      if (!filter_value.is_dict())
         continue;
+      const base::DictionaryValue* filter =
+          static_cast<const base::DictionaryValue*>(&filter_value);
       if (is_for_service_worker) {
         AddListener(EventListener::ForExtensionServiceWorker(
             it.key(), extension_id, nullptr,

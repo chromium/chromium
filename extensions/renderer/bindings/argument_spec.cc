@@ -183,8 +183,10 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
         // Enum entries come in two versions: a list of possible strings, and
         // a dictionary with a field 'name'.
         if (!enums->GetString(i, &enum_value)) {
-          const base::DictionaryValue* enum_value_dictionary = nullptr;
-          CHECK(enums->GetDictionary(i, &enum_value_dictionary));
+          const base::Value& value = enums->GetList()[i];
+          CHECK(value.is_dict());
+          const base::DictionaryValue* enum_value_dictionary =
+              static_cast<const base::DictionaryValue*>(&value);
           CHECK(enum_value_dictionary->GetString("name", &enum_value));
         }
         enum_values_.insert(std::move(enum_value));
