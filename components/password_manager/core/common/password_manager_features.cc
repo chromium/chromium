@@ -37,11 +37,6 @@ const base::Feature kEditPasswordsInSettings = {
 const base::Feature kEnableManualPasswordGeneration = {
     "EnableManualPasswordGeneration", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables UI in settings that allows the user to move multiple passwords to the
-// account storage.
-const base::Feature kEnableMovingMultiplePasswordsToAccount = {
-    "EnableMovingMultiplePasswordsToAccount", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the overwriting of prefilled username fields if the server predicted
 // the field to contain a placeholder value.
 const base::Feature kEnableOverwritingPlaceholderUsernames{

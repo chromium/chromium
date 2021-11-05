@@ -279,10 +279,6 @@ class PasswordsDeviceSectionElement extends PasswordsDeviceSectionElementBase {
   }
 
   private computeShouldShowMoveMultiplePasswordsBanner_(): boolean {
-    if (!loadTimeData.getBoolean('enableMovingMultiplePasswordsToAccount')) {
-      return false;
-    }
-
     if (this.allDevicePasswords_.length === 0) {
       return false;
     }

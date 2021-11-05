@@ -278,11 +278,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               password_manager::features::kPasswordImport));
 
-  html_source->AddBoolean(
-      "enableMovingMultiplePasswordsToAccount",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kEnableMovingMultiplePasswordsToAccount));
-
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("enableDesktopRestructuredLanguageSettings",
                           base::FeatureList::IsEnabled(
