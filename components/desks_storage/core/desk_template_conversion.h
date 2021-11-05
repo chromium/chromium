@@ -12,6 +12,10 @@ namespace ash {
 class DeskTemplate;
 }
 
+namespace apps {
+class AppRegistryCache;
+}
+
 namespace desks_storage {
 
 // DeskTemplateConversion contains helper functions for converting between
@@ -32,6 +36,10 @@ int64_t TimeToProtoTime(const base::Time& t);
 // |ash::DeskTemplateSource::kPolicy|.
 std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromPolicy(
     const base::Value& policyJson);
+
+base::Value SerializeDeskTemplateAsPolicy(
+    const ash::DeskTemplate* desk_template,
+    apps::AppRegistryCache* app_cache);
 
 }  // namespace desk_template_conversion
 

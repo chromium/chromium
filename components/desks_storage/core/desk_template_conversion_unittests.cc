@@ -13,9 +13,12 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/window_info.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,31 +37,84 @@ const std::string kProgressiveAppid = "progressive_app_1";
 const std::string kValidTemplateBrowser =
     "{\"version\":1,\"uuid\":\"" + kTestUuidBrowser + "\",\"name\":\"" +
     kBrowserTemplateName +
-    "\",\"created_time_usec\":\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
+    "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
-    "\"url\":\"https://example.com\",\"title\":\"Example\"},{\"url\":\"https://"
+    "\"url\":\"https://example.com/\"},{\"url\":\"https://"
     "example.com/"
-    "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
+    "2\"}],\"active_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}";
 const std::string kValidTemplateChromeAndProgressive =
     "{\"version\":1,\"uuid\":\"" + kTestUuidChromeAndProgressive +
     "\",\"name\":\"" + kChromePwaTemplateName +
-    "\",\"created_time_usec\":\"1633535632000\",\"desk\":{\"apps\":[{\"window_"
-    "bound\":{\"left\":0,\"top\":0,\"height\":120,\"width\":120},\"window_"
-    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"PWA\",\"app_id\":\"" +
-    kProgressiveAppid +
-    "\",\"title\":\"Example\",\"window_id\":1,\"display_id\":"
-    "\"100\",\"pre_minimized_window_state\":\"NORMAL\"},{\"window_bound\":{"
+    "\",\"created_time_usec\":\"1633535632000\",\"updated_time_usec\": "
+    "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "bound\":{"
     "\"left\":200,\"top\":200,\"height\":1000,\"width\":1000},\"window_state\":"
     "\"NORMAL\",\"z_index\":2,\"app_type\":\"CHROME_APP\",\"app_id\":\"" +
     kChromeAppId +
-    "\",\"title\":\"Example\",\"window_id\":0,\"display_id\":\"100\",\"pre_"
-    "minimized_window_state\":\"NORMAL\"}]}}";
+    "\",\"window_id\":0,\"display_id\":\"100\",\"pre_"
+    "minimized_window_state\":\"NORMAL\"},{\"window_"
+    "bound\":{\"left\":0,\"top\":0,\"height\":120,\"width\":120},\"window_"
+    "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"PWA\",\"app_id\":\"" +
+    kProgressiveAppid +
+    "\",\"window_id\":1,\"display_id\":"
+    "\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}";
+
+apps::mojom::AppPtr MakeApp(const char* app_id,
+                            const char* name,
+                            apps::mojom::AppType app_type) {
+  apps::mojom::AppPtr app = apps::mojom::App::New();
+  app->app_type = app_type;
+  app->app_id = app_id;
+  app->readiness = apps::mojom::Readiness::kReady;
+  app->name = name;
+  return app;
+}
 
 }  // namespace
 
-TEST(DeskTemplateConversionTest, ParseBrowserTemplate) {
+class DeskTemplateConversionTest : public testing::Test {
+ public:
+  DeskTemplateConversionTest(const DeskTemplateConversionTest&) = delete;
+  DeskTemplateConversionTest& operator=(const DeskTemplateConversionTest&) =
+      delete;
+
+ protected:
+  DeskTemplateConversionTest()
+      : account_id_(AccountId::FromUserEmail("test@gmail.com")),
+        cache_(std::make_unique<apps::AppRegistryCache>()) {}
+
+  void PopulateAppRegistryCache() {
+    std::vector<apps::mojom::AppPtr> deltas;
+
+    deltas.push_back(MakeApp(kProgressiveAppid.c_str(), "Test PWA App",
+                             apps::mojom::AppType::kWeb));
+    // chromeAppId returns kExtension in the real Apps cache.
+    deltas.push_back(MakeApp(extension_misc::kChromeAppId, "Chrome Browser",
+                             apps::mojom::AppType::kExtension));
+    deltas.push_back(MakeApp(kChromeAppId.c_str(), "Test Chrome App",
+                             apps::mojom::AppType::kExtension));
+
+    cache_->OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
+                   /*should_notify_initialized=*/false);
+
+    cache_->SetAccountId(account_id_);
+
+    apps::AppRegistryCacheWrapper::Get().AddAppRegistryCache(account_id_,
+                                                             cache_.get());
+  }
+
+  void SetUp() override { PopulateAppRegistryCache(); }
+
+  AccountId account_id_;
+
+ private:
+  std::unique_ptr<apps::AppRegistryCache> cache_;
+};
+
+TEST_F(DeskTemplateConversionTest, ParseBrowserTemplate) {
   base::StringPiece raw_json = base::StringPiece(kValidTemplateBrowser);
   base::JSONReader::ValueWithError parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(raw_json);
@@ -115,7 +171,7 @@ TEST(DeskTemplateConversionTest, ParseBrowserTemplate) {
   EXPECT_EQ(wi->current_bounds.value().width(), 120);
 }
 
-TEST(DeskTemplateConversionTest, ParseChromePwaTemplate) {
+TEST_F(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   base::StringPiece raw_json =
       base::StringPiece(kValidTemplateChromeAndProgressive);
   base::JSONReader::ValueWithError parsed_json =
@@ -203,7 +259,7 @@ TEST(DeskTemplateConversionTest, ParseChromePwaTemplate) {
   EXPECT_EQ(wi_pwa->current_bounds.value().width(), 120);
 }
 
-TEST(DeskTemplateConversionTest, kEmptyJson) {
+TEST_F(DeskTemplateConversionTest, EmptyJsonTest) {
   base::StringPiece raw_json = base::StringPiece(kEmptyJson);
   base::JSONReader::ValueWithError parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(raw_json);
@@ -215,6 +271,51 @@ TEST(DeskTemplateConversionTest, kEmptyJson) {
       desk_template_conversion::ParseDeskTemplateFromPolicy(
           parsed_json.value.value());
   EXPECT_TRUE(dt == nullptr);
+}
+
+TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonBrowserTest) {
+  base::StringPiece raw_json = base::StringPiece(kValidTemplateBrowser);
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+
+  EXPECT_TRUE(parsed_json.value.has_value());
+  EXPECT_TRUE(parsed_json.value->is_dict());
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      desk_template_conversion::ParseDeskTemplateFromPolicy(
+          parsed_json.value.value());
+
+  apps::AppRegistryCache* app_cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
+
+  base::Value desk_template_value =
+      desk_template_conversion::SerializeDeskTemplateAsPolicy(
+          desk_template.get(), app_cache);
+
+  EXPECT_EQ(parsed_json.value, desk_template_value);
+}
+
+TEST_F(DeskTemplateConversionTest, DeskTemplateFromJsonAppTest) {
+  base::StringPiece raw_json =
+      base::StringPiece(kValidTemplateChromeAndProgressive);
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(raw_json);
+
+  EXPECT_TRUE(parsed_json.value.has_value());
+  EXPECT_TRUE(parsed_json.value->is_dict());
+
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      desk_template_conversion::ParseDeskTemplateFromPolicy(
+          parsed_json.value.value());
+
+  apps::AppRegistryCache* app_cache =
+      apps::AppRegistryCacheWrapper::Get().GetAppRegistryCache(account_id_);
+
+  base::Value desk_template_value =
+      desk_template_conversion::SerializeDeskTemplateAsPolicy(
+          desk_template.get(), app_cache);
+
+  EXPECT_EQ(parsed_json.value, desk_template_value);
 }
 
 }  // namespace desks_storage

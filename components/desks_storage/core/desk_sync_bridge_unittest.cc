@@ -87,7 +87,8 @@ const std::string kPolicyWithTwoTemplates =
     "[{\"version\":1,\"uuid\":\"" + base::StringPrintf(kUuidFormat, 8) +
     "\",\"name\":\""
     "Example Template"
-    "\",\"created_time_usec\":\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
+    "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
     "\"url\":\"https://example.com\",\"title\":\"Example\"},{\"url\":\"https://"
@@ -98,7 +99,8 @@ const std::string kPolicyWithTwoTemplates =
     base::StringPrintf(kUuidFormat, 9) +
     "\",\"name\":\""
     "Example Template 2"
-    "\",\"created_time_usec\":\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+    "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
+    "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
     "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
     "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
     "\"url\":\"https://google.com\",\"title\":\"Example "
