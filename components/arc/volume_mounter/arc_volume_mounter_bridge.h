@@ -74,6 +74,7 @@ class ArcVolumeMounterBridge
 
   // mojom::VolumeMounterHost overrides:
   void RequestAllMountPoints() override;
+  void ReportMountFailureCount(uint16_t count) override;
 
   // Initialize ArcVolumeMounterBridge with delegate.
   void Initialize(Delegate* delegate);

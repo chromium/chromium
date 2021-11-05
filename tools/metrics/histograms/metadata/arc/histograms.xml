@@ -1866,6 +1866,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VolumeMounter.MountFailureCount" units="failures"
+    expires_after="2022-10-19">
+  <owner>risan@google.com</owner>
+  <owner>youkichihosoi@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    Counts the number of mount failures for a volume shared with ARC. This is
+    recorded when a volume is successfully mounted by ARC, or when ARC gives up
+    on mounting a volume. Samples in the underflow bucket (value 0) indicate
+    that ARC successfully mounted the volume without any failure. Samples in the
+    overflow bucket indicate that ARC stopped trying to mount the volume after
+    reaching the retry threshold. Samples in between them with value n indicate
+    that ARC successfully mounted the volume after n failures (= n retries).
+    Emitted only on ARC-enabled Chrome OS devices.
+  </summary>
+</histogram>
+
 <histogram name="ArcAuth.CheckinTime" units="ms" expires_after="M87">
 <!-- Deprecated, used to access legacy data -->
 
