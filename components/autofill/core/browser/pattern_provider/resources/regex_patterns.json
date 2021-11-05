@@ -603,7 +603,7 @@
         "pattern_identifier": "fr_address_line_2_label_preserving",
         "positive_pattern": "adresse",
         "positive_score": 1.1,
-        "negative_pattern": null, 
+        "negative_pattern": null,
         "match_field_attributes": 1,
         "match_field_input_types": 1
       }
@@ -3273,6 +3273,18 @@
         "pattern_identifier": "en_one_time_password_preserving",
         "positive_pattern": "one.?time|sms.?(code|token|password|pwd|pass)",
         "positive_score": 0,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 1
+      }
+    ]
+  },
+  "MERCHANT_PROMO_CODE": {
+    "en": [
+      {
+        "pattern_identifier": "en_merchant_promo_code_preserving",
+        "positive_pattern": "\\bpromo.*code\\b|\\bcoupon code\\b|\\bgift code\\b",
+        "positive_score": 0.85,
         "negative_pattern": null,
         "match_field_attributes": 3,
         "match_field_input_types": 1

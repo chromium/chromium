@@ -37,6 +37,16 @@ TEST_F(MerchantPromoCodeFieldTest, ParsePromoCode) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
+TEST_F(MerchantPromoCodeFieldTest, ParsePromotionalCode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillParseMerchantPromoCodeFields);
+  AddTextFormFieldData("Use the promotional code here", "promoCodeField",
+                       MERCHANT_PROMO_CODE);
+
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
 TEST_F(MerchantPromoCodeFieldTest, ParseCouponCode) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(

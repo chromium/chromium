@@ -604,7 +604,7 @@ const char16_t kHiddenValueRe[] = u"^(\\W)\\1+$";
 // merchant_promo_code_field.cc
 /////////////////////////////////////////////////////////////////////////////
 const char16_t kMerchantPromoCodeRe[] =
-    u"\\bpromo code\\b|\\bcoupon code\\b|\\bgift code\\b";
+    u"\\bpromo.*code\\b|\\bcoupon code\\b|\\bgift code\\b";
 
 /////////////////////////////////////////////////////////////////////////////
 // votes_uploader.cc
