@@ -77,10 +77,12 @@ bool TestPasswordsPrivateDelegate::IsAccountStoreDefault(
   return is_account_store_default_;
 }
 
-bool TestPasswordsPrivateDelegate::AddPassword(const std::string& url,
-                                               const std::u16string& username,
-                                               const std::u16string& password,
-                                               bool use_account_store) {
+bool TestPasswordsPrivateDelegate::AddPassword(
+    const std::string& url,
+    const std::u16string& username,
+    const std::u16string& password,
+    bool use_account_store,
+    content::WebContents* web_contents) {
   return !url.empty() && !password.empty();
 }
 

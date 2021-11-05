@@ -230,10 +230,12 @@ bool PasswordsPrivateDelegateImpl::IsAccountStoreDefault(
          password_manager::PasswordForm::Store::kAccountStore;
 }
 
-bool PasswordsPrivateDelegateImpl::AddPassword(const std::string& url,
-                                               const std::u16string& username,
-                                               const std::u16string& password,
-                                               bool use_account_store) {
+bool PasswordsPrivateDelegateImpl::AddPassword(
+    const std::string& url,
+    const std::u16string& username,
+    const std::u16string& password,
+    bool use_account_store,
+    content::WebContents* web_contents) {
   password_manager::PasswordForm form;
   form.url = password_manager_util::StripAuthAndParams(
       password_manager_util::ConstructGURLWithScheme(url));
@@ -244,7 +246,16 @@ bool PasswordsPrivateDelegateImpl::AddPassword(const std::string& url,
                       ? password_manager::PasswordForm::Store::kAccountStore
                       : password_manager::PasswordForm::Store::kProfileStore;
   form.type = password_manager::PasswordForm::Type::kManuallyAdded;
-  return saved_passwords_presenter_.AddPassword(form);
+  bool success = saved_passwords_presenter_.AddPassword(form);
+
+  auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
+  DCHECK(client);
+  // Update the default store to the last used one.
+  if (success &&
+      client->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
+    client->GetPasswordFeatureManager()->SetDefaultPasswordStore(form.in_store);
+  }
+  return success;
 }
 
 bool PasswordsPrivateDelegateImpl::ChangeSavedPassword(

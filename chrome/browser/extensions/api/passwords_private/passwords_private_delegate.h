@@ -70,7 +70,8 @@ class PasswordsPrivateDelegate : public KeyedService {
   // Adds the |username| and |password| corresponding to the |url| to the
   // specified store and returns true if the operation succeeded. Fails and
   // returns false if the data is invalid or an entry with such origin and
-  // username already exists.
+  // username already exists. Updates the default store to the used one on
+  // success if the user has opted-in for account storage.
   // |url|: The url of the password entry, must be a valid http(s) ip/web
   //        address as is or after adding http(s) scheme.
   // |username|: The username to save, can be empty.
@@ -79,7 +80,8 @@ class PasswordsPrivateDelegate : public KeyedService {
   virtual bool AddPassword(const std::string& url,
                            const std::u16string& username,
                            const std::u16string& password,
-                           bool use_account_store) = 0;
+                           bool use_account_store,
+                           content::WebContents* web_contents) = 0;
 
   // Changes the username and password corresponding to |ids|.
   // |ids|: The ids for the password entries being updated.

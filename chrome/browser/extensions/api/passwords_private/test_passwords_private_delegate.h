@@ -34,7 +34,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool AddPassword(const std::string& url,
                    const std::u16string& username,
                    const std::u16string& password,
-                   bool use_account_store) override;
+                   bool use_account_store,
+                   content::WebContents* web_contents) override;
   // Fake implementation of ChangeSavedPassword. This succeeds if the current
   // list of entries has each of the ids, vector of ids isn't empty and if the
   // new password isn't empty.
