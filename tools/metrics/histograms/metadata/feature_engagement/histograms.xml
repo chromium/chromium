@@ -400,6 +400,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InProductHelp.TextBubble.ShowSnooze" enum="BooleanSuccess"
+    expires_after="2022-10-01">
+  <owner>haileywang@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records if the snooze button was shown on an in-product help bubble.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

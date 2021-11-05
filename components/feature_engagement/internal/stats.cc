@@ -123,6 +123,8 @@ void RecordShouldTriggerHelpUI(const base::Feature& feature,
     action_name.append(".");
     action_name.append(feature.name);
     base::RecordComputedAction(action_name);
+    base::UmaHistogramBoolean("InProductHelp.TextBubble.ShowSnooze",
+                              result.should_show_snooze);
   } else {
     LogTriggerHelpUIResult(name, TriggerHelpUIResult::FAILURE);
     std::string action_name =
