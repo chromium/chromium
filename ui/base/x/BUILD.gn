@@ -162,6 +162,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//skia",
     "//testing/gtest",
+    "//ui/base/cursor",
     "//ui/gfx/geometry",
     "//ui/gfx/x",
   ]

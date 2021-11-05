@@ -20,12 +20,6 @@
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #endif
 
-#if defined(USE_X11)
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/x/x11_cursor_factory.h"  // nogncheck
-#include "ui/gfx/geometry/point.h"
-#endif
-
 namespace ui {
 namespace {
 
@@ -50,25 +44,13 @@ TEST(CursorLoaderTest, InvisibleCursor) {
 }
 #endif
 
-#if defined(USE_OZONE) && !defined(USE_X11)
+#if defined(USE_OZONE)
 TEST(CursorLoaderTest, InvisibleCursor) {
   BitmapCursorFactoryOzone cursor_factory;
   auto invisible_cursor = LoadInvisibleCursor();
   ASSERT_NE(invisible_cursor, nullptr);
   EXPECT_EQ(BitmapCursorOzone::FromPlatformCursor(invisible_cursor)->type(),
             CursorType::kNone);
-}
-#endif
-
-#if defined(USE_X11)
-TEST(CursorLoaderTest, InvisibleCursor) {
-  X11CursorFactory cursor_factory;
-  // Building an image cursor with an invalid SkBitmap should return the
-  // invisible cursor in X11.
-  auto invisible_cursor =
-      cursor_factory.CreateImageCursor({}, SkBitmap(), gfx::Point());
-  ASSERT_NE(invisible_cursor, nullptr);
-  EXPECT_EQ(invisible_cursor, LoadInvisibleCursor());
 }
 #endif
 
