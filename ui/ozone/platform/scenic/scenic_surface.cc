@@ -144,7 +144,7 @@ void ScenicSurface::OnScenicEvents(
 
 void ScenicSurface::Present(
     scoped_refptr<gfx::NativePixmap> primary_plane_pixmap,
-    std::vector<ui::OverlayPlane> overlays,
+    std::vector<ui::OverlayPlane> overlays_to_present,
     std::vector<gfx::GpuFenceHandle> acquire_fences,
     std::vector<gfx::GpuFenceHandle> release_fences,
     SwapCompletionCallback completion_callback,
@@ -165,10 +165,55 @@ void ScenicSurface::Present(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("viz", "ScenicSurface::PresentFrame",
                                     TRACE_ID_LOCAL(this), "image_id", image_id);
 
-  for (auto& overlay : overlays) {
+  bool layout_update_required = false;
+
+  for (auto& overlay_view : overlay_views_) {
+    overlay_view.second.should_be_visible = false;
+  }
+
+  for (auto& overlay : overlays_to_present) {
     overlay.pixmap->ScheduleOverlayPlane(window_, overlay.overlay_plane_data,
                                          DuplicateGpuFences(acquire_fences),
                                          /*release_fences=*/{});
+
+    auto& handle =
+        static_cast<SysmemNativePixmap*>(overlay.pixmap.get())->PeekHandle();
+    gfx::SysmemBufferCollectionId overlay_id =
+        handle.buffer_collection_id.value();
+    auto it = overlay_views_.find(overlay_id);
+    CHECK(it != overlay_views_.end());
+    auto& overlay_view_info = it->second;
+    overlay_view_info.should_be_visible = true;
+
+    auto& overlay_data = overlay.overlay_plane_data;
+    if (!overlay_view_info.visible ||
+        overlay_view_info.plane_z_order != overlay_data.z_order ||
+        overlay_view_info.display_bounds != overlay_data.display_bounds ||
+        overlay_view_info.crop_rect != overlay_data.crop_rect ||
+        overlay_view_info.plane_transform != overlay_data.plane_transform) {
+      overlay_view_info.visible = true;
+      overlay_view_info.plane_z_order = overlay_data.z_order;
+      overlay_view_info.display_bounds = overlay_data.display_bounds;
+      overlay_view_info.crop_rect = overlay_data.crop_rect;
+      overlay_view_info.plane_transform = overlay_data.plane_transform;
+      layout_update_required = true;
+    }
+  }
+
+  // Hide all overlays views that are not in `overlays_to_present`.
+  for (auto it = overlay_views_.begin(); it != overlay_views_.end(); ++it) {
+    auto& overlay_view = it->second;
+    if (overlay_view.visible && !overlay_view.should_be_visible) {
+      overlay_view.visible = false;
+      layout_update_required = true;
+    }
+  }
+
+  if (layout_update_required) {
+    for (auto& fence : acquire_fences) {
+      scenic_session_.EnqueueAcquireFence(std::move(fence.Clone().owned_event));
+    }
+    UpdateViewHolderScene();
   }
 
   pending_frames_.emplace_back(
@@ -300,53 +345,14 @@ bool ScenicSurface::PresentOverlayView(
   scenic::ViewHolder view_holder(&scenic_session_, std::move(view_holder_token),
                                  "OverlayViewHolder");
   scenic::EntityNode entity_node(&scenic_session_);
-  fuchsia::ui::gfx::ViewProperties view_properties;
-  view_properties.bounding_box = {{-0.5f, -0.5f, 0.f}, {0.5f, 0.5f, 0.f}};
-  view_properties.focus_change = false;
-  view_holder.SetViewProperties(std::move(view_properties));
   view_holder.SetHitTestBehavior(fuchsia::ui::gfx::HitTestBehavior::kSuppress);
 
   entity_node.AddChild(view_holder);
-  parent_->AddChild(entity_node);
-  safe_presenter_.QueuePresent();
 
-  DCHECK(!overlays_.count(id));
-  overlays_.emplace(
+  DCHECK(!overlay_views_.count(id));
+  overlay_views_.emplace(
       std::piecewise_construct, std::forward_as_tuple(id),
       std::forward_as_tuple(std::move(view_holder), std::move(entity_node)));
-
-  return true;
-}
-
-bool ScenicSurface::UpdateOverlayViewPosition(
-    gfx::SysmemBufferCollectionId id,
-    int plane_z_order,
-    const gfx::Rect& display_bounds,
-    const gfx::RectF& crop_rect,
-    gfx::OverlayTransform plane_transform,
-    std::vector<zx::event> acquire_fences) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(overlays_.count(id));
-  auto& overlay_view_info = overlays_.at(id);
-
-  if (overlay_view_info.plane_z_order == plane_z_order &&
-      overlay_view_info.display_bounds == display_bounds &&
-      overlay_view_info.crop_rect == crop_rect &&
-      overlay_view_info.plane_transform == plane_transform) {
-    return false;
-  }
-
-  overlay_view_info.plane_z_order = plane_z_order;
-  overlay_view_info.display_bounds = display_bounds;
-  overlay_view_info.crop_rect = crop_rect;
-  overlay_view_info.plane_transform = plane_transform;
-
-  for (auto& fence : acquire_fences)
-    scenic_session_.EnqueueAcquireFence(std::move(fence));
-
-  // TODO(crbug.com/1143514): Only queue commands for the affected overlays
-  // instead of the whole scene.
-  UpdateViewHolderScene();
 
   return true;
 }
@@ -354,11 +360,11 @@ bool ScenicSurface::UpdateOverlayViewPosition(
 bool ScenicSurface::RemoveOverlayView(gfx::SysmemBufferCollectionId id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  auto it = overlays_.find(id);
-  DCHECK(it != overlays_.end());
+  auto it = overlay_views_.find(id);
+  DCHECK(it != overlay_views_.end());
   parent_->DetachChild(it->second.entity_node);
   safe_presenter_.QueuePresent();
-  overlays_.erase(it);
+  overlay_views_.erase(it);
   return true;
 }
 
@@ -432,63 +438,79 @@ void ScenicSurface::OnPresentComplete(
 
 void ScenicSurface::UpdateViewHolderScene() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (overlays_.empty())
-    return;
 
   // |plane_z_order| for main surface is 0.
   int min_z_order = 0;
-  for (const auto& overlay : overlays_) {
-    min_z_order = std::min(overlay.second.plane_z_order, min_z_order);
+  for (auto& item : overlay_views_) {
+    auto& overlay_view = item.second;
+    min_z_order = std::min(overlay_view.plane_z_order, min_z_order);
   }
-  for (auto& overlay : overlays_) {
-    auto& info = overlay.second;
+
+  for (auto& item : overlay_views_) {
+    auto& overlay_view = item.second;
+
+    if (!overlay_view.visible) {
+      // `Detach()` is a no-op if the node is not attached.
+      overlay_view.entity_node.Detach();
+      continue;
+    }
+
+    // No-op if the node is already attached.
+    parent_->AddChild(overlay_view.entity_node);
 
     // Apply view bound clipping around the ImagePipe that has size 1x1 and
     // centered at (0, 0).
     fuchsia::ui::gfx::ViewProperties view_properties;
-    const float left_bound = -0.5f + info.crop_rect.x();
-    const float top_bound = -0.5f + info.crop_rect.y();
-    view_properties.bounding_box = {{left_bound, top_bound, 0.f},
-                                    {left_bound + info.crop_rect.width(),
-                                     top_bound + info.crop_rect.height(), 0.f}};
+    const float left_bound = -0.5f + overlay_view.crop_rect.x();
+    const float top_bound = -0.5f + overlay_view.crop_rect.y();
+    view_properties.bounding_box = {
+        {left_bound, top_bound, 0.f},
+        {left_bound + overlay_view.crop_rect.width(),
+         top_bound + overlay_view.crop_rect.height(), 0.f}};
     view_properties.focus_change = false;
-    info.view_holder.SetViewProperties(std::move(view_properties));
+    overlay_view.view_holder.SetViewProperties(std::move(view_properties));
 
     // We receive |display_bounds| in screen coordinates. Convert them to fit
     // 1x1 View, which is later scaled up by the browser process.
-    float scaled_width = info.display_bounds.width() /
-                         (info.crop_rect.width() * main_shape_size_.width());
-    float scaled_height = info.display_bounds.height() /
-                          (info.crop_rect.height() * main_shape_size_.height());
-    const float scaled_x = info.display_bounds.x() / main_shape_size_.width();
-    const float scaled_y = info.display_bounds.y() / main_shape_size_.height();
+    float scaled_width =
+        overlay_view.display_bounds.width() /
+        (overlay_view.crop_rect.width() * main_shape_size_.width());
+    float scaled_height =
+        overlay_view.display_bounds.height() /
+        (overlay_view.crop_rect.height() * main_shape_size_.height());
+    const float scaled_x =
+        overlay_view.display_bounds.x() / main_shape_size_.width();
+    const float scaled_y =
+        overlay_view.display_bounds.y() / main_shape_size_.height();
 
     // Position ImagePipe based on the display bounds given.
-    info.entity_node.SetTranslation(
+    overlay_view.entity_node.SetTranslation(
         -0.5f + scaled_x + scaled_width / 2,
         -0.5f + scaled_y + scaled_height / 2,
-        (min_z_order - info.plane_z_order) * kElevationStep);
+        (min_z_order - overlay_view.plane_z_order) * kElevationStep);
 
     // Apply rotation if given. Scenic expects rotation passed as Quaternion.
-    const float angle = OverlayTransformToRadians(info.plane_transform);
-    info.entity_node.SetRotation(
+    const float angle = OverlayTransformToRadians(overlay_view.plane_transform);
+    overlay_view.entity_node.SetRotation(
         {0.f, 0.f, sinf(angle * .5f), cosf(angle * .5f)});
 
     // Scenic applies scaling before rotation.
-    if (info.plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
-        info.plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) {
+    if (overlay_view.plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_90 ||
+        overlay_view.plane_transform == gfx::OVERLAY_TRANSFORM_ROTATE_270) {
       std::swap(scaled_width, scaled_height);
     }
 
     // Scenic expects flip as negative scaling.
-    if (info.plane_transform == gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL) {
+    if (overlay_view.plane_transform ==
+        gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL) {
       scaled_width = -scaled_width;
-    } else if (info.plane_transform == gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL) {
+    } else if (overlay_view.plane_transform ==
+               gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL) {
       scaled_height = -scaled_height;
     }
 
     // Scale ImagePipe based on the display bounds and clip rect given.
-    info.entity_node.SetScale(scaled_width, scaled_height, 1.f);
+    overlay_view.entity_node.SetScale(scaled_width, scaled_height, 1.f);
   }
 
   main_material_.SetColor(255, 255, 255, 0 > min_z_order ? 254 : 255);

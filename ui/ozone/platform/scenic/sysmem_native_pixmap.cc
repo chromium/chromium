@@ -21,18 +21,6 @@ zx::event GpuFenceToZxEvent(gfx::GpuFence fence) {
   return fence.GetGpuFenceHandle().Clone().owned_event;
 }
 
-std::vector<zx::event> DuplicateZxEvents(
-    const std::vector<zx::event>& acquire_events) {
-  std::vector<zx::event> duped_events;
-  for (auto& event : acquire_events) {
-    duped_events.emplace_back();
-    zx_status_t status =
-        event.duplicate(ZX_RIGHT_SAME_RIGHTS, &duped_events.back());
-    ZX_DCHECK(status == ZX_OK, status);
-  }
-  return duped_events;
-}
-
 }  // namespace
 
 SysmemNativePixmap::SysmemNativePixmap(
@@ -93,13 +81,6 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
     const gfx::OverlayPlaneData& overlay_plane_data,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
-  DCHECK(collection_->surface_factory());
-  ScenicSurface* surface = collection_->surface_factory()->GetSurface(widget);
-  if (!surface) {
-    DLOG(ERROR) << "Failed to find surface.";
-    return false;
-  }
-
   DCHECK(collection_->scenic_overlay_view());
   ScenicOverlayView* overlay_view = collection_->scenic_overlay_view();
   const auto& buffer_collection_id = handle_.buffer_collection_id.value();
@@ -115,11 +96,6 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
   std::vector<zx::event> release_events;
   for (auto& fence : release_fences)
     release_events.push_back(GpuFenceToZxEvent(std::move(fence)));
-
-  surface->UpdateOverlayViewPosition(
-      buffer_collection_id, overlay_plane_data.z_order,
-      overlay_plane_data.display_bounds, overlay_plane_data.crop_rect,
-      overlay_plane_data.plane_transform, DuplicateZxEvents(acquire_events));
 
   overlay_view->SetBlendMode(overlay_plane_data.enable_blend);
   overlay_view->PresentImage(handle_.buffer_index, std::move(acquire_events),
