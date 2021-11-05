@@ -494,8 +494,7 @@ config("compiler") {
     #}
   }
 
-  # TODO(crbug.com/1253924): Enable on apple/lld for arm64 too once it works.
-  if (use_icf && (!is_apple || (use_lld && current_cpu != "arm64"))) {
+  if (use_icf && (!is_apple || use_lld)) {
     ldflags += [ "-Wl,--icf=all" ]
   }
 
