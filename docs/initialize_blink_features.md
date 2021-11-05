@@ -48,7 +48,7 @@ specified, if **not overridden** by field trial or command line switches
 default status):
 
 | |No status|`status:"test"`|`status:"experimental"`|`status:"stable"`|
-|-|---------|-----------------|--------------------------|-------------------|
+|---|---------|-----------------|--------------------------|-------------------|
 |`FEATURE_DISABLED_BY_DEFAULT`|Disabled everywhere|Blink feature is enabled for tests, or everywhere with `--enable-blink-test-features` [1]|Blink feature is enabled for tests, or everywhere with `--enable-experimental-web-platform-features` [1]|Blink feature is enabled everywhere [2]|
 |`FEATURE_ENABLED_BY_DEFAULT`|Enabled everywhere|Enabled everywhere|Enabled everywhere|Enabled everywhere|
 
