@@ -13,9 +13,9 @@
     // iterable, however that isn't supported yet by the bindings. So for now
     // just explicitly define what an async iterable definition implies.
     //async iterable<USVString, FileSystemHandle>;
-    FileSystemDirectoryIterator entries();
-    FileSystemDirectoryIterator keys();
-    FileSystemDirectoryIterator values();
+    [RaisesException] FileSystemDirectoryIterator entries();
+    [RaisesException] FileSystemDirectoryIterator keys();
+    [RaisesException] FileSystemDirectoryIterator values();
 
     [CallWith=ScriptState] Promise<FileSystemFileHandle> getFileHandle(USVString name, optional FileSystemGetFileOptions options = {});
     [CallWith=ScriptState] Promise<FileSystemDirectoryHandle> getDirectoryHandle(USVString name, optional FileSystemGetDirectoryOptions options = {});

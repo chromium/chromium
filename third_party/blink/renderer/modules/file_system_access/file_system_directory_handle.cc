@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_get_file_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_remove_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
@@ -41,20 +42,46 @@ FileSystemDirectoryHandle::FileSystemDirectoryHandle(
   DCHECK(mojo_ptr_.is_bound());
 }
 
-FileSystemDirectoryIterator* FileSystemDirectoryHandle::entries() {
+FileSystemDirectoryIterator* FileSystemDirectoryHandle::entries(
+    ExceptionState& exception_state) {
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "entries() may not be called in a detached window");
+    return nullptr;
+  }
+
   return MakeGarbageCollected<FileSystemDirectoryIterator>(
-      this, FileSystemDirectoryIterator::Mode::kKeyValue,
-      GetExecutionContext());
+      this, FileSystemDirectoryIterator::Mode::kKeyValue, execution_context);
 }
 
-FileSystemDirectoryIterator* FileSystemDirectoryHandle::keys() {
+FileSystemDirectoryIterator* FileSystemDirectoryHandle::keys(
+    ExceptionState& exception_state) {
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "keys() may not be called in a detached window");
+    return nullptr;
+  }
+
   return MakeGarbageCollected<FileSystemDirectoryIterator>(
-      this, FileSystemDirectoryIterator::Mode::kKey, GetExecutionContext());
+      this, FileSystemDirectoryIterator::Mode::kKey, execution_context);
 }
 
-FileSystemDirectoryIterator* FileSystemDirectoryHandle::values() {
+FileSystemDirectoryIterator* FileSystemDirectoryHandle::values(
+    ExceptionState& exception_state) {
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "values() may not be called in a detached window");
+    return nullptr;
+  }
+
   return MakeGarbageCollected<FileSystemDirectoryIterator>(
-      this, FileSystemDirectoryIterator::Mode::kValue, GetExecutionContext());
+      this, FileSystemDirectoryIterator::Mode::kValue, execution_context);
 }
 
 ScriptPromise FileSystemDirectoryHandle::getFileHandle(
