@@ -52,7 +52,7 @@ class ASH_EXPORT DisplayColorManager
     kMaxValue = kAll,
   };
 
-  DisplayColorManager(display::DisplayConfigurator* configurator);
+  explicit DisplayColorManager(display::DisplayConfigurator* configurator);
 
   DisplayColorManager(const DisplayColorManager&) = delete;
   DisplayColorManager& operator=(const DisplayColorManager&) = delete;

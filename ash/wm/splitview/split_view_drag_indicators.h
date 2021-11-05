@@ -90,7 +90,7 @@ class ASH_EXPORT SplitViewDragIndicators {
       WindowDraggingState non_snap_state,
       SplitViewController::SnapPosition snap_position);
 
-  SplitViewDragIndicators(aura::Window* root_window);
+  explicit SplitViewDragIndicators(aura::Window* root_window);
 
   SplitViewDragIndicators(const SplitViewDragIndicators&) = delete;
   SplitViewDragIndicators& operator=(const SplitViewDragIndicators&) = delete;

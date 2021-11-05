@@ -93,7 +93,7 @@ class ASH_EXPORT ZeroStateDefaultDeskButton : public DeskButtonBase {
  public:
   METADATA_HEADER(ZeroStateDefaultDeskButton);
 
-  ZeroStateDefaultDeskButton(DesksBarView* bar_view);
+  explicit ZeroStateDefaultDeskButton(DesksBarView* bar_view);
   ZeroStateDefaultDeskButton(const ZeroStateDefaultDeskButton&) = delete;
   ZeroStateDefaultDeskButton& operator=(const ZeroStateDefaultDeskButton&) =
       delete;

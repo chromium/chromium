@@ -15,7 +15,7 @@ namespace ash {
 
 class MockArcNotificationItem : public ArcNotificationItem {
  public:
-  MockArcNotificationItem(const std::string& notification_key);
+  explicit MockArcNotificationItem(const std::string& notification_key);
 
   MockArcNotificationItem(const MockArcNotificationItem&) = delete;
   MockArcNotificationItem& operator=(const MockArcNotificationItem&) = delete;

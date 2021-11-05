@@ -335,7 +335,7 @@ void QuickAnswersView::ShowRetryView() {
   main_view_->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
 
   // Add title.
-  AddTextElement({title_}, content_view_);
+  AddTextElement(QuickAnswerText(title_), content_view_);
 
   // Add error label.
   std::vector<std::unique_ptr<QuickAnswerUiElement>> description_labels;
@@ -423,10 +423,10 @@ void QuickAnswersView::AddContentView() {
       .SetDefault(views::kMarginsKey,
                   gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/kLineSpacingDip,
                               /*right=*/0));
-  AddTextElement({title_}, content_view_);
-  AddTextElement({l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_LOADING),
-                  gfx::kGoogleGrey700},
-                 content_view_);
+  AddTextElement(QuickAnswerText(title_), content_view_);
+  std::string loading =
+      l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_LOADING);
+  AddTextElement(QuickAnswerText(loading, gfx::kGoogleGrey700), content_view_);
 }
 
 void QuickAnswersView::AddSettingsButton() {

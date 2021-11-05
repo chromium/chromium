@@ -17,7 +17,7 @@ namespace ash {
 // to record Interaction metrics.
 class InteractedByTapRecorder : public ui::EventHandler {
  public:
-  InteractedByTapRecorder(views::View* target_view);
+  explicit InteractedByTapRecorder(views::View* target_view);
 
   InteractedByTapRecorder(const InteractedByTapRecorder&) = delete;
   InteractedByTapRecorder& operator=(const InteractedByTapRecorder&) = delete;

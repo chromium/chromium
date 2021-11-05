@@ -13,7 +13,7 @@ namespace ash {
 
 class DragDropControllerTestApi {
  public:
-  DragDropControllerTestApi(DragDropController* controller)
+  explicit DragDropControllerTestApi(DragDropController* controller)
       : controller_(controller) {}
 
   DragDropControllerTestApi(const DragDropControllerTestApi&) = delete;

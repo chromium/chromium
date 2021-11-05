@@ -73,7 +73,7 @@ class ASH_EXPORT DragImageView : public views::ImageView {
   gfx::Size GetMinimumSize() const override;
 
  private:
-  DragImageView(ui::mojom::DragEventSource source);
+  explicit DragImageView(ui::mojom::DragEventSource source);
 
   gfx::Image* DragHint() const;
   // Drag hint images are only drawn when the input source is touch.

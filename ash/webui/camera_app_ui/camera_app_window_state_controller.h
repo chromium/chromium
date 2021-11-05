@@ -26,7 +26,7 @@ class CameraAppWindowStateController
   using WindowStateType = camera_app::mojom::WindowStateType;
   using WindowStateMonitor = camera_app::mojom::WindowStateMonitor;
 
-  CameraAppWindowStateController(views::Widget* widget);
+  explicit CameraAppWindowStateController(views::Widget* widget);
   CameraAppWindowStateController(const CameraAppWindowStateController&) =
       delete;
   CameraAppWindowStateController& operator=(

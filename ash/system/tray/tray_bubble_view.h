@@ -210,7 +210,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // process accelerator as menu is currently open.
   class RerouteEventHandler : public ui::EventHandler {
    public:
-    RerouteEventHandler(TrayBubbleView* tray_bubble_view);
+    explicit RerouteEventHandler(TrayBubbleView* tray_bubble_view);
 
     RerouteEventHandler(const RerouteEventHandler&) = delete;
     RerouteEventHandler& operator=(const RerouteEventHandler&) = delete;

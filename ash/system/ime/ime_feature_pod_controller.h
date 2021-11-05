@@ -18,7 +18,8 @@ class UnifiedSystemTrayController;
 class ASH_EXPORT IMEFeaturePodController : public FeaturePodControllerBase,
                                            public IMEObserver {
  public:
-  IMEFeaturePodController(UnifiedSystemTrayController* tray_controller);
+  explicit IMEFeaturePodController(
+      UnifiedSystemTrayController* tray_controller);
 
   IMEFeaturePodController(const IMEFeaturePodController&) = delete;
   IMEFeaturePodController& operator=(const IMEFeaturePodController&) = delete;

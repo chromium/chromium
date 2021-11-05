@@ -19,7 +19,7 @@ class DictationNudgeControllerTest;
 // that their Dictation language now works offline.
 class ASH_EXPORT DictationNudge : public SystemNudge {
  public:
-  DictationNudge(DictationNudgeController* controller);
+  explicit DictationNudge(DictationNudgeController* controller);
   DictationNudge(const DictationNudge&) = delete;
   DictationNudge& operator=(const DictationNudge&) = delete;
   ~DictationNudge() override;

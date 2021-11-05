@@ -38,7 +38,7 @@ class InputDataProvider : public mojom::InputDataProvider,
                           public ui::DeviceEventObserver {
  public:
   InputDataProvider();
-  InputDataProvider(std::unique_ptr<ui::DeviceManager> device_manager);
+  explicit InputDataProvider(std::unique_ptr<ui::DeviceManager> device_manager);
   InputDataProvider(const InputDataProvider&) = delete;
   InputDataProvider& operator=(const InputDataProvider&) = delete;
   ~InputDataProvider() override;

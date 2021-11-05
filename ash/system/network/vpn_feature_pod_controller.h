@@ -17,7 +17,8 @@ class UnifiedSystemTrayController;
 class VPNFeaturePodController : public FeaturePodControllerBase,
                                 public TrayNetworkStateObserver {
  public:
-  VPNFeaturePodController(UnifiedSystemTrayController* tray_controller);
+  explicit VPNFeaturePodController(
+      UnifiedSystemTrayController* tray_controller);
 
   VPNFeaturePodController(const VPNFeaturePodController&) = delete;
   VPNFeaturePodController& operator=(const VPNFeaturePodController&) = delete;

@@ -107,7 +107,7 @@ class AshTracingRequest {
   };
 
   // Will start tracing (asynchronously).
-  AshTracingRequest(AshTracingManager* tracing_manager);
+  explicit AshTracingRequest(AshTracingManager* tracing_manager);
   AshTracingRequest(const AshTracingRequest&) = delete;
   AshTracingRequest& operator=(const AshTracingRequest&) = delete;
 

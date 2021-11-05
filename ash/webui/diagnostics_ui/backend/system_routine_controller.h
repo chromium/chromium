@@ -37,7 +37,7 @@ using RunRoutineCallback = base::OnceCallback<void(
 class SystemRoutineController : public mojom::SystemRoutineController {
  public:
   SystemRoutineController();
-  SystemRoutineController(RoutineLog* routine_log_ptr);
+  explicit SystemRoutineController(RoutineLog* routine_log_ptr);
   ~SystemRoutineController() override;
 
   SystemRoutineController(const SystemRoutineController&) = delete;

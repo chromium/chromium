@@ -63,7 +63,7 @@ class ASH_EXPORT PaletteToolManager : public PaletteTool::Delegate {
   };
 
   // Creates the tool manager.
-  PaletteToolManager(Delegate* delegate);
+  explicit PaletteToolManager(Delegate* delegate);
 
   PaletteToolManager(const PaletteToolManager&) = delete;
   PaletteToolManager& operator=(const PaletteToolManager&) = delete;

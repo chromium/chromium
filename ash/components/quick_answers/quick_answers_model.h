@@ -94,7 +94,8 @@ struct QuickAnswerUiElement {
 
 // class to describe an answer text.
 struct QuickAnswerText : public QuickAnswerUiElement {
-  QuickAnswerText(const std::string& text, SkColor color = gfx::kGoogleGrey900)
+  explicit QuickAnswerText(const std::string& text,
+                           SkColor color = gfx::kGoogleGrey900)
       : QuickAnswerUiElement(QuickAnswerUiElementType::kText),
         text(base::UTF8ToUTF16(text)),
         color(color) {}

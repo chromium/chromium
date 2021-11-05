@@ -31,7 +31,7 @@ namespace ash {
 class ASH_EXPORT NotifierSettingsView : public views::View,
                                         public NotifierSettingsObserver {
  public:
-  explicit NotifierSettingsView();
+  NotifierSettingsView();
 
   NotifierSettingsView(const NotifierSettingsView&) = delete;
   NotifierSettingsView& operator=(const NotifierSettingsView&) = delete;

@@ -110,7 +110,8 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   // notifies WorkspaceLayoutManager to send out system ui area change events.
   class BubbleWindowObserver : public aura::WindowObserver {
    public:
-    BubbleWindowObserver(WorkspaceLayoutManager* workspace_layout_manager);
+    explicit BubbleWindowObserver(
+        WorkspaceLayoutManager* workspace_layout_manager);
 
     BubbleWindowObserver(const BubbleWindowObserver&) = delete;
     BubbleWindowObserver& operator=(const BubbleWindowObserver&) = delete;

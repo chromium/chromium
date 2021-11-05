@@ -31,7 +31,7 @@ class SystemDataProvider : public mojom::SystemDataProvider,
                            public PowerManagerClient::Observer {
  public:
   SystemDataProvider();
-  SystemDataProvider(TelemetryLog* telemetry_log_ptr);
+  explicit SystemDataProvider(TelemetryLog* telemetry_log_ptr);
 
   ~SystemDataProvider() override;
 

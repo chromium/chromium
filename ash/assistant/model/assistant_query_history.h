@@ -20,7 +20,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQueryHistory {
  public:
   class Iterator {
    public:
-    Iterator(const base::circular_deque<std::string>& queries);
+    explicit Iterator(const base::circular_deque<std::string>& queries);
 
     Iterator(const Iterator&) = delete;
     Iterator& operator=(const Iterator&) = delete;

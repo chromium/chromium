@@ -19,7 +19,8 @@ class ASH_EXPORT CastFeaturePodController
     : public FeaturePodControllerBase,
       public CastConfigController::Observer {
  public:
-  CastFeaturePodController(UnifiedSystemTrayController* tray_controller);
+  explicit CastFeaturePodController(
+      UnifiedSystemTrayController* tray_controller);
 
   CastFeaturePodController(const CastFeaturePodController&) = delete;
   CastFeaturePodController& operator=(const CastFeaturePodController&) = delete;

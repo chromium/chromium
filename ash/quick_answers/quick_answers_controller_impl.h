@@ -25,7 +25,7 @@ class ASH_EXPORT QuickAnswersControllerImpl
     : public QuickAnswersController,
       public quick_answers::QuickAnswersDelegate {
  public:
-  explicit QuickAnswersControllerImpl();
+  QuickAnswersControllerImpl();
   QuickAnswersControllerImpl(const QuickAnswersControllerImpl&) = delete;
   QuickAnswersControllerImpl& operator=(const QuickAnswersControllerImpl&) =
       delete;
