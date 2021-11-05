@@ -125,20 +125,20 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, MAYBE_LargestContentfulPaint) {
   // Comparing with strict equality could round incorrectly and introduce
   // flakiness into the test.
   ExpectUKMPageLoadMetricNear(
-      PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName,
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
       lcp_timestamps[2].value(), 1.2);
   ExpectUKMPageLoadMetricNear(
-      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName,
+      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName,
       lcp_timestamps[2].value(), 1.2);
 
   // Check UMA.
   // Similar to UKM, rounding could introduce flakiness, so use helper to
   // compare near.
   ExpectUniqueUMAPageLoadMetricNear(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint",
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2",
       lcp_timestamps[2].value());
   ExpectUniqueUMAPageLoadMetricNear(
-      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame",
+      "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame",
       lcp_timestamps[2].value());
 }
 

@@ -610,37 +610,7 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
                 .value()
                 .InMilliseconds());
   }
-  // TODO(crbug.com/1045640): Stop reporting the experimental obsolete versions.
-  const page_load_metrics::ContentfulPaintTimingInfo&
-      main_frame_experimental_largest_contentful_paint =
-          GetDelegate()
-              .GetExperimentalLargestContentfulPaintHandler()
-              .MainFrameLargestContentfulPaint();
-  if (main_frame_experimental_largest_contentful_paint.ContainsValidTime() &&
-      WasStartedInForegroundOptionalEventInForeground(
-          main_frame_experimental_largest_contentful_paint.Time(),
-          GetDelegate())) {
-    builder.SetPaintTiming_NavigationToLargestContentfulPaint_MainFrame(
-        main_frame_experimental_largest_contentful_paint.Time()
-            .value()
-            .InMilliseconds());
-  }
-  const page_load_metrics::ContentfulPaintTimingInfo&
-      all_frames_experimental_largest_contentful_paint =
-          GetDelegate()
-              .GetExperimentalLargestContentfulPaintHandler()
-              .MergeMainFrameAndSubframes();
-  if (all_frames_experimental_largest_contentful_paint.ContainsValidTime() &&
-      WasStartedInForegroundOptionalEventInForeground(
-          all_frames_experimental_largest_contentful_paint.Time(),
-          GetDelegate())) {
-    builder.SetPaintTiming_NavigationToLargestContentfulPaint(
-        all_frames_experimental_largest_contentful_paint.Time()
-            .value()
-            .InMilliseconds());
-  }
-  RecordInternalTimingMetrics(all_frames_largest_contentful_paint,
-                              all_frames_experimental_largest_contentful_paint);
+  RecordInternalTimingMetrics(all_frames_largest_contentful_paint);
   if (timing.interactive_timing->first_input_delay &&
       WasStartedInForegroundOptionalEventInForeground(
           timing.interactive_timing->first_input_timestamp, GetDelegate())) {
@@ -797,9 +767,7 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
     const page_load_metrics::ContentfulPaintTimingInfo&
-        all_frames_largest_contentful_paint,
-    const page_load_metrics::ContentfulPaintTimingInfo&
-        all_frames_experimental_largest_contentful_paint) {
+        all_frames_largest_contentful_paint) {
   ukm::builders::PageLoad_Internal debug_builder(
       GetDelegate().GetPageUkmSourceId());
   LargestContentState lcp_state = LargestContentState::kNotFound;
@@ -822,32 +790,6 @@ void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
   }
   debug_builder.SetPaintTiming_LargestContentfulPaint_TerminationState(
       static_cast<int>(lcp_state));
-
-  LargestContentState experimental_lcp_state = LargestContentState::kNotFound;
-  if (all_frames_experimental_largest_contentful_paint.ContainsValidTime()) {
-    if (WasStartedInForegroundOptionalEventInForeground(
-            all_frames_experimental_largest_contentful_paint.Time(),
-            GetDelegate())) {
-      debug_builder
-          .SetPaintTiming_ExperimentalLargestContentfulPaint_ContentType(
-              static_cast<int>(
-                  all_frames_experimental_largest_contentful_paint.Type()));
-      experimental_lcp_state = LargestContentState::kReported;
-    } else {
-      // This can be reached if LCP occurs after tab hide.
-      experimental_lcp_state = LargestContentState::kFoundButNotReported;
-    }
-  } else if (all_frames_experimental_largest_contentful_paint.Time()
-                 .has_value()) {
-    DCHECK(all_frames_experimental_largest_contentful_paint.Size());
-    experimental_lcp_state = LargestContentState::kLargestImageLoading;
-  } else {
-    DCHECK(all_frames_experimental_largest_contentful_paint.Empty());
-    experimental_lcp_state = LargestContentState::kNotFound;
-  }
-  debug_builder
-      .SetPaintTiming_ExperimentalLargestContentfulPaint_TerminationState(
-          static_cast<int>(experimental_lcp_state));
   debug_builder.Record(ukm::UkmRecorder::Get());
 }
 

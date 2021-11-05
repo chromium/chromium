@@ -115,9 +115,7 @@ class UkmPageLoadMetricsObserver
   // Records page load internal timing metrics, which are used for debugging.
   void RecordInternalTimingMetrics(
       const page_load_metrics::ContentfulPaintTimingInfo&
-          all_frames_largest_contentful_paint,
-      const page_load_metrics::ContentfulPaintTimingInfo&
-          all_frames_experimental_largest_contentful_paint);
+          all_frames_largest_contentful_paint);
 
   // Records metrics based on the page load information exposed by the observer
   // delegate, as well as updating the URL. |app_background_time| should be set

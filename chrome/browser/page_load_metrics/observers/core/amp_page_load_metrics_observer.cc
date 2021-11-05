@@ -496,16 +496,6 @@ void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
             largest_content_paint_time.value());
       }
     }
-    // TODO(crbug.com/1045640): Stop reporting the experimental obsolete
-    // version.
-    if (page_load_metrics::LargestContentfulPaintHandler::
-            AssignTimeAndSizeForLargestContentfulPaint(
-                *paint_timing->experimental_largest_contentful_paint,
-                &largest_content_paint_time, &largest_content_paint_size,
-                &largest_content_type)) {
-      builder.SetSubFrame_PaintTiming_NavigationToLargestContentfulPaint(
-          largest_content_paint_time.value().InMilliseconds());
-    }
 
     if (subframe_info.timing->interactive_timing->first_input_delay
             .has_value()) {

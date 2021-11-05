@@ -816,6 +816,10 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="SubFrame.PaintTiming.NavigationToLargestContentfulPaint">
+    <obsolete>
+      Replaced by SubFrame.PaintTiming.NavigationToLargestContentfulPaint2. No
+      longer reported from Nov 2021.
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
@@ -13281,6 +13285,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="PaintTiming.NavigationToLargestContentfulPaint">
+    <obsolete>
+      Replaced by PaintTiming.NavigationToLargestContentfulPaint2. No longer
+      reported from Nov 2021.
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
@@ -13304,6 +13312,10 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="PaintTiming.NavigationToLargestContentfulPaint.MainFrame">
+    <obsolete>
+      Replaced by PaintTiming.NavigationToLargestContentfulPaint2.MainFrame. No
+      longer reported from Nov 2021.
+    </obsolete>
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
       start to the time when the page first paints the largest content (text or
@@ -13426,6 +13438,10 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="PaintTiming.ExperimentalLargestContentfulPaint.ContentType"
       enum="LargestContentType">
+    <obsolete>
+      Replaced by PaintTiming.LargestContentfulPaint.ContentType. No longer
+      reported from Nov 2021.
+    </obsolete>
     <summary>
       Records whether the page's experimental version of largest contentful
       paint, whose timestamp is measured by
@@ -13438,6 +13454,10 @@ be describing additional metrics about the same event.
   <metric
       name="PaintTiming.ExperimentalLargestContentfulPaint.TerminationState"
       enum="LargestContentfulPaint.TerminationState">
+    <obsolete>
+      Replaced by PaintTiming.LargestContentfulPaint.TerminationState. No longer
+      reported from Nov 2021.
+    </obsolete>
     <summary>
       Records the state of the experimental largest contentful paint algorithm
       at the time in which the browser attempts to record

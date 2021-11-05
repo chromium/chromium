@@ -378,9 +378,6 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
       entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint2",
       10);
   tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint",
-      8);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
       entry.get(),
       "SubFrame.MobileFriendliness.TextContentOutsideViewportPercentage", 55);
   tester()->test_ukm_recorder().ExpectEntryMetric(
@@ -981,9 +978,6 @@ TEST_F(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint2",
       10);
-  tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry.get(), "SubFrame.PaintTiming.NavigationToLargestContentfulPaint",
-      5);
 }
 
 TEST_F(AMPPageLoadMetricsObserverTest, SubFrameRecordOnFullNavigation) {

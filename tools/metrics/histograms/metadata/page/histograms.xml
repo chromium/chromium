@@ -2204,6 +2204,11 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint.ContentType"
     enum="LargestContentType" expires_after="2021-12-11">
+  <obsolete>
+    Replaced by
+    PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType. Stopped
+    being recorded on Nov 2021.
+  </obsolete>
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2217,6 +2222,11 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint.MainFrame.ContentType"
     enum="LargestContentType" expires_after="2021-12-11">
+  <obsolete>
+    Replaced by
+    PageLoad.Internal.PaintTiming.LargestContentfulPaint.MainFrame.ContentType.
+    Stopped being recorded on Nov 2021.
+  </obsolete>
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2784,6 +2794,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2022-04-17">
+  <obsolete>
+    Replaced by PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.
+    Stopped being recorded on Nov 2021.
+  </obsolete>
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2808,6 +2822,11 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame"
     units="ms" expires_after="2022-04-17">
+  <obsolete>
+    Replaced by
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame. Stopped
+    being recorded on Nov 2021.
+  </obsolete>
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

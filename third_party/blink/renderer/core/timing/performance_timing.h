@@ -141,13 +141,6 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // Largest Contentful Paint is the either the largest text paint time or the
   // largest image paint time, whichever has the larger size.
   base::TimeTicks LargestContentfulPaintAsMonotonicTime() const;
-  // Experimental versions of the above metrics. Currently these are computed by
-  // considering the largest content seen so far, regardless of DOM node
-  // removal.
-  uint64_t ExperimentalLargestImagePaint() const;
-  uint64_t ExperimentalLargestImagePaintSize() const;
-  uint64_t ExperimentalLargestTextPaint() const;
-  uint64_t ExperimentalLargestTextPaintSize() const;
   // The time at which the frame is first eligible for painting due to not
   // being throttled. A zero value indicates throttling.
   uint64_t FirstEligibleToPaint() const;

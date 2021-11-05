@@ -143,14 +143,6 @@ class TextPaintTimingDetectorTest : public testing::Test {
     return GetPaintTimingDetector().largest_text_paint_size_;
   }
 
-  base::TimeTicks ExperimentalLargestPaintTime() {
-    return GetPaintTimingDetector().experimental_largest_text_paint_time_;
-  }
-
-  uint64_t ExperimentalLargestPaintSize() {
-    return GetPaintTimingDetector().experimental_largest_text_paint_size_;
-  }
-
   void SetBodyInnerHTML(const std::string& content) {
     frame_test_helpers::LoadHTMLString(
         web_view_helper_.GetWebView()->MainFrameImpl(), content,
@@ -301,8 +293,6 @@ TEST_F(TextPaintTimingDetectorTest, InsertionOrderIsSecondaryRankingKey) {
   AppendDivElementToBody("text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, first);
-  EXPECT_EQ(LargestPaintSize(), ExperimentalLargestPaintSize());
-  EXPECT_EQ(LargestPaintTime(), ExperimentalLargestPaintTime());
 }
 
 TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
@@ -412,8 +402,6 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_NoCandidate) {
     UpdateAllLifecyclePhases();
     EXPECT_GT(LargestPaintSize(), 0u);
     EXPECT_NE(LargestPaintTime(), base::TimeTicks());
-    EXPECT_EQ(ExperimentalLargestPaintSize(), 0u);
-    EXPECT_EQ(ExperimentalLargestPaintTime(), base::TimeTicks());
   }
   auto analyzer = trace_analyzer::Stop();
   trace_analyzer::TraceEventVector events;
@@ -492,8 +480,6 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_LargestText) {
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
 
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, large_text);
-  EXPECT_EQ(LargestPaintSize(), ExperimentalLargestPaintSize());
-  EXPECT_EQ(LargestPaintTime(), ExperimentalLargestPaintTime());
 }
 
 TEST_F(TextPaintTimingDetectorTest, UpdateResultWhenCandidateChanged) {
@@ -506,7 +492,6 @@ TEST_F(TextPaintTimingDetectorTest, UpdateResultWhenCandidateChanged) {
   base::TimeTicks first_largest = LargestPaintTime();
   EXPECT_GE(first_largest, time1);
   EXPECT_GE(time2, first_largest);
-  EXPECT_EQ(first_largest, ExperimentalLargestPaintTime());
 
   AppendDivElementToBody("a long-long-long text");
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
@@ -514,7 +499,6 @@ TEST_F(TextPaintTimingDetectorTest, UpdateResultWhenCandidateChanged) {
   base::TimeTicks second_largest = LargestPaintTime();
   EXPECT_GE(second_largest, time2);
   EXPECT_GE(time3, second_largest);
-  EXPECT_EQ(second_largest, ExperimentalLargestPaintTime());
 }
 
 // There is a risk that a text that is just recorded is selected to be the
@@ -559,8 +543,6 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_ReportFirstPaintTime) {
   TextRecord* record = TextRecordOfLargestTextPaint();
   EXPECT_TRUE(record);
   EXPECT_EQ(record->paint_time, start_time + base::Seconds(1) + kQuantumOfTime);
-  EXPECT_EQ(LargestPaintSize(), ExperimentalLargestPaintSize());
-  EXPECT_EQ(LargestPaintTime(), ExperimentalLargestPaintTime());
 }
 
 TEST_F(TextPaintTimingDetectorTest,
@@ -589,8 +571,6 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_RemovedText) {
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, large_text);
   uint64_t size_before_remove = LargestPaintSize();
   base::TimeTicks time_before_remove = LargestPaintTime();
-  EXPECT_EQ(ExperimentalLargestPaintSize(), size_before_remove);
-  EXPECT_EQ(ExperimentalLargestPaintTime(), time_before_remove);
   EXPECT_GT(size_before_remove, 0u);
   EXPECT_GT(time_before_remove, base::TimeTicks());
 
@@ -600,8 +580,6 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_RemovedText) {
   // LCP values should remain unchanged.
   EXPECT_EQ(LargestPaintSize(), size_before_remove);
   EXPECT_EQ(LargestPaintTime(), time_before_remove);
-  // Experimental values should correspond to the smaller text.
-  EXPECT_LT(ExperimentalLargestPaintSize(), size_before_remove);
 }
 
 TEST_F(TextPaintTimingDetectorTest,
@@ -673,10 +651,8 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_ReportLastNullCandidate) {
   EXPECT_EQ(TextRecordOfLargestTextPaint()->node_, text);
   base::TimeTicks largest_paint_time = LargestPaintTime();
   EXPECT_NE(largest_paint_time, base::TimeTicks());
-  EXPECT_EQ(largest_paint_time, ExperimentalLargestPaintTime());
   uint64_t largest_paint_size = LargestPaintSize();
   EXPECT_NE(largest_paint_size, 0u);
-  EXPECT_EQ(largest_paint_size, ExperimentalLargestPaintSize());
 
   RemoveElement(text);
   UpdateAllLifecyclePhasesAndSimulatePresentationTime();
@@ -684,9 +660,6 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_ReportLastNullCandidate) {
   // LCP values should remain unchanged.
   EXPECT_EQ(largest_paint_time, LargestPaintTime());
   EXPECT_EQ(largest_paint_size, LargestPaintSize());
-  // Experimental values should be reset.
-  EXPECT_EQ(base::TimeTicks(), ExperimentalLargestPaintTime());
-  EXPECT_EQ(0u, ExperimentalLargestPaintSize());
 }
 
 TEST_F(TextPaintTimingDetectorTest,

@@ -187,22 +187,6 @@ class CORE_EXPORT PaintTimingDetector
     return largest_contentful_paint_time_;
   }
 
-  // Experimental counterparts of the above methods. Currently these values are
-  // computed by looking at the largest content seen so far, but excluding
-  // content that is removed.
-  base::TimeTicks ExperimentalLargestImagePaint() const {
-    return experimental_largest_image_paint_time_;
-  }
-  uint64_t ExperimentalLargestImagePaintSize() const {
-    return experimental_largest_image_paint_size_;
-  }
-  base::TimeTicks ExperimentalLargestTextPaint() const {
-    return experimental_largest_text_paint_time_;
-  }
-  uint64_t ExperimentalLargestTextPaintSize() const {
-    return experimental_largest_text_paint_size_;
-  }
-
   base::TimeTicks FirstInputOrScrollNotifiedTimestamp() const {
     return first_input_or_scroll_notified_timestamp_;
   }
@@ -247,11 +231,6 @@ class CORE_EXPORT PaintTimingDetector
   base::TimeTicks largest_text_paint_time_;
   uint64_t largest_text_paint_size_ = 0;
   base::TimeTicks largest_contentful_paint_time_;
-
-  base::TimeTicks experimental_largest_image_paint_time_;
-  uint64_t experimental_largest_image_paint_size_ = 0;
-  base::TimeTicks experimental_largest_text_paint_time_;
-  uint64_t experimental_largest_text_paint_size_ = 0;
 };
 
 // Largest Text Paint and Text Element Timing aggregate text nodes by these

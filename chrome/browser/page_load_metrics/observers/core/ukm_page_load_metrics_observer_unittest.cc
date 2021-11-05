@@ -150,7 +150,7 @@ class UkmPageLoadMetricsObserverTest
     return mock_network_quality_provider_;
   }
 
-  // Tests that LCP and its experimental histograms report the given |value|,
+  // Tests that LCP reports the given |value|,
   // and tests that the LCP content type reported is |type|. If
   // |test_main_frame| is set, also tests that the main frame LCP histograms
   // also report |value|.
@@ -166,19 +166,11 @@ class UkmPageLoadMetricsObserverTest
     tester()->test_ukm_recorder().ExpectEntryMetric(
         entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name,
         value);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName,
-        value);
     if (test_main_frame) {
       tester()->test_ukm_recorder().ExpectEntryMetric(
           entry,
           PageLoad::
               kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName,
-          value);
-      tester()->test_ukm_recorder().ExpectEntryMetric(
-          entry,
-          PageLoad::
-              kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName,
           value);
     }
     EXPECT_TRUE(tester()->test_ukm_recorder().EntryHasMetric(
@@ -199,17 +191,7 @@ class UkmPageLoadMetricsObserverTest
     tester()->test_ukm_recorder().ExpectEntryMetric(
         internal_entry,
         PageLoad_Internal::
-            kPaintTiming_ExperimentalLargestContentfulPaint_ContentTypeName,
-        static_cast<int>(type));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        internal_entry,
-        PageLoad_Internal::
             kPaintTiming_LargestContentfulPaint_TerminationStateName,
-        static_cast<int>(LargestContentState::kReported));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        internal_entry,
-        PageLoad_Internal::
-            kPaintTiming_ExperimentalLargestContentfulPaint_TerminationStateName,
         static_cast<int>(LargestContentState::kReported));
   }
 
@@ -222,15 +204,9 @@ class UkmPageLoadMetricsObserverTest
     EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
         entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name));
     EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-        entry, PageLoad::kPaintTiming_NavigationToLargestContentfulPaintName));
-    EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
         entry,
         PageLoad::
             kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName));
-    EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-        entry,
-        PageLoad::
-            kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName));
 
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> internal_merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -244,19 +220,10 @@ class UkmPageLoadMetricsObserverTest
         internal_entry,
         PageLoad_Internal::
             kPaintTiming_LargestContentfulPaint_ContentTypeName));
-    EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-        internal_entry,
-        PageLoad_Internal::
-            kPaintTiming_ExperimentalLargestContentfulPaint_ContentTypeName));
     tester()->test_ukm_recorder().ExpectEntryMetric(
         internal_entry,
         PageLoad_Internal::
             kPaintTiming_LargestContentfulPaint_TerminationStateName,
-        static_cast<int>(state));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        internal_entry,
-        PageLoad_Internal::
-            kPaintTiming_ExperimentalLargestContentfulPaint_TerminationStateName,
         static_cast<int>(state));
   }
 
@@ -852,9 +819,6 @@ TEST_F(UkmPageLoadMetricsObserverTest,
       entry,
       PageLoad::
           kPaintTiming_NavigationToLargestContentfulPaint2_MainFrameName));
-  EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
-      entry,
-      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint_MainFrameName));
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
