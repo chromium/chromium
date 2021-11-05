@@ -517,6 +517,14 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyNames) {
         it.key(), std::string(), std::string(), nullptr, false));
   }
 
+#if !defined(OS_CHROMEOS)
+  // Add policies found in the Policy Precedence table.
+  for (auto* policy : policy::metapolicy::kPrecedence) {
+    expected_policies.push_back(PopulateExpectedPolicy(
+        policy, std::string(), std::string(), nullptr, false));
+  }
+#endif  // !defined(OS_CHROMEOS)
+
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
   VerifyPolicies(expected_policies);
@@ -598,10 +606,107 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, SendPolicyValues) {
           kUnknownPolicyWithDots, expected_values[kUnknownPolicyWithDots],
           "Platform", values.Get(kUnknownPolicyWithDots), true));
 
+#if !defined(OS_CHROMEOS)
+  // Add policies found in the Policy Precedence table.
+  for (auto* policy : policy::metapolicy::kPrecedence) {
+    expected_policies.push_back(PopulateExpectedPolicy(
+        policy, std::string(), std::string(), values.Get(policy), false));
+  }
+#endif  // !defined(OS_CHROMEOS)
+
   // Retrieve the contents of the policy table from the UI and verify that it
   // matches the expectation.
   VerifyPolicies(expected_policies);
 }
+
+#if !defined(OS_CHROMEOS)
+class PolicyPrecedenceUITest
+    : public PolicyUITest,
+      public ::testing::WithParamInterface<std::tuple<
+          /*cloud_policy_overrides_platform_policy=*/bool,
+          /*cloud_user_policy_overrides_cloud_machine_policy=*/bool,
+          /*is_user_affiliated=*/bool>> {
+ public:
+  bool CloudPolicyOverridesPlatformPolicy() { return std::get<0>(GetParam()); }
+
+  bool CloudUserPolicyOverridesCloudMachinePolicy() {
+    return std::get<1>(GetParam());
+  }
+
+  bool IsUserAffiliated() { return std::get<2>(GetParam()); }
+
+  void ValidatePrecedenceValue(const std::string& precedence_row_value) {
+    if (CloudPolicyOverridesPlatformPolicy() &&
+        CloudUserPolicyOverridesCloudMachinePolicy() && IsUserAffiliated()) {
+      EXPECT_EQ(precedence_row_value,
+                "Cloud user > Cloud machine > Platform machine > "
+                "Platform user");
+    } else if (CloudPolicyOverridesPlatformPolicy()) {
+      EXPECT_EQ(precedence_row_value,
+                "Cloud machine > Platform machine > Platform user > "
+                "Cloud user");
+    } else if (CloudUserPolicyOverridesCloudMachinePolicy() &&
+               IsUserAffiliated()) {
+      EXPECT_EQ(precedence_row_value,
+                "Platform machine > Cloud user > Cloud machine > "
+                "Platform user");
+    } else {
+      EXPECT_EQ(precedence_row_value,
+                "Platform machine > Cloud machine > Platform user > "
+                "Cloud user");
+    }
+  }
+
+  // Used to retrieve the contents of the policy precedence rows.
+  const std::string kJavaScript =
+      "var precedence_row = document.getElementById('policy-ui')"
+      "  .querySelector('.policy-table .precedence.row > .value');"
+      "domAutomationController.send(precedence_row.textContent);";
+};
+
+// Verify that the precedence order displayed in the Policy Precedence table is
+// correct.
+IN_PROC_BROWSER_TEST_P(PolicyPrecedenceUITest, PrecedenceOrder) {
+  // Set precedence policies.
+  policy::PolicyMap policy_map;
+
+  if (IsUserAffiliated()) {
+    base::flat_set<std::string> affiliation_ids;
+    affiliation_ids.insert("12345");
+    // Treat user as affiliated by setting identical user and device IDs.
+    policy_map.SetUserAffiliationIds(affiliation_ids);
+    policy_map.SetDeviceAffiliationIds(affiliation_ids);
+  }
+
+  policy_map.Set(policy::key::kCloudPolicyOverridesPlatformPolicy,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_PLATFORM,
+                 base::Value(CloudPolicyOverridesPlatformPolicy()), nullptr);
+  policy_map.Set(policy::key::kCloudUserPolicyOverridesCloudMachinePolicy,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_PLATFORM,
+                 base::Value(CloudUserPolicyOverridesCloudMachinePolicy()),
+                 nullptr);
+  provider_.UpdateChromePolicy(policy_map);
+
+  // Retrieve the contents of the policy precedence rows.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::string precedence_row_value;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(contents, kJavaScript,
+                                                     &precedence_row_value));
+
+  ValidatePrecedenceValue(precedence_row_value);
+}
+
+INSTANTIATE_TEST_SUITE_P(PolicyPrecedenceUITestInstance,
+                         PolicyPrecedenceUITest,
+                         testing::Combine(testing::Values(false, true),
+                                          testing::Values(false, true),
+                                          testing::Values(false, true)));
+#endif  // !defined(OS_CHROMEOS)
 
 // TODO(https://crbug.com/1027135) Add tests to verify extension policies are
 // exported correctly.
@@ -734,6 +839,15 @@ IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
     expected_chrome_policies.push_back(PopulateExpectedPolicy(
         it.key(), std::string(), std::string(), nullptr, false));
   }
+
+#if !defined(OS_CHROMEOS)
+  // Add policies found in the precedence policy table.
+  for (auto* policy : policy::metapolicy::kPrecedence) {
+    expected_chrome_policies.push_back(PopulateExpectedPolicy(
+        policy, std::string(), std::string(), nullptr, false));
+  }
+#endif  // !defined(OS_CHROMEOS)
+
   // Add extension policy to expected policy list.
   std::vector<std::vector<std::string>> expected_policies =
       expected_chrome_policies;

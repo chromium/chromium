@@ -884,6 +884,18 @@ base::Value PolicyUIHandler::GetPolicyNames() {
   chrome_values.SetKey("policyNames", std::move(chrome_policy_names));
   names.SetKey("chrome", std::move(chrome_values));
 
+#if !defined(OS_CHROMEOS)
+  // Add precedence policy names.
+  base::Value precedence_policy_names(base::Value::Type::LIST);
+  for (auto* policy : policy::metapolicy::kPrecedence) {
+    precedence_policy_names.Append(base::Value(policy));
+  }
+  base::Value precedence_values(base::Value::Type::DICTIONARY);
+  precedence_values.SetStringKey("name", "Policy Precedence");
+  precedence_values.SetKey("policyNames", std::move(precedence_policy_names));
+  names.SetKey("precedence", std::move(precedence_values));
+#endif  // !defined(OS_CHROMEOS)
+
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (updater_policies_) {
     base::Value updater_policies(base::Value::Type::DICTIONARY);

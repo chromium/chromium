@@ -50,6 +50,10 @@ body > main {
   border: 1px solid rgba(0, 0, 0, .06);
 }
 
+.policy-precedence-data {
+  border: 1px solid rgba(0, 0, 0, .06);
+}
+
 .name {
   border-inline-end: 1px solid rgba(0, 0, 0, .06);
   flex: 0 0 15%;
@@ -76,14 +80,16 @@ body > main {
 }
 
 .expanded .policy.row:not(.conflict),
-.policy.row:not(.conflict):hover {
+.policy.row:not(.conflict):hover,
+.precedence.row:hover {
   background-color: rgb(250, 250, 250);
 }
 
 .warnings.row .value,
 .errors.row .value,
 .infos.row .value,
-.value.row .value {
+.value.row .value,
+.precedence.row .value {
   flex-grow: 1;
   max-height: 200px;
   overflow: auto;
@@ -97,7 +103,8 @@ body > main {
 .warnings.row .name,
 .infos.row .name,
 .conflict.row .name,
-.value.row .name {
+.value.row .name,
+.precedence.row .name {
   text-align: end;
 }
 </if>

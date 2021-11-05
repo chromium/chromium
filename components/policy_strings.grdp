@@ -424,6 +424,9 @@ Additional details:
   <message name="IDS_POLICY_LABEL_INFO" desc="Label for the info row in the policy table.">
     Info
   </message>
+  <message name="IDS_POLICY_LABEL_PRECEDENCE" desc="Label for the precedence order row in the policy precedence table.">
+    Current precedence order
+  </message>
   <message name="IDS_POLICY_SHOW_UNSET" desc="Label for the checkbox that determines whether policies whose value has not been set are shown.">
     Show policies with no value set
   </message>
@@ -574,6 +577,18 @@ Additional details:
   </message>
   <message name="IDS_POLICY_IGNORED_CHROME_PROFILE" desc="Text explaining that the policy cannot be set at the Chrome profile level and is therefore ignored.">
     This policy cannot be set at the Chrome profile level and will be ignored.
+  </message>
+  <message name="IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE" desc="Text describing the platform machine precedence value.">
+    Platform machine
+  </message>
+  <message name="IDS_POLICY_PRECEDENCE_PLATFORM_USER" desc="Text describing the platform user precedence value.">
+    Platform user
+  </message>
+  <message name="IDS_POLICY_PRECEDENCE_CLOUD_MACHINE" desc="Text describing the cloud machine precedence value.">
+    Cloud machine
+  </message>
+  <message name="IDS_POLICY_PRECEDENCE_CLOUD_USER" desc="Text describing the cloud user precedence value.">
+    Cloud user
   </message>
   <if expr="not is_macosx">
     <message name="IDS_POLICY_SPELLCHECK_UNKNOWN_LANGUAGE" desc="Warning message in the policy summary page for the spellcheck policies when a language is unrecognized or unsupported.">

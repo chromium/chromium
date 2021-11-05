@@ -106,6 +106,95 @@ base::Value PolicyConversionsClient::GetChromePolicies() {
                          GetKnownPolicies(schema_map, policy_namespace));
 }
 
+base::Value PolicyConversionsClient::GetPrecedencePolicies() {
+  DCHECK(HasUserPolicies());
+
+  PolicyNamespace policy_namespace =
+      PolicyNamespace(POLICY_DOMAIN_CHROME, std::string());
+  const PolicyMap& chrome_policies =
+      GetPolicyService()->GetPolicies(policy_namespace);
+
+  auto* schema_registry = GetPolicySchemaRegistry();
+  if (!schema_registry) {
+    LOG(ERROR) << "Cannot dump Chrome precedence policies, no schema registry";
+    return Value(Value::Type::DICTIONARY);
+  }
+
+  base::Value values(base::Value::Type::DICTIONARY);
+  // Iterate through all precedence metapolicies and retrieve their value only
+  // if they are set in the PolicyMap.
+  for (auto* policy : metapolicy::kPrecedence) {
+    auto* entry = chrome_policies.Get(policy);
+
+    if (entry) {
+      values.SetKey(
+          policy, GetPolicyValue(policy, entry->DeepCopy(), PoliciesSet(),
+                                 PoliciesSet(), nullptr,
+                                 GetKnownPolicies(schema_registry->schema_map(),
+                                                  policy_namespace)));
+    }
+  }
+
+  return values;
+}
+
+base::Value PolicyConversionsClient::GetPrecedenceOrder() {
+  DCHECK(HasUserPolicies());
+
+  PolicyNamespace policy_namespace =
+      PolicyNamespace(POLICY_DOMAIN_CHROME, std::string());
+  const PolicyMap& chrome_policies =
+      GetPolicyService()->GetPolicies(policy_namespace);
+
+  bool cloud_machine_precedence =
+      chrome_policies.Get(key::kCloudPolicyOverridesPlatformPolicy)
+          ? chrome_policies.GetValue(key::kCloudPolicyOverridesPlatformPolicy)
+                ->GetBool()
+          : false;
+  bool cloud_user_precedence =
+      chrome_policies.Get(key::kCloudUserPolicyOverridesCloudMachinePolicy)
+          ? chrome_policies.IsUserAffiliated() &&
+                chrome_policies
+                    .GetValue(key::kCloudUserPolicyOverridesCloudMachinePolicy)
+                    ->GetBool()
+          : false;
+
+  std::vector<int> precedence_order(4);
+  if (cloud_user_precedence) {
+    if (cloud_machine_precedence) {
+      precedence_order = {IDS_POLICY_PRECEDENCE_CLOUD_USER,
+                          IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+                          IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+                          IDS_POLICY_PRECEDENCE_PLATFORM_USER};
+    } else {
+      precedence_order = {IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+                          IDS_POLICY_PRECEDENCE_CLOUD_USER,
+                          IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+                          IDS_POLICY_PRECEDENCE_PLATFORM_USER};
+    }
+  } else {
+    if (cloud_machine_precedence) {
+      precedence_order = {IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+                          IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+                          IDS_POLICY_PRECEDENCE_PLATFORM_USER,
+                          IDS_POLICY_PRECEDENCE_CLOUD_USER};
+    } else {
+      precedence_order = {IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE,
+                          IDS_POLICY_PRECEDENCE_CLOUD_MACHINE,
+                          IDS_POLICY_PRECEDENCE_PLATFORM_USER,
+                          IDS_POLICY_PRECEDENCE_CLOUD_USER};
+    }
+  }
+
+  base::Value precedence_order_localized(base::Value::Type::LIST);
+  for (int label_id : precedence_order) {
+    precedence_order_localized.Append(
+        base::Value(l10n_util::GetStringUTF16(label_id)));
+  }
+
+  return precedence_order_localized;
+}
+
 Value PolicyConversionsClient::CopyAndMaybeConvert(
     const Value& value,
     const absl::optional<Schema>& schema) const {

@@ -28,7 +28,8 @@ let PolicyNamesResponse;
  * @typedef {!Array<{
  *  name: string,
  *  id: ?String,
- *  policies: {[name: string]: policy.Policy}
+ *  policies: {[name: string]: policy.Policy},
+ *  precedenceOrder: ?Array<string>,
  * }>}
  */
 let PolicyValuesResponse;
@@ -69,7 +70,8 @@ let Policy;
  *     id: ?string,
  *     isExtension?: boolean,
  *     name: string,
- *     policies: !Array<!Policy>
+ *     policies: !Array<!Policy>,
+ *     precedenceOrder: ?Array<string>,
  * }}
  */
 let PolicyTableModel;
@@ -444,6 +446,33 @@ PolicyRow.prototype = {
 };
 
 /**
+ * A row describing the current policy precedence.
+ * @constructor
+ * @extends {HTMLDivElement}
+ */
+const PolicyPrecedenceRow = crUiDefine(function() {
+  const node = $('policy-precedence-template').cloneNode(true);
+  node.removeAttribute('id');
+  return node;
+});
+
+PolicyPrecedenceRow.prototype = {
+  // Set up the prototype chain.
+  __proto__: HTMLDivElement.prototype,
+
+  decorate() {},
+
+  /**
+   * @param {Array<String>} precedenceOrder Array containing ordered strings
+   *     which represent the order of policy precedence.
+   */
+  initialize(precedenceOrder) {
+    this.querySelector('.precedence.row > .value').textContent =
+        precedenceOrder.join(' > ');
+  }
+};
+
+/**
  * A table of policies and their values.
  * @constructor
  * @extends {HTMLDivElement}
@@ -499,6 +528,17 @@ PolicyTable.prototype = {
           mainContent.appendChild(policyRow);
         });
     this.filter();
+
+    // Show the current policy precedence order in the Policy Precedence table.
+    if (dataModel.name === 'Policy Precedence') {
+      // Clear previous precedence row.
+      const precedenceRowOld = this.querySelectorAll('.policy-precedence-data');
+      precedenceRowOld.forEach(row => mainContent.removeChild(row));
+
+      const precedenceRow = new PolicyPrecedenceRow;
+      precedenceRow.initialize(dataModel.precedenceOrder);
+      mainContent.appendChild(precedenceRow);
+    }
   },
 
   /**
@@ -614,7 +654,10 @@ export class Page {
           name => Object.assign(
               {
                 name,
-                link: knownPolicyNames === policyNames.chrome.policyNames &&
+                link: [
+                  policyNames.chrome.policyNames,
+                  policyNames.precedence?.policyNames
+                ].includes(knownPolicyNames) &&
                         knownPolicyNamesSet.has(name) ?
                     `https://chromeenterprise.google/policies/?policy=${name}` :
                     undefined,
@@ -626,7 +669,8 @@ export class Page {
             `${value.name} [${loadTimeData.getString('signinProfile')}]` :
             value.name,
         id: value.isExtension ? value.id : null,
-        policies
+        policies,
+        ...(value.precedenceOrder && {precedenceOrder: value.precedenceOrder}),
       };
     });
 
