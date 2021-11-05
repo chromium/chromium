@@ -817,33 +817,6 @@ void BaseRenderingContext2D::scale(double sx, double sy) {
   path_.Transform(AffineTransform().ScaleNonUniform(1.0 / fsx, 1.0 / fsy));
 }
 
-void BaseRenderingContext2D::scale(double sx, double sy, double sz) {
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (!c)
-    return;
-
-  if (!std::isfinite(sx) || !std::isfinite(sy) || !std::isfinite(sz))
-    return;
-
-  TransformationMatrix new_transform = GetState().GetTransform();
-  float fsx = ClampTo<float>(sx);
-  float fsy = ClampTo<float>(sy);
-  float fsz = ClampTo<float>(sz);
-  new_transform.Scale3d(fsx, fsy, fsz);
-  if (GetState().GetTransform() == new_transform)
-    return;
-
-  SetTransform(new_transform);
-  if (!IsTransformInvertible())
-    return;
-
-  // SkCanvas has no 3d scale method for now
-  TransformationMatrix scale_matrix =
-      TransformationMatrix().Scale3d(fsx, fsy, fsz);
-  c->concat(TransformationMatrix::ToSkM44(scale_matrix));
-  path_.Transform(scale_matrix);
-}
-
 void BaseRenderingContext2D::rotate(double angle_in_radians) {
   cc::PaintCanvas* c = GetOrCreatePaintCanvas();
   if (!c)
@@ -866,67 +839,6 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
     return;
   c->rotate(ClampTo<float>(angle_in_radians * (180.0 / kPiFloat)));
   path_.Transform(AffineTransform().RotateRadians(-angle_in_radians));
-}
-
-// All angles are in radians
-void BaseRenderingContext2D::rotate3d(double rx, double ry, double rz) {
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (!c)
-    return;
-
-  if (!std::isfinite(rx) || !std::isfinite(ry) || !std::isfinite(rz))
-    return;
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-
-  TransformationMatrix rotation_matrix =
-      TransformationMatrix().Rotate3d(Rad2deg(rx), Rad2deg(ry), Rad2deg(rz));
-
-  // Check if the transformation is a no-op and early out if that is the case.
-  TransformationMatrix new_transform =
-      GetState().GetTransform().Rotate3d(Rad2deg(rx), Rad2deg(ry), Rad2deg(rz));
-  if (GetState().GetTransform() == new_transform)
-    return;
-
-  // Must call setTransform to set the IsTransformInvertible flag.
-  SetTransform(new_transform);
-  if (!IsTransformInvertible())
-    return;
-
-  c->concat(TransformationMatrix::ToSkM44(rotation_matrix));
-  path_.Transform(rotation_matrix.Inverse());
-}
-
-void BaseRenderingContext2D::rotateAxis(double axisX,
-                                        double axisY,
-                                        double axisZ,
-                                        double angle_in_radians) {
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (!c)
-    return;
-
-  if (!std::isfinite(axisX) || !std::isfinite(axisY) || !std::isfinite(axisZ) ||
-      !std::isfinite(angle_in_radians))
-    return;
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-
-  TransformationMatrix rotation_matrix = TransformationMatrix().Rotate3d(
-      axisX, axisY, axisZ, Rad2deg(angle_in_radians));
-
-  // Check if the transformation is a no-op and early out if that is the case.
-  TransformationMatrix new_transform = GetState().GetTransform().Rotate3d(
-      axisX, axisY, axisZ, Rad2deg(angle_in_radians));
-  if (GetState().GetTransform() == new_transform)
-    return;
-
-  // Must call setTransform to set the IsTransformInvertible flag.
-  SetTransform(new_transform);
-  if (!IsTransformInvertible())
-    return;
-
-  c->concat(TransformationMatrix::ToSkM44(rotation_matrix));
-  path_.Transform(rotation_matrix.Inverse());
 }
 
 void BaseRenderingContext2D::translate(double tx, double ty) {
@@ -959,133 +871,6 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
 
   c->translate(ftx, fty);
   path_.Transform(AffineTransform().Translate(-ftx, -fty));
-}
-
-void BaseRenderingContext2D::translate(double tx, double ty, double tz) {
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (!c)
-    return;
-
-  if (!std::isfinite(tx) || !std::isfinite(ty) || !std::isfinite(tz))
-    return;
-
-  // clamp to float to avoid float cast overflow when used as SkScalar
-  float ftx = ClampTo<float>(tx);
-  float fty = ClampTo<float>(ty);
-  float ftz = ClampTo<float>(ty);
-
-  TransformationMatrix translation_matrix =
-      TransformationMatrix().Translate3d(ftx, fty, ftz);
-
-  // Check if the transformation is a no-op and early out if that is the case.
-  TransformationMatrix new_transform =
-      GetState().GetTransform().Translate3d(ftx, fty, ftz);
-  if (GetState().GetTransform() == new_transform)
-    return;
-
-  // We need to call SetTransform() to set the IsTransformInvertible flag.
-  SetTransform(new_transform);
-  if (!IsTransformInvertible())
-    return;
-
-  c->concat(TransformationMatrix::ToSkM44(translation_matrix));
-  path_.Transform(translation_matrix.Inverse());
-}
-
-void BaseRenderingContext2D::perspective(double length) {
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (!c)
-    return;
-
-  if (length == 0 || !std::isfinite(length))
-    return;
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-
-  float flength = ClampTo<float>(length);
-
-  TransformationMatrix perspective_matrix =
-      TransformationMatrix().ApplyPerspective(flength);
-
-  // Check if the transformation is a no-op and early out if that is the case.
-  TransformationMatrix new_transform =
-      GetState().GetTransform().ApplyPerspective(flength);
-  if (GetState().GetTransform() == new_transform)
-    return;
-
-  // We need to call SetTransform() to set the IsTransformInvertible flag.
-  SetTransform(new_transform);
-  if (!IsTransformInvertible())
-    return;
-
-  c->concat(TransformationMatrix::ToSkM44(perspective_matrix));
-  path_.Transform(perspective_matrix.Inverse());
-}
-
-void BaseRenderingContext2D::transform(double m11,
-                                       double m12,
-                                       double m13,
-                                       double m14,
-                                       double m21,
-                                       double m22,
-                                       double m23,
-                                       double m24,
-                                       double m31,
-                                       double m32,
-                                       double m33,
-                                       double m34,
-                                       double m41,
-                                       double m42,
-                                       double m43,
-                                       double m44) {
-  cc::PaintCanvas* c = GetOrCreatePaintCanvas();
-  if (!c)
-    return;
-
-  if (!std::isfinite(m11) || !std::isfinite(m12) || !std::isfinite(m13) ||
-      !std::isfinite(m14) || !std::isfinite(m21) || !std::isfinite(m22) ||
-      !std::isfinite(m23) || !std::isfinite(m24) || !std::isfinite(m31) ||
-      !std::isfinite(m32) || !std::isfinite(m33) || !std::isfinite(m34) ||
-      !std::isfinite(m41) || !std::isfinite(m42) || !std::isfinite(m43) ||
-      !std::isfinite(m44))
-    return;
-  // TODO(crbug.com/1234113): Instrument new canvas APIs.
-  identifiability_study_helper_.set_encountered_skipped_ops();
-
-  // clamp to float to avoid float cast overflow when used as SkScalar
-  float fm11 = ClampTo<float>(m11);
-  float fm12 = ClampTo<float>(m12);
-  float fm13 = ClampTo<float>(m13);
-  float fm14 = ClampTo<float>(m14);
-  float fm21 = ClampTo<float>(m21);
-  float fm22 = ClampTo<float>(m22);
-  float fm23 = ClampTo<float>(m23);
-  float fm24 = ClampTo<float>(m24);
-  float fm31 = ClampTo<float>(m31);
-  float fm32 = ClampTo<float>(m32);
-  float fm33 = ClampTo<float>(m33);
-  float fm34 = ClampTo<float>(m34);
-  float fm41 = ClampTo<float>(m41);
-  float fm42 = ClampTo<float>(m42);
-  float fm43 = ClampTo<float>(m43);
-  float fm44 = ClampTo<float>(m44);
-
-  TransformationMatrix transform =
-      TransformationMatrix(fm11, fm12, fm13, fm14, fm21, fm22, fm23, fm24, fm31,
-                           fm32, fm33, fm34, fm41, fm42, fm43, fm44);
-
-  // Check if the transformation is a no-op and early out if that is the case.
-  TransformationMatrix new_transform = GetState().GetTransform() * transform;
-  if (GetState().GetTransform() == new_transform)
-    return;
-
-  // Must call setTransform to set the IsTransformInvertible flag.
-  SetTransform(new_transform);
-  if (!IsTransformInvertible())
-    return;
-
-  c->concat(TransformationMatrix::ToSkM44(transform));
-  path_.Transform(transform.Inverse());
 }
 
 void BaseRenderingContext2D::transform(double m11,
@@ -1173,35 +958,6 @@ void BaseRenderingContext2D::setTransform(double m11,
   transform(m11, m12, m21, m22, dx, dy);
 }
 
-void BaseRenderingContext2D::setTransform(double m11,
-                                          double m12,
-                                          double m13,
-                                          double m14,
-                                          double m21,
-                                          double m22,
-                                          double m23,
-                                          double m24,
-                                          double m31,
-                                          double m32,
-                                          double m33,
-                                          double m34,
-                                          double m41,
-                                          double m42,
-                                          double m43,
-                                          double m44) {
-  if (!std::isfinite(m11) || !std::isfinite(m12) || !std::isfinite(m13) ||
-      !std::isfinite(m14) || !std::isfinite(m21) || !std::isfinite(m22) ||
-      !std::isfinite(m23) || !std::isfinite(m24) || !std::isfinite(m31) ||
-      !std::isfinite(m32) || !std::isfinite(m33) || !std::isfinite(m34) ||
-      !std::isfinite(m41) || !std::isfinite(m42) || !std::isfinite(m43) ||
-      !std::isfinite(m44))
-    return;
-
-  resetTransform();
-  transform(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41,
-            m42, m43, m44);
-}
-
 void BaseRenderingContext2D::setTransform(DOMMatrixInit* transform,
                                           ExceptionState& exception_state) {
   DOMMatrixReadOnly* m =
@@ -1210,39 +966,18 @@ void BaseRenderingContext2D::setTransform(DOMMatrixInit* transform,
   if (!m)
     return;
 
-  // The new canvas 2d API supports 3d transforms.
-  // https://github.com/fserb/canvas2D/blob/master/spec/perspective-transforms.md
-  // If it is not enabled, throw 3d information away.
-  if (GetCanvasRenderingContextHost() &&
-      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-          GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
-    setTransform(m->m11(), m->m12(), m->m13(), m->m14(), m->m21(), m->m22(),
-                 m->m23(), m->m24(), m->m31(), m->m32(), m->m33(), m->m34(),
-                 m->m41(), m->m42(), m->m43(), m->m44());
-  } else {
-    setTransform(m->m11(), m->m12(), m->m21(), m->m22(), m->m41(), m->m42());
-  }
+  setTransform(m->m11(), m->m12(), m->m21(), m->m22(), m->m41(), m->m42());
 }
 
 DOMMatrix* BaseRenderingContext2D::getTransform() {
   const TransformationMatrix& t = GetState().GetTransform();
   DOMMatrix* m = DOMMatrix::Create();
-  m->setM11(t.M11());
-  m->setM12(t.M12());
-  m->setM13(t.M13());
-  m->setM14(t.M14());
-  m->setM21(t.M21());
-  m->setM22(t.M22());
-  m->setM23(t.M23());
-  m->setM24(t.M24());
-  m->setM31(t.M31());
-  m->setM32(t.M32());
-  m->setM33(t.M33());
-  m->setM34(t.M34());
-  m->setM41(t.M41());
-  m->setM42(t.M42());
-  m->setM43(t.M43());
-  m->setM44(t.M44());
+  m->setA(t.A());
+  m->setB(t.B());
+  m->setC(t.C());
+  m->setD(t.D());
+  m->setE(t.E());
+  m->setF(t.F());
   return m;
 }
 

@@ -98,54 +98,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void ResetInternal();  // Called from within blink
 
   void scale(double sx, double sy);
-  void scale(double sx, double sy, double sz);
   void rotate(double angle_in_radians);
-  void rotate3d(double rx, double ry, double rz);
-  void rotateAxis(double axisX,
-                  double axisY,
-                  double axisZ,
-                  double angle_in_radians);
   void translate(double tx, double ty);
-  void translate(double tx, double ty, double tz);
-  void perspective(double length);
   void transform(double m11,
                  double m12,
                  double m21,
                  double m22,
                  double dx,
                  double dy);
-  void transform(double m11,
-                 double m12,
-                 double m13,
-                 double m14,
-                 double m21,
-                 double m22,
-                 double m23,
-                 double m24,
-                 double m31,
-                 double m32,
-                 double m33,
-                 double m34,
-                 double m41,
-                 double m42,
-                 double m43,
-                 double m44);
-  void setTransform(double m11,
-                    double m12,
-                    double m13,
-                    double m14,
-                    double m21,
-                    double m22,
-                    double m23,
-                    double m24,
-                    double m31,
-                    double m32,
-                    double m33,
-                    double m34,
-                    double m41,
-                    double m42,
-                    double m43,
-                    double m44);
   void setTransform(double m11,
                     double m12,
                     double m21,
