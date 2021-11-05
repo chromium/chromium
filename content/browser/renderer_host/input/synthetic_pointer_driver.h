@@ -27,6 +27,9 @@ class CONTENT_EXPORT SyntheticPointerDriver {
 
   static std::unique_ptr<SyntheticPointerDriver> Create(
       content::mojom::GestureSourceType gesture_source_type);
+  static std::unique_ptr<SyntheticPointerDriver> Create(
+      content::mojom::GestureSourceType gesture_source_type,
+      bool from_devtools_debugger);
 
   virtual void DispatchEvent(SyntheticGestureTarget* target,
                              const base::TimeTicks& timestamp) = 0;
@@ -73,6 +76,9 @@ class CONTENT_EXPORT SyntheticPointerDriver {
   // a valid sequence of pointer actions.
   virtual bool UserInputCheck(
       const SyntheticPointerActionParams& params) const = 0;
+
+ protected:
+  bool from_devtools_debugger_ = false;
 };
 
 }  // namespace content

@@ -30,4 +30,13 @@ std::unique_ptr<SyntheticPointerDriver> SyntheticPointerDriver::Create(
   return nullptr;
 }
 
+// static
+std::unique_ptr<SyntheticPointerDriver> SyntheticPointerDriver::Create(
+    content::mojom::GestureSourceType gesture_source_type,
+    bool from_devtools_debugger) {
+  auto driver = Create(gesture_source_type);
+  driver->from_devtools_debugger_ = from_devtools_debugger;
+  return driver;
+}
+
 }  // namespace content
