@@ -234,15 +234,11 @@
         },
         {
             "files": [
-                "UpdaterSetup.exe"
+                "updater.zip"
             ],
-            "rename_dirs": [
-                {"from_dir": ".", "to_dir": "updater"}
-            ],
-            "dirs": ["UpdaterSigning"],
             "gcs_bucket": "chromium-browser-snapshots",
-            "gcs_path": "Win/{%position%}/updater.zip",
-            "archive_type": "ARCHIVE_TYPE_ZIP"
+            "gcs_path": "Win/{%position%}",
+            "archive_type": "ARCHIVE_TYPE_FILES"
         }
     ]
 }
