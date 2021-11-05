@@ -4588,7 +4588,16 @@ ci.fyi_ios_builder(
         short_name = "asan",
     ),
 )
-
+ci.fyi_ios_builder(
+    name = "ios-catalyst",
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "iOS",
+            short_name = "ctl",
+        ),
+    ],
+    os = os.MAC_11,
+)
 ci.fyi_ios_builder(
     name = "ios-reclient",
     console_view_entry = consoles.console_view_entry(

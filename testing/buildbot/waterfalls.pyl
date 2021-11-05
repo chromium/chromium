@@ -2952,6 +2952,15 @@
           'isolated_scripts': 'ios_asan_tests',
         }
       },
+      'ios-catalyst': {
+        'additional_compile_targets': [
+          # TODO(crbug.com/1266211): Add //ios/chrome/app:chrome as a compile
+          # target.
+          # TODO(crbug.com/1256485): The bot won't need to compile fuzzers after
+          # the clusterfuzz upload bot is set up.
+          'form_activity_tab_helper_fuzzer',
+        ],
+      },
       # TODO(crbug.com/1254986): remove this after the migration.
       'ios-reclient': {
         'additional_compile_targets': [

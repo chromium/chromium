@@ -1724,6 +1724,10 @@ try_.chromium_mac_builder(
 )
 
 try_.chromium_mac_ios_builder(
+    name = "ios-catalyst",
+)
+
+try_.chromium_mac_ios_builder(
     name = "ios-device",
 )
 
