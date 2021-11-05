@@ -3918,6 +3918,7 @@ ci.fyi_builder(
         category = "paeverywhere|mac",
         short_name = "64dbg",
     ),
+    cores = None,
     notifies = ["chrome-memory-safety"],
     os = os.MAC_ANY,
 )
@@ -3929,6 +3930,7 @@ ci.fyi_builder(
         category = "paeverywhere|mac",
         short_name = "64rel",
     ),
+    cores = None,
     notifies = ["chrome-memory-safety"],
     os = os.MAC_ANY,
 )
