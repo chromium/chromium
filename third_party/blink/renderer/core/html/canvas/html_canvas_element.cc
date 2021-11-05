@@ -114,7 +114,7 @@ namespace {
 // This feature will only take effect if `kTwoCopyCanvasCapture` is also
 // enabled.
 const base::Feature kOneCopyCanvasCapture{"OneCopyCanvasCapture",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kTwoCopyCanvasCapture {
   "TwoCopyCanvasCapture",
