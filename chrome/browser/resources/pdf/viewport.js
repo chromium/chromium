@@ -1050,6 +1050,7 @@ export class Viewport {
     // Avoid scrolling if the space key is down while a form field is focused
     // on since the user might be typing space into the field.
     if (formFieldFocused && e.key === ' ') {
+      this.window_.dispatchEvent(new CustomEvent('scroll-avoided-for-testing'));
       return;
     }
 
@@ -1068,6 +1069,8 @@ export class Viewport {
         y: this.position.y + direction * this.size.height,
       });
     }
+
+    this.window_.dispatchEvent(new CustomEvent('scroll-proceeded-for-testing'));
   }
 
   /**

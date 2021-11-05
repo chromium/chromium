@@ -34,6 +34,7 @@ js_type_check("closure_compile") {
     ":printing_icon_test",
 
     #":redirects_fail_test",
+    ":scroll_with_form_field_focused_test",
     ":test_util",
     ":title_test",
 
@@ -173,6 +174,14 @@ js_library("printing_icon_test") {
 
 js_library("params_parser_test") {
   deps = [ "//chrome/browser/resources/pdf:pdf_viewer_wrapper" ]
+  externs_list = [ "$externs_path/test.js" ]
+}
+
+js_library("scroll_with_form_field_focused_test") {
+  deps = [
+    "../webui:test_util",
+    "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
+  ]
   externs_list = [ "$externs_path/test.js" ]
 }
 
