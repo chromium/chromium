@@ -139,7 +139,7 @@ class EasyUnlockService : public KeyedService {
 
   // Updates the user pod on the signin/lock screen for the user associated with
   // the service to reflect the provided Smart Lock state.
-  bool UpdateSmartLockState(SmartLockState state);
+  void UpdateSmartLockState(SmartLockState state);
 
   // Starts an auth attempt for the user associated with the service. The
   // attempt type (unlock vs. signin) will depend on the service type. Returns
@@ -281,6 +281,12 @@ class EasyUnlockService : public KeyedService {
 
   void EnsureTpmKeyPresentIfNeeded();
 
+  // Determines whether failure to unlock with phone should be handled as an
+  // authentication failure.
+  bool IsSmartLockStateValidOnRemoteAuthFailure() const;
+
+  void NotifySmartLockAuthResult(bool success);
+
   Profile* const profile_;
   secure_channel::SecureChannelClient* secure_channel_client_;
 
@@ -288,6 +294,8 @@ class EasyUnlockService : public KeyedService {
 
   // Created lazily in `GetSmartLockStateHandler`.
   std::unique_ptr<SmartLockStateHandler> smartlock_state_handler_;
+
+  absl::optional<SmartLockState> smart_lock_state_;
 
   // The handler for the current auth attempt. Set iff an auth attempt is in
   // progress.

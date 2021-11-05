@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -33,6 +34,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/proximity_auth/proximity_auth_local_state_pref_manager.h"
 #include "chromeos/components/proximity_auth/proximity_auth_profile_pref_manager.h"
@@ -50,6 +52,7 @@
 #include "components/user_manager/user.h"
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 namespace {
@@ -79,7 +82,7 @@ EasyUnlockService* EasyUnlockService::GetForUser(
     const user_manager::User& user) {
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(&user);
   if (!profile)
-    return NULL;
+    return nullptr;
   return EasyUnlockService::Get(profile);
 }
 
@@ -186,6 +189,9 @@ bool EasyUnlockService::IsChromeOSLoginEnabled() const {
 
 void EasyUnlockService::SetHardlockState(
     SmartLockStateHandler::HardlockState state) {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   const AccountId& account_id = GetAccountId();
   if (!account_id.is_valid())
     return;
@@ -198,6 +204,9 @@ void EasyUnlockService::SetHardlockState(
 
 SmartLockStateHandler::HardlockState EasyUnlockService::GetHardlockState()
     const {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return SmartLockStateHandler::NO_HARDLOCK;
+
   SmartLockStateHandler::HardlockState state;
   if (GetPersistedHardlockState(&state))
     return state;
@@ -207,6 +216,9 @@ SmartLockStateHandler::HardlockState EasyUnlockService::GetHardlockState()
 
 bool EasyUnlockService::GetPersistedHardlockState(
     SmartLockStateHandler::HardlockState* state) const {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return false;
+
   const AccountId& account_id = GetAccountId();
   if (!account_id.is_valid())
     return false;
@@ -229,8 +241,11 @@ bool EasyUnlockService::GetPersistedHardlockState(
 }
 
 SmartLockStateHandler* EasyUnlockService::GetSmartLockStateHandler() {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return nullptr;
+
   if (!IsAllowed())
-    return NULL;
+    return nullptr;
   if (!smartlock_state_handler_) {
     smartlock_state_handler_ = std::make_unique<SmartLockStateHandler>(
         GetAccountId(), GetHardlockState(),
@@ -239,23 +254,67 @@ SmartLockStateHandler* EasyUnlockService::GetSmartLockStateHandler() {
   return smartlock_state_handler_.get();
 }
 
-bool EasyUnlockService::UpdateSmartLockState(SmartLockState state) {
+void EasyUnlockService::UpdateSmartLockState(SmartLockState state) {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+    if (smart_lock_state_ && state == smart_lock_state_.value())
+      return;
+
+    if (!proximity_auth::ScreenlockBridge::Get()->IsLocked())
+      return;
+
+    proximity_auth::ScreenlockBridge::Get()->lock_handler()->SetSmartLockState(
+        GetAccountId(), state);
+    smart_lock_state_ = state;
+
+    // TODO(https://crbug.com/1233614): Eventually we would like to remove
+    // auth_type.mojom where AuthType lives, but this will require further
+    // investigation. This logic was copied from
+    // SmartLockStateHandler::UpdateScreenlockAuthType.
+    // Do not override online signin.
+    const proximity_auth::mojom::AuthType existing_auth_type =
+        proximity_auth::ScreenlockBridge::Get()->lock_handler()->GetAuthType(
+            GetAccountId());
+    if (existing_auth_type == proximity_auth::mojom::AuthType::ONLINE_SIGN_IN)
+      return;
+
+    if (smart_lock_state_ == SmartLockState::kPhoneAuthenticated) {
+      if (existing_auth_type != proximity_auth::mojom::AuthType::USER_CLICK) {
+        proximity_auth::ScreenlockBridge::Get()->lock_handler()->SetAuthType(
+            GetAccountId(), proximity_auth::mojom::AuthType::USER_CLICK,
+            l10n_util::GetStringUTF16(
+                IDS_EASY_UNLOCK_SCREENLOCK_USER_POD_AUTH_VALUE));
+      }
+    } else if (existing_auth_type !=
+               proximity_auth::mojom::AuthType::OFFLINE_PASSWORD) {
+      proximity_auth::ScreenlockBridge::Get()->lock_handler()->SetAuthType(
+          GetAccountId(), proximity_auth::mojom::AuthType::OFFLINE_PASSWORD,
+          std::u16string());
+    }
+
+    if (state != SmartLockState::kPhoneAuthenticated && auth_attempt_) {
+      // Clean up existing auth attempt if we can no longer authenticate the
+      // remote device.
+      auth_attempt_.reset();
+
+      if (!IsSmartLockStateValidOnRemoteAuthFailure())
+        HandleAuthFailure(GetAccountId());
+    }
+
+    return;
+  }
+
   SmartLockStateHandler* handler = GetSmartLockStateHandler();
   if (!handler)
-    return false;
+    return;
 
   handler->ChangeState(state);
 
   if (state != SmartLockState::kPhoneAuthenticated && auth_attempt_) {
-    // Clean up existing auth attempt if we can no longer authenticate the
-    // remote device.
     auth_attempt_.reset();
 
     if (!handler->InStateValidOnRemoteAuthFailure())
       HandleAuthFailure(GetAccountId());
   }
-
-  return true;
 }
 
 void EasyUnlockService::OnUserEnteredPassword() {
@@ -331,7 +390,13 @@ void EasyUnlockService::FinalizeUnlock(bool success) {
   if (!success) {
     auth_attempt_.reset();
     RecordEasyUnlockScreenUnlockEvent(EASY_UNLOCK_FAILURE);
-    HandleAuthFailure(GetAccountId());
+    if (!base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+      HandleAuthFailure(GetAccountId());
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+    NotifySmartLockAuthResult(success);
   }
 }
 
@@ -349,16 +414,28 @@ void EasyUnlockService::FinalizeSignin(const std::string& key) {
   // Processing empty key is equivalent to auth cancellation. In this case the
   // signin request will not actually be processed by login stack, so the lock
   // screen state should be set from here.
-  if (key.empty()) {
+  bool success = !key.empty();
+
+  if (success) {
+    set_will_authenticate_using_easy_unlock(true);
+  } else {
     auth_attempt_.reset();
-    HandleAuthFailure(GetAccountId());
-    return;
+    if (!base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+      HandleAuthFailure(GetAccountId());
+    }
   }
 
-  set_will_authenticate_using_easy_unlock(true);
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+    NotifySmartLockAuthResult(success);
+  }
 }
 
 void EasyUnlockService::HandleAuthFailure(const AccountId& account_id) {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+    NotifySmartLockAuthResult(/*success=*/false);
+    return;
+  }
+
   if (account_id != GetAccountId())
     return;
 
@@ -441,6 +518,9 @@ void EasyUnlockService::ResetSmartLockState() {
 
 void EasyUnlockService::SetSmartLockHardlockedState(
     SmartLockStateHandler::HardlockState state) {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   if (GetSmartLockStateHandler()) {
     smartlock_state_handler_->SetHardlockState(state);
     smartlock_state_handler_->MaybeShowHardlockUI();
@@ -452,6 +532,9 @@ void EasyUnlockService::SetSmartLockHardlockedState(
 void EasyUnlockService::SetHardlockStateForUser(
     const AccountId& account_id,
     SmartLockStateHandler::HardlockState state) {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   DCHECK(account_id.is_valid());
 
   PrefService* local_state = GetLocalState();
@@ -503,11 +586,20 @@ EasyUnlockService::GetSmartUnlockPasswordAuthEvent() const {
         return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
             kUnknownState;
     }
-  } else if (!smartlock_state_handler()) {
+  } else if (!base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp) &&
+             !smartlock_state_handler()) {
+    return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
+        kUnknownState;
+  } else if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp) &&
+             !smart_lock_state_) {
     return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
         kUnknownState;
   } else {
-    switch (smartlock_state_handler()->state()) {
+    SmartLockState state =
+        (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+            ? smart_lock_state_.value()
+            : smartlock_state_handler()->state();
+    switch (state) {
       case SmartLockState::kInactive:
       case SmartLockState::kDisabled:
         return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
@@ -578,10 +670,19 @@ EasyUnlockAuthEvent EasyUnlockService::GetPasswordAuthEvent() const {
       case SmartLockStateHandler::LOGIN_DISABLED:
         return PASSWORD_ENTRY_LOGIN_DISABLED;
     }
-  } else if (!smartlock_state_handler()) {
+  } else if (!base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp) &&
+             !smartlock_state_handler()) {
+    return PASSWORD_ENTRY_NO_SMARTLOCK_STATE_HANDLER;
+  } else if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp) &&
+             !smart_lock_state_) {
     return PASSWORD_ENTRY_NO_SMARTLOCK_STATE_HANDLER;
   } else {
-    switch (smartlock_state_handler()->state()) {
+    SmartLockState state =
+        (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+            ? smart_lock_state_.value()
+            : smartlock_state_handler()->state();
+
+    switch (state) {
       case SmartLockState::kInactive:
       case SmartLockState::kDisabled:
         return PASSWORD_ENTRY_SERVICE_NOT_ACTIVE;
@@ -713,6 +814,25 @@ void EasyUnlockService::EnsureTpmKeyPresentIfNeeded() {
       /*check_private_key=*/true, base::OnceClosure());
 
   tpm_key_checked_ = true;
+}
+
+bool EasyUnlockService::IsSmartLockStateValidOnRemoteAuthFailure() const {
+  // Note that NO_PHONE is not valid in this case because the phone may close
+  // the connection if the auth challenge sent to it is invalid. This case
+  // should be handled as authentication failure.
+  return smart_lock_state_ == SmartLockState::kInactive ||
+         smart_lock_state_ == SmartLockState::kDisabled ||
+         smart_lock_state_ == SmartLockState::kBluetoothDisabled ||
+         smart_lock_state_ == SmartLockState::kPhoneFoundLockedAndProximate;
+}
+
+void EasyUnlockService::NotifySmartLockAuthResult(bool success) {
+  if (!proximity_auth::ScreenlockBridge::Get()->IsLocked())
+    return;
+
+  proximity_auth::ScreenlockBridge::Get()
+      ->lock_handler()
+      ->NotifySmartLockAuthResult(GetAccountId(), success);
 }
 
 std::string EasyUnlockService::GetLastRemoteStatusUnlockForLogging() {
