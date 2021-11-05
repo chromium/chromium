@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/win/sid.h"
 #include "chrome/chrome_cleaner/engines/common/registry_util.h"
 #include "chrome/chrome_cleaner/engines/common/sandbox_error_code.h"
 #include "chrome/chrome_cleaner/os/pre_fetched_paths.h"
@@ -37,8 +38,6 @@
 #include "chrome/chrome_cleaner/test/test_task_scheduler.h"
 #include "chrome/chrome_cleaner/test/test_util.h"
 #include "sandbox/win/src/nt_internals.h"
-#include "sandbox/win/src/sid.h"
-#include "sandbox/win/src/win_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using chrome_cleaner::GetWow64RedirectedSystemPath;
@@ -540,21 +539,25 @@ TEST(ScannerSandboxInterface, GetProcessCommandLine_InvalidInput) {
 }
 
 TEST(ScannerSandboxInterface, GetUserInfoFromSID) {
-  sandbox::Sid sid(WinLocalSid);
-  EXPECT_FALSE(
-      SandboxGetUserInfoFromSID(static_cast<SID*>(sid.GetPSID()), nullptr));
+  const absl::optional<base::win::Sid> world_sid =
+      base::win::Sid::FromKnownSid(base::win::WellKnownSid::kWorld);
+  ASSERT_TRUE(world_sid);
+  EXPECT_FALSE(SandboxGetUserInfoFromSID(
+      static_cast<SID*>(world_sid->GetPSID()), nullptr));
 
   chrome_cleaner::mojom::UserInformation user_info;
-  EXPECT_TRUE(
-      SandboxGetUserInfoFromSID(static_cast<SID*>(sid.GetPSID()), &user_info));
-  EXPECT_EQ(L"LOCAL", user_info.name);
+  EXPECT_TRUE(SandboxGetUserInfoFromSID(static_cast<SID*>(world_sid->GetPSID()),
+                                        &user_info));
+  EXPECT_EQ(L"Everyone", user_info.name);
   EXPECT_EQ(L"", user_info.domain);
   EXPECT_EQ(static_cast<uint32_t>(SidTypeWellKnownGroup),
             user_info.account_type);
 
-  sid = sandbox::Sid(WinSelfSid);
-  EXPECT_TRUE(
-      SandboxGetUserInfoFromSID(static_cast<SID*>(sid.GetPSID()), &user_info));
+  const absl::optional<base::win::Sid> self_sid =
+      base::win::Sid::FromKnownSid(base::win::WellKnownSid::kSelf);
+  ASSERT_TRUE(self_sid);
+  EXPECT_TRUE(SandboxGetUserInfoFromSID(static_cast<SID*>(self_sid->GetPSID()),
+                                        &user_info));
   EXPECT_EQ(L"SELF", user_info.name);
   EXPECT_EQ(L"NT AUTHORITY", user_info.domain);
   EXPECT_EQ(static_cast<uint32_t>(SidTypeWellKnownGroup),
