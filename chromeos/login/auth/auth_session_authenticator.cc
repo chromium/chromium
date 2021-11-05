@@ -17,6 +17,7 @@
 #include "chromeos/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/user_names.h"
 
 namespace chromeos {
 
@@ -45,6 +46,13 @@ user_data_auth::StartAuthSessionRequest ConfigureRegularSession(
   return request;
 }
 
+user_data_auth::StartAuthSessionRequest ConfigureEphemeralSession(
+    const UserContext& context,
+    user_data_auth::StartAuthSessionRequest request) {
+  request.set_flags(user_data_auth::AUTH_SESSION_FLAGS_EPHEMERAL_USER);
+  return request;
+}
+
 // -- ConfigureMountCallback implementations
 
 user_data_auth::MountRequest ConfigureGenericMount(
@@ -63,7 +71,21 @@ user_data_auth::MountRequest ConfigureCreateMount(
   return ConfigureGenericMount(context, std::move(request));
 }
 
+user_data_auth::MountRequest ConfigureGuestMount(
+    const UserContext& context,
+    user_data_auth::MountRequest request) {
+  request.set_guest_mount(true);
+  return request;
+}
+
 // -- KeyHashingCallback implementations
+
+void IgnoreHashing(
+    std::unique_ptr<UserContext> context,
+    const user_data_auth::StartAuthSessionReply& reply,
+    base::OnceCallback<void(std::unique_ptr<UserContext>)> consumer) {
+  std::move(consumer).Run(std::move(context));
+}
 
 void TransformGaiaPasswordWithSalt(
     std::unique_ptr<UserContext> user_context,
@@ -226,12 +248,57 @@ void AuthSessionAuthenticator::AuthenticateToLogin(
          user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
          user_context.GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-
   NOTIMPLEMENTED();
 }
 
 void AuthSessionAuthenticator::LoginOffTheRecord() {
-  NOTIMPLEMENTED();
+  PrepareForNewAttempt("LoginOffTheRecord", "Guest login");
+
+  std::unique_ptr<UserContext> context = std::make_unique<UserContext>(
+      user_manager::USER_TYPE_GUEST, user_manager::GuestAccountId());
+
+  // ToDo: check for safe mode;
+
+  // (1) Initialize AuthSession & transform keys
+  //   (1.1) Fake transformer
+  //   (2) Guests mounts can not exist
+  //   For new users:
+  //     (3) Mount home directory
+  //        (3.1) as a guest mount
+  //     (#) Notify success
+  // (*) Errors are notified as COULD_NOT_MOUNT_TMPFS
+  // Callbacks are created in reverse order:
+
+  // (*)
+  auto error_handler_repeating = base::BindRepeating(
+      &AuthSessionAuthenticator::ProcessCryptohomeError,
+      weak_factory_.GetWeakPtr(),
+      /* default_error */ AuthFailure::COULD_NOT_MOUNT_TMPFS);
+  // (#) Notify success
+  ContextCallback success_callback =
+      base::BindOnce(&AuthSessionAuthenticator::NotifyGuestSuccess,
+                     weak_factory_.GetWeakPtr());
+  // (3.1)
+  ConfigureMountCallback guest_configurator =
+      base::BindOnce(&ConfigureGuestMount);
+  // (3)
+  NewUserAuthSessionCallback guest_mount = base::BindOnce(
+      &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
+      /* error_handler */ base::BindOnce(error_handler_repeating),
+      /* configurator */ std::move(guest_configurator),
+      /* continuation */ std::move(success_callback));
+  // (2)
+  ExistingUserAuthSessionCallback guest_exists = base::BindOnce(
+      &AuthSessionAuthenticator::OnGuestExist, weak_factory_.GetWeakPtr());
+  //   (1.1) Fake transformer
+  KeyHashingCallback password_transformer = base::BindOnce(&IgnoreHashing);
+  // (1)
+  CreateAuthSessionGeneric(
+      "Guest", /* error_handler */ base::BindOnce(error_handler_repeating),
+      /* configurator */ base::BindOnce(&ConfigureEphemeralSession),
+      /* key_hasher */ std::move(password_transformer),
+      /* new_user_flow */ std::move(guest_mount),
+      /* existing_user_flow */ std::move(guest_exists), std::move(context));
 }
 
 void AuthSessionAuthenticator::LoginAsPublicSession(
@@ -607,6 +674,18 @@ void AuthSessionAuthenticator::NotifyAuthSuccess(
     std::unique_ptr<UserContext> context) {
   if (consumer_)
     consumer_->OnAuthSuccess(*context);
+}
+
+void AuthSessionAuthenticator::NotifyGuestSuccess(
+    std::unique_ptr<UserContext> context) {
+  if (consumer_)
+    consumer_->OnOffTheRecordAuthSuccess();
+}
+
+void AuthSessionAuthenticator::OnGuestExist(
+    std::unique_ptr<UserContext> context) {
+  if (consumer_)
+    consumer_->OnAuthFailure(AuthFailure(AuthFailure::COULD_NOT_MOUNT_TMPFS));
 }
 
 }  // namespace chromeos

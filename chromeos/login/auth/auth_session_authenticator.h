@@ -209,6 +209,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthSessionAuthenticator
 
   // Simple callback that notifies about mount success.
   void NotifyAuthSuccess(std::unique_ptr<UserContext> context);
+  void NotifyGuestSuccess(std::unique_ptr<UserContext> context);
+  void OnGuestExist(std::unique_ptr<UserContext> context);
 
   // Handles errors specific to authenticating existing users with the password:
   //   if password is known to be correct (e.g. it comes from online auth flow),
