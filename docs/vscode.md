@@ -97,8 +97,7 @@ every day:
 *   [***Mojom IDL support***](https://github.com/GoogleChromeLabs/mojom-language-support) -
     Syntax highlighting and a
     [language server](https://microsoft.github.io/language-server-protocol/)
-    for .mojom files. This isn't available on the VS Code marketplace for now.
-    You need to install it manually.
+    for .mojom files.
 *   ***vscode-clangd*** -
     If you do not plan to use VSCode for debugging, vscode-clangd is a great
     alternative to C/C++ IntelliSense. It knows about how to compile Chromium,
