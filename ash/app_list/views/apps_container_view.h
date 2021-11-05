@@ -112,9 +112,7 @@ class ASH_EXPORT AppsContainerView
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
-  void ChildVisibilityChanged(views::View* child) override;
 
   // AppListPage overrides:
   void OnShown() override;
@@ -162,7 +160,9 @@ class ASH_EXPORT AppsContainerView
   void MoveFocusUpFromRecents() override;
   void MoveFocusDownFromRecents(int column) override;
 
-  RecentAppsView* recent_apps() { return recent_apps_; }
+  ContinueSectionView* GetContinueSection();
+  RecentAppsView* GetRecentApps();
+  views::View* GetSeparatorView();
   PagedAppsGridView* apps_grid_view() { return apps_grid_view_; }
   FolderBackgroundView* folder_background_view() {
     return folder_background_view_;
@@ -195,6 +195,8 @@ class ASH_EXPORT AppsContainerView
     SHOW_ACTIVE_FOLDER,
     SHOW_ITEM_REPARENT,
   };
+
+  class ContinueContainer;
 
   void SetShowState(ShowState show_state, bool show_apps_with_animation);
 
@@ -266,10 +268,7 @@ class ASH_EXPORT AppsContainerView
 
   // The views below are owned by views hierarchy.
   SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
-  views::View* continue_container_ = nullptr;
-  ContinueSectionView* continue_section_ = nullptr;
-  RecentAppsView* recent_apps_ = nullptr;
-  views::Separator* separator_ = nullptr;
+  ContinueContainer* continue_container_ = nullptr;
   PagedAppsGridView* apps_grid_view_ = nullptr;
   AppListFolderView* app_list_folder_view_ = nullptr;
   PageSwitcher* page_switcher_ = nullptr;

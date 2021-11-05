@@ -113,6 +113,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   continue_section_ =
       scroll_contents->AddChildView(std::make_unique<ContinueSectionView>(
           view_delegate, kContinueColumnCount, /*tablet_mode=*/false));
+  // Observe changes in continue section visibility, to keep separator
+  // visibility in sync.
+  continue_section_->AddObserver(this);
 
   // Recent apps row.
   SearchModel* const search_model = AppListModelProvider::Get()->search_model();
@@ -121,6 +124,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       std::make_unique<RecentAppsView>(this, view_delegate));
   recent_apps_->UpdateAppListConfig(app_list_config);
   recent_apps_->ShowResults(search_model, model);
+  // Observe changes in continue section visibility, to keep separator
+  // visibility in sync.
+  recent_apps_->AddObserver(this);
 
   // Horizontal separator.
   separator_ =
@@ -155,6 +161,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() {
   AppListModelProvider::Get()->RemoveObserver(this);
+  continue_section_->RemoveObserver(this);
+  recent_apps_->RemoveObserver(this);
 }
 
 void AppListBubbleAppsPage::StartShowAnimation() {
@@ -281,8 +289,10 @@ void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
   recent_apps_->ShowResults(search_model, model);
 }
 
-void AppListBubbleAppsPage::ChildVisibilityChanged(views::View* child) {
-  if (child == continue_section_ || child == recent_apps_)
+void AppListBubbleAppsPage::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  if (starting_view == continue_section_ || starting_view == recent_apps_)
     UpdateSeparatorVisibility();
 }
 

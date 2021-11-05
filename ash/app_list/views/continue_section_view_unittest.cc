@@ -55,7 +55,7 @@ class ContinueSectionViewTest : public AshTestBase {
   void SetUp() override { AshTestBase::SetUp(); }
 
   ContinueSectionView* GetContinueSectionView() {
-    return GetAppListTestHelper()->GetContinueSectionView();
+    return GetAppListTestHelper()->GetBubbleContinueSectionView();
   }
 
   void AddSearchResult(const std::string& id, AppListSearchResultType type) {

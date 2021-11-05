@@ -67,19 +67,6 @@ void AddSearchResult(const std::string& id, const std::u16string& title) {
   GetSearchModel()->results()->Add(std::move(search_result));
 }
 
-void AddContinueSuggestionResult(int num_suggestions) {
-  auto* search_model = GetSearchModel();
-  for (int i = 0; i < num_suggestions; i++) {
-    auto result = std::make_unique<TestSearchResult>();
-    result->set_result_id(base::NumberToString(i));
-    result->set_result_type(AppListSearchResultType::kFileChip);
-    // TODO(crbug.com/1216662): Replace with a real display type after the ML
-    // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kContinue);
-    search_model->results()->Add(std::move(result));
-  }
-}
-
 AppListBubblePresenter* GetBubblePresenter() {
   return Shell::Get()->app_list_controller()->bubble_presenter_for_test();
 }
@@ -125,6 +112,10 @@ class AppListBubbleViewTest : public AshTestBase {
   // Shows the app list on the primary display.
   void ShowAppList() { GetAppListTestHelper()->ShowAppList(); }
 
+  void AddContinueSuggestionResult(int num_suggestions) {
+    GetAppListTestHelper()->AddContinueSuggestionResults(num_suggestions);
+  }
+
   void AddRecentApps(int num_apps) {
     GetAppListTestHelper()->AddRecentApps(num_apps);
   }
@@ -150,12 +141,8 @@ class AppListBubbleViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetBubbleAppsPage();
   }
 
-  views::View* GetAppsPageSeparator() {
-    return GetAppsPage()->separator_for_test();
-  }
-
   ContinueSectionView* GetContinueSectionView() {
-    return GetAppListTestHelper()->GetContinueSectionView();
+    return GetAppListTestHelper()->GetBubbleContinueSectionView();
   }
 
   RecentAppsView* GetRecentAppsView() {
@@ -280,7 +267,8 @@ TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
   ShowAppList();
 
   // The animating sections have layers created.
-  auto* continue_section = GetAppListTestHelper()->GetContinueSectionView();
+  auto* continue_section =
+      GetAppListTestHelper()->GetBubbleContinueSectionView();
   EXPECT_TRUE(continue_section->layer());
   auto* recent_apps = GetRecentAppsView();
   EXPECT_TRUE(recent_apps->layer());
@@ -1003,39 +991,6 @@ TEST_F(AppListBubbleViewTest, ScrollInFolderHeaderScrollsFolder) {
   // The view scrolled.
   const int final_scroll_offset = scroll_view->GetVisibleRect().y();
   EXPECT_GT(final_scroll_offset, initial_scroll_offset);
-}
-
-TEST_F(AppListBubbleViewTest,
-       SeparatorWontShowWithNoRecentAppsNorContinueFiles) {
-  AddAppItems(5);
-  ShowAppList();
-
-  ASSERT_EQ(0, GetRecentAppsView()->GetItemViewCount());
-  ASSERT_EQ(0u, GetContinueSectionView()->GetTasksSuggestionsCount());
-
-  EXPECT_FALSE(GetAppsPageSeparator()->GetVisible());
-}
-
-TEST_F(AppListBubbleViewTest, SeparatorShowsWithRecentApps) {
-  AddAppItems(5);
-  AddRecentApps(4);
-  ShowAppList();
-
-  ASSERT_EQ(4, GetRecentAppsView()->GetItemViewCount());
-  ASSERT_EQ(0u, GetContinueSectionView()->GetTasksSuggestionsCount());
-
-  EXPECT_TRUE(GetAppsPageSeparator()->GetVisible());
-}
-
-TEST_F(AppListBubbleViewTest, SeparatorShowsWithContinueFiles) {
-  AddAppItems(5);
-  AddContinueSuggestionResult(4);
-  ShowAppList();
-
-  ASSERT_EQ(0, GetRecentAppsView()->GetItemViewCount());
-  ASSERT_EQ(4u, GetContinueSectionView()->GetTasksSuggestionsCount());
-
-  EXPECT_TRUE(GetAppsPageSeparator()->GetVisible());
 }
 
 }  // namespace

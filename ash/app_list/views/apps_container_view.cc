@@ -299,6 +299,74 @@ END_METADATA
 
 }  // namespace
 
+// A view that contains continue section, recent apps and a separator view,
+// which is shown when any of other views is shown.
+// The view is intended to be a wrapper around suggested content views that
+// makes applying identical transforms to suggested content views easier.
+class AppsContainerView::ContinueContainer : public views::View {
+ public:
+  ContinueContainer(AppsContainerView* apps_container,
+                    AppListViewDelegate* view_delegate) {
+    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+    SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kVertical);
+
+    continue_section_ = AddChildView(std::make_unique<ContinueSectionView>(
+        view_delegate, kContinueColumnCount, /*tablet_mode=*/true));
+    continue_section_->SetPaintToLayer();
+    continue_section_->layer()->SetFillsBoundsOpaquely(false);
+    continue_section_->UpdateSuggestionTasks();
+
+    recent_apps_ = AddChildView(
+        std::make_unique<RecentAppsView>(apps_container, view_delegate));
+    recent_apps_->SetPaintToLayer();
+    recent_apps_->layer()->SetFillsBoundsOpaquely(false);
+
+    separator_ = AddChildView(std::make_unique<views::Separator>());
+    separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor));
+    separator_->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets(kSeparatorVerticalInset, 0)));
+    separator_->SetPreferredSize(
+        gfx::Size(kSeparatorWidth,
+                  kSeparatorVerticalInset * 2 + views::Separator::kThickness));
+    separator_->SetPaintToLayer();
+    separator_->layer()->SetFillsBoundsOpaquely(false);
+    separator_->SetProperty(views::kCrossAxisAlignmentKey,
+                            views::LayoutAlignment::kCenter);
+
+    UpdateSeparatorVisibility();
+  }
+
+  // views::View:
+  void ChildVisibilityChanged(views::View* child) override {
+    if (child == recent_apps_ || child == continue_section_)
+      UpdateSeparatorVisibility();
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor));
+  }
+
+  ContinueSectionView* continue_section() { return continue_section_; }
+  RecentAppsView* recent_apps() { return recent_apps_; }
+  views::View* separator() { return separator_; }
+
+ private:
+  void UpdateSeparatorVisibility() {
+    if (!separator_ || !recent_apps_ || !continue_section_)
+      return;
+    separator_->SetVisible(recent_apps_->GetVisible() ||
+                           continue_section_->GetVisible());
+  }
+
+  ContinueSectionView* continue_section_ = nullptr;
+  RecentAppsView* recent_apps_ = nullptr;
+  views::Separator* separator_ = nullptr;
+};
+
 AppsContainerView::AppsContainerView(ContentsView* contents_view)
     : contents_view_(contents_view) {
   AppListModelProvider::Get()->AddObserver(this);
@@ -314,42 +382,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     // The bounds of the |scrollable_container_| will visually clip the
     // |continue_container_| layer during page changes.
     scrollable_container_->layer()->SetMasksToBounds(true);
-
-    continue_container_ =
-        scrollable_container_->AddChildView(std::make_unique<views::View>());
-    continue_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-
-    continue_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
-        ->SetOrientation(views::LayoutOrientation::kVertical);
-
-    continue_section_ =
-        continue_container_->AddChildView(std::make_unique<ContinueSectionView>(
-            view_delegate, kContinueColumnCount, /*tablet_mode=*/true));
-    continue_section_->SetPaintToLayer();
-    continue_section_->layer()->SetFillsBoundsOpaquely(false);
-    continue_section_->UpdateSuggestionTasks();
-
-    recent_apps_ = continue_container_->AddChildView(
-        std::make_unique<RecentAppsView>(this, view_delegate));
-    recent_apps_->SetPaintToLayer();
-    recent_apps_->layer()->SetFillsBoundsOpaquely(false);
-
-    separator_ =
-        continue_container_->AddChildView(std::make_unique<views::Separator>());
-    separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor));
-    separator_->SetBorder(
-        views::CreateEmptyBorder(gfx::Insets(kSeparatorVerticalInset, 0)));
-    separator_->SetPreferredSize(
-        gfx::Size(kSeparatorWidth,
-                  kSeparatorVerticalInset * 2 + views::Separator::kThickness));
-    separator_->SetPaintToLayer();
-    separator_->layer()->SetFillsBoundsOpaquely(false);
-    separator_->SetProperty(views::kCrossAxisAlignmentKey,
-                            views::LayoutAlignment::kCenter);
-
-    separator_->SetVisible(recent_apps_->GetItemViewCount() > 0 ||
-                           continue_section_->GetTasksSuggestionsCount() > 0);
+    continue_container_ = scrollable_container_->AddChildView(
+        std::make_unique<ContinueContainer>(this, view_delegate));
   } else {
     // Add child view at index 0 so focus traversal goes to suggestion chips
     // before the views in the scrollable_container.
@@ -485,8 +519,8 @@ void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds) {
 
   apps_grid_view()->UpdateAppListConfig(app_list_config_.get());
   app_list_folder_view()->UpdateAppListConfig(app_list_config_.get());
-  if (recent_apps_)
-    recent_apps_->UpdateAppListConfig(app_list_config_.get());
+  if (GetRecentApps())
+    GetRecentApps()->UpdateAppListConfig(app_list_config_.get());
 }
 
 void AppsContainerView::OnActiveAppListModelsChanged(
@@ -650,8 +684,8 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
 
 // RecentAppsView::Delegate:
 void AppsContainerView::MoveFocusUpFromRecents() {
-  DCHECK(!recent_apps_->children().empty());
-  views::View* first_recent = recent_apps_->children()[0];
+  DCHECK(!GetRecentApps()->children().empty());
+  views::View* first_recent = GetRecentApps()->children()[0];
   DCHECK(views::IsViewClass<AppListItemView>(first_recent));
   // Find the view one step in reverse from the first recent app.
   views::View* previous_view = GetFocusManager()->GetNextFocusableView(
@@ -671,6 +705,24 @@ void AppsContainerView::MoveFocusDownFromRecents(int column) {
   AppListItemView* item = apps_grid_view_->GetItemViewAt(index);
   DCHECK(item);
   item->RequestFocus();
+}
+
+ContinueSectionView* AppsContainerView::GetContinueSection() {
+  if (!continue_container_)
+    return nullptr;
+  return continue_container_->continue_section();
+}
+
+RecentAppsView* AppsContainerView::GetRecentApps() {
+  if (!continue_container_)
+    return nullptr;
+  return continue_container_->recent_apps();
+}
+
+views::View* AppsContainerView::GetSeparatorView() {
+  if (!continue_container_)
+    return nullptr;
+  return continue_container_->separator();
 }
 
 void AppsContainerView::UpdateControlVisibility(AppListViewState app_list_state,
@@ -899,15 +951,6 @@ void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
     UpdateForActiveAppListModel();
 }
 
-void AppsContainerView::ChildVisibilityChanged(views::View* child) {
-  if (!features::IsProductivityLauncherEnabled())
-    return;
-  if (child == continue_section_ || child == recent_apps_) {
-    separator_->SetVisible(recent_apps_->GetItemViewCount() > 0 ||
-                           continue_section_->GetTasksSuggestionsCount() > 0);
-  }
-}
-
 void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {
   // Ignore tap/long-press, allow those to pass to the ancestor view.
   if (event->type() == ui::ET_GESTURE_TAP ||
@@ -937,14 +980,6 @@ void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {
   // If the temporary event was handled, we don't want to handle it again.
   if (grid_event.handled())
     event->SetHandled();
-}
-
-void AppsContainerView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  if (separator_) {
-    separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor));
-  }
 }
 
 void AppsContainerView::OnShown() {
@@ -1141,12 +1176,12 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
 }
 
 void AppsContainerView::UpdateRecentApps() {
-  if (!recent_apps_ || !app_list_config_)
+  if (!GetRecentApps() || !app_list_config_)
     return;
 
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
-  recent_apps_->ShowResults(model_provider->search_model(),
-                            model_provider->model());
+  GetRecentApps()->ShowResults(model_provider->search_model(),
+                               model_provider->model());
 }
 
 void AppsContainerView::UpdateSuggestionChips() {

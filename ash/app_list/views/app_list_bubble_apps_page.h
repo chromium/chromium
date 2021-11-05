@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 class Separator;
@@ -39,6 +40,7 @@ class ScrollViewGradientHelper;
 // - Grid of all apps
 // Does not include the search box, which is owned by a parent view.
 class ASH_EXPORT AppListBubbleAppsPage : public views::View,
+                                         public views::ViewObserver,
                                          public AppListModelProvider::Observer,
                                          public RecentAppsView::Delegate,
                                          public AppsGridViewFocusDelegate {
@@ -68,7 +70,10 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   // views::View:
   void Layout() override;
-  void ChildVisibilityChanged(views::View* child) override;
+
+  // view::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,

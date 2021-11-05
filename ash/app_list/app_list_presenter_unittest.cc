@@ -25,6 +25,7 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/privacy_container_view.h"
@@ -370,6 +371,25 @@ class AppListBubbleAndTabletTest
                      ->GetVisible();
   }
 
+  ContinueSectionView* GetContinueSectionView() {
+    return should_show_bubble_launcher()
+               ? GetAppListTestHelper()->GetBubbleContinueSectionView()
+               : GetAppListTestHelper()->GetFullscreenContinueSectionView();
+  }
+
+  RecentAppsView* GetRecentAppsView() {
+    return should_show_bubble_launcher()
+               ? GetAppListTestHelper()->GetBubbleRecentAppsView()
+               : GetAppListTestHelper()->GetFullscreenRecentAppsView();
+  }
+
+  views::View* GetAppsSeparator() {
+    return should_show_bubble_launcher()
+               ? GetAppListTestHelper()->GetBubbleLauncherAppsSeparatorView()
+               : GetAppListTestHelper()
+                     ->GetFullscreenLauncherAppsSeparatorView();
+  }
+
   void EnsureLauncherShown() {
     auto* helper = GetAppListTestHelper();
     if (should_show_bubble_launcher()) {
@@ -568,6 +588,120 @@ TEST_P(AppListBubbleAndTabletTest, LauncherSearchZeroState) {
   // Delete the character in the textfield and check visibility.
   generator->PressKey(ui::VKEY_BACK, 0);
   EXPECT_EQ(should_show_zero_state_search(), AppListSearchResultPageVisible());
+}
+
+// Tests that apps container/page does not have a separator between apps grid
+// and recent apps/continue section if neither continue section nor recent apps
+// are shown.
+TEST_P(AppListBubbleAndTabletTest,
+       NoSeparatorWithoutRecentAppsOrContinueSection) {
+  GetAppListTestHelper()->AddAppItems(5);
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  views::View* separator = GetAppsSeparator();
+  EXPECT_EQ(productivity_launcher_param(), !!separator);
+
+  RecentAppsView* recent_apps = GetRecentAppsView();
+  EXPECT_EQ(productivity_launcher_param(), !!recent_apps);
+
+  ContinueSectionView* continue_section = GetContinueSectionView();
+  EXPECT_EQ(productivity_launcher_param(), !!continue_section);
+
+  if (productivity_launcher_param()) {
+    EXPECT_FALSE(separator->GetVisible());
+    EXPECT_FALSE(recent_apps->GetVisible());
+    EXPECT_FALSE(continue_section->GetVisible());
+  }
+
+  // If some content gets added to continue section, separator is expected to
+  // show.
+  GetAppListTestHelper()->AddContinueSuggestionResults(3);
+  // Run loop, as continue section content is updated asynchronously.
+  base::RunLoop().RunUntilIdle();
+
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  if (productivity_launcher_param()) {
+    EXPECT_TRUE(separator->GetVisible());
+    EXPECT_TRUE(continue_section->GetVisible());
+    EXPECT_FALSE(recent_apps->GetVisible());
+  }
+}
+
+// Tests that apps container/page has a separator between apps grid
+// and recent apps/continue section if recent apps are shown.
+TEST_P(AppListBubbleAndTabletTest, SepratorShownWithRecentApps) {
+  GetAppListTestHelper()->AddAppItems(5);
+  GetAppListTestHelper()->AddRecentApps(4);
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  views::View* separator = GetAppsSeparator();
+  EXPECT_EQ(productivity_launcher_param(), !!separator);
+
+  RecentAppsView* recent_apps = GetRecentAppsView();
+  EXPECT_EQ(productivity_launcher_param(), !!recent_apps);
+
+  ContinueSectionView* continue_section = GetContinueSectionView();
+  EXPECT_EQ(productivity_launcher_param(), !!continue_section);
+
+  if (productivity_launcher_param()) {
+    EXPECT_TRUE(separator->GetVisible());
+    EXPECT_TRUE(recent_apps->GetVisible());
+    EXPECT_FALSE(continue_section->GetVisible());
+  }
+}
+
+// Tests that apps container/page has a separator between apps grid
+// and recent apps/continue section if continue section is shown.
+TEST_P(AppListBubbleAndTabletTest, SepratorShownWithContinueSection) {
+  GetAppListTestHelper()->AddAppItems(5);
+  GetAppListTestHelper()->AddContinueSuggestionResults(4);
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  views::View* separator = GetAppsSeparator();
+  EXPECT_EQ(productivity_launcher_param(), !!separator);
+
+  RecentAppsView* recent_apps = GetRecentAppsView();
+  EXPECT_EQ(productivity_launcher_param(), !!recent_apps);
+
+  ContinueSectionView* continue_section = GetContinueSectionView();
+  EXPECT_EQ(productivity_launcher_param(), !!continue_section);
+
+  if (productivity_launcher_param()) {
+    EXPECT_TRUE(separator->GetVisible());
+    EXPECT_TRUE(continue_section->GetVisible());
+    EXPECT_FALSE(recent_apps->GetVisible());
+  }
+}
+
+// Tests that apps container/page has a separator between apps grid
+// and recent apps/continue section if recent apps and continue section are
+// shown.
+TEST_P(AppListBubbleAndTabletTest,
+       SepratorShownWithContinueSectionAndRecentApps) {
+  GetAppListTestHelper()->AddAppItems(5);
+  GetAppListTestHelper()->AddContinueSuggestionResults(4);
+  GetAppListTestHelper()->AddRecentApps(4);
+  EnableTabletMode(tablet_mode_param());
+  EnsureLauncherShown();
+
+  views::View* separator = GetAppsSeparator();
+  EXPECT_EQ(productivity_launcher_param(), !!separator);
+
+  RecentAppsView* recent_apps = GetRecentAppsView();
+  EXPECT_EQ(productivity_launcher_param(), !!recent_apps);
+
+  ContinueSectionView* continue_section = GetContinueSectionView();
+  EXPECT_EQ(productivity_launcher_param(), !!continue_section);
+
+  if (productivity_launcher_param()) {
+    EXPECT_TRUE(separator->GetVisible());
+    EXPECT_TRUE(recent_apps->GetVisible());
+    EXPECT_TRUE(continue_section->GetVisible());
+  }
 }
 
 // Verifies that context menu click should not activate the search box

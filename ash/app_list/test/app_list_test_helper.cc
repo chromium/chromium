@@ -113,6 +113,16 @@ void AppListTestHelper::AddPageBreakItem() {
   AppListModelProvider::Get()->model()->AddItem(std::move(page_break_item));
 }
 
+void AppListTestHelper::AddContinueSuggestionResults(int num_results) {
+  for (int i = 0; i < num_results; i++) {
+    auto result = std::make_unique<TestSearchResult>();
+    result->set_result_id(base::NumberToString(i));
+    result->set_result_type(AppListSearchResultType::kFileChip);
+    result->set_display_type(SearchResultDisplayType::kContinue);
+    GetSearchResults()->Add(std::move(result));
+  }
+}
+
 void AppListTestHelper::AddRecentApps(int num_apps) {
   for (int i = 0; i < num_apps; i++) {
     auto result = std::make_unique<TestSearchResult>();
@@ -155,11 +165,19 @@ AppListFolderView* AppListTestHelper::GetFullscreenFolderView() {
 }
 
 RecentAppsView* AppListTestHelper::GetFullscreenRecentAppsView() {
-  return GetAppsContainerView()->recent_apps();
+  return GetAppsContainerView()->GetRecentApps();
+}
+
+ContinueSectionView* AppListTestHelper::GetFullscreenContinueSectionView() {
+  return GetAppsContainerView()->GetContinueSection();
 }
 
 PagedAppsGridView* AppListTestHelper::GetRootPagedAppsGridView() {
   return GetAppsContainerView()->apps_grid_view();
+}
+
+views::View* AppListTestHelper::GetFullscreenLauncherAppsSeparatorView() {
+  return GetAppsContainerView()->GetSeparatorView();
 }
 
 AppListBubbleView* AppListTestHelper::GetBubbleView() {
@@ -185,7 +203,7 @@ AppListBubbleAppsPage* AppListTestHelper::GetBubbleAppsPage() {
       ->apps_page_;
 }
 
-ContinueSectionView* AppListTestHelper::GetContinueSectionView() {
+ContinueSectionView* AppListTestHelper::GetBubbleContinueSectionView() {
   return GetBubbleAppsPage()->continue_section_;
 }
 
@@ -218,6 +236,10 @@ AppListTestHelper::GetProductivityLauncherSearchView() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
       ->search_page_->search_view();
+}
+
+views::View* AppListTestHelper::GetBubbleLauncherAppsSeparatorView() {
+  return GetBubbleAppsPage()->separator_for_test();
 }
 
 }  // namespace ash
