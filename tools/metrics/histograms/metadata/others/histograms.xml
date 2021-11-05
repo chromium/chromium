@@ -19981,7 +19981,8 @@ regressions. -->
   <owner>mxcai@chromium.org</owner>
   <summary>
     Tracks actions with the &quot;All Sites&quot; page in website settings
-    starting in M82. No data available for M94, was temporarily expired.
+    starting in M82. No data available for M94, was temporarily expired. Values
+    7 and 8 were added with M96.
   </summary>
 </histogram>
 

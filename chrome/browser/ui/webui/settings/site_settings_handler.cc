@@ -111,7 +111,9 @@ enum class AllSitesAction2 {
   kClearSiteGroupData = 4,
   kClearOriginData = 5,
   kEnterSiteDetails = 6,
-  kMaxValue = kEnterSiteDetails,
+  kRemoveSiteGroup = 7,
+  kRemoveOrigin = 8,
+  kMaxValue = kRemoveOrigin,
 };
 
 // Return an appropriate API Permission ID for the given string name.
