@@ -39,7 +39,7 @@
 #include "ui/base/l10n/time_format.h"
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
-#include "components/history_clusters/internal/on_device_clustering_backend.h"
+#include "components/history_clusters/core/on_device_clustering_backend.h"
 #endif
 
 namespace history_clusters {
