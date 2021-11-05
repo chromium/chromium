@@ -21,9 +21,12 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/value_builder.h"
 #endif
@@ -66,7 +69,7 @@ class MetricsWebContentsObserverTest : public ChromeRenderViewHostTestHarness {
     observer->OnVisibilityChanged(content::Visibility::VISIBLE);
   }
 
-  TestMetricsWebContentsObserverEmbedder* embedder_interface_;
+  TestMetricsWebContentsObserverEmbedder* embedder_interface_ = nullptr;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -74,23 +77,26 @@ TEST_F(MetricsWebContentsObserverTest,
        RecordFeatureUsageIgnoresChromeExtensionUpdates) {
   // Register our fake extension. The URL we access must be part of the
   // 'web_accessible_resources' for the network commit to work.
-  base::DictionaryValue manifest;
-  manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
-  manifest.SetString(extensions::manifest_keys::kName, "TestExtension");
-  manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.SetKey("web_accessible_resources",
-                  base::Value::FromUniquePtrValue(
-                      extensions::ListBuilder().Append("main.html").Build()));
-  std::string error;
-  scoped_refptr<extensions::Extension> extension =
-      extensions::Extension::Create(
-          base::FilePath(FILE_PATH_LITERAL("//no-such-file")),
-          extensions::mojom::ManifestLocation::kInvalidLocation, manifest,
-          extensions::Extension::NO_FLAGS, "mbflcebpggnecokmikipoihdbecnjfoj",
-          &error);
-  ASSERT_TRUE(error.empty());
-  extensions::ExtensionRegistry::Get(web_contents()->GetBrowserContext())
-      ->AddEnabled(extension);
+  extensions::DictionaryBuilder manifest;
+  manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0")
+      .Set(extensions::manifest_keys::kName, "TestExtension")
+      .Set(extensions::manifest_keys::kManifestVersion, 2)
+      .Set("web_accessible_resources",
+           extensions::ListBuilder().Append("main.html").Build());
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder()
+          .SetManifest(manifest.Build())
+          .SetID("mbflcebpggnecokmikipoihdbecnjfoj")
+          .Build();
+  ASSERT_TRUE(extension);
+
+  extensions::TestExtensionSystem* extension_system =
+      static_cast<extensions::TestExtensionSystem*>(
+          extensions::ExtensionSystem::Get(profile()));
+  extensions::ExtensionService* extension_service =
+      extension_system->CreateExtensionService(
+          base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+  extension_service->AddExtension(extension.get());
 
   content::WebContentsTester* web_contents_tester =
       content::WebContentsTester::For(web_contents());

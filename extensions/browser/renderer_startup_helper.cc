@@ -224,7 +224,7 @@ void RendererStartupHelper::ActivateExtensionInProcess(
   if (!base::Contains(extension_process_map_, extension.id())) {
 #if DCHECK_IS_ON()
     NOTREACHED() << "Extension " << extension.id()
-                 << "activated before loading";
+                 << " activated before loading";
 #else
     base::debug::DumpWithoutCrashing();
     return;
