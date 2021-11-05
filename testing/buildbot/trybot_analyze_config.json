@@ -10,7 +10,6 @@
       ".vpython",
       "build/check_gn_headers.py",
       "build/check_gn_headers_whitelist.txt",
-      "build/fuchsia/.*py",
       "build/get_landmines.py",
       "build/gn_helpers.py",
       "build/mac_toolchain.py",
