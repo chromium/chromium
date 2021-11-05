@@ -5,16 +5,11 @@
 #include "gpu/vulkan/tests/native_window.h"
 
 #include "base/containers/flat_map.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#endif
-
-#if defined(USE_X11)
-#include "ui/platform_window/x11/x11_window.h"  // nogncheck
 #endif
 
 namespace gpu {
@@ -28,22 +23,10 @@ class Window : public ui::PlatformWindowDelegate {
   void Initialize(const gfx::Rect& bounds) {
     DCHECK(!platform_window_);
 
-#if defined(USE_OZONE) || defined(USE_X11)
-    ui::PlatformWindowInitProperties props(bounds);
 #if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform()) {
-      platform_window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
-          this, std::move(props));
-    }
-#endif
-#if defined(USE_X11)
-    if (!platform_window_) {
-      DCHECK(!features::IsUsingOzonePlatform());
-      auto x11_window = std::make_unique<ui::X11Window>(this);
-      x11_window->Initialize(std::move(props));
-      platform_window_ = std::move(x11_window);
-    }
-#endif
+    ui::PlatformWindowInitProperties props(bounds);
+    platform_window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
+        this, std::move(props));
 #else
     NOTIMPLEMENTED();
     return;

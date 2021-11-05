@@ -16,7 +16,7 @@ buildflag_header("buildflags") {
 }
 
 if (enable_vulkan) {
-  use_vulkan_xcb = use_x11 || ozone_platform_x11
+  use_vulkan_xcb = ozone_platform_x11
   config("vulkan_config") {
     defines = [ "VK_NO_PROTOTYPES" ]
     if (use_vulkan_xcb) {
@@ -165,15 +165,12 @@ if (enable_vulkan) {
       "//ui/gfx:native_widget_types",
     ]
 
-    if (use_x11 || use_ozone) {
+    if (use_ozone) {
       sources += [ "tests/native_window.cc" ]
-      deps += [ "//ui/platform_window" ]
-      if (use_x11) {
-        deps += [ "//ui/platform_window/x11" ]
-      }
-      if (use_ozone) {
-        deps += [ "//ui/ozone" ]
-      }
+      deps += [
+        "//ui/ozone",
+        "//ui/platform_window",
+      ]
     }
 
     if (is_win) {
@@ -191,7 +188,7 @@ if (enable_vulkan) {
 
   # TODO(penghuang): support more platforms
   # https://crbug.com/1065499
-  if (is_android || use_x11 || is_win || use_ozone) {
+  if (is_android || is_win || use_ozone) {
     test("vulkan_tests") {
       use_xvfb = use_xvfb_in_this_config
 
@@ -200,6 +197,7 @@ if (enable_vulkan) {
         "tests/basic_vulkan_test.h",
         "tests/vulkan_test.cc",
         "tests/vulkan_tests_main.cc",
+
         # TODO(crbug.com/1234132): fix compile problem with the latest vulkan
         # headers.
         # "vulkan_cxx_unittest.cc",
@@ -225,10 +223,6 @@ if (enable_vulkan) {
 
       if (is_android) {
         deps += [ "//ui/android:ui_java_test_support" ]
-      }
-
-      if (use_x11) {
-        deps += [ "//ui/events/platform/x11" ]
       }
 
       if (use_ozone) {
