@@ -551,6 +551,13 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
   }
 
   if (notification) {
+    // Check if we need to remove any progress notification when there
+    // are active SWA windows.
+    if (DoFilesSwaWindowsExist()) {
+      GetNotificationDisplayService()->Close(
+          NotificationHandler::Type::TRANSIENT, notification->id());
+      return;
+    }
     GetNotificationDisplayService()->Display(
         NotificationHandler::Type::TRANSIENT, *notification,
         /*metadata=*/nullptr);
