@@ -806,7 +806,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSynthesizedRestoreSessionName,
      flag_descriptions::kSynthesizedRestoreSessionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kSynthesizedRestoreSession)},
-};
+    {"remove-extra-ntps", flag_descriptions::kRemoveExcessNTPsExperimentName,
+     flag_descriptions::kRemoveExcessNTPsExperimentDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kRemoveExcessNTPs)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

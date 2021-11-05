@@ -331,6 +331,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/settings/utils:unit_tests",
     "//ios/chrome/browser/ui/sharing:unit_tests",
     "//ios/chrome/browser/ui/side_swipe:unit_tests",
+    "//ios/chrome/browser/ui/start_surface:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:unit_tests",
     "//ios/chrome/browser/ui/table_view:unit_tests",

@@ -410,6 +410,12 @@ const char kReadingListMessagesDescription[] =
     "When enabled, a Messages prompt may be presented to allow the user to "
     "save the current page to Reading List";
 
+extern const char kRemoveExcessNTPsExperimentName[] =
+    "Remove extra New Tab Pages";
+extern const char kRemoveExcessNTPsExperimentDescription[] =
+    "When enabled, extra tabs with the New Tab Page open and no navigation "
+    "history will be removed.";
+
 const char kRestoreSessionFromCacheName[] =
     "Use native WKWebView sesion restoration (iOS15 only).";
 const char kRestoreSessionFromCacheDescription[] =
