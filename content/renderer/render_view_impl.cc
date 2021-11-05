@@ -121,6 +121,7 @@ void RenderViewImpl::Initialize(
   webview_ = WebView::Create(
       this, params->hidden, params->is_prerendering,
       params->type == mojom::ViewWidgetType::kPortal ? true : false,
+      params->type == mojom::ViewWidgetType::kFencedFrame ? true : false,
       /*compositing_enabled=*/true, params->never_composited,
       opener_frame ? opener_frame->View() : nullptr,
       std::move(params->blink_page_broadcast),

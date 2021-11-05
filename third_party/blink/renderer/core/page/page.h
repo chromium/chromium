@@ -385,6 +385,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // Fully invalidate paint of all local frames in this page.
   void InvalidatePaint();
 
+  // Should be invoked when the main frame of this frame tree is a fenced frame.
+  void SetIsMainFrameFencedFrameRoot();
+  // Returns if the main frame of this frame tree is a fenced frame.
+  bool IsMainFrameFencedFrameRoot() const;
+
  private:
   friend class ScopedPagePauser;
 
@@ -505,6 +510,11 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // this Page. Once initialized, it can only transition from true to false on
   // prerender activation; it does not go from false to true.
   bool is_prerendering_ = false;
+
+  // Whether the the Page's main document is a Fenced Frame document. This is
+  // only set for the MPArch implementation and is true when the corresponding
+  // browser side FrameTree has the FrameTree::Type of kFencedFrame.
+  bool is_fenced_frame_tree_ = false;
 
   mojom::blink::TextAutosizerPageInfo web_text_autosizer_page_info_;
 

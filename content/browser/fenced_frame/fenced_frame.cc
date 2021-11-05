@@ -78,7 +78,7 @@ void FencedFrame::Navigate(const GURL& url) {
       owner_render_frame_host_->GetLastCommittedOrigin(),
       owner_render_frame_host_->GetSiteInstance(), content::Referrer(),
       ui::PAGE_TRANSITION_LINK,
-      /*should_replace_current_entry=*/false, download_policy, "GET",
+      /*should_replace_current_entry=*/true, download_policy, "GET",
       /*post_body=*/nullptr, /*extra_headers=*/"",
       /*blob_url_loader_factory=*/nullptr,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
