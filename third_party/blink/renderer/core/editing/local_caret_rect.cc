@@ -87,7 +87,8 @@ PositionWithAffinityTemplate<Strategy> AdjustForNGCaretPosition(
 template <typename Strategy>
 LocalCaretRect LocalCaretRectOfPositionTemplate(
     const PositionWithAffinityTemplate<Strategy>& position,
-    LayoutUnit* extra_width_to_end_of_line) {
+    LayoutUnit* extra_width_to_end_of_line,
+    EditingBoundaryCrossingRule rule) {
   if (position.IsNull())
     return LocalCaretRect();
   Node* const node = position.AnchorNode();
@@ -96,7 +97,7 @@ LocalCaretRect LocalCaretRectOfPositionTemplate(
     return LocalCaretRect();
 
   const PositionWithAffinityTemplate<Strategy>& adjusted =
-      ComputeInlineAdjustedPosition(position);
+      ComputeInlineAdjustedPosition(position, rule);
 
   if (adjusted.IsNotNull()) {
     if (auto caret_position =
@@ -173,17 +174,18 @@ LocalCaretRect LocalSelectionRectOfPositionTemplate(
 
 }  // namespace
 
-LocalCaretRect LocalCaretRectOfPosition(
-    const PositionWithAffinity& position,
-    LayoutUnit* extra_width_to_end_of_line) {
+LocalCaretRect LocalCaretRectOfPosition(const PositionWithAffinity& position,
+                                        LayoutUnit* extra_width_to_end_of_line,
+                                        EditingBoundaryCrossingRule rule) {
   return LocalCaretRectOfPositionTemplate<EditingStrategy>(
-      position, extra_width_to_end_of_line);
+      position, extra_width_to_end_of_line, rule);
 }
 
 LocalCaretRect LocalCaretRectOfPosition(
-    const PositionInFlatTreeWithAffinity& position) {
-  return LocalCaretRectOfPositionTemplate<EditingInFlatTreeStrategy>(position,
-                                                                     nullptr);
+    const PositionInFlatTreeWithAffinity& position,
+    EditingBoundaryCrossingRule rule) {
+  return LocalCaretRectOfPositionTemplate<EditingInFlatTreeStrategy>(
+      position, nullptr, rule);
 }
 
 LocalCaretRect LocalSelectionRectOfPosition(
@@ -196,18 +198,20 @@ LocalCaretRect LocalSelectionRectOfPosition(
 template <typename Strategy>
 static IntRect AbsoluteCaretBoundsOfAlgorithm(
     const PositionWithAffinityTemplate<Strategy>& position,
-    LayoutUnit* extra_width_to_end_of_line = nullptr) {
+    LayoutUnit* extra_width_to_end_of_line,
+    EditingBoundaryCrossingRule rule) {
   const LocalCaretRect& caret_rect = LocalCaretRectOfPositionTemplate<Strategy>(
-      position, extra_width_to_end_of_line);
+      position, extra_width_to_end_of_line, rule);
   if (caret_rect.IsEmpty())
     return IntRect();
   return LocalToAbsoluteQuadOf(caret_rect).EnclosingBoundingBox();
 }
 
 IntRect AbsoluteCaretBoundsOf(const PositionWithAffinity& position,
-                              LayoutUnit* extra_width_to_end_of_line) {
+                              LayoutUnit* extra_width_to_end_of_line,
+                              EditingBoundaryCrossingRule rule) {
   return AbsoluteCaretBoundsOfAlgorithm<EditingStrategy>(
-      position, extra_width_to_end_of_line);
+      position, extra_width_to_end_of_line, rule);
 }
 
 template <typename Strategy>
@@ -225,8 +229,10 @@ IntRect AbsoluteSelectionBoundsOf(const VisiblePosition& visible_position) {
   return AbsoluteSelectionBoundsOfAlgorithm<EditingStrategy>(visible_position);
 }
 
-IntRect AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity& position) {
-  return AbsoluteCaretBoundsOfAlgorithm<EditingInFlatTreeStrategy>(position);
+IntRect AbsoluteCaretBoundsOf(const PositionInFlatTreeWithAffinity& position,
+                              EditingBoundaryCrossingRule rule) {
+  return AbsoluteCaretBoundsOfAlgorithm<EditingInFlatTreeStrategy>(
+      position, nullptr, rule);
 }
 
 }  // namespace blink
