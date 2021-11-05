@@ -96,6 +96,51 @@ class RecursiveStartOneShotter {
   size_t callback_count_ = 0u;
 };
 
+class RecursiveStopper {
+ public:
+  RecursiveStopper(scoped_refptr<MetronomeProvider> metronome_provider,
+                   base::TimeDelta delay)
+      : timer_(std::move(metronome_provider),
+               base::ThreadPool::CreateSequencedTaskRunner({}),
+               base::BindRepeating(&RecursiveStopper::Callback,
+                                   base::Unretained(this))) {
+    timer_.StartRepeating(delay);
+  }
+  ~RecursiveStopper() { timer_.Shutdown(); }
+
+  size_t callback_count() const { return callback_count_; }
+
+  void Callback() {
+    ++callback_count_;
+    timer_.Stop();
+  }
+
+ private:
+  WebRtcTimer timer_;
+  size_t callback_count_ = 0u;
+};
+
+class IsActiveChecker {
+ public:
+  explicit IsActiveChecker(scoped_refptr<MetronomeProvider> metronome_provider)
+      : timer_(std::move(metronome_provider),
+               base::ThreadPool::CreateSequencedTaskRunner({}),
+               base::BindRepeating(&IsActiveChecker::Callback,
+                                   base::Unretained(this))) {}
+  ~IsActiveChecker() { timer_.Shutdown(); }
+
+  WebRtcTimer& timer() { return timer_; }
+  bool was_active_in_last_callback() const {
+    return was_active_in_last_callback_;
+  }
+
+  void Callback() { was_active_in_last_callback_ = timer_.IsActive(); }
+
+ private:
+  WebRtcTimer timer_;
+  bool was_active_in_last_callback_;
+};
+
 }  // namespace
 
 TEST_F(WebRtcTimerTest, StartOneShotWithoutMetronome) {
@@ -401,6 +446,53 @@ TEST_F(WebRtcTimerTest, StopRepeatingTimer) {
 
   // Cleanup.
   timer.Shutdown();
+}
+
+TEST_F(WebRtcTimerTest, StopTimerFromInsideCallbackWithoutMetronome) {
+  // Stops its own timer from inside the callback after 10 ms.
+  RecursiveStopper recursive_stopper(metronome_provider_,
+                                     base::Milliseconds(10));
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  EXPECT_EQ(recursive_stopper.callback_count(), 1u);
+
+  // Ensure we are stopped, the callback count does not increase.
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  EXPECT_EQ(recursive_stopper.callback_count(), 1u);
+}
+
+TEST_F(WebRtcTimerTest, StopTimerFromInsideCallbackWithMetronome) {
+  // Stops its own timer from inside the callback after a tick.
+  RecursiveStopper recursive_stopper(metronome_provider_, kMetronomeTick);
+  StartUsingMetronome();
+  task_environment_.FastForwardBy(kMetronomeTick);
+  EXPECT_EQ(recursive_stopper.callback_count(), 1u);
+
+  // Ensure we are stopped, the callback count does not increase.
+  task_environment_.FastForwardBy(kMetronomeTick);
+  EXPECT_EQ(recursive_stopper.callback_count(), 1u);
+}
+
+TEST_F(WebRtcTimerTest, IsActive) {
+  constexpr base::TimeDelta kDelay = base::Milliseconds(10);
+  IsActiveChecker is_active_checker(metronome_provider_);
+
+  // StartOneShot() makes the timer temporarily active.
+  EXPECT_FALSE(is_active_checker.timer().IsActive());
+  is_active_checker.timer().StartOneShot(kDelay);
+  EXPECT_TRUE(is_active_checker.timer().IsActive());
+  task_environment_.FastForwardBy(kDelay);
+  EXPECT_FALSE(is_active_checker.timer().IsActive());
+  // The timer is said to be inactive inside the one-shot callback.
+  EXPECT_FALSE(is_active_checker.was_active_in_last_callback());
+
+  // StartRepeating() makes the timer active until stopped.
+  EXPECT_FALSE(is_active_checker.timer().IsActive());
+  is_active_checker.timer().StartRepeating(kDelay);
+  EXPECT_TRUE(is_active_checker.timer().IsActive());
+  task_environment_.FastForwardBy(kDelay);
+  EXPECT_TRUE(is_active_checker.timer().IsActive());
+  // The timer is said to be active inside the repeating callback.
+  EXPECT_TRUE(is_active_checker.was_active_in_last_callback());
 }
 
 }  // namespace blink
