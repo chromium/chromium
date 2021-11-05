@@ -813,13 +813,10 @@ bool MetricsService::PrepareInitialStabilityLog(
   std::unique_ptr<MetricsLog> initial_stability_log(
       CreateLog(MetricsLog::INITIAL_STABILITY_LOG));
 
-  // Do not call OnDidCreateMetricsLog here because the stability
-  // log describes stats from the _previous_ session.
-  std::string system_profile_app_version;
-  if (!initial_stability_log->LoadSavedEnvironmentFromPrefs(
-          local_state_, &system_profile_app_version)) {
+  // Do not call OnDidCreateMetricsLog here because the stability log describes
+  // stats from the _previous_ session.
+  if (!initial_stability_log->LoadSavedEnvironmentFromPrefs(local_state_))
     return false;
-  }
 
   log_manager_.PauseCurrentLog();
   log_manager_.BeginLoggingWithLog(std::move(initial_stability_log));
