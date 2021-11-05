@@ -314,6 +314,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     SessionRateImpact session_rate_impact;
     session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->session_rate_impact = session_rate_impact;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
 
     return config;
   }
@@ -336,6 +338,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     SessionRateImpact session_rate_impact;
     session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->session_rate_impact = session_rate_impact;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
 
     return config;
   }
@@ -358,6 +362,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     SessionRateImpact session_rate_impact;
     session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->session_rate_impact = session_rate_impact;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
 
     return config;
   }
@@ -382,6 +388,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     SessionRateImpact session_rate_impact;
     session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->session_rate_impact = session_rate_impact;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
 
     return config;
   }
@@ -402,6 +410,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     SessionRateImpact session_rate_impact;
     session_rate_impact.type = SessionRateImpact::Type::NONE;
     config->session_rate_impact = session_rate_impact;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
 
     return config;
   }
