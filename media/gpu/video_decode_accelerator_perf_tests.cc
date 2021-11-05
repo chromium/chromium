@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "build/build_config.h"
 #include "media/base/test_data_util.h"
+#include "media/gpu/buildflags.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_player/frame_renderer_dummy.h"
 #include "media/gpu/test/video_player/video_decoder_client.h"
@@ -385,9 +386,12 @@ TEST_F(VideoDecoderTest,
 
 // The minimal number of concurrent decoders we expect to be supported on
 // platforms.
-#if defined(ARCH_CPU_X86_FAMILY)
-  constexpr size_t kMinSupportedConcurrentDecoders = 25;
-#elif defined(ARCH_CPU_ARM_FAMILY)
+#if defined(USE_VAAPI)
+  constexpr size_t kMinSupportedConcurrentDecoders =
+      VaapiVideoDecoder::kMaxNumOfInstances;
+#elif defined(USE_V4L2_CODEC)
+  constexpr size_t kMinSupportedConcurrentDecoders = 10;
+#else
   constexpr size_t kMinSupportedConcurrentDecoders = 10;
 #endif
 
