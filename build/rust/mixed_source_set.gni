@@ -46,6 +46,21 @@ import("//build/rust/rust_source_set.gni")
 
 template("mixed_source_set") {
   _target_name = target_name
+
+  known_rs_variables = [
+    "rs_epoch",
+    "rs_edition",
+    "rs_configs",
+    "rs_deps",
+    "rs_test_deps",
+    "rs_sources",
+    "rs_features",
+    "rs_cxx_bindings",
+    "rs_crate_root",
+    "rs_skip_unit_tests",
+    "rs_unit_test_target",
+  ]
+
   if (enable_rust) {
     rust_source_set("${_target_name}_rs") {
       mutually_dependent_target = ":${_target_name}"
@@ -84,29 +99,11 @@ template("mixed_source_set") {
       }
     }
   } else {
-    not_needed(invoker,
-               [
-                 "rs_epoch",
-                 "rs_edition",
-                 "rs_configs",
-                 "rs_deps",
-                 "rs_test_deps",
-                 "rs_sources",
-                 "rs_features",
-                 "rs_cxx_bindings",
-                 "rs_crate_root",
-                 "rs_skip_unit_tests",
-                 "rs_unit_test_target",
-               ])
+    not_needed(invoker, known_rs_variables)
   }
 
   source_set(_target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "sources",
-                             "configs",
-                             "deps",
-                           ])
+    forward_variables_from(invoker, "*", known_rs_variables)
     if (!defined(deps)) {
       deps = []
     }
@@ -117,5 +114,19 @@ template("mixed_source_set") {
       configs += [ "//build/rust:rust_enabled" ]
       deps += [ ":${_target_name}_rs_cpp_bindings" ]
     }
+    if (defined(visibility)) {
+      visibility += [ ":${_target_name}_rs" ]
+      if (!defined(invoker.rs_skip_unit_tests) || !invoker.rs_skip_unit_tests) {
+        _unit_test_target = "${_target_name}_rs_unittests"
+        if (defined(invoker.rs_unit_test_target)) {
+          _unit_test_target = invoker.rs_unit_test_target
+        }
+        visibility += [ ":${_unit_test_target}" ]
+      }
+    }
   }
+}
+
+set_defaults("mixed_source_set") {
+  configs = default_compiler_configs
 }

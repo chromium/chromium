@@ -126,6 +126,10 @@ import("//build/rust/rust_target.gni")
 #     This will automatically add appropriate dependencies: there's no
 #     need to depend on the cxx crate or any generated bindings.
 #
+#   native_header_deps (optional)
+#     If cxx_bindings is defined, this dictates the C++ header
+#     targets on which the generated C++ code depends.
+#
 #   visibility (optional)
 #   rustflags (optional)
 #   crate_name (optional)

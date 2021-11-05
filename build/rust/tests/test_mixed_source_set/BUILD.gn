@@ -11,4 +11,15 @@ mixed_source_set("test_mixed_source_set") {
   ]
   rs_sources = [ "src/lib.rs" ]
   rs_cxx_bindings = [ "src/lib.rs" ]
+  visibility = [
+    "//build/rust/tests",
+    "//build/rust/tests/test_cpp_including_rust:*",
+  ]
+  deps = [ ":some_headers" ]
+}
+
+# Exists to test that such dependents are visible to the source_set
+# that builds the generated cxx bindings.
+source_set("some_headers") {
+  sources = [ "dependency_header.h" ]
 }

@@ -6,9 +6,10 @@
 #define BUILD_RUST_TESTS_TEST_MIXED_SOURCE_SET_TEST_MIXED_SOURCE_SET_H_
 
 #include <stdint.h>
+#include "build/rust/tests/test_mixed_source_set/dependency_header.h"
 #include "build/rust/tests/test_mixed_source_set/src/lib.rs.h"
 
-uint32_t cpp_addition(uint32_t a, uint32_t b);
+CustomIntType cpp_addition(uint32_t a, uint32_t b);
 void cpp_callback();
 
 void say_hello_via_callbacks();
