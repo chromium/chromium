@@ -448,6 +448,7 @@ WebView* WebView::Create(
     bool is_hidden,
     bool is_prerendering,
     bool is_inside_portal,
+    bool is_fenced_frame,
     bool compositing_enabled,
     bool widgets_never_composited,
     WebView* opener,
@@ -460,7 +461,7 @@ WebView* WebView::Create(
       client,
       is_hidden ? mojom::blink::PageVisibilityState::kHidden
                 : mojom::blink::PageVisibilityState::kVisible,
-      is_prerendering, is_inside_portal, compositing_enabled,
+      is_prerendering, is_inside_portal, is_fenced_frame, compositing_enabled,
       widgets_never_composited, To<WebViewImpl>(opener), std::move(page_handle),
       agent_group_scheduler, session_storage_namespace_id,
       std::move(page_base_background_color));
@@ -471,6 +472,7 @@ WebViewImpl* WebViewImpl::Create(
     mojom::blink::PageVisibilityState visibility,
     bool is_prerendering,
     bool is_inside_portal,
+    bool is_fenced_frame,
     bool compositing_enabled,
     bool widgets_never_composited,
     WebViewImpl* opener,
@@ -481,7 +483,7 @@ WebViewImpl* WebViewImpl::Create(
   // Take a self-reference for WebViewImpl that is released by calling Close(),
   // then return a raw pointer to the caller.
   auto web_view = base::AdoptRef(new WebViewImpl(
-      client, visibility, is_prerendering, is_inside_portal,
+      client, visibility, is_prerendering, is_inside_portal, is_fenced_frame,
       compositing_enabled, widgets_never_composited, opener,
       std::move(page_handle), agent_group_scheduler,
       session_storage_namespace_id, std::move(page_base_background_color)));
@@ -544,6 +546,7 @@ WebViewImpl::WebViewImpl(
     mojom::blink::PageVisibilityState visibility,
     bool is_prerendering,
     bool is_inside_portal,
+    bool is_fenced_frame,
     bool does_composite,
     bool widgets_never_composited,
     WebViewImpl* opener,
@@ -578,6 +581,11 @@ WebViewImpl::WebViewImpl(
   // We pass this state to Page, but it's only used by the main frame in the
   // page.
   SetInsidePortal(is_inside_portal);
+
+  if (is_fenced_frame && features::IsFencedFramesEnabled() &&
+      features::IsFencedFramesMPArchBased()) {
+    page_->SetIsMainFrameFencedFrameRoot();
+  }
 
   // When not compositing, keep the Page in the loop so that it will paint all
   // content into the root layer, as multiple layers can only be used when
