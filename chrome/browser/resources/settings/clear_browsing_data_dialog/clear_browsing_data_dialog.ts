@@ -86,8 +86,11 @@ type UpdateSyncStateEvent = {
   nonGoogleSearchHistoryString: string,
 };
 
-interface SettingsClearBrowsingDataDialogElement {
+export interface SettingsClearBrowsingDataDialogElement {
   $: {
+    installedAppsConfirm: HTMLElement,
+    clearBrowsingDataConfirm: HTMLElement,
+    cookiesCheckboxBasic: SettingsCheckboxElement,
     clearBrowsingDataDialog: CrDialogElement,
     installedAppsDialog: CrDialogElement,
     tabs: IronPagesElement,
@@ -100,7 +103,7 @@ const SettingsClearBrowsingDataDialogElementBase =
       I18nMixinInterface & RouteObserverMixinInterface
     };
 
-class SettingsClearBrowsingDataDialogElement extends
+export class SettingsClearBrowsingDataDialogElement extends
     SettingsClearBrowsingDataDialogElementBase {
   static get is() {
     return 'settings-clear-browsing-data-dialog';
@@ -660,6 +663,13 @@ class SettingsClearBrowsingDataDialogElement extends
         Object.keys(InstalledAppsDialogActions).length);
     this.recordInstalledAppsInteractions_();
     await this.clearBrowsingData_();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-clear-browsing-data-dialog':
+        SettingsClearBrowsingDataDialogElement;
   }
 }
 

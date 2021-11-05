@@ -15,13 +15,13 @@ import '../settings_shared_css.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-interface SettingsPasswordsDeletionDialogElement {
+export interface SettingsPasswordsDeletionDialogElement {
   $: {
     dialog: CrDialogElement,
   };
 }
 
-class SettingsPasswordsDeletionDialogElement extends PolymerElement {
+export class SettingsPasswordsDeletionDialogElement extends PolymerElement {
   static get is() {
     return 'settings-passwords-deletion-dialog';
   }

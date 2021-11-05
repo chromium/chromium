@@ -38,5 +38,11 @@ class InstalledAppCheckboxElement extends PolymerElement {
   installedApp: InstalledApp;
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'installed-app-checkbox': InstalledAppCheckboxElement;
+  }
+}
+
 customElements.define(
     InstalledAppCheckboxElement.is, InstalledAppCheckboxElement);

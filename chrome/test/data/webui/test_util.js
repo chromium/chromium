@@ -134,7 +134,7 @@ export function flushTasks() {
 
 /**
  * Returns whether or not the element specified is visible.
- * @param {!Element} element
+ * @param {?Element} element
  * @return {boolean}
  */
 export function isVisible(element) {

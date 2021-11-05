@@ -57,3 +57,16 @@ index 588b7ee0df247..b07e82710b235 100644
  export {PolymerElement} from './polymer-element.js';
 -export {Base} from './polymer-legacy.js';
  export {gestures};
+diff --git a/components-chromium/paper-spinner/paper-spinner-behavior.d.ts b/components-chromium/paper-spinner/paper-spinner-behavior.d.ts
+index e6b510ce1ffda..da0718c12503f 100644
+--- a/components-chromium/paper-spinner/paper-spinner-behavior.d.ts
++++ b/components-chromium/paper-spinner/paper-spinner-behavior.d.ts
+@@ -15,7 +15,7 @@ interface PaperSpinnerBehavior {
+   /**
+    * Displays the spinner.
+    */
+-  active: boolean|null|undefined;
++  active: boolean;
+
+   /**
+    * Alternative text content for accessibility support.
