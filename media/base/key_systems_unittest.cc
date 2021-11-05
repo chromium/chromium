@@ -769,12 +769,23 @@ TEST_F(KeySystemsTest,
 
 TEST_F(KeySystemsTest, KeySystemNameForUMA) {
   EXPECT_EQ("ClearKey", GetKeySystemNameForUMA(kClearKey));
+  EXPECT_EQ("ClearKey", GetKeySystemNameForUMA(kClearKey, false));
+  EXPECT_EQ("ClearKey", GetKeySystemNameForUMA(kClearKey, true));
   EXPECT_EQ("Widevine", GetKeySystemNameForUMA(kWidevineKeySystem));
+  EXPECT_EQ("Widevine.SoftwareSecure",
+            GetKeySystemNameForUMA(kWidevineKeySystem, false));
+  EXPECT_EQ("Widevine.HardwareSecure",
+            GetKeySystemNameForUMA(kWidevineKeySystem, true));
   EXPECT_EQ("Unknown", GetKeySystemNameForUMA("Foo"));
+  EXPECT_EQ("Unknown", GetKeySystemNameForUMA("Foo", false));
+  EXPECT_EQ("Unknown", GetKeySystemNameForUMA("Foo", true));
 
   // External Clear Key never has a UMA name.
-  if (CanRunExternalKeySystemTests())
+  if (CanRunExternalKeySystemTests()) {
     EXPECT_EQ("Unknown", GetKeySystemNameForUMA(kExternalClearKey));
+    EXPECT_EQ("Unknown", GetKeySystemNameForUMA(kExternalClearKey, false));
+    EXPECT_EQ("Unknown", GetKeySystemNameForUMA(kExternalClearKey, true));
+  }
 }
 
 TEST_F(KeySystemsTest, KeySystemsUpdate) {

@@ -173,8 +173,9 @@ void CdmSessionAdapter::OnCdmCreated(
       "media", "CdmSessionAdapter::CreateCdm", trace_id_, "success",
       (cdm ? "true" : "false"), "error_message", error_message);
 
-  auto key_system_uma_prefix =
-      kMediaEME + media::GetKeySystemNameForUMA(key_system) + kDot;
+  auto key_system_name_for_uma = media::GetKeySystemNameForUMA(
+      key_system, cdm_config.use_hw_secure_codecs);
+  auto key_system_uma_prefix = kMediaEME + key_system_name_for_uma + kDot;
   base::UmaHistogramBoolean(key_system_uma_prefix + kCreateCdmUMAName,
                             cdm ? true : false);
 

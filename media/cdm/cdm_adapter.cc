@@ -144,7 +144,9 @@ void* GetCdmHost(int host_interface_version, void* user_data) {
 
 void ReportSystemCodeUMA(const std::string& key_system, uint32_t system_code) {
   base::UmaHistogramSparse(
-      "Media.EME." + GetKeySystemNameForUMA(key_system) + ".SystemCode",
+      "Media.EME." +
+          GetKeySystemNameForUMA(key_system, /*use_hw_secure_codecs=*/false) +
+          ".SystemCode",
       system_code);
 }
 
