@@ -645,7 +645,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.ProfileSignInStatus" enum="ProfileSyncStatus"
+<histogram name="UMA.ProfileSignInStatus" enum="ProfileSyncConsentStatus"
     expires_after="never">
 <!-- expires-never: For the signin_status filter in dynamic table. -->
 
@@ -655,8 +655,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     WARNING: despite the name, this histogram is about *sync*, not sign-in.
 
-    An enum representing the sync status of all opened profiles during one UMA
-    session.
+    An enum representing the sync consent status of all opened profiles during
+    one UMA session. Recorded once in every ongoing metrics log; not recorded in
+    logs about the previous session.
+
+    This does not mean the user is actively syncing. Some common reasons for
+    consent but not syncing: (i) user signed out of the web (which disables sync
+    but doesn't remove consent for it so it will resume when the user signs in
+    again) and (ii) user changed password and hasn't yet reauthenticated. There
+    are a variety of rarer reasons as well. Examples: user disabled syncing for
+    all sync data types but did not revoke consent, user enabled the sync
+    passphrase and hasn't entered the passphrase in the current profile yet.
 
     Reported incorrect data on ChromeOS before M80. Removed from ChromeOS in
     M97.
