@@ -1112,7 +1112,7 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
       // Only propagate baselines from children on the first flex-line.
       if (&line_context == line_contexts.begin()) {
         // TODO(almaher): How will this work with fragmentation?
-        PropagateBaselineFromChild(*flex_item, fragment, location.Y(),
+        PropagateBaselineFromChild(flex_item->style_, fragment, location.Y(),
                                    &fallback_baseline);
       }
     }
@@ -1269,7 +1269,7 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
 }
 
 void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
-    const FlexItem& flex_item,
+    const ComputedStyle& flex_item_style,
     const NGBoxFragment& fragment,
     LayoutUnit block_offset,
     absl::optional<LayoutUnit>* fallback_baseline) {
@@ -1286,9 +1286,9 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
   // We prefer a baseline from a child with baseline alignment, and no
   // auto-margins in the cross axis (even if we have to synthesize the
   // baseline).
-  if (FlexLayoutAlgorithm::AlignmentForChild(Style(), flex_item.style_) ==
+  if (FlexLayoutAlgorithm::AlignmentForChild(Style(), flex_item_style) ==
           ItemPosition::kBaseline &&
-      !flex_item.HasAutoMarginsInCrossAxis()) {
+      !FlexItem::HasAutoMarginsInCrossAxis(flex_item_style, &algorithm_)) {
     container_builder_.SetBaseline(baseline_offset);
     return;
   }

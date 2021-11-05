@@ -174,13 +174,6 @@ LayoutUnit FlexItem::AvailableAlignmentSpace() const {
   return Line()->cross_axis_extent_ - cross_extent;
 }
 
-bool FlexItem::HasAutoMarginsInCrossAxis() const {
-  if (algorithm_->IsHorizontalFlow()) {
-    return style_.MarginTop().IsAuto() || style_.MarginBottom().IsAuto();
-  }
-  return style_.MarginLeft().IsAuto() || style_.MarginRight().IsAuto();
-}
-
 ItemPosition FlexItem::Alignment() const {
   return FlexLayoutAlgorithm::AlignmentForChild(*algorithm_->Style(), style_);
 }
@@ -337,6 +330,15 @@ LayoutUnit FlexItem::AlignmentOffset(LayoutUnit available_free_space,
       break;
   }
   return LayoutUnit();
+}
+
+bool FlexItem::HasAutoMarginsInCrossAxis(const ComputedStyle& item_style,
+                                         FlexLayoutAlgorithm* algorithm) {
+  if (algorithm->IsHorizontalFlow()) {
+    return item_style.MarginTop().IsAuto() ||
+           item_style.MarginBottom().IsAuto();
+  }
+  return item_style.MarginLeft().IsAuto() || item_style.MarginRight().IsAuto();
 }
 
 void FlexLine::FreezeViolations(ViolationsVector& violations) {
@@ -546,7 +548,7 @@ void FlexLine::ComputeLineItemsPosition(LayoutUnit main_axis_start_offset,
 
     LayoutUnit child_cross_axis_margin_box_extent;
     if (flex_item.Alignment() == ItemPosition::kBaseline &&
-        !flex_item.HasAutoMarginsInCrossAxis()) {
+        !FlexItem::HasAutoMarginsInCrossAxis(flex_item.style_, algorithm_)) {
       LayoutUnit ascent = flex_item.MarginBoxAscent();
       LayoutUnit descent =
           (flex_item.CrossAxisMarginExtent() + flex_item.cross_axis_size_) -
@@ -880,7 +882,8 @@ void FlexLayoutAlgorithm::AlignChildren() {
         min_margin_after_baselines[line_number++];
     for (FlexItem& flex_item : line_context.line_items_) {
       if (flex_item.Alignment() == ItemPosition::kBaseline &&
-          !flex_item.HasAutoMarginsInCrossAxis() && min_margin_after_baseline) {
+          !FlexItem::HasAutoMarginsInCrossAxis(flex_item.style_, this) &&
+          min_margin_after_baseline) {
         flex_item.desired_location_.Move(LayoutUnit(),
                                          min_margin_after_baseline);
       }

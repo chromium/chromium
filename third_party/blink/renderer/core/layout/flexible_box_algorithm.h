@@ -172,8 +172,6 @@ class FlexItem {
 
   LayoutUnit AvailableAlignmentSpace() const;
 
-  bool HasAutoMarginsInCrossAxis() const;
-
   void UpdateAutoMarginsInMainAxis(LayoutUnit auto_margin_offset);
 
   // Computes the cross-axis size that a stretched item should have and stores
@@ -191,6 +189,9 @@ class FlexItem {
                                     LayoutUnit max_ascent,
                                     bool is_wrap_reverse,
                                     bool is_deprecated_webkit_box);
+
+  static bool HasAutoMarginsInCrossAxis(const ComputedStyle& item_style,
+                                        FlexLayoutAlgorithm* algorithm);
 
   void Trace(Visitor*) const;
 

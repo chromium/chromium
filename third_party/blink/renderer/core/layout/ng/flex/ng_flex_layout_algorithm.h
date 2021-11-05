@@ -85,7 +85,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   // Propagates the baseline from the given flex-item if needed.
   void PropagateBaselineFromChild(
-      const FlexItem&,
+      const ComputedStyle&,
       const NGBoxFragment&,
       LayoutUnit block_offset,
       absl::optional<LayoutUnit>* fallback_baseline);
