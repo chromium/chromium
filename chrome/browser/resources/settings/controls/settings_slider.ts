@@ -19,7 +19,7 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {CrPolicyPrefMixin, CrPolicyPrefMixinInterface} from './cr_policy_pref_mixin.js';
 
-interface SettingsSliderElement {
+export interface SettingsSliderElement {
   $: {
     slider: CrSliderElement,
   }
@@ -27,7 +27,7 @@ interface SettingsSliderElement {
 
 const SettingsSliderElementBase = CrPolicyPrefMixin(PolymerElement);
 
-class SettingsSliderElement extends SettingsSliderElementBase {
+export class SettingsSliderElement extends SettingsSliderElementBase {
   static get is() {
     return 'settings-slider';
   }
@@ -210,6 +210,12 @@ class SettingsSliderElement extends SettingsSliderElementBase {
   private getRoleDescription_(): string {
     return loadTimeData.getStringF(
         'settingsSliderRoleDescription', this.labelMin, this.labelMax);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-slider': SettingsSliderElement;
   }
 }
 

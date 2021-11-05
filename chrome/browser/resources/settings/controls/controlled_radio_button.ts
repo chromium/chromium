@@ -21,7 +21,8 @@ const ControlledRadioButtonElementBase =
       new (): PolymerElement & CrRadioButtonBehavior & PrefControlMixinInterface
     };
 
-class ControlledRadioButtonElement extends ControlledRadioButtonElementBase {
+export class ControlledRadioButtonElement extends
+    ControlledRadioButtonElementBase {
   static get is() {
     return 'controlled-radio-button';
   }

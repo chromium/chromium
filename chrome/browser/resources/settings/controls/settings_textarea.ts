@@ -12,13 +12,14 @@ import '//resources/cr_elements/cr_input/cr_input_style_css.m.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-interface SettingsTextareaElement {
+export interface SettingsTextareaElement {
   $: {
     input: HTMLTextAreaElement,
+    label: HTMLElement,
   };
 }
 
-class SettingsTextareaElement extends PolymerElement {
+export class SettingsTextareaElement extends PolymerElement {
   static get is() {
     return 'settings-textarea';
   }
@@ -104,6 +105,12 @@ class SettingsTextareaElement extends PolymerElement {
 
   private onDisabledChanged_() {
     this.setAttribute('aria-disabled', this.disabled ? 'true' : 'false');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-textarea': SettingsTextareaElement;
   }
 }
 

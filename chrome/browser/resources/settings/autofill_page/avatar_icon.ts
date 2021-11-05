@@ -50,4 +50,10 @@ class SettingsAvatarIconElement extends SettingsAvatarIconElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-avatar-icon': SettingsAvatarIconElement;
+  }
+}
+
 customElements.define(SettingsAvatarIconElement.is, SettingsAvatarIconElement);

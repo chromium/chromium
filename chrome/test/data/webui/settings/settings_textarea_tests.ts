@@ -4,16 +4,16 @@
 
 import 'chrome://settings/lazy_load.js';
 
+import {SettingsTextareaElement} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 /** @fileoverview Suite of tests for settings-textarea. */
 suite('SettingsTextarea', function() {
-  /** @type {!SettingsTextareaElement} */
-  let settingsTextarea;
-
-  /** @type {!HTMLTextAreaElement} */
-  let textarea;
+  let settingsTextarea: SettingsTextareaElement;
+  let textarea: HTMLTextAreaElement;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     settingsTextarea = document.createElement('settings-textarea');
     document.body.appendChild(settingsTextarea);
     textarea = settingsTextarea.$.input;
@@ -40,7 +40,7 @@ suite('SettingsTextarea', function() {
     assertTrue(label.hidden);
     settingsTextarea.label = 'foobar';
     assertFalse(label.hidden);
-    assertEquals('foobar', label.textContent.trim());
+    assertEquals('foobar', label.textContent!.trim());
     assertEquals('foobar', textarea.getAttribute('aria-label'));
   });
 

@@ -17,7 +17,7 @@ import {PrefControlMixin} from './pref_control_mixin.js';
 const ControlledButtonElementBase =
     CrPolicyPrefMixin(PrefControlMixin(PolymerElement));
 
-class ControlledButtonElement extends ControlledButtonElementBase {
+export class ControlledButtonElement extends ControlledButtonElementBase {
   static get is() {
     return 'controlled-button';
   }
@@ -79,6 +79,12 @@ class ControlledButtonElement extends ControlledButtonElementBase {
 
   private buttonEnabled_(enforced: boolean, disabled: boolean): boolean {
     return !enforced && !disabled;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'controlled-button': ControlledButtonElement;
   }
 }
 

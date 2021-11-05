@@ -15,7 +15,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   // Settable fake data.
   private encryptionPassphraseSuccess: boolean = false;
   private decryptionPassphraseSuccess: boolean = false;
-  private storedAccounts: StoredAccount[] = [];
+  storedAccounts: StoredAccount[] = [];
   syncStatus: SyncStatus = {
     signedIn: true,
     signedInUsername: 'fakeUsername',

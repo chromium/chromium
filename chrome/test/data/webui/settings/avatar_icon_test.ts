@@ -5,16 +5,18 @@
 /** @fileoverview Tests for the AvatarIcon component. */
 
 import 'chrome://settings/lazy_load.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 suite('AvatarIcon', function() {
-  /** @type {SyncBrowserProxy} */
-  let syncBrowserProxy = null;
+  let syncBrowserProxy: TestSyncBrowserProxy;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
@@ -43,8 +45,8 @@ suite('AvatarIcon', function() {
     await syncBrowserProxy.whenCalled('getStoredAccounts');
 
     assertEquals(
-        syncBrowserProxy.storedAccounts[0].avatarImage,
-        avatarIcon.$.avatar.src);
+        syncBrowserProxy.storedAccounts[0]!.avatarImage,
+        avatarIcon.shadowRoot!.querySelector('img')!.src);
   });
 
   test('fallbackAvatarDisplayedWhenSignedInUserHasNoAvatar', async function() {
@@ -61,7 +63,7 @@ suite('AvatarIcon', function() {
 
     assertEquals(
         'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE',
-        avatarIcon.$.avatar.src);
+        avatarIcon.shadowRoot!.querySelector('img')!.src);
   });
 
   test('fallbackAvatarDisplayedWhenNoSignedInUser', async function() {
@@ -75,6 +77,6 @@ suite('AvatarIcon', function() {
 
     assertEquals(
         'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE',
-        avatarIcon.$.avatar.src);
+        avatarIcon.shadowRoot!.querySelector('img')!.src);
   });
 });

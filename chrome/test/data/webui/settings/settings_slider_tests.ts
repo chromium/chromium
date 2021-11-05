@@ -7,37 +7,38 @@ import 'chrome://settings/lazy_load.js';
 
 import {keyDownOn, keyUpOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import { CrSliderElement,SettingsSliderElement} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for settings-slider. */
 suite('SettingsSlider', function() {
-  /** @type {!SettingsSliderElement} */
-  let slider;
+  let slider: SettingsSliderElement;
 
   /**
    * cr-slider instance wrapped by settings-slider.
-   * @type {!CrSliderElement}
    */
-  let crSlider;
+  let crSlider: CrSliderElement;
 
-  const ticks = [2, 4, 8, 16, 32, 64, 128];
+  const ticks: number[] = [2, 4, 8, 16, 32, 64, 128];
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     slider = document.createElement('settings-slider');
     slider.pref = {
+      key: '',
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: 16,
     };
     document.body.appendChild(slider);
-    crSlider = slider.shadowRoot.querySelector('cr-slider');
+    crSlider = slider.shadowRoot!.querySelector('cr-slider')!;
     return flushTasks();
   });
 
-  function press(key) {
-    keyDownOn(crSlider, null, [], key);
-    keyUpOn(crSlider, null, [], key);
+  function press(key: string) {
+    keyDownOn(crSlider, 0, [], key);
+    keyUpOn(crSlider, 0, [], key);
   }
 
   function pressArrowRight() {
@@ -72,8 +73,9 @@ suite('SettingsSlider', function() {
     press('End');
   }
 
-  function pointerEvent(eventType, ratio) {
-    const rect = crSlider.$.container.getBoundingClientRect();
+  function pointerEvent(eventType: string, ratio: number) {
+    const rect = crSlider.shadowRoot!.querySelector<HTMLElement>(
+                                         '#container')!.getBoundingClientRect();
     crSlider.dispatchEvent(new PointerEvent(eventType, {
       buttons: 1,
       pointerId: 1,
@@ -81,11 +83,11 @@ suite('SettingsSlider', function() {
     }));
   }
 
-  function pointerDown(ratio) {
+  function pointerDown(ratio: number) {
     pointerEvent('pointerdown', ratio);
   }
 
-  function pointerMove(ratio) {
+  function pointerMove(ratio: number) {
     pointerEvent('pointermove', ratio);
   }
 
@@ -94,13 +96,14 @@ suite('SettingsSlider', function() {
     pointerEvent('pointerup', 0);
   }
 
-  function assertCloseTo(actual, expected) {
+  function assertCloseTo(actual: number, expected: number) {
     assertTrue(
         Math.abs(1 - actual / expected) <= Number.EPSILON,
         `expected ${expected} to be close to ${actual}`);
   }
 
-  async function checkSliderValueFromPref(prefValue, sliderValue) {
+  async function checkSliderValueFromPref(
+      prefValue: number, sliderValue: number) {
     assertNotEquals(sliderValue, crSlider.value);
     if (crSlider.updatingFromKey) {
       await eventToPromise('updating-from-key-changed', crSlider);
@@ -112,16 +115,18 @@ suite('SettingsSlider', function() {
   test('enforce value', function() {
     // Test that the indicator is not present until after the pref is
     // enforced.
-    let indicator = slider.shadowRoot.querySelector('cr-policy-pref-indicator');
+    let indicator =
+        slider.shadowRoot!.querySelector('cr-policy-pref-indicator');
     assertFalse(!!indicator);
     slider.pref = {
+      key: '',
       controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: 16,
     };
     flush();
-    indicator = slider.shadowRoot.querySelector('cr-policy-pref-indicator');
+    indicator = slider.shadowRoot!.querySelector('cr-policy-pref-indicator');
     assertTrue(!!indicator);
   });
 

@@ -3,44 +3,43 @@
 // found in the LICENSE file.
 
 import 'chrome://settings/settings.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 /** @fileoverview Suite of tests for settings-dropdown-menu. */
 suite('SettingsDropdownMenu', function() {
-  /** @type {SettingsDropdownMenu} */
-  let dropdown;
+  let dropdown: SettingsDropdownMenuElement;
 
   /**
    * The <select> used internally by the dropdown menu.
-   * @type {HTMLSelectElement}
    */
-  let selectElement;
+  let selectElement: HTMLSelectElement;
 
   /**
    * The "Custom" option in the <select> menu.
-   * @type {HTMLOptionElement}
    */
-  let customOption;
+  let customOption: HTMLOptionElement;
 
-  function waitUntilDropdownUpdated() {
+  function waitUntilDropdownUpdated(): Promise<void> {
     return waitAfterNextRender(dropdown);
   }
 
-  function simulateChangeEvent(value) {
+  function simulateChangeEvent(value: string): Promise<void> {
     selectElement.value = value;
     selectElement.dispatchEvent(new CustomEvent('change'));
     return waitUntilDropdownUpdated();
   }
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     dropdown = document.createElement('settings-dropdown-menu');
     document.body.appendChild(dropdown);
-    selectElement = dropdown.shadowRoot.querySelector('select');
+    selectElement = dropdown.shadowRoot!.querySelector('select')!;
     assertTrue(!!selectElement);
     const options = selectElement.options;
-    customOption = options[options.length - 1];
+    customOption = options[options.length - 1]!;
     assertTrue(!!customOption);
   });
 
@@ -60,13 +59,13 @@ suite('SettingsDropdownMenu', function() {
           // Initially selected item.
           assertEquals(
               'Option 100',
-              selectElement.selectedOptions[0].textContent.trim());
+              selectElement.selectedOptions[0]!.textContent!.trim());
 
           // Selecting an item updates the pref.
           return simulateChangeEvent('200');
         })
         .then(function() {
-          assertEquals(200, dropdown.pref.value);
+          assertEquals(200, dropdown.pref!.value);
 
           // Updating the pref selects an item.
           dropdown.set('pref.value', 400);
@@ -92,13 +91,13 @@ suite('SettingsDropdownMenu', function() {
         .then(function() {
           // Initially selected item.
           assertEquals(
-              'CCC', selectElement.selectedOptions[0].textContent.trim());
+              'CCC', selectElement.selectedOptions[0]!.textContent!.trim());
 
           // Selecting an item updates the pref.
           return simulateChangeEvent('a');
         })
         .then(function() {
-          assertEquals('a', dropdown.pref.value);
+          assertEquals('a', dropdown.pref!.value);
 
           // Item remains selected after updating menu items.
           const newMenuOptions = dropdown.menuOptions.slice().reverse();
@@ -107,7 +106,7 @@ suite('SettingsDropdownMenu', function() {
         })
         .then(function() {
           assertEquals(
-              'AAA', selectElement.selectedOptions[0].textContent.trim());
+              'AAA', selectElement.selectedOptions[0]!.textContent!.trim());
         });
   });
 
@@ -123,22 +122,23 @@ suite('SettingsDropdownMenu', function() {
     ];
     dropdown.addEventListener('settings-control-change', () => {
       // Failure, custom value shouldn't ever call this.
-      fail('settings-control-change should not be triggered for custom value');
+      assertNotReached(
+          'settings-control-change should not be triggered for custom value');
     });
 
     return waitUntilDropdownUpdated().then(function() {
       // "Custom" initially selected.
-      assertEquals(dropdown.notFoundValue_, selectElement.value);
+      assertEquals(dropdown.notFoundValue, selectElement.value);
       assertEquals('block', getComputedStyle(customOption).display);
       assertFalse(customOption.disabled);
 
       // Pref should not have changed.
-      assertEquals('f', dropdown.pref.value);
+      assertEquals('f', dropdown.pref!.value);
     });
   });
 
-  function waitForTimeout(timeMs) {
-    return new Promise(function(resolve) {
+  function waitForTimeout(timeMs: number): Promise<void> {
+    return new Promise<void>(function(resolve) {
       setTimeout(resolve, timeMs);
     });
   }
@@ -201,7 +201,8 @@ suite('SettingsDropdownMenu', function() {
         .then(function() {
           // Initially selected item.
           assertEquals(
-              'Option 2', selectElement.selectedOptions[0].textContent.trim());
+              'Option 2',
+              selectElement.selectedOptions[0]!.textContent!.trim());
 
           // Setup does not call the settings-control-change event.
           assertEquals(0, settingsControlChangeCount);
@@ -210,7 +211,7 @@ suite('SettingsDropdownMenu', function() {
           return simulateChangeEvent('value3');
         })
         .then(function() {
-          assertEquals('value3', dropdown.pref.value['key2']);
+          assertEquals('value3', dropdown.pref!.value['key2']);
 
           // The settings-control-change callback should have been triggered
           // exactly once.

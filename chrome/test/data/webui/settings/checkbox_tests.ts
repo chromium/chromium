@@ -4,19 +4,20 @@
 
 import 'chrome://settings/lazy_load.js';
 
+import {SettingsCheckboxElement} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 /** @fileoverview Suite of tests for settings-checkbox. */
 suite('SettingsCheckbox', function() {
   /**
    * Checkbox created before each test.
-   * @type {SettingsCheckbox}
    */
-  let testElement;
+  let testElement: SettingsCheckboxElement;
 
   /**
    * Pref value used in tests, should reflect checkbox 'checked' attribute.
-   * @type {SettingsCheckbox}
    */
-  const pref = {
+  const pref: chrome.settingsPrivate.PrefObject = {
     key: 'test',
     type: chrome.settingsPrivate.PrefType.BOOLEAN,
     value: true
@@ -24,7 +25,7 @@ suite('SettingsCheckbox', function() {
 
   // Initialize a checked settings-checkbox before each test.
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('settings-checkbox');
     testElement.set('pref', pref);
     document.body.appendChild(testElement);

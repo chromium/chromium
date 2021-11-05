@@ -5,21 +5,21 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ControlledRadioButtonElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 suite('controlled radio button', function() {
-  /** @type {ControlledRadioButtonElement} */
-  let radioButton;
+  let radioButton: ControlledRadioButtonElement;
 
-  /** @type {!chrome.settingsPrivate.PrefObject} */
-  const pref = {
+  const pref: chrome.settingsPrivate.PrefObject = {
     key: 'test',
     type: chrome.settingsPrivate.PrefType.BOOLEAN,
     value: true
   };
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     radioButton = document.createElement('controlled-radio-button');
     radioButton.set('pref', pref);
     document.body.appendChild(radioButton);
@@ -31,12 +31,12 @@ suite('controlled radio button', function() {
     flush();
     assertTrue(radioButton.disabled);
     assertFalse(
-        !!radioButton.shadowRoot.querySelector('cr-policy-pref-indicator'));
+        !!radioButton.shadowRoot!.querySelector('cr-policy-pref-indicator'));
 
     radioButton.set('name', 'true');
     flush();
     assertTrue(
-        !!radioButton.shadowRoot.querySelector('cr-policy-pref-indicator'));
+        !!radioButton.shadowRoot!.querySelector('cr-policy-pref-indicator'));
 
     // See https://github.com/Polymer/polymer/issues/4652#issuecomment-305471987
     // on why |null| must be used here instead of |undefined|.
@@ -45,7 +45,7 @@ suite('controlled radio button', function() {
     assertFalse(radioButton.disabled);
     assertEquals(
         'none',
-        radioButton.shadowRoot.querySelector('cr-policy-pref-indicator')
-            .style.display);
+        radioButton.shadowRoot!.querySelector(
+                                   'cr-policy-pref-indicator')!.style.display);
   });
 });

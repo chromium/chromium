@@ -55,9 +55,11 @@ import './system_page/system_page.js';
 
 // <if expr="not chromeos and not is_macosx">
 import './languages_page/edit_dictionary_page.js';
+
 // </if>
 
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 export {FontsBrowserProxy, FontsBrowserProxyImpl} from './appearance_page/fonts_browser_proxy.js';
 export {CountryDetailManagerImpl} from './autofill_page/address_edit_dialog.js';
@@ -75,7 +77,10 @@ export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearB
 export {SettingsClearBrowsingDataDialogElement} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 export {SettingsHistoryDeletionDialogElement} from './clear_browsing_data_dialog/history_deletion_dialog.js';
 export {SettingsPasswordsDeletionDialogElement} from './clear_browsing_data_dialog/passwords_deletion_dialog.js';
+export {ControlledButtonElement} from './controls/controlled_button.js';
 export {SettingsCheckboxElement} from './controls/settings_checkbox.js';
+export {SettingsSliderElement} from './controls/settings_slider.js';
+export {SettingsTextareaElement} from './controls/settings_textarea.js';
 export {DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
 // <if expr="_google_chrome and is_win">
 export {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_page/incompatible_applications_browser_proxy.js';

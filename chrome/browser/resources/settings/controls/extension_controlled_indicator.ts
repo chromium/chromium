@@ -14,7 +14,7 @@ import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_pro
 
 const ExtensionControlledIndicatorElementBase = I18nMixin(PolymerElement);
 
-class ExtensionControlledIndicatorElement extends
+export class ExtensionControlledIndicatorElement extends
     ExtensionControlledIndicatorElementBase {
   static get is() {
     return 'extension-controlled-indicator';
@@ -55,6 +55,12 @@ class ExtensionControlledIndicatorElement extends
         assert(this.extensionId));
     this.dispatchEvent(
         new CustomEvent('extension-disable', {bubbles: true, composed: true}));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extension-controlled-indicator': ExtensionControlledIndicatorElement;
   }
 }
 

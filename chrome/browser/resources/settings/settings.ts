@@ -17,6 +17,9 @@ export {MultiStoreExceptionEntry} from './autofill_page/multi_store_exception_en
 export {MultiStorePasswordUiEntry} from './autofill_page/multi_store_password_ui_entry.js';
 export {PasswordCheckInteraction, PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerProxy} from './autofill_page/password_manager_proxy.js';
 export {SettingsBasicPageElement} from './basic_page/basic_page.js';
+export {ControlledRadioButtonElement} from './controls/controlled_radio_button.js';
+export {ExtensionControlledIndicatorElement} from './controls/extension_controlled_indicator.js';
+export {SettingsDropdownMenuElement} from './controls/settings_dropdown_menu.js';
 export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js';
 // <if expr="not chromeos and not lacros">
 export {DefaultBrowserBrowserProxyImpl} from './default_browser_page/default_browser_browser_proxy.js';

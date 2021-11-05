@@ -153,7 +153,7 @@ export const SettingsBooleanControlMixin = dedupingMixin(
     });
 
 export interface SettingsBooleanControlMixinInterface extends
-    PrefControlMixinInterface {
+    PrefControlMixinInterface, CrPolicyPrefMixinInterface {
   inverted: boolean;
   checked: boolean;
   disabled: boolean;

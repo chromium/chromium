@@ -4,15 +4,17 @@
 
 // clang-format off
 import 'chrome://settings/lazy_load.js';
+
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ControlledButtonElement} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 // clang-format on
 
 suite('controlled button', function() {
-  /** @type {ControlledButtonElement} */
-  let controlledButton;
+  let controlledButton: ControlledButtonElement;
 
-  /** @type {!chrome.settingsPrivate.PrefObject} */
-  const uncontrolledPref = {
+  const uncontrolledPref: chrome.settingsPrivate.PrefObject = {
     key: 'test',
     type: chrome.settingsPrivate.PrefType.BOOLEAN,
     value: true
@@ -34,8 +36,12 @@ suite('controlled button', function() {
       },
       uncontrolledPref);
 
+  function queryCrButton() {
+    return controlledButton.shadowRoot!.querySelector('cr-button')!;
+  }
+
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     controlledButton = document.createElement('controlled-button');
     controlledButton.pref = uncontrolledPref;
     document.body.appendChild(controlledButton);
@@ -43,52 +49,47 @@ suite('controlled button', function() {
   });
 
   test('controlled prefs', function() {
-    assertFalse(
-        controlledButton.shadowRoot.querySelector('cr-button').disabled);
-    assertFalse(!!controlledButton.shadowRoot.querySelector(
+    assertFalse(queryCrButton().disabled);
+    assertFalse(!!controlledButton.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
 
     controlledButton.pref = extensionControlledPref;
     flush();
-    assertTrue(controlledButton.shadowRoot.querySelector('cr-button').disabled);
-    assertTrue(!!controlledButton.shadowRoot.querySelector(
+    assertTrue(queryCrButton().disabled);
+    assertTrue(!!controlledButton.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
 
     controlledButton.pref = policyControlledPref;
     flush();
-    assertTrue(controlledButton.shadowRoot.querySelector('cr-button').disabled);
+    assertTrue(queryCrButton().disabled);
     const indicator =
-        controlledButton.shadowRoot.querySelector('cr-policy-pref-indicator');
+        controlledButton.shadowRoot!.querySelector('cr-policy-pref-indicator');
     assertTrue(!!indicator);
-    assertGT(indicator.clientHeight, 0);
+    assertGT(indicator!.clientHeight, 0);
 
     controlledButton.pref = uncontrolledPref;
     flush();
-    assertFalse(
-        controlledButton.shadowRoot.querySelector('cr-button').disabled);
-    assertFalse(!!controlledButton.shadowRoot.querySelector(
+    assertFalse(queryCrButton().disabled);
+    assertFalse(!!controlledButton.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
   });
 
   test('null pref', function() {
     controlledButton.pref = extensionControlledPref;
     flush();
-    assertTrue(controlledButton.shadowRoot.querySelector('cr-button').disabled);
-    assertTrue(!!controlledButton.shadowRoot.querySelector(
+    assertTrue(queryCrButton().disabled);
+    assertTrue(!!controlledButton.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
 
-    controlledButton.pref = null;
+    controlledButton.pref = undefined;
     flush();
-    assertFalse(
-        controlledButton.shadowRoot.querySelector('cr-button').disabled);
-    assertFalse(!!controlledButton.shadowRoot.querySelector(
+    assertFalse(queryCrButton().disabled);
+    assertFalse(!!controlledButton.shadowRoot!.querySelector(
         'cr-policy-pref-indicator'));
   });
 
   test('action-button', function() {
-    assertNotEquals(
-        'action-button',
-        controlledButton.shadowRoot.querySelector('cr-button').className);
+    assertNotEquals('action-button', queryCrButton().className);
 
     const controlledActionButton = document.createElement('controlled-button');
     controlledActionButton.pref = uncontrolledPref;
@@ -97,6 +98,7 @@ suite('controlled button', function() {
     flush();
     assertEquals(
         'action-button',
-        controlledActionButton.shadowRoot.querySelector('cr-button').className);
+        controlledActionButton.shadowRoot!.querySelector(
+                                              'cr-button')!.className);
   });
 });
