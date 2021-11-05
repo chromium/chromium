@@ -1907,3 +1907,26 @@ TEST_F('ChromeVoxEditingTest', 'DISABLED_ParagraphNavigation', function() {
         .replay();
   });
 });
+TEST_F(
+    'ChromeVoxEditingTest', 'StartAndEndOfOutputStopAtEditableRoot',
+    function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
+    <div role="article">
+      <div contenteditable role="textbox">
+        hello<br>world
+      </div>
+    </div>
+  `;
+      this.runWithLoadedTree(site, async function(root) {
+        await this.focusFirstTextField(root);
+        mockFeedback.expectSpeech('Text area')
+            .call(this.press(KeyCode.DOWN))
+            .expectSpeech('world')
+            .call(this.press(KeyCode.UP))
+            .expectNextSpeechUtteranceIsNot('Article')
+            .expectNextSpeechUtteranceIsNot('Article end')
+            .expectSpeech('hello')
+            .replay();
+      });
+    });

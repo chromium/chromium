@@ -60,7 +60,8 @@ OutputAncestryInfo = class {
 
     if (afterEndNode) {
       this.endAncestors_ = OutputAncestryInfo.byContextFirst_(
-          AutomationUtil.getUniqueAncestors(afterEndNode, node));
+          AutomationUtil.getUniqueAncestors(afterEndNode, node),
+          true /* discardRootOrEditableRoot */);
     }
 
     let beforeStartNode = AutomationUtil.findNextNode(
@@ -74,7 +75,8 @@ OutputAncestryInfo = class {
       this.startAncestors_ =
           OutputAncestryInfo
               .byContextFirst_(
-                  AutomationUtil.getUniqueAncestors(beforeStartNode, node))
+                  AutomationUtil.getUniqueAncestors(beforeStartNode, node),
+                  true /* discardRootOrEditableRoot */)
               .reverse();
     }
   }
@@ -128,16 +130,20 @@ OutputAncestryInfo = class {
 
   /**
    * @param {!Array<!AutomationNode>} ancestors
+   * @param {boolean} discardRootOrEditableRoot Whether to stop ancestry
+   *     computation at a root or editable root.
    * @return {!Array<!AutomationNode>}
    * @private
    */
-  static byContextFirst_(ancestors) {
+  static byContextFirst_(ancestors, discardRootOrEditableRoot = false) {
     let contextFirst = [];
     let rest = [];
     for (let i = 0; i < ancestors.length - 1; i++) {
       const node = ancestors[i];
-      // Discard ancestors of deepest window.
-      if (node.role === RoleType.WINDOW) {
+      // Discard ancestors of deepest window or if requested.
+      if (node.role === RoleType.WINDOW ||
+          (discardRootOrEditableRoot &&
+           AutomationPredicate.rootOrEditableRoot(node))) {
         contextFirst = [];
         rest = [];
       }
