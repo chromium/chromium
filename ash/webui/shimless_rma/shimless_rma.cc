@@ -41,16 +41,27 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      // Landing page
+      {"welcomeTitleText", IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE},
+      {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},
+      {"validatingComponentsText", IDS_SHIMLESS_RMA_VALIDATING_COMPONENTS},
+      {"validatedComponentsSuccessText",
+       IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_SUCCESS},
+      {"validatedComponentsFailText",
+       IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL},
+      // Choose destination page
       {"chooseDestinationTitleText", IDS_SHIMLESS_RMA_CHOOSE_DESTINATION},
       {"sameOwnerText", IDS_SHIMLESS_RMA_SAME_OWNER},
       {"sameOwnerDescriptionText", IDS_SHIMLESS_RMA_SAME_OWNER_DESCRIPTION},
       {"newOwnerText", IDS_SHIMLESS_RMA_NEW_OWNER},
       {"newOwnerDescriptionText", IDS_SHIMLESS_RMA_NEW_OWNER_DESCRIPTION},
+      // OS update page
       {"currentVersionText", IDS_SHIMLESS_RMA_CURRENT_VERSION},
       {"currentVersionOutOfDateText",
        IDS_SHIMLESS_RMA_CURRENT_VERSION_OUT_OF_DATE},
       {"currentVersionUpToDateText",
        IDS_SHIMLESS_RMA_CURRENT_VERSION_UP_TO_DATE},
+      // Repair complete page
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
       {"reworkFlowLinkText", IDS_SHIMLESS_RMA_REWORK_FLOW_LINK},
       {"updateVersionRestartLabel",

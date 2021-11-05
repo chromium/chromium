@@ -8,7 +8,8 @@ import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
@@ -18,7 +19,17 @@ import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusO
  * 'onboarding-landing-page' is the main landing page for the shimless rma
  * process.
  */
-export class OnboardingLandingPage extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const OnboardingLandingPageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class OnboardingLandingPage extends OnboardingLandingPageBase {
   static get is() {
     return 'onboarding-landing-page';
   }
@@ -32,8 +43,7 @@ export class OnboardingLandingPage extends PolymerElement {
       /** @protected */
       verificationMessage_: {
         type: String,
-        // TODO(gavindodd): i18n string
-        value: 'Validating components...',
+        value: '',
       },
 
       /**
@@ -81,6 +91,7 @@ export class OnboardingLandingPage extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
+    this.verificationMessage_ = this.i18n('validatingComponentsText');
   }
 
   /** @return {!Promise<StateResult>} */
@@ -107,14 +118,10 @@ export class OnboardingLandingPage extends PolymerElement {
    * @param {string} errorMessage
    */
   onHardwareVerificationResult(isCompliant, errorMessage) {
-    // TODO(gavindodd): i18n strings
     if (isCompliant) {
-      this.verificationMessage_ = 'Components are installed correctly.';
+      this.verificationMessage_ = this.i18n('validatedComponentsSuccessText');
     } else {
-      this.verificationMessage_ =
-          'Components could not be validated. If you are certain you are ' +
-          'using a qualified component updating Chrome OS may resolve this ' +
-          'issue.';
+      this.verificationMessage_ = this.i18n('validatedComponentsFailText');
       this.errorMessage_ = errorMessage;
     }
     this.isCompliant_ = isCompliant;

@@ -13,10 +13,8 @@
 <base-page orientation="column">
   <div slot="header">
     <!-- TODO(joonbug): Update text for i18n -->
-    <h1>Chromebook repair</h1>
-    <p>This repair process is intended for a trained repair technicians.
-      Start only after replacing the malfunctioning components.
-    </p>
+    <h1>[[i18n('welcomeTitleText')]]</h1>
+    <div>[[i18n('beginRmaWarningText')]]</div>
     <div id="verificationMessage">
       <paper-spinner-lite id="busyIcon" hidden$="[[!verificationInProgress_]]"
         active>
