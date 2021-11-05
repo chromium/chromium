@@ -740,7 +740,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     if (card_->record_type() == CreditCard::VIRTUAL_CARD &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableVirtualCardsRiskBasedAuthentication)) {
-      ShowUnmaskAuthenticatorSelectionDialog();
+      GetAuthenticationTypeForVirtualCard(/*fido_auth_enabled=*/false);
     } else {
       unmask_auth_flow_type_ = UnmaskAuthFlowType::kCvcFallbackFromFido;
       Authenticate();
