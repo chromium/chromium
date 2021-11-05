@@ -635,18 +635,6 @@ ui::MenuSourceType GetMenuSourceType(int event_flags) {
 }
 #endif
 
-bool IsFrameInPdfViewer(content::RenderFrameHost* rfh) {
-  if (!rfh)
-    return false;
-
-  if (IsPdfExtensionOrigin(rfh->GetLastCommittedOrigin()))
-    return true;
-
-  content::RenderFrameHost* parent_rfh = rfh->GetParent();
-  return parent_rfh &&
-         IsPdfExtensionOrigin(parent_rfh->GetLastCommittedOrigin());
-}
-
 }  // namespace
 
 // static
@@ -2308,10 +2296,14 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
     case IDC_CONTENT_CONTEXT_ROTATECW:
     case IDC_CONTENT_CONTEXT_ROTATECCW: {
+      bool is_pdf_viewer_fullscreen = false;
+#if BUILDFLAG(ENABLE_PDF)
       // Rotate commands should be disabled when in PDF Viewer's Presentation
       // mode.
-      bool is_pdf_viewer_fullscreen =
-          IsFrameInPdfViewer(GetRenderFrameHost()) && IsHTML5Fullscreen();
+      is_pdf_viewer_fullscreen =
+          IsPdfExtensionOrigin(url::Origin::Create(GetDocumentURL(params_))) &&
+          IsHTML5Fullscreen();
+#endif
       return !is_pdf_viewer_fullscreen &&
              (params_.media_flags & ContextMenuData::kMediaCanRotate) != 0;
     }
@@ -3129,7 +3121,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
       provider && !provider->image_url().empty() &&
       provider->image_url_ref().IsValid(service->search_terms_data());
   return base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
-         !IsFrameInPdfViewer(GetRenderFrameHost()) &&
+         !IsPdfExtensionOrigin(url::Origin::Create(GetDocumentURL(params_))) &&
          provider_supports_image_search &&
          !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
          !in_app &&
