@@ -522,10 +522,10 @@
       'Fuchsia ARM64': 'release_bot_fuchsia_arm64',
       'Fuchsia x64': 'release_bot_fuchsia',
       'Leak Detection Linux': 'release_bot',
-      'Linux Builder (dbg)': 'gpu_tests_debug_bot',
-      'Linux Builder (dbg)(32)': 'gpu_tests_debug_bot_x86',
+      'Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
+      'Linux Builder (dbg)(32)': 'gpu_tests_debug_bot_x86_reclient',
       'Linux Builder': 'gpu_tests_release_bot',
-      'Linux Builder (Wayland)': 'gpu_tests_wayland_release_bot',
+      'Linux Builder (Wayland)': 'gpu_tests_wayland_release_bot_reclient',
       'Network Service Linux': 'release_bot',
       'fuchsia-arm64-cast': 'release_bot_fuchsia_arm64_cast',
       'fuchsia-x64-cast': 'release_bot_fuchsia_cast',
@@ -2313,10 +2313,6 @@
       'gpu_tests', 'debug_bot', 'arm64',
     ],
 
-    'gpu_tests_debug_bot_x86': [
-      'gpu_tests', 'debug_bot', 'x86',
-    ],
-
     'gpu_tests_debug_bot_x86_reclient': [
       'gpu_tests', 'debug_bot_reclient', 'x86',
     ],
@@ -2329,8 +2325,8 @@
       'gpu_tests', 'release_bot',
     ],
 
-    'gpu_tests_wayland_release_bot': [
-      'gpu_tests', 'release_bot', 'linux_wayland',
+    'gpu_tests_wayland_release_bot_reclient': [
+      'gpu_tests', 'release_bot_reclient', 'linux_wayland',
     ],
 
     'gpu_tests_release_bot_minimal_symbols': [
