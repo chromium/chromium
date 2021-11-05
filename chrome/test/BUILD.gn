@@ -2146,6 +2146,7 @@ if (!is_android && !is_fuchsia) {
 
     if (enable_pdf) {
       deps += [
+        "//components/lens",
         "//components/pdf/browser",
         "//pdf:internal",
       ]
