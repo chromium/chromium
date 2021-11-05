@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/web/js_compile.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 source_set("form_util") {
@@ -119,4 +120,21 @@ source_set("unit_tests") {
     "//ios/web/web_state/js",
     "//testing/gtest",
   ]
+}
+if (is_ios) {
+  fuzzer_test("form_activity_tab_helper_fuzzer") {
+    additional_configs = [ "//build/config/compiler:enable_arc" ]
+    sources = [ "form_activity_tab_helper_fuzzer.mm" ]
+    deps = [
+      ":form_util",
+      "//base/test:test_support",
+      "//ios/web/public",
+      "//ios/web/public/js_messaging",
+      "//ios/web/public/js_messaging/fuzzer_support",
+      "//ios/web/public/js_messaging/fuzzer_support:js_message_proto",
+      "//ios/web/public/test",
+      "//ios/web/public/test:fuzzer_support",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }
