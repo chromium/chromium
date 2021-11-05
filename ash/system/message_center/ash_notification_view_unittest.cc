@@ -4,11 +4,13 @@
 
 #include "ash/system/message_center/ash_notification_view.h"
 
+#include "ash/public/cpp/rounded_image_view.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/message_view.h"
@@ -29,10 +31,12 @@ namespace {
 
 constexpr char kDefaultNotificationId[] = "ash notification id";
 
-const gfx::Image CreateTestImage(int width, int height) {
+const gfx::Image CreateTestImage(int width,
+                                 int height,
+                                 SkColor color = SK_ColorGREEN) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
-  bitmap.eraseColor(SK_ColorGREEN);
+  bitmap.eraseColor(color);
   return gfx::Image::CreateFrom1xBitmap(bitmap);
 }
 
@@ -148,6 +152,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   }
   views::View* left_content() { return notification_view_->left_content(); }
   views::View* content_row() { return notification_view_->content_row(); }
+  RoundedImageView* app_icon_view() {
+    return notification_view_->app_icon_view_;
+  }
   views::View* title_row() { return notification_view_->title_row_; }
   views::Label* title_view() {
     return notification_view_->title_row_->title_view_;
@@ -347,6 +354,30 @@ TEST_F(AshNotificationViewTest, GroupedNotificationExpandState) {
   EXPECT_FALSE(
       GetCollapsedSummaryViewForNotificationView(child_view)->GetVisible());
   EXPECT_TRUE(GetMainViewForNotificationView(child_view)->GetVisible());
+}
+
+TEST_F(AshNotificationViewTest, GroupedNotificationChildIcon) {
+  auto notification = CreateTestNotification();
+  notification->set_icon(CreateTestImage(16, 16, SK_ColorBLUE));
+  notification->SetGroupChild();
+  notification_view()->UpdateWithNotification(*notification.get());
+
+  // Notification's icon should be used in child notification's app icon (we
+  // check this by comparing the color of the app icon with the color of the
+  // generated test image).
+  EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorBLUE),
+            color_utils::SkColorToRgbaString(
+                app_icon_view()->original_image().bitmap()->getColor(0, 0)));
+
+  // This should not be changed after theme changed.
+  notification_view()->OnThemeChanged();
+  EXPECT_EQ(color_utils::SkColorToRgbaString(SK_ColorBLUE),
+            color_utils::SkColorToRgbaString(
+                app_icon_view()->original_image().bitmap()->getColor(0, 0)));
+
+  // Reset the notification to be group parent at the end.
+  notification->SetGroupParent();
+  notification_view()->UpdateWithNotification(*notification.get());
 }
 
 TEST_F(AshNotificationViewTest, ExpandButtonVisibility) {
