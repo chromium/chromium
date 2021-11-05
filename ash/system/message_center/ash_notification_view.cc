@@ -372,6 +372,7 @@ AshNotificationView::AshNotificationView(
 AshNotificationView::~AshNotificationView() = default;
 
 void AshNotificationView::ToggleExpand() {
+  SetManuallyExpandedOrCollapsed(true);
   SetExpanded(!IsExpanded());
 }
 
