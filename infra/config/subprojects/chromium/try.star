@@ -858,7 +858,7 @@ try_.chromium_chromiumos_builder(
     name = "linux-chromeos-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     builderless = not settings.is_main,
-    cores = None,
+    cores = 8,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     tryjob = try_.job(),
