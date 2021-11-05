@@ -69,7 +69,7 @@
 <translation id="1376578503827013741">Ifaka kukhompuyutha...</translation>
 <translation id="1382912999714108023">Awuluboni ulwazi lwakho lwamanje?Sicela uxhumane nebhange lakho ukuze ulubuyekeze.</translation>
 <translation id="1383876407941801731">Sesha</translation>
-<translation id="1384704387250346179">Humusha isithombe ngokuthi Ilensi ye-Google <ph name="BEGIN_NEW" />Okusha<ph name="END_NEW" /></translation>
+<translation id="1384704387250346179">Humusha isithombe ngokuthi Amalensi eGoogle <ph name="BEGIN_NEW" />Okusha<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Isebenze ezinsukwini ezingu-<ph name="LAST_UPDATED" /> ezedlule</translation>
 <translation id="1397811292916898096">Sesha nge-<ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">'Ungalandeleli'</translation>
@@ -106,7 +106,7 @@
 <translation id="1670399744444387456">Isisekelo</translation>
 <translation id="1671236975893690980">Ukulanda kulindile...</translation>
 <translation id="1672586136351118594">Ungabonisi futhi</translation>
-<translation id="1680919990519905526">Thenga isithombe ngokuthi Ilensi ye-Google <ph name="BEGIN_NEW" />Okusha<ph name="END_NEW" /></translation>
+<translation id="1680919990519905526">Thenga isithombe ngokuthi amaLensi eGoogle <ph name="BEGIN_NEW" />Okusha<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Zama manje</translation>
 <translation id="1697284962337958118">Engeza ku-</translation>
 <translation id="1702543251015153180">Shintsha amasethingi akho wetimu emnyama?</translation>
@@ -519,7 +519,7 @@ Thinta uphinde ubambe noma iliphi igama ukuze useshe. Ukuze wenze ngcono usesho 
 <translation id="4170011742729630528">Isevisi ayitholakali; zama futhi emuva kwesikhathi.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> esetshenzisiwe</translation>
 <translation id="4181841719683918333">Izilimi</translation>
-<translation id="4183868528246477015">Sesha ngelensi yeGoogle<ph name="BEGIN_NEW" />Okusha<ph name="END_NEW" /></translation>
+<translation id="4183868528246477015">Sesha ngamaLensi eGoogle<ph name="BEGIN_NEW" />Okusha<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Vula kuthebhu entsha</translation>
 <translation id="4196597275619698563">Dala ikhadi</translation>
 <translation id="4198423547019359126">Azikho izindawo ezitholakalayo zokulanda</translation>
@@ -714,7 +714,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5342314432463739672">Izicelo zemvume</translation>
 <translation id="5355191726083956201">Ukuvikelwa Okuthuthukisiwe kuvuliwe</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> vula ithebhu, thepha ukuze uguqule amathebhu}one{<ph name="OPEN_TABS_MANY" /> vula amathebhu, thepha ukuze uguqule amathebhu}other{<ph name="OPEN_TABS_MANY" /> vula amathebhu, thepha ukuze uguqule amathebhu}}</translation>
-<translation id="5375577065097716013">Sesha isithombe Ngelensi ye-Google <ph name="BEGIN_NEW" />Entsha<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Sesha isithombe Ngamalensi eGoogle <ph name="BEGIN_NEW" />Entsha<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Vumela kuphela amasayithi athile</translation>
 <translation id="5409881200985013443">Thumela i-<ph name="ONE_TIME_CODE" /> ku-<ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Iyaqinisekisa…</translation>
@@ -1086,7 +1086,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="7482656565088326534">Ithebhu yokubuka kuqala</translation>
 <translation id="7484997419527351112">I-Discover - ivaliwe</translation>
 <translation id="7485033510383818941">Ukuze uvuselele okuqukethwe kokuphakelayo, yehlisela phansi ikhasi</translation>
-<translation id="749294055653435199">I-Google Lens ayitholakali kule divayisi</translation>
+<translation id="749294055653435199">Amalensi eGoogle akatholakali kule divayisi</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Kubuyekeziwe <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7494974237137038751">idatha elondoloziwe</translation>
 <translation id="7498271377022651285">Sicela ulinde…</translation>
@@ -1095,7 +1095,7 @@ Isibonelo, amanye amawebhusayithi angaphendula lesi sicelo ngokukubonisa izikhan
 <translation id="7514365320538308">Landa</translation>
 <translation id="751961395872307827">Ayikwazi ukuxhumeka kusayithi</translation>
 <translation id="752220631458524187">Yeka ukuxhuma lapho usuqedile</translation>
-<translation id="7523960634226602883">Sesha ngekhamera yakho usebenzisa Ilensi ye-Google</translation>
+<translation id="7523960634226602883">Sesha ngekhamera yakho usebenzisa Amalensi eGoogle</translation>
 <translation id="753225086557513863">Kushejulelwe kamuva</translation>
 <translation id="7559975015014302720">Imodi elula ivaliwe</translation>
 <translation id="7560448309733608642">Isula umlando kusuka kuwo wonke amadivayisi avumelanisiwe. I-akhawunti yakho ye-Google ingaba namanye amafomu omlando wokuphequlula ku-<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

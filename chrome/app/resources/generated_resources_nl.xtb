@@ -2261,7 +2261,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3335947283844343239">Open gesloten tabblad opnieuw</translation>
 <translation id="3336855445806447827">Weet niet</translation>
 <translation id="3337568642696914359">Niet toestaan dat sites protocollen verwerken</translation>
-<translation id="3340251637492627067">Je organisatie vereist dat in aanmerking komende downloads worden opgeslagen in <ph name="WEB_DRIVE" />. Als je inlogt, wordt een uniek verificatietoken opgeslagen. Dit token wordt gebruikt voor alle toekomstige in aanmerking komende downloads.</translation>
+<translation id="3340251637492627067">Je organisatie vereist dat in aanmerking komende downloads worden opgeslagen in <ph name="WEB_DRIVE" />. Als je inlogt, wordt een unieke verificatietoken opgeslagen. Deze token wordt gebruikt voor alle toekomstige in aanmerking komende downloads.</translation>
 <translation id="3340620525920140773">Download voltooid: <ph name="FILE_NAME" />.</translation>
 <translation id="3341699307020049241">Onjuiste pincode. Je hebt nog <ph name="RETRIES" /> pogingen over.</translation>
 <translation id="3341703758641437857">Toegang tot bestand-URL's toestaan</translation>

@@ -1831,7 +1831,7 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="3088557424854005813">Attest</translation>
 <translation id="3091832372132789233">Batterijen opladen van apparaten die ook zijn aangesloten op een externe voedingsbron.</translation>
 <translation id="3092059499596000593">De standaardprinter van het systeem gebruiken als standaardprinter in het afdrukvoorbeeld</translation>
-<translation id="309416443108680956">Hiermee wordt aangegeven wat er gebeurt als een gebruiker die verificatie via een beveiligingstoken uitvoert (bijv. met een smartcard), dat token verwijdert tijdens een sessie. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Er gebeurt niets. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Het scherm wordt vergrendeld tot de gebruiker de verificatie opnieuw uitvoert. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: De sessie wordt beëindigd en de gebruiker wordt uitgelogd. Als je dit beleid niet instelt, geldt de standaardwaarde <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
+<translation id="309416443108680956">Hiermee wordt aangegeven wat er gebeurt als een gebruiker die verificatie via een beveiligingstoken uitvoert (bijv. met een smartcard), die token verwijdert tijdens een sessie. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Er gebeurt niets. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Het scherm wordt vergrendeld tot de gebruiker de verificatie opnieuw uitvoert. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: De sessie wordt beëindigd en de gebruiker wordt uitgelogd. Als je dit beleid niet instelt, geldt de standaardwaarde <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lijst met aangezette plug-ins</translation>
 <translation id="3101501961102569744">Kies hoe je proxyserverinstellingen wilt specificeren</translation>
 <translation id="3101709781009526431">Datum en tijd</translation>
@@ -4329,7 +4329,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="6310223829319187614">Automatisch aanvullen van domeinnaam bij inloggen van gebruiker aanzetten</translation>
 <translation id="631081324835911099">De gebruiker gedwongen uitloggen als het verificatietoken van zijn of haar account ongeldig wordt.
         Dit beleid kan de gebruiker beschermen tegen toegang tot beperkte content op webproperty's van Google.
-        Als dit beleid is ingesteld op True, wordt de gebruiker uitgelogd zodra zijn of haar verificatietoken ongeldig wordt. Er wordt geprobeerd dit probleem met het token op te lossen.
+        Als dit beleid is ingesteld op True, wordt de gebruiker uitgelogd zodra zijn of haar verificatietoken ongeldig wordt. Er wordt geprobeerd dit probleem met de token op te lossen.
         Als dit beleid is ingesteld op False of niet is ingesteld, kan de gebruiker blijven werken terwijl de verificatie ongeldig is.</translation>
 <translation id="631183702829488873">Als deze functie aanstaat, wordt een knop getoond op het inlog- en vergrendelscherm waarmee het wachtwoord kan worden weergegeven.
           De knop wordt weergegeven als een oog in het tekstveld voor het wachtwoord. De knop is afwezig als de functie uitstaat.</translation>

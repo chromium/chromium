@@ -7,7 +7,7 @@
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
 <translation id="1047726139967079566">Tanda Halaman Ini...</translation>
 <translation id="1049743911850919806">Inkognito</translation>
-<translation id="105093091697134113">Akaun yang berikut menggunakan kata laluan yang terdedah dalam pelanggaran data pihak ketiga atau yang dimasukkan pada tapak web menipu. Tukar kata laluan ini dengan segera untuk memastikan akaun anda selamat.</translation>
+<translation id="105093091697134113">Akaun yang berikut menggunakan kata laluan yang terdedah dalam pelanggaran data pihak ketiga atau yang dimasukkan pada laman web menipu. Tukar kata laluan ini dengan segera untuk memastikan akaun anda selamat.</translation>
 <translation id="105214722824962652">Anda tidak akan dilog keluar daripada Akaun Google anda. <ph name="BEGIN_LINK" />Bentuk aktiviti lain<ph name="END_LINK" /> mungkin disimpan dalam Akaun Google anda semasa anda dilog masuk. Anda boleh memadamkan data tersebut pada bila-bila masa.
 
         
@@ -64,7 +64,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="149095475893949513">Laman web ini cuba memuat turun profil konfigurasi.</translation>
 <translation id="1491277525950327607">Dwiketik untuk togol tetapan</translation>
 <translation id="1492417797159476138">Anda telah pun menyimpan nama pengguna ini untuk tapak ini</translation>
-<translation id="1509486075633541495">Log masuk ke tapak web</translation>
+<translation id="1509486075633541495">Log masuk ke laman web</translation>
 <translation id="1509960214886564027">Ciri pada banyak tapak mungkin rosak</translation>
 <translation id="152234381334907219">Tidak Pernah Disimpan</translation>
 <translation id="1523341279170789507">Benarkan Semua Kuki</translation>
@@ -74,7 +74,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1545749641540134597">Imbas Kod QR</translation>
 <translation id="1552525382687785070">Penyegerakan Dilumpuhkan oleh Pentadbir Anda</translation>
 <translation id="1554477036522844996">Tetingkap Baharu</translation>
-<translation id="1580715474678097352">Kekal dilindungi daripada tapak web berbahaya</translation>
+<translation id="1580715474678097352">Kekal dilindungi daripada laman web berbahaya</translation>
 <translation id="1580783302095112590">Mel dihantar.</translation>
 <translation id="1582732959743469162">Ini akan menghentikan semua kemajuan bagi muat turun semasa anda.</translation>
 <translation id="1605405588277479165">Dimatikan - Tidak disyorkan</translation>
@@ -454,7 +454,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5513681519188741830"><ph name="TIME" /> j yang lalu</translation>
 <translation id="5525269841082836315">Buat Frasa Laluan</translation>
 <translation id="5532698011560297095">Tidak Dapat Log Masuk</translation>
-<translation id="5548760955356983418">Ciri Serah membolehkan anda mula menyemak imbas tapak web pada peranti ini, kemudian meneruskannya pada Mac anda dengan mudah. Tapak web yang dibuka pada masa ini akan muncul dalam Dock Mac anda.
+<translation id="5548760955356983418">Ciri Serah membolehkan anda mula menyemak imbas laman web pada peranti ini, kemudian meneruskannya pada Mac anda dengan mudah. Tapak web yang dibuka pada masa ini akan muncul dalam Dock Mac anda.
 
 Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda mestilah menggunakan akaun iCloud yang sama.</translation>
 <translation id="5551897871312988470">Tawaran untuk Menterjemah</translation>

@@ -10,7 +10,7 @@
 <translation id="1242008676835033345">Dibenamkan pada <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1289742167380433257">Untuk menjimatkan data anda, imej halaman ini telah dioptimumkan oleh Google.</translation>
-<translation id="129382876167171263">Fail yang disimpan oleh tapak web akan dipaparkan di sini</translation>
+<translation id="129382876167171263">Fail yang disimpan oleh laman web akan dipaparkan di sini</translation>
 <translation id="1317194122196776028">Lupakan laman ini</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">Tapak <ph name="SITE_NAME" /> telah ditambahkan</translation>
@@ -80,7 +80,7 @@
 <translation id="2913331724188855103">Benarkan tapak untuk menyimpan dan membaca data kuki (disyorkan)</translation>
 <translation id="2932883381142163287">Laporkan penyalahgunaan</translation>
 <translation id="2968755619301702150">Pemapar sijil</translation>
-<translation id="300526633675317032">Tindakan ini akan menghapuskan semua <ph name="SIZE_IN_KB" /> daripada storan tapak web.</translation>
+<translation id="300526633675317032">Tindakan ini akan menghapuskan semua <ph name="SIZE_IN_KB" /> daripada storan laman web.</translation>
 <translation id="3008272652534848354">Tetapkan semula kebenaran</translation>
 <translation id="301521992641321250">Disekat secara automatik</translation>
 <translation id="3114012059975132928">Pemain video</translation>
@@ -261,7 +261,7 @@
 <translation id="780301667611848630">Tidak, terima kasih</translation>
 <translation id="7804248752222191302">Suatu tapak sedang menggunakan kamera anda</translation>
 <translation id="7817023149356982970">Anda akan dilog keluar daripada tapak ini.</translation>
-<translation id="7828557259026017104">Kuki ialah fail yang dibuat oleh tapak web yang anda lawati. Tapak menggunakan kuki untuk mengingat pilihan anda. Kuki pihak ketiga dibuat oleh tapak lain. Tapak ini memiliki sebahagian daripada kandungan, seperti iklan atau imej, yang anda lihat dalam halaman web yang anda lawati.</translation>
+<translation id="7828557259026017104">Kuki ialah fail yang dibuat oleh laman web yang anda lawati. Tapak menggunakan kuki untuk mengingat pilihan anda. Kuki pihak ketiga dibuat oleh tapak lain. Tapak ini memiliki sebahagian daripada kandungan, seperti iklan atau imej, yang anda lihat dalam halaman web yang anda lawati.</translation>
 <translation id="7835852323729233924">Memainkan media</translation>
 <translation id="783819812427904514">Nyahredam video</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
@@ -269,7 +269,7 @@
 <translation id="7882806643839505685">Benarkan bunyi untuk tapak tertentu.</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
 <translation id="7986741934819883144">Pilih kenalan</translation>
-<translation id="7999064672810608036">Anda pasti ingin mengosongkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk tapak web ini?</translation>
+<translation id="7999064672810608036">Anda pasti ingin mengosongkan semua data setempat, termasuk kuki dan menetapkan semula semua kebenaran untuk laman web ini?</translation>
 <translation id="8007176423574883786">Dimatikan untuk peranti ini</translation>
 <translation id="802154636333426148">Muat turun gagal</translation>
 <translation id="8042586301629853791">Isih mengikut:</translation>
