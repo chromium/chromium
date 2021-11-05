@@ -45,11 +45,11 @@ views::UniqueWidgetPtr DesksTemplatesGridView::CreateDesksTemplatesGridWidget(
   params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.accept_events = true;
   // The parent should be a container that covers all the windows but is below
-  // some other system UI features such as system tray and capture mode.
-  // TODO(sammiequon): It is possible but unlikely due to the bounds we choose
-  // that this can cover the shelf. Investigate if there is a more suitable
-  // container for this widget.
-  params.parent = root->GetChildById(kShellWindowId_ShelfContainer);
+  // some other system UI features such as system tray and capture mode and also
+  // below the system modal dialogs.
+  // TODO(sammiequon): Investigate if there is a more suitable container for
+  // this widget.
+  params.parent = root->GetChildById(kShellWindowId_ShelfBubbleContainer);
   params.name = "DesksTemplatesGridWidget";
 
   views::UniqueWidgetPtr widget(
