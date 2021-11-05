@@ -6020,6 +6020,35 @@
             ]
         }
     ],
+    "PerProcessReclaimArcVmOnFirstMemoryPressure": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroupA_20211104",
+                    "params": {
+                        "TrimArcVmOnCriticalPressure": "false",
+                        "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot": "true"
+                    },
+                    "enable_features": [
+                        "TrimArcVmOnMemoryPressure"
+                    ]
+                },
+                {
+                    "name": "EnabledGroupB_20211104",
+                    "params": {
+                        "TrimArcVmOnCriticalPressure": "true",
+                        "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot": "true"
+                    },
+                    "enable_features": [
+                        "TrimArcVmOnMemoryPressure"
+                    ]
+                }
+            ]
+        }
+    ],
     "PermissionChip": [
         {
             "platforms": [
