@@ -281,6 +281,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 #if defined(OS_ANDROID)
   DestroyJavaObject();
   std::swap(java_match_, match.java_match_);
+  std::swap(matching_java_tab_, match.matching_java_tab_);
   UpdateJavaObjectNativeRef();
 #endif
   return *this;
