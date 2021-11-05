@@ -58,7 +58,7 @@ EventCaptureMac::~EventCaptureMac() {
 }
 
 void EventCaptureMac::SetCrossCursor() {
-  [[NSCursor crosshairCursor] push];
+  [[NSCursor crosshairCursor] set];
 }
 
 }  // namespace image_editor
