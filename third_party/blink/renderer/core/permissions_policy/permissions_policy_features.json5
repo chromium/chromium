@@ -258,6 +258,15 @@
       depends_on: ["InterestCohortFeaturePolicy"],
     },
     {
+      name: "JoinAdInterestGroup",
+      permissions_policy_name: "join-ad-interest-group",
+      feature_default: "EnableForAll",
+      depends_on: ["AdInterestGroupAPI"],
+      default_value_behind_flag: [
+        ["AdInterestGroupAPIRestrictedPolicyByDefault", "EnableForSelf"],
+      ],
+    },
+    {
       name: "KeyboardMap",
       permissions_policy_name: "keyboard-map",
     },
@@ -292,6 +301,15 @@
     {
       name: "PublicKeyCredentialsGet",
       permissions_policy_name: "publickey-credentials-get",
+    },
+    {
+      name: "RunAdAuction",
+      permissions_policy_name: "run-ad-auction",
+      feature_default: "EnableForAll",
+      depends_on: ["Fledge"],
+      default_value_behind_flag: [
+        ["AdInterestGroupAPIRestrictedPolicyByDefault", "EnableForSelf"],
+      ],
     },
     {
       name: "ScreenWakeLock",

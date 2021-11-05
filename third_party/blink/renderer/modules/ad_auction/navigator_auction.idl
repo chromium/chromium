@@ -20,7 +20,7 @@
   [CallWith=ScriptState, Measure, RaisesException]
   void leaveAdInterestGroup(AuctionAdInterestGroup group);
 
-  [CallWith=ScriptState, Measure]
+  [CallWith=ScriptState, Measure, RaisesException]
   void updateAdInterestGroups();
 
   [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]

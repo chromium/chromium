@@ -408,6 +408,10 @@ BLINK_COMMON_EXPORT extern const base::Feature kAdInterestGroupAPI;
 BLINK_COMMON_EXPORT extern const base::Feature kParakeet;
 // FLEDGE ad serving runtime flag/JS API.
 BLINK_COMMON_EXPORT extern const base::Feature kFledge;
+// Changes default Permissions Policy for features join-ad-interest-group and
+// run-ad-auction to a more restricted EnableForSelf.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kAdInterestGroupAPIRestrictedPolicyByDefault;
 
 // Control switch for minimizing processing in the WebRTC APM when all audio
 // tracks are disabled.

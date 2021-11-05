@@ -6763,6 +6763,7 @@ domain Page
       hid
       idle-detection
       interest-cohort
+      join-ad-interest-group
       keyboard-map
       magnetometer
       microphone
@@ -6771,6 +6772,7 @@ domain Page
       payment
       picture-in-picture
       publickey-credentials-get
+      run-ad-auction
       screen-wake-lock
       serial
       shared-autofill

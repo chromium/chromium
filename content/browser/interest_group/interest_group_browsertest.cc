@@ -26,6 +26,7 @@
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -232,7 +233,11 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
   // The `trusted_bidding_signals_keys` and `ads` fields of `group` will be
   // ignored in favor of the passed in values.
-  bool JoinInterestGroupInJS(const blink::InterestGroup& group)
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  bool JoinInterestGroupInJS(
+      const blink::InterestGroup& group,
+      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
       WARN_UNUSED_RESULT {
     // TODO(qingxin): Use base::Value to replace ostringstream.
     std::ostringstream buf;
@@ -267,18 +272,40 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
     buf << "}";
 
-    return "done" == EvalJs(shell(), base::StringPrintf(R"(
+    return "done" == EvalJs(execution_target ? *execution_target : shell(),
+                            base::StringPrintf(R"(
     (function() {
       navigator.joinAdInterestGroup(
         %s, /*join_duration_sec=*/ 300);
       return 'done';
     })())",
-                                                        buf.str().c_str()));
+                                               buf.str().c_str()));
   }
 
-  bool LeaveInterestGroupInJS(url::Origin owner, std::string name) {
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  EvalJsResult UpdateInterestGroupsInJS(
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
+    return EvalJs(execution_target ? *execution_target : shell(), R"(
+(function() {
+  try {
+    navigator.updateAdInterestGroups();
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())");
+  }
+
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  bool LeaveInterestGroupInJS(
+      url::Origin owner, std::string name,
+      const absl::optional<ToRenderFrameHost> execution_target =
+          absl::nullopt) {
     return "done" ==
-           EvalJs(shell(),
+           EvalJs(execution_target ? *execution_target : shell(),
                   base::StringPrintf(R"(
     (function() {
       navigator.leaveAdInterestGroup({name: '%s', owner: '%s'});
@@ -334,10 +361,14 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return 0;
   }
 
-  bool JoinInterestGroupAndWaitInJs(const blink::InterestGroup& group)
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  bool JoinInterestGroupAndWaitInJs(
+      const blink::InterestGroup& group,
+      const absl::optional<ToRenderFrameHost> execution_target = absl::nullopt)
       WARN_UNUSED_RESULT {
     int initial_count = GetJoinCount(group.owner, group.name);
-    if (!JoinInterestGroupInJS(group)) {
+    if (!JoinInterestGroupInJS(group, execution_target)) {
       return false;
     }
     while (GetJoinCount(group.owner, group.name) != initial_count + 1) {
@@ -498,6 +529,76 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     base::AutoLock auto_lock(requests_lock_);
     return received_https_test_server_requests_.find(url) !=
            received_https_test_server_requests_.end();
+  }
+
+  void ExpectNotAllowedToJoinOrUpdateInterestGroup(
+      const url::Origin& origin, RenderFrameHost* execution_target) {
+    EXPECT_EQ(
+        "NotAllowedError: Failed to execute 'joinAdInterestGroup' on "
+        "'Navigator': Feature join-ad-interest-group is not enabled by "
+        "Permissions Policy",
+        EvalJs(execution_target, JsReplace(
+                                     R"(
+(function() {
+  try {
+    navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                     origin)));
+
+    EXPECT_EQ(
+        "NotAllowedError: Failed to execute 'updateAdInterestGroups' on "
+        "'Navigator': Feature join-ad-interest-group is not enabled by "
+        "Permissions Policy",
+        UpdateInterestGroupsInJS(execution_target));
+  }
+
+  // If `execution_target` is non-null, uses it as the target. Otherwise, uses
+  // shell().
+  void ExpectNotAllowedToLeaveInterestGroup(const url::Origin& origin,
+                                            std::string name,
+                                            RenderFrameHost* execution_target) {
+    EXPECT_EQ(
+        "NotAllowedError: Failed to execute 'leaveAdInterestGroup' on "
+        "'Navigator': Feature join-ad-interest-group is not enabled by "
+        "Permissions Policy",
+        EvalJs(execution_target,
+               base::StringPrintf(R"(
+(function() {
+  try {
+    navigator.leaveAdInterestGroup({name: '%s', owner: '%s'});
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())",
+                                  name.c_str(), origin.Serialize().c_str())));
+  }
+
+  void ExpectNotAllowedToRunAdAuction(const url::Origin& origin,
+                                      const GURL& url,
+                                      RenderFrameHost* execution_target) {
+    EXPECT_EQ(
+        "NotAllowedError: Failed to execute 'runAdAuction' on 'Navigator': "
+        "Feature run-ad-auction is not enabled by Permissions Policy",
+        RunAuctionAndWait(JsReplace(
+                              R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$1],
+}
+                              )",
+                              origin, url),
+                          execution_target));
   }
 
  protected:
@@ -691,6 +792,21 @@ class InterestGroupPrivateNetworkBrowserTest : public InterestGroupBrowserTest {
   // seller script had the same header.
   net::test_server::EmbeddedTestServer remote_test_server_;
 
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// More restricted Permissions Policy is set for features join-ad-interest-group
+// and run-ad-auction (EnableForSelf instead of EnableForAll) when runtime flag
+// kAdInterestGroupAPIRestrictedPolicyByDefault is enabled.
+class InterestGroupRestrictedPermissionsPolicyBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupRestrictedPermissionsPolicyBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault);
+  }
+
+ protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -2725,11 +2841,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
       {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2,3]}"}}},
       /*ad_components=*/absl::nullopt)));
 
-  EXPECT_EQ("done", EvalJs(shell(), R"(
-(function() {
-  navigator.updateAdInterestGroups();
-  return 'done';
-})())"));
+  EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
   WaitForInterestGroupsSatisfying(
       test_origin,
@@ -2791,11 +2903,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       {{{GURL("https://example.com/render"), "{ad:'metadata', here:[1,2,3]}"}}},
       /*ad_components=*/absl::nullopt)));
 
-  EXPECT_EQ("done", EvalJs(shell(), R"(
-(function() {
-  navigator.updateAdInterestGroups();
-  return 'done';
-})())"));
+  EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
   // Navigate away -- the update should still continue.
   GURL test_url_b = https_server_->GetURL("b.test", "/echo");
@@ -3418,12 +3526,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
         {{{GURL("https://example.com/render"), /*metadata=*/absl::nullopt}}},
         /*ad_components=*/absl::nullopt)));
 
-    EXPECT_EQ("done", EvalJs(shell(), R"(
-(function() {
-  navigator.updateAdInterestGroups();
-  return 'done';
-})();
-                                      )"));
+    EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
     // Wait for the update request to be made, and check its IPAddressSpace.
     url_loader_monitor.WaitForUrls();
@@ -3480,6 +3583,367 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
             }
             return found_updated_group;
           }));
+}
+
+// Interest group APIs succeeded (i.e., feature join-ad-interest-group is
+// enabled by Permissions Policy), and runAdAuction succeeded (i.e., feature
+// run-ad-auction is enabled by Permissions Policy) in all contexts, because
+// the kAdInterestGroupAPIRestrictedPolicyByDefault runtime flag is disabled by
+// default and in that case the default value for those features are
+// EnableForAll.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       FeaturesEnabledForAllByPermissionsPolicy) {
+  // clang-format off
+  GURL test_url = https_server_->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test("
+          "a.test,"
+          "b.test("
+              "c.test{allow-join-ad-interest-group;run-ad-auction}"
+          ")"
+       ")");
+  // clang-format on
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* same_origin_iframe = ChildFrameAt(main_frame, 0);
+  RenderFrameHost* cross_origin_iframe = ChildFrameAt(main_frame, 1);
+  RenderFrameHost* inner_cross_origin_iframe =
+      ChildFrameAt(cross_origin_iframe, 0);
+
+  // The server JSON updates all fields that can be updated.
+  constexpr char kDailyUpdateUrlPath[] =
+      "/interest_group/daily_update_partial.json";
+  network_responder_->RegisterNetworkResponse(kDailyUpdateUrlPath,
+                                              base::StringPrintf(
+                                                  R"(
+  {
+    "trustedBiddingSignalsKeys": ["new_key"],
+  }
+                                                  )"));
+
+  GURL url;
+  url::Origin origin;
+  std::string host;
+  RenderFrameHost* execution_targets[] = {main_frame, same_origin_iframe,
+                                          cross_origin_iframe,
+                                          inner_cross_origin_iframe};
+
+  for (auto* execution_target : execution_targets) {
+    url = execution_target->GetLastCommittedURL();
+    origin = url::Origin::Create(url);
+    host = url.host();
+    EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+        blink::InterestGroup(
+            /*expiry=*/base::Time(),
+            /*owner=*/origin,
+            /*name=*/"cars",
+            /*bidding_url=*/
+            https_server_->GetURL(host, "/interest_group/bidding_logic.js"),
+            /*update_url=*/
+            https_server_->GetURL(host,
+                                  "/interest_group/daily_update_partial.json"),
+            /*trusted_bidding_signals_url=*/absl::nullopt,
+            /*trusted_bidding_signals_keys=*/absl::nullopt,
+            /*user_bidding_signals=*/absl::nullopt,
+            /*ads=*/
+            {{{GURL("https://example.com/render"),
+               /*metadata=*/absl::nullopt}}},
+            /*ad_components=*/absl::nullopt),
+        execution_target));
+
+    EXPECT_EQ(
+        "https://example.com/render",
+        RunAuctionAndWait(JsReplace(
+                              R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$1],
+}
+                              )",
+                              origin,
+                              https_server_->GetURL(
+                                  host, "/interest_group/decision_logic.js")),
+                          execution_target));
+
+    EXPECT_EQ("done", UpdateInterestGroupsInJS(execution_target));
+    EXPECT_TRUE(LeaveInterestGroupInJS(origin, "cars", execution_target));
+  }
+}
+
+// Features join-ad-interest-group and run-ad-auction can be disabled by HTTP
+// headers, and they cannot be enabled again by container policy in that case.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       FeaturesDisabledByHttpHeader) {
+  GURL test_url = https_server_->GetURL(
+      "a.test",
+      "/interest_group/page-with-fledge-permissions-policy-disabled.html");
+  url::Origin origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
+
+  for (auto* execution_target : {main_frame, iframe}) {
+    ExpectNotAllowedToJoinOrUpdateInterestGroup(origin, execution_target);
+    ExpectNotAllowedToRunAdAuction(
+        origin,
+        https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+        execution_target);
+    ExpectNotAllowedToLeaveInterestGroup(origin, "cars", execution_target);
+  }
+}
+
+// Features join-ad-interest-group and run-ad-auction can be disabled by
+// container policy.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       FeaturesDisabledByContainerPolicy) {
+  GURL test_url = https_server_->GetURL(
+      "a.test",
+      "/interest_group/"
+      "page-with-fledge-permissions-policy-disabled-in-iframe.html");
+  url::Origin origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  RenderFrameHost* same_origin_iframe =
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+  ExpectNotAllowedToJoinOrUpdateInterestGroup(origin, same_origin_iframe);
+  ExpectNotAllowedToRunAdAuction(
+      origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+      same_origin_iframe);
+  ExpectNotAllowedToLeaveInterestGroup(origin, "cars", same_origin_iframe);
+}
+
+// Interest group APIs succeeded (i.e., feature join-ad-interest-group is
+// enabled by Permissions Policy), and runAdAuction succeeded (i.e., feature
+// run-ad-auction is enabled by Permissions Policy) in
+// (1) same-origin frames by default,
+// (2) cross-origin iframes that enable those features in container policy
+//     (iframe "allow" attribute).
+// (3) cross-origin iframes that enables those features inside parent
+//     cross-origin iframes that also enables those features.
+IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
+                       EnabledByPermissionsPolicy) {
+  // clang-format off
+  GURL test_url = https_server_->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test("
+          "a.test,"
+          "b.test{allow-join-ad-interest-group;run-ad-auction}("
+              "c.test{allow-join-ad-interest-group;run-ad-auction}"
+          ")"
+       ")");
+  // clang-format on
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* same_origin_iframe = ChildFrameAt(main_frame, 0);
+  RenderFrameHost* cross_origin_iframe = ChildFrameAt(main_frame, 1);
+  RenderFrameHost* inner_cross_origin_iframe =
+      ChildFrameAt(cross_origin_iframe, 0);
+
+  // The server JSON updates all fields that can be updated.
+  constexpr char kDailyUpdateUrlPath[] =
+      "/interest_group/daily_update_partial.json";
+  network_responder_->RegisterNetworkResponse(kDailyUpdateUrlPath,
+                                              base::StringPrintf(
+                                                  R"(
+  {
+    "trustedBiddingSignalsKeys": ["new_key"],
+  }
+                                                  )"));
+
+  GURL url;
+  url::Origin origin;
+  std::string host;
+  RenderFrameHost* execution_targets[] = {main_frame, same_origin_iframe,
+                                          cross_origin_iframe,
+                                          inner_cross_origin_iframe};
+
+  for (auto* execution_target : execution_targets) {
+    url = execution_target->GetLastCommittedURL();
+    origin = url::Origin::Create(url);
+    host = url.host();
+    EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+        blink::InterestGroup(
+            /*expiry=*/base::Time(),
+            /*owner=*/origin,
+            /*name=*/"cars",
+            /*bidding_url=*/
+            https_server_->GetURL(host, "/interest_group/bidding_logic.js"),
+            /*update_url=*/
+            https_server_->GetURL(host,
+                                  "/interest_group/daily_update_partial.json"),
+            /*trusted_bidding_signals_url=*/absl::nullopt,
+            /*trusted_bidding_signals_keys=*/absl::nullopt,
+            /*user_bidding_signals=*/absl::nullopt,
+            /*ads=*/
+            {{{GURL("https://example.com/render"),
+               /*metadata=*/absl::nullopt}}},
+            /*ad_components=*/absl::nullopt),
+        execution_target));
+
+    EXPECT_EQ(
+        "https://example.com/render",
+        RunAuctionAndWait(JsReplace(
+                              R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$1],
+}
+                              )",
+                              origin,
+                              https_server_->GetURL(
+                                  host, "/interest_group/decision_logic.js")),
+                          execution_target));
+
+    EXPECT_EQ("done", UpdateInterestGroupsInJS(execution_target));
+    EXPECT_TRUE(LeaveInterestGroupInJS(origin, "cars", execution_target));
+  }
+}
+
+// Interest group APIs throw NotAllowedError (i.e., feature
+// join-ad-interest-group is disabled by Permissions Policy), and runAdAuction
+// throws NotAllowedError (i.e, feature run-ad-auction is disabled by
+// Permissions Policy) in
+// (1) same-origin iframes that disabled the features using allow attribute,
+// (2) cross-origin iframes that don't enable those features in container policy
+//     (iframe "allow" attribute).
+// (3) iframes that enables those features inside parent cross-origin iframes
+//     that don't enable those features.
+IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
+                       DisabledByContainerPolicy) {
+  GURL other_url = https_server_->GetURL("b.test", "/echo");
+  url::Origin other_origin = url::Origin::Create(other_url);
+  // clang-format off
+  GURL test_url = https_server_->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test("
+          "b.test("
+              "b.test{allow-join-ad-interest-group;run-ad-auction}"
+          ")"
+       ")");
+  // clang-format on
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  RenderFrameHost* outter_iframe =
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+  RenderFrameHost* inner_iframe = ChildFrameAt(outter_iframe, 0);
+
+  for (auto* execution_target : {outter_iframe, inner_iframe}) {
+    ExpectNotAllowedToJoinOrUpdateInterestGroup(other_origin, execution_target);
+    ExpectNotAllowedToRunAdAuction(
+        other_origin,
+        https_server_->GetURL("b.test", "/interest_group/decision_logic.js"),
+        execution_target);
+    ExpectNotAllowedToLeaveInterestGroup(other_origin, "cars",
+                                         execution_target);
+  }
+
+  test_url = https_server_->GetURL(
+      "a.test",
+      "/interest_group/"
+      "page-with-fledge-permissions-policy-disabled-in-iframe.html");
+  url::Origin origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  RenderFrameHost* same_origin_iframe =
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+  ExpectNotAllowedToJoinOrUpdateInterestGroup(origin, same_origin_iframe);
+  ExpectNotAllowedToRunAdAuction(
+      origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+      same_origin_iframe);
+  ExpectNotAllowedToLeaveInterestGroup(origin, "cars", same_origin_iframe);
+}
+
+// Features join-ad-interest-group and run-ad-auction can be enabled/disabled
+// separately.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupRestrictedPermissionsPolicyBrowserTest,
+    EnableOneOfInterestGroupAPIsAndAuctionAPIForIframe) {
+  GURL other_url = https_server_->GetURL("b.test", "/echo");
+  url::Origin other_origin = url::Origin::Create(other_url);
+  // clang-format off
+  GURL test_url = https_server_->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test("
+          "b.test{allow-join-ad-interest-group},"
+          "b.test{allow-run-ad-auction})");
+  // clang-format on
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  RenderFrameHost* iframe_interest_group =
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 0);
+  RenderFrameHost* iframe_ad_auction =
+      ChildFrameAt(shell()->web_contents()->GetMainFrame(), 1);
+
+  // Interest group APIs succeed and run ad auction fails for
+  // iframe_interest_group.
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/other_origin,
+          /*name=*/"cars",
+          /*bidding_url=*/
+          https_server_->GetURL("b.test", "/interest_group/bidding_logic.js"),
+          /*update_url=*/
+          https_server_->GetURL("b.test",
+                                "/interest_group/daily_update_partial.json"),
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/absl::nullopt,
+          /*ads=*/
+          {{{GURL("https://example.com/render"), /*metadata=*/absl::nullopt}}},
+          /*ad_components=*/absl::nullopt),
+      iframe_interest_group));
+
+  EXPECT_EQ("done", UpdateInterestGroupsInJS(iframe_interest_group));
+  ExpectNotAllowedToRunAdAuction(
+      other_origin,
+      https_server_->GetURL("b.test", "/interest_group/decision_logic.js"),
+      iframe_interest_group);
+
+  // Interest group APIs fail and run ad auction succeeds for iframe_ad_auction.
+  ExpectNotAllowedToJoinOrUpdateInterestGroup(other_origin, iframe_ad_auction);
+  EXPECT_EQ(
+      "https://example.com/render",
+      RunAuctionAndWait(JsReplace(
+                            R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$1],
+}
+                            )",
+                            other_origin,
+                            https_server_->GetURL(
+                                "b.test", "/interest_group/decision_logic.js")),
+                        iframe_ad_auction));
+  ExpectNotAllowedToLeaveInterestGroup(other_origin, "cars", iframe_ad_auction);
+
+  EXPECT_TRUE(
+      LeaveInterestGroupInJS(other_origin, "cars", iframe_interest_group));
+}
+
+// Features join-ad-interest-group and run-ad-auction can be disabled by HTTP
+// headers, and they cannot be enabled again by container policy in that case.
+IN_PROC_BROWSER_TEST_F(InterestGroupRestrictedPermissionsPolicyBrowserTest,
+                       DisabledByHttpHeader) {
+  GURL test_url = https_server_->GetURL(
+      "a.test",
+      "/interest_group/page-with-fledge-permissions-policy-disabled.html");
+  url::Origin origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  RenderFrameHost* main_frame = shell()->web_contents()->GetMainFrame();
+  RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
+
+  for (auto* execution_target : {main_frame, iframe}) {
+    ExpectNotAllowedToJoinOrUpdateInterestGroup(origin, execution_target);
+    ExpectNotAllowedToRunAdAuction(
+        origin,
+        https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
+        execution_target);
+    ExpectNotAllowedToLeaveInterestGroup(origin, "cars", execution_target);
+  }
 }
 
 }  // namespace

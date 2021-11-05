@@ -153,7 +153,7 @@ enum PermissionsPolicyFeature {
   // introduced to enable safely experimenting with sending a reduced user
   // agent string in the `User-Agent` header.
   //
-  // See https://www.chromestatus.com/feature/5704553745874944 for the 
+  // See https://www.chromestatus.com/feature/5704553745874944 for the
   // User-Agent reduction Chrome feature and the design doc
   // https://docs.google.com/document/d/1feIxK9S7oNgT2oGGebbxE9X0O-4wTKcsP_gRaY99tq4
   // for details on the use of Client Hints guarded by an Origin Trial to
@@ -166,6 +166,18 @@ enum PermissionsPolicyFeature {
   // Controls access to the Keyboard API.
   // https://wicg.github.io/keyboard-map/
   kKeyboardMap = 90,
+
+  // Controls FLEDGE's runAdAuction API.
+  //
+  // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
+  // for the API.
+  kRunAdAuction = 91,
+
+  // Controls FLEDGE's joinAdInterestGroup and updateAdInterestGroups APIs.
+  //
+  // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
+  // for the API.
+  kJoinAdInterestGroup = 92,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

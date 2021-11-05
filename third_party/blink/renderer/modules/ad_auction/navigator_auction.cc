@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequence.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad.h"
@@ -427,6 +429,7 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
                                            double duration_seconds,
                                            ExceptionState& exception_state) {
   const ExecutionContext* context = ExecutionContext::From(script_state);
+
   auto mojo_group = mojom::blink::InterestGroup::New();
   mojo_group->expiry = base::Time::Now() + base::Seconds(duration_seconds);
   if (!CopyOwnerFromIdlToMojo(*context, exception_state, *group, *mojo_group))
@@ -478,6 +481,14 @@ void NavigatorAuction::joinAdInterestGroup(ScriptState* script_state,
                                            const AuctionAdInterestGroup* group,
                                            double duration_seconds,
                                            ExceptionState& exception_state) {
+  const ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    exception_state.ThrowException(
+        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+        "Feature join-ad-interest-group is not enabled by Permissions Policy");
+    return;
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .joinAdInterestGroup(script_state, group, duration_seconds,
                            exception_state);
@@ -502,6 +513,14 @@ void NavigatorAuction::leaveAdInterestGroup(ScriptState* script_state,
                                             Navigator& navigator,
                                             const AuctionAdInterestGroup* group,
                                             ExceptionState& exception_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    exception_state.ThrowException(
+        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+        "Feature join-ad-interest-group is not enabled by Permissions Policy");
+    return;
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .leaveAdInterestGroup(script_state, group, exception_state);
 }
@@ -512,9 +531,17 @@ void NavigatorAuction::updateAdInterestGroups() {
 
 /* static */
 void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
-                                              Navigator& navigator) {
-  return From(ExecutionContext::From(script_state), navigator)
-      .updateAdInterestGroups();
+                                              Navigator& navigator,
+                                              ExceptionState& exception_state) {
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    exception_state.ThrowException(
+        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+        "Feature join-ad-interest-group is not enabled by Permissions Policy");
+    return;
+  }
+  return From(context, navigator).updateAdInterestGroups();
 }
 
 ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
@@ -554,6 +581,14 @@ ScriptPromise NavigatorAuction::runAdAuction(ScriptState* script_state,
                                              Navigator& navigator,
                                              const AuctionAdConfig* config,
                                              ExceptionState& exception_state) {
+  const ExecutionContext* context = ExecutionContext::From(script_state);
+  if (!context->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
+    exception_state.ThrowException(
+        static_cast<int>(DOMExceptionCode::kNotAllowedError),
+        "Feature run-ad-auction is not enabled by Permissions Policy");
+    return ScriptPromise();
+  }
   return From(ExecutionContext::From(script_state), navigator)
       .runAdAuction(script_state, config, exception_state);
 }

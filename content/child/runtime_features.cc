@@ -332,6 +332,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
   const RuntimeFeatureToChromiumFeatureMap<const char*>
       runtimeFeatureNameToChromiumFeatureMapping[] = {
           {"AdInterestGroupAPI", blink::features::kAdInterestGroupAPI},
+          {"AdInterestGroupAPIRestrictedPolicyByDefault",
+           blink::features::kAdInterestGroupAPIRestrictedPolicyByDefault},
           {"AllowContentInitiatedDataUrlNavigations",
            features::kAllowContentInitiatedDataUrlNavigations},
           {"AutofillShadowDOM", blink::features::kAutofillShadowDOM},

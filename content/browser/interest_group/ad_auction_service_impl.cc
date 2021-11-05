@@ -177,6 +177,13 @@ void AdAuctionServiceImpl::CreateMojoService(
 
 void AdAuctionServiceImpl::JoinInterestGroup(
     const blink::InterestGroup& group) {
+  // If the interest group API is not allowed for this context by Permissions
+  // Policy, do nothing
+  if (!render_frame_host()->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    mojo::ReportBadMessage("Unexpected request");
+    return;
+  }
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
           render_frame_host()->GetBrowserContext(), main_frame_origin_,
@@ -200,6 +207,13 @@ void AdAuctionServiceImpl::JoinInterestGroup(
 
 void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
                                               const std::string& name) {
+  // If the interest group API is not allowed for this context by Permissions
+  // Policy, do nothing
+  if (!render_frame_host()->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    mojo::ReportBadMessage("Unexpected request");
+    return;
+  }
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
           render_frame_host()->GetBrowserContext(), main_frame_origin_,
@@ -217,6 +231,13 @@ void AdAuctionServiceImpl::LeaveInterestGroup(const url::Origin& owner,
 }
 
 void AdAuctionServiceImpl::UpdateAdInterestGroups() {
+  // If the interest group API is not allowed for this context by Permissions
+  // Policy, do nothing
+  if (!render_frame_host()->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
+    mojo::ReportBadMessage("Unexpected request");
+    return;
+  }
   // If the interest group API is not allowed for this origin do nothing.
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
           render_frame_host()->GetBrowserContext(), main_frame_origin_,
@@ -229,6 +250,13 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
 
 void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                                         RunAdAuctionCallback callback) {
+  // If the run ad auction API is not allowed for this context by Permissions
+  // Policy, do nothing
+  if (!render_frame_host()->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
+    mojo::ReportBadMessage("Unexpected request");
+    return;
+  }
   if (!IsAuctionValid(*config)) {
     if (GetAuctionCompleteCallback())
       GetAuctionCompleteCallback().Run({"Invalid auction config"});

@@ -35380,6 +35380,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="88" label="ClientHintUAReduced"/>
   <int value="89" label="ClientHintViewportHeight"/>
   <int value="90" label="KeyboardMap"/>
+  <int value="91" label="RunAdAuction"/>
+  <int value="92" label="JoinAdInterestGroup"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

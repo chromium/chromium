@@ -47,7 +47,7 @@ class MODULES_EXPORT NavigatorAuction final
                                    const AuctionAdInterestGroup*,
                                    ExceptionState&);
   void updateAdInterestGroups();
-  static void updateAdInterestGroups(ScriptState*, Navigator&);
+  static void updateAdInterestGroups(ScriptState*, Navigator&, ExceptionState&);
   ScriptPromise runAdAuction(ScriptState*,
                              const AuctionAdConfig*,
                              ExceptionState&);

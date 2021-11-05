@@ -3381,6 +3381,8 @@ enum WebFeature {
   kWebCodecsVideoFrameFromBuffer = 4072,
   kOpenWebDatabaseInsecureContext = 4073,
   kScriptWebBundle = 4074,
+  kRunAdAuction = 4075,
+  kJoinAdInterestGroup = 4076,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
