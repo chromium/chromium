@@ -236,8 +236,6 @@ class LoginPromptBrowserTest
     auth_map_["bar"] = AuthInfo("testuser", "barpassword");
     auth_map_["testrealm"] = AuthInfo(username_basic_, password_);
 
-    // TODO(https://crbug.com/333943): Remove kFtpProtocol feature and FTP
-    // credential tests when FTP support is removed.
     if (GetParam() == SplitAuthCacheByNetworkIsolationKey::kFalse) {
       scoped_feature_list_.InitAndDisableFeature(
           network::features::kSplitAuthCacheByNetworkIsolationKey);
