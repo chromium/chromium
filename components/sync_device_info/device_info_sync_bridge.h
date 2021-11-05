@@ -27,6 +27,7 @@
 
 namespace sync_pb {
 class DeviceInfoSpecifics;
+enum SyncEnums_DeviceType : int;
 }  // namespace sync_pb
 
 namespace syncer {
@@ -91,7 +92,8 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   std::vector<std::unique_ptr<DeviceInfo>> GetAllDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  int CountActiveDevices() const override;
+  std::map<sync_pb::SyncEnums_DeviceType, int> CountActiveDevicesByType()
+      const override;
   bool IsRecentLocalCacheGuid(const std::string& cache_guid) const override;
 
   // For testing only.
@@ -150,12 +152,6 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   // indicated to do as such.
   void CommitAndNotify(std::unique_ptr<ModelTypeStore::WriteBatch> batch,
                        bool should_notify);
-
-  // Counts the number of active devices relative to |now|. The activeness of a
-  // device depends on the amount of time since it was updated, which means
-  // comparing it against the current time. |now| is passed into this method to
-  // allow unit tests to control expected results.
-  int CountActiveDevices(const base::Time now) const;
 
   // Deletes locally old data and metadata entries without issuing tombstones.
   void ExpireOldEntries();

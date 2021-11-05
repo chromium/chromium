@@ -5,9 +5,11 @@
 #include "components/sync_device_info/fake_device_info_tracker.h"
 
 #include <algorithm>
+#include <map>
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
 namespace {
@@ -68,8 +70,15 @@ void FakeDeviceInfoTracker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-int FakeDeviceInfoTracker::CountActiveDevices() const {
-  return active_device_count_.value_or(devices_.size());
+std::map<sync_pb::SyncEnums_DeviceType, int>
+FakeDeviceInfoTracker::CountActiveDevicesByType() const {
+  if (device_count_per_type_override_)
+    return *device_count_per_type_override_;
+
+  std::map<sync_pb::SyncEnums_DeviceType, int> count_by_type;
+  for (const auto* device : devices_)
+    count_by_type[device->device_type()]++;
+  return count_by_type;
 }
 
 void FakeDeviceInfoTracker::ForcePulseForTest() {
@@ -97,8 +106,9 @@ void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
     observer.OnDeviceInfoChange();
 }
 
-void FakeDeviceInfoTracker::OverrideActiveDeviceCount(int count) {
-  active_device_count_ = count;
+void FakeDeviceInfoTracker::OverrideActiveDeviceCount(
+    const std::map<sync_pb::SyncEnums_DeviceType, int>& counts) {
+  device_count_per_type_override_ = counts;
   for (auto& observer : observers_)
     observer.OnDeviceInfoChange();
 }

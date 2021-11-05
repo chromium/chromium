@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/model/data_type_activation_request.h"
@@ -571,10 +572,6 @@ void DeviceInfoSyncBridge::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-int DeviceInfoSyncBridge::CountActiveDevices() const {
-  return CountActiveDevices(Time::Now());
-}
-
 bool DeviceInfoSyncBridge::IsRecentLocalCacheGuid(
     const std::string& cache_guid) const {
   return device_info_prefs_->IsRecentLocalCacheGuid(cache_guid);
@@ -841,7 +838,8 @@ void DeviceInfoSyncBridge::CommitAndNotify(std::unique_ptr<WriteBatch> batch,
   }
 }
 
-int DeviceInfoSyncBridge::CountActiveDevices(const Time now) const {
+std::map<sync_pb::SyncEnums_DeviceType, int>
+DeviceInfoSyncBridge::CountActiveDevicesByType() const {
   // The algorithm below leverages sync timestamps to give a tight lower bound
   // (modulo clock skew) on how many distinct devices are currently active
   // (where active means being used recently enough as specified by
@@ -854,6 +852,7 @@ int DeviceInfoSyncBridge::CountActiveDevices(const Time now) const {
 
   // The series of relevant events over time, the value being +1 when a device
   // was seen for the first time, and -1 when a device was seen last.
+  const base::Time now = base::Time::Now();
   std::map<sync_pb::SyncEnums_DeviceType, std::multimap<base::Time, int>>
       relevant_events;
 
@@ -877,7 +876,7 @@ int DeviceInfoSyncBridge::CountActiveDevices(const Time now) const {
     }
   }
 
-  int max_overlapping_sum = 0;
+  std::map<sync_pb::SyncEnums_DeviceType, int> device_count_by_type;
   for (const auto& type_and_events : relevant_events) {
     int max_overlapping = 0;
     int overlapping = 0;
@@ -886,11 +885,11 @@ int DeviceInfoSyncBridge::CountActiveDevices(const Time now) const {
       DCHECK_LE(0, overlapping);
       max_overlapping = std::max(max_overlapping, overlapping);
     }
+    device_count_by_type[type_and_events.first] = max_overlapping;
     DCHECK_EQ(overlapping, 0);
-    max_overlapping_sum += max_overlapping;
   }
 
-  return max_overlapping_sum;
+  return device_count_by_type;
 }
 
 void DeviceInfoSyncBridge::ExpireOldEntries() {

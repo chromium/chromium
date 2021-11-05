@@ -33,6 +33,12 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
+<variants name="SyncDeviceType">
+  <variant name="Desktop"/>
+  <variant name="Phone"/>
+  <variant name="Tablet"/>
+</variants>
+
 <variants name="SyncModelType">
   <variant name=".APP" summary="APP"/>
   <variant name=".APP_LIST" summary="APP_LIST"/>
@@ -652,6 +658,21 @@ chromium-metrics-reviews@google.com.
     profile. May be 0 when there are no signed in/syncing profiles open. Logged
     with every UMA log.
   </summary>
+</histogram>
+
+<histogram name="Sync.DeviceCount2.{SyncDeviceType}" units="devices"
+    expires_after="2023-11-02">
+  <owner>ssid@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <owner>jkrcal@chromium.org</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The largest number of active and concurrently syncing devices of type
+    {SyncDeviceType} known to any profile. May be 0 when there are no signed
+    in/syncing profiles open. Logged with every UMA log.
+  </summary>
+  <token key="SyncDeviceType" variants="SyncDeviceType"/>
 </histogram>
 
 <histogram name="Sync.DuplicateBookmarkEntityOnRemoteUpdateCondition"
