@@ -1,12 +1,14 @@
 <style>
   :root {
-    --grid-gap: 3px;
+    --grid-gap: max(3px, 0.5vw);
     --key-travel: 3px;
+
+    --rows: minmax(18px, 1fr) repeat(5, 2fr);
   }
 
-  .keyboard {
+  #keyboard {
     column-gap: var(--grid-gap);
-    height: 200px;
+    height: 200px;  /* Overriden by JavaScript */
     width: 100%;
   }
 
@@ -14,7 +16,7 @@
     display: inline-grid;
     grid-gap: var(--grid-gap);
     grid-template-columns: repeat(29, 1fr);
-    grid-template-rows: 1fr repeat(5, 2fr);
+    grid-template-rows: var(--rows);
     height: 100%;
     width: 100%;
   }
@@ -46,6 +48,7 @@
   #arrowKeyCluster {
     display: grid;
     grid-column: span 6;
+    grid-gap: var(--grid-gap);
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
   }
@@ -166,13 +169,14 @@
     display: inline-grid;
     grid-gap: var(--grid-gap);
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: 1fr repeat(5, 2fr);
+    grid-template-rows: var(--rows);
     height: 100%;
     /*
      * The number pad will always be on the right, even in RTL locales, so
      * disable the lint warning.
      */
-    padding-left: 9px;  /* csschecker-disable-line left-right */
+    padding-left:  /* csschecker-disable-line left-right */
+        calc(var(--grid-gap) * 3);
     width: 23%;
   }
 
@@ -188,7 +192,14 @@
     grid-column: span 2;
   }
 </style>
-<div class="keyboard"
+<div id="widthChangeDetector">
+  <!--
+    We don't want to both observe and modify the size of #keyboard, so instead
+    we observe the size of this empty element, which will change widths at the
+    same time as #keyboard.
+  -->
+</div>
+<div id="keyboard"
     data-show-number-pad$="[[showNumberPad]]">
   <div class="main-cluster"
       data-mech-layout$="[[mechanicalLayout]]">

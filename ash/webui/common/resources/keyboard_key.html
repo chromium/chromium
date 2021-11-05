@@ -32,12 +32,17 @@
     left: 0;
     position: absolute;
     right: 0;
-    text-align: center;
     top: 0;
     transition: all 150ms ease-in-out;
   }
 
-  #foreground:not(:empty) {
+  #text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #text:not(:empty) {
     padding: 0 5px;
   }
 
@@ -63,4 +68,6 @@
   }
 </style>
 <div id="background"></div>
-<div id="foreground">[[mainGlyph]]</div>
+<div id="foreground">
+  <span id="text">[[mainGlyph]]</span>
+</div>

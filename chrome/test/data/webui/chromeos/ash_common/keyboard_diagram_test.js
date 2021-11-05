@@ -68,4 +68,30 @@ export function keyboardDiagramTestSuite() {
     assertKeyVisible('jisKanaKey');
     assertKeyVisible('jisYenKey');
   });
+
+  test('resize', async () => {
+    const keyboardElement = diagramElement.root.getElementById('keyboard');
+    diagramElement.showNumberPad = false;
+
+    document.body.style.width = '700px';
+    await flushTasks();
+    assertEquals(264, keyboardElement.offsetHeight);
+
+    document.body.style.width = '1000px';
+    await flushTasks();
+    assertEquals(377, keyboardElement.offsetHeight);
+  });
+
+  test('resizeOnNumpadChange', async () => {
+    const keyboardElement = diagramElement.root.getElementById('keyboard');
+
+    document.body.style.width = '1000px';
+    diagramElement.showNumberPad = false;
+    await flushTasks();
+    assertEquals(377, keyboardElement.offsetHeight);
+
+    diagramElement.showNumberPad = true;
+    await flushTasks();
+    assertEquals(290, keyboardElement.offsetHeight);
+  });
 }

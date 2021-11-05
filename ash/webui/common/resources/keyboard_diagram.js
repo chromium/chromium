@@ -11,6 +11,10 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
  * 'keyboard-diagram' displays a diagram of a CrOS-style keyboard.
  */
 
+// Size ratios derived from diagrams in the Chromebook keyboard spec.
+const HEIGHT_TO_WIDTH_RATIO = 663 / 1760;
+const EXTENDED_HEIGHT_TO_WIDTH_RATIO = 9 / 31;
+
 /**
  * Enum of mechanical layouts supported by the component.
  * @enum {string}
@@ -39,8 +43,30 @@ export class KeyboardDiagramElement extends PolymerElement {
       mechanicalLayout: String,
 
       /** Whether to show a Chrome OS-style number pad.  */
-      showNumberPad: Boolean,
+      showNumberPad: {
+        type: Boolean,
+        observer: 'updateHeight_',
+      },
     };
+  }
+
+  constructor() {
+    super();
+
+    /** @private */
+    this.resizeObserver_ = new ResizeObserver(this.onResize_.bind(this));
+
+    /** @private {?number} */
+    this.currentWidth_ = null;
+  }
+
+  ready() {
+    super.ready();
+
+    // We have to observe the size of an element other than the keyboard itself,
+    // to avoid ResizeObserver call loops when we change the width of the
+    // keyboard element.
+    this.resizeObserver_.observe(this.$.widthChangeDetector);
   }
 
   /**
@@ -52,6 +78,24 @@ export class KeyboardDiagramElement extends PolymerElement {
    */
   isEqual_(lhs, rhs) {
     return lhs === rhs;
+  }
+
+  /** @private */
+  updateHeight_() {
+    const width = this.$.keyboard.offsetWidth;
+    const widthToHeightRatio = this.showNumberPad ?
+        EXTENDED_HEIGHT_TO_WIDTH_RATIO :
+        HEIGHT_TO_WIDTH_RATIO;
+    this.$.keyboard.style.height = `${width * widthToHeightRatio}px`;
+  }
+
+  /** @private */
+  onResize_() {
+    const newWidth = this.$.keyboard.offsetWidth;
+    if (newWidth !== this.currentWidth_) {
+      this.updateHeight_();
+      this.currentWidth_ = newWidth;
+    }
   }
 }
 
