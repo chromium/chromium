@@ -15,6 +15,35 @@ source_set("cast_streaming_renderer") {
   deps = [
     "//base",
     "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("cast_streaming_renderer_controller_proxy") {
+  sources = [
+    "cast_streaming_renderer_controller_proxy.cc",
+    "cast_streaming_renderer_controller_proxy.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//media/cast/receiver/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("cast_streaming_renderer_controller_proxy_impl") {
+  sources = [
+    "cast_streaming_renderer_controller_proxy_impl.cc",
+    "cast_streaming_renderer_controller_proxy_impl.h",
+  ]
+
+  public_deps = [
+    ":cast_streaming_renderer_controller_proxy",
+    "//base",
+    "//media/cast/receiver/mojom",
+    "//mojo/public/cpp/bindings",
   ]
 }
 
@@ -30,7 +59,9 @@ source_set("unit_tests") {
     ":cast_streaming_renderer",
     "//base/test:test_support",
     "//media:test_support",
+    "//media/cast/receiver/mojom",
     "//media/mojo:test_support",
+    "//media/mojo/mojom",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gmock",
     "//testing/gtest",

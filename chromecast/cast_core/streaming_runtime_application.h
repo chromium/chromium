@@ -5,9 +5,14 @@
 #ifndef CHROMECAST_CAST_CORE_STREAMING_RUNTIME_APPLICATION_H_
 #define CHROMECAST_CAST_CORE_STREAMING_RUNTIME_APPLICATION_H_
 
+#include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/cast_core/runtime_application_base.h"
 #include "chromecast/cast_core/streaming_receiver_session_client.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
+#include "media/cast/receiver/mojom/cast_streaming_renderer_controller.mojom.h"
+#include "media/mojo/mojom/renderer.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {
 
@@ -15,7 +20,8 @@ class MessagePortService;
 
 class StreamingRuntimeApplication final
     : public RuntimeApplicationBase,
-      public StreamingReceiverSessionClient::Handler {
+      public StreamingReceiverSessionClient::Handler,
+      public CastWebContents::Observer {
  public:
   // |web_service| is expected to exist for the lifetime of this instance.
   StreamingRuntimeApplication(
@@ -37,6 +43,20 @@ class StreamingRuntimeApplication final
   void OnError() override;
   void StartAvSettingsQuery(
       std::unique_ptr<cast_api_bindings::MessagePort> message_port) override;
+
+  // CastWebContents::Observer overrides.
+  void MainFrameReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+  // Helper method to start playback using |renderer_connection_| and
+  // |renderer_controls_|.
+  void StartRenderer();
+
+  bool has_started_streaming_ = false;
+
+  mojo::AssociatedRemote<media::cast::mojom::CastStreamingRendererController>
+      renderer_connection_;
+  mojo::Remote<media::mojom::Renderer> renderer_controls_;
 
   // Returns the network context used by |receiver_session_client_|.
   const cast_streaming::NetworkContextGetter network_context_getter_;

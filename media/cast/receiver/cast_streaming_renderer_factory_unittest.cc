@@ -7,12 +7,15 @@
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "media/base/mock_filters.h"
 #include "media/base/mock_video_renderer_sink.h"
 #include "media/base/overlay_info.h"
 #include "media/base/video_renderer_sink.h"
+#include "media/mojo/mojom/renderer.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
@@ -40,11 +43,17 @@ class CastStreamingRendererFactoryTest : public testing::Test {
   CastStreamingRendererFactoryTest()
       : mock_factory_(std::make_unique<StrictMock<MockRendererFactory>>()),
         mock_factory_ptr_(mock_factory_.get()),
-        factory_(std::move(mock_factory_)) {}
+        factory_(std::move(mock_factory_),
+                 remote_.BindNewPipeAndPassReceiver()) {}
 
   ~CastStreamingRendererFactoryTest() override = default;
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  mojo::Remote<media::mojom::Renderer> remote_;
+
   std::unique_ptr<MockRendererFactory> mock_factory_;
   MockRendererFactory* mock_factory_ptr_;
   CastStreamingRendererFactory factory_;

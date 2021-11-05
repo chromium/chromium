@@ -108,6 +108,7 @@
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
 // Enable libcast streaming receiver.
 #include "components/cast_streaming/public/cast_streaming_url.h"  // nogncheck
+#include "media/cast/receiver/cast_streaming_renderer_controller_proxy.h"  // nogncheck
 #include "media/cast/receiver/cast_streaming_renderer_factory.h"  // nogncheck
 #endif
 
@@ -785,9 +786,13 @@ MediaFactory::CreateRendererFactorySelector(
         media_log, decoder_factory, render_thread, render_frame_);
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
+    auto* renderer_controller_proxy =
+        media::cast::CastStreamingRendererControllerProxy::GetInstance();
+    DCHECK(renderer_controller_proxy);
     auto cast_streaming_renderer_factory =
         std::make_unique<media::cast::CastStreamingRendererFactory>(
-            std::move(default_factory_cast_streaming));
+            std::move(default_factory_cast_streaming),
+            renderer_controller_proxy->GetReceiver(render_frame_));
     factory_selector->AddBaseFactory(
         RendererType::kCastStreaming,
         std::move(cast_streaming_renderer_factory));

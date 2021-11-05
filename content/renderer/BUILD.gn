@@ -387,6 +387,7 @@ target(link_target_type, "renderer") {
     deps += [
       "//components/cast_streaming/public",
       "//media/cast/receiver:cast_streaming_renderer",
+      "//media/cast/receiver:cast_streaming_renderer_controller_proxy",
     ]
   }
 

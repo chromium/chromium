@@ -200,6 +200,8 @@ if (is_linux) {
       ":metrics_recorder",
       "//base",
       "//chromecast/browser:public",
+      "//media/cast/receiver/mojom",
+      "//media/mojo/mojom",
       "//third_party/cast_core/public/src/proto/common:application_config_proto",
       "//third_party/cast_core/public/src/proto/core:cast_core_service_proto",
       "//third_party/cast_core/public/src/proto/metrics:metrics_recorder_proto",
@@ -236,6 +238,7 @@ cast_source_set("renderer") {
     "//components/cast_streaming/renderer",
     "//content/public/renderer",
     "//media",
+    "//media/cast/receiver:cast_streaming_renderer_controller_proxy_impl",
   ]
 }
 

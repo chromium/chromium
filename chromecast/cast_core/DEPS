@@ -16,6 +16,8 @@ include_rules = [
   "+content/public",
   "+extensions/browser",
   "+media/base",
+  "+media/cast/receiver",
+  "+media/mojo",
   "+mojo/core/test",
   "+mojo/public",
   "+net/base",

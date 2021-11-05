@@ -8,6 +8,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_media_playback_options.h"
 #include "media/base/demuxer.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace chromecast {
 
@@ -19,6 +20,9 @@ void CastRuntimeContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
   CastContentRendererClient::RenderFrameCreated(render_frame);
   cast_streaming_demuxer_provider_.RenderFrameCreated(render_frame);
+
+  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
+      cast_streaming_renderer_controller_proxy_.GetBinder(render_frame));
 }
 
 std::unique_ptr<::media::Demuxer>

@@ -9,7 +9,9 @@
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
@@ -49,7 +51,12 @@ void StreamingRuntimeApplication::HandleMessage(
 
 void StreamingRuntimeApplication::OnStreamingSessionStarted() {
   LOG(INFO) << "Streaming session started for " << *this << "!";
+  has_started_streaming_ = true;
   SetApplicationStarted();
+
+  if (renderer_connection_) {
+    StartRenderer();
+  }
 }
 
 void StreamingRuntimeApplication::OnError() {
@@ -78,6 +85,9 @@ GURL StreamingRuntimeApplication::InitializeAndGetInitialURL(
   message_port_service_->ConnectToPort(kCastTransportBindingName,
                                        std::move(client_port));
 
+  // Allow for capturing of the renderer controls mojo pipe.
+  Observe(cast_web_contents);
+
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
       task_runner(), network_context_getter_, std::move(server_port), this,
@@ -101,6 +111,36 @@ void StreamingRuntimeApplication::StopApplication() {
   receiver_session_client_.reset();
   RuntimeApplicationBase::StopApplication();
   message_port_service_.reset();
+}
+
+void StreamingRuntimeApplication::MainFrameReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  DLOG(INFO)
+      << "Capturing CastStreamingRendererController remote pipe for URL: "
+      << navigation_handle->GetURL() << " in " << *this;
+
+  renderer_connection_.reset();
+  navigation_handle->GetRenderFrameHost()
+      ->GetRemoteAssociatedInterfaces()
+      ->GetInterface(&renderer_connection_);
+  DCHECK(renderer_connection_);
+
+  if (has_started_streaming_) {
+    StartRenderer();
+  }
+}
+
+void StreamingRuntimeApplication::StartRenderer() {
+  DCHECK(has_started_streaming_);
+  DCHECK(renderer_connection_);
+  DCHECK(!renderer_controls_.is_bound());
+
+  renderer_connection_->SetPlaybackController(
+      renderer_controls_.BindNewPipeAndPassReceiver());
+  renderer_controls_->StartPlayingFrom(base::Seconds(0));
+  renderer_controls_->SetPlaybackRate(1.0);
+
+  LOG(INFO) << "Starting CastStreamingRenderer playback for " << *this;
 }
 
 }  // namespace chromecast
