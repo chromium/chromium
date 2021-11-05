@@ -27,11 +27,11 @@ class FieldTrialServiceAsh : public mojom::FieldTrialService,
   void AddFieldTrialObserver(
       mojo::PendingRemote<mojom::FieldTrialObserver> observer) override;
 
- private:
   // FieldTrialList::Observer:
   void OnFieldTrialGroupFinalized(const std::string& trial_name,
                                   const std::string& group_name) override;
 
+ private:
   // Support any number of connections.
   mojo::ReceiverSet<mojom::FieldTrialService> receivers_;
 

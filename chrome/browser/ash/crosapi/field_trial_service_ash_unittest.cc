@@ -6,7 +6,7 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crosapi {
@@ -66,7 +66,7 @@ class FieldTrialServiceAshTest : public testing::Test {
   TestFieldTrialObserver observer_;
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment;
+  content::BrowserTaskEnvironment task_environment;
 };
 
 TEST_F(FieldTrialServiceAshTest, SendInitialFieldTrialsAndUpdate) {
