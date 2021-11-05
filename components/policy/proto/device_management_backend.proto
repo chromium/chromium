@@ -3572,6 +3572,15 @@ message UploadEuiccInfoRequest {
 
   // List of policy provisioned eSIM profiles on the device.
   repeated ESimProfileInfo esim_profiles = 2;
+
+  // A boolean flag which indicates that the list of eSim profiles was cleared.
+  // We use this differentiate between intentionally empty profile list(after
+  // cleanup) or not yet provisioned one.
+  // On the server, we would ignore requests where |esim_profiles| is empty
+  // if |clear_profile_list| is not set to |true| to not accidentally clear the
+  // values previously stored for this device(which can happen in a case of
+  // device being in after-powerwash state, for example).
+  optional bool clear_profile_list = 3;
 }
 
 // Response from server to device for EUICC status update.

@@ -49,6 +49,7 @@ class PrefService;
 namespace policy {
 
 class DeviceCloudPolicyStoreAsh;
+class EuiccStatusUploader;
 class ForwardingSchemaRegistry;
 class HeartbeatScheduler;
 class ManagedSessionService;
@@ -210,6 +211,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager {
       machine_certificate_uploader_;
   std::unique_ptr<ash::attestation::AttestationPolicyObserver>
       attestation_policy_observer_;
+  std::unique_ptr<EuiccStatusUploader> euicc_status_uploader_;
 
   // Uploader for remote server unlock related lookup keys.
   std::unique_ptr<LookupKeyUploader> lookup_key_uploader_;

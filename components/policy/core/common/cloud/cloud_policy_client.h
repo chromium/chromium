@@ -416,6 +416,11 @@ class POLICY_EXPORT CloudPolicyClient {
   // |callback| will be called when the operation completes.
   virtual void UpdateGcmId(const std::string& gcm_id, StatusCallback callback);
 
+  // Sends a request with EUICCs on device to the DM server.
+  virtual void UploadEuiccInfo(
+      std::unique_ptr<enterprise_management::UploadEuiccInfoRequest> request,
+      StatusCallback callback);
+
   // Sends certificate provisioning start csr request. It is Step 1 in the
   // certificate provisioning flow. |cert_scope| defines if it is a user- or
   // device-level request, |cert_profile_id| defines for which profile from
@@ -717,6 +722,14 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Callback for gcm id update requests.
   void OnGcmIdUpdated(
+      StatusCallback callback,
+      DeviceManagementService::Job* job,
+      DeviceManagementStatus status,
+      int net_error,
+      const enterprise_management::DeviceManagementResponse& response);
+
+  // Callback for EUICC info upload requests.
+  void OnEuiccInfoUploaded(
       StatusCallback callback,
       DeviceManagementService::Job* job,
       DeviceManagementStatus status,

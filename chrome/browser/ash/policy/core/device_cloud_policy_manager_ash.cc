@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/policy_pref_names.h"
+#include "chrome/browser/ash/policy/networking/euicc_status_uploader.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_ash.h"
 #include "chrome/browser/ash/policy/reporting/user_added_removed/user_added_removed_reporter.h"
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
@@ -213,6 +215,10 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   lookup_key_uploader_ = std::make_unique<LookupKeyUploader>(
       device_store(), g_browser_process->local_state(),
       enrollment_certificate_uploader_.get());
+  if (ash::features::IsESimPolicyEnabled()) {
+    euicc_status_uploader_ = std::make_unique<EuiccStatusUploader>(
+        client(), g_browser_process->local_state());
+  }
 
   // Don't create a MachineCertificateUploader or start the
   // AttestationPolicyObserver if machine cert requests are disabled.

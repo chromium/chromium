@@ -829,6 +829,39 @@ void CloudPolicyClient::UpdateGcmId(
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
+void CloudPolicyClient::UploadEuiccInfo(
+    std::unique_ptr<enterprise_management::UploadEuiccInfoRequest> request,
+    CloudPolicyClient::StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(is_registered());
+
+  std::unique_ptr<DMServerJobConfiguration> config =
+      std::make_unique<DMServerJobConfiguration>(
+          DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO,
+          /*client=*/this,
+          /*critical=*/false, DMAuth::FromDMToken(dm_token_),
+          /*oauth_token=*/absl::nullopt,
+          base::BindOnce(&CloudPolicyClient::OnEuiccInfoUploaded,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  config->request()->set_allocated_upload_euicc_info_request(request.release());
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
+}
+
+void CloudPolicyClient::OnEuiccInfoUploaded(
+    StatusCallback callback,
+    DeviceManagementService::Job* job,
+    DeviceManagementStatus status,
+    int net_error,
+    const em::DeviceManagementResponse& response) {
+  status_ = status;
+  if (status != DM_STATUS_SUCCESS)
+    NotifyClientError();
+
+  std::move(callback).Run(status == DM_STATUS_SUCCESS);
+  RemoveJob(job);
+}
+
 void CloudPolicyClient::ClientCertProvisioningStartCsr(
     const std::string& cert_scope,
     const std::string& cert_profile_id,
