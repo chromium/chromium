@@ -4336,6 +4336,9 @@ double AXNodeObject::EstimatedLoadingProgress() const {
 Element* AXNodeObject::ActionElement() const {
   const AXObject* current = this;
 
+  if (!current->GetElement())
+    return nullptr;  // Do not expose action element for text or document.
+
   while (current) {
     // Handles clicks or is a textfield and is not a disabled form control.
     if (current->IsClickable()) {

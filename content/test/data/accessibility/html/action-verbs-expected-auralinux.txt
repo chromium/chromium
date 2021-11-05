@@ -5,7 +5,7 @@
 ++++[static] name='Heading'
 ++[push button] name='Button' actions=(press)
 ++[link] name='Link' actions=(jump)
-++++[static] name='Link' actions=(clickAncestor)
+++++[static] name='Link'
 ++[entry] selectable-text actions=(activate)
 ++[entry] selectable-text actions=(activate)
 ++[entry] selectable-text actions=(activate)
@@ -16,15 +16,15 @@
 ++[toggle button] name='ARIA Switch' actions=(check) checkable:true
 ++[panel]
 ++++[toggle button] name='Summary' actions=(press)
-++++++[static] name='Summary' actions=(clickAncestor)
+++++++[static] name='Summary'
 ++[combo box] actions=(open)
 ++++[menu]
 ++++++[menu item] name='Pop-up button' selectable selected actions=(select)
 ++[section] actions=(click)
-++++[static] name='Div with click handler' actions=(clickAncestor)
+++++[static] name='Div with click handler'
 ++[panel] actions=(click)
 ++++[paragraph] actions=(clickAncestor)
-++++++[static] name='Paragraph with click handler on parent' actions=(clickAncestor)
+++++++[static] name='Paragraph with click handler on parent'
 ++[menu]
 ++++[menu item] name='Menu item 1' actions=(select)
 ++++[check menu item] name='Menu item 2' checked actions=(uncheck) checkable:true
@@ -34,3 +34,7 @@
 ++[push button] name='ARIA button with negative tab index' actions=(press)
 ++[section] actions=(click)
 ++++[push button] name='ARIA button that is an active descendant' actions=(press)
+++[section] actions=(click)
+++++[toggle button] name='ARIA switch in clickable container' actions=(check) checkable:true
+++++[section] actions=(clickAncestor)
+++++++[static] name='Generic in clickable container'
