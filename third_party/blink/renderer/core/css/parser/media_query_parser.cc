@@ -161,6 +161,7 @@ void MediaQueryParser::FinishQueryDataAndSetState(bool success,
 // State machine member functions start here
 void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
   DCHECK_EQ(state_, kReadRestrictor);
+  DCHECK(!range.AtEnd());
 
   if (range.Peek().GetType() == kLeftParenthesisToken) {
     if (media_query_data_.Restrictor() != MediaQuery::kNone) {
@@ -185,13 +186,17 @@ void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
 }
 
 void MediaQueryParser::ReadMediaNot(CSSParserTokenRange& range) {
+  DCHECK(!range.AtEnd());
+
   if (ConsumeIfIdent(range, "not"))
     media_query_data_.SetRestrictor(MediaQuery::kNot);
   FinishQueryDataAndSetState(ConsumeFeature(range) && ConsumeAnd(range), range);
 }
 
 void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() == kCommaToken || range.AtEnd()) {
+  DCHECK(!range.AtEnd());
+
+  if (range.Peek().GetType() == kCommaToken) {
     ConsumeToken(range);
     if (parser_type_ == kMediaQuerySetParser) {
       state_ = kReadRestrictor;
@@ -205,7 +210,7 @@ void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {
 }
 
 void MediaQueryParser::Done(CSSParserTokenRange& range) {
-  DCHECK(range.AtEnd());
+  NOTREACHED();
 }
 
 CSSParserToken MediaQueryParser::ConsumeToken(CSSParserTokenRange& range) {
@@ -255,15 +260,9 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
 
   DCHECK_NE(state_, kReadMediaNot);
 
-  // FIXME: Can we get rid of this special case?
-  if (parser_type_ == kMediaQuerySetParser) {
-    CSSParserTokenRange empty = range.MakeSubRange(range.end(), range.end());
-    ProcessToken(empty);
-  }
-
-  if (state_ != kReadRestrictor && state_ != kDone)
+  if (state_ != kDone)
     query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
-  else if (media_query_data_.CurrentMediaQueryChanged())
+  else
     query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
 
   return query_set_;

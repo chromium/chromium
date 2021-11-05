@@ -44,10 +44,6 @@ class MediaQueryData {
   void SetMediaType(const String&);
   std::unique_ptr<MediaQuery> TakeMediaQuery();
 
-  inline bool CurrentMediaQueryChanged() const {
-    return (restrictor_ != MediaQuery::kNone || media_type_set_ ||
-            expressions_.size() > 0);
-  }
   inline MediaQuery::RestrictorType Restrictor() { return restrictor_; }
 
   inline void SetRestrictor(MediaQuery::RestrictorType restrictor) {
