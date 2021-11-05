@@ -31,10 +31,6 @@ import {ClusterAction, MetricsProxyImpl} from './metrics_proxy.js';
  * infinite scrolling as well as deletion of visits within the clusters.
  */
 
-// Chosen fairly arbitrarily. We want to fill the whole vertical viewport.
-// See `onClustersQueryResult_()` for details.
-const RESULTS_PER_PAGE: number = 10;
-
 declare global {
   interface HTMLElementTagNameMap {
     'history-clusters': HistoryClustersElement,
@@ -178,7 +174,6 @@ class HistoryClustersElement extends PolymerElement {
     if (this.result_ && this.result_.continuationEndTime) {
       this.queryClusters_({
         query: this.result_.query,
-        maxCount: RESULTS_PER_PAGE,
         endTime: this.result_.continuationEndTime,
       });
     }
@@ -332,10 +327,8 @@ class HistoryClustersElement extends PolymerElement {
 
   private onQueryChanged_() {
     this.onBrowserIdle_().then(() => {
-      // Request up to `RESULTS_PER_PAGE` of the freshest clusters until now.
       this.queryClusters_({
         query: this.query.trim(),
-        maxCount: RESULTS_PER_PAGE,
         endTime: undefined,
       });
     });

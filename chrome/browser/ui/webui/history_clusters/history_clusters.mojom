@@ -95,10 +95,6 @@ struct QueryParams {
   // empty string means to return every Cluster that matches the other criteria.
   string query;
 
-  // The maximum number of Clusters to return. The default value of 0 means to
-  // return every Cluster that matches the other criteria.
-  uint32 max_count;
-
   // The optional time threshold (exclusive) for how recent the Clusters can be.
   // If specified, Clusters before `end_time` and if missing, Clusters until the
   // present time that match the other criteria are returned.
@@ -111,7 +107,9 @@ struct QueryResult {
   // The query string the Clusters were matched against.
   string query;
 
-  // The Clusters in the result set in reverse chronological order.
+  // The Clusters in the result set in reverse chronological order. This is
+  // always non-zero length, unless `continuation_end_time` is also null,
+  // indicating that we have exhausted History.
   array<history_clusters.mojom.Cluster> clusters;
 
   // True if this is in response to a continuation query. If so, `clusters` is a
@@ -137,8 +135,7 @@ interface PageHandler {
 
   // Requests the freshest Clusters created from the user visit history, in
   // reverse chronological order, based on the parameters in `query_params`.
-  // Note: Returns mock Clusters in non-chrome-branded builds if no remote
-  // endpoint is specified.
+  // Returns either a non-zero length list of clusters, or exhausts history.
   QueryClusters(QueryParams query_params);
 
   // Requests to remove all visits to the specified URLs in the specified

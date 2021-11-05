@@ -116,6 +116,10 @@ absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
   return search_query_mojom;
 }
 
+// Chosen fairly arbitrarily. In practice this fills many vertical viewports
+// adequately. The WebUI automatically queries for more for tall monitor cases.
+constexpr size_t kMaxClustersCount = 10;
+
 }  // namespace
 
 // Creates a `mojom::QueryResultPtr` using the original `query`, if the query
@@ -215,7 +219,6 @@ void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
   base::TimeTicks query_start_time = base::TimeTicks::Now();
 
   const std::string& query = query_params->query;
-  const size_t max_count = query_params->max_count;
   base::Time end_time;
   if (query_params->end_time.has_value()) {
     // Continuation queries have a non-null value for `end_time`.
@@ -237,7 +240,7 @@ void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
   history_clusters_service->QueryClusters(
-      query, end_time, max_count,
+      query, end_time, kMaxClustersCount,
       base::BindOnce(&QueryClustersResultToMojom, profile_, query,
                      query_params->end_time.has_value())
           .Then(base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
@@ -287,6 +290,31 @@ void HistoryClustersHandler::OnDebugMessage(const std::string& message) {
 void HistoryClustersHandler::OnClustersQueryResult(
     base::TimeTicks query_start_time,
     mojom::QueryResultPtr query_result) {
+  // In case no clusters came back, recursively ask for more here. We do this
+  // to fulfill the mojom contract where we always return at least one cluster,
+  // or we exhaust History. We don't do this in the service because of task
+  // tracker lifetime difficulty. In practice, this only happens when the user
+  // has a search query that doesn't match any of the clusters in the "page".
+  // https://crbug.com/1263728
+  if (query_result->clusters.empty() &&
+      query_result->continuation_end_time.has_value()) {
+    base::Time continuation_end_time = *query_result->continuation_end_time;
+    DCHECK(!continuation_end_time.is_null());
+
+    auto* history_clusters_service =
+        HistoryClustersServiceFactory::GetForBrowserContext(profile_);
+    history_clusters_service->QueryClusters(
+        query_result->query, continuation_end_time, kMaxClustersCount,
+        base::BindOnce(&QueryClustersResultToMojom, profile_,
+                       query_result->query, true)
+            .Then(base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 query_start_time)),
+        &query_task_tracker_);
+
+    return;
+  }
+
   page_->OnClustersQueryResult(std::move(query_result));
 
   // Log metrics after delivering the results to the page.
