@@ -571,9 +571,6 @@ below:
       <message name="IDS_AX_ROLE_EMAIL" desc="Accessibility role description for email input">
         email
       </message>
-      <message name="IDS_AX_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA" desc="The accessibility text to speak when we display an autofill popup">
-        Autofill
-      </message>
       <if expr="is_macosx">
         <message name="IDS_AX_ROLE_STEPPER" desc="Accessibility role description for a stepper - a control where you can use up/down arrows to increment or decrement it. The name 'stepper' is how this user interface element is described by VoiceOver on Mac OS X; the translation should be consistent with VoiceOver.">
           stepper
