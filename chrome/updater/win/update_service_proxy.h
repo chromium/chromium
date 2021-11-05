@@ -68,7 +68,7 @@ class UpdateServiceProxy : public UpdateService {
                    Callback callback);
 
   // Bound to the main sequence.
-  SEQUENCE_CHECKER(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_main_);
 
   UpdaterScope scope_;
 

@@ -166,7 +166,9 @@ void AppInstall::RegisterUpdater() {
       request, base::BindOnce(
                    [](scoped_refptr<UpdateService> /*update_service*/,
                       scoped_refptr<AppInstall> app_install,
-                      const RegistrationResponse& unused) {
+                      const RegistrationResponse& registration_response) {
+                     VLOG(2) << "Updater registration complete: "
+                             << registration_response.status_code;
                      app_install->MaybeInstallApp();
                    },
                    update_service, base::WrapRefCounted(this)));

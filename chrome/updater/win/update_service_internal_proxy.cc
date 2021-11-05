@@ -11,9 +11,11 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/logging.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -55,20 +57,14 @@ class UpdaterInternalCallback
   base::OnceClosure Disconnect();
 
  private:
-  ~UpdaterInternalCallback() override = default;
+  ~UpdaterInternalCallback() override {
+    DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
+    if (callback_)
+      std::move(callback_).Run();
+  }
 
-  void RunOnSTA();
-
-  // Bound to the STA thread.
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  // Sequences COM function calls.
-  scoped_refptr<base::SingleThreadTaskRunner> STA_task_runner_ =
-      base::ThreadTaskRunnerHandle::Get();
-
-  // The thread id of the STA thread.
-  const base::PlatformThreadId STA_thread_id_ =
-      base::PlatformThread::CurrentId();
+  // The reference of the thread this object is bound to.
+  base::PlatformThreadRef com_thread_ref_;
 
   // Keeps a reference of the updater object alive, while this object is
   // owned by the COM RPC runtime.
@@ -79,36 +75,16 @@ class UpdaterInternalCallback
 };
 
 IFACEMETHODIMP UpdaterInternalCallback::Run(LONG result) {
+  DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
   DVLOG(2) << __func__ << " result " << result << ".";
-
-  // Since this function is invoked directly by COM RPC, the code can only
-  // assert its OS thread-affinity but not its task runner sequence-affinity.
-  // For this reason, the implementation is delegated to a helper function,
-  // which is sequenced by `STA_task_runner`.
-  DCHECK_EQ(base::PlatformThread::CurrentId(), STA_thread_id_);
-  STA_task_runner_->PostTask(FROM_HERE,
-                             base::BindOnce(&UpdaterInternalCallback::RunOnSTA,
-                                            base::WrapRefCounted(this)));
   return S_OK;
 }
 
 base::OnceClosure UpdaterInternalCallback::Disconnect() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(base::PlatformThreadRef(), com_thread_ref_);
   DVLOG(2) << __func__;
   updater_internal_ = nullptr;
   return std::move(callback_);
-}
-
-void UpdaterInternalCallback::RunOnSTA() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  updater_internal_ = nullptr;
-
-  if (!callback_) {
-    DVLOG(2) << "Skipping posting the completion callback.";
-    return;
-  }
-  STA_task_runner_->PostTask(FROM_HERE, std::move(callback_));
 }
 
 }  // namespace
@@ -128,22 +104,17 @@ UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
 UpdateServiceInternalProxy::~UpdateServiceInternalProxy() = default;
 
 void UpdateServiceInternalProxy::Uninitialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
 }
 
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
 
   STA_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &UpdateServiceInternalProxy::RunOnSTA, this,
-          base::BindOnce(
-              [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                 base::OnceClosure callback) {
-                task_runner->PostTask(FROM_HERE, std::move(callback));
-              },
-              base::SequencedTaskRunnerHandle::Get(), std::move(callback))));
+      base::BindOnce(&UpdateServiceInternalProxy::RunOnSTA, this,
+                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                        std::move(callback))));
 }
 
 CLSID UpdateServiceInternalProxy::GetInternalClass() const {
@@ -178,14 +149,14 @@ void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
     return;
   }
 
-  // The `rpc_callback` takes ownership of the `callback` and owns a reference
-  // to the updater object as well. As long as the `rpc_callback` retains this
-  // reference to the updater internal object, then the object is going to stay
-  // alive.
-  // The `rpc_callback` drops its reference to the updater internal object when
-  // handling the last server callback. After that, the object model is torn
-  // down, and the execution flow returns back into the App object when
-  // `callback` is posted.
+  // The COM RPC takes ownership of the `rpc_callback` and owns a reference to
+  // the `updater_internal` object as well. As long as the `rpc_callback`
+  // retains this reference to the `updater_internal` object, then the object
+  // is going to stay alive. Once the server has notified, then released its
+  // last reference to the `rpc_callback` object, the `rpc_callback` is
+  // destroyed, and as a result, the last reference to `updater_internal` is
+  // released as well, which causes the destruction of the `updater_internal`
+  // object.
   auto rpc_callback = Microsoft::WRL::Make<UpdaterInternalCallback>(
       updater_internal, std::move(callback));
   hr = updater_internal->Run(rpc_callback.Get());
@@ -203,19 +174,13 @@ void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
 
 void UpdateServiceInternalProxy::InitializeUpdateService(
     base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
 
   STA_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA, this,
-          base::BindOnce(
-              [](scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                 base::OnceClosure callback) {
-                task_runner->PostTask(FROM_HERE,
-                                      base::BindOnce(std::move(callback)));
-              },
-              STA_task_runner_, std::move(callback))));
+          base::BindPostTask(STA_task_runner_, std::move(callback))));
 }
 
 void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
