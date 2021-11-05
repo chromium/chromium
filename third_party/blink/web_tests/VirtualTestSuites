@@ -842,6 +842,7 @@
     "prefix": "third-party-storage-partitioning",
     "bases": [
       "external/wpt/service-workers/service-worker/partitioned-service-worker.tentative.https.html",
+      "external/wpt/service-workers/service-worker/partitioned-service-worker-getRegistrations.tentative.https.html",
       "external/wpt/webstorage/localstorage-basic-partitioned.tentative.sub.html"
     ],
     "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]

@@ -16,6 +16,12 @@ self.addEventListener('fetch', function(event) {
   fetchEventHandler(event);
 })
 
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === "get-id") {
+    event.source.postMessage({ID: ID});
+  }
+});
+
 async function fetchEventHandler(event){
   var request_url = new URL(event.request.url);
   var url_search = request_url.search.substr(1);
