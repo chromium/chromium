@@ -88,7 +88,7 @@ public class RequestDesktopSiteTest {
     @Test
     @SmallTest
     public void testGlobalSiteSettingsAndException() throws TimeoutException {
-        final Tab tab = mActivityTestRule.loadUrlInNewTab(URL_1);
+        Tab tab = mActivityTestRule.loadUrlInNewTab(URL_1);
         assertUsingDesktopUserAgent(tab, false, "Default user agent should be mobile.");
 
         CallbackHelper menuObserver = new CallbackHelper();
@@ -114,26 +114,23 @@ public class RequestDesktopSiteTest {
         });
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isLoading(), Matchers.is(false)));
         assertUsingDesktopUserAgent(
-                tab, true, "User agent should be mobile according to site settings.");
+                tab, true, "User agent should be desktop according to site settings.");
         assertChangeUserActionRecorded(true);
 
-        // TODO(https://crbug.com/1263069): Change this test to per-site settings once cpp observer
-        // is ready.
-        final Tab tab2 = mActivityTestRule.loadUrlInNewTab(URL_2);
+        mActivityTestRule.loadUrl(URL_2);
         assertUsingDesktopUserAgent(
-                tab2, false, "Site settings exceptions should not affect other URL.");
+                tab, false, "Site settings exceptions should not affect other URL.");
 
         // Change site settings and reload.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             WebsitePreferenceBridge.setContentSettingEnabled(
-                    Profile.fromWebContents(tab2.getWebContents()),
+                    Profile.fromWebContents(tab.getWebContents()),
                     ContentSettingsType.REQUEST_DESKTOP_SITE, true);
-            // Ignore cache so that the tab will recalculate the screen size.
-            tab2.reloadIgnoringCache();
+            tab.reload();
         });
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab2.isLoading(), Matchers.is(false)));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isLoading(), Matchers.is(false)));
         assertUsingDesktopUserAgent(
-                tab2, true, "User agent should be desktop according to global site settings.");
+                tab, true, "User agent should be desktop according to global site settings.");
     }
 
     private void assertUsingDesktopUserAgent(

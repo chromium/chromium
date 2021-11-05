@@ -3028,6 +3028,8 @@ static_library("browser") {
       "content_creation/reactions/internal/android/reaction_service_bridge_factory.cc",
       "content_creation/reactions/internal/reaction_service_factory.cc",
       "content_creation/reactions/internal/reaction_service_factory.h",
+      "content_settings/request_desktop_site_web_contents_observer_android.cc",
+      "content_settings/request_desktop_site_web_contents_observer_android.h",
       "crash_upload_list/crash_upload_list_android.cc",
       "crash_upload_list/crash_upload_list_android.h",
       "data_reduction_proxy/data_reduction_promo_infobar_delegate_android.cc",
