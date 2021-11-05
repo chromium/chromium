@@ -70,6 +70,10 @@ crbug.com/1257856 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platfo
 # Dawn implements validation of the limit at createShaderModule time, while the CTS checks at createRenderPipeline time.
 crbug.com/dawn/986 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,vertex_state:vertex_shader_input_location_limit:* [ Failure ]
 
+# Temporary suppression for a default limit change.
+crbug.com/dawn/1173 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:supported_limits:limit="maxUniformBufferBindingSize" [ Failure ]
+crbug.com/dawn/1173 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxUniformBufferBindingSize" [ Failure ]
+
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
 # Linux: Crashes
