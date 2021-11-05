@@ -300,7 +300,7 @@ cr.define('cr.ui.login.debug', function() {
           id: 'require-permission-celluar',
           trigger: (screen) => {
             screen.onBeforeShow();
-            screen.setRequiresPermissionForCellular(true);
+            screen.setUpdateState('cellular');
           },
         },
       ],

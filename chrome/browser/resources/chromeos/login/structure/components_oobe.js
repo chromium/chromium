@@ -6,5 +6,4 @@
 
 // <include src="../screens/oobe/enable_debugging.js">
 // <include src="../screens/oobe/oobe_network.js">
-// <include src="../oobe_update.js">
 // <include src="../enterprise_enrollment.js">

@@ -15,8 +15,9 @@ group("polymer3_elements") {
     ":hid_detection_module",
     ":oobe_eula_module",
     ":packaged_license_module",
-    ":welcome_module",
+    ":update_module",
     ":welcome_dialog_module",
+    ":welcome_module",
   ]
 }
 
@@ -42,6 +43,7 @@ js_type_check("closure_compile_module") {
     ":hid_detection.m",
     ":oobe_eula.m",
     ":packaged_license.m",
+    ":update.m",
     ":welcome.m",
     ":welcome_dialog.m",
   ]
@@ -157,6 +159,21 @@ js_library("packaged_license.m") {
   extra_deps = [ ":packaged_license_module" ]
 }
 
+js_library("update.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/update.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/oobe_slide:oobe_slide.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":update_module" ]
+}
+
 js_library("welcome.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome.m.js" ]
   deps = [
@@ -232,6 +249,14 @@ polymer_modulizer("oobe_eula") {
 polymer_modulizer("packaged_license") {
   js_file = "packaged_license.js"
   html_file = "packaged_license.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("update") {
+  js_file = "update.js"
+  html_file = "update.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

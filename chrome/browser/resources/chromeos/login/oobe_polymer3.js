@@ -28,6 +28,7 @@ import 'chrome://oobe/screens/oobe/hid_detection.m.js';
 import 'chrome://oobe/screens/oobe/oobe_eula.m.js';
 import 'chrome://oobe/screens/oobe/welcome.m.js';
 import 'chrome://oobe/screens/oobe/packaged_license.m.js';
+import 'chrome://oobe/screens/oobe/update.m.js';
 
 import {Oobe} from './cr_ui.m.js';
 import {DebuggerUI} from './debug/debug.m.js';

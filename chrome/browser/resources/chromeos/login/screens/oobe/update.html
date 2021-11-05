@@ -8,21 +8,19 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
-<link rel="import" href="/components/oobe_icons.html">
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
-<link rel="import" href="/components/behaviors/multi_step_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/buttons/oobe_back_button.html">
-<link rel="import" href="/components/buttons/oobe_next_button.html">
-<link rel="import" href="/components/common_styles/common_styles.html">
-<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="/components/oobe_carousel/oobe_carousel.html">
-<link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/dialogs/oobe_loading_dialog.html">
-<link rel="import" href="/components/oobe_slide/oobe_slide.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_back_button.html">
+<link rel="import" href="../../components/buttons/oobe_next_button.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="../../components/oobe_carousel/oobe_carousel.html">
+<link rel="import" href="../../components/oobe_slide/oobe_slide.html">
 
-<dom-module id="oobe-update-element">
+<dom-module id="update-element">
   <template>
     <style include="oobe-dialog-host-styles">
       .progress-message {
@@ -57,8 +55,7 @@
       </p>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            srcset="images/1x/updating_1x.svg 1x,
-                    images/2x/updating_2x.svg 2x">
+            srcset="images/updating.svg">
       </div>
       <div slot="back-navigation">
         <oobe-back-button id="cellular-permission-back" inverse
@@ -79,8 +76,7 @@
       </paper-progress>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            srcset="images/1x/updating_1x.svg 1x,
-                    images/2x/updating_2x.svg 2x">
+            srcset="images/updating.svg">
       </div>
     </oobe-adaptive-dialog>
     <oobe-adaptive-dialog footer-shrinkable id="update-in-progress-dialog"
@@ -90,9 +86,9 @@
         [[i18nDynamic(locale, 'updateStatusTitle')]]
       </h1>
       <div slot="subtitle">
-        <span id="better-update-percent">[[updateStatusMessagePercent]]</span>
+        <span id="betterUpdatePercent">[[updateStatusMessagePercent]]</span>
         <span> | </span>
-        <span id="better-update-timeleft">
+        <span id="betterUpdateTimeleft">
           [[updateStatusMessageTimeLeft]]
         </span>
       </div>
@@ -103,8 +99,7 @@
           class="slide-view" slot="content">
         <oobe-slide is-warning>
           <img slot="slide-img" class="update-illustration oobe-illustration"
-              srcset="images/1x/update-charge.svg 1x,
-                      images/2x/update-charge.svg 2x">
+              srcset="images/update-charge.svg">
           <div slot="title">
             [[i18nDynamic(locale, 'batteryWarningTitle')]]
           </div>
@@ -123,16 +118,14 @@
           <oobe-slide slot="slides">
             <img slot="slide-img"
                 class="update-illustration oobe-illustration"
-                srcset="images/1x/update-no-waiting.svg 1x,
-                        images/2x/update-no-waiting.svg 2x">
+                srcset="images/update-no-waiting.svg">
             <div slot="title">[[i18nDynamic(locale, 'slideUpdateTitle')]]</div>
             <div slot="text">[[i18nDynamic(locale, 'slideUpdateText')]]</div>
           </oobe-slide>
           <oobe-slide slot="slides">
             <img slot="slide-img"
                 class="update-illustration oobe-illustration"
-                srcset="images/1x/update-antivirus.svg 1x,
-                        images/2x/update-antivirus.svg 2x">
+                srcset="images/update-antivirus.svg">
             <div slot="title">
               [[i18nDynamic(locale, 'slideAntivirusTitle')]]
             </div>
@@ -143,16 +136,14 @@
           <oobe-slide slot="slides">
             <img slot="slide-img"
                 class="update-illustration oobe-illustration"
-                srcset="images/1x/update-apps.svg 1x,
-                        images/2x/update-apps.svg 2x">
+                srcset="images/update-apps.svg">
             <div slot="title">[[i18nDynamic(locale, 'slideAppsTitle')]]</div>
             <div slot="text">[[i18nDynamic(locale, 'slideAppsText')]]</div>
           </oobe-slide>
           <oobe-slide slot="slides">
             <img slot="slide-img"
                 class="update-illustration oobe-illustration"
-                srcset="images/1x/google-accounts.svg 1x,
-                        images/2x/google-accounts.svg 2x">
+                srcset="images/google-accounts.svg">
             <div slot="title">
               [[i18nDynamic(locale, 'slideAccountTitle')]]
             </div>
@@ -175,4 +166,5 @@
       </h1>
     </oobe-adaptive-dialog>
   </template>
+  <script src="update.js"></script>
 </dom-module>
