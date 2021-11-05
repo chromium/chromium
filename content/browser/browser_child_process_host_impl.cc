@@ -16,7 +16,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -215,16 +214,6 @@ void BrowserChildProcessHostImpl::TerminateAll() {
   for (auto it = copy.begin(); it != copy.end(); ++it) {
     delete (*it)->delegate();  // ~*HostDelegate deletes *HostImpl.
   }
-}
-
-// static
-void BrowserChildProcessHostImpl::CopyFeatureAndFieldTrialFlags(
-    base::CommandLine* cmd_line) {
-  // If we run base::FieldTrials, we want to pass to their state to the
-  // child process so that it can act in accordance with each state.
-  base::FieldTrialList::CopyFieldTrialStateToFlags(
-      switches::kFieldTrialHandle, switches::kEnableFeatures,
-      switches::kDisableFeatures, cmd_line);
 }
 
 // static

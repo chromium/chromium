@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/api/enterprise_reporting_private/enterprise_reporting_private_api.h"
 
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "build/build_config.h"

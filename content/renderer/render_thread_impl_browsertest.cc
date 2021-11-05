@@ -191,8 +191,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
     scoped_refptr<base::SingleThreadTaskRunner> test_task_counter(
         test_task_counter_.get());
 
-    base::FieldTrialList::CreateTrialsFromCommandLine(
-        *cmd, switches::kFieldTrialHandle, -1);
+    base::FieldTrialList::CreateTrialsFromCommandLine(*cmd, -1);
     thread_ = new RenderThreadImpl(
         InProcessChildThreadParams(io_task_runner,
                                    &process_host_->GetMojoInvitation().value()),

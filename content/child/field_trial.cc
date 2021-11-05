@@ -32,22 +32,12 @@ void InitializeFieldTrialAndFeatureList() {
   ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
   ignore_result(leaked_field_trial_list);
 
-// Ensure any field trials in browser are reflected into the child
-// process.
-#if defined(OS_WIN) || defined(OS_MAC)
-  base::FieldTrialList::CreateTrialsFromCommandLine(
-      command_line, switches::kFieldTrialHandle, -1);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  // On POSIX systems that use the zygote, we get the trials from a shared
-  // memory segment backed by an fd instead of the command line.
-  base::FieldTrialList::CreateTrialsFromCommandLine(
-      command_line, switches::kFieldTrialHandle, kFieldTrialDescriptor);
-#endif
-
+  // Ensure any field trials in browser are reflected into the child process.
+  base::FieldTrialList::CreateTrialsFromCommandLine(command_line,
+                                                    kFieldTrialDescriptor);
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-  base::FieldTrialList::CreateFeaturesFromCommandLine(
-      command_line, switches::kEnableFeatures, switches::kDisableFeatures,
-      feature_list.get());
+  base::FieldTrialList::CreateFeaturesFromCommandLine(command_line,
+                                                      feature_list.get());
   // TODO(crbug.com/988603): This may be redundant. The way this is supposed to
   // work is that the parent process's state should be passed via command-line
   // to the child process, such that a feature explicitly enabled or disabled in

@@ -9,6 +9,7 @@
 
 #include "base/base_switches.h"
 #include "base/build_time.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_param_associator.h"
@@ -27,6 +28,10 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+
+#if !defined(OS_IOS)
+#include "base/process/launch.h"
+#endif
 
 #if defined(OS_ANDROID)
 #include "base/posix/global_descriptors.h"
@@ -1156,18 +1161,9 @@ class FieldTrialListTest : public ::testing::Test {
   test::ScopedFieldTrialListResetter trial_list_resetter_;
 };
 
-#if defined(OS_FUCHSIA)
-// TODO(crbug.com/752368): This is flaky on Fuchsia.
-#define MAYBE_TestCopyFieldTrialStateToFlags \
-  DISABLED_TestCopyFieldTrialStateToFlags
-#else
-#define MAYBE_TestCopyFieldTrialStateToFlags TestCopyFieldTrialStateToFlags
-#endif
-TEST_F(FieldTrialListTest, MAYBE_TestCopyFieldTrialStateToFlags) {
-  constexpr char kFieldTrialHandleSwitch[] = "test-field-trial-handle";
-  constexpr char kEnableFeaturesSwitch[] = "test-enable-features";
-  constexpr char kDisableFeaturesSwitch[] = "test-disable-features";
-
+#if !defined(OS_IOS)
+// LaunchOptions is not available on iOS.
+TEST_F(FieldTrialListTest, TestCopyFieldTrialStateToFlags) {
   FieldTrialList field_trial_list(std::make_unique<MockEntropyProvider>());
 
   std::unique_ptr<FeatureList> feature_list(new FeatureList);
@@ -1182,16 +1178,17 @@ TEST_F(FieldTrialListTest, MAYBE_TestCopyFieldTrialStateToFlags) {
 
   FilePath test_file_path = FilePath(FILE_PATH_LITERAL("Program"));
   CommandLine command_line = CommandLine(test_file_path);
+  LaunchOptions launch_options;
 
-  FieldTrialList::CopyFieldTrialStateToFlags(
-      kFieldTrialHandleSwitch, kEnableFeaturesSwitch, kDisableFeaturesSwitch,
-      &command_line);
-  EXPECT_TRUE(command_line.HasSwitch(kFieldTrialHandleSwitch));
+  FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(&command_line,
+                                                           &launch_options);
+  EXPECT_TRUE(command_line.HasSwitch(switches::kFieldTrialHandle));
 
-  // Explictly specified enabled/disabled features should be specified.
-  EXPECT_EQ("A,B", command_line.GetSwitchValueASCII(kEnableFeaturesSwitch));
-  EXPECT_EQ("C", command_line.GetSwitchValueASCII(kDisableFeaturesSwitch));
+  // Explicitly specified enabled/disabled features should be specified.
+  EXPECT_EQ("A,B", command_line.GetSwitchValueASCII(switches::kEnableFeatures));
+  EXPECT_EQ("C", command_line.GetSwitchValueASCII(switches::kDisableFeatures));
 }
+#endif  // !defined(OS_IOS)
 
 TEST_F(FieldTrialListTest, InstantiateAllocator) {
   FieldTrialList field_trial_list(nullptr);
@@ -1394,31 +1391,21 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
   EXPECT_EQ("value2", shm_params["key2"]);
 }
 
-// Shared-memory distribution of FieldTrial to child process is not implemented
-// on Fuchsia: http://crbug.com/752368.
-#if !defined(OS_NACL) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
+#if !defined(OS_NACL) && !defined(OS_IOS)
 MULTIPROCESS_TEST_MAIN(SerializeSharedMemoryRegionMetadata) {
   std::string serialized =
       CommandLine::ForCurrentProcess()->GetSwitchValueASCII("field_trials");
   std::string guid_string =
       CommandLine::ForCurrentProcess()->GetSwitchValueASCII("guid");
 
-#if defined(OS_WIN) || defined(OS_MAC)
-  base::ReadOnlySharedMemoryRegion deserialized =
-      FieldTrialList::DeserializeSharedMemoryRegionMetadata(serialized);
-#elif defined(OS_ANDROID)
-  // Use the arbitrary fd value selected in the main process.
-  // File descriptors are not remapped on Android. They have to be looked up in
-  // the GlobalDescriptors table instead.
-  int fd = base::GlobalDescriptors::GetInstance()->MaybeGet(42);
+  int fd = 42;
+#if defined(OS_ANDROID)
+  fd = base::GlobalDescriptors::GetInstance()->MaybeGet(42);
   CHECK_NE(fd, -1);
+#endif
+
   base::ReadOnlySharedMemoryRegion deserialized =
-      FieldTrialList::DeserializeSharedMemoryRegionMetadata(fd, serialized);
-#else
-  // Use the arbitrary fd value selected in the main process.
-  base::ReadOnlySharedMemoryRegion deserialized =
-      FieldTrialList::DeserializeSharedMemoryRegionMetadata(42, serialized);
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+      FieldTrialList::DeserializeSharedMemoryRegionMetadata(serialized, fd);
   CHECK(deserialized.IsValid());
   CHECK_EQ(deserialized.GetGUID().ToString(), guid_string);
   CHECK(!deserialized.GetGUID().is_empty());
@@ -1431,28 +1418,20 @@ TEST_F(FieldTrialListTest, SerializeSharedMemoryRegionMetadata) {
       base::ReadOnlySharedMemoryRegion::Create(4 << 10);
   ASSERT_TRUE(shm.IsValid());
 
-  std::string serialized =
-      FieldTrialList::SerializeSharedMemoryRegionMetadata(shm.region);
-
   LaunchOptions options;
+  std::string serialized =
+      FieldTrialList::SerializeSharedMemoryRegionMetadata(shm.region, &options);
 
-#if defined(OS_WIN)
-  options.handles_to_inherit.push_back(shm.region.GetPlatformHandle());
-#elif defined(OS_MAC)
-  options.mach_ports_for_rendezvous.insert(
-      std::make_pair('fldt', MachRendezvousPort{shm.region.GetPlatformHandle(),
-                                                MACH_MSG_TYPE_COPY_SEND}));
-#elif defined(OS_POSIX)
-
+#if defined(OS_POSIX) && !defined(OS_MAC)
 #if defined(OS_ANDROID)
   int shm_fd = shm.region.GetPlatformHandle();
 #else
   int shm_fd = shm.region.GetPlatformHandle().fd;
 #endif  // defined(OS_ANDROID)
-
   // Pick an arbitrary FD number to use for the shmem FD in the child.
   options.fds_to_remap.emplace_back(std::make_pair(shm_fd, 42));
-#endif  // defined(OS_POSIX)
+#endif  // defined(OS_POSIX) && !defined(OS_MAC)
+
   CommandLine cmd_line = GetMultiProcessTestChildBaseCommandLine();
   cmd_line.AppendSwitchASCII("field_trials", serialized);
   cmd_line.AppendSwitchASCII("guid", shm.region.GetGUID().ToString());
@@ -1465,13 +1444,12 @@ TEST_F(FieldTrialListTest, SerializeSharedMemoryRegionMetadata) {
       process, TestTimeouts::action_timeout(), &exit_code));
   EXPECT_EQ(0, exit_code);
 }
-#endif  // !defined(OS_NACL) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
+#endif  // !defined(OS_NACL) && !defined(OS_IOS)
 
 // Verify that the field trial shared memory handle is really read-only, and
 // does not allow writable mappings. Test disabled on NaCl, Fuchsia, and Mac,
-// which don't support/implement shared memory configuration. For Fuchsia, see
-// crbug.com/752368
-#if !defined(OS_NACL) && !defined(OS_FUCHSIA) && !defined(OS_MAC)
+// which don't support/implement shared memory configuration.
+#if !defined(OS_NACL) && !defined(OS_MAC)
 TEST_F(FieldTrialListTest, CheckReadOnlySharedMemoryRegion) {
   FieldTrialList field_trial_list(nullptr);
   FieldTrialList::CreateFieldTrial("Trial1", "Group1");
@@ -1486,7 +1464,7 @@ TEST_F(FieldTrialListTest, CheckReadOnlySharedMemoryRegion) {
       base::ReadOnlySharedMemoryRegion::TakeHandleForSerialization(
           std::move(region))));
 }
-#endif  // !OS_NACL && !OS_FUCHSIA && !OS_MAC
+#endif  // !OS_NACL && !OS_MAC
 
 TEST_F(FieldTrialTest, TestAllParamsToString) {
   std::string exptected_output = "t1.g1:p1/v1/p2/v2";

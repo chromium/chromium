@@ -75,18 +75,14 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/pickle.h"
-#include "base/process/launch.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
-#if defined(OS_MAC)
-#include "base/mac/mach_port_rendezvous.h"
-#endif
-
 namespace base {
 
 class FieldTrialList;
+struct LaunchOptions;
 
 class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
  public:
@@ -552,53 +548,39 @@ class BASE_EXPORT FieldTrialList {
 
   // Achieves the same thing as CreateTrialsFromString, except wraps the logic
   // by taking in the trials from the command line, either via shared memory
-  // handle or command line argument. A bit of a misnomer since on POSIX we
-  // simply get the trials from opening |fd_key| if using shared memory. On
-  // Windows, we expect the |cmd_line| switch for |field_trial_handle_switch| to
-  // contain the shared memory handle that contains the field trial allocator.
-  // We need the |field_trial_handle_switch| and |fd_key| arguments to be passed
-  // in since base/ can't depend on content/.
+  // handle or command line argument.
+  // On non-Mac POSIX platforms, we simply get the trials from opening |fd_key|
+  // if using shared memory. The argument is needed here since //base can't
+  // depend on //content. |fd_key| is unused on other platforms.
+  // On other platforms, we expect the |cmd_line| switch for kFieldTrialHandle
+  // to contain the shared memory handle that contains the field trial
+  // allocator.
   static void CreateTrialsFromCommandLine(const CommandLine& cmd_line,
-                                          const char* field_trial_handle_switch,
                                           int fd_key);
 
   // Creates base::Feature overrides from the command line by first trying to
   // use shared memory and then falling back to the command line if it fails.
   static void CreateFeaturesFromCommandLine(const CommandLine& command_line,
-                                            const char* enable_features_switch,
-                                            const char* disable_features_switch,
                                             FeatureList* feature_list);
 
-#if defined(OS_WIN)
-  // On Windows, we need to explicitly pass down any handles to be inherited.
-  // This function adds the shared memory handle to field trial state to the
-  // list of handles to be inherited.
-  static void AppendFieldTrialHandleIfNeeded(HandlesToInheritVector* handles);
-#elif defined(OS_FUCHSIA)
-  // TODO(fuchsia): Implement shared-memory configuration (crbug.com/752368).
-#elif defined(OS_MAC)
-  // On Mac, the field trial shared memory is accessed via a Mach server, which
-  // the child looks up directly.
-  static void InsertFieldTrialHandleIfNeeded(
-      MachPortsForRendezvous* rendezvous_ports);
-#elif defined(OS_POSIX) && !defined(OS_NACL)
+#if !defined(OS_IOS)
+  // Populates |command_line| and |launch_options| with the handles and command
+  // line arguments necessary for a child process to inherit the shared-memory
+  // object containing the FieldTrial configuration.
+  static void PopulateLaunchOptionsWithFieldTrialState(
+      CommandLine* command_line,
+      LaunchOptions* launch_options);
+#endif  // !defined(OS_IOS)
+
+#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_NACL)
   // On POSIX, we also need to explicitly pass down this file descriptor that
   // should be shared with the child process. Returns -1 if it was not
   // initialized properly. The current process remains the onwer of the passed
   // descriptor.
   static int GetFieldTrialDescriptor();
-#endif
-  static ReadOnlySharedMemoryRegion DuplicateFieldTrialSharedMemoryForTesting();
+#endif  // defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_NACL)
 
-  // Adds a switch to the command line containing the field trial state as a
-  // string (if not using shared memory to share field trial state), or the
-  // shared memory handle + length.
-  // Needs the |field_trial_handle_switch| argument to be passed in since base/
-  // can't depend on content/.
-  static void CopyFieldTrialStateToFlags(const char* field_trial_handle_switch,
-                                         const char* enable_features_switch,
-                                         const char* disable_features_switch,
-                                         CommandLine* cmd_line);
+  static ReadOnlySharedMemoryRegion DuplicateFieldTrialSharedMemoryForTesting();
 
   // Create a FieldTrial with the given |name| and using 100% probability for
   // the FieldTrial, force FieldTrial to have the same group string as
@@ -678,38 +660,42 @@ class BASE_EXPORT FieldTrialList {
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest, ClearParamsFromSharedMemory);
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest,
                            SerializeSharedMemoryRegionMetadata);
-  friend int SerializeSharedMemoryRegionMetadata(void);
+  friend int SerializeSharedMemoryRegionMetadata();
   FRIEND_TEST_ALL_PREFIXES(FieldTrialListTest, CheckReadOnlySharedMemoryRegion);
 
-  // Serialization is used to pass information about the handle to child
-  // processes. It passes a reference to the relevant OS resource, and it passes
-  // a GUID. Serialization and deserialization doesn't actually transport the
-  // underlying OS resource - that must be done by the Process launcher.
+#if !defined(OS_NACL) && !defined(OS_IOS)
+  // Serialization is used to pass information about the shared memory handle
+  // to child processes. This is achieved by passing a stringified reference to
+  // the relevant OS resources to the child process.
+  //
+  // Serialization populates |launch_options| with the relevant OS handles to
+  // transfer or copy to the child process and returns serialized information
+  // to be passed to the kFieldTrialHandle command-line switch.
+  // Note: On non-Mac POSIX platforms, it is necessary to pass down the file
+  // descriptor for the shared memory separately. It can be accessed via the
+  // GetFieldTrialDescriptor() API.
   static std::string SerializeSharedMemoryRegionMetadata(
-      const ReadOnlySharedMemoryRegion& shm);
-#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
-  static ReadOnlySharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
-      const std::string& switch_value);
-#elif defined(OS_POSIX) && !defined(OS_NACL)
-  static ReadOnlySharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
-      int fd,
-      const std::string& switch_value);
-#endif
+      const ReadOnlySharedMemoryRegion& shm,
+      LaunchOptions* launch_options);
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
+  // Deserialization instantiates the shared memory region for FieldTrials from
+  // the serialized information contained in |switch_value|. Returns an invalid
+  // ReadOnlySharedMemoryRegion on failure.
+  // |fd| is used on non-Mac POSIX platforms to instantiate the shared memory
+  // region via a file descriptor.
+  static ReadOnlySharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
+      const std::string& switch_value,
+      int fd);
+
   // Takes in |handle_switch| from the command line which represents the shared
   // memory handle for field trials, parses it, and creates the field trials.
   // Returns true on success, false on failure.
   // |switch_value| also contains the serialized GUID.
-  static bool CreateTrialsFromSwitchValue(const std::string& switch_value);
-#elif defined(OS_POSIX) && !defined(OS_NACL)
-  // On POSIX systems that use the zygote, we look up the correct fd that backs
-  // the shared memory segment containing the field trials by looking it up via
-  // an fd key in GlobalDescriptors. Returns true on success, false on failure.
-  // |switch_value| also contains the serialized GUID.
-  static bool CreateTrialsFromDescriptor(int fd_key,
-                                         const std::string& switch_value);
-#endif
+  // |fd_key| is used on non-Mac POSIX platforms as the file descriptor passed
+  // down to the child process for the shared memory region.
+  static bool CreateTrialsFromSwitchValue(const std::string& switch_value,
+                                          int fd_key);
+#endif  // !defined(OS_NACL) && !defined(OS_IOS)
 
   // Takes an unmapped ReadOnlySharedMemoryRegion, maps it with the correct size
   // and creates field trials via CreateTrialsFromSharedMemoryMapping(). Returns
@@ -760,8 +746,7 @@ class BASE_EXPORT FieldTrialList {
   // FieldTrialList is created after that.
   static bool used_without_global_;
 
-  // Lock for access to |registered_|, |observers_| and
-  // |field_trial_allocator_|.
+  // Lock for access to |registered_|, |observers_|.
   Lock lock_;
   RegistrationMap registered_ GUARDED_BY(lock_);
 
@@ -784,8 +769,7 @@ class BASE_EXPORT FieldTrialList {
   std::unique_ptr<FieldTrialAllocator> field_trial_allocator_;
 
   // Readonly copy of the region to the allocator. Needs to be a member variable
-  // because it's needed from both CopyFieldTrialStateToFlags() and
-  // AppendFieldTrialHandleIfNeeded().
+  // because it's needed from multiple methods.
   ReadOnlySharedMemoryRegion readonly_allocator_region_;
 
   // Tracks whether CreateTrialsFromCommandLine() has been called.

@@ -469,12 +469,6 @@ const char kEnableWebGLDraftExtensions[] = "enable-webgl-draft-extensions";
 // Enables WebGL rendering into a scanout buffer for overlay support.
 const char kEnableWebGLImageChromium[] = "enable-webgl-image-chromium";
 
-// Handle to the shared memory segment containing field trial state that is to
-// be shared between processes. The argument to this switch is the handle id
-// (pointer on Windows) as a string, followed by a comma, then the size of the
-// shared memory segment as a string.
-const char kFieldTrialHandle[] = "field-trial-handle";
-
 // Define an alias root directory which is replaced with the replacement string
 // in file URLs. The format is "/alias=/replacement", which would turn
 // file:///alias/some/path.html into file:///replacement/some/path.html.
