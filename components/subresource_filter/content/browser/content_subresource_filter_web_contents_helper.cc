@@ -13,6 +13,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -36,9 +37,12 @@ bool WillCreateNewPage(content::NavigationHandle& handle) {
 // TODO(bokan): Ideally this would be provided by a //content API and this
 // class will eventually be removed. See the TODO in the class comment in the
 // header file.
-class ThrottleManagerInUserDataContainer : public base::SupportsUserData::Data {
+class ThrottleManagerInUserDataContainer
+    : public content::NavigationHandleUserData<
+          ThrottleManagerInUserDataContainer> {
  public:
   explicit ThrottleManagerInUserDataContainer(
+      content::NavigationHandle&,
       std::unique_ptr<ContentSubresourceFilterThrottleManager> throttle_manager)
       : throttle_manager_(std::move(throttle_manager)) {}
   ~ThrottleManagerInUserDataContainer() override = default;
@@ -52,8 +56,13 @@ class ThrottleManagerInUserDataContainer : public base::SupportsUserData::Data {
   }
 
  private:
+  friend NavigationHandleUserData;
+  NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+
   std::unique_ptr<ContentSubresourceFilterThrottleManager> throttle_manager_;
 };
+
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ThrottleManagerInUserDataContainer);
 
 }  // namespace
 
@@ -114,8 +123,7 @@ ContentSubresourceFilterWebContentsHelper::GetThrottleManager(
 
   if (WillCreateNewPage(handle)) {
     auto* container =
-        static_cast<ThrottleManagerInUserDataContainer*>(handle.GetUserData(
-            &ContentSubresourceFilterThrottleManager::kUserDataKey));
+        ThrottleManagerInUserDataContainer::GetForNavigationHandle(handle);
     if (!container)
       return nullptr;
 
@@ -196,13 +204,8 @@ void ContentSubresourceFilterWebContentsHelper::DidStartNavigation(
 
   throttle_managers_.insert(new_manager.get());
 
-  std::unique_ptr<base::SupportsUserData::Data> user_data_container =
-      std::make_unique<ThrottleManagerInUserDataContainer>(
-          std::move(new_manager));
-
-  navigation_handle->SetUserData(
-      &ContentSubresourceFilterThrottleManager::kUserDataKey,
-      std::move(user_data_container));
+  ThrottleManagerInUserDataContainer::CreateForNavigationHandle(
+      *navigation_handle, std::move(new_manager));
 }
 
 void ContentSubresourceFilterWebContentsHelper::ReadyToCommitNavigation(
@@ -250,10 +253,9 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
       navigated_frames_.insert(navigation_handle->GetFrameTreeNodeId()).second;
 
   if (WillCreateNewPage(*navigation_handle)) {
-    ThrottleManagerInUserDataContainer* container =
-        static_cast<ThrottleManagerInUserDataContainer*>(
-            navigation_handle->GetUserData(
-                &ContentSubresourceFilterThrottleManager::kUserDataKey));
+    auto* container =
+        ThrottleManagerInUserDataContainer::GetForNavigationHandle(
+            *navigation_handle);
 
     // It is theoretically possible to start a navigation in an unattached
     // WebContents (so the WebContents doesn't yet have any WebContentsHelpers
@@ -269,9 +271,7 @@ void ContentSubresourceFilterWebContentsHelper::DidFinishNavigation(
     // transfer the throttle manager to Page user data. If it failed, but it's
     // the first navigation in the frame, we should transfer it to the existing
     // Page since it won't have a throttle manager and will remain in the
-    // frame. In all other cases, the throttle manager will be destroyed (see
-    // comment in ThrottleManager destructor for why we call
-    // WillDestroyThrottleManager from here).
+    // frame. In all other cases, the throttle manager will be destroyed.
     content::Page* page = nullptr;
     if (navigation_handle->HasCommitted()) {
       page = &navigation_handle->GetRenderFrameHost()->GetPage();

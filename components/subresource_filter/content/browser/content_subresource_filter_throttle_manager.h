@@ -362,7 +362,7 @@ class ContentSubresourceFilterThrottleManager
   // has not had a navigation evaluated by the filter list.
   std::map<int, LoadPolicy> navigation_load_policies_;
 
-  // Receiver set for all RenderFrames in the WebContents.
+  // Receiver set for all RenderFrames in this throttle manager's page.
   content::RenderFrameHostReceiverSet<mojom::SubresourceFilterHost> receiver_;
 
   // Lazily instantiated in EnsureRulesetHandle when the first page level
