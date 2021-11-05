@@ -1087,7 +1087,8 @@ void Page::SetMediaFeatureOverride(const AtomicString& media_feature,
     media_feature_overrides_ = std::make_unique<MediaFeatureOverrides>();
   }
   media_feature_overrides_->SetOverride(media_feature, value);
-  if (media_feature == "prefers-color-scheme")
+  if (media_feature == "prefers-color-scheme" ||
+      media_feature == "forced-colors")
     SettingsChanged(ChangeType::kColorScheme);
   else
     SettingsChanged(ChangeType::kMediaQuery);

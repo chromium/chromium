@@ -40,7 +40,7 @@ matchMedia("(color-gamut: __invalid__)").matches applied: 3px x 2px, rgb(0, 0, 2
 matchMedia("(forced-colors: __invalid__)").matches: false
 matchMedia("(forced-colors: __invalid__)").matches applied: 3px x 2px, rgb(0, 0, 255)
 matchMedia("(forced-colors: active)").matches: true
-matchMedia("(forced-colors: active)").matches applied: 3px x 2px, rgb(0, 0, 255)
+matchMedia("(forced-colors: active)").matches applied: 3px x 2px, rgb(0, 0, 0)
 matchMedia("(forced-colors: none)").matches: true
 matchMedia("(forced-colors: none)").matches applied: 3px x 2px, rgb(0, 0, 255)
 matchMedia("(forced-colors: __invalid__)").matches: false

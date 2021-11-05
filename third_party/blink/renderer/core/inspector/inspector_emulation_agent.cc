@@ -6,6 +6,8 @@
 
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/public/web/web_render_theme.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -270,21 +272,76 @@ Response InspectorEmulationAgent::setEmulatedMedia(
     emulated_media_.Set("");
     GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride("");
   }
-  for (const WTF::String& feature : emulated_media_features_.Keys()) {
-    GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(AtomicString(feature),
-                                                         "");
-  }
+
+  auto const old_emulated_media_features_keys = emulated_media_features_.Keys();
   emulated_media_features_.Clear();
+
   if (features.isJust()) {
     auto featuresValue = features.takeJust();
     for (auto const& mediaFeature : *featuresValue.get()) {
       auto const& name = mediaFeature->getName();
       auto const& value = mediaFeature->getValue();
       emulated_media_features_.Set(name, value);
-      GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(AtomicString(name),
-                                                           value);
+    }
+
+    auto const& forced_colors_value =
+        emulated_media_features_.Get("forced-colors");
+    auto const& prefers_color_scheme_value =
+        emulated_media_features_.Get("prefers-color-scheme");
+
+    if (forced_colors_value == "active") {
+      if (!forced_colors_override_) {
+        initial_system_color_info_state_ =
+            Platform::Current()->ThemeEngine()->GetSystemColorInfo();
+      }
+      forced_colors_override_ = true;
+      bool is_dark_mode = false;
+      if (prefers_color_scheme_value.IsEmpty()) {
+        is_dark_mode = GetWebViewImpl()
+                           ->GetPage()
+                           ->GetSettings()
+                           .GetPreferredColorScheme() ==
+                       mojom::blink::PreferredColorScheme::kDark;
+      } else {
+        is_dark_mode = prefers_color_scheme_value == "dark";
+      }
+      Platform::Current()->ThemeEngine()->OverrideForcedColorsTheme(
+          is_dark_mode);
+    } else if (forced_colors_value == "none") {
+      if (!forced_colors_override_) {
+        initial_system_color_info_state_ =
+            Platform::Current()->ThemeEngine()->GetSystemColorInfo();
+      }
+      forced_colors_override_ = true;
+      Platform::Current()->ThemeEngine()->SetForcedColors(ForcedColors::kNone);
+    } else if (forced_colors_override_) {
+      Platform::Current()->ThemeEngine()->ResetToSystemColors(
+          initial_system_color_info_state_);
+    }
+
+    for (const WTF::String& feature : emulated_media_features_.Keys()) {
+      auto const& value = emulated_media_features_.Get(feature);
+      GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(
+          AtomicString(feature), value);
+    }
+
+    if (forced_colors_override_) {
+      blink::SystemColorsChanged();
+
+      if (forced_colors_value != "none" && forced_colors_value != "active") {
+        forced_colors_override_ = false;
+      }
     }
   }
+
+  for (const WTF::String& feature : old_emulated_media_features_keys) {
+    auto const& value = emulated_media_features_.Get(feature);
+    if (!value) {
+      GetWebViewImpl()->GetPage()->SetMediaFeatureOverride(
+          AtomicString(feature), "");
+    }
+  }
+
   return response;
 }
 
@@ -734,6 +791,8 @@ void InspectorEmulationAgent::InnerEnable() {
   enabled_ = true;
   instrumenting_agents_->AddInspectorEmulationAgent(this);
 }
+
+void InspectorEmulationAgent::SetSystemThemeState() {}
 
 Response InspectorEmulationAgent::AssertPage() {
   if (!web_local_frame_) {

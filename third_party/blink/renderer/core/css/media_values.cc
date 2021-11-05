@@ -27,8 +27,7 @@
 
 namespace blink {
 
-namespace {
-static ForcedColors CSSValueIDToForcedColors(CSSValueID id) {
+ForcedColors CSSValueIDToForcedColors(CSSValueID id) {
   switch (id) {
     case CSSValueID::kActive:
       return ForcedColors::kActive;
@@ -39,7 +38,6 @@ static ForcedColors CSSValueIDToForcedColors(CSSValueID id) {
       return ForcedColors::kNone;
   }
 }
-}  // namespace
 
 mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
     CSSValueID id) {

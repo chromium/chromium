@@ -2401,12 +2401,22 @@ void StyleEngine::UpdateColorScheme() {
   mojom::blink::PreferredColorScheme old_preferred_color_scheme =
       preferred_color_scheme_;
   preferred_color_scheme_ = settings->GetPreferredColorScheme();
+
   if (const auto* overrides =
           GetDocument().GetPage()->GetMediaFeatureOverrides()) {
-    MediaQueryExpValue value = overrides->GetOverride("prefers-color-scheme");
-    if (value.IsValid())
-      preferred_color_scheme_ = CSSValueIDToPreferredColorScheme(value.Id());
+    MediaQueryExpValue forced_colors_value =
+        overrides->GetOverride("forced-colors");
+    if (forced_colors_value.IsValid())
+      forced_colors_ = CSSValueIDToForcedColors(forced_colors_value.Id());
+
+    MediaQueryExpValue preferred_color_scheme_value =
+        overrides->GetOverride("prefers-color-scheme");
+    if (preferred_color_scheme_value.IsValid()) {
+      preferred_color_scheme_ =
+          CSSValueIDToPreferredColorScheme(preferred_color_scheme_value.Id());
+    }
   }
+
   if (GetDocument().Printing())
     preferred_color_scheme_ = mojom::blink::PreferredColorScheme::kLight;
 
