@@ -421,13 +421,33 @@ constexpr int kMaxCountForKeywordCacheBatch = 10;
 
 }  // namespace
 
+VisitDeletionObserver::VisitDeletionObserver(
+    HistoryClustersService* history_clusters_service)
+    : history_clusters_service_(history_clusters_service) {}
+
+VisitDeletionObserver::~VisitDeletionObserver() = default;
+
+void VisitDeletionObserver::AttachToHistoryService(
+    history::HistoryService* history_service) {
+  DCHECK(history_service);
+  history_service_observation_.Observe(history_service);
+}
+
+void VisitDeletionObserver::OnURLsDeleted(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  history_clusters_service_->ClearKeywordCache();
+}
+
 HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : history_service_(history_service) {
+    : history_service_(history_service), visit_deletion_observer_(this) {
   DCHECK(history_service_);
+
+  visit_deletion_observer_.AttachToHistoryService(history_service);
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
   if (kUseOnDeviceClusteringBackend.Get()) {
@@ -658,6 +678,12 @@ std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
 
   DCHECK_EQ(result_clusters.size(), raw_clusters.size());
   return result_clusters;
+}
+
+void HistoryClustersService::ClearKeywordCache() {
+  all_keywords_cache_timestamp_ = base::Time();
+  all_keywords_cache_.clear();
+  cache_query_task_tracker_.TryCancelAll();
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(

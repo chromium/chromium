@@ -15,9 +15,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/history_clusters_types.h"
@@ -32,6 +34,33 @@ class EntityMetadataProvider;
 }  // namespace optimization_guide
 
 namespace history_clusters {
+
+class HistoryClustersService;
+
+// Clears `HistoryClustersService`'s keyword cache when 1 or more history
+// entries are deleted.
+class VisitDeletionObserver : public history::HistoryServiceObserver {
+ public:
+  explicit VisitDeletionObserver(
+      HistoryClustersService* history_clusters_service);
+
+  ~VisitDeletionObserver() override;
+
+  // Starts observing a service for history deletions.
+  void AttachToHistoryService(history::HistoryService* history_service);
+
+  // history::HistoryServiceObserver
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
+
+ private:
+  HistoryClustersService* history_clusters_service_;
+
+  // Tracks the observed history service, for cleanup.
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
+};
 
 // This Service provides an API to the History Clusters for UI entry points.
 class HistoryClustersService : public KeyedService {
@@ -117,6 +146,9 @@ class HistoryClustersService : public KeyedService {
   std::vector<Cluster> CollapseDuplicateVisits(
       const std::vector<history::Cluster>& raw_clusters) const;
 
+  // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
+  void ClearKeywordCache();
+
  private:
   friend class HistoryClustersServiceTestApi;
 
@@ -162,6 +194,8 @@ class HistoryClustersService : public KeyedService {
 
   // A list of observers for this service.
   base::ObserverList<Observer> observers_;
+
+  VisitDeletionObserver visit_deletion_observer_;
 
   // Weak pointers issued from this factory never get invalidated before the
   // service is destroyed.
