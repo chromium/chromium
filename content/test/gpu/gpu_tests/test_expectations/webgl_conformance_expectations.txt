@@ -246,6 +246,10 @@ crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.h
 # on Nexus 5/6 consistently and other Android bots (eg. Nexus 5X) sometimes.
 crbug.com/1052790 [ android ] conformance/state/gl-object-get-calls.html [ Skip ]
 
+# When this fails, it causes several subsequent tests to fail due to the
+# browser failing to restart properly.
+crbug.com/610951 [ android android-nexus-5x ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
+
 # Skip test that breaks subsequent tests.
 crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
@@ -698,7 +702,6 @@ crbug.com/609883 [ android android-nexus-5x ] conformance/extensions/oes-texture
 crbug.com/784817 [ android android-nexus-5x ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
 crbug.com/609883 [ android android-nexus-5x ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
 crbug.com/609883 [ android android-nexus-5x no-passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
-crbug.com/610951 [ android android-nexus-5x ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1043431 [ android android-nexus-5x ] conformance/limits/gl-max-texture-dimensions.html [ RetryOnFailure ]
 crbug.com/951628 [ android android-nexus-5x no-passthrough no-swiftshader-gl ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1083320 [ android android-nexus-5x ] conformance/misc/uninitialized-test.html [ Failure ]
