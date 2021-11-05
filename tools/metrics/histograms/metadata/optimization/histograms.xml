@@ -23,9 +23,21 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="OptimizationTarget">
+  <variant name="AutofillAssistant"/>
   <variant name="LanguageDetection"/>
+  <variant name="ModelValidation"/>
+  <variant name="NotificationPermissions"/>
+  <variant name="PageEntities"/>
   <variant name="PageTopics"/>
+  <variant name="PageTopicsV2"/>
+  <variant name="PageVisibility"/>
   <variant name="PainfulPageLoad"/>
+  <variant name="SegmentationChromeStartAndroid"/>
+  <variant name="SegmentationDummyFeature"/>
+  <variant name="SegmentationNewTab"/>
+  <variant name="SegmentationQueryTiles"/>
+  <variant name="SegmentationShare"/>
+  <variant name="SegmentationVoice"/>
 </variants>
 
 <variants name="PageTextDumpEvent">

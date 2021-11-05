@@ -19,6 +19,7 @@
 
 namespace optimization_guide {
 
+// These names are persisted to histograms, so don't change them.
 std::string GetStringNameForOptimizationTarget(
     optimization_guide::proto::OptimizationTarget optimization_target) {
   switch (optimization_target) {
@@ -48,8 +49,15 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationChromeStartAndroid";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
       return "SegmentationQueryTiles";
+    case proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY:
+      return "PageVisibility";
     case proto::OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT:
       return "AutofillAssistant";
+    case proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2:
+      return "PageTopicsV2";
+      // Whenever a new value is added, make sure to add it to the OptTarget
+      // variant list in
+      // //tools/metrics/histograms/metadata/optimization/histograms.xml.
   }
   NOTREACHED();
   return std::string();
