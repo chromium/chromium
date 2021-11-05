@@ -839,6 +839,39 @@ gfx::NativeView WebContentsViewAura::GetRenderWidgetHostViewParent() const {
 
 bool WebContentsViewAura::IsValidDragTarget(
     RenderWidgetHostImpl* target_rwh) const {
+  // This is the browser-side check for https://crbug.com/59081 to prevent
+  // drags between cross-origin frames within the same page.
+  //
+  // First, check if the target widget's render process ID matches the starting
+  // frame's render process ID. If it matches, this is either:
+  //
+  // - a same-process drag between frames in the same page. Since this is a drag
+  //   within the same `blink::Page`, `blink::DragController::drag_initiator_`
+  //   will be non-null (since each `blink::Page` owns `blink::DragController`)
+  //   and the render process will use `drag_initiator_` to perform an origin
+  //   check to decide whether or not to allow the drag. For example, frames
+  //   in the same renderer process may be same-site but cross-origin: in this
+  //   case, the drag should be disallowed.
+  //
+  // - a same-process drag between frames in different pages. Since this is a
+  //   drag between two different `blink::Page`s, the aforementioned
+  //   `blink::DragController::drag_initiator_` for the target
+  //   `blink::Page` will be null. When `drag_initiator_` is unset, Blink always
+  //   allows the drag, but this is OK: cross-origin cross-page drags should be
+  //   allowed.
+  //
+  // Otherwise, if the render process IDs do not match, this is a cross-process
+  // drag—but still possibly within the same page. `drag_start_view_id_` is set
+  // to the main `RenderFrameHost`'s `RenderViewHost`'s ID—so if the two
+  // IDs match here, the drag is within the same page and disallowed. It is
+  // important to block these drags here, as if it were allowed to go to the
+  // render process, `blink::DragController::drag_initiator_` will be null (by
+  // definition, since the target frame is cross-process to the starting frame),
+  // and the drag will be incorrectly allowed.
+  //
+  // TODO(https://crbug.com/1266953): There are some known gaps caused by
+  // comparing `RenderViewHost` IDs, as `RenderViewHost` ID is not really a
+  // strong signal for page identity.
   return target_rwh->GetProcess()->GetID() == drag_start_process_id_ ||
       GetRenderViewHostID(web_contents_->GetRenderViewHost()) !=
       drag_start_view_id_;

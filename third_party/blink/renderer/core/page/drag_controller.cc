@@ -396,6 +396,16 @@ bool DragController::TryDocumentDrag(DragData* drag_data,
   if (!document_under_mouse_)
     return false;
 
+  // This is the renderer-side check for https://crbug.com/59081 to prevent
+  // drags between cross-origin frames within the same page. This logic relies
+  // on the browser process to have already filtered out any drags that might
+  // span distinct `blink::Page` objects but still be part of the same logical
+  // page. Otherwise, `drag_initiator_` will be null here and the drag will
+  // incorrectly be allowed to proceed.
+  //
+  // Note: One example where the drag start frame and the drop target frame can
+  // be part of the same logical page, but belong to different `blink::Page`
+  // instances is if the two frames are hosted in different renderer processes.
   auto* under_mouse_origin =
       document_under_mouse_->GetExecutionContext()->GetSecurityOrigin();
   if (drag_initiator_ &&
