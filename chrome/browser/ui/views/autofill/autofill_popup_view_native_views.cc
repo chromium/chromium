@@ -1521,7 +1521,7 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
 std::unique_ptr<views::Border> AutofillPopupViewNativeViews::CreateBorder() {
   BubbleBorder::Arrow arrow = BubbleBorder::Arrow::TOP_LEFT;
   auto border = std::make_unique<BubbleBorder>(
-      arrow, BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+      arrow, BubbleBorder::STANDARD_SHADOW, GetBackgroundColor());
   border->SetCornerRadius(GetCornerRadius());
   border->set_md_shadow_elevation(
       ChromeLayoutProvider::Get()->GetShadowElevationMetric(
