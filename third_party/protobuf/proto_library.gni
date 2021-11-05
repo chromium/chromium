@@ -90,6 +90,13 @@
 #
 # Parameters for compiling the generated code:
 #
+#   force_source_set (Default=false)
+#       When set true the generated code will be compiled as a source set.
+#       This can be useful if you need to export the generated symbols from a
+#       shared library. You should use this carefully, as you probably only
+#       want this if your dependencies are *always* shared libraries. Most
+#       of the time, you probably want `component_build_force_source_set`
+#       instead (see the next option).
 #   component_build_force_source_set (Default=false)
 #       When set true the generated code will be compiled as a source set in
 #       the component build. This does not affect static builds.  If you are
@@ -453,8 +460,9 @@ template("proto_library") {
   if (!generate_library) {
     # If only descriptor is required, just generate a group wrapper for action output.
     link_target_type = "group"
-  } else if (defined(invoker.component_build_force_source_set) &&
-             invoker.component_build_force_source_set && is_component_build) {
+  } else if ((defined(invoker.force_source_set) && invoker.force_source_set) ||
+             (defined(invoker.component_build_force_source_set) &&
+              invoker.component_build_force_source_set && is_component_build)) {
     # Option to disable building a library in component build.
     link_target_type = "source_set"
   } else {
