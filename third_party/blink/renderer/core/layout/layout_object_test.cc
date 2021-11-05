@@ -423,7 +423,7 @@ TEST_F(
 
 TEST_F(LayoutObjectTest, PaintingLayerOfOverflowClipLayerUnderColumnSpanAll) {
   SetBodyInnerHTML(R"HTML(
-    <div id='columns' style='columns: 3'>
+    <div id='columns' style='position: relative; columns: 3'>
       <div style='column-span: all'>
         <div id='overflow-clip-layer' style='height: 100px; overflow:
     hidden'></div>
