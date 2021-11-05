@@ -7,16 +7,18 @@ package org.chromium.content.browser.accessibility;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellActivityTestRule.EVENTS_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellActivityTestRule.RESULTS_NULL;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sClassNameMatcher;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ACTION_CONTEXT_CLICK;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.ACTION_SHOW_ON_SCREEN;
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_SUPPORTED_ELEMENTS;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_BOTTOM;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_TOP;
+
+import static java.lang.String.CASE_INSENSITIVE_ORDER;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.test.filters.SmallTest;
@@ -29,7 +31,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Tests for WebContentsAccessibilityImpl integration with accessibility services.
@@ -40,7 +44,18 @@ import java.lang.reflect.Method;
 @SuppressLint("VisibleForTests")
 public class WebContentsAccessibilityTreeTest {
     // File path that holds all the relevant tests.
-    private static final String BASE_FILE_PATH = "content/test/data/accessibility/html/";
+    private static final String BASE_ARIA_FILE_PATH = "content/test/data/accessibility/aria/";
+    private static final String BASE_HTML_FILE_PATH = "content/test/data/accessibility/html/";
+
+    // All HTML elements that can be traversed through, should be the same for all tests. Taken
+    // from: content/browser/accessibility/web_contents_accessibility_android.cc
+    private static final String ALL_HTML_ELEMENT_PREDICATES =
+            "ARTICLE,BUTTON,CHECKBOX,COMBOBOX,CONTROL,FOCUSABLE,FRAME,GRAPHIC,H1,H2,H3,H4,H5,H6,"
+            + "HEADING,LANDMARK,LINK,LIST,LIST_ITEM,MAIN,MEDIA,RADIO,SECTION,TABLE,TEXT_FIELD,"
+            + "UNVISITED_LINK,VISITED_LINK";
+    private static final String PREDICATES_ERROR =
+            "HTML predicates did not match expectations, was a new predicate added to predicate "
+            + "map of web_contents_accessibility_android.cc?";
 
     @Rule
     public AccessibilityContentShellActivityTestRule mActivityTestRule =
@@ -63,6 +78,16 @@ public class WebContentsAccessibilityTreeTest {
 
         // Generate full AccessibilityNodeInfo tree and verify results.
         assertResults(expectationFilePath + expectationFile, generateAccessibilityNodeInfoTree());
+    }
+
+    // Helper methods to pass-through to the performTest method so each individual test does
+    // not need to include its own filepath.
+    private void performAriaTest(String inputFile, String expectationFile) {
+        performTest(inputFile, expectationFile, BASE_ARIA_FILE_PATH);
+    }
+
+    private void performHtmlTest(String inputFile, String expectationFile) {
+        performTest(inputFile, expectationFile, BASE_HTML_FILE_PATH);
     }
 
     /**
@@ -128,27 +153,6 @@ public class WebContentsAccessibilityTreeTest {
     }
 
     /**
-     * Helper method to use reflection to convert AccessibilityNodeInfo actions to human-
-     * readable text. The method is private so we set accessible to true.
-     *
-     * @param node                        The object that contains the action
-     * @param action                      Action int to convert to a String
-     * @return  String                    Human-readable representation of the action int
-     */
-    @SuppressLint("SoonBlockedPrivateApi")
-    private String getSymbolicName(AccessibilityNodeInfo node, int action) {
-        try {
-            Method getActionSymbolicName = AccessibilityNodeInfo.class.getDeclaredMethod(
-                    "getActionSymbolicName", int.class);
-            getActionSymbolicName.setAccessible(true);
-            return (String) getActionSymbolicName.invoke(node, Integer.valueOf(action));
-        } catch (Exception ex) {
-            Assert.fail("Unable to call hidden AccessibilityNodeInfo method: " + ex.toString());
-            return "";
-        }
-    }
-
-    /**
      * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
      *
      * @param node                        Object to create a toString for
@@ -157,24 +161,30 @@ public class WebContentsAccessibilityTreeTest {
     private String customToString(AccessibilityNodeInfo node) {
         StringBuilder builder = new StringBuilder();
 
-        // Classname and text should always be printed.
-        builder.append(node.getClassName());
-        builder.append("; text: ").append(node.getText()).append(";");
+        // Print classname first, but only print content after the last period to remove redundancy.
+        String[] classNameParts = node.getClassName().toString().split("\\.");
+        builder.append(classNameParts[classNameParts.length - 1]);
+
+        // Print text unless it is empty (null is allowed)
+        if (node.getText() == null || !node.getText().toString().isEmpty()) {
+            builder.append(" text:\"").append(node.getText()).append("\"");
+        }
 
         // Text properties - Only print when non-null
         if (node.getContentDescription() != null) {
-            builder.append(" contentDescription: ")
+            builder.append(" contentDescription:\"")
                     .append(node.getContentDescription())
-                    .append(";");
+                    .append("\"");
         }
         if (node.getViewIdResourceName() != null) {
-            builder.append(" viewIdResName: ").append(node.getViewIdResourceName()).append(";");
+            builder.append(" viewIdResName:\"").append(node.getViewIdResourceName()).append("\"");
         }
         if (node.getError() != null) {
-            builder.append(" error: ").append(node.getError()).append(";");
+            builder.append(" error:\"").append(node.getError()).append("\"");
         }
 
-        // Boolean properties - Only print when set to true.
+        // Boolean properties - Only print when set to true except for enabled and visibleToUser,
+        // which are both mostly true, so only print when they are false.
         if (node.canOpenPopup()) {
             builder.append(" canOpenPopUp");
         }
@@ -196,8 +206,8 @@ public class WebContentsAccessibilityTreeTest {
         if (node.isEditable()) {
             builder.append(" editable");
         }
-        if (node.isEnabled()) {
-            builder.append(" enabled");
+        if (!node.isEnabled()) {
+            builder.append(" disabled");
         }
         if (node.isFocusable()) {
             builder.append(" focusable");
@@ -217,88 +227,178 @@ public class WebContentsAccessibilityTreeTest {
         if (node.isSelected()) {
             builder.append(" selected");
         }
-        if (node.isVisibleToUser()) {
-            builder.append(" visibleToUser");
+        if (!node.isVisibleToUser()) {
+            builder.append(" notVisibleToUser");
         }
 
         // Integer properties - Only print when not default values.
         if (node.getInputType() != InputType.TYPE_NULL) {
-            builder.append("; inputType: ").append(node.getInputType());
+            builder.append(" inputType:").append(node.getInputType());
         }
         if (node.getTextSelectionStart() != -1) {
-            builder.append("; textSelectionStart: ").append(node.getTextSelectionStart());
+            builder.append(" textSelectionStart:").append(node.getTextSelectionStart());
         }
         if (node.getTextSelectionEnd() != -1) {
-            builder.append("; textSelectionEnd: ").append(node.getTextSelectionEnd());
+            builder.append(" textSelectionEnd:").append(node.getTextSelectionEnd());
         }
         if (node.getMaxTextLength() != -1) {
-            builder.append("; maxTextLength: ").append(node.getMaxTextLength());
+            builder.append(" maxTextLength:").append(node.getMaxTextLength());
         }
 
         // Child objects - print for non-null cases.
         if (node.getCollectionInfo() != null) {
-            builder.append("; CollectionInfo: ")
+            builder.append(" CollectionInfo:")
                     .append(collectionInfoToString(node.getCollectionInfo()));
         }
         if (node.getCollectionItemInfo() != null) {
-            builder.append("; CollectionItemInfo: ")
+            builder.append(" CollectionItemInfo:")
                     .append(collectionItemInfoToString(node.getCollectionItemInfo()));
         }
         if (node.getRangeInfo() != null) {
-            builder.append("; RangeInfo: ").append(rangeInfoToString(node.getRangeInfo()));
+            builder.append(" RangeInfo:").append(rangeInfoToString(node.getRangeInfo()));
         }
 
         // Actions and Bundle extras - Always print.
-        builder.append("; actions: ").append(actionsToString(node));
-        builder.append("; bundle: ").append(bundleToString(node.getExtras()));
+        builder.append(" actions:").append(actionsToString(node));
+        builder.append(" bundle:").append(bundleToString(node.getExtras()));
 
         return builder.toString();
     }
 
     // Various helper methods to print custom toStrings for objects.
     private String collectionInfoToString(AccessibilityNodeInfo.CollectionInfo info) {
-        return "[" + info.isHierarchical() + ", " + info.getSelectionMode() + ", "
-                + info.getRowCount() + ", " + info.getColumnCount() + "]";
+        // Only include the isHierarchical boolean if true, since it is more often false, and
+        // ignore selection mode, which is not set by Chrome.
+        String prefix = "[";
+        if (info.isHierarchical()) {
+            prefix += "hierarchical, ";
+        }
+        return prefix + "rows=" + info.getRowCount() + ", cols=" + info.getColumnCount() + "]";
     }
 
     private String collectionItemInfoToString(AccessibilityNodeInfo.CollectionItemInfo info) {
-        return "[" + info.isHeading() + ", " + info.isSelected() + ", " + info.getRowIndex() + ", "
-                + info.getRowSpan() + ", " + info.getColumnIndex() + ", " + info.getColumnSpan()
-                + "]";
+        // Only include isHeading and isSelected if true, since both are more often false.
+        String prefix = "[";
+        if (info.isHeading()) {
+            prefix += "heading, ";
+        }
+        if (info.isSelected()) {
+            prefix += "selected, ";
+        }
+        return prefix + "rowIndex=" + info.getRowIndex() + ", rowSpan=" + info.getRowSpan()
+                + ", colIndex=" + info.getColumnIndex() + ", colSpan=" + info.getColumnSpan() + "]";
     }
 
     private String rangeInfoToString(AccessibilityNodeInfo.RangeInfo info) {
-        return "[" + info.getType() + ", " + info.getCurrent() + ", " + info.getMin() + ", "
-                + info.getMax() + "]";
+        // Chrome always uses the float range type, so only print values of RangeInfo.
+        return "[current=" + info.getCurrent() + ", min=" + info.getMin() + ", max=" + info.getMax()
+                + "]";
     }
 
     private String actionsToString(AccessibilityNodeInfo node) {
+        // Sort actions list to ensure consistent output of tests.
+        Collections.sort(node.getActionList(), (a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
+
+        List<String> actionStrings = new ArrayList<String>();
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         for (AccessibilityNodeInfo.AccessibilityAction action : node.getActionList()) {
             // Four actions are set on all nodes, so ignore those when printing the tree.
             if (action.getId() == AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT
                     || action.getId() == AccessibilityNodeInfo.ACTION_PREVIOUS_HTML_ELEMENT
-                    || action.getId() == ACTION_SHOW_ON_SCREEN
-                    || action.getId() == ACTION_CONTEXT_CLICK) {
+                    || action.getId() == WebContentsAccessibilityImpl.ACTION_SHOW_ON_SCREEN
+                    || action.getId() == WebContentsAccessibilityImpl.ACTION_CONTEXT_CLICK) {
                 continue;
             }
 
-            builder.append(getSymbolicName(node, action.getId())).append(", ");
+            actionStrings.add(actionToString(action.getId()));
         }
-        // Remove the extra comma for cleanliness
-        if (builder.length() > 2) {
-            builder.setLength(builder.length() - 2);
-        }
+        builder.append(TextUtils.join(", ", actionStrings)).append("]");
 
-        builder.append("]");
         return builder.toString();
     }
 
+    private String actionToString(int action) {
+        switch (action) {
+            // These could potentially be added to any given node.
+            case AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY:
+                return "NEXT";
+            case AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY:
+                return "PREVIOUS";
+            case AccessibilityNodeInfo.ACTION_SET_TEXT:
+                return "SET_TEXT";
+            case AccessibilityNodeInfo.ACTION_PASTE:
+                return "PASTE";
+            case WebContentsAccessibilityImpl.ACTION_IME_ENTER:
+                return "IME_ENTER";
+            case AccessibilityNodeInfo.ACTION_SET_SELECTION:
+                return "SET_SELECTION";
+            case AccessibilityNodeInfo.ACTION_CUT:
+                return "CUT";
+            case AccessibilityNodeInfo.ACTION_COPY:
+                return "COPY";
+            case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:
+                return "SCROLL_FORWARD";
+            case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD:
+                return "SCROLL_BACK";
+            case WebContentsAccessibilityImpl.ACTION_SCROLL_UP:
+                return "SCROLL_UP";
+            case WebContentsAccessibilityImpl.ACTION_PAGE_UP:
+                return "PAGE_UP";
+            case WebContentsAccessibilityImpl.ACTION_SCROLL_DOWN:
+                return "SCROLL_DOWN";
+            case WebContentsAccessibilityImpl.ACTION_PAGE_DOWN:
+                return "PAGE_DOWN";
+            case WebContentsAccessibilityImpl.ACTION_SCROLL_LEFT:
+                return "SCROLL_LEFT";
+            case WebContentsAccessibilityImpl.ACTION_PAGE_LEFT:
+                return "PAGE_LEFT";
+            case WebContentsAccessibilityImpl.ACTION_SCROLL_RIGHT:
+                return "SCROLL_RIGHT";
+            case WebContentsAccessibilityImpl.ACTION_PAGE_RIGHT:
+                return "PAGE_RIGHT";
+            case AccessibilityNodeInfo.ACTION_CLEAR_FOCUS:
+                return "CLEAR_FOCUS";
+            case AccessibilityNodeInfo.ACTION_FOCUS:
+                return "FOCUS";
+            case AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS:
+                return "CLEAR_A11Y_FOCUS";
+            case AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS:
+                return "A11Y_FOCUS";
+            case AccessibilityNodeInfo.ACTION_CLICK:
+                return "CLICK";
+            case AccessibilityNodeInfo.ACTION_EXPAND:
+                return "EXPAND";
+            case AccessibilityNodeInfo.ACTION_COLLAPSE:
+                return "COLLAPSE";
+            case WebContentsAccessibilityImpl.ACTION_SET_PROGRESS:
+                return "SET_PROGRESS";
+
+            // The long click action is deliberately never be added to a node.
+            case AccessibilityNodeInfo.ACTION_LONG_CLICK:
+            // These are the remaining potential actions which Chrome does not implement.
+            case AccessibilityNodeInfo.ACTION_DISMISS:
+            case AccessibilityNodeInfo.ACTION_SELECT:
+            case AccessibilityNodeInfo.ACTION_CLEAR_SELECTION:
+            case WebContentsAccessibilityImpl.ACTION_SCROLL_TO_POSITION:
+            case WebContentsAccessibilityImpl.ACTION_MOVE_WINDOW:
+            case WebContentsAccessibilityImpl.ACTION_SHOW_TOOLTIP:
+            case WebContentsAccessibilityImpl.ACTION_HIDE_TOOLTIP:
+            case WebContentsAccessibilityImpl.ACTION_PRESS_AND_HOLD:
+            default:
+                return "NOT_IMPLEMENTED";
+        }
+    }
+
     private String bundleToString(Bundle extras) {
+        // Sort keys to ensure consistent output of tests.
+        List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
+        Collections.sort(sortedKeySet, CASE_INSENSITIVE_ORDER);
+
+        List<String> bundleStrings = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         builder.append("[");
-        for (String key : extras.keySet()) {
+        for (String key : sortedKeySet) {
             // Two Bundle extras are related to bounding boxes, these should be ignored so the
             // tests can safely run on varying devices and not be screen-dependent.
             if (key.equals(EXTRAS_KEY_UNCLIPPED_TOP) || key.equals(EXTRAS_KEY_UNCLIPPED_BOTTOM)) {
@@ -307,32 +407,42 @@ public class WebContentsAccessibilityTreeTest {
 
             // Since every node has a few Bundle extras, and some are often empty, we will only
             // print non-null and not empty values.
-            if (extras.get(key).toString().isEmpty()) {
+            if (extras.get(key) == null || extras.get(key).toString().isEmpty()) {
                 continue;
             }
 
-            builder.append(key).append(" - ").append(extras.get(key).toString()).append(", ");
-        }
-        // Remove the extra comma for cleanliness
-        if (builder.length() > 2) {
-            builder.setLength(builder.length() - 2);
-        }
+            // For the special case of the supported HTML elements, which prints the same for the
+            // rootWebArea on each test, assert consistency and suppress from results.
+            if (key.equals(EXTRAS_KEY_SUPPORTED_ELEMENTS)) {
+                Assert.assertEquals(
+                        PREDICATES_ERROR, ALL_HTML_ELEMENT_PREDICATES, extras.get(key).toString());
+                continue;
+            }
 
-        builder.append("]");
+            // Simplify the key String before printing to make test outputs easier to read.
+            bundleStrings.add(key.replace("AccessibilityNodeInfo.", "") + "=\""
+                    + extras.get(key).toString() + "\"");
+        }
+        builder.append(TextUtils.join(", ", bundleStrings)).append("]");
+
         return builder.toString();
     }
 
     @Test
     @SmallTest
+    public void test_annotationRoles() {
+        performAriaTest("annotation-roles.html", "annotation-roles-expected-android-external.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_tableSimple() {
-        performTest(
-                "table-simple.html", "table-simple-expected-android-external.txt", BASE_FILE_PATH);
+        performHtmlTest("table-simple.html", "table-simple-expected-android-external.txt");
     }
 
     @Test
     @SmallTest
     public void test_clickableScore() {
-        performTest("clickable-score.html", "clickable-score-expected-android-external.txt",
-                BASE_FILE_PATH);
+        performHtmlTest("clickable-score.html", "clickable-score-expected-android-external.txt");
     }
 }

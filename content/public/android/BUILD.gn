@@ -604,6 +604,7 @@ android_library("content_javatests") {
   ]
 
   data = [
+    "//content/test/data/accessibility/aria/",
     "//content/test/data/accessibility/event/",
     "//content/test/data/accessibility/html/",
     "//content/test/data/android/",
