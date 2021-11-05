@@ -9,10 +9,13 @@
 #include <vector>
 
 #include "ash/public/cpp/window_properties.h"
+#include "base/callback.h"
 #include "base/hash/hash.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/exo/wm_helper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -150,7 +153,19 @@ bool IsInternalWebsite(GURL url) {
 }
 
 template <size_t N>
-bool IsAllowedUrl(const char* (&allowedDomains)[N]) {
+bool IsAllowedUrl(const char* (&allowedDomains)[N], GURL url) {
+  if (IsTestUrl(url) || IsInternalWebsite(url))
+    return true;
+  for (size_t i = 0; i < N; i++) {
+    if (url.DomainIs(allowedDomains[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+template <size_t N>
+bool IsAllowedUrlLegacy(const char* (&allowedDomains)[N]) {
   Browser* browser = chrome::FindLastActive();
   if (browser && browser->window() && browser->window()->IsActive() &&
       browser->tab_strip_model() &&
@@ -196,21 +211,100 @@ bool IsAllowedApp(const char* (&allowedApps)[N]) {
 }
 
 bool IsAllowedUrlOrAppForPersonalInfoSuggestion() {
-  return IsAllowedUrl(kAllowedDomainsForPersonalInfoSuggester) ||
+  return IsAllowedUrlLegacy(kAllowedDomainsForPersonalInfoSuggester) ||
          IsAllowedApp(kAllowedAppsForPersonalInfoSuggester);
 }
 
 bool IsAllowedUrlOrAppForEmojiSuggestion() {
-  return IsAllowedUrl(kAllowedDomainsForEmojiSuggester) ||
+  return IsAllowedUrlLegacy(kAllowedDomainsForEmojiSuggester) ||
          IsAllowedApp(kAllowedAppsForEmojiSuggester);
 }
 
 bool IsAllowedUrlOrAppForMultiWordSuggestion() {
-  return IsAllowedUrl(kAllowedDomainsForMultiWordSuggester) ||
+  return IsAllowedUrlLegacy(kAllowedDomainsForMultiWordSuggester) ||
          IsAllowedApp(kAllowedAppsForMultiWordSuggester);
 }
 
+absl::optional<GURL> GetAshChromeUrl() {
+  Browser* browser = chrome::FindLastActive();
+  // Ash chrome will return true for browser->window()->IsActive() if the
+  // user is currently typing in an ash browser tab. IsActive() will return
+  // false if the user is currently typing a lacros browser tab.
+  if (browser && browser->window() && browser->window()->IsActive() &&
+      browser->tab_strip_model() &&
+      browser->tab_strip_model()->GetActiveWebContents()) {
+    return browser->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetLastCommittedURL();
+  }
+
+  return absl::nullopt;
+}
+
+using GetBrowserUrlCallback =
+    base::OnceCallback<void(const absl::optional<GURL>& url)>;
+
+void OnLacrosChromeUrlReturned(GetBrowserUrlCallback callback,
+                               const absl::optional<GURL>& url) {
+  std::move(callback).Run(std::move(url));
+}
+
+void GetLacrosChromeUrl(GetBrowserUrlCallback callback) {
+  crosapi::BrowserManager* browser_manager = crosapi::BrowserManager::Get();
+  // browser_manager will exist whenever there is a lacros browser running.
+  // GetActiveTabUrlSupported() will only return true if the current lacros
+  // browser is being used by the user.
+  if (browser_manager && browser_manager->IsReady() &&
+      browser_manager->GetActiveTabUrlSupported()) {
+    browser_manager->GetActiveTabUrl(
+        base::BindOnce(&OnLacrosChromeUrlReturned, std::move(callback)));
+    return;
+  }
+
+  std::move(callback).Run(absl::nullopt);
+}
+
+void GetBrowserUrl(GetBrowserUrlCallback callback) {
+  absl::optional<GURL> ash_url = GetAshChromeUrl();
+  if (ash_url.has_value()) {
+    std::move(callback).Run(ash_url);
+    return;
+  }
+
+  GetLacrosChromeUrl(std::move(callback));
+}
+
+void ReturnEnabledSuggestions(
+    AssistiveSuggesterSwitch::GetEnabledSuggestionsCallback callback,
+    const absl::optional<GURL>& current_url) {
+  if (!current_url.has_value()) {
+    std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{});
+    return;
+  }
+
+  bool emoji_suggestions_allowed =
+      IsAllowedUrl(kAllowedDomainsForEmojiSuggester, *current_url) ||
+      IsAllowedApp(kAllowedAppsForEmojiSuggester);
+
+  bool multi_word_suggestions_allowed =
+      IsAllowedUrl(kAllowedDomainsForMultiWordSuggester, *current_url) ||
+      IsAllowedApp(kAllowedAppsForMultiWordSuggester);
+
+  bool personal_info_suggestions_allowed =
+      IsAllowedUrl(kAllowedDomainsForPersonalInfoSuggester, *current_url) ||
+      IsAllowedApp(kAllowedAppsForPersonalInfoSuggester);
+
+  std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{
+      .emoji_suggestions = emoji_suggestions_allowed,
+      .multi_word_suggestions = multi_word_suggestions_allowed,
+      .personal_info_suggestions = personal_info_suggestions_allowed,
+  });
+}
+
 }  // namespace
+
+AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter() = default;
+AssistiveSuggesterClientFilter::~AssistiveSuggesterClientFilter() = default;
 
 bool AssistiveSuggesterClientFilter::IsEmojiSuggestionAllowed() {
   return IsAllowedUrlOrAppForEmojiSuggestion();
@@ -226,11 +320,7 @@ bool AssistiveSuggesterClientFilter::IsPersonalInfoSuggestionAllowed() {
 
 void AssistiveSuggesterClientFilter::GetEnabledSuggestions(
     GetEnabledSuggestionsCallback callback) {
-  std::move(callback).Run(EnabledSuggestions{
-      .emoji_suggestions = IsEmojiSuggestionAllowed(),
-      .multi_word_suggestions = IsMultiWordSuggestionAllowed(),
-      .personal_info_suggestions = IsPersonalInfoSuggestionAllowed(),
-  });
+  GetBrowserUrl(base::BindOnce(ReturnEnabledSuggestions, std::move(callback)));
 }
 
 }  // namespace input_method
