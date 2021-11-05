@@ -25,9 +25,6 @@ bool IsRestrictAccountsToPatternsEnabled();
 // Returns true if force signIn is set.
 bool IsForceSignInEnabled();
 
-// Returns true if force signIn is set.
-bool IsSyncTypesListEnabled();
-
 // Returns true if the |dataType| is managed by policies (i.e. is not syncable).
 bool IsManagedSyncDataType(ChromeBrowserState* browserState,
                            SyncSetupService::SyncableDatatype dataType);

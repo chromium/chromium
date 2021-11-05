@@ -50,13 +50,6 @@ bool IsForceSignInEnabled() {
   return policy_mode == BrowserSigninMode::kForced;
 }
 
-bool IsSyncTypesListEnabled() {
-  const base::ListValue* value =
-      GetApplicationContext()->GetLocalState()->GetList(
-          policy::key::kSyncTypesListDisabled);
-  return value->GetList().size();
-}
-
 bool IsManagedSyncDataType(ChromeBrowserState* browserState,
                            SyncSetupService::SyncableDatatype dataType) {
   return browserState->GetPrefs()
