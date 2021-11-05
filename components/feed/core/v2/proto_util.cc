@@ -130,11 +130,8 @@ feedwire::Request CreateFeedQueryRequest(
       feedwire::Capability::LONG_PRESS_CARD_MENU);
   feed_request.add_client_capability(feedwire::Capability::SHARE);
 
-  // TODO(crbug.com/1225676): Enable by default once fix is launched.
-  if (!request_metadata.chrome_info.start_surface ||
-      base::FeatureList::IsEnabled(kEnableOpenInNewTabFromStartSurfaceFeed)) {
-    feed_request.add_client_capability(feedwire::Capability::OPEN_IN_TAB);
-  }
+  feed_request.add_client_capability(feedwire::Capability::OPEN_IN_TAB);
+  feed_request.add_client_capability(feedwire::Capability::OPEN_IN_INCOGNITO);
 
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
