@@ -1043,9 +1043,16 @@ export class Viewport {
 
   /**
    * @param {!KeyboardEvent} e
+   * @param {boolean} formFieldFocused
    * @private
    */
-  pageUpDownSpaceHandler_(e) {
+  pageUpDownSpaceHandler_(e, formFieldFocused) {
+    // Avoid scrolling if the space key is down while a form field is focused
+    // on since the user might be typing space into the field.
+    if (formFieldFocused && e.key === ' ') {
+      return;
+    }
+
     const direction =
         e.key === 'PageUp' || (e.key === ' ' && e.shiftKey) ? -1 : 1;
     // Go to the previous/next page if we are fit-to-page or fit-to-height.
@@ -1144,7 +1151,7 @@ export class Viewport {
       case ' ':
       case 'PageUp':
       case 'PageDown':
-        this.pageUpDownSpaceHandler_(e);
+        this.pageUpDownSpaceHandler_(e, formFieldFocused);
         return true;
       case 'ArrowLeft':
         this.arrowLeftHandler_(e, formFieldFocused);
