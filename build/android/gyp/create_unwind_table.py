@@ -766,7 +766,10 @@ def EncodePageTableAndFunctionTable(
     # ]
     assert page_number > len(raw_page_table) - 1
     number_of_empty_pages = page_number - len(raw_page_table)
-    raw_page_table.extend([len(function_table)] * (number_of_empty_pages + 1))
+    # The function table is represented as `base::FunctionTableEntry[]`,
+    # where `base::FunctionTableEntry` is 4 bytes.
+    function_table_index = len(function_table) // 4
+    raw_page_table.extend([function_table_index] * (number_of_empty_pages + 1))
     assert page_number == len(raw_page_table) - 1
 
     for function_unwind in sorted(

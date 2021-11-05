@@ -821,7 +821,7 @@ class _TestEncodePageTableAndFunctionTable(unittest.TestCase):
         function_unwinds, function_offset_table_offsets)
 
     self.assertEqual(2 * 4, len(page_table))
-    self.assertEqual((0, 8), struct.unpack('2I', page_table))
+    self.assertEqual((0, 2), struct.unpack('2I', page_table))
 
     self.assertEqual(6 * 2, len(function_table))
     self.assertEqual((0, 0x100, 0x8000, 0x200, 0x8000, 0x300),
@@ -864,7 +864,7 @@ class _TestEncodePageTableAndFunctionTable(unittest.TestCase):
         function_unwinds, function_offset_table_offsets)
 
     self.assertEqual(5 * 4, len(page_table))
-    self.assertEqual((0, 8, 8, 8, 8), struct.unpack('5I', page_table))
+    self.assertEqual((0, 2, 2, 2, 2), struct.unpack('5I', page_table))
 
     self.assertEqual(6 * 2, len(function_table))
     self.assertEqual((0, 0x100, 0x8000, 0x200, 0x8000, 0x300),
