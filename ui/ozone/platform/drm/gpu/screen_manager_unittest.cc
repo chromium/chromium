@@ -344,10 +344,7 @@ TEST_F(ScreenManagerTest, CheckMultipleDisplaysWithinModifiersLimit) {
 }
 
 TEST_F(ScreenManagerTest, CheckMultipleDisplaysOutsideModifiersLimit) {
-  const int max_supported_displays_with_modifier = 2;
-  // b/197804801: external displays don't support RBC so act like everything is
-  // eDP.
-  drm_->set_connector_type(DRM_MODE_CONNECTOR_eDP);
+  int max_supported_displays_with_modifier = 2;
   drm_->SetSystemLimitOfModifiers(modifiers_overhead_[DRM_FORMAT_MOD_LINEAR] *
                                   max_supported_displays_with_modifier);
 
@@ -378,9 +375,6 @@ TEST_F(ScreenManagerTest, CheckMultipleDisplaysOutsideModifiersLimit) {
 }
 
 TEST_F(ScreenManagerTest, CheckDisplaysWith0Limit) {
-  // b/197804801: external displays don't support RBC so act like everything is
-  // eDP.
-  drm_->set_connector_type(DRM_MODE_CONNECTOR_eDP);
   drm_->SetSystemLimitOfModifiers(0);
 
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true,

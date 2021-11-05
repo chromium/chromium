@@ -65,21 +65,7 @@ bool CrtcController::AssignOverlayPlanes(HardwareDisplayPlaneList* plane_list,
 }
 
 std::vector<uint64_t> CrtcController::GetFormatModifiers(uint32_t format) {
-  std::vector<uint64_t> modifiers =
-      drm_->plane_manager()->GetFormatModifiers(crtc_, format);
-
-  display::DisplayConnectionType display_type =
-      ui::GetDisplayType(drm_->GetConnector(connector_).get());
-  // b/197804801: If this is an external display, remove the modifiers
-  // applicable to internal displays only.
-  if (display_type != display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
-    for (auto modifier : internal_diplay_only_modifiers_) {
-      modifiers.erase(std::remove(modifiers.begin(), modifiers.end(), modifier),
-                      modifiers.end());
-    }
-  }
-
-  return modifiers;
+  return drm_->plane_manager()->GetFormatModifiers(crtc_, format);
 }
 
 void CrtcController::SetCursor(uint32_t handle, const gfx::Size& size) {
