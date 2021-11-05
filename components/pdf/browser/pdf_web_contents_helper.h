@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,8 +30,7 @@ class PDFWebContentsHelperTest;
 
 // Per-WebContents class to handle PDF messages.
 class PDFWebContentsHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<PDFWebContentsHelper>,
+    : public content::WebContentsUserData<PDFWebContentsHelper>,
       public mojom::PdfService,
       public ui::TouchSelectionControllerClient,
       public ui::TouchSelectionMenuClient,
@@ -99,6 +97,7 @@ class PDFWebContentsHelper
   void SetPluginCanSave(bool can_save) override;
   void GetPdfFindInPage(GetPdfFindInPageCallback callback) override;
 
+  content::WebContents* const web_contents_;
   content::RenderFrameHostReceiverSet<mojom::PdfService> pdf_service_receivers_;
   std::unique_ptr<PDFWebContentsHelperClient> const client_;
   content::TouchSelectionControllerClientManager*

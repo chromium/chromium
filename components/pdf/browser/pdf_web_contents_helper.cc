@@ -49,7 +49,7 @@ void PDFWebContentsHelper::BindPdfService(
 PDFWebContentsHelper::PDFWebContentsHelper(
     content::WebContents* web_contents,
     std::unique_ptr<PDFWebContentsHelperClient> client)
-    : content::WebContentsObserver(web_contents),
+    : web_contents_(web_contents),
       pdf_service_receivers_(web_contents, this),
       client_(std::move(client)) {}
 
@@ -79,7 +79,7 @@ gfx::PointF PDFWebContentsHelper::ConvertHelper(const gfx::PointF& point_f,
                                                 float scale) const {
   gfx::PointF origin_f;
   content::RenderWidgetHostView* view =
-      web_contents()->GetRenderWidgetHostView();
+      web_contents_->GetRenderWidgetHostView();
   if (view) {
     origin_f = view->TransformPointToRootCoordSpaceF(gfx::PointF());
     origin_f.Scale(scale);
@@ -111,7 +111,7 @@ void PDFWebContentsHelper::SelectionChanged(const gfx::PointF& left,
 }
 
 void PDFWebContentsHelper::SetPluginCanSave(bool can_save) {
-  client_->SetPluginCanSave(web_contents(), can_save);
+  client_->SetPluginCanSave(web_contents_, can_save);
 }
 
 void PDFWebContentsHelper::GetPdfFindInPage(GetPdfFindInPageCallback callback) {
@@ -121,8 +121,7 @@ void PDFWebContentsHelper::GetPdfFindInPage(GetPdfFindInPageCallback callback) {
   }
 
   if (!find_factory_remote_) {
-    web_contents()
-        ->GetMainFrame()
+    web_contents_->GetMainFrame()
         ->GetRemoteAssociatedInterfaces()
         ->GetInterface(&find_factory_remote_);
   }
@@ -233,13 +232,13 @@ void PDFWebContentsHelper::ExecuteCommand(int command_id, int event_flags) {
   // cut/paste commands.
   switch (command_id) {
     case ui::TouchEditable::kCopy:
-      web_contents()->Copy();
+      web_contents_->Copy();
       break;
   }
 }
 
 void PDFWebContentsHelper::RunContextMenu() {
-  content::RenderFrameHost* focused_frame = web_contents()->GetFocusedFrame();
+  content::RenderFrameHost* focused_frame = web_contents_->GetFocusedFrame();
   if (!focused_frame)
     return;
 
@@ -282,7 +281,7 @@ std::u16string PDFWebContentsHelper::GetSelectedText() {
 
 void PDFWebContentsHelper::InitTouchSelectionClientManager() {
   content::RenderWidgetHostView* view =
-      web_contents()->GetRenderWidgetHostView();
+      web_contents_->GetRenderWidgetHostView();
   if (!view)
     return;
 
@@ -295,25 +294,25 @@ void PDFWebContentsHelper::InitTouchSelectionClientManager() {
 }
 
 void PDFWebContentsHelper::HasUnsupportedFeature() {
-  client_->OnPDFHasUnsupportedFeature(web_contents());
+  client_->OnPDFHasUnsupportedFeature(web_contents_);
 }
 
 void PDFWebContentsHelper::SaveUrlAs(const GURL& url,
                                      network::mojom::ReferrerPolicy policy) {
-  client_->OnSaveURL(web_contents());
+  client_->OnSaveURL(web_contents_);
 
-  content::RenderFrameHost* rfh = web_contents()->GetOuterWebContentsFrame();
+  content::RenderFrameHost* rfh = web_contents_->GetOuterWebContentsFrame();
   if (!rfh)
     return;
 
   content::Referrer referrer(url, policy);
   referrer = content::Referrer::SanitizeForRequest(url, referrer);
-  web_contents()->SaveFrame(url, referrer, rfh);
+  web_contents_->SaveFrame(url, referrer, rfh);
 }
 
 void PDFWebContentsHelper::UpdateContentRestrictions(
     int32_t content_restrictions) {
-  client_->UpdateContentRestrictions(web_contents(), content_restrictions);
+  client_->UpdateContentRestrictions(web_contents_, content_restrictions);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PDFWebContentsHelper);
