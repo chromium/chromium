@@ -1306,6 +1306,11 @@
       name: "LayoutNGPrinting",
     },
     {
+      name: "LayoutNGSubgrid",
+      depends_on: ["LayoutNGGrid"],
+      status: "test"
+    },
+    {
       name: "LayoutNGTable",
       depends_on: ["LayoutNG"],
       status: "stable"
