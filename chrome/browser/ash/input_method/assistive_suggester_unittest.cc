@@ -259,25 +259,31 @@ TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-class FakeBlocklist : public AssistiveSuggesterSwitch {
+class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
  public:
-  explicit FakeBlocklist(bool allowed) : allowed_(allowed) {}
-  ~FakeBlocklist() override = default;
+  explicit FakeSuggesterSwitch(EnabledSuggestions enabled_suggestions)
+      : enabled_suggestions_(enabled_suggestions) {}
+  ~FakeSuggesterSwitch() override = default;
 
   // AssistiveSuggesterDelegate overrides
-  bool IsEmojiSuggestionAllowed() override { return allowed_; }
-  bool IsMultiWordSuggestionAllowed() override { return allowed_; }
-  bool IsPersonalInfoSuggestionAllowed() override { return allowed_; }
+  bool IsEmojiSuggestionAllowed() override {
+    return enabled_suggestions_.emoji_suggestions;
+  }
+
+  bool IsMultiWordSuggestionAllowed() override {
+    return enabled_suggestions_.multi_word_suggestions;
+  }
+
+  bool IsPersonalInfoSuggestionAllowed() override {
+    return enabled_suggestions_.personal_info_suggestions;
+  }
+
   void GetEnabledSuggestions(GetEnabledSuggestionsCallback callback) override {
-    std::move(callback).Run(EnabledSuggestions{
-        .emoji_suggestions = false,
-        .multi_word_suggestions = false,
-        .personal_info_suggestions = false,
-    });
+    std::move(callback).Run(enabled_suggestions_);
   }
 
  private:
-  bool allowed_;
+  EnabledSuggestions enabled_suggestions_;
 };
 
 class AssistiveSuggesterMultiWordTest : public testing::Test {
@@ -289,7 +295,11 @@ class AssistiveSuggesterMultiWordTest : public testing::Test {
   void SetUp() override {
     engine_ = std::make_unique<InputMethodEngine>();
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-        engine_.get(), profile_.get(), std::make_unique<FakeBlocklist>(true));
+        engine_.get(), profile_.get(),
+        std::make_unique<FakeSuggesterSwitch>(
+            FakeSuggesterSwitch::EnabledSuggestions{
+                .multi_word_suggestions = true,
+            }));
 
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAssistMultiWord},
@@ -352,7 +362,9 @@ TEST_F(AssistiveSuggesterMultiWordTest,
 TEST_F(AssistiveSuggesterMultiWordTest,
        DisableMetricNotRecordedWhenNoSuggestionAndMultiWordBlocked) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(), std::make_unique<FakeBlocklist>(false));
+      engine_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(
+          FakeSuggesterSwitch::EnabledSuggestions{}));
 
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
@@ -365,7 +377,9 @@ TEST_F(AssistiveSuggesterMultiWordTest,
 TEST_F(AssistiveSuggesterMultiWordTest,
        DisableMetricRecordedWhenGivenSuggestionAndMultiWordBlocked) {
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      engine_.get(), profile_.get(), std::make_unique<FakeBlocklist>(false));
+      engine_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(
+          FakeSuggesterSwitch::EnabledSuggestions{}));
   std::vector<TextSuggestion> suggestions = {
       TextSuggestion{.mode = TextSuggestionMode::kPrediction,
                      .type = TextSuggestionType::kMultiWord,
@@ -463,7 +477,11 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
   void SetUp() override {
     engine_ = std::make_unique<InputMethodEngine>();
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-        engine_.get(), profile_.get(), std::make_unique<FakeBlocklist>(true));
+        engine_.get(), profile_.get(),
+        std::make_unique<FakeSuggesterSwitch>(
+            FakeSuggesterSwitch::EnabledSuggestions{
+                .emoji_suggestions = true,
+            }));
     assistive_suggester_->get_emoji_suggester_for_testing()
         ->LoadEmojiMapForTesting(kEmojiData);
 

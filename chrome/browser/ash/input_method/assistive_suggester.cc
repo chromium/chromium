@@ -201,7 +201,8 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
   return DisabledReason::kNone;
 }
 
-DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord() {
+DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord(
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   if (!features::IsAssistiveMultiWordEnabled()) {
     return DisabledReason::kFeatureFlagOff;
   }
@@ -209,7 +210,7 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForMultiWord() {
           prefs::kAssistPredictiveWritingEnabled)) {
     return DisabledReason::kUserSettingsOff;
   }
-  if (!suggester_switch_->IsMultiWordSuggestionAllowed()) {
+  if (!enabled_suggestions.multi_word_suggestions) {
     return DisabledReason::kUrlOrAppNotAllowed;
   }
   return DisabledReason::kNone;
@@ -281,17 +282,24 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
 
 void AssistiveSuggester::OnExternalSuggestionsUpdated(
     const std::vector<TextSuggestion>& suggestions) {
-  if (!IsMultiWordSuggestEnabled()) {
+  if (!IsMultiWordSuggestEnabled())
     return;
-  }
 
+  suggester_switch_->GetEnabledSuggestions(
+      base::BindOnce(&AssistiveSuggester::ProcessExternalSuggestions,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(suggestions)));
+}
+
+void AssistiveSuggester::ProcessExternalSuggestions(
+    const std::vector<TextSuggestion>& suggestions,
+    const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   RecordSuggestionsMatch(suggestions);
 
-  if (!suggester_switch_->IsMultiWordSuggestionAllowed() &&
+  if (!enabled_suggestions.multi_word_suggestions &&
       !IsExpandedMultiWordSuggestEnabled()) {
     if (IsTopResultMultiWord(suggestions))
       RecordAssistiveDisabledReasonForMultiWord(
-          GetDisabledReasonForMultiWord());
+          GetDisabledReasonForMultiWord(std::move(enabled_suggestions)));
     return;
   }
 

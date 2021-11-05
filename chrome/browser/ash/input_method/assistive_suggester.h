@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/emoji_suggester.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
@@ -102,11 +103,16 @@ class AssistiveSuggester : public SuggestionsSource {
   DisabledReason GetDisabledReasonForPersonalInfo();
 
   // Only the first applicable reason in DisabledReason enum is returned.
-  DisabledReason GetDisabledReasonForMultiWord();
+  DisabledReason GetDisabledReasonForMultiWord(
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   bool IsActionEnabled(AssistiveType action);
 
   bool WithinGrammarFragment(int cursor_pos, int anchor_pos);
+
+  void ProcessExternalSuggestions(
+      const std::vector<ime::TextSuggestion>& suggestions,
+      const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
   Profile* profile_;
   PersonalInfoSuggester personal_info_suggester_;
@@ -119,6 +125,8 @@ class AssistiveSuggester : public SuggestionsSource {
 
   // The current suggester in use, nullptr means no suggestion is shown.
   Suggester* current_suggester_ = nullptr;
+
+  base::WeakPtrFactory<AssistiveSuggester> weak_ptr_factory_{this};
 };
 
 }  // namespace input_method

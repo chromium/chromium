@@ -15,9 +15,9 @@ class AssistiveSuggesterSwitch {
   // Specifies the suggestions that are current enabled given the user's
   // context.
   struct EnabledSuggestions {
-    bool emoji_suggestions;
-    bool multi_word_suggestions;
-    bool personal_info_suggestions;
+    bool emoji_suggestions = false;
+    bool multi_word_suggestions = false;
+    bool personal_info_suggestions = false;
   };
 
   AssistiveSuggesterSwitch() = default;
@@ -42,7 +42,7 @@ class AssistiveSuggesterSwitch {
   virtual bool IsPersonalInfoSuggestionAllowed() = 0;
 
   using GetEnabledSuggestionsCallback =
-      base::OnceCallback<void(EnabledSuggestions)>;
+      base::OnceCallback<void(const EnabledSuggestions&)>;
 
   // Gets the currently enabled suggestions given the current user context.
   virtual void GetEnabledSuggestions(
