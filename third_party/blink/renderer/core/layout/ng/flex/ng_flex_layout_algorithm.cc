@@ -1119,7 +1119,9 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
 
     // Some FlexItem info will only be available in the first layout pass.
     if (!IsResumingLayout(BreakToken())) {
-      success &= PropagateFlexItemInfo(flex_item, flex_line_idx, location,
+      FlexItem* item =
+          algorithm_.FlexItemAtIndex(flex_line_idx, entry.flex_item_idx);
+      success &= PropagateFlexItemInfo(item, flex_line_idx, location,
                                        physical_fragment.Size());
     }
   }
@@ -1150,6 +1152,7 @@ bool NGFlexLayoutAlgorithm::PropagateFlexItemInfo(FlexItem* flex_item,
                                                   wtf_size_t flex_line_idx,
                                                   LayoutPoint location,
                                                   PhysicalSize fragment_size) {
+  DCHECK(flex_item);
   bool success = true;
 
   // TODO(almaher): How should devtools be handled for multiple fragments?

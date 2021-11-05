@@ -1171,6 +1171,14 @@ bool FlexLayoutAlgorithm::IsNGFlexBox() const {
   return all_items_.at(0).ng_input_node_.GetLayoutBox();
 }
 
+FlexItem* FlexLayoutAlgorithm::FlexItemAtIndex(wtf_size_t line_index,
+                                               wtf_size_t item_index) const {
+  DCHECK_LT(line_index, flex_lines_.size());
+  DCHECK_LT(item_index, flex_lines_[line_index].line_items_.size());
+  return const_cast<FlexItem*>(
+      &flex_lines_[line_index].line_items_[item_index]);
+}
+
 void FlexLayoutAlgorithm::Trace(Visitor* visitor) const {
   visitor->Trace(all_items_);
 }

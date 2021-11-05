@@ -61,16 +61,22 @@ struct NGFlexItemIterator::Entry {
 
  public:
   Entry(FlexItem* flex_item,
+        wtf_size_t flex_item_idx,
         wtf_size_t flex_line_idx,
         const NGBlockBreakToken* token)
-      : flex_item(flex_item), flex_line_idx(flex_line_idx), token(token) {}
+      : flex_item(flex_item),
+        flex_item_idx(flex_item_idx),
+        flex_line_idx(flex_line_idx),
+        token(token) {}
 
   FlexItem* flex_item;
+  wtf_size_t flex_item_idx;
   wtf_size_t flex_line_idx;
   const NGBlockBreakToken* token;
 
   bool operator==(const NGFlexItemIterator::Entry& other) const {
     return flex_item == other.flex_item &&
+           flex_item_idx == other.flex_item_idx &&
            flex_line_idx == other.flex_line_idx && token == other.token;
   }
 };

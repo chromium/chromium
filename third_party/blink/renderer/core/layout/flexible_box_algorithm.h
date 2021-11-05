@@ -449,6 +449,8 @@ class FlexLayoutAlgorithm {
                            LayoutUnit border_scrollbar_padding_before);
   bool IsNGFlexBox() const;
 
+  FlexItem* FlexItemAtIndex(wtf_size_t line_index, wtf_size_t item_index) const;
+
   static LayoutUnit GapBetweenItems(const ComputedStyle& style,
                                     LogicalSize percent_resolution_sizes);
   static LayoutUnit GapBetweenLines(const ComputedStyle& style,
