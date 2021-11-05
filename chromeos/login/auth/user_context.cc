@@ -41,7 +41,8 @@ bool UserContext::operator==(const UserContext& context) const {
          context.auth_flow_ == auth_flow_ && context.user_type_ == user_type_ &&
          context.public_session_locale_ == public_session_locale_ &&
          context.public_session_input_method_ == public_session_input_method_ &&
-         context.login_input_method_id_used_ == login_input_method_id_used_;
+         context.login_input_method_id_used_ == login_input_method_id_used_ &&
+         context.authsession_id_ == authsession_id_;
 }
 
 bool UserContext::operator!=(const UserContext& context) const {
@@ -279,12 +280,22 @@ const std::string& UserContext::GetLoginInputMethodIdUsed() const {
   return login_input_method_id_used_;
 }
 
+void UserContext::SetAuthSessionId(const std::string& authsession_id) {
+  DCHECK(authsession_id_.empty());
+  authsession_id_ = authsession_id;
+}
+
+const std::string& UserContext::GetAuthSessionId() const {
+  return authsession_id_;
+}
+
 void UserContext::ClearSecrets() {
   key_.ClearSecret();
   password_key_.ClearSecret();
   auth_code_.clear();
   refresh_token_.clear();
   sync_trusted_vault_keys_.reset();
+  authsession_id_.clear();
 }
 
 }  // namespace chromeos

@@ -1142,6 +1142,11 @@ const base::Feature kTrafficCountersSettingsUi{
 const base::Feature kTrilinearFiltering{"TrilinearFiltering",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Uses new  AuthSession-based API in cryptohome to authenticate users during
+// sign-in.
+const base::Feature kUseAuthsessionAuthentication{
+    "UseAuthsessionAuthentication", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables using the BluetoothSystem Mojo interface for Bluetooth operations.
 const base::Feature kUseBluetoothSystemInAsh{"UseBluetoothSystemInAsh",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

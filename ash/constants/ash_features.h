@@ -433,6 +433,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kTrafficCountersSettingsUi;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kTrilinearFiltering;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kUseAuthsessionAuthentication;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kUseBluetoothSystemInAsh;
 // Visible for testing. Call UseBrowserSyncConsent() to check the flag.
 COMPONENT_EXPORT(ASH_CONSTANTS)

@@ -22,6 +22,13 @@ COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
 cryptohome::MountError
     ReplyToMountError(const absl::optional<ReplyType>& reply);
 
+// Returns a CryptohomeErrorCode code from |reply|, returning
+// CRYPTOHOME_ERROR_NOT_SET if the reply is well-formed and there is no error.
+template <typename ReplyType>
+COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
+CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<ReplyType>& reply);
+
 // Converts the key metadata in GetKeyDataReply into cryptohome::KeyDefinition
 // format.
 COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)

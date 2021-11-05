@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/logging.h"
 #include "chrome/browser/ash/login/auth/chrome_cryptohome_authenticator.h"
+#include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
@@ -120,6 +121,7 @@
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/login/auth/auth_session_authenticator.h"
 #include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/session/session_termination_manager.h"
@@ -616,6 +618,10 @@ scoped_refptr<Authenticator> UserSessionManager::CreateAuthenticator(
   if (authenticator_.get() == NULL) {
     if (injected_authenticator_builder_) {
       authenticator_ = injected_authenticator_builder_->Create(consumer);
+    } else if (base::FeatureList::IsEnabled(
+                   ash::features::kUseAuthsessionAuthentication)) {
+      authenticator_ = new chromeos::AuthSessionAuthenticator(
+          consumer, std::make_unique<ChromeSafeModeDelegate>());
     } else {
       authenticator_ =
           base::MakeRefCounted<ChromeCryptohomeAuthenticator>(consumer);

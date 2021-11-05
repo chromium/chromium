@@ -36,6 +36,14 @@ cryptohome::MountError ReplyToMountError(
   return CryptohomeErrorToMountError(reply->error());
 }
 
+template <typename ReplyType>
+CryptohomeErrorCode ReplyToCryptohomeError(
+    const absl::optional<ReplyType>& reply) {
+  if (IsEmpty(reply))
+    return CRYPTOHOME_ERROR_MOUNT_FATAL;
+  return reply->error();
+}
+
 // Instantiate ReplyToMountError and export them for types actually used.
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<RemoveReply>&);
@@ -49,6 +57,15 @@ template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<MigrateKeyReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) cryptohome::MountError
     ReplyToMountError(const absl::optional<GetKeyDataReply>&);
+
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<MountReply>&);
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<StartAuthSessionReply>&);
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<AuthenticateAuthSessionReply>&);
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<AddCredentialsReply>&);
 
 std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
     const absl::optional<GetKeyDataReply>& reply) {

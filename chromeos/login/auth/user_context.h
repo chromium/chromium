@@ -148,6 +148,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   // when session starts.
   void SetLoginInputMethodIdUsed(const std::string& input_method_id);
   const std::string& GetLoginInputMethodIdUsed() const;
+  void SetAuthSessionId(const std::string& authsession_id);
+  const std::string& GetAuthSessionId() const;
 
   void ClearSecrets();
 
@@ -176,6 +178,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   // |login_input_method_id_used_| is non-empty if login password/code was used,
   // i.e. user used some input method to log in.
   std::string login_input_method_id_used_;
+  std::string authsession_id_;
 
   // For password reuse detection use.
   absl::optional<password_manager::PasswordHashData> sync_password_data_;
