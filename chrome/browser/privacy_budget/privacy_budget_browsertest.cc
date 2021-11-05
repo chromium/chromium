@@ -2,19 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <cstdint>
 #include <iosfwd>
 #include <map>
 #include <memory>
+#include <ostream>
+#include <set>
 #include <utility>
+#include <vector>
 
+#include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
+#include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -22,6 +31,7 @@
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
+#include "chrome/common/privacy_budget/types.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
@@ -31,25 +41,28 @@
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/variations/service/buildflags.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_sample_collector.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-shared.h"
 #include "url/gurl.h"
 
 class Profile;
 
-namespace content {
-class WebContents;
-}  // namespace content
 namespace ukm {
 class UkmService;
 }  // namespace ukm
@@ -72,40 +85,89 @@ uint64_t HashFeature(const blink::mojom::WebFeature& feature) {
 }
 
 // This test runs on Android as well as desktop platforms.
-class PrivacyBudgetBrowserTest : public SyncTest {
+class PrivacyBudgetBrowserTestBase : public SyncTest {
  public:
-  PrivacyBudgetBrowserTest() : SyncTest(SINGLE_CLIENT) {
-    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
-  }
-
-  void SetUpOnMainThread() override {
-    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    SyncTest::SetUpOnMainThread();
-  }
-
-  ukm::TestUkmRecorder& recorder() { return *ukm_recorder_; }
+  PrivacyBudgetBrowserTestBase() : SyncTest(SINGLE_CLIENT) {}
 
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
-  ukm::UkmService* ukm_service() const {
+  static ukm::UkmService* ukm_service() {
     return g_browser_process->GetMetricsServicesManager()->GetUkmService();
   }
 
-  PrefService* local_state() const { return g_browser_process->local_state(); }
+  static PrefService* local_state() { return g_browser_process->local_state(); }
 
-  void EnableSyncForProfile(Profile* profile) {
-    std::unique_ptr<SyncServiceImplHarness> harness =
-        metrics::test::InitializeProfileForSync(profile,
-                                                GetFakeServer()->AsWeakPtr());
-    EXPECT_TRUE(harness->SetupSync());
+  bool EnableUkmRecording() {
+    // 1. Enable sync.
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    sync_test_harness_ = metrics::test::InitializeProfileForSync(
+        profile, GetFakeServer()->AsWeakPtr());
+    EXPECT_TRUE(sync_test_harness_->SetupSync());
 
+    // 2. Signal consent for UKM reporting.
     unified_consent::UnifiedConsentService* consent_service =
         UnifiedConsentServiceFactory::GetForProfile(profile);
-    if (consent_service)
+    if (consent_service != nullptr)
       consent_service->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+
+    // 3. Enable metrics reporting.
+    is_metrics_reporting_enabled_ = true;
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &is_metrics_reporting_enabled_);
+
+    // UpdateUploadPermissions causes the MetricsServicesManager to look at the
+    // consent signals and re-evaluate whether reporting should be enabled.
+    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
+        true);
+
+    // The following sequence synchronously completes UkmService initialization
+    // (if it wasn't initialized yet) and flushes any accumulated metrics.
+    ukm::UkmTestHelper ukm_test_helper(ukm_service());
+    ukm_test_helper.BuildAndStoreLog();
+    std::unique_ptr<ukm::Report> report_to_discard =
+        ukm_test_helper.GetUkmReport();
+
+    return ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled();
   }
+
+  bool DisableUkmRecording() {
+    EXPECT_TRUE(is_metrics_reporting_enabled_)
+        << "DisableUkmRecording() should only be called after "
+           "EnableUkmRecording()";
+    is_metrics_reporting_enabled_ = false;
+    g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(
+        true);
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        nullptr);
+    return !ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled();
+  }
+
+  void TearDown() override {
+    if (is_metrics_reporting_enabled_) {
+      ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+          nullptr);
+    }
+  }
+
+ private:
+  bool is_metrics_reporting_enabled_ = false;
+  std::unique_ptr<SyncServiceImplHarness> sync_test_harness_;
+};
+
+class PrivacyBudgetBrowserTest : public PrivacyBudgetBrowserTestBase {
+ public:
+  PrivacyBudgetBrowserTest() {
+    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
+  }
+
+  void SetUpOnMainThread() override {
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    PrivacyBudgetBrowserTestBase::SetUpOnMainThread();
+  }
+
+  ukm::TestUkmRecorder& recorder() { return *ukm_recorder_; }
 
  private:
   test::ScopedPrivacyBudgetConfig privacy_budget_config_;
@@ -116,7 +178,7 @@ class PrivacyBudgetBrowserTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, BrowserSideSettingsIsActive) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
-  auto* settings = blink::IdentifiabilityStudySettings::Get();
+  const auto* settings = blink::IdentifiabilityStudySettings::Get();
   EXPECT_TRUE(settings->IsActive());
 }
 
@@ -125,34 +187,15 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, BrowserSideSettingsIsActive) {
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
                        UkmClientIdChangesResetStudyState) {
   EXPECT_TRUE(blink::IdentifiabilityStudySettings::Get()->IsActive());
-
-  // Sync needs to be enabled for reporting to be enabled.
-  auto* profile = ProfileManager::GetActiveUserProfile();
-  EnableSyncForProfile(profile);
-
-  bool reporting_allowed = true;
-  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
-      &reporting_allowed);
-
-  // UpdateUploadPermissions causes the MetricsServicesManager to look at the
-  // consent signals and re-evaluate whether reporting should be enabled.
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
-
-  ASSERT_TRUE(ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled())
-      << "UKM recording not enabled";
+  ASSERT_TRUE(EnableUkmRecording());
 
   local_state()->SetString(prefs::kPrivacyBudgetSeenSurfaces, "1,2,3");
 
-  // Disallowing reporting is equivalent to revoking consent.
-  reporting_allowed = false;
-  g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
-  ASSERT_FALSE(ukm::UkmTestHelper(ukm_service()).IsRecordingEnabled())
-      << "UKM recording not disabled";
+  ASSERT_TRUE(DisableUkmRecording());
 
   EXPECT_TRUE(
       local_state()->GetString(prefs::kPrivacyBudgetSeenSurfaces).empty())
       << "Active surface list still exists after resetting client ID";
-  ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, SamplingScreenAPIs) {
@@ -371,26 +414,62 @@ class PrivacyBudgetGroupConfigBrowserTest : public PlatformBrowserTest {
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetGroupConfigBrowserTest, LoadsAGroup) {
   EXPECT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
 
-  auto* settings = blink::IdentifiabilityStudySettings::Get();
+  const auto* settings = blink::IdentifiabilityStudySettings::Get();
   ASSERT_TRUE(settings->IsActive());
 }
 
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 
 namespace {
-class PrivacyBudgetDefaultConfigBrowserTest : public PlatformBrowserTest {};
+class PrivacyBudgetFieldtrialConfigTest : public PrivacyBudgetBrowserTestBase {
+ public:
+  // This surface is blocked in fieldtrial_testing_config.json.
+  static constexpr auto kBlockedSurface =
+      blink::IdentifiableSurface::FromMetricHash(44033);
+
+  // This surface is not mentioned in fieldtrial_testing_config.json and is
+  // not blocked by default. It should be considered allowed, but its metrics
+  // will not be recorded because it is not one of the active surfaces.
+  static constexpr auto kAllowedInactiveSurface =
+      blink::IdentifiableSurface::FromMetricHash(44290);
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+const blink::IdentifiableSurface
+    PrivacyBudgetFieldtrialConfigTest::kBlockedSurface;
+const blink::IdentifiableSurface
+    PrivacyBudgetFieldtrialConfigTest::kAllowedInactiveSurface;
 }  // namespace
 
 // //testing/variations/fieldtrial_testing_config.json defines a set of
 // parameters that should effectively enable the identifiability study for
-// browser tests. This test verifies that those settings work.
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetDefaultConfigBrowserTest, Variations) {
-  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+// browser tests. This test verifies that those settings work. This isn't
+// testing whether fieldtrial work, but rather we are testing if the process
+// picks up the config correctly since it is non-trivial.
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetFieldtrialConfigTest,
+                       LoadsSettingsFromFieldTrialConfig) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+  ASSERT_TRUE(EnableUkmRecording());
 
-  auto* settings = blink::IdentifiabilityStudySettings::Get();
+  const auto* settings = blink::IdentifiabilityStudySettings::Get();
   EXPECT_TRUE(settings->IsActive());
+  // Allowed by default.
   EXPECT_TRUE(settings->IsTypeAllowed(
       blink::IdentifiableSurface::Type::kCanvasReadback));
+
+  // Blocked surfaces. See fieldtrial_testing_config.json#IdentifiabilityStudy.
+  EXPECT_FALSE(settings->IsSurfaceAllowed(kBlockedSurface));
+
+  // Some random surface that shouldn't be blocked.
+  EXPECT_TRUE(settings->IsSurfaceAllowed(kAllowedInactiveSurface));
+
+  // Blocked types
+  EXPECT_FALSE(settings->IsTypeAllowed(
+      blink::IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter));
+  EXPECT_FALSE(settings->IsTypeAllowed(
+      blink::IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo));
 }
 
 #endif
