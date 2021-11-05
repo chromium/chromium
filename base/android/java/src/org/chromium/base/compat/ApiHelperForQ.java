@@ -23,6 +23,7 @@ import android.telephony.TelephonyManager;
 import android.view.MotionEvent;
 
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.VerifiesOnQ;
 import org.chromium.base.task.AsyncTask;
 
 import java.io.IOException;
@@ -37,6 +38,7 @@ import java.util.concurrent.Executor;
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
+@VerifiesOnQ
 @TargetApi(Build.VERSION_CODES.Q)
 public final class ApiHelperForQ {
     private ApiHelperForQ() {}

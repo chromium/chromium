@@ -11,6 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import org.chromium.android_webview.AwContentsClient;
+import org.chromium.base.annotations.VerifiesOnM;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
@@ -20,6 +21,7 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
+@VerifiesOnM
 @TargetApi(Build.VERSION_CODES.M)
 public final class GlueApiHelperForM {
     private GlueApiHelperForM() {}

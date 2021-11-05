@@ -12,11 +12,14 @@ import android.view.autofill.AutofillId;
 import android.view.contentcapture.ContentCaptureSession;
 import android.widget.Checkable;
 
+import org.chromium.base.annotations.VerifiesOnQ;
+
 import java.util.HashMap;
 
 /**
  * The class to manage the platform session.
  */
+@VerifiesOnQ
 @TargetApi(Build.VERSION_CODES.Q)
 class PlatformSession {
     /**

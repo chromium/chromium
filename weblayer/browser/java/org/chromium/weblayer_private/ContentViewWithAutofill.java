@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 
+import org.chromium.base.annotations.VerifiesOnO;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.EventOffsetHandler;
@@ -18,6 +19,7 @@ import org.chromium.ui.base.EventOffsetHandler;
 /**
  * API level 26 implementation that includes autofill.
  */
+@VerifiesOnO
 public class ContentViewWithAutofill extends ContentView.ContentViewApi23 {
     public static ContentView createContentView(
             Context context, EventOffsetHandler eventOffsetHandler) {

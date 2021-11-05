@@ -9,6 +9,8 @@ import android.os.Build;
 import android.webkit.TracingController;
 import android.webkit.WebViewDelegate;
 
+import org.chromium.base.annotations.VerifiesOnP;
+
 /**
  * Utility class to use new APIs that were added in P (API level 28). These need to exist in a
  * separate class so that Android framework can successfully verify glue layer classes without
@@ -16,6 +18,7 @@ import android.webkit.WebViewDelegate;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
+@VerifiesOnP
 @TargetApi(Build.VERSION_CODES.P)
 public final class GlueApiHelperForP {
     private GlueApiHelperForP() {}

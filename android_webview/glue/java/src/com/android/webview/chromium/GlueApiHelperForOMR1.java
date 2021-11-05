@@ -12,6 +12,7 @@ import android.webkit.WebViewClient;
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.VerifiesOnOMR1;
 
 /**
  * Utility class to use new APIs that were added in OMR1 (API level 27). These need to exist in a
@@ -20,6 +21,7 @@ import org.chromium.base.Callback;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
+@VerifiesOnOMR1
 @TargetApi(Build.VERSION_CODES.O_MR1)
 public final class GlueApiHelperForOMR1 {
     private GlueApiHelperForOMR1() {}

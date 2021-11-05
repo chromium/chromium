@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.VerifiesOnN;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -287,6 +288,7 @@ public class LocaleUtils {
      * Helper class for N only code that is not validated on pre-N devices.
      */
     @RequiresApi(Build.VERSION_CODES.N)
+    @VerifiesOnN
     @VisibleForTesting
     static class ApisN {
         static void setConfigLocales(Context base, Configuration config, String language) {

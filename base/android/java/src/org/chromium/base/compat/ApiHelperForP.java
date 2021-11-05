@@ -17,11 +17,14 @@ import android.telephony.TelephonyManager;
 import android.view.textclassifier.TextClassifier;
 import android.view.textclassifier.TextSelection;
 
+import org.chromium.base.annotations.VerifiesOnP;
+
 /**
  * Utility class to use new APIs that were added in P (API level 28). These need to exist in a
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
+@VerifiesOnP
 @TargetApi(Build.VERSION_CODES.P)
 public final class ApiHelperForP {
     private ApiHelperForP() {}

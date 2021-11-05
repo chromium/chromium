@@ -16,6 +16,8 @@ import android.view.InputEvent;
 import android.view.VerifiedInputEvent;
 import android.view.WindowManager;
 
+import org.chromium.base.annotations.VerifiesOnR;
+
 import java.io.File;
 
 /**
@@ -23,6 +25,7 @@ import java.io.File;
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
+@VerifiesOnR
 @TargetApi(Build.VERSION_CODES.R)
 public final class ApiHelperForR {
     private ApiHelperForR() {}
