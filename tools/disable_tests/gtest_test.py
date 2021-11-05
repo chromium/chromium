@@ -15,6 +15,8 @@ class GtestTest(unittest.TestCase):
                     expected_result: str):
     """Helper function for testing gtest.disabler."""
 
+    self.maxDiff = None
+
     if isinstance(new_cond, list):
       new_cond = conditions.parse(new_cond)
     else:
@@ -138,6 +140,31 @@ TEST(Suite, MAYBE_Test) {}
 #define MAYBE_Test Test
 #endif
 TEST(Suite, MAYBE_Test) {}
+''')
+
+  def test_split_long_lines_disabled(self):
+    self.disabler_test(
+        'TEST(Suite, ' +
+        'ReallyReallyReallyReallyReallyReallyReallyReallyLongTestName) {}',
+        'Suite.ReallyReallyReallyReallyReallyReallyReallyReallyLongTestName',
+        conditions.ALWAYS, '''
+TEST(Suite,
+     DISABLED_ReallyReallyReallyReallyReallyReallyReallyReallyLongTestName) {}
+     ''')
+
+  def test_split_long_lines_conditionally_disabled(self):
+    self.disabler_test(
+        'TEST(Suite, ReallyReallyReallyReallyLongTestName) {}',
+        'Suite.ReallyReallyReallyReallyLongTestName', ['win'], r'''
+#include "build/build_config.h"
+#if defined(OS_WIN)
+#define MAYBE_ReallyReallyReallyReallyLongTestName \
+  DISABLED_ReallyReallyReallyReallyLongTestName
+#else
+#define MAYBE_ReallyReallyReallyReallyLongTestName \
+  ReallyReallyReallyReallyLongTestName
+#endif
+TEST(Suite, MAYBE_ReallyReallyReallyReallyLongTestName) {}
 ''')
 
 

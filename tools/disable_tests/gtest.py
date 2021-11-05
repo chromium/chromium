@@ -4,6 +4,7 @@
 """Code specific to disabling GTest tests."""
 
 import re
+import subprocess
 from typing import List, Optional, Tuple, Union, Any, Dict, TypeVar
 
 import conditions
@@ -25,7 +26,6 @@ TEST_MACROS = {
 }
 
 
-# TODO: Also run clang-format on the file afterwards?
 def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   """Disable a GTest test within the given file.
 
@@ -78,32 +78,30 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
 
   merged = conditions.merge(existing_cond, new_cond)
 
-  if merged == conditions.ALWAYS:
+  # If it's not conditionally disabled, we don't need a pre-processor block to
+  # conditionally define the name. We just change the name within the test macro
+  # to its appropriate value, and delete any existing preprocessor block.
+  if isinstance(merged, conditions.BaseCondition):
+    if merged == conditions.ALWAYS:
+      replacement_name = disabled
+    elif merged == conditions.NEVER:
+      replacement_name = test_name
+
     lines[test_name_index] = \
-        lines[test_name_index].replace(current_name, disabled)
+        lines[test_name_index].replace(current_name, replacement_name)
+    modified_line = test_name_index
 
     if src_range:
       del lines[src_range[0]:src_range[1] + 1]
+      modified_line -= src_range[1] - src_range[0] + 1
 
-    return '\n'.join(lines)
-
-  if merged == conditions.NEVER:
-    lines[test_name_index] = lines[test_name_index].replace(
-        current_name, test_name)
-
-    if src_range:
-      del lines[src_range[0]:src_range[1] + 1]
-
-    return '\n'.join(lines)
+    return clang_format('\n'.join(lines), [modified_line])
 
   # => now conditionally disabled
   lines[test_name_index] = lines[test_name_index].replace(current_name, maybe)
 
   condition_impl = cc_format_condition(merged)
 
-  # TODO: Split lines using backslashes if they're too long (according to
-  # whatever the limit is in the style guide). Or just use clang-format to do
-  # it.
   condition_block = [
       f'#if {condition_impl}',
       f'#define {maybe} {disabled}',
@@ -112,9 +110,13 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
       '#endif',
   ]
 
+  modified_lines = []
+
   if src_range:
     # Replace the existing condition, if there was one
     lines[src_range[0]:src_range[1] + 1] = condition_block
+    modified_lines = list(
+        range(src_range[0], src_range[0] + len(condition_block)))
   else:
     # If not, find where to add a new one.
     for i in range(test_name_index, -1, -1):
@@ -123,6 +125,7 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
     else:
       raise Exception("Couldn't find where to insert test conditions")
     lines[i:i] = condition_block
+    modified_lines = list(range(i, i + len(condition_block)))
 
   # Insert includes.
   # First find the set of headers we need for the given condition.
@@ -192,7 +195,10 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   for path, i in sorted(to_insert.items(), key=lambda x: x[1], reverse=True):
     lines.insert(i, f'#include "{path}"')
 
-  return '\n'.join(lines)
+  for i in range(len(modified_lines)):
+    modified_lines[i] += len(to_insert)
+
+  return clang_format('\n'.join(lines), modified_lines)
 
 
 def find_conditions(lines: List[str], start_line: int, test_name: str):
@@ -506,3 +512,35 @@ def cc_format_condition(cond: Condition, add_brackets=False) -> str:
     return bracket(' || '.join(cc_format_condition(arg, True) for arg in args))
 
   raise Exception(f'Unknown op "{op}"')
+
+
+# TODO: Running clang-format is ~400x slower than everything else this tool does
+# (excluding ResultDB RPCs). We may want to consider replacing this with
+# something simpler that applies only the changes we need, and doesn't require
+# shelling out to an external tool.
+def clang_format(file_contents: str, modified_lines: List[int]) -> str:
+  # clang-format accepts 1-based line numbers. Do the adjustment here to keep
+  # things simple for the calling code.
+  modified_lines = [i + 1 for i in modified_lines]
+
+  p = subprocess.Popen(['clang-format', '--style=file'] +
+                       [f'--lines={i}:{i}' for i in modified_lines],
+                       stdin=subprocess.PIPE,
+                       stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE,
+                       text=True)
+
+  stdout, stderr = p.communicate(file_contents)
+
+  if p.returncode != 0:
+    # TODO: We might want to distinguish between different types of error here.
+    #
+    # If it failed because the user doesn't have clang-format in their path, we
+    # might want to raise UserError and tell them to install it. Or perhaps to
+    # just return the original file contents and forgo formatting.
+    #
+    # But if it failed because we generated bad output and clang-format is
+    # rightfully rejecting it, that should definitely be an InternalError.
+    raise errors.InternalError(f'clang-format failed with: {stderr}')
+
+  return stdout
