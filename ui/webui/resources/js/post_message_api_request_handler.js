@@ -118,21 +118,24 @@ export class RequestHandler {
       return;
     }
 
-    const sendMessage = (methodId, result) => {
+    const sendMessage = (methodId, result, rejected, error) => {
       this.targetWindow().postMessage(
           {
             methodId: methodId,
             result: result,
+            rejected: rejected,
+            error: error,
           },
           this.targetURL().toString());
     };
 
-    // Some methods return a promise and some don't. If we have a promise,
-    // we resolve it first, otherwise we send the result directly (e.g., for
-    // void functions we send 'undefined').
-    sendMessage(methodId, await this.handle(fn, args));
-  }
 
+    try {
+      sendMessage(methodId, await this.handle(fn, args), false, null);
+    } catch (error) {
+      sendMessage(methodId, null, true, error);
+    }
+  }
   /**
    * Executes the method and returns the result.
    *

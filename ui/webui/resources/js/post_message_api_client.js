@@ -5,6 +5,27 @@
 import {RequestHandler} from './post_message_api_request_handler.m.js';
 
 /**
+ * Creates a new JavaScript native Promise and captures its resolve and reject
+ * callbacks. The promise, resolve, and reject are available as properties
+ * @final
+ * @template T
+ */
+class NativeResolver {
+  constructor() {
+    /** @type {function((T|!IThenable<T>|!Thenable)=)} */
+    this.resolve;
+    /** @type {function(*=)} */
+    this.reject;
+
+    /** @type {!Promise<T>} */
+    this.promise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+}
+
+/**
  * Class that provides the functionality for talking to a PostMessageAPIServer
  * over the postMessage API.  This should be subclassed and the subclass should
  * expose methods that are implemented by the server. The following is an
@@ -38,7 +59,7 @@ export class PostMessageAPIClient {
     this.nextMethodId_ = 0;
     /**
      * Map of methods awaiting a response.
-     * @private {!Map}
+     * @private {!Map<number, !NativeResolver>}
      */
     this.methodsAwaitingResponse_ = new Map;
 
@@ -158,9 +179,13 @@ export class PostMessageAPIClient {
       return;
     }
 
-    const method = this.methodsAwaitingResponse_.get(event.data.methodId);
+    const resolver = this.methodsAwaitingResponse_.get(event.data.methodId);
     this.methodsAwaitingResponse_.delete(event.data.methodId);
-    method(event.data.result);
+    if (event.data.rejected) {
+      resolver.reject(event.data.error);
+    } else {
+      resolver.resolve(event.data.result);
+    }
   }
 
   /**
@@ -171,21 +196,22 @@ export class PostMessageAPIClient {
    * @return {!Promise} A promise capturing the executing of the function.
    */
   callApiFn(fn, args) {
-    const newMethodId = this.nextMethodId_++;
-    const promise = new Promise((resolve, reject) => {
-      if (!this.targetWindow_) {
-        reject('No parent window defined');
-      }
-      this.targetWindow_.postMessage(
-          {
-            methodId: newMethodId,
-            fn: fn,
-            args: args,
-          },
-          this.serverOriginURLFilter_);
+    if (!this.targetWindow_) {
+      return Promise.reject('No parent window defined');
+    }
 
-      this.methodsAwaitingResponse_.set(newMethodId, resolve);
-    });
-    return promise;
+    const newMethodId = this.nextMethodId_++;
+    const resolver = new NativeResolver();
+    this.targetWindow_.postMessage(
+        {
+          methodId: newMethodId,
+          fn: fn,
+          args: args,
+        },
+        this.serverOriginURLFilter_);
+
+    this.methodsAwaitingResponse_.set(newMethodId, resolver);
+
+    return resolver.promise;
   }
 }

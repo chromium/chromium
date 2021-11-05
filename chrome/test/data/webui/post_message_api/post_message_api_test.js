@@ -73,14 +73,13 @@ class TestPostMessageAPIServer extends PostMessageAPIServer {
    * @return {Promise<boolean>}
    */
   getTestFinalized() {
-    const promise = new Promise((resolve, reject) => {
-      this.promise_resolve = resolve;
-    });
-
-    if (this.success) {
-      this.promise_resolve(this.success);
+    if (!this.success) {
+      const promise = new Promise((resolve, reject) => {
+        this.promise_resolve = resolve;
+      });
+      return promise;
     }
-    return promise;
+    return Promise.resolve(this.sucess);
   }
 }
 
@@ -95,6 +94,16 @@ class TestClient extends PostMessageAPIClient {
    */
   isTestFinalized() {
     return this.callApiFn('isTestFinalized', null);
+  }
+
+  /**
+   * Used to test that rejected promises are passed back to client and the
+   * client handles them appropriately.
+   * @param {boolean} reject. Whether this all should be rejected or not.
+   * @return {Promise<boolean>}
+   */
+  rejectedPromiseTest(reject) {
+    return this.callApiFn('rejectedPromiseTest', [reject]);
   }
 }
 
@@ -113,6 +122,23 @@ suite('PostMessageAPIModuleTest', function() {
     //  Bootstraps a duplex communication channel between this server and the
     //  client handler in the iframe.
     var client = new TestClient(this.innerFrame);
+
+    // Test non-rejected request.
+    success = await client.rejectedPromiseTest(/*reject=*/ false);
+    assertTrue(success);
+
+    // Test rejected test case.
+    let rejected = false;
+    try {
+      await client.rejectedPromiseTest(/*reject=*/ true);
+      rejected = false;
+    } catch (error) {
+      rejected = true;
+    }
+
+    // Assert that the request was rejected.
+    assertTrue(rejected);
+
     success = await client.isTestFinalized();
     assertTrue(success);
   });

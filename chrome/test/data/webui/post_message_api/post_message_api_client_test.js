@@ -11,6 +11,8 @@ class TestRequestHandler extends RequestHandler {
   constructor() {
     super(null, ServerOriginURLFilter, ServerOriginURLFilter);
     this.registerMethod('isTestFinalized', this.isTestFinalized_.bind(this));
+    this.registerMethod(
+        'rejectedPromiseTest', this.rejectedPromiseTest_.bind(this));
     this.isTestFinalized_ = false;
   }
 
@@ -24,10 +26,25 @@ class TestRequestHandler extends RequestHandler {
     this.isTestFinalized_ = true;
   }
 
-  // PostMessageAPIRequest that comes from the server to check if test is
-  // finalized.
+  /**
+   * PostMessageAPIRequest that comes from the server to check if test is
+   * finalized.
+   * @return {boolean}
+   */
   isTestFinalized_() {
     return this.isTestFinalized_;
+  }
+
+  /**
+   * A test used to ensure that rejected promises are passed to client.
+   * @return {Promise<boolean>}
+   */
+  rejectedPromiseTest_(args) {
+    const reject = args[0];
+    if (reject) {
+      return Promise.reject(new Error('Promise rejected'));
+    }
+    return Promise.resolve(true);
   }
 }
 
