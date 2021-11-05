@@ -29,7 +29,7 @@ group("locally_built") {
     ":libdbusmenu",
     ":libdbusmenu-glib4",
     ":libexpat1",
-    ":libffi6",
+    ":libffi7",
     ":libfontconfig1",
     ":libgcrypt20",
     ":libgdk-pixbuf2.0-0",
@@ -377,7 +377,7 @@ instrumented_library("libexpat1") {
   patches = [ "patches/libexpat1.diff" ]
 }
 
-instrumented_library("libffi6") {
+instrumented_library("libffi7") {
   extra_configure_flags = [ "--disable-static" ]
 }
 
