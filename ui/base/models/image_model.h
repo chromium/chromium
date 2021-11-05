@@ -73,10 +73,8 @@ class COMPONENT_EXPORT(UI_BASE) VectorIconModel {
   const gfx::VectorIcon* badge_icon_ = nullptr;
 };
 
-// ImageModel encapsulates either a gfx::Image or a VectorIconModel. Only one
-// of the two may be specified at a given time. This class is instantiated via
-// the FromXXXX static factory functions.
-
+// ImageModel encapsulates one of several image representations. See FromXXXX
+// static-factory functions for supported formats.
 class COMPONENT_EXPORT(UI_BASE) ImageModel {
  public:
   using ImageGenerator =
