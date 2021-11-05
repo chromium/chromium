@@ -456,6 +456,8 @@ Format:
   "availability": "{Comparator}",
   "session_rate": "{Comparator}",
   "session_rate_impact": "{SessionRateImpact}",
+  "blocked_by": "{BlockedBy}",
+  "blocking": "{Blocking}",
   "event_used": "{EventConfig}",
   "event_trigger": "{EventConfig}",
   "event_???": "{EventConfig}",
@@ -471,6 +473,8 @@ Alternate format:
   "IPH_GoatTeleportationFeature_availability": "{Comparator}",
   "IPH_GoatTeleportationFeature_session_rate": "{Comparator}",
   "IPH_GoatTeleportationFeature_session_rate_impact": "{SessionRateImpact}",
+  "IPH_GoatTeleportationFeature_blocked_by": "{BlockedBy}",
+  "IPH_GoatTeleportationFeature_blocking": "{Blocking}",
   "IPH_GoatTeleportationFeature_event_used": "{EventConfig}",
   "IPH_GoatTeleportationFeature_event_trigger": "{EventConfig}",
   "IPH_GoatTeleportationFeature_event_???": "{EventConfig}",
@@ -502,6 +506,16 @@ into the same field trial.
     *   By default, a feature impacts every other feature.
     *   Defaults to `all`.
     *   See [SessionRateImpact](#SessionRateImpact) below for details.
+*   `blocked_by`
+    *   Which other in-product help features the current IPH is blocked by.
+    *   By default, a feature is blocked by any other feature.
+    *   Defaults to `all`.
+    *   See [BlockedBy](#BlockedBy) below for details.
+*   `blocking`
+    *   Which other in-product help features showing the current IPH blocks.
+    *   By default, a feature blocks every other feature.
+    *   Defaults to `all`.
+    *   See [Blocking](#Blocking) below for details.
 *   `event_used` __REQUIRED__
     *   Relates to what the in-product help wants to highlight, i.e. teach the
         user about and increase usage of.
@@ -676,7 +690,47 @@ Format: `[all|none|comma-separated list]`
 all
 none
 IPH_DownloadHome
-IPH_DonwloadPage,IPH_DownloadHome
+IPH_DownloadPage,IPH_DownloadHome
+```
+
+### BlockedBy
+
+Format: `[all|none|comma-separated list]`
+
+*   `all` means this feature is blocked by any other feature that is currently
+    showing. This is the default.
+*   `none` means that this feature is not blocked by any other features. This
+    feature may therefore be shown unrestricted by the currently showing features.
+*   `[comma-separated list]` means that this feature is only blocked by the
+    particular
+    features listed. Use the `base::Feature` name of the feature in the list.
+    *   It is *NOT* valid to use the feature names `all` or `none`. They must
+        only be used alone with no comma, at which point they work as described
+        above.
+
+**Examples**
+
+```
+all
+none
+IPH_DownloadHome
+IPH_DownloadPage,IPH_DownloadHome
+```
+
+### Blocking
+
+Format: `[all|none]`
+
+*   `all` means this feature blocks every other feature regarding their
+    `IsBlocked` calculations. This is the default.
+*   `none` means that this feature does not block any other features regarding
+    the `IsBlocked` calculation. 
+
+**Examples**
+
+```
+all
+none
 ```
 
 ### Manual testing using field trial configurations
