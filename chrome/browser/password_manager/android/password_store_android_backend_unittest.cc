@@ -53,7 +53,7 @@ std::vector<PasswordForm> UnwrapForms(
 class MockPasswordStoreAndroidBackendBridge
     : public PasswordStoreAndroidBackendBridge {
  public:
-  MOCK_METHOD(void, SetConsumer, (Consumer*), (override));
+  MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (), (override));
 };
 
@@ -68,7 +68,6 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
 
   ~PasswordStoreAndroidBackendTest() override {
     testing::Mock::VerifyAndClearExpectations(bridge_);
-    EXPECT_CALL(*bridge_, SetConsumer(nullptr));
   }
 
   PasswordStoreBackend& backend() { return *backend_; }

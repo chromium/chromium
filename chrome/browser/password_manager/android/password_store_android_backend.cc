@@ -85,12 +85,10 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge)
     : bridge_(std::move(bridge)) {
   DCHECK(bridge_);
-  bridge_->SetConsumer(this);
+  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
 
-PasswordStoreAndroidBackend::~PasswordStoreAndroidBackend() {
-  bridge_->SetConsumer(nullptr);
-}
+PasswordStoreAndroidBackend::~PasswordStoreAndroidBackend() = default;
 
 void PasswordStoreAndroidBackend::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
@@ -110,10 +108,9 @@ void PasswordStoreAndroidBackend::Shutdown(
 
 void PasswordStoreAndroidBackend::GetAllLoginsAsync(LoginsReply callback) {
   JobId job_id = bridge_->GetAllLogins();
-  request_for_job_.emplace(
-      job_id,
-      JobReturnHandler(std::move(callback),
-                       JobReturnHandler::MetricInfix("GetAllLoginsAsync")));
+  QueueNewJob(job_id, JobReturnHandler(
+                          std::move(callback),
+                          JobReturnHandler::MetricInfix("GetAllLoginsAsync")));
 }
 
 void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
@@ -188,6 +185,7 @@ PasswordStoreAndroidBackend::CreateSyncControllerDelegateFactory() {
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(
     JobId job_id,
     std::vector<PasswordForm> passwords) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
   reply.RecordMetrics(JobReturnHandler::WasSuccess(true));
   DCHECK(reply.Holds<LoginsReply>());
@@ -198,6 +196,7 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
 }
 
 void PasswordStoreAndroidBackend::OnError(JobId job_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
   reply.RecordMetrics(JobReturnHandler::WasSuccess(false));
 }
@@ -207,8 +206,15 @@ PasswordStoreAndroidBackend::GetSyncControllerDelegate() {
   return sync_controller_delegate_.GetWeakPtr();
 }
 
+void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
+                                              JobReturnHandler return_handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  request_for_job_.emplace(job_id, std::move(return_handler));
+}
+
 PasswordStoreAndroidBackend::JobReturnHandler
 PasswordStoreAndroidBackend::GetAndEraseJob(JobId job_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   auto iter = request_for_job_.find(job_id);
   DCHECK(iter != request_for_job_.end());
   JobReturnHandler reply = std::move(iter->second);

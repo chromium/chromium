@@ -50,7 +50,8 @@ PasswordStoreAndroidBackendBridgeImpl::
   Java_PasswordStoreAndroidBackendBridgeImpl_destroy(
       base::android::AttachCurrentThread(), java_object_);
 }
-void PasswordStoreAndroidBackendBridgeImpl::SetConsumer(Consumer* consumer) {
+void PasswordStoreAndroidBackendBridgeImpl::SetConsumer(
+    base::WeakPtr<Consumer> consumer) {
   consumer_ = consumer;
 }
 
@@ -64,7 +65,12 @@ void PasswordStoreAndroidBackendBridgeImpl::OnCompleteWithLogins(
 
 void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env, jint job_id) {
   DCHECK(consumer_);
-  consumer_->OnError(JobId(job_id));
+  // Posting the tasks to the same sequence prevents that synchronous responses
+  // try to finish tasks before their registration was completed.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreAndroidBackendBridge::Consumer::OnError,
+                     consumer_, JobId(job_id)));
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
