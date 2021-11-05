@@ -286,6 +286,61 @@ TEST_F(ContainerQueryTest, QueryZoom) {
   EXPECT_TRUE(target2->ComputedStyleRef().GetVariableData("--h400"));
 }
 
+TEST_F(ContainerQueryTest, QueryFontRelativeWithZoom) {
+  GetFrame().SetPageZoomFactor(2.0f);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #font-root {
+        font-size: 50px;
+      }
+      #em-container {
+        width: 10em;
+        container-type: inline-size;
+      }
+      #ex-container {
+        width: 10ex;
+        container-type: inline-size;
+      }
+      #ch-container {
+        width: 10ch;
+        container-type: inline-size;
+      }
+      @container (width: 10em) {
+        #em-target { --em:1; }
+      }
+      @container (width: 10ex) {
+        #ex-target { --ex:1; }
+      }
+      @container (width: 10ch) {
+        #ch-target { --ch:1; }
+      }
+    </style>
+    <div id="font-root">
+      <div id="em-container">
+        <div id="em-target"></div>
+      </div>
+      <div id="ex-container">
+        <div id="ex-target"></div>
+      </div>
+      <div id="ch-container">
+        <div id="ch-target"></div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* em_target = GetDocument().getElementById("em-target");
+  Element* ex_target = GetDocument().getElementById("ex-target");
+  Element* ch_target = GetDocument().getElementById("ch-target");
+  ASSERT_TRUE(em_target);
+  ASSERT_TRUE(ex_target);
+  ASSERT_TRUE(ch_target);
+
+  EXPECT_TRUE(em_target->ComputedStyleRef().GetVariableData("--em"));
+  EXPECT_TRUE(ex_target->ComputedStyleRef().GetVariableData("--ex"));
+  EXPECT_TRUE(ch_target->ComputedStyleRef().GetVariableData("--ch"));
+}
+
 TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
   using css_test_helpers::RegisterProperty;
 

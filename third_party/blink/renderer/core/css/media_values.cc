@@ -377,8 +377,10 @@ bool MediaValues::ComputeLengthImpl(double value,
   // way.
   switch (type) {
     case CSSPrimitiveValue::UnitType::kEms:
-    case CSSPrimitiveValue::UnitType::kRems:
       result = value * EmSize();
+      return true;
+    case CSSPrimitiveValue::UnitType::kRems:
+      result = value * RemSize();
       return true;
     case CSSPrimitiveValue::UnitType::kPixels:
     case CSSPrimitiveValue::UnitType::kUserUnits:

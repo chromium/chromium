@@ -2124,7 +2124,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   auto* evaluator = cq_data->GetContainerQueryEvaluator();
   DCHECK(evaluator);
 
-  switch (evaluator->ContainerChanged(GetDocument(), physical_size,
+  switch (evaluator->ContainerChanged(GetDocument(), style, physical_size,
                                       physical_axes)) {
     case ContainerQueryEvaluator::Change::kNone:
       if (!cq_data->SkippedStyleRecalc())

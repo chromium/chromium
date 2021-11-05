@@ -83,6 +83,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual double ViewportWidth() const = 0;
   virtual double ViewportHeight() const = 0;
   virtual float EmSize() const = 0;
+  virtual float RemSize() const = 0;
   virtual float ExSize() const = 0;
   virtual float ChSize() const = 0;
 

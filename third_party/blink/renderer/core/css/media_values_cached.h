@@ -145,6 +145,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   double ViewportWidth() const override;
   double ViewportHeight() const override;
   float EmSize() const override;
+  float RemSize() const override;
   float ExSize() const override;
   float ChSize() const override;
 

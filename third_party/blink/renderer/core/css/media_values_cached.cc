@@ -95,6 +95,11 @@ float MediaValuesCached::EmSize() const {
   return data_.em_size;
 }
 
+float MediaValuesCached::RemSize() const {
+  // For media queries rem and em units are both based on the initial font.
+  return data_.em_size;
+}
+
 float MediaValuesCached::ExSize() const {
   return data_.ex_size;
 }

@@ -84,12 +84,13 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
     Document& document,
+    const ComputedStyle& style,
     PhysicalSize size,
     PhysicalAxes contained_axes) {
   if (size_ == size && contained_axes_ == contained_axes)
     return Change::kNone;
 
-  SetData(document, size, contained_axes);
+  SetData(document, style, size, contained_axes);
 
   Change change = ComputeChange();
 
@@ -109,13 +110,14 @@ void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
 }
 
 void ContainerQueryEvaluator::SetData(Document& document,
+                                      const ComputedStyle& style,
                                       PhysicalSize size,
                                       PhysicalAxes contained_axes) {
   size_ = size;
   contained_axes_ = contained_axes;
 
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
-      document, size.width.ToDouble(), size.height.ToDouble());
+      document, style, size.width.ToDouble(), size.height.ToDouble());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }

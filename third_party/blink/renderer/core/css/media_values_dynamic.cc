@@ -61,6 +61,11 @@ float MediaValuesDynamic::EmSize() const {
   return CalculateEmSize(frame_);
 }
 
+float MediaValuesDynamic::RemSize() const {
+  // For media queries rem and em units are both based on the initial font.
+  return CalculateEmSize(frame_);
+}
+
 float MediaValuesDynamic::ExSize() const {
   return CalculateExSize(frame_);
 }
