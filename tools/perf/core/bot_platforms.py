@@ -523,7 +523,8 @@ MAC_HIGH_END = PerfPlatform(
     'mac-10_13_laptop_high_end-perf',
     'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
     _MAC_HIGH_END_BENCHMARK_CONFIGS,
-    26,
+    # crbug/1267365: reduce as some bots are lost due to OS divergence
+    22,
     'mac',
     executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS)
 MAC_LOW_END = PerfPlatform(
