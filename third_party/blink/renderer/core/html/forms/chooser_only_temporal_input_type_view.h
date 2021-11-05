@@ -55,6 +55,7 @@ class ChooserOnlyTemporalInputTypeView final
   void ValueAttributeChanged() override;
   void DidSetValue(const String&, bool value_changed) override;
   void HandleDOMActivateEvent(Event&) override;
+  void OpenPopupView() override;
   void UpdateView() override;
 
   // DateTimeChooserClient functions:
