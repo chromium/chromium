@@ -17,6 +17,7 @@
 
 namespace base {
 class ListValue;
+class DictionaryValue;
 }  // namespace base
 
 namespace content {
@@ -70,7 +71,7 @@ class AccessibilityUIMessageHandler : public content::WebUIMessageHandler {
 
   void ToggleAccessibility(const base::ListValue* args);
   void SetGlobalFlag(const base::ListValue* args);
-  void GetRequestTypeAndFilters(const base::DictionaryValue* data,
+  void GetRequestTypeAndFilters(const base::DictionaryValue& data,
                                 std::string& request_type,
                                 std::string& allow,
                                 std::string& allow_empty,

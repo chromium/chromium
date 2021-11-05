@@ -429,13 +429,13 @@ void AccessibilityUIMessageHandler::RegisterMessages() {
 
 void AccessibilityUIMessageHandler::ToggleAccessibility(
     const base::ListValue* args) {
-  const base::DictionaryValue* data;
-  CHECK(args->GetDictionary(0, &data));
+  const base::Value& data = args->GetList()[0];
+  CHECK(data.is_dict());
 
-  int process_id = *data->FindIntPath(kProcessIdField);
-  int routing_id = *data->FindIntPath(kRoutingIdField);
-  int mode = *data->FindIntPath(kModeIdField);
-  bool should_request_tree = *data->FindBoolPath(kShouldRequestTreeField);
+  int process_id = *data.FindIntPath(kProcessIdField);
+  int routing_id = *data.FindIntPath(kRoutingIdField);
+  int mode = *data.FindIntPath(kModeIdField);
+  bool should_request_tree = *data.FindBoolPath(kShouldRequestTreeField);
 
   AllowJavascript();
   content::RenderViewHost* rvh =
@@ -481,13 +481,13 @@ void AccessibilityUIMessageHandler::ToggleAccessibility(
 }
 
 void AccessibilityUIMessageHandler::SetGlobalFlag(const base::ListValue* args) {
-  const base::DictionaryValue* data;
-  CHECK(args->GetDictionary(0, &data));
+  const base::Value& data = args->GetList()[0];
+  CHECK(data.is_dict());
 
-  const std::string* flag_name_str_p = data->FindStringPath(kFlagNameField);
+  const std::string* flag_name_str_p = data.FindStringPath(kFlagNameField);
   CHECK(IsValidJSValue(flag_name_str_p));
   std::string flag_name_str = *flag_name_str_p;
-  bool enabled = *data->FindBoolPath(kEnabledField);
+  bool enabled = *data.FindBoolPath(kEnabledField);
 
   AllowJavascript();
   if (flag_name_str == kInternal) {
@@ -536,39 +536,41 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(const base::ListValue* args) {
     state->RemoveAccessibilityModeFlags(new_mode);
 }
 
+// TODO(crbug.com/1187061): Consider replacing base::DictionaryValue with
+// base::flat_map<std::string, base::Value>.
 void AccessibilityUIMessageHandler::GetRequestTypeAndFilters(
-    const base::DictionaryValue* data,
+    const base::DictionaryValue& data,
     std::string& request_type,
     std::string& allow,
     std::string& allow_empty,
     std::string& deny) {
-  DCHECK(data);
-  const std::string* request_type_p = data->FindStringPath(kRequestTypeField);
+  const std::string* request_type_p = data.FindStringPath(kRequestTypeField);
   CHECK(IsValidJSValue(request_type_p));
   request_type = *request_type_p;
   CHECK(request_type == kShowOrRefreshTree || request_type == kCopyTree);
 
-  const std::string* allow_p = data->FindStringPath("filters.allow");
+  const std::string* allow_p = data.FindStringPath("filters.allow");
   CHECK(IsValidJSValue(allow_p));
   allow = *allow_p;
-  const std::string* allow_empty_p = data->FindStringPath("filters.allowEmpty");
+  const std::string* allow_empty_p = data.FindStringPath("filters.allowEmpty");
   CHECK(IsValidJSValue(allow_empty_p));
   allow_empty = *allow_empty_p;
-  const std::string* deny_p = data->FindStringPath("filters.deny");
+  const std::string* deny_p = data.FindStringPath("filters.deny");
   CHECK(IsValidJSValue(deny_p));
   deny = *deny_p;
 }
 
 void AccessibilityUIMessageHandler::RequestWebContentsTree(
     const base::ListValue* args) {
-  const base::DictionaryValue* data;
-  CHECK(args->GetDictionary(0, &data));
+  const base::Value& data = args->GetList()[0];
+  CHECK(data.is_dict());
 
   std::string request_type, allow, allow_empty, deny;
-  GetRequestTypeAndFilters(data, request_type, allow, allow_empty, deny);
+  GetRequestTypeAndFilters(static_cast<const base::DictionaryValue&>(data),
+                           request_type, allow, allow_empty, deny);
 
-  int process_id = *data->FindIntPath(kProcessIdField);
-  int routing_id = *data->FindIntPath(kRoutingIdField);
+  int process_id = *data.FindIntPath(kProcessIdField);
+  int routing_id = *data.FindIntPath(kRoutingIdField);
 
   AllowJavascript();
   content::RenderViewHost* rvh =
@@ -607,13 +609,14 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
 
 void AccessibilityUIMessageHandler::RequestNativeUITree(
     const base::ListValue* args) {
-  const base::DictionaryValue* data;
-  CHECK(args->GetDictionary(0, &data));
+  const base::Value& data = args->GetList()[0];
+  CHECK(data.is_dict());
 
   std::string request_type, allow, allow_empty, deny;
-  GetRequestTypeAndFilters(data, request_type, allow, allow_empty, deny);
+  GetRequestTypeAndFilters(static_cast<const base::DictionaryValue&>(data),
+                           request_type, allow, allow_empty, deny);
 
-  int session_id = *data->FindIntPath(kSessionIdField);
+  int session_id = *data.FindIntPath(kSessionIdField);
 
   AllowJavascript();
 
@@ -650,11 +653,12 @@ void AccessibilityUIMessageHandler::RequestNativeUITree(
 void AccessibilityUIMessageHandler::RequestWidgetsTree(
     const base::ListValue* args) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::DictionaryValue* data;
-  CHECK(args->GetDictionary(0, &data));
+  const base::Value& data = args->GetList()[0];
+  CHECK(data.is_dict());
 
   std::string request_type, allow, allow_empty, deny;
-  GetRequestTypeAndFilters(data, request_type, allow, allow_empty, deny);
+  GetRequestTypeAndFilters(static_cast<const base::DictionaryValue&>(data),
+                           request_type, allow, allow_empty, deny);
 
   std::vector<AXPropertyFilter> property_filters;
   AddPropertyFilters(property_filters, allow, AXPropertyFilter::ALLOW);
@@ -663,7 +667,7 @@ void AccessibilityUIMessageHandler::RequestWidgetsTree(
   AddPropertyFilters(property_filters, deny, AXPropertyFilter::DENY);
 
   if (features::IsAccessibilityTreeForViewsEnabled()) {
-    int widget_id = *data->FindIntPath(kWidgetIdField);
+    int widget_id = *data.FindIntPath(kWidgetIdField);
     views::WidgetAXTreeIDMap& manager_map =
         views::WidgetAXTreeIDMap::GetInstance();
     const std::vector<views::Widget*> widgets = manager_map.GetWidgets();
@@ -708,12 +712,12 @@ void AccessibilityUIMessageHandler::StopRecording(
 
 void AccessibilityUIMessageHandler::RequestAccessibilityEvents(
     const base::ListValue* args) {
-  const base::DictionaryValue* data;
-  CHECK(args->GetDictionary(0, &data));
+  const base::Value& data = args->GetList()[0];
+  CHECK(data.is_dict());
 
-  int process_id = *data->FindIntPath(kProcessIdField);
-  int routing_id = *data->FindIntPath(kRoutingIdField);
-  bool start_recording = *data->FindBoolPath(kStartField);
+  int process_id = *data.FindIntPath(kProcessIdField);
+  int routing_id = *data.FindIntPath(kRoutingIdField);
+  bool start_recording = *data.FindBoolPath(kStartField);
 
   AllowJavascript();
 

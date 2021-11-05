@@ -325,9 +325,9 @@ TEST_F(TabsApiUnitTest, QueryWithoutTabsPermission) {
   ASSERT_TRUE(tabs_list_with_permission);
   ASSERT_EQ(1u, tabs_list_with_permission->GetList().size());
 
-  const base::DictionaryValue* third_tab_info;
-  ASSERT_TRUE(tabs_list_with_permission->GetDictionary(0, &third_tab_info));
-  absl::optional<int> third_tab_id = third_tab_info->FindIntKey("id");
+  const base::Value& third_tab_info = tabs_list_with_permission->GetList()[0];
+  ASSERT_TRUE(third_tab_info.is_dict());
+  absl::optional<int> third_tab_id = third_tab_info.FindIntKey("id");
   EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
 
   while (!browser()->tab_strip_model()->empty())
@@ -381,9 +381,9 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
     ASSERT_TRUE(tabs_list_with_permission);
     ASSERT_EQ(1u, tabs_list_with_permission->GetList().size());
 
-    const base::DictionaryValue* third_tab_info;
-    ASSERT_TRUE(tabs_list_with_permission->GetDictionary(0, &third_tab_info));
-    absl::optional<int> third_tab_id = third_tab_info->FindIntKey("id");
+    const base::Value& third_tab_info = tabs_list_with_permission->GetList()[0];
+    ASSERT_TRUE(third_tab_info.is_dict());
+    absl::optional<int> third_tab_id = third_tab_info.FindIntKey("id");
     EXPECT_EQ(ExtensionTabUtil::GetTabId(web_contentses[2]), third_tab_id);
   }
 
@@ -396,20 +396,20 @@ TEST_F(TabsApiUnitTest, QueryWithHostPermission) {
     ASSERT_TRUE(tabs_list_with_permission);
     ASSERT_EQ(2u, tabs_list_with_permission->GetList().size());
 
-    const base::DictionaryValue* first_tab_info;
-    const base::DictionaryValue* third_tab_info;
-    ASSERT_TRUE(tabs_list_with_permission->GetDictionary(0, &first_tab_info));
-    ASSERT_TRUE(tabs_list_with_permission->GetDictionary(1, &third_tab_info));
+    const base::Value& first_tab_info = tabs_list_with_permission->GetList()[0];
+    ASSERT_TRUE(first_tab_info.is_dict());
+    const base::Value& third_tab_info = tabs_list_with_permission->GetList()[1];
+    ASSERT_TRUE(third_tab_info.is_dict());
 
     std::vector<int> expected_tabs_ids;
     expected_tabs_ids.push_back(ExtensionTabUtil::GetTabId(web_contentses[0]));
     expected_tabs_ids.push_back(ExtensionTabUtil::GetTabId(web_contentses[2]));
 
-    absl::optional<int> first_tab_id = first_tab_info->FindIntKey("id");
+    absl::optional<int> first_tab_id = first_tab_info.FindIntKey("id");
     ASSERT_TRUE(first_tab_id);
     EXPECT_TRUE(base::Contains(expected_tabs_ids, *first_tab_id));
 
-    absl::optional<int> third_tab_id = third_tab_info->FindIntKey("id");
+    absl::optional<int> third_tab_id = third_tab_info.FindIntKey("id");
     ASSERT_TRUE(third_tab_id);
     EXPECT_TRUE(base::Contains(expected_tabs_ids, *third_tab_id));
   }
