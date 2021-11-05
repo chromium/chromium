@@ -1732,7 +1732,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'x52eczK_IMUnsA0AGpimIsOpzy-ToCTqXPa-UhGLnsgC',
+        'version': '56JcYmvecGTVcFFcRl-3mOvV1fN0IkcuWl-70iU4vncC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
