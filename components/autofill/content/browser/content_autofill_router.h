@@ -261,12 +261,12 @@ class ContentAutofillRouter {
 
   // The URL of a main frame managed by the ContentAutofillRouter.
   // TODO(crbug.com/1240247): Remove.
-  GURL MainUrlForDebugging() const;
+  std::string MainUrlForDebugging() const;
 
   // The frame managed by the ContentAutofillRouter that was last passed to
   // an event.
   // TODO(crbug.com/1240247): Remove.
-  content::RenderFrameHost* some_rfh_for_debugging_ = nullptr;
+  content::GlobalRenderFrameHostId some_rfh_for_debugging_;
 
   // The forest of forms. See its documentation for the usage protocol.
   internal::FormForest form_forest_;
