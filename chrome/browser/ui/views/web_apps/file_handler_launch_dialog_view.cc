@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,8 +33,13 @@ FileHandlerLaunchDialogView::FileHandlerLaunchDialogView(
     : LaunchAppUserChoiceDialogView(profile, app_id, std::move(close_callback)),
       file_paths_(file_paths) {
   auto* layout_provider = views::LayoutProvider::Get();
-  set_margins(layout_provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kControl, views::DialogContentType::kControl));
+  gfx::Insets dialog_insets = layout_provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl, views::DialogContentType::kControl);
+#if defined(OS_CHROMEOS)
+  // The Chrome OS dialog has no title and no need for a top inset.
+  dialog_insets.set_top(0);
+#endif
+  set_margins(dialog_insets);
   set_fixed_width(layout_provider->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 }

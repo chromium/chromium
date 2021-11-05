@@ -323,6 +323,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   // Called after the user has allowed or denied an app launch with files.
   void OnFileHandlerDialogCompleted(
+      std::string app_id,
       apps::AppLaunchParams params,
       base::OnceCallback<void(content::WebContents*)> callback,
       bool allowed,

@@ -1379,17 +1379,17 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
     return;
   }
 
-  auto launch_callback = base::BindOnce(
-      &WebAppPublisherHelper::OnFileHandlerDialogCompleted,
-      weak_ptr_factory_.GetWeakPtr(), std::move(params), std::move(callback));
+  std::vector<base::FilePath> file_paths = params.launch_files;
+
+  auto launch_callback =
+      base::BindOnce(&WebAppPublisherHelper::OnFileHandlerDialogCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), app_id, std::move(params),
+                     std::move(callback));
 
   switch (web_app->file_handler_approval_state()) {
     case ApiApprovalState::kRequiresPrompt:
-      // TODO(estade): this should use a file handling dialog, but until that's
-      // implemented, this reuses the PH dialog with a dummy URL as a stand-in.
-      chrome::ShowWebAppProtocolHandlerIntentPicker(GURL("https://example.com"),
-                                                    profile(), app_id,
-                                                    std::move(launch_callback));
+      chrome::ShowWebAppFileLaunchDialog(file_paths, profile(), app_id,
+                                         std::move(launch_callback));
       break;
     case ApiApprovalState::kAllowed:
       std::move(launch_callback)
@@ -1406,11 +1406,16 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
 }
 
 void WebAppPublisherHelper::OnFileHandlerDialogCompleted(
+    std::string app_id,
     apps::AppLaunchParams params,
     base::OnceCallback<void(content::WebContents*)> callback,
     bool allowed,
     bool remember_user_choice) {
-  // TODO(estade): implement `remember_user_choice`.
+  if (remember_user_choice) {
+    PersistFileHandlersUserChoice(profile(), app_id, allowed,
+                                  base::DoNothing());
+  }
+
   std::move(callback).Run(allowed ? LaunchAppWithParams(std::move(params))
                                   : nullptr);
 }
