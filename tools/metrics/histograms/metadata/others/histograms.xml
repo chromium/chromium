@@ -10014,6 +10014,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mac.UniversalLink.APIDuration" units="ms"
     expires_after="2022-07-01">
+  <obsolete>
+    Removed 2021 November.
+  </obsolete>
   <owner>avi@chromium.org</owner>
   <owner>mark@chromium.org</owner>
   <summary>

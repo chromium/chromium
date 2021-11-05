@@ -7,9 +7,9 @@
 #import <Cocoa/Cocoa.h>
 #import <SafariServices/SafariServices.h>
 
-#include "base/metrics/histogram_functions.h"
+#include "base/feature_list.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/timer/elapsed_timer.h"
+#include "chrome/browser/browser_features.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/models/image_model.h"
 
@@ -43,36 +43,18 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
 }  // namespace
 
 absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url) {
-  if (@available(macOS 10.15, *)) {
-    // This function is called synchronously on the main thread for every
-    // navigation, which means it needs to be fast. Unfortunately, for some
-    // machines, -[SFUniversalLink initWithWebpageURL:] is consistently slow
-    // (https://crbug.com/1228740, FB9364726). Therefore, time all executions of
-    // that API, and if it ever runs too slowly, stop calling it in an attempt
-    // to preserve the user experience. 100ms is the speed of human perception;
-    // this API call must never be allowed to push a navigation from being
-    // perceived as "instant" to not being perceived as "instant". See
-    // https://web.dev/rail/ for more philosophy.
-    static bool api_is_fast_enough = true;
-    if (!api_is_fast_enough)
-      return absl::nullopt;
+  static bool universal_links_enabled =
+      base::FeatureList::IsEnabled(features::kEnableUniveralLinks);
+  if (!universal_links_enabled)
+    return absl::nullopt;
 
+  if (@available(macOS 10.15, *)) {
     NSURL* nsurl = net::NSURLWithGURL(url);
     if (!nsurl)
       return absl::nullopt;
 
-    base::ElapsedTimer timer;
     SFUniversalLink* link =
         [[[SFUniversalLink alloc] initWithWebpageURL:nsurl] autorelease];
-    base::TimeDelta api_duration = timer.Elapsed();
-    static constexpr auto kHowFastIsFastEnough = base::Milliseconds(100);
-    if (api_duration > kHowFastIsFastEnough) {
-      api_is_fast_enough = false;
-      // In doing metrics, allow for hangs up to an hour. This is exceptionally
-      // pessimistic, but will provide useful data for feedback to Apple.
-      base::UmaHistogramLongTimes("Mac.UniversalLink.APIDuration",
-                                  api_duration);
-    }
 
     if (link)
       return AppInfoForAppUrl(link.applicationURL);

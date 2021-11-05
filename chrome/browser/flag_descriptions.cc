@@ -3904,6 +3904,10 @@ const char kCupsIppPrintingBackendDescription[] =
     "that calls the PPD API.";
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
+const char kEnableUniversalLinksName[] = "Universal Links";
+const char kEnableUniversalLinksDescription[] =
+    "Include Universal Links in the intent picker.";
+
 const char kEnterpriseReportingApiKeychainRecreationName[] =
     "Enterprise reporting API keychain item recreation.";
 const char kEnterpriseReportingApiKeychainRecreationDescription[] =
