@@ -18,6 +18,8 @@
 #include "chrome/browser/share/core/share_targets.h"
 #include "chrome/browser/share/proto/share_target.pb.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -87,6 +89,11 @@ void SharingHubModel::GetFirstPartyActionList(
     } else if (action.command_id == IDC_QRCODE_GENERATOR) {
       if (qrcode_generator::QRCodeGeneratorBubbleController::
               IsGeneratorAvailable(web_contents->GetLastCommittedURL())) {
+        list->push_back(action);
+      }
+    } else if (action.command_id == IDC_SAVE_PAGE) {
+      if (chrome::CanSavePage(
+              chrome::FindBrowserWithWebContents(web_contents))) {
         list->push_back(action);
       }
     } else {
