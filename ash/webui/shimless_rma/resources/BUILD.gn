@@ -182,6 +182,7 @@ js_library("onboarding_choose_destination_page") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 

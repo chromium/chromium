@@ -41,6 +41,11 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"chooseDestinationTitleText", IDS_SHIMLESS_RMA_CHOOSE_DESTINATION},
+      {"sameOwnerText", IDS_SHIMLESS_RMA_SAME_OWNER},
+      {"sameOwnerDescriptionText", IDS_SHIMLESS_RMA_SAME_OWNER_DESCRIPTION},
+      {"newOwnerText", IDS_SHIMLESS_RMA_NEW_OWNER},
+      {"newOwnerDescriptionText", IDS_SHIMLESS_RMA_NEW_OWNER_DESCRIPTION},
       {"currentVersionText", IDS_SHIMLESS_RMA_CURRENT_VERSION},
       {"currentVersionOutOfDateText",
        IDS_SHIMLESS_RMA_CURRENT_VERSION_OUT_OF_DATE},
