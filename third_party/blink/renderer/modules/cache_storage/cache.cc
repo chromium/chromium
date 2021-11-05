@@ -102,7 +102,7 @@ void ValidateResponseForPut(const Response* response,
     exception_state.ThrowTypeError("Vary header contains *");
     return;
   }
-  if (response->GetResponse()->InternalStatus() == 206) {
+  if (response->GetResponse()->Status() == 206) {
     exception_state.ThrowTypeError(
         "Partial response (status code 206) is unsupported");
     return;
