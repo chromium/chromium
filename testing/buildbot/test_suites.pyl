@@ -270,11 +270,13 @@
     'android_pie_rel_reduced_capacity_gtests': {
       'android_browsertests': {},
       'blink_platform_unittests': {},
+      'cc_unittests': {},
       'content_browsertests': {
         'swarming': {
           'shards': 15,
         },
       },
+      'viz_unittests': {},
       'weblayer_bundle_test': {},
       'weblayer_instrumentation_test_apk': {},
       'webview_instrumentation_test_apk': {
