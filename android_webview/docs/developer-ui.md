@@ -203,6 +203,14 @@ menu and tapping the "Components" option.
 Tapping the "Update" button located in the options menu will download new versions
 of the components if any are available.
 
+*** note
+**Note:** Updating components via the UI runs in "on-demand" or "user-visible"
+mode by default which may have [different behavior](https://crbug.com/1250837)
+from automated updates. To simulate the behaviour of the automated update
+service, on-demand updates can be turned off using the toggle provided
+below the Components Summary.
+***
+
 ![WebView components UI](images/webview_components_ui.png)
 
 ## More cool stuff
