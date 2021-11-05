@@ -54,6 +54,10 @@ class CORE_EXPORT DisplayLockDocumentState final
   // Returns true if all activatable locks have been forced.
   bool ActivatableDisplayLocksForced() const;
 
+  // Notifications for elements entering/exiting top layer.
+  void ElementAddedToTopLayer(Element*);
+  void ElementRemovedFromTopLayer(Element*);
+
   class CORE_EXPORT ScopedForceActivatableDisplayLocks {
     STACK_ALLOCATED();
 
@@ -167,6 +171,11 @@ class CORE_EXPORT DisplayLockDocumentState final
       const HeapVector<Member<IntersectionObserverEntry>>&);
 
   void ScheduleAnimation();
+
+  // Mark element's ancestor contexts as having a top layer element. If at least
+  // one of the contexts skips its descendants, this return true. Otherwise, it
+  // returns false.
+  bool MarkAncestorContextsHaveTopLayerElement(Element*);
 
   Member<Document> document_;
 

@@ -215,6 +215,10 @@ class CORE_EXPORT DisplayLockContext final
 
   bool HasElement() const { return element_; }
 
+  // Top layer implementation.
+  void NotifyHasTopLayerElement();
+  void ClearHasTopLayerElement();
+
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
   // |NotifyForcedUpdateScopeEnded()|.
@@ -310,6 +314,13 @@ class CORE_EXPORT DisplayLockContext final
   // selected notes up to its root looking for `element_`.
   void DetermineIfSubtreeHasSelection();
 
+  // Determines if the subtree has a top layer element. This is a walk from each
+  // top layer node up the ancestor chain looking for `element_`.
+  void DetermineIfSubtreeHasTopLayerElement();
+
+  // Detaching the layout tree from the top layers nested under this lock.
+  void DetachDescendantTopLayerElements();
+
   // Keep this context unlocked until the beginning of lifecycle. Effectively
   // keeps this context unlocked for the next `count` frames. It also schedules
   // a frame to ensure the lifecycle happens. Only affects locks with 'auto'
@@ -328,6 +339,8 @@ class CORE_EXPORT DisplayLockContext final
   void StashScrollOffsetIfAvailable();
   void RestoreScrollOffsetIfStashed();
   bool HasStashedScrollOffset() const;
+
+  bool SubtreeHasTopLayerElement() const;
 
   WeakMember<Element> element_;
   WeakMember<Document> document_;
@@ -441,6 +454,7 @@ class CORE_EXPORT DisplayLockContext final
     kSubtreeHasSelection,
     kAutoStateUnlockedUntilLifecycle,
     kAutoUnlockedForPrint,
+    kSubtreeHasTopLayerElement,
     kNumRenderAffectingStates
   };
   void SetRenderAffectingState(RenderAffectingState state, bool flag);
@@ -465,6 +479,10 @@ class CORE_EXPORT DisplayLockContext final
   // slot or the hidden=until-found attribute, then this lock must activate
   // during find-in-page.
   bool activate_for_find_in_page_ = false;
+
+  // If true, we need to clear the fact that we have a top layer at the start of
+  // the next frame.
+  bool has_pending_clear_has_top_layer_ = false;
 };
 
 }  // namespace blink
