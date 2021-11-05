@@ -29,15 +29,14 @@
 #include "remoting/host/win/evaluate_d3d.h"
 #endif
 
-#if defined(USE_X11)
+#if defined(REMOTING_USE_X11)
 #include "base/threading/watchdog.h"
 #include "remoting/host/linux/x11_util.h"
-#include "ui/base/ui_base_features.h"
 #endif
 
 namespace remoting {
 
-#if defined(USE_X11)
+#if defined(REMOTING_USE_X11)
 
 namespace {
 
@@ -67,7 +66,7 @@ class IgnoreXServerGrabsWatchdog : public base::Watchdog {
 
 }  // namespace
 
-#endif  // defined(USE_X11)
+#endif  // defined(REMOTING_USE_X11)
 
 BasicDesktopEnvironment::~BasicDesktopEnvironment() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
@@ -169,16 +168,14 @@ BasicDesktopEnvironment::BasicDesktopEnvironment(
       client_session_control_(client_session_control),
       options_(options) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform()) {
-    // TODO(yuweih): The watchdog is just to test the hypothesis.
-    // The IgnoreXServerGrabs() call should probably be moved to whichever
-    // thread that created desktop_capture_options().x_display().
-    IgnoreXServerGrabsWatchdog watchdog;
-    watchdog.Arm();
-    desktop_capture_options().x_display()->IgnoreXServerGrabs();
-    watchdog.Disarm();
-  }
+#if defined(REMOTING_USE_X11)
+  // TODO(yuweih): The watchdog is just to test the hypothesis.
+  // The IgnoreXServerGrabs() call should probably be moved to whichever
+  // thread that created desktop_capture_options().x_display().
+  IgnoreXServerGrabsWatchdog watchdog;
+  watchdog.Arm();
+  desktop_capture_options().x_display()->IgnoreXServerGrabs();
+  watchdog.Disarm();
 #elif defined(OS_WIN)
   // The options passed to this instance are determined by a process running in
   // Session 0.  Access to DirectX functions in Session 0 is limited so the

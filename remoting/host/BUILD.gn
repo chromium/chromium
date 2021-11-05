@@ -198,7 +198,7 @@ source_set("clipboard") {
     "//remoting/protocol",
   ]
 
-  if (use_x11 && (!is_chromeos_ash || !use_ozone)) {
+  if (remoting_use_x11) {
     sources += [ "clipboard_x11.cc" ]
 
     deps += [
@@ -492,12 +492,13 @@ static_library("common") {
 
     deps += [ "//build/config/linux/gtk" ]
 
-    if (use_x11) {
+    if (remoting_use_x11) {
       deps += [ "linux:x11" ]
     }
   }
 
-  if (use_x11 && !is_chromeos_ash && !is_chromeos_lacros) {
+  if (remoting_use_x11) {
+    defines += [ "REMOTING_USE_X11" ]
     sources += [
       "desktop_display_info_loader_x11.cc",
       "desktop_resizer_x11.cc",
@@ -515,7 +516,8 @@ static_library("common") {
     }
   }
 
-  if (is_linux && (!use_x11 || is_chromeos_ash || is_chromeos_lacros)) {
+  if (is_linux &&
+      (!remoting_use_x11 || is_chromeos_ash || is_chromeos_lacros)) {
     # On Linux, exactly one of desktop_resizer_{linux,x11}.cc should be
     # compiled in. The _linux version is a no-op and should be used on
     # platforms without X11.
@@ -976,7 +978,7 @@ if (enable_me2me_host) {
       "//third_party/webrtc_overrides:webrtc_component",
     ]
 
-    if (use_x11) {
+    if (remoting_use_x11) {
       deps += [ "//ui/events/platform/x11:x11" ]
     }
 

@@ -78,7 +78,7 @@ if (enable_me2me_host) {
   }
 }
 
-if (use_x11) {
+if (remoting_use_x11) {
   source_set("x11") {
     sources = [
       "unicode_to_keysym.cc",
@@ -150,7 +150,7 @@ source_set("unit_tests") {
     "x_server_clipboard_unittest.cc",
   ]
 
-  if (!use_x11) {
+  if (!remoting_use_x11) {
     sources -= [
       "unicode_to_keysym_unittest.cc",
       "x_server_clipboard_unittest.cc",
@@ -173,7 +173,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (use_x11) {
+  if (remoting_use_x11) {
     deps += [ ":x11" ]
   }
 
