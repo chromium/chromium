@@ -6020,48 +6020,6 @@
             ]
         }
     ],
-    "PerProcessReclaimModeratePressureArcVm": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledGroupA_20211019",
-                    "params": {
-                        "ArcVmInactivityTimeMs": "300s",
-                        "ArcVmTrimBackoffTimeMs": "450s",
-                        "TrimArcVmOnCriticalPressure": "false"
-                    },
-                    "enable_features": [
-                        "TrimArcVmOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "EnabledGroupB_20211019",
-                    "params": {
-                        "ArcVmInactivityTimeMs": "600s",
-                        "ArcVmTrimBackoffTimeMs": "900s",
-                        "TrimArcVmOnCriticalPressure": "false"
-                    },
-                    "enable_features": [
-                        "TrimArcVmOnMemoryPressure"
-                    ]
-                },
-                {
-                    "name": "EnabledGroupC_20211019",
-                    "params": {
-                        "ArcVmInactivityTimeMs": "1200s",
-                        "ArcVmTrimBackoffTimeMs": "1800s",
-                        "TrimArcVmOnCriticalPressure": "false"
-                    },
-                    "enable_features": [
-                        "TrimArcVmOnMemoryPressure"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionChip": [
         {
             "platforms": [
