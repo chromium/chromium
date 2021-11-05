@@ -182,6 +182,19 @@ const char* GetSaveAndUpdatePromptDecisionMetricsSuffix(
   return "";
 }
 
+std::string GetCreditCardTypeSuffix(
+    AutofillClient::PaymentsRpcCardType card_type) {
+  switch (card_type) {
+    case AutofillClient::PaymentsRpcCardType::kServerCard:
+      return ".ServerCard";
+    case AutofillClient::PaymentsRpcCardType::kVirtualCard:
+      return ".VirtualCard";
+    case AutofillClient::PaymentsRpcCardType::kUnknown:
+      NOTREACHED();
+      return std::string();
+  }
+}
+
 }  // namespace
 
 // First, translates |field_type| to the corresponding logical |group| from
@@ -1325,7 +1338,6 @@ void AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
     AutofillClient::PaymentsRpcResult result,
     AutofillClient::PaymentsRpcCardType card_type) {
   std::string result_suffix;
-  std::string card_type_suffix;
 
   switch (result) {
     case AutofillClient::PaymentsRpcResult::kSuccess:
@@ -1347,22 +1359,11 @@ void AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
       return;
   }
 
-  switch (card_type) {
-    case AutofillClient::PaymentsRpcCardType::kServerCard:
-      card_type_suffix = "ServerCard";
-      break;
-    case AutofillClient::PaymentsRpcCardType::kVirtualCard:
-      card_type_suffix = "VirtualCard";
-      break;
-    case AutofillClient::PaymentsRpcCardType::kUnknown:
-      NOTREACHED();
-      return;
-  }
-
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido",
                               duration);
-  base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido." +
-                                  card_type_suffix + "." + result_suffix,
+  base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido" +
+                                  GetCreditCardTypeSuffix(card_type) + "." +
+                                  result_suffix,
                               duration);
 }
 
@@ -1376,6 +1377,50 @@ void AutofillMetrics::LogCardUnmaskPreflightDuration(
     const base::TimeDelta& duration) {
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskPreflightDuration",
                               duration);
+}
+
+// static
+void AutofillMetrics::LogServerCardUnmaskAttempt(
+    AutofillClient::PaymentsRpcCardType card_type) {
+  base::UmaHistogramBoolean("Autofill.ServerCardUnmask" +
+                                GetCreditCardTypeSuffix(card_type) + ".Attempt",
+                            true);
+}
+
+// static
+void AutofillMetrics::LogServerCardUnmaskResult(
+    ServerCardUnmaskResult unmask_result,
+    AutofillClient::PaymentsRpcCardType card_type,
+    VirtualCardUnmaskFlowType flow_type) {
+  std::string flow_type_suffix;
+  switch (flow_type) {
+    case VirtualCardUnmaskFlowType::kUnspecified:
+      flow_type_suffix = ".UnspecifiedFlowType";
+      break;
+    case VirtualCardUnmaskFlowType::kFidoOnly:
+      flow_type_suffix = ".Fido";
+      break;
+    case VirtualCardUnmaskFlowType::kOtpOnly:
+      flow_type_suffix = ".Otp";
+      break;
+    case VirtualCardUnmaskFlowType::kOtpFallbackFromFido:
+      flow_type_suffix = ".OtpFallbackFromFido";
+      break;
+  }
+
+  base::UmaHistogramEnumeration("Autofill.ServerCardUnmask" +
+                                    GetCreditCardTypeSuffix(card_type) +
+                                    ".Result" + flow_type_suffix,
+                                unmask_result);
+}
+
+// static
+void AutofillMetrics::LogServerCardUnmaskFormSubmission(
+    AutofillClient::PaymentsRpcCardType card_type) {
+  base::UmaHistogramBoolean("Autofill.ServerCardUnmask" +
+                                GetCreditCardTypeSuffix(card_type) +
+                                ".FormSubmission",
+                            true);
 }
 
 // static

@@ -152,7 +152,8 @@ TEST_F(CreditCardOtpAuthenticatorTest, AuthenticateServerCardSuccess) {
 
   // Simulate server returns success and invoke the callback.
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
-  EXPECT_TRUE(requester_->did_succeed());
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
 
   // Ensures the metrics have been logged correctly.
@@ -188,6 +189,8 @@ TEST_F(CreditCardOtpAuthenticatorTest, SelectChallengeOptionFailsWithVcnError) {
   EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_FALSE(*(requester_->did_succeed()));
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
@@ -224,6 +227,8 @@ TEST_F(CreditCardOtpAuthenticatorTest,
   EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_FALSE(*(requester_->did_succeed()));
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
@@ -263,6 +268,8 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthServerVcnError) {
   EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_FALSE(*(requester_->did_succeed()));
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
@@ -303,6 +310,8 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthServerNonVcnError) {
   EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
   // Ensure the OTP authenticator is reset.
   EXPECT_TRUE(OtpAuthenticatorContextToken().empty());
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_FALSE(*(requester_->did_succeed()));
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,
@@ -361,7 +370,8 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthMismatchThenRetry) {
 
   // Simulate server returns success for the second try and invoke the callback.
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
-  EXPECT_TRUE(requester_->did_succeed());
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
 
   // Ensures the metrics have been logged correctly.
@@ -440,7 +450,8 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthExpiredThenResendOtp) {
 
   // Simulate server returns success for the second try and invoke the callback.
   OnDidGetRealPan(AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber);
-  EXPECT_TRUE(requester_->did_succeed());
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_TRUE(*(requester_->did_succeed()));
   EXPECT_EQ(kTestNumber16, requester_->number());
 
   // Ensures the metrics have been logged correctly.
@@ -477,8 +488,9 @@ TEST_F(CreditCardOtpAuthenticatorTest, OtpAuthCancelled) {
             "context_token_from_previous_unmask_response");
 
   // Simulate user closes the otp input dialog.
-  authenticator_->OnUnmaskPromptClosed(/*dismiss_by_cancellation=*/true);
-  EXPECT_FALSE(requester_->did_succeed());
+  authenticator_->OnUnmaskPromptClosed(/*user_closed_dialog=*/true);
+  ASSERT_TRUE(requester_->did_succeed().has_value());
+  EXPECT_FALSE(*(requester_->did_succeed()));
 
   // Ensures the metrics have been logged correctly.
   histogram_tester.ExpectUniqueSample("Autofill.OtpAuth.SmsOtp.Attempt", true,

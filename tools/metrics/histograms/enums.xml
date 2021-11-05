@@ -6632,6 +6632,21 @@ others/histograms.xml -->
   <int value="2" label="Some other item selected"/>
 </enum>
 
+<enum name="AutofillServerCardUnmaskResult">
+  <int value="0" label="Unknown result"/>
+  <int value="1" label="Local cache hit"/>
+  <int value="2"
+      label="Completed risk-based unmasking, no user-facing authentication"/>
+  <int value="3" label="Completed unmasking via authentication"/>
+  <int value="4" label="Authentication-related errors"/>
+  <int value="5" label="Virtual-card-retrieval-related errors"/>
+  <int value="6" label="Flow was cancelled"/>
+  <int value="7"
+      label="FIDO option was the only option provided but user has not opted
+             in"/>
+  <int value="8" label="Unexpected errors"/>
+</enum>
+
 <enum name="AutofillServerFieldType">
   <int value="0" label="NO_SERVER_DATA"/>
   <int value="1" label="UNKNOWN_TYPE"/>
@@ -10050,6 +10065,11 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BooleanStreamed">
   <int value="0" label="Not streamed"/>
   <int value="1" label="Streamed"/>
+</enum>
+
+<enum name="BooleanSubmitted">
+  <int value="0" label="Not submitted"/>
+  <int value="1" label="Submitted"/>
 </enum>
 
 <enum name="BooleanSuccess">
