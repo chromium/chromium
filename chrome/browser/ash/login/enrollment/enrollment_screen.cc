@@ -105,6 +105,8 @@ std::string EnrollmentScreen::GetResultString(Result result) {
       return BaseScreen::kNotApplicable;
     case Result::TPM_ERROR:
       return "TpmError";
+    case Result::TPM_DBUS_ERROR:
+      return "TpmDbusError";
   }
 }
 
@@ -258,7 +260,7 @@ void EnrollmentScreen::ShowImpl() {
   if (!tpm_checked_ && switches::IsTpmDynamic()) {
     if (view_)
       view_->ShowEnrollmentTPMCheckingScreen();
-    CheckTpmStatus();
+    TakeTpmOwnership();
     return;
   }
   VLOG(1) << "Show enrollment screen";
@@ -286,47 +288,39 @@ void EnrollmentScreen::ShowImpl() {
   }
 }
 
-void EnrollmentScreen::CheckTpmStatus() {
+void EnrollmentScreen::TakeTpmOwnership() {
   // This is used in browsertest to test cancel button.
-  if (tpm_check_callback_for_testing_.has_value()) {
-    chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
-        ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
-        std::move(tpm_check_callback_for_testing_.value()));
+  if (tpm_ownership_callback_for_testing_.has_value()) {
+    TpmManagerClient::Get()->TakeOwnership(
+        ::tpm_manager::TakeOwnershipRequest(),
+        std::move(tpm_ownership_callback_for_testing_.value()));
     return;
   }
-  chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
-      ::tpm_manager::GetTpmNonsensitiveStatusRequest(),
+  TpmManagerClient::Get()->TakeOwnership(
+      ::tpm_manager::TakeOwnershipRequest(),
       base::BindOnce(&EnrollmentScreen::OnTpmStatusResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EnrollmentScreen::OnTpmStatusResponse(
-    const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply) {
+    const ::tpm_manager::TakeOwnershipReply& reply) {
   if (is_hidden() || tpm_checked_)
     return;
   tpm_checked_ = true;
-  // If the call failed, assume TPM is not enabled and allow enrollment.
-  if (reply.status() != ::tpm_manager::STATUS_SUCCESS) {
-    LOG(ERROR) << "Failed to get TPM status; status: " << reply.status();
-    ShowImpl();
-    return;
-  }
-  // TPM is not enabled, allow enrollment.
-  if (!reply.is_enabled()) {
-    VLOG(1) << "pre-enroll: TPM not enabled";
-    ShowImpl();
-    return;
-  }
-  VLOG(1) << "pre-enroll: TPM is enabled";
-  if (reply.is_owned()) {
-    // The TPM is already owned, which means that the enrollment process won't
-    // be able to place install attributes in the TPM. Show an error screen to
-    // help guide the user.
-    VLOG(1) << "pre-enroll: TPM is owned";
-    ClearAuth(base::BindRepeating(exit_callback_, Result::TPM_ERROR));
-  } else {
-    VLOG(1) << "pre-enroll: TPM not owned";
-    ShowImpl();
+  VLOG(1) << "OnTpmStatusResponse: status=" << reply.status();
+  switch (reply.status()) {
+    case ::tpm_manager::STATUS_SUCCESS:
+    case ::tpm_manager::STATUS_NOT_AVAILABLE:
+      ShowImpl();
+      break;
+    case ::tpm_manager::STATUS_DEVICE_ERROR:
+      ClearAuth(base::BindOnce(exit_callback_, Result::TPM_ERROR));
+      break;
+    case ::tpm_manager::STATUS_DBUS_ERROR:
+      ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
+      break;
+    default:
+      NOTREACHED();
   }
 }
 

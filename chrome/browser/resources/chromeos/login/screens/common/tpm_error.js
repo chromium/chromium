@@ -15,6 +15,7 @@
 const tpmUIState = {
   DEFAULT: 'default',
   TPM_OWNED: 'tpm-owned',
+  DBUS_ERROR: 'dbus-error',
 };
 
 /**
@@ -44,22 +45,13 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   static get properties() {
     return {
-      osName_: {
-        type: String,
-        computed: 'updateOSName_(isBranded)',
-      },
-
-      isBranded: {
-        type: Boolean,
-        value: false,
-      },
+      osName: String,
     };
   }
 
   constructor() {
     super();
-    this.isBranded = false;
-    this.osName_ = this.updateOSName_();
+    this.osName = '';
   }
 
   ready() {
@@ -71,7 +63,7 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   /** @override */
   get EXTERNAL_API() {
-    return ['setStep', 'setIsBrandedBuild'];
+    return ['setStep', 'setOsName'];
   }
 
   get UI_STEPS() {
@@ -114,18 +106,10 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
   }
 
   /**
-   * @param {boolean} is_branded
+   * @param {string} osName
    */
-  setIsBrandedBuild(is_branded) {
-    this.isBranded = is_branded;
-  }
-
-  /**
-   * @return {string} OS name
-   */
-  updateOSName_() {
-    return this.isBranded ? loadTimeData.getString('osInstallCloudReadyOS') :
-                            loadTimeData.getString('osInstallChromiumOS');
+  setOsName(osName) {
+    this.osName = osName;
   }
 }
 

@@ -27,22 +27,25 @@
       <h1 slot="title" for-step="default">
         [[i18nDynamic(locale, 'errorTpmFailureTitle')]]
       </h1>
-      <p slot="subtitle" for-step="default">
+      <h1 slot="title" for-step="dbus-error">
+        [[i18nDynamic(locale, 'errorTpmDbusErrorTitle')]]
+      </h1>
+      <p slot="subtitle" for-step="default,dbus-error">
         [[i18nDynamic(locale, 'errorTpmFailureReboot')]]
       </p>
-      <div slot="content" for-step="default" class="flex layout vertical center
-          center-justified">
+      <div slot="content" for-step="default,dbus-error" class="flex layout
+          vertical center center-justified">
         <img src="/images/error.svg" class="oobe-illustration">
       </div>
       <h1 slot="title" for-step="tpm-owned">
         [[i18nDynamic(locale, 'errorTPMOwnedTitle')]]
       </h1>
       <p slot="subtitle" for-step="tpm-owned">
-        [[i18nDynamic(locale, 'errorTPMOwnedSubtitle', osName_)]]
+        [[i18nDynamic(locale, 'errorTPMOwnedSubtitle', osName)]]
       </p>
       <html-echo slot="content" for-step="tpm-owned" class="flex layout
           vertical center center-justified"
-          content="[[getTPMOwnedFailureContent_(locale, osName_)]]"></html-echo>
+          content="[[getTPMOwnedFailureContent_(locale, osName)]]"></html-echo>
       <div slot="bottom-buttons">
         <oobe-text-button id="restartButton" inverse class="focus-on-show"
             text-key="errorTpmFailureRebootButton" on-click="onRestartTap_">

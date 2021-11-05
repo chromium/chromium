@@ -2217,6 +2217,9 @@
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_TITLE" desc="Title of the screen notifying user about TPM error.">
     Something went wrong with signing in
   </message>
+  <message name="IDS_LOGIN_ERROR_TPM_DBUS_ERROR_TITLE" desc="Title of the screen notifying user about TPM error." translateable="false">
+    Something went wrong during TPM check
+  </message>
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT" desc="Suggestion to restart device in case of the TPM error.">
     Please restart your device to fix this error.
   </message>

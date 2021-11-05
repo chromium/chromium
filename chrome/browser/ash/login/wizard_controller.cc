@@ -1406,6 +1406,11 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
       wizard_context_->tpm_owned_error = true;
       AdvanceToScreen(TpmErrorView::kScreenId);
       break;
+    case EnrollmentScreen::Result::TPM_DBUS_ERROR:
+      DCHECK(switches::IsTpmDynamic());
+      wizard_context_->tpm_dbus_error = true;
+      AdvanceToScreen(TpmErrorView::kScreenId);
+      break;
   }
 }
 

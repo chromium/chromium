@@ -68,22 +68,13 @@ class EnrollmentScreenTest : public OobeBaseTest {
 };
 
 // Class to test TPM pre-enrollment check that happens only with
-// --tpm-is-dynamic switch enabled. Test parameter represent if tpm is owned.
+// --tpm-is-dynamic switch enabled. Test parameter represents take TPM
+// ownership reply possible statuses.
 class EnrollmentScreenDynamicTPMTest
     : public EnrollmentScreenTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<::tpm_manager::TpmManagerStatus> {
  public:
-  EnrollmentScreenDynamicTPMTest() {
-    tpm_is_owned_ = GetParam();
-    // Fake tpm manager tells the TPM is owned by default and should be
-    // initialized early.
-    TpmManagerClient::InitializeFake();
-    TpmManagerClient::Get()
-        ->GetTestInterface()
-        ->mutable_nonsensitive_status_reply()
-        ->set_is_owned(tpm_is_owned_);
-  }
-
+  EnrollmentScreenDynamicTPMTest() = default;
   EnrollmentScreenDynamicTPMTest(const EnrollmentScreenDynamicTPMTest&) =
       delete;
   EnrollmentScreenDynamicTPMTest& operator=(
@@ -94,10 +85,10 @@ class EnrollmentScreenDynamicTPMTest
   // EnrollmentScreenTest:
   void SetUpOnMainThread() override {
     original_tpm_check_callback_ =
-        enrollment_screen()->get_tpm_check_callback_for_testing();
-    enrollment_screen()->set_tpm_check_callback_for_testing(
-        base::BindOnce(&EnrollmentScreenDynamicTPMTest::HandleTPMCheckResponse,
-                       base::Unretained(this)));
+        enrollment_screen()->get_tpm_ownership_callback_for_testing();
+    enrollment_screen()->set_tpm_ownership_callback_for_testing(base::BindOnce(
+        &EnrollmentScreenDynamicTPMTest::HandleTakeTPMOwnershipResponse,
+        base::Unretained(this)));
 
     enrollment_ui_.SetExitHandler();
     EnrollmentScreenTest::SetUpOnMainThread();
@@ -122,13 +113,15 @@ class EnrollmentScreenDynamicTPMTest
 
   bool tpm_is_owned() { return tpm_is_owned_; }
   EnrollmentScreen::TpmStatusCallback original_tpm_check_callback_;
-  absl::optional<::tpm_manager::GetTpmNonsensitiveStatusReply> tpm_reply_;
+  absl::optional<::tpm_manager::TakeOwnershipReply> tpm_reply_;
 
  private:
-  void HandleTPMCheckResponse(
-      const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply) {
+  void HandleTakeTPMOwnershipResponse(
+      const ::tpm_manager::TakeOwnershipReply& reply) {
     EXPECT_FALSE(tpm_reply_.has_value());
     tpm_reply_ = reply;
+    // Here we substitute fake reply with status that we want to test.
+    tpm_reply_.value().set_status(GetParam());
 
     if (tpm_check_callback_)
       std::move(tpm_check_callback_).Run();
@@ -139,15 +132,29 @@ class EnrollmentScreenDynamicTPMTest
 };
 
 IN_PROC_BROWSER_TEST_P(EnrollmentScreenDynamicTPMTest, TPMCheckCompleted) {
-  if (tpm_is_owned()) {
-    enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepTPMChecking);
-    WaitForTPMCheckReply();
-    EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-    EXPECT_EQ(screen_result, EnrollmentScreen::Result::TPM_ERROR);
-  } else {
-    enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepTPMChecking);
-    WaitForTPMCheckReply();
-    enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
+  switch (GetParam()) {
+    case ::tpm_manager::STATUS_DEVICE_ERROR: {
+      enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepTPMChecking);
+      WaitForTPMCheckReply();
+      EnrollmentScreen::Result screen_result =
+          enrollment_ui_.WaitForScreenExit();
+      EXPECT_EQ(screen_result, EnrollmentScreen::Result::TPM_ERROR);
+      return;
+    }
+    case ::tpm_manager::STATUS_SUCCESS:
+    case ::tpm_manager::STATUS_NOT_AVAILABLE:
+      enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepTPMChecking);
+      WaitForTPMCheckReply();
+      enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
+      return;
+    case ::tpm_manager::STATUS_DBUS_ERROR: {
+      enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepTPMChecking);
+      WaitForTPMCheckReply();
+      EnrollmentScreen::Result screen_result =
+          enrollment_ui_.WaitForScreenExit();
+      EXPECT_EQ(screen_result, EnrollmentScreen::Result::TPM_DBUS_ERROR);
+      return;
+    }
   }
 }
 
@@ -160,7 +167,10 @@ IN_PROC_BROWSER_TEST_P(EnrollmentScreenDynamicTPMTest, TPMCheckCanceled) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          EnrollmentScreenDynamicTPMTest,
-                         ::testing::Bool());
+                         ::testing::Values(::tpm_manager::STATUS_SUCCESS,
+                                           ::tpm_manager::STATUS_DEVICE_ERROR,
+                                           ::tpm_manager::STATUS_NOT_AVAILABLE,
+                                           ::tpm_manager::STATUS_DBUS_ERROR));
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestCancel) {
   enrollment_ui_.SetExitHandler();

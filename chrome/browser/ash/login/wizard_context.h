@@ -62,10 +62,15 @@ class WizardContext {
   // when screen is skipped or when cancel action is called.
   bool is_user_creation_enabled = false;
 
-  // When --tpm-is-dynamic switch is set TPM ownership check is happening
-  // right before enrollment. If TPM is owned TpmErrorScreen occurs and this
-  // flag helps to set right error message.
+  // When --tpm-is-dynamic switch is set taking TPM ownership is happening right
+  // before enrollment. If TakeOwnership returns STATUS_DEVICE_ERROR this
+  // flag helps to set the right error message.
   bool tpm_owned_error = false;
+
+  // When --tpm-is-dynamic switch is set taking TPM ownership is happening right
+  // before enrollment. If TakeOwnership returns STATUS_DBUS_ERROR this
+  // flag helps to set the right error message.
+  bool tpm_dbus_error = false;
 
   // True if this is a branded build (i.e. Google Chrome).
   bool is_branded_build;
