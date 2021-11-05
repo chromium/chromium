@@ -520,6 +520,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Mobile.SystemNotification.NotifyFailure"
     enum="SystemNotificationType" expires_after="2021-10-31">
+  <obsolete>
+    Deprecated 10/2021
+  </obsolete>
   <owner>knollr@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>

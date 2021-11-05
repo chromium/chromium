@@ -53,10 +53,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether we could successfully build a notification using Android's
     Notification Builder. If unsuccessful, we will silently drop the
-    notification display request. Note that delivering the notification may
-    still fail which is logged in Mobile.SystemNotification.NotifyFailure.
-    Logged when we try to build a notification using an instance of
-    NotificationWrapperBuilder.
+    notification display request.
   </summary>
 </histogram>
 
