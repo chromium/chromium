@@ -7238,6 +7238,3 @@ crbug.com/1265311 [ Mac11-arm64 ] http/tests/navigation/location-change-repeated
 crbug.com/1266199 [ Mac10.12 ] fast/css3-text/css3-text-decoration/text-decoration-style-wavy-font-size.html [ Failure Pass ]
 crbug.com/1266221 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system-access/sandboxed_FileSystemFileHandle-create-sync-access-handle.https.tentative.window.html [ Failure Pass ]
 crbug.com/1263354 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-adds-entry.html [ Failure Pass Timeout ]
-
-# Sheriff 2021-11-05
-crbug.com/1266635 [ Mac ] external/wpt/html/semantics/forms/the-input-element/show-picker.tentative.html [ Failure Pass ]
