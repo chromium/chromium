@@ -22,4 +22,9 @@ mixed_source_set("test_mixed_source_set") {
 # that builds the generated cxx bindings.
 source_set("some_headers") {
   sources = [ "dependency_header.h" ]
+
+  # This line tests that existing targets with visibility rules
+  # do not have to adjust those rules when Rust is added to an
+  # existing source_set.
+  visibility = [ ":test_mixed_source_set" ]
 }

@@ -35,6 +35,26 @@ set_defaults("rust_cxx") {
 # native_header_deps (optional)
 #   C++ targets on which the headers depend in order to build
 #   successfully.
+#
+# Consumers of this template may alternatively depend upon
+# the :${target_name}_gen target if you wish to include
+# the generated source code in an *existing* source set.
+# To do this:
+# * depend on the target name with a _gen suffix;
+# * for each of the inputs, include in your sources:
+#     file_name.rs.h
+#     file_name.rs.cc
+# * ensure you also depend upon //build/rust:cxx_cppdeps
+#
+# A good way to get the file names is:
+#   process_file_template(list-of-bindings-rs-files,
+#       [ "{{source_gen_dir}}/{{source_file_part}}.h",
+#         "{{source_gen_dir}}/{{source_file_part}}.cc" ]
+#
+# You might want to depend on this template in this mode if
+# you have an existing source_set which is referred to
+# using 'visibility' rules throughout the codebase.
+#
 template("rust_cxx") {
   assert(defined(invoker.inputs), "Must specify the Rust file to use as input.")
   action_foreach("${target_name}_gen") {
