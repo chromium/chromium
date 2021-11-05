@@ -678,7 +678,14 @@ void HTMLSelectMenuElement::SetSelectedOption(
   if (selected_option_ == selected_option)
     return;
 
+  if (selected_option_)
+    selected_option_->SetSelectedState(false);
+
   selected_option_ = selected_option;
+
+  if (selected_option_)
+    selected_option_->SetSelectedState(true);
+
   UpdateSelectedValuePartContents();
   NotifyFormStateChanged();
 }
