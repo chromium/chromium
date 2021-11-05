@@ -4,6 +4,7 @@
 from __future__ import absolute_import
 import base64
 import json
+import logging
 import os
 
 import six
@@ -174,7 +175,13 @@ def _TruncateToUTF8Bytes(s, length):
     s: The string to truncate.
     length: the length (in bytes) to truncate to.
   """
-  encoded = s.encode('utf-8')
+  # TODO(crbug.com/1260506): Remove the try except block after resolving
+  # the encode/decode issue.
+  try:
+    encoded = s.encode('utf-8')
+  except UnicodeDecodeError:
+    logging.exception('UnicodeDecodeError for the string: %s', s)
+    raise
   if len(encoded) > length:
     # Truncate, leaving space for trailing ellipsis (...).
     encoded = encoded[:length - 3]
