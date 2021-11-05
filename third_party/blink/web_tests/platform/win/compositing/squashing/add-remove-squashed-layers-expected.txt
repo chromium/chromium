@@ -1,0 +1,239 @@
+Test that layers can be nicely added or removed from a squashed layer, without unnecessary repaints on any layer. Click anywhere to test interactively; keep clicking to proceed through the test.
+
+CASE 1, original layer tree with overlap1 and overlap2:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
+      "bounds": [120, 120],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#00FF00"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 2, overlap3 gets added:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
+      "bounds": [140, 140],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF",
+      "invalidations": [
+        [40, 40, 100, 100]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 3, overlap2 gets removed. Since this does not resize the layer, there should only be a repaint of overlap2:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
+      "bounds": [140, 140],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF",
+      "invalidations": [
+        [20, 20, 100, 100]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 4, overlap1 gets removed:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='C' class='overlap3'",
+      "position": [180, 180],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF00FF",
+      "invalidations": [
+        [0, 0, 100, 100]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 5, overlap2 gets added back:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='B' class='overlap2'",
+      "position": [160, 160],
+      "bounds": [120, 120],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF",
+      "invalidations": [
+        [0, 0, 120, 120]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 6, overlap1 gets added back, and overlap3 gets removed:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [400, 400],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
+      "bounds": [120, 120],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#00FF00",
+      "invalidations": [
+        [0, 0, 120, 120]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+

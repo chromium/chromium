@@ -2,7 +2,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -11,19 +11,23 @@
       "name": "LayoutBlockFlow (relative positioned) DIV class='main box'",
       "position": [-30, -30],
       "bounds": [340, 340],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FF0000",
       "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='negative child'",
       "bounds": [50, 50],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='main box' (foreground) Layer",
-      "position": [-30, -30],
-      "bounds": [340, 340],
+      "name": "LayoutBlockFlow (relative positioned) DIV class='main box'",
+      "position": [40, 40],
+      "bounds": [200, 204],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#008000",
       "transform": 1
     },
     {
@@ -37,13 +41,16 @@
     {
       "name": "LayoutBlockFlow (positioned) DIV class='negative child'",
       "bounds": [50, 50],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 6
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='main box' (foreground) Layer",
-      "position": [-30, -30],
-      "bounds": [340, 340],
+      "name": "LayoutBlockFlow (relative positioned) DIV class='main box'",
+      "position": [40, 40],
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
       "transform": 4
     }
   ],

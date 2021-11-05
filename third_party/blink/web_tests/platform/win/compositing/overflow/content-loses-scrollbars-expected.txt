@@ -1,0 +1,105 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "bounds": [100, 100],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='vertical' class='content'",
+      "bounds": [10, 10],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "bounds": [100, 100],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='horizontal' class='content'",
+      "bounds": [10, 10],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "bounds": [100, 100],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='both' class='content'",
+      "bounds": [10, 10],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='corner' class='container'",
+      "bounds": [100, 100],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='content'",
+      "bounds": [10, 10],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 4
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 13, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 13, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 13, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 13, 0, 1]
+      ]
+    }
+  ]
+}
+

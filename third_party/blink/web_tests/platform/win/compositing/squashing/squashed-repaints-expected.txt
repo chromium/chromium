@@ -1,0 +1,202 @@
+Basic repaint test for squashed layers. The entire squashing layer should not need repainting when only a portion of it is invalidated. Test interactively by using --show-paint-rects and hovering over elements to change their color.
+
+CASE 1, original layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
+      "bounds": [140, 140],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 2, overlap1 changes color:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
+      "bounds": [140, 140],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF",
+      "invalidations": [
+        [0, 0, 100, 100]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 3, overlap1 and overlap2 change color:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
+      "bounds": [140, 140],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF",
+      "invalidations": [
+        [20, 20, 100, 100],
+        [0, 0, 100, 100]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 4, overlap2 and overlap3 change color:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
+      "bounds": [140, 140],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#008000",
+      "invalidations": [
+        [40, 40, 100, 100],
+        [20, 20, 100, 100]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 5, overlap3 and overlap1 change color:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
+      "bounds": [140, 140],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#0000FF",
+      "invalidations": [
+        [40, 40, 100, 100],
+        [0, 0, 100, 100]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ]
+    }
+  ]
+}
+

@@ -585,7 +585,10 @@ class Driver(object):
         # enabling of the feature because of the number of rebaselines needed.
         # TODO(pdr): Remove this code and run web tests with
         # CompositeAfterPaint.
-        if '--enable-blink-features=CompositeAfterPaint' not in cmd:
+        # TODO(wangxianzhu): This is left for Mac only. Will remove this and
+        # rebaseline tests when the mac bots become stable.
+        if (self._port.host.platform.is_mac()
+                and '--enable-blink-features=CompositeAfterPaint' not in cmd):
             cmd.append('--disable-blink-features=CompositeAfterPaint')
 
         cmd = coalesce_repeated_switches(cmd)

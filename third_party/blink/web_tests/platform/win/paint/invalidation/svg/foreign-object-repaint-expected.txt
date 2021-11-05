@@ -1,0 +1,15 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [129, 200, 142, 142],
+        [50, 50, 100, 100]
+      ]
+    }
+  ]
+}
+

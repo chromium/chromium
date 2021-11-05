@@ -1,0 +1,77 @@
+This scenario verifies that the cyan "container" element scrolls properly with squashing enabled. The "container" element should not squash into a composited layer mapping owned by the fixed position layer or its descendant, since this would make it behave like a fixed position element during composited scrolling.
+
+CASE 1, original layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 4050],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed'",
+      "bounds": [400, 200],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "position": [100, 50],
+      "bounds": [200, 4000],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FFFF"
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
+    }
+  ]
+}
+
+CASE 2, scrolling y to 80, the "container" element should remain positioned with respect to the scrolled document, the fixed-pos layer compensates for the new scroll position:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 4050],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='fixed'",
+      "bounds": [400, 200],
+      "contentsOpaque": true,
+      "backfaceVisibility": "hidden",
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
+      "position": [100, 50],
+      "bounds": [200, 4000],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FFFF",
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -80, 0, 1]
+      ]
+    }
+  ]
+}
+

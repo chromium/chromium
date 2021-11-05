@@ -1,0 +1,65 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='grandparent' class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='parent' class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='child' class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 5
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "renderingContext": 1
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "renderingContext": 2
+    }
+  ]
+}
+

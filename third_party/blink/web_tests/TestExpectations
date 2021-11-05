@@ -558,10 +558,41 @@ crbug.com/954591 external/wpt/css/css-transforms/composited-under-rotateY-180deg
 crbug.com/1261905 external/wpt/css/css-transforms/backface-visibility-hidden-child-will-change-transform.html [ Failure ]
 crbug.com/1261905 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-child-translate.html [ Failure ]
 
-# Fixed in CompositeAfterPaint.
-crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Crash Failure Pass ]
-crbug.com/918155 virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Failure ]
-crbug.com/1227541 external/wpt/css/css-multicol/multicol-scroll-content.html [ Failure ]
+# CompositeAfterPaint remaining failures
+# Outline paints incorrectly with columns. Needs LayoutNGBlockFragmentation.
+crbug.com/1047358 paint/pagination/composited-paginated-outlined-box.html [ Failure ]
+crbug.com/1266689 compositing/gestures/gesture-tapHighlight-composited-img.html [ Failure Pass ]
+# Need to force the video to be composited in this case, or change pre-CAP
+# to match CAP behavior.
+crbug.com/1108972 fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html [ Failure ]
+# Cross-origin iframe layerization is buggy with empty iframes.
+crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-masked-pointer-events-mixed-2.sub.html [ Failure ]
+crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-complex-clip.sub.html [ Failure ]
+
+# Fixed in CompositeAfterPaint
+# TODO(wangxianzhu): Remove these entries when enabling CAP for web tests on Mac.
+crbug.com/918155 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Crash Failure Pass ]
+crbug.com/918155 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Failure ]
+crbug.com/1227541 [ Mac ] external/wpt/css/css-multicol/multicol-scroll-content.html [ Failure ]
+crbug.com/1135676 [ Mac ] external/wpt/css/css-ui/resize-child-will-change-transform.html [ Failure ]
+crbug.com/148499 [ Mac ] external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Failure ]
+crbug.com/1183814 [ Mac ] external/wpt/svg/extensibility/foreignObject/scroll-transform-nested-stacked-children.html [ Failure ]
+crbug.com/1167352 [ Mac ] external/wpt/css/css-will-change/will-change-transform-add-content.html [ Failure ]
+crbug.com/829028 [ Mac ] external/wpt/css/css-break/out-of-flow-in-multicolumn-075.html [ Failure ]
+crbug.com/471333 [ Mac ] external/wpt/css/css-break/transform-000.html [ Failure ]
+crbug.com/471333 [ Mac ] external/wpt/css/css-break/transform-001.html [ Failure ]
+crbug.com/471333 [ Mac ] external/wpt/css/css-break/transform-002.html [ Failure ]
+# Some of the following failures on Mac are because the ref test has been updated to
+# CompositeAfterPaint version. Some needs rebaseline, and will do when enabling CAP on Mac.
+crbug.com/802915 [ Mac ] css3/blending/isolation-should-include-non-local-background.html [ Failure ]
+crbug.com/1062984 [ Mac ] external/wpt/paint-timing/fcp-only/fcp-out-of-bounds-translate.html [ Failure ]
+crbug.com/471333 [ Mac ] paint/invalidation/compositing/composited-layers-move-in-subpixels.html [ Failure ]
+crbug.com/471333 [ Mac ] paint/invalidation/compositing/composited-layer-move-in-subpixels-contents.html [ Failure ]
+crbug.com/471333 [ Mac ] virtual/backface-visibility-interop/paint/invalidation/svg/text-selection-text-05-t.svg [ Failure ]
+# Will rebaseline on Fuchsia
+crbug.com/471333 [ Fuchsia ] compositing/geometry/bounds-ignores-hidden.html [ Failure ]
+crbug.com/471333 [ Fuchsia ] compositing/layer-creation/fixed-position-out-of-view.html [ Failure ]
+crbug.com/471333 [ Fuchsia ] paint/invalidation/svg/animated-svg-as-image-transformed-offscreen.html [ Failure ]
 
 # WebGPU tests are only run on GPU bots, so they are skipped by default and run
 # separately from other Web Tests.
@@ -746,12 +777,6 @@ crbug.com/1050993 [ Linux ] virtual/gpu-rasterization/images/drag-image-descenda
 
 # Flaky test.
 crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Failure Pass ]
-
-# Fixed in CompositeAfterPaint.
-crbug.com/1135676 external/wpt/css/css-ui/resize-child-will-change-transform.html [ Failure ]
-crbug.com/148499 external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Failure ]
-crbug.com/1183814 external/wpt/svg/extensibility/foreignObject/scroll-transform-nested-stacked-children.html [ Failure ]
-crbug.com/1167352 external/wpt/css/css-will-change/will-change-transform-add-content.html [ Failure ]
 
 crbug.com/819617 [ Linux ] virtual/text-antialias/descent-clip-in-scaled-page.html [ Failure ]
 
@@ -4015,7 +4040,6 @@ crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-065.html 
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-066.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-071.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-073.html [ Failure ]
-crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-075.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/overflow-clip-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/overflow-clip-001.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/overflow-clip-010.html [ Failure ]
@@ -4029,9 +4053,6 @@ crbug.com/829028 external/wpt/css/css-break/tall-line-in-short-fragmentainer-001
 crbug.com/829028 external/wpt/css/css-break/tall-line-in-short-fragmentainer-002.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/trailing-child-margin-000.html [ Failure ]
 crbug.com/829028 external/wpt/css/css-break/trailing-child-margin-002.html [ Failure ]
-crbug.com/471333 external/wpt/css/css-break/transform-000.html [ Failure ]
-crbug.com/471333 external/wpt/css/css-break/transform-001.html [ Failure ]
-crbug.com/471333 external/wpt/css/css-break/transform-002.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-003.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-004.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-005.html [ Failure ]
@@ -4660,8 +4681,6 @@ crbug.com/831720 [ Win ] media/controls/doubletap-to-jump-forwards-too-short.htm
 crbug.com/831720 [ Linux ] media/controls/doubletap-to-jump-forwards-too-short.html [ Failure Pass ]
 crbug.com/831720 media/controls/tap-to-hide-controls.html [ Failure Pass ]
 
-crbug.com/802915 css3/blending/isolation-should-include-non-local-background.html [ Failure ]
-
 # These tests require Unified Autoplay.
 crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-allowed-by-feature-policy-attribute-redirect-on-load.https.sub.html [ Skip ]
 crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-default-feature-policy.https.sub.html [ Skip ]
@@ -4990,9 +5009,8 @@ crbug.com/936827 external/wpt/fullscreen/api/element-request-fullscreen-and-remo
 
 # Paint Timing failures
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-gradient.html [ Failure ]
-crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate-descendant.html [ Failure ]
+crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate-descendant.html [ Failure Timeout ]
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-invisible-3d-rotate.html [ Failure ]
-crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-out-of-bounds-translate.html [ Failure ]
 crbug.com/1062984 external/wpt/paint-timing/fcp-only/fcp-text-input.html [ Failure ]
 
 # Also crbug.com/1044535

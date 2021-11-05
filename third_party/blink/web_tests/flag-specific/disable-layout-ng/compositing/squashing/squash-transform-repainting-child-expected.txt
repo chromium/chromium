@@ -2,7 +2,7 @@ CASE 1, original layer tree
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -15,10 +15,9 @@ CASE 1, original layer tree
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box middle')",
-      "position": [-101, -101],
-      "bounds": [151, 151],
-      "transform": 1
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
+      "bounds": [150, 150],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [
@@ -38,7 +37,7 @@ CASE 2, hovering over the outer div
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -51,13 +50,12 @@ CASE 2, hovering over the outer div
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box middle')",
-      "position": [-101, -101],
-      "bounds": [151, 151],
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
+      "bounds": [150, 150],
+      "contentsOpaqueForText": true,
       "invalidations": [
-        [0, 0, 142, 142]
-      ],
-      "transform": 1
+        [0, 0, 141, 141]
+      ]
     }
   ],
   "transforms": [
@@ -77,7 +75,7 @@ CASE 3, hovering over the inner div
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -90,13 +88,12 @@ CASE 3, hovering over the inner div
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box middle')",
-      "position": [-101, -101],
-      "bounds": [151, 151],
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
+      "bounds": [150, 150],
+      "contentsOpaqueForText": true,
       "invalidations": [
-        [0, 0, 142, 142]
-      ],
-      "transform": 1
+        [0, 0, 141, 141]
+      ]
     }
   ],
   "transforms": [

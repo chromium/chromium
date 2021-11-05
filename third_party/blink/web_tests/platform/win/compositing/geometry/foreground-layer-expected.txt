@@ -1,0 +1,118 @@
+ 
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
+      "position": [-30, -30],
+      "bounds": [340, 340],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF0000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='negative child'",
+      "bounds": [50, 50],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
+      "position": [40, 40],
+      "bounds": [200, 205],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#008000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
+      "position": [-30, -30],
+      "bounds": [340, 340],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF0000",
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='negative child'",
+      "bounds": [50, 50],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 6
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='main box'",
+      "position": [40, 40],
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 4
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [38, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [40, 40, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [382, 38, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [40, 40, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 1]
+      ]
+    }
+  ]
+}
+

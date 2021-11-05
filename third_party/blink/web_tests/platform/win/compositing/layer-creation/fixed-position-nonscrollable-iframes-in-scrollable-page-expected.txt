@@ -1,0 +1,136 @@
+In all iframes, the green fixed-position element should not be composited.
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 4016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box'",
+      "bounds": [300, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 3
+    },
+    {
+      "name": "LayoutIFrame (positioned) IFRAME id='iframe2' class='composited'",
+      "bounds": [154, 154],
+      "contentsOpaqueForText": true,
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 6
+    },
+    {
+      "name": "LayoutIFrame (positioned) IFRAME id='iframe3'",
+      "position": [10, 380],
+      "bounds": [154, 154],
+      "contentsOpaqueForText": true
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='fixed lime box'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00",
+      "transform": 8
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [50, 360, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 32, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 200, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 2, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 10, 0, 1]
+      ]
+    },
+    {
+      "id": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 382, 0, 1]
+      ]
+    },
+    {
+      "id": 8,
+      "parent": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 10, 0, 1]
+      ]
+    }
+  ]
+}
+
+Composited box underneath iframe.

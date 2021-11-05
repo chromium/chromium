@@ -1,0 +1,201 @@
+The gray div is a composited fixed-position element, and the cyan/lime elements should be squashed together on top. When scrolling, paragraphs may pop in-and-out of the squashing layer when they change overlapping status with respect to the composited layer underneath.
+
+This scenario tests (1) that content repaints correctly as layers pop in and out of squashing, and (2) that the positioning of the squashing layer remains correct (i.e. scrolls properly) when the squashing layer is on top of a fixed-position composited layer.
+
+CASE 1, original layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 1400],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited background'",
+      "bounds": [300, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
+      "contentsOpaque": true
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 150, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 2, scrolling y to 80, new layers will be squashed, so things repaint:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 1400],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited background'",
+      "bounds": [300, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -80, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 150, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 3, scrolling y to 120, no repaints expected:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 1400],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited background'",
+      "bounds": [300, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -120, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 150, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 4, scrolling y to 170 new layers will be squashed, so things repaint:
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [785, 1400],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited background'",
+      "bounds": [300, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='paragraph-b' class='overlapping lime'",
+      "position": [0, 100],
+      "bounds": [200, 1300],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -170, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [100, 150, 0, 1]
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,44 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutImage (positioned) IMG",
+      "position": [10, 10],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000"
+    },
+    {
+      "name": "LayoutImage (positioned) IMG class='to-visible'",
+      "position": [500, 200],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000"
+    },
+    {
+      "name": "LayoutImage (positioned) IMG",
+      "position": [10, 10],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 250, 0, 1]
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,95 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='outer'",
+      "position": [2, 2],
+      "bounds": [400, 400],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
+      "bounds": [204, 204],
+      "contentsOpaqueForText": true,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
+      "position": [2, 2],
+      "bounds": [200, 200],
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
+      "position": [2, 2],
+      "bounds": [2000, 9000],
+      "contentsOpaqueForText": true,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='spacer'",
+      "position": [2, 2002],
+      "bounds": [5000, 1000],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [2, 195],
+      "bounds": [193, 7],
+      "transform": 3
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [195, 2],
+      "bounds": [7, 193],
+      "transform": 3
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [395, 2],
+      "bounds": [7, 400],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -304, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [2, 502, 0, 1]
+      ]
+    }
+  ]
+}
+

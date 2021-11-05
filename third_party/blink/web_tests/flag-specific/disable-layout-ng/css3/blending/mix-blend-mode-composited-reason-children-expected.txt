@@ -1,14 +1,10 @@
 {
   "layers": [
     {
-      "name": "LayoutBlockFlow HTML",
-      "bounds": [800, 600]
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
-      "position": [8, 8],
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
       "contentsOpaque": true,
-      "drawsContent": false
+      "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
@@ -19,23 +15,21 @@
     },
     {
       "name": "LayoutBlockFlow DIV class='blended'",
+      "position": [8, 8],
       "bounds": [160, 90],
-      "backgroundColor": "#0000FF",
-      "transform": 1
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
     },
     {
       "name": "LayoutImage IMG class='accelerated'",
       "bounds": [160, 90],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context' (foreground) Layer",
+      "name": "LayoutBlockFlow HTML",
       "position": [8, 8],
-      "drawsContent": false
-    },
-    {
-      "name": "LayoutBlockFlow HTML (foreground) Layer",
-      "bounds": [800, 600]
+      "bounds": [784, 579]
     }
   ],
   "transforms": [

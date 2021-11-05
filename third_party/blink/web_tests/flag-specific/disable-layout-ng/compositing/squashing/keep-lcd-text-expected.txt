@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -9,11 +9,18 @@
     {
       "name": "LayoutBlockFlow (positioned) DIV id='composited'",
       "bounds": [300, 300],
+      "contentsOpaqueForText": true,
       "drawsContent": false
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='non-opaque')",
-      "bounds": [220, 270],
+      "name": "LayoutBlockFlow (positioned) DIV id='non-opaque'",
+      "bounds": [220, 120]
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV id='opaque'",
+      "position": [0, 50],
+      "bounds": [220, 220],
+      "contentsOpaque": true,
       "backgroundColor": "#FFFF00"
     }
   ]

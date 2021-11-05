@@ -1,0 +1,41 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [2008, 2016],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [2008, 2016],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [2008, 2016],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [2008, 2016],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
+    }
+  ]
+}
+

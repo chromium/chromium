@@ -1,14 +1,21 @@
 {
   "layers": [
     {
-      "name": "LayoutBlockFlow HTML",
-      "bounds": [800, 70]
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600]
     },
     {
       "name": "LayoutBlockFlow DIV",
+      "position": [8, 18],
       "bounds": [10, 10],
-      "backgroundColor": "#0000FF",
-      "transform": 1
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
     },
     {
       "name": "LayoutBlockFlow DIV",

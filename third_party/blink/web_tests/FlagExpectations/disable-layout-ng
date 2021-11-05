@@ -21,7 +21,6 @@ crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-delete-2.html [ 
 crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-delete.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/dynamic-change-inline-size-002.html [ Failure ]
 
-
 # accessibility/
 crbug.com/1159730 accessibility/inline-text-box-next-on-line.html [ Failure ]
 crbug.com/591099 accessibility/listitem-presentation-inherited.html [ Failure ]
@@ -1378,6 +1377,14 @@ crbug.com/626703 external/wpt/css/CSS2/borders/border-left-width-applies-to-014.
 crbug.com/626703 external/wpt/css/CSS2/borders/border-right-applies-to-014.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/borders/border-right-color-applies-to-014.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/borders/border-right-width-applies-to-014.xht [ Failure ]
+
+# Failures when enabling CompositeAfter
+crbug.com/591099 fast/block/float/float-change-composited-scrolling.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-aspectparams.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-transformparams.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-viewboxparams.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-viewtargetparams.html [ Failure ]
+crbug.com/591099 svg/dom/viewspec-zoomandpanparams.html [ Failure ]
 
 # Fails with ForceSynchronousHTMLParsing enabled, might be a fluke:
 crbug.com/1254921 svg/as-image/image-respects-deviceScaleFactor.html [ Failure ]

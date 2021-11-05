@@ -3,7 +3,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -12,6 +12,7 @@
       "name": "LayoutBlockFlow (relative positioned) DIV class='box translateZ'",
       "position": [-5, -5],
       "bounds": [110, 110],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
       "transform": 1
     },
@@ -19,29 +20,31 @@
       "name": "LayoutBlockFlow (relative positioned) DIV class='composited box rotate15'",
       "position": [-5, -5],
       "bounds": [110, 110],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
       "transform": 3
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV class='box')",
-      "position": [-5, 115],
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box'",
+      "position": [167, 143],
       "bounds": [110, 110],
-      "backgroundColor": "#0000FF",
-      "transform": 2
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#0000FF"
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='composited box rotate45'",
       "position": [-5, -5],
       "bounds": [110, 110],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
       "transform": 5
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV class='box')",
-      "position": [-5, 115],
+      "name": "LayoutBlockFlow (relative positioned) DIV class='box'",
+      "position": [311, 143],
       "bounds": [110, 110],
-      "backgroundColor": "#0000FF",
-      "transform": 4
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#0000FF"
     }
   ],
   "transforms": [

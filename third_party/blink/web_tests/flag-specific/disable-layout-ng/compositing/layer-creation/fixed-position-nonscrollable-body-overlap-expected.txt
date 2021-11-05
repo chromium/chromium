@@ -3,7 +3,7 @@ Even though we can opt-out of fixed-position compositing for unscrollable fixed-
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 4024],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"

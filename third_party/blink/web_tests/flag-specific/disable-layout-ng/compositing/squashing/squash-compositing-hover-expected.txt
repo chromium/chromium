@@ -4,44 +4,29 @@ Case 1, original layer tree:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutBlockFlow DIV class='composited'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 2
+      "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box middle')",
-      "position": [80, 80],
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
+      "position": [180, 180],
       "bounds": [140, 140],
-      "backgroundColor": "#00FFFF",
-      "transform": 2
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#00FFFF"
     }
   ],
   "transforms": [
     {
       "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [8, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
@@ -56,37 +41,31 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutBlockFlow DIV class='composited'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 2
+      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "transform": 3
+      "transform": 2
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box middle2')",
-      "position": [20, 20],
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle2'",
+      "position": [200, 200],
       "bounds": [120, 120],
-      "backgroundColor": "#00FFFF",
-      "transform": 3
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#00FFFF"
     }
   ],
   "transforms": [
@@ -96,20 +75,11 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [100, 100, 0, 1]
       ]
     },
     {
-      "id": 3,
+      "id": 2,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
@@ -124,44 +94,38 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutBlockFlow DIV class='composited'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 2
+      "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box middle')",
-      "position": [80, 80],
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
+      "position": [180, 180],
       "bounds": [100, 100],
-      "backgroundColor": "#00FF00",
-      "transform": 2
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00"
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='box middle2'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "transform": 3
+      "transform": 2
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box top')",
-      "position": [20, 20],
+      "name": "LayoutBlockFlow (positioned) DIV class='box top'",
+      "position": [220, 220],
       "bounds": [100, 100],
-      "backgroundColor": "#00FFFF",
-      "transform": 3
+      "contentsOpaque": true,
+      "backgroundColor": "#00FFFF"
     }
   ],
   "transforms": [
@@ -171,20 +135,11 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [100, 100, 0, 1]
       ]
     },
     {
-      "id": 3,
+      "id": 2,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
@@ -199,37 +154,31 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutBlockFlow DIV class='composited'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 2
+      "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box middle')",
-      "position": [80, 80],
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
+      "position": [180, 180],
       "bounds": [120, 120],
-      "backgroundColor": "#FF00FF",
-      "transform": 2
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF"
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='box top'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "transform": 3
+      "transform": 2
     }
   ],
   "transforms": [
@@ -239,20 +188,11 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
         [100, 100, 0, 1]
       ]
     },
     {
-      "id": 3,
+      "id": 2,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
@@ -267,44 +207,29 @@ Case 5: back to situation in case 1
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "LayoutBlockFlow DIV class='composited'",
-      "contentsOpaque": true,
-      "drawsContent": false,
-      "transform": 1
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='composited box behind'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 2
+      "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='box middle')",
-      "position": [80, 80],
+      "name": "LayoutBlockFlow (positioned) DIV class='box middle'",
+      "position": [180, 180],
       "bounds": [140, 140],
-      "backgroundColor": "#00FFFF",
-      "transform": 2
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#00FFFF"
     }
   ],
   "transforms": [
     {
       "id": 1,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [8, 8, 0, 1]
-      ]
-    },
-    {
-      "id": 2,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

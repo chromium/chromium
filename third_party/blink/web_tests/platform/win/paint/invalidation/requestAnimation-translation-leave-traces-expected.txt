@@ -1,0 +1,24 @@
+This test checks that changing the transform on an element triggers a correct invalidation.
+The paint invalidations below should match the transformed element's coordinates.
+Tested locations: 1200,1500
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1600, 585],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [1300, 0, 300, 585],
+        [1000, 0, 300, 585],
+        [900, 0, 100, 100]
+      ]
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 585],
+      "bounds": [800, 15]
+    }
+  ]
+}
+

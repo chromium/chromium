@@ -1,0 +1,129 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1008, 1016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [8, 8, 1000, 1000]
+      ]
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 235],
+      "bounds": [585, 15]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [585, 0],
+      "bounds": [15, 235]
+    },
+    {
+      "name": "Scroll corner of LayoutView #document",
+      "position": [585, 235],
+      "bounds": [15, 15],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 15, 15]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1008, 1016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [8, 8, 1000, 1000]
+      ]
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 235],
+      "bounds": [385, 15]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [385, 0],
+      "bounds": [15, 235]
+    },
+    {
+      "name": "Scroll corner of LayoutView #document",
+      "position": [385, 235],
+      "bounds": [15, 15],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 15, 15]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1008, 1016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [8, 8, 1000, 1000]
+      ]
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 585],
+      "bounds": [385, 15]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [385, 0],
+      "bounds": [15, 585]
+    },
+    {
+      "name": "Scroll corner of LayoutView #document",
+      "position": [385, 585],
+      "bounds": [15, 15],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 15, 15]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [1008, 1016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [8, 8, 1000, 1000]
+      ]
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [0, 585],
+      "bounds": [785, 15]
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 585]
+    },
+    {
+      "name": "Scroll corner of LayoutView #document",
+      "position": [785, 585],
+      "bounds": [15, 15],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 15, 15]
+      ]
+    }
+  ]
+}
+

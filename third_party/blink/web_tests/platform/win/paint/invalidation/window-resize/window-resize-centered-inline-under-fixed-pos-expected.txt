@@ -1,0 +1,83 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [600, 250],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "bounds": [600, 250],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "invalidations": [
+        [0, 0, 600, 250]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [400, 250],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "bounds": [400, 250],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "invalidations": [
+        [0, 0, 400, 250]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [400, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [0, 250, 400, 350]
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "bounds": [400, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "invalidations": [
+        [0, 0, 400, 600]
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [400, 0, 400, 600]
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='container'",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "invalidations": [
+        [0, 0, 800, 600]
+      ]
+    }
+  ]
+}
+

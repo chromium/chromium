@@ -1,0 +1,12 @@
+This tests verifies the hit test regions given to the compositor in the simple case where touch handles cover (or nearly cover) the entire document. It can only be run in DumpRenderTree.
+
+document: layer(785x600) has hit test rect (0,0 785x600)
+document: layer(785x2000) has hit test rect (0,0 785x2000)
+
+html: layer(785x2000) has hit test rect (0,0 785x2000)
+
+body: layer(785x2000) has hit test rect (5,16 775x1968)
+
+webPageOverlay: no rects
+
+

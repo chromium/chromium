@@ -1,0 +1,102 @@
+ 
+ 
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box translateZ'",
+      "position": [-5, -5],
+      "bounds": [110, 110],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#0000FF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='composited box rotate15'",
+      "position": [-5, -5],
+      "bounds": [110, 110],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#0000FF",
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
+      "position": [167, 143],
+      "bounds": [110, 110],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='composited box rotate45'",
+      "position": [-5, -5],
+      "bounds": [110, 110],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#0000FF",
+      "transform": 5
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
+      "position": [311, 143],
+      "bounds": [110, 110],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#0000FF"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [28, 28, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [172, 28, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [0.965925826289068, 0.258819045102521, 0, 0],
+        [-0.258819045102521, 0.965925826289068, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [50, 50]
+    },
+    {
+      "id": 4,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [316, 28, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [0.707106781186548, 0.707106781186548, 0, 0],
+        [-0.707106781186548, 0.707106781186548, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [50, 50]
+    }
+  ]
+}
+
