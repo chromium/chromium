@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.merchant_viewer;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -525,10 +526,18 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
-    public void testOnMessageDismissed() {
+    public void testOnMessageDismissed_Timer() {
         mCoordinator.onMessageDismissed(DismissReason.TIMER, FAKE_URL);
         verify(mMockMetrics, times(1)).recordMetricsForMessageDismissed(eq(DismissReason.TIMER));
-        verify(mCoordinator, times(1)).maybeShowStoreIcon(eq(FAKE_URL));
+        verify(mCoordinator, times(1)).maybeShowStoreIcon(eq(FAKE_URL), eq(true));
+    }
+
+    @SmallTest
+    @Test
+    public void testOnMessageDismissed_Gesture() {
+        mCoordinator.onMessageDismissed(DismissReason.GESTURE, FAKE_URL);
+        verify(mMockMetrics, times(1)).recordMetricsForMessageDismissed(eq(DismissReason.GESTURE));
+        verify(mCoordinator, times(1)).maybeShowStoreIcon(eq(FAKE_URL), eq(false));
     }
 
     @SmallTest
@@ -542,7 +551,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .requestOpenSheet(any(GURL.class), any(String.class),
                         mOnBottomSheetDismissedCaptor.capture());
         mOnBottomSheetDismissedCaptor.getValue().run();
-        verify(mCoordinator, times(1)).maybeShowStoreIcon(eq(FAKE_URL));
+        verify(mCoordinator, times(1)).maybeShowStoreIcon(eq(FAKE_URL), eq(true));
     }
 
     @SmallTest
@@ -560,7 +569,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         verify(mMockTracker, times(1))
                 .notifyEvent(eq(EventConstants.PAGE_INFO_STORE_INFO_ROW_CLICKED));
         mOnBottomSheetDismissedCaptor.getValue().run();
-        verify(mCoordinator, times(0)).maybeShowStoreIcon(any());
+        verify(mCoordinator, times(0)).maybeShowStoreIcon(any(), anyBoolean());
 
         TrackerFactory.setTrackerForTests(null);
     }
@@ -604,13 +613,20 @@ public class MerchantTrustSignalsCoordinatorTest {
         doReturn(true).when(mCoordinator).isStoreInfoFeatureEnabled();
         mCoordinator.setOmniboxIconController(mMockIconController);
 
-        mCoordinator.maybeShowStoreIcon(null);
+        mCoordinator.maybeShowStoreIcon(null, true);
         verify(mMockIconController, times(0))
-                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_URL), eq(mMockDrawable), anyInt());
+                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_URL), eq(mMockDrawable), anyInt(),
+                        anyBoolean());
 
-        mCoordinator.maybeShowStoreIcon(FAKE_URL);
+        mCoordinator.maybeShowStoreIcon(FAKE_URL, true);
         verify(mMockIconController, times(1))
-                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_URL), eq(mMockDrawable), anyInt());
+                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_URL), eq(mMockDrawable), anyInt(),
+                        eq(true));
+
+        mCoordinator.maybeShowStoreIcon(FAKE_URL, false);
+        verify(mMockIconController, times(1))
+                .showStoreIcon(eq(mMockWindowAndroid), eq(FAKE_URL), eq(mMockDrawable), anyInt(),
+                        eq(false));
 
         mCoordinator.setOmniboxIconController(null);
     }

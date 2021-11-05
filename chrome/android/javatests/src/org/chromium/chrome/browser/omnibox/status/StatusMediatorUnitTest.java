@@ -489,7 +489,7 @@ public final class StatusMediatorUnitTest {
                         .getDrawable(mContext, mResources));
 
         // Try to show the store icon.
-        mMediator.showStoreIcon(mWindowAndroid, "test2.com", mStoreIconDrawable, 0);
+        mMediator.showStoreIcon(mWindowAndroid, "test2.com", mStoreIconDrawable, 0, true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
         Assert.assertNotEquals(mStoreIconDrawable,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
@@ -510,7 +510,7 @@ public final class StatusMediatorUnitTest {
                         .getDrawable(mContext, mResources));
 
         // Try to show the store icon.
-        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0);
+        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
         Assert.assertNotEquals(mStoreIconDrawable,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
@@ -531,7 +531,7 @@ public final class StatusMediatorUnitTest {
                         .getDrawable(mContext, mResources));
 
         // Try to show the store icon.
-        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0);
+        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, true);
         Assert.assertTrue(mMediator.isStoreIconShowing());
         Assert.assertEquals(mStoreIconDrawable,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
@@ -548,7 +548,7 @@ public final class StatusMediatorUnitTest {
         Assert.assertFalse(mMediator.isStoreIconShowing());
 
         // Show store icon again.
-        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0);
+        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, true);
         Assert.assertTrue(mMediator.isStoreIconShowing());
 
         // Simulate that we need to switch back to the default icon.
@@ -558,6 +558,33 @@ public final class StatusMediatorUnitTest {
         Assert.assertNotEquals(mStoreIconDrawable,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
                         .getDrawable(mContext, mResources));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testShowStoreIcon_NotEligibleToShowIph() {
+        setupStoreIconForTesting("test.com", false);
+        // Show the default icon first.
+        mMediator.setUrlHasFocus(true);
+        mMediator.setShowIconsWhenUrlFocused(true);
+        Assert.assertFalse(mMediator.isStoreIconShowing());
+        Assert.assertNotEquals(mStoreIconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
+                        .getDrawable(mContext, mResources));
+
+        // Try to show the store icon.
+        mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, false);
+        Assert.assertTrue(mMediator.isStoreIconShowing());
+        Assert.assertEquals(mStoreIconDrawable,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
+                        .getDrawable(mContext, mResources));
+        Assert.assertEquals(IconTransitionType.ROTATE,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getTransitionType());
+        Assert.assertNotNull(
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback());
+        mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getAnimationFinishedCallback().run();
+        verify(mPageInfoIPHController, times(0)).showStoreIconIPH(anyInt(), eq(0));
     }
 
     /**
