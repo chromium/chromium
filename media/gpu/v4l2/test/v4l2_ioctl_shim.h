@@ -45,6 +45,7 @@ class V4L2Queue {
   enum v4l2_memory memory() const { return memory_; }
 
   MmapedBuffers buffers() const { return buffers_; }
+  void set_buffers(const MmapedBuffers& buffers) { buffers_ = buffers; }
 
   gfx::Size coded_size() const { return coded_size_; }
   void set_coded_size(gfx::Size coded_size) { coded_size_ = coded_size; }

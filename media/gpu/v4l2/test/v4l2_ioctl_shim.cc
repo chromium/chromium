@@ -376,7 +376,7 @@ bool V4L2IoctlShim::QueryAndMmapQueueBuffers(
     const std::unique_ptr<V4L2Queue>& queue) const {
   DCHECK_EQ(queue->memory(), V4L2_MEMORY_MMAP);
 
-  auto buffers = queue->buffers();
+  MmapedBuffers buffers;
 
   for (uint32_t i = 0; i < kRequestBufferCount; ++i) {
     struct v4l2_buffer v4l_buffer;
@@ -405,6 +405,8 @@ bool V4L2IoctlShim::QueryAndMmapQueueBuffers(
         return false;
       }
     }
+
+    queue->set_buffers(buffers);
   }
 
   return true;
