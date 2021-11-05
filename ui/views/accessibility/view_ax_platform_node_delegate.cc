@@ -454,7 +454,7 @@ ViewAXPlatformNodeDelegate::GetNativeViewAccessible() {
   return view()->GetNativeViewAccessible();
 }
 
-gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetParent() {
+gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetParent() const {
   if (View* parent_view = view()->parent()) {
     ViewAccessibility& view_accessibility = parent_view->GetViewAccessibility();
     if (!view_accessibility.IsIgnored())

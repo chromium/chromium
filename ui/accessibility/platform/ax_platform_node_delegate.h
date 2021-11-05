@@ -209,7 +209,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
 
   // Get the parent of the node, which may be an AXPlatformNode or it may
   // be a native accessible object implemented by another class.
-  virtual gfx::NativeViewAccessible GetParent() = 0;
+  virtual gfx::NativeViewAccessible GetParent() const = 0;
 
   // Get the index in parent. Typically this is the AXNode's index_in_parent_.
   // This should return -1 if the index in parent is unknown.

@@ -80,7 +80,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
       ax::mojom::TextAffinity affinity =
           ax::mojom::TextAffinity::kDownstream) const override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  gfx::NativeViewAccessible GetParent() override;
+  gfx::NativeViewAccessible GetParent() const override;
   int GetChildCount() const override;
   gfx::NativeViewAccessible ChildAtIndex(int index) override;
   gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,

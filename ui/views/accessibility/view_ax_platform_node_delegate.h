@@ -70,7 +70,7 @@ class ViewAXPlatformNodeDelegate : public ViewAccessibility,
   // codebase.
   gfx::NativeViewAccessible GetNativeViewAccessible() const;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  gfx::NativeViewAccessible GetParent() override;
+  gfx::NativeViewAccessible GetParent() const override;
   bool IsLeaf() const override;
   bool IsInvisibleOrIgnored() const override;
   bool IsFocused() const override;

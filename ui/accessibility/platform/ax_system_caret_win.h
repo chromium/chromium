@@ -40,7 +40,7 @@ class AX_EXPORT AXSystemCaretWin : private AXPlatformNodeDelegateBase {
  private:
   // |AXPlatformNodeDelegate| members.
   const AXNodeData& GetData() const override;
-  gfx::NativeViewAccessible GetParent() override;
+  gfx::NativeViewAccessible GetParent() const override;
   gfx::Rect GetBoundsRect(const AXCoordinateSystem coordinate_system,
                           const AXClippingBehavior clipping_behavior,
                           AXOffscreenResult* offscreen_result) const override;

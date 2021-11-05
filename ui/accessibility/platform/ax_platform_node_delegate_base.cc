@@ -286,7 +286,7 @@ AXPlatformNodeDelegateBase::GetNativeViewAccessible() {
   return nullptr;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetParent() {
+gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetParent() const {
   return nullptr;
 }
 
