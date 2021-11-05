@@ -179,8 +179,6 @@ void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
     } else {
       state_ = kSkipUntilComma;
     }
-  } else if (range.AtEnd() && !query_set_->QueryVector().size()) {
-    state_ = kDone;
   } else {
     state_ = kSkipUntilComma;
   }
@@ -228,6 +226,11 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
     CSSParserTokenRange range) {
   range.ConsumeWhitespace();
 
+  // Note that we currently expect an empty input to evaluate to an empty
+  // MediaQuerySet, rather than "not all".
+  if (range.AtEnd())
+    return query_set_;
+
 #if DCHECK_IS_ON()
   // Used to detect loops.
   Vector<State> seen_states;
@@ -250,13 +253,15 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
 #endif  // DCHECK_IS_ON()
   }
 
+  DCHECK_NE(state_, kReadMediaNot);
+
   // FIXME: Can we get rid of this special case?
   if (parser_type_ == kMediaQuerySetParser) {
     CSSParserTokenRange empty = range.MakeSubRange(range.end(), range.end());
     ProcessToken(empty);
   }
 
-  if (state_ != kReadRestrictor && state_ != kDone && state_ != kReadMediaNot)
+  if (state_ != kReadRestrictor && state_ != kDone)
     query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
   else if (media_query_data_.CurrentMediaQueryChanged())
     query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
