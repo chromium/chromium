@@ -3200,6 +3200,12 @@
       },
     },
   },
+  'webgl2_conformance_metal_passthrough_tests': {
+    'remove_from': [
+      # Not enough capacity.
+      'Mac FYI Retina Release (NVIDIA)',
+    ],
+  },
   'webgl2_conformance_validating_tests': {
     'remove_from': [
       # The Mac NVIDIA Retina bots don't have the capacity to run
