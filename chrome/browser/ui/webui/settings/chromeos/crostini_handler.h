@@ -78,8 +78,9 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   // Called after establishing whether disabling adb sideloading is allowed for
   // the user and device
   void OnCanDisableArcAdbSideloading(bool can_change_adb_sideloading);
-  // Launch the Crostini terminal.
-  void LaunchTerminal();
+  // Launch the Crostini terminal, with |intent| specifying any non-default
+  // container id.
+  void LaunchTerminal(apps::mojom::IntentPtr intent);
   // Handle a request for showing the container upgrade view.
   void HandleRequestContainerUpgradeView(base::Value::ConstListView args);
   // Callback of HandleQueryArcAdbRequest.
@@ -131,6 +132,14 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   void FetchCanChangeAdbSideloading();
   // Callback of FetchCanChangeAdbSideloading.
   void OnCanChangeArcAdbSideloading(bool can_change_arc_adb_sideloading);
+  // Handle a request for creating a container
+  void HandleCreateContainer(base::Value::ConstListView args);
+  // Handle a request for deleting a container
+  void HandleDeleteContainer(base::Value::ConstListView args);
+  // Handle a request for the running info of all known containers
+  void HandleRequestContainerInfo(base::Value::ConstListView args);
+  // Handle a request to stop a running lxd container
+  void HandleStopContainer(base::Value::ConstListView args);
 
   Profile* profile_;
   base::CallbackListSubscription adb_sideloading_device_policy_subscription_;

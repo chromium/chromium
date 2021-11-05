@@ -150,6 +150,24 @@ void CrostiniHandler::RegisterMessages() {
       "shutdownCrostini",
       base::BindRepeating(&CrostiniHandler::HandleShutdownCrostini,
                           handler_weak_ptr_factory_.GetWeakPtr()));
+  if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    web_ui()->RegisterMessageCallback(
+        "createContainer",
+        base::BindRepeating(&CrostiniHandler::HandleCreateContainer,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "deleteContainer",
+        base::BindRepeating(&CrostiniHandler::HandleDeleteContainer,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "requestContainerInfo",
+        base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "stopContainer",
+        base::BindRepeating(&CrostiniHandler::HandleStopContainer,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void CrostiniHandler::OnJavascriptAllowed() {
@@ -174,6 +192,13 @@ void CrostiniHandler::OnJavascriptAllowed() {
       crostini::prefs::kCrostiniArcAdbSideloadingUserPref,
       base::BindRepeating(&CrostiniHandler::FetchCanChangeAdbSideloading,
                           handler_weak_ptr_factory_.GetWeakPtr()));
+
+  // Observe changes to containers in general
+  pref_change_registrar_.Add(
+      crostini::prefs::kCrostiniContainers,
+      base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
+                          handler_weak_ptr_factory_.GetWeakPtr(),
+                          base::Value(base::Value::Type::LIST).GetList()));
 }
 
 void CrostiniHandler::OnJavascriptDisallowed() {
@@ -365,10 +390,11 @@ void CrostiniHandler::OnCanDisableArcAdbSideloading(
       power_manager::REQUEST_RESTART_FOR_USER, "disable adb sideloading");
 }
 
-void CrostiniHandler::LaunchTerminal() {
-  crostini::LaunchCrostiniApp(
+void CrostiniHandler::LaunchTerminal(apps::mojom::IntentPtr intent) {
+  crostini::LaunchCrostiniAppWithIntent(
       profile_, crostini::kCrostiniTerminalSystemAppId,
-      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      std::move(intent));
 }
 
 void CrostiniHandler::HandleRequestContainerUpgradeView(
@@ -377,7 +403,8 @@ void CrostiniHandler::HandleRequestContainerUpgradeView(
   chromeos::CrostiniUpgraderDialog::Show(
       profile_,
       base::BindOnce(&CrostiniHandler::LaunchTerminal,
-                     handler_weak_ptr_factory_.GetWeakPtr()),
+                     handler_weak_ptr_factory_.GetWeakPtr(),
+                     /*intent=*/nullptr),
       // If the user cancels the upgrade, we won't need to restart Crostini and
       // we don't want to run the launch closure which would launch Terminal.
       /*only_run_launch_closure_on_restart=*/true);
@@ -633,11 +660,13 @@ void CrostiniHandler::HandleCheckCrostiniIsRunning(
 void CrostiniHandler::OnContainerStarted(
     const crostini::ContainerId& container_id) {
   FireWebUIListener("crostini-status-changed", base::Value(true));
+  HandleRequestContainerInfo(base::Value(base::Value::Type::LIST).GetList());
 }
 
 void CrostiniHandler::OnContainerShutdown(
     const crostini::ContainerId& container_id) {
   FireWebUIListener("crostini-status-changed", base::Value(false));
+  HandleRequestContainerInfo(base::Value(base::Value::Type::LIST).GetList());
 }
 
 void CrostiniHandler::HandleShutdownCrostini(base::Value::ConstListView args) {
@@ -647,6 +676,117 @@ void CrostiniHandler::HandleShutdownCrostini(base::Value::ConstListView args) {
 
   crostini::CrostiniManager::GetForProfile(profile_)->StopVm(std::move(vm_name),
                                                              base::DoNothing());
+}
+
+void CrostiniHandler::HandleCreateContainer(base::Value::ConstListView args) {
+  CHECK_EQ(3U, args.size());
+  crostini::ContainerId container_id(args[0]);
+  GURL image_server_url(args[1].GetString());
+  std::string image_alias(args[2].GetString());
+
+  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    return;
+  }
+
+  if (!args[1].GetString().empty() && !image_server_url.is_valid()) {
+    LOG(ERROR) << "Malformed data. image_server_url=" << args[1].GetString()
+               << ", image_alias=" << image_alias;
+    return;
+  }
+  VLOG(1) << "Creating container_id = " << container_id;
+
+  crostini::CrostiniManager::RestartOptions options;
+  if (image_server_url.is_valid()) {
+    options.image_server_url = image_server_url.spec();
+    VLOG(1) << "image_server_url = " << image_server_url;
+  }
+  if (!image_alias.empty()) {
+    options.image_alias = image_alias;
+    VLOG(1) << "image_alias = " << image_alias;
+  }
+  if (options.image_server_url || options.image_alias) {
+    auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
+    crostini_manager->SetRestartOptions(container_id, std::move(options));
+  }
+
+  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
+  intent->extras = container_id.ToMap();
+  LaunchTerminal(std::move(intent));
+}
+
+void CrostiniHandler::HandleDeleteContainer(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+
+  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    return;
+  }
+
+  crostini::ContainerId container_id(args[0]);
+  if (container_id == crostini::DefaultContainerId()) {
+    LOG(ERROR) << "Deleting " << container_id << " not permitted";
+    return;
+  }
+  VLOG(1) << "Deleting " << container_id;
+
+  auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
+  crostini::CrostiniManager::RestartOptions options;
+  options.stop_after_lxd_available = true;
+  crostini_manager->RestartCrostiniWithOptions(
+      container_id, std::move(options),
+      base::BindOnce(
+          [](base::WeakPtr<crostini::CrostiniManager> crostini_manager,
+             crostini::ContainerId container_id,
+             crostini::CrostiniResult result) {
+            if (crostini_manager &&
+                result == crostini::CrostiniResult::SUCCESS) {
+              crostini_manager->DeleteLxdContainer(container_id,
+                                                   base::DoNothing());
+            }
+          },
+          crostini_manager->GetWeakPtr(), container_id));
+}
+
+void CrostiniHandler::HandleRequestContainerInfo(
+    base::Value::ConstListView args) {
+  constexpr char kIdKey[] = "id";
+  constexpr char kIpv4Key[] = "ipv4";
+
+  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    return;
+  }
+  base::Value container_info_list(base::Value::Type::LIST);
+
+  base::Value::ConstListView containers =
+      profile_->GetPrefs()
+          ->GetList(crostini::prefs::kCrostiniContainers)
+          ->GetList();
+
+  for (const auto& dict : containers) {
+    crostini::ContainerId container_id(dict);
+    base::Value container_info_value(base::Value::Type::DICTIONARY);
+    container_info_value.SetKey(kIdKey, container_id.ToDictValue());
+    auto info =
+        crostini::CrostiniManager::GetForProfile(profile_)->GetContainerInfo(
+            container_id);
+    if (info) {
+      container_info_value.SetStringKey(kIpv4Key, info->ipv4_address);
+    }
+    container_info_list.Append(std::move(container_info_value));
+  }
+  FireWebUIListener("crostini-container-info", container_info_list);
+}
+
+void CrostiniHandler::HandleStopContainer(base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
+
+  if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    return;
+  }
+
+  crostini::ContainerId container_id(args[0]);
+  // For now, we only can stop the whole VM.
+  crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
+      container_id.vm_name, base::DoNothing());
 }
 
 }  // namespace settings

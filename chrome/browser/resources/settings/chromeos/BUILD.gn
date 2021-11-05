@@ -368,6 +368,8 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/crostini_page/crostini_disk_resize_confirmation_dialog.js",
     "chromeos/crostini_page/crostini_disk_resize_dialog.js",
     "chromeos/crostini_page/crostini_export_import.js",
+    "chromeos/crostini_page/crostini_extra_containers.js",
+    "chromeos/crostini_page/crostini_extra_containers_create_dialog.js",
     "chromeos/crostini_page/crostini_import_confirmation_dialog.js",
     "chromeos/crostini_page/crostini_page.js",
     "chromeos/crostini_page/crostini_port_forwarding.js",

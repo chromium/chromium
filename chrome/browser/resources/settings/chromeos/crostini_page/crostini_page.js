@@ -20,6 +20,7 @@ import '../guest_os/guest_os_shared_usb_devices.js';
 import '//resources/cr_components/chromeos/localized_link/localized_link.js';
 import './crostini_arc_adb.js';
 import './crostini_export_import.js';
+import './crostini_extra_containers.js';
 import './crostini_port_forwarding.js';
 import './crostini_subpage.js';
 
@@ -69,6 +70,11 @@ Polymer({
         if (routes.CROSTINI_EXPORT_IMPORT) {
           map.set(
               routes.CROSTINI_EXPORT_IMPORT.path, '#crostini .subpage-arrow');
+        }
+        if (routes.CROSTINI_EXTRA_CONTAINERS) {
+          map.set(
+              routes.CROSTINI_EXTRA_CONTAINERS.path,
+              '#crostini .subpage-arrow');
         }
         if (routes.CROSTINI_PORT_FORWARDING) {
           map.set(

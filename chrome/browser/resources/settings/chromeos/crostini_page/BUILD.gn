@@ -17,6 +17,8 @@ js_type_check("closure_compile_module") {
     ":crostini_disk_resize_confirmation_dialog",
     ":crostini_disk_resize_dialog",
     ":crostini_export_import",
+    ":crostini_extra_containers",
+    ":crostini_extra_containers_create_dialog",
     ":crostini_import_confirmation_dialog",
     ":crostini_page",
     ":crostini_port_forwarding",
@@ -122,6 +124,7 @@ js_library("crostini_page") {
     ":crostini_arc_adb",
     ":crostini_browser_proxy",
     ":crostini_export_import",
+    ":crostini_extra_containers",
     ":crostini_port_forwarding",
     ":crostini_subpage",
     "..:deep_linking_behavior.m",
@@ -170,12 +173,40 @@ js_library("crostini_port_forwarding_add_port_dialog") {
   ]
 }
 
+js_library("crostini_extra_containers") {
+  deps = [
+    ":crostini_browser_proxy",
+    ":crostini_extra_containers_create_dialog",
+    "..:metrics_recorder.m",
+    "..:prefs_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+}
+
+js_library("crostini_extra_containers_create_dialog") {
+  deps = [
+    ":crostini_browser_proxy",
+    "..:metrics_recorder.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
 js_library("crostini_subpage") {
   deps = [
     ":crostini_browser_proxy",
     ":crostini_confirmation_dialog",
     ":crostini_disk_resize_confirmation_dialog",
     ":crostini_disk_resize_dialog",
+    ":crostini_extra_containers",
     ":crostini_port_forwarding",
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
@@ -201,6 +232,8 @@ html_to_js("web_components") {
     "crostini_disk_resize_confirmation_dialog.js",
     "crostini_disk_resize_dialog.js",
     "crostini_export_import.js",
+    "crostini_extra_containers.js",
+    "crostini_extra_containers_create_dialog.js",
     "crostini_import_confirmation_dialog.js",
     "crostini_page.js",
     "crostini_port_forwarding_add_port_dialog.js",

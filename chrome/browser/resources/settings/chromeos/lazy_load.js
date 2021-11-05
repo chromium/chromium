@@ -9,6 +9,8 @@ import './crostini_page/crostini_confirmation_dialog.js';
 import './crostini_page/crostini_disk_resize_confirmation_dialog.js';
 import './crostini_page/crostini_disk_resize_dialog.js';
 import './crostini_page/crostini_export_import.js';
+import './crostini_page/crostini_extra_containers.js';
+import './crostini_page/crostini_extra_containers_create_dialog.js';
 import './crostini_page/crostini_import_confirmation_dialog.js';
 import './crostini_page/crostini_page.js';
 import './crostini_page/crostini_port_forwarding.js';

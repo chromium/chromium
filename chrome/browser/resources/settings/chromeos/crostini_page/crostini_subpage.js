@@ -39,6 +39,7 @@ import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, reco
 import './crostini_disk_resize_dialog.js';
 import './crostini_disk_resize_confirmation_dialog.js';
 import './crostini_port_forwarding.js';
+import './crostini_extra_containers.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -88,6 +89,14 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('showCrostiniPortForwarding');
+      },
+    },
+
+    /** @private {boolean} */
+    showCrostiniExtraContainers_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('showCrostiniExtraContainers');
       },
     },
 
@@ -257,6 +266,8 @@ Polymer({
     this.addFocusConfig_(r.CROSTINI_ANDROID_ADB, '#crostini-enable-arc-adb');
     this.addFocusConfig_(
         r.CROSTINI_PORT_FORWARDING, '#crostini-port-forwarding');
+    this.addFocusConfig_(
+        r.CROSTINI_EXTRA_CONTAINERS, '#crostini-extra-containers');
   },
 
   /**
@@ -412,6 +423,11 @@ Polymer({
   /** @private */
   onPortForwardingClick_() {
     Router.getInstance().navigateTo(routes.CROSTINI_PORT_FORWARDING);
+  },
+
+  /** @private */
+  onExtraContainersClick_() {
+    Router.getInstance().navigateTo(routes.CROSTINI_EXTRA_CONTAINERS);
   },
 
   /**

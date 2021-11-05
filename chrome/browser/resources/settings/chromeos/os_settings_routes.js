@@ -27,6 +27,7 @@
  *   CROSTINI_DETAILS: !settings.Route,
  *   CROSTINI_DISK_RESIZE: !settings.Route,
  *   CROSTINI_EXPORT_IMPORT: !settings.Route,
+ *   CROSTINI_EXTRA_CONTAINERS: !settings.Route,
  *   CROSTINI_PORT_FORWARDING: !settings.Route,
  *   CROSTINI_SHARED_PATHS: !settings.Route,
  *   CROSTINI_SHARED_USB_DEVICES: !settings.Route,

@@ -34,6 +34,15 @@
     on-click="onSharedUsbDevicesClick_"
     role-description="$i18n{subpageArrowRoleDescription}">
 </cr-link-row>
+<template is="dom-if" if="[[showCrostiniExtraContainers_]]">
+  <cr-link-row
+      class="hr"
+      label="$i18n{crostiniExtraContainersLabel}"
+      id="crostini-extra-containers"
+      on-click="onExtraContainersClick_"
+      role-description="$i18n{subpageArrowRoleDescription}">
+  </cr-link-row>
+</template>
 <template is="dom-if" if="[[showCrostiniExportImport_]]">
   <cr-link-row
       class="hr"

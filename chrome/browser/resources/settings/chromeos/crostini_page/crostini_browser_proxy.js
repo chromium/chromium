@@ -58,6 +58,19 @@ export const PortState = {
 export const MIN_VALID_PORT_NUMBER = 1024;   // Minimum 16-bit integer value.
 export const MAX_VALID_PORT_NUMBER = 65535;  // Maximum 16-bit integer value.
 
+/**
+ * Non-js key names are kept to match c++ style keys in prefs.
+ * @typedef {{vm_name: string,
+ *            container_name: string}}
+ */
+export let ContainerId;
+
+/**
+ * |ipv4| below is null if the container is not currently running.
+ * @typedef {{id: !ContainerId,
+ *            ipv4: ?string}}
+ */
+export let ContainerInfo;
 
 /**
  * @fileoverview A helper object used by the "Linux Apps" (Crostini) section
@@ -226,7 +239,32 @@ export class CrostiniBrowserProxy {
    * @return {!Promise<boolean>} Return Crostini's access to the mic.
    */
   getCrostiniMicSharingEnabled() {}
+
+  /**
+   * @param {!ContainerId} containerId id of container to create.
+   * @param {?URL} imageServer url of lxd container server from which to fetch
+   * @param {?string} imageAlias name of image to fetch e.g. 'debian/bullseye'
+   */
+  createContainer(containerId, imageServer, imageAlias) {}
+
+  /**
+   * @param {!ContainerId} containerId id of container to delete.
+   */
+  deleteContainer(containerId) {}
+
+  /**
+   * Fetches container info for all known containers and invokes listener
+   * callback.
+   */
+  requestContainerInfo() {}
+
+  /**
+   * @param {!ContainerId} containerId id of container to stop, recovering
+   * CPU and other resources.
+   */
+  stopContainer(containerId) {}
 }
+
 
 /**
  * @implements {CrostiniBrowserProxy}
@@ -368,6 +406,26 @@ export class CrostiniBrowserProxyImpl {
   /** @override */
   getCrostiniMicSharingEnabled() {
     return sendWithPromise('getCrostiniMicSharingEnabled');
+  }
+
+  /** @override */
+  createContainer(containerId, imageServer, imageAlias) {
+    chrome.send('createContainer', [containerId, imageServer, imageAlias]);
+  }
+
+  /** @override */
+  deleteContainer(containerId) {
+    chrome.send('deleteContainer', [containerId]);
+  }
+
+  /** @override */
+  requestContainerInfo() {
+    return chrome.send('requestContainerInfo');
+  }
+
+  /** @override */
+  stopContainer(containerId) {
+    chrome.send('stopContainer', [containerId]);
   }
 }
 

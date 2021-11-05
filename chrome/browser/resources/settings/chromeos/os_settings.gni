@@ -319,6 +319,8 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/crostini_page/crostini_disk_resize_confirmation_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/crostini_page/crostini_disk_resize_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/crostini_page/crostini_export_import.html",
+                                 "chrome/browser/resources/settings/chromeos/crostini_page/crostini_extra_containers.html",
+                                 "chrome/browser/resources/settings/chromeos/crostini_page/crostini_extra_containers_create_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/crostini_page/crostini_import_confirmation_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/crostini_page/crostini_page.html",
                                  "chrome/browser/resources/settings/chromeos/crostini_page/crostini_port_forwarding.html",

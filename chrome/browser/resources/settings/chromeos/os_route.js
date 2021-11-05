@@ -216,6 +216,13 @@ cr.define('settings', function() {
             r.CROSTINI_DETAILS, mojom.CROSTINI_BACKUP_AND_RESTORE_SUBPAGE_PATH,
             Subpage.kCrostiniBackupAndRestore);
       }
+      if (loadTimeData.valueExists('showCrostiniExtraContainers') &&
+          loadTimeData.getBoolean('showCrostiniExtraContainers')) {
+        r.CROSTINI_EXTRA_CONTAINERS = createSubpage(
+            r.CROSTINI_DETAILS, mojom.CROSTINI_EXTRA_CONTAINERS_SUBPAGE_PATH,
+            Subpage.kCrostiniExtraContainers);
+      }
+
       r.CROSTINI_ANDROID_ADB = createSubpage(
           r.CROSTINI_DETAILS, mojom.CROSTINI_DEVELOP_ANDROID_APPS_SUBPAGE_PATH,
           Subpage.kCrostiniDevelopAndroidApps);

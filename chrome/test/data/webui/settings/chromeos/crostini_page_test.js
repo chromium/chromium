@@ -190,6 +190,7 @@ suite('CrostiniPageTests', function() {
         showCrostiniPortForwarding: true,
         showCrostiniDiskResize: true,
         arcAdbSideloadingSupported: true,
+        showCrostiniExtraContainers: true,
       });
 
       settings.Router.getInstance().navigateTo(settings.routes.CROSTINI);
@@ -211,6 +212,7 @@ suite('CrostiniPageTests', function() {
         assertTrue(!!subpage.$$('#crostini-port-forwarding'));
         assertTrue(!!subpage.$$('#crostini-mic-permission-toggle'));
         assertTrue(!!subpage.$$('#crostini-disk-resize'));
+        assertTrue(!!subpage.$$('#crostini-extra-containers'));
       });
 
       test('SharedPaths', async function() {
