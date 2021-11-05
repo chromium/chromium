@@ -29,10 +29,13 @@ declare_args() {
   # the performance of the build since the symbols are large and dealing with
   # them is slow.
   #   2 means regular build with symbols.
-  #   1 means minimal symbols, usually enough for backtraces only. Symbols with
+  #   1 means medium symbols, usually enough for backtraces only. Symbols with
   # internal linkage (static functions or those in anonymous namespaces) may not
-  # appear when using this level.
-  #   0 means no symbols.
+  # appear when using this level. On some platforms (including Windows)
+  # filenames and line numbers will be included. Information about types and
+  # locals is not included.
+  #   0 means minimal symbols, which on some platforms (including Windows) may
+  # include function names suitable for backtraces.
   #   -1 means auto-set according to debug/release and platform.
   blink_symbol_level = -1
 
@@ -71,9 +74,6 @@ if (blink_symbol_level == 2) {
 } else if (blink_symbol_level == 1) {
   blink_symbols_config = [ "//build/config/compiler:minimal_symbols" ]
 } else if (blink_symbol_level == 0) {
-  assert(
-      !enable_resource_allowlist_generation,
-      "enable_resource_allowlist_generation=true requires blink_symbol_level >= 1")
   blink_symbols_config = [ "//build/config/compiler:no_symbols" ]
 } else {
   blink_symbols_config = [ "//build/config/compiler:default_symbols" ]
