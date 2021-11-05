@@ -1331,19 +1331,16 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RecommitSystemPagesForData(
     size_t length,
     PageAccessibilityDisposition accessibility_disposition) {
   internal::ScopedSyscallTimer<thread_safe> timer{this};
-#if defined(PA_COMMIT_CHARGE_IS_LIMITED)
+
   bool ok = TryRecommitSystemPages(address, length, PageReadWriteTagged,
                                    accessibility_disposition);
   if (UNLIKELY(!ok)) {
-    // Decommit some memory and retry.
+    // Decommit some memory and retry. The alternative is crashing.
     DecommitEmptySlotSpans();
     RecommitSystemPages(address, length, PageReadWriteTagged,
                         accessibility_disposition);
   }
-#else
-  RecommitSystemPages(address, length, PageReadWriteTagged,
-                      accessibility_disposition);
-#endif  // defined(PA_COMMIT_CHARGE_IS_LIMITED)
+
   IncreaseCommittedPages(length);
 }
 
