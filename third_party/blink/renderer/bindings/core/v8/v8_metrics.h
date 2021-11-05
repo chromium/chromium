@@ -47,6 +47,8 @@ class CORE_EXPORT V8MetricsRecorder : public v8::metrics::Recorder {
       const v8::metrics::GarbageCollectionFullMainThreadBatchedIncrementalSweep&
           event,
       ContextId context_id) override;
+  void AddMainThreadEvent(const v8::metrics::GarbageCollectionYoungCycle& event,
+                          ContextId context_id) override;
 
   void NotifyIsolateDisposal() override;
 

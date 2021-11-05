@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Cycle.CollectionRate.Full.Cpp" units="KB/ms"
+<histogram name="V8.GC.Cycle.CollectionRate.Full.Cpp" units="%"
     expires_after="M100">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -400,6 +400,17 @@ chromium-metrics-reviews@google.com.
     The percentage of managed C++ memory that has been collected by a garbage
     collection of the managed C++ heap. Reported at the end of the garbage
     collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.CollectionRate.Young" units="%"
+    expires_after="M100">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    The percentage of managed JavaScript memory that has been collected by a
+    young generation garbage collection of the managed JavaScript heap. Reported
+    at the end of the garbage collection cycle.
   </summary>
 </histogram>
 
@@ -421,6 +432,29 @@ chromium-metrics-reviews@google.com.
     The speed at which garbage collection of the managed C++ heap reclaims
     unused memory on the main thread only. This histogram ignores concurrent
     garbage collection. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Efficiency.MainThread.Young" units="KB/ms"
+    expires_after="M100">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    The speed at which a young generation garbage collection of the managed
+    JavaScript heap reclaims unused memory on the main thread only. This
+    histogram ignores concurrent garbage collection. Reported at the end of the
+    garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Efficiency.Young" units="KB/ms"
+    expires_after="M100">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    The speed at which a young generation garbage collection of the managed
+    JavaScript heap reclaims unused memory. Reported at the end of the garbage
+    collection cycle.
   </summary>
 </histogram>
 
@@ -586,6 +620,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.MainThread.Young" units="ms" expires_after="M100">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Main-thread only duration of a young generation garbage collection of the
+    JavaScript heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.Memory.Freed.Full.Cpp" units="KB"
     expires_after="2022-04-24">
   <owner>omerkatz@chromium.org</owner>
@@ -623,6 +666,15 @@ chromium-metrics-reviews@google.com.
   <summary>
     Amount of used memory freed by a garbage collection of the managed C++ heap.
     Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
+<histogram name="V8.GC.Cycle.Young" units="ms" expires_after="M100">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of a young generation garbage collection of the JavaScript
+    heap. Reported at the end of the garbage collection cycle.
   </summary>
 </histogram>
 

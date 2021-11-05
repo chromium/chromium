@@ -323,6 +323,49 @@ void V8MetricsRecorder::AddMainThreadEvent(
   }
 }
 
+void V8MetricsRecorder::AddMainThreadEvent(
+    const v8::metrics::GarbageCollectionYoungCycle& event,
+    ContextId context_id) {
+  // Check that all used values have been initialized.
+  DCHECK_LE(0, event.total_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.main_thread_wall_clock_duration_in_us);
+  DCHECK_LE(0, event.collection_rate_in_percent);
+  DCHECK_LE(0, event.efficiency_in_bytes_per_us);
+  DCHECK_LE(0, event.main_thread_efficiency_in_bytes_per_us);
+
+  // Report throughput metrics:
+  UMA_HISTOGRAM_TIMES(
+      "V8.GC.Cycle.Young",
+      base::Microseconds(event.total_wall_clock_duration_in_us));
+  UMA_HISTOGRAM_TIMES(
+      "V8.GC.Cycle.MainThread.Young",
+      base::Microseconds(event.main_thread_wall_clock_duration_in_us));
+
+  // Report efficacy metrics:
+  static constexpr size_t kMinSize = 1;
+  static constexpr size_t kMaxSize = 4 * 1024 * 1024;
+  static constexpr size_t kNumBuckets = 50;
+
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, efficacy_histogram,
+      ("V8.GC.Cycle.Efficiency.Young", kMinSize, kMaxSize, kNumBuckets));
+  efficacy_histogram.Count(
+      CappedEfficacyInKBPerMs(event.efficiency_in_bytes_per_us));
+
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram,
+                                  efficacy_main_thread_histogram,
+                                  ("V8.GC.Cycle.Efficiency.MainThread.Young",
+                                   kMinSize, kMaxSize, kNumBuckets));
+  efficacy_main_thread_histogram.Count(
+      CappedEfficacyInKBPerMs(event.main_thread_efficiency_in_bytes_per_us));
+
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, collection_rate_histogram,
+      ("V8.GC.Cycle.CollectionRate.Young", 0, 100, 20));
+  collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
+      100 * event.collection_rate_in_percent));
+}
+
 void V8MetricsRecorder::NotifyIsolateDisposal() {
   v8::metrics::Recorder::NotifyIsolateDisposal();
   isolate_ = nullptr;
