@@ -2288,8 +2288,6 @@ class BannedTypeCheckTest(unittest.TestCase):
                ['using namespace std;  // nocheck']),
       MockFile('some/cpp/comment/file.cc',
                ['  // A comment about `using namespace std;`']),
-      MockFile('some/cpp/macro/file.h',
-               ['DISALLOW_COPY_AND_ASSIGN(foo)']),
     ]
 
     results = PRESUBMIT.CheckNoBannedFunctions(input_api, MockOutputApi())
@@ -2305,8 +2303,6 @@ class BannedTypeCheckTest(unittest.TestCase):
     self.assertFalse('some/cpp/nocheck/file.cc' in results[1].message)
     self.assertFalse('some/cpp/comment/file.cc' in results[0].message)
     self.assertFalse('some/cpp/comment/file.cc' in results[1].message)
-    self.assertTrue('some/cpp/macro/file.h' in results[0].message)
-    self.assertFalse('some/cpp/macro/file.h' in results[1].message)
 
   def testBannedIosObjcFunctions(self):
     input_api = MockInputApi()

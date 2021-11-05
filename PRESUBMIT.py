@@ -972,14 +972,6 @@ _BANNED_CPP_FUNCTIONS = (
           r'^base[\\/]win[\\/]scoped_winrt_initializer\.cc$'
       ),
     ),
-    (
-      r'/DISALLOW_(COPY|ASSIGN|COPY_AND_ASSIGN)\(',
-      (
-        'DISALLOW_xxx macros are deprecated. See base/macros.h for details.',
-      ),
-      False,
-      (),
-    ),
 )
 
 # Format: Sequence of tuples containing:
