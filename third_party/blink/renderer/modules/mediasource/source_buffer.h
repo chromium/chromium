@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/stream_parser.h"
 #include "third_party/blink/public/platform/web_source_buffer_client.h"
@@ -144,10 +145,30 @@ class SourceBuffer final : public EventTargetWithInlineData,
   void Trace(Visitor*) const override;
 
  private:
+  struct PendingAppendDataDeleter {
+    void operator()(unsigned char* buffer) {
+      WTF::Partitions::BufferFree(buffer);
+    }
+  };
+  using PendingAppendDataPtr =
+      std::unique_ptr<unsigned char[], PendingAppendDataDeleter>;
+
   void Dispose();
 
   bool IsRemoved() const;
   void ScheduleEvent(const AtomicString& event_name);
+
+  // A zero |size| is invalid. |pending_append_data_| must previously own
+  // nothing. If the allocation is unsuccessful, |pending_append_data_| will
+  // own the allocated space. Returns true on success, false otherwise.
+  WARN_UNUSED_RESULT bool AllocatePendingAppendData(wtf_size_t size);
+
+  // Note that zero-sized async appends are possible. In such case,
+  // |pending_append_data_| will be nullptr. Calling ClearPendingAppendData() in
+  // this case is still ok upon async work completion or abort (the actual free
+  // is conditioned). Likewise, even if there is no pending append, it is ok to
+  // call this to simplify reset paths.
+  void ClearPendingAppendData();
 
   bool PrepareAppend(double media_time, size_t new_data_size, ExceptionState&);
   bool EvictCodedFrames(double media_time, size_t new_data_size);
@@ -258,8 +279,15 @@ class SourceBuffer final : public EventTargetWithInlineData,
   // respectively track the async state for these pending operations:
 
   // These are valid only during the scope of synchronous and asynchronous
-  // follow-up of appendBuffer().
-  Vector<unsigned char> pending_append_data_;
+  // follow-up of appendBuffer(). No residual bytes in |pending_append_data_|
+  // can remain outside of that scope; it is reset and the backing store is
+  // freed when it is cleared. See AllocatePendingAppendData() and
+  // ClearPendingAppendData(). |pending_append_data_| evaluates to a nullptr if
+  // it is empty. In addition to when there is no async appendBuffer() work
+  // pending, this can also occur during the asynchronous follow-up of a
+  // zero-byte appendBuffer() call.
+  PendingAppendDataPtr pending_append_data_;
+  wtf_size_t pending_append_data_size_;
   wtf_size_t pending_append_data_offset_;
   TaskHandle append_buffer_async_task_handle_;
 

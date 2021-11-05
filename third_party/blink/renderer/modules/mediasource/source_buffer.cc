@@ -36,6 +36,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/numerics/checked_math.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/stream_parser_buffer.h"
@@ -74,6 +75,8 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -207,6 +210,7 @@ SourceBuffer::SourceBuffer(std::unique_ptr<WebSourceBuffer> web_source_buffer,
       append_window_start_(0),
       append_window_end_(std::numeric_limits<double>::infinity()),
       first_initialization_segment_received_(false),
+      pending_append_data_size_(0),
       pending_append_data_offset_(0),
       pending_remove_start_(-1),
       pending_remove_end_(-1) {
@@ -1163,8 +1167,8 @@ void SourceBuffer::AbortIfUpdating() {
 
   DCHECK(!append_encoded_chunks_resolver_);
   append_buffer_async_task_handle_.Cancel();
-  pending_append_data_.clear();
-  pending_append_data_offset_ = 0;
+  ClearPendingAppendData();
+
   // For the regular, non-promisified appendBuffer abort, use events to notify
   // result.
   // 4.3. Queue a task to fire a simple event named abort at this SourceBuffer
@@ -1857,8 +1861,7 @@ bool SourceBuffer::HasPendingActivity() const {
 
 void SourceBuffer::ContextDestroyed() {
   append_buffer_async_task_handle_.Cancel();
-  pending_append_data_.clear();
-  pending_append_data_offset_ = 0;
+  ClearPendingAppendData();
 
   append_encoded_chunks_async_task_handle_.Cancel();
   pending_chunks_to_buffer_.reset();
@@ -1890,6 +1893,30 @@ void SourceBuffer::ScheduleEvent(const AtomicString& event_name) {
   event->SetTarget(this);
 
   async_event_queue_->EnqueueEvent(FROM_HERE, *event);
+}
+
+bool SourceBuffer::AllocatePendingAppendData(wtf_size_t size) {
+  DCHECK(!pending_append_data_);
+  DCHECK(size);
+  DCHECK(!pending_append_data_size_);
+  DCHECK(!pending_append_data_offset_);
+
+  pending_append_data_.reset(static_cast<unsigned char*>(
+      WTF::Partitions::BufferPartition()->AllocFlags(
+          base::PartitionAllocReturnNull, size, "MsePendingAppend")));
+
+  if (!pending_append_data_)
+    return false;
+
+  pending_append_data_size_ = size;
+  pending_append_data_offset_ = 0;
+  return true;
+}
+
+void SourceBuffer::ClearPendingAppendData() {
+  pending_append_data_.reset();
+  pending_append_data_size_ = 0;
+  pending_append_data_offset_ = 0;
 }
 
 bool SourceBuffer::PrepareAppend(double media_time,
@@ -2016,6 +2043,9 @@ void SourceBuffer::AppendBufferInternal_Locked(
     MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) {
   DCHECK(source_);
   DCHECK(!updating_);
+  DCHECK(!pending_append_data_);
+  DCHECK(!pending_append_data_size_);
+  DCHECK(!pending_append_data_offset_);
   source_->AssertAttachmentsMutexHeldIfCrossThreadForDebugging();
 
   // Finish the prepare append algorithm begun by the caller.
@@ -2030,9 +2060,36 @@ void SourceBuffer::AppendBufferInternal_Locked(
 
   // 2. Add data to the end of the input buffer.
   DCHECK(data || size == 0);
-  if (data)
-    pending_append_data_.Append(data, base::checked_cast<wtf_size_t>(size));
-  pending_append_data_offset_ = 0;
+  if (data) {
+    // We are guaranteed to not have anything in |pending_append_data_|
+    // currently. Instead of adding the new data to an empty WTF::Vector, which
+    // could crash on OOM during the inherent allocation, we instead just
+    // attempt to allocate specifically the needed size and copy the input data
+    // to it. We do not need vector iterator semantics, just a basic byte
+    // buffer. This allows us to use the underlying allocator's ability to
+    // return null if the allocation fails, instead of causing OOM.
+    // TODO(crbug.com/1266639): Consider further optimizations.
+    if (!AllocatePendingAppendData(base::checked_cast<wtf_size_t>(size))) {
+      DCHECK(!pending_append_data_);
+      DCHECK(!pending_append_data_size_);
+      DCHECK(!pending_append_data_offset_);
+      MediaSource::LogAndThrowDOMException(
+          *exception_state, DOMExceptionCode::kQuotaExceededError,
+          "Unable to allocate space required to buffer appended media.");
+      TRACE_EVENT_NESTABLE_ASYNC_END0(
+          "media", "SourceBuffer::prepareAsyncAppend", TRACE_ID_LOCAL(this));
+      return;
+    }
+
+    // Copy |data| into |pending_append_data_| and continue.
+    static_assert(
+        !WTF::PartitionAllocator::kIsGarbageCollected,
+        "Ensure that we can use simple memcpy when using PartitionAllocator");
+    DCHECK(pending_append_data_);
+    DCHECK_EQ(pending_append_data_size_, base::checked_cast<wtf_size_t>(size));
+    DCHECK(!pending_append_data_offset_);
+    memcpy(pending_append_data_.get(), data, size);
+  }
 
   // 3. Set the updating attribute to true.
   updating_ = true;
@@ -2153,9 +2210,9 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
 
   // 1. Run the segment parser loop algorithm.
   // Step 2 doesn't apply since we run Step 1 synchronously here.
-  DCHECK_GE(pending_append_data_.size(), pending_append_data_offset_);
+  DCHECK_GE(pending_append_data_size_, pending_append_data_offset_);
   wtf_size_t append_size =
-      pending_append_data_.size() - pending_append_data_offset_;
+      pending_append_data_size_ - pending_append_data_offset_;
 
   // Impose an arbitrary max size for a single append() call so that an append
   // doesn't block the renderer event loop very long. This value was selected
@@ -2178,15 +2235,16 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
   // so that it can clear its end of stream state if necessary.
   unsigned char zero = 0;
   unsigned char* append_data = &zero;
-  if (append_size)
-    append_data = pending_append_data_.data() + pending_append_data_offset_;
+  if (append_size) {
+    DCHECK(pending_append_data_);
+    append_data = pending_append_data_.get() + pending_append_data_offset_;
+  }
 
   bool append_success =
       web_source_buffer_->Append(append_data, append_size, &timestamp_offset_);
 
   if (!append_success) {
-    pending_append_data_.clear();
-    pending_append_data_offset_ = 0;
+    ClearPendingAppendData();
     // Note that AppendError() calls NotifyDurationChanged, so a cross-thread
     // attachment will send updated buffered and seekable information to the
     // main thread here, too.
@@ -2194,7 +2252,7 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
   } else {
     pending_append_data_offset_ += append_size;
 
-    if (pending_append_data_offset_ < pending_append_data_.size()) {
+    if (pending_append_data_offset_ < pending_append_data_size_) {
       append_buffer_async_task_handle_ = PostCancellableTask(
           *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
           FROM_HERE,
@@ -2209,8 +2267,7 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
 
     // 3. Set the updating attribute to false.
     updating_ = false;
-    pending_append_data_.clear();
-    pending_append_data_offset_ = 0;
+    ClearPendingAppendData();
 
     source_->SendUpdatedInfoToMainThreadCache();
 
