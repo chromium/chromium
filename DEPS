@@ -740,10 +740,6 @@ deps = {
           'version': Var('luci_go'),
         },
         {
-          'package': 'infra/tools/luci/isolated/${{platform}}',
-          'version': Var('luci_go'),
-        },
-        {
           'package': 'infra/tools/luci/swarming/${{platform}}',
           'version': Var('luci_go'),
         },
