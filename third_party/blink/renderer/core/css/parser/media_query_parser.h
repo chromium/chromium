@@ -99,6 +99,13 @@ class CORE_EXPORT MediaQueryParser {
   // and instead parses the following: [ and <media-feature> ]*
   bool ConsumeAnd(CSSParserTokenRange&);
 
+  // Used for ParserType::kMediaConditionParser.
+  //
+  // Parsing a single condition is useful for the 'sizes' attribute.
+  //
+  // https://html.spec.whatwg.org/multipage/images.html#sizes-attribute
+  scoped_refptr<MediaQuerySet> ConsumeSingleCondition(CSSParserTokenRange);
+
   scoped_refptr<MediaQuerySet> ParseImpl(CSSParserTokenRange);
 
   // Like a regular Consume, except verifies that don't consume past
@@ -108,7 +115,6 @@ class CORE_EXPORT MediaQueryParser {
   void ProcessToken(CSSParserTokenRange&);
 
   void ReadRestrictor(CSSParserTokenRange&);
-  void ReadMediaNot(CSSParserTokenRange&);
   void SkipUntilComma(CSSParserTokenRange&);
   void Done(CSSParserTokenRange&);
 
@@ -126,7 +132,6 @@ class CORE_EXPORT MediaQueryParser {
   const ExecutionContext* execution_context_;
 
   const static State kReadRestrictor;
-  const static State kReadMediaNot;
   const static State kSkipUntilComma;
   const static State kDone;
 };
