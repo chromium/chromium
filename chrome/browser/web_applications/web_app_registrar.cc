@@ -447,7 +447,8 @@ void WebAppRegistrar::Shutdown() {
 
 bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
-  return web_app && !web_app->is_from_sync_and_pending_installation();
+  return web_app && !web_app->is_from_sync_and_pending_installation() &&
+         !web_app->is_uninstalling();
 }
 
 bool WebAppRegistrar::IsUninstalling(const AppId& app_id) const {
@@ -457,7 +458,9 @@ bool WebAppRegistrar::IsUninstalling(const AppId& app_id) const {
 
 bool WebAppRegistrar::IsLocallyInstalled(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->is_locally_installed() : false;
+  return web_app
+             ? !web_app->is_uninstalling() && web_app->is_locally_installed()
+             : false;
 }
 
 bool WebAppRegistrar::WasInstalledByUser(const AppId& app_id) const {
@@ -510,7 +513,8 @@ base::flat_set<std::string> WebAppRegistrar::GetAllDisallowedLaunchProtocols()
 int WebAppRegistrar::CountUserInstalledApps() const {
   int num_user_installed = 0;
   for (const WebApp& app : GetAppsIncludingStubs()) {
-    if (app.is_locally_installed() && app.WasInstalledByUser())
+    if (!app.is_uninstalling() && app.is_locally_installed() &&
+        app.WasInstalledByUser())
       ++num_user_installed;
   }
   return num_user_installed;
