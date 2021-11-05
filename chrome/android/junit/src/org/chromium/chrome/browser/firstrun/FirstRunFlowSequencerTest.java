@@ -75,7 +75,7 @@ public class FirstRunFlowSequencerTest {
         public boolean shouldShowSearchEnginePage;
 
         @Override
-        public boolean shouldShowDataReductionPage() {
+        public boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
             return shouldShowDataReductionPage;
         }
 

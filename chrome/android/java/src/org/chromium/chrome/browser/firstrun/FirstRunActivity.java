@@ -101,7 +101,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private static FirstRunActivityObserver sObserver;
 
     private String mResultSyncConsentAccountName;
-    private boolean mResultShowAdvancedSyncSettings;
 
     private boolean mFlowIsKnown;
     private boolean mPostNativeAndPolicyPagesCreated;
@@ -484,15 +483,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void completeFirstRunExperience() {
         RecordHistogram.recordMediumTimesHistogram("MobileFre.FromLaunch.FreCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
-        if (mResultShowAdvancedSyncSettings) {
+        if (mFreProperties.getBoolean(OPEN_ADVANCED_SYNC_SETTINGS)) {
             recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
         }
         recordFreProgressHistogram(TextUtils.isEmpty(mResultSyncConsentAccountName)
                         ? MobileFreProgress.SYNC_CONSENT_DISMISSED
                         : MobileFreProgress.SYNC_CONSENT_ACCEPTED);
 
-        FirstRunFlowSequencer.markFlowAsCompleted(
-                mResultSyncConsentAccountName, mResultShowAdvancedSyncSettings);
+        FirstRunFlowSequencer.markFlowAsCompleted(mResultSyncConsentAccountName,
+                mFreProperties.getBoolean(OPEN_ADVANCED_SYNC_SETTINGS));
 
         if (DataReductionPromoUtils.getDisplayedFreOrSecondRunPromo()) {
             if (DataReductionProxySettings.getInstance().isDataReductionProxyEnabled()) {
@@ -548,13 +547,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Override
     public void refuseSync() {
         mResultSyncConsentAccountName = null;
-        mResultShowAdvancedSyncSettings = false;
+        mFreProperties.putBoolean(OPEN_ADVANCED_SYNC_SETTINGS, false);
     }
 
     @Override
     public void acceptSync(String accountName, boolean openSettings) {
         mResultSyncConsentAccountName = accountName;
-        mResultShowAdvancedSyncSettings = openSettings;
+        mFreProperties.putBoolean(OPEN_ADVANCED_SYNC_SETTINGS, openSettings);
     }
 
     @Override

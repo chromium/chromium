@@ -1490,7 +1490,7 @@ public class FirstRunIntegrationTest {
         }
 
         @Override
-        public boolean shouldShowDataReductionPage() {
+        public boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
             return mTestCase.showDataSaverPromo();
         }
 
