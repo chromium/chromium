@@ -22,6 +22,22 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="EmeApi">
+  <variant name="CloseSession"/>
+  <variant name="GenerateRequest"/>
+  <variant name="GetStatusForPolicy"/>
+  <variant name="LoadSession"/>
+  <variant name="RemoveSession"/>
+  <variant name="SetServerCertificate"/>
+  <variant name="UpdateSession"/>
+</variants>
+
+<variants name="KeySystem">
+  <variant name="ClearKey" summary="Clear Key key system"/>
+  <variant name="Unknown" summary="Unknown key system"/>
+  <variant name="Widevine" summary="Widevine key system"/>
+</variants>
+
 <histogram name="Media.AImageReaderGLOwner.AcquireImageResult"
     enum="MediaStatus" expires_after="2022-04-17">
   <owner>vikassoni@chromium.org</owner>
@@ -1755,13 +1771,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Media.EME" enum="CdmPromiseResult"
-    expires_after="2022-05-07">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>Result of EME promises that were handled by Chromium code.</summary>
-</histogram>
-
 <histogram name="Media.EME.CdmFileIO.FileSizeKBOnError" units="KB"
     expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
@@ -1835,31 +1844,6 @@ chromium-metrics-reviews@google.com.
   <summary>The time spent to load a library CDM.</summary>
 </histogram>
 
-<histogram base="true" name="Media.EME.CreateCdm" enum="BooleanSuccess"
-    expires_after="2022-05-07">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Whether the CDM instance is created successfully. Reported each time a CDM
-    instance creation is attempted, usually as a result of Javascript call of
-    createMediaKeys().
-  </summary>
-</histogram>
-
-<histogram base="true" name="Media.EME.CreateCdmTime" units="ms"
-    expires_after="2022-05-07">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>The time it takes to create the CDM instance.</summary>
-</histogram>
-
-<histogram base="true" name="Media.EME.CreateSession.SessionType"
-    enum="EmeSessionType" expires_after="2022-05-07">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>EME session type passed into CreateSession.</summary>
-</histogram>
-
 <histogram name="Media.EME.CrosCdmType" enum="CrosCdmType"
     expires_after="2022-01-15">
   <owner>jkardatzke@chromium.org</owner>
@@ -1874,9 +1858,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-01-15">
   <owner>jkardatzke@chromium.org</owner>
   <owner>cros-gfx-video@google.com</owner>
-  <summary>
-    System code count in promise rejection for ChromeOS platform CDM.
-  </summary>
+  <summary>System code in promise rejection for ChromeOS platform CDM.</summary>
 </histogram>
 
 <histogram name="Media.EME.EncryptedEvent" enum="BooleanEncryptedEvent"
@@ -1932,25 +1914,6 @@ chromium-metrics-reviews@google.com.
     Whether a given WebMediaPlayer instance, with a CDM attached, is played in
     an incognito window or in Chrome OS guest mode. Players that never started
     playback are excluded. Recorded once at time of player destruction.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Media.EME.KeyStatusSystemCode"
-    enum="CdmSystemCode" expires_after="2022-05-07">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>System code count associated with key status.</summary>
-</histogram>
-
-<histogram base="true" name="Media.EME.LibraryCdmAvailable"
-    enum="BooleanAvailable" expires_after="2022-05-07">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Whether the CDM is available for the key system or not. In normal cases,
-    this is reported once per render process if the EME API is used. In rare
-    cases it could be reported more than once if the CDM is not available and
-    then is component updated.
   </summary>
 </histogram>
 
@@ -2053,29 +2016,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.EME.RequestMediaKeySystemAccess"
+<histogram name="Media.EME.RequestMediaKeySystemAccess.{KeySystem}"
     enum="RequestMediaKeySystemAccessStatus" expires_after="2022-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
-    Key system support query status and result, as reported by
+    {KeySystem} support query status and result, as reported by
     RequestMediaKeySystemAccess. Each value will be reported at most once per
     renderer process.
   </summary>
-</histogram>
-
-<histogram base="true" name="Media.EME.SystemCode" enum="CdmSystemCode"
-    expires_after="2022-05-07">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>System code count in promise rejection.</summary>
-</histogram>
-
-<histogram base="true" name="Media.EME.TimeTo" units="ms"
-    expires_after="2022-05-07">
-  <owner>xhwang@chromium.org</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>The time it takes to resolve a EME promise.</summary>
+  <token key="KeySystem" variants="KeySystem"/>
 </histogram>
 
 <histogram name="Media.EME.UrlProvisionFetcher.ResponseCode"
@@ -2097,6 +2047,101 @@ chromium-metrics-reviews@google.com.
     configuration passed into requestMediaKeySystemAccess() is empty. This is
     specific to the Widevine key system.
   </summary>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.CreateCdm" enum="BooleanSuccess"
+    expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Whether the CDM instance is created successfully for {KeySystem}. Reported
+    each time a CDM instance creation is attempted, usually as a result of
+    Javascript call of createMediaKeys().
+  </summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.CreateCdmTime" units="ms"
+    expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>Time took to create the CDM instance for {KeySystem}.</summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.CreateSession" enum="EmeSessionType"
+    expires_after="2022-05-07">
+  <obsolete>
+    Replaced by GenerateRequest on 2015-01.
+  </obsolete>
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>Result of EME CreateSesson promise.</summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.CreateSession.SessionType"
+    enum="EmeSessionType" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>EME session type passed into CreateSession.</summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.KeyStatusSystemCode"
+    enum="CdmSystemCode" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>System code associated with key status for {KeySystem}.</summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.LibraryCdmAvailable"
+    enum="BooleanAvailable" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Whether the CDM is available for {KeySystem} or not. In normal cases, this
+    is reported once per render process if the EME API is used. In rare cases it
+    could be reported more than once if the CDM is not available and then is
+    component updated.
+  </summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.SystemCode" enum="CdmSystemCode"
+    expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>System code in promise rejection.</summary>
+  <token key="KeySystem" variants="KeySystem"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.TimeTo.{EmeApi}" units="ms"
+    expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>The time it takes to resolve a EME promise.</summary>
+  <token key="KeySystem" variants="KeySystem"/>
+  <token key="EmeApi" variants="EmeApi"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.{EmeApi}" enum="CdmPromiseResult"
+    expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>Result of EME promises that were handled by Chromium code.</summary>
+  <token key="KeySystem" variants="KeySystem"/>
+  <token key="EmeApi" variants="EmeApi"/>
+</histogram>
+
+<histogram name="Media.EME.{KeySystem}.{EmeApi}.SystemCode"
+    enum="CdmSystemCode" expires_after="2022-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>System code in promise rejection.</summary>
+  <token key="KeySystem" variants="KeySystem"/>
+  <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
 <histogram name="Media.Engagement.PreloadedList.CheckResult"
