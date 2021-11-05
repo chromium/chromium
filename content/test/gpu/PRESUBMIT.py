@@ -48,9 +48,7 @@ def CommonChecks(input_api, output_api):
           output_api,
           input_api.os_path.join(input_api.PresubmitLocalPath(),
                                  'unexpected_passes'), [r'^.+_unittest\.py$'],
-          env=gpu_env,
-          run_on_python2=False,
-          run_on_python3=True))
+          env=gpu_env))
 
   results.extend(
       input_api.canned_checks.RunUnitTestsInDirectory(
@@ -59,8 +57,7 @@ def CommonChecks(input_api, output_api):
           input_api.os_path.join(input_api.PresubmitLocalPath(),
                                  'flake_suppressor'), [r'^.+_unittest\.py$'],
           env=gpu_env,
-          run_on_python2=False,
-          run_on_python3=True))
+          run_on_python2=False))
 
   pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
   results.extend(input_api.RunTests(pylint_checks))
