@@ -8,9 +8,18 @@
 #error "This file requires ARC support."
 #endif
 
+const char kReadingListMessagesOnlyJavaScriptExecutionParam[] =
+    "javascript_only";
+
 const base::Feature kReadingListMessages{"ReadingListMessages",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsReadingListMessagesEnabled() {
   return base::FeatureList::IsEnabled(kReadingListMessages);
+}
+
+bool ShouldOnlyExecuteJavascript() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kReadingListMessages, kReadingListMessagesOnlyJavaScriptExecutionParam,
+      false);
 }
