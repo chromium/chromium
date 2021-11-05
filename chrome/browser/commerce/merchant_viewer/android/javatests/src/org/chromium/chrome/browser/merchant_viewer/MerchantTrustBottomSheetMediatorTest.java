@@ -253,6 +253,9 @@ public class MerchantTrustBottomSheetMediatorTest {
 
     @Test
     public void testWebContentsObserverDidStartNavigation() {
+        doReturn(false).when(mUrlUtilitiesJniMock).isGoogleDomainUrl(anyString(), anyBoolean());
+        doReturn(false).when(mUrlUtilitiesJniMock).isGoogleSubDomainUrl(anyString());
+
         assertNull(mToolbarModel.get(BottomSheetToolbarProperties.FAVICON_ICON_DRAWABLE));
 
         mWebContentsObserverCaptor.getValue().didStartNavigation(mMockNavigationHandle);
