@@ -33,6 +33,10 @@ typedef sdk_util::ScopedRef<JSPipeEventEmitter> ScopedJSPipeEventEmitter;
 class JSPipeEventEmitter : public EventEmitter {
  public:
   JSPipeEventEmitter(PepperInterface* ppapi, size_t size);
+
+  JSPipeEventEmitter(const JSPipeEventEmitter&) = delete;
+  JSPipeEventEmitter& operator=(const JSPipeEventEmitter&) = delete;
+
   virtual void Destroy();
 
   Error Read_Locked(char* data, size_t len, int* out_bytes);
@@ -80,8 +84,6 @@ class JSPipeEventEmitter : public EventEmitter {
   PP_Var payload_key_;
   PP_Var write_var_;
   PP_Var ack_var_;
-
-  DISALLOW_COPY_AND_ASSIGN(JSPipeEventEmitter);
 };
 
 }  // namespace nacl_io

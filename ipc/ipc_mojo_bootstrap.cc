@@ -156,6 +156,11 @@ class ChannelAssociatedGroupController
     GetMemoryDumpProvider().AddController(this);
   }
 
+  ChannelAssociatedGroupController(const ChannelAssociatedGroupController&) =
+      delete;
+  ChannelAssociatedGroupController& operator=(
+      const ChannelAssociatedGroupController&) = delete;
+
   size_t GetQueuedMessageCount() {
     base::AutoLock lock(outgoing_messages_lock_);
     return outgoing_messages_.size();
@@ -474,6 +479,9 @@ class ChannelAssociatedGroupController
     Endpoint(ChannelAssociatedGroupController* controller, mojo::InterfaceId id)
         : controller_(controller), id_(id) {}
 
+    Endpoint(const Endpoint&) = delete;
+    Endpoint& operator=(const Endpoint&) = delete;
+
     mojo::InterfaceId id() const { return id_; }
 
     bool closed() const {
@@ -690,8 +698,6 @@ class ChannelAssociatedGroupController
     std::unique_ptr<mojo::SequenceLocalSyncEventWatcher> sync_watcher_;
     base::queue<std::pair<uint32_t, MessageWrapper>> sync_messages_;
     uint32_t next_sync_message_id_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(Endpoint);
   };
 
   class ControlMessageProxyThunk : public MessageReceiver {
@@ -700,6 +706,10 @@ class ChannelAssociatedGroupController
         ChannelAssociatedGroupController* controller)
         : controller_(controller) {}
 
+    ControlMessageProxyThunk(const ControlMessageProxyThunk&) = delete;
+    ControlMessageProxyThunk& operator=(const ControlMessageProxyThunk&) =
+        delete;
+
    private:
     // MessageReceiver:
     bool Accept(mojo::Message* message) override {
@@ -707,8 +717,6 @@ class ChannelAssociatedGroupController
     }
 
     ChannelAssociatedGroupController* controller_;
-
-    DISALLOW_COPY_AND_ASSIGN(ControlMessageProxyThunk);
   };
 
   ~ChannelAssociatedGroupController() override {
@@ -1099,8 +1107,6 @@ class ChannelAssociatedGroupController
   uint32_t next_interface_id_ = 2;
 
   std::map<uint32_t, scoped_refptr<Endpoint>> endpoints_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelAssociatedGroupController);
 };
 
 bool ControllerMemoryDumpProvider::OnMemoryDump(

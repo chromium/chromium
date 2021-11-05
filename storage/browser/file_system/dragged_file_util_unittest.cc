@@ -98,6 +98,9 @@ class DraggedFileUtilTest : public testing::Test {
  public:
   DraggedFileUtilTest() = default;
 
+  DraggedFileUtilTest(const DraggedFileUtilTest&) = delete;
+  DraggedFileUtilTest& operator=(const DraggedFileUtilTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(partition_dir_.CreateUniqueTempDir());
@@ -280,7 +283,6 @@ class DraggedFileUtilTest : public testing::Test {
   scoped_refptr<FileSystemContext> file_system_context_;
   std::map<base::FilePath, base::FilePath> toplevel_root_map_;
   std::unique_ptr<DraggedFileUtil> file_util_;
-  DISALLOW_COPY_AND_ASSIGN(DraggedFileUtilTest);
 };
 
 TEST_F(DraggedFileUtilTest, BasicTest) {

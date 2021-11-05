@@ -123,6 +123,9 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // Get our singleton instance.
   static SandboxLinux* GetInstance();
 
+  SandboxLinux(const SandboxLinux&) = delete;
+  SandboxLinux& operator=(const SandboxLinux&) = delete;
+
   // Do some initialization that can only be done before any of the sandboxes
   // are enabled. If using the setuid sandbox, this should be called manually
   // before the setuid sandbox is engaged.
@@ -298,8 +301,6 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   std::unique_ptr<__sanitizer_sandbox_arguments> sanitizer_args_;
 #endif
   syscall_broker::BrokerProcess* broker_process_;  // Leaked as global.
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxLinux);
 };
 
 }  // namespace policy

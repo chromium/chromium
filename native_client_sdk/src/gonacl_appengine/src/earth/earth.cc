@@ -81,9 +81,11 @@ struct Texture {
     pixels = new uint32_t[w * h];
     memcpy(pixels, p, sizeof(uint32_t) * w * h);
   }
-  ~Texture() { delete[] pixels; }
 
-  DISALLOW_COPY_AND_ASSIGN(Texture);
+  Texture(const Texture&) = delete;
+  Texture& operator=(const Texture&) = delete;
+
+  ~Texture() { delete[] pixels; }
 };
 
 

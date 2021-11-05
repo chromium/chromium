@@ -39,6 +39,9 @@ class QuotaReservationBuffer : public base::RefCounted<QuotaReservationBuffer> {
       const url::Origin& origin,
       FileSystemType type);
 
+  QuotaReservationBuffer(const QuotaReservationBuffer&) = delete;
+  QuotaReservationBuffer& operator=(const QuotaReservationBuffer&) = delete;
+
   scoped_refptr<QuotaReservation> CreateReservation();
   std::unique_ptr<OpenFileHandle> GetOpenFileHandle(
       QuotaReservation* reservation,
@@ -77,8 +80,6 @@ class QuotaReservationBuffer : public base::RefCounted<QuotaReservationBuffer> {
   int64_t reserved_quota_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaReservationBuffer);
 };
 
 }  // namespace storage

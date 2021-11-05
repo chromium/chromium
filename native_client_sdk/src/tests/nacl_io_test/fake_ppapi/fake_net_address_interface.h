@@ -16,6 +16,9 @@ class FakeNetAddressInterface : public nacl_io::NetAddressInterface {
  public:
   explicit FakeNetAddressInterface(FakePepperInterface* ppapi);
 
+  FakeNetAddressInterface(const FakeNetAddressInterface&) = delete;
+  FakeNetAddressInterface& operator=(const FakeNetAddressInterface&) = delete;
+
   virtual PP_Resource CreateFromIPv4Address(PP_Instance, PP_NetAddress_IPv4*);
   virtual PP_Resource CreateFromIPv6Address(PP_Instance, PP_NetAddress_IPv6*);
   virtual PP_Bool IsNetAddress(PP_Resource);
@@ -26,8 +29,6 @@ class FakeNetAddressInterface : public nacl_io::NetAddressInterface {
 
  private:
   FakePepperInterface* ppapi_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNetAddressInterface);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_NET_ADDRESS_INTERFACE_H_

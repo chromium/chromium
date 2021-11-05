@@ -43,6 +43,9 @@ class HEADLESS_EXPORT HeadlessBrowser {
  public:
   struct Options;
 
+  HeadlessBrowser(const HeadlessBrowser&) = delete;
+  HeadlessBrowser& operator=(const HeadlessBrowser&) = delete;
+
   // Create a new browser context which can be used to create tabs and isolate
   // them from one another.
   // Pointer to HeadlessBrowserContext becomes invalid after:
@@ -94,9 +97,6 @@ class HEADLESS_EXPORT HeadlessBrowser {
  protected:
   HeadlessBrowser() {}
   virtual ~HeadlessBrowser() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowser);
 };
 
 // Embedding API overrides for the headless browser.
@@ -104,6 +104,10 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   class Builder;
 
   Options(Options&& options);
+
+  Options(const Options&) = delete;
+  Options& operator=(const Options&) = delete;
+
   ~Options();
 
   Options& operator=(Options&& options);
@@ -221,8 +225,6 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // HeadlessBrowserContextOptions (where appropriate).
  private:
   Options(int argc, const char** argv);
-
-  DISALLOW_COPY_AND_ASSIGN(Options);
 };
 
 class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {

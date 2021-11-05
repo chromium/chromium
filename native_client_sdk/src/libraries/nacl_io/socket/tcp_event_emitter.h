@@ -23,6 +23,9 @@ class TcpEventEmitter : public StreamEventEmitter {
  public:
   TcpEventEmitter(size_t rsize, size_t wsize);
 
+  TcpEventEmitter(const TcpEventEmitter&) = delete;
+  TcpEventEmitter& operator=(const TcpEventEmitter&) = delete;
+
   uint32_t ReadIn_Locked(char* buffer, uint32_t len);
   uint32_t WriteIn_Locked(const char* buffer, uint32_t len);
 
@@ -52,7 +55,6 @@ class TcpEventEmitter : public StreamEventEmitter {
   bool listening_;
   bool recv_endofstream_;
   PP_Resource accepted_socket_;
-  DISALLOW_COPY_AND_ASSIGN(TcpEventEmitter);
 };
 
 }  // namespace nacl_io

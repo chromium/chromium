@@ -37,6 +37,9 @@ class StreamFs : public Filesystem {
     StreamFs* filesystem_;
   };
 
+  StreamFs(const StreamFs&) = delete;
+  StreamFs& operator=(const StreamFs&) = delete;
+
  protected:
   StreamFs();
   virtual ~StreamFs();
@@ -70,7 +73,6 @@ class StreamFs : public Filesystem {
   sdk_util::SimpleLock message_lock_;
 
   friend class KernelProxy;
-  DISALLOW_COPY_AND_ASSIGN(StreamFs);
 };
 
 }  // namespace nacl_io

@@ -121,6 +121,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
   // We enable file paging if |file_runner| isn't a nullptr.
   BlobMemoryController(const base::FilePath& storage_directory,
                        scoped_refptr<base::TaskRunner> file_runner);
+
+  BlobMemoryController(const BlobMemoryController&) = delete;
+  BlobMemoryController& operator=(const BlobMemoryController&) = delete;
+
   ~BlobMemoryController();
 
   // Disables file paging. This cancels all pending file creations and paging
@@ -322,8 +326,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobMemoryController {
   base::MemoryPressureListener memory_pressure_listener_;
 
   base::WeakPtrFactory<BlobMemoryController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlobMemoryController);
 };
 }  // namespace storage
 #endif  // STORAGE_BROWSER_BLOB_BLOB_MEMORY_CONTROLLER_H_

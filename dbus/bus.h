@@ -222,6 +222,9 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // Connect() is called.
   explicit Bus(const Options& options);
 
+  Bus(const Bus&) = delete;
+  Bus& operator=(const Bus&) = delete;
+
   // Called when an ownership request is complete.
   // Parameters:
   // - the requested service name.
@@ -783,8 +786,6 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   int num_pending_timeouts_;
 
   std::string address_;
-
-  DISALLOW_COPY_AND_ASSIGN(Bus);
 };
 
 }  // namespace dbus

@@ -21,6 +21,9 @@ class JsFsNode : public Node {
  public:
   typedef JsFs::RequestId RequestId;
 
+  JsFsNode(const JsFsNode&) = delete;
+  JsFsNode& operator=(const JsFsNode&) = delete;
+
  protected:
   JsFsNode(Filesystem* filesystem, int32_t fd);
   virtual void Destroy();
@@ -60,7 +63,6 @@ class JsFsNode : public Node {
   int32_t fd_;
 
   friend class JsFs;
-  DISALLOW_COPY_AND_ASSIGN(JsFsNode);
 };
 
 }  // namespace nacl_io

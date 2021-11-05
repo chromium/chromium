@@ -26,6 +26,10 @@ class TranslatorCompileListener : public IPC::Listener {
     CHECK(channel_->Connect());
   }
 
+  TranslatorCompileListener(const TranslatorCompileListener&) = delete;
+  TranslatorCompileListener& operator=(const TranslatorCompileListener&) =
+      delete;
+
   // Needed for handling sync messages in OnMessageReceived().
   bool Send(IPC::Message* message) {
     return channel_->Send(message);
@@ -96,8 +100,6 @@ class TranslatorCompileListener : public IPC::Listener {
 
   std::unique_ptr<IPC::Channel> channel_;
   const struct nacl_irt_pnacl_compile_funcs* funcs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslatorCompileListener);
 };
 
 void ServeTranslateRequest(const struct nacl_irt_pnacl_compile_funcs* funcs) {

@@ -36,6 +36,9 @@ class ManifestMessageFilter : public IPC::SyncMessageFilter {
         connected_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                          base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
+  ManifestMessageFilter(const ManifestMessageFilter&) = delete;
+  ManifestMessageFilter& operator=(const ManifestMessageFilter&) = delete;
+
   bool Send(IPC::Message* message) override {
     // Wait until set up is actually done.
     connected_event_.Wait();
@@ -63,8 +66,6 @@ class ManifestMessageFilter : public IPC::SyncMessageFilter {
 
  private:
   base::WaitableEvent connected_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestMessageFilter);
 };
 
 ManifestService::ManifestService(

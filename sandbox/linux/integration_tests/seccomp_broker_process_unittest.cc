@@ -72,11 +72,13 @@ class InitializedOpenBroker {
         [](const syscall_broker::BrokerSandboxConfig&) { return true; })));
   }
 
+  InitializedOpenBroker(const InitializedOpenBroker&) = delete;
+  InitializedOpenBroker& operator=(const InitializedOpenBroker&) = delete;
+
   BrokerProcess* broker_process() const { return broker_process_.get(); }
 
  private:
   std::unique_ptr<BrokerProcess> broker_process_;
-  DISALLOW_COPY_AND_ASSIGN(InitializedOpenBroker);
 };
 
 intptr_t BrokerOpenTrapHandler(const struct arch_seccomp_data& args,

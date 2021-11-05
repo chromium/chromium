@@ -78,6 +78,9 @@ class Forwarder::BufferedCopier {
         peer_(NULL),
         state_(STATE_READING) {}
 
+  BufferedCopier(const BufferedCopier&) = delete;
+  BufferedCopier& operator=(const BufferedCopier&) = delete;
+
   // Sets the 'peer_' field pointing to the other BufferedCopier in a pair.
   void SetPeer(BufferedCopier* peer) {
     DCHECK(!peer_);
@@ -219,8 +222,6 @@ class Forwarder::BufferedCopier {
   BufferedCopier* peer_;
   State state_;
   char buffer_[kBufferSize];
-
-  DISALLOW_COPY_AND_ASSIGN(BufferedCopier);
 };
 
 Forwarder::Forwarder(std::unique_ptr<Socket> socket1,

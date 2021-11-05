@@ -26,6 +26,9 @@ class AXTreeServer final {
   AXTreeServer(const ui::AXTreeSelector& selector,
                const base::FilePath& filters_path);
 
+  AXTreeServer(const AXTreeServer&) = delete;
+  AXTreeServer& operator=(const AXTreeServer&) = delete;
+
  private:
   // Extracts filters and directives for the formatter from the specified
   // filter file.
@@ -36,8 +39,6 @@ class AXTreeServer final {
   // Only one COM initializer per thread is permitted.
   base::win::ScopedCOMInitializer com_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeServer);
 };
 
 }  // namespace content

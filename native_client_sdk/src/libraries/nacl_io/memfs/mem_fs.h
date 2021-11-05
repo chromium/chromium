@@ -11,6 +11,10 @@
 namespace nacl_io {
 
 class MemFs : public Filesystem {
+ public:
+  MemFs(const MemFs&) = delete;
+  MemFs& operator=(const MemFs&) = delete;
+
  protected:
   MemFs();
 
@@ -47,7 +51,6 @@ class MemFs : public Filesystem {
   ScopedNode root_;
 
   friend class TypedFsFactory<MemFs>;
-  DISALLOW_COPY_AND_ASSIGN(MemFs);
 };
 
 }  // namespace nacl_io

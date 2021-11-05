@@ -42,6 +42,9 @@ class ResolverThunkTestImpl : public T, public ResolverThunkTest {
   explicit ResolverThunkTestImpl(bool relaxed)
       : T(::GetCurrentProcess(), relaxed) {}
 
+  ResolverThunkTestImpl(const ResolverThunkTestImpl&) = delete;
+  ResolverThunkTestImpl& operator=(const ResolverThunkTestImpl&) = delete;
+
   sandbox::ServiceResolverThunk* resolver() { return this; }
 
  protected:
@@ -63,8 +66,6 @@ class ResolverThunkTestImpl : public T, public ResolverThunkTest {
 
     return ret;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ResolverThunkTestImpl);
 };
 
 typedef ResolverThunkTestImpl<sandbox::ServiceResolverThunk> WinXpResolverTest;

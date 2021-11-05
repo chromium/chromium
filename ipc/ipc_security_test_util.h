@@ -14,6 +14,9 @@ class Message;
 
 class IpcSecurityTestUtil {
  public:
+  IpcSecurityTestUtil(const IpcSecurityTestUtil&) = delete;
+  IpcSecurityTestUtil& operator=(const IpcSecurityTestUtil&) = delete;
+
   // Enables testing of security exploit scenarios where a compromised child
   // process can send a malicious message of an arbitrary type.
   //
@@ -31,8 +34,6 @@ class IpcSecurityTestUtil {
 
  private:
   IpcSecurityTestUtil();  // Not instantiable.
-
-  DISALLOW_COPY_AND_ASSIGN(IpcSecurityTestUtil);
 };
 
 }  // namespace IPC

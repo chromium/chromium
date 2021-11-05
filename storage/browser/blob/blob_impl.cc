@@ -30,6 +30,9 @@ class ReaderDelegate : public MojoBlobReader::Delegate {
   ReaderDelegate(mojo::PendingRemote<blink::mojom::BlobReaderClient> client)
       : client_(std::move(client)) {}
 
+  ReaderDelegate(const ReaderDelegate&) = delete;
+  ReaderDelegate& operator=(const ReaderDelegate&) = delete;
+
   MojoBlobReader::Delegate::RequestSideData DidCalculateSize(
       uint64_t total_size,
       uint64_t content_size) override {
@@ -45,8 +48,6 @@ class ReaderDelegate : public MojoBlobReader::Delegate {
 
  private:
   mojo::Remote<blink::mojom::BlobReaderClient> client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReaderDelegate);
 };
 
 class DataPipeGetterReaderDelegate : public MojoBlobReader::Delegate {
@@ -54,6 +55,10 @@ class DataPipeGetterReaderDelegate : public MojoBlobReader::Delegate {
   DataPipeGetterReaderDelegate(
       network::mojom::DataPipeGetter::ReadCallback callback)
       : callback_(std::move(callback)) {}
+
+  DataPipeGetterReaderDelegate(const DataPipeGetterReaderDelegate&) = delete;
+  DataPipeGetterReaderDelegate& operator=(const DataPipeGetterReaderDelegate&) =
+      delete;
 
   MojoBlobReader::Delegate::RequestSideData DidCalculateSize(
       uint64_t total_size,
@@ -78,8 +83,6 @@ class DataPipeGetterReaderDelegate : public MojoBlobReader::Delegate {
 
  private:
   network::mojom::DataPipeGetter::ReadCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeGetterReaderDelegate);
 };
 
 }  // namespace

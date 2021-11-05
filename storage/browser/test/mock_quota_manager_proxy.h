@@ -35,6 +35,9 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
       MockQuotaManager* quota_manager,
       scoped_refptr<base::SequencedTaskRunner> quota_manager_task_runner);
 
+  MockQuotaManagerProxy(const MockQuotaManagerProxy&) = delete;
+  MockQuotaManagerProxy& operator=(const MockQuotaManagerProxy&) = delete;
+
   void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
@@ -107,8 +110,6 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   int64_t last_notified_delta_;
 
   mojo::Remote<mojom::QuotaClient> registered_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuotaManagerProxy);
 };
 
 }  // namespace storage

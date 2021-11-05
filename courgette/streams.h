@@ -48,6 +48,9 @@ class SourceStream {
  public:
   SourceStream() : start_(nullptr), end_(nullptr), current_(nullptr) {}
 
+  SourceStream(const SourceStream&) = delete;
+  SourceStream& operator=(const SourceStream&) = delete;
+
   // Initializes the SourceStream to yield the bytes at |pointer|.  The caller
   // still owns the memory at |pointer| and should free the memory only after
   // the last use of the stream.
@@ -117,8 +120,6 @@ class SourceStream {
   const uint8_t* start_;    // Points to start of buffer.
   const uint8_t* end_;      // Points to first location after buffer.
   const uint8_t* current_;  // Points into buffer at current read location.
-
-  DISALLOW_COPY_AND_ASSIGN(SourceStream);
 };
 
 // A SinkStream accumulates writes into a buffer that it owns.  The stream is

@@ -53,6 +53,9 @@ struct ObfuscatedFileUtilMemoryDelegate::Entry {
     last_accessed = last_modified;
   }
 
+  Entry(const Entry&) = delete;
+  Entry& operator=(const Entry&) = delete;
+
   Entry(Entry&&) = default;
 
   ~Entry() = default;
@@ -64,8 +67,6 @@ struct ObfuscatedFileUtilMemoryDelegate::Entry {
 
   std::map<base::FilePath::StringType, Entry> directory_content;
   std::vector<uint8_t> file_content;
-
-  DISALLOW_COPY_AND_ASSIGN(Entry);
 };
 
 // Keeps a decomposed FilePath.

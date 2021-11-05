@@ -38,6 +38,10 @@ class FakeDriveURLLoaderInterface : public FakeURLLoaderInterface {
  public:
   explicit FakeDriveURLLoaderInterface(FakeCoreInterface* core_interface);
 
+  FakeDriveURLLoaderInterface(const FakeDriveURLLoaderInterface&) = delete;
+  FakeDriveURLLoaderInterface& operator=(const FakeDriveURLLoaderInterface&) =
+      delete;
+
   virtual PP_Resource Create(PP_Instance instance);
   virtual int32_t Open(PP_Resource loader,
                        PP_Resource request_info,
@@ -46,9 +50,6 @@ class FakeDriveURLLoaderInterface : public FakeURLLoaderInterface {
   virtual int32_t FinishStreamingToFile(PP_Resource loader,
                                         PP_CompletionCallback callback);
   virtual void Close(PP_Resource loader);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveURLLoaderInterface);
 };
 
 class FakeDriveURLRequestInfoInterface : public FakeURLRequestInfoInterface {
@@ -56,10 +57,12 @@ class FakeDriveURLRequestInfoInterface : public FakeURLRequestInfoInterface {
   FakeDriveURLRequestInfoInterface(FakeCoreInterface* core_interface,
                                    FakeVarInterface* var_interface);
 
-  virtual PP_Resource Create(PP_Instance instance);
+  FakeDriveURLRequestInfoInterface(const FakeDriveURLRequestInfoInterface&) =
+      delete;
+  FakeDriveURLRequestInfoInterface& operator=(
+      const FakeDriveURLRequestInfoInterface&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveURLRequestInfoInterface);
+  virtual PP_Resource Create(PP_Instance instance);
 };
 
 class FakeDriveURLResponseInfoInterface : public FakeURLResponseInfoInterface {

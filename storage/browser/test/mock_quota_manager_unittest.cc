@@ -50,6 +50,9 @@ class MockQuotaManagerTest : public testing::Test {
  public:
   MockQuotaManagerTest() : deletion_callback_count_(0) {}
 
+  MockQuotaManagerTest(const MockQuotaManagerTest&) = delete;
+  MockQuotaManagerTest& operator=(const MockQuotaManagerTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     policy_ = base::MakeRefCounted<MockSpecialStoragePolicy>();
@@ -154,8 +157,6 @@ class MockQuotaManagerTest : public testing::Test {
   StorageType type_;
 
   base::WeakPtrFactory<MockQuotaManagerTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuotaManagerTest);
 };
 
 TEST_F(MockQuotaManagerTest, GetOrCreateBucket) {

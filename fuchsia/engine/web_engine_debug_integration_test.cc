@@ -149,13 +149,15 @@ struct TestContextAndFrame {
       return;
     }
   }
+
+  TestContextAndFrame(const TestContextAndFrame&) = delete;
+  TestContextAndFrame& operator=(const TestContextAndFrame&) = delete;
+
   ~TestContextAndFrame() = default;
 
   fuchsia::web::ContextPtr context;
   fuchsia::web::FramePtr frame;
   fuchsia::web::NavigationControllerPtr controller;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContextAndFrame);
 };
 
 // Test the Debug service is properly started and accessible.

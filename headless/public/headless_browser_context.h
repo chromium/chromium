@@ -115,13 +115,14 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
   struct MojoBindings {
     MojoBindings();
     MojoBindings(const std::string& mojom_name, const std::string& js_bindings);
+
+    MojoBindings(const MojoBindings&) = delete;
+    MojoBindings& operator=(const MojoBindings&) = delete;
+
     ~MojoBindings();
 
     std::string mojom_name;
     std::string js_bindings;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(MojoBindings);
   };
 
   HeadlessBrowserImpl* browser_;

@@ -34,6 +34,9 @@ class PPAPI_SHARED_EXPORT PPB_Graphics3D_Shared
     : public Resource,
       public thunk::PPB_Graphics3D_API {
  public:
+  PPB_Graphics3D_Shared(const PPB_Graphics3D_Shared&) = delete;
+  PPB_Graphics3D_Shared& operator=(const PPB_Graphics3D_Shared&) = delete;
+
   // Resource overrides.
   thunk::PPB_Graphics3D_API* AsPPB_Graphics3D_API() override;
 
@@ -91,8 +94,6 @@ class PPAPI_SHARED_EXPORT PPB_Graphics3D_Shared
 
   // Callback that needs to be executed when swap-buffers is completed.
   scoped_refptr<TrackedCallback> swap_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_Graphics3D_Shared);
 };
 
 }  // namespace ppapi

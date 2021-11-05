@@ -396,6 +396,9 @@ class ChunkedHttpTransaction {
     current_instance_ = this;
   }
 
+  ChunkedHttpTransaction(const ChunkedHttpTransaction&) = delete;
+  ChunkedHttpTransaction& operator=(const ChunkedHttpTransaction&) = delete;
+
   static ChunkedHttpTransaction* current() {
     DCHECK(current_instance_);
     return current_instance_;
@@ -463,8 +466,6 @@ class ChunkedHttpTransaction {
 
   SendState send_state_;
   base::WeakPtr<net::test_server::HttpResponseDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkedHttpTransaction);
 };
 
 ChunkedHttpTransaction* ChunkedHttpTransaction::current_instance_ = nullptr;

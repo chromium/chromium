@@ -155,6 +155,11 @@ class CopyOrMoveOnSameFileSystemImpl
                        options,
                        progress_callback) {}
 
+  CopyOrMoveOnSameFileSystemImpl(const CopyOrMoveOnSameFileSystemImpl&) =
+      delete;
+  CopyOrMoveOnSameFileSystemImpl& operator=(
+      const CopyOrMoveOnSameFileSystemImpl&) = delete;
+
   void Run(CopyOrMoveOperationDelegate::StatusCallback callback) override {
     if (operation_type_ == CopyOrMoveOperationDelegate::OPERATION_MOVE) {
       operation_runner_->MoveFileLocal(
@@ -180,7 +185,6 @@ class CopyOrMoveOnSameFileSystemImpl
 
  private:
   base::WeakPtrFactory<CopyOrMoveOnSameFileSystemImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CopyOrMoveOnSameFileSystemImpl);
 };
 
 // Specifically for cross file system copy/move operation, this class creates
@@ -207,6 +211,9 @@ class SnapshotCopyOrMoveImpl
 
         validator_factory_(validator_factory),
         cancel_requested_(false) {}
+
+  SnapshotCopyOrMoveImpl(const SnapshotCopyOrMoveImpl&) = delete;
+  SnapshotCopyOrMoveImpl& operator=(const SnapshotCopyOrMoveImpl&) = delete;
 
   void Run(CopyOrMoveOperationDelegate::StatusCallback callback) override {
     OnCopyOrMoveFileProgress(0);
@@ -437,7 +444,6 @@ class SnapshotCopyOrMoveImpl
   std::unique_ptr<CopyOrMoveFileValidator> validator_;
   bool cancel_requested_;
   base::WeakPtrFactory<SnapshotCopyOrMoveImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SnapshotCopyOrMoveImpl);
 };
 
 // The size of buffer for StreamCopyHelper.
@@ -473,6 +479,9 @@ class StreamCopyOrMoveImpl
         reader_(std::move(reader)),
         writer_(std::move(writer)),
         cancel_requested_(false) {}
+
+  StreamCopyOrMoveImpl(const StreamCopyOrMoveImpl&) = delete;
+  StreamCopyOrMoveImpl& operator=(const StreamCopyOrMoveImpl&) = delete;
 
   void Run(CopyOrMoveOperationDelegate::StatusCallback callback) override {
     // Reader can be created even if the entry does not exist or the entry is
@@ -668,7 +677,6 @@ class StreamCopyOrMoveImpl
   std::unique_ptr<CopyOrMoveOperationDelegate::StreamCopyHelper> copy_helper_;
   bool cancel_requested_;
   base::WeakPtrFactory<StreamCopyOrMoveImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(StreamCopyOrMoveImpl);
 };
 
 }  // namespace

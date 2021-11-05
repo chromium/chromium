@@ -427,6 +427,10 @@ class BASE_EXPORT ScopedDisallowBlocking {
 };
 
 class BASE_EXPORT ScopedAllowBlocking {
+ public:
+  ScopedAllowBlocking(const ScopedAllowBlocking&) = delete;
+  ScopedAllowBlocking& operator=(const ScopedAllowBlocking&) = delete;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ThreadRestrictionsTest,
                            NestedAllowRestoresPreviousStack);
@@ -489,8 +493,6 @@ class BASE_EXPORT ScopedAllowBlocking {
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBlocking);
 };
 
 class ScopedAllowBlockingForTesting {
@@ -531,6 +533,11 @@ class BASE_EXPORT ScopedDisallowBaseSyncPrimitives {
 };
 
 class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
+ public:
+  ScopedAllowBaseSyncPrimitives(const ScopedAllowBaseSyncPrimitives&) = delete;
+  ScopedAllowBaseSyncPrimitives& operator=(
+      const ScopedAllowBaseSyncPrimitives&) = delete;
+
  private:
   // This can only be instantiated by friends. Use
   // ScopedAllowBaseSyncPrimitivesForTesting in unit tests to avoid the friend
@@ -584,11 +591,15 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBaseSyncPrimitives);
 };
 
 class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
+ public:
+  ScopedAllowBaseSyncPrimitivesOutsideBlockingScope(
+      const ScopedAllowBaseSyncPrimitivesOutsideBlockingScope&) = delete;
+  ScopedAllowBaseSyncPrimitivesOutsideBlockingScope& operator=(
+      const ScopedAllowBaseSyncPrimitivesOutsideBlockingScope&) = delete;
+
  private:
   // This can only be instantiated by friends. Use
   // ScopedAllowBaseSyncPrimitivesForTesting in unit tests to avoid the friend
@@ -674,8 +685,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
 #if DCHECK_IS_ON()
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowBaseSyncPrimitivesOutsideBlockingScope);
 };
 
 // Allow base-sync-primitives in tests, doesn't require explicit friend'ing like

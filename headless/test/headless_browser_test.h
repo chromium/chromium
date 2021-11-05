@@ -56,6 +56,9 @@ class LoadObserver : public page::Observer, public network::Observer {
 // Base class for tests which require a full instance of the headless browser.
 class HeadlessBrowserTest : public content::BrowserTestBase {
  public:
+  HeadlessBrowserTest(const HeadlessBrowserTest&) = delete;
+  HeadlessBrowserTest& operator=(const HeadlessBrowserTest&) = delete;
+
   // Notify that an asynchronous test is now complete and the test runner should
   // exit.
   void FinishAsynchronousTest();
@@ -103,8 +106,6 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserTest);
 };
 
 // TODO(eseckler): Make macro more sheriff-friendly.

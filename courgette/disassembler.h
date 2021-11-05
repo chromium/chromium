@@ -58,6 +58,9 @@ class Disassembler : public AddressTranslator {
     const AddressTranslator& translator_;
   };
 
+  Disassembler(const Disassembler&) = delete;
+  Disassembler& operator=(const Disassembler&) = delete;
+
   virtual ~Disassembler();
 
   // AddressTranslator interfaces.
@@ -152,8 +155,6 @@ class Disassembler : public AddressTranslator {
   size_t length_;         // In current memory.
   const uint8_t* start_;  // In current memory, base for 'file offsets'.
   const uint8_t* end_;    // In current memory.
-
-  DISALLOW_COPY_AND_ASSIGN(Disassembler);
 };
 
 }  // namespace courgette

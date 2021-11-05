@@ -22,6 +22,9 @@ class PPAPI_PROXY_EXPORT PluginResourceVar : public ppapi::ResourceVar {
   // Takes one reference to the given resource.
   explicit PluginResourceVar(ppapi::Resource* resource);
 
+  PluginResourceVar(const PluginResourceVar&) = delete;
+  PluginResourceVar& operator=(const PluginResourceVar&) = delete;
+
   // ResourceVar override.
   PP_Resource GetPPResource() const override;
   bool IsPending() const override;
@@ -34,8 +37,6 @@ class PPAPI_PROXY_EXPORT PluginResourceVar : public ppapi::ResourceVar {
  private:
   // If NULL, this represents the PP_Resource 0.
   scoped_refptr<ppapi::Resource> resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginResourceVar);
 };
 
 #endif  // PPAPI_PROXY_PLUGIN_RESOURCE_VAR_H_

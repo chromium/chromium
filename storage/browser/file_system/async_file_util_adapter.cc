@@ -35,6 +35,9 @@ class EnsureFileExistsHelper {
  public:
   EnsureFileExistsHelper() : error_(base::File::FILE_OK), created_(false) {}
 
+  EnsureFileExistsHelper(const EnsureFileExistsHelper&) = delete;
+  EnsureFileExistsHelper& operator=(const EnsureFileExistsHelper&) = delete;
+
   void RunWork(FileSystemFileUtil* file_util,
                FileSystemOperationContext* context,
                const FileSystemURL& url) {
@@ -48,12 +51,14 @@ class EnsureFileExistsHelper {
  private:
   base::File::Error error_;
   bool created_;
-  DISALLOW_COPY_AND_ASSIGN(EnsureFileExistsHelper);
 };
 
 class GetFileInfoHelper {
  public:
   GetFileInfoHelper() : error_(base::File::FILE_OK) {}
+
+  GetFileInfoHelper(const GetFileInfoHelper&) = delete;
+  GetFileInfoHelper& operator=(const GetFileInfoHelper&) = delete;
 
   void GetFileInfo(FileSystemFileUtil* file_util,
                    FileSystemOperationContext* context,
@@ -96,7 +101,6 @@ class GetFileInfoHelper {
   base::File::Info file_info_;
   base::FilePath platform_path_;
   ScopedFile scoped_file_;
-  DISALLOW_COPY_AND_ASSIGN(GetFileInfoHelper);
 };
 
 void ReadDirectoryHelper(FileSystemFileUtil* file_util,

@@ -143,6 +143,9 @@ class EventListenerPoll : public EventListener {
  public:
   EventListenerPoll() : EventListener(), signaled_(0) {}
 
+  EventListenerPoll(const EventListenerPoll&) = delete;
+  EventListenerPoll& operator=(const EventListenerPoll&) = delete;
+
   // Called by EventEmitter to signal the Listener that a new event is
   // available.
   virtual void ReceiveEvents(EventEmitter* emitter, uint32_t events);
@@ -159,7 +162,6 @@ class EventListenerPoll : public EventListener {
   sdk_util::SimpleLock signal_lock_;
   EmitterRequestMap_t emitters_;
   size_t signaled_;
-  DISALLOW_COPY_AND_ASSIGN(EventListenerPoll);
 };
 
 }  // namespace nacl_io

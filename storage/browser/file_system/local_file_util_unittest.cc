@@ -42,6 +42,9 @@ class LocalFileUtilTest : public testing::Test {
  public:
   LocalFileUtilTest() = default;
 
+  LocalFileUtilTest(const LocalFileUtilTest&) = delete;
+  LocalFileUtilTest& operator=(const LocalFileUtilTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     file_system_context_ = CreateFileSystemContextForTesting(
@@ -119,8 +122,6 @@ class LocalFileUtilTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<FileSystemContext> file_system_context_;
   base::ScopedTempDir data_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileUtilTest);
 };
 
 TEST_F(LocalFileUtilTest, CreateAndClose) {

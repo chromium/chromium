@@ -106,6 +106,10 @@ TEST(CodeGen, HashSanity) {
 // programs with CodeGen and verifying the linearized output matches
 // the input DAG.
 class ProgramTest : public ::testing::Test {
+ public:
+  ProgramTest(const ProgramTest&) = delete;
+  ProgramTest& operator=(const ProgramTest&) = delete;
+
  protected:
   ProgramTest() : gen_(), node_hashes_() {}
 
@@ -171,8 +175,6 @@ class ProgramTest : public ::testing::Test {
 
   CodeGen gen_;
   std::map<CodeGen::Node, Hash> node_hashes_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgramTest);
 };
 
 TEST_F(ProgramTest, OneInstruction) {

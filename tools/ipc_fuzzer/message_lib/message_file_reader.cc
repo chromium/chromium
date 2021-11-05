@@ -27,6 +27,10 @@ namespace {
 class Reader {
  public:
   Reader(const base::FilePath& path);
+
+  Reader(const Reader&) = delete;
+  Reader& operator=(const Reader&) = delete;
+
   bool Read(MessageVector* messages);
 
  private:
@@ -61,8 +65,6 @@ class Reader {
   const FileHeader* header_;
   MessageVector* messages_;
   MessageNames name_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(Reader);
 };
 
 Reader::Reader(const base::FilePath& path)

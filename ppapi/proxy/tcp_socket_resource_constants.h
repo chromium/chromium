@@ -14,6 +14,10 @@ namespace proxy {
 
 class TCPSocketResourceConstants {
  public:
+  TCPSocketResourceConstants(const TCPSocketResourceConstants&) = delete;
+  TCPSocketResourceConstants& operator=(const TCPSocketResourceConstants&) =
+      delete;
+
   // The maximum number of bytes that each PpapiHostMsg_PPBTCPSocket_Read
   // message is allowed to request.
   enum { kMaxReadSize = 1024 * 1024 };
@@ -31,9 +35,6 @@ class TCPSocketResourceConstants {
   // argument sanity check, it doesn't mean the browser guarantees to support
   // such a buffer size.
   enum { kMaxReceiveBufferSize = 1024 * kMaxReadSize };
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketResourceConstants);
 };
 
 }  // namespace proxy

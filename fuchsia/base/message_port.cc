@@ -79,6 +79,10 @@ absl::optional<fuchsia::web::FrameError> BlinkMessageFromFidl(
 // MessagePortAdapter instances are self-managed; they destroy themselves when
 // the connection is terminated from either the Blink or FIDL side.
 class MessagePortAdapter : public blink::WebMessagePort::MessageReceiver {
+ public:
+  MessagePortAdapter(const MessagePortAdapter&) = delete;
+  MessagePortAdapter& operator=(const MessagePortAdapter&) = delete;
+
  protected:
   explicit MessagePortAdapter(blink::WebMessagePort blink_port)
       : blink_port_(std::move(blink_port)) {
@@ -137,8 +141,6 @@ class MessagePortAdapter : public blink::WebMessagePort::MessageReceiver {
 
   base::circular_deque<fuchsia::web::WebMessage> message_queue_;
   blink::WebMessagePort blink_port_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePortAdapter);
 };
 
 // Binds a handle to a remote MessagePort to a blink::WebMessagePort.
@@ -158,6 +160,10 @@ class FidlMessagePortClientAdapter : public MessagePortAdapter {
       Destroy();
     });
   }
+
+  FidlMessagePortClientAdapter(const FidlMessagePortClientAdapter&) = delete;
+  FidlMessagePortClientAdapter& operator=(const FidlMessagePortClientAdapter&) =
+      delete;
 
   fidl::InterfaceRequest<fuchsia::web::MessagePort> NewRequest() {
     return port_.NewRequest();
@@ -212,8 +218,6 @@ class FidlMessagePortClientAdapter : public MessagePortAdapter {
   }
 
   fuchsia::web::MessagePortPtr port_;
-
-  DISALLOW_COPY_AND_ASSIGN(FidlMessagePortClientAdapter);
 };
 
 // Binds a MessagePort FIDL service from a blink::WebMessagePort.
@@ -237,6 +241,10 @@ class FidlMessagePortServerAdapter : public fuchsia::web::MessagePort,
       : FidlMessagePortServerAdapter(std::move(blink_port)) {
     binding_.Bind(std::move(request));
   }
+
+  FidlMessagePortServerAdapter(const FidlMessagePortServerAdapter&) = delete;
+  FidlMessagePortServerAdapter& operator=(const FidlMessagePortServerAdapter&) =
+      delete;
 
   fidl::InterfaceHandle<fuchsia::web::MessagePort> NewBinding() {
     return binding_.NewBinding();
@@ -293,8 +301,6 @@ class FidlMessagePortServerAdapter : public fuchsia::web::MessagePort,
   PostMessageCallback post_message_ack_;
   ReceiveMessageCallback pending_receive_message_callback_;
   fidl::Binding<fuchsia::web::MessagePort> binding_;
-
-  DISALLOW_COPY_AND_ASSIGN(FidlMessagePortServerAdapter);
 };
 
 fidl::InterfaceRequest<fuchsia::web::MessagePort>

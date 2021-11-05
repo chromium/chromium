@@ -219,6 +219,9 @@ class LabelInfoMaker {
  public:
   LabelInfoMaker() : debug_label_index_gen_(0) {}
 
+  LabelInfoMaker(const LabelInfoMaker&) = delete;
+  LabelInfoMaker& operator=(const LabelInfoMaker&) = delete;
+
   LabelInfo* MakeLabelInfo(Label* label, bool is_model, uint32_t position) {
     LabelInfo& slot = label_infos_[label];
     if (slot.label_ == nullptr) {
@@ -239,8 +242,6 @@ class LabelInfoMaker {
   // Note LabelInfo is allocated 'flat' inside map::value_type, so the LabelInfo
   // lifetimes are managed by the map.
   std::map<Label*, LabelInfo> label_infos_;
-
-  DISALLOW_COPY_AND_ASSIGN(LabelInfoMaker);
 };
 
 struct OrderLabelInfo {
@@ -751,6 +752,9 @@ class VariableQueue {
 
   VariableQueue() = default;
 
+  VariableQueue(const VariableQueue&) = delete;
+  VariableQueue& operator=(const VariableQueue&) = delete;
+
   bool empty() const { return queue_.empty(); }
 
   const ScoreAndLabel& first() const { return *queue_.begin(); }
@@ -798,8 +802,6 @@ class VariableQueue {
 
   Queue queue_;
   std::vector<AssignmentCandidates*> pending_update_candidates_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariableQueue);
 };
 
 
@@ -811,6 +813,9 @@ class AssignmentProblem {
     VLOG(2) << "AssignmentProblem::AssignmentProblem  " << model_end << ", "
             << trace.size();
   }
+
+  AssignmentProblem(const AssignmentProblem&) = delete;
+  AssignmentProblem& operator=(const AssignmentProblem&) = delete;
 
   bool Solve() {
     if (model_end_ < Shingle::kWidth ||
@@ -1221,8 +1226,6 @@ class AssignmentProblem {
   typedef std::map<ShinglePattern::Index,
                    ShinglePattern, ShinglePatternIndexLess> IndexToPattern;
   IndexToPattern patterns_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssignmentProblem);
 };
 
 class Adjuster : public AdjustmentMethod {

@@ -35,6 +35,9 @@ class HEADLESS_EXPORT HeadlessWebContents {
 
   class HEADLESS_EXPORT Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     // All the following notifications will be called on browser main thread.
 
     // Indicates that this HeadlessWebContents instance is now ready to be
@@ -67,9 +70,6 @@ class HEADLESS_EXPORT HeadlessWebContents {
    protected:
     Observer() {}
     virtual ~Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   // Add or remove an observer to receive events from this WebContents.

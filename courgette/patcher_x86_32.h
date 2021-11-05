@@ -26,6 +26,9 @@ class PatcherX86_32 : public TransformationPatcher {
         base_length_(0) {
   }
 
+  PatcherX86_32(const PatcherX86_32&) = delete;
+  PatcherX86_32& operator=(const PatcherX86_32&) = delete;
+
   Status Init(SourceStream* parameter_stream) {
     if (!parameter_stream->ReadVarint32(&base_offset_))
       return C_BAD_TRANSFORM;
@@ -79,8 +82,6 @@ class PatcherX86_32 : public TransformationPatcher {
 
   uint32_t base_offset_;
   uint32_t base_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(PatcherX86_32);
 };
 
 }  // namespace courgette

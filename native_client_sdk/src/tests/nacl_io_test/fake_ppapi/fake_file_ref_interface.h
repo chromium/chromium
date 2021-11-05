@@ -15,6 +15,9 @@ class FakeFileRefInterface : public nacl_io::FileRefInterface {
   FakeFileRefInterface(FakeCoreInterface* core_interface,
                        FakeVarInterface* var_interface);
 
+  FakeFileRefInterface(const FakeFileRefInterface&) = delete;
+  FakeFileRefInterface& operator=(const FakeFileRefInterface&) = delete;
+
   virtual PP_Resource Create(PP_Resource file_system, const char* path);
   virtual PP_Var GetName(PP_Resource file_ref);
   virtual int32_t MakeDirectory(PP_Resource directory_ref,
@@ -35,8 +38,6 @@ class FakeFileRefInterface : public nacl_io::FileRefInterface {
   FakeCoreInterface* core_interface_;  // Weak reference.
   FakeVarInterface* var_interface_;    // Weak reference.
   FakeVarManager* var_manager_;        // Weak reference
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFileRefInterface);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_FILE_REF_INTERFACE_H_

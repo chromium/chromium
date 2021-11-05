@@ -60,6 +60,9 @@ class SyncSocketServerListener : public IPC::Listener {
  public:
   SyncSocketServerListener() : chan_(nullptr) {}
 
+  SyncSocketServerListener(const SyncSocketServerListener&) = delete;
+  SyncSocketServerListener& operator=(const SyncSocketServerListener&) = delete;
+
   void Init(IPC::Channel* chan) {
     chan_ = chan;
   }
@@ -103,8 +106,6 @@ class SyncSocketServerListener : public IPC::Listener {
   void OnMsgClassShutdown() { base::RunLoop::QuitCurrentWhenIdleDeprecated(); }
 
   IPC::Channel* chan_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSocketServerListener);
 };
 
 // Runs the fuzzing server child mode. Returns when the preset number of
@@ -122,6 +123,9 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(SyncSocketServerClient) {
 class SyncSocketClientListener : public IPC::Listener {
  public:
   SyncSocketClientListener() = default;
+
+  SyncSocketClientListener(const SyncSocketClientListener&) = delete;
+  SyncSocketClientListener& operator=(const SyncSocketClientListener&) = delete;
 
   void Init(base::SyncSocket* socket, IPC::Channel* chan) {
     socket_ = socket;
@@ -157,8 +161,6 @@ class SyncSocketClientListener : public IPC::Listener {
 
   base::SyncSocket* socket_;
   IPC::Channel* chan_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSocketClientListener);
 };
 
 using SyncSocketTest = IPCChannelMojoTestBase;

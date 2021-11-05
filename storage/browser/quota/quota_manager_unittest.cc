@@ -113,6 +113,9 @@ class QuotaManagerImplTest : public testing::Test {
  public:
   QuotaManagerImplTest() : mock_time_counter_(0) {}
 
+  QuotaManagerImplTest(const QuotaManagerImplTest&) = delete;
+  QuotaManagerImplTest& operator=(const QuotaManagerImplTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     mock_special_storage_policy_ =
@@ -714,8 +717,6 @@ class QuotaManagerImplTest : public testing::Test {
   int mock_time_counter_;
 
   base::WeakPtrFactory<QuotaManagerImplTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaManagerImplTest);
 };
 
 TEST_F(QuotaManagerImplTest, GetUsageInfo) {

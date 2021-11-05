@@ -12,6 +12,9 @@ class FakeFileIoInterface : public nacl_io::FileIoInterface {
  public:
   explicit FakeFileIoInterface(FakeCoreInterface* core_interface);
 
+  FakeFileIoInterface(const FakeFileIoInterface&) = delete;
+  FakeFileIoInterface& operator=(const FakeFileIoInterface&) = delete;
+
   virtual PP_Resource Create(PP_Resource instance);
   virtual int32_t Open(PP_Resource file_io,
                        PP_Resource file_ref,
@@ -38,8 +41,6 @@ class FakeFileIoInterface : public nacl_io::FileIoInterface {
 
  private:
   FakeCoreInterface* core_interface_;  // Weak reference.
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFileIoInterface);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_FILE_IO_INTERFACE_H_

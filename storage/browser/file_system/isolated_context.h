@@ -89,6 +89,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) IsolatedContext : public MountPoints {
   // The instance is lazily created per browser process.
   static IsolatedContext* GetInstance();
 
+  IsolatedContext(const IsolatedContext&) = delete;
+  IsolatedContext& operator=(const IsolatedContext&) = delete;
+
   // Returns true if the given filesystem type is managed by IsolatedContext
   // (i.e. if the given |type| is Isolated or External).
   // TODO(kinuko): needs a better function name.
@@ -214,8 +217,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) IsolatedContext : public MountPoints {
 
   // Reverse map from registered path to IDs.
   std::map<base::FilePath, std::set<std::string>> path_to_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolatedContext);
 };
 
 }  // namespace storage

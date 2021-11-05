@@ -59,6 +59,9 @@ class PPAPI_PROXY_EXPORT SerializedHandle {
   // Create an invalid handle of the given type.
   explicit SerializedHandle(Type type);
 
+  SerializedHandle(const SerializedHandle&) = delete;
+  SerializedHandle& operator=(const SerializedHandle&) = delete;
+
   // Create a shared memory region handle.
   explicit SerializedHandle(base::ReadOnlySharedMemoryRegion region);
   explicit SerializedHandle(base::UnsafeSharedMemoryRegion region);
@@ -164,8 +167,6 @@ class PPAPI_PROXY_EXPORT SerializedHandle {
   int32_t open_flags_;
   // This is non-zero if file writes require quota checking.
   PP_Resource file_io_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerializedHandle);
 };
 
 }  // namespace proxy

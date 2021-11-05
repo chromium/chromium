@@ -50,6 +50,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ShareableFileReference
   static scoped_refptr<ShareableFileReference> GetOrCreate(
       ScopedFile scoped_file);
 
+  ShareableFileReference(const ShareableFileReference&) = delete;
+  ShareableFileReference& operator=(const ShareableFileReference&) = delete;
+
   // The full file path.
   const base::FilePath& path() const { return scoped_file_.path(); }
 
@@ -69,8 +72,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ShareableFileReference
   ~ShareableFileReference();
 
   ScopedFile scoped_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShareableFileReference);
 };
 
 }  // namespace storage

@@ -32,6 +32,9 @@ class NativeFileUtilTest : public testing::Test {
  public:
   NativeFileUtilTest() = default;
 
+  NativeFileUtilTest(const NativeFileUtilTest&) = delete;
+  NativeFileUtilTest& operator=(const NativeFileUtilTest&) = delete;
+
   void SetUp() override { ASSERT_TRUE(data_dir_.CreateUniqueTempDir()); }
 
  protected:
@@ -77,8 +80,6 @@ class NativeFileUtilTest : public testing::Test {
 
  private:
   base::ScopedTempDir data_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeFileUtilTest);
 };
 
 TEST_F(NativeFileUtilTest, CreateCloseAndDeleteFile) {

@@ -72,6 +72,9 @@ class ServerDelegate : public Daemon::ServerDelegate {
         has_failed_(false),
         controllers_manager_(base::BindRepeating(&GetExitNotifierFD)) {}
 
+  ServerDelegate(const ServerDelegate&) = delete;
+  ServerDelegate& operator=(const ServerDelegate&) = delete;
+
   bool has_failed() const {
     return has_failed_ || controllers_manager_.has_failed();
   }
@@ -123,8 +126,6 @@ class ServerDelegate : public Daemon::ServerDelegate {
   std::string adb_path_;
   bool has_failed_;
   HostControllersManager controllers_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServerDelegate);
 };
 
 class ClientDelegate : public Daemon::ClientDelegate {

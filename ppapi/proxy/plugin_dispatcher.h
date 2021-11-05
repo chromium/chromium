@@ -148,6 +148,10 @@ class PPAPI_PROXY_EXPORT PluginDispatcher
   PluginDispatcher(PP_GetInterface_Func get_interface,
                    const PpapiPermissions& permissions,
                    bool incognito);
+
+  PluginDispatcher(const PluginDispatcher&) = delete;
+  PluginDispatcher& operator=(const PluginDispatcher&) = delete;
+
   virtual ~PluginDispatcher();
 
   // The plugin side maintains a mapping from PP_Instance to Dispatcher so
@@ -255,8 +259,6 @@ class PPAPI_PROXY_EXPORT PluginDispatcher
   bool incognito_;
 
   scoped_refptr<Sender> sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginDispatcher);
 };
 
 }  // namespace proxy

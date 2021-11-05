@@ -90,6 +90,9 @@ class FakeURLLoaderInterface : public nacl_io::URLLoaderInterface {
  public:
   explicit FakeURLLoaderInterface(FakeCoreInterface* core_interface);
 
+  FakeURLLoaderInterface(const FakeURLLoaderInterface&) = delete;
+  FakeURLLoaderInterface& operator=(const FakeURLLoaderInterface&) = delete;
+
   virtual PP_Resource Create(PP_Instance instance);
   virtual int32_t Open(PP_Resource loader,
                        PP_Resource request_info,
@@ -106,15 +109,16 @@ class FakeURLLoaderInterface : public nacl_io::URLLoaderInterface {
 
  protected:
   FakeCoreInterface* core_interface_;  // Weak reference.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeURLLoaderInterface);
 };
 
 class FakeURLRequestInfoInterface : public nacl_io::URLRequestInfoInterface {
  public:
   FakeURLRequestInfoInterface(FakeCoreInterface* core_interface,
                               FakeVarInterface* var_interface);
+
+  FakeURLRequestInfoInterface(const FakeURLRequestInfoInterface&) = delete;
+  FakeURLRequestInfoInterface& operator=(const FakeURLRequestInfoInterface&) =
+      delete;
 
   virtual PP_Resource Create(PP_Instance instance);
   virtual PP_Bool SetProperty(PP_Resource request,
@@ -127,15 +131,16 @@ class FakeURLRequestInfoInterface : public nacl_io::URLRequestInfoInterface {
  protected:
   FakeCoreInterface* core_interface_;  // Weak reference.
   FakeVarInterface* var_interface_;    // Weak reference.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeURLRequestInfoInterface);
 };
 
 class FakeURLResponseInfoInterface : public nacl_io::URLResponseInfoInterface {
  public:
   FakeURLResponseInfoInterface(FakeCoreInterface* core_interface,
                                FakeVarInterface* var_interface);
+
+  FakeURLResponseInfoInterface(const FakeURLResponseInfoInterface&) = delete;
+  FakeURLResponseInfoInterface& operator=(const FakeURLResponseInfoInterface&) =
+      delete;
 
   virtual PP_Var GetProperty(PP_Resource response,
                              PP_URLResponseProperty property);
@@ -144,9 +149,6 @@ class FakeURLResponseInfoInterface : public nacl_io::URLResponseInfoInterface {
  protected:
   FakeCoreInterface* core_interface_;  // Weak reference.
   FakeVarInterface* var_interface_;    // Weak reference.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeURLResponseInfoInterface);
 };
 
 class FakePepperInterfaceURLLoader : public nacl_io::PepperInterfaceDummy {

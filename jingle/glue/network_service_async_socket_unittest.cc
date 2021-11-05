@@ -306,6 +306,10 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
     testing::GTEST_FLAG(death_test_style) = "threadsafe";
   }
 
+  NetworkServiceAsyncSocketTest(const NetworkServiceAsyncSocketTest&) = delete;
+  NetworkServiceAsyncSocketTest& operator=(
+      const NetworkServiceAsyncSocketTest&) = delete;
+
   ~NetworkServiceAsyncSocketTest() override {}
 
   void SetUp() override {
@@ -597,9 +601,6 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
   std::unique_ptr<NetworkServiceAsyncSocket> ns_async_socket_;
   base::circular_deque<SignalSocketState> signal_socket_states_;
   const net::HostPortPair addr_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceAsyncSocketTest);
 };
 
 TEST_F(NetworkServiceAsyncSocketTest, InitialState) {

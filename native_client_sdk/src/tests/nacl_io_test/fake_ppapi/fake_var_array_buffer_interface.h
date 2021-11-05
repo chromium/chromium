@@ -14,6 +14,10 @@ class FakeVarArrayBufferInterface : public nacl_io::VarArrayBufferInterface {
  public:
   explicit FakeVarArrayBufferInterface(FakeVarManager* manager);
 
+  FakeVarArrayBufferInterface(const FakeVarArrayBufferInterface&) = delete;
+  FakeVarArrayBufferInterface& operator=(const FakeVarArrayBufferInterface&) =
+      delete;
+
   virtual struct PP_Var Create(uint32_t size_in_bytes);
   virtual PP_Bool ByteLength(struct PP_Var var, uint32_t* byte_length);
   virtual void* Map(struct PP_Var var);
@@ -21,8 +25,6 @@ class FakeVarArrayBufferInterface : public nacl_io::VarArrayBufferInterface {
 
  private:
   FakeVarManager* manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVarArrayBufferInterface);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_VAR_ARRAY_BUFFER_INTERFACE_H_

@@ -14,6 +14,9 @@ class DBusStatisticsTest : public testing::Test {
  public:
   DBusStatisticsTest() = default;
 
+  DBusStatisticsTest(const DBusStatisticsTest&) = delete;
+  DBusStatisticsTest& operator=(const DBusStatisticsTest&) = delete;
+
   void SetUp() override { statistics::Initialize(); }
 
   void TearDown() override { statistics::Shutdown(); }
@@ -50,9 +53,6 @@ class DBusStatisticsTest : public testing::Test {
     statistics::AddSentMethodCall(
         "service2", "service2.interface1", "method1");
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DBusStatisticsTest);
 };
 
 TEST_F(DBusStatisticsTest, TestDBusStatsBasic) {

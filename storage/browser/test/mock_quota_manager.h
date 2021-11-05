@@ -41,6 +41,9 @@ class MockQuotaManager : public QuotaManager {
                    scoped_refptr<base::SingleThreadTaskRunner> io_thread,
                    scoped_refptr<SpecialStoragePolicy> special_storage_policy);
 
+  MockQuotaManager(const MockQuotaManager&) = delete;
+  MockQuotaManager& operator=(const MockQuotaManager&) = delete;
+
   // Overrides QuotaManager's implementation that maintains an internal
   // container of created buckets and avoids going to the DB.
   void GetOrCreateBucket(
@@ -189,8 +192,6 @@ class MockQuotaManager : public QuotaManager {
   std::map<const blink::StorageKey, int> write_error_tracker_;
 
   base::WeakPtrFactory<MockQuotaManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuotaManager);
 };
 
 }  // namespace storage

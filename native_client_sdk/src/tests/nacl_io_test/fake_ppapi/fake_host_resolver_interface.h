@@ -20,6 +20,10 @@ class FakeHostResolverInterface : public nacl_io::HostResolverInterface {
  public:
   explicit FakeHostResolverInterface(FakePepperInterface* ppapi);
 
+  FakeHostResolverInterface(const FakeHostResolverInterface&) = delete;
+  FakeHostResolverInterface& operator=(const FakeHostResolverInterface&) =
+      delete;
+
   virtual PP_Resource Create(PP_Instance);
 
   virtual int32_t Resolve(PP_Resource,
@@ -38,8 +42,6 @@ class FakeHostResolverInterface : public nacl_io::HostResolverInterface {
 
  private:
   FakePepperInterface* ppapi_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostResolverInterface);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_HOST_RESOLVER_INTERFACE_H_

@@ -45,6 +45,10 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
  public:
   UsageTrackerTestQuotaClient() = default;
 
+  UsageTrackerTestQuotaClient(const UsageTrackerTestQuotaClient&) = delete;
+  UsageTrackerTestQuotaClient& operator=(const UsageTrackerTestQuotaClient&) =
+      delete;
+
   void GetStorageKeyUsage(const StorageKey& storage_key,
                           StorageType type,
                           GetStorageKeyUsageCallback callback) override {
@@ -110,8 +114,6 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
 
  private:
   std::map<StorageKey, int64_t> storage_key_usage_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageTrackerTestQuotaClient);
 };
 
 }  // namespace

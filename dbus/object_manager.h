@@ -188,6 +188,9 @@ class CHROME_DBUS_EXPORT ObjectManager final
                                              const std::string& service_name,
                                              const ObjectPath& object_path);
 
+  ObjectManager(const ObjectManager&) = delete;
+  ObjectManager& operator=(const ObjectManager&) = delete;
+
   // Register a client implementation class |interface| for the given D-Bus
   // interface named in |interface_name|. That object's CreateProperties()
   // method will be used to create instances of dbus::PropertySet* when
@@ -363,8 +366,6 @@ class CHROME_DBUS_EXPORT ObjectManager final
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<ObjectManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ObjectManager);
 };
 
 }  // namespace dbus

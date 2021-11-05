@@ -34,6 +34,9 @@ class SyncChannel;
 class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
                                                 public Sender {
  public:
+  SyncMessageFilter(const SyncMessageFilter&) = delete;
+  SyncMessageFilter& operator=(const SyncMessageFilter&) = delete;
+
   // Sender implementation.
   bool Send(Message* message) override;
 
@@ -88,8 +91,6 @@ class COMPONENT_EXPORT(IPC) SyncMessageFilter : public MessageFilter,
   base::Lock lock_;
 
   base::WaitableEvent* const shutdown_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncMessageFilter);
 };
 
 }  // namespace IPC

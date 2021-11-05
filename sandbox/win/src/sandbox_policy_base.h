@@ -41,6 +41,9 @@ class PolicyBase final : public TargetPolicy {
  public:
   PolicyBase();
 
+  PolicyBase(const PolicyBase&) = delete;
+  PolicyBase& operator=(const PolicyBase&) = delete;
+
   // TargetPolicy:
   void AddRef() override;
   void Release() override;
@@ -195,8 +198,6 @@ class PolicyBase final : public TargetPolicy {
 
   HANDLE effective_token_;
   bool allow_no_sandbox_job_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyBase);
 };
 
 }  // namespace sandbox

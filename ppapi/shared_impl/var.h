@@ -33,6 +33,9 @@ class VarTracker;
 // Represents a non-POD var.
 class PPAPI_SHARED_EXPORT Var : public base::RefCounted<Var> {
  public:
+  Var(const Var&) = delete;
+  Var& operator=(const Var&) = delete;
+
   // Returns a string representing the given var for logging purposes.
   static std::string PPVarToLogString(PP_Var var);
 
@@ -84,8 +87,6 @@ class PPAPI_SHARED_EXPORT Var : public base::RefCounted<Var> {
  private:
   // This will be 0 if no ID has been assigned (this happens lazily).
   int32_t var_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(Var);
 };
 
 // StringVar -------------------------------------------------------------------

@@ -34,6 +34,9 @@ namespace {
 // headless mode.
 class HeadlessPopUpMethods {
  public:
+  HeadlessPopUpMethods(const HeadlessPopUpMethods&) = delete;
+  HeadlessPopUpMethods& operator=(const HeadlessPopUpMethods&) = delete;
+
   static void Init() {
     static base::NoDestructor<HeadlessPopUpMethods> swizzler;
     ALLOW_UNUSED_LOCAL(swizzler);
@@ -51,8 +54,6 @@ class HeadlessPopUpMethods {
 
   base::mac::ScopedObjCClassSwizzler popup_perform_click_swizzler_;
   base::mac::ScopedObjCClassSwizzler popup_attach_swizzler_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessPopUpMethods);
 };
 
 NSString* const kActivityReason = @"Batch headless process";

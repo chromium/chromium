@@ -29,6 +29,10 @@ class PPAPI_PROXY_EXPORT UDPSocketResourceBase : public PluginResource {
   UDPSocketResourceBase(Connection connection,
                         PP_Instance instance,
                         bool private_api);
+
+  UDPSocketResourceBase(const UDPSocketResourceBase&) = delete;
+  UDPSocketResourceBase& operator=(const UDPSocketResourceBase&) = delete;
+
   virtual ~UDPSocketResourceBase();
 
   int32_t SetOptionImpl(PP_UDPSocket_Option name,
@@ -81,8 +85,6 @@ class PPAPI_PROXY_EXPORT UDPSocketResourceBase : public PluginResource {
   PP_NetAddress_Private bound_addr_;
 
   base::queue<scoped_refptr<TrackedCallback>> sendto_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketResourceBase);
 };
 
 }  // namespace proxy

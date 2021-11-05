@@ -56,6 +56,10 @@ class PPAPI_PROXY_EXPORT HostDispatcher : public Dispatcher {
   HostDispatcher(PP_Module module,
                  PP_GetInterface_Func local_get_interface,
                  const PpapiPermissions& permissions);
+
+  HostDispatcher(const HostDispatcher&) = delete;
+  HostDispatcher& operator=(const HostDispatcher&) = delete;
+
   ~HostDispatcher();
 
   // You must call this function before anything else. Returns true on success.
@@ -153,8 +157,6 @@ class PPAPI_PROXY_EXPORT HostDispatcher : public Dispatcher {
   std::vector<IPC::Listener*> filters_;
 
   base::WeakPtrFactory<HostDispatcher> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostDispatcher);
 };
 
 // Create this object on the stack to prevent the module (and hence the

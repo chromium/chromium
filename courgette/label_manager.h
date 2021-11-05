@@ -80,6 +80,10 @@ class LabelManager {
   };
 
   LabelManager();
+
+  LabelManager(const LabelManager&) = delete;
+  LabelManager& operator=(const LabelManager&) = delete;
+
   ~LabelManager();
 
   // Returns an exclusive upper bound for all assigned indexes in |labels|.
@@ -116,9 +120,6 @@ class LabelManager {
 
   // The main list of Label instances, sorted by the |rva_| member.
   LabelVector labels_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LabelManager);
 };
 
 }  // namespace courgette

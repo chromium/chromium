@@ -97,6 +97,11 @@ class CopyOrMoveOperationDelegate : public RecursiveOperationDelegate {
       ErrorBehavior error_behavior,
       const CopyOrMoveProgressCallback& progress_callback,
       StatusCallback callback);
+
+  CopyOrMoveOperationDelegate(const CopyOrMoveOperationDelegate&) = delete;
+  CopyOrMoveOperationDelegate& operator=(const CopyOrMoveOperationDelegate&) =
+      delete;
+
   ~CopyOrMoveOperationDelegate() override;
 
   // RecursiveOperationDelegate overrides:
@@ -151,8 +156,6 @@ class CopyOrMoveOperationDelegate : public RecursiveOperationDelegate {
 
   std::map<CopyOrMoveImpl*, std::unique_ptr<CopyOrMoveImpl>> running_copy_set_;
   base::WeakPtrFactory<CopyOrMoveOperationDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CopyOrMoveOperationDelegate);
 };
 
 }  // namespace storage

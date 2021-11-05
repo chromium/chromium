@@ -13,6 +13,9 @@ class FakeCoreInterface : public nacl_io::CoreInterface {
  public:
   explicit FakeCoreInterface(FakeResourceManager* manager);
 
+  FakeCoreInterface(const FakeCoreInterface&) = delete;
+  FakeCoreInterface& operator=(const FakeCoreInterface&) = delete;
+
   virtual void AddRefResource(PP_Resource handle);
   virtual void ReleaseResource(PP_Resource handle);
   virtual PP_Bool IsMainThread() { return PP_FALSE; }
@@ -21,8 +24,6 @@ class FakeCoreInterface : public nacl_io::CoreInterface {
 
  private:
   FakeResourceManager* resource_manager_;  // Weak reference
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCoreInterface);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_CORE_INTERFACE_H_

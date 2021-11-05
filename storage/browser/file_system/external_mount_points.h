@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
   static ExternalMountPoints* GetSystemInstance();
   static scoped_refptr<ExternalMountPoints> CreateRefCounted();
 
+  ExternalMountPoints(const ExternalMountPoints&) = delete;
+  ExternalMountPoints& operator=(const ExternalMountPoints&) = delete;
+
   // Registers a new named external filesystem.
   // The |path| is registered as the root path of the mount point which
   // is identified by a URL "filesystem:.../external/mount_name".
@@ -156,8 +159,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ExternalMountPoints
 
   // Reverse map from registered path to its corresponding mount name.
   std::map<base::FilePath, std::string> path_to_name_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalMountPoints);
 };
 
 }  // namespace storage

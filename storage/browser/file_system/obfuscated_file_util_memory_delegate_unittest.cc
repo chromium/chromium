@@ -28,6 +28,11 @@ class ObfuscatedFileUtilMemoryDelegateTest : public testing::Test {
  public:
   ObfuscatedFileUtilMemoryDelegateTest() = default;
 
+  ObfuscatedFileUtilMemoryDelegateTest(
+      const ObfuscatedFileUtilMemoryDelegateTest&) = delete;
+  ObfuscatedFileUtilMemoryDelegateTest& operator=(
+      const ObfuscatedFileUtilMemoryDelegateTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(file_system_directory_.CreateUniqueTempDir());
     file_util_ = std::make_unique<ObfuscatedFileUtilMemoryDelegate>(
@@ -62,8 +67,6 @@ class ObfuscatedFileUtilMemoryDelegateTest : public testing::Test {
  private:
   base::ScopedTempDir file_system_directory_;
   std::unique_ptr<ObfuscatedFileUtilMemoryDelegate> file_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObfuscatedFileUtilMemoryDelegateTest);
 };
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CreateOrOpenFile) {

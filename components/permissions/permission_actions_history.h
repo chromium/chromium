@@ -46,6 +46,10 @@ class PermissionActionsHistory : public KeyedService {
   };
 
   explicit PermissionActionsHistory(PrefService* pref_service);
+
+  PermissionActionsHistory(const PermissionActionsHistory&) = delete;
+  PermissionActionsHistory& operator=(const PermissionActionsHistory&) = delete;
+
   ~PermissionActionsHistory() override = default;
 
   // Get the history of recorded actions that happened after a particular time.
@@ -83,8 +87,6 @@ class PermissionActionsHistory : public KeyedService {
                                         EntryFilter entry_filter);
 
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionActionsHistory);
 };
 
 }  // namespace permissions

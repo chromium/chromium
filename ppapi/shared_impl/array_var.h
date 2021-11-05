@@ -24,6 +24,9 @@ class PPAPI_SHARED_EXPORT ArrayVar : public Var {
 
   ArrayVar();
 
+  ArrayVar(const ArrayVar&) = delete;
+  ArrayVar& operator=(const ArrayVar&) = delete;
+
   // Helper function that converts a PP_Var to an ArrayVar. This will return
   // NULL if the PP_Var is not of type PP_VARTYPE_ARRAY or the array cannot be
   // found from the var tracker.
@@ -48,8 +51,6 @@ class PPAPI_SHARED_EXPORT ArrayVar : public Var {
 
  private:
   ElementVector elements_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArrayVar);
 };
 
 }  // namespace ppapi

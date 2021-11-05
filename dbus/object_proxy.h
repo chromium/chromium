@@ -48,6 +48,9 @@ class CHROME_DBUS_EXPORT ObjectProxy
               const ObjectPath& object_path,
               int options);
 
+  ObjectProxy(const ObjectProxy&) = delete;
+  ObjectProxy& operator=(const ObjectProxy&) = delete;
+
   // Options to be OR-ed together when calling Bus::GetObjectProxyWithOptions().
   // Set the IGNORE_SERVICE_UNKNOWN_ERRORS option to silence logging of
   // org.freedesktop.DBus.Error.ServiceUnknown errors and
@@ -365,8 +368,6 @@ class CHROME_DBUS_EXPORT ObjectProxy
   std::string service_name_owner_;
 
   std::set<DBusPendingCall*> pending_calls_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObjectProxy);
 };
 
 }  // namespace dbus

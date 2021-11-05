@@ -51,6 +51,9 @@ class IsolatedContextTest : public testing::Test {
       fileset_.insert(path.NormalizePathSeparators());
   }
 
+  IsolatedContextTest(const IsolatedContextTest&) = delete;
+  IsolatedContextTest& operator=(const IsolatedContextTest&) = delete;
+
   void SetUp() override {
     IsolatedContext::FileInfoSet files;
     for (const auto& path : kTestPaths) {
@@ -75,9 +78,6 @@ class IsolatedContextTest : public testing::Test {
   std::string id_;
   std::multiset<base::FilePath> fileset_;
   std::vector<std::string> names_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedContextTest);
 };
 
 TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {

@@ -277,6 +277,9 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
  public:
   MojoSteadyPingPongTest() = default;
 
+  MojoSteadyPingPongTest(const MojoSteadyPingPongTest&) = delete;
+  MojoSteadyPingPongTest& operator=(const MojoSteadyPingPongTest&) = delete;
+
  protected:
   void RunPingPongServer(MojoHandle mp, const std::string& label, bool sync) {
     label_ = label;
@@ -400,8 +403,6 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
   std::unique_ptr<PerfCpuLogger> cpu_logger_;
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSteadyPingPongTest);
 };
 
 DEFINE_TEST_CLIENT_WITH_PIPE(PingPongClient, MojoSteadyPingPongTest, h) {

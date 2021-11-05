@@ -14,6 +14,9 @@ class FakeVarInterface : public nacl_io::VarInterface {
  public:
   explicit FakeVarInterface(FakeVarManager* manager);
 
+  FakeVarInterface(const FakeVarInterface&) = delete;
+  FakeVarInterface& operator=(const FakeVarInterface&) = delete;
+
   virtual void AddRef(PP_Var var);
   virtual void Release(PP_Var var);
   virtual PP_Var VarFromUtf8(const char* data, uint32_t len);
@@ -21,8 +24,6 @@ class FakeVarInterface : public nacl_io::VarInterface {
 
  private:
   FakeVarManager* manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVarInterface);
 };
 
 #endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_VAR_INTERFACE_H_

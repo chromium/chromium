@@ -30,6 +30,9 @@ class TranslatorLinkListener : public IPC::Listener {
     CHECK(channel_->Connect());
   }
 
+  TranslatorLinkListener(const TranslatorLinkListener&) = delete;
+  TranslatorLinkListener& operator=(const TranslatorLinkListener&) = delete;
+
   // Needed for handling sync messages in OnMessageReceived().
   bool Send(IPC::Message* message) {
     return channel_->Send(message);
@@ -67,8 +70,6 @@ class TranslatorLinkListener : public IPC::Listener {
 
   std::unique_ptr<IPC::Channel> channel_;
   CallbackFunc func_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslatorLinkListener);
 };
 
 void ServeLinkRequest(CallbackFunc func) {

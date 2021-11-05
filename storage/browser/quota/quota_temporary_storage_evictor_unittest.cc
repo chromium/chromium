@@ -148,6 +148,11 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
   QuotaTemporaryStorageEvictorTest()
       : num_get_usage_and_quota_for_eviction_(0) {}
 
+  QuotaTemporaryStorageEvictorTest(const QuotaTemporaryStorageEvictorTest&) =
+      delete;
+  QuotaTemporaryStorageEvictorTest& operator=(
+      const QuotaTemporaryStorageEvictorTest&) = delete;
+
   void SetUp() override {
     quota_eviction_handler_ = std::make_unique<MockQuotaEvictionHandler>(this);
 
@@ -222,7 +227,6 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
   std::unique_ptr<QuotaTemporaryStorageEvictor> temporary_storage_evictor_;
   int num_get_usage_and_quota_for_eviction_;
   base::WeakPtrFactory<QuotaTemporaryStorageEvictorTest> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(QuotaTemporaryStorageEvictorTest);
 };
 
 TEST_F(QuotaTemporaryStorageEvictorTest, SimpleEvictionTest) {

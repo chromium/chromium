@@ -50,6 +50,10 @@ class FileSystemOperationImplTest : public testing::Test {
   FileSystemOperationImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
+  FileSystemOperationImplTest(const FileSystemOperationImplTest&) = delete;
+  FileSystemOperationImplTest& operator=(const FileSystemOperationImplTest&) =
+      delete;
+
  protected:
   void SetUp() override {
     EXPECT_TRUE(base_.CreateUniqueTempDir());
@@ -456,8 +460,6 @@ class FileSystemOperationImplTest : public testing::Test {
   UpdateObserverList update_observers_;
 
   base::WeakPtrFactory<FileSystemOperationImplTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemOperationImplTest);
 };
 
 TEST_F(FileSystemOperationImplTest, TestMoveFailureSrcDoesntExist) {

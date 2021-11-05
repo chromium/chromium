@@ -42,6 +42,10 @@ class PPAPI_PROXY_EXPORT ResourceReplyThreadRegistrar
   explicit ResourceReplyThreadRegistrar(
       scoped_refptr<base::SingleThreadTaskRunner> main_thread);
 
+  ResourceReplyThreadRegistrar(const ResourceReplyThreadRegistrar&) = delete;
+  ResourceReplyThreadRegistrar& operator=(const ResourceReplyThreadRegistrar&) =
+      delete;
+
   // This method can only be called while holding the Pepper proxy lock; the
   // other methods can be called with/without the Pepper proxy lock.
   void Register(PP_Resource resource,
@@ -68,8 +72,6 @@ class PPAPI_PROXY_EXPORT ResourceReplyThreadRegistrar
   base::Lock lock_;
   ResourceMap map_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceReplyThreadRegistrar);
 };
 
 }  // namespace proxy

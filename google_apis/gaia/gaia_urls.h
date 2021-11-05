@@ -18,6 +18,9 @@ class GaiaUrls {
  public:
   static GaiaUrls* GetInstance();
 
+  GaiaUrls(const GaiaUrls&) = delete;
+  GaiaUrls& operator=(const GaiaUrls&) = delete;
+
   // The URLs for different calls in the Google Accounts programmatic login API.
   const GURL& google_url() const;
   const GURL& secure_google_url() const;
@@ -130,8 +133,6 @@ class GaiaUrls {
   GURL reauth_api_url_;
 
   GURL gaia_login_form_realm_;
-
-  DISALLOW_COPY_AND_ASSIGN(GaiaUrls);
 };
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_URLS_H_

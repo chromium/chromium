@@ -31,6 +31,9 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageAttachmentSet
  public:
   MessageAttachmentSet();
 
+  MessageAttachmentSet(const MessageAttachmentSet&) = delete;
+  MessageAttachmentSet& operator=(const MessageAttachmentSet&) = delete;
+
   // Return the number of attachments
   unsigned size() const;
 
@@ -87,8 +90,6 @@ class IPC_MESSAGE_SUPPORT_EXPORT MessageAttachmentSet
   // all the descriptors have been read (with GetNthDescriptor). Secondly, we
   // can check that they are read in order.
   unsigned consumed_descriptor_highwater_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageAttachmentSet);
 };
 
 }  // namespace IPC

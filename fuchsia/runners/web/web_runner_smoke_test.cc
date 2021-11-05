@@ -28,6 +28,10 @@ namespace {
 class WebRunnerSmokeTest : public testing::Test {
  public:
   WebRunnerSmokeTest() = default;
+
+  WebRunnerSmokeTest(const WebRunnerSmokeTest&) = delete;
+  WebRunnerSmokeTest& operator=(const WebRunnerSmokeTest&) = delete;
+
   void SetUp() final {
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &WebRunnerSmokeTest::HandleRequest, base::Unretained(this)));
@@ -85,8 +89,6 @@ class WebRunnerSmokeTest : public testing::Test {
   net::EmbeddedTestServer test_server_;
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRunnerSmokeTest);
 };
 
 // Verify that the Component loads and fetches the desired page.
