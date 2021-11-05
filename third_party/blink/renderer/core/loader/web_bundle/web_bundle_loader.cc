@@ -98,12 +98,12 @@ void WebBundleLoader::OnWebBundleError(
 }
 
 void WebBundleLoader::OnWebBundleLoadFinished(bool success) {
-  if (load_state_ != kInProgress)
+  if (load_state_ != LoadState::kInProgress)
     return;
   if (success) {
-    load_state_ = kSuccess;
+    load_state_ = LoadState::kSuccess;
   } else {
-    load_state_ = kFailed;
+    load_state_ = LoadState::kFailed;
   }
 
   subresource_web_bundle_->NotifyLoadingFinished();
@@ -116,9 +116,9 @@ void WebBundleLoader::ClearReceivers() {
 }
 
 void WebBundleLoader::DidFailInternal() {
-  if (load_state_ != kInProgress)
+  if (load_state_ != LoadState::kInProgress)
     return;
-  load_state_ = kFailed;
+  load_state_ = LoadState::kFailed;
   subresource_web_bundle_->NotifyLoadingFinished();
 }
 
