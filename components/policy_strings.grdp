@@ -498,7 +498,7 @@ Additional details:
     Merged
   </message>
   <message name="IDS_POLICY_SOURCE_CLOUD_FROM_ASH" desc="Indicates that the policy originates from the cloud in Ash and piped to Lacros.">
-    Cloud (system-wide)
+    Cloud (Ash)
   </message>
   <message name="IDS_POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE" desc="Indicates that the policy originates from the restricted managed guest session override.">
     Restricted managed guest session override
