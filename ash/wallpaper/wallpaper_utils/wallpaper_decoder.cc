@@ -63,7 +63,7 @@ void DecodeImageData(DecodeImageCallback callback, const std::string& data) {
   data_decoder::DecodeImageIsolated(
       base::as_bytes(base::make_span(data)),
       data_decoder::mojom::ImageCodec::kDefault,
-      /*shrink_to_fit=*/false, kMaxImageSizeInBytes,
+      /*shrink_to_fit=*/true, kMaxImageSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&ToImageSkia, std::move(callback)));
 }
