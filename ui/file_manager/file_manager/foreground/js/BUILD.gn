@@ -817,6 +817,7 @@ js_library("folder_shortcuts_data_model") {
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }

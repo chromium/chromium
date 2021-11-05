@@ -195,25 +195,25 @@ export class FolderShortcutsDataModel extends EventTarget {
    * Initializes the model and loads the shortcuts.
    * @private
    */
-  load_() {
-    this.queue_.run(callback => {
-      xfm.storage.sync.get(FolderShortcutsDataModel.NAME, value => {
-        if (chrome.runtime.lastError) {
-          console.error(
-              'Failed to load shortcut paths from xfm.storage: ' +
-              chrome.runtime.lastError.message);
-          callback();
-          return;
+  async load_() {
+    this.queue_.run(async (callback) => {
+      try {
+        const value =
+            await xfm.storage.sync.getAsync(FolderShortcutsDataModel.NAME);
+        if (value) {
+          const shortcutPaths = /** @type {!Array} */ (
+              value[FolderShortcutsDataModel.NAME] || []);
+
+          // Record metrics.
+          metrics.recordSmallCount(
+              'FolderShortcut.Count', shortcutPaths.length);
+
+          // Resolve and add the entries to the model.
+          this.processEntries_(shortcutPaths);  // Runs within a queue.
         }
-        const shortcutPaths = value[FolderShortcutsDataModel.NAME] || [];
-
-        // Record metrics.
-        metrics.recordSmallCount('FolderShortcut.Count', shortcutPaths.length);
-
-        // Resolve and add the entries to the model.
-        this.processEntries_(shortcutPaths);  // Runs within a queue.
+      } finally {
         callback();
-      });
+      }
     });
   }
 
@@ -223,12 +223,16 @@ export class FolderShortcutsDataModel extends EventTarget {
    */
   reload_() {
     let shortcutPaths;
-    this.queue_.run(callback => {
-      xfm.storage.sync.get(FolderShortcutsDataModel.NAME, value => {
-        const shortcutPaths = value[FolderShortcutsDataModel.NAME] || [];
+    this.queue_.run(async (callback) => {
+      try {
+        const value =
+            await xfm.storage.sync.getAsync(FolderShortcutsDataModel.NAME);
+        const shortcutPaths =
+            /** @type {!Array} */ (value[FolderShortcutsDataModel.NAME] || []);
         this.processEntries_(shortcutPaths);  // Runs within a queue.
+      } finally {
         callback();
-      });
+      }
     });
   }
 
@@ -421,7 +425,7 @@ export class FolderShortcutsDataModel extends EventTarget {
 
     const prefs = {};
     prefs[FolderShortcutsDataModel.NAME] = paths;
-    xfm.storage.sync.set(prefs, () => {});
+    xfm.storage.sync.setAsync(prefs);
   }
 
   /**

@@ -101,20 +101,20 @@ export class AppWindowWrapper {
    * @return {!Promise}
    */
   async getWindowPreferences_() {
-    return new Promise(resolve => {
-      const boundsKey = AppWindowWrapper.makeGeometryKey(this.url_);
-      const maximizedKey = AppWindowWrapper.MAXIMIZED_KEY_;
+    const boundsKey = AppWindowWrapper.makeGeometryKey(this.url_);
+    const maximizedKey = AppWindowWrapper.MAXIMIZED_KEY_;
 
-      let lastBounds;
-      let isMaximized = false;
-      xfm.storage.local.get([boundsKey, maximizedKey], preferences => {
-        if (!chrome.runtime.lastError) {
-          lastBounds = preferences[boundsKey];
-          isMaximized = preferences[maximizedKey];
-        }
-        resolve({lastBounds: lastBounds, isMaximized: isMaximized});
-      });
-    });
+    let lastBounds;
+    let isMaximized = false;
+    const preferences =
+        await xfm.storage.local.getAsync([boundsKey, maximizedKey]);
+    if (preferences) {
+      if (!chrome.runtime.lastError) {
+        lastBounds = preferences[boundsKey];
+        isMaximized = preferences[maximizedKey];
+      }
+      return {lastBounds: lastBounds, isMaximized: isMaximized};
+    }
   }
 
   /**
@@ -291,11 +291,11 @@ export class AppWindowWrapper {
    * Handles the onClosed extension API event.
    * @private
    */
-  onClosed_() {
+  async onClosed_() {
     // Remember the last window state (maximized or normal).
     const preferences = {};
     preferences[AppWindowWrapper.MAXIMIZED_KEY_] = this.window_.isMaximized();
-    xfm.storage.local.set(preferences);
+    xfm.storage.local.setAsync(preferences);
 
     // Unload the window.
     const appWindow = this.window_;
@@ -327,7 +327,7 @@ export class AppWindowWrapper {
       const preferences = {};
       preferences[AppWindowWrapper.makeGeometryKey(this.url_)] =
           this.window_.getBounds();
-      xfm.storage.local.set(preferences);
+      xfm.storage.local.setAsync(preferences);
     }
   }
 }
@@ -414,23 +414,23 @@ export class SingletonAppWindowWrapper extends AppWindowWrapper {
    * Reopen a window if its state is saved in the local xfm.storage.
    * @param {function()=} opt_callback Completion callback.
    */
-  reopen(opt_callback) {
-    xfm.storage.local.get(this.id_, items => {
-      const value = items[this.id_];
-      if (!value) {
-        opt_callback && opt_callback();
-        return;  // No app state persisted.
-      }
+  async reopen(opt_callback) {
+    const items = await xfm.storage.local.getAsync(this.id_);
+    const value = /** @type {string} */ (items[this.id_]);
+    if (!value) {
+      opt_callback && opt_callback();
+      return;  // No app state persisted.
+    }
 
-      let appState;
-      try {
-        appState = assertInstanceof(JSON.parse(value), Object);
-      } catch (e) {
-        console.error('Corrupt launch data for ' + this.id_, value);
-        opt_callback && opt_callback();
-        return;
-      }
-      this.launch(appState, true).then(() => opt_callback && opt_callback());
-    });
+    let appState;
+    try {
+      appState = assertInstanceof(JSON.parse(value), Object);
+    } catch (e) {
+      console.error('Corrupt launch data for ' + this.id_, value);
+      opt_callback && opt_callback();
+      return;
+    }
+    await this.launch(appState, true);
+    opt_callback && opt_callback();
   }
 }

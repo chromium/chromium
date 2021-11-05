@@ -17,6 +17,12 @@ class StorageAreaAsync {
   constructor(storageArea) {
     this.storageArea_ = (storageArea) ? storageArea : this;
 
+    /**
+     * If the chrome.runtime.lastError should be checked.
+     * @protected {boolean}
+     */
+    this.checkLastError = true;
+
     this.get = this.storageArea_.get.bind(this.storageArea_);
     this.set = this.storageArea_.set.bind(this.storageArea_);
     this.remove = this.storageArea_.remove.bind(this.storageArea_);
@@ -31,7 +37,8 @@ class StorageAreaAsync {
   async getAsync(keys) {
     return new Promise((resolve, reject) => {
       this.get(keys, (values) => {
-        if (chrome && chrome.runtime && chrome.runtime.lastError) {
+        if (this.checkLastError && chrome && chrome.runtime &&
+            chrome.runtime.lastError) {
           const keysString = keys && keys.join(', ');
           reject(`Failed to retrieve keys [${keysString}] from browser storage:
               ${chrome.runtime.lastError.message}`);
@@ -50,7 +57,8 @@ class StorageAreaAsync {
   async setAsync(values) {
     return new Promise((resolve, reject) => {
       this.set(values, () => {
-        if (chrome && chrome.runtime && chrome.runtime.lastError) {
+        if (this.checkLastError && chrome && chrome.runtime &&
+            chrome.runtime.lastError) {
           const keysString = values && Object.keys(values).join(', ');
           reject(`Failed to update browser storage keys
               [${keysString}] with supplied values:
@@ -104,6 +112,8 @@ class StorageAreaSWAImpl extends StorageAreaAsync {
    */
   constructor(type) {
     super(/** storageArea */ null);
+
+    this.checkLastError = false;
 
     /** @private {boolean} */
     this.loaded_ = false;
