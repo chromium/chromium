@@ -7,17 +7,30 @@ import("//build/rust/rust_target.gni")
 
 # This template allows for building Cargo crates within gn.
 #
+# It is intended for use with pre-existing (third party) code and
+# is none too efficient. (It will stall the build pipeline whilst
+# it runs build scripts to work out what flags are needed). First
+# party code should directly use first-class gn targets, such as
+# //build/rust/rust_source_set.gni or similar.
+#
+# Because it's intended for third-party code, it automatically
+# defaults to //build/config/compiler:no_chromium_code which
+# suppresses some warnings. If you *do* use this for first party
+# code, you should remove that config and add the equivalent
+# //build/config/compiler:chromium_code config.
+#
 # Arguments:
 #  sources
 #  crate_root
 #  epoch
-#  configs
 #  deps
 #  features
 #  skip_unit_tests
 #  edition
 #  crate_name
 #    All just as in rust_source_set.gni
+#  library_configs/executable_configs
+#    All just as in rust_target.gni
 #
 #  dev_deps
 #    Same meaning as test_deps in rust_source_set.gni, but called
@@ -98,6 +111,7 @@ template("cargo_crate") {
                              "target_type",
                              "visibility",
                              "testonly",
+                             "configs",
                            ])
 
     if (defined(invoker.build_root)) {
@@ -184,8 +198,9 @@ template("cargo_crate") {
                                  "features",
                                  "edition",
                                  "rustflags",
-                                 "configs",
                                ])
+        executable_configs -= [ "//build/config/compiler:chromium_code" ]
+        executable_configs += [ "//build/config/compiler:no_chromium_code" ]
       }
     } else {
       not_needed(invoker,
@@ -196,4 +211,13 @@ template("cargo_crate") {
                  ])
     }
   }
+}
+
+set_defaults("cargo_crate") {
+  library_configs = default_compiler_configs
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs = default_executable_configs
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 }

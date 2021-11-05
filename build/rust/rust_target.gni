@@ -28,6 +28,11 @@ import("//build/rust/rust_unit_test.gni")
 #     are created for downstream targets to link against in both languages
 #     (again, see rust_source_set for docs). Only works for rust_library
 #     types.
+#
+# There is one area where this differs from `rust_source_set`: configs.
+# Here, you must specify `executable_configs` or `library_configs`
+# depending on the type of thing you're generating. This is so that
+# different defaults can be provided.
 
 template("rust_target") {
   _target_name = target_name
@@ -58,9 +63,16 @@ template("rust_target") {
   } else {
     _configs = [ "//build/rust:edition_2018" ]
   }
-  if (defined(invoker.configs)) {
-    _configs += invoker.configs
+  if (invoker.target_type == "executable") {
+    if (defined(invoker.executable_configs)) {
+      _configs += invoker.executable_configs
+    }
+  } else {
+    if (defined(invoker.library_configs)) {
+      _configs += invoker.library_configs
+    }
   }
+
   _deps_for_rust_targets = []
   if (defined(invoker.mutually_dependent_target)) {
     _deps_for_rust_targets += [ invoker.mutually_dependent_target ]
@@ -139,7 +151,8 @@ template("rust_target") {
   target(invoker.target_type, "${target_name}${main_target_suffix}") {
     crate_name = _crate_name
     crate_root = _crate_root
-    configs += _configs
+    configs = []
+    configs = _configs
     deps = _deps
     if (defined(_cxx_bindings)) {
       deps += [ "//build/rust:cxx_rustdeps" ]
@@ -183,6 +196,10 @@ template("rust_target") {
       crate_root = _crate_root
       rustflags = _rustflags
       deps = _deps
+      if (defined(invoker.executable_configs)) {
+        configs = []
+        configs = invoker.executable_configs
+      }
       if (defined(invoker.test_deps)) {
         deps += invoker.test_deps
       }
@@ -196,4 +213,9 @@ template("rust_target") {
       native_header_deps = _deps
     }
   }
+}
+
+set_defaults("rust_target") {
+  executable_configs = default_executable_configs
+  library_configs = default_compiler_configs
 }

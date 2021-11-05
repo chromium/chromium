@@ -78,13 +78,14 @@ template("rust_unit_test") {
       "--test",
     ]
     rustflags += _rustflags
-    configs += _configs
+    configs = []
+    configs = _configs
     crate_root = _crate_root
   }
 }
 
 set_defaults("rust_unit_test") {
-  configs = []
+  configs = default_executable_configs
   deps = []
   rustflags = []
 }
