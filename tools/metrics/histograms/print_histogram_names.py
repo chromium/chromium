@@ -72,7 +72,7 @@ def get_diff(revision):
   prev_files = []
   for p in histogram_paths.ALL_XMLS_RELATIVE:
     try:
-      prev_files.append(get_file_at_revision(os.path.normpath(p)))
+      prev_files.append(get_file_at_revision(p))
     except subprocess.CalledProcessError:
       # Paths might not exist in the provided revision.
       continue
