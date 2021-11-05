@@ -231,6 +231,14 @@ bool CanvasResourceDispatcher::PrepareFrame(
 
   frame->metadata.frame_token = ++next_frame_token_;
 
+  // Ask viz not to throttle us if we've not voluntarily suspended animation.
+  // Typically, we'll suspend if we're hidden, unless we're hidden-but-painting.
+  // In that case, we can still submit frames that will contribute, possibly
+  // indirectly, to picture-in-picture content even if those frames are not
+  // consumed by a viz frame sink directly.  In those cases, it might choose to
+  // throttle us, incorrectly.
+  frame->metadata.may_throttle_if_undrawn_frames = suspend_animation_;
+
   const gfx::Rect bounds(size_.width(), size_.height());
   constexpr viz::CompositorRenderPassId kRenderPassId{1};
   auto pass =

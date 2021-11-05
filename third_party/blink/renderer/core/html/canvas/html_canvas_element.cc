@@ -1308,7 +1308,11 @@ void HTMLCanvasElement::DiscardResourceProvider() {
 
 void HTMLCanvasElement::PageVisibilityChanged() {
   bool hidden = !GetPage()->IsPageVisible();
-  SetSuspendOffscreenCanvasAnimation(hidden);
+  // If we are still painting, then continue to allow animations, even if the
+  // page is otherwise hidden.
+  SetSuspendOffscreenCanvasAnimation(
+      GetPage()->GetVisibilityState() ==
+      mojom::blink::PageVisibilityState::kHidden);
 
   if (!context_)
     return;
