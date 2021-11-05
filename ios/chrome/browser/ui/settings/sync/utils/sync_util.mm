@@ -63,7 +63,6 @@ NSString* GetSyncErrorDescriptionForSyncSetupService(
       // syncer::AlwaysEncryptedUserTypes().
       return l10n_util::GetNSString(IDS_IOS_SYNC_PASSWORDS_ERROR_DESCRIPTION);
     case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
-      // TODO(crbug.com/1100278): Revisit strings below.
       if (syncSetupService->IsEncryptEverythingEnabled())
         return l10n_util::GetNSString(
             IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_EVERYTHING);

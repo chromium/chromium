@@ -48,9 +48,8 @@ class ChromeTrustedVaultService {
   // unspecified if FetchKeys() is invoked, that is, FetchKeys() may or may not
   // treat existing keys as stale (only guaranteed upon completion of
   // MarkLocalKeysAsStale()).
-  // TODO(crbug.com/1100278): Make pure virtual.
   virtual void MarkLocalKeysAsStale(ChromeIdentity* chrome_identity,
-                                    base::OnceClosure callback);
+                                    base::OnceClosure callback) = 0;
 
   // Returns whether recoverability of the keys is degraded and user action is
   // required to add a new method.
@@ -72,7 +71,6 @@ class ChromeTrustedVaultService {
   // GetDegradedRecoverabilityStatus(). Once the reauth is done and the UI is
   // dismissed, |callback| is called. |callback| is not called if the
   // reauthentication is canceled.
-  // TODO(crbug.com/1100278): Make pure.
   virtual void FixDegradedRecoverability(
       ChromeIdentity* chrome_identity,
       UIViewController* presentingViewController,

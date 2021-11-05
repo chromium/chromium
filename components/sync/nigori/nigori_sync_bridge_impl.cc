@@ -1050,12 +1050,7 @@ void NigoriSyncBridgeImpl::MaybeNotifyBootstrapTokenUpdated() const {
       NOTREACHED();
       return;
     case NigoriSpecifics::KEYSTORE_PASSPHRASE:
-      return;
     case NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE:
-      // This may be problematic for the MIGRATION_DONE case because the local
-      // keybag will be cleared and it won't be automatically recovered from
-      // prefs.
-      NOTIMPLEMENTED();
       return;
     case NigoriSpecifics::IMPLICIT_PASSPHRASE:
     case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:

@@ -24,6 +24,8 @@ class FakeChromeTrustedVaultService : public ChromeTrustedVaultService {
   void FetchKeys(ChromeIdentity* chrome_identity,
                  base::OnceCallback<void(const TrustedVaultSharedKeyList&)>
                      callback) override;
+  void MarkLocalKeysAsStale(ChromeIdentity* chrome_identity,
+                            base::OnceClosure callback) override;
   void GetDegradedRecoverabilityStatus(
       ChromeIdentity* chrome_identity,
       base::OnceCallback<void(bool)> callback) override;

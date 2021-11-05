@@ -57,6 +57,10 @@ void FakeChromeTrustedVaultService::FetchKeys(
     ChromeIdentity* chrome_identity,
     base::OnceCallback<void(const TrustedVaultSharedKeyList&)> callback) {}
 
+void FakeChromeTrustedVaultService::MarkLocalKeysAsStale(
+    ChromeIdentity* chrome_identity,
+    base::OnceClosure callback) {}
+
 void FakeChromeTrustedVaultService::GetDegradedRecoverabilityStatus(
     ChromeIdentity* chrome_identity,
     base::OnceCallback<void(bool)> callback) {}
