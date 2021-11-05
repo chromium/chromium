@@ -24,7 +24,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_factory_ozone.h"
-#include "ui/base/dragdrop/os_exchange_data_provider_x11.h"
 #include "ui/base/x/x11_cursor.h"
 #include "ui/base/x/x11_move_loop.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
@@ -41,7 +40,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #else
-#include "ui/base/dragdrop/os_exchange_data_provider_x11.h"
+#include "ui/platform_window/x11/os_exchange_data_provider_x11.h"
 #endif
 
 namespace ui {

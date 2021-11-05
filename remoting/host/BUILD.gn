@@ -506,6 +506,7 @@ static_library("common") {
     ]
     deps += [
       "//remoting/host/linux:x11",
+      "//ui/base/x",
       "//ui/events/platform/x11",
       "//ui/gfx/x",
     ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/hit_test_x11.h"
+#include "ui/platform_window/x11/hit_test_x11.h"
 
 #include "ui/base/hit_test.h"
 

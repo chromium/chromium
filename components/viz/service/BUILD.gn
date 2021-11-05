@@ -485,6 +485,7 @@ viz_source_set("gpu_service_dependencies") {
       libs = [ "xshmfence" ]
 
       deps += [
+        "//ui/base/x",
         "//ui/events/platform/x11",
         "//ui/gfx/x",
       ]

@@ -19,6 +19,8 @@ component("x11") {
     "//ui/base",
     "//ui/base:hit_test",
     "//ui/base:wm_role_names",
+    "//ui/base/clipboard:clipboard_types",
+    "//ui/base/data_transfer_policy",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom",
     "//ui/base/x",
@@ -36,6 +38,10 @@ component("x11") {
   defines = [ "X11_WINDOW_IMPLEMENTATION" ]
 
   sources = [
+    "hit_test_x11.cc",
+    "hit_test_x11.h",
+    "os_exchange_data_provider_x11.cc",
+    "os_exchange_data_provider_x11.h",
     "x11_topmost_window_finder.cc",
     "x11_topmost_window_finder.h",
     "x11_window.cc",
@@ -80,6 +86,7 @@ test("x11_unittests") {
     "//ui/base/dragdrop:types",
     "//ui/base/x",
     "//ui/base/x:test_support",
+    "//ui/base/x:unittests",
     "//ui/events:test_support",
     "//ui/events/platform/x11",
     "//ui/events/x",

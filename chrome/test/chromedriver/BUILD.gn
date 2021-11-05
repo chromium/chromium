@@ -302,7 +302,10 @@ source_set("lib") {
     # engine.
     if (ozone_platform_x11) {
       sources += [ "keycode_text_conversion_x.cc" ]
-      deps += [ "//ui/gfx/x" ]
+      deps += [
+        "//ui/base/x",
+        "//ui/gfx/x",
+      ]
     }
   }
 

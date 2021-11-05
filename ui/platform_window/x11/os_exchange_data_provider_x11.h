@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_PROVIDER_X11_H_
-#define UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_PROVIDER_X11_H_
+#ifndef UI_PLATFORM_WINDOW_X11_OS_EXCHANGE_DATA_PROVIDER_X11_H_
+#define UI_PLATFORM_WINDOW_X11_OS_EXCHANGE_DATA_PROVIDER_X11_H_
 
-#include "base/component_export.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
+#include "ui/platform_window/x11/x11_window_export.h"
 
 namespace ui {
 
 // OSExchangeDataProvider implementation for x11 linux.
-class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderX11
+class X11_WINDOW_EXPORT OSExchangeDataProviderX11
     : public XOSExchangeDataProvider,
       public x11::EventObserver {
  public:
@@ -48,4 +48,4 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderX11
 
 }  // namespace ui
 
-#endif  // UI_BASE_DRAGDROP_OS_EXCHANGE_DATA_PROVIDER_X11_H_
+#endif  // UI_PLATFORM_WINDOW_X11_OS_EXCHANGE_DATA_PROVIDER_X11_H_

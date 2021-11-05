@@ -6,7 +6,7 @@ import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 
-assert(use_x11 || ozone_platform_x11)
+assert(ozone_platform_x11)
 
 component("x") {
   output_name = "ui_base_x"
@@ -107,6 +107,7 @@ component("x") {
     ]
     public_deps += [ "//ui/base/dragdrop/mojom:mojom_shared" ]
     deps += [
+      "//ui/base",
       "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom",
     ]

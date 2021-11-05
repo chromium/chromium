@@ -18,13 +18,8 @@
 #include "ui/base/ime/win/input_method_win_tsf.h"
 #elif defined(OS_APPLE)
 #include "ui/base/ime/mac/input_method_mac.h"
-#elif defined(USE_X11) || defined(USE_OZONE)
-#if defined(USE_X11)
-#include "ui/base/ime/linux/input_method_auralinux.h"
-#endif  // defined(USE_X11)
-#if defined(USE_OZONE)
+#elif defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#endif  // defined(USE_OZONE)
 #else
 #include "ui/base/ime/input_method_minimal.h"
 #endif
@@ -67,18 +62,8 @@ std::unique_ptr<InputMethod> CreateInputMethod(
   return std::make_unique<InputMethodWinImm32>(delegate, widget);
 #elif defined(OS_APPLE)
   return std::make_unique<InputMethodMac>(delegate);
-#elif defined(USE_X11) || defined(USE_OZONE)
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return ui::OzonePlatform::GetInstance()->CreateInputMethod(delegate,
-                                                               widget);
-  }
-#endif  // defined(USE_OZONE)
-#if defined(USE_X11)
-  return std::make_unique<ui::InputMethodAuraLinux>(delegate);
-#endif  // defined(USE_X11)
-  NOTREACHED();
-  return nullptr;
+#elif defined(USE_OZONE)
+  return ui::OzonePlatform::GetInstance()->CreateInputMethod(delegate, widget);
 #else
   return std::make_unique<InputMethodMinimal>(delegate);
 #endif

@@ -136,6 +136,7 @@ component("gtk") {
       "x/gtk_ui_platform_x11.h",
     ]
     deps += [
+      "//ui/base/x",
       "//ui/events/platform/x11",
       "//ui/gfx/x",
       "//ui/platform_window/x11",
