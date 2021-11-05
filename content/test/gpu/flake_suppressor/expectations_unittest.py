@@ -8,11 +8,17 @@ import os
 import sys
 import unittest
 
+import six
+
+# Same reasoning as below.
+if six.PY3:
+  import urllib.error
+
 # This script is not Python 2-compatible, but some presubmit scripts end up
 # trying to parse this to find tests.
 # TODO(crbug.com/1198237): Remove this once all the GPU tests, and by
 # extension the presubmit scripts, are Python 3-compatible.
-if sys.version_info[0] == 3:
+if six.PY3:
   import unittest.mock as mock
 
 import validate_tag_consistency
@@ -359,11 +365,14 @@ class FindBestInsertionLineForExpectationUnittest(
 class GetExpectationFilesFromOriginUnittest(unittest.TestCase):
   class FakeRequestResult(object):
     def __init__(self):
-      self.status_code = 200
       self.text = ''
 
+    def read(self):
+      return self.text
+
   def setUp(self):
-    self._get_patcher = mock.patch('flake_suppressor.expectations.requests.get')
+    self._get_patcher = mock.patch(
+        'flake_suppressor.expectations.urllib.request.urlopen')
     self._get_mock = self._get_patcher.start()
     self.addCleanup(self._get_patcher.stop)
 
@@ -399,12 +408,10 @@ mode type hash bar_tests.txt"""
     """Tests that getting a non-200 status code back results in a failure."""
 
     def SideEffect(_):
-      request_result = GetExpectationFilesFromOriginUnittest.FakeRequestResult()
-      request_result.status_code = 404
-      return request_result
+      raise urllib.error.HTTPError('url', '404', 'No exist :(', '', None)
 
     self._get_mock.side_effect = SideEffect
-    with self.assertRaises(AssertionError):
+    with self.assertRaises(urllib.error.HTTPError):
       expectations.GetExpectationFilesFromOrigin()
 
 

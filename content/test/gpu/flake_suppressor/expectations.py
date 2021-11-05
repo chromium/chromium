@@ -7,7 +7,12 @@ import base64
 import os
 import posixpath
 
-import requests
+import six
+
+# This script is Python 3-only, but some presubmit stuff still tries to parse
+# it in Python 2, and this module does not exist in Python 2.
+if six.PY3:
+  import urllib.request
 
 import flake_suppressor
 
@@ -317,12 +322,11 @@ def GetExpectationFilesFromOrigin():
   origin_dir = RELATIVE_EXPECTATION_FILE_DIRECTORY.replace(os.sep, '/')
 
   origin_dir_url = posixpath.join(GITILES_URL, origin_dir) + TEXT_FORMAT_ARG
-  r = requests.get(origin_dir_url)
-  assert r.status_code == 200
+  response = urllib.request.urlopen(origin_dir_url).read()
   # Response is a base64 encoded, newline-separated list of files in the
   # directory in the format: `mode file_type hash name`
   files = []
-  decoded_text = base64.b64decode(r.text).decode('utf-8')
+  decoded_text = base64.b64decode(response).decode('utf-8')
   for line in decoded_text.splitlines():
     files.append(line.split()[-1])
 
@@ -331,9 +335,8 @@ def GetExpectationFilesFromOrigin():
     origin_filepath = posixpath.join(origin_dir, f)
     origin_filepath_url = posixpath.join(GITILES_URL,
                                          origin_filepath) + TEXT_FORMAT_ARG
-    r = requests.get(origin_filepath_url)
-    assert r.status_code == 200
-    decoded_text = base64.b64decode(r.text).decode('utf-8')
+    response = urllib.request.urlopen(origin_filepath_url).read()
+    decoded_text = base64.b64decode(response).decode('utf-8')
     origin_file_contents[f] = decoded_text
 
   return origin_file_contents
