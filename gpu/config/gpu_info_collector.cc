@@ -38,13 +38,8 @@
 #include "ui/gl/init/gl_factory.h"
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"                 // nogncheck
 #include "ui/ozone/public/ozone_platform.h"           // nogncheck
 #include "ui/ozone/public/platform_gl_egl_utility.h"  // nogncheck
-#endif
-
-#if defined(USE_X11)
-#include "ui/gl/gl_utils.h"
 #endif
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
@@ -614,20 +609,12 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
   }
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    const auto* const egl_utility =
-        ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-    if (egl_utility)
-      egl_utility->CollectGpuExtraInfo(prefs.enable_native_gpu_memory_buffers,
-                                       *gpu_extra_info);
-    return true;
+  if (const auto* const egl_utility =
+          ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility()) {
+    egl_utility->CollectGpuExtraInfo(prefs.enable_native_gpu_memory_buffers,
+                                     *gpu_extra_info);
   }
 #endif
-#if defined(USE_X11)
-  gl::CollectX11GpuExtraInfo(prefs.enable_native_gpu_memory_buffers,
-                             *gpu_extra_info);
-#endif
-
   return true;
 }
 

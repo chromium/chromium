@@ -20,7 +20,7 @@ declare_args() {
   enable_gpu_service_logging = false
 }
 
-use_glx = use_x11 || ozone_platform_x11
+use_glx = ozone_platform_x11
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -263,7 +263,7 @@ component("gl") {
     }
   }
 
-  if (use_x11 || ozone_platform_x11) {
+  if (ozone_platform_x11) {
     sources += [
       "gl_image_egl_pixmap.cc",
       "gl_image_egl_pixmap.h",
@@ -522,13 +522,6 @@ static_library("test_support") {
     deps += [ "//ui/platform_window/common" ]
   }
 
-  if (use_x11) {
-    deps += [
-      "//ui/gfx/x",
-      "//ui/platform_window/x11",
-    ]
-  }
-
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -636,7 +629,7 @@ test("gl_unittests") {
   data_deps = [ "//third_party/mesa_headers" ]
 
   # TODO(https://crbug.com/789065): this must be moved to Ozone.
-  if (use_x11) {
+  if (ozone_platform_x11) {
     sources += [ "gl_context_glx_unittest.cc" ]
     deps += [ "//ui/gfx/x" ]
   }

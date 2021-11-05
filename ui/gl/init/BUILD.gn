@@ -62,37 +62,10 @@ component("init") {
     sources += [
       "gl_display_egl_util_ozone.cc",
       "gl_display_egl_util_ozone.h",
+      "gl_factory_ozone.cc",
+      "gl_initializer_ozone.cc",
       "ozone_util.h",
     ]
     deps += [ "//ui/ozone" ]
-  }
-
-  # Allow X11 to use Ozone implementation of gl_factory and gl_initializer.
-  # This is needed temporarily to allow use_x11 && use_ozone build. Once
-  # use_x11 goes away, this will be removed.  Internally, it checks whether
-  # it should use pure X11 implementation or Ozone implementation based on
-  # IsUsingOzonePlatform feature flag.
-  if (use_x11 || use_ozone) {
-    sources += [
-      "gl_factory_ozone.cc",
-      "gl_initializer_ozone.cc",
-    ]
-  }
-
-  if (use_x11) {
-    sources += [
-      "gl_display_egl_util_x11.cc",
-      "gl_display_egl_util_x11.h",
-      "gl_factory_linux_x11.cc",
-      "gl_factory_linux_x11.h",
-      "gl_initializer_linux_x11.cc",
-      "gl_initializer_linux_x11.h",
-    ]
-
-    deps += [
-      "//ui/base/x",
-      "//ui/base/x:gl",
-      "//ui/gfx/x",
-    ]
   }
 }

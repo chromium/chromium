@@ -29,13 +29,6 @@
 #include "ui/gl/direct_composition_surface_win.h"
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-#include "ui/base/x/visual_picker_glx.h"                 // nogncheck
-#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"  // nogncheck
-#include "ui/gfx/x/glx.h"                                // nogncheck
-#include "ui/gl/gl_implementation.h"                     // nogncheck
-#endif
-
 namespace gl {
 namespace {
 
@@ -201,38 +194,6 @@ void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
   LabelSwapChainBuffers(swap_chain, name_prefix);
 }
 #endif  // OS_WIN
-
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-void CollectX11GpuExtraInfo(bool enable_native_gpu_memory_buffers,
-                            gfx::GpuExtraInfo& info) {
-  // TODO(https://crbug.com/1031269): Enable by default.
-  if (enable_native_gpu_memory_buffers) {
-    info.gpu_memory_buffer_support_x11 =
-        ui::GpuMemoryBufferSupportX11::GetInstance()->supported_configs();
-  }
-
-  if (GetGLImplementation() == kGLImplementationDesktopGL) {
-    // Create the VisualPickerGlx singleton now while the GbmSupportX11
-    // singleton is busy being created on another thread.
-    auto* visual_picker = ui::VisualPickerGlx::GetInstance();
-
-    // With GLX, only BGR(A) buffer formats are supported.  EGL does not have
-    // this restriction.
-    info.gpu_memory_buffer_support_x11.erase(
-        std::remove_if(info.gpu_memory_buffer_support_x11.begin(),
-                       info.gpu_memory_buffer_support_x11.end(),
-                       [&](gfx::BufferUsageAndFormat usage_and_format) {
-                         return visual_picker->GetFbConfigForFormat(
-                                    usage_and_format.format) ==
-                                x11::Glx::FbConfig{};
-                       }),
-        info.gpu_memory_buffer_support_x11.end());
-  } else if (GetGLImplementation() == kGLImplementationEGLANGLE) {
-    // ANGLE does not yet support EGL_EXT_image_dma_buf_import[_modifiers].
-    info.gpu_memory_buffer_support_x11.clear();
-  }
-}
-#endif  // defined(USE_X11) || BUILDFLAG(OZONE_PLATFORM_X11)
 
 #if defined(OS_MAC)
 
