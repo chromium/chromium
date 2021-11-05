@@ -51,6 +51,7 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   bool HandleKeyboardEvent(
       const content::NativeWebKeyboardEvent& event) override;
   bool ShouldRestorePreviousBrowserWidgetState() const override;
+  void AnnounceTextInInProcessWindow(const std::u16string& text) override;
 
  protected:
   ~BrowserFrameMac() override;

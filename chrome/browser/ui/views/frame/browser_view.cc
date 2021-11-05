@@ -100,6 +100,7 @@
 #include "chrome/browser/ui/views/frame/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/native_browser_frame.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_loading_bar.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -1817,12 +1818,20 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
   if (frame_ && frame_->GetFrameView())
     frame_->GetFrameView()->WindowControlsOverlayEnabledChanged();
 
-  GetViewAccessibility().AnnounceText(
+  const std::u16string& state_change_text =
       IsWindowControlsOverlayEnabled()
           ? l10n_util::GetStringUTF16(
                 IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_ENABLED_ALERT)
           : l10n_util::GetStringUTF16(
-                IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_DISABLED_ALERT));
+                IDS_WEB_APP_WINDOW_CONTROLS_OVERLAY_DISABLED_ALERT);
+#if defined(OS_MAC)
+  if (frame_) {
+    frame_->native_browser_frame()->AnnounceTextInInProcessWindow(
+        state_change_text);
+  }
+#else
+  GetViewAccessibility().AnnounceText(state_change_text);
+#endif
 }
 
 void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
