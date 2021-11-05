@@ -18,6 +18,7 @@ import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInter
  * @typedef {{
  *   component: !ComponentType,
  *   id: string,
+ *   uniqueId: string,
  *   name: string,
  *   checked: boolean,
  *   disabled: boolean
@@ -89,19 +90,18 @@ export class OnboardingSelectComponentsPageElement extends
         return;
       }
 
-      const componentList = [];
-      result.components.forEach(item => {
+      this.componentCheckboxes_ = result.components.map(item => {
         const component = assert(item.component);
-
-        componentList.push({
+        return {
           component: item.component,
           id: ComponentTypeToId[item.component],
+          // TODO(gavinwill): Source |uniqueId| from proto.
+          uniqueId: '',
           name: ComponentTypeToName[item.component],
           checked: item.state === ComponentRepairStatus.kReplaced,
           disabled: item.state === ComponentRepairStatus.kMissing
-        });
+        };
       });
-      this.componentCheckboxes_ = componentList;
     });
   }
 

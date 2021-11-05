@@ -19,17 +19,14 @@
   }
 
   #labelDiv {
+    color: grey;
     flex-basis: 155px;
     margin-bottom: auto;
     margin-top: auto;
+    padding-inline-start: 20px;
   }
 
-  #componentName {
-    color: grey;
-    margin-inline-start: 20px;
-  }
-
-  :host([checked]) #componentName {
+  :host([checked]) #labelDiv {
     color: blue;
   }
 
@@ -42,6 +39,7 @@
     on-click="onComponentButtonClicked_">
   <div id="labelDiv">
     <span id="componentName">[[componentName]]</span>
+    <div>[[componentId]]</div>
   </div>
   <iron-icon icon="shimless-icon24:check-circle" hidden="[[!checked]]">
   </iron-icon>
