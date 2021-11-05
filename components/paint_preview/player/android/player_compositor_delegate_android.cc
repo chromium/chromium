@@ -307,6 +307,14 @@ void PlayerCompositorDelegateAndroid::OnBitmapCallback(
       TRACE_ID_LOCAL(request_id), "status", static_cast<int>(status), "bytes",
       sk_bitmap.computeByteSize());
 
+  if (status == mojom::PaintPreviewCompositor::BitmapStatus::kAllocFailed) {
+    base::android::RunRunnableAndroid(j_error_callback);
+    // Treat this as a critical memory pressure failure. We should abort.
+    OnMemoryPressure(
+        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    return;
+  }
+
   if (status != mojom::PaintPreviewCompositor::BitmapStatus::kSuccess ||
       sk_bitmap.isNull() || sk_bitmap.info().width() <= 0 ||
       sk_bitmap.info().height() <= 0) {
