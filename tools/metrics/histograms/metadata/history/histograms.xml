@@ -549,6 +549,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.ProcessClustersDuration" units="ms"
+    expires_after="2022-03-05">
+  <owner>olivierli@chromium.org</owner>
+  <owner>tommycli@chromium.org</owner>
+  <summary>
+    This histogram records the total time taken to convert and process visits in
+    in all history cluster available. This is recorded once after the
+    conversion, deduplication and sorting of the clusters. This is recorded
+    using the highest precision clock possible. Like most time measurements this
+    will not have the same behavior regarding system sleep on all platforms. See
+    bit.ly/chrome-clocks-and-sleep for more details. Since the measurement is
+    taken after the operation is over it will be missing if the operation never
+    completes. This can happen if the user or the system shuts down chrome
+    because of the unresponsiveness. A decidely imperfect strategy to evaluate
+    how often this happens is to compare total counts with another histogram
+    that is recorded before the operation starts
+    (&quot;History.Clusters.Backend.GetClusterLatency&quot;). Such analysis has
+    to be conducted with care. Consult with Metrics team if curious.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.ServiceLatency" units="ms"
     expires_after="M101">
   <owner>tommycli@chromium.org</owner>
