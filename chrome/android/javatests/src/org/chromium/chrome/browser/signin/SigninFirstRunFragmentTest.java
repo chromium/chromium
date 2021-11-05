@@ -74,6 +74,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 /** Tests for the class {@link SigninFirstRunFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -375,6 +376,34 @@ public class SigninFirstRunFragmentTest {
         Assert.assertEquals(TEST_EMAIL1, primaryAccount.getEmail());
         verify(mFirstRunPageDelegateMock)
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT);
+    }
+
+    @Test
+    @MediumTest
+    public void testSigninWithNonDefaultAccount() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /*avatar=*/null);
+        mAccountManagerTestRule.addAccount(
+                TEST_EMAIL2, /*fullName=*/null, /*givenName=*/null, /*avatar=*/null);
+        launchActivityWithFragment();
+        onView(withText(TEST_EMAIL1)).perform(click());
+        onView(withText(TEST_EMAIL2)).inRoot(isDialog()).perform(click());
+        final String continueAsText = mChromeActivityTestRule.getActivity().getString(
+                R.string.signin_promo_continue_as, TEST_EMAIL2);
+
+        ViewUtils.onViewWaiting(withText(continueAsText)).perform(click());
+
+        CriteriaHelper.pollUiThread(() -> {
+            return IdentityServicesProvider.get()
+                    .getIdentityManager(Profile.getLastUsedRegularProfile())
+                    .hasPrimaryAccount(ConsentLevel.SIGNIN);
+        });
+        final CoreAccountInfo primaryAccount =
+                mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN);
+        Assert.assertEquals(TEST_EMAIL2, primaryAccount.getEmail());
+        verify(mFirstRunPageDelegateMock)
+                .recordFreProgressHistogram(
+                        MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT);
     }
 
     @Test
