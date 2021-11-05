@@ -66,10 +66,12 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
       Callback callback)
       : incomplete_visit_map_(incomplete_visit_map),
         original_end_time_(end_time),
+        visit_soft_cap_(max_count),
         callback_(std::move(callback)) {
-    // As a primitive heuristic, fetch 3x the amount of visits as requested
-    // clusters. We don't know in advance how big the clusters will be.
-    max_count_ = max_count > 0 ? max_count * 3 : kMaxVisitsToCluster.Get();
+    // Provide a parameter-controlled hard-cap of the max visits to fetch.
+    // Note in most cases we stop fetching visits far before reaching this
+    // number. This is to prevent OOM errors. See https://crbug.com/1262016.
+    options_.max_count = kMaxVisitsToCluster.Get();
 
     // Determine initial query options.
     options_.end_time = end_time;
@@ -94,11 +96,12 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
 
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
-    // Accumulate visits until reaching `max_count_`. Accumulate 1 day at a
-    // time to avoid breaking up clusters. E.g., if each day has 10 visits, and
-    // `max_visits_` is 15, we want 2 full days consisting of 20 visits, not 1.5
-    // days consisting of 15 visits.
-    do {
+    // Accumulate 1 day at a time of visits to avoid breaking up clusters.
+    // We stop once we meet `visit_soft_cap_`. Also hard cap at
+    // `options_.max_count` which is enforced at the database level to avoid any
+    // one day blasting past the hard cap, causing OOM errors.
+    while (!exhausted_history_ && annotated_visits_.size() < visit_soft_cap_ &&
+           annotated_visits_.size() < size_t(options_.EffectiveMaxCount())) {
       auto newly_fetched_annotated_visits =
           backend->GetAnnotatedVisits(options_);
       // Tack on all the newly fetched visits onto our accumulator vector.
@@ -113,7 +116,7 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
       // History and call this method again when done.
       options_.end_time = options_.begin_time;
       options_.begin_time = options_.end_time - base::Days(1);
-    } while (!exhausted_history_ && annotated_visits_.size() < max_count_);
+    }
 
     // Now we have enough visits for clustering, add all incomplete visits
     // between the current `options.begin_time` and `original_end_time`, as
@@ -220,9 +223,11 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   // fetch in the DB thread and used in the main thread to determine
   // `continuation_end_time`.
   history::QueryOptions options_;
-  // The 'soft' (see comment in `RunOnDBThread()`) max count of visits to fetch
-  // used in the DB thread.
-  size_t max_count_;
+  // This task stops fetching days of History once we've hit this soft cap,
+  // which is controlled by the UI. Note there is a separate
+  // parameter-controlled hard cap to prevent OOM errors if a single day has too
+  // many visits.
+  size_t visit_soft_cap_;
   // Persisted visits retrieved from the history DB thread and returned through
   // the callback on the main thread.
   std::vector<history::AnnotatedVisit> annotated_visits_;
