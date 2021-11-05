@@ -351,6 +351,7 @@ struct KeylockerInfo {
 // NextMinVersion: 1, NextIndex: 2
 struct PhysicalCpuInfo {
   // The CPU model name, if available.
+  // For Arm devices, we will return SoC model instead.
   string? model_name@0;
   // Logical CPUs corresponding to this physical CPU.
   array<LogicalCpuInfo> logical_cpus@1;
