@@ -163,8 +163,9 @@ class WizardController {
   // Advances to login/update screen. Should be used in for testing only.
   void SkipToLoginForTesting();
 
-  // Forces to exit wizard after accepting terms of service.
-  void EndOnboardingAfterToS();
+  OobeScreenId get_screen_after_managed_tos_for_testing() {
+    return wizard_context_->screen_after_managed_tos;
+  }
 
   // Returns current DemoSetupController if demo setup flow is in progress or
   // nullptr otherwise.

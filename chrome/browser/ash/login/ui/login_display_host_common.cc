@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -416,12 +417,22 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
   return true;
 }
 
+void LoginDisplayHostCommon::SetScreenAfterManagedTos(OobeScreenId screen_id) {
+  // If user stopped onboarding flow on TermsOfServiceScreen make sure that
+  // next screen will be FamilyLinkNoticeView::kScreenId.
+  if (screen_id == TermsOfServiceScreenView::kScreenId)
+    screen_id = FamilyLinkNoticeView::kScreenId;
+  wizard_context_->screen_after_managed_tos = screen_id;
+}
+
 void LoginDisplayHostCommon::StartUserOnboarding() {
   StartWizard(LocaleSwitchView::kScreenId);
 }
 
 void LoginDisplayHostCommon::ResumeUserOnboarding(OobeScreenId screen_id) {
-  StartWizard(screen_id);
+  SetScreenAfterManagedTos(screen_id);
+  // Try to show TermsOfServiceScreen first
+  StartWizard(TermsOfServiceScreenView::kScreenId);
 }
 
 void LoginDisplayHostCommon::StartManagementTransition() {
@@ -429,7 +440,7 @@ void LoginDisplayHostCommon::StartManagementTransition() {
 }
 
 void LoginDisplayHostCommon::ShowTosForExistingUser() {
-  GetWizardController()->EndOnboardingAfterToS();
+  SetScreenAfterManagedTos(OobeScreen::SCREEN_UNKNOWN);
   StartUserOnboarding();
 }
 

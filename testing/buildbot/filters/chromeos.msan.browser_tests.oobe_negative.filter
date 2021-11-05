@@ -8,6 +8,7 @@
 -All/EnrollmentScreenDynamicTPMTest.*
 -All/EphemeralUserOobeTest.*
 -All/GestureNavigationScreenTest.*
+-All/ManagedUserTosOnboardingResumeTest.*
 -All/MergeSessionTest.*
 -All/MergeSessionTimeoutTest.*
 -All/OobeGuestButtonPolicy.*
