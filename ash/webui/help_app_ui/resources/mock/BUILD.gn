@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/components/web_applications/system_apps.gni")
+import("//ash/webui/web_applications/system_apps.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 assert(is_chromeos, "Help App is Chrome OS only")

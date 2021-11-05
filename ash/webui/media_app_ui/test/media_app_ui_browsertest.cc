@@ -7,8 +7,8 @@
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/media_app_ui/url_constants.h"
+#include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/files/file_path.h"
-#include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 
 namespace {
 

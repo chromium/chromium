@@ -6,7 +6,7 @@
 
 #include "ash/grit/ash_help_app_resources.h"
 #include "ash/webui/help_app_ui/url_constants.h"
-#include "chromeos/components/web_applications/webui_test_prod_util.h"
+#include "ash/webui/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_help_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_help_app_bundle_resources_map.h"
 #include "chromeos/strings/grit/chromeos_strings.h"

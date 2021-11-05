@@ -35,9 +35,6 @@ const testing = {
     setUp() {}
   }
 };
-const test_util = {
-  eventToPromise: function(eventName, element) {}
-};
 function testDone() {}
 function assertEquals(expected, actual, message = undefined) {}
 function assertGE(lhs, rhs) {}

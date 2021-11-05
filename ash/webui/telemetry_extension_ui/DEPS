@@ -4,7 +4,6 @@ include_rules = [
   "+chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h",
 
   # TODO(https://crbug.com/1164001): Remove when these moves to ash.
-  "+chromeos/components/web_applications",
   "+chromeos/dbus",
   "+chromeos/services/cros_healthd",
 ]

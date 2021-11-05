@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/web_applications/webui_test_prod_util.h"
+#include "ash/webui/web_applications/webui_test_prod_util.h"
 
 #include "base/command_line.h"
 #include "base/no_destructor.h"

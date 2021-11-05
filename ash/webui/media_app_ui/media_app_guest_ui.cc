@@ -6,7 +6,7 @@
 
 #include "ash/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
-#include "chromeos/components/web_applications/webui_test_prod_util.h"
+#include "ash/webui/web_applications/webui_test_prod_util.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
 #include "content/public/browser/navigation_handle.h"

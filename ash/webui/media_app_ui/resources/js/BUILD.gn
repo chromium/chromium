@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/web_applications/system_apps.gni")
 import("//chrome/browser/resources/tools/optimize_webui.gni")
-import("//chromeos/components/web_applications/system_apps.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 stage_folder = "$target_gen_dir/stage"
@@ -117,7 +117,7 @@ js_library("app_context_test_support") {
 
 js_library("launch") {
   externs_list = [
-    "//chromeos/components/web_applications/externs/file_handling.externs.js",
+    "//ash/webui/web_applications/externs/file_handling.externs.js",
     "dom_draft.externs.js",
 
     # The privileged context can't access the app, but shares struct definitions

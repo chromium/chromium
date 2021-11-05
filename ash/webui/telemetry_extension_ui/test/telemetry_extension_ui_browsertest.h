@@ -5,10 +5,10 @@
 #ifndef ASH_WEBUI_TELEMETRY_EXTENSION_UI_TEST_TELEMETRY_EXTENSION_UI_BROWSERTEST_H_
 #define ASH_WEBUI_TELEMETRY_EXTENSION_UI_TEST_TELEMETRY_EXTENSION_UI_BROWSERTEST_H_
 
+#include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 
 class TelemetryExtensionUiBrowserTest : public SandboxedWebUiAppTestBase {
  public:

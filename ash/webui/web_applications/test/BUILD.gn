@@ -12,10 +12,10 @@ source_set("test_support") {
   data = js2gtest_js_libraries
 
   deps = [
+    "//ash/webui/web_applications",
     "//base/test:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
-    "//chromeos/components/web_applications",
     "//content/test:test_support",
     "//ui/webui:webui",
   ]

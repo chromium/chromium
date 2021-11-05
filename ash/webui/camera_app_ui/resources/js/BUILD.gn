@@ -70,7 +70,7 @@ js_library("compile_resources") {
 
     # TODO(crbug.com/980846): Remove it once it is upstreamed to the closure
     # compiler.
-    "//chromeos/components/web_applications/externs/file_handling.externs.js",
+    "//ash/webui/web_applications/externs/file_handling.externs.js",
   ]
   externs_list += externs_files
 }

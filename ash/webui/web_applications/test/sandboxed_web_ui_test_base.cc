@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
+#include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 
 #include <vector>
 
+#include "ash/webui/web_applications/webui_test_prod_util.h"
 #include "base/base_paths.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -15,7 +16,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/test/base/js_test_api.h"
-#include "chromeos/components/web_applications/webui_test_prod_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/web_applications/test/js_library_test.h"
+#include "ash/webui/web_applications/test/js_library_test.h"
 
 #include <string>
 #include <utility>

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
+#include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 
 class MediaAppUiBrowserTest : public SandboxedWebUiAppTestBase {
  public:

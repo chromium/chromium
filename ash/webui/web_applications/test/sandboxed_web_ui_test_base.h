@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_WEB_APPLICATIONS_TEST_SANDBOXED_WEB_UI_TEST_BASE_H_
-#define CHROMEOS_COMPONENTS_WEB_APPLICATIONS_TEST_SANDBOXED_WEB_UI_TEST_BASE_H_
+#ifndef ASH_WEBUI_WEB_APPLICATIONS_TEST_SANDBOXED_WEB_UI_TEST_BASE_H_
+#define ASH_WEBUI_WEB_APPLICATIONS_TEST_SANDBOXED_WEB_UI_TEST_BASE_H_
 
 #include <memory>
 #include <string>
@@ -65,4 +65,4 @@ class SandboxedWebUiAppTestBase : public MojoWebUIBrowserTest {
   const std::string test_module_;
 };
 
-#endif  // CHROMEOS_COMPONENTS_WEB_APPLICATIONS_TEST_SANDBOXED_WEB_UI_TEST_BASE_H_
+#endif  // ASH_WEBUI_WEB_APPLICATIONS_TEST_SANDBOXED_WEB_UI_TEST_BASE_H_

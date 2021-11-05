@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/web_applications/system_apps.gni")
 import("//chrome/test/base/js2gtest.gni")
-import("//chromeos/components/web_applications/system_apps.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
 assert(is_chromeos, "Telemetry Extension is Chrome OS only")
@@ -32,9 +32,9 @@ source_set("browser_test_support") {
   deps = [
     "../:telemetry_extension_ui",
     "//ash/constants",
+    "//ash/webui/web_applications/test:test_support",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/test:test_support_ui",
-    "//chromeos/components/web_applications/test:test_support",
     "//chromeos/dbus/cros_healthd:cros_healthd",
   ]
 
@@ -75,8 +75,7 @@ js_library("trusted_browsertest") {
     "trusted_test_requester.js",
   ]
   deps = [ "//ash/webui/telemetry_extension_ui/resources:trusted" ]
-  externs_list =
-      [ "//chromeos/components/web_applications/js2gtest_support.externs.js" ]
+  externs_list = [ "//ash/webui/web_applications/js2gtest_support.externs.js" ]
 }
 
 js_library("untrusted_browsertest") {
@@ -89,6 +88,6 @@ js_library("untrusted_browsertest") {
   deps = [ "//ash/webui/telemetry_extension_ui/resources/dpsl" ]
   externs_list = [
     "$externs_path/pending.js",
-    "//chromeos/components/web_applications/js2gtest_support.externs.js",
+    "//ash/webui/web_applications/js2gtest_support.externs.js",
   ]
 }

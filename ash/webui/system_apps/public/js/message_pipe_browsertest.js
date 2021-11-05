@@ -5,7 +5,7 @@
 /**
  * @fileoverview Test suite for message_pipe.js.
  */
-GEN('#include "chromeos/components/web_applications/test/js_library_test.h"');
+GEN('#include "ash/webui/web_applications/test/js_library_test.h"');
 
 GEN('#include "content/public/test/browser_test.h"');
 

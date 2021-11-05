@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_HELP_APP_UI_TEST_HELP_APP_UI_BROWSERTEST_H_
 #define ASH_WEBUI_HELP_APP_UI_TEST_HELP_APP_UI_BROWSERTEST_H_
 
-#include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
+#include "ash/webui/web_applications/test/sandboxed_web_ui_test_base.h"
 
 class HelpAppUiBrowserTest : public SandboxedWebUiAppTestBase {
  public:

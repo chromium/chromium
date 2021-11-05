@@ -62,8 +62,8 @@ source_set("browser_test_support") {
     "//ash/public/cpp",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",
+    "//ash/webui/web_applications/test:test_support",
     "//chrome/test:test_support_ui",
-    "//chromeos/components/web_applications/test:test_support",
   ]
 
   data = []

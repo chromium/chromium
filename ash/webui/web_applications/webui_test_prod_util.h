@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_WEB_APPLICATIONS_WEBUI_TEST_PROD_UTIL_H_
-#define CHROMEOS_COMPONENTS_WEB_APPLICATIONS_WEBUI_TEST_PROD_UTIL_H_
+#ifndef ASH_WEBUI_WEB_APPLICATIONS_WEBUI_TEST_PROD_UTIL_H_
+#define ASH_WEBUI_WEB_APPLICATIONS_WEBUI_TEST_PROD_UTIL_H_
 
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -20,4 +20,4 @@ void SetTestableDataSourceRequestHandlerForTesting(
     content::WebUIDataSource::ShouldHandleRequestCallback should_handle,
     content::WebUIDataSource::HandleRequestCallback handler);
 
-#endif  // CHROMEOS_COMPONENTS_WEB_APPLICATIONS_WEBUI_TEST_PROD_UTIL_H_
+#endif  // ASH_WEBUI_WEB_APPLICATIONS_WEBUI_TEST_PROD_UTIL_H_

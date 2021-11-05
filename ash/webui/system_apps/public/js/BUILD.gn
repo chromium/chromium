@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/web_applications/system_apps.gni")
 import("//chrome/test/base/js2gtest.gni")
-import("//chromeos/components/web_applications/system_apps.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 
@@ -26,7 +26,7 @@ js2gtest("browser_tests_js") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [ "//chromeos/components/web_applications/test:test_support" ]
+  deps = [ "//ash/webui/web_applications/test:test_support" ]
 
   data = [
     "message_pipe.js",
@@ -64,7 +64,7 @@ js_library("message_pipe_browsertest_js") {
     "test_data/message_pipe_browsertest_untrusted.js",
   ]
   externs_list = [
-    "//chromeos/components/web_applications/js2gtest_support.externs.js",
+    "//ash/webui/web_applications/js2gtest_support.externs.js",
     "//third_party/chaijs/externs/chai-3.5.js",
   ]
   deps = [ ":message_pipe" ]
