@@ -488,8 +488,6 @@ component("base") {
     sources += [
       "l10n/l10n_util_mac.h",
       "l10n/l10n_util_mac.mm",
-      "l10n/l10n_util_mac_bridge.h",
-      "l10n/l10n_util_mac_bridge.mm",
     ]
     public_deps += [ "//ui/events:event_constants" ]
     deps -= [
