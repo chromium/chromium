@@ -489,7 +489,7 @@ formats.
 [github-tutorial]: https://try.github.io
 [good-git-commit-message]: https://chris.beams.io/posts/git-commit/
 [individual-cla]: https://cla.developers.google.com/about/google-individual?csw=1
-[life-of-a-chromium-developer]: https://docs.google.com/a/google.com/present/view?id=0AetfwCoL2lQAZGQ5bXJ0NDVfMGRtdGQ0OWM2
+[life-of-a-chromium-developer]: https://docs.google.com/presentation/d/1abnqM9j6zFodPHA38JG1061rG2iGj_GABxEDgZsdbJg/edit
 [noms-tutorial]: https://meowni.ca/posts/chromium-101
 [review-lag]: https://dev.chromium.org/developers/contributing-code/minimizing-review-lag-across-time-zones
 [skia-dev-guide]: https://skia.org/dev/contrib
