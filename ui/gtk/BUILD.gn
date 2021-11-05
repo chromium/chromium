@@ -151,7 +151,5 @@ component("gtk") {
   }
 
   # TODO: This should be removed.
-  if (use_ozone) {
-    deps += [ "//ui/ozone" ]
-  }
+  deps += [ "//ui/ozone" ]
 }
