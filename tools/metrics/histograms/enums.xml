@@ -68542,6 +68542,10 @@ Called by update_net_trust_anchors.py.-->
     The url was prefetched but not used, because cookies were added to the URL
     at some point after the initial eligibility check.
   </int>
+  <int value="35" label="Prefetch failed, redirects disabled">
+    The url was prefetched and was redirected; however, redirects were disabled,
+    so the prefetch failed.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirect">

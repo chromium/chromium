@@ -215,6 +215,7 @@ bool ShouldConsiderDecoyRequestForStatus(PrefetchProxyPrefetchStatus status) {
     case PrefetchProxyPrefetchStatus::kPrefetchIsStaleNSPAttemptDenied:
     case PrefetchProxyPrefetchStatus::kPrefetchIsStaleNSPNotStarted:
     case PrefetchProxyPrefetchStatus::kPrefetchNotUsedCookiesChanged:
+    case PrefetchProxyPrefetchStatus::kPrefetchFailedRedirectsDisabled:
       // These statuses should not be returned by the eligibility checks, and
       // thus not be passed in here.
       NOTREACHED();
@@ -468,6 +469,7 @@ PrefetchProxyTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
     case PrefetchProxyPrefetchStatus::kPrefetchProxyNotAvailable:
     case PrefetchProxyPrefetchStatus::kPrefetchIsPrivacyDecoy:
     case PrefetchProxyPrefetchStatus::kPrefetchNotUsedCookiesChanged:
+    case PrefetchProxyPrefetchStatus::kPrefetchFailedRedirectsDisabled:
       return status;
     // These statuses we are going to update to, and this is the only place that
     // they are set so they are not expected to be passed in.
@@ -868,45 +870,17 @@ void PrefetchProxyTabHelper::OnPrefetchRedirect(
     std::vector<std::string>* removed_headers) {
   DCHECK(PrefetchingActive());
 
-  // Copy the position ordering when there is a redirect so the metrics don't
-  // miss out on redirects.
-  auto position_iter = page_->original_prediction_ordering_.find(original_url);
-  if (position_iter != page_->original_prediction_ordering_.end()) {
-    page_->original_prediction_ordering_.emplace(redirect_info.new_url,
-                                                 position_iter->second);
-  }
-
-  if (page_->decoy_urls_.find(original_url) != page_->decoy_urls_.end()) {
-    // Check whether the next url is eligible (without considering user data) to
-    // be prefetched as a decoy.
-    auto result =
-        CheckEligibilityOfURLSansUserData(profile_, redirect_info.new_url);
-    if (result.first && PrefetchProxySendDecoyRequestForIneligiblePrefetch()) {
-      page_->decoy_urls_.emplace(redirect_info.new_url);
-      page_->urls_to_prefetch_.push_back(redirect_info.new_url);
-    }
-
-    // Cancels the current request.
-    DCHECK(page_->url_loaders_.find(loader) != page_->url_loaders_.end());
-    page_->url_loaders_.erase(page_->url_loaders_.find(loader));
-
-    Prefetch();
-    return;
-  }
-
-  page_->srp_metrics_->prefetch_total_redirect_count_++;
-
-  // Run the new URL through all the eligibility checks. In the mean time,
-  // continue on with other Prefetches.
-  CheckEligibilityOfURL(
-      profile_, redirect_info.new_url,
-      base::BindOnce(&PrefetchProxyTabHelper::OnGotEligibilityResult,
-                     weak_factory_.GetWeakPtr()));
+  // Currently all redirects are disabled when using the prefetch proxy. See
+  // crbug.com/1266876 for more details.
+  OnPrefetchStatusUpdate(
+      original_url,
+      PrefetchProxyPrefetchStatus::kPrefetchFailedRedirectsDisabled);
 
   // Cancels the current request.
   DCHECK(page_->url_loaders_.find(loader) != page_->url_loaders_.end());
   page_->url_loaders_.erase(page_->url_loaders_.find(loader));
 
+  // Continue prefetching other urls.
   Prefetch();
 }
 
