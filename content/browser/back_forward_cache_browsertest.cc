@@ -1100,51 +1100,47 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A and open a popup.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
   EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
-  Shell* popup = OpenPopup(rfh_a, url_a, "");
+  Shell* popup = OpenPopup(rfh_a.get(), url_a, "");
   EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
 
   // 2) Navigate to B. The previous document can't enter the BackForwardCache,
   // because of the popup.
-  EXPECT_TRUE(ExecJs(rfh_a, JsReplace("location = $1;", url_b.spec())));
-  delete_observer_rfh_a.WaitUntilDeleted();
-  RenderFrameHostImpl* rfh_b = current_frame_host();
+  ASSERT_TRUE(ExecJs(rfh_a.get(), JsReplace("location = $1;", url_b.spec())));
+  rfh_a.WaitUntilRenderFrameDeleted();
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
   EXPECT_EQ(2u, rfh_b->GetSiteInstance()->GetRelatedActiveContentsCount());
 
   // 3) Go back to A. The previous document can't enter the BackForwardCache,
   // because of the popup.
-  RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
-  EXPECT_TRUE(ExecJs(rfh_b, "history.back();"));
-  delete_observer_rfh_b.WaitUntilDeleted();
+  ASSERT_TRUE(ExecJs(rfh_b.get(), "history.back();"));
+  rfh_b.WaitUntilRenderFrameDeleted();
 
   // 4) Make the popup drop the window.opener connection. It happens when the
   //    user does an omnibox-initiated navigation, which happens in a new
   //    BrowsingInstance.
-  RenderFrameHostImpl* rfh_a_new = current_frame_host();
+  RenderFrameHostImplWrapper rfh_a_new(current_frame_host());
   EXPECT_EQ(2u, rfh_a_new->GetSiteInstance()->GetRelatedActiveContentsCount());
-  EXPECT_TRUE(NavigateToURL(popup, url_b));
+  ASSERT_TRUE(NavigateToURL(popup, url_b));
   EXPECT_EQ(1u, rfh_a_new->GetSiteInstance()->GetRelatedActiveContentsCount());
 
   // 5) Navigate to B again. As the scripting relationship with the popup is
   // now severed, the current page (|rfh_a_new|) can enter back-forward cache.
-  RenderFrameDeletedObserver delete_observer_rfh_a_new(rfh_a_new);
-  EXPECT_TRUE(ExecJs(rfh_a_new, JsReplace("location = $1;", url_b.spec())));
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  EXPECT_FALSE(delete_observer_rfh_a_new.deleted());
+  ASSERT_TRUE(
+      ExecJs(rfh_a_new.get(), JsReplace("location = $1;", url_b.spec())));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_FALSE(rfh_a_new.IsRenderFrameDeleted());
   EXPECT_TRUE(rfh_a_new->IsInBackForwardCache());
 
   // 6) Go back to A. The current document can finally enter the
   // BackForwardCache, because it is alone in its BrowsingInstance and has never
   // been related to any other document.
-  RenderFrameHostImpl* rfh_b_new = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_b_new(rfh_b_new);
-  EXPECT_TRUE(ExecJs(rfh_b_new, "history.back();"));
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
-  EXPECT_FALSE(delete_observer_rfh_b_new.deleted());
+  RenderFrameHostImplWrapper rfh_b_new(current_frame_host());
+  ASSERT_TRUE(ExecJs(rfh_b_new.get(), "history.back();"));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_FALSE(rfh_b_new.IsRenderFrameDeleted());
   EXPECT_TRUE(rfh_b_new->IsInBackForwardCache());
 }
 
