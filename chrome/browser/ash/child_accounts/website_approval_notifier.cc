@@ -10,6 +10,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -35,6 +36,12 @@ constexpr char kWebsiteApprovalNotifierId[] = "family-link";
 // displace previous ones).
 constexpr char kWebsiteApprovalNotificationIdPrefix[] = "website-approval-";
 
+const char kNotificationClickedActionName[] =
+    "SupervisedUsers_RemoteWebApproval_NotificationClicked";
+
+const char kNotificationShownActionName[] =
+    "SupervisedUsers_RemoteWebApproval_NotificationShown";
+
 GURL GetURLToOpen(const std::string& allowed_host) {
   // When a match pattern containing * (e.g. *.google.*) is allowlisted, return
   // an empty URL because we can't know which URL to open.
@@ -48,7 +55,8 @@ GURL GetURLToOpen(const std::string& allowed_host) {
   return url;
 }
 
-void OpenURL(const GURL& url) {
+void OnNotificationClick(const GURL& url) {
+  base::RecordAction(base::UserMetricsAction(kNotificationClickedActionName));
   NewWindowDelegate::GetInstance()->OpenUrl(url,
                                             /*from_user_interaction=*/true);
 }
@@ -92,9 +100,10 @@ void WebsiteApprovalNotifier::MaybeShowApprovalNotification(
               kWebsiteApprovalNotifierId),
           option_fields,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(&OpenURL, url)),
+              base::BindRepeating(&OnNotificationClick, url)),
           chromeos::kNotificationSupervisedUserIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
+  base::RecordAction(base::UserMetricsAction(kNotificationShownActionName));
   NotificationDisplayService::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);

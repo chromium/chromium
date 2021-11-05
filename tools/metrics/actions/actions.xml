@@ -27282,6 +27282,26 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SupervisedUsers_RemoteWebApproval_NotificationClicked">
+  <owner>cros-families-eng@google.com</owner>
+  <owner>agawronska@chromium.org</owner>
+  <owner>lienhoang@chromium.org</owner>
+  <description>
+    Recorded when the supervised user clicks on a remote web approval
+    notification.
+  </description>
+</action>
+
+<action name="SupervisedUsers_RemoteWebApproval_NotificationShown">
+  <owner>cros-families-eng@google.com</owner>
+  <owner>agawronska@chromium.org</owner>
+  <owner>lienhoang@chromium.org</owner>
+  <description>
+    Recorded when a remote web approval notification is shown to a supervised
+    user.
+  </description>
+</action>
+
 <action name="SuspiciousExtensionBubbleDismissed">
   <owner>finnur@chromium.org</owner>
   <description>Please enter the description of this user action.</description>

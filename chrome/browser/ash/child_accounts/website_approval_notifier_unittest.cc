@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/child_accounts/website_approval_notifier.h"
 
+#include <memory>
 #include <string>
 
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,9 +32,12 @@ class WebsiteApprovalNotifierTest : public testing::Test {
     notifier_.MaybeShowApprovalNotification(hostname);
   }
 
+  std::string GetNotificationId(const std::string& hostname) const {
+    return base::StrCat({"website-approval-", hostname});
+  }
+
   bool HasApprovalNotification(const std::string& hostname) const {
-    return notification_tester_
-        .GetNotification(base::StrCat({"website-approval-", hostname}))
+    return notification_tester_.GetNotification(GetNotificationId(hostname))
         .has_value();
   }
 
@@ -39,6 +45,8 @@ class WebsiteApprovalNotifierTest : public testing::Test {
   TestingProfile profile_;
   NotificationDisplayServiceTester notification_tester_{&profile_};
   WebsiteApprovalNotifier notifier_{&profile_};
+  ash::TestNewWindowDelegateProvider new_window_provider_{
+      std::make_unique<ash::TestNewWindowDelegate>()};
 };
 
 TEST_F(WebsiteApprovalNotifierTest, ShowNotificationsForValidHosts) {
@@ -61,6 +69,21 @@ TEST_F(WebsiteApprovalNotifierTest, NoNotificationForInvalidHost) {
   std::string host = "google.com:12three";
   OnNewWebsiteApproval(host);
   EXPECT_FALSE(HasApprovalNotification(host));
+}
+
+TEST_F(WebsiteApprovalNotifierTest, MetricRecording) {
+  base::UserActionTester user_action_tester;
+  std::string host = "www.google.com";
+  OnNewWebsiteApproval(host);
+  EXPECT_TRUE(HasApprovalNotification(host));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SupervisedUsers_RemoteWebApproval_NotificationShown"));
+  notification_tester_.SimulateClick(NotificationHandler::Type::TRANSIENT,
+                                     GetNotificationId(host),
+                                     /*action_index=*/absl::nullopt,
+                                     /*reply=*/absl::nullopt);
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "SupervisedUsers_RemoteWebApproval_NotificationClicked"));
 }
 
 }  // namespace ash
