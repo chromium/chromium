@@ -104,3 +104,5 @@ const CGFloat kPlusSignImageYCenterConstant =
     kGridCellSelectionRingGapWidth + kGridCellSelectionRingTintWidth +
     kGridCellSizeSmall.height / 2 - 2;
 const CGFloat kPlusSignButtonWidth = 156;
+
+const CGFloat kGridExpectedTopContentInset = 20.0f;

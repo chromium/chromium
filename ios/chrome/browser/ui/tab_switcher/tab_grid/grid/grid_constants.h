@@ -108,5 +108,8 @@ extern const CGFloat kScrollThresholdForPlusSignButtonHide;
 extern const CGFloat kPlusSignImageYCenterConstant;
 // With of the plus sign button.
 extern const CGFloat kPlusSignButtonWidth;
+// Expected collection view top content inset. If mismatch, the extra space
+// is communicated to the plus sign button to align + sign correctly.
+extern const CGFloat kGridExpectedTopContentInset;
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_CONSTANTS_H_

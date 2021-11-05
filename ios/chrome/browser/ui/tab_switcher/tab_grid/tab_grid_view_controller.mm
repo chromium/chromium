@@ -1848,6 +1848,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)didChangeLastItemVisibilityInGridViewController:
     (GridViewController*)gridViewController {
+  self.plusSignButton.plusSignVerticalOffset =
+      gridViewController.gridView.adjustedContentInset.top -
+      kGridExpectedTopContentInset;
+
   CGFloat lastItemVisiblity = gridViewController.fractionVisibleOfLastItem;
   self.plusSignButton.alpha = 1 - lastItemVisiblity;
   self.plusSignButton.plusSignImage.transform =

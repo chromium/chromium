@@ -14,6 +14,8 @@
 @interface ThumbStripPlusSignButton ()
 // The transparency gradient of the button.
 @property(nonatomic, strong) CAGradientLayer* gradient;
+// The current constraints for the image.
+@property(nonatomic, strong) NSLayoutConstraint* plusYConstraints;
 @end
 
 @implementation ThumbStripPlusSignButton
@@ -30,13 +32,15 @@
   plusSignImage.translatesAutoresizingMaskIntoConstraints = NO;
   [self addSubview:plusSignImage];
 
+  self.plusYConstraints = [plusSignImage.centerYAnchor
+      constraintEqualToAnchor:self.topAnchor
+                     constant:kPlusSignImageYCenterConstant];
+
   NSArray* constraints = @[
     [plusSignImage.centerXAnchor
         constraintEqualToAnchor:self.trailingAnchor
                        constant:-kPlusSignImageTrailingCenterDistance],
-    [plusSignImage.centerYAnchor
-        constraintEqualToAnchor:self.topAnchor
-                       constant:kPlusSignImageYCenterConstant],
+    self.plusYConstraints,
   ];
   [NSLayoutConstraint activateConstraints:constraints];
 }
@@ -64,6 +68,17 @@
     gradient.affineTransform = CGAffineTransformMakeScale(-1, 1);
   }
   [self.layer insertSublayer:gradient atIndex:0];
+}
+
+#pragma mark - Properties
+
+- (void)setPlusSignVerticalOffset:(CGFloat)verticalOffset {
+  BOOL updateNeeded = _plusSignVerticalOffset != verticalOffset;
+  _plusSignVerticalOffset = verticalOffset;
+  if (updateNeeded) {
+    self.plusYConstraints.constant =
+        kPlusSignImageYCenterConstant + self.plusSignVerticalOffset;
+  }
 }
 
 @end
