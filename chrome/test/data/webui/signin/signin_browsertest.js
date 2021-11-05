@@ -112,7 +112,7 @@ TEST_F('LocalProfileCustomizationTest', 'All', function() {
 var ProfilePickerAppTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://profile-picker/test_loader.html?module=signin/profile_picker_app_test.js';
+    return 'chrome://profile-picker/test_loader.html?module=signin/profile_picker_app_test.js&host=webui-test';
   }
 };
 
@@ -144,7 +144,7 @@ TEST_F('ProfilePickerMainViewTest', 'All', function() {
 var ProfileCardMenuTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://profile-picker/test_loader.html?module=signin/profile_card_menu_test.js';
+    return 'chrome://profile-picker/test_loader.html?module=signin/profile_card_menu_test.js&host=webui-test';
   }
 };
 
