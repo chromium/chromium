@@ -1401,7 +1401,9 @@ class DeviceStatusCollectorState : public StatusCollectorState {
 
           em::TpmVersionInfo* tpm_version_info_out =
               response_params_.device_status->mutable_tpm_version_info();
-          tpm_version_info_out->set_did_vid(tpm_info->did_vid.value());
+          if (tpm_info->did_vid.has_value()) {
+            tpm_version_info_out->set_did_vid(tpm_info->did_vid.value());
+          }
           break;
         }
       }
@@ -2029,6 +2031,7 @@ void DeviceStatusCollector::SampleDischargeRate(
     }
   }
 
+  AddDataSample(std::move(sample), std::move(callback));
 }
 
 void DeviceStatusCollector::ReceiveCPUTemperature(

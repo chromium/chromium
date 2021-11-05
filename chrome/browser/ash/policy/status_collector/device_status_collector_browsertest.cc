@@ -681,6 +681,11 @@ cros_healthd::TpmResultPtr CreateTpmResult() {
       nullptr, nullptr, nullptr, nullptr, nullptr, kFakeTpmDidVid));
 }
 
+cros_healthd::TpmResultPtr CreateUnsetTpmResult() {
+  return cros_healthd::TpmResult::NewTpmInfo(cros_healthd::TpmInfo::New(
+      nullptr, nullptr, nullptr, nullptr, nullptr, nullptr));
+}
+
 base::circular_deque<std::unique_ptr<policy::SampledData>>
 CreateFakeSampleData() {
   em::CPUTempInfo fake_cpu_temp_sample;
@@ -748,6 +753,15 @@ void FetchFakeFullCrosHealthdData(
       return;
     }
   }
+}
+
+// Fake cros_healthd fetching function. Returns TPM data which is not set
+void FetchFakeUnsetTpmData(
+    policy::CrosHealthdCollectionMode mode,
+    policy::DeviceStatusCollector::CrosHealthdDataReceiver receiver) {
+  cros_healthd::TelemetryInfo fake_info;
+  fake_info.tpm_result = CreateUnsetTpmResult();
+  std::move(receiver).Run(fake_info.Clone(), CreateFakeSampleData());
 }
 
 // Fake cros_healthd fetching function. Returns data with only the CPU and
@@ -3569,6 +3583,20 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfoOptional) {
 
   // Verify the fan info is empty.
   EXPECT_EQ(device_status_.fan_info_size(), 0);
+}
+
+TEST_F(DeviceStatusCollectorTest, TestUnsetTpmInfo) {
+  auto options = CreateEmptyDeviceStatusCollectorOptions();
+  options->cros_healthd_data_fetcher =
+      base::BindRepeating(&FetchFakeUnsetTpmData);
+  RestartStatusCollector(std::move(options));
+
+  GetStatus();
+
+  // Verify the Tpm info is unset without crashing.
+  ASSERT_TRUE(device_status_.has_tpm_version_info());
+  const auto& tpm = device_status_.tpm_version_info();
+  EXPECT_EQ(tpm.did_vid(), "");
 }
 
 TEST_F(DeviceStatusCollectorTest, TestPartialCrosHealthdInfo) {
