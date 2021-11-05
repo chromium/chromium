@@ -74,7 +74,6 @@ class CommerceHintAgent
     void WillExecute() override;
     void Completed(
         const blink::WebVector<v8::Local<v8::Value>>& result) override;
-    void HandlePromiseResults(const v8::FunctionCallbackInfo<v8::Value>& info);
 
    private:
     ~JavaScriptRequest() override;

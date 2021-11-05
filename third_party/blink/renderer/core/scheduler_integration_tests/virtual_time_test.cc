@@ -46,7 +46,8 @@ class VirtualTimeTest : public SimTest {
     WebView().MainFrame()->ToWebLocalFrame()->RequestExecuteScript(
         DOMWrapperWorld::kMainWorldId, base::make_span(&source, 1), false,
         WebLocalFrame::kSynchronous, &callback_helper,
-        BackForwardCacheAware::kAllow);
+        BackForwardCacheAware::kAllow,
+        WebLocalFrame::PromiseBehavior::kDontWait);
 
     return callback_helper.Result();
   }

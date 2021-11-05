@@ -181,13 +181,13 @@ class CORE_EXPORT WebLocalFrameImpl final
                                 int argc,
                                 v8::Local<v8::Value> argv[],
                                 WebScriptExecutionCallback*) override;
-  void RequestExecuteScript(
-      int32_t world_id,
-      base::span<const WebScriptSource> sources,
-      bool user_gesture,
-      ScriptExecutionType,
-      WebScriptExecutionCallback*,
-      BackForwardCacheAware back_forward_cache_aware) override;
+  void RequestExecuteScript(int32_t world_id,
+                            base::span<const WebScriptSource> sources,
+                            bool user_gesture,
+                            ScriptExecutionType,
+                            WebScriptExecutionCallback*,
+                            BackForwardCacheAware back_forward_cache_aware,
+                            PromiseBehavior) override;
   void Alert(const WebString& message) override;
   bool Confirm(const WebString& message) override;
   WebString Prompt(const WebString& message,

@@ -989,7 +989,8 @@ void WebLocalFrameImpl::RequestExecuteScript(
     bool user_gesture,
     ScriptExecutionType execution_type,
     WebScriptExecutionCallback* callback,
-    BackForwardCacheAware back_forward_cache_aware) {
+    BackForwardCacheAware back_forward_cache_aware,
+    PromiseBehavior promise_behavior) {
   DCHECK(GetFrame());
 
   scoped_refptr<DOMWrapperWorld> world;
@@ -1012,6 +1013,7 @@ void WebLocalFrameImpl::RequestExecuteScript(
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
       GetFrame()->DomWindow(), std::move(world), script_sources, user_gesture,
       callback);
+  executor->set_wait_for_promise(promise_behavior == PromiseBehavior::kAwait);
   switch (execution_type) {
     case kAsynchronousBlockingOnload:
       executor->RunAsync(PausableScriptExecutor::kOnloadBlocking);

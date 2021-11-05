@@ -257,16 +257,31 @@ std::string GetHTMLStringForReferrerPolicy(const std::string& meta_policy,
       meta_tag.c_str(), referrer_policy_attr.c_str());
 }
 
-// A helper function to execute the given `script` in the main world of the
+// A helper function to execute the given `scripts` in the main world of the
 // specified `frame`.
+void ExecuteScriptsInMainWorld(WebLocalFrame* frame,
+                               base::span<const String> scripts,
+                               WebScriptExecutionCallback* callback,
+                               bool wait_for_promise = true,
+                               bool user_gesture = false) {
+  Vector<WebScriptSource> sources;
+  for (auto script : scripts)
+    sources.push_back(WebScriptSource(script));
+  frame->RequestExecuteScript(
+      DOMWrapperWorld::kMainWorldId, sources, user_gesture,
+      WebLocalFrame::kSynchronous, callback, BackForwardCacheAware::kAllow,
+      wait_for_promise ? WebLocalFrame::PromiseBehavior::kAwait
+                       : WebLocalFrame::PromiseBehavior::kDontWait);
+}
+
+// Same as above, but for a single script.
 void ExecuteScriptInMainWorld(WebLocalFrame* frame,
                               String script_string,
                               WebScriptExecutionCallback* callback,
+                              bool wait_for_promise = true,
                               bool user_gesture = false) {
-  WebScriptSource source(script_string);
-  frame->RequestExecuteScript(
-      DOMWrapperWorld::kMainWorldId, base::make_span(&source, 1), user_gesture,
-      WebLocalFrame::kSynchronous, callback, BackForwardCacheAware::kAllow);
+  ExecuteScriptsInMainWorld(frame, base::make_span(&script_string, 1), callback,
+                            wait_for_promise, user_gesture);
 }
 
 }  // namespace
@@ -517,30 +532,51 @@ TEST_F(WebFrameTest, FrameForEnteredContext) {
 class ScriptExecutionCallbackHelper : public WebScriptExecutionCallback {
  public:
   explicit ScriptExecutionCallbackHelper(v8::Local<v8::Context> context)
-      : did_complete_(false), bool_value_(false), context_(context) {}
+      : context_(context) {}
   ~ScriptExecutionCallbackHelper() override = default;
 
+  // Returns true if the callback helper was ever invoked.
   bool DidComplete() const { return did_complete_; }
-  const String& StringValue() const { return string_value_; }
-  bool BoolValue() { return bool_value_; }
+
+  // Returns true if any results (even if they were empty) were passed to the
+  // callback helper. This is generally false if the execution context was
+  // invalidated while running the script.
+  bool HasAnyResults() const { return !string_values_.IsEmpty(); }
+
+  // Returns the single value returned from the execution.
+  String SingleStringValue() const {
+    if (string_values_.size() != 1u) {
+      ADD_FAILURE() << "Expected a single result, but found: "
+                    << string_values_.size();
+      return String();
+    }
+    return string_values_[0];
+  }
+
+  // Returns the value at the given index.
+  String StringValueAt(wtf_size_t i) const {
+    if (i >= string_values_.size()) {
+      ADD_FAILURE() << "Attempted OOB access at index: " << i;
+      return String();
+    }
+    return string_values_[i];
+  }
 
  private:
   // WebScriptExecutionCallback:
   void Completed(const WebVector<v8::Local<v8::Value>>& values) override {
     did_complete_ = true;
-    if (!values.empty()) {
-      if (values[0]->IsString()) {
-        string_value_ =
-            ToCoreString(values[0]->ToString(context_).ToLocalChecked());
-      } else if (values[0]->IsBoolean()) {
-        bool_value_ = values[0].As<v8::Boolean>()->Value();
-      }
+    string_values_.Grow(static_cast<wtf_size_t>(values.size()));
+    for (wtf_size_t i = 0u; i < values.size(); ++i) {
+      if (values[i].IsEmpty())
+        continue;
+      string_values_[i] =
+          ToCoreString(values[i]->ToString(context_).ToLocalChecked());
     }
   }
 
-  bool did_complete_;
-  String string_value_;
-  bool bool_value_;
+  bool did_complete_ = false;
+  Vector<String> string_values_;
   v8::Local<v8::Context> context_;
 };
 
@@ -557,7 +593,7 @@ TEST_F(WebFrameTest, RequestExecuteScript) {
                            "'hello';", &callback_helper);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ("hello", callback_helper.StringValue());
+  EXPECT_EQ("hello", callback_helper.SingleStringValue());
 }
 
 TEST_F(WebFrameTest, SuspendedRequestExecuteScript) {
@@ -579,7 +615,223 @@ TEST_F(WebFrameTest, SuspendedRequestExecuteScript) {
 
   web_view_helper.Reset();
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ(String(), callback_helper.StringValue());
+  EXPECT_FALSE(callback_helper.HasAnyResults());
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithError) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::HandleScope scope(isolate);
+  v8::Local<v8::Context> context =
+      web_view_helper.LocalMainFrame()->MainWorldScriptContext();
+  ScriptExecutionCallbackHelper callback_helper(context);
+  v8::TryCatch try_catch(isolate);
+  try_catch.SetVerbose(true);
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           "foo = bar; 'hello';", &callback_helper);
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  // Even though an error is thrown here, it's swallowed by one of the
+  // script runner classes, so the caller never sees it. Instead, the error
+  // is represented by an empty V8Value (stringified to an empty string).
+  EXPECT_FALSE(try_catch.HasCaught());
+  EXPECT_EQ(String(), callback_helper.SingleStringValue());
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithPromiseWithoutWait) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  constexpr char kScript[] = R"(Promise.resolve('hello');)";
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper(
+      web_view_helper.LocalMainFrame()->MainWorldScriptContext());
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           kScript, &callback_helper,
+                           /*wait_for_promise=*/false);
+  RunPendingTasks();
+  // Since the caller specified the script shouldn't wait for the promise to
+  // be resolved, the callback should have completed normally and the result
+  // value should be the promise.
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_EQ("[object Promise]", callback_helper.SingleStringValue());
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithPromiseFulfilled) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  constexpr char kScript[] = R"(Promise.resolve('hello');)";
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper(
+      web_view_helper.LocalMainFrame()->MainWorldScriptContext());
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           kScript, &callback_helper);
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_EQ("hello", callback_helper.SingleStringValue());
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithPromiseRejected) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  constexpr char kScript[] = R"(Promise.reject('hello');)";
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper(
+      web_view_helper.LocalMainFrame()->MainWorldScriptContext());
+  ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                           kScript, &callback_helper);
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  // Promise rejection, similar to errors, are represented by empty V8Values
+  // passed to the callback.
+  EXPECT_EQ(String(), callback_helper.SingleStringValue());
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithFrameRemovalBeforePromiseResolves) {
+  RegisterMockedHttpURLLoad("single_iframe.html");
+  RegisterMockedHttpURLLoad("visible_iframe.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "single_iframe.html");
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+
+  constexpr char kScript[] = R"((new Promise((r) => {}));)";
+
+  WebLocalFrame* iframe =
+      web_view_helper.LocalMainFrame()->FirstChild()->ToWebLocalFrame();
+  ScriptExecutionCallbackHelper callback_helper(
+      iframe->MainWorldScriptContext());
+  ExecuteScriptInMainWorld(iframe, kScript, &callback_helper);
+  RunPendingTasks();
+  EXPECT_FALSE(callback_helper.DidComplete());
+
+  constexpr char kRemoveFrameScript[] =
+      "var iframe = document.getElementsByTagName('iframe')[0]; "
+      "document.body.removeChild(iframe);";
+  web_view_helper.LocalMainFrame()->ExecuteScript(
+      WebScriptSource(kRemoveFrameScript));
+  RunPendingTasks();
+
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_FALSE(callback_helper.HasAnyResults());
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithMultiplePromises) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  const String scripts[] = {
+      "Promise.resolve('hello');",
+      "Promise.resolve('world');",
+  };
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper(
+      web_view_helper.LocalMainFrame()->MainWorldScriptContext());
+  ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                            scripts, &callback_helper, true);
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_EQ("hello", callback_helper.StringValueAt(0));
+  EXPECT_EQ("world", callback_helper.StringValueAt(1));
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithMultiplePromisesWithDelayedSettlement) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  const String scripts[] = {
+      "Promise.resolve('hello');",
+      "(new Promise((r) => { window.resolveSecond = r; }));",
+  };
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper(
+      web_view_helper.LocalMainFrame()->MainWorldScriptContext());
+  ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                            scripts, &callback_helper, true);
+  RunPendingTasks();
+  EXPECT_FALSE(callback_helper.DidComplete());
+
+  {
+    ScriptExecutionCallbackHelper second_callback_helper(
+        web_view_helper.LocalMainFrame()->MainWorldScriptContext());
+    ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                             String("window.resolveSecond('world');"),
+                             &second_callback_helper);
+    RunPendingTasks();
+    EXPECT_TRUE(second_callback_helper.DidComplete());
+    EXPECT_EQ("undefined", second_callback_helper.SingleStringValue());
+  }
+
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_EQ("hello", callback_helper.StringValueAt(0));
+  EXPECT_EQ("world", callback_helper.StringValueAt(1));
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithMultipleSourcesWhereSomeArePromises) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  const String scripts[] = {
+      "Promise.resolve('hello');",
+      "'world';",
+  };
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper(
+      web_view_helper.LocalMainFrame()->MainWorldScriptContext());
+  ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                            scripts, &callback_helper, true);
+  RunPendingTasks();
+
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_EQ("hello", callback_helper.StringValueAt(0));
+  EXPECT_EQ("world", callback_helper.StringValueAt(1));
+}
+
+TEST_F(WebFrameTest, ExecuteScriptWithPromisesWhereOnlySomeAreFulfilled) {
+  RegisterMockedHttpURLLoad("foo.html");
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad(base_url_ + "foo.html");
+
+  String scripts[] = {
+      "Promise.resolve('hello');",
+      "Promise.reject('world');",
+  };
+
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+  ScriptExecutionCallbackHelper callback_helper(
+      web_view_helper.LocalMainFrame()->MainWorldScriptContext());
+  ExecuteScriptsInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
+                            scripts, &callback_helper, true);
+  RunPendingTasks();
+  EXPECT_TRUE(callback_helper.DidComplete());
+  EXPECT_EQ("hello", callback_helper.StringValueAt(0));
+  EXPECT_EQ(String(), callback_helper.StringValueAt(1));
 }
 
 TEST_F(WebFrameTest, RequestExecuteV8Function) {
@@ -610,7 +862,7 @@ TEST_F(WebFrameTest, RequestExecuteV8Function) {
                                  base::size(args), args, &callback_helper);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ("hello", callback_helper.StringValue());
+  EXPECT_EQ("hello", callback_helper.SingleStringValue());
 }
 
 TEST_F(WebFrameTest, RequestExecuteV8FunctionWhileSuspended) {
@@ -644,7 +896,7 @@ TEST_F(WebFrameTest, RequestExecuteV8FunctionWhileSuspended) {
   web_view_helper.GetWebView()->GetPage()->SetPaused(false);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ("hello", callback_helper.StringValue());
+  EXPECT_EQ("hello", callback_helper.SingleStringValue());
 }
 
 TEST_F(WebFrameTest, RequestExecuteV8FunctionWhileSuspendedWithUserGesture) {
@@ -672,7 +924,7 @@ TEST_F(WebFrameTest, RequestExecuteV8FunctionWhileSuspendedWithUserGesture) {
   web_view_helper.GetWebView()->GetPage()->SetPaused(false);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ(true, callback_helper.BoolValue());
+  EXPECT_EQ("true", callback_helper.SingleStringValue());
 }
 
 TEST_F(WebFrameTest, IframeScriptRemovesSelf) {
@@ -695,7 +947,7 @@ TEST_F(WebFrameTest, IframeScriptRemovesSelf) {
       &callback_helper);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
-  EXPECT_EQ(String(), callback_helper.StringValue());
+  EXPECT_FALSE(callback_helper.HasAnyResults());
 }
 
 namespace {
@@ -769,7 +1021,7 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
   // user activation but without the delegation option.
   ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                            post_message_wo_payment_request, &callback_helper,
-                           true);
+                           /*wait_for_promise=*/true, /*user_gesture=*/true);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_FALSE(message_event_listener->DelegatePaymentRequest());
@@ -778,7 +1030,7 @@ TEST_F(WebFrameTest, CapabilityDelegationMessageEventTest) {
   // user activation and the delegation option.
   ExecuteScriptInMainWorld(web_view_helper.GetWebView()->MainFrameImpl(),
                            post_message_w_payment_request, &callback_helper,
-                           true);
+                           /*wait_for_promise=*/true, /*user_gesture=*/true);
   RunPendingTasks();
   EXPECT_TRUE(callback_helper.DidComplete());
   EXPECT_TRUE(message_event_listener->DelegatePaymentRequest());
@@ -10040,7 +10292,7 @@ class DeviceEmulationTest : public WebFrameTest {
                              code, &callback_helper);
     RunPendingTasks();
     EXPECT_TRUE(callback_helper.DidComplete());
-    return callback_helper.StringValue();
+    return callback_helper.SingleStringValue();
   }
 
   frame_test_helpers::WebViewHelper web_view_helper_;

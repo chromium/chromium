@@ -764,7 +764,8 @@ void CommerceHintAgent::ExtractProducts() {
   main_frame->RequestExecuteScript(
       ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1), false,
       blink::WebLocalFrame::kAsynchronous, javascript_request_,
-      blink::BackForwardCacheAware::kAllow);
+      blink::BackForwardCacheAware::kAllow,
+      blink::WebLocalFrame::PromiseBehavior::kAwait);
 }
 
 CommerceHintAgent::JavaScriptRequest::JavaScriptRequest(
@@ -779,39 +780,6 @@ void CommerceHintAgent::JavaScriptRequest::WillExecute() {
 
 void CommerceHintAgent::JavaScriptRequest::Completed(
     const blink::WebVector<v8::Local<v8::Value>>& result) {
-  if (!agent_)
-    return;
-  blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
-  if (result.empty() || result.begin()->IsEmpty())
-    return;
-  if (!result[0]->IsPromise()) {
-    DLOG(ERROR) << "JavaScriptRequest::Completed() got non-Promise";
-    return;
-  }
-  v8::Local<v8::Promise> promise = result[0].As<v8::Promise>();
-  v8::Local<v8::Context> context = main_frame->MainWorldScriptContext();
-  auto callback = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
-    // The JavaScriptRequest object is never deleted, so we know the
-    // pointer we curried into the v8::Function is still valid. We forward
-    // the request to the instance, so that it can check the validity of the
-    // CommerceHintAgent, and process the results as appropriate.
-    DCHECK(info.Data()->IsExternal());
-    auto* javascript_request = static_cast<JavaScriptRequest*>(
-        info.Data().As<v8::External>()->Value());
-    javascript_request->HandlePromiseResults(info);
-  };
-  // Curry in the JavaScriptRequest instance into the callback.
-  v8::Local<v8::External> external =
-      v8::External::New(context->GetIsolate(), this);
-  v8::Local<v8::Function> function =
-      v8::Function::New(context, callback, external).ToLocalChecked();
-
-  v8::MaybeLocal<v8::Promise> result_maybe;
-  result_maybe = promise->Then(context, function);
-}
-
-void CommerceHintAgent::JavaScriptRequest::HandlePromiseResults(
-    const v8::FunctionCallbackInfo<v8::Value>& info) {
   // Only record when the start time is correctly captured.
   DCHECK(!start_time_.is_null());
   if (!start_time_.is_null()) {
@@ -820,11 +788,13 @@ void CommerceHintAgent::JavaScriptRequest::HandlePromiseResults(
   }
   if (!agent_)
     return;
+  if (result.empty() || result[0].IsEmpty())
+    return;
   blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
   v8::Local<v8::Context> context = main_frame->MainWorldScriptContext();
 
   agent_->OnProductsExtracted(
-      content::V8ValueConverter::Create()->FromV8Value(info[0], context));
+      content::V8ValueConverter::Create()->FromV8Value(result[0], context));
 }
 
 void CommerceHintAgent::OnProductsExtracted(

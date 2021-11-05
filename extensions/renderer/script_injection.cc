@@ -363,7 +363,8 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   }
   render_frame_->GetWebFrame()->RequestExecuteScript(
       world_id, sources, is_user_gesture, execution_option, callback.release(),
-      blink::BackForwardCacheAware::kPossiblyDisallow);
+      blink::BackForwardCacheAware::kPossiblyDisallow,
+      blink::WebLocalFrame::PromiseBehavior::kDontWait);
 }
 
 void ScriptInjection::OnJsInjectionCompleted(
