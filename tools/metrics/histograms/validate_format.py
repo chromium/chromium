@@ -14,7 +14,7 @@ import histogram_paths
 import merge_xml
 
 # The allowlist of namespaces that are split across multiple files.
-_NAMESPACES_IN_MULTIPLE_FILES = ['chromeos']
+_NAMESPACES_IN_MULTIPLE_FILES = ['chromeos', 'fcminvalidations']
 
 
 def CheckNamespaces():

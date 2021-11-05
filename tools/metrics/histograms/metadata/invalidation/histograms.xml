@@ -116,25 +116,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="FCMInvalidations.SubscriptionResponseCodeForTopic{FCMInvalidationNonSyncPerUserTopics}"
-    enum="HttpResponseCode" expires_after="never">
-<!-- expires-never: For monitoring FCM based invalidations. -->
-
-  <owner>melandory@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    For each subcription request to the FCM Per-User-Topic server, log the
-    response received from the server per topic. Note: This is only recorded
-    with a data type suffix. The base version is never recorded.
-    {FCMInvalidationNonSyncPerUserTopics}
-  </summary>
-  <token key="FCMInvalidationNonSyncPerUserTopics">
-    <variant name=""/>
-    <variant name=".OTHER" summary="OTHER"/>
-  </token>
-</histogram>
-
 <histogram name="FCMInvalidations.TokenStateOnRegistrationRequest2"
     enum="TokenStateOnRegistrationRequest" expires_after="never">
 <!-- expires-never: For monitoring FCM based invalidations. -->
