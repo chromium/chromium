@@ -40,7 +40,7 @@ mojom("mojom") {
   ]
 
   enabled_features = []
-  if (use_x11 || ozone_platform_x11) {
+  if (ozone_platform_x11) {
     enabled_features += [ "enable_x11_params" ]
   }
 

@@ -25,7 +25,7 @@ namespace gfx {
 namespace {
 
 gfx::AcceleratedWidget CastToAcceleratedWidget(int i) {
-#if defined(USE_OZONE) || defined(USE_X11) || defined(OS_APPLE)
+#if defined(USE_OZONE) || defined(OS_APPLE)
   return static_cast<gfx::AcceleratedWidget>(i);
 #else
   return reinterpret_cast<gfx::AcceleratedWidget>(i);

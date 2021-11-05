@@ -413,10 +413,6 @@ component("gfx") {
   if (use_ozone) {
     deps += [ "//ui/ozone:buildflags" ]
   }
-
-  if (ozone_platform_x11 || use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
 }
 
 component("color_space") {
@@ -457,9 +453,6 @@ component("color_space") {
       "CoreFoundation.framework",
       "CoreGraphics.framework",
     ]
-  }
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
   }
   defines = [ "COLOR_SPACE_IMPLEMENTATION" ]
 }
