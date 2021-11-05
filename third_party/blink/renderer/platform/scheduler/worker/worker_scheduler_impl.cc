@@ -43,7 +43,9 @@ WorkerSchedulerImpl::WorkerSchedulerImpl(
           worker_thread_scheduler->CreateTaskQueue("worker_pausable_tq")),
       unpausable_task_queue_(
           worker_thread_scheduler->CreateTaskQueue("worker_unpausable_tq")),
-      thread_scheduler_(worker_thread_scheduler) {
+      thread_scheduler_(worker_thread_scheduler),
+      back_forward_cache_disabling_feature_tracker_(&tracing_controller_,
+                                                    thread_scheduler_) {
   task_runners_.emplace(throttleable_task_queue_,
                         throttleable_task_queue_->CreateQueueEnabledVoter());
   task_runners_.emplace(pausable_task_queue_,
@@ -254,6 +256,11 @@ void WorkerSchedulerImpl::OnLifecycleStateChanged(
   NotifyLifecycleObservers();
 }
 
+void WorkerSchedulerImpl::InitializeOnWorkerThread(Delegate* delegate) {
+  DCHECK(delegate);
+  back_forward_cache_disabling_feature_tracker_.SetDelegate(delegate);
+}
+
 scoped_refptr<NonMainThreadTaskQueue>
 WorkerSchedulerImpl::UnpausableTaskQueue() {
   return unpausable_task_queue_.get();
@@ -270,11 +277,28 @@ WorkerSchedulerImpl::ThrottleableTaskQueue() {
 
 void WorkerSchedulerImpl::OnStartedUsingFeature(
     SchedulingPolicy::Feature feature,
-    const SchedulingPolicy& policy) {}
+    const SchedulingPolicy& policy) {
+  if (!policy.disable_back_forward_cache) {
+    return;
+  }
+
+  back_forward_cache_disabling_feature_tracker_.Add(feature);
+}
 
 void WorkerSchedulerImpl::OnStoppedUsingFeature(
     SchedulingPolicy::Feature feature,
-    const SchedulingPolicy& policy) {}
+    const SchedulingPolicy& policy) {
+  if (!policy.disable_back_forward_cache) {
+    return;
+  }
+
+  back_forward_cache_disabling_feature_tracker_.Remove(feature);
+}
+
+base::WeakPtr<FrameOrWorkerScheduler>
+WorkerSchedulerImpl::GetSchedulingAffectingFeatureWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 
 std::unique_ptr<WebSchedulingTaskQueue>
 WorkerSchedulerImpl::CreateWebSchedulingTaskQueue(

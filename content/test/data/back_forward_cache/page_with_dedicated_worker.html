@@ -1,6 +1,5 @@
 <html>
 <head></head>
-<body>This page has a dedicated worker.</body>
 <script>
 const worker = new Worker('/back_forward_cache/worker.js');
 window.receivedMessagePromise = new Promise(resolve => {

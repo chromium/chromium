@@ -311,6 +311,53 @@ TEST_F(WorkerSchedulerImplTest, MAYBE_NestedPauseHandlesTasks) {
   EXPECT_THAT(run_order, testing::ElementsAre("T1", "T2"));
 }
 
+class WorkerSchedulerDelegateForTesting : public WorkerScheduler::Delegate {
+ public:
+  MOCK_METHOD1(UpdateBackForwardCacheDisablingFeatures, void(uint64_t));
+};
+
+// Confirms that the feature usage in a dedicated worker is uploaded to
+// somewhere (the browser side in the actual implementation) via a delegate.
+TEST_F(WorkerSchedulerImplTest, FeatureUpload) {
+  auto delegate = std::make_unique<
+      testing::StrictMock<WorkerSchedulerDelegateForTesting>>();
+  worker_scheduler_->InitializeOnWorkerThread(delegate.get());
+
+  // As the tracked features are uplodaed after the current task is done by
+  // ExecuteAfterCurrentTask, register features in a different task, and wait
+  // for the task execution.
+  worker_scheduler_->GetTaskRunner(TaskType::kJavascriptTimerImmediate)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     [](WorkerSchedulerImpl* worker_scheduler,
+                        testing::StrictMock<WorkerSchedulerDelegateForTesting>*
+                            delegate) {
+                       worker_scheduler->RegisterStickyFeature(
+                           SchedulingPolicy::Feature::
+                               kMainResourceHasCacheControlNoStore,
+                           {SchedulingPolicy::DisableBackForwardCache()});
+                       worker_scheduler->RegisterStickyFeature(
+                           SchedulingPolicy::Feature::
+                               kMainResourceHasCacheControlNoCache,
+                           {SchedulingPolicy::DisableBackForwardCache()});
+                       testing::Mock::VerifyAndClearExpectations(delegate);
+                       EXPECT_CALL(
+                           *delegate,
+                           UpdateBackForwardCacheDisablingFeatures(
+                               (1 << static_cast<uint64_t>(
+                                    SchedulingPolicy::Feature::
+                                        kMainResourceHasCacheControlNoStore)) |
+                               (1 << static_cast<uint64_t>(
+                                    SchedulingPolicy::Feature::
+                                        kMainResourceHasCacheControlNoCache))));
+                     },
+                     worker_scheduler_.get(), delegate.get()));
+
+  RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(delegate.get());
+}
+
 class NonMainThreadWebSchedulingTaskQueueTest : public WorkerSchedulerImplTest {
  public:
   void SetUp() override {

@@ -89,6 +89,10 @@ class DummyFrameScheduler : public FrameScheduler {
                              const SchedulingPolicy& policy) override {}
   void OnStoppedUsingFeature(SchedulingPolicy::Feature feature,
                              const SchedulingPolicy& policy) override {}
+  base::WeakPtr<FrameOrWorkerScheduler> GetSchedulingAffectingFeatureWeakPtr()
+      override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
   WTF::HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics() override {
     return WTF::HashSet<SchedulingPolicy::Feature>();

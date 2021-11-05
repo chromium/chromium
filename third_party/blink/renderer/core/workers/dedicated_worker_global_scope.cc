@@ -465,6 +465,21 @@ DedicatedWorkerObjectProxy& DedicatedWorkerGlobalScope::WorkerObjectProxy()
   return static_cast<DedicatedWorkerThread*>(GetThread())->WorkerObjectProxy();
 }
 
+void DedicatedWorkerGlobalScope::UpdateBackForwardCacheDisablingFeatures(
+    uint64_t features_mask) {
+  // `back_forward_cache_controller_host_` might not be bound when non-
+  // PlzDedicatedWorker is used. Non-PlzDedicatedWorker will be removed in near
+  // future.
+  // TODO(hajimehoshi): Remove this 'if' branch after non-PlzDedicatedWorker is
+  // removed.
+  if (!back_forward_cache_controller_host_.is_bound()) {
+    return;
+  }
+
+  back_forward_cache_controller_host_
+      ->DidChangeBackForwardCacheDisablingFeatures(features_mask);
+}
+
 void DedicatedWorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(dedicated_worker_host_);
   visitor->Trace(back_forward_cache_controller_host_);

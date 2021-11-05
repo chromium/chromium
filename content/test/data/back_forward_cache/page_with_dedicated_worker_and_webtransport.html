@@ -1,0 +1,26 @@
+<html>
+<head></head>
+<script>
+const worker = new Worker('/back_forward_cache/worker_with_webtransport.js');
+
+function roundtrip(msg) {
+  let promise = new Promise(resolve => {
+    let fn = (msg) => {
+      worker.removeEventListener('message', fn);
+      resolve(msg.data);
+    };
+    worker.addEventListener('message', fn);
+  });
+  worker.postMessage(msg);
+  return promise
+}
+
+function testOpenWebTransport(port) {
+  return roundtrip('open,' + port);
+}
+
+function testCloseWebTransport() {
+  return roundtrip('close');
+}
+</script>
+</html>

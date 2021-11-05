@@ -602,6 +602,7 @@ void WorkerThread::InitializeOnWorkerThread(
     console_message_storage_ = MakeGarbageCollected<ConsoleMessageStorage>();
     global_scope_ =
         CreateWorkerGlobalScope(std::move(global_scope_creation_params));
+    worker_scheduler_->InitializeOnWorkerThread(global_scope_);
     worker_reporting_proxy_.DidCreateWorkerGlobalScope(GlobalScope());
 
     worker_inspector_controller_ = WorkerInspectorController::Create(

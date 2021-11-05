@@ -43,8 +43,10 @@ class WorkerOrWorkletScriptController;
 class WorkerReportingProxy;
 class WorkerThread;
 
-class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
-                                               public ExecutionContext {
+class CORE_EXPORT WorkerOrWorkletGlobalScope
+    : public EventTargetWithInlineData,
+      public ExecutionContext,
+      public scheduler::WorkerScheduler::Delegate {
  public:
   WorkerOrWorkletGlobalScope(
       v8::Isolate*,
@@ -75,6 +77,10 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
   bool IsJSExecutionForbidden() const final;
   void DisableEval(const String& error_message) final;
   bool CanExecuteScripts(ReasonForCallingCanExecuteScripts) final;
+
+  // scheduler::WorkerScheduler::Delegate
+  void UpdateBackForwardCacheDisablingFeatures(
+      uint64_t features_mask) override {}
 
   // Returns true when the WorkerOrWorkletGlobalScope is closing (e.g. via
   // WorkerGlobalScope#close() method). If this returns true, the worker is

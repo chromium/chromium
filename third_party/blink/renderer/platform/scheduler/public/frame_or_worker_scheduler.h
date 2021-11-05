@@ -151,7 +151,10 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   virtual void OnStoppedUsingFeature(SchedulingPolicy::Feature feature,
                                      const SchedulingPolicy& policy) = 0;
 
-  virtual base::WeakPtr<FrameOrWorkerScheduler> GetDocumentBoundWeakPtr();
+  // Gets a weak pointer for this scheduler that is reset when the influence by
+  // registered features to this scheduler is reset.
+  virtual base::WeakPtr<FrameOrWorkerScheduler>
+  GetSchedulingAffectingFeatureWeakPtr() = 0;
 
  private:
   void RemoveLifecycleObserver(Observer* observer);

@@ -56,6 +56,10 @@ class PLATFORM_EXPORT WorkerScheduler : public FrameOrWorkerScheduler {
 
   // Pauses the scheduler. The scheduler is paused as long as PauseHandle lives.
   virtual std::unique_ptr<PauseHandle> Pause() WARN_UNUSED_RESULT = 0;
+
+  // Initializes this on a worker thread. This must not be called twice or more.
+  // `delegate` must outlive this.
+  virtual void InitializeOnWorkerThread(Delegate* delegate) = 0;
 };
 
 }  // namespace scheduler

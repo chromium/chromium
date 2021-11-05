@@ -121,6 +121,9 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       RejectCoepUnsafeNone reject_coep_unsafe_none) override;
   bool IsOffMainThreadScriptFetchDisabled() override;
 
+  // Implements scheduler::WorkerScheduler::Delegate.
+  void UpdateBackForwardCacheDisablingFeatures(uint64_t features_mask) override;
+
   // Called by the bindings (dedicated_worker_global_scope.idl).
   const String name() const;
   void postMessage(ScriptState*,

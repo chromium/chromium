@@ -2243,28 +2243,104 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 class BackForwardCacheWithDedicatedWorkerBrowserTest
     : public BackForwardCacheBrowserTest {
  public:
+  BackForwardCacheWithDedicatedWorkerBrowserTest() { server_.Start(); }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(blink::features::kBackForwardCacheDedicatedWorker,
                               "", "");
+    EnableFeatureAndSetParams(blink::features::kPlzDedicatedWorker, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+
+    server_.SetUpCommandLine(command_line);
   }
+
+  int port() const { return server_.server_address().port(); }
+
+ private:
+  WebTransportSimpleTestServer server_;
 };
 
+// Confirms that a page using a dedicated worker is cached.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
                        CacheWithDedicatedWorker) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
 
   EXPECT_TRUE(NavigateToURL(
       shell(),
-      embedded_test_server()->GetURL(
+      https_server()->GetURL(
           "a.test", "/back_forward_cache/page_with_dedicated_worker.html")));
   EXPECT_EQ(42, EvalJs(current_frame_host(), "window.receivedMessagePromise"));
 
   // Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
 
   // Go back to the original page.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
+// Confirms that a page using a dedicated worker with WebTransport is not
+// cached.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       DoNotCacheWithDedicatedWorkerWithWebTransport) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL(
+                   "a.test",
+                   "/back_forward_cache/"
+                   "page_with_dedicated_worker_and_webtransport.html")));
+  // Open a WebTransport.
+  EXPECT_EQ("opened",
+            EvalJs(current_frame_host(),
+                   JsReplace("window.testOpenWebTransport($1);", port())));
+  RenderFrameDeletedObserver delete_observer_rfh(current_frame_host());
+
+  // Navigate away.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
+  delete_observer_rfh.WaitUntilDeleted();
+
+  // Go back to the original page. The page was not cached as the worker used
+  // WebTransport.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kWebTransport}, {}, {}, {},
+      FROM_HERE);
+}
+
+// Confirms that a page using a dedicated worker with a closed WebTransport is
+// cached as WebTransport is not a sticky feature.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       CacheWithDedicatedWorkerWithWebTransportClosed) {
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL(
+                   "a.test",
+                   "/back_forward_cache/"
+                   "page_with_dedicated_worker_and_webtransport.html")));
+  // Open and close a WebTransport.
+  EXPECT_EQ("opened",
+            EvalJs(current_frame_host(),
+                   JsReplace("window.testOpenWebTransport($1);", port())));
+  EXPECT_EQ("closed",
+            EvalJs(current_frame_host(), "window.testCloseWebTransport();"));
+
+  // Navigate away.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), https_server()->GetURL("b.test", "/title1.html")));
+
+  // Go back to the original page. The page was cached. Even though WebTransport
+  // is used once, the page is eligible for back-forward cache as the feature is
+  // not sticky.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ExpectRestored(FROM_HERE);

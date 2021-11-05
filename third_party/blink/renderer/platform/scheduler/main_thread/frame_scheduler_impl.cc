@@ -1284,7 +1284,10 @@ FrameSchedulerImpl::GetActiveFeaturesTrackedForBackForwardCacheMetricsMask()
 }
 
 base::WeakPtr<FrameOrWorkerScheduler>
-FrameSchedulerImpl::GetDocumentBoundWeakPtr() {
+FrameSchedulerImpl::GetSchedulingAffectingFeatureWeakPtr() {
+  // We reset feature sets upon frame navigation, so having a document-bound
+  // weak pointer ensures that the feature handle associated with previous
+  // document can't influence the new one.
   return document_bound_weak_factory_.GetWeakPtr();
 }
 

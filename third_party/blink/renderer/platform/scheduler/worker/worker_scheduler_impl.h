@@ -11,6 +11,8 @@
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/platform/scheduler/common/back_forward_cache_disabling_feature_tracker.h"
+#include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -50,6 +52,7 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   void OnLifecycleStateChanged(
       SchedulingLifecycleState lifecycle_state) override;
   std::unique_ptr<PauseHandle> Pause() override;
+  void InitializeOnWorkerThread(Delegate* delegate) override;
 
   // FrameOrWorkerScheduler implementation:
   SchedulingLifecycleState CalculateLifecycleState(ObserverType) const override;
@@ -57,6 +60,8 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
                              const SchedulingPolicy& policy) override;
   void OnStoppedUsingFeature(SchedulingPolicy::Feature feature,
                              const SchedulingPolicy& policy) override;
+  base::WeakPtr<FrameOrWorkerScheduler> GetSchedulingAffectingFeatureWeakPtr()
+      override;
   void SetPreemptedForCooperativeScheduling(Preempted) override {}
   std::unique_ptr<WebSchedulingTaskQueue> CreateWebSchedulingTaskQueue(
       WebSchedulingPriority) override;
@@ -72,6 +77,8 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   void ResumeImpl();
 
   base::WeakPtr<WorkerSchedulerImpl> GetWeakPtr();
+
+  TraceableVariableController tracing_controller_;
 
   // The tasks runners below are listed in increasing QoS order.
   // - throttleable task queue. Designed for custom user-provided javascript
@@ -102,6 +109,10 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
 
   bool is_disposed_ = false;
   uint32_t paused_count_ = 0;
+
+  BackForwardCacheDisablingFeatureTracker
+      back_forward_cache_disabling_feature_tracker_;
+
   base::WeakPtrFactory<WorkerSchedulerImpl> weak_factory_{this};
 };
 
