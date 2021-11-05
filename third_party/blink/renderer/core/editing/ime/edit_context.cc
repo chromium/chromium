@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_init.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/editing/ime/character_bounds_update_event.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/ime/text_format_update_event.h"
 #include "third_party/blink/renderer/core/editing/ime/text_update_event.h"
@@ -105,6 +106,13 @@ bool EditContext::DispatchCompositionStartEvent(const String& text) {
       event_type_names::kCompositionstart, DomWindow(), text);
   DispatchEvent(*event);
   return DomWindow();
+}
+
+void EditContext::DispatchCharacterBoundsUpdateEvent(uint32_t range_start,
+                                                     uint32_t range_end) {
+  auto* event =
+      MakeGarbageCollected<CharacterBoundsUpdateEvent>(range_start, range_end);
+  DispatchEvent(*event);
 }
 
 void EditContext::DispatchTextUpdateEvent(const String& text,
@@ -224,6 +232,21 @@ void EditContext::updateSelection(uint32_t start,
   }
 }
 
+void EditContext::updateCharacterBounds(
+    unsigned long range_start,
+    HeapVector<Member<DOMRect>>& character_bounds) {
+  character_bounds_range_start_ = static_cast<uint32_t>(range_start);
+
+  character_bounds_.Clear();
+  std::for_each(
+      character_bounds.begin(), character_bounds.end(),
+      [this](const auto& bound) {
+        const DoubleRect double_rect(bound->x(), bound->y(), bound->width(),
+                                     bound->height());
+        character_bounds_.push_back(ToGfxRect(EnclosingIntRect(double_rect)));
+      });
+}
+
 void EditContext::updateBounds(DOMRect* control_bounds,
                                DOMRect* selection_bounds) {
   // Return the IntRect containing the given DOMRect.
@@ -279,6 +302,10 @@ uint32_t EditContext::selectionEnd() const {
   return selection_end_;
 }
 
+uint32_t EditContext::characterBoundsRangeStart() const {
+  return character_bounds_range_start_;
+}
+
 void EditContext::setSelectionEnd(uint32_t selection_end,
                                   ExceptionState& exception_state) {
   // Following this spec:
@@ -294,6 +321,18 @@ String EditContext::inputPanelPolicy() const {
 
 const HeapVector<Member<Element>>& EditContext::attachedElements() {
   return attached_elements_;
+}
+
+const HeapVector<Member<DOMRect>> EditContext::characterBounds() {
+  HeapVector<Member<DOMRect>> dom_rects;
+
+  std::for_each(character_bounds_.begin(), character_bounds_.end(),
+                [&dom_rects](const auto& bound) {
+                  dom_rects.push_back(DOMRect::Create(
+                      bound.x(), bound.y(), bound.width(), bound.height()));
+                });
+
+  return dom_rects;
 }
 
 void EditContext::setInputPanelPolicy(const String& input_policy) {
@@ -426,6 +465,8 @@ bool EditContext::SetComposition(
                           selection_start_, selection_end_);
   composition_range_end_ = composition_range_start_ + update_text.length();
   DispatchTextFormatEvent(ime_text_spans);
+  DispatchCharacterBoundsUpdateEvent(composition_range_start_,
+                                     composition_range_end_);
   return true;
 }
 
@@ -458,6 +499,8 @@ bool EditContext::SetCompositionFromExistingText(
                           composition_range_end_, composition_start,
                           composition_start);
   DispatchTextFormatEvent(ime_text_spans);
+  DispatchCharacterBoundsUpdateEvent(composition_range_start_,
+                                     composition_range_end_);
   // Update the selection range.
   selection_start_ = composition_start;
   selection_end_ = composition_start;
@@ -709,7 +752,17 @@ WebRange EditContext::CompositionRange() {
 }
 
 bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
-  bounds[0] = selection_bounds_;
+  WebRange composition_range = CompositionRange();
+  if (composition_range.IsEmpty())
+    return false;
+
+  // The number of character bounds provided by the authors has to be the same
+  // as the length of the composition (as we request in
+  // CompositionCharacterBoundsUpdate event).
+  if (static_cast<int>(character_bounds_.size()) != composition_range.length())
+    return false;
+
+  bounds = character_bounds_;
   return true;
 }
 

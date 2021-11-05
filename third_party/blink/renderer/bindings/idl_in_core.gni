@@ -193,6 +193,8 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/dom/tree_walker.idl",
           "//third_party/blink/renderer/core/dom/void_function.idl",
           "//third_party/blink/renderer/core/dom/xml_document.idl",
+          "//third_party/blink/renderer/core/editing/ime/character_bounds_update_event.idl",
+          "//third_party/blink/renderer/core/editing/ime/character_bounds_update_event_init.idl",
           "//third_party/blink/renderer/core/editing/ime/edit_context.idl",
           "//third_party/blink/renderer/core/editing/ime/edit_context_init.idl",
           "//third_party/blink/renderer/core/editing/ime/text_format_update_event.idl",

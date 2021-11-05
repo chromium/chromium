@@ -66,6 +66,7 @@
     "canplaythrough",
     "capturehandlechange",
     "change",
+    "characterboundsupdate",
     "characteristicvaluechanged",
     "chargingchange",
     "chargingtimechange",

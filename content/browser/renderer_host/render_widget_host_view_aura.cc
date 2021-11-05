@@ -1305,6 +1305,13 @@ gfx::Rect RenderWidgetHostViewAura::GetCaretBounds() const {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return gfx::Rect();
 
+  // Check selection bound first (currently populated only for EditContext)
+  const absl::optional<gfx::Rect> text_selection_bound =
+      text_input_manager_->GetTextSelectionBounds();
+  if (text_selection_bound)
+    return ConvertRectToScreen(text_selection_bound.value());
+
+  // If no selection bound, we fall back to use selection region.
   const TextInputManager::SelectionRegion* region =
       text_input_manager_->GetSelectionRegion();
   gfx::Rect caret_rect = ConvertRectToScreen(

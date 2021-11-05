@@ -14,6 +14,7 @@
     [CallWith=ScriptState] constructor(optional EditContextInit options = {});
     [RaisesException] void updateSelection(unsigned long start, unsigned long end);
     void updateBounds(DOMRect controlBounds, DOMRect selectionBounds);
+    void updateCharacterBounds(unsigned long rangeStart, sequence<DOMRect> characterBounds);
     [RaisesException] void updateText(unsigned long start, unsigned long end, DOMString newText);
     sequence<Element> attachedElements();
 
@@ -23,10 +24,13 @@
     attribute EditContextInputMode inputMode;
     attribute EditContextInputPanelPolicy inputPanelPolicy;
     attribute EditContextEnterKeyHint enterKeyHint;
+    readonly attribute unsigned long characterBoundsRangeStart;
+    sequence<DOMRect> characterBounds();
 
     // Event handler attributes
     attribute EventHandler ontextupdate;
     attribute EventHandler ontextformatupdate;
+    attribute EventHandler oncharacterboundsupdate;
     attribute EventHandler oncompositionstart;
     attribute EventHandler oncompositionend;
 };

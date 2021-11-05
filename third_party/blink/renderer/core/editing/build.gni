@@ -150,6 +150,8 @@ blink_core_sources_editing = [
   "granularity_strategy.h",
   "ime/cached_text_input_info.cc",
   "ime/cached_text_input_info.h",
+  "ime/character_bounds_update_event.cc",
+  "ime/character_bounds_update_event.h",
   "ime/edit_context.cc",
   "ime/edit_context.h",
   "ime/ime_text_span.cc",

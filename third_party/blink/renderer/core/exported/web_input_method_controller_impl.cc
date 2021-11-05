@@ -224,8 +224,11 @@ WebRange WebInputMethodControllerImpl::CompositionRange() {
 
 bool WebInputMethodControllerImpl::GetCompositionCharacterBounds(
     WebVector<gfx::Rect>& bounds) {
-  if (IsEditContextActive())
-    return false;
+  if (IsEditContextActive()) {
+    return GetInputMethodController()
+        .GetActiveEditContext()
+        ->GetCompositionCharacterBounds(bounds);
+  }
 
   WebRange range = CompositionRange();
   if (range.IsEmpty())

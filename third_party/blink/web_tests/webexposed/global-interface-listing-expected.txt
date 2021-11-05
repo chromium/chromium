@@ -1213,6 +1213,11 @@ interface ChannelMergerNode : AudioNode
 interface ChannelSplitterNode : AudioNode
     attribute @@toStringTag
     method constructor
+interface CharacterBoundsUpdateEvent : Event
+    attribute @@toStringTag
+    getter rangeEnd
+    getter rangeStart
+    method constructor
 interface CharacterData : Node
     attribute @@toStringTag
     attribute @@unscopables
@@ -2155,9 +2160,11 @@ interface DynamicsCompressorNode : AudioNode
     method constructor
 interface EditContext : EventTarget
     attribute @@toStringTag
+    getter characterBoundsRangeStart
     getter enterKeyHint
     getter inputMode
     getter inputPanelPolicy
+    getter oncharacterboundsupdate
     getter oncompositionend
     getter oncompositionstart
     getter ontextformatupdate
@@ -2166,13 +2173,16 @@ interface EditContext : EventTarget
     getter selectionStart
     getter text
     method attachedElements
+    method characterBounds
     method constructor
     method updateBounds
+    method updateCharacterBounds
     method updateSelection
     method updateText
     setter enterKeyHint
     setter inputMode
     setter inputPanelPolicy
+    setter oncharacterboundsupdate
     setter oncompositionend
     setter oncompositionstart
     setter ontextformatupdate

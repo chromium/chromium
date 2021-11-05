@@ -330,19 +330,8 @@ HRESULT TSFTextStore::GetTextExt(TsViewCookie view_cookie,
   // TODO(IME): add tests for scenario that left position is bigger than right
   // position.
   absl::optional<gfx::Rect> result_rect;
-  absl::optional<gfx::Rect> tmp_opt_rect;
   const uint32_t start_pos = acp_start - composition_start_;
   const uint32_t end_pos = acp_end - composition_start_;
-  // If there is an active EditContext, then fetch the layout bounds from it.
-  text_input_client_->GetActiveTextInputControlLayoutBounds(&tmp_opt_rect,
-                                                            &result_rect);
-  if (result_rect) {
-    *rect = display::win::ScreenWin::DIPToScreenRect(window_handle_,
-                                                     result_rect.value())
-                .ToRECT();
-    *clipped = FALSE;
-    return S_OK;
-  }
 
   gfx::Rect tmp_rect;
   if (start_pos == end_pos) {

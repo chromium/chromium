@@ -603,6 +603,29 @@ test(function() {
 
 test(function() {
   const editContext = new EditContext();
+  const test = document.getElementById('test');
+  var rect1 = DOMRect.fromRect({x:0, y:1, width:100, height:200});
+  var rect2 = DOMRect.fromRect({x:2, y:3, width:300, height:400});
+  var rectArray = [rect1, rect2];
+  var rangeStart = 2;
+  editContext.updateCharacterBounds(rangeStart, rectArray);
+  assert_equals(editContext.characterBoundsRangeStart, 2);
+
+  var actualRectArray = editContext.characterBounds();
+  assert_equals(actualRectArray.length, 2);
+  assert_equals(actualRectArray[0].x, 0);
+  assert_equals(actualRectArray[0].y, 1);
+  assert_equals(actualRectArray[0].width, 100);
+  assert_equals(actualRectArray[0].height, 200);
+  rect2.x=100;
+  assert_equals(actualRectArray[1].x, 2);  // the cached value shouldn't change.
+  assert_equals(actualRectArray[1].y, 3);
+  assert_equals(actualRectArray[1].width, 300);
+  assert_equals(actualRectArray[1].height, 400);
+}, 'updateCharacterBounds(), characterBounds(), and characterBoundsRangeStart should work properly');
+
+test(function() {
+  const editContext = new EditContext();
   assert_not_equals(editContext, null);
   editContext.text = "foo";
   assert_equals(editContext.text, "foo");
