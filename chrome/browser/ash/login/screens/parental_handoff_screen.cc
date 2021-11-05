@@ -71,11 +71,6 @@ bool ParentalHandoffScreen::MaybeSkip(WizardContext* context) {
     return true;
   }
 
-  if (!supervised_users::IsEduCoexistenceFlowV2Enabled()) {
-    exit_callback_.Run(Result::SKIPPED);
-    return true;
-  }
-
   const Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile->IsChild()) {
     exit_callback_.Run(Result::SKIPPED);

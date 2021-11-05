@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
@@ -341,30 +340,11 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
   // Child user added a secondary account.
   if (profile->IsChild() &&
       !gaia::AreEmailsSame(primary_account_email, email)) {
-    if (!base::FeatureList::IsEnabled(
-            supervised_users::kEduCoexistenceFlowV2)) {
-      const std::string* rapt =
-          edu_login_params.FindStringKey("reAuthProofToken");
-      CHECK(rapt);
-      const std::string* parentId =
-          edu_login_params.FindStringKey("parentObfuscatedGaiaId");
-      CHECK(parentId);
-
-      // ChildSigninHelper deletes itself after its work is done.
-      new ChildSigninHelper(
-          account_manager, account_manager_mojo_service, close_dialog_closure_,
-          profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
-          GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
-                             gaia_id),
-          identity_manager, profile->GetPrefs(), *parentId, *rapt);
-    } else {
-      new EduCoexistenceChildSigninHelper(
-          account_manager, account_manager_mojo_service,
-          profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
-          GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
-                             gaia_id),
-          profile->GetPrefs(), web_ui());
-    }
+    new EduCoexistenceChildSigninHelper(
+        account_manager, account_manager_mojo_service,
+        profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
+        GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile), gaia_id),
+        profile->GetPrefs(), web_ui());
 
     return;
   }

@@ -277,9 +277,7 @@ std::u16string SupervisedUserService::GetExtensionsLockedMessage() const {
 
 // static
 std::string SupervisedUserService::GetEduCoexistenceLoginUrl() {
-  return base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)
-             ? chrome::kChromeUIEDUCoexistenceLoginURLV2
-             : chrome::kChromeUIEDUCoexistenceLoginURLV1;
+  return chrome::kChromeUIEDUCoexistenceLoginURLV2;
 }
 
 bool SupervisedUserService::IsChild() const {

@@ -99,9 +99,8 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 };
 
 ParentalHandoffScreenBrowserTest::ParentalHandoffScreenBrowserTest() {
-  feature_list_.InitWithFeatures(
-      {supervised_users::kEduCoexistenceFlowV2, kFamilyLinkOobeHandoff},
-      {} /*disable_features*/);
+  feature_list_.InitWithFeatures({kFamilyLinkOobeHandoff},
+                                 {} /*disable_features*/);
 }
 
 void ParentalHandoffScreenBrowserTest::SetUpOnMainThread() {

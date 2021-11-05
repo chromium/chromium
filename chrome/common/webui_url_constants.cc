@@ -68,7 +68,6 @@ const char kChromeUIDownloadInternalsHost[] = "download-internals";
 const char kChromeUIDownloadsHost[] = "downloads";
 const char kChromeUIDownloadsURL[] = "chrome://downloads/";
 const char kChromeUIDriveInternalsHost[] = "drive-internals";
-const char kChromeUIEDUCoexistenceLoginURLV1[] = "chrome://chrome-signin/edu";
 const char kChromeUIEDUCoexistenceLoginURLV2[] =
     "chrome://chrome-signin/edu-coexistence";
 const char kChromeUIEnterpriseCastingHost[] = "enterprise-casting";

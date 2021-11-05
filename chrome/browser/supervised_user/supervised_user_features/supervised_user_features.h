@@ -9,13 +9,9 @@
 
 namespace supervised_users {
 
-extern const base::Feature kEduCoexistenceFlowV2;
-
 extern const base::Feature kWebFilterInterstitialRefresh;
 
 extern const base::Feature kLocalWebApprovals;
-
-bool IsEduCoexistenceFlowV2Enabled();
 
 // Returns whether refreshed version of the website filter interstitial is
 // enabled.

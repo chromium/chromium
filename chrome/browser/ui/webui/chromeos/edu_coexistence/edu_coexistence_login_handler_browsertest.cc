@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
@@ -17,7 +16,6 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_state_tracker.h"
@@ -51,12 +49,7 @@ class EduCoexistenceLoginHandlerBrowserTest
       const EduCoexistenceLoginHandlerBrowserTest&) = delete;
   ~EduCoexistenceLoginHandlerBrowserTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        supervised_users::kEduCoexistenceFlowV2);
-
-    MixinBasedInProcessBrowserTest::SetUp();
-  }
+  void SetUp() override { MixinBasedInProcessBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -114,8 +107,6 @@ class EduCoexistenceLoginHandlerBrowserTest
   content::TestWebUI* web_ui() { return &web_ui_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   LoggedInUserMixin logged_in_user_mixin_{&mixin_host_,
                                           LoggedInUserMixin::LogInType::kChild,
                                           embedded_test_server(), this};

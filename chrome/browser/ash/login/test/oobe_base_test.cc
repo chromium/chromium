@@ -26,7 +26,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
@@ -86,14 +85,6 @@ class GaiaPageEventWaiter : public test::TestConditionWaiter {
 }  // namespace
 
 OobeBaseTest::OobeBaseTest() {
-  // Skip the EDU Coexistence Screen, because many OOBE tests don't expect
-  // the EDU coexistence screen after signin and fail if it isn't disabled.
-  // TODO(https://crbug.com/1175215): Make those tests work with this feature
-  // enabled.
-  scoped_feature_list_.InitWithFeatures(
-      {} /** enabled */,
-      {supervised_users::kEduCoexistenceFlowV2} /** disabled */);
-
   set_exit_when_last_browser_closes(false);
 }
 

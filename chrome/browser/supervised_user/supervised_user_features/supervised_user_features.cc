@@ -9,9 +9,6 @@
 
 namespace supervised_users {
 
-const base::Feature kEduCoexistenceFlowV2{"EduCoexistenceV2",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables refreshed version of the website filter interstitial that is shown to
 // Family Link users when the navigate to the blocked website.
 // This feature is a prerequisite for `kLocalWebApproval` feature.
@@ -24,10 +21,6 @@ const base::Feature kWebFilterInterstitialRefresh{
 // to be enabled.
 const base::Feature kLocalWebApprovals{"LocalWebApprovals",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsEduCoexistenceFlowV2Enabled() {
-  return base::FeatureList::IsEnabled(kEduCoexistenceFlowV2);
-}
 
 bool IsWebFilterInterstitialRefreshEnabled() {
   DCHECK(base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh) ||

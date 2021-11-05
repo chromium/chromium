@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -87,8 +86,6 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
   FakeUpdateEngineClient* update_engine_client_ = nullptr;
 
   std::unique_ptr<LoginOrLockScreenVisibleWaiter> login_screen_load_observer_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace ash

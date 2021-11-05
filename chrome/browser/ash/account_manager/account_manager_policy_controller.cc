@@ -8,13 +8,11 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
@@ -62,17 +60,11 @@ void AccountManagerPolicyController::Start() {
   OnChildAccountTypeChanged(user_data->value());
 
   if (profile_->IsChild()) {
-    if (base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)) {
-      edu_coexistence_consent_invalidation_controller_ =
-          std::make_unique<EduCoexistenceConsentInvalidationController>(
-              profile_, account_manager_, account_manager_facade_,
-              device_account_id_);
-      edu_coexistence_consent_invalidation_controller_->Init();
-    } else {
-      // Invalidate secondary accounts if parental consent text version for EDU
-      // accounts addition has changed.
-      CheckEduCoexistenceSecondaryAccountsInvalidationVersion();
-    }
+    edu_coexistence_consent_invalidation_controller_ =
+        std::make_unique<EduCoexistenceConsentInvalidationController>(
+            profile_, account_manager_, account_manager_facade_,
+            device_account_id_);
+    edu_coexistence_consent_invalidation_controller_->Init();
   }
 }
 

@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
@@ -78,16 +76,12 @@ class EduCoexistenceLoginBrowserTest : public OobeBaseTest {
 
   FakeGaiaMixin fake_gaia_{&mixin_host_};
 
-  base::test::ScopedFeatureList feature_list_;
-
   base::HistogramTester histogram_tester_;
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
 };
 
-EduCoexistenceLoginBrowserTest::EduCoexistenceLoginBrowserTest() {
-  feature_list_.InitAndEnableFeature(supervised_users::kEduCoexistenceFlowV2);
-}
+EduCoexistenceLoginBrowserTest::EduCoexistenceLoginBrowserTest() {}
 
 void EduCoexistenceLoginBrowserTest::SetUpOnMainThread() {
   EduCoexistenceLoginScreen* screen = GetEduCoexistenceLoginScreen();

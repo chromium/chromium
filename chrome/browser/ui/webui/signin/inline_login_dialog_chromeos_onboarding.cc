@@ -4,11 +4,9 @@
 
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/size.h"
@@ -68,7 +66,6 @@ InlineLoginDialogChromeOSOnboarding* InlineLoginDialogChromeOSOnboarding::Show(
     gfx::NativeWindow window,
     base::OnceCallback<void(void)> dialog_closed_callback) {
   DCHECK(ProfileManager::GetActiveUserProfile()->IsChild());
-  DCHECK(base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2));
 
   base::UmaHistogramEnumeration(
       account_manager::AccountManagerFacade::kAccountAdditionSource,

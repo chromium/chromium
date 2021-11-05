@@ -72,7 +72,6 @@ extern const char kChromeUIDownloadInternalsHost[];
 extern const char kChromeUIDownloadsHost[];
 extern const char kChromeUIDownloadsURL[];
 extern const char kChromeUIDriveInternalsHost[];
-extern const char kChromeUIEDUCoexistenceLoginURLV1[];
 extern const char kChromeUIEDUCoexistenceLoginURLV2[];
 extern const char kChromeUIEnterpriseCastingHost[];
 extern const char kChromeUIEnterpriseCastingURL[];
