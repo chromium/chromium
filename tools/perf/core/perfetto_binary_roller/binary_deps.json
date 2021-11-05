@@ -10,7 +10,7 @@
         },
         "mac": {
             "hash": "51aa6ceeed80258323467ff54ba5e3c90ea83e61",
-            "remote_path": "perfetto_binaries/trace_processor_shell/mac/9342043ac3c46789c845af1e62e307f4ec932eec/trace_processor_shell"
+            "remote_path": "perfetto_binaries/trace_processor_shell/mac/082503ee8f0bc9e8154af643786351b925dbd130/trace_processor_shell"
         },
         "linux_arm64": {
             "hash": "5074025a2898ec41a872e70a5719e417acb0a380",
