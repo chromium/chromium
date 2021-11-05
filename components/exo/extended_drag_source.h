@@ -75,7 +75,8 @@ class ExtendedDragSource : public DataSourceObserver,
 
   // ash::ToplevelWindowDragDelegate:
   void OnToplevelWindowDragStarted(const gfx::PointF& start_location,
-                                   ui::mojom::DragEventSource source) override;
+                                   ui::mojom::DragEventSource source,
+                                   aura::Window* drag_source_window) override;
   ui::mojom::DragOperation OnToplevelWindowDragDropped() override;
   void OnToplevelWindowDragCancelled() override;
   void OnToplevelWindowDragEvent(ui::LocatedEvent* event) override;
@@ -111,6 +112,7 @@ class ExtendedDragSource : public DataSourceObserver,
 
   std::unique_ptr<DraggedWindowHolder> dragged_window_holder_;
   std::unique_ptr<aura::ScopedWindowEventTargetingBlocker> event_blocker_;
+  aura::Window* drag_source_window_ = nullptr;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

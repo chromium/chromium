@@ -234,7 +234,7 @@ DragOperation DragDropController::StartDragAndDrop(
 
   if (toplevel_window_drag_delegate_) {
     toplevel_window_drag_delegate_->OnToplevelWindowDragStarted(
-        gfx::PointF(start_location_), source);
+        gfx::PointF(start_location_), source, drag_source_window_);
   }
 
   if (TabDragDropDelegate::IsChromeTabDrag(*drag_data_)) {

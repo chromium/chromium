@@ -170,9 +170,12 @@ bool ExtendedDragSource::IsActive() const {
 
 void ExtendedDragSource::OnToplevelWindowDragStarted(
     const gfx::PointF& start_location,
-    ui::mojom::DragEventSource source) {
+    ui::mojom::DragEventSource source,
+    aura::Window* drag_source_window) {
   pointer_location_ = start_location;
   drag_event_source_ = source;
+  drag_source_window_ =
+      drag_source_window ? drag_source_window->GetToplevelWindow() : nullptr;
   MaybeLockCursor();
 
   if (dragged_window_holder_ && dragged_window_holder_->toplevel_window())
@@ -295,6 +298,7 @@ void ExtendedDragSource::Cleanup() {
   }
   event_blocker_.reset();
   dragged_window_holder_.reset();
+  drag_source_window_ = nullptr;
   UnlockCursor();
 }
 

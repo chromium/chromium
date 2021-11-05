@@ -389,7 +389,8 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
 
   // ToplevelWindowDragDelegate:
   void OnToplevelWindowDragStarted(const gfx::PointF& start_location,
-                                   ui::mojom::DragEventSource source) override {
+                                   ui::mojom::DragEventSource source,
+                                   aura::Window* source_window) override {
     EXPECT_EQ(State::kNotInvoked, state_);
     state_ = State::kDragStartedInvoked;
     current_location_.emplace(start_location);

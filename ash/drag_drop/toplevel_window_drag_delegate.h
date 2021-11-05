@@ -7,6 +7,10 @@
 
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
+namespace aura {
+class Window;
+}
+
 namespace gfx {
 class PointF;
 }
@@ -21,9 +25,9 @@ namespace ash {
 // during Drag & Drop sessions.
 class ToplevelWindowDragDelegate {
  public:
-  virtual void OnToplevelWindowDragStarted(
-      const gfx::PointF& start_location,
-      ui::mojom::DragEventSource source) = 0;
+  virtual void OnToplevelWindowDragStarted(const gfx::PointF& start_location,
+                                           ui::mojom::DragEventSource source,
+                                           aura::Window* source_window) = 0;
 
   virtual ui::mojom::DragOperation OnToplevelWindowDragDropped() = 0;
 
