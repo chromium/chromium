@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/exo/wayland/zwp_color_manager.h"
+#include "components/exo/wayland/zcr_color_manager.h"
 
-#include <color-management-unstable-v1-server-protocol.h>
+#include <chrome-color-management-server-protocol.h>
 #include <wayland-server-core.h>
 
 #include "base/notreached.h"
@@ -15,7 +15,7 @@ namespace wayland {
 namespace {
 
 ////////////////////////////////////////////////////////////////////////////////
-// zwp_color_management_output_v1_interface:
+// zcr_color_management_output_v1_interface:
 
 void color_space_get_information(struct wl_client* client,
                                  struct wl_resource* resource) {
@@ -27,17 +27,17 @@ void color_space_destroy(struct wl_client* client,
   wl_resource_destroy(resource);
 }
 
-const struct zwp_color_space_v1_interface color_space_v1_implementation = {
+const struct zcr_color_space_v1_interface color_space_v1_implementation = {
     color_space_get_information, color_space_destroy};
 
 ////////////////////////////////////////////////////////////////////////////////
-// zwp_color_management_output_v1_interface:
+// zcr_color_management_output_v1_interface:
 
 void color_management_output_get_color_space(struct wl_client* client,
                                              struct wl_resource* resource,
                                              uint32_t id) {
   wl_resource* color_space_resource =
-      wl_resource_create(client, &zwp_color_space_v1_interface, 1, id);
+      wl_resource_create(client, &zcr_color_space_v1_interface, 1, id);
 
   wl_resource_set_implementation(color_space_resource,
                                  &color_space_v1_implementation,
@@ -49,13 +49,13 @@ void color_management_output_destroy(struct wl_client* client,
   wl_resource_destroy(resource);
 }
 
-const struct zwp_color_management_output_v1_interface
+const struct zcr_color_management_output_v1_interface
     color_management_output_v1_implementation = {
         color_management_output_get_color_space,
         color_management_output_destroy};
 
 ////////////////////////////////////////////////////////////////////////////////
-// zwp_color_management_surface_v1_interface:
+// zcr_color_management_surface_v1_interface:
 
 void color_management_surface_set_alpha_mode(struct wl_client* client,
                                              struct wl_resource* resource,
@@ -85,7 +85,7 @@ void color_management_surface_destroy(struct wl_client* client,
   wl_resource_destroy(resource);
 }
 
-const struct zwp_color_management_surface_v1_interface
+const struct zcr_color_management_surface_v1_interface
     color_management_surface_v1_implementation = {
         color_management_surface_set_alpha_mode,
         color_management_surface_set_extended_dynamic_range,
@@ -94,7 +94,7 @@ const struct zwp_color_management_surface_v1_interface
         color_management_surface_destroy};
 
 ////////////////////////////////////////////////////////////////////////////////
-// zwp_color_manager_v1_interface:
+// zcr_color_manager_v1_interface:
 
 void color_manager_create_color_space_from_icc(struct wl_client* client,
                                                struct wl_resource* resource,
@@ -110,7 +110,7 @@ void color_manager_create_color_space_from_names(struct wl_client* client,
                                                  uint32_t chromaticity,
                                                  uint32_t whitepoint) {
   wl_resource* color_space_resource =
-      wl_resource_create(client, &zwp_color_space_v1_interface, 1, id);
+      wl_resource_create(client, &zcr_color_space_v1_interface, 1, id);
 
   wl_resource_set_implementation(color_space_resource,
                                  &color_space_v1_implementation,
@@ -137,7 +137,7 @@ void color_manager_get_color_management_output(struct wl_client* client,
                                                uint32_t id,
                                                struct wl_resource* output) {
   wl_resource* color_management_output_resource = wl_resource_create(
-      client, &zwp_color_management_output_v1_interface, 1, id);
+      client, &zcr_color_management_output_v1_interface, 1, id);
 
   wl_resource_set_implementation(color_management_output_resource,
                                  &color_management_output_v1_implementation,
@@ -149,7 +149,7 @@ void color_manager_get_color_management_surface(struct wl_client* client,
                                                 uint32_t id,
                                                 struct wl_resource* surface) {
   wl_resource* color_management_surface_resource = wl_resource_create(
-      client, &zwp_color_management_surface_v1_interface, 1, id);
+      client, &zcr_color_management_surface_v1_interface, 1, id);
 
   wl_resource_set_implementation(color_management_surface_resource,
                                  &color_management_surface_v1_implementation,
@@ -161,7 +161,7 @@ void color_manager_destroy(struct wl_client* client,
   wl_resource_destroy(resource);
 }
 
-const struct zwp_color_manager_v1_interface color_manager_v1_implementation = {
+const struct zcr_color_manager_v1_interface color_manager_v1_implementation = {
     color_manager_create_color_space_from_icc,
     color_manager_create_color_space_from_names,
     color_manager_create_color_space_from_params,
@@ -170,12 +170,12 @@ const struct zwp_color_manager_v1_interface color_manager_v1_implementation = {
     color_manager_destroy};
 }  // namespace
 
-void bind_zwp_color_manager(wl_client* client,
+void bind_zcr_color_manager(wl_client* client,
                             void* data,
                             uint32_t version,
                             uint32_t id) {
   wl_resource* resource =
-      wl_resource_create(client, &zwp_color_manager_v1_interface, version, id);
+      wl_resource_create(client, &zcr_color_manager_v1_interface, version, id);
 
   wl_resource_set_implementation(resource, &color_manager_v1_implementation,
                                  data, /*destroy=*/nullptr);

@@ -12,7 +12,7 @@ struct wl_client;
 namespace exo {
 namespace wayland {
 
-void bind_zwp_color_manager(wl_client* client,
+void bind_zcr_color_manager(wl_client* client,
                             void* data,
                             uint32_t version,
                             uint32_t id);

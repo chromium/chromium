@@ -7,6 +7,10 @@ wayland_protocol("aura_shell_protocol") {
   sources = [ "aura-shell.xml" ]
 }
 
+wayland_protocol("chrome_color_management_protocol") {
+  sources = [ "chrome-color-management.xml" ]
+}
+
 wayland_protocol("surface_augmenter_protocol") {
   sources = [ "surface-augmenter.xml" ]
 }

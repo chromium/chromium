@@ -102,8 +102,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_COLOR_MANAGER)
-#include <color-management-unstable-v1-server-protocol.h>
-#include "components/exo/wayland/zwp_color_manager.h"
+#include <chrome-color-management-server-protocol.h>
+#include "components/exo/wayland/zcr_color_manager.h"
 #endif
 
 #endif
@@ -254,8 +254,8 @@ void Server::Initialize() {
                    &zwp_relative_pointer_manager_v1_interface, 1, display_,
                    bind_relative_pointer_manager);
 #if BUILDFLAG(ENABLE_COLOR_MANAGER)
-  wl_global_create(wl_display_.get(), &zwp_color_manager_v1_interface, 1,
-                   display_, bind_zwp_color_manager);
+  wl_global_create(wl_display_.get(), &zcr_color_manager_v1_interface, 1,
+                   display_, bind_zcr_color_manager);
 #endif
   wl_global_create(wl_display_.get(), &zxdg_decoration_manager_v1_interface, 1,
                    display_, bind_zxdg_decoration_manager);

@@ -202,10 +202,12 @@ source_set("wayland") {
     ]
 
     if (enable_color_manager) {
-      deps += [ "//third_party/wayland-protocols:color_management_protocol" ]
+      deps += [
+        "//components/exo/wayland/protocol:chrome_color_management_protocol",
+      ]
       sources += [
-        "zwp_color_manager.cc",
-        "zwp_color_manager.h",
+        "zcr_color_manager.cc",
+        "zcr_color_manager.h",
       ]
     }
 
