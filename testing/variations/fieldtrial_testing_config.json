@@ -4550,7 +4550,11 @@
     "IncognitoBrandConsistencyForDesktop": [
         {
             "platforms": [
-                "chromeos_lacros"
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {

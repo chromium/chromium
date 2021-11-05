@@ -633,7 +633,7 @@ const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
 // When enabled, removes any theme or background customization done by the user
 // on the Incognito UI.
 const base::Feature kIncognitoBrandConsistencyForDesktop{
-    "IncognitoBrandConsistencyForDesktop", base::FEATURE_ENABLED_BY_DEFAULT};
+    "IncognitoBrandConsistencyForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, clear browsing data option would be enabled in Incognito which
 // upon clicking would show a dialog to close all Incognito windows.
