@@ -39,6 +39,7 @@
 #include <wrl/event.h>
 
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage;
+using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage2;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackagePropertySet;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataRequest;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataRequestDeferral;
@@ -527,7 +528,11 @@ bool ShareOperation::PutShareContentInDataPackage(IDataRequest* data_request) {
     if (FAILED(uri_factory->CreateUri(url_h.get(), &uri)))
       return false;
 
-    if (FAILED(data_package_->SetUri(uri.Get())))
+    ComPtr<IDataPackage2> data_package_2;
+    if (FAILED(data_package_.As(&data_package_2)))
+      return false;
+
+    if (FAILED(data_package_2->SetWebLink(uri.Get())))
       return false;
   }
 

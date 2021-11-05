@@ -25,6 +25,7 @@
 using ABI::Windows::ApplicationModel::DataTransfer::DataRequestedEventArgs;
 using ABI::Windows::ApplicationModel::DataTransfer::DataTransferManager;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage;
+using ABI::Windows::ApplicationModel::DataTransfer::IDataPackage2;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataPackagePropertySet;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataRequest;
 using ABI::Windows::ApplicationModel::DataTransfer::IDataRequestDeferral;
@@ -304,7 +305,9 @@ TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback) {
         auto url_h = base::win::ScopedHString::Create("https://my.url.com");
         ComPtr<IUriRuntimeClass> uri;
         EXPECT_HRESULT_SUCCEEDED(uri_factory->CreateUri(url_h.get(), &uri));
-        EXPECT_HRESULT_SUCCEEDED(data_package->SetUri(uri.Get()));
+        ComPtr<IDataPackage2> data_package_2;
+        EXPECT_HRESULT_SUCCEEDED(data_package.As(&data_package_2));
+        EXPECT_HRESULT_SUCCEEDED(data_package_2->SetWebLink(uri.Get()));
 
         auto storage_items = Make<base::win::Vector<IStorageItem*>>();
         storage_items->Append(storage_item.Get());
