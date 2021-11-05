@@ -107,7 +107,7 @@ export function WallpaperFullscreenTest() {
     assertTrue(container.hidden);
   });
 
-  test('sets local layout option on full screen change', async () => {
+  test('sets default layout option on when entering preview', async () => {
     wallpaperFullscreenElement = initElement(WallpaperFullscreen.is);
     const {requestFullscreenPromise, exitFullscreenPromise} =
         mockFullscreenApis();
@@ -122,7 +122,7 @@ export function WallpaperFullscreenTest() {
     await requestFullscreenPromise;
 
     assertEquals(
-        currentSelectedCustomImage.layout,
+        ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped,
         wallpaperFullscreenElement.selectedLayout_);
 
     personalizationStore.data.fullscreen = false;
@@ -243,7 +243,7 @@ export function WallpaperFullscreenTest() {
 
     await requestFullscreenPromise;
 
-    // Current image is kCenter and should set the initial state.
+    // Current image is kCenter but initial state should reset to default.
     assertEquals(
         ash.personalizationApp.mojom.WallpaperLayout.kCenter,
         personalizationStore.data.currentSelected.layout);
@@ -253,15 +253,15 @@ export function WallpaperFullscreenTest() {
     const fill = wallpaperFullscreenElement.shadowRoot.querySelector(
         'cr-button[data-layout="FILL"]');
 
-    assertEquals('true', center.getAttribute('aria-selected'));
-    assertEquals('false', fill.getAttribute('aria-selected'));
-
-    wallpaperFullscreenElement.selectedLayout_ =
-        ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped;
-    await waitAfterNextRender(wallpaperFullscreenElement);
-
     assertEquals('false', center.getAttribute('aria-selected'));
     assertEquals('true', fill.getAttribute('aria-selected'));
+
+    wallpaperFullscreenElement.selectedLayout_ =
+        ash.personalizationApp.mojom.WallpaperLayout.kCenter;
+    await waitAfterNextRender(wallpaperFullscreenElement);
+
+    assertEquals('true', center.getAttribute('aria-selected'));
+    assertEquals('false', fill.getAttribute('aria-selected'));
   });
 
   test('clicking set as wallpaper confirms wallpaper', async () => {

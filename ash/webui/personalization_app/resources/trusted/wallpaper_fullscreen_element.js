@@ -98,11 +98,14 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
         state => state.pendingSelected?.hasOwnProperty('path'));
     this.watch('currentSelected_', state => state.currentSelected);
     this.watch('pendingSelected_', state => state.pendingSelected);
-    window.addEventListener('beforeunload', () => {
-      // Attempt to cancel preview in the scenario the user exits wallpaper
-      // picker by pressing CTRL + W while preview is still enabled.
-      const hidden = !this.getFullscreenElement();
-      if (!hidden) {
+    // Visibility change will fire in case of alt+tab, closing the window, or
+    // anything else that exits out of full screen mode.
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' &&
+          !!this.getFullscreenElement()) {
+        this.exitFullscreen();
+        // Cancel preview immediately instead of waiting for fullscreenchange
+        // event.
         cancelPreviewWallpaper(this.wallpaperProvider_);
       }
     });
@@ -127,7 +130,9 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
    */
   onVisibleChanged_(value) {
     if (value && !this.getFullscreenElement()) {
-      this.selectedLayout_ = this.currentSelected_.layout;
+      // Reset to default wallpaper layout each time.
+      this.selectedLayout_ =
+          ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped;
       this.shadowRoot.getElementById('container')
           .requestFullscreen()
           .then(() => document.body.classList.add(fullscreenClass));
