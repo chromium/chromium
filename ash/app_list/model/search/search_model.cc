@@ -14,7 +14,8 @@ namespace ash {
 
 SearchModel::SearchModel()
     : search_box_(std::make_unique<SearchBoxModel>()),
-      results_(std::make_unique<SearchResults>()) {}
+      results_(std::make_unique<SearchResults>()),
+      ordered_categories_(std::vector<ash::AppListSearchResultCategory>()) {}
 
 SearchModel::~SearchModel() {}
 
@@ -58,6 +59,8 @@ std::vector<SearchResult*> SearchModel::FilterSearchResultsByFunction(
 void SearchModel::PublishResults(
     std::vector<std::unique_ptr<SearchResult>> new_results,
     const std::vector<ash::AppListSearchResultCategory>& categories) {
+  ordered_categories_ = categories;
+
   // The following algorithm is used:
   // 1. Transform the |results_| list into an unordered map from result ID
   // to item.

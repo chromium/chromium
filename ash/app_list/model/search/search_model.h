@@ -62,6 +62,11 @@ class APP_LIST_MODEL_EXPORT SearchModel {
       std::vector<std::unique_ptr<SearchResult>> new_results,
       const std::vector<ash::AppListSearchResultCategory>& categories);
 
+  // Fetches search result categories ordered by relevance to the active query.
+  std::vector<ash::AppListSearchResultCategory> ordered_categories() {
+    return ordered_categories_;
+  }
+
   SearchResult* FindSearchResult(const std::string& id);
 
   // Returns the first available SearchResult which has not been marked as
@@ -77,6 +82,7 @@ class APP_LIST_MODEL_EXPORT SearchModel {
  private:
   std::unique_ptr<SearchBoxModel> search_box_;
   std::unique_ptr<SearchResults> results_;
+  std::vector<ash::AppListSearchResultCategory> ordered_categories_;
 };
 
 }  // namespace ash
