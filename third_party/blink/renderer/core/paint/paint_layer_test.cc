@@ -1902,6 +1902,11 @@ TEST_P(PaintLayerTest, CompositingContainerFloatingIframe) {
 }
 
 TEST_P(PaintLayerTest, CompositingContainerSelfPaintingNonStackedFloat) {
+  // Self-painting non-stacked layers don't exist in
+  // LayoutNGBlockFragmentation.
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='position: relative'>
       <span id='span' style='opacity: 0.9'>
