@@ -56,7 +56,8 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
   autofill::TestPersonalDataManager test_personal_data_manager_;
 };
 
-TEST_F(PaymentRequestWebContentsManagerTest, SPCTransactionMode) {
+// Disabled due to test flakiness. https://crbug.com/1267079.
+TEST_F(PaymentRequestWebContentsManagerTest, DISABLED_SPCTransactionMode) {
   // Initially there should be no automated transaction mode enabled.
   PaymentRequest* request1 = CreateAndReturnPaymentRequest();
   ASSERT_EQ(request1->spc_transaction_mode(), SPCTransactionMode::NONE);
