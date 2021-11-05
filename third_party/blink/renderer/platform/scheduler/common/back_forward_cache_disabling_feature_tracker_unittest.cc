@@ -21,7 +21,8 @@ class BackForwardCacheDisablingFeatureTrackerTest : public testing::Test {
 };
 
 TEST_F(BackForwardCacheDisablingFeatureTrackerTest, AddAndRemove) {
-  BackForwardCacheDisablingFeatureTracker tracker(tracing_controller());
+  BackForwardCacheDisablingFeatureTracker tracker(tracing_controller(),
+                                                  nullptr);
 
   EXPECT_THAT(tracker.GetActiveFeaturesTrackedForBackForwardCacheMetrics(),
               testing::UnorderedElementsAre());

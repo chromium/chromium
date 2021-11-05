@@ -8,12 +8,16 @@
 #include <bitset>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 namespace scheduler {
+
+class ThreadSchedulerImpl;
 
 // Keeps track of feature usage that disables back/forward cache.
 //
@@ -26,9 +30,16 @@ namespace scheduler {
 // determine back-forward cache eligibility.
 class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
  public:
-  // `tracing_controller` must not be null and must outlive this instance.
-  explicit BackForwardCacheDisablingFeatureTracker(
-      TraceableVariableController* tracing_controller);
+  // `tracing_controller` and `scheduler` must not be null and must outlive this
+  // instance except for tests.
+  BackForwardCacheDisablingFeatureTracker(
+      TraceableVariableController* tracing_controller,
+      ThreadSchedulerImpl* scheduler);
+
+  // Sets the delegate to notify the feature usage update. This must be called
+  // only once for initialization. `delegate` must not be null and must outlive
+  // except for tests.
+  void SetDelegate(FrameOrWorkerScheduler::Delegate* delegate);
 
   // Resets the feature-usage counters.
   void Reset();
@@ -46,13 +57,42 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // Gets a hash set of feature usages for metrics as a bitmap.
   uint64_t GetActiveFeaturesTrackedForBackForwardCacheMetricsMask() const;
 
+  // Notifies the delegate about the change in the set of active features.
+  // The scheduler calls this function when needed after each task finishes,
+  // grouping multiple OnStartedUsingFeature/OnStoppedUsingFeature into
+  // one call to the delegate (which is generally expected to upload them to
+  // the browser process).
+  // No calls will be issued to the delegate if the set of features didn't
+  // change since the previous call.
+  void ReportFeaturesToDelegate();
+
  private:
+  enum class TracingType {
+    kBegin,
+    kEnd,
+  };
+
+  void NotifyDelegateAboutFeaturesAfterCurrentTask(
+      TracingType tracing_type,
+      SchedulingPolicy::Feature traced_feature);
+
   base::flat_map<SchedulingPolicy::Feature, int>
       back_forward_cache_disabling_feature_counts_{};
   std::bitset<static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) + 1>
       back_forward_cache_disabling_features_{};
   TraceableState<bool, TracingCategoryName::kInfo>
       opted_out_from_back_forward_cache_;
+
+  // The last set of features passed to FrameOrWorkerScheduler::Delegate::
+  // UpdateBackForwardCacheDisablingFeatures.
+  uint64_t last_uploaded_bfcache_disabling_features_ = 0;
+  bool feature_report_scheduled_ = false;
+
+  FrameOrWorkerScheduler::Delegate* delegate_ = nullptr;
+  ThreadSchedulerImpl* scheduler_;
+
+  base::WeakPtrFactory<BackForwardCacheDisablingFeatureTracker> weak_factory_{
+      this};
 };
 
 }  // namespace scheduler

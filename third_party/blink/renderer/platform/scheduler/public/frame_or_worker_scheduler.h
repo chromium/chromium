@@ -85,6 +85,17 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     base::WeakPtr<FrameOrWorkerScheduler> scheduler_;
   };
 
+  class PLATFORM_EXPORT Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Notifies that the list of active features for this worker has changed.
+    // See SchedulingPolicy::Feature for the list of features and the meaning
+    // of individual features.
+    virtual void UpdateBackForwardCacheDisablingFeatures(
+        uint64_t features_mask) = 0;
+  };
+
   virtual ~FrameOrWorkerScheduler();
 
   using Preempted = base::StrongAlias<class PreemptedTag, bool>;

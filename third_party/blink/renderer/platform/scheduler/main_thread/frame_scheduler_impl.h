@@ -356,10 +356,6 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   BackForwardCacheDisablingFeatureTracker
       back_forward_cache_disabling_feature_tracker_;
 
-  // The last set of features passed to
-  // Delegate::UpdateBackForwardCacheDisablingFeatures.
-  uint64_t last_uploaded_bfcache_disabling_features_ = 0;
-  bool feature_report_scheduled_ = false;
   base::sequence_manager::TaskQueue::QueuePriority
       default_loading_task_priority_ =
           base::sequence_manager::TaskQueue::QueuePriority::kNormalPriority;
