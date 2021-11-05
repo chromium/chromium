@@ -118,11 +118,15 @@ def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
 
   if silent:
     devnull = open(os.devnull, 'w')
-    process = subprocess.Popen(command, stdout=devnull, stderr=devnull)
+    process = subprocess.Popen(command,
+                               stdout=devnull,
+                               stderr=devnull,
+                               text=True)
   else:
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+                               stderr=subprocess.PIPE,
+                               text=True)
   timeout_timer = None
   if timeout_secs:
 

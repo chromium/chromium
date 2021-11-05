@@ -29,7 +29,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          mock.patch.object(DeviceTarget, 'RunFFXCommand') as mock_ffx, \
          mock.patch.object(Target, '_WaitUntilReady') as mock_waituntilready:
       mock_spec_popen = mock.create_autospec(subprocess.Popen, instance=True)
-      mock_spec_popen.communicate.return_value = (b'address device_name', '')
+      mock_spec_popen.communicate.return_value = ('address device_name', '')
       mock_spec_popen.returncode = 0
       mock_ffx.return_value = mock_spec_popen
       mock_waituntilready.return_value = True
@@ -43,8 +43,8 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          self.assertRaisesRegex(Exception, \
                                 'More than one device was discovered'):
       mock_spec_popen = mock.create_autospec(subprocess.Popen, instance=True)
-      mock_spec_popen.communicate.return_value = (b'address1 device_name1\n'
-                                                  b'address2 device_name2', '')
+      mock_spec_popen.communicate.return_value = ('address1 device_name1\n'
+                                                  'address2 device_name2', '')
       mock_spec_popen.returncode = 0
       mock_ffx.return_value = mock_spec_popen
       device_target_instance.Start()
@@ -56,7 +56,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          mock.patch.object(DeviceTarget, 'RunFFXCommand') as mock_ffx, \
          self.assertRaisesRegex(Exception, 'Could not find device.'):
       mock_spec_popen = mock.create_autospec(subprocess.Popen, instance=True)
-      mock_spec_popen.communicate.return_value = (b'address', '')
+      mock_spec_popen.communicate.return_value = ('address', '')
       mock_spec_popen.returncode = 0
       mock_ffx.return_value = mock_spec_popen
       device_target_instance.Start()
@@ -68,8 +68,8 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch('subprocess.Popen') as mock_popen, \
          mock.patch.object(Target, '_WaitUntilReady') as mock_waituntilready:
-      mock_popen.return_value.communicate.return_value = (b'address',
-                                                          b'device_name')
+      mock_popen.return_value.communicate.return_value = ('address',
+                                                          'device_name')
       mock_popen.return_value.returncode = 0
       mock_waituntilready.return_value = True
       self.assertIsNone(device_target_instance.Start())
@@ -91,7 +91,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
          mock.patch.object(DeviceTarget, 'RunFFXCommand') as mock_ffx, \
          self.assertRaisesRegex(Exception, 'Could not find device.'):
       mock_spec_popen = mock.create_autospec(subprocess.Popen, instance=True)
-      mock_spec_popen.communicate.return_value = (b'', b'')
+      mock_spec_popen.communicate.return_value = ('', '')
       mock_spec_popen.returncode = 0
       mock_ffx.return_value = mock_spec_popen
       device_target_instance.Start()
