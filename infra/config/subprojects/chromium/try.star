@@ -305,7 +305,7 @@ try_.chromium_android_builder(
     builderless = not settings.is_main,
     # TODO (kimstephanie): Change to cores = 16 and ssd = True once bots have
     # landed
-    cores = "8|16",
+    cores = 16,
     executable = "recipe:binary_size_trybot",
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
@@ -328,6 +328,7 @@ try_.chromium_android_builder(
     tryjob = try_.job(),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
+    ssd = True,
 )
 
 try_.chromium_android_builder(
