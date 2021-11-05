@@ -223,6 +223,7 @@ js_library("onboarding_select_components_page") {
     ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 

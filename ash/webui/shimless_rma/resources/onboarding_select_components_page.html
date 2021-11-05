@@ -5,6 +5,9 @@
   <div slot="header">
     <!-- TODO(gavindodd): Update strings for i18n -->
     <h1>Select which components were replaced</h1>
+    <div>
+      <span inner-h-t-m-l="[[reworkFlowLinkText_]]"></span>
+    </div>
   </div>
   <div slot="body">
     <div>
@@ -15,12 +18,6 @@
           component-name="[[component.name]]">
         </repair-component-chip>
       </template>
-    </div>
-    <div>If you are reworking a motherboard to use in another device, go to the
-      <a href="#" id="reworkFlow" on-click="onReworkFlowButtonClicked_">
-        rework flow
-      </a>
-      .
     </div>
   </div>
 </base-page>

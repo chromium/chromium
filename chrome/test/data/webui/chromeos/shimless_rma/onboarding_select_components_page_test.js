@@ -83,7 +83,8 @@ export function onboardingSelectComponentsPageTest() {
    * @return {!Promise}
    */
   function clickReworkButton() {
-    const reworkFlowLink = component.shadowRoot.querySelector('#reworkFlow');
+    const reworkFlowLink =
+        component.shadowRoot.querySelector('#reworkFlowLink');
     assertTrue(!!reworkFlowLink);
     reworkFlowLink.click();
     return flushTasks();
@@ -101,7 +102,8 @@ export function onboardingSelectComponentsPageTest() {
   test('SelectComponentsPageInitializes', async () => {
     await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
 
-    const reworkFlowLink = component.shadowRoot.querySelector('#reworkFlow');
+    const reworkFlowLink =
+        component.shadowRoot.querySelector('#reworkFlowLink');
     const cameraComponent =
         component.shadowRoot.querySelector('#componentCamera');
     const batteryComponent =
