@@ -504,7 +504,7 @@ class Driver(object):
         init_timeout = self._port.get_option(
             'initialize_webgpu_adapter_at_startup_timeout_ms')
         startup_input = DriverInput(
-            "wpt_internal/webgpu/000_run_me_first.html",
+            "wpt_internal/webgpu/000_run_me_first.https.html",
             timeout=init_timeout,
             image_hash=None,
             args=per_test_args)
@@ -512,8 +512,8 @@ class Driver(object):
         if output.text and 'PASS 000_run_me_first' in output.text:
             return True, None
 
-        output.text = ('Failed to initialize WebGPU adapter at startup '
-                       'via wpt_internal_webgpu/000_run_me_first.html:\n' +
+        output.text = ('Failed to initialize WebGPU adapter at startup via '
+                       'wpt_internal_webgpu/000_run_me_first.https.html:\n' +
                        output.text)
         return False, output
 

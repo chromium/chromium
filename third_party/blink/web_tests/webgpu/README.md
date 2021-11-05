@@ -13,7 +13,7 @@ CTS into Chromium regularly. Part of the roll requires regenerating a few files 
 autoroller attempts to do.
 1. `third_party/webgpu-cts/ts_sources.txt` is a generated file which tells GN the list of Typescript
    sources that may impact compilation.
-1. `third_party/blink/web_tests/wpt_internal/webgpu/cts.html` is a generated file for WPT and
+1. `third_party/blink/web_tests/wpt_internal/webgpu/cts.https.html` is a generated file for WPT and
    contains all of the "variants" the CTS is run with. It is generated with the script
    `third_party/webgpu-cts/scripts/run_regenerate_internal_cts_html.py` based on a manual list of
    tests to split into variants (`third_party/blink/web_tests/webgpu/internal_cts_test_splits.pyl`)
@@ -116,9 +116,9 @@ check there to see if this documentation is outdated):
     `webgpu-with-backend-validation` or `webgpu-with-partial-backend-validation`.
 
 To run a particular test rather than the entire WebGPU CTS, add a test filter.
-(Note, queries can't be more specific than "variants" already in `cts.html`).
+(Note, queries can't be more specific than "variants" already in `cts.https.html`).
 Examples:
-- `--isolated-script-test-filter='wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map:mapAsync,read:*'`
-- `--isolated-script-test-filter='wpt_internal/webgpu/web_platform/reftests/canvas_clear.html'`
+- `--isolated-script-test-filter='wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,buffers,map:mapAsync,read:*'`
+- `--isolated-script-test-filter='wpt_internal/webgpu/web_platform/reftests/canvas_clear.https.html'`
 
 Finally, to view the results, open `out/YOUR_TARGET/layout-test-results/results.html`.

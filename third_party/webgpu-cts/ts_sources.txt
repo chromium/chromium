@@ -239,6 +239,7 @@ src/webgpu/api/validation/resource_usages/texture/in_pass_encoder.spec.ts
 src/webgpu/api/validation/resource_usages/texture/in_render_common.spec.ts
 src/webgpu/api/validation/resource_usages/texture/in_render_misc.spec.ts
 src/webgpu/api/validation/texture/destroy.spec.ts
+src/webgpu/idl/exposed.html.ts
 src/webgpu/idl/idl_test.ts
 src/webgpu/idl/constants/flags.spec.ts
 src/webgpu/shader/types.ts

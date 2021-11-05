@@ -87,7 +87,7 @@ action("verify_regenerate_internal_cts_html") {
              "scripts/regenerate_internal_cts_html.py",
              "scripts/regenerate_internal_cts_html.bat",
              "//third_party/node/node.py",
-             "//third_party/blink/web_tests/wpt_internal/webgpu/cts.html",
+             "//third_party/blink/web_tests/wpt_internal/webgpu/cts.https.html",
              "//third_party/blink/web_tests/webgpu/ctshtml-template.txt",
              "//third_party/blink/web_tests/webgpu/argsprefixes.txt",
            ] + ts_source_inputs
