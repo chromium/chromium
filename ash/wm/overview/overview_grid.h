@@ -407,6 +407,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return desks_templates_grid_widget_.get();
   }
 
+  views::Widget* save_desk_as_template_widget_for_testing() const {
+    return save_desk_as_template_widget_.get();
+  }
+
  private:
   class TargetWindowObserver;
   friend class DesksTemplatesTest;

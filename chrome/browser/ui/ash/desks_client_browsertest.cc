@@ -9,12 +9,15 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/desks/templates/desks_templates_test_util.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -59,6 +62,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/display/screen.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
 
 using ::testing::_;
@@ -136,6 +141,16 @@ web_app::AppId CreateSettingsSystemWebApp(Profile* profile) {
   return settings_app_id;
 }
 
+void ClickButton(const views::Button* button) {
+  DCHECK(button);
+  DCHECK(button->GetVisible());
+  aura::Window* root_window =
+      button->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+}
+
 class MockDeskTemplateAppLaunchHandler : public DeskTemplateAppLaunchHandler {
  public:
   explicit MockDeskTemplateAppLaunchHandler(Profile* profile)
@@ -198,8 +213,10 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
  public:
   DesksClientTest() {
     // This feature depends on full restore feature, so need to enable it.
-    scoped_feature_list_.InitAndEnableFeature(
-        full_restore::features::kFullRestore);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{full_restore::features::kFullRestore,
+                              ash::features::kDesksTemplates},
+        /*disabled_features=*/{});
   }
   ~DesksClientTest() override = default;
 
@@ -947,6 +964,40 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
   EXPECT_FALSE(iter != app_id_to_launch_list.end());
 }
 
+// Tests that basic operations using the native UI work as expected.
+IN_PROC_BROWSER_TEST_F(DesksClientTest, NativeUIBasic) {
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  // Tests that since we have no templates right now, so the desks templates
+  // button is hidden.
+  views::Button* zero_state_templates_button =
+      ash::GetZeroStateDesksTemplatesButton();
+  ASSERT_TRUE(zero_state_templates_button);
+  EXPECT_FALSE(zero_state_templates_button->GetVisible());
+
+  // Note that this button needs at least one window to show up. Browser tests
+  // have an existing browser window, so no new window needs to be created.
+  views::Button* save_desk_as_template_button =
+      ash::GetSaveDeskAsTemplateButton();
+  ASSERT_TRUE(save_desk_as_template_button);
+  ClickButton(save_desk_as_template_button);
+
+  // TODO(sophiewen): The desks templates button doesn't show up currently
+  // after saving a desk. Leave and reenter overview for now.
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+
+  // Tests that since we have one template right now, so the desks templates
+  // button is shown.
+  zero_state_templates_button = ash::GetZeroStateDesksTemplatesButton();
+  ASSERT_TRUE(zero_state_templates_button);
+  EXPECT_TRUE(zero_state_templates_button->GetVisible());
+
+  // TODO(richui): Add tests for launching and deleting.
+}
 class DesksClientMultiProfileTest : public ash::LoginManagerTest {
  public:
   DesksClientMultiProfileTest() : ash::LoginManagerTest() {
