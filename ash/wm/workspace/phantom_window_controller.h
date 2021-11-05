@@ -52,6 +52,9 @@ class ASH_EXPORT PhantomWindowController {
   // bounds |target_bounds_in_screen_| with offsets |kPhantomWindowInsets|.
   gfx::Rect GetTargetWindowBoundsForTesting() const;
 
+  // Returns |maximize_cue_widget_|.
+  views::Widget* GetMaximizeCueForTesting() const;
+
  private:
   // Creates, shows and returns a phantom widget at |bounds|
   // with kShellWindowId_ShelfContainer in |root_window| as a parent.

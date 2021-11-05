@@ -173,11 +173,7 @@ void PhantomWindowController::Show(const gfx::Rect& window_bounds_in_screen) {
 }
 
 void PhantomWindowController::HideMaximizeCue() {
-  // `WorkspaceWindowResizer::ShowMaximizePhantom()` calls this function once
-  // the dwell timer completes, but maximize phantom shown for landscape
-  // display does not have |maximize_cue_widget_|.
-  if (!maximize_cue_widget_)
-    return;
+  DCHECK(maximize_cue_widget_);
   ui::Layer* widget_layer = maximize_cue_widget_->GetLayer();
 
   views::AnimationBuilder()
@@ -241,6 +237,10 @@ gfx::Rect PhantomWindowController::GetTargetWindowBoundsForTesting() const {
   gfx::Rect target_window_bounds = target_bounds_in_screen_;
   target_window_bounds.Inset(-kPhantomWindowInsets);
   return target_window_bounds;
+}
+
+views::Widget* PhantomWindowController::GetMaximizeCueForTesting() const {
+  return maximize_cue_widget_.get();
 }
 
 std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(

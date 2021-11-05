@@ -773,18 +773,15 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
   if (IsSnapTopOrMaximize(snap_type)) {
     if (can_snap_to_maximize_) {
       const bool drag_passed_threshold =
-          (location_in_screen - dwell_location_in_screen_).Length() >
-          kSnapDragDwellTimeResetThreshold;
+          dwell_location_in_screen_.has_value() &&
+          (location_in_screen - dwell_location_in_screen_.value()).Length() >
+              kSnapDragDwellTimeResetThreshold;
       // If vertical snap state is enabled, update phantom window for top/bottom
       // snap before setting a timer for maximize phantom to show up.
       if (chromeos::wm::features::IsVerticalSnapEnabled() &&
           !snap_phantom_window_controller_ &&
           snap_type != SnapType::kMaximize) {
         UpdateSnapPhantomWindow(snap_type);
-        // TODO(crbug.com/1257240): Move maximize cue logic into
-        // `UpdateSnapPhantomWindow()` to handle the cue if needed.
-        if (snap_phantom_window_controller_)
-          snap_phantom_window_controller_->ShowMaximizeCue();
       }
 
       // Start maximize phantom window dwell time if it is not already running
@@ -798,8 +795,9 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
              snap_type != SnapType::kMaximize)
                 ? kDwellLongTime
                 : kDwellTime,
-            base::BindOnce(&WorkspaceWindowResizer::ShowMaximizePhantom,
-                           weak_ptr_factory_.GetWeakPtr()));
+            base::BindOnce(&WorkspaceWindowResizer::UpdateSnapPhantomWindow,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           SnapType::kMaximize));
         // Cancel maximization if drag passed threshold.
         // Window can still be maximized in next dwell cycle if stays at top of
         // display.
@@ -815,7 +813,7 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
     if (dwell_countdown_timer_.IsRunning()) {
       dwell_countdown_timer_.Stop();
     }
-    dwell_location_in_screen_ = gfx::PointF();
+    dwell_location_in_screen_.reset();
   }
 }
 
@@ -1473,6 +1471,8 @@ bool WorkspaceWindowResizer::IsSnapTopOrMaximize(SnapType type) const {
 
 void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
     const SnapType target_snap_type) {
+  if (snap_type_ == target_snap_type)
+    return;
   if (!did_move_or_resize_ || details().window_component != HTCAPTION)
     return;
 
@@ -1526,8 +1526,15 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
   if (is_top_to_maximize) {
     snap_phantom_window_controller_
         ->TransformPhantomWidgetFromSnapTopToMaximize(phantom_bounds);
+    // Hide maximize cue once the top-snap phantom turns into maximize phantom.
+    snap_phantom_window_controller_->HideMaximizeCue();
   } else {
     snap_phantom_window_controller_->Show(phantom_bounds);
+    // Show the maximize cue on top-snap phantom.
+    if (IsSnapTopOrMaximize(snap_type_) && snap_type_ != SnapType::kMaximize &&
+        snap_type_ != last_type) {
+      snap_phantom_window_controller_->ShowMaximizeCue();
+    }
   }
 }
 
@@ -1678,12 +1685,6 @@ void WorkspaceWindowResizer::EndDragForAttachedWindows(bool revert_drag) {
       window_state->OnCompleteDrag(last_mouse_location_);
     window_state->DeleteDragDetails();
   }
-}
-
-void WorkspaceWindowResizer::ShowMaximizePhantom() {
-  UpdateSnapPhantomWindow(SnapType::kMaximize);
-  if (snap_phantom_window_controller_)
-    snap_phantom_window_controller_->HideMaximizeCue();
 }
 
 display::Display WorkspaceWindowResizer::GetDisplay() const {

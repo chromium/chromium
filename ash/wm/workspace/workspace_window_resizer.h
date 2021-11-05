@@ -162,10 +162,6 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   void StartDragForAttachedWindows();
   void EndDragForAttachedWindows(bool revert_drag);
 
-  // Updates phantom window to maximize phantom window and hides maximize cue
-  // widget.
-  void ShowMaximizePhantom();
-
   // Gets the display associated with GetTarget() if touch dragging. Gets the
   // display associated with the cursor if mouse dragging.
   display::Display GetDisplay() const;
@@ -211,7 +207,7 @@ class ASH_EXPORT WorkspaceWindowResizer : public WindowResizer {
   // Timer for dwell time countdown.
   base::OneShotTimer dwell_countdown_timer_;
   // The location for drag maximize in screen.
-  gfx::PointF dwell_location_in_screen_;
+  absl::optional<gfx::PointF> dwell_location_in_screen_;
 
   // The mouse location passed to Drag().
   gfx::PointF last_mouse_location_;
