@@ -65,10 +65,6 @@ def get_test_metadata(test_id: str) -> Tuple[str, str]:
     raise errors.InternalError(
         f"Malformed GetTestResult response: no key {e}") from e
 
-  # Parameterised tests put "/n" on the end, where n is a number. This isn't
-  # reflected in source though, so we strip it.
-  name = re.sub('/[0-9]*$', '', name)
-
   if repo != 'https://chromium.googlesource.com/chromium/src':
     raise errors.UserError(
         f"Test is in repo '{repo}', this tool can only disable tests in " +

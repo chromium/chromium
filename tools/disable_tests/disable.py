@@ -86,12 +86,14 @@ def main() -> int:
 def disable_test(test_id: str, cond_strs: List[str]):
   conds = conditions.parse(cond_strs)
 
-  #  If the given ID looks like 'TestSuite.TestName', then add the necessary
-  #  parts to make a matching query for the full ID.
-  if '/' not in test_id and test_id.count('.') == 1:
-    test_id = f'ninja://.*/{test_id}(/.*)?'
+  #  If the given ID starts with "ninja:", then it's a full test ID. If not,
+  #  assume it's a test name, and transform it into a query that will match the
+  #  full ID.
+  if not test_id.startswith('ninja:'):
+    test_id = f'ninja://.*/{extract_name_and_suite(test_id)}(/.*)?'
 
   test_name, filename = resultdb.get_test_metadata(test_id)
+  test_name = extract_name_and_suite(test_name)
 
   # Paths returned from ResultDB look like //foo/bar, where // refers to the
   # root of the chromium/src repo.
@@ -121,6 +123,17 @@ def disable_test(test_id: str, cond_strs: List[str]):
   new_content = disabler(test_name, source_file, conds)
   with open(full_path, 'w') as f:
     f.write(new_content)
+
+
+def extract_name_and_suite(test_name: str) -> str:
+  # Test names always have a suite name and test name, separated by '.'s. They
+  # may also have extra slash-separated parts on the beginning and the end,
+  # for parameterised tests.
+  for part in test_name.split('/'):
+    if '.' in part:
+      return part
+
+  raise errors.UserError(f"Couldn't parse test name: {test_name}")
 
 
 def get_current_commit_hash() -> Optional[str]:
