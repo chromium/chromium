@@ -100,4 +100,10 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-radio-group': SettingsRadioGroupElement;
+  }
+}
+
 customElements.define(SettingsRadioGroupElement.is, SettingsRadioGroupElement);

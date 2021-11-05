@@ -9,6 +9,7 @@ import '../settings_shared_css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -31,14 +32,15 @@ enum UrlInputError {
  * or editing a startup URL entry.
  */
 
-interface SettingsStartupUrlDialogElement {
+export interface SettingsStartupUrlDialogElement {
   $: {
-    dialog: CrDialogElement,
     actionButton: CrButtonElement,
+    dialog: CrDialogElement,
+    url: CrInputElement,
   };
 }
 
-class SettingsStartupUrlDialogElement extends PolymerElement {
+export class SettingsStartupUrlDialogElement extends PolymerElement {
   static get is() {
     return 'settings-startup-url-dialog';
   }
@@ -142,6 +144,12 @@ class SettingsStartupUrlDialogElement extends PolymerElement {
       this.$.actionButton.disabled = !isValid;
       this.error_ = isValid ? UrlInputError.NONE : UrlInputError.INVALID_URL;
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-startup-url-dialog': SettingsStartupUrlDialogElement;
   }
 }
 

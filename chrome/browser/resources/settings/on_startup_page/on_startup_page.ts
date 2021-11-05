@@ -30,7 +30,8 @@ enum PrefValues {
 
 const SettingsOnStartupPageElementBase = WebUIListenerMixin(PolymerElement);
 
-class SettingsOnStartupPageElement extends SettingsOnStartupPageElementBase {
+export class SettingsOnStartupPageElement extends
+    SettingsOnStartupPageElementBase {
   static get is() {
     return 'settings-on-startup-page';
   }
@@ -52,6 +53,7 @@ class SettingsOnStartupPageElement extends SettingsOnStartupPageElementBase {
     };
   }
 
+  prefs: Object;
   private ntpExtension_: NtpExtension|null;
 
   connectedCallback() {
@@ -77,6 +79,12 @@ class SettingsOnStartupPageElement extends SettingsOnStartupPageElementBase {
    */
   private showStartupUrls_(restoreOnStartup: PrefValues): boolean {
     return restoreOnStartup === PrefValues.OPEN_SPECIFIC;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-on-startup-page': SettingsOnStartupPageElement;
   }
 }
 

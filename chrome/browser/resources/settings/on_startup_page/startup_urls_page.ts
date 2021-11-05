@@ -32,7 +32,7 @@ const SettingsStartupUrlsPageElementBase =
           PolymerElement & WebUIListenerMixinInterface & CrScrollableBehavior
     };
 
-class SettingsStartupUrlsPageElement extends
+export class SettingsStartupUrlsPageElement extends
     SettingsStartupUrlsPageElementBase {
   static get is() {
     return 'settings-startup-urls-page';
@@ -58,6 +58,7 @@ class SettingsStartupUrlsPageElement extends
     };
   }
 
+  prefs: Object;
   private startupPages_: Array<StartupPageInfo>;
   private showStartupUrlDialog_: boolean;
   private startupUrlDialogModel_: StartupPageInfo|null;
@@ -128,6 +129,12 @@ class SettingsStartupUrlsPageElement extends
   private shouldAllowUrlsEdit_(): boolean {
     return this.get('prefs.session.startup_urls.enforcement') !==
         chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-startup-urls-page': SettingsStartupUrlsPageElement;
   }
 }
 

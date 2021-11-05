@@ -33,7 +33,7 @@ const SettingsStartupUrlEntryElementBase =
     mixinBehaviors([FocusRowBehavior], PolymerElement) as
     {new (): PolymerElement & FocusRowBehavior};
 
-class SettingsStartupUrlEntryElement extends
+export class SettingsStartupUrlEntryElement extends
     SettingsStartupUrlEntryElementBase {
   static get is() {
     return 'settings-startup-url-entry';
@@ -81,6 +81,12 @@ class SettingsStartupUrlEntryElement extends
                         CrLazyRenderElement<CrActionMenuElement>)
                            .get();
     actionMenu.showAt(assert(this.shadowRoot!.querySelector('#dots')!));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-startup-url-entry': SettingsStartupUrlEntryElement;
   }
 }
 

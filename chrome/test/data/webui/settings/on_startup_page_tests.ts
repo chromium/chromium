@@ -5,30 +5,28 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {OnStartupBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {NtpExtension, OnStartupBrowserProxy, OnStartupBrowserProxyImpl, SettingsOnStartupPageElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
-/** @implements {OnStartupBrowserProxy} */
-class TestOnStartupBrowserProxy extends TestBrowserProxy {
+class TestOnStartupBrowserProxy extends TestBrowserProxy implements
+    OnStartupBrowserProxy {
+  private ntpExtension_: NtpExtension|null = null;
+
   constructor() {
     super(['getNtpExtension']);
-
-    /** @private {?NtpExtension} */
-    this.ntpExtension_ = null;
   }
 
-  /** @override */
   getNtpExtension() {
-    this.methodCalled('getNtpExtension', arguments);
+    this.methodCalled('getNtpExtension');
     return Promise.resolve(this.ntpExtension_);
   }
 
   /**
    * Sets ntpExtension and fires an update event
-   * @param {?NtpExtension}
    */
-  setNtpExtension(ntpExtension) {
+  setNtpExtension(ntpExtension: NtpExtension) {
     this.ntpExtension_ = ntpExtension;
     webUIListenerCallback('update-ntp-extension', ntpExtension);
   }
@@ -46,21 +44,14 @@ suite('OnStartupPage', function() {
     OPEN_SPECIFIC: 4,
   };
 
-  let testElement;
+  let testElement: SettingsOnStartupPageElement;
+  let onStartupBrowserProxy: TestOnStartupBrowserProxy;
 
-  /**
-   * The mock proxy object to use during test.
-   * @type {TestOnStartupBrowserProxy}
-   */
-  let onStartupBrowserProxy = null;
-
-  /** @type {NtpExtension} */
   const ntpExtension = {id: 'id', name: 'name', canBeDisabled: true};
 
-  /** @return {!Promise} */
-  function initPage() {
+  function initPage(): Promise<void> {
     onStartupBrowserProxy.reset();
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('settings-on-startup-page');
     testElement.prefs = {
       session: {
@@ -76,11 +67,14 @@ suite('OnStartupPage', function() {
     });
   }
 
-  function getSelectedOptionLabel() {
+  function getSelectedOptionLabel(): string {
     return Array
-        .from(testElement.root.querySelectorAll('controlled-radio-button'))
-        .find(el => el.name === testElement.$.onStartupRadioGroup.selected)
-        .label;
+        .from(
+            testElement.shadowRoot!.querySelectorAll('controlled-radio-button'))
+        .find(
+            el => el.name ===
+                testElement.shadowRoot!.querySelector('settings-radio-group')!
+                    .selected)!.label;
   }
 
   setup(function() {
@@ -92,7 +86,6 @@ suite('OnStartupPage', function() {
   teardown(function() {
     if (testElement) {
       testElement.remove();
-      testElement = null;
     }
   });
 
@@ -119,7 +112,8 @@ suite('OnStartupPage', function() {
   });
 
   function extensionControlledIndicatorExists() {
-    return !!testElement.$$('extension-controlled-indicator');
+    return !!testElement.shadowRoot!.querySelector(
+        'extension-controlled-indicator');
   }
 
   test('given ntp extension, extension indicator always exists', function() {

@@ -3,15 +3,21 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://settings/settings.js';
+
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {EDIT_STARTUP_URL_EVENT, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
+import { EDIT_STARTUP_URL_EVENT,SettingsStartupUrlDialogElement,SettingsStartupUrlEntryElement, SettingsStartupUrlsPageElement, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 // clang-format on
 
-/** @implements {StartupUrlsPageBrowserProxy} */
-class TestStartupUrlsPageBrowserProxy extends TestBrowserProxy {
+class TestStartupUrlsPageBrowserProxy extends TestBrowserProxy implements
+    StartupUrlsPageBrowserProxy {
+  private urlIsValid_: boolean = true;
+
   constructor() {
     super([
       'addStartupPage',
@@ -21,62 +27,49 @@ class TestStartupUrlsPageBrowserProxy extends TestBrowserProxy {
       'useCurrentPages',
       'validateStartupPage',
     ]);
-
-    /** @private {boolean} */
-    this.urlIsValid_ = true;
   }
 
-  /** @param {boolean} isValid */
-  setUrlValidity(isValid) {
+  setUrlValidity(isValid: boolean) {
     this.urlIsValid_ = isValid;
   }
 
-  /** @override */
-  addStartupPage(url) {
+  addStartupPage(url: string) {
     this.methodCalled('addStartupPage', url);
     return Promise.resolve(this.urlIsValid_);
   }
 
-  /** @override */
-  editStartupPage(modelIndex, url) {
+  editStartupPage(modelIndex: number, url: string) {
     this.methodCalled('editStartupPage', [modelIndex, url]);
     return Promise.resolve(this.urlIsValid_);
   }
 
-  /** @override */
   loadStartupPages() {
     this.methodCalled('loadStartupPages');
   }
 
-  /** @override */
-  removeStartupPage(modelIndex) {
+  removeStartupPage(modelIndex: number) {
     this.methodCalled('removeStartupPage', modelIndex);
   }
 
-  /** @override */
   useCurrentPages() {
     this.methodCalled('useCurrentPages');
   }
 
-  /** @override */
-  validateStartupPage(url) {
+  validateStartupPage(url: string) {
     this.methodCalled('validateStartupPage', url);
     return Promise.resolve(this.urlIsValid_);
   }
 }
 
 suite('StartupUrlDialog', function() {
-  /** @type {?SettingsStartupUrlDialogElement} */
-  let dialog = null;
-
-  let browserProxy = null;
+  let dialog: SettingsStartupUrlDialogElement;
+  let browserProxy: TestStartupUrlsPageBrowserProxy;
 
   /**
    * Triggers an 'input' event on the given text input field, which triggers
    * validation to occur.
-   * @param {!CrInputElement} element
    */
-  function pressSpace(element) {
+  function pressSpace(element: HTMLElement) {
     // The actual key code is irrelevant for these tests.
     keyEventOn(element, 'input', 32 /* space key code */);
   }
@@ -84,7 +77,7 @@ suite('StartupUrlDialog', function() {
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     dialog = document.createElement('settings-startup-url-dialog');
   });
 
@@ -154,9 +147,8 @@ suite('StartupUrlDialog', function() {
   /**
    * Tests that the appropriate browser proxy method is called when the action
    * button is tapped.
-   * @param {string} proxyMethodName
    */
-  async function testProxyCalled(proxyMethodName) {
+  async function testProxyCalled(proxyMethodName: string) {
     const actionButton = dialog.$.actionButton;
     actionButton.disabled = false;
 
@@ -202,15 +194,13 @@ suite('StartupUrlDialog', function() {
 });
 
 suite('StartupUrlsPage', function() {
-  /** @type {?SettingsStartupUrlsPageElement} */
-  let page = null;
-
-  let browserProxy = null;
+  let page: SettingsStartupUrlsPageElement;
+  let browserProxy: TestStartupUrlsPageBrowserProxy;
 
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     page = document.createElement('settings-startup-urls-page');
     page.prefs = {
       session: {
@@ -234,28 +224,35 @@ suite('StartupUrlsPage', function() {
   });
 
   test('UseCurrentPages', async function() {
-    const useCurrentPagesButton = page.$$('#useCurrentPages > a');
+    const useCurrentPagesButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#useCurrentPages > a');
     assertTrue(!!useCurrentPagesButton);
-    useCurrentPagesButton.click();
+    useCurrentPagesButton!.click();
     await browserProxy.whenCalled('useCurrentPages');
   });
 
   test('AddPage_OpensDialog', async function() {
-    const addPageButton = page.$$('#addPage > a');
+    const addPageButton =
+        page.shadowRoot!.querySelector<HTMLElement>('#addPage > a');
     assertTrue(!!addPageButton);
-    assertFalse(!!page.$$('settings-startup-url-dialog'));
+    assertFalse(
+        !!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
 
-    addPageButton.click();
+    addPageButton!.click();
     flush();
-    assertTrue(!!page.$$('settings-startup-url-dialog'));
+    assertTrue(!!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
   });
 
   test('EditPage_OpensDialog', function() {
-    assertFalse(!!page.$$('settings-startup-url-dialog'));
-    page.fire(
-        EDIT_STARTUP_URL_EVENT, {model: createSampleUrlEntry(), anchor: null});
+    assertFalse(
+        !!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
+    page.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
+      bubbles: true,
+      composed: true,
+      detail: {model: createSampleUrlEntry(), anchor: null}
+    }));
     flush();
-    assertTrue(!!page.$$('settings-startup-url-dialog'));
+    assertTrue(!!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
   });
 
   test('StartupPagesChanges_CloseOpenEditDialog', function() {
@@ -274,21 +271,27 @@ suite('StartupUrlsPage', function() {
     };
 
     webUIListenerCallback('update-startup-pages', [entry1, entry2]);
-    page.fire(EDIT_STARTUP_URL_EVENT, {model: entry2, anchor: null});
+    page.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
+      bubbles: true,
+      composed: true,
+      detail: {model: entry2, anchor: null}
+    }));
     flush();
 
-    assertTrue(!!page.$$('settings-startup-url-dialog'));
+    assertTrue(!!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
     webUIListenerCallback('update-startup-pages', [entry1]);
     flush();
 
-    assertFalse(!!page.$$('settings-startup-url-dialog'));
+    assertFalse(
+        !!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
   });
 
   test('StartupPages_WhenExtensionControlled', function() {
     assertFalse(!!page.get('prefs.session.startup_urls.controlledBy'));
-    assertFalse(!!page.$$('extension-controlled-indicator'));
-    assertTrue(!!page.$$('#addPage'));
-    assertTrue(!!page.$$('#useCurrentPages'));
+    assertFalse(
+        !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
+    assertTrue(!!page.shadowRoot!.querySelector('#addPage'));
+    assertTrue(!!page.shadowRoot!.querySelector('#useCurrentPages'));
 
     page.set('prefs.session.startup_urls', {
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
@@ -300,9 +303,10 @@ suite('StartupUrlsPage', function() {
     });
     flush();
 
-    assertTrue(!!page.$$('extension-controlled-indicator'));
-    assertFalse(!!page.$$('#addPage'));
-    assertFalse(!!page.$$('#useCurrentPages'));
+    assertTrue(
+        !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
+    assertFalse(!!page.shadowRoot!.querySelector('#addPage'));
+    assertFalse(!!page.shadowRoot!.querySelector('#useCurrentPages'));
   });
 });
 
@@ -317,15 +321,13 @@ function createSampleUrlEntry() {
 }
 
 suite('StartupUrlEntry', function() {
-  /** @type {?SettingsStartupUrlEntryElement} */
-  let element = null;
-
-  let browserProxy = null;
+  let element: SettingsStartupUrlEntryElement;
+  let browserProxy: TestStartupUrlsPageBrowserProxy;
 
   setup(function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     element = document.createElement('settings-startup-url-entry');
     element.model = createSampleUrlEntry();
     document.body.appendChild(element);
@@ -341,23 +343,24 @@ suite('StartupUrlEntry', function() {
     flush();
 
     // Bring up the popup menu.
-    assertFalse(!!element.$$('cr-action-menu'));
-    element.$$('#dots').click();
+    assertFalse(!!element.shadowRoot!.querySelector('cr-action-menu'));
+    element.shadowRoot!.querySelector<HTMLElement>('#dots')!.click();
     flush();
-    assertTrue(!!element.$$('cr-action-menu'));
+    assertTrue(!!element.shadowRoot!.querySelector('cr-action-menu'));
 
-    const removeButton = element.shadowRoot.querySelector('#remove');
-    removeButton.click();
+    const removeButton =
+        element.shadowRoot!.querySelector<HTMLElement>('#remove');
+    removeButton!.click();
     const modelIndex = await browserProxy.whenCalled('removeStartupPage');
     assertEquals(element.model.modelIndex, modelIndex);
   });
 
   test('Editable', function() {
     assertFalse(!!element.editable);
-    assertFalse(!!element.$$('#dots'));
+    assertFalse(!!element.shadowRoot!.querySelector('#dots'));
 
     element.editable = true;
     flush();
-    assertTrue(!!element.$$('#dots'));
+    assertTrue(!!element.shadowRoot!.querySelector('#dots'));
   });
 });

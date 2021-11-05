@@ -52,5 +52,11 @@ class ControlledRadioButtonElement extends ControlledRadioButtonElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'controlled-radio-button': ControlledRadioButtonElement;
+  }
+}
+
 customElements.define(
     ControlledRadioButtonElement.is, ControlledRadioButtonElement);
