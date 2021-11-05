@@ -39,6 +39,15 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       WGPUTextureUsage usage,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 
+  static scoped_refptr<WebGPUMailboxTexture> FromExistingMailbox(
+      scoped_refptr<DawnControlClientHolder> dawn_control_client,
+      WGPUDevice device,
+      WGPUTextureUsage usage,
+      const gpu::Mailbox& mailbox,
+      const gpu::SyncToken& sync_token,
+      gpu::webgpu::MailboxFlags mailbox_flags =
+          gpu::webgpu::WEBGPU_MAILBOX_NONE);
+
   ~WebGPUMailboxTexture();
 
   WGPUTexture GetTexture() { return texture_; }
@@ -53,6 +62,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       WGPUTextureUsage usage,
       const gpu::Mailbox& mailbox,
       const gpu::SyncToken& sync_token,
+      gpu::webgpu::MailboxFlags mailbox_flags,
       base::OnceCallback<void(const gpu::SyncToken&)> destroy_callback,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 

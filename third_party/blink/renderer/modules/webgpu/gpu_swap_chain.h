@@ -59,13 +59,20 @@ class GPUSwapChain final : public GarbageCollected<GPUSwapChain>,
 
   // Copies the back buffer to given shared image resource provider which must
   // be webgpu compatible. Returns true on success.
-  bool CopyToResourceProvider(CanvasResourceProvider*);
+  bool CopyToResourceProvider(CanvasResourceProvider*) const;
+
+  // Produces a snapshot of the current contents of the swap chain if possible.
+  // If that texture has already been sent to the compositor, will produce a
+  // snapshot of the just released texture associated to this gpu context.
+  // todo(crbug/1267243) Make snapshot always return the current frame.
+  scoped_refptr<StaticBitmapImage> Snapshot() const;
 
   GPUTexture* getCurrentTexture();
 
   // WebGPUSwapBufferProvider::Client implementation
   void OnTextureTransferred() override;
 
+ private:
   scoped_refptr<WebGPUSwapBufferProvider> swap_buffers_;
 
   Member<GPUDevice> device_;
@@ -75,6 +82,14 @@ class GPUSwapChain final : public GarbageCollected<GPUSwapChain>,
   const IntSize size_;
 
   Member<GPUTexture> texture_;
+
+  scoped_refptr<StaticBitmapImage> SnapshotInternal(
+      const WGPUTexture& texture,
+      const gfx::Size& size) const;
+  bool CopyTextureToResourceProvider(
+      const WGPUTexture& texture,
+      const gfx::Size& size,
+      CanvasResourceProvider* resource_provider) const;
 };
 
 }  // namespace blink

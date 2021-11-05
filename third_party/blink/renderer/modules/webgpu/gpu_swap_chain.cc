@@ -131,15 +131,63 @@ scoped_refptr<CanvasResource> GPUSwapChain::ExportCanvasResource() {
       transferable_resource.is_overlay_candidate);
 }
 
+scoped_refptr<StaticBitmapImage> GPUSwapChain::Snapshot() const {
+  // If there is a current texture, create a snapshot from it.
+  if (texture_) {
+    return SnapshotInternal(texture_->GetHandle(), Size());
+  }
+
+  // If there is no current texture, we need to get the information of the last
+  // texture reserved, that contains the last mailbox, create a new texture for
+  // it, and use it to create the resource provider. We also need the size of
+  // the texture to create the resource provider.
+  auto mailbox_texture_size =
+      swap_buffers_->GetLastWebGPUMailboxTextureAndSize();
+  if (!mailbox_texture_size.mailbox_texture)
+    return nullptr;
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
+      mailbox_texture_size.mailbox_texture;
+  gfx::Size size = mailbox_texture_size.size;
+
+  return SnapshotInternal(mailbox_texture->GetTexture(), size);
+}
+
+scoped_refptr<StaticBitmapImage> GPUSwapChain::SnapshotInternal(
+    const WGPUTexture& texture,
+    const gfx::Size& size) const {
+  const auto info = SkImageInfo::Make(size.width(), size.height(),
+                                      viz::ResourceFormatToClosestSkColorType(
+                                          /*gpu_compositing=*/true, Format()),
+                                      kPremul_SkAlphaType);
+  auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
+      info,
+      /*is_origin_top_left=*/true);
+  if (!resource_provider)
+    return nullptr;
+
+  if (!CopyTextureToResourceProvider(texture, size, resource_provider.get()))
+    return nullptr;
+
+  return resource_provider->Snapshot();
+}
+
 bool GPUSwapChain::CopyToResourceProvider(
-    CanvasResourceProvider* resource_provider) {
+    CanvasResourceProvider* resource_provider) const {
+  return CopyTextureToResourceProvider(texture_->GetHandle(), Size(),
+                                       resource_provider);
+}
+
+bool GPUSwapChain::CopyTextureToResourceProvider(
+    const WGPUTexture& texture,
+    const gfx::Size& size,
+    CanvasResourceProvider* resource_provider) const {
   DCHECK(resource_provider);
-  DCHECK_EQ(resource_provider->Size(), IntSize(Size()));
+  DCHECK_EQ(resource_provider->Size(), IntSize(size));
   DCHECK(resource_provider->GetSharedImageUsageFlags() &
          gpu::SHARED_IMAGE_USAGE_WEBGPU);
   DCHECK(resource_provider->IsOriginTopLeft());
 
-  if (!texture_)
+  if (!texture)
     return false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
@@ -157,6 +205,8 @@ bool GPUSwapChain::CopyToResourceProvider(
   if (!GetContextProviderWeakPtr()) {
     return false;
   }
+  // todo(crbug/1267244) Use WebGPUMailboxTexture here instead of doing things
+  // manually.
   gpu::webgpu::WebGPUInterface* webgpu =
       GetContextProviderWeakPtr()->ContextProvider()->WebGPUInterface();
   gpu::webgpu::ReservedTexture reservation =
@@ -176,7 +226,7 @@ bool GPUSwapChain::CopyToResourceProvider(
 
   WGPUImageCopyTexture source = {
       .nextInChain = nullptr,
-      .texture = texture_->GetHandle(),
+      .texture = texture,
       .mipLevel = 0,
       .origin = WGPUOrigin3D{0},
       .aspect = WGPUTextureAspect_All,
@@ -189,8 +239,8 @@ bool GPUSwapChain::CopyToResourceProvider(
       .aspect = WGPUTextureAspect_All,
   };
   WGPUExtent3D copy_size = {
-      .width = static_cast<uint32_t>(swap_buffers_->Size().width()),
-      .height = static_cast<uint32_t>(swap_buffers_->Size().height()),
+      .width = static_cast<uint32_t>(size.width()),
+      .height = static_cast<uint32_t>(size.height()),
       .depthOrArrayLayers = 1,
   };
   GetProcs().commandEncoderCopyTextureToTextureInternal(

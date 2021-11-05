@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -46,6 +47,17 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
   WGPUTexture GetNewTexture(const IntSize& size);
+
+  struct WebGPUMailboxTextureAndSize {
+    scoped_refptr<WebGPUMailboxTexture> mailbox_texture;
+    gfx::Size size;
+
+    WebGPUMailboxTextureAndSize(
+        scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
+        gfx::Size size)
+        : mailbox_texture(std::move(mailbox_texture)), size(size) {}
+  };
+  WebGPUMailboxTextureAndSize GetLastWebGPUMailboxTextureAndSize() const;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
@@ -106,6 +118,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   static constexpr int kMaxRecycledSwapBuffers = 3;
 
   WTF::Vector<std::unique_ptr<SwapBuffer>> unused_swap_buffers_;
+  std::unique_ptr<SwapBuffer> last_swap_buffer_;
 
   uint32_t wire_device_id_ = 0;
   uint32_t wire_device_generation_ = 0;
