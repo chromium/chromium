@@ -8,6 +8,7 @@
 
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
@@ -101,6 +102,17 @@ ReceivingUiHandlerRegistry::GetAndroidNotificationHandlerForProfile(
 const std::vector<std::unique_ptr<ReceivingUiHandler>>&
 ReceivingUiHandlerRegistry::GetHandlers() const {
   return applicable_handlers_;
+}
+
+void ReceivingUiHandlerRegistry::OnProfileShutdown(Profile* profile) {
+  // Remove all handlers for |profile|.
+  applicable_handlers_.erase(
+      base::ranges::remove_if(
+          applicable_handlers_,
+          [=](const std::unique_ptr<ReceivingUiHandler>& handler) {
+            return handler->profile() == profile;
+          }),
+      applicable_handlers_.end());
 }
 
 }  // namespace send_tab_to_self
