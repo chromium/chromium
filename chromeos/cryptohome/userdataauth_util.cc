@@ -66,6 +66,8 @@ template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<AuthenticateAuthSessionReply>&);
 template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
     ReplyToCryptohomeError(const absl::optional<AddCredentialsReply>&);
+template COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) CryptohomeErrorCode
+    ReplyToCryptohomeError(const absl::optional<UnmountReply>&);
 
 std::vector<cryptohome::KeyDefinition> GetKeyDataReplyToKeyDefinitions(
     const absl::optional<GetKeyDataReply>& reply) {

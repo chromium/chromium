@@ -150,19 +150,19 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
   // (1) Initialize AuthSession & transform keys
   //   (1.1) For regular users
   //   (1.2) Key is a password
-  //   (2) For existing users:
-  //     (3) Authenticate AuthSession
-  //       (3.1) Password mismatch means that password changed
-  //     (4) Mount directory
-  //         (4.1) with regular flags
-  //     (5) (Safe mode) Check ownership
+  //   For existing users:
+  //     (2) Authenticate AuthSession
+  //       (2.1) Password mismatch means that password changed
+  //     (3) Mount directory
+  //         (3.1) with regular flags
+  //     (4) (Safe mode) Check ownership
   //     (#) Notify success
-  //   (6) For new users:
-  //     (7) (Safe mode) fail, as this user can not be owner
-  //     (8) Add user key
-  //     (9) Authenticate session with same key
-  //     (10) Mount home directory
-  //        (10.1) with create request
+  //   For new users:
+  //     (5) (Safe mode) fail, as this user can not be owner
+  //     (6) Add user key
+  //     (7) Authenticate session with same key
+  //     (8) Mount home directory
+  //        (8.1) with create request
   //     (#) Notify success
   // (*) Errors are notified as COULD_NOT_MOUNT_CRYPTOHOME
 
@@ -178,16 +178,16 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
   auto success_split = base::SplitOnceCallback(
       base::BindOnce(&AuthSessionAuthenticator::NotifyAuthSuccess,
                      weak_factory_.GetWeakPtr()));
-  // (10.1)
+  // (8.1)
   ConfigureMountCallback mount_create_cfg =
       base::BindOnce(&ConfigureCreateMount);
-  // (10)
+  // (8)
   ContextCallback mount_create = base::BindOnce(
       &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
       /* error_handler */ base::BindOnce(error_handler_repeating),
       /* configurator */ std::move(mount_create_cfg),
       /* continunation */ std::move(success_split.first));
-  // (9)
+  // (7)
   ContextCallback authenticate_same_key = base::BindOnce(
       &AuthSessionAuthenticator::AuthenticateSessionGeneric,
       weak_factory_.GetWeakPtr(),
@@ -195,32 +195,40 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
       /* key_transformer */ base::BindOnce(&TransformToWildcardKey),
       /* continuation */ std::move(mount_create));
 
-  // (8)
-  NewUserAuthSessionCallback new_user_flow = base::BindOnce(
+  // (6)
+  ContextCallback add_credentials = base::BindOnce(
       &AuthSessionAuthenticator::AddInitialCredentialsGeneric,
       weak_factory_.GetWeakPtr(),
       /* error_handler */ base::BindOnce(error_handler_repeating),
       /* key_transformer */ base::BindOnce(&TransformToLabeledKey),
       /* continuation */ std::move(authenticate_same_key));
-  // TODO(antrim): implement (7)
-  // TODO(antrim): implement (5)
-  // (4.1)
+  // (5)
+  NewUserAuthSessionCallback new_user_flow = base::BindOnce(
+      &AuthSessionAuthenticator::FailIfInSafeMode, weak_factory_.GetWeakPtr(),
+      /* continuation */ std::move(add_credentials));
+  // (4)
+  ContextCallback safe_mode_check = base::BindOnce(
+      &AuthSessionAuthenticator::RunSafeModeChecks, weak_factory_.GetWeakPtr(),
+      /* continuation */ std::move(success_split.second));
+
+  // (3.1)
   ConfigureMountCallback mount_regular_cfg =
       base::BindOnce(&ConfigureGenericMount);
-  // (4)
+  // (3)
   ContextCallback mount_existing = base::BindOnce(
       &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
       /* error_handler */ base::BindOnce(error_handler_repeating),
       /* configurator */ std::move(mount_regular_cfg),
-      /* continuation */ std::move(success_split.second));
-  // (3.1)
+      /* continuation */ std::move(safe_mode_check));
+
+  // (2.1)
   ErrorHandlingCallback auth_error_handler =
       base::BindOnce(&AuthSessionAuthenticator::
                          ExistingUserPasswordAuthenticationErrorHandling,
                      weak_factory_.GetWeakPtr(),
                      /* fallback */ base::BindOnce(error_handler_repeating),
                      /* verified password */ true);
-  // (3)
+  // (2)
   ExistingUserAuthSessionCallback existing_user_flow = base::BindOnce(
       &AuthSessionAuthenticator::AuthenticateSessionGeneric,
       weak_factory_.GetWeakPtr(),
@@ -229,26 +237,106 @@ void AuthSessionAuthenticator::CompleteLogin(const UserContext& user_context) {
       /* continuation */ std::move(mount_existing));
 
   // (1.2)
-  auto password_transformer = base::BindOnce(&HashPassword);
+  auto password_hasher = base::BindOnce(&HashPassword);
   // (1.1)
-  auto regular_session = base::BindOnce(&ConfigureRegularSession);
+  auto regular_session_configurator = base::BindOnce(&ConfigureRegularSession);
   // (1)
   CreateAuthSessionGeneric(
       "RegularUser", base::BindOnce(error_handler_repeating),
-      /* configurator */ std::move(regular_session),
-      /* password_hasher */ std::move(password_transformer),
-      /* new_user_flow (6) */ std::move(new_user_flow),
-      /* existing_user_flow (2) */ std::move(existing_user_flow),
+      /* configurator */ std::move(regular_session_configurator),
+      /* password_hasher */ std::move(password_hasher),
+      /* new_user_flow */ std::move(new_user_flow),
+      /* existing_user_flow */ std::move(existing_user_flow),
       std::move(context));
 }
 
+// Authentication from user pod.
+// *  User could mistype their password/PIN.
+// *  User homedir is expected to exist
 void AuthSessionAuthenticator::AuthenticateToLogin(
     const UserContext& user_context) {
   DCHECK(user_context.GetUserType() == user_manager::USER_TYPE_REGULAR ||
          user_context.GetUserType() == user_manager::USER_TYPE_CHILD ||
          user_context.GetUserType() ==
              user_manager::USER_TYPE_ACTIVE_DIRECTORY);
-  NOTIMPLEMENTED();
+
+  PrepareForNewAttempt("AuthenticateToLogin", "Returning regular user");
+
+  // For now we don't support empty passwords:
+  if (user_context.GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
+    if (user_context.GetKey()->GetSecret().empty()) {
+      NOTIMPLEMENTED();
+      if (consumer_)
+        consumer_->OnAuthFailure(
+            AuthFailure(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
+      return;
+    }
+  }
+
+  std::unique_ptr<UserContext> context =
+      std::make_unique<UserContext>(user_context);
+
+  // (1) Initialize AuthSession & transform keys
+  //   (1.1) For regular users
+  //   (1.2) Key is a password
+  //   For existing users:
+  //     (2) Authenticate AuthSession
+  //     (3) Mount directory
+  //         (3.1) with regular flags
+  //     (4) (Safe mode) Check ownership
+  //     (#) Notify success
+  //   For new users:
+  //     (5) Notify that cryptohome is missing
+  // (*) Errors are notified as COULD_NOT_MOUNT_CRYPTOHOME
+
+  // Callbacks are created in reverse order:
+
+  // (*)
+  auto error_handler_repeating = base::BindRepeating(
+      &AuthSessionAuthenticator::ProcessCryptohomeError,
+      weak_factory_.GetWeakPtr(),
+      /* default_error */ AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME);
+
+  // (#)
+  ContextCallback success = base::BindOnce(
+      &AuthSessionAuthenticator::NotifyAuthSuccess, weak_factory_.GetWeakPtr());
+  // (5)
+  NewUserAuthSessionCallback no_cryptohome = base::BindOnce(
+      &AuthSessionAuthenticator::NotifyFailure, weak_factory_.GetWeakPtr(),
+      AuthFailure::MISSING_CRYPTOHOME);
+  // (4)
+  ContextCallback safe_mode_check = base::BindOnce(
+      &AuthSessionAuthenticator::RunSafeModeChecks, weak_factory_.GetWeakPtr(),
+      /* continuation */ std::move(success));
+  // (3.1)
+  ConfigureMountCallback mount_regular_cfg =
+      base::BindOnce(&ConfigureGenericMount);
+  // (3)
+  ContextCallback mount_existing = base::BindOnce(
+      &AuthSessionAuthenticator::MountGeneric, weak_factory_.GetWeakPtr(),
+      /* error_handler */ base::BindOnce(error_handler_repeating),
+      /* configurator */ std::move(mount_regular_cfg),
+      /* continuation */ std::move(safe_mode_check));
+  // (2)
+  ExistingUserAuthSessionCallback existing_user_flow = base::BindOnce(
+      &AuthSessionAuthenticator::AuthenticateSessionGeneric,
+      weak_factory_.GetWeakPtr(),
+      /* error_handler */ base::BindOnce(error_handler_repeating),
+      /* key_transformer */ base::BindOnce(&TransformToWildcardKey),
+      /* continuation */ std::move(mount_existing));
+  // (1.2)
+  auto password_hasher = base::BindOnce(&HashPassword);
+  // (1.1)
+  auto regular_session = base::BindOnce(&ConfigureRegularSession);
+  // (1)
+  CreateAuthSessionGeneric(
+      "RegularReturningUser",
+      /* error_handler */ base::BindOnce(error_handler_repeating),
+      /* configurator */ std::move(regular_session),
+      /* key_hasher */ std::move(password_hasher),
+      /* new_user_flow */ std::move(no_cryptohome),
+      /* existing_user_flow */ std::move(existing_user_flow),
+      std::move(context));
 }
 
 void AuthSessionAuthenticator::LoginOffTheRecord() {
@@ -257,7 +345,12 @@ void AuthSessionAuthenticator::LoginOffTheRecord() {
   std::unique_ptr<UserContext> context = std::make_unique<UserContext>(
       user_manager::USER_TYPE_GUEST, user_manager::GuestAccountId());
 
-  // ToDo: check for safe mode;
+  // Guest can not be be an owner.
+  if (safe_mode_delegate_->IsSafeMode()) {
+    LOGIN_LOG(EVENT) << "Guest can not sign-in in safe mode";
+    NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
+    return;
+  }
 
   // (1) Initialize AuthSession & transform keys
   //   (1.1) Fake transformer
@@ -289,14 +382,15 @@ void AuthSessionAuthenticator::LoginOffTheRecord() {
       /* continuation */ std::move(success_callback));
   // (2)
   ExistingUserAuthSessionCallback guest_exists = base::BindOnce(
-      &AuthSessionAuthenticator::OnGuestExist, weak_factory_.GetWeakPtr());
-  //   (1.1) Fake transformer
-  KeyHashingCallback password_transformer = base::BindOnce(&IgnoreHashing);
+      &AuthSessionAuthenticator::NotifyFailure, weak_factory_.GetWeakPtr(),
+      AuthFailure::COULD_NOT_MOUNT_TMPFS);
+  // (1.1) Fake transformer
+  KeyHashingCallback password_hasher = base::BindOnce(&IgnoreHashing);
   // (1)
   CreateAuthSessionGeneric(
       "Guest", /* error_handler */ base::BindOnce(error_handler_repeating),
       /* configurator */ base::BindOnce(&ConfigureEphemeralSession),
-      /* key_hasher */ std::move(password_transformer),
+      /* key_hasher */ std::move(password_hasher),
       /* new_user_flow */ std::move(guest_mount),
       /* existing_user_flow */ std::move(guest_exists), std::move(context));
 }
@@ -352,7 +446,7 @@ void AuthSessionAuthenticator::PrepareForNewAttempt(
 
 void AuthSessionAuthenticator::ProcessCryptohomeError(
     AuthFailure::FailureReason default_error,
-    std::unique_ptr<UserContext> user_context,
+    std::unique_ptr<UserContext> context,
     user_data_auth::CryptohomeErrorCode error) {
   if (!consumer_)
     return;
@@ -362,7 +456,7 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
       NOTREACHED() << "Should be called with an error";
       return;
     case user_data_auth::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND:
-      consumer_->OnAuthFailure(AuthFailure(AuthFailure::MISSING_CRYPTOHOME));
+      NotifyFailure(AuthFailure::MISSING_CRYPTOHOME, std::move(context));
       return;
     case user_data_auth::CRYPTOHOME_ERROR_NOT_IMPLEMENTED:
     case user_data_auth::CRYPTOHOME_ERROR_INVALID_ARGUMENT:
@@ -397,10 +491,10 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
       break;
     case user_data_auth::CRYPTOHOME_ERROR_TPM_COMM_ERROR:
     case user_data_auth::CRYPTOHOME_ERROR_TPM_NEEDS_REBOOT:
-      consumer_->OnAuthFailure(AuthFailure(AuthFailure::TPM_ERROR));
+      NotifyFailure(AuthFailure::TPM_ERROR, std::move(context));
       return;
     case user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK:
-      consumer_->OnAuthFailure(AuthFailure(AuthFailure::TPM_ERROR));
+      NotifyFailure(AuthFailure::TPM_ERROR, std::move(context));
       return;
     case user_data_auth::CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY:
       // Assumption about system state is not correct
@@ -413,14 +507,13 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
       NOTREACHED() << "Add credentials failure should be handled separately";
       return;
     case user_data_auth::CRYPTOHOME_ERROR_REMOVE_FAILED:
-      consumer_->OnAuthFailure(AuthFailure(AuthFailure::DATA_REMOVAL_FAILED));
+      NotifyFailure(AuthFailure::DATA_REMOVAL_FAILED, std::move(context));
       return;
     case user_data_auth::CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED:
-      consumer_->OnAuthFailure(AuthFailure(AuthFailure::TPM_UPDATE_REQUIRED));
+      NotifyFailure(AuthFailure::TPM_UPDATE_REQUIRED, std::move(context));
       return;
     case user_data_auth::CRYPTOHOME_ERROR_VAULT_UNRECOVERABLE:
-      consumer_->OnAuthFailure(
-          AuthFailure(AuthFailure::UNRECOVERABLE_CRYPTOHOME));
+      NotifyFailure(AuthFailure::UNRECOVERABLE_CRYPTOHOME, std::move(context));
       return;
     case user_data_auth::CRYPTOHOME_ERROR_LOCKBOX_SIGNATURE_INVALID:
     case user_data_auth::CRYPTOHOME_ERROR_LOCKBOX_CANNOT_SIGN:
@@ -452,7 +545,7 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
       // Ignored
       return;
   }
-  consumer_->OnAuthFailure(AuthFailure(default_error));
+  NotifyFailure(default_error, std::move(context));
 }
 
 void AuthSessionAuthenticator::CreateAuthSessionGeneric(
@@ -635,6 +728,36 @@ void AuthSessionAuthenticator::OnMountGeneric(
   std::move(continuation).Run(std::move(context));
 }
 
+void AuthSessionAuthenticator::UnmountGeneric(
+    ErrorHandlingCallback error_handler,
+    ContextCallback continuation,
+    std::unique_ptr<UserContext> context) {
+  VLOG(1) << "AuthSessionAuthenticator::UnMount";
+
+  user_data_auth::UnmountRequest request;
+  UserDataAuthClient::Get()->Unmount(
+      request,
+      base::BindOnce(&AuthSessionAuthenticator::OnUnmountGeneric,
+                     weak_factory_.GetWeakPtr(), std::move(error_handler),
+                     std::move(continuation), std::move(context)));
+}
+
+void AuthSessionAuthenticator::OnUnmountGeneric(
+    ErrorHandlingCallback error_callback,
+    ContextCallback continuation,
+    std::unique_ptr<UserContext> context,
+    absl::optional<user_data_auth::UnmountReply> reply) {
+  VLOG(1) << "AuthSessionAuthenticator::OnUnmount";
+  auto error = user_data_auth::ReplyToCryptohomeError(reply);
+  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
+    LOGIN_LOG(ERROR) << "Unmount failed with error" << error;
+    std::move(error_callback).Run(std::move(context), error);
+    return;
+  }
+  CHECK(reply.has_value());
+  std::move(continuation).Run(std::move(context));
+}
+
 void AuthSessionAuthenticator::ExistingUserPasswordAuthenticationErrorHandling(
     ErrorHandlingCallback fallback,
     bool verified_password,
@@ -649,6 +772,15 @@ void AuthSessionAuthenticator::ExistingUserPasswordAuthenticationErrorHandling(
     return;
   }
   std::move(fallback).Run(std::move(context), error);
+}
+
+void AuthSessionAuthenticator::NonOwnerUnmountErrorHandler(
+    std::unique_ptr<UserContext> context,
+    user_data_auth::CryptohomeErrorCode error) {
+  // Crash if could not unmount home directory, and let session_manager
+  // handle it.
+  LOG(FATAL) << "Failed to unmount non-owner home directory " << error;
+  NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
 }
 
 void AuthSessionAuthenticator::MountErrorHandling(
@@ -682,10 +814,63 @@ void AuthSessionAuthenticator::NotifyGuestSuccess(
     consumer_->OnOffTheRecordAuthSuccess();
 }
 
-void AuthSessionAuthenticator::OnGuestExist(
+void AuthSessionAuthenticator::NotifyFailure(
+    AuthFailure::FailureReason reason,
     std::unique_ptr<UserContext> context) {
   if (consumer_)
-    consumer_->OnAuthFailure(AuthFailure(AuthFailure::COULD_NOT_MOUNT_TMPFS));
+    consumer_->OnAuthFailure(AuthFailure(reason));
+}
+
+void AuthSessionAuthenticator::FailIfInSafeMode(
+    ContextCallback continuation,
+    std::unique_ptr<UserContext> context) {
+  if (safe_mode_delegate_->IsSafeMode()) {
+    LOGIN_LOG(EVENT) << "Safe mode: non-owner";
+    NotifyFailure(AuthFailure::OWNER_REQUIRED, std::move(context));
+    return;
+  }
+  std::move(continuation).Run(std::move(context));
+}
+
+void AuthSessionAuthenticator::RunSafeModeChecks(
+    ContextCallback continuation,
+    std::unique_ptr<UserContext> context) {
+  if (!safe_mode_delegate_->IsSafeMode()) {
+    std::move(continuation).Run(std::move(context));
+    return;
+  }
+  LOGIN_LOG(EVENT) << "Running in safe mode";
+  // Device is running in the safe mode, need to check if user is an owner.
+  safe_mode_delegate_->CheckSafeModeOwnership(
+      context->GetUserIDHash(),
+      base::BindOnce(&AuthSessionAuthenticator::OnOwnershipCheckedForSafeMode,
+                     weak_factory_.GetWeakPtr(), std::move(continuation),
+                     std::move(context)));
+}
+
+void AuthSessionAuthenticator::OnOwnershipCheckedForSafeMode(
+    ContextCallback continuation,
+    std::unique_ptr<UserContext> context,
+    bool is_owner) {
+  if (is_owner) {
+    LOGIN_LOG(EVENT) << "Safe mode: owner";
+    std::move(continuation).Run(std::move(context));
+    return;
+  }
+  LOGIN_LOG(EVENT) << "Safe mode: non-owner";
+  // Unmount home directory
+  //   (1) Notify that owner is required upon success
+  //   (2) Crash if directory could not be unmounted
+
+  // (1)
+  ContextCallback not_owner =
+      base::BindOnce(&AuthSessionAuthenticator::NotifyFailure,
+                     weak_factory_.GetWeakPtr(), AuthFailure::OWNER_REQUIRED);
+  // (2)
+  ErrorHandlingCallback crasher =
+      base::BindOnce(&AuthSessionAuthenticator::NonOwnerUnmountErrorHandler,
+                     weak_factory_.GetWeakPtr());
+  UnmountGeneric(std::move(crasher), std::move(not_owner), std::move(context));
 }
 
 }  // namespace chromeos

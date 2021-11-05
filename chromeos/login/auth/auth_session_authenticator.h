@@ -204,13 +204,23 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthSessionAuthenticator
                       std::unique_ptr<UserContext> user_context,
                       absl::optional<user_data_auth::MountReply> reply);
 
+  void UnmountGeneric(ErrorHandlingCallback error_handler,
+                      ContextCallback continuation,
+                      std::unique_ptr<UserContext> context);
+
+  void OnUnmountGeneric(ErrorHandlingCallback error_handler,
+                        ContextCallback continuation,
+                        std::unique_ptr<UserContext> context,
+                        absl::optional<user_data_auth::UnmountReply> reply);
+
   void PrepareForNewAttempt(const std::string& method_id,
                             const std::string& long_desc);
 
-  // Simple callback that notifies about mount success.
+  // Simple callback that notifies about mount success / failure.
   void NotifyAuthSuccess(std::unique_ptr<UserContext> context);
   void NotifyGuestSuccess(std::unique_ptr<UserContext> context);
-  void OnGuestExist(std::unique_ptr<UserContext> context);
+  void NotifyFailure(AuthFailure::FailureReason reason,
+                     std::unique_ptr<UserContext> context);
 
   // Handles errors specific to authenticating existing users with the password:
   //   if password is known to be correct (e.g. it comes from online auth flow),
@@ -223,6 +233,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthSessionAuthenticator
       std::unique_ptr<UserContext> user_context,
       user_data_auth::CryptohomeErrorCode error);
 
+  void NonOwnerUnmountErrorHandler(std::unique_ptr<UserContext> context,
+                                   user_data_auth::CryptohomeErrorCode error);
+
   // Handles errors specific to Mounting, e.g. required migration.
   // Other errors are handled by `fallback`.
   void MountErrorHandling(ErrorHandlingCallback fallback,
@@ -234,6 +247,24 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthSessionAuthenticator
   void ProcessCryptohomeError(AuthFailure::FailureReason default_reason,
                               std::unique_ptr<UserContext> user_context,
                               user_data_auth::CryptohomeErrorCode error);
+
+  // Callback used for new regular users - would fail iff device is
+  // running in Safe mode (as new users can not be owners).
+  void FailIfInSafeMode(ContextCallback continuation,
+                        std::unique_ptr<UserContext> context);
+
+  // Callback used for existing regular users - in safe mode would check
+  // if home directory contains valid owner key. If key is not found,
+  // would unmount directory and notify failure.
+  void RunSafeModeChecks(ContextCallback continuation,
+                         std::unique_ptr<UserContext> context);
+  void OnOwnershipCheckedForSafeMode(ContextCallback continuation,
+                                     std::unique_ptr<UserContext> context,
+                                     bool is_owner);
+
+  void OnUnmountOwnerRequired(
+      std::unique_ptr<UserContext> user_context,
+      absl::optional<user_data_auth::UnmountReply> reply);
 
   std::unique_ptr<SafeModeDelegate> safe_mode_delegate_;
 
