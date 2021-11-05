@@ -68,11 +68,14 @@ bool HasManagedSyncDataType(ChromeBrowserState* browserState) {
   return false;
 }
 
-EnterpriseSignInRestrictions GetEnterpriseSignInRestrictions() {
+EnterpriseSignInRestrictions GetEnterpriseSignInRestrictions(
+    ChromeBrowserState* browserState) {
   EnterpriseSignInRestrictions restrictions = kNoEnterpriseRestriction;
   if (IsForceSignInEnabled())
     restrictions |= kEnterpriseForceSignIn;
   if (IsRestrictAccountsToPatternsEnabled())
     restrictions |= kEnterpriseRestrictAccounts;
+  if (HasManagedSyncDataType(browserState))
+    restrictions |= kEnterpriseSyncTypesListDisabled;
   return restrictions;
 }

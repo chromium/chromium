@@ -114,7 +114,6 @@ class SigninSyncMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   SigninSyncMediator* mediator_;
   std::unique_ptr<ChromeBrowserState> browser_state_;

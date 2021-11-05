@@ -105,19 +105,9 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     ]];
   }
 
-  bool forceSignInEnabled =
-      self.enterpriseSignInRestrictions & kEnterpriseForceSignIn;
-  bool signinRestricted =
-      self.enterpriseSignInRestrictions || forceSignInEnabled;
-
-  self.bannerImage =
-      [UIImage imageNamed:signinRestricted ? @"forced_signin_screen_banner"
-                                           : @"signin_screen_banner"];
-  // Only add "Don't Sign In" button when signin is not required.
-  if (!forceSignInEnabled) {
-    self.secondaryActionString =
-        l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
-  }
+  self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
+  self.secondaryActionString =
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
 
   NSLayoutConstraint* widthConstraint = [self.identityControl.widthAnchor
       constraintEqualToConstant:kIdentityControlMaxWidth];
@@ -272,6 +262,15 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   }
 }
 
+// Appends |restrictionString| to |existingString|, adding padding if needed.
+- (void)appendRestrictionString:(NSString*)restrictionString
+                       toString:(NSMutableString*)existingString {
+  NSString* padding = @"\n\n";
+  if ([existingString length])
+    [existingString appendString:padding];
+  [existingString appendString:restrictionString];
+}
+
 #pragma mark - UITextViewDelegate
 
 - (BOOL)textView:(UITextView*)textView
@@ -281,18 +280,16 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   DCHECK(textView == self.learnMoreTextView);
 
   NSMutableString* detailsMessage = [[NSMutableString alloc] init];
-  NSString* detailsPadding = @"\n\n";
-  if (self.enterpriseSignInRestrictions & kEnterpriseForceSignIn) {
-    [detailsMessage appendString:l10n_util::GetNSString(
-                                     IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE)];
-  }
   if (self.enterpriseSignInRestrictions & kEnterpriseRestrictAccounts) {
-    if ([detailsMessage length])
-      [detailsMessage appendString:detailsPadding];
-    [detailsMessage
-        appendString:
-            l10n_util::GetNSString(
-                IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE)];
+    [self appendRestrictionString:
+              l10n_util::GetNSString(
+                  IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE)
+                         toString:detailsMessage];
+  }
+  if (self.enterpriseSignInRestrictions & kEnterpriseSyncTypesListDisabled) {
+    [self appendRestrictionString:l10n_util::GetNSString(
+                                      IDS_IOS_ENTERPRISE_MANAGED_SYNC)
+                         toString:detailsMessage];
   }
 
   // Open signin popover.

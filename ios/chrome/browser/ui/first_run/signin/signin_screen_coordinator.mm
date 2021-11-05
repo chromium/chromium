@@ -128,7 +128,7 @@
   self.viewController = [[SigninScreenViewController alloc] init];
   self.viewController.delegate = self;
   self.viewController.enterpriseSignInRestrictions =
-      GetEnterpriseSignInRestrictions();
+      GetEnterpriseSignInRestrictions(self.browser->GetBrowserState());
 
   self.accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(

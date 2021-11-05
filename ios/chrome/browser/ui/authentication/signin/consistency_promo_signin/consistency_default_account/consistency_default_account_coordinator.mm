@@ -38,7 +38,7 @@
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc] init];
   self.defaultAccountViewController.enterpriseSignInRestrictions =
-      GetEnterpriseSignInRestrictions();
+      GetEnterpriseSignInRestrictions(self.browser->GetBrowserState());
   self.mediator.consumer = self.defaultAccountViewController;
   self.defaultAccountViewController.actionDelegate = self;
   self.defaultAccountViewController.layoutDelegate = self.layoutDelegate;

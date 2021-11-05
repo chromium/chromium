@@ -48,19 +48,9 @@
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
 
-    // Use the forced sign-in access point when the force sign-in policy is
-    // enabled, otherwise infer that the sign-in screen is used in the FRE. If
-    // the forced sign-in screen is presented in the FRE, the forced sign-in
-    // access point will still be used. The forced sign-in screen may also be
-    // presented outside of the FRE when the user has to be prompted to sign-in
-    // because of the policy.
-    signin_metrics::AccessPoint accessPoint =
-        IsForceSignInEnabled()
-            ? signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN
-            : signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
-
     _logger = [[FirstRunSigninLogger alloc]
-          initWithAccessPoint:accessPoint
+          initWithAccessPoint:signin_metrics::AccessPoint::
+                                  ACCESS_POINT_START_PAGE
                   promoAction:signin_metrics::PromoAction::
                                   PROMO_ACTION_NO_SIGNIN_PROMO
         accountManagerService:accountManagerService];
@@ -106,7 +96,7 @@
   DCHECK(selectedIdentity || !self.accountManagerService->HasIdentities());
   _selectedIdentity = selectedIdentity;
 
-  [self updateConsumer];
+  [self updateConsumerIdentity];
 }
 
 - (void)setConsumer:(id<SigninSyncConsumer>)consumer {
@@ -114,7 +104,7 @@
     return;
   _consumer = consumer;
 
-  [self updateConsumer];
+  [self updateConsumerIdentity];
 }
 
 #pragma mark - ChromeAccountManagerServiceObserver
@@ -132,13 +122,14 @@
 
 - (void)identityChanged:(ChromeIdentity*)identity {
   if ([self.selectedIdentity isEqual:identity]) {
-    [self updateConsumer];
+    [self updateConsumerIdentity];
   }
 }
 
 #pragma mark - Private
 
-- (void)updateConsumer {
+// Updates the identity displayed by the consumer.
+- (void)updateConsumerIdentity {
   if (!self.selectedIdentity) {
     [self.consumer noIdentityAvailable];
   } else {
