@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +24,28 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "components/arc/test/fake_app_instance.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
+                                             const std::string& version,
+                                             const std::string& url,
+                                             const std::string& id) {
+  std::string err;
+  base::DictionaryValue value;
+  value.SetString("name", name);
+  value.SetString("version", version);
+  value.SetString("app.launch.web_url", url);
+  scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
+      base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
+      extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);
+  EXPECT_EQ(err, "");
+  return app;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+}  // namespace
 
 namespace apps {
 
@@ -75,7 +98,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-
 TEST_F(PublisherTest, ArcAppsOnApps) {
   ArcAppTest arc_test;
   arc_test.SetUp(profile());
@@ -127,7 +149,30 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
               Readiness::kReady);
   }
 }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(PublisherTest, ExtensionAppsOnApps) {
+  // Install a "web store" app.
+  scoped_refptr<extensions::Extension> store =
+      MakeApp("webstore", "0.0", "http://google.com",
+              std::string(extensions::kWebStoreAppId));
+  service_->AddExtension(store.get());
+
+  // Re-init AppService to verify the init process.
+  AppServiceTest app_service_test;
+  app_service_test.SetUp(profile());
+  VerifyApp(store->id(), store->name(), Readiness::kReady);
+
+  // Uninstall the extension.
+  service_->UninstallExtension(
+      store->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+  VerifyApp(store->id(), store->name(), Readiness::kUninstalledByUser);
+
+  // Reinstall the extension.
+  service_->AddExtension(store.get());
+  VerifyApp(store->id(), store->name(), Readiness::kReady);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace apps

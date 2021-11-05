@@ -95,8 +95,7 @@ void PublisherHost::Initialize() {
     borealis_apps_ = std::make_unique<BorealisApps>(proxy_);
   }
   crostini_apps_ = std::make_unique<CrostiniApps>(proxy_);
-  extension_apps_ = std::make_unique<ExtensionAppsChromeOs>(
-      app_service, profile, &proxy_->InstanceRegistry());
+  extension_apps_ = std::make_unique<ExtensionAppsChromeOs>(proxy_);
   if (!g_omit_plugin_vm_apps_for_testing_) {
     plugin_vm_apps_ = std::make_unique<PluginVmApps>(proxy_);
   }
@@ -112,7 +111,7 @@ void PublisherHost::Initialize() {
       app_service, &proxy_->InstanceRegistry(), profile);
 #else
   web_apps_ = std::make_unique<web_app::WebApps>(app_service, profile);
-  extension_apps_ = std::make_unique<ExtensionApps>(app_service, profile);
+  extension_apps_ = std::make_unique<ExtensionApps>(proxy_);
 #endif
 }
 
