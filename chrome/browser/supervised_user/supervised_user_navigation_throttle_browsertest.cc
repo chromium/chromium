@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -47,6 +48,13 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/test/event_generator.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 using content::NavigationController;
 using content::WebContents;
 
@@ -57,6 +65,9 @@ static const char* kExampleHost2 = "www.example2.com";
 static const char* kFamiliesHost = "families.google.com";
 static const char* kIframeHost1 = "www.iframe1.com";
 static const char* kIframeHost2 = "www.iframe2.com";
+
+constexpr char kLocalUrlAccessCommand[] = "requestUrlAccessLocal";
+constexpr char kRemoteUrlAccessCommand[] = "requestUrlAccessRemote";
 
 // Class to keep track of iframes created and destroyed.
 // TODO(https://crbug.com/1188721): Can be replaced with
@@ -360,7 +371,7 @@ class SupervisedUserIframeFilterTest
   bool IsInterstitialBeingShownInFrame(int frame_id);
   bool IsRemoteApprovalsButtonBeingShown(int frame_id);
   bool IsLocalApprovalsButtonBeingShown(int frame_id);
-  void RequestPermissionFromFrame(int frame_id);
+  void SendCommandToFrame(const std::string& command_name, int frame_id);
   void WaitForNavigationFinished(int frame_id, const GURL& url);
   void InitFeatures();
   bool IsWebFilterInterstitialRefreshEnabled() const;
@@ -455,11 +466,13 @@ bool SupervisedUserIframeFilterTest::IsLocalApprovalsButtonBeingShown(
   return RunCommandAndGetBooleanFromFrame(frame_id, command);
 }
 
-void SupervisedUserIframeFilterTest::RequestPermissionFromFrame(int frame_id) {
+void SupervisedUserIframeFilterTest::SendCommandToFrame(
+    const std::string& command_name,
+    int frame_id) {
   auto* render_frame_host = tracker()->GetHost(frame_id);
   DCHECK(render_frame_host);
   DCHECK(render_frame_host->IsRenderFrameLive());
-  std::string command = "sendCommand(\'requestUrlAccessRemote\')";
+  std::string command = base::StrCat({"sendCommand(\'", command_name, "\')"});
   ASSERT_TRUE(content::ExecuteScript(
       content::ToRenderFrameHost(render_frame_host), command));
 }
@@ -551,7 +564,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockSubFrame) {
   EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame_id));
 
   permission_creator()->SetPermissionResult(true);
-  RequestPermissionFromFrame(blocked_frame_id);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id);
   EXPECT_EQ(permission_creator()->url_requests().size(), 1u);
   std::string requested_host = permission_creator()->url_requests()[0].host();
 
@@ -589,8 +602,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockMultipleSubFrames) {
   permission_creator()->SetPermissionResult(true);
   permission_creator()->DelayHandlingForNextRequests();
 
-  RequestPermissionFromFrame(blocked_frame_id_1);
-  RequestPermissionFromFrame(blocked_frame_id_2);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id_1);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id_2);
 
   EXPECT_EQ(permission_creator()->url_requests().size(), 2u);
   EXPECT_EQ(permission_creator()->url_requests()[0], GURL(blocked_frame_url_1));
@@ -624,7 +637,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, TestBackButton) {
   permission_creator()->SetPermissionResult(true);
   permission_creator()->DelayHandlingForNextRequests();
 
-  RequestPermissionFromFrame(blocked[0]);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked[0]);
 
   std::string command =
       "domAutomationController.send("
@@ -657,7 +670,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   permission_creator()->SetPermissionResult(true);
   permission_creator()->DelayHandlingForNextRequests();
 
-  RequestPermissionFromFrame(blocked[0]);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked[0]);
 
   std::string command =
       "domAutomationController.send("
@@ -712,7 +725,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   permission_creator()->DelayHandlingForNextRequests();
 
   // Request permission.
-  RequestPermissionFromFrame(blocked_frames[0]);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frames[0]);
 
   // Navigate to another allowed url.
   GURL allowed_url = embedded_test_server()->GetURL(
@@ -836,7 +849,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
   permission_creator()->DelayHandlingForNextRequests();
 
   // Request permission.
-  RequestPermissionFromFrame(blocked_frames[0]);
+  SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frames[0]);
 
   // Navigate to another allowed url.
   GURL allowed_url = embedded_test_server()->GetURL(
@@ -877,6 +890,79 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
 
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests Chrome OS local web approvals flow.
+using ChromeOSLocalWebApprovalsTest = SupervisedUserIframeFilterTest;
+
+// Only test for the local web approvals feature enabled.
+INSTANTIATE_TEST_SUITE_P(,
+                         ChromeOSLocalWebApprovalsTest,
+                         testing::Values(std::make_tuple(
+                             /* web_filter_interstitial_refresh_enabled */ true,
+                             /* local_web_approvals_enabled */ true)));
+
+IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
+                       StartLocalWebApprovalsFromMainFrame) {
+  BlockHost(kExampleHost);
+
+  GURL blocked_url = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blocked_url));
+  EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  const std::vector<int> blocked_frames = GetBlockedFrames();
+  ASSERT_EQ(blocked_frames.size(), 1u);
+  const int blocked_frame = blocked_frames[0];
+  EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));
+  EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
+
+  // Trigger local approval flow - native dialog should appear.
+  SendCommandToFrame(kLocalUrlAccessCommand, blocked_frame);
+  EXPECT_TRUE(chromeos::ParentAccessDialog::GetInstance());
+
+  // Close the flow without approval - interstitial should be still shown.
+  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
+  generator.PressKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+
+  EXPECT_FALSE(chromeos::ParentAccessDialog::GetInstance());
+  EXPECT_TRUE(IsInterstitialBeingShownInMainFrame(browser()));
+  EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));
+  EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
+                       StartLocalWebApprovalsFromIframe) {
+  BlockHost(kIframeHost1);
+
+  const GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
+      kExampleHost, "/supervised_user/with_iframes.html");
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), allowed_url_with_iframes));
+  EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
+
+  const std::vector<int> blocked_frames = GetBlockedFrames();
+  ASSERT_EQ(blocked_frames.size(), 1u);
+  const int blocked_frame = blocked_frames[0];
+  EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame));
+  EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));
+  EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
+
+  // Trigger local approval flow - native dialog should appear.
+  SendCommandToFrame(kLocalUrlAccessCommand, blocked_frame);
+  EXPECT_TRUE(chromeos::ParentAccessDialog::GetInstance());
+
+  // Close the flow without approval - interstitial should be still shown.
+  ui::test::EventGenerator generator(ash::Shell::Get()->GetPrimaryRootWindow());
+  generator.PressKey(ui::VKEY_ESCAPE, ui::EventFlags::EF_NONE);
+
+  EXPECT_FALSE(chromeos::ParentAccessDialog::GetInstance());
+  EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
+  EXPECT_TRUE(IsInterstitialBeingShownInFrame(blocked_frame));
+  EXPECT_TRUE(IsLocalApprovalsButtonBeingShown(blocked_frame));
+  EXPECT_TRUE(IsRemoteApprovalsButtonBeingShown(blocked_frame));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SupervisedUserNavigationThrottleNotSupervisedTest
     : public SupervisedUserNavigationThrottleTest {
