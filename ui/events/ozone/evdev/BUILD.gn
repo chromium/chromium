@@ -188,10 +188,8 @@ component("evdev") {
 }
 
 source_set("event_device_info") {
-  sources = [
-    "event_device_info.cc",
-    "event_device_info.h",
-  ]
+  public = [ "event_device_info.h" ]
+  sources = [ "event_device_info.cc" ]
 
   deps = [
     "//base",
@@ -201,6 +199,7 @@ source_set("event_device_info") {
 
   visibility += [
     "//ash/webui/diagnostics_ui/backend:*",
+    "//chromeos/services/cros_healthd/*",
     "//ui/chromeos/*",
   ]
 }

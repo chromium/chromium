@@ -22,7 +22,7 @@ source_set("cpp") {
     "//base",
     "//chromeos/dbus/cros_healthd",
     "//chromeos/services/cros_healthd/public/mojom",
-    "//ui/events",
+    "//ui/events/ozone/evdev:event_device_info",
   ]
 }
 
@@ -38,5 +38,6 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/events/ozone/evdev:event_device_info",
   ]
 }
