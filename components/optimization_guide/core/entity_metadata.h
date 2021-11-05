@@ -32,11 +32,10 @@ struct EntityMetadata {
   // contain the top 5 entries based on confidence score.
   base::flat_map<std::string, float> human_readable_categories;
 
-  friend bool operator==(const EntityMetadata& lhs, const EntityMetadata& rhs) {
-    return lhs.entity_id == rhs.entity_id &&
-           lhs.human_readable_name == rhs.human_readable_name &&
-           lhs.human_readable_categories == rhs.human_readable_categories;
-  }
+  std::string ToString() const;
+
+  friend std::ostream& operator<<(std::ostream& out, const EntityMetadata& md);
+  friend bool operator==(const EntityMetadata& lhs, const EntityMetadata& rhs);
 };
 
 // The metadata with its score as output of the model execution.
@@ -52,12 +51,12 @@ struct ScoredEntityMetadata {
   // The score.
   float score;
 
+  std::string ToString() const;
+
+  friend std::ostream& operator<<(std::ostream& out,
+                                  const ScoredEntityMetadata& md);
   friend bool operator==(const ScoredEntityMetadata& lhs,
-                         const ScoredEntityMetadata& rhs) {
-    constexpr const double kScoreTolerance = 1e-6;
-    return lhs.metadata == rhs.metadata &&
-           abs(lhs.score - rhs.score) <= kScoreTolerance;
-  }
+                         const ScoredEntityMetadata& rhs);
 };
 
 }  // namespace optimization_guide

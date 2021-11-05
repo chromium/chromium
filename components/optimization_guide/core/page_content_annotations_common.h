@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "components/optimization_guide/core/entity_metadata.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
@@ -96,7 +97,7 @@ class BatchAnnotationResult {
   static BatchAnnotationResult CreatePageEntitiesResult(
       const std::string& input,
       ExecutionStatus status,
-      absl::optional<std::vector<WeightedString>> entities);
+      absl::optional<std::vector<ScoredEntityMetadata>> entities);
 
   // Creates a result for a content visibility annotation.
   static BatchAnnotationResult CreateContentVisibilityResult(
@@ -116,7 +117,7 @@ class BatchAnnotationResult {
   AnnotationType type() const { return type_; }
   ExecutionStatus status() const { return status_; }
   absl::optional<std::vector<WeightedString>> topics() const { return topics_; }
-  absl::optional<std::vector<WeightedString>> entities() const {
+  absl::optional<std::vector<ScoredEntityMetadata>> entities() const {
     return entities_;
   }
   absl::optional<double> visibility_score() const { return visibility_score_; }
@@ -141,7 +142,7 @@ class BatchAnnotationResult {
 
   // Output for page entities annotations, set only if the |type_| matches and
   // the execution was successful.
-  absl::optional<std::vector<WeightedString>> entities_;
+  absl::optional<std::vector<ScoredEntityMetadata>> entities_;
 
   // Output for visisbility score annotations, set only if the |type_| matches
   // and the execution was successful.

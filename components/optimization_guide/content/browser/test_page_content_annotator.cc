@@ -35,7 +35,7 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
   if (annotation_type == AnnotationType::kPageEntities) {
     for (const std::string& input : inputs) {
       auto it = entities_by_input_.find(input);
-      absl::optional<std::vector<WeightedString>> output;
+      absl::optional<std::vector<ScoredEntityMetadata>> output;
       if (it != entities_by_input_.end()) {
         output = it->second;
       }
@@ -70,7 +70,7 @@ void TestPageContentAnnotator::UsePageTopics(
 }
 
 void TestPageContentAnnotator::UsePageEntities(
-    const base::flat_map<std::string, std::vector<WeightedString>>&
+    const base::flat_map<std::string, std::vector<ScoredEntityMetadata>>&
         entities_by_input) {
   entities_by_input_ = entities_by_input;
 }

@@ -115,12 +115,12 @@ static_library("core") {
   }
 
   public_deps = [
+    ":entities",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//third_party/re2",
   ]
   if (build_with_tflite_lib) {
     public_deps += [
-      ":entities",
       "//components/optimization_guide/core:machine_learning",
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",

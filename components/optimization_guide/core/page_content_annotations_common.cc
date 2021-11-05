@@ -76,12 +76,18 @@ BatchAnnotationResult::~BatchAnnotationResult() = default;
 
 std::string BatchAnnotationResult::ToString() const {
   std::string output = "nullopt";
-  if (topics_ || entities_) {
+  if (topics_) {
     std::vector<std::string> all_weighted_strings;
-    for (const WeightedString& ws : (topics_ ? *topics_ : *entities_)) {
+    for (const WeightedString& ws : *topics_) {
       all_weighted_strings.push_back(ws.ToString());
     }
     output = "{" + base::JoinString(all_weighted_strings, ",") + "}";
+  } else if (entities_) {
+    std::vector<std::string> all_entities;
+    for (const ScoredEntityMetadata& md : *entities_) {
+      all_entities.push_back(md.ToString());
+    }
+    output = "{" + base::JoinString(all_entities, ",") + "}";
   } else if (visibility_score_) {
     output = base::NumberToString(*visibility_score_);
   }
@@ -127,7 +133,7 @@ BatchAnnotationResult BatchAnnotationResult::CreatePageTopicsResult(
 BatchAnnotationResult BatchAnnotationResult::CreatePageEntitiesResult(
     const std::string& input,
     ExecutionStatus status,
-    absl::optional<std::vector<WeightedString>> entities) {
+    absl::optional<std::vector<ScoredEntityMetadata>> entities) {
   BatchAnnotationResult result;
   result.input_ = input;
   result.status_ = status;
@@ -137,8 +143,8 @@ BatchAnnotationResult BatchAnnotationResult::CreatePageEntitiesResult(
   // Always sort the result (if present) by the given score.
   if (result.entities_) {
     std::sort(result.entities_->begin(), result.entities_->end(),
-              [](const WeightedString& a, const WeightedString& b) {
-                return a.weight() < b.weight();
+              [](const ScoredEntityMetadata& a, const ScoredEntityMetadata& b) {
+                return a.score < b.score;
               });
   }
 
