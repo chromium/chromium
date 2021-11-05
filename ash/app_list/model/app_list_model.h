@@ -191,6 +191,10 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Deletes `folder` if `folder` is empty.
   void DeleteFolderIfEmpty(AppListFolderItem* folder);
 
+  // Sets the position of a root item.
+  void SetRootItemPosition(AppListItem* item,
+                           const syncer::StringOrdinal& new_position);
+
   // Used to initiate updates on app list items from the ash side.
   AppListModelDelegate* const app_list_model_delegate_;
 

@@ -59,18 +59,19 @@ class APP_LIST_MODEL_EXPORT AppListItemList {
   // Triggers observers_.OnListItemMoved().
   void MoveItem(size_t from_index, size_t to_index);
 
-  // Sets the position of |item| which is expected to be a member of
-  // |app_list_items_| and sorts the list accordingly. If |new_position| is
-  // invalid, move the item to the end of the list.
-  // This method should not be called by `AppListItemList` itself. Because
+  // Sets the position of `item` which is expected to be a member of
+  // `app_list_items_` and sorts the list accordingly. Returns true if the index
+  // of `item` in the sorted list changes after setting the position. If
+  // `new_position` is invalid, move the item to the end of the list. This
+  // method should not be called by `AppListItemList` itself. Because
   // `AppListItemList` is not the owner of app list item attributes (such as
-  // item position) but the consumer. If `AppListItemList` wants to trigger
-  // the update on app list item positions, it should always use the APIs
-  // provided by `app_list_model_delegate_`.
+  // item position) but the consumer. If `AppListItemList` wants to trigger the
+  // update on app list item positions, it should always use the APIs provided
+  // by `app_list_model_delegate_`.
   // TODO(https://crbug.com/125779): It is confusing to have a method that
   // shares the similar functionality with a delegate but is only available to
   // external classes. Fixing this issue can eliminate such confusion.
-  void SetItemPosition(AppListItem* item, syncer::StringOrdinal new_position);
+  bool SetItemPosition(AppListItem* item, syncer::StringOrdinal new_position);
 
   // Add a "page break" item right after the specified item in item list.
   AppListItem* AddPageBreakItemAfter(const AppListItem* previous_item);

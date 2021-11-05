@@ -113,19 +113,19 @@ void AppListItemList::MoveItem(size_t from_index, size_t to_index) {
       target_item->id(), new_position, RequestPositionUpdateReason::kMoveItem);
 }
 
-void AppListItemList::SetItemPosition(AppListItem* item,
+bool AppListItemList::SetItemPosition(AppListItem* item,
                                       syncer::StringOrdinal new_position) {
   DCHECK(item);
   size_t from_index;
   if (!FindItemIndex(item->id(), &from_index)) {
     LOG(ERROR) << "SetItemPosition: Not in list: " << item->id().substr(0, 8);
-    return;
+    return false;
   }
   DCHECK(item_at(from_index) == item);
   if (!new_position.IsValid()) {
     size_t last_index = app_list_items_.size() - 1;
     if (from_index == last_index)
-      return;  // Already last item, do nothing.
+      return false;  // Already last item, do nothing.
     new_position = item_at(last_index)->position().CreateAfter();
   }
   // First check if the order would remain the same, in which case just update
@@ -134,7 +134,7 @@ void AppListItemList::SetItemPosition(AppListItem* item,
   if (to_index == from_index) {
     DVLOG(2) << "SetItemPosition: No change: " << item->id().substr(0, 8);
     item->set_position(new_position);
-    return;
+    return false;
   }
   // Remove the item and get the updated to index.
   auto target_item = std::move(app_list_items_[from_index]);
@@ -148,6 +148,7 @@ void AppListItemList::SetItemPosition(AppListItem* item,
                          std::move(target_item));
   for (auto& observer : observers_)
     observer.OnListItemMoved(from_index, to_index, item);
+  return true;
 }
 
 AppListItem* AppListItemList::AddPageBreakItemAfter(

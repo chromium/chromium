@@ -14,7 +14,6 @@
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item_manager.h"
@@ -489,11 +488,8 @@ void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
 }
 
 void ChromeAppListModelUpdater::NotifyProcessSyncChangesFinished() {
-  if (is_active_) {
-    AppListClientImpl::GetInstance()
-        ->GetAppListController()
-        ->NotifyProcessSyncChangesFinished();
-  }
+  if (is_active_)
+    ash::AppListController::Get()->NotifyProcessSyncChangesFinished();
 }
 
 void ChromeAppListModelUpdater::AddObserver(

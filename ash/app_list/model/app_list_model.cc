@@ -228,12 +228,12 @@ bool AppListModel::MoveItemToRootAt(AppListItem* item,
 void AppListModel::SetItemPosition(AppListItem* item,
                                    const syncer::StringOrdinal& new_position) {
   if (!item->IsInFolder()) {
-    top_level_item_list_->SetItemPosition(item, new_position);
-    // Note: this will trigger OnListItemMoved which will signal observers.
-    // (This is done this way because some View code still moves items within
-    // the item list directly).
+    SetRootItemPosition(item, new_position);
     return;
   }
+
+  // The code below handles the case that `item` has a parent folder.
+
   AppListFolderItem* folder = FindFolderItem(item->folder_id());
   DCHECK(folder);
   folder->item_list()->SetItemPosition(item, new_position);
@@ -453,6 +453,24 @@ void AppListModel::DeleteFolderIfEmpty(AppListFolderItem* folder) {
   DVLOG(2) << "Deleting empty folder: " << folder->ToDebugString();
   std::string copy_id = folder->id();
   DeleteItem(copy_id);
+}
+
+void AppListModel::SetRootItemPosition(
+    AppListItem* item,
+    const syncer::StringOrdinal& new_position) {
+  DCHECK(!item->IsInFolder());
+  DCHECK(FindItem(item->id()));
+
+  const bool index_change =
+      top_level_item_list_->SetItemPosition(item, new_position);
+
+  // If `index_change` is true, `OnListItemMoved()` is called and model
+  // observers are signaled. Nothing to do so return early.
+  if (index_change)
+    return;
+
+  for (auto& observer : observers_)
+    observer.OnAppListItemUpdated(item);
 }
 
 }  // namespace ash
