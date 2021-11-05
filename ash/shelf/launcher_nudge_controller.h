@@ -5,11 +5,14 @@
 #ifndef ASH_SHELF_LAUNCHER_NUDGE_CONTROLLER_H_
 #define ASH_SHELF_LAUNCHER_NUDGE_CONTROLLER_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 
@@ -42,7 +45,7 @@ class ASH_EXPORT LauncherNudgeController : public SessionObserver,
   static constexpr base::TimeDelta kMinIntervalAfterHomeButtonAppears =
       base::Minutes(2);
 
-  explicit LauncherNudgeController();
+  LauncherNudgeController();
   LauncherNudgeController(const LauncherNudgeController&) = delete;
   LauncherNudgeController& operator=(const LauncherNudgeController&) = delete;
   ~LauncherNudgeController() override;
@@ -117,4 +120,4 @@ class ASH_EXPORT LauncherNudgeController : public SessionObserver,
 
 }  // namespace ash
 
-#endif
+#endif  // ASH_SHELF_LAUNCHER_NUDGE_CONTROLLER_H_

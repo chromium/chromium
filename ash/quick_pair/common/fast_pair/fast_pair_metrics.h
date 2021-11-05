@@ -30,4 +30,4 @@ void RecordFastPairEngagementFlow(FastPairEngagementFlowEvent event);
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_METRICS_LOGGER_H_
+#endif  // ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_METRICS_H_

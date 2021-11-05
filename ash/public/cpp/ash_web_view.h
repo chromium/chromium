@@ -30,8 +30,8 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
     // desired by its embedded WebContents. Note that, if specified, the
     // WebContents will be bounded by |min_size| and |max_size|.
     bool enable_auto_resize = false;
-    absl::optional<gfx::Size> min_size = absl::nullopt;
-    absl::optional<gfx::Size> max_size = absl::nullopt;
+    absl::optional<gfx::Size> min_size;
+    absl::optional<gfx::Size> max_size;
 
     // If enabled, AshWebView will suppress navigation attempts of its
     // embedded WebContents. When navigation suppression occurs,
@@ -85,4 +85,4 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
 
 }  // namespace ash
 
-#endif  // ASH_PUBLIC_CPP_ASHE_WEB_VIEW_H_
+#endif  // ASH_PUBLIC_CPP_ASH_WEB_VIEW_H_

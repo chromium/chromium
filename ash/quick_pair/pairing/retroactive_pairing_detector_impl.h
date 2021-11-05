@@ -7,12 +7,11 @@
 
 #include <string>
 
-#include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
-
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/pairing/pairer_broker.h"
+#include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
@@ -107,4 +106,4 @@ class RetroactivePairingDetectorImpl final
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_PAIRING_RETROACTIVE_PAIRING_DETECTOR_H_
+#endif  // ASH_QUICK_PAIR_PAIRING_RETROACTIVE_PAIRING_DETECTOR_IMPL_H_
