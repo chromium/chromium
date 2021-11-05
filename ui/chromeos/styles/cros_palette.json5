@@ -70,5 +70,6 @@
     google_yellow_700: "#f29900",
     google_yellow_800: "#ea8600",
     google_yellow_900: "#e37400",
+    google_yellow_950: "#FFFF00",
   }
 }
