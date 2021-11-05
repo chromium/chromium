@@ -51,6 +51,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/page_visibility_state.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -422,10 +423,6 @@ void RenderWidgetHostViewAura::InitAsPopup(
   device_scale_factor_ = GetDeviceScaleFactor();
 }
 
-void RenderWidgetHostViewAura::Show() {
-  ShowWithVisibility(Visibility::VISIBLE);
-}
-
 void RenderWidgetHostViewAura::Hide() {
   window_->Hide();
   visibility_ = Visibility::HIDDEN;
@@ -744,7 +741,7 @@ void RenderWidgetHostViewAura::RenderProcessGone() {
 }
 
 void RenderWidgetHostViewAura::ShowWithVisibility(
-    Visibility web_contents_visibility) {
+    PageVisibilityState page_visibility) {
   // Make sure we grab updated ScreenInfos before synchronizing visual
   // properties, in case they have changed or this is the initial show.
   UpdateScreenInfo();
@@ -761,7 +758,7 @@ void RenderWidgetHostViewAura::ShowWithVisibility(
   window_->Show();
   WasUnOccluded();
 #if defined(OS_WIN)
-  if (web_contents_visibility == Visibility::HIDDEN &&
+  if (page_visibility != PageVisibilityState::kVisible &&
       legacy_render_widget_host_HWND_) {
     legacy_render_widget_host_HWND_->Hide();
   }

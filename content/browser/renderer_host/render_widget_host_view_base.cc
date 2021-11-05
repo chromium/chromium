@@ -28,6 +28,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_switches_internal.h"
+#include "content/public/common/page_visibility_state.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_types.h"
@@ -712,10 +713,8 @@ bool RenderWidgetHostViewBase::HasSize() const {
   return true;
 }
 
-// RenderWidgetHostViewAura overrides this.
-void RenderWidgetHostViewBase::ShowWithVisibility(
-    content::Visibility web_contents_visibility) {
-  Show();
+void RenderWidgetHostViewBase::Show() {
+  ShowWithVisibility(PageVisibilityState::kVisible);
 }
 
 void RenderWidgetHostViewBase::Destroy() {

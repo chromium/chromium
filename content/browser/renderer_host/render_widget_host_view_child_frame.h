@@ -87,7 +87,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       const gfx::Size& output_size,
       base::OnceCallback<void(const SkBitmap&)> callback) override;
   void EnsureSurfaceSynchronizedForWebTest() override;
-  void Show() override;
   void Hide() override;
   bool IsShowing() override;
   void WasUnOccluded() override;
@@ -112,6 +111,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void SendInitialPropertiesIfNeeded() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
+  void ShowWithVisibility(PageVisibilityState page_visibility) final;
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,

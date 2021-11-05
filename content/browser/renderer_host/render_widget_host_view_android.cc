@@ -778,7 +778,8 @@ bool RenderWidgetHostViewAndroid::IsSurfaceAvailableForCopy() {
           delegated_frame_host_->CanCopyFromCompositingSurface());
 }
 
-void RenderWidgetHostViewAndroid::Show() {
+void RenderWidgetHostViewAndroid::ShowWithVisibility(
+    PageVisibilityState /*page_visibility*/) {
   if (is_showing_)
     return;
 

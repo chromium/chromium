@@ -71,7 +71,6 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   ui::TextInputClient* GetTextInputClient() override;
   bool HasFocus() override;
-  void Show() override;
   void Hide() override;
   bool IsShowing() override;
   void WasUnOccluded() override;
@@ -107,6 +106,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void SetIsLoading(bool is_loading) override {}
   void UpdateCursor(const WebCursor& cursor) override;
   void RenderProcessGone() override;
+  void ShowWithVisibility(PageVisibilityState page_visibility) override;
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override {}
   void UpdateTooltipFromKeyboard(const std::u16string& tooltip_text,

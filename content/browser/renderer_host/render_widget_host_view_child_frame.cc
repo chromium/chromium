@@ -212,7 +212,8 @@ uint32_t RenderWidgetHostViewChildFrame::GetCaptureSequenceNumber() const {
   return frame_connector_->capture_sequence_number();
 }
 
-void RenderWidgetHostViewChildFrame::Show() {
+void RenderWidgetHostViewChildFrame::ShowWithVisibility(
+    PageVisibilityState /*page_visibility*/) {
   if (!host()->is_hidden())
     return;
 

@@ -109,7 +109,8 @@ bool TestRenderWidgetHostView::HasFocus() {
   return true;
 }
 
-void TestRenderWidgetHostView::Show() {
+void TestRenderWidgetHostView::ShowWithVisibility(
+    PageVisibilityState /*page_visibility*/) {
   is_showing_ = true;
   is_occluded_ = false;
 }

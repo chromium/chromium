@@ -110,7 +110,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   gfx::NativeView GetNativeView() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   bool HasFocus() override;
-  void Show() override;
   void Hide() override;
   bool IsShowing() override;
   void WasUnOccluded() override;
@@ -135,6 +134,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void OnDidNavigateMainFrameToNewPage() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
+  void ShowWithVisibility(PageVisibilityState page_visibility) final;
   void Destroy() override;
   void UpdateTooltipUnderCursor(const std::u16string& tooltip_text) override;
   void UpdateTooltip(const std::u16string& tooltip_text) override;

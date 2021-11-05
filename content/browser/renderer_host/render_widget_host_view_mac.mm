@@ -424,7 +424,8 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
   return GetActiveWidget();
 }
 
-void RenderWidgetHostViewMac::Show() {
+void RenderWidgetHostViewMac::ShowWithVisibility(
+    PageVisibilityState /*page_visibility*/) {
   is_visible_ = true;
   ns_view_->SetVisible(is_visible_);
   browser_compositor_->SetViewVisible(is_visible_);
