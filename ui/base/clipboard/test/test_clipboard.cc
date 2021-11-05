@@ -24,7 +24,6 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/codec/png_codec.h"
 
 namespace ui {
@@ -113,10 +112,7 @@ std::vector<std::u16string> TestClipboard::GetStandardFormats(
     // clipboards convert text/plain[;charset=utf-8] <=> [UTF8_]STRING to allow
     // interoperability with other applications which do not use the same mime
     // types as chrome.
-    // TODO(https://crbug.com/1096425): remove this if condition once Ozone is
-    // the only path in Linux builds.
-    if (features::IsUsingOzonePlatform())
-      types.push_back(base::UTF8ToUTF16(kMimeTypeTextUtf8));
+    types.push_back(base::UTF8ToUTF16(kMimeTypeTextUtf8));
 #endif
   }
   if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))

@@ -35,7 +35,7 @@ component("clipboard_types") {
   }
 
   if (use_aura) {
-    if ((use_x11 && (is_linux || is_chromeos_lacros)) || !is_win) {
+    if ((!is_chromecast && is_linux) || is_chromeos_lacros || !is_win) {
       sources += [ "clipboard_format_type_aura.cc" ]
     }
   }
@@ -215,7 +215,7 @@ source_set("clipboard_test") {
     ]
   }
 
-  if (use_aura && !is_chromeos_lacros && !use_x11 && !is_win) {
+  if (use_aura && !is_chromeos_lacros && !is_linux && !is_win) {
     sources += [
       "clipboard_data_unittest.cc",
       "clipboard_non_backed_unittest.cc",
