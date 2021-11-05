@@ -161,11 +161,11 @@ class SpeechRecognitionPrivateRecognizerTest
 
 INSTANTIATE_TEST_SUITE_P(Network,
                          SpeechRecognitionPrivateRecognizerTest,
-                         ::testing::Values(SpeechRecognitionType::kNetwork));
+                         ::testing::Values(kNetworkRecognition));
 
 INSTANTIATE_TEST_SUITE_P(OnDevice,
                          SpeechRecognitionPrivateRecognizerTest,
-                         ::testing::Values(SpeechRecognitionType::kOnDevice));
+                         ::testing::Values(kOnDeviceRecognition));
 
 IN_PROC_BROWSER_TEST_P(SpeechRecognitionPrivateRecognizerTest,
                        MaybeUpdateProperties) {
