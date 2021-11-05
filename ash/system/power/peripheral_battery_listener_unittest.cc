@@ -1754,7 +1754,7 @@ TEST_F(PeripheralBatteryListenerTest, StylusBatteryEligibility) {
   EXPECT_CALL(listener_observer_mock,
               OnAddingBattery(AFIELD(&BI::key, Eq(kTestStylusBatteryPath))));
 
-  for (std::string SN : kStylusEligibleSerialNumbers) {
+  for (const char* sn : kStylusEligibleSerialNumbers) {
     EXPECT_CALL(listener_observer_mock,
                 OnUpdatedBatteryLevel(AllOf(
                     AFIELD(&BI::key, Eq(kTestStylusBatteryPath)),
@@ -1767,10 +1767,10 @@ TEST_F(PeripheralBatteryListenerTest, StylusBatteryEligibility) {
 
     battery_listener_->PeripheralBatteryStatusReceived(
         kTestStylusBatteryPath, kTestStylusName, 50,
-        kTestStylusBatteryStatusDischargingIn, SN, kBatteryPolledUpdate);
+        kTestStylusBatteryStatusDischargingIn, sn, kBatteryPolledUpdate);
   }
 
-  for (std::string SN : kStylusIneligibleSerialNumbers) {
+  for (const char* sn : kStylusIneligibleSerialNumbers) {
     EXPECT_CALL(listener_observer_mock,
                 OnUpdatedBatteryLevel(
                     AllOf(AFIELD(&BI::key, Eq(kTestStylusBatteryPath)),
@@ -1779,7 +1779,7 @@ TEST_F(PeripheralBatteryListenerTest, StylusBatteryEligibility) {
 
     battery_listener_->PeripheralBatteryStatusReceived(
         kTestStylusBatteryPath, kTestStylusName, 5,
-        kTestStylusBatteryStatusDischargingIn, SN, kBatteryEventUpdate);
+        kTestStylusBatteryStatusDischargingIn, sn, kBatteryEventUpdate);
   }
 }
 

@@ -50,18 +50,18 @@ constexpr char kBluetoothDeviceNotificationId2[] =
     "battery_notification-battery_bluetooth-11:22:33:44:55:66";
 
 // Stylus devices.
-const std::string kTestStylusBatteryPath =
+const char kTestStylusBatteryPath[] =
     "/sys/class/power_supply/hid-AAAA:BBBB:CCCC.DDDD-battery";
-const std::string kTestStylusName = "test_stylus";
+const char kTestStylusName[] = "test_stylus";
 const auto kTestStylusBatteryStatusDischargingIn = power_manager::
     PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_DISCHARGING;
 const auto kTestStylusBatteryStatusDischargingOut =
     ash::PeripheralBatteryListener::BatteryInfo::ChargeStatus::kDischarging;
-const std::string kStylusEligibleSerialNumbers[] = {
+const char kStylusEligibleSerialNumbers[][18] = {
     "FABCDE01BCA23633", "019F02212D4F446E",  "154006440FE368C",
     "0190AB234FFE368",  "0154006440FE368C9", "0204009540fE368C9",
     "0347we-$%^$#^#*"};
-const std::string kStylusIneligibleSerialNumbers[] = {
+const char kStylusIneligibleSerialNumbers[][17] = {
     "0190AB234FFE368C", "0190AB234fFe368C", "0154006440FE368C",
     "0204009540FE368C", "2011003140FE368C", ""};
 // A period of time less than full garage charge, in seconds
