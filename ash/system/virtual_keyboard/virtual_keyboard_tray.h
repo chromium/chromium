@@ -54,7 +54,6 @@ class VirtualKeyboardTray : public TrayBackgroundView,
   const char* GetClassName() const override;
 
  private:
-
   // Weak pointer, will be parented by TrayContainer for its lifetime.
   views::ImageView* icon_;
 

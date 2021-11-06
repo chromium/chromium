@@ -21,15 +21,15 @@ namespace aura {
 class Window;
 }  // namesapce aura
 
-namespace viz {
-class CopyOutputRequest;
-class CopyOutputResult;
-}  // namespace cc
-
 namespace ui {
 class LayerTreeOwner;
 class ScopedAnimationDurationScaleMode;
 }  // namespace ui
+
+namespace viz {
+class CopyOutputRequest;
+class CopyOutputResult;
+}  // namespace viz
 
 namespace ash {
 class ScreenRotationAnimatorObserver;

@@ -58,7 +58,8 @@ class IMEDetailedView : public ImeListView {
   // This icon says that the IMEs are managed by policy.
   views::ImageView* controlled_setting_icon_ = nullptr;
 };
-}
+
+}  // namespace tray
 
 }  // namespace ash
 

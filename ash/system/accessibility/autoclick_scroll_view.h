@@ -59,7 +59,7 @@ class AutoclickScrollView : public views::View {
 
   // The amount of time to wait during a hover over a scroll pad button before
   // requesting that Autoclick Controller perform a scroll. Visible for tests.
-  const static int kAutoclickScrollDelayMs = 50;
+  static constexpr int kAutoclickScrollDelayMs = 50;
 
   AutoclickScrollView();
 

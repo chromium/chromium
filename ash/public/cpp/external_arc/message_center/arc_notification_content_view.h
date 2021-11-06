@@ -211,7 +211,6 @@ class ArcNotificationContentView
   absl::optional<gfx::Insets> mask_insets_;
 
   std::unique_ptr<ui::LayerTreeOwner> surface_copy_;
-
 };
 
 }  // namespace ash

@@ -19,7 +19,6 @@ namespace ash {
 // paint nothing.
 class WmHighlightItemBorder : public views::Border {
  public:
-
   explicit WmHighlightItemBorder(
       int corner_radius,
       gfx::Insets padding = gfx::Insets(0));
