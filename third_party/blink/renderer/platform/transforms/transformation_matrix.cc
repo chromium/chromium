@@ -242,9 +242,10 @@ static bool Inverse(const TransformationMatrix::Matrix4& matrix,
                     TransformationMatrix::Matrix4& result) {
   // Calculate the 4x4 determinant
   // If 1/determinant is not finite, then the inverse matrix is not unique.
-  const double inv_det = 1 / Determinant4x4(matrix);
-  if (!std::isfinite(inv_det))
+  const double det = Determinant4x4(matrix);
+  if (!std::isnormal(det))
     return false;
+  const double inv_det = 1 / det;
 
 #if defined(ARCH_CPU_ARM64)
   const double* mat = &(matrix[0][0]);
@@ -604,7 +605,7 @@ static bool Decompose(const TransformationMatrix::Matrix4& mat,
     perspective_matrix[i][3] = 0;
   perspective_matrix[3][3] = 1;
 
-  if (Determinant4x4(perspective_matrix) == 0)
+  if (!std::isnormal(Determinant4x4(perspective_matrix)))
     return false;
 
   // First, isolate perspective.  This is the messiest.
@@ -1675,7 +1676,7 @@ FloatPoint3D TransformationMatrix::InternalMapPoint(
 
 bool TransformationMatrix::IsInvertible() const {
   return IsIdentityOrTranslation() ||
-         std::isfinite(1 / blink::Determinant4x4(matrix_));
+         std::isnormal(blink::Determinant4x4(matrix_));
 }
 
 TransformationMatrix TransformationMatrix::Inverse() const {
