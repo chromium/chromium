@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_live_region_tracker.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -269,9 +270,11 @@ void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
   if (node->GetRole() == ax::mojom::Role::kInlineTextBox)
     return;
 
+  DCHECK(tree_->event_data());
   std::set<EventParams>& node_events = tree_events_[node->id()];
-  node_events.emplace(event, ax::mojom::EventFrom::kNone,
-                      ax::mojom::Action::kNone, tree_->event_intents());
+  node_events.emplace(event, tree_->event_data()->event_from,
+                      tree_->event_data()->event_from_action,
+                      tree_->event_data()->event_intents);
 }
 
 void AXEventGenerator::OnIgnoredWillChange(AXTree* tree,

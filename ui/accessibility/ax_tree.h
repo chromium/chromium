@@ -26,6 +26,7 @@
 
 namespace ui {
 
+struct AXEvent;
 class AXTableInfo;
 class AXTreeObserver;
 struct AXTreeUpdateState;
@@ -221,10 +222,8 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   //                  When should we initialize this?
   std::unique_ptr<AXLanguageDetectionManager> language_detection_manager;
 
-  // A list of intents active during a tree update/unserialization.
-  const std::vector<AXEventIntent>& event_intents() const {
-    return event_intents_;
-  }
+  // Event metadata while applying a tree update during unserialization.
+  AXEvent* event_data() const { return event_data_.get(); }
 
   // Notify the delegate that the tree manager for |previous_tree_id| will be
   // removed from the AXTreeManagerMap. Because we sometimes remove the tree
@@ -462,7 +461,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // Indicates if the tree represents a paginated document
   bool has_pagination_support_ = false;
 
-  std::vector<AXEventIntent> event_intents_;
+  std::unique_ptr<AXEvent> event_data_;
 };
 
 }  // namespace ui

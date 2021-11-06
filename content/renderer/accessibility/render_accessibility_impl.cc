@@ -360,13 +360,6 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
     case ax::mojom::Action::kSetSelection:
       anchor->SetSelection(anchor.get(), data.anchor_offset, focus.get(),
                            data.focus_offset);
-      // Selection alters layout, so update layout before firing an
-      // event or we'll hit an assertion failure when trying to access
-      // |root| because layout isn't clean.
-      if (root.MaybeUpdateLayoutAndCheckValidity()) {
-        HandleAXEvent(
-            ui::AXEvent(root.AxID(), ax::mojom::Event::kLayoutComplete));
-      }
       break;
     case ax::mojom::Action::kScrollToMakeVisible:
       target->ScrollToMakeVisibleWithSubFocus(

@@ -106,13 +106,13 @@ TEST(AXEventGeneratorTest, IterateThroughEmptyEventSets) {
   std::set<AXEventGenerator::EventParams> node3_events;
   node3_events.emplace(AXEventGenerator::Event::IGNORED_CHANGED,
                        ax::mojom::EventFrom::kNone, ax::mojom::Action::kNone,
-                       tree.event_intents());
+                       std::vector<AXEventIntent>());
   node3_events.emplace(AXEventGenerator::Event::SUBTREE_CREATED,
                        ax::mojom::EventFrom::kNone, ax::mojom::Action::kNone,
-                       tree.event_intents());
+                       std::vector<AXEventIntent>());
   node3_events.emplace(AXEventGenerator::Event::NAME_CHANGED,
                        ax::mojom::EventFrom::kNone, ax::mojom::Action::kNone,
-                       tree.event_intents());
+                       std::vector<AXEventIntent>());
   // Node4 contains no event.
   std::set<AXEventGenerator::EventParams> node4_events;
   // Node5 contains no event.
@@ -123,7 +123,7 @@ TEST(AXEventGeneratorTest, IterateThroughEmptyEventSets) {
   std::set<AXEventGenerator::EventParams> node7_events;
   node7_events.emplace(AXEventGenerator::Event::IGNORED_CHANGED,
                        ax::mojom::EventFrom::kNone, ax::mojom::Action::kNone,
-                       tree.event_intents());
+                       std::vector<AXEventIntent>());
   // Node8 contains no event.
   std::set<AXEventGenerator::EventParams> node8_events;
   // Node9 contains no event.

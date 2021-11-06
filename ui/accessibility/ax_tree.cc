@@ -22,6 +22,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -1017,10 +1018,13 @@ const std::set<AXTreeID> AXTree::GetAllChildTreeIds() const {
 }
 
 bool AXTree::Unserialize(const AXTreeUpdate& update) {
-  event_intents_ = update.event_intents;
-  base::ScopedClosureRunner clear_event_intents(base::BindOnce(
-      [](std::vector<AXEventIntent>* event_intents) { event_intents->clear(); },
-      &event_intents_));
+  event_data_ = std::make_unique<AXEvent>();
+  event_data_->event_from = update.event_from;
+  event_data_->event_from_action = update.event_from_action;
+  event_data_->event_intents = update.event_intents;
+  base::ScopedClosureRunner clear_event_data(base::BindOnce(
+      [](std::unique_ptr<AXEvent>* event_data) { event_data->reset(); },
+      &event_data_));
 
   AXTreeUpdateState update_state(*this, update);
   const AXNodeID old_root_id = root_ ? root_->id() : kInvalidAXNodeID;
