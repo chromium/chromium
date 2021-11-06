@@ -69,6 +69,11 @@ bool InputControllerEvdev::HasTouchpad() {
   return has_touchpad_;
 }
 
+bool InputControllerEvdev::HasHapticTouchpad() {
+  // TODO(b/204903440): Check if haptic touchpad is present.
+  return false;
+}
+
 bool InputControllerEvdev::IsCapsLockEnabled() {
   return keyboard_->IsCapsLockEnabled();
 }
@@ -325,5 +330,15 @@ void InputControllerEvdev::StopVibration(int id) {
     return;
   input_device_factory_->StopVibration(id);
 }
+
+// TODO(b/204903440): Implement.
+void InputControllerEvdev::PlayHapticTouchpadEffect(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {}
+
+// TODO(b/204903440): Implement.
+void InputControllerEvdev::SetHapticTouchpadEffectForNextButtonRelease(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {}
 
 }  // namespace ui

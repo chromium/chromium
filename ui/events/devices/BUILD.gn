@@ -15,6 +15,7 @@ component("devices") {
     "events_devices_export.h",
     "gamepad_device.cc",
     "gamepad_device.h",
+    "haptic_touchpad_effects.h",
     "input_device.cc",
     "input_device.h",
     "input_device_event_observer.h",

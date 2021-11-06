@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 #include "ui/ozone/public/input_controller.h"
@@ -49,6 +50,7 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
   bool HasMouse() override;
   bool HasPointingStick() override;
   bool HasTouchpad() override;
+  bool HasHapticTouchpad() override;
   bool IsCapsLockEnabled() override;
   void SetCapsLockEnabled(bool enabled) override;
   void SetNumLockEnabled(bool enabled) override;
@@ -98,6 +100,11 @@ class COMPONENT_EXPORT(EVDEV) InputControllerEvdev : public InputController {
                            uint8_t amplitude,
                            uint16_t duration_millis) override;
   void StopVibration(int id) override;
+  void PlayHapticTouchpadEffect(HapticTouchpadEffect effect,
+                                HapticTouchpadEffectStrength strength) override;
+  void SetHapticTouchpadEffectForNextButtonRelease(
+      HapticTouchpadEffect effect,
+      HapticTouchpadEffectStrength strength) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(InputControllerEvdevTest, AccelerationSuspension);

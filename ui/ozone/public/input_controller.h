@@ -23,6 +23,8 @@ class TimeDelta;
 
 namespace ui {
 enum class StylusState;
+enum class HapticTouchpadEffect;
+enum class HapticTouchpadEffectStrength;
 }  // namespace ui
 
 namespace ui {
@@ -54,6 +56,7 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   virtual bool HasMouse() = 0;
   virtual bool HasPointingStick() = 0;
   virtual bool HasTouchpad() = 0;
+  virtual bool HasHapticTouchpad() = 0;
 
   // Keyboard settings.
   virtual bool IsCapsLockEnabled() = 0;
@@ -129,6 +132,14 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
                                    uint8_t amplitude,
                                    uint16_t duration_millis) = 0;
   virtual void StopVibration(int id) = 0;
+
+  // Control haptic feedback for haptic-capable touchpad devices.
+  virtual void PlayHapticTouchpadEffect(
+      HapticTouchpadEffect effect,
+      HapticTouchpadEffectStrength strength) = 0;
+  virtual void SetHapticTouchpadEffectForNextButtonRelease(
+      HapticTouchpadEffect effect,
+      HapticTouchpadEffectStrength strength) = 0;
 
   // If |enable_filter| is true, all keys on the internal keyboard except
   // |allowed_keys| are disabled.
