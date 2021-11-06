@@ -103,8 +103,7 @@ Provider base_provider_fuchsia = {PathProviderFuchsia, &base_provider,
                                   true};
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_ANDROID) && \
-    !defined(OS_FUCHSIA)
+#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_ANDROID)
 Provider base_provider_posix = {
   PathProviderPosix,
   &base_provider,
