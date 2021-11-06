@@ -1,0 +1,6 @@
+name: "Release"
+description: "Trigger browser release"
+
+runs:
+  using: "node12"
+  main: "./main.js"

@@ -1,0 +1,6 @@
+name: "Build/Test"
+description: "Trigger build/test run"
+
+runs:
+  using: "node12"
+  main: "./main.js"

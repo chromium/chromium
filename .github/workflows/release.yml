@@ -1,0 +1,17 @@
+name: Release Latest Browsers
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Trigger release run
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/release
+        env:
+          BUILD_TEST_AUTHORIZATION: ${{ secrets.BUILD_TEST_AUTHORIZATION }}
+          BUILD_TEST_HOSTNAME: ${{ secrets.BUILD_TEST_HOSTNAME }}
+          BUILD_TEST_PORT: ${{ secrets.BUILD_TEST_PORT }}
+          BUILD_TEST_INSECURE: ${{ secrets.BUILD_TEST_INSECURE }}

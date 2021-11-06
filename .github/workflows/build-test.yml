@@ -1,0 +1,20 @@
+name: Build/Test
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-test:
+    name: Trigger build/test run
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/build-test
+        env:
+          BUILD_TEST_AUTHORIZATION: ${{ secrets.BUILD_TEST_AUTHORIZATION }}
+          BUILD_TEST_HOSTNAME: ${{ secrets.BUILD_TEST_HOSTNAME }}
+          BUILD_TEST_PORT: ${{ secrets.BUILD_TEST_PORT }}
+          BUILD_TEST_INSECURE: ${{ secrets.BUILD_TEST_INSECURE }}
