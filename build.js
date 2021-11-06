@@ -80,7 +80,7 @@ function computeBuildId() {
   ])
     .stdout.toString()
     .trim()
-    .replace(/-/g, "-");
+    .replace(/-/g, "");
 
   // Use the later of the two dates in the build ID.
   const date = +chromiumDate >= +driverDate ? chromiumDate : driverDate;
