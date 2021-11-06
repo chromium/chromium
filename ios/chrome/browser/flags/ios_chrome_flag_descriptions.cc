@@ -547,6 +547,10 @@ const char kEnableNewDownloadAPIName[] = "Enable new download API";
 const char kEnableNewDownloadAPIDescription[] =
     "Enable new download API (restricted to iOS 15.0+).";
 
+const char kLazilyCreateWebStateOnRestorationName[] = "Unrealized WebStates";
+const char kLazilyCreateWebStateOnRestorationDescription[] =
+    "Create WebState in unrealized state upon session restoration.";
+
 const char kWebPageDefaultZoomFromDynamicTypeName[] =
     "Use dynamic type size for default text zoom level";
 const char kWebPageDefaultZoomFromDynamicTypeDescription[] =

@@ -3607,6 +3607,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "lazily-create-web-state-on-restoration",
+    "owners": ["olivierrobin", "sdefresne"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "legacy-tls-interstitial",
     "owners": [ "cthomp" ],
     "expiry_milestone": 92

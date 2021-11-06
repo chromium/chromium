@@ -808,7 +808,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(web::features::kSynthesizedRestoreSession)},
     {"remove-extra-ntps", flag_descriptions::kRemoveExcessNTPsExperimentName,
      flag_descriptions::kRemoveExcessNTPsExperimentDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kRemoveExcessNTPs)}};
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kRemoveExcessNTPs)},
+    {"lazily-create-web-state-on-restoration",
+     flag_descriptions::kLazilyCreateWebStateOnRestorationName,
+     flag_descriptions::kLazilyCreateWebStateOnRestorationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kEnableUnrealizedWebStates)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

@@ -485,6 +485,10 @@ extern const char kWalletServiceUseSandboxDescription[];
 extern const char kEnableNewDownloadAPIName[];
 extern const char kEnableNewDownloadAPIDescription[];
 
+// Title and description for the flag to enable unrealized WebStates.
+extern const char kLazilyCreateWebStateOnRestorationName[];
+extern const char kLazilyCreateWebStateOnRestorationDescription[];
+
 // Title and description for the flag to tie the default text zoom level to
 // the dynamic type setting.
 extern const char kWebPageDefaultZoomFromDynamicTypeName[];

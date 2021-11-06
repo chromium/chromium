@@ -83,6 +83,10 @@ extern const base::Feature kEnableNewDownloadAPI;
 // interaction state.
 extern const base::Feature kSynthesizedRestoreSession;
 
+// Enable support for unrealized WebState upon session restoration.
+// See //docs/ios/unrealized_web_state.md for more information.
+extern const base::Feature kEnableUnrealizedWebStates;
+
 // When true, for each navigation, the default user agent is chosen by the
 // WebClient GetDefaultUserAgent() method. If it is false, the mobile version
 // is requested by default.
