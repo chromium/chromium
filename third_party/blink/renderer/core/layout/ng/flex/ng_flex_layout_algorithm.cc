@@ -795,8 +795,6 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
   ConstructAndAppendFlexItems();
-  Vector<LayoutPoint> item_offsets(algorithm_.NumItems());
-  LayoutPoint* current_item_offset = item_offsets.begin();
 
   LayoutUnit main_axis_start_offset;
   LayoutUnit main_axis_end_offset;
@@ -818,13 +816,14 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   }
 
   Vector<NGFlexLine> flex_line_outputs;
+  flex_line_outputs.ReserveCapacity(algorithm_.NumItems());
+
   FlexLine* line;
   while ((
       line = algorithm_.ComputeNextFlexLine(container_builder_.InlineSize()))) {
     line->SetContainerMainInnerSize(
         MainAxisContentExtent(line->sum_hypothetical_main_size_));
     line->FreezeInflexibleItems();
-    flex_line_outputs.push_back(NGFlexLine());
     while (!line->ResolveFlexibleLengths()) {
       continue;
     }
@@ -833,11 +832,14 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     if (UNLIKELY(layout_info_for_devtools_ && !IsResumingLayout(BreakToken())))
       layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
 
+    flex_line_outputs.push_back(NGFlexLine(line->line_items_.size()));
     for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
       FlexItem& flex_item = line->line_items_[i];
-      DCHECK(current_item_offset);
-      flex_item.offset_ = current_item_offset;
-      current_item_offset++;
+      NGFlexItem& flex_item_output = flex_line_outputs.back().line_items[i];
+
+      flex_item.offset_ = &flex_item_output.offset;
+      flex_item_output.ng_input_node = flex_item.ng_input_node_;
+      flex_item_output.main_axis_final_size = flex_item.FlexedBorderBoxSize();
 
       NGConstraintSpace child_space = BuildSpaceForLayout(flex_item);
 
@@ -1386,8 +1388,21 @@ void NGFlexLayoutAlgorithm::CheckFlexLines(
 
   DCHECK_EQ(flex_line_outputs.size(), flex_lines.size());
   for (wtf_size_t i = 0; i < flex_line_outputs.size(); i++) {
-    DCHECK_EQ(flex_line_outputs[i].line_cross_size,
-              flex_lines[i].cross_axis_extent_);
+    const FlexLine& flex_line = flex_lines[i];
+    const NGFlexLine& flex_line_output = flex_line_outputs[i];
+
+    DCHECK_EQ(flex_line_output.line_cross_size, flex_line.cross_axis_extent_);
+    DCHECK_EQ(flex_line_output.line_items.size(), flex_line.line_items_.size());
+
+    for (wtf_size_t j = 0; j < flex_line_output.line_items.size(); j++) {
+      const FlexItem& flex_item = flex_line.line_items_[j];
+      const NGFlexItem& flex_item_output = flex_line_output.line_items[j];
+
+      DCHECK_EQ(flex_item_output.offset, *flex_item.offset_);
+      DCHECK_EQ(flex_item_output.ng_input_node, flex_item.ng_input_node_);
+      DCHECK_EQ(flex_item_output.main_axis_final_size,
+                flex_item.FlexedBorderBoxSize());
+    }
   }
 }
 #endif
