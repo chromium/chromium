@@ -111,6 +111,7 @@ class ASH_EXPORT AppListFolderView
   void Layout() override;
   void ChildPreferredSizeChanged(View* child) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,

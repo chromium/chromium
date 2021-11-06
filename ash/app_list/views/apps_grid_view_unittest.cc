@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -51,6 +52,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -3561,6 +3563,135 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
 
   Shell::Get()->app_list_controller()->ClearActiveModel();
   EXPECT_EQ(0, view_model->view_size());
+}
+
+TEST_P(AppsGridViewClamshellAndTabletTest,
+       TouchScrollFromFolderNameDoesNotAffectRootGrid) {
+  // Add enough items to the root grid so the launcher becomes paged.
+  model_->PopulateApps(1);
+  model_->CreateAndPopulateFolderWithApps(5);
+  // `GetTilesPerPage()` may return a large number for bubble launcher - ensure
+  // the number of test apps is not excessive.
+  model_->PopulateApps(std::min(30, GetTilesPerPage(0)));
+  UpdateLayout();
+
+  // Open the folder view.
+  SimulateLeftClickOnView(apps_grid_view_->view_model()->view_at(1));
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  AppsGridView* const root_grid_view = apps_grid_view_;
+  const gfx::Point original_root_grid_origin =
+      apps_grid_view_->GetBoundsInScreen().origin();
+  const gfx::Point original_first_item_origin =
+      apps_grid_view_->view_model()->view_at(0)->GetBoundsInScreen().origin();
+  ui::test::ScrollStepCallback verify_grid_bounds = base::BindLambdaForTesting(
+      [&](ui::EventType event_type, const gfx::Vector2dF& offset) {
+        EXPECT_EQ(original_root_grid_origin,
+                  root_grid_view->GetBoundsInScreen().origin());
+        EXPECT_EQ(original_first_item_origin, root_grid_view->view_model()
+                                                  ->view_at(0)
+                                                  ->GetBoundsInScreen()
+                                                  .origin());
+      });
+
+  // Simulate upward gesture scroll from folder header view, and verify it
+  // doesn't affect the root apps grid view location.
+  gfx::Point scroll_start = app_list_folder_view_->folder_header_view()
+                                ->GetBoundsInScreen()
+                                .CenterPoint();
+  GetEventGenerator()->GestureScrollSequenceWithCallback(
+      scroll_start, scroll_start - gfx::Vector2d(0, 100),
+      /*duration=*/base::Milliseconds(50),
+      /*steps=*/5, verify_grid_bounds);
+
+  ASSERT_EQ(original_root_grid_origin,
+            apps_grid_view_->GetBoundsInScreen().origin());
+  ASSERT_EQ(
+      original_first_item_origin,
+      apps_grid_view_->view_model()->view_at(0)->GetBoundsInScreen().origin());
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  // Simulate downward gesture scroll from folder header view, and verify it
+  // doesn't affect the root apps grid view location.
+  scroll_start = app_list_folder_view_->folder_header_view()
+                     ->GetBoundsInScreen()
+                     .CenterPoint();
+  GetEventGenerator()->GestureScrollSequenceWithCallback(
+      scroll_start, scroll_start + gfx::Vector2d(0, 100),
+      /*duration=*/base::Milliseconds(50),
+      /*steps=*/5, verify_grid_bounds);
+
+  EXPECT_EQ(original_root_grid_origin,
+            apps_grid_view_->GetBoundsInScreen().origin());
+  EXPECT_EQ(
+      original_first_item_origin,
+      apps_grid_view_->view_model()->view_at(0)->GetBoundsInScreen().origin());
+}
+
+TEST_P(AppsGridViewClamshellAndTabletTest,
+       TouchScrollFromFolderGridDoesNotAffectRootGrid) {
+  // Add enough items to the root grid so the launcher becomes paged.
+  model_->PopulateApps(1);
+  model_->CreateAndPopulateFolderWithApps(5);
+  // `GetTilesPerPage()` may return a large number for bubble launcher - ensure
+  // the number of test apps is not excessive.
+  model_->PopulateApps(std::min(30, GetTilesPerPage(0)));
+  UpdateLayout();
+
+  // Open the folder view.
+  SimulateLeftClickOnView(apps_grid_view_->view_model()->view_at(1));
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  AppsGridView* const root_grid_view = apps_grid_view_;
+  const gfx::Point original_root_grid_origin =
+      apps_grid_view_->GetBoundsInScreen().origin();
+  const gfx::Point original_first_item_origin =
+      apps_grid_view_->view_model()->view_at(0)->GetBoundsInScreen().origin();
+  ui::test::ScrollStepCallback verify_grid_bounds = base::BindLambdaForTesting(
+      [&](ui::EventType event, const gfx::Vector2dF& offset) {
+        EXPECT_EQ(original_root_grid_origin,
+                  root_grid_view->GetBoundsInScreen().origin());
+        EXPECT_EQ(original_first_item_origin, root_grid_view->view_model()
+                                                  ->view_at(0)
+                                                  ->GetBoundsInScreen()
+                                                  .origin());
+      });
+
+  // Simulate downward gesture scroll from folder grid (outside any folder app
+  // list item view), and verify it doesn't affect the root apps grid view
+  // location.
+  gfx::Point scroll_start = GetItemViewInAppsGridAt(0, folder_apps_grid_view())
+                                ->GetBoundsInScreen()
+                                .right_center() +
+                            gfx::Vector2d(1, 0);
+  GetEventGenerator()->GestureScrollSequenceWithCallback(
+      scroll_start, scroll_start - gfx::Vector2d(0, 100),
+      /*duration=*/base::Milliseconds(50),
+      /*steps=*/5, verify_grid_bounds);
+
+  ASSERT_EQ(original_root_grid_origin,
+            apps_grid_view_->GetBoundsInScreen().origin());
+  ASSERT_EQ(
+      original_first_item_origin,
+      apps_grid_view_->view_model()->view_at(0)->GetBoundsInScreen().origin());
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  // Simulate downward gesture scroll from folder header view, and verify it
+  // doesn't affect the root apps grid view location.
+  scroll_start = GetItemViewInAppsGridAt(0, folder_apps_grid_view())
+                     ->GetBoundsInScreen()
+                     .right_center() +
+                 gfx::Vector2d(1, 0);
+  GetEventGenerator()->GestureScrollSequenceWithCallback(
+      scroll_start, scroll_start + gfx::Vector2d(0, 100),
+      /*duration=*/base::Milliseconds(50),
+      /*steps=*/5, verify_grid_bounds);
+
+  EXPECT_EQ(original_root_grid_origin,
+            apps_grid_view_->GetBoundsInScreen().origin());
+  EXPECT_EQ(
+      original_first_item_origin,
+      apps_grid_view_->view_model()->view_at(0)->GetBoundsInScreen().origin());
 }
 
 // This is a NonBubble test because page breaks are ignored with the

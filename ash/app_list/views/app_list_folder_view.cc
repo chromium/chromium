@@ -1162,6 +1162,14 @@ void AppListFolderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGenericContainer;
 }
 
+void AppListFolderView::OnGestureEvent(ui::GestureEvent* event) {
+  // Capture scroll events so they don't bubble up to the apps container, where
+  // they may cause the root apps grid view to scroll, or get translated into
+  // apps grid view drag.
+  if (event->type() == ui::ET_GESTURE_SCROLL_BEGIN)
+    event->SetHandled();
+}
+
 void AppListFolderView::SetItemName(AppListFolderItem* item,
                                     const std::string& name) {
   AppListModelProvider::Get()->model()->SetItemName(item, name);
