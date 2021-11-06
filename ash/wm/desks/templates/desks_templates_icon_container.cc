@@ -5,10 +5,13 @@
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/background.h"
 
@@ -96,7 +99,32 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromTemplate(
     }
   }
 
-  SetIcons(SortIconIdentifiers(identifier_info));
+  CreateIconViewsFromIconIdentifiers(SortIconIdentifiers(identifier_info));
+}
+
+void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
+    const std::vector<aura::Window*>& windows) {
+  DCHECK(!windows.empty());
+
+  // Iterate through `windows`, counting the occurrences of each unique icon and
+  // storing their lowest activation index.
+  std::map<std::string, IconInfo> identifier_info;
+  for (size_t i = 0; i < windows.size(); ++i) {
+    auto* window = windows[i];
+    ShelfID shelf_id = ShelfID::Deserialize(window->GetProperty(kShelfIDKey));
+    const std::string app_id = shelf_id.app_id;
+
+    // A single app can have multiple windows so count their occurrences and
+    // use their index in `windows` as their activation index.
+    if (!base::Contains(identifier_info, app_id)) {
+      identifier_info[app_id] = {/*activation_index=*/static_cast<int>(i),
+                                 /*count=*/1};
+    } else {
+      ++identifier_info[app_id].count;
+    }
+  }
+
+  CreateIconViewsFromIconIdentifiers(SortIconIdentifiers(identifier_info));
 }
 
 void DesksTemplatesIconContainer::Layout() {
@@ -134,7 +162,7 @@ void DesksTemplatesIconContainer::Layout() {
   }
 }
 
-void DesksTemplatesIconContainer::SetIcons(
+void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
     const std::vector<std::pair<std::string, int>>& identifiers_and_counts) {
   DCHECK(icon_views_.empty());
 
@@ -150,8 +178,8 @@ void DesksTemplatesIconContainer::SetIcons(
                                      kControlBackgroundColorInactive),
                              DesksTemplatesIconView::kIconSize / 2))
                          .Build());
-    icon_view->SetIconAndCount(identifiers_and_counts[i].first,
-                               identifiers_and_counts[i].second);
+    icon_view->SetIconIdentifierAndCount(identifiers_and_counts[i].first,
+                                         identifiers_and_counts[i].second);
     icon_views_.push_back(icon_view);
   }
 
@@ -166,7 +194,7 @@ void DesksTemplatesIconContainer::SetIcons(
                                    kControlBackgroundColorInactive),
                            DesksTemplatesIconView::kIconSize / 2))
                        .Build());
-  overflow_icon_view->SetIconAndCount(
+  overflow_icon_view->SetIconIdentifierAndCount(
       std::string(), identifiers_and_counts.size() - num_added_icons);
   icon_views_.push_back(overflow_icon_view);
 }

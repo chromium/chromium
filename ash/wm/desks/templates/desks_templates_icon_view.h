@@ -44,7 +44,7 @@ class DesksTemplatesIconView : public views::View {
   // Sets `icon_identifier_` to `icon_identifier` and `count_` to `count` then
   // based on their values determines what views need to be created and starts
   // loading the icon specified by `icon_identifier`.
-  void SetIconAndCount(const std::string& icon_identifier, int count);
+  void SetIconIdentifierAndCount(const std::string& icon_identifier, int count);
 
   // Sets `count_` to `count` and updates the `count_label_`.
   void UpdateCount(int count);
@@ -76,7 +76,6 @@ class DesksTemplatesIconView : public views::View {
   int count_;
 
   // Owned by the views hierarchy.
-  // TODO(chinsenj): Add styling for these views.
   views::Label* count_label_ = nullptr;
   RoundedImageView* icon_view_ = nullptr;
 

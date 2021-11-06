@@ -36,15 +36,20 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
   // the according DesksTemplatesIconView's.
   void PopulateIconContainerFromTemplate(DeskTemplate* desk_template);
 
+  // Given `windows`, determine which icons to show in this and create the
+  // according DesksTemplatesIconView's.
+  void PopulateIconContainerFromWindows(
+      const std::vector<aura::Window*>& windows);
+
   // views::BoxLayoutView:
   void Layout() override;
 
  private:
   friend class DesksTemplatesItemViewTestApi;
 
-  // Given a vector of pairs, where the first entry is an icon's identifier and
-  // the second entry is its count, create views for them.
-  void SetIcons(
+  // Given an ordered vector of pairs, where the first entry is an icon's
+  // identifier and the second entry is its count, create views for them.
+  void CreateIconViewsFromIconIdentifiers(
       const std::vector<std::pair<std::string, int>>& identifiers_and_counts);
 
   // A vector of the `DesksTemplatesIconView`s stored in this. They

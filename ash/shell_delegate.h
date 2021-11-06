@@ -175,6 +175,9 @@ class ASH_EXPORT ShellDelegate {
   // for a template.
   virtual void LaunchAppsFromTemplate(
       std::unique_ptr<DeskTemplate> desk_template) = 0;
+
+  // Checks whether `window` is supported in the desks templates feature.
+  virtual bool IsWindowSupportedForDeskTemplate(aura::Window* window) const = 0;
 };
 
 }  // namespace ash

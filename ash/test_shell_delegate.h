@@ -80,6 +80,7 @@ class TestShellDelegate : public ShellDelegate {
       const override;
   void LaunchAppsFromTemplate(
       std::unique_ptr<DeskTemplate> desk_template) override;
+  bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
 
  private:
   // True if the current top window can go back.

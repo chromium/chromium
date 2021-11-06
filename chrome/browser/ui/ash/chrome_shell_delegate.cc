@@ -113,43 +113,6 @@ std::vector<GURL> GetURLsIfApplicable(TabStripModel* tab_strip_model) {
   return urls;
 }
 
-// Returns true if `window` is supported in desk templates feature.
-bool IsWindowSupportedForDeskTemplate(aura::Window* window,
-                                      Profile* user_profile) {
-  // For now we'll crostini and lacros windows in desk template. We'll also
-  // ignore ARC apps unless the flag is turned on.
-  const ash::AppType app_type =
-      static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
-  switch (app_type) {
-    case ash::AppType::NON_APP:
-    case ash::AppType::CROSTINI_APP:
-    case ash::AppType::LACROS:
-      return false;
-    case ash::AppType::ARC_APP:
-      if (!app_restore::features::IsArcAppsForDesksTemplatesEnabled())
-        return false;
-      break;
-    case ash::AppType::BROWSER:
-    case ash::AppType::CHROME_APP:
-    case ash::AppType::SYSTEM_APP:
-      break;
-  }
-
-  DCHECK(user_profile);
-  // Exclude window that does not asscociate with a full restore app id.
-  const std::string app_id = full_restore::GetAppId(window);
-  if (app_id.empty())
-    return false;
-
-  // Exclude incognito browser window.
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
-  if (browser_view && browser_view->GetIncognito())
-    return false;
-
-  return true;
-}
-
 }  // namespace
 
 ChromeShellDelegate::ChromeShellDelegate() = default;
@@ -364,7 +327,7 @@ ChromeShellDelegate::GetAppLaunchDataForDeskTemplate(
   if (!user_profile)
     return nullptr;
 
-  if (!IsWindowSupportedForDeskTemplate(window, user_profile))
+  if (!IsWindowSupportedForDeskTemplate(window))
     return nullptr;
 
   // Get |full_restore_data| from FullRestoreSaveHandler which contains all
@@ -470,6 +433,51 @@ void ChromeShellDelegate::GetIconForAppId(
 void ChromeShellDelegate::LaunchAppsFromTemplate(
     std::unique_ptr<ash::DeskTemplate> desk_template) {
   DesksClient::Get()->LaunchAppsFromTemplate(std::move(desk_template));
+}
+
+// Returns true if `window` is supported in desk templates feature.
+bool ChromeShellDelegate::IsWindowSupportedForDeskTemplate(
+    aura::Window* window) const {
+  // For now we'll crostini and lacros windows in desk template. We'll also
+  // ignore ARC apps unless the flag is turned on.
+  const ash::AppType app_type =
+      static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
+  switch (app_type) {
+    case ash::AppType::NON_APP:
+    case ash::AppType::CROSTINI_APP:
+    case ash::AppType::LACROS:
+      return false;
+    case ash::AppType::ARC_APP:
+      if (!app_restore::features::IsArcAppsForDesksTemplatesEnabled())
+        return false;
+      break;
+    case ash::AppType::BROWSER:
+    case ash::AppType::CHROME_APP:
+    case ash::AppType::SYSTEM_APP:
+      break;
+  }
+
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  DCHECK(active_user);
+  Profile* user_profile =
+      ash::ProfileHelper::Get()->GetProfileByUser(active_user);
+  if (!user_profile)
+    return false;
+
+  DCHECK(user_profile);
+  // Exclude window that does not asscociate with a full restore app id.
+  const std::string app_id = full_restore::GetAppId(window);
+  if (app_id.empty())
+    return false;
+
+  // Exclude incognito browser window.
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForNativeWindow(window);
+  if (browser_view && browser_view->GetIncognito())
+    return false;
+
+  return true;
 }
 
 // static

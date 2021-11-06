@@ -76,7 +76,7 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       const override;
   void LaunchAppsFromTemplate(
       std::unique_ptr<ash::DeskTemplate> desk_template) override;
-
+  bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
   static void SetDisableLoggingRedirectForTesting(bool value);
   static void ResetDisableLoggingRedirectForTesting();
 };

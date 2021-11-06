@@ -39,7 +39,9 @@ class ASH_EXPORT DesksTemplatesDialogController : public views::WidgetObserver {
   // type. The `template_name` is used for the replace and delete dialogs, which
   // show the name of the template which will be replaced and deleted in the
   // dialog description.
-  void ShowUnsupportedAppsDialog(aura::Window* root_window);
+  void ShowUnsupportedAppsDialog(
+      aura::Window* root_window,
+      const std::vector<aura::Window*>& unsupported_apps);
   void ShowReplaceDialog(aura::Window* root_window,
                          const std::u16string& template_name);
   void ShowDeleteDialog(aura::Window* root_window,

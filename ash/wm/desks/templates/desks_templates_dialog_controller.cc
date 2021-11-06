@@ -5,6 +5,7 @@
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "base/bind.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -119,8 +120,9 @@ DesksTemplatesDialogController* DesksTemplatesDialogController::Get() {
 }
 
 void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
-    aura::Window* root_window) {
-  // TODO(crbug.com/1261623): Add a list of unsupported apps icons.
+    aura::Window* root_window,
+    const std::vector<aura::Window*>& unsupported_apps) {
+  DesksTemplatesIconContainer* icon_container = nullptr;
   auto dialog =
       views::Builder<DesksTemplatesDialog>()
           .SetTitleText(IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_TITLE)
@@ -132,8 +134,11 @@ void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
               views::Builder<views::Label>()
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                   .SetText(l10n_util::GetStringUTF16(
-                      IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER)))
+                      IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER)),
+              views::Builder<DesksTemplatesIconContainer>().CopyAddressTo(
+                  &icon_container))
           .Build();
+  icon_container->PopulateIconContainerFromWindows(unsupported_apps);
   CreateDialogWidget(std::move(dialog), root_window);
 }
 

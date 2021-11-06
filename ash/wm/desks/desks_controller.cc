@@ -25,6 +25,7 @@
 #include "ash/wm/desks/desks_animations.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -862,14 +863,20 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
   DCHECK(current_account_id_.is_valid());
 
   // Construct |restore_data| for |desk_template|.
-  std::unique_ptr<app_restore::RestoreData> restore_data =
-      std::make_unique<app_restore::RestoreData>();
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
   auto* shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  auto* shell_delegate = shell->shell_delegate();
+  std::vector<aura::Window*> unsupported_apps;
   for (auto* window : mru_windows) {
+    if (!shell_delegate->IsWindowSupportedForDeskTemplate(window)) {
+      unsupported_apps.push_back(window);
+      continue;
+    }
+
     std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info =
-        shell->shell_delegate()->GetAppLaunchDataForDeskTemplate(window);
+        shell_delegate->GetAppLaunchDataForDeskTemplate(window);
     if (!app_launch_info)
       continue;
 
@@ -885,6 +892,16 @@ std::unique_ptr<DeskTemplate> DesksController::CaptureActiveDeskAsTemplate()
     // to a newly created desk.
     window_info->desk_id.reset();
     restore_data->ModifyWindowInfo(app_id, window_id, *window_info);
+  }
+
+  if (!unsupported_apps.empty() &&
+      shell->overview_controller()->InOverviewSession()) {
+    // There were some unsupported apps in the active desk so open up a dialog
+    // to let the user know.
+    DesksTemplatesDialogController::Get()->ShowUnsupportedAppsDialog(
+        shell->GetPrimaryRootWindow(), unsupported_apps);
+    // TODO(chinsenj): If we reach here, we should hold off on capturing the
+    // desk until the user hits the accept button of the dialog.
   }
 
   std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(

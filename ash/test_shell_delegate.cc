@@ -114,4 +114,9 @@ void TestShellDelegate::GetIconForAppId(
 void TestShellDelegate::LaunchAppsFromTemplate(
     std::unique_ptr<DeskTemplate> desk_template) {}
 
+bool TestShellDelegate::IsWindowSupportedForDeskTemplate(
+    aura::Window* window) const {
+  return true;
+}
+
 }  // namespace ash
