@@ -219,7 +219,10 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   void ResetAutoMarginsAndLogicalTopInCrossAxis(LayoutBox& child);
   void SetOverrideMainAxisContentSizeForChild(FlexItem&);
   void PrepareChildForPositionedLayout(LayoutBox& child);
-  void LayoutLineItems(FlexLine*, bool relayout_children, SubtreeLayoutScope&);
+  void LayoutLineItems(FlexLine*,
+                       bool relayout_children,
+                       SubtreeLayoutScope&,
+                       LayoutPoint** current_item_offset);
   void ApplyLineItemsPosition(FlexLine*);
   void LayoutColumnReverse(FlexItemVectorView&,
                            LayoutUnit cross_axis_offset,

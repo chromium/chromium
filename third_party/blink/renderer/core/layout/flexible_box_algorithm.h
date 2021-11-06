@@ -213,7 +213,7 @@ class FlexItem {
   // When set by the caller, this should be the size pre-stretching.
   LayoutUnit cross_axis_size_;
   // The algorithm stores the main axis offset in X and cross axis offset in Y.
-  LayoutPoint desired_location_;
+  LayoutPoint* offset_ = nullptr;
 
   const bool depends_on_min_max_sizes_;
   bool frozen_;
@@ -365,7 +365,7 @@ class FlexLine {
 //        LayoutUnit main_axis_offset = border + padding + scrollbar;
 //        line->ComputeLineItemsPosition(main_axis_offset, cross_axis_offset);
 //     }
-//     // The final position of each flex item is in item.desired_location
+// The final position of each flex item is in item.offset
 class FlexLayoutAlgorithm {
   DISALLOW_NEW();
 
@@ -383,6 +383,8 @@ class FlexLayoutAlgorithm {
   FlexItem& emplace_back(Args&&... args) {
     return all_items_.emplace_back(this, std::forward<Args>(args)...);
   }
+
+  wtf_size_t NumItems() const { return all_items_.size(); }
 
   const ComputedStyle* Style() const { return style_; }
   const ComputedStyle& StyleRef() const { return *style_; }
@@ -419,7 +421,7 @@ class FlexLayoutAlgorithm {
   // FlexLine::cross_axis_extent.
   void AlignFlexLines(LayoutUnit cross_axis_content_extent);
 
-  // Positions flex items by modifying FlexItem::desired_location.
+  // Positions flex items by modifying FlexItem::offset.
   // When lines stretch, also modifies FlexItem::cross_axis_size.
   void AlignChildren();
 

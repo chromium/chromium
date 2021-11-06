@@ -794,6 +794,8 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
   ConstructAndAppendFlexItems();
+  Vector<LayoutPoint> item_offsets(algorithm_.NumItems());
+  LayoutPoint* current_item_offset = item_offsets.begin();
 
   LayoutUnit main_axis_start_offset;
   LayoutUnit main_axis_end_offset;
@@ -829,6 +831,10 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 
     for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
       FlexItem& flex_item = line->line_items_[i];
+      DCHECK(current_item_offset);
+      flex_item.offset_ = current_item_offset;
+      current_item_offset++;
+
       NGConstraintSpace child_space = BuildSpaceForLayout(flex_item);
 
       // We need to get the item's cross axis size given its new main size. If
@@ -1051,13 +1057,12 @@ bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
     FlexLine& line_context = line_contexts[flex_line_idx];
     const NGBreakToken* item_break_token = entry.token;
 
-    // flex_item.desired_location_ stores the main axis offset in X and the
+    // flex_item.offset_ stores the main axis offset in X and the
     // cross axis offset in Y. But AddChild wants offset from parent
     // rectangle, so we have to transpose for columns. AddChild takes care of
     // any writing mode differences though.
-    LayoutPoint location = is_column_
-                               ? flex_item->desired_location_.TransposedPoint()
-                               : flex_item->desired_location_;
+    LayoutPoint location = is_column_ ? flex_item->offset_->TransposedPoint()
+                                      : *flex_item->offset_;
 
     if (item_break_token) {
       location.SetY(LayoutUnit());

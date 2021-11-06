@@ -498,8 +498,7 @@ void LayoutFlexibleBox::RepositionLogicalHeightDependentFlexItems(
                                  CrossAxisContentExtent());
     for (FlexLine& line_context : line_contexts) {
       for (FlexItem& flex_item : line_context.line_items_) {
-        ResetAlignmentForChild(*flex_item.box_,
-                               flex_item.desired_location_.Y());
+        ResetAlignmentForChild(*flex_item.box_, flex_item.offset_->Y());
       }
     }
   }
@@ -1082,6 +1081,8 @@ void LayoutFlexibleBox::LayoutFlexItems(bool relayout_children,
   LayoutUnit cross_axis_offset = FlowAwareContentInsetBefore();
   LayoutUnit logical_width = LogicalWidth();
   FlexLine* current_line;
+  Vector<LayoutPoint> item_offsets(flex_algorithm.NumItems());
+  LayoutPoint* current_item_offset = item_offsets.begin();
   while ((current_line = flex_algorithm.ComputeNextFlexLine(logical_width))) {
     DCHECK_GE(current_line->line_items_.size(), 0ULL);
     current_line->SetContainerMainInnerSize(
@@ -1093,7 +1094,8 @@ void LayoutFlexibleBox::LayoutFlexItems(bool relayout_children,
       DCHECK_GE(current_line->total_weighted_flex_shrink_, 0);
     }
 
-    LayoutLineItems(current_line, relayout_children, layout_scope);
+    LayoutLineItems(current_line, relayout_children, layout_scope,
+                    &current_item_offset);
 
     current_line->ComputeLineItemsPosition(FlowAwareContentInsetStart(),
                                            FlowAwareContentInsetEnd(),
@@ -1627,11 +1629,16 @@ EOverflow LayoutFlexibleBox::CrossAxisOverflowForChild(
 DISABLE_CFI_PERF
 void LayoutFlexibleBox::LayoutLineItems(FlexLine* current_line,
                                         bool relayout_children,
-                                        SubtreeLayoutScope& layout_scope) {
+                                        SubtreeLayoutScope& layout_scope,
+                                        LayoutPoint** current_item_offset) {
   NOT_DESTROYED();
   for (wtf_size_t i = 0; i < current_line->line_items_.size(); ++i) {
     FlexItem& flex_item = current_line->line_items_[i];
     LayoutBox* child = flex_item.box_;
+
+    DCHECK(current_item_offset);
+    flex_item.offset_ = *current_item_offset;
+    (*current_item_offset)++;
 
     DCHECK(!flex_item.box_->IsOutOfFlowPositioned());
 
@@ -1698,7 +1705,7 @@ void LayoutFlexibleBox::ApplyLineItemsPosition(FlexLine* current_line) {
   for (wtf_size_t i = 0; i < current_line->line_items_.size(); ++i) {
     const FlexItem& flex_item = current_line->line_items_[i];
     LayoutBox* child = flex_item.box_;
-    SetFlowAwareLocationForChild(*child, flex_item.desired_location_);
+    SetFlowAwareLocationForChild(*child, *flex_item.offset_);
     child->SetMargin(flex_item.physical_margins_);
 
     if (is_paginated)
@@ -1781,7 +1788,7 @@ void LayoutFlexibleBox::AlignFlexLines(FlexLayoutAlgorithm& algorithm) {
        ++line_number) {
     FlexLine& line_context = line_contexts[line_number];
     for (FlexItem& flex_item : line_context.line_items_) {
-      ResetAlignmentForChild(*flex_item.box_, flex_item.desired_location_.Y());
+      ResetAlignmentForChild(*flex_item.box_, flex_item.offset_->Y());
     }
   }
 }
@@ -1808,7 +1815,7 @@ void LayoutFlexibleBox::AlignChildren(FlexLayoutAlgorithm& algorithm) {
         ApplyStretchAlignmentToChild(flex_item);
         flex_item.needs_relayout_for_stretch_ = false;
       }
-      ResetAlignmentForChild(*flex_item.box_, flex_item.desired_location_.Y());
+      ResetAlignmentForChild(*flex_item.box_, flex_item.offset_->Y());
       flex_item.box_->SetMargin(flex_item.physical_margins_);
     }
   }
