@@ -201,7 +201,6 @@
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – možnosti</translation>
 <translation id="6231752747840485235">Odinstalovat aplikaci <ph name="APP_NAME" />?</translation>
-<translation id="6233545266937675277">Požadovat zobrazení webů pro počítače</translation>
 <translation id="6262279340360821358">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou zablokována</translation>
 <translation id="6270391203985052864">Weby mohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
@@ -286,7 +285,6 @@
 <translation id="8211406090763984747">Připojení je zabezpečené</translation>
 <translation id="8249310407154411074">Přesunout na začátek</translation>
 <translation id="8261506727792406068">Smazat</translation>
-<translation id="8267092878336850213">Požadovat mobilní zobrazení webů</translation>
 <translation id="8300705686683892304">Spravováno aplikací</translation>
 <translation id="8324158725704657629">Příště se neptat</translation>
 <translation id="8372893542064058268">Povolit synchronizaci na pozadí konkrétnímu webu.</translation>

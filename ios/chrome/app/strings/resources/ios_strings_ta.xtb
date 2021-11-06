@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">தரவை அழிக்காதே</translation>
 <translation id="1974060860693918893">மேம்பட்டவை</translation>
 <translation id="1989112275319619282">உலாவு</translation>
+<translation id="199425419756152024">கடவுச்சொல்லைக் காட்டு</translation>
 <translation id="2015722694326466240">கடவுச்சொற்களைப் பார்க்க, முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
 <translation id="2021670401941426298">தேடல் விவரங்களை நீக்க உங்கள் தேடல் இன்ஜினின் வழிமுறைகளைப் பாருங்கள் (நீக்க அனுமதித்தால்).</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> நாட்களுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">1 தேர்ந்தெடுப்பட்டது</translation>
 <translation id="2421004566762153674">மூன்றாம் தரப்புக் குக்கீகளைத் தடுக்கிறது</translation>
 <translation id="2421044535038393232">தொடர்ந்து திருத்து</translation>
+<translation id="2434405374328098816"><ph name="WEBSITE" /> இணையதளத்தில் "<ph name="USERNAME" />" கணக்கிற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
+<translation id="2473876017985765807"><ph name="WEBSITE" /> தளத்திற்கான கடவுச்சொல்லை ஏற்கெனவே சேமித்துள்ளீர்கள்</translation>
 <translation id="2476359652512522418">தேர்ந்தெடுக்கப்படவில்லை</translation>
 <translation id="2497852260688568942">உங்கள் நிர்வாகி ஒத்திசைவை முடக்கியுள்ளார்</translation>
 <translation id="2500374554657206846">கடவுச்சொல்லைச் சேமிப்பதற்கான விருப்பத்தேர்வுகள்</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">இணைப்பு URL ஐ நகலெடு</translation>
 <translation id="3607167657931203000">தன்னிரப்பி தரவு</translation>
 <translation id="3609785682760573515">ஒத்திசைக்கிறது...</translation>
+<translation id="3631443864840848029">இந்தத் தளத்திற்கான தற்போதைய கடவுச்சொல்லை மறக்காமல் சேமிக்கவும்.</translation>
 <translation id="3638472932233958418">வலைப்பக்கங்களை முன்னதாக ஏற்று</translation>
 <translation id="3661160521073045932">உள்ளமைவுச் சுயவிவரம் உள்ளது</translation>
 <translation id="3670030362669914947">எண்</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> இல் புத்தகக்குறியைச் சேர்த்தது</translation>
+<translation id="369349502275246497">கடவுச்சொற்களைச் சேமிப்பதற்குக் கேள்</translation>
 <translation id="3709582977625132201">படிக்காததாகக் குறி</translation>
 <translation id="3740397331642243698">Google Chrome உலாவியில் உள்ளிட்ட URLகளை மறைநிலையில் திறக்கும்.</translation>
 <translation id="3762232513783804601">iPadக்காக உருவாக்கப்பட்டது</translation>
@@ -376,7 +381,6 @@
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4747097190499141774">கடவுச்சொற்றொடர் என்க்ரிப்ஷனில் Google Payயிலுள்ள கட்டண முறைகளும் முகவரிகளும் சேர்க்கப்படாது. என்கிரிப்ட் செய்யப்பட்ட தரவை உங்கள் கடவுச்சொற்றொடரை அறிந்தவரால் மட்டுமே படிக்க முடியும். Googleளுக்குக் கடவுச்சொற்றொடர் அனுப்பப்படுவதில்லை. Google அதைச் சேமிப்பதுமில்லை. உங்கள் கடவுச்சொற்றொடரை மறந்துவிட்டாலோ இந்த அமைப்பை மாற்ற விரும்பினாலோ, ஒத்திசைவை மீட்டமைக்க வேண்டும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">புதிய மறைநிலைத் தாவல்</translation>
-<translation id="4764612367328936189">குறிப்பிட்ட சில கணக்குகளை மட்டுமே பயன்படுத்தி உள்நுழைய உங்கள் நிறுவனம் அனுமதி வழங்கியுள்ளது. அனுமதிக்கப்படாத கணக்குகள் மறைக்கப்பட்டிருக்கும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">இயல்புநிலை உலாவி</translation>
 <translation id="4778644898150334464">வேறொரு கடவுச்சொல்லைப் பயன்படுத்துக</translation>
 <translation id="4802417911091824046">கடவுச்சொற்றொடர் என்க்ரிப்ஷனில் Google Payயிலுள்ள கட்டண முறைகளும் முகவரிகளும் சேர்க்கப்படாது.
@@ -463,7 +467,6 @@
 <translation id="5614553682702429503">கடவுச்சொல்லைச் சேமிக்கவா?</translation>
 <translation id="5626245204502895507">இந்த நேரத்தில் ஃபைலைப் பதிவிறக்க முடியாது.</translation>
 <translation id="5631164295104953411">கட்டண முறையைச் சேர்</translation>
-<translation id="5653058065071344726">உங்கள் நிறுவனம் நிர்வகிக்கிறது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="5659593005791499971">மின்னஞ்சல்</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">பதிப்பு <ph name="PRODUCT_VERSION" /></translation>
@@ -509,6 +512,7 @@
 <translation id="5988851877894965432">URLகளை Chromeமில் திற</translation>
 <translation id="6012140227487808125">முறைமையாக்குகிறது...</translation>
 <translation id="6021332621416007159">இதில் திற...</translation>
+<translation id="6027945736510816438"><ph name="WEBSITE" /> தளத்தைக் குறிப்பிடுகிறீர்களா?</translation>
 <translation id="6036514205982097558">உங்கள் தாவல்கள் அனைத்தும் ஒரே உலாவியில்</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">மூடு</translation>
@@ -532,7 +536,6 @@
 <translation id="6189413832092199491">படிக்காதவை</translation>
 <translation id="6196207969502475924">குரல் தேடல்</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} தாவலை மூடுக}other{{COUNT} தாவல்களை மூடுக}}</translation>
-<translation id="6207754106943147310"><ph name="BEGIN_LINK" />நீங்கள் எவற்றையெல்லாம் ஒத்திசைக்கலாம் என்பதைப் பாருங்கள்<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="6223816392543092032">உங்கள் புக்மார்க்குகள், இதுவரையான செயல்பாடுகள், கடவுச்சொற்கள் மற்றும் பிற அமைப்புகளை உங்கள் சாதனங்கள் அனைத்திலும் பெறலாம்.</translation>
 <translation id="6232329973559504466">மறைநிலையில் தேடுக</translation>
@@ -751,6 +754,7 @@
 <translation id="8080028325999236607">எல்லா தாவல்களையும் மூடு</translation>
 <translation id="8105368624971345109">முடக்கு</translation>
 <translation id="8114753159095730575">ஃபைலைப் பதிவிறக்கிக்கொள்ளலாம். திரையின் அடிப்பகுதிக்கு அருகில், விருப்பங்கள் உள்ளன.</translation>
+<translation id="8132598642024322408">தற்போதைய விலை: <ph name="PRICE" />, முந்தைய விலை: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">கடவுச்சொல்லை ஒத்திசைக்க முடியவில்லை</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />உங்கள் சாதனங்கள்<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">பக்கத்தை மொழிபெயர்</translation>
@@ -823,6 +827,7 @@
 <translation id="8881801611828450202">இந்தப் படத்தை <ph name="SEARCH_ENGINE" /> இல் தேடு</translation>
 <translation id="8909135823018751308">பகிர்...</translation>
 <translation id="8917490105272468696">ஏற்கிறேன்</translation>
+<translation id="8952559610785099500">கடவுச்சொல்லைச் சேருங்கள்</translation>
 <translation id="895541991026785598">சிக்கலைப் புகார் செய்க</translation>
 <translation id="8976382372951310360">உதவி</translation>
 <translation id="8976414606286374109">கார்டுகள் உங்கள் Google கணக்கில் சேமிக்கப்படும்.</translation>

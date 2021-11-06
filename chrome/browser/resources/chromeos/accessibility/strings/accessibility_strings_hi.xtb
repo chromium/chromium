@@ -607,7 +607,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5138912041966667164">मध्यम स्लेटी नीला</translation>
 <translation id="5140016802771803559">रेबेका जामुनी रंग</translation>
 <translation id="5142101052131610456">सभी लेसन पर जाएं</translation>
-<translation id="5152605892605507188">दाईं ओर ले जाएं</translation>
 <translation id="5158275234811857234">कवर</translation>
 <translation id="516076699907426116">जारी रखने के लिए, अगले लेसन का बटन ढूंढने के लिए छूकर, उससे जुड़ी जानकारी सुनें. इसके बाद, जारी रखने के लिए दो बार टैप करें.</translation>
 <translation id="5170206230005240598">ब्रेल कैप्शन चालू किए गए</translation>
@@ -741,6 +740,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6034000775414344507">हल्का भूरा</translation>
 <translation id="6036135911048686884">टच मोड की सुविधा से एक्सप्लोर करें</translation>
 <translation id="6037602951055904232">आगे की ओर पैन करें</translation>
+<translation id="604240746417122825">व्याकरण से जुड़ी गड़बड़ी</translation>
 <translation id="6082768461603900813">मूलभूत नेविगेशन</translation>
 <translation id="609281021724813947">पहले से कोई स्लाइडर नहीं है</translation>
 <translation id="6100239002225743044">एक पंक्ति ऊपर ले जाएं</translation>
@@ -751,7 +751,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6142308968191113180">शीर्षक 4</translation>
 <translation id="6150023170003443621">पीला हरा</translation>
 <translation id="6158882249329863701">पंक्ति <ph name="TABLECELLROWINDEX" /> कॉलम <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">बाईं ओर ले जाएं</translation>
 <translation id="6164829606128959761">मीटर</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6166362019018438352">ब्रेल कैप्शन बंद किए गए</translation>
@@ -844,7 +843,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="6910969481785184048">चालू करें, बंद करें और रोकें</translation>
 <translation id="6919104639734799681">तालिकाओं की सूची दिखाएं</translation>
 <translation id="692135145298539227">हटाएं</translation>
-<translation id="6935674530832500465">नीचे ले जाएं</translation>
 <translation id="6945221475159498467">चुनें</translation>
 <translation id="6949846980769640811">मध्यम समुद्री हरा</translation>
 <translation id="6951482098621102657">आगे कोई लेवल 5 शीर्षक नहीं है</translation>
@@ -1041,14 +1039,12 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="826825447994856889">परिचय</translation>
 <translation id="827266600368092403">चुनना शुरू या बंद करें</translation>
 <translation id="827422111966801947">गहरा नीला</translation>
-<translation id="827496561804786391">ऊपर ले जाएं</translation>
 <translation id="8276439074553447000">पिछले फ़ोकस करने योग्‍य आइटम पर जंप करें</translation>
 <translation id="8279039817939141096">कोई QWERTY बटन या रीफ़्रेश किया जा सकने वाला ब्रेल बटन दबाएं और उनके फ़ंक्शन के बारे में जानें. इसके अलावा, हाथ के जेस्चर (हाव-भाव) इस्तेमाल करें और उनके फ़ंक्शन के बारे में जानें. बाहर निकलने के लिए, control के साथ w या स्पेस बटन के साथ Z दबाएं. इसकी जगह, आप दो उंगलियों से बाईं ओर स्वाइप कर सकते हैं या Escape बटन दबा सकते हैं.</translation>
 <translation id="8283603667300770666">अगला फ़ॉर्म फ़ील्‍ड</translation>
 <translation id="8310185481635255431">आगे कोई लिंक नहीं है</translation>
 <translation id="831207808878314375">परिभाषा</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">चुने गए कॉन्टेंट से, चुने हुए का निशान हटाएं</translation>
 <translation id="8316881042119029234">ओल्ड लेस</translation>
 <translation id="8324974933005349667">लिखाई को बोली में बदलने की सेटिंग पसंद के मुताबिक बनाएं</translation>
 <translation id="8326783648485765113">हल्का हरा</translation>

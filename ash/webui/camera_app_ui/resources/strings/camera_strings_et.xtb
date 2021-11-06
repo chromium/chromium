@@ -3,6 +3,7 @@
 <translationbundle lang="et">
 <translation id="1113173431709655881">Kaamerarežiim</translation>
 <translation id="1175958423215084756">Tuvastati link. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Pööra 90 kraadi päripäeva</translation>
 <translation id="1276998909102132017">Galerii pildid</translation>
 <translation id="1300209025925956156">Dokumendi skannimine</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Juurdepääsemine: Otsing + vasaknool.</translation>
@@ -54,6 +55,7 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="3517926952904427380">Vertikaalpaigutuses fotot ei saa jäädvustada</translation>
 <translation id="3569311554794739032">Kas soovite faili <ph name="FILE" /> kindlasti eemaldada?</translation>
 <translation id="3573890771273113519">Lülitumine skannimisrežiimi</translation>
+<translation id="3789724198583203151">Pööra 90 kraadi vastupäeva</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skannige ribakood</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>

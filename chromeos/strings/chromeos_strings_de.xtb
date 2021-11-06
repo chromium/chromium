@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Captive Portal erkannt</translation>
 <translation id="3170673040743561620">Legen Sie das Dokument in den Scanner</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
+<translation id="3192947282887913208">Audiodateien</translation>
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
 <translation id="3226405216343213872">Suche nach Scannern läuft</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> Rezensionen)</translation>
 <translation id="3748026146096797577">Nicht verbunden</translation>
 <translation id="3749289110408117711">Dateiname</translation>
+<translation id="3771294271822695279">Videodateien</translation>
 <translation id="38114475217616659">Gesamten Verlauf löschen</translation>
 <translation id="3820172043799983114">Ungültige PIN.</translation>
 <translation id="3838338534323494292">Neues Passwort</translation>
@@ -347,6 +349,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6388847657025262518">Der Dokumenteneinzug des Scanners klemmt. Kontrollieren Sie den Einzug und versuchen Sie es noch einmal.</translation>
+<translation id="6410257289063177456">Bilddateien</translation>
 <translation id="641081527798843608">subject-match</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>

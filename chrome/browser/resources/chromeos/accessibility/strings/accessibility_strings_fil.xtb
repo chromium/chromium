@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Medium Slate Blue</translation>
 <translation id="5140016802771803559">Rebecca Purple</translation>
 <translation id="5142101052131610456">Lahat ng aralin</translation>
-<translation id="5152605892605507188">ilipat pakanan</translation>
 <translation id="5158275234811857234">Cover</translation>
 <translation id="516076699907426116">Para magpatuloy, mag-explore by touch para hanapin ang button na Susunod na aralin. Pagkatapos ay mag-double tap para magpatuloy.</translation>
 <translation id="5170206230005240598">Na-enable ang mga caption ng braille</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Light Grey</translation>
 <translation id="6036135911048686884">Pindutin ang mag-explore</translation>
 <translation id="6037602951055904232">I-pan paharap</translation>
+<translation id="604240746417122825">error sa grammar</translation>
 <translation id="6082768461603900813">Basic na Pag-navigate</translation>
 <translation id="609281021724813947">Walang nakaraang slider</translation>
 <translation id="6100239002225743044">Umakyat nang isang linya</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">Heading 4</translation>
 <translation id="6150023170003443621">Yellow Green</translation>
 <translation id="6158882249329863701">row <ph name="TABLECELLROWINDEX" /> column <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">ilipat pakaliwa</translation>
 <translation id="6164829606128959761">metro</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6166362019018438352">Na-disable ang mga caption ng braille</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">I-on, I-off at Ihinito</translation>
 <translation id="6919104639734799681">Ipakita ang listahan ng mga talahanayan</translation>
 <translation id="692135145298539227">tanggalin</translation>
-<translation id="6935674530832500465">ilipat pababa</translation>
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6949846980769640811">Medium Aqua Marine</translation>
 <translation id="6951482098621102657">Walang susunod na heading sa antas 5</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">Panimula</translation>
 <translation id="827266600368092403">Simulan o tapusin ang pagpipilian</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="827496561804786391">ilipat pataas</translation>
 <translation id="8276439074553447000">Lumaktaw sa nakaraang napo-focus na item</translation>
 <translation id="8279039817939141096">Pumindot ng qwerty key, nare-refresh na braille key, o touch gesture para malaman ang function nito. Pindutin ang control at w, space at Z, mag-swipe pakaliwa gamit ang dalawang daliri, o escape para lumabas</translation>
 <translation id="8283603667300770666">Susunod na field ng form</translation>
 <translation id="8310185481635255431">Walang susunod na link</translation>
 <translation id="831207808878314375">Kahulugan</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">i-unselect lahat</translation>
 <translation id="8316881042119029234">Old Lace</translation>
 <translation id="8324974933005349667">I-personalize ang mga setting ng Text-to-Speech</translation>
 <translation id="8326783648485765113">Lawn Green</translation>

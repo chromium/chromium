@@ -608,7 +608,6 @@
 <translation id="5138912041966667164">أزرق متوسط مائل إلى الرمادي</translation>
 <translation id="5140016802771803559">أرجواني داكن</translation>
 <translation id="5142101052131610456">جميع الدروس</translation>
-<translation id="5152605892605507188">نقل إلى اليمين</translation>
 <translation id="5158275234811857234">غلاف</translation>
 <translation id="516076699907426116">للمتابعة، استكشِف باللمس للعثور على زر "الدرس التالي". وانقر مرّتين للمتابعة.</translation>
 <translation id="5170206230005240598">تم تفعيل تسميات برايل التوضيحية.</translation>
@@ -742,6 +741,7 @@
 <translation id="6034000775414344507">رمادي فاتح</translation>
 <translation id="6036135911048686884">اللمس للاستكشاف</translation>
 <translation id="6037602951055904232">تحريك للأمام</translation>
+<translation id="604240746417122825">خطأ في قاعدة نحوية</translation>
 <translation id="6082768461603900813">التنقل الأساسي</translation>
 <translation id="609281021724813947">ليس هناك شريط تمرير سابق.</translation>
 <translation id="6100239002225743044">نقل للأعلى سطر واحد</translation>
@@ -752,7 +752,6 @@
 <translation id="6142308968191113180">العنوان الرابع</translation>
 <translation id="6150023170003443621">أخضر مصفر</translation>
 <translation id="6158882249329863701">الصف <ph name="TABLECELLROWINDEX" /> العمود <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">نقل إلى اليسار</translation>
 <translation id="6164829606128959761">متر</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6166362019018438352">تم إيقاف تسميات برايل التوضيحية.</translation>
@@ -845,7 +844,6 @@
 <translation id="6910969481785184048">تشغيل، إيقاف، إيقاف</translation>
 <translation id="6919104639734799681">عرض قائمة الجداول</translation>
 <translation id="692135145298539227">حذف</translation>
-<translation id="6935674530832500465">تحريك للأسفل</translation>
 <translation id="6945221475159498467">تحديد</translation>
 <translation id="6949846980769640811">أزرق مخضر متوسط</translation>
 <translation id="6951482098621102657">ليس هناك عنوان تالٍ من المستوى الخامس.</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">مقدمة</translation>
 <translation id="827266600368092403">بدء الاختيار أو إنهاؤه</translation>
 <translation id="827422111966801947">نيلي</translation>
-<translation id="827496561804786391">تحريك للأعلى</translation>
 <translation id="8276439074553447000">الانتقال إلى العنصر السابق القابل للتركيز</translation>
 <translation id="8279039817939141096">‏يمكنك النقر على مفتاح qwerty أو مفتاح لغة برايل القابل لإعادة التحميل أو إيماءة اللمس لمعرفة وظيفته. ويمكنك الضغط على Ctrl+W أو على مفتاح المسافة مع Z، أو التمرير سريعًا بإصبعين إلى جهة اليسار، أو الضغط على المفتاح Esc للخروج.</translation>
 <translation id="8283603667300770666">حقل النموذج التالي</translation>
 <translation id="8310185481635255431">ليس هناك رابط تالٍ.</translation>
 <translation id="831207808878314375">تعريف</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">إلغاء اختيار الكل</translation>
 <translation id="8316881042119029234">برتقالي مصفر عتيق</translation>
 <translation id="8324974933005349667">تخصيص إعدادات ميزة "تحويل النص إلى كلام"</translation>
 <translation id="8326783648485765113">أخضر عشبي</translation>

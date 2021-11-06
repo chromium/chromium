@@ -48,6 +48,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
 <translation id="1246890715821376239">App non supportate</translation>
 <translation id="1247372569136754018">Microfono (interno)</translation>
+<translation id="1247519845643687288">App recenti</translation>
 <translation id="1252999807265626933">In carica da: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Che tempo fa?</translation>
 <translation id="1266097335951928626">Apri fotocamera per selfie</translation>
@@ -61,6 +62,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1289185460362160437">Puoi riprendere <ph name="COME_BACK_DAY_OF_WEEK" /> alle ore <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Segnale debole</translation>
 <translation id="1293264513303784526">Dispositivo USB-C (porta a sinistra)</translation>
+<translation id="1293556467332435079">File</translation>
 <translation id="1294929383540927798">Modifica le impostazioni per le notifiche della schermata di blocco</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Mostra impostazioni Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1419738280318246476">Sblocca il dispositivo per eseguire l'azione di notifica</translation>
 <translation id="1420408895951708260">Attiva/disattiva luminosità notturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sì</translation>
+<translation id="1438357537418863713">Ora lo streaming di app è configurato. Quando inizierai a usare lo streaming, le app avviate di recente verranno visualizzate qui.</translation>
 <translation id="144853431011121127">Ricevi le notifiche del telefono sul tuo dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Mostra impostazioni lingua</translation>
 <translation id="1460620680449458626">Il volume è disattivato.</translation>
@@ -246,6 +249,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2778650143428714839">Dispositivo <ph name="DEVICE_TYPE" /> gestito da <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Esci dalla modalità di acquisizione</translation>
 <translation id="2792498699870441125">Alt+tasto per la ricerca</translation>
+<translation id="2805756323405976993">App</translation>
 <translation id="2814448776515246190">Acquisizione parziale</translation>
 <translation id="2819276065543622893">Verrai disconnesso ora.</translation>
 <translation id="28232023175184696">Impossibile connettersi a Internet. Fai clic per riprovare.</translation>
@@ -374,6 +378,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3665889125180354336">Registra microfono</translation>
 <translation id="3680908746918359504">Cancella tutti gli indicatori</translation>
 <translation id="36813544980941320">Il tuo telefono e il dispositivo <ph name="DEVICE_NAME" /> useranno le stesse reti Wi-Fi</translation>
+<translation id="3694122362646626770">Siti web</translation>
 <translation id="3701206655856637070">Ora puoi cambiare la posizione in cui vengono salvate le acquisizioni schermo</translation>
 <translation id="3702809606464356667">Dalla visualizzazione delle finestre della scrivania corrente, premi il tasto Freccia su per mostrare le finestre di tutte le scrivanie</translation>
 <translation id="3702846122927433391">Popolazione della Nigeria</translation>
@@ -536,6 +541,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4774338217796918551">Puoi riprendere domani alle ore <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password per <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistente Google non è disponibile in una sessione demo.</translation>
 <translation id="4782311465517282004">Ricevi definizioni, traduzioni o conversioni di unità quando tocchi e tieni premuto del testo oppure quando ci fai clic sopra con il pulsante destro del mouse.</translation>
 <translation id="479989351350248267">ricerca</translation>
@@ -591,6 +597,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
 <translation id="5147567197700016471">Sbloccato</translation>
 <translation id="5155897006997040331">Velocità di lettura</translation>
+<translation id="5166007464919321363">Salva scrivania come modello</translation>
 <translation id="5166918508782100047">Impostazioni Risposte rapide</translation>
 <translation id="5168181903108465623">Dispositivi di trasmissione disponibili</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
@@ -800,6 +807,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6777216307882431711">Alimentazione dei dispositivi USB-C collegati</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="6803622936009808957">Impossibile duplicare i display perché non sono state trovate risoluzioni supportate. È stato attivato il desktop esteso.</translation>
+<translation id="6811454077060061666">Google Drive per desktop non è disponibile</translation>
 <translation id="6816797338148849397">Sono disponibili informazioni relative al testo selezionato. Per accedere, utilizza il tasto Freccia su.</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
@@ -934,6 +942,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7796353162336583443">Tocca il pulsante dello stilo nella barra delle app per creare note, acquisire screenshot, usare l'Assistente Google, il puntatore laser o la lente d'ingrandimento.</translation>
 <translation id="7798302898096527229">Premi il tasto per la ricerca o MAIUSC per annullare.</translation>
 <translation id="780301667611848630">No grazie</translation>
+<translation id="7807067443225230855">Ricerca e assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Segnale forte</translation>
 <translation id="7837740436429729974">Tempo scaduto</translation>
@@ -998,6 +1007,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />, batteria del telefono <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Premi INVIO per sbloccare per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Elimina</translation>
+<translation id="8281279285293265212">Impossibile salvare lo screencast</translation>
 <translation id="8284362522226889623">Scorri verso sinistra con quattro dita per passare alla scrivania precedente</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Debole</translation>
@@ -1102,6 +1112,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="9070640332319875144">Impostazioni assistente</translation>
 <translation id="9072519059834302790">Tempo rimanente all'esaurimento completo della batteria: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Modelli</translation>
 <translation id="9077515519330855811">Controlli multimediali, ora in riproduzione: <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Scorri verso l'alto per andare alla Home page</translation>

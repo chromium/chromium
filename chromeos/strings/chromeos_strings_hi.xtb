@@ -132,6 +132,7 @@
 <translation id="315738237743207937">कैप्टिव पोर्टल की पहचान की गई</translation>
 <translation id="3170673040743561620">अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
+<translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
 <translation id="3199982728237701504">डॉक्यूमेंट फ़ीडर (दो तरफ़ वाला)</translation>
 <translation id="3226405216343213872">स्कैनर खोजे जा रहे हैं</translation>
 <translation id="3246869037381808805">एक दिन से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> समीक्षाएं)</translation>
 <translation id="3748026146096797577">कनेक्ट नहीं है</translation>
 <translation id="3749289110408117711">फ़ाइल नाम</translation>
+<translation id="3771294271822695279">वीडियो फ़ाइलें</translation>
 <translation id="38114475217616659">सारा इतिहास मिटाएं</translation>
 <translation id="3820172043799983114">गलत पिन</translation>
 <translation id="3838338534323494292">नया पासवर्ड</translation>
@@ -347,6 +349,7 @@
 <translation id="636850387210749493">एंटरप्राइज़ नामांकन</translation>
 <translation id="6379086450106841622">टचस्क्रीन</translation>
 <translation id="6388847657025262518">स्कैनर का डॉक्यूमेंट फ़ीडर जाम हो गया है. फ़ीडर की जांच करें और फिर से कोशिश करें.</translation>
+<translation id="6410257289063177456">इमेज फ़ाइल</translation>
 <translation id="641081527798843608">विषय मिलान</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">सिग्नल कमज़ोर है (<ph name="SIGNAL_STRENGTH" />)</translation>

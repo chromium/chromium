@@ -1972,6 +1972,13 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Usa il carattere jolly "*" per rappresentare lo zero e caratteri più arbitrari. Il carattere di escape è "\"; quindi, per rappresentare gli effettivi caratteri "*" o "\", devi farli precedere da un "\".
 
       Se il criterio non è impostato, tutti gli Account Google sul dispositivo saranno visibili in <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3243793808000947475">Se questo criterio viene disattivato, non è possibile avviare o configurare l'host di assistenza da remoto per accettare le connessioni in arrivo.
+
+          Questo criterio non influisce sugli scenari di accesso remoto.
+
+          Questo criterio non impedisce agli amministratori aziendali di connettersi a dispositivi Chrome OS gestiti.
+
+          Questo criterio non ha effetto se viene attivato, se viene lasciato vuoto o se non viene impostato.</translation>
 <translation id="3251500716404598358">Configura le norme per passare da un browser all'altro.
 
       I siti web configurati verranno aperti automaticamente in un browser diverso da <ph name="PRODUCT_NAME" />.</translation>
@@ -2197,6 +2204,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
       Per informazioni dettagliate sui pattern URL validi, vai all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Limiti di utilizzo per app</translation>
 <translation id="3547954654003013442">Impostazioni proxy</translation>
+<translation id="3548642468619496972">Blocca download dannosi, download insoliti o indesiderati e tipi di file pericolosi.</translation>
 <translation id="3550122827225052130">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
           Consente di specificare il periodo di tempo senza input utente trascorso il quale lo schermo viene bloccato quando viene usata la corrente alternata.
@@ -2909,6 +2917,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Imposta le norme relative a <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Concedi automaticamente ai siti l'autorizzazione a connettersi a tutte le porte seriali</translation>
+<translation id="450080746522343150">Blocca tutti i download.</translation>
 <translation id="4510923771103268849">L'utente può avere accesso root ai contenitori Crostini</translation>
 <translation id="4513691822411041977">Non viene forzato l'uso di SafeSearch nella Ricerca Google o nella Modalità con restrizioni di YouTube</translation>
 <translation id="4515404363392014383">Attiva Navigazione sicura per le origini attendibili</translation>
@@ -3009,6 +3018,7 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
       Se il criterio è impostato su vero o se non è configurato, l'utente può eseguire acquisizioni di pacchetti di rete sul dispositivo.
       Se è impostato su falso, l'acquisizione di pacchetti di rete non è disponibile sul dispositivo.</translation>
 <translation id="4600786265870346112">Attivazione del puntatore grande</translation>
+<translation id="4602988345256038309">Consenti le connessioni di assistenza da remoto a questo computer</translation>
 <translation id="4607416370554533118">La configurazione del criterio consente di creare un elenco di pattern URL che specifica i siti per cui Chrome può selezionare automaticamente un certificato client. Il valore è un array di dizionari JSON sotto forma di stringa, ognuno nel formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, dove <ph name="URL_PATTERN_PLACEHOLDER" /> rappresenta un pattern di impostazioni contenuti. <ph name="FILTER_PLACEHOLDER" /> consente di limitare i certificati client che il browser può selezionare automaticamente. Indipendentemente dal filtro, vengono selezionati solo certificati che soddisfano la richiesta di certificato del server.
 
       Esempi di utilizzo della sezione <ph name="FILTER_PLACEHOLDER" />:
@@ -3337,7 +3347,6 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
 
       Nota: puoi aggiungere elementi all'elenco anche tramite il criterio <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Whitelist di utenti con accesso</translation>
-<translation id="5070080638050927923">Richiesta per il certificato client quando più certificati corrispondono.</translation>
 <translation id="5071303485174858500">Viene disattivata la sessione Ospite gestita limitata.</translation>
 <translation id="5073609397321802133">Se il criterio viene impostato su false, gli utenti non possono personalizzare lo sfondo della pagina Nuova scheda. L'eventuale sfondo personalizzato esistente viene rimosso definitivamente anche se il criterio viene impostato su true in un secondo momento.
 
@@ -3659,6 +3668,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se questo criterio viene impostato su Disattivato, la funzionalità viene disattivata forzatamente.
           </translation>
 <translation id="5435888298115339571">Attiva la condivisione desktop nel menu con tre puntini e in omnibox</translation>
+<translation id="5441508088704391614">Nessuna limitazione speciale (opzione predefinita).</translation>
 <translation id="5442026853063570579">Questa norma consente di controllare anche l'accesso alle Opzioni sviluppatore di Android. Se la norma viene impostata su "DeveloperToolsDisallowed" (valore 2), gli utenti non potranno accedere alle Opzioni sviluppatore. Se la norma viene impostata su un altro valore o non viene impostata, gli utenti potranno accedere alle Opzioni sviluppatore toccando sette volte il numero di build nell'app Impostazioni di Android.</translation>
 <translation id="5443582909255996887">Se il criterio viene impostato su Attivato, tutti i siti vengono isolati su Android, così che ogni sito venga eseguito nel proprio processo e la disattivazione da parte degli utenti viene impedita. Ogni sito è uno schema più eTLD+1 (ad es. https://example.com). Tieni presente che Android isola alcuni siti sensibili per impostazione predefinita a partire da <ph name="PRODUCT_NAME" /> 77 e il criterio estende questa modalità di isolamento dei siti predefinita affinché venga applicata a tutti i siti.
 
@@ -4192,6 +4202,27 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6102449843040973938">È consentita l'esecuzione di <ph name="BOREALIS_NAME" /> su un dispositivo</translation>
 <translation id="6107642964266628393">Consente di stabilire come e quando applicare gli aggiornamenti di Chrome OS.</translation>
 <translation id="6111936128861357925">Attiva il gioco del dinosauro</translation>
+<translation id="6112524153927257380">Se il criterio viene impostato, gli utenti non potranno aggirare le decisioni relative alla sicurezza dei download.
+
+      In Chrome ci sono tanti tipi di avvisi relativi ai download, suddivisi approssimativamente nelle seguenti categorie (scopri di più sui risultati di Navigazione sicura all'indirizzo https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Dannosi, come segnalato dal server di Navigazione sicura
+      * Insoliti o indesiderati, come segnalato dal server di Navigazione sicura
+      * Un tipo di file pericoloso (ad esempio tutti i download SWF e tanti download EXE)
+
+      Se il criterio viene impostato, vengono bloccati diversi sottoinsiemi di questi download, in base al valore del criterio:
+
+      0: Nessuna limitazione speciale (opzione predefinita).
+
+      1: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
+
+      2: Blocca i file dannosi segnalati dal server di Navigazione sicura E Blocca i file insoliti o indesiderati segnalati dal server di Navigazione sicura E Blocca tutti i tipi di file pericolosi. Opzione consigliata soltanto per UO/browser/utenti che hanno una tolleranza elevata di falsi positivi.
+
+      3: Blocca tutti i download. Opzione sconsigliata, ad eccezione di casi d'uso speciali.
+
+      4: Blocca i file dannosi segnalati dal server di Navigazione sicura, non blocca i tipi di file pericolosi (opzione consigliata).
+
+      Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione di menu "Salva link con nome…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Scopri di più sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6123052603197028610">Non consentire query ai server Google per recuperare i timestamp</translation>
 <translation id="6132506775968708399">Blocca cookie di terze parti</translation>
 <translation id="6133088669883929098">Consenti a tutti i siti di utilizzare la generazione di chiavi</translation>
@@ -4301,6 +4332,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Per informazioni dettagliate su <ph name="CORS" />, visita la pagina <ph name="CORS_HELP_URL" />.
 
       Tieni presente che, nonostante sia stata comunicata la rimozione di questo criterio nella versione 82 di <ph name="PRODUCT_NAME" />, il criterio è stato rimosso nella versione 84.</translation>
+<translation id="627672037430076089">Impedisci le connessioni di assistenza da remoto a questo computer</translation>
 <translation id="6277314550042130537">Utilizza l'approvazione del criterio KDC durante l'autenticazione HTTP</translation>
 <translation id="6279722058145292462">La configurazione del criterio consente di specificare la frequenza in giorni con cui un client modifica la password dell'account della propria macchina. La password viene generata automaticamente dal client e non può essere visualizzata dall'utente. Se il criterio viene disattivato o se viene impostato su un numero alto di giorni, la sicurezza potrebbe risentirne, poiché i potenziali utenti malintenzionati hanno più tempo a disposizione per scoprire e utilizzare la password dell'account della macchina.
 
@@ -5926,6 +5958,7 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
           Se l'azione è la sospensione, è possibile configurare separatamente <ph name="PRODUCT_OS_NAME" /> in modo che blocchi o meno lo schermo prima della sospensione.</translation>
 <translation id="8214600119442850823">Consente di configurare Gestione password.</translation>
 <translation id="8217664958939773083">Se questo criterio viene impostato su <ph name="ENABLED" /> o se non viene configurato, è possibile usare la modalità headless. Se questo criterio viene impostato su <ph name="DISABLED" />, non è possibile usare la modalità headless.</translation>
+<translation id="8219813789911069300">Blocca download dannosi (opzione consigliata).</translation>
 <translation id="8220023426952118761">La velocità di download desiderata, in kbit/s.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>
 <translation id="8229912067600517877">Attiva Strumenti per sviluppatori</translation>
@@ -6218,6 +6251,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8524334245528364388">URL per un file JSON con un elenco di server di stampa.</translation>
 <translation id="8525526490824335042">Container Linux</translation>
 <translation id="8528951285051082869">Non consentire ad alcuna app web di accedere a determinati tipi di file tramite l'API File Handling</translation>
+<translation id="8533145294731270627">Blocca download dannosi e tipi di file pericolosi.</translation>
 <translation id="8537051350735478658">Se il criterio è impostato su True, la funzionalità Suggerimenti per le ricerche viene attivata nella barra degli indirizzi di <ph name="PRODUCT_NAME" />. Se il criterio è impostato su False, tale funzionalità viene disattivata.
 
       Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, la funzionalità Suggerimenti per le ricerche è attiva all'inizio, ma gli utenti possono disattivarla in qualsiasi momento.</translation>
@@ -6680,23 +6714,6 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità non è consentita per gli utenti gestiti a livello aziendale ed è consentita per gli utenti non gestiti.</translation>
 <translation id="9096086085182305205">Whitelist server di autenticazione</translation>
 <translation id="9096772739225230999">Non viene segnalata la configurazione di rete</translation>
-<translation id="9097005000667946359">La configurazione di questo criterio consente di specificare un elenco di app web installate automaticamente, senza interazione dell'utente, e che non possono essere disinstallate o disattivate dagli utenti.
-
-      Ogni voce del criterio è un oggetto con un componente obbligatorio:
-      <ph name="URL_LABEL" /> (l'URL dell'app web da installare)
-
-      e 5 componenti facoltativi:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (indica la modalità di apertura dell'app web, che per impostazione predefinita è una nuova scheda).
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (Vero se vuoi creare collegamenti sul desktop <ph name="LINUX_OS_NAME" /> e <ph name="MS_WIN_NAME" />).
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" /> (a partire dalla versione 90 di <ph name="PRODUCT_NAME" />, consente di sostituire il nome dell'app se non si tratta di un'app web progressiva [PWA] o il nome dell'app installata temporaneamente se si tratta di un'app web progressiva, ma è necessaria l'autenticazione per poter completare l'installazione. Se vengono impostati entrambi i valori <ph name="CUSTOM_NAME_LABEL" /> e <ph name="FALLBACK_APP_NAME_LABEL" />, il secondo verrà ignorato.)
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" /> (a partire dalla versione 96 di <ph name="PRODUCT_NAME" />, consente di sostituire definitivamente il nome dell'app per tutte le app web e le app web progressive).
-
-      - <ph name="CUSTOM_ICON_LABEL" /> (a partire dalla versione 96 di <ph name="PRODUCT_NAME" />, consente di sostituire l'icona delle app installate. Le icone devono essere quadrate, avere dimensioni massime pari a 1 MB ed essere in uno dei seguenti formati: jpeg, png, gif, webp, ico. Il valore hash deve essere l'hash SHA256 del file dell'icona.)
-
-      Vedi il criterio <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app nella barra delle app di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9098409326885953506">La finestra coperta viene rilevata e viene sospesa la creazione</translation>
 <translation id="9105265795073104888">Solo un sottoinsieme di opzioni di configurazione del proxy viene reso disponibile alle app Android, che decidono volontariamente se rispettarlo o meno. Non puoi forzarle a utilizzare un proxy.</translation>
 <translation id="9106865192244721694">Consenti WebUSB su questi siti</translation>

@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">மீடியம் சிலேட்டு புளூ</translation>
 <translation id="5140016802771803559">ரிபெக்கா பர்ப்பிள்</translation>
 <translation id="5142101052131610456">அனைத்துப் பாடங்களும்</translation>
-<translation id="5152605892605507188">வலதுபுறம் நகர்த்தும்</translation>
 <translation id="5158275234811857234">அட்டை</translation>
 <translation id="516076699907426116">தொடர, 'தொட்டு அறிக' அம்சத்தின் மூலம் ‘அடுத்த பாடம்’ பட்டனைக் கண்டறியவும். அதன்பிறகு, இருமுறை தட்டித் தொடரவும்.</translation>
 <translation id="5170206230005240598">பிரெய்ல் வசனங்கள் இயக்கப்பட்டுள்ளது</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">வெளிர் சாம்பல்</translation>
 <translation id="6036135911048686884">தொடுதல் மூலம் கண்டறிதல்</translation>
 <translation id="6037602951055904232">முன்னோக்கி நகர்த்து</translation>
+<translation id="604240746417122825">இலக்கணப் பிழை</translation>
 <translation id="6082768461603900813">அடிப்படை வழிசெலுத்துதல்</translation>
 <translation id="609281021724813947">முந்தைய ஸ்லைடர் எதுவும் இல்லை</translation>
 <translation id="6100239002225743044">முந்தைய வரிக்குச் செல்</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">தலைப்பு 4</translation>
 <translation id="6150023170003443621">எல்லோ க்ரீன்</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" /> வரிசை <ph name="TABLECELLCOLUMNINDEX" /> நெடுவரிசை</translation>
-<translation id="6159796324830296161">இடதுபுறம் நகர்த்தும்</translation>
 <translation id="6164829606128959761">மீட்டர்</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6166362019018438352">பிரெய்ல் வசனங்கள் முடக்கப்பட்டுள்ளது</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">இயக்கம், முடக்கம் மற்றும் நிறுத்தம்</translation>
 <translation id="6919104639734799681">அட்டவணைகள் பட்டியலைக் காட்டு</translation>
 <translation id="692135145298539227">நீக்கு</translation>
-<translation id="6935674530832500465">கர்சரைக் கீழே நகர்த்தும்</translation>
 <translation id="6945221475159498467">தேர்ந்தெடு</translation>
 <translation id="6949846980769640811">மீடியம் அக்வா மரைன்</translation>
 <translation id="6951482098621102657">அடுத்த 5ம் நிலை தலைப்பு எதுவும் இல்லை</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">அறிமுகம்</translation>
 <translation id="827266600368092403">தொடக்க அல்லது இறுதித் தேர்வு</translation>
 <translation id="827422111966801947">இண்டிகோ</translation>
-<translation id="827496561804786391">கர்சரை மேலே நகர்த்தும்</translation>
 <translation id="8276439074553447000">முன்பு கவனிக்கப்பட்ட உருப்படிக்குத் தாவு</translation>
 <translation id="8279039817939141096">ஏதேனும் ஒரு qwerty விசை/பிரெய்ல் விசையை அழுத்தியோ விரல் சைகை மூலமோ அவற்றின் செயல்பாட்டை அறிந்துகொள்ளலாம். வெளியேறுவதற்கு: w விசையுடன் சேர்த்து Ctrl விசையை அழுத்தவும் அல்லது Space விசையுடன் சேர்த்து Z விசையை அழுத்தவும் அல்லது இரண்டு விரல்களால் இடதுபுறம் ஸ்வைப் செய்யவும் அல்லது Esc விசையை அழுத்தவும்.</translation>
 <translation id="8283603667300770666">அடுத்த வடிவப் புலம்</translation>
 <translation id="8310185481635255431">அடுத்த இணைப்பு எதுவும் இல்லை</translation>
 <translation id="831207808878314375">விளக்கம்</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">அனைத்தையும் தேர்வுநீக்கும்</translation>
 <translation id="8316881042119029234">ஓல்டு லேஸ்</translation>
 <translation id="8324974933005349667">’உரையிலிருந்து பேச்சு’ அமைப்புகளைத் தனிப்பயனாக்கவும்</translation>
 <translation id="8326783648485765113">லான் கிரீன்</translation>

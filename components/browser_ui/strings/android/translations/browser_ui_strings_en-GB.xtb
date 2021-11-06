@@ -201,7 +201,6 @@
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Options</translation>
 <translation id="6231752747840485235">Uninstall '<ph name="APP_NAME" />'?</translation>
-<translation id="6233545266937675277">Request the desktop view of sites</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> blocked</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6295158916970320988">All sites</translation>
@@ -286,7 +285,6 @@
 <translation id="8211406090763984747">Connection is secure</translation>
 <translation id="8249310407154411074">Move to top</translation>
 <translation id="8261506727792406068">Delete</translation>
-<translation id="8267092878336850213">Request the mobile view of sites</translation>
 <translation id="8300705686683892304">Managed by app</translation>
 <translation id="8324158725704657629">Don't ask again</translation>
 <translation id="8372893542064058268">Allow Background Sync for a specific site.</translation>

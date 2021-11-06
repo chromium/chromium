@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">中岩藍</translation>
 <translation id="5140016802771803559">麗貝卡紫</translation>
 <translation id="5142101052131610456">所有課程</translation>
-<translation id="5152605892605507188">向右移</translation>
 <translation id="5158275234811857234">封面</translation>
 <translation id="516076699907426116">請透過輕觸探索的方式找到 [下一門課] 按鈕，然後輕觸兩下即可繼續。</translation>
 <translation id="5170206230005240598">點字字幕已啟用</translation>
@@ -752,7 +751,6 @@
 <translation id="6142308968191113180">標題 4</translation>
 <translation id="6150023170003443621">黃綠</translation>
 <translation id="6158882249329863701">第 <ph name="TABLECELLROWINDEX" /> 列，第 <ph name="TABLECELLCOLUMNINDEX" /> 欄</translation>
-<translation id="6159796324830296161">向左移</translation>
 <translation id="6164829606128959761">計量器</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6166362019018438352">點字字幕已停用</translation>
@@ -845,7 +843,6 @@
 <translation id="6910969481785184048">開啟、關閉及停止</translation>
 <translation id="6919104639734799681">顯示表格清單</translation>
 <translation id="692135145298539227">刪除</translation>
-<translation id="6935674530832500465">向下移動</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6949846980769640811">中碧藍</translation>
 <translation id="6951482098621102657">沒有下一個第 5 階標題</translation>
@@ -1043,14 +1040,12 @@
 <translation id="826825447994856889">簡介</translation>
 <translation id="827266600368092403">開始或結束選取</translation>
 <translation id="827422111966801947">靛藍</translation>
-<translation id="827496561804786391">向上移動</translation>
 <translation id="8276439074553447000">跳至上一個可選擇的項目</translation>
 <translation id="8279039817939141096">按下 qwerty 鍵、可更新的點字鍵或觸控手勢即可學習相關功能。如要結束，請按下 Ctrl + W 鍵、空格鍵 + Z 鍵、Esc 鍵，或是以兩指向左滑動。</translation>
 <translation id="8283603667300770666">下一個表單欄位</translation>
 <translation id="8310185481635255431">沒有下一個連結</translation>
 <translation id="831207808878314375">定義</translation>
 <translation id="8313653172105209786">目錄</translation>
-<translation id="8314546933558091113">取消全選</translation>
 <translation id="8316881042119029234">舊蕾絲色</translation>
 <translation id="8324974933005349667">個人化文字轉語音設定</translation>
 <translation id="8326783648485765113">草坪綠</translation>

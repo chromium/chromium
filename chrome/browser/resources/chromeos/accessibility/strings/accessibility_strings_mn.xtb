@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Бага зэргийн нил ягаан туяатай тод хөх</translation>
 <translation id="5140016802771803559">Нил ягаан</translation>
 <translation id="5142101052131610456">Бүх хичээл</translation>
-<translation id="5152605892605507188">баруун тийш зөөх</translation>
 <translation id="5158275234811857234">Ковер</translation>
 <translation id="516076699907426116">Үргэлжлүүлэхийн тулд хүрэлтээр сонсохыг ашиглан Дараагийн хичээлийн товчлуурыг олно уу. Дараа нь үргэлжлүүлэхийн тулд хоёр товшино уу.</translation>
 <translation id="5170206230005240598">Брайл хадмалыг идэвхжүүллээ</translation>
@@ -752,7 +751,6 @@
 <translation id="6142308968191113180">Гарчиг 4</translation>
 <translation id="6150023170003443621">Шар ногоон</translation>
 <translation id="6158882249329863701">мөр <ph name="TABLECELLROWINDEX" /> багана <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">зүүн тийш зөөх</translation>
 <translation id="6164829606128959761">метр</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6166362019018438352">Брайл хадмалыг идэвхгүй болгосон</translation>
@@ -845,7 +843,6 @@
 <translation id="6910969481785184048">Асаалттай, Унтраалтай, Зогсоох</translation>
 <translation id="6919104639734799681">Хүснэгтийг жагсаалтаар харуулах</translation>
 <translation id="692135145298539227">устгах</translation>
-<translation id="6935674530832500465">доош зөөх</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6949846980769640811">Бүдэг номин ногоон</translation>
 <translation id="6951482098621102657">Дараагийн 5-р түвшний гарчиг алга байна</translation>
@@ -1043,14 +1040,12 @@
 <translation id="826825447994856889">Оршил</translation>
 <translation id="827266600368092403">Сонголтыг эхлэх эсвэл дуусгах</translation>
 <translation id="827422111966801947">Хөхөвтөр нил ягаан</translation>
-<translation id="827496561804786391">дээш зөөх</translation>
 <translation id="8276439074553447000">Өмнөх анхаарбал зохих зүйл рүү очих</translation>
 <translation id="8279039817939141096">Qwerty товч, сэргээх боломжтой брайл товч эсвэл хүрэх зангааны функцийг сурахын тулд дээр нь дарна уу. Гарахын тулд control-г w-тай, зай авах товчийг Z-тэй, escape-г дарж эсвэл хоёр хуруугаараа зүүн тийш шударна уу.</translation>
 <translation id="8283603667300770666">Дараагийн маягтийн талбар</translation>
 <translation id="8310185481635255431">Дараагийн холбоос алга байна</translation>
 <translation id="831207808878314375">Тодорхойлолт</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">бүх сонголтыг болиулах</translation>
 <translation id="8316881042119029234">Цайвар ягаан</translation>
 <translation id="8324974933005349667">Бичвэрийг ярианд хувиргах тохиргоог хувийн болгох</translation>
 <translation id="8326783648485765113">Тод ногоон</translation>

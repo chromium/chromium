@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">पेज को बंद किए बिना, वेबसाइटों पर दिए गए विषयों के बारे में जानें. 'खोजने के लिए टैप करें' सुविधा, 'Google सर्च' को शब्द और उससे जुड़ी जानकारी भेजती है. इसके बाद, 'सर्च' पर आपको उस शब्द की परिभाषाएं, फ़ोटो, खोज के नतीजे वगैरह दिखते हैं.
 
 खाेजने के लिए किसी भी शब्द को दबाकर रखें. अपनी खोज को फ़िल्टर करने के लिए, ज़्यादा या कम शब्दों काे चुनें. अपनी खाेज में बदलाव करने के लिए, पैनल को खोलें. आइकॉन पर टैप करके, उसे नए टैब में खाेलें. इसके बाद, खोज बॉक्स में शब्द को बदलें.</translation>
+<translation id="2451607499823206582">ट्रैक किया जा रहा है</translation>
 <translation id="2459390580524506445">वॉइस सर्च की बेहतर सुविधा</translation>
 <translation id="2461822463642141190">मौजूदा</translation>
 <translation id="247737702124049222">इमेज की जानकारी जोड़ने की सुविधा चालू कर दी गई है</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">क्लिपबोर्ड का कॉन्टेंट छिपाएं</translation>
 <translation id="2532336938189706096">वेब व्यू</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आइटम मिटाए गए</translation>
+<translation id="2534582914273493287">आपके देखे गए पेजों के यूआरएल, Google को भेजे जाते हैं</translation>
 <translation id="2536728043171574184">इस पृष्‍ठ की ऑफ़लाइन कॉपी देख रहे हैं</translation>
 <translation id="2546283357679194313">कुकी और साइट डेटा</translation>
 <translation id="2561519700418191927">वीडियो की झलक की सेटिंग</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">डिवाइस में सेव करें</translation>
 <translation id="3236059992281584593">1 मिनट शेष</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">अगर Chrome के इस्तेमाल से जुड़ी जानकारी देने वाली रिपोर्ट भी शेयर की जाती हैं, तो याद रखें कि आपके देखे गए पेजों के यूआरएल उनमें शामिल होते हैं</translation>
 <translation id="3250563604907490871">वाई-फ़ाई से कनेक्ट करने पर, इमेज की जानकारी जोड़ने की सुविधा फिर से शुरू हो जाएगी</translation>
 <translation id="3254409185687681395">इस पेज को बुकमार्क करें</translation>
 <translation id="3259831549858767975">पेज पर सब कुछ छोटा करें</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">फ़ोल्डर</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> केबी उपलब्ध</translation>
 <translation id="3549657413697417275">अपने इतिहास में खोजें</translation>
+<translation id="3557272988124495906">कीमत में कमी होने पर सूचनाएं पाएं</translation>
 <translation id="3557336313807607643">संपर्कों में जोड़ें</translation>
 <translation id="3563767357928833671">क्लिपबोर्ड का कॉन्टेंट दिखाया गया</translation>
 <translation id="3566923219790363270">Chrome अब भी VR के लिए तैयारी कर रहा है. Chrome को बाद में रीस्टार्ट करें.</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">अपने डिवाइस पर भेजें</translation>
 <translation id="3778956594442850293">होम स्‍क्रीन में जोड़ा गया</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
+<translation id="3803783897442799486">जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />सेवा की शर्तों<ph name="END_LINK1" /> से सहमत हैं.\nऐप्लिकेशन को बेहतर बनाने के लिए, Chrome आपके इस्तेमाल के आंकड़े और ऐप्लिकेशन के बंद होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_LINK2" />मैनेज करें<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">अपने-आप चलने की सुविधा मैनेज करें</translation>
 <translation id="3810838688059735925">वीडियो</translation>
 <translation id="3810973564298564668">प्रबंधित करें</translation>
@@ -606,6 +611,7 @@
 <translation id="47217992755561375">अपने हिसाब से खास साइटें देखें</translation>
 <translation id="4732120983431207637">स्टैक अनवाइंडर</translation>
 <translation id="4738836084190194332">अंतिम बार सिंक किया गया: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">आपको पता बार में बेहतर सुझाव मिलेंगे</translation>
 <translation id="4742970037960872810">हाइलाइट हटाएं</translation>
 <translation id="4749960740855309258">नया टैब खोलें</translation>
 <translation id="4758061975920522644">सिर्फ़ इमेज शेयर करें</translation>
@@ -1173,6 +1179,7 @@
 <translation id="7975379999046275268">पेज की झलक देखें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ज़्यादा तेज़ी से ब्राउज़ करने और खोजने के लिए पेज पहले से लोड करें</translation>
 <translation id="7986497153528221272">पासवर्ड देखने के लिए, अपने डिवाइस पर एक स्क्रीन लॉक सेट करें</translation>
+<translation id="799576009106109668">आपको ज़्यादा तेज़ी से ब्राउज़ करने का अनुभव मिलता है, क्योंकि कॉन्टेंट आपके हाल ही में देखे गए पेजों के हिसाब से लोड होता है</translation>
 <translation id="7998918019931843664">बंद टैब फिर से खोलें</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="8013372441983637696">इस डिवाइस से अपना Chrome डेटा भी हटाएं</translation>
@@ -1220,6 +1227,7 @@
 <translation id="8218052821161047641">तेज़ी से लोड होने वाला पेज</translation>
 <translation id="8218622182176210845">अपना खाता प्रबंधित करें</translation>
 <translation id="8223642481677794647">फ़ीड कार्ड मेन्यू</translation>
+<translation id="8242868071038398515">किसी साइट पर प्रॉडक्ट की कीमत में कमी होने पर, आपको सूचना दी जाएगी</translation>
 <translation id="8250920743982581267">दस्तावेज़</translation>
 <translation id="825412236959742607">यह पेज बहुत ज़्यादा स्टोरेज का इस्तेमाल करता है, इसलिए Chrome ने कुछ सामग्री हटा दी है.</translation>
 <translation id="8260126382462817229">फिर से प्रवेश करके देखें</translation>
@@ -1238,6 +1246,7 @@
 <translation id="8354977102499939946">बोलकर तेज़ी से खोजें. इस शॉर्टकट में बदलाव करने के लिए, सेटिंग पर जाएं.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड वापस लाया गया</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइटें देखें</translation>
+<translation id="8368001212524806591">कीमत ट्रैक करें</translation>
 <translation id="8387617938027387193">अपनी पहचान की पुष्टि करें</translation>
 <translation id="8393700583063109961">संदेश भेजें</translation>
 <translation id="8410695015584479363">कीमतें ट्रैक करें</translation>

@@ -6,7 +6,6 @@
 <translation id="1003088604756913841">Open Link in New <ph name="APP" /> Window</translation>
 <translation id="100323615638474026">USB device (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">Site access</translation>
-<translation id="100524763483954942">Back to settings</translation>
 <translation id="1005274289863221750">Use your microphone and camera</translation>
 <translation id="1005333234656240382">Enable ADB debugging?</translation>
 <translation id="1006873397406093306">This extension can read and change your data on sites. You can control which sites the extension can access.</translation>
@@ -784,7 +783,6 @@
 <translation id="1780273119488802839">Importing bookmarks...</translation>
 <translation id="178092663238929451">Set up Nearby Share to receive and send files with people around you</translation>
 <translation id="1781291988450150470">Current PIN</translation>
-<translation id="1781398670452016618"><ph name="DOMAIN" /> requires you to connect to Wi-Fi now and download an update.</translation>
 <translation id="1781502536226964113">Open the New Tab page</translation>
 <translation id="1781771911845953849">Accounts and sync</translation>
 <translation id="1781979858217752599">Share window audio</translation>
@@ -1455,7 +1453,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2459703812219683497">Activation code detected</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2462752602710430187">Added <ph name="PRINTER_NAME" /></translation>
-<translation id="2465237718053447668"><ph name="DOMAIN" /> requires you to connect to Wi-Fi now and download an update. Or, download from a metered connection (charges may apply).</translation>
 <translation id="2467755475704469005">No device detected. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Touchpad scroll acceleration</translation>
 <translation id="2468205691404969808">Uses cookies to remember your preferences, even if you don’t visit those pages</translation>
@@ -1486,6 +1483,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2489686758589235262">Assign 2 more switches</translation>
 <translation id="2489829450872380594">Next time, a new phone will unlock this <ph name="DEVICE_TYPE" />. You can turn off Smart Lock in Settings.</translation>
 <translation id="2489918096470125693">Add &amp;Folder...</translation>
+<translation id="2489931062851778802">Enter these keys on <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">Removed '<ph name="FILE_NAME" />' from list</translation>
 <translation id="249113932447298600">Sorry, the device <ph name="DEVICE_LABEL" /> is not supported at this time.</translation>
 <translation id="2492461744635776704">Preparing certificate signing request</translation>
@@ -2241,11 +2239,13 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3288047731229977326">Extensions running in developer mode can harm your computer. If you're not a developer, you should disable these extensions running in developer mode to stay safe.</translation>
 <translation id="3289668031376215426">Auto-capitalisation</translation>
 <translation id="3289856944988573801">To check for updates, please use Ethernet or Wi-Fi.</translation>
+<translation id="3290249595466894471">Also sends a small sample of pages, downloads, extension activity and system information to help discover new threats</translation>
 <translation id="3291436823898732747">Improved browsing: For example, suggestions in the omnibox before you start typing</translation>
 <translation id="3293644607209440645">Send this page</translation>
 <translation id="32939749466444286">The Linux container didn't start. Please try again.</translation>
 <translation id="3294437725009624529">Guest</translation>
 <translation id="3294686910656423119">Usage statistics and crash reports</translation>
+<translation id="3297536526040732495">Temporarily links this data to your Google Account when you're signed in, to protect you across Google apps</translation>
 <translation id="329838636886466101">Repair</translation>
 <translation id="3298789223962368867">Invalid URL entered.</translation>
 <translation id="32991397311664836">Devices:</translation>
@@ -4355,6 +4355,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5554489410841842733">This icon will be visible when the extension can act on the current page.</translation>
 <translation id="5554720593229208774">Email Certification Authority</translation>
 <translation id="5555363196923735206">Flip camera</translation>
+<translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5558125320634132440">This site is blocked because it may have mature content</translation>
 <translation id="5558129378926964177">Zoom &amp;In</translation>
@@ -4742,7 +4743,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5979353814339191480">This option applies to Chromebooks with a data plan or mobile network dongle, or when tethering to a portable hotspot</translation>
 <translation id="5979421442488174909">&amp;Translate to <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">To bookmark pages, click the star in the address bar</translation>
-<translation id="5983831175889857946">Review completed!</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="5985458664595100876">Invalid URL format. Supported formats are \\server\share and smb://server/share.</translation>
 <translation id="598810097218913399">Remove assignment</translation>
@@ -5677,7 +5677,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6991665348624301627">Select a destination</translation>
 <translation id="6992554835374084304">Turn on enhanced spell check</translation>
 <translation id="6993000214273684335">Tab removed from unnamed group – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Updating Chrome Browser</translation>
 <translation id="6994069045767983299">Inverted colours</translation>
 <translation id="6995899638241819463">Warn you if passwords are exposed in a data breach</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Activity Log</translation>
@@ -5721,6 +5720,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Open all in &amp;incognito window}=1{Open in &amp;incognito window}other{Open all ({COUNT}) in &amp;incognito window}}</translation>
 <translation id="7029307918966275733">Crostini is not installed. Please install Crostini to view credits.</translation>
 <translation id="7029809446516969842">Passwords</translation>
+<translation id="7030304022046916278">Sends URLs to Safe Browsing to check them</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> – Serial port connected</translation>
 <translation id="7034692021407794547">An administrator with billing management privileges must first accept the Google Meet hardware Terms of Service in the Google Meet hardware section of the Admin console.</translation>
 <translation id="7036706669646341689"><ph name="DISK_SIZE" /> of space is recommended for Linux. To increase free space, delete files from your device.</translation>
@@ -5816,7 +5816,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="7133578150266914903">Your administrator is rolling back this device (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="7134098520442464001">Make Text Smaller</translation>
 <translation id="7135729336746831607">Turn on Bluetooth?</translation>
-<translation id="7136639886842764730"><ph name="DOMAIN" /> requires you to update your <ph name="DEVICE_TYPE" /> immediately.</translation>
 <translation id="7136694880210472378">Make default</translation>
 <translation id="7136993520339022828">There's an error. Please try again by choosing other images.</translation>
 <translation id="7138515695467025690">Off – will turn on automatically at sunset</translation>

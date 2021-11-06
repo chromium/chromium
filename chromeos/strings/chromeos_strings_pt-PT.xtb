@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Portal cativo detetado</translation>
 <translation id="3170673040743561620">Coloque o documento no scanner</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
+<translation id="3192947282887913208">Ficheiros de áudio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dois lados)</translation>
 <translation id="3226405216343213872">A procurar leitores…</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> opiniões)</translation>
 <translation id="3748026146096797577">Desligado</translation>
 <translation id="3749289110408117711">Nome do ficheiro</translation>
+<translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="38114475217616659">Limpar todo o histórico</translation>
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="3838338534323494292">Nova palavra-passe</translation>
@@ -348,6 +350,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="636850387210749493">Inscrição empresarial</translation>
 <translation id="6379086450106841622">Ecrã tátil</translation>
 <translation id="6388847657025262518">O alimentador de documentos do scanner está encravado. Verifique o alimentador e tente novamente.</translation>
+<translation id="6410257289063177456">Ficheiros de imagem</translation>
 <translation id="641081527798843608">Correspondência de assunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Fraca (<ph name="SIGNAL_STRENGTH" />)</translation>

@@ -6,7 +6,6 @@
 <translation id="1003088604756913841">Отвори го линкот во нов прозорец на <ph name="APP" /></translation>
 <translation id="100323615638474026">USB-уред (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">Пристап до сајтови</translation>
-<translation id="100524763483954942">Назад на поставки</translation>
 <translation id="1005274289863221750">Користете ги микрофонот и фотоапаратот</translation>
 <translation id="1005333234656240382">Да се овозможи отстранување грешки на ADB?</translation>
 <translation id="1006873397406093306">Екстензијава може да ги чита и менува вашите податоци на сајтовите. Може да ги контролирате сајтовите до кои таа има пристап.</translation>
@@ -785,7 +784,6 @@
 <translation id="1780273119488802839">Се увезуваат обележувачи…</translation>
 <translation id="178092663238929451">Поставете „Споделување во близина“ за да примате и испраќате датотеки до луѓето околу вас</translation>
 <translation id="1781291988450150470">Тековен PIN</translation>
-<translation id="1781398670452016618"><ph name="DOMAIN" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање.</translation>
 <translation id="1781502536226964113">Отвори ја страницата Нова картичка</translation>
 <translation id="1781771911845953849">Сметки и синхронизација</translation>
 <translation id="1781979858217752599">Сподели аудио од прозорецот</translation>
@@ -1456,7 +1454,6 @@
 <translation id="2459703812219683497">Кодот за активација е препознаен</translation>
 <translation id="2462724976360937186">ИД на клуч на орган за сертифицирање</translation>
 <translation id="2462752602710430187">Додаден е <ph name="PRINTER_NAME" /></translation>
-<translation id="2465237718053447668"><ph name="DOMAIN" /> бара веднаш да се поврзете на Wi-Fi и да преземете ажурирање. Или преземете преку врска со ограничен интернет (може да ви се наплати).</translation>
 <translation id="2467755475704469005">Не е откриен уред. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Забрзување на лизгањето на подлогата за допир</translation>
 <translation id="2468205691404969808">Користи колачиња за да ги запамети вашите поставки, дури и ако не ги посетувате тие страници</translation>
@@ -4747,7 +4744,6 @@
 <translation id="5979353814339191480">Опцијава се однесува на уредите Chromebooks со пакет за мобилен интернет или стик за мобилна мрежа или кога интернет се добива преку мобилен од пренослива точка на пристап</translation>
 <translation id="5979421442488174909">&amp;Преведи на <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">За да обележите некоја страница, кликнете на ѕвездата во лентата за адреси</translation>
-<translation id="5983831175889857946">Прегледот е завршен!</translation>
 <translation id="5984222099446776634">Неодамна посетени</translation>
 <translation id="5985458664595100876">Погрешен URL-формат. Поддржани формати се \\server\share и smb://server/share.</translation>
 <translation id="598810097218913399">Отстранете го назначувањето</translation>
@@ -5682,7 +5678,6 @@
 <translation id="6991665348624301627">Изберете дестинација</translation>
 <translation id="6992554835374084304">Вклучете подобрена проверка на правопис</translation>
 <translation id="6993000214273684335">Картичката е отстранета од неименувана група - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Се ажурира прелистувачот Chrome</translation>
 <translation id="6994069045767983299">Инверзија на бои</translation>
 <translation id="6995899638241819463">Добијте предупредување ако лозинките се откриени при упад во податоците</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Евиденција на активности</translation>
@@ -5822,7 +5817,6 @@
 <translation id="7133578150266914903">Администраторот го враќа уредов на фабричките поставки (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="7134098520442464001">Направи го текстот помал</translation>
 <translation id="7135729336746831607">Да се вклучи Bluetooth?</translation>
-<translation id="7136639886842764730"><ph name="DOMAIN" /> бара веднаш да го ажурирате вашиот <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7136694880210472378">Направи стандардно</translation>
 <translation id="7136993520339022828">Грешка. Обидете се повторно со избирање други слики.</translation>
 <translation id="7138515695467025690">Исклучена/Ќе се вклучи автоматски на зајдисонце</translation>

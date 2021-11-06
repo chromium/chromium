@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">မီးခိုးပြာ မနုမရင့်</translation>
 <translation id="5140016802771803559">ရေဘက်ကာ ခရမ်း</translation>
 <translation id="5142101052131610456">သင်ခန်းစာအားလုံး</translation>
-<translation id="5152605892605507188">ညာဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="5158275234811857234">မျက်နှာဖုံး</translation>
 <translation id="516076699907426116">ရှေ့ဆက်ရန်အတွက် ‘လာမည့်’ သင်ခန်းစာ ခလုတ်ကိုရှာရန် ထိပြီး ရှာဖွေစူးစမ်းပါ။ ထို့နောက် ရှေ့ဆက်ရန် နှစ်ချက်တို့ပါ။</translation>
 <translation id="5170206230005240598">မျက်မမြင် စာတန်းများကို ဖွင့်ထားသည်</translation>
@@ -752,7 +751,6 @@
 <translation id="6142308968191113180">ခေါင်းစီး ၄</translation>
 <translation id="6150023170003443621">အစိမ်းဝါ</translation>
 <translation id="6158882249329863701">အတန်း <ph name="TABLECELLROWINDEX" /> ကော်လံ <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">ဘယ်ဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="6164829606128959761">မီတာ</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6166362019018438352">မျက်မမြင်စာရေးစနစ် စာတန်းများ ပိတ်ထားသည်</translation>
@@ -845,7 +843,6 @@
 <translation id="6910969481785184048">အဖွင့်၊ အပိတ်နှင့် ရပ်ခြင်း</translation>
 <translation id="6919104639734799681">ဇယားကွက် စာရင်းပြရန်</translation>
 <translation id="692135145298539227">ဖျက်ရန်</translation>
-<translation id="6935674530832500465">အောက်သို့ရွှေ့ပါ</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6949846980769640811">မြပြာ မနုမရင့်</translation>
 <translation id="6951482098621102657">နောက်ထပ် အဆင့် ၅ ခေါင်စီး မရှိပါ</translation>
@@ -1043,14 +1040,12 @@
 <translation id="826825447994856889">နိဒါန်း</translation>
 <translation id="827266600368092403">ရွေးချယ်မှု စတင်ရန် သို့မဟုတ် အဆုံးသတ်ရန်</translation>
 <translation id="827422111966801947">မဲနယ်</translation>
-<translation id="827496561804786391">အပေါ်သို့ရွှေ့ပါ</translation>
 <translation id="8276439074553447000">ဆုံချက်ညှိရနိုင်သည့် အရင် အရာဆီ ခုန်သွားရန်</translation>
 <translation id="8279039817939141096">၎င်း၏လုပ်ဆောင်ချက်ကို လေ့လာရန် qwerty ခလုတ်၊ ပြန်လည်စတင်နိုင်သော မျက်မမြင်စာခလုတ် (သို့) ထိတွေ့လက်ဟန်ကို နှိပ်ပါ။ ထွက်ရန် control နှင့် w၊ နေရာခြားခလုတ်နှင့် Z နှိပ်ပါ၊ ဘယ်ဘက်သို့ လက်နှစ်ချောင်းပွတ်ဆွဲပါ (သို့) escape ကို နှိပ်ပါ။</translation>
 <translation id="8283603667300770666">ရှေ့ပုံစံ အကွက်</translation>
 <translation id="8310185481635255431">နောက်ထပ်လင့်ခ် မရှိပါ</translation>
 <translation id="831207808878314375">ဖွင့်ဆိုချက်</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">အားလုံးကို ပြန်ဖြုတ်ပါ</translation>
 <translation id="8316881042119029234">ဇာအဟောင်း</translation>
 <translation id="8324974933005349667">'စာသားမှ စကားပြောသို့ ပြောင်းခြင်း' ဆက်တင်များကို ပုဂ္ဂိုလ်ရေးသီးသန့် ပြုလုပ်ရန်</translation>
 <translation id="8326783648485765113">မြက်ခင်းစိမ်း</translation>

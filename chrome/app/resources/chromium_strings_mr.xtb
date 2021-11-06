@@ -57,6 +57,7 @@
 <translation id="2885378588091291677">टास्क मॅनेजर</translation>
 <translation id="2910007522516064972">&amp;Chromium बद्दल</translation>
 <translation id="2977470724722393594">Chromium अद्ययावत आहे</translation>
+<translation id="2977506796191543575">साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानिकारक फाइल डाउनलोड केल्यास, Chromium कदाचित पेज आशयाच्या भागांसह, URLs देखील सुरक्षित ब्राउझिंग ला पाठवेल</translation>
 <translation id="2983934633046890458">Chromium पासवर्ड संपादित करण्याचा प्रयत्‍न करत आहे.</translation>
 <translation id="3032706164202344641">Chromium तुमचे पासवर्ड तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="3032787606318309379">Chromium वर जोडत आहे...</translation>
@@ -168,6 +169,7 @@
 <translation id="6212496753309875659">या कॉंप्युटरवर आधीपासून Chromium ची अगदी अलीकडील आवृत्ती आहे. सॉफ्‍टवेअर काम करत नसल्‍यास, कृपया Chromium अनइंस्टॉल करा आणि पुन्‍हा प्रयत्‍न करा.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium आता पुन्हा लाँच होईल}=1{Chromium एका सेकंदामध्ये पुन्हा लाँच होईल}other{Chromium # सेकंदांमध्ये पुन्हा लाँच होईल}}</translation>
 <translation id="6241367896540709610">Chromium ला फाइल डाउनलोड करण्यासाठी स्टोरेज अ‍ॅक्सेस करण्याची परवानगी आवश्यक आहे</translation>
+<translation id="6245734527075554892">Chromium मध्ये स्टोअर केलेल्या असुरक्षित साइटच्या सूचीसह URLs तपासते</translation>
 <translation id="6248213926982192922">Chromium ला डीफॉल्‍ट ब्राउझर बनवा</translation>
 <translation id="6266342355635466082">Chromium अपडेट तपासू शकत नाही. तुमचे इंटरनेट कनेक्शन तपासून पहा.</translation>
 <translation id="6268381023930128611">Chromium मधून साइन आउट करायचे?</translation>

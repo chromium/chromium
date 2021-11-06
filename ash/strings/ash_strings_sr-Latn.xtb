@@ -62,6 +62,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1289185460362160437">Vratite se u: <ph name="COME_BACK_DAY_OF_WEEK" /> u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1293264513303784526">Uređaj sa USB priključkom tipa C (levi port)</translation>
+<translation id="1293556467332435079">Datoteke</translation>
 <translation id="1294929383540927798">Promenite podešavanja obaveštenja na zaključanom ekranu</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Pregledajte Bluetooth podešavanja. <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-om upravlja <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Izađite iz režima snimanja</translation>
 <translation id="2792498699870441125">Alt + taster za pretragu</translation>
+<translation id="2805756323405976993">Aplikacije</translation>
 <translation id="2814448776515246190">Delimično snimanje</translation>
 <translation id="2819276065543622893">Bićete odmah odjavljeni.</translation>
 <translation id="28232023175184696">Povezivanje na internet nije uspelo. Kliknite da biste probali ponovo.</translation>
@@ -376,6 +378,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3665889125180354336">Snimaj pomoću mikrofona</translation>
 <translation id="3680908746918359504">Obriši sve markere</translation>
 <translation id="36813544980941320">WiFi mreže će se deliti između vašeg telefona i uređaja <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Veb-sajtovi</translation>
 <translation id="3701206655856637070">Sada možete da promenite gde se snimci ekrana čuvaju</translation>
 <translation id="3702809606464356667">Prikazuju se prozori sa aktuelne radne površine. Pritisnite taster sa strelicom nagore da bi se prikazivali prozori sa svih radnih površina.</translation>
 <translation id="3702846122927433391">Populacija Nigerije</translation>
@@ -537,6 +540,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4774338217796918551">Vratite se sutra u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Lozinka za <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play prodavnica</translation>
 <translation id="4778095205580009397">Google pomoćnik nije dostupan u sesiji demonstracije.</translation>
 <translation id="4782311465517282004">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite</translation>
 <translation id="479989351350248267">search</translation>
@@ -937,6 +941,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7796353162336583443">Dodirnite dugme pisaljke na polici da biste napravili belešku i snimak ekrana i da biste koristili Google pomoćnik, laserski pokazivač ili lupu.</translation>
 <translation id="7798302898096527229">Pritisnite taster za pretragu ili Shift da biste otkazali.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
+<translation id="7807067443225230855">Pretraga i Pomoćnik</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Jak signal</translation>
 <translation id="7837740436429729974">Vreme je isteklo</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="vi">
 <translation id="1113173431709655881">Chế độ camera</translation>
 <translation id="1175958423215084756">Phát hiện thấy đường liên kết. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Xoay 90 độ theo chiều kim đồng hồ</translation>
 <translation id="1276998909102132017">Ảnh trong thư viện</translation>
 <translation id="1300209025925956156">Quét tài liệu của bạn</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Hãy nhấn tổ hợp phím Tìm kiếm + Mũi tên trái để truy cập.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Không thể chụp ảnh chân dung</translation>
 <translation id="3569311554794739032">Bạn có thực sự muốn xóa <ph name="FILE" /> không?</translation>
 <translation id="3573890771273113519">Chuyển sang chế độ quét</translation>
+<translation id="3789724198583203151">Xoay 90 độ ngược chiều kim đồng hồ</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Quét mã vạch</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>

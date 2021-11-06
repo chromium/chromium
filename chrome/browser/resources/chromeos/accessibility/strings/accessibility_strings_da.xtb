@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Mellemlys skiferblå</translation>
 <translation id="5140016802771803559">Lilla</translation>
 <translation id="5142101052131610456">Alle lektioner</translation>
-<translation id="5152605892605507188">gå til højre</translation>
 <translation id="5158275234811857234">Forside</translation>
 <translation id="516076699907426116">Hvis du vil fortsætte, skal du bruge Tryk for at høre for at finde knappen til næste lektion. Tryk derefter to gange for at fortsætte.</translation>
 <translation id="5170206230005240598">Brailletekst er aktiveret</translation>
@@ -752,7 +751,6 @@
 <translation id="6142308968191113180">Overskrift 4</translation>
 <translation id="6150023170003443621">Gulgrøn</translation>
 <translation id="6158882249329863701">række <ph name="TABLECELLROWINDEX" /> kolonne <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">gå til venstre</translation>
 <translation id="6164829606128959761">måler</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6166362019018438352">Brailletekst er deaktiveret</translation>
@@ -845,7 +843,6 @@
 <translation id="6910969481785184048">Til, Fra, og Afbryd</translation>
 <translation id="6919104639734799681">Vis tabelliste</translation>
 <translation id="692135145298539227">slet</translation>
-<translation id="6935674530832500465">flyt ned</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6949846980769640811">Akvamarinblå</translation>
 <translation id="6951482098621102657">Der er ikke flere niveau 5-overskrifter</translation>
@@ -1043,14 +1040,12 @@
 <translation id="826825447994856889">Indledning</translation>
 <translation id="827266600368092403">Start eller afslut det valgte</translation>
 <translation id="827422111966801947">Indigoblå</translation>
-<translation id="827496561804786391">flyt op</translation>
 <translation id="8276439074553447000">Gå til forrige element, der kan fokuseres på</translation>
 <translation id="8279039817939141096">Tryk på en qwerty-tast, en opdaterbar brailletast eller en bevægelse for at lære den tilknyttede funktion. Tryk på Ctrl+W, mellemrum+Z, stryg med to fingre, eller tryk på Escape for at afslutte.</translation>
 <translation id="8283603667300770666">Næste formularfelt</translation>
 <translation id="8310185481635255431">Der er ikke flere links</translation>
 <translation id="831207808878314375">Definition</translation>
 <translation id="8313653172105209786">map</translation>
-<translation id="8314546933558091113">fravælg alle</translation>
 <translation id="8316881042119029234">Gullighvid</translation>
 <translation id="8324974933005349667">Tilpas indstillinger for tekstoplæsning</translation>
 <translation id="8326783648485765113">Plænegrøn</translation>

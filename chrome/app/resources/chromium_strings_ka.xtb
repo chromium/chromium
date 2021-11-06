@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">ამოცანების მმართველი</translation>
 <translation id="2910007522516064972">Chromium-ის შ&amp;ესახებ</translation>
 <translation id="2977470724722393594">Chromium განახლებულია</translation>
+<translation id="2977506796191543575">საიტის მიერ პაროლის მოპარვის მცდელობის ან თქვენ მიერ საზიანო ფაილის ჩამოტვირთვის შემთხვევაში Chromium-ის მიერ Safe Browsing-ს გაეგზავნება URL-ები და შესაბამისი გვერდის კონტენტის გარკვეული ნაწილი</translation>
 <translation id="2983934633046890458">Chromium ცდილობს პაროლების რედაქტირებას.</translation>
 <translation id="3032706164202344641">Chromium ვერ ახერხებს პაროლების შემოწმებას. ცადეთ მოგვიანებით.</translation>
 <translation id="3032787606318309379">Chromium-ში დამატება…</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">ამ კომპიუტერს უკვე აქვს Chromium.-ის უფრო ახალი ვერსია. იმ შემთხვევაში, თუ პროგრამა არ მუშაობს, გთხოვთ, განახორციელეთ Chromium-ის დეინსტალაცია და სცადეთ ისევ.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ახლა ხელახლა გაეშვება}=1{Chromium ხელახლა გაეშვება 1 წამში}other{Chromium ხელახლა გაეშვება # წამში}}</translation>
 <translation id="6241367896540709610">ფაილების ჩამოსატვირთად Chromium საჭიროებს მეხსიერებაზე წვდომის ნებართვას</translation>
+<translation id="6245734527075554892">შეამოწმებს URL-ების თანხვედრას Chromium-ში შენახულ არაუსაფრთხო საიტების სიასთან</translation>
 <translation id="6248213926982192922">Chromium გახდეს ნაგულისხმევი ბრაუზერი</translation>
 <translation id="6266342355635466082">Chromium ვერ ახერხებს განახლებების შემოწმებას. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="6268381023930128611">გსურთ Chromium-იდან გამოსვლა?</translation>

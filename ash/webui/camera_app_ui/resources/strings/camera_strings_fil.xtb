@@ -3,6 +3,7 @@
 <translationbundle lang="fil">
 <translation id="1113173431709655881">Camera mode</translation>
 <translation id="1175958423215084756">Na-detect na link. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">I-rotate nang 90 degree clockwise</translation>
 <translation id="1276998909102132017">Mga larawan sa gallery</translation>
 <translation id="1300209025925956156">I-scan ang iyong dokumento</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + Kaliwang arrow para i-access.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Hindi makakuha ng portrait na larawan</translation>
 <translation id="3569311554794739032">Gusto mo ba talagang alisin ang <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Lumipat sa scan mode</translation>
+<translation id="3789724198583203151">I-rotate nang 90 degree counterclockwise</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">I-scan ang barcode</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>

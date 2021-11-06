@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{Ruxsat berildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="2434158240863470628">Yuklab olindi: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Har doim kompyuter versiyasi ochilsin</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> tomonidan boshqariladi</translation>
@@ -95,6 +96,7 @@
 <translation id="3328801116991980348">Sayt haqida ma’lumot</translation>
 <translation id="3333961966071413176">Barcha kontaktlar</translation>
 <translation id="3386292677130313581">Joylashuv ma’lumotini ko‘rishiga ruxsat so‘ralsin (tavsiya etiladi)</translation>
+<translation id="3517437118288792304">Muayyan saytda har doim kompyuter versiyasi ochilsin.</translation>
 <translation id="3538390592868664640">Saytlarni atrofingizning 3D xaritasini yaratish yoki kamera joylashuvini aniqlashdan bloklash</translation>
 <translation id="3551268116566418498">Inkognito rejimi tark etilsinmi?</translation>
 <translation id="3586500876634962664">Kamera va mikrofonni ishlatish</translation>
@@ -124,6 +126,7 @@
 <translation id="429312253194641664">Saytda media-fayl ijro etilmoqda</translation>
 <translation id="42981349822642051">Kengaytirish</translation>
 <translation id="4336434711095810371">Barcha maʼlumotlarni tozalash</translation>
+<translation id="4353125860368453721">Muayyan saytda har doim mobil versiya ochilsin.</translation>
 <translation id="4402755511846832236">Bu qurilmadan foydalanish axborotlarini saytlar bilishini taqiqlash</translation>
 <translation id="4434045419905280838">Qalquvchi oyna va yo‘naltirishlar</translation>
 <translation id="445467742685312942">Saytlarga himoyalangan kontentni ijro qilish uchun ruxsat berish</translation>
@@ -201,7 +204,6 @@
 <translation id="6196640612572343990">Tashqi cookie-fayllarni bloklash.</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> parametrlar</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" /> oʻchirib tashlansinmi?</translation>
-<translation id="6233545266937675277">Saytlarning kompyuter versiyasini talab qilish</translation>
 <translation id="6262279340360821358">Bloklandi: <ph name="PERMISSION_1" /> va <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Saytlar bildirishnoma chiqarishga ruxsat soʻray oladi</translation>
 <translation id="6295158916970320988">Barcha saytlar</translation>
@@ -286,7 +288,6 @@
 <translation id="8211406090763984747">Bu ulanish xavfsiz</translation>
 <translation id="8249310407154411074">Tepaga siljitish</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
-<translation id="8267092878336850213">Saytlarning mobil versiyasini talab qilish</translation>
 <translation id="8300705686683892304">Ilova boshqaruvida</translation>
 <translation id="8324158725704657629">Boshqa soʻralmasin</translation>
 <translation id="8372893542064058268">Ko‘rsatilgan sayt uchun fonda sinxronlashga ruxsat berish.</translation>
@@ -300,6 +301,7 @@
 <translation id="8447861592752582886">Qurilma ruxsatini bekor qilish</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 ta cookie fayl ishlatilmoqda}other{# ta cookie fayl ishlatilmoqda}}</translation>
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>
+<translation id="848952951823693243">Har doim mobil versiya ochilsin</translation>
 <translation id="851751545965956758">Saytlarga qurilmalarga ulanishni taqiqlash</translation>
 <translation id="8525306231823319788">To‘liq ekran rejimi</translation>
 <translation id="857943718398505171">Ruxsat berilgan (tavsiya etiladi)</translation>

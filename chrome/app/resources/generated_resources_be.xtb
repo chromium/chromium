@@ -6,7 +6,6 @@
 <translation id="1003088604756913841">Адкрыць спасылку ў новым акне <ph name="APP" /></translation>
 <translation id="100323615638474026">Прылада USB (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">Доступ да сайтаў</translation>
-<translation id="100524763483954942">Вярнуцца ў налады</translation>
 <translation id="1005274289863221750">Выкарыстанне мікрафона і камеры</translation>
 <translation id="1005333234656240382">Уключыць адладку ADB?</translation>
 <translation id="1006873397406093306">Гэта пашырэнне можа чытаць і змяняць вашы даныя на сайтах. Вы можаце вызначыць, да якіх сайтаў яно мае доступ.</translation>
@@ -776,7 +775,6 @@
 <translation id="1780273119488802839">Ідзе імпартаванне закладак...</translation>
 <translation id="178092663238929451">Каб абменьвацца файламі з людзьмі побач, наладзьце Абагульванне паблізу</translation>
 <translation id="1781291988450150470">Бягучы PIN-код</translation>
-<translation id="1781398670452016618">Выкарыстанне дамена "<ph name="DOMAIN" />" патрабуе падключэння да сеткі Wi-Fi і спампоўвання абнаўлення.</translation>
 <translation id="1781502536226964113">Адкрыць старонку новай укладкі</translation>
 <translation id="1781771911845953849">Уліковыя запісы і сінхранізацыя</translation>
 <translation id="1781979858217752599">Абагульваць аўдыя з акна</translation>
@@ -1443,7 +1441,6 @@
 <translation id="2459703812219683497">Код актывацыі выяўлены</translation>
 <translation id="2462724976360937186">Ідэнтыфікатар ключа цэнтра сертыфікацыі</translation>
 <translation id="2462752602710430187">Дададзены прынтар <ph name="PRINTER_NAME" /></translation>
-<translation id="2465237718053447668">Выкарыстанне дамена "<ph name="DOMAIN" />" патрабуе падключэння да сеткі Wi-Fi і спампоўвання абнаўлення. Вы можаце таксама спампаваць яго праз падключэнне з улікам трафіка (можа спаганяцца плата).</translation>
 <translation id="2467755475704469005">Прылады не выяўлены. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Паскарэнне прагорткі сэнсарнай панэллю</translation>
 <translation id="2468205691404969808">Выкарыстоўвае файлы cookie для захоўвання параметраў, нават калі вы не наведваеце гэтыя старонкі</translation>
@@ -4730,7 +4727,6 @@
 <translation id="5979353814339191480">Гэты параметр прымяняецца да прылад Chromebook, якія выкарыстоўваюць план перадачы даных або падключаны да мабільнай сеткі праз USB-мадэм, а таксама пры падключэнні да партатыўнага хот-спота</translation>
 <translation id="5979421442488174909">&amp;Перакласці на наступную мову: <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Каб дадаць закладку для старонкі, націсніце на зорачку ў адрасным радку</translation>
-<translation id="5983831175889857946">Праверка завершана!</translation>
 <translation id="5984222099446776634">Нядаўна наведаныя</translation>
 <translation id="5985458664595100876">Няправільны фармат URL-адраса. Падтрымліваюцца фарматы \\server\share і smb://server/share.</translation>
 <translation id="598810097218913399">Выдаліць прызначэнне</translation>
@@ -5591,6 +5587,7 @@
 <translation id="6914783257214138813">Усе карыстальнікі, якія будуць бачыць экспартаваны файл, змогуць пабачыць вашы паролі.</translation>
 <translation id="6916590542764765824">Кіраваць пашырэннямі</translation>
 <translation id="6919868320029503575">Ненадзейныя паролі</translation>
+<translation id="6919952941889172531">Уключыць Палепшаны Бяспечны прагляд для гэтага профілю Chrome?</translation>
 <translation id="6920989436227028121">Адкрыць у звычайнай укладцы</translation>
 <translation id="6921104647315081813">Выдаліць дзеянні</translation>
 <translation id="692114467174262153">Не ўдалося адкрыць <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -5665,7 +5662,6 @@
 <translation id="6991665348624301627">Выберыце месца прызначэння</translation>
 <translation id="6992554835374084304">Уключэнне палепшанай праверкі правапісу</translation>
 <translation id="6993000214273684335">Укладка выдалена з групы без назвы – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Ідзе абнаўленне браўзера Chrome</translation>
 <translation id="6994069045767983299">Інвертаваныя колеры</translation>
 <translation id="6995899638241819463">Папярэджваць мяне ў выпадку, калі пры ўцечцы даных былі раскрыты паролі</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – журнал актыўнасці</translation>
@@ -5805,7 +5801,6 @@
 <translation id="7133578150266914903">Адміністратар робіць адкат гэтай прылады (<ph name="PROGRESS_PERCENT" />).</translation>
 <translation id="7134098520442464001">Паменшыць тэкст</translation>
 <translation id="7135729336746831607">Уключыць Bluetooth?</translation>
-<translation id="7136639886842764730">Выкарыстанне дамена "<ph name="DOMAIN" />" патрабуе неадкладнага абнаўлення прылады "<ph name="DEVICE_TYPE" />".</translation>
 <translation id="7136694880210472378">Зрабіць стандартнай пошукавай сістэмай</translation>
 <translation id="7136993520339022828">Адбылася памылка. Выберыце іншы відарыс і паўтарыце спробу.</translation>
 <translation id="7138515695467025690">Выключана (уключыцца аўтаматычна на захадзе сонца)</translation>

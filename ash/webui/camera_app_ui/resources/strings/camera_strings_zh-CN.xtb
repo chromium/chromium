@@ -3,6 +3,7 @@
 <translationbundle lang="zh-CN">
 <translation id="1113173431709655881">相机模式</translation>
 <translation id="1175958423215084756">检测到链接。<ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">顺时针旋转 90 度</translation>
 <translation id="1276998909102132017">图库图片</translation>
 <translation id="1300209025925956156">扫描您的文件</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />。按搜索键 + 向左键即可访问。</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">无法拍摄纵向照片</translation>
 <translation id="3569311554794739032">确定要移除“<ph name="FILE" />”吗？</translation>
 <translation id="3573890771273113519">切换到扫描模式</translation>
+<translation id="3789724198583203151">逆时针旋转 90 度</translation>
 <translation id="3810838688059735925">视频</translation>
 <translation id="3838931309141338733">扫描条形码</translation>
 <translation id="3892148308691398805">复制文字</translation>

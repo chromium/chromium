@@ -201,7 +201,6 @@
 <translation id="6196640612572343990">Blockera cookies från tredje part</translation>
 <translation id="6216432067784365534">Alternativ för <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vill du avinstallera <ph name="APP_NAME" />?</translation>
-<translation id="6233545266937675277">Begär visning av webbplatser för dator</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> blockeras</translation>
 <translation id="6270391203985052864">Webbplatser får be om tillåtelse att skicka aviseringar</translation>
 <translation id="6295158916970320988">Alla webbplatser</translation>
@@ -286,7 +285,6 @@
 <translation id="8211406090763984747">Anslutningen är säker</translation>
 <translation id="8249310407154411074">Flytta högst upp</translation>
 <translation id="8261506727792406068">Radera</translation>
-<translation id="8267092878336850213">Begär visning av webbplatser för mobila enheter</translation>
 <translation id="8300705686683892304">Hanteras av app</translation>
 <translation id="8324158725704657629">Fråga inte igen</translation>
 <translation id="8372893542064058268">Tillåt bakgrundssynkronisering för en specifik webbplats.</translation>

@@ -608,7 +608,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="5138912041966667164">میڈیم سلیٹی نیلا</translation>
 <translation id="5140016802771803559">ریبیکا جامنی</translation>
 <translation id="5142101052131610456">سبھی اسباق</translation>
-<translation id="5152605892605507188">دائیں منتقل کریں</translation>
 <translation id="5158275234811857234">سر ورق</translation>
 <translation id="516076699907426116">جاری رکھنے کے لیے، اگلے سبق کا بٹن تلاش کرنے کے لیے ٹچ کے ذریعے دریافت کریں۔ پھر جاری رکھنے کے لیے دو بار تھپتھپائیں۔</translation>
 <translation id="5170206230005240598">بریل کیپشنز فعال ہیں</translation>
@@ -742,6 +741,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6034000775414344507">ہلکا خاکستری</translation>
 <translation id="6036135911048686884">ٹچ کر کے دریافت کریں</translation>
 <translation id="6037602951055904232">پین فارورڈ</translation>
+<translation id="604240746417122825">قواعد کی غلطی</translation>
 <translation id="6082768461603900813">بنیادی نیویگیشن</translation>
 <translation id="609281021724813947">کوئی پچھلا سلائیڈر نہیں ہے</translation>
 <translation id="6100239002225743044">ایک لائن اوپر منتقل کریں</translation>
@@ -752,7 +752,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6142308968191113180">سرخی 4</translation>
 <translation id="6150023170003443621">پیلا مائل سبز</translation>
 <translation id="6158882249329863701">قطار <ph name="TABLECELLROWINDEX" /> کالم <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">بائیں منتقل کریں</translation>
 <translation id="6164829606128959761">میٹر</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6166362019018438352">بریل کیپشنز غیر فعال ہیں</translation>
@@ -845,7 +844,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6910969481785184048">آن، آف کرنا اور روکنا</translation>
 <translation id="6919104639734799681">ٹیبلز کی فہرست دکھائیں</translation>
 <translation id="692135145298539227">حذف کریں</translation>
-<translation id="6935674530832500465">نیچے منتقل کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6949846980769640811">میڈیم نیلگوں سبز</translation>
 <translation id="6951482098621102657">اگلی سطح 5 کی کوئی ہیڈنگ نہیں ہے</translation>
@@ -1043,14 +1041,12 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="826825447994856889">تعارف</translation>
 <translation id="827266600368092403">انتخاب شروع یا ختم کریں</translation>
 <translation id="827422111966801947">گہرا نیلا</translation>
-<translation id="827496561804786391">اوپر منتقل کریں</translation>
 <translation id="8276439074553447000">پچھلے فوکس کرنے لائق آئٹم پر جائیں</translation>
 <translation id="8279039817939141096">‏اس کے فنکشن کو جاننے کے لیے کورٹی کلید، تازہ کاری کرنے لائق بریل کلید یا ٹچ کا اشارہ دبائیں۔ باہر نکلنے کے لئے w کے ساتھ کنٹرول، Z کے ساتھ اسپیس دبائیں یا دو انگلیوں سے بائیں سوائپ کریں یا اسکیپ دبائیں۔</translation>
 <translation id="8283603667300770666">اگلی فارم فیلڈ</translation>
 <translation id="8310185481635255431">کوئی اگلا لنک نہیں ہے</translation>
 <translation id="831207808878314375">تعریف</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">سبھی کو غیر منتخب کریں</translation>
 <translation id="8316881042119029234">پرانے لیس نما</translation>
 <translation id="8324974933005349667">ٹیکسٹ ٹو اسپیچ کی ترتیبات کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="8326783648485765113">لان سبز</translation>

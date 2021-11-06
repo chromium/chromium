@@ -48,6 +48,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1239161794459865856">La funció <ph name="FEATURE_NAME" /> està connectada.</translation>
 <translation id="1246890715821376239">Aplicacions no admeses</translation>
 <translation id="1247372569136754018">Micròfon (intern)</translation>
+<translation id="1247519845643687288">Aplicacions recents</translation>
 <translation id="1252999807265626933">S'està carregant amb: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Quin temps fa?</translation>
 <translation id="1266097335951928626">Inicia la càmera per a selfies</translation>
@@ -61,6 +62,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1289185460362160437">Pots tornar <ph name="COME_BACK_DAY_OF_WEEK" /> a les <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
 <translation id="1293264513303784526">Dispositiu USB-C (port esquerre)</translation>
+<translation id="1293556467332435079">Fitxers</translation>
 <translation id="1294929383540927798">Canvia la configuració de notificacions de la pantalla de bloqueig</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Mostra la configuració del Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1419738280318246476">Desbloqueja el dispositiu per dur a terme l'acció que indica la notificació</translation>
 <translation id="1420408895951708260">Activa o desactiva la funció Llum nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sí</translation>
+<translation id="1438357537418863713">La reproducció en continu d'aplicacions ja està configurada. Quan comencis, les aplicacions llançades recentment apareixeran aquí.</translation>
 <translation id="144853431011121127">Rep les notificacions del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
@@ -246,6 +249,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionat per <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Surt del mode de captura</translation>
 <translation id="2792498699870441125">Alt+Cerca</translation>
+<translation id="2805756323405976993">Aplicacions</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Ara se us tancarà la sessió.</translation>
 <translation id="28232023175184696">No es pot connectar a Internet. Fes clic per tornar-ho a provar.</translation>
@@ -374,6 +378,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3665889125180354336">Grava el micròfon</translation>
 <translation id="3680908746918359504">Esborra tots els marcadors</translation>
 <translation id="36813544980941320">Les xarxes Wi-Fi es compartiran entre el teu telèfon i el dispositiu <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Llocs web</translation>
 <translation id="3701206655856637070">Ara pots canviar el lloc on es desen les captures de pantalla</translation>
 <translation id="3702809606464356667">S'estan mostrant les finestres de l'escriptori actual. Prem la tecla de fletxa amunt per mostrar les finestres de tots els escriptoris.</translation>
 <translation id="3702846122927433391">Quants habitants té Nigèria?</translation>
@@ -535,6 +540,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4759238208242260848">Baixades</translation>
 <translation id="4774338217796918551">Pots tornar demà a les <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contrasenya per a <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistent de Google no està disponible en les sessions de demostració.</translation>
 <translation id="4782311465517282004">Obtén definicions, traduccions o conversions d'unitats quan mantinguis premut el text o quan hi facis clic amb el botó dret</translation>
 <translation id="479989351350248267">cerca</translation>
@@ -590,6 +596,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
 <translation id="5147567197700016471">Desbloquejat</translation>
 <translation id="5155897006997040331">Velocitat de lectura</translation>
+<translation id="5166007464919321363">Desa l'escriptori com a plantilla</translation>
 <translation id="5166918508782100047">Configuració de Respostes ràpides</translation>
 <translation id="5168181903108465623">Dispositius d'emissió disponibles</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
@@ -799,6 +806,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6777216307882431711">S'estan alimentant els dispositius USB-C connectats</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>
+<translation id="6811454077060061666">Google Drive per a ordinadors no està disponible</translation>
 <translation id="6816797338148849397">Hi ha disponible informació relacionada amb la teva selecció. Utilitza la tecla de fletxa amunt per accedir-hi.</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
@@ -933,6 +941,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7796353162336583443">Toca el botó del llapis òptic al prestatge per escriure una nota, fer una captura de pantalla, utilitzar l'Assistent de Google o fer-lo servir com a punter làser o lupa.</translation>
 <translation id="7798302898096527229">Prem Cerca o Maj per cancel·lar.</translation>
 <translation id="780301667611848630">No, gràcies</translation>
+<translation id="7807067443225230855">Cerca i Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Senyal potent</translation>
 <translation id="7837740436429729974">S'ha esgotat el temps</translation>
@@ -997,6 +1006,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
 <translation id="826107067893790409">Prem Retorn per desbloquejar-lo per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Suprimeix</translation>
+<translation id="8281279285293265212">No s'ha pogut desar la captura de pantalla de vídeo</translation>
 <translation id="8284362522226889623">Fes lliscar quatre dits cap a l'esquerra per canviar a l'escriptori anterior</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Feble</translation>
@@ -1101,6 +1111,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="9070640332319875144">Configuració de l'Assistent</translation>
 <translation id="9072519059834302790">Temps restant perquè s'esgoti la bateria: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Plantilles</translation>
 <translation id="9077515519330855811">Controls multimèdia; ara s'està reproduint <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Llisca cap amunt per anar a la pàgina d'inici</translation>

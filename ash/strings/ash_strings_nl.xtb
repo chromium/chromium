@@ -48,6 +48,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is verbonden.</translation>
 <translation id="1246890715821376239">Niet-ondersteunde apps</translation>
 <translation id="1247372569136754018">Microfoon (intern)</translation>
+<translation id="1247519845643687288">Recente apps</translation>
 <translation id="1252999807265626933">Opladen via <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Wat voor weer is het?</translation>
 <translation id="1266097335951928626">Selfiecamera starten</translation>
@@ -61,6 +62,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1289185460362160437">Kom op <ph name="COME_BACK_DAY_OF_WEEK" /> terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
 <translation id="1293264513303784526">USB-C-apparaat (poort aan linkerkant)</translation>
+<translation id="1293556467332435079">Bestanden</translation>
 <translation id="1294929383540927798">Instellingen voor meldingen voor het vergrendelscherm wijzigen</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Bluetooth-instellingen bekijken. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1419738280318246476">Ontgrendel het apparaat om de meldingsactie uit te voeren</translation>
 <translation id="1420408895951708260">Nachtverlichting aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
+<translation id="1438357537418863713">App-streaming is nu ingesteld. Als je aan de slag gaat, zie je hier recent gelanceerde apps.</translation>
 <translation id="144853431011121127">Meldingen van je telefoon krijgen op je <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Taalinstellingen bekijken</translation>
 <translation id="1460620680449458626">Volume staat uit.</translation>
@@ -246,6 +249,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> beheerd door <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Opnamemodus sluiten</translation>
 <translation id="2792498699870441125">Alt+Zoeken</translation>
+<translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Gedeeltelijke opname</translation>
 <translation id="2819276065543622893">Je wordt nu uitgelogd.</translation>
 <translation id="28232023175184696">Kan geen verbinding maken met internet. Klik om het opnieuw te proberen.</translation>
@@ -374,6 +378,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3665889125180354336">Microfoon opnemen</translation>
 <translation id="3680908746918359504">Alle markeringen wissen</translation>
 <translation id="36813544980941320">Wifi-netwerken worden gedeeld tussen je telefoon en <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Websites</translation>
 <translation id="3701206655856637070">Je kunt nu wijzigen waar schermopnamen worden opgeslagen</translation>
 <translation id="3702809606464356667">Er worden vensters van het huidige bureau getoond, druk op de pijl-omhoog om vensters van alle bureaus te bekijken</translation>
 <translation id="3702846122927433391">Bevolking van Nigeria</translation>
@@ -535,6 +540,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Kom morgen terug om <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Wachtwoord voor <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">De Google Assistent is niet beschikbaar in een demosessie.</translation>
 <translation id="4782311465517282004">Als je met de rechtermuisknop op tekst klikt of op tekst tikt en deze vasthoudt, kun je definities, vertalingen of eenheidsconversies opvragen</translation>
 <translation id="479989351350248267">zoeken</translation>
@@ -590,6 +596,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5136175204352732067">Ander toetsenbord aangesloten</translation>
 <translation id="5147567197700016471">Ontgrendeld</translation>
 <translation id="5155897006997040331">Leesnelheid</translation>
+<translation id="5166007464919321363">Bureau opslaan als template</translation>
 <translation id="5166918508782100047">Instellingen voor Snelle antwoorden</translation>
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
@@ -799,6 +806,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6777216307882431711">De aangesloten USB-C-apparaten worden van stroom voorzien</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6803622936009808957">Kan schermen niet spiegelen, omdat er geen ondersteunde resoluties zijn gevonden. Het uitgebreide bureaublad is geactiveerd.</translation>
+<translation id="6811454077060061666">Google Drive voor desktop is niet beschikbaar</translation>
 <translation id="6816797338148849397">Er is informatie met betrekking tot je selectie beschikbaar. Gebruik de pijl-omhoog om deze te openen.</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6820676911989879663">Neem een pauze</translation>
@@ -933,6 +941,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7796353162336583443">Tik op de stylusknop op de plank om een notitie of screenshot te maken of de Google Assistent, de laserpen of het vergrootglas te gebruiken.</translation>
 <translation id="7798302898096527229">Druk op Zoeken of Shift om te annuleren.</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
+<translation id="7807067443225230855">Google Zoeken en Google Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> en <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterk signaal</translation>
 <translation id="7837740436429729974">De tijd is om</translation>
@@ -997,6 +1006,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Druk op Enter om te ontgrendelen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Verwijderen</translation>
+<translation id="8281279285293265212">Kan screencast niet opslaan</translation>
 <translation id="8284362522226889623">Swipe met 4 vingers naar links om naar het vorige bureau te schakelen</translation>
 <translation id="828708037801473432">Uit</translation>
 <translation id="8297006494302853456">Zwak</translation>
@@ -1101,6 +1111,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="9070640332319875144">Instellingen voor Assistent</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> tot de batterij leeg is.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Templates</translation>
 <translation id="9077515519330855811">Mediabediening, <ph name="MEDIA_TITLE" /> wordt nu afgespeeld</translation>
 <translation id="9079731690316798640">Wifi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Swipe omhoog om naar het startscherm te gaan</translation>

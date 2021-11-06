@@ -58,6 +58,7 @@
 <translation id="2885378588091291677">ٹاسک مینیجر</translation>
 <translation id="2910007522516064972">‏Chromium&amp; کے بارے میں</translation>
 <translation id="2977470724722393594">‏Chromium اپ ٹو ڈیٹ ہے</translation>
+<translation id="2977506796191543575">‏اگر کوئی سائٹ آپ کا پاس ورڈ چرانے کی کوشش کرتی ہے یا جب آپ نقصان دہ فائل ڈاؤن لوڈ کرتے ہیں تو Chromium محفوظ براؤزنگ پر صفحہ کے مواد کے کچھ حصوں سمیت URLs بھی بھیج سکتا ہے</translation>
 <translation id="2983934633046890458">‏Chromium پاس ورڈز میں ترمیم کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="3032706164202344641">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکتا ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="3032787606318309379">‏Chromium میں شامل کیا جا رہا ہے…</translation>
@@ -169,6 +170,7 @@
 <translation id="6212496753309875659">‏اس کمپیوٹر پر Chromium کا ایک مزید حالیہ ورژن پہلے سے ہے۔ اگر سافٹ ویئر کام نہیں کر رہا ہے تو براہ کرم Chromium کو ان انسٹال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏ابھی Chromium دوبارہ لانچ ہوگا}=1{‏1 سیکنڈ میں Chromium دوبارہ لانچ ہوگا}other{‏# سیکنڈ میں Chromium دوبارہ لانچ ہوگا}}</translation>
 <translation id="6241367896540709610">‏Chromium کو فائلز ڈاؤن لوڈ کرنے کیلئے اسٹوریج تک رسائی کی اجازت درکار ہے</translation>
+<translation id="6245734527075554892">‏Chromium میں اسٹور کردہ غیر محفوظ سائٹس کی فہرست کے URLs چیک کرتا ہے</translation>
 <translation id="6248213926982192922">‏Chromium کو ڈیفالٹ براؤزر بنائیں</translation>
 <translation id="6266342355635466082">‏Chromium اپ ڈیٹس چیک نہیں کرسکتا ہے۔ اپنا انٹرنیٹ کنکشن چیک کرنے کی کوشش کریں۔</translation>
 <translation id="6268381023930128611">‏Chromium سے سائن آؤٹ کریں؟</translation>

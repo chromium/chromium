@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Орташа сұрқай көк</translation>
 <translation id="5140016802771803559">Қою күлгін</translation>
 <translation id="5142101052131610456">Барлық сабақтар</translation>
-<translation id="5152605892605507188">оңға жылжыт</translation>
 <translation id="5158275234811857234">Мұқаба</translation>
 <translation id="516076699907426116">"Келесі сабақ" түймесін табу үшін түртілген элементтерді дыбыстаңыз. Сосын жалғастыру үшін екі рет түртіңіз.</translation>
 <translation id="5170206230005240598">Брайль жазулары қосылған.</translation>
@@ -751,7 +750,6 @@
 <translation id="6142308968191113180">4-тақырып</translation>
 <translation id="6150023170003443621">Сарғыш жасыл</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" />-жол, <ph name="TABLECELLCOLUMNINDEX" />-баған</translation>
-<translation id="6159796324830296161">солға жылжыт</translation>
 <translation id="6164829606128959761">өлшегіш құрал</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6166362019018438352">Брайль жазулары өшірілген.</translation>
@@ -844,7 +842,6 @@
 <translation id="6910969481785184048">Қосу, өшіру және тоқтату</translation>
 <translation id="6919104639734799681">Кестелер тізімін көрсету</translation>
 <translation id="692135145298539227">жой</translation>
-<translation id="6935674530832500465">төмен жылжыту</translation>
 <translation id="6945221475159498467">Таңдау</translation>
 <translation id="6949846980769640811">Орташа теңіз түстес көк</translation>
 <translation id="6951482098621102657">Келесі 5-деңгей тақырыбы жоқ.</translation>
@@ -1041,14 +1038,12 @@
 <translation id="826825447994856889">Кіріспе</translation>
 <translation id="827266600368092403">Таңдауды бастау немесе аяқтау.</translation>
 <translation id="827422111966801947">Индиго</translation>
-<translation id="827496561804786391">жоғары жылжыту</translation>
 <translation id="8276439074553447000">Алдыңғы фокусталатын элементке өту</translation>
 <translation id="8279039817939141096">Оның қалай жұмыс істейтінін білу үшін QWERTY пернесін, жаңартылатын Брайль қарпі пернесін басыңыз немесе қимылдың өзін түртіңіз. Шығу үшін Ctrl+W, бос орын мен Z пернелер тіркесімдерін немесе Esc пернесін басыңыз, я болмаса екі саусағыңызбен солға сырғытыңыз.</translation>
 <translation id="8283603667300770666">Келесі нысан өрісі</translation>
 <translation id="8310185481635255431">Келесі сілтеме жоқ.</translation>
 <translation id="831207808878314375">Анықтама</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">барлығынан таңдау белгісін алу</translation>
 <translation id="8316881042119029234">Ақшыл сары</translation>
 <translation id="8324974933005349667">Мәтінді дыбыстау параметрлерін жекелендіру</translation>
 <translation id="8326783648485765113">Шөп реңкті жасыл</translation>

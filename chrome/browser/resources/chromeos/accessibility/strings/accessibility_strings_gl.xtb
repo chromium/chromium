@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Azul lousa intermedio</translation>
 <translation id="5140016802771803559">Púrpura Rebecca</translation>
 <translation id="5142101052131610456">Todas as leccións</translation>
-<translation id="5152605892605507188">move o cursor cara á dereita</translation>
 <translation id="5158275234811857234">Portada</translation>
 <translation id="516076699907426116">Se queres continuar, usa a Exploración táctil para atopar o botón Lección seguinte. Despois, toca dúas veces para continuar.</translation>
 <translation id="5170206230005240598">Subtítulos en braille: activados</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Gris claro</translation>
 <translation id="6036135911048686884">Exploración táctil</translation>
 <translation id="6037602951055904232">Despraza cara adiante</translation>
+<translation id="604240746417122825">erro gramatical</translation>
 <translation id="6082768461603900813">Navegación básica</translation>
 <translation id="609281021724813947">Non hai ningún control desprazable anterior</translation>
 <translation id="6100239002225743044">Subir unha liña</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">Título 4</translation>
 <translation id="6150023170003443621">Verde amarelado</translation>
 <translation id="6158882249329863701">fila <ph name="TABLECELLROWINDEX" /> columna <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">move o cursor cara á esquerda</translation>
 <translation id="6164829606128959761">medidor</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6166362019018438352">Subtítulos en braille: desactivados</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">Activar, desactivar e deter</translation>
 <translation id="6919104639734799681">Mostra a lista de táboas</translation>
 <translation id="692135145298539227">elimina</translation>
-<translation id="6935674530832500465">baixa</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6949846980769640811">Augamariña intermedio</translation>
 <translation id="6951482098621102657">Non hai ningunha cabeceira posterior de nivel 5</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">Introdución</translation>
 <translation id="827266600368092403">Inicia ou finaliza a selección</translation>
 <translation id="827422111966801947">Índigo</translation>
-<translation id="827496561804786391">sube</translation>
 <translation id="8276439074553447000">Salta ao elemento enfocable anterior</translation>
 <translation id="8279039817939141096">Fai un xesto táctil ou ben preme unha tecla dunha liña de braille ou dun teclado QWERTY se queres descubrir para que serve. Para saír, preme Escape, Control+W ou Espazo+Z, ou ben pasa dous dedos cara á esquerda.</translation>
 <translation id="8283603667300770666">Seguinte campo do formulario</translation>
 <translation id="8310185481635255431">Non hai ningunha ligazón posterior</translation>
 <translation id="831207808878314375">Definición</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">anula toda a selección</translation>
 <translation id="8316881042119029234">Encaixe antigo</translation>
 <translation id="8324974933005349667">Personalizar opcións de configuración da conversión de texto a voz</translation>
 <translation id="8326783648485765113">Verde herba</translation>

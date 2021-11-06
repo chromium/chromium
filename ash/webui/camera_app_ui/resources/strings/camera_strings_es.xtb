@@ -3,6 +3,7 @@
 <translationbundle lang="es">
 <translation id="1113173431709655881">Modo de cámara</translation>
 <translation id="1175958423215084756">Enlace detectado. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Girar 90 grados en el sentido de las agujas del reloj</translation>
 <translation id="1276998909102132017">Imágenes de la galería</translation>
 <translation id="1300209025925956156">Escanear tu documento</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Pulsa la tecla de búsqueda y la flecha hacia la izquierda para acceder a ellos.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">No se ha podido hacer una foto vertical</translation>
 <translation id="3569311554794739032">¿Seguro que quieres eliminar <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Cambiar al modo escáner</translation>
+<translation id="3789724198583203151">Girar 90 grados en el sentido contrario a las agujas del reloj</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Escanear código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>

@@ -201,7 +201,6 @@
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />选项</translation>
 <translation id="6231752747840485235">卸载“<ph name="APP_NAME" />”？</translation>
-<translation id="6233545266937675277">请求获取网站的桌面版视图</translation>
 <translation id="6262279340360821358">已禁用“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
 <translation id="6295158916970320988">所有网站</translation>
@@ -286,7 +285,6 @@
 <translation id="8211406090763984747">连接是安全的</translation>
 <translation id="8249310407154411074">移至顶部</translation>
 <translation id="8261506727792406068">删除</translation>
-<translation id="8267092878336850213">请求获取网站的移动版视图</translation>
 <translation id="8300705686683892304">由应用管理</translation>
 <translation id="8324158725704657629">别再询问</translation>
 <translation id="8372893542064058268">允许特定网站进行后台同步。</translation>

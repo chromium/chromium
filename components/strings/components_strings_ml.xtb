@@ -42,7 +42,6 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> എല്ലായ്പ്പോഴും വിവര്‍ത്തനം ചെയ്യുക </translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> എന്നതിന്‍റെ അനുമതി തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1113869188872983271">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
-<translation id="1115795617528746272"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിലവിൽ തുറന്നിരിക്കുന്ന എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്ക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക.</translation>
 <translation id="1123753900084781868">തത്സമയ ക്യാപ്ഷൻ ഇപ്പോൾ ലഭ്യമല്ല</translation>
 <translation id="1125573121925420732">വെബ്‌സൈറ്റുകൾ അവയുടെ സുരക്ഷ അപ്‌ഡേറ്റ് ചെയ്യുന്ന സമയത്ത് പൊതുവെ മുന്നറിയിപ്പുകൾ കാണിച്ചേക്കാം. ഇത് താമസിയാതെ മെച്ചപ്പെടും.</translation>
 <translation id="112840717907525620">നയ കാഷെ ശരി</translation>
@@ -471,7 +470,6 @@
 <translation id="2465655957518002998">ഡെലിവറി രീതി തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2465688316154986572">സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="2465914000209955735">Chrome-ൽ നിങ്ങൾ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യുക</translation>
-<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗും മറ്റും മാനേജ് ചെയ്യാൻ 'Tab' അമർത്തിയ ശേഷം 'Enter' അമർത്തുക</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്യുന്നു<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-N ക്രമത്തിൽ</translation>
 <translation id="2470767536994572628">നിങ്ങൾ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യുമ്പോൾ, ഈ ഡോക്യുമെന്റ് ഒറ്റ പേജ് കാഴ്ചയിലേക്കും അതിന്റെ ഒറിജിനൽ റൊട്ടേഷനിലേക്കും മടങ്ങുന്നു</translation>
@@ -635,7 +633,6 @@
 <translation id="3041612393474885105">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
 <translation id="3044034790304486808">നിങ്ങളുടെ തിരയൽ പുനരാരംഭിക്കുക</translation>
 <translation id="3060227939791841287">C9 (എൻവലപ്പ്)</translation>
-<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ Tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="3061707000357573562">പാച്ച് സേവനം</translation>
 <translation id="306573536155379004">ഗെയിം ആരംഭിച്ചു.</translation>
 <translation id="3080254622891793721">ഗ്രാഫിക്</translation>
@@ -713,7 +710,6 @@
 <translation id="3329013043687509092">സാച്ചുറേഷൻ</translation>
 <translation id="3333762389743153920">വെർച്വൽ കാർഡിന് യോഗ്യമല്ല</translation>
 <translation id="3338095232262050444">സുരക്ഷിതം</translation>
-<translation id="3344575302477361573">'അദൃശ്യ വിൻഡോകൾ അടയ്ക്കുക' ബട്ടൺ, നിലവിൽ തുറന്നിരിക്കുന്ന എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്ക്കാൻ Enter അമർത്തുക.</translation>
 <translation id="3355823806454867987">പ്രോക്സി ക്രമീകരണങ്ങള്‍ മാറ്റുക...</translation>
 <translation id="3360103848165129075">പേയ്മെന്റ് കൈകാര്യം ചെയ്യുന്ന ഷീറ്റ്</translation>
 <translation id="3361596688432910856">Chrome ഇനിപ്പറയുന്ന വിവരങ്ങൾ <ph name="BEGIN_EMPHASIS" />സംരക്ഷിക്കില്ല<ph name="END_EMPHASIS" />:
@@ -862,7 +858,6 @@
 <translation id="3765588406864124894">മെയിൽബോക്സ് 9</translation>
 <translation id="3767485424735936570">ഈ ഉള്ളടക്കം പകർത്തി <ph name="VM_NAME" />-ലേക്ക് ഒട്ടിക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-ൽ പുതിയൊരു കുറിപ്പ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
-<translation id="3776257069753764304">Chrome-ൽ ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക ബട്ടൺ, Chrome-ൽ നിങ്ങൾ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യാൻ Enter അമർത്തുക.</translation>
 <translation id="3778403066972421603">ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിലും ഈ ഉപകരണത്തിലും സംരക്ഷിക്കണോ?</translation>
 <translation id="3780694243617746492">ഔട്ട്പുട്ട് ബിൻ</translation>
 <translation id="3781428340399460090">ഹോട്ട് പിങ്ക്</translation>
@@ -919,11 +914,7 @@
 <translation id="3969052498612555048">നിങ്ങളുടെ കോഡ് കണ്ടെത്താനാകുന്നില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ബ്ലോക്കുചെയ്‌തിരിക്കുന്നു</translation>
-<translation id="3973357910713125165">Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="3986705137476756801">തൽസമയ ക്യാപ്ഷൻ ഇപ്പോഴത്തേക്ക് ഓഫാക്കുക</translation>
-<translation id="3987405730340719549">ഈ സൈറ്റ് വ്യാജമോ വഞ്ചനാപരമോ ആകാമെന്ന് Chrome നിർണ്ണയിച്ചു.
-
-    ഇത് പിശകിനാൽ കാണിച്ചതാണെന്ന് നിങ്ങൾ വിശ്വസിക്കുന്നുവെങ്കിൽ, https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals സന്ദർശിക്കുക.</translation>
 <translation id="3987940399970879459">ഒരു MB-യിൽ കുറവാണ്</translation>
 <translation id="3990250421422698716">ജോഗ് ഓഫ്‌സെറ്റ്</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> എന്ന സൈറ്റിലേക്കുള്ള എല്ലാ അഭ്യർത്ഥനകൾക്കും ഒരു ഉറവിട നയം
@@ -965,7 +956,6 @@
 <translation id="4127575959421463246">ChromeOS ഫ്ലാഗുകൾ തിരയുകയാണോ? സന്ദർശിക്കുക</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{മറ്റൊരെണ്ണം}other{മറ്റ് # എണ്ണം}}</translation>
 <translation id="4130226655945681476">നെറ്റ്‌വർക്ക് കേബിളുകളും മോഡവും റൂട്ടറും പരിശോധിക്കുന്നു</translation>
-<translation id="4133224101597112888">ഈ ടാബ് ബട്ടൺ പങ്കിടുക, ലിങ്ക് പങ്കിടുക, QR കോഡ് സൃഷ്ടിക്കുക, കാസ്റ്റ് ചെയ്യുക എന്നിവയും മറ്റും ഉപയോഗിച്ച് ഈ ടാബ് പങ്കിടാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="4134123981501319574">ഡോക് സൃഷ്ടിക്കുക</translation>
 <translation id="413544239732274901">കൂടുതലറിയുക</translation>
 <translation id="4142935452406587478">ട്രേ 10</translation>
@@ -1014,7 +1004,6 @@
     &lt;h4&gt;ഘട്ടം 5: അധിക സഹായം സ്വീകരിക്കുക&lt;/h4&gt;
     &lt;p&gt;നിങ്ങൾ ഇപ്പോഴും പിശക് കാണുന്നുവെങ്കിൽ, വെബ്‌സൈറ്റ് ഉടമയെ ബന്ധപ്പെടുക.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
-<translation id="4229544452621580519">Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക</translation>
 <translation id="4230204356098880324">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാനും നീക്കാനും ആവശ്യപ്പെടാം</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> എന്ന സൈറ്റിലേക്ക് പോവുക<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">സാധുത</translation>
@@ -1178,7 +1167,6 @@
 <translation id="4757993714154412917">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഇപ്പോൾ തന്നെ പരിശോധിക്കാൻ Chromium നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="4758311279753947758">കോൺടാക്റ്റ് വിവരങ്ങൾ ചേർക്കുക</translation>
 <translation id="4761104368405085019">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുക</translation>
-<translation id="4761869838909035636">Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക</translation>
 <translation id="4764776831041365478"><ph name="URL" /> ലെ വെബ്‌പേജ് താല്‍‌ക്കാലികമായി പ്രവര്‍‌ത്തനരഹിതമായിരിക്കാം, അല്ലെങ്കില്‍‌ ഒരു പുതിയ വെബ് വിലാസത്തിലേക്ക് ശാശ്വതമായി നീക്കംചെയ്യപ്പെട്ടിരിക്കാം.</translation>
 <translation id="4766713847338118463">താഴെ ഇരട്ട സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
 <translation id="4771973620359291008">ഒരു അജ്ഞാത പിശക് സംഭവിച്ചു.</translation>
@@ -1240,7 +1228,6 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, തിരയാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="4930153903256238152">ഉയർന്ന ശേഷി</translation>
 <translation id="4943872375798546930">ഫലങ്ങളൊന്നുമില്ല</translation>
-<translation id="4946982471994930967">'ഉപയോഗസഹായി ക്രമീകരണം മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Enter അമർത്തുക.</translation>
 <translation id="4950898438188848926">ടാബ് മാറാനുള്ള ബട്ടൺ, തുറന്നിരിക്കുന്ന ടാബായ <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> എന്നതിലേക്ക് മാറാൻ എൻ്റർ അമർത്തുക</translation>
 <translation id="495170559598752135">പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="4953689047182316270">ഉപയോഗസഹായി ഇവന്റുകളോട് പ്രതികരിക്കുക</translation>
@@ -1299,7 +1286,6 @@
 <translation id="5115216390227830982">യൂറോപ്യൻ-Edp</translation>
 <translation id="5115232566827194440">നിയന്ത്രിത 'മാനേജ് ചെയ്യുന്ന അതിഥി സെഷൻ' അസാധുവാക്കൽ</translation>
 <translation id="5115563688576182185">(64-ബിറ്റ്)</translation>
-<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക.</translation>
 <translation id="5123063207673082822">വാരാന്ത്യം</translation>
 <translation id="5125394840236832993">B-പ്ലസ്</translation>
 <translation id="5126510351761255129">നിങ്ങളുടെ കാർഡ് പരിശോധിച്ചുറപ്പിക്കുക</translation>
@@ -1346,7 +1332,6 @@
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">എന്തായാലും ക്യാപ്‌ചർ ചെയ്യുക</translation>
 <translation id="5266128565379329178">മുകളിൽ ബൈൻഡ് ചെയ്യുക</translation>
-<translation id="5269124652893918188"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ ബ്രൗസറിന്റെ രൂപം ഇഷ്ടാനുസൃതമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക.</translation>
 <translation id="5269225904387178860">താഴെ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="5269999699920406580">സിസ്‌റ്റത്തിലുടനീളം ബാധകമാകുന്ന ഫീച്ചറുകൾ ഉടമയ്‌ക്ക് മാത്രമേ സജ്ജീകരിക്കാനാവൂ: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">മുന്നറിയിപ്പ്: ഈ നയം ലയിപ്പിക്കാവുന്ന നിഘണ്ടു നയങ്ങളുടെ ഭാഗമല്ലാത്തതിനാലാണ് PolicyDictionaryMultipleSourceMergeList നയത്തിൽ വ്യക്തമാക്കിയിരിക്കുന്നത് പോലെ ലയിപ്പിക്കാത്തത്.</translation>
@@ -1399,7 +1384,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
 <translation id="5428105026674456456">സ്പാനിഷ്</translation>
 <translation id="5430298929874300616">ബുക്ക്‌മാർക്ക് നീക്കംചെയ്യുക</translation>
-<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ലിങ്ക് പങ്കിടുക, QR കോഡ് സൃഷ്ടിക്കുക, കാസ്റ്റ് ചെയ്യുക എന്നിവയും മറ്റും ഉപയോഗിച്ച് ഈ ടാബ് പങ്കിടാൻ ടാബ് അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക.</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" എന്നതിൽ സ്‌കീമ മൂല്ല്യനിർണ്ണയ പിശക്: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">വിപരീത ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>
 <translation id="5447765697759493033">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യപ്പെടില്ല</translation>
@@ -1432,7 +1416,6 @@
 <translation id="5540224163453853">അഭ്യർത്ഥിച്ച ലേഖനം കണ്ടെത്താനായില്ല.</translation>
 <translation id="5541086400771735334">മെയിൽബോക്സ് 7</translation>
 <translation id="5541546772353173584">ഇമെയില്‍‌ ചേര്‍‌ക്കുക</translation>
-<translation id="5542280138350899197">സുരക്ഷാ ക്രമീകരണ ബട്ടൺ മാനേജ് ചെയ്യുക, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗും മറ്റും മാനേജ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="5545756402275714221">നിങ്ങൾക്കുള്ള ലേഖനങ്ങൾ</translation>
 <translation id="5552137475244467770">ഓൺലൈനിൽ പ്രസിദ്ധീകരിച്ച ലിസ്റ്റുകൾക്ക് അനുസൃതമായി Chrome ഇടയ്ക്കിടെ നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കുന്നു. ഇത് ചെയ്യുമ്പോൾ, നിങ്ങളുടെ പാസ്‌വേഡുകളും ഉപയോക്തൃനാമങ്ങളും എൻ‌ക്രിപ്റ്റ് ചെയ്‌ത നിലയിലായിരിക്കും, അതിനാൽ അവ Google ഉൾപ്പെടെ ആർക്കും വായിക്കാൻ കഴിയില്ല.</translation>
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
@@ -1511,9 +1494,6 @@
 <translation id="5830698870816298009">ക്യാമറയുടെ ഉപയോഗവും ചലനവും</translation>
 <translation id="5838278095973806738">അക്രമകാരികൾ മോഷ്‌ടിക്കാൻ സാധ്യതയുള്ളതിനാൽ ഈ സൈറ്റിൽ നിങ്ങളുടെ രഹസ്യ വിവരങ്ങളൊന്നും (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകളോ ക്രെഡിറ്റ് കാർഡുകളോ പോലുള്ളവ) നൽകരുത്.</translation>
 <translation id="5851548754964597211">ടാബ് ലിസ്റ്റ്</translation>
-<translation id="5855253129151731373">ഈ സൈറ്റിന്റെ ഹോസ്റ്റ് നാമം <ph name="LOOKALIKE_DOMAIN" /> എന്നതിന്റെ പേരിന് സമാനമായി തോന്നുന്നു. ഡൊമെയ്ൻ നാമത്തിൽ ചിലപ്പോൾ ചെറുതും കാണാൻ ബുദ്ധിമുട്ടുള്ളതുമായ മാറ്റങ്ങൾ വരുത്തി, ആക്രമണകാരികൾ സൈറ്റുകളുടെ അനുകരണ രൂപം സൃഷ്‌ടിക്കാറുണ്ട്.
-
-    ഇത് പിശകിനാൽ കാണിച്ചതാണെന്ന് നിങ്ങൾ വിശ്വസിക്കുന്നുവെങ്കിൽ, https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals സന്ദർശിക്കുക.</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5862579898803147654">സ്റ്റാക്കർ 8</translation>
 <translation id="5863847714970149516">മുമ്പോട്ടുള്ള പേജ് നിങ്ങളിൽ നിന്ന് പണമീടാക്കാൻ ശ്രമിച്ചേക്കാം</translation>
@@ -1695,7 +1675,6 @@
 <translation id="647261751007945333">ഉപകരണ നയങ്ങൾ</translation>
 <translation id="6476284679642588870">പേയ്മെൻ്റ് രീതികൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="6489534406876378309">ക്രാഷുകൾ അപ്‌ലോഡുചെയ്യുന്നത് ആരംഭിക്കുക</translation>
-<translation id="6493328574149990106"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഉപയോഗസഹായി ടൂളുകൾ വ്യക്തിപരമാക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക.</translation>
 <translation id="6493924760403974580">ഈ ആപ്പ് ഈ വലുപ്പം മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ.</translation>
 <translation id="6494750904506170417">പോപ്-അപ്പുകളും റീഡയറക്‌റ്റുകളും</translation>
 <translation id="6499038740797743453">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യണോ?</translation>
@@ -2034,7 +2013,6 @@
 <translation id="7638605456503525968">സീരിയൽ പോർട്ടുകൾ</translation>
 <translation id="7639968568612851608">കടും ചാരനിറം</translation>
 <translation id="7647206758853451655">പ്രിന്റ് നിലവാരം</translation>
-<translation id="7648685412377719625">നിലവിൽ തുറന്നിരിക്കുന്ന എല്ലാ അദൃശ്യ വിൻഡോകളും അടയ്ക്കുക.</translation>
 <translation id="7648992873808071793">ഈ ഉപകരണത്തിൽ ഫയലുകൾ സംഭരിക്കുക</translation>
 <translation id="7653957176542370971">പേയ്മെന്റ് കൈകാര്യം ചെയ്യുന്ന ഷീറ്റ് അടച്ചു</translation>
 <translation id="7654909834015434372">നിങ്ങൾ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യുമ്പോൾ, ഈ ഡോക്യുമെന്റ് അതിന്റെ ഒറിജിനൽ റൊട്ടേഷനിലേക്ക് മടങ്ങുന്നു</translation>
@@ -2118,7 +2096,6 @@
 <translation id="7932579305932748336">കോട്ട്</translation>
 <translation id="79338296614623784">ശരിയായ ഒരു ഫോൺ നമ്പർ നൽകുക</translation>
 <translation id="7934414805353235750">പരിരക്ഷിത ഉള്ളടക്കം പ്ലേ ചെയ്യാൻ <ph name="URL" /> ആഗ്രഹിക്കുന്നു. നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഐഡന്റിറ്റി, Google പരിശോധിച്ചുറപ്പിക്കും</translation>
-<translation id="7935031712718413217">കബളിപ്പിക്കാൻ സാധ്യതയുള്ള URL</translation>
 <translation id="7935318582918952113">DOM ഡിസ്‌റ്റിലർ</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />-ന് കാലഹരണപ്പെടുന്നു</translation>
 <translation id="7938958445268990899">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് ഇതുവരെയും സാധുതയുള്ളതല്ല.</translation>
@@ -2129,7 +2106,6 @@
 <translation id="7950027195171824198">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="7951415247503192394">(32-ബിറ്റ്)</translation>
 <translation id="7953569069500808819">മുകളിൽ അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
-<translation id="7954041596401851904">ലിങ്ക് പങ്കിടുക, QR കോഡ് സൃഷ്ടിക്കുക, കാസ്റ്റ് ചെയ്യുക എന്നിവയും മറ്റും ഉപയോഗിച്ച് ഈ ടാബ് പങ്കിടുക.</translation>
 <translation id="7956713633345437162">മൊബൈൽ ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>
 <translation id="7966803981046576691">ജോബ് അക്കൗണ്ട് തരം</translation>
@@ -2203,7 +2179,6 @@
 <translation id="8202370299023114387">പൊരുത്തക്കേട്</translation>
 <translation id="8206978196348664717">Prc4 (എൻവലപ്പ്)</translation>
 <translation id="8211406090763984747">കണക്ഷൻ സുരക്ഷിതമാണ്</translation>
-<translation id="8215696832828595581">Chrome ബട്ടൺ ഇഷ്ടാനുസൃതമാക്കുക, നിങ്ങളുടെ ബ്രൗസറിന്റെ രൂപം ഇഷ്ടാനുസൃതമാക്കാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="8218327578424803826">നൽകിയിരിക്കുന്ന ലൊക്കേഷൻ:</translation>
 <translation id="8220146938470311105">C7/C6 (എൻവലപ്പ്)</translation>
 <translation id="8225771182978767009">ഈ കമ്പ്യൂട്ടർ സജ്ജമാക്കിയ വ്യക്തി, ഈ സൈറ്റ് ബ്ലോക്ക് ചെയ്യാൻ തീരുമാനിച്ചിരുന്നു.</translation>
@@ -2244,7 +2219,6 @@
 <translation id="830498451218851433">പകുതിയായി മടക്കുക</translation>
 <translation id="8307358339886459768">ചെറിയ-ഫോട്ടോ</translation>
 <translation id="8307888238279532626">ആപ്പുകൾ ഇൻസ്‌റ്റാൾ ചെയ്തിരിക്കുന്നു, അവ എത്ര തവണ ഉപയോഗിക്കുന്നു</translation>
-<translation id="831207732689920588">ഈ പേജ് സംശയാസ്പദമാണ് (Chrome ഫ്ലാഗ് ചെയ്തത്).</translation>
 <translation id="831997045666694187">വൈകുന്നേരം</translation>
 <translation id="8321476692217554900">അറിയിപ്പുകൾ</translation>
 <translation id="8328484624016508118">എല്ലാ അദൃശ്യ ടാബുകളും അടച്ചതിനുശേഷം, Chrome ഇവ മായ്ക്കുന്നു:
@@ -2403,7 +2377,6 @@
 <translation id="890493561996401738">നിർദ്ദേശ ബട്ടൺ നീക്കം ചെയ്യുക, നീക്കം ചെയ്യാൻ എന്റർ അമർത്തുക, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8912362522468806198">Google അക്കൗണ്ട്</translation>
 <translation id="8913778647360618320">'പേയ്‌മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
-<translation id="8918231688545606538">ഈ പേജ് സംശയാസ്പദമാണ്</translation>
 <translation id="8922013791253848639">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും പരസ്യങ്ങൾ അനുവദിക്കുക</translation>
 <translation id="892588693504540538">മുകളിൽ വലതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="8931333241327730545">ഈ കാർഡ് നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കണോ?</translation>

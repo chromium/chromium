@@ -132,6 +132,7 @@
 <translation id="315738237743207937">S'ha detectat un portal captiu</translation>
 <translation id="3170673040743561620">Col·loca el document a l'escàner</translation>
 <translation id="3188257591659621405">Els meus fitxers</translation>
+<translation id="3192947282887913208">Fitxers d'àudio</translation>
 <translation id="3199982728237701504">Alimentador de documents (a dues cares)</translation>
 <translation id="3226405216343213872">S'estan cercant escàners</translation>
 <translation id="3246869037381808805">Se suprimiran les tasques d'impressió amb una antiguitat superior a 1 dia</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ressenyes)</translation>
 <translation id="3748026146096797577">Desconnectat</translation>
 <translation id="3749289110408117711">Nom del fitxer</translation>
+<translation id="3771294271822695279">Fitxers de vídeo</translation>
 <translation id="38114475217616659">Esborra tot l'historial</translation>
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">Connexió</translation>
 <translation id="4832079907277790330">Selecciona una carpeta a l'aplicació Fitxers...</translation>
 <translation id="4835901797422965222">No hi ha cap xarxa activa</translation>
+<translation id="4839698083503556542">Crea la teva pel·lícula</translation>
 <translation id="484790837831576105">(Android) Resolució de DNS</translation>
 <translation id="4848429997038228357">EN EXECUCIÓ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intent.}other{<ph name="ERROR_MESSAGE" /> Queden {0} intents.}}</translation>
@@ -347,6 +350,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
 <translation id="6379086450106841622">Pantalla tàctil</translation>
 <translation id="6388847657025262518">L'alimentador de documents de l'escàner està encallat. Comprova l'alimentador i torna-ho a provar.</translation>
+<translation id="6410257289063177456">Fitxers d'imatge </translation>
 <translation id="641081527798843608">Coincidència d'assumpte</translation>
 <translation id="6423239382391657905">VPN oberta</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>

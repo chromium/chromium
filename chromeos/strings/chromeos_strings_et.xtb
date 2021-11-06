@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Tuvastati hõiveportaal</translation>
 <translation id="3170673040743561620">Asetage dokument skannerisse</translation>
 <translation id="3188257591659621405">Minu failid</translation>
+<translation id="3192947282887913208">Helifailid</translation>
 <translation id="3199982728237701504">Dokumendisöötur (kahepoolne)</translation>
 <translation id="3226405216343213872">Skannerite otsimine</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvustust)</translation>
 <translation id="3748026146096797577">Ühendus puudub</translation>
 <translation id="3749289110408117711">Faili nimi</translation>
+<translation id="3771294271822695279">Videofailid</translation>
 <translation id="38114475217616659">Kustuta kogu ajalugu</translation>
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
 <translation id="3838338534323494292">Uus parool</translation>
@@ -347,6 +349,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
 <translation id="6379086450106841622">Puuteekraan</translation>
 <translation id="6388847657025262518">Skanneri dokumendisöötur on ummistunud. Kontrollige sööturit ja proovige uuesti.</translation>
+<translation id="6410257289063177456">Pildifailid</translation>
 <translation id="641081527798843608">Teema vaste</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Nõrk (<ph name="SIGNAL_STRENGTH" />)</translation>

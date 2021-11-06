@@ -48,6 +48,7 @@
 <translation id="1239161794459865856">Функция "<ph name="FEATURE_NAME" />" подключена.</translation>
 <translation id="1246890715821376239">Неподдерживаемые приложения</translation>
 <translation id="1247372569136754018">Микрофон (встроенный)</translation>
+<translation id="1247519845643687288">Недавние приложения</translation>
 <translation id="1252999807265626933">Подключен источник питания: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какая сейчас погода?</translation>
 <translation id="1266097335951928626">Включить фронтальную камеру</translation>
@@ -61,6 +62,7 @@
 <translation id="1289185460362160437">Устройство станет доступно в <ph name="COME_BACK_TIME" /> (<ph name="COME_BACK_DAY_OF_WEEK" />).</translation>
 <translation id="1290331692326790741">слабый сигнал</translation>
 <translation id="1293264513303784526">Устройство USB-C (порт слева)</translation>
+<translation id="1293556467332435079">Файлы</translation>
 <translation id="1294929383540927798">Изменить настройки уведомлений на заблокированном экране</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Показать настройки Bluetooth. <ph name="STATE_TEXT" />.</translation>
@@ -79,6 +81,7 @@
 <translation id="1419738280318246476">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство.</translation>
 <translation id="1420408895951708260">Включить или отключить ночную подсветку (<ph name="STATE_TEXT" />)</translation>
 <translation id="1426410128494586442">Да</translation>
+<translation id="1438357537418863713">Стриминг приложений настроен. Когда вы начнете его использовать, здесь появятся недавно запущенные приложения.</translation>
 <translation id="144853431011121127">Получайте уведомления с телефона на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1455242230282523554">Показать языковые настройки</translation>
 <translation id="1460620680449458626">Сейчас звук выключен.</translation>
@@ -246,6 +249,7 @@
 <translation id="2778650143428714839">Устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />.</translation>
 <translation id="2782591952652094792">Выйти из режима съемки</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
+<translation id="2805756323405976993">Сервисы</translation>
 <translation id="2814448776515246190">Запись части экрана</translation>
 <translation id="2819276065543622893">Сеанс завершен.</translation>
 <translation id="28232023175184696">Ошибка подключения к Интернету. Нажмите, чтобы повторить попытку.</translation>
@@ -374,6 +378,7 @@
 <translation id="3665889125180354336">Запись микрофона</translation>
 <translation id="3680908746918359504">Удалить все маркеры</translation>
 <translation id="36813544980941320">На вашем телефоне и устройстве <ph name="DEVICE_NAME" /> будут использоваться одинаковые сети Wi-Fi.</translation>
+<translation id="3694122362646626770">Сайты</translation>
 <translation id="3701206655856637070">Теперь вы можете выбрать папку, в которой будут храниться записи экрана.</translation>
 <translation id="3702809606464356667">Показаны окна текущего рабочего стола. Чтобы показать окна со всех рабочих столов, нажмите на стрелку вверх.</translation>
 <translation id="3702846122927433391">Население Нигерии</translation>
@@ -535,6 +540,7 @@
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4774338217796918551">Возвращайтесь завтра в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Пароль для адреса электронной почты <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Маркет</translation>
 <translation id="4778095205580009397">Google Ассистент в демонстрационном сеансе недоступен</translation>
 <translation id="4782311465517282004">Получайте определения слов, перевод или значение в других единицах измерения: достаточно нажать на текст правой кнопкой мыши или коснуться его и удерживать.</translation>
 <translation id="479989351350248267">поиск</translation>
@@ -590,6 +596,7 @@
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
 <translation id="5147567197700016471">Устройство разблокировано.</translation>
 <translation id="5155897006997040331">Скорость чтения</translation>
+<translation id="5166007464919321363">Сохранить рабочий стол как шаблон</translation>
 <translation id="5166918508782100047">Настройка функции "Быстрые ответы"</translation>
 <translation id="5168181903108465623">Доступны устройства для трансляции</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
@@ -799,6 +806,7 @@
 <translation id="6777216307882431711">Питание подключенных устройств USB-C</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6803622936009808957">Не удалось дублировать изображение экрана, т. к. указанное разрешение не поддерживается. Включен режим расширенного рабочего стола.</translation>
+<translation id="6811454077060061666">Приложение "Google Диск для компьютеров" недоступно.</translation>
 <translation id="6816797338148849397">Доступна информация на основе выделенного текста. Чтобы перейти к ней, нажмите стрелку вверх.</translation>
 <translation id="6818242057446442178">Назад на одно слово</translation>
 <translation id="6820676911989879663">Пора отдохнуть!</translation>
@@ -933,6 +941,7 @@
 <translation id="7796353162336583443">Нажмите кнопку стилуса на панели запуска, чтобы создать заметку, запустить Ассистента либо использовать стилус в качестве лупы или лазерной указки.</translation>
 <translation id="7798302898096527229">Для отмены нажмите SEARCH или SHIFT.</translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
+<translation id="7807067443225230855">Поиск и Ассистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">хороший сигнал</translation>
 <translation id="7837740436429729974">Время истекло</translation>
@@ -997,6 +1006,7 @@
 <translation id="8247060538831475781">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, заряд батареи – <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Чтобы разблокировать устройство для пользователя <ph name="USER_EMAIL_ADDRESS" />, нажмите Ввод</translation>
 <translation id="8261506727792406068">Удалить</translation>
+<translation id="8281279285293265212">Не удалось сохранить скринкаст.</translation>
 <translation id="8284362522226889623">Чтобы перейти на предыдущий рабочий стол, проведите четырьмя пальцами влево.</translation>
 <translation id="828708037801473432">Отключено</translation>
 <translation id="8297006494302853456">Слабый</translation>
@@ -1101,6 +1111,7 @@
 <translation id="9070640332319875144">Настройки Ассистента</translation>
 <translation id="9072519059834302790">Оставшееся время работы от батареи: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Шаблоны</translation>
 <translation id="9077515519330855811">Элементы управления медиафайлами, сейчас играет "<ph name="MEDIA_TITLE" />"</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Чтобы перейти на главный экран, проведите вверх.</translation>

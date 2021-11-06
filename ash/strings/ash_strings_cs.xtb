@@ -48,6 +48,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1239161794459865856">Funkce <ph name="FEATURE_NAME" /> je připojena.</translation>
 <translation id="1246890715821376239">Nepodporované aplikace</translation>
 <translation id="1247372569136754018">Mikrofon (interní)</translation>
+<translation id="1247519845643687288">Poslední aplikace</translation>
 <translation id="1252999807265626933">Zdroj nabíjení: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaké je počasí?</translation>
 <translation id="1266097335951928626">Spustit fotoaparát pro selfie</translation>
@@ -61,6 +62,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1289185460362160437">Vrať se, až bude <ph name="COME_BACK_DAY_OF_WEEK" />, <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
 <translation id="1293264513303784526">Zařízení USB Type-C (levý port)</translation>
+<translation id="1293556467332435079">Soubory</translation>
 <translation id="1294929383540927798">Změnit nastavení oznámení na obrazovce uzamčení</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Zobrazit nastavení Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1419738280318246476">Chcete-li provést akci s oznámením, odemkněte zařízení</translation>
 <translation id="1420408895951708260">Zapnout nebo vypnout noční režim. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ano</translation>
+<translation id="1438357537418863713">Streamování aplikace je nastaveno. Až začnete, budou se zde zobrazovat nedávno spuštěné aplikace.</translation>
 <translation id="144853431011121127">Dostávat oznámení z telefonu do zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Zobrazit jazykové nastavení</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
@@ -246,6 +249,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2778650143428714839">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ukončit režim nahrávání</translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
+<translation id="2805756323405976993">Aplikace</translation>
 <translation id="2814448776515246190">Částečný záznam</translation>
 <translation id="2819276065543622893">Nyní budete odhlášeni.</translation>
 <translation id="28232023175184696">Nelze se připojit k internetu. Kliknutím to zkuste znovu.</translation>
@@ -374,6 +378,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3665889125180354336">Záznam mikrofonu</translation>
 <translation id="3680908746918359504">Vymazat všechny značky</translation>
 <translation id="36813544980941320">Sítě Wi-Fi se budou sdílet mezi vaším telefonem a zařízením <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Webové stránky</translation>
 <translation id="3701206655856637070">Můžete změnit, kam se ukládají záznamy obrazovky</translation>
 <translation id="3702809606464356667">Zobrazují se okna z aktuální plochy, stisknutím šipky nahoru zobrazíte okna ze všech ploch</translation>
 <translation id="3702846122927433391">Počet obyvatel Nigérie</translation>
@@ -535,6 +540,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4759238208242260848">Stažené soubory</translation>
 <translation id="4774338217796918551">Vrať se v <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Heslo pro účet <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Obchod Play</translation>
 <translation id="4778095205580009397">Asistent Google není v ukázkové relaci k dispozici.</translation>
 <translation id="4782311465517282004">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek</translation>
 <translation id="479989351350248267">search</translation>
@@ -590,6 +596,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
 <translation id="5147567197700016471">Odemknuto</translation>
 <translation id="5155897006997040331">Rychlost čtení</translation>
+<translation id="5166007464919321363">Uložit plochu jako šablonu</translation>
 <translation id="5166918508782100047">Nastavení rychlých odpovědí</translation>
 <translation id="5168181903108465623">Dostupná zařízení pro streamování obsahu</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
@@ -799,6 +806,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6777216307882431711">Napájení připojených zařízení USB-C</translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6803622936009808957">Zobrazení nelze zrcadlit, protože nebyla nalezena podporovaná rozlišení. Místo toho se spustil režim rozšířené pracovní plochy.</translation>
+<translation id="6811454077060061666">Disk Google pro počítače není k dispozici</translation>
 <translation id="6816797338148849397">K dispozici jsou informace související s vaším výběrem. Zobrazíte je pomocí šipky nahoru.</translation>
 <translation id="6818242057446442178">Zpět o slovo</translation>
 <translation id="6820676911989879663">Dejte si pauzu.</translation>
@@ -933,6 +941,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7796353162336583443">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít Asistenta Google, laserové ukazovátko nebo lupu.</translation>
 <translation id="7798302898096527229">Vypnete jej stisknutím klávesy Hledat nebo Shift.</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
+<translation id="7807067443225230855">Vyhledávání a Asistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> a <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Silný signál</translation>
 <translation id="7837740436429729974">Čas vypršel</translation>
@@ -997,6 +1006,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, baterie telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Chcete-li zařízení odemknout pro účet <ph name="USER_EMAIL_ADDRESS" />, stiskněte Enter</translation>
 <translation id="8261506727792406068">Smazat</translation>
+<translation id="8281279285293265212">Záznam obrazovky se nepodařilo uložit</translation>
 <translation id="8284362522226889623">Na předchozí plochu přejdete přejetím čtyřmi prsty doleva</translation>
 <translation id="828708037801473432">Vypnuto</translation>
 <translation id="8297006494302853456">Slabý</translation>
@@ -1101,6 +1111,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="9070640332319875144">Nastavení Asistenta</translation>
 <translation id="9072519059834302790">Do vybití baterie zbývá: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Šablony</translation>
 <translation id="9077515519330855811">Ovládací prvky médií, probíhá přehrávání <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Přejetím nahoru se vrátíte na plochu</translation>

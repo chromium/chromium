@@ -61,6 +61,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1289185460362160437">Kthehu ditën <ph name="COME_BACK_DAY_OF_WEEK" /> në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1293264513303784526">Pajisja USB-C (porta majtas)</translation>
+<translation id="1293556467332435079">Skedarët</translation>
 <translation id="1294929383540927798">Ndrysho cilësimet e njoftimeve të ekranit të kyçjes</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Shfaq cilësimet e Bluetooth-it. <ph name="STATE_TEXT" /></translation>
@@ -246,6 +247,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Dil nga modaliteti i regjistrimit</translation>
 <translation id="2792498699870441125">Alt+Kërko</translation>
+<translation id="2805756323405976993">Aplikacionet</translation>
 <translation id="2814448776515246190">Regjistrim i pjesshëm</translation>
 <translation id="2819276065543622893">Do të dalësh nga llogaria tani.</translation>
 <translation id="28232023175184696">S'mund të lidhet me internetin. Kliko për të provuar përsëri.</translation>
@@ -374,6 +376,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3665889125180354336">Regjistro me mikrofonin</translation>
 <translation id="3680908746918359504">Pastro të gjitha piketat</translation>
 <translation id="36813544980941320">Rrjetet Wi-Fi do të ndahen mes telefonit tënd dhe <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Sajtet e uebit</translation>
 <translation id="3701206655856637070">Tani mund të ndryshosh se ku ruhen regjistrimet e ekranit</translation>
 <translation id="3702809606464356667">Po shfaqen dritaret nga tavolina aktuale e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga të gjitha tavolinat e punës</translation>
 <translation id="3702846122927433391">Popullsia në Nigeri</translation>
@@ -535,6 +538,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4774338217796918551">Kthehu përsëri nesër në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Dyqani i Play</translation>
 <translation id="4778095205580009397">"Asistenti i Google" nuk ofrohet në një sesion demonstrimi.</translation>
 <translation id="4782311465517282004">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek e mban shtypur tekstin</translation>
 <translation id="479989351350248267">kërko</translation>
@@ -933,6 +937,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7796353162336583443">Trokit te butoni i stilolapsit në raft për të mbajtur një shënim, për të nxjerrë një pamje të ekranit, për të përdorur "Asistentin e Google", treguesin me lazer ose xhamin zmadhues.</translation>
 <translation id="7798302898096527229">Shtyp "Kërko" ose "Shift" për të anuluar</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
+<translation id="7807067443225230855">Kërkimi dhe "Asistenti"</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dhe <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinjal i fortë</translation>
 <translation id="7837740436429729974">Koha mbaroi</translation>

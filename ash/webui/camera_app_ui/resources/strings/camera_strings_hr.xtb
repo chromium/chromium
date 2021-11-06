@@ -3,6 +3,7 @@
 <translationbundle lang="hr">
 <translation id="1113173431709655881">Način kamere</translation>
 <translation id="1175958423215084756">Veza je prepoznata. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Zakreni za 90 stupnjeva u smjeru kazaljke na satu</translation>
 <translation id="1276998909102132017">Slike iz galerije</translation>
 <translation id="1300209025925956156">Skeniranje dokumenta</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Pretraživanje + strelica lijevo za pristup.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Snimanje portretne fotografije nije uspjelo</translation>
 <translation id="3569311554794739032">Želite li doista ukloniti datoteku <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Prijeđi na način skeniranja</translation>
+<translation id="3789724198583203151">Zakreni za 90 stupnjeva suprotno od smjera kazaljke na satu</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Skenirajte crtični kôd</translation>
 <translation id="3892148308691398805">Kopiranje teksta</translation>

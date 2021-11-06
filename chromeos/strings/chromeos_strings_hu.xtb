@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Hitelesítési portál észlelve</translation>
 <translation id="3170673040743561620">Helyezze a dokumentumot a szkennerre</translation>
 <translation id="3188257591659621405">Saját fájlok</translation>
+<translation id="3192947282887913208">Audiofájlok</translation>
 <translation id="3199982728237701504">Dokumentumadagoló (kétoldalas)</translation>
 <translation id="3226405216343213872">Szkennerek keresése</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> vélemény)</translation>
 <translation id="3748026146096797577">Nincs kapcsolódva</translation>
 <translation id="3749289110408117711">Fájlnév</translation>
+<translation id="3771294271822695279">Videofájlok</translation>
 <translation id="38114475217616659">Minden előzmény törlése</translation>
 <translation id="3820172043799983114">Érvénytelen PIN-kód.</translation>
 <translation id="3838338534323494292">Új jelszó</translation>
@@ -347,6 +349,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="6379086450106841622">Érintőképernyő</translation>
 <translation id="6388847657025262518">A szkenner dokumentumadagolója beragadt. Ellenőrizze az adagolót, és próbálja újra.</translation>
+<translation id="6410257289063177456">Képfájlok</translation>
 <translation id="641081527798843608">Tárgyegyeztetés</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Gyenge (<ph name="SIGNAL_STRENGTH" />)</translation>

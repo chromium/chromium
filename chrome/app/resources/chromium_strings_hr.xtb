@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">Upravitelj zadataka</translation>
 <translation id="2910007522516064972">O pregledniku &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium je ažuran</translation>
+<translation id="2977506796191543575">Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chromium također može sigurnom pregledavanju poslati URL-ove, uključujući dijelove sadržaja web-stranice</translation>
 <translation id="2983934633046890458">Chromium pokušava urediti zaporke.</translation>
 <translation id="3032706164202344641">Chromium ne može provjeriti vaše zaporke. Pokušajte ponovno kasnije.</translation>
 <translation id="3032787606318309379">Dodavanje u preglednik Chromium...</translation>
@@ -167,6 +168,7 @@
 <translation id="6212496753309875659">Ovo računalo već ima noviju verziju Chromiuma. Ako softver ne funkcionira, deinstalirajte Chromium i pokušajte ponovo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium će se sada ponovo pokrenuti}=1{Chromium će se ponovo pokrenuti za jednu sekundu}one{Chromium će se ponovo pokrenuti za # sekundu}few{Chromium će se ponovo pokrenuti za # sekunde}other{Chromium će se ponovo pokrenuti za # sekundi}}</translation>
 <translation id="6241367896540709610">Chromium treba dopuštenje za pristup pohrani radi preuzimanja datoteka</translation>
+<translation id="6245734527075554892">Provjerava nalaze li se URL-ovi na popisu nesigurnih web-lokacija pohranjenom u Chromiumu</translation>
 <translation id="6248213926982192922">Neka Chromium bude zadani preglednik</translation>
 <translation id="6266342355635466082">Chromium ne može provjeriti ažuriranja. Provjerite internetsku vezu.</translation>
 <translation id="6268381023930128611">Želite li se odjaviti iz Chromiuma?</translation>

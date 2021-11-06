@@ -201,7 +201,6 @@
 <translation id="6196640612572343990">Блокировать сторонние файлы cookie</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: параметры</translation>
 <translation id="6231752747840485235">Удалить приложение "<ph name="APP_NAME" />"?</translation>
-<translation id="6233545266937675277">Запрашивать версии сайтов для ПК</translation>
 <translation id="6262279340360821358">Заблокировано: <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6295158916970320988">Все сайты</translation>
@@ -286,7 +285,6 @@
 <translation id="8211406090763984747">Безопасное подключение</translation>
 <translation id="8249310407154411074">Переместить в начало</translation>
 <translation id="8261506727792406068">Удалить</translation>
-<translation id="8267092878336850213">Запрашивать версии сайтов для мобильных устройств</translation>
 <translation id="8300705686683892304">Под управлением приложения</translation>
 <translation id="8324158725704657629">Больше не спрашивать</translation>
 <translation id="8372893542064058268">Разрешить фоновую синхронизацию для конкретного сайта</translation>

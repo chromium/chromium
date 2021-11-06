@@ -3,6 +3,7 @@
 <translationbundle lang="de">
 <translation id="1113173431709655881">Kameramodus</translation>
 <translation id="1175958423215084756">Link erkannt. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Um 90 Grad im Uhrzeigersinn drehen</translation>
 <translation id="1276998909102132017">Galeriebilder</translation>
 <translation id="1300209025925956156">Dokument scannen</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. „Suchtaste + Linkspfeil“ drücken, um darauf zuzugreifen.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Es konnte kein Foto im Hochformat aufgenommen werden</translation>
 <translation id="3569311554794739032">Möchten Sie "<ph name="FILE" />" wirklich entfernen?</translation>
 <translation id="3573890771273113519">In den Scanmodus wechseln</translation>
+<translation id="3789724198583203151">Um 90 Grad gegen den Uhrzeigersinn drehen</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Barcode scannen</translation>
 <translation id="3892148308691398805">Text kopieren</translation>

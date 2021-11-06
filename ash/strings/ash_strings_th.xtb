@@ -62,6 +62,7 @@
 <translation id="1289185460362160437">ใช้ได้อีกครั้ง<ph name="COME_BACK_DAY_OF_WEEK" /> เวลา <ph name="COME_BACK_TIME" /></translation>
 <translation id="1290331692326790741">สัญญาณไม่ดี</translation>
 <translation id="1293264513303784526">อุปกรณ์ USB-C (พอร์ตด้านซ้าย)</translation>
+<translation id="1293556467332435079">ไฟล์</translation>
 <translation id="1294929383540927798">เปลี่ยนการตั้งค่าการแจ้งเตือนในหน้าจอล็อก</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">แสดงการตั้งค่าบลูทูธ <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> จัดการโดย <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">ออกจากโหมดจับภาพ</translation>
 <translation id="2792498699870441125">Alt+ค้นหา</translation>
+<translation id="2805756323405976993">แอป</translation>
 <translation id="2814448776515246190">จับภาพบางส่วน</translation>
 <translation id="2819276065543622893">คุณจะออกจากระบบในตอนนี้</translation>
 <translation id="28232023175184696">เชื่อมต่ออินเทอร์เน็ตไม่ได้ คลิกเพื่อลองอีกครั้ง</translation>
@@ -376,6 +378,7 @@
 <translation id="3665889125180354336">การบันทึกเสียงจากไมโครโฟน</translation>
 <translation id="3680908746918359504">ล้างเครื่องหมายทั้งหมด</translation>
 <translation id="36813544980941320">จะมีการแชร์เครือข่าย Wi-Fi ระหว่างโทรศัพท์และ <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">เว็บไซต์</translation>
 <translation id="3701206655856637070">คุณจะเปลี่ยนแปลงที่บันทึกภาพหน้าจอของคุณได้ในตอนนี้</translation>
 <translation id="3702809606464356667">กำลังแสดงหน้าต่างจากเดสก์ปัจจุบัน กดปุ่มลูกศรขึ้นเพื่อแสดงหน้าต่างจากเดสก์ทั้งหมด</translation>
 <translation id="3702846122927433391">ประชากรในประเทศไนจีเรีย</translation>
@@ -537,6 +540,7 @@
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4774338217796918551">ใช้ได้อีกครั้งพรุ่งนี้ เวลา <ph name="COME_BACK_TIME" /></translation>
 <translation id="4776917500594043016">รหัสผ่านของ <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant ไม่พร้อมใช้งานในเซสชันสาธิต</translation>
 <translation id="4782311465517282004">รับคำจำกัดความ คำแปล หรือการแปลงหน่วยเมื่อคุณคลิกขวาหรือแตะข้อความค้างไว้</translation>
 <translation id="479989351350248267">ค้นหา</translation>
@@ -937,6 +941,7 @@
 <translation id="7796353162336583443">แตะปุ่มสไตลัสในชั้นวางเพื่อจดโน้ต บันทึกภาพหน้าจอ ตลอดจนใช้ Google Assistant ตัวชี้เลเซอร์ หรือแว่นขยาย</translation>
 <translation id="7798302898096527229">กด Search หรือ Shift เพื่อยกเลิก</translation>
 <translation id="780301667611848630">ไม่ ขอบคุณ</translation>
+<translation id="7807067443225230855">การค้นหาและผู้ช่วย</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> กับ <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">สัญญาณแรง</translation>
 <translation id="7837740436429729974">หมดเวลา</translation>

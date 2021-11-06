@@ -48,6 +48,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> on yhdistetty.</translation>
 <translation id="1246890715821376239">Sovellukset, joita ei tueta</translation>
 <translation id="1247372569136754018">Mikrofoni (sisäinen)</translation>
+<translation id="1247519845643687288">Viimeisimmät sovellukset</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> lataa laitetta.</translation>
 <translation id="1255033239764210633">Miltä päivän sää näyttää?</translation>
 <translation id="1266097335951928626">Avaa selfie-kamera</translation>
@@ -61,6 +62,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1289185460362160437">Palaa seuraavana ajankohtana: <ph name="COME_BACK_DAY_OF_WEEK" />, kello <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Heikko signaali</translation>
 <translation id="1293264513303784526">C-tyypin USB-laite (vasemman sivun portti)</translation>
+<translation id="1293556467332435079">Tiedostot</translation>
 <translation id="1294929383540927798">Muuta lukitusnäytön ilmoitusasetuksia</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Näytä Bluetooth-asetukset. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1419738280318246476">Avaa laitteen lukitus, niin voit käyttää ilmoitustoimintoa</translation>
 <translation id="1420408895951708260">Yövalo päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Kyllä</translation>
+<translation id="1438357537418863713">Sovellusstriimaus on nyt otettu käyttöön. Kun aloitat sen käytön, äskettäin käynnistetyt sovellukset näkyvät täällä.</translation>
 <translation id="144853431011121127">Saat puhelimesi ilmoitukset laitteelle (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="1455242230282523554">Näytä kieliasetukset</translation>
 <translation id="1460620680449458626">Äänet on mykistetty.</translation>
@@ -246,6 +249,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />: ylläpitäjä on <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Sulje tallennustila</translation>
 <translation id="2792498699870441125">Alt + haku</translation>
+<translation id="2805756323405976993">Sovellukset</translation>
 <translation id="2814448776515246190">Osittainen kuvakaappaus</translation>
 <translation id="2819276065543622893">Sinut kirjataan ulos nyt.</translation>
 <translation id="28232023175184696">Ei internetyhteyttä. Yritä uudelleen klikkaamalla.</translation>
@@ -374,6 +378,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3665889125180354336">Mikrofonin tallentaminen</translation>
 <translation id="3680908746918359504">Poista kaikki merkinnät</translation>
 <translation id="36813544980941320">Wi-Fi-verkot jaetaan puhelimesi ja <ph name="DEVICE_NAME" />-laitteesi välillä</translation>
+<translation id="3694122362646626770">Verkkosivustot</translation>
 <translation id="3701206655856637070">Nyt voit muuttaa kuvakaappausten tallennuspaikkaa</translation>
 <translation id="3702809606464356667">Näytetään nykyisen työpöydän ikkunat, näytä kaikkien työpöytien ikkunat painamalla ylänuolta</translation>
 <translation id="3702846122927433391">Nigerian väkiluku</translation>
@@ -535,6 +540,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4759238208242260848">Lataukset</translation>
 <translation id="4774338217796918551">Palaa huomenna kello <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Osoitteen <ph name="USER_EMAIL_ADDRESS" /> salasana</translation>
+<translation id="4777825441726637019">Play Kauppa</translation>
 <translation id="4778095205580009397">Google Assistantia ei voi käyttää demo-käyttökerralla.</translation>
 <translation id="4782311465517282004">Voit nähdä määritelmiä, käännöksiä tai yksikkömuunnoksia klikkaamalla tekstiä kakkospainikkeella tai koskettamalla sitä pitkään</translation>
 <translation id="479989351350248267">haku</translation>
@@ -590,6 +596,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5136175204352732067">Eri näppäimistö kytketty</translation>
 <translation id="5147567197700016471">Avattu</translation>
 <translation id="5155897006997040331">Lukunopeus</translation>
+<translation id="5166007464919321363">Tallenna työpöytä malliksi</translation>
 <translation id="5166918508782100047">Pikainfon asetukset</translation>
 <translation id="5168181903108465623">Cast-laitteita käytettävissä</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
@@ -799,6 +806,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="6777216307882431711">Toimii yhdistettyjen USB-C-laitteiden virtalähteenä</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6803622936009808957">Näyttöjen peilaaminen ei onnistunut, sillä tuettua resoluutiota ei löytynyt. Sen sijaan valittiin työpöydän laajennus.</translation>
+<translation id="6811454077060061666">Google Drive ‑työpöytäsovellus ei ole käytettävissä</translation>
 <translation id="6816797338148849397">Valintaasi liittyvää tietoa on saatavilla. Paina ylänuolta, niin näet tiedot.</translation>
 <translation id="6818242057446442178">Yksi sana taaksepäin</translation>
 <translation id="6820676911989879663">Pidä tauko</translation>
@@ -933,6 +941,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7796353162336583443">Napauttamalla hyllyn näyttökynäpainiketta voit tehdä muistiinpanoja, tallentaa kuvakaappauksen ja käyttää Google Assistantia, laserosoitinta tai suurennuslasia.</translation>
 <translation id="7798302898096527229">Peru painamalla haku- tai vaihtonäppäintä.</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
+<translation id="7807067443225230855">Haku ja Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Vahva signaali</translation>
 <translation id="7837740436429729974">Aika loppui</translation>
@@ -997,6 +1006,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" />, puhelimen akun varaus <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Avaa painamalla Enter: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Poista</translation>
+<translation id="8281279285293265212">Screencastin tallennus epäonnistui</translation>
 <translation id="8284362522226889623">Siirry edelliseen työpöytään pyyhkäisemälle vasemmalle neljällä sormella</translation>
 <translation id="828708037801473432">Poissa päältä</translation>
 <translation id="8297006494302853456">Heikko</translation>
@@ -1101,6 +1111,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="9070640332319875144">Assistantin asetukset</translation>
 <translation id="9072519059834302790">Akku loppuu <ph name="TIME_LEFT" /> päästä</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Mallit</translation>
 <translation id="9077515519330855811">Mediaohjaimet, nyt soi <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Siirry aloitusnäytölle pyyhkäisemällä ylös</translation>

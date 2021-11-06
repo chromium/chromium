@@ -607,7 +607,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="5138912041966667164">Bizitasun ertaineko arbel-urdina</translation>
 <translation id="5140016802771803559">More bizia</translation>
 <translation id="5142101052131610456">Ikasgai guztiak</translation>
-<translation id="5152605892605507188">eraman eskuinera</translation>
 <translation id="5158275234811857234">Azala</translation>
 <translation id="516076699907426116">Aurrera egiteko, arakatu sakatuta "Hurrengo ikasgaia" botoia aurkitzeko. Ondoren, sakatu pantaila birritan aurrera egiteko.</translation>
 <translation id="5170206230005240598">Braille-oinak gaituta daude</translation>
@@ -741,6 +740,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6034000775414344507">Gris argia</translation>
 <translation id="6036135911048686884">Sakatu arakatzeko</translation>
 <translation id="6037602951055904232">Mugitu panoramikoki aurrera</translation>
+<translation id="604240746417122825">gramatika-akatsa</translation>
 <translation id="6082768461603900813">Oinarrizko nabigazioa</translation>
 <translation id="609281021724813947">Ez dago beste graduatzailerik honen aurretik</translation>
 <translation id="6100239002225743044">Igo lerro bat</translation>
@@ -751,7 +751,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6142308968191113180">4. goiburua</translation>
 <translation id="6150023170003443621">Hori berdexka</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" />. errenkada, <ph name="TABLECELLCOLUMNINDEX" /> zutabea</translation>
-<translation id="6159796324830296161">eraman ezkerrera</translation>
 <translation id="6164829606128959761">neurgailua</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6166362019018438352">Braille-oinak desgaituta daude</translation>
@@ -844,7 +843,6 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="6910969481785184048">Aktibatu, desaktibatu eta gelditu</translation>
 <translation id="6919104639734799681">Erakutsi taulen zerrenda</translation>
 <translation id="692135145298539227">ezabatu</translation>
-<translation id="6935674530832500465">eraman behera</translation>
 <translation id="6945221475159498467">Hautatu</translation>
 <translation id="6949846980769640811">Bizitasun ertaineko urdin berdexka</translation>
 <translation id="6951482098621102657">Ez dago bosgarren mailako beste goibururik honen ondoren</translation>
@@ -1041,14 +1039,12 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="826825447994856889">Sarrera</translation>
 <translation id="827266600368092403">Hasi edo amaitu hautapena</translation>
 <translation id="827422111966801947">Indigoa</translation>
-<translation id="827496561804786391">eraman gora</translation>
 <translation id="8276439074553447000">Joan aurreko elementu fokagarrira</translation>
 <translation id="8279039817939141096">Sakatu QWERTY teklatuko edo freskatzen den braille-teklatu bateko tekla bat, edo egin ukipen-keinu bat haren funtzioa ikusteko. Sakatu Kontrol eta Z, edo zuriune-barra eta Z, pasatu bi hatz ezkerrera, edo sakatu Ihes tekla irteteko.</translation>
 <translation id="8283603667300770666">Hurrengo inprimaki-eremua</translation>
 <translation id="8310185481635255431">Ez dago beste estekarik honen ondoren</translation>
 <translation id="831207808878314375">Definizioa</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">desautatu guztiak</translation>
 <translation id="8316881042119029234">Horixka</translation>
 <translation id="8324974933005349667">Pertsonalizatu testua ahots bihurtzeko eginbidearen ezarpenak</translation>
 <translation id="8326783648485765113">Zelai-berdea</translation>

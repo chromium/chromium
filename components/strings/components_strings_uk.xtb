@@ -42,7 +42,6 @@
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="1110994991967754504">Виберіть тип для дозволу "<ph name="PERMISSION_NAME" />"</translation>
 <translation id="1113869188872983271">&amp;Відмінити перевпорядкування</translation>
-<translation id="1115795617528746272"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб закрити всі відкриті вікна в режимі анонімного перегляду.</translation>
 <translation id="1123753900084781868">Живі субтитри зараз недоступні</translation>
 <translation id="1125573121925420732">Можуть з’являтися застереження під час оновлення системи безпеки сайтів. Цю проблему буде незабаром виправлено.</translation>
 <translation id="112840717907525620">Кеш-пам’ять правила не пошкоджено</translation>
@@ -472,7 +471,6 @@
 <translation id="2465655957518002998">Вибрати спосіб доставки</translation>
 <translation id="2465688316154986572">Скріпити</translation>
 <translation id="2465914000209955735">Керувати завантаженими файлами в Chrome</translation>
-<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати Безпечним переглядом і виконувати інші дії в налаштуваннях Chrome</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />провести діагностику мережі<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Порядок від 1 до N</translation>
 <translation id="2470767536994572628">Коли ви редагуєте примітки, документ переходить у режим перегляду по одній сторінці, а також відновлюється його початкова орієнтація</translation>
@@ -636,7 +634,6 @@
 <translation id="3041612393474885105">Інформація про сертифікат</translation>
 <translation id="3044034790304486808">Відновити пошук</translation>
 <translation id="3060227939791841287">C9 (конверт)</translation>
-<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, натисніть Tab, а тоді Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="3061707000357573562">Служба виправлень</translation>
 <translation id="306573536155379004">Гра почалася.</translation>
 <translation id="3080254622891793721">Зображення</translation>
@@ -715,7 +712,6 @@
 <translation id="3329013043687509092">Насиченість</translation>
 <translation id="3333762389743153920">Не підходить для віртуальної картки</translation>
 <translation id="3338095232262050444">Надійне</translation>
-<translation id="3344575302477361573">Кнопка "Закрити вікна в режимі анонімного перегляду"; натисніть Enter, щоб закрити всі відкриті вікна в режимі анонімного перегляду.</translation>
 <translation id="3355823806454867987">Змінити налаштування проксі...</translation>
 <translation id="3360103848165129075">Аркуш обробника платежу</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />не зберігатиме<ph name="END_EMPHASIS" />:
@@ -864,7 +860,6 @@
 <translation id="3765588406864124894">Поштова скринька 9</translation>
 <translation id="3767485424735936570">Адміністратор не радить копіювати й вставляти цей контент на віртуальну машину <ph name="VM_NAME" /></translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову нотатку в Google Keep</translation>
-<translation id="3776257069753764304">Кнопка "Керувати завантаженнями в Chrome"; натисніть Enter, щоб керувати завантаженими файлами в Chrome.</translation>
 <translation id="3778403066972421603">Зберегти дані картки у вашому обліковому записі Google і на цьому пристрої?</translation>
 <translation id="3780694243617746492">Вихідний контейнер</translation>
 <translation id="3781428340399460090">Яскраво-рожевий</translation>
@@ -921,11 +916,7 @@
 <translation id="3969052498612555048">Не вдається знайти код? <ph name="BEGIN_LINK" />Отримати новий<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> заблокований</translation>
-<translation id="3973357910713125165">Кнопка "Виконати перевірку безпеки Chrome", натисніть Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="3986705137476756801">Наразі вимкнути живі субтитри</translation>
-<translation id="3987405730340719549">Веб-переглядач Chrome визначив, що цей сайт може бути підробленим або шахрайським.
-
-    Якщо ви вважаєте, що сталася помилка, перейдіть на сторінку https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
 <translation id="3987940399970879459">Менше 1 МБ</translation>
 <translation id="3990250421422698716">Поступове зміщення</translation>
 <translation id="3996311196211510766">Сайт <ph name="ORIGIN" /> просить, щоб правило джерела
@@ -967,7 +958,6 @@
 <translation id="4127575959421463246">Шукаєте експериментальні параметри для ОС Chrome? Перейти</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{і ще 1 елемент даних}one{і ще # елемент даних}few{і ще # елементи даних}many{і ще # елементів даних}other{і ще # елемента даних}}</translation>
 <translation id="4130226655945681476">перевірити мережевий кабель, модем і маршрутизатор</translation>
-<translation id="4133224101597112888">Кнопка "Поділитися цією вкладкою"; натисніть Enter, щоб поділитися цією вкладкою (надіслати посилання, створити QR-код, транслювати її тощо).</translation>
 <translation id="4134123981501319574">Створити документ</translation>
 <translation id="413544239732274901">Докладніше</translation>
 <translation id="4142935452406587478">Лоток 10</translation>
@@ -1018,7 +1008,6 @@
     &lt;h4&gt;Крок 5. Отримайте додаткову підтримку&lt;/h4&gt;
     &lt;p&gt;Якщо повідомлення про помилку не зникає, зв’яжіться з власником веб-сайту.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Проведіть діагностику мережі<ph name="END_LINK" />.</translation>
-<translation id="4229544452621580519">Виконайте перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="4230204356098880324">Може просити дозвіл використовувати й переміщувати камеру</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" />Перейти на сайт <ph name="SITE" /><ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">Дійсний</translation>
@@ -1182,7 +1171,6 @@
 <translation id="4757993714154412917">Щойно ви ввели пароль на оманливому сайті. Щоб захистити ваші облікові записи, Chromium радить перевірити збережені паролі.</translation>
 <translation id="4758311279753947758">Додати контактну інформацію</translation>
 <translation id="4761104368405085019">Використовувати ваш мікрофон</translation>
-<translation id="4761869838909035636">Виконати перевірку безпеки Chrome</translation>
 <translation id="4764776831041365478">Веб-сторінка за адресою <ph name="URL" /> може бути тимчасово недоступною або її назавжди переміщено на нову веб-адресу.</translation>
 <translation id="4766713847338118463">Двічі скріпити внизу</translation>
 <translation id="4771973620359291008">Виникла невідома помилка.</translation>
@@ -1244,7 +1232,6 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб шукати</translation>
 <translation id="4930153903256238152">Велика місткість</translation>
 <translation id="4943872375798546930">Не знайдено жодного результату</translation>
-<translation id="4946982471994930967">Кнопка "Керувати налаштуваннями спеціальних можливостей"; натисніть Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях Chrome.</translation>
 <translation id="4950898438188848926">Кнопка перемикання вкладки: натисніть Enter, щоб перейти на відкриту вкладку, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Дії</translation>
 <translation id="4953689047182316270">реагувати на події спеціальних можливостей</translation>
@@ -1303,7 +1290,6 @@
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Перевизначення для керованого сеансу в режимі "Гість" з обмеженнями</translation>
 <translation id="5115563688576182185">(64-розрядна версія)</translation>
-<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях ОС Chrome.</translation>
 <translation id="5123063207673082822">Вихідні</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Підтвердьте дані картки</translation>
@@ -1350,7 +1336,6 @@
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Усе одно записати</translation>
 <translation id="5266128565379329178">Зшити вгорі</translation>
-<translation id="5269124652893918188"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб налаштувати вигляд веб-переглядача.</translation>
 <translation id="5269225904387178860">Пробити чотири отвори внизу</translation>
 <translation id="5269999699920406580">Функції, які застосовуються до всієї системи, може налаштовувати лише власник: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">Застереження: це правило не об'єднано, як указано в PolicyDictionaryMultipleSourceMergeList, оскільки воно не є частиною правил щодо словників, які можна об'єднувати.</translation>
@@ -1403,7 +1388,6 @@
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
 <translation id="5428105026674456456">Іспанська</translation>
 <translation id="5430298929874300616">Видалити закладку</translation>
-<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб поділитися цією вкладкою (надіслати посилання, створити QR-код, транслювати її тощо).</translation>
 <translation id="5439770059721715174">Помилка перевірки схеми за адресою "<ph name="ERROR_PATH" />": <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">Зворотний порядок лицевою стороною вгору</translation>
 <translation id="5447765697759493033">Цей сайт не буде перекладено</translation>
@@ -1436,7 +1420,6 @@
 <translation id="5540224163453853">Не вдалося знайти потрібну статтю.</translation>
 <translation id="5541086400771735334">Поштова скринька 7</translation>
 <translation id="5541546772353173584">Додайте електронну адресу</translation>
-<translation id="5542280138350899197">Кнопка "Керувати налаштуваннями безпеки"; натисніть Enter, щоб керувати Безпечним переглядом і виконувати інші дії в налаштуваннях Chrome</translation>
 <translation id="5545756402275714221">Статті для вас</translation>
 <translation id="5552137475244467770">Chrome періодично зіставляє ваші паролі зі списками, які були опубліковані онлайн. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
@@ -1515,9 +1498,6 @@
 <translation id="5830698870816298009">використання й переміщення камери</translation>
 <translation id="5838278095973806738">Не вводьте конфіденційну інформацію на цьому сайті (як-от паролі й дані кредитних карток). Зловмисники можуть викрасти її.</translation>
 <translation id="5851548754964597211">Список вкладок</translation>
-<translation id="5855253129151731373">Ім'я хосту цього сайту схоже на ім'я хосту сайту <ph name="LOOKALIKE_DOMAIN" />. Іноді зловмисники імітують сайти, вносячи незначні, майже непомітні зміни в доменне ім'я.
-
-    Якщо ви вважаєте, що сталася помилка, перейдіть на сторінку https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals.</translation>
 <translation id="5860033963881614850">Вимк.</translation>
 <translation id="5862579898803147654">Накопичувач 8</translation>
 <translation id="5863847714970149516">Наступна сторінка може спробувати стягнути плату</translation>
@@ -1699,7 +1679,6 @@
 <translation id="647261751007945333">Правила пристрою</translation>
 <translation id="6476284679642588870">Керувати способами оплати</translation>
 <translation id="6489534406876378309">Почати завантаження даних про аварійне завершення роботи</translation>
-<translation id="6493328574149990106"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях Chrome.</translation>
 <translation id="6493924760403974580">У цьому додатку підтримується лише цей розмір.</translation>
 <translation id="6494750904506170417">спливаючі вікна й переспрямування</translation>
 <translation id="6499038740797743453">Скинути пароль?</translation>
@@ -2040,7 +2019,6 @@
 <translation id="7638605456503525968">Послідовні порти</translation>
 <translation id="7639968568612851608">Темно-сірий</translation>
 <translation id="7647206758853451655">Якість друку</translation>
-<translation id="7648685412377719625">Закрийте всі відкриті вікна в режимі анонімного перегляду.</translation>
 <translation id="7648992873808071793">Зберігати файли на цьому пристрої</translation>
 <translation id="7653957176542370971">Аркуш обробника платежу закрито</translation>
 <translation id="7654909834015434372">Коли ви редагуєте примітки, відновлюється початкова орієнтація документа</translation>
@@ -2124,7 +2102,6 @@
 <translation id="7932579305932748336">Вкрити обкладинкою</translation>
 <translation id="79338296614623784">Введіть дійсний номер телефону</translation>
 <translation id="7934414805353235750">Сайт <ph name="URL" /> хоче відтворювати захищений вміст. Google перевірить ідентифікатор вашого пристрою.</translation>
-<translation id="7935031712718413217">Імовірно, що цю URL-адресу підмінено</translation>
 <translation id="7935318582918952113">Дистилятор DOM</translation>
 <translation id="7937554595067888181">Діє до <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертифікат сервера ще не дійсний.</translation>
@@ -2135,7 +2112,6 @@
 <translation id="7950027195171824198">Керуйте параметрами файлів cookie в налаштуваннях Chrome</translation>
 <translation id="7951415247503192394">(32-розрядна версія)</translation>
 <translation id="7953569069500808819">Зшити вздовж верхнього краю</translation>
-<translation id="7954041596401851904">Поділитися цією вкладкою (надіслати посилання, створити QR-код, транслювати її тощо).</translation>
 <translation id="7956713633345437162">Закладки на мобільному</translation>
 <translation id="7961015016161918242">Ніколи</translation>
 <translation id="7966803981046576691">Тип робочого облікового запису</translation>
@@ -2209,7 +2185,6 @@
 <translation id="8202370299023114387">Конфлікт</translation>
 <translation id="8206978196348664717">Prc4 (конверт)</translation>
 <translation id="8211406090763984747">З’єднання безпечне</translation>
-<translation id="8215696832828595581">Кнопка "Налаштувати Chrome"; натисніть Enter, щоб налаштувати вигляд веб-переглядача.</translation>
 <translation id="8218327578424803826">Указане місцезнаходження:</translation>
 <translation id="8220146938470311105">C7/C6 (конверт)</translation>
 <translation id="8225771182978767009">Користувач, який налаштував комп’ютер, заблокував цей сайт.</translation>
@@ -2250,7 +2225,6 @@
 <translation id="830498451218851433">Зігнути посередині</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Установлені додатки та як часто ними користуються</translation>
-<translation id="831207732689920588">Ця сторінка підозріла (позначено Chrome).</translation>
 <translation id="831997045666694187">Увечері</translation>
 <translation id="8321476692217554900">сповіщення</translation>
 <translation id="8328484624016508118">Коли ви закриєте всі анонімні вкладки, у Chrome буде видалено:
@@ -2410,7 +2384,6 @@
 <translation id="890493561996401738">Кнопка видалення підказки: натисніть Enter, щоб видалити, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8912362522468806198">Обліковий запис Google</translation>
 <translation id="8913778647360618320">Кнопка "Керувати способами оплати"; натисніть Enter, щоб керувати платежами й даними кредитної картки в налаштуваннях Chrome</translation>
-<translation id="8918231688545606538">Ця сторінка підозріла</translation>
 <translation id="8922013791253848639">Завжди дозволяти показ реклами на цьому сайті</translation>
 <translation id="892588693504540538">Пробити отвір угорі праворуч</translation>
 <translation id="8931333241327730545">Зберегти цю картку у вашому обліковому записі Google?</translation>

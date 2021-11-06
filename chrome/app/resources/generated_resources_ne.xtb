@@ -6,7 +6,6 @@
 <translation id="1003088604756913841">लिंकलाई नयाँ <ph name="APP" /> विन्डोमा खोल्नुहोस्</translation>
 <translation id="100323615638474026">USB डिभाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">पहुँच राख्न सक्ने साइटहरू</translation>
-<translation id="100524763483954942">सेटिङमा फर्कनुहोस्</translation>
 <translation id="1005274289863221750">आफ्नो माइक्रोफोन र क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="1005333234656240382">ADB डिबग प्रक्रिया सक्षम पार्ने हो?</translation>
 <translation id="1006873397406093306">यो विस्तारले साइटहरूमा तपाईंको डेटा पढ्न र परिवर्तन गर्न सक्छ। तपाईं यो विस्तारले कुन कुन साइटहरूमाथि पहुँच राख्न सक्छ भन्ने कुरा नियन्त्रण गर्न सक्नुहुन्छ।</translation>
@@ -770,7 +769,6 @@
 <translation id="1780273119488802839">बुकमार्क इम्पोर्ट गरिँदै छन्...</translation>
 <translation id="178092663238929451">तपाईं आफू वरपरका मान्छेले पठाएका फाइल प्राप्त गर्न र ती मान्छेलाई फाइल पठाउन चाहनुहुन्छ भने नजिकैका डिभाइससँग सेयर गर्ने सुविधा सेटअप गर्नुहोस्</translation>
 <translation id="1781291988450150470">हालको PIN</translation>
-<translation id="1781398670452016618"><ph name="DOMAIN" /> का अनुसार तपाईंले अहिले नै Wi-Fi मार्फत अपडेट डाउनलोड गर्नु पर्ने हुन्छ।</translation>
 <translation id="1781502536226964113">नयाँ ट्याब पेज खोल्नुहोस्</translation>
 <translation id="1781771911845953849">खाता र सिंक सुविधा</translation>
 <translation id="1781979858217752599">विन्डोमा बजिरहेको अडियो सेयर गर्नुहोस्</translation>
@@ -1437,7 +1435,6 @@
 <translation id="2459703812219683497">सक्रिय गर्ने कोड सफलतापूर्वक स्क्यान गरियो</translation>
 <translation id="2462724976360937186">प्रमाणीकरण प्राधिकरण कुञ्जी आइडी</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> थपियो</translation>
-<translation id="2465237718053447668"><ph name="DOMAIN" /> का अनुसार तपाईंले अहिले नै Wi-Fi मा जोडिएर एउटा अद्यावधिक डाउनलोड गर्नु पर्ने हुन्छ। अथवा, डेटाको सीमा भएको इन्टरनेटबाट डाउनलोड गर्नुहोस् (तोकिएको शुल्क लाग्न सक्छ)।</translation>
 <translation id="2467755475704469005">कुनै डिभाइस भेट्टिएन। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">टचप्याड स्क्रोल हुने गति बढाउने कार्य</translation>
 <translation id="2468205691404969808">तपाईं ती पृष्ठहरूमा नजानुभए तापनि तपाईंका प्राथमिकताहरू सम्झनका लागि कुकीहरूको प्रयोग गर्छ</translation>
@@ -4067,6 +4064,7 @@
 <translation id="5265562206369321422">एक हप्ता भन्दा बढीको लागि अफलाइन</translation>
 <translation id="5265797726250773323">स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="5266113311903163739">प्रमाणपत्र प्राधिकरण आयात त्रुटि</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="5269977353971873915">प्रिन्टिङ असफल भयो</translation>
 <translation id="5275352920323889391">कुकुर</translation>
 <translation id="527605982717517565"><ph name="HOST" /> मा सँधै जाभास्क्रिप्टको लागि अनुम</translation>
@@ -4726,7 +4724,6 @@
 <translation id="5979353814339191480">यो विकल्प डेटा प्याक भएको SIM हालिएका वा मोबाइल नेटवर्कको डङ्गल जोडिएका Chromebook हरूमा वा कुनै पोर्टेबल हटस्पटमा टेदरिङ गर्दा लागू हुन्छ</translation>
 <translation id="5979421442488174909"><ph name="LANGUAGE" /> मा &amp;अनुवाद गर्नुहोस्</translation>
 <translation id="5979469435153841984">पृष्ठहरूलाई पुस्तक चिन्ह लगाउन ठेगाना पट्टीमा अवस्थित तारा आइकनमा क्लिक गर्नुहोस्</translation>
-<translation id="5983831175889857946">समीक्षा गर्ने कार्य पूरा भयो!</translation>
 <translation id="5984222099446776634">भर्खरै भ्रमण गरिएको</translation>
 <translation id="5985458664595100876">URL ढाँचा अमान्य छ। समर्थन गरिएका ढाँचाहरू \\server\share र smb://server/share हुन्।</translation>
 <translation id="598810097218913399">तोकिएको काम हटाउनुहोस्</translation>
@@ -5442,6 +5439,7 @@
 <translation id="6775163072363532304">उपलब्ध डिभाइस यहाँ देखिने छन्।</translation>
 <translation id="6777817260680419853">रिडिरेक्ट गर्न रोक लगाइयो</translation>
 <translation id="6778737459546443941">तपाईंको अभिभावले अझै पनि यसलाई अनुमोदन गर्नुभएको छैन</translation>
+<translation id="6779092717724412415">तपाईं यो जस्तै हाइलाइट बनाउन चाहनुहुन्छ भने कुनै टेक्स्ट चयन गर्नुहोस् र दायाँ क्लिक गर्नुहोस्।</translation>
 <translation id="6779447100905857289">तपाईंका कार्टहरू</translation>
 <translation id="677965093459947883">धेरै सानो</translation>
 <translation id="6781005693196527806">&amp;सर्च इन्जिनहरू व्यवस्थापन गर्नुहोस्...</translation>
@@ -5662,7 +5660,6 @@
 <translation id="6991665348624301627">गन्तव्य चयन गर्नुहोस्</translation>
 <translation id="6992554835374084304">हिज्जे जाँचसम्बन्धी परिष्कृत सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="6993000214273684335">यो ट्याब नामविहीन समूहबाट हटाइयो - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Chrome ब्राउजर अपडेट गरिँदै छ</translation>
 <translation id="6994069045767983299">हाइ कन्ट्रास्ट मोड</translation>
 <translation id="6995899638241819463">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा तपाईंलाई चेतावनी दिइन्छ</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - क्रियाकलापको लग</translation>
@@ -5802,7 +5799,6 @@
 <translation id="7133578150266914903">तपाईंको प्रशासकले यो यन्त्रलाई पहिलेको स्थितिमा फर्काउँदै हुनुहुन्छ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="7134098520442464001">पाठलाई अझ सानो बनाउनुहोस्</translation>
 <translation id="7135729336746831607">ब्लुटुथ सक्रिय पार्ने हो?</translation>
-<translation id="7136639886842764730"><ph name="DOMAIN" /> का अनुसार तपाईंले तत्कालै आफ्नो <ph name="DEVICE_TYPE" /> अद्यावधिक गर्नु पर्ने हुन्छ।</translation>
 <translation id="7136694880210472378">डिफल्ट बनाउनुहोस्</translation>
 <translation id="7136993520339022828">त्यहाँ कुनै त्रुटि छ। अन्य फोटो छनौट गरी कृपया फेरि प्रयास गर्नुहोस्‌।</translation>
 <translation id="7138515695467025690">अफ छ / सूर्यास्त हुँदा स्वतः अन हुने छ</translation>
@@ -6258,6 +6254,7 @@
 <translation id="7625823789272218216">नयाँ ट्याब बायाँतिर देखिन्छ</translation>
 <translation id="7628201176665550262">रिफ्रेस हुने दर</translation>
 <translation id="7629827748548208700">ट्याब: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">यो डिभाइस <ph name="MANAGER" /> ले व्यवस्थापन गर्छ र यो डिभाइस प्रयोग गर्न तपाईंले हरेक पटक साइन इन गर्नु पर्ने हुन्छ।</translation>
 <translation id="7631014249255418691">Linux एप र फाइलहरू सफलतापूर्वक ब्याकअप गरिएका छन्</translation>
 <translation id="7631205654593498032">तपाईंले आफ्ना यन्त्रहरू जोड्दा, तपाईं आफ्नो <ph name="DEVICE_TYPE" /> ले निम्न कार्यहरू गर्न सक्छ भन्ने कुरामा सहमत हुनुहुन्छ:</translation>
 <translation id="7631887513477658702">&amp;जहिले पनि यस प्रकारको</translation>

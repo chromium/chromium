@@ -3,8 +3,10 @@
 <translationbundle lang="gl">
 <translation id="1113173431709655881">Modo de cámara</translation>
 <translation id="1175958423215084756">Detectouse unha ligazón. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Xirar 90 graos cara á dereita</translation>
 <translation id="1276998909102132017">Imaxes da galería</translation>
 <translation id="1300209025925956156">Escanea o teu documento</translation>
+<translation id="1303487788671416818">Activar instantánea de vídeo de tamaño completo</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Para acceder a eles, preme Buscar + Frecha esquerda.</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1467231725790366244">Desconectouse a cámara <ph name="CAMERA" />.</translation>
@@ -54,6 +56,7 @@
 <translation id="3517926952904427380">Non se puido facer a foto de retrato</translation>
 <translation id="3569311554794739032">Seguro que queres eliminar <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Cambiar a modo de escaneo</translation>
+<translation id="3789724198583203151">Xirar 90 graos cara á esquerda</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3838931309141338733">Escanear código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>

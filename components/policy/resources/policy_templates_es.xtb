@@ -1976,6 +1976,13 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       El carácter comodín "*" se puede utilizar para buscar coincidencias con cero o más caracteres arbitrarios. Como el carácter de escape es "\", para que coincida con los caracteres "*", "?" o "\", debes colocar el carácter "\" delante de ellos.
 
       Si esta política no se configura, todas las cuentas de Google del dispositivo serán visibles en <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3243793808000947475">Si se inhabilita esta política, el host de asistencia remota no se podrá iniciar ni configurar para aceptar conexiones entrantes.
+
+          Esta política no afecta a los accesos remotos.
+
+          Esta política no impide a los administradores de empresa conectarse a dispositivos Chrome OS gestionados.
+
+          Esta política no tendrá efecto si se habilita, se deja vacía o no se establece.</translation>
 <translation id="3251500716404598358">Configura las políticas para cambiar de navegador.
 
       Los sitios web configurados se abrirán automáticamente en un navegador diferente a <ph name="PRODUCT_NAME" />.</translation>
@@ -2205,6 +2212,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Límites de tiempo por aplicación</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
+<translation id="3548642468619496972">Bloquear las descargas maliciosas, poco frecuentes o no deseadas, así como los tipos de archivos peligrosos.</translation>
 <translation id="3550122827225052130">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" /> en su lugar.
 
           Permite especificar el tiempo que debe transcurrir sin que el usuario realice ninguna acción antes de que la pantalla se bloquee (con conexión a la red eléctrica).
@@ -2919,6 +2927,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">Configura las políticas relacionadas con <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Permite conceder permiso automáticamente a sitios para conectarse a todos los puertos serie.</translation>
+<translation id="450080746522343150">Bloquear todas las descargas.</translation>
 <translation id="4510923771103268849">El usuario puede tener acceso root a los contenedores de Crostini</translation>
 <translation id="4513691822411041977">No forzar el uso de Búsqueda Segura en la Búsqueda de Google ni en el modo restringido de YouTube</translation>
 <translation id="4515404363392014383">Habilitar Navegación segura en fuentes de confianza</translation>
@@ -3019,6 +3028,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si se le asigna el valor true o no se le asigna ninguno, el usuario podrá realizar capturas de paquetes de red en el dispositivo.
       Si se le asigna el valor false, las capturas de paquetes de red no estarán disponibles en el dispositivo.</translation>
 <translation id="4600786265870346112">Habilitar cursor grande</translation>
+<translation id="4602988345256038309">Permitir conexiones de asistencia remota a este equipo</translation>
 <translation id="4607416370554533118">Si configuras esta política, podrás crear una lista de patrones de URL donde se especifique en qué sitios web podrá usar Chrome un certificado de cliente de forma automática. El valor debe ser un conjunto de diccionarios JSON de tipo string, cada uno con el formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, donde <ph name="URL_PATTERN_PLACEHOLDER" /> es un patrón de configuración de contenido. <ph name="FILTER_PLACEHOLDER" /> restringe los certificados de cliente entre los que puede elegir automáticamente el navegador. Independientemente del filtro, solo se seleccionarán los certificados que coincidan con la solicitud de certificado del servidor.
 
       Ejemplos del uso de la sección <ph name="FILTER_PLACEHOLDER" />:
@@ -3344,7 +3354,6 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 
       Nota: También se pueden añadir elementos a la lista a través de la política <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Lista de admisión de usuarios con permiso para iniciar sesión</translation>
-<translation id="5070080638050927923">Pedir el certificado de cliente cuando haya varios certificados que coincidan.</translation>
 <translation id="5071303485174858500">Inhabilitar sesión de invitado administrada y restringida.</translation>
 <translation id="5073609397321802133">Si se asigna el valor "false" a esta política, la página Nueva pestaña no permitirá a los usuarios personalizar la imagen de fondo. Aunque se cambie el valor a "true" posteriormente, las imágenes de fondo personalizadas se eliminarán de forma permanente.
 
@@ -3667,6 +3676,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Si se le asigna el valor "Inhabilitada", esta función se inhabilitará de forma forzosa.
           </translation>
 <translation id="5435888298115339571">Habilitar la opción de compartir escritorio en el omnibox y el menú de 3 puntos</translation>
+<translation id="5441508088704391614">Sin restricciones especiales. Predeterminado.</translation>
 <translation id="5442026853063570579">Esta política también controla el acceso a las opciones para desarrolladores de Android. Si se asigna a esta política el valor DeveloperToolsDisallowed (el valor 2), los usuarios no podrán acceder a las opciones para desarrolladores. Si se le asigna otro valor o no se le asigna ninguno, los usuarios podrán acceder a las opciones para desarrolladores tocando siete veces el número de compilación en la aplicación Ajustes de Android.</translation>
 <translation id="5443582909255996887">Si se habilita esta política, se aíslan todos los sitios en Android (de manera que cada sitio se ejecuta en su propio proceso) y se evita que los usuarios inhabiliten esta opción. Un sitio consiste en un esquema más el eTLD+1 (por ejemplo, https://example.com). Ten en cuenta que Android aísla algunos sitios sensibles de forma predeterminada a partir de la versión 77 de <ph name="PRODUCT_NAME" />. Además, esta política amplía el modo de aislamiento de sitio web predeterminado para que se aplique a todos los sitios.
 
@@ -4210,6 +4220,27 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6102449843040973938">No impedir que <ph name="BOREALIS_NAME" /> se ejecute en un dispositivo</translation>
 <translation id="6107642964266628393">Controla cómo y cuándo se aplican las actualizaciones de Chrome OS.</translation>
 <translation id="6111936128861357925">Permitir el juego del huevo de pascua de dinosaurio</translation>
+<translation id="6112524153927257380">Si se establece la política, los usuarios no podrán saltarse las medidas de seguridad de las descargas.
+
+      Hay muchos tipos de advertencias de descarga en Chrome. En general, pueden dividirse en las siguientes categorías (consulta más información sobre los resultados de Navegación segura en https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Contenido malicioso: como lo marca el servidor de Navegación segura
+      * Contenido poco frecuente o no deseado: como lo marca el servidor de Navegación segura
+      * Tipo de archivo peligroso: por ejemplo, todas las descargas de archivos SWF y muchas descargas de archivos EXE
+
+      Cuando se establece la política, se bloquean distintos subconjuntos de estas categorías en función de su valor:
+
+      0: sin restricciones especiales. Predeterminado.
+
+      1: bloquea archivos maliciosos marcados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos. Se recomienda exclusivamente en el caso de UOs/navegadores/usuarios que tengan tolerancia alta a los falsos positivos.
+
+      2: bloquea archivos maliciosos marcados por el servidor de Navegación segura Y archivos poco frecuentes o no deseados marcados por el servidor de Navegación segura Y todos los tipos de archivos peligrosos. Se recomienda exclusivamente en el caso de UOs/navegadores/usuarios que tengan tolerancia alta a los falsos positivos.
+
+      3: bloquea todas las descargas. No recomendado (excepto en casos especiales).
+
+      4: bloquea archivos maliciosos marcados por el servidor de Navegación segura, pero no bloquea los tipos de archivos peligrosos. Recomendado.
+
+      Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o mediante la opción Descargar enlace del menú. No se aplican a la opción de descargar de la página que se esté mostrando ni a la opción de guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
 <translation id="6123052603197028610">No permitir que las consultas a los servidores de Google obtengan marcas de tiempo</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceros</translation>
 <translation id="6133088669883929098">Permitir que todos los sitios utilicen la generación de claves</translation>
@@ -4319,6 +4350,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Para consultar más información sobre <ph name="CORS" />, visita <ph name="CORS_HELP_URL" />.
 
       Ten en cuenta que se anunció que esta política se eliminaría en la versión 82 de <ph name="PRODUCT_NAME" />, pero se eliminará en la versión 84.</translation>
+<translation id="627672037430076089">Impedir conexiones de asistencia remota a este equipo</translation>
 <translation id="6277314550042130537">Usar la aprobación de políticas de KDC durante la autenticación de HTTP</translation>
 <translation id="6279722058145292462">Si se establece esta política, se especificará en días la frecuencia con la que un cliente cambia la contraseña de la cuenta de su dispositivo. El cliente genera aleatoriamente la contraseña y el usuario no puede verla. Si se inhabilita esta política o se establece un número elevado de días, se podría comprometer la seguridad, ya que los posibles atacantes tendrían más tiempo para averiguar la contraseña de la cuenta del dispositivo y utilizarla.
 
@@ -5951,6 +5983,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Si la acción es la suspensión, <ph name="PRODUCT_OS_NAME" /> se puede configurar por separado para bloquear o no la pantalla antes de entrar en modo de suspensión.</translation>
 <translation id="8214600119442850823">Permite configurar el gestor de contraseñas.</translation>
 <translation id="8217664958939773083">Si a esta política se le asigna el valor <ph name="ENABLED" /> o no se le asigna ninguno, se podrá utilizar el modo sin interfaz gráfica. Si se le asigna el valor <ph name="DISABLED" />, no se podrá utilizar el modo sin interfaz gráfica.</translation>
+<translation id="8219813789911069300">Bloquea las descargas maliciosas. Recomendado.</translation>
 <translation id="8220023426952118761">Velocidad de descarga deseada en kilobits por segundo.</translation>
 <translation id="8220156281401380422">Configurar la lista de permitidos de mensajes nativos</translation>
 <translation id="8229912067600517877">Habilitar herramientas de desarrollo</translation>
@@ -6252,6 +6285,7 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 <translation id="8524334245528364388">URL de un archivo JSON con una lista de servidores de impresión.</translation>
 <translation id="8525526490824335042">Contenedor de Linux</translation>
 <translation id="8528951285051082869">No permitir que ninguna aplicación web acceda a ciertos tipos de archivo a través de la API File Handling</translation>
+<translation id="8533145294731270627">Bloquea las descargas maliciosas y los tipos de archivos peligrosos.</translation>
 <translation id="8537051350735478658">Si se asigna el valor "Verdadero" a esta política, se activarán las sugerencias de búsqueda en la barra de direcciones de <ph name="PRODUCT_NAME" />. Si se le asigna el valor "Falso", se desactivarán estas sugerencias de búsqueda.
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ningún valor, las sugerencias de búsqueda estarán activadas inicialmente, pero los usuarios podrán desactivarlas en cualquier momento.</translation>
@@ -6716,41 +6750,6 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si no se le asigna ningún valor a esta política o no se establece, la opción predeterminada no estará disponible para usuarios gestionados por empresas, aunque sí lo estará para aquellos no gestionados por empresas.</translation>
 <translation id="9096086085182305205">Lista de admisión de servidores de autenticación</translation>
 <translation id="9096772739225230999">No enviar información sobre la configuración de red</translation>
-<translation id="9097005000667946359">Si se establece esta política, especifica una lista de aplicaciones web que se instalarán de forma silenciosa y sin intervención del usuario, y qué usuarios no podrán desinstalarlas ni desactivarlas.
-
-      Cada elemento de la lista de esta política es un objeto con un miembro obligatorio:
-      <ph name="URL_LABEL" /> (la URL de la aplicación web que se va a instalar)
-
-      y 5 miembros opcionales:
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      (define cómo se abre la aplicación web; la opción predeterminada es que lo haga en una pestaña nueva)
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      (selecciona True si quieres crear accesos directos del escritorio
-      de <ph name="LINUX_OS_NAME" /> y <ph name="MS_WIN_NAME" />)
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      A partir de la versión 90 de <ph name="PRODUCT_NAME" />,
-      te permite cambiar el nombre de la aplicación si no es una
-      aplicación web progresiva (PWA), o el nombre de la aplicación instalada
-      temporalmente si es una PWA, pero se requiere autenticación para que la
-      instalación pueda completarse. Si se proporcionan tanto
-      <ph name="CUSTOM_NAME_LABEL" /> como
-      <ph name="FALLBACK_APP_NAME_LABEL" />,
-      esta última se ignorará.
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      A partir de la versión 96
-      de <ph name="PRODUCT_NAME" />, podrás cambiar permanentemente el nombre de todas las aplicaciones web y PWAs.
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      A partir de la versión 96
-      de <ph name="PRODUCT_NAME" />, podrás cambiar el icono de las aplicaciones instaladas. Los
-      iconos deben ser cuadrados, con un tamaño máximo de 1 MB y deben tener uno de los
-      siguientes formatos: .jpeg, .png, .gif, .webp o .ico. El valor de hash debe ser el hash SHA256
-      del archivo de icono.
-
-      Consulta <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> para fijar aplicaciones en la estantería de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9098409326885953506">Detectar ventanas tapadas y dejar de generar sus píxeles</translation>
 <translation id="9105265795073104888">Solo se habilita la disponibilidad de un subconjunto de opciones de proxy para las aplicaciones de Android. Estas pueden elegir voluntariamente el uso del proxy. No puedes forzarlas a que utilicen un proxy.</translation>
 <translation id="9106865192244721694">Permitir WebUSB en estos sitios web</translation>

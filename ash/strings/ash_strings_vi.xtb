@@ -48,6 +48,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> đã kết nối.</translation>
 <translation id="1246890715821376239">Các ứng dụng không được hỗ trợ</translation>
 <translation id="1247372569136754018">Micrô (bên trong)</translation>
+<translation id="1247519845643687288">Ứng dụng gần đây</translation>
 <translation id="1252999807265626933">Đang sạc từ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Tình hình thời tiết thế nào?</translation>
 <translation id="1266097335951928626">Bắt đầu máy ảnh ở chế độ tự chụp ảnh chân dung</translation>
@@ -61,6 +62,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1289185460362160437">Hãy quay lại vào <ph name="COME_BACK_DAY_OF_WEEK" /> lúc <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
 <translation id="1293264513303784526">Thiết bị USB-C (cổng bên trái)</translation>
+<translation id="1293556467332435079">Tệp</translation>
 <translation id="1294929383540927798">Thay đổi các mục cài đặt thông báo trên màn hình khóa</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Hiển thị các tùy chọn cài đặt Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1419738280318246476">Mở khóa thiết bị để thực hiện hành động đối với thông báo</translation>
 <translation id="1420408895951708260">Bật/tắt chế độ Ánh sáng đêm. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Có</translation>
+<translation id="1438357537418863713">Quá trình phát trực tuyến qua ứng dụng hiện đã được thiết lập. Sau khi bạn bắt đầu, các ứng dụng được chạy gần đây sẽ xuất hiện ở đây.</translation>
 <translation id="144853431011121127">Nhận các thông báo của điện thoại trên <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="1455242230282523554">Hiển thị các tùy chọn cài đặt ngôn ngữ</translation>
 <translation id="1460620680449458626">Đang tắt tiếng.</translation>
@@ -246,6 +249,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý</translation>
 <translation id="2782591952652094792">Thoát khỏi chế độ chụp</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2814448776515246190">Chụp một phần màn hình</translation>
 <translation id="2819276065543622893">Bạn sẽ bị đăng xuất bây giờ.</translation>
 <translation id="28232023175184696">Không thể kết nối Internet. Hãy nhấp để thử lại.</translation>
@@ -374,6 +378,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3665889125180354336">Ghi âm</translation>
 <translation id="3680908746918359504">Xóa tất cả các điểm đánh dấu</translation>
 <translation id="36813544980941320">Điện thoại và <ph name="DEVICE_NAME" /> của bạn sẽ dùng chung mạng Wi-Fi</translation>
+<translation id="3694122362646626770">Trang web</translation>
 <translation id="3701206655856637070">Giờ đây, bạn có thể thay đổi vị trí lưu ảnh chụp màn hình</translation>
 <translation id="3702809606464356667">Đang hiển thị các cửa sổ của không gian làm việc hiện tại, hãy nhấn phím Mũi tên lên để hiển thị các cửa sổ của mọi không gian làm việc</translation>
 <translation id="3702846122927433391">Dân số ở Nigeria</translation>
@@ -535,6 +540,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4774338217796918551">Hãy quay lại lúc <ph name="COME_BACK_TIME" /> ngày mai.</translation>
 <translation id="4776917500594043016">Mật khẩu cho <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Cửa hàng Play</translation>
 <translation id="4778095205580009397">Bạn không thể sử dụng Trợ lý Google trong phiên minh họa.</translation>
 <translation id="4782311465517282004">Xem định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị bằng cách nhấp chuột phải hoặc chạm và giữ văn bản</translation>
 <translation id="479989351350248267">search</translation>
@@ -590,6 +596,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
 <translation id="5147567197700016471">Đã mở khóa</translation>
 <translation id="5155897006997040331">Tốc độ đọc</translation>
+<translation id="5166007464919321363">Lưu không gian làm việc ở dạng mẫu</translation>
 <translation id="5166918508782100047">Chế độ cài đặt tính năng Thông tin nhanh</translation>
 <translation id="5168181903108465623">Có thiết bị truyền</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
@@ -799,6 +806,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6777216307882431711">Đang cấp nguồn cho các thiết bị USB-C đã kết nối</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6803622936009808957">Không thể phản chiếu màn hình do không tìm thấy độ phân giải được hỗ trợ. Thay vào đó, đã chuyển sang chế độ màn hình mở rộng.</translation>
+<translation id="6811454077060061666">Google Drive cho máy tính hiện không dùng được</translation>
 <translation id="6816797338148849397">Có thông tin liên quan đến nội dung bạn chọn. Sử dụng phím Mũi tên lên để truy cập.</translation>
 <translation id="6818242057446442178">Lùi một từ</translation>
 <translation id="6820676911989879663">Hãy nghỉ giải lao!</translation>
@@ -933,6 +941,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7796353162336583443">Hãy nhấn vào nút bút cảm ứng trên giá để ghi chú, chụp ảnh màn hình, sử dụng Trợ lý Google, chế độ con trỏ laser hoặc kính lúp.</translation>
 <translation id="7798302898096527229">Nhấn phím Search hoặc Shift để hủy.</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
+<translation id="7807067443225230855">Tìm kiếm và trợ lý</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> và <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Tín hiệu mạnh</translation>
 <translation id="7837740436429729974">Hết giờ</translation>
@@ -997,6 +1006,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Pin điện thoại <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Nhấn Enter để mở khóa cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Xóa</translation>
+<translation id="8281279285293265212">Không lưu được video ghi lại chuyển động trên màn hình</translation>
 <translation id="8284362522226889623">Hãy vuốt sang trái bằng 4 ngón tay để chuyển sang không gian làm việc trước</translation>
 <translation id="828708037801473432">Đang tắt</translation>
 <translation id="8297006494302853456">Yếu</translation>
@@ -1101,6 +1111,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="9070640332319875144">Cài đặt Trợ lý</translation>
 <translation id="9072519059834302790">Còn <ph name="TIME_LEFT" /> nữa là pin hết.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Mẫu</translation>
 <translation id="9077515519330855811">Các tùy chọn điều khiển nội dung nghe nhìn, đang phát <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Vuốt lên để chuyển đến màn hình chính</translation>

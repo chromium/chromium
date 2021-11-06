@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">미디엄 슬레이트 블루</translation>
 <translation id="5140016802771803559">레베카 퍼플</translation>
 <translation id="5142101052131610456">모든 과정</translation>
-<translation id="5152605892605507188">오른쪽으로 이동</translation>
 <translation id="5158275234811857234">표지</translation>
 <translation id="516076699907426116">계속하려면 터치로 탐색하여 다음 과정 버튼을 찾으세요. 그런 다음 두 번 탭하여 계속하세요.</translation>
 <translation id="5170206230005240598">점자 캡션을 사용 설정했습니다</translation>
@@ -752,7 +751,6 @@
 <translation id="6142308968191113180">제목 4</translation>
 <translation id="6150023170003443621">옐로우 그린</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" />행 <ph name="TABLECELLCOLUMNINDEX" />열</translation>
-<translation id="6159796324830296161">왼쪽으로 이동</translation>
 <translation id="6164829606128959761">미터</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6166362019018438352">점자 캡션을 사용 중지했습니다</translation>
@@ -845,7 +843,6 @@
 <translation id="6910969481785184048">사용, 사용 중지 및 중지</translation>
 <translation id="6919104639734799681">표 목록 표시</translation>
 <translation id="692135145298539227">삭제</translation>
-<translation id="6935674530832500465">아래로 이동</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6949846980769640811">미디엄 아쿠아 마린</translation>
 <translation id="6951482098621102657">다음 수준 5 제목이 없습니다</translation>
@@ -1042,14 +1039,12 @@
 <translation id="826825447994856889">소개</translation>
 <translation id="827266600368092403">선택을 시작 또는 종료합니다.</translation>
 <translation id="827422111966801947">인디고</translation>
-<translation id="827496561804786391">위로 이동</translation>
 <translation id="8276439074553447000">이전 초점 가능 항목으로 이동</translation>
 <translation id="8279039817939141096">QWERTY 키, 새로고침할 수 있는 점자 키를 누르거나 터치 동작으로 기능을 학습합니다. ctrl 키와 w, 스페이스바와 Z를 누르거나 두 손가락을 사용하여 왼쪽으로 스와이프합니다. 종료하려면 Esc 키를 누르세요.</translation>
 <translation id="8283603667300770666">다음 양식 입력란</translation>
 <translation id="8310185481635255431">다음 링크가 없습니다</translation>
 <translation id="831207808878314375">정의</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">전체 선택 해제</translation>
 <translation id="8316881042119029234">올드 레이스</translation>
 <translation id="8324974933005349667">TTS(텍스트 음성 변환) 설정 맞춤설정</translation>
 <translation id="8326783648485765113">잔디색</translation>

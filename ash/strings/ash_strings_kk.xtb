@@ -61,6 +61,7 @@
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> күні сағат <ph name="COME_BACK_TIME" /> шамасында қайта қолдана аласыз.</translation>
 <translation id="1290331692326790741">Әлсіз сигнал</translation>
 <translation id="1293264513303784526">USB-C құрылғысы (сол жақ ұяшық)</translation>
+<translation id="1293556467332435079">Файлдар</translation>
 <translation id="1294929383540927798">Құлып экранындағы хабарландыру параметрлерін өзгертіңіз</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Bluetooth параметрлерін көрсету. <ph name="STATE_TEXT" /></translation>
@@ -246,6 +247,7 @@
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
 <translation id="2782591952652094792">Түсіру режимінен шығу</translation>
 <translation id="2792498699870441125">Alt+Іздеу</translation>
+<translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2814448776515246190">Экранның бір бөлігін түсіру</translation>
 <translation id="2819276065543622893">Жүйеден қазір шығасыз.</translation>
 <translation id="28232023175184696">Интернетке қосыла алмай жатыр. Әрекетті қайталау үшін түртіңіз.</translation>
@@ -374,6 +376,7 @@
 <translation id="3665889125180354336">Микрофон арқылы жазу</translation>
 <translation id="3680908746918359504">Барлық маркерді өшіру</translation>
 <translation id="36813544980941320">Телефоныңыз бен <ph name="DEVICE_NAME" /> құрылғысында бірдей Wi-Fi желілері пайдаланылатын болады.</translation>
+<translation id="3694122362646626770">Веб-сайттар</translation>
 <translation id="3701206655856637070">Енді экран жазбалары сақталатын жерді өзгерте аласыз.</translation>
 <translation id="3702809606464356667">Терезелер қазіргі жұмыс үстелінен көрсетіліп тұр. Терезелерді барлық жұмыс үстелінен көрсету үшін жоғарыға бағыттауыш пернені басыңыз.</translation>
 <translation id="3702846122927433391">Нигерия халқының саны</translation>
@@ -535,6 +538,7 @@
 <translation id="4759238208242260848">Жүктеп алынғандар</translation>
 <translation id="4774338217796918551">Ертең сағат <ph name="COME_BACK_TIME" /> шамасында қайта қолдануыңызға болады.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> құпия сөзі</translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant демо сеанста қолжетімді емес.</translation>
 <translation id="4782311465517282004">Тінтуірдің оң жақ түймесін басқанда немесе мәтінді басып тұрғанда мәтіннің анықтамасын, аудармасын немесе өлшем бірліктерін көріңіз.</translation>
 <translation id="479989351350248267">іздеу</translation>
@@ -933,6 +937,7 @@
 <translation id="7796353162336583443">Жазба мен скриншот үшін сөредегі стилус түймесін түртіңіз. Google көмекшісін, лазер меңзерді немесе ұлғайтқыш әйнекті пайдаланыңыз.</translation>
 <translation id="7798302898096527229">Бас тарту үшін Іздеу не Shift пернесін басыңыз.</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
+<translation id="7807067443225230855">Іздеу және Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> және <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Күшті сигнал</translation>
 <translation id="7837740436429729974">Уақыт бітті</translation>

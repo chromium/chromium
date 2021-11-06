@@ -132,6 +132,7 @@
 <translation id="315738237743207937">已偵測到網頁認證入口</translation>
 <translation id="3170673040743561620">將文件放入掃描機</translation>
 <translation id="3188257591659621405">我的檔案</translation>
+<translation id="3192947282887913208">音訊檔</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
 <translation id="3226405216343213872">正在尋找掃描器</translation>
 <translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 則評論)</translation>
 <translation id="3748026146096797577">尚未連線</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
+<translation id="3771294271822695279">影片檔</translation>
 <translation id="38114475217616659">清除所有記錄</translation>
 <translation id="3820172043799983114">PIN 無效。</translation>
 <translation id="3838338534323494292">新密碼</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">連線</translation>
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4835901797422965222">沒有使用中的網路</translation>
+<translation id="4839698083503556542">創作自己的電影</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
 <translation id="4848429997038228357">執行中</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
@@ -347,6 +350,7 @@
 <translation id="636850387210749493">企業註冊</translation>
 <translation id="6379086450106841622">觸控螢幕</translation>
 <translation id="6388847657025262518">掃描器的文件送紙器發生卡紙。請檢查送紙器，然後再試一次。</translation>
+<translation id="6410257289063177456">圖片檔</translation>
 <translation id="641081527798843608">主題比對</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱 (<ph name="SIGNAL_STRENGTH" />)</translation>

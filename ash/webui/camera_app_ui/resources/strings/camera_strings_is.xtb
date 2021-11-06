@@ -3,6 +3,7 @@
 <translationbundle lang="is">
 <translation id="1113173431709655881">Myndavélarstilling</translation>
 <translation id="1175958423215084756">Tengill greindist. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Snúa um 90 gráður réttsælis</translation>
 <translation id="1276998909102132017">Myndir úr galleríi</translation>
 <translation id="1300209025925956156">Skannaðu skjalið</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Leit + Vinstri ör til að opna.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Ekki tókst að taka andlitsmynd</translation>
 <translation id="3569311554794739032">Viltu örugglega fjarlægja <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Skipta yfir í skönnunarstillingu</translation>
+<translation id="3789724198583203151">Snúa um 90 gráður rangsælis</translation>
 <translation id="3810838688059735925">Myndskeið</translation>
 <translation id="3838931309141338733">Skanna strikamerki</translation>
 <translation id="3892148308691398805">Afrita texta</translation>

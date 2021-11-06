@@ -201,7 +201,6 @@
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6216432067784365534">Opciones de <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">¿Quieres desinstalar "<ph name="APP_NAME" />"?</translation>
-<translation id="6233545266937675277">Solicita la vista de sitios para escritorio.</translation>
 <translation id="6262279340360821358">Bloqueados: <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Los sitios podrán preguntarte si quieres recibir notificaciones</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
@@ -286,7 +285,6 @@
 <translation id="8211406090763984747">La conexión es segura</translation>
 <translation id="8249310407154411074">Mover al principio</translation>
 <translation id="8261506727792406068">Borrar</translation>
-<translation id="8267092878336850213">Solicita la vista de sitios para dispositivos móviles.</translation>
 <translation id="8300705686683892304">Administrados por una app</translation>
 <translation id="8324158725704657629">No volver a preguntar</translation>
 <translation id="8372893542064058268">Permite la sincronización en segundo plano para un sitio específico.</translation>

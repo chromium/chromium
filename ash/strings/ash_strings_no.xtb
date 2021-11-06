@@ -61,6 +61,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1289185460362160437">Kom tilbake <ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Svakt signal</translation>
 <translation id="1293264513303784526">USB-C-enhet (porten på venstre side)</translation>
+<translation id="1293556467332435079">Filer</translation>
 <translation id="1294929383540927798">Endre innstillingene for varsler på låseskjermen</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Vis Bluetooth-innstillinger. <ph name="STATE_TEXT" /></translation>
@@ -246,6 +247,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Avslutt opptaksmodus</translation>
 <translation id="2792498699870441125">Alt + Søk</translation>
+<translation id="2805756323405976993">Apper</translation>
 <translation id="2814448776515246190">Delvis opptak</translation>
 <translation id="2819276065543622893">Du blir nå logget av.</translation>
 <translation id="28232023175184696">Kan ikke koble til internett. Klikk for å prøve på nytt.</translation>
@@ -374,6 +376,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3665889125180354336">Ta opp med mikrofonen</translation>
 <translation id="3680908746918359504">Fjern alle merkepenner</translation>
 <translation id="36813544980941320">Wi-Fi-nettverk blir delt mellom telefonen din og <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Nettsteder</translation>
 <translation id="3701206655856637070">Du kan nå endre hvor skjermdumper lagres</translation>
 <translation id="3702809606464356667">Viser vinduer fra det nåværende skrivebordet. Trykk på oppoverpiltasten for å vise vinduer fra alle skrivebord</translation>
 <translation id="3702846122927433391">Antall innbyggere i Nigeria</translation>
@@ -535,6 +538,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
 <translation id="4774338217796918551">Kom tilbake i morgen <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Passord for <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Butikk</translation>
 <translation id="4778095205580009397">Google-assistenten er ikke tilgjengelig under demonstrasjonsøkter.</translation>
 <translation id="4782311465517282004">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder inne på tekst</translation>
 <translation id="479989351350248267">søk</translation>
@@ -933,6 +937,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7796353162336583443">Trykk på pekepenn-knappen på hyllen for å gjøre et notat, ta en skjermdump eller bruke Google-assistenten, laserpekeren eller forstørrelsesglasset.</translation>
 <translation id="7798302898096527229">Trykk på Søk eller Shift for å avbryte</translation>
 <translation id="780301667611848630">Nei takk</translation>
+<translation id="7807067443225230855">Søk og Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> og <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sterkt signal</translation>
 <translation id="7837740436429729974">Tiden er ute</translation>

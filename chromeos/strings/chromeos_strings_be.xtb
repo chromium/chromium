@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Выяўлены партал узаемадзеяння</translation>
 <translation id="3170673040743561620">Палажыце дакумент у сканер</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
+<translation id="3192947282887913208">Аўдыяфайлы</translation>
 <translation id="3199982728237701504">Прылада для падачы дакументаў (абодвума бакамі)</translation>
 <translation id="3226405216343213872">Ідзе пошук сканераў</translation>
 <translation id="3246869037381808805">Заданні друку, старэйшыя за 1 дзень, будуць выдалены</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (водгукаў: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Няма падключэння</translation>
 <translation id="3749289110408117711">Назва файла</translation>
+<translation id="3771294271822695279">Відэафайлы</translation>
 <translation id="38114475217616659">Ачысціць усю гісторыю</translation>
 <translation id="3820172043799983114">Несапраўдны PIN-код.</translation>
 <translation id="3838338534323494292">Новы пароль</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">Падключэнне</translation>
 <translation id="4832079907277790330">Выбраць папку ў праграме "Файлы"...</translation>
 <translation id="4835901797422965222">Няма актыўных сетак</translation>
+<translation id="4839698083503556542">Стварыце ўласны фільм</translation>
 <translation id="484790837831576105">(Android) DNS-пераўтварэнне</translation>
 <translation id="4848429997038228357">ВЫКОНВАЕЦЦА</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Засталася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}many{<ph name="ERROR_MESSAGE" /> Засталося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Засталося {0} спробы}}</translation>
@@ -347,6 +350,7 @@
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
 <translation id="6379086450106841622">Сэнсарны экран</translation>
 <translation id="6388847657025262518">Заела прыстасаванне сканера для падачы дакументаў. Праверце прыстасаванне і паўтарыце спробу.</translation>
+<translation id="6410257289063177456">Файлы відарысаў</translation>
 <translation id="641081527798843608">Супадзенне суб'екта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабы (<ph name="SIGNAL_STRENGTH" />)</translation>

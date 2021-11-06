@@ -48,6 +48,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1239161794459865856">Nakakonekta ang <ph name="FEATURE_NAME" />.</translation>
 <translation id="1246890715821376239">Mga hindi sinusuportahang app</translation>
 <translation id="1247372569136754018">Mikropono (internal)</translation>
+<translation id="1247519845643687288">Mga kamakailang app</translation>
 <translation id="1252999807265626933">Nagcha-charge mula sa <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Ano'ng lagay ng panahon?</translation>
 <translation id="1266097335951928626">Simulan ang camera para sa selfie</translation>
@@ -61,6 +62,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1289185460362160437">Bumalik sa <ph name="COME_BACK_DAY_OF_WEEK" /> nang <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Mahina ang signal</translation>
 <translation id="1293264513303784526">USB-C device (port sa kaliwa)</translation>
+<translation id="1293556467332435079">Mga File</translation>
 <translation id="1294929383540927798">Baguhin ang mga setting ng notification ng lock-screen</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Ipakita ang mga setting ng Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1419738280318246476">I-unlock ang device para maisagawa ang pagkilos sa notification</translation>
 <translation id="1420408895951708260">I-toggle ang Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Oo</translation>
+<translation id="1438357537418863713">Naka-set up na ngayon ang streaming ng app. Kapag nagsimula ka na, lalabas dito ang mga kamakailang inilunsad na app.</translation>
 <translation id="144853431011121127">Makatanggap ng mga notification mula sa iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="1455242230282523554">Ipakita ang mga setting ng wika</translation>
 <translation id="1460620680449458626">Naka-mute ang volume.</translation>
@@ -246,6 +249,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2778650143428714839">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Lumabas sa capture mode</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2805756323405976993">Mga App</translation>
 <translation id="2814448776515246190">Pag-capture ng isang bahagi ng screen</translation>
 <translation id="2819276065543622893">Masa-sign out ka ngayon.</translation>
 <translation id="28232023175184696">Hindi makakonekta sa internet. I-click para subukan ulit.</translation>
@@ -374,6 +378,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3665889125180354336">I-record ang mikropono</translation>
 <translation id="3680908746918359504">I-clear ang lahat ng marker</translation>
 <translation id="36813544980941320">Ibabahagi ang mga Wi-Fi network sa pagitan ng iyong telepono at <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Mga Website</translation>
 <translation id="3701206655856637070">Puwede mo na ngayong baguhin kung saan nase-save ang mga screen capture</translation>
 <translation id="3702809606464356667">Ipinapakita ang mga window mula sa kasalukuyang desk, pindutin ang key na Pataas na arrow para ipakita ang mga window mula sa lahat ng desk</translation>
 <translation id="3702846122927433391">Populasyon sa Nigeria</translation>
@@ -535,6 +540,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4759238208242260848">Mga Download </translation>
 <translation id="4774338217796918551">Bumalik nang <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Hindi available ang Google Assistant sa demo session.</translation>
 <translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
 <translation id="479989351350248267">search</translation>
@@ -590,6 +596,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
 <translation id="5147567197700016471">Na-unlock na</translation>
 <translation id="5155897006997040331">Bilis ng pagbabasa</translation>
+<translation id="5166007464919321363">I-save ang bilang template</translation>
 <translation id="5166918508782100047">Mga setting ng instant na impormasyon</translation>
 <translation id="5168181903108465623">I-cast ang mga available na device</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
@@ -799,6 +806,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6777216307882431711">Pinapagana ang mga nakakonektang USB-C device</translation>
 <translation id="6790428901817661496">I-play</translation>
 <translation id="6803622936009808957">Hindi ma-mirror ang mga display dahil walang mga sinusuportahang resolusyon na nakita. Pumasok na lang sa pinalawak na desktop.</translation>
+<translation id="6811454077060061666">Hindi available ang Google Drive para sa desktop</translation>
 <translation id="6816797338148849397">Available ang impormasyong nauugnay sa iyong pinili. Gamitin ang Pataas na arrow key para ma-access.</translation>
 <translation id="6818242057446442178">Bumalik nang paisa-isang salita</translation>
 <translation id="6820676911989879663">Magpahinga!</translation>
@@ -933,6 +941,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7796353162336583443">I-tap ang button ng stylus sa shelf upang magsulat ng tala, mag-screenshot, gamitin ang Google Assistant, laser pointer, o magnifying glass.</translation>
 <translation id="7798302898096527229">Pindutin ang Search o Shift upang kanselahin.</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
+<translation id="7807067443225230855">Paghahanap at Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> at <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Malakas ang signal</translation>
 <translation id="7837740436429729974">Oras na</translation>
@@ -997,6 +1006,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Baterya ng Telepono <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Pindutin ang Enter para ma-unlock ang <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">I-delete</translation>
+<translation id="8281279285293265212">Hindi na-save ang screencast</translation>
 <translation id="8284362522226889623">Mag-swipe pakaliwa gamit ang apat na daliri para lumipat sa nakaraang desk</translation>
 <translation id="828708037801473432">Naka-off</translation>
 <translation id="8297006494302853456">Mahina</translation>
@@ -1101,6 +1111,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="9070640332319875144">Mga Setting ng Assistant</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> bago maubos ang baterya.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Mga Template</translation>
 <translation id="9077515519330855811">Mga kontrol ng media, nagpe-play ngayon ng <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Mag-swipe pataas para pumunta sa home</translation>

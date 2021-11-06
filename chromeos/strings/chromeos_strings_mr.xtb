@@ -132,6 +132,7 @@
 <translation id="315738237743207937">कॅप्टिव्ह पोर्टल डिटेक्ट केले</translation>
 <translation id="3170673040743561620">तुमचे दस्तऐवज स्कॅनरवर ठेवा</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
+<translation id="3192947282887913208">ऑडिओ फाइल</translation>
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
+<translation id="3771294271822695279">व्हिडिओ फाइल</translation>
 <translation id="38114475217616659">सर्व इतिहास साफ करा</translation>
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="3838338534323494292">नवीन पासवर्ड</translation>
@@ -347,6 +349,7 @@
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
 <translation id="6379086450106841622">टचस्क्रीन</translation>
 <translation id="6388847657025262518">स्कॅनरचा दस्तऐवज फीडर अडकला आहे. फीडर तपासा आणि पुन्हा प्रयत्न करा.</translation>
+<translation id="6410257289063177456">इमेज फाइल</translation>
 <translation id="641081527798843608">जुळणारा विषय</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">कमकुवत (<ph name="SIGNAL_STRENGTH" />)</translation>

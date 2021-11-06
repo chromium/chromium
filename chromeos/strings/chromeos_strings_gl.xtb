@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Detectouse un portal cativo</translation>
 <translation id="3170673040743561620">Coloca o documento no escáner</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
+<translation id="3192947282887913208">Ficheiros de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
 <translation id="3226405216343213872">Buscando escáneres</translation>
 <translation id="3246869037381808805">Quitaranse os traballos de impresión de máis de 1 día</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensións)</translation>
 <translation id="3748026146096797577">Non conectado</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
+<translation id="3771294271822695279">Ficheiros de vídeo</translation>
 <translation id="38114475217616659">Borrar todo o historial</translation>
 <translation id="3820172043799983114">O PIN non é válido.</translation>
 <translation id="3838338534323494292">Novo contrasinal</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">Conexión</translation>
 <translation id="4832079907277790330">Seleccionar cartafol na aplicación Ficheiros…</translation>
 <translation id="4835901797422965222">Non hai ningunha rede activa</translation>
+<translation id="4839698083503556542">Crea a túa película</translation>
 <translation id="484790837831576105">(Android) resolución de DNS</translation>
 <translation id="4848429997038228357">EN CURSO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos}}</translation>
@@ -347,6 +350,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="636850387210749493">Inscrición corporativa</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6388847657025262518">O alimentador de documentos do escáner está atascado. Revísao e téntao de novo.</translation>
+<translation id="6410257289063177456">Ficheiros de imaxe</translation>
 <translation id="641081527798843608">Coincidencia do asunto</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>

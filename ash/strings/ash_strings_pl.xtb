@@ -48,6 +48,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1239161794459865856">Funkcja <ph name="FEATURE_NAME" /> ma połączenie.</translation>
 <translation id="1246890715821376239">Nieobsługiwane aplikacje</translation>
 <translation id="1247372569136754018">Mikrofon (wewnętrzny)</translation>
+<translation id="1247519845643687288">Ostatnie aplikacje</translation>
 <translation id="1252999807265626933">Trwa ładowanie z: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaka jest pogoda?</translation>
 <translation id="1266097335951928626">Uruchom aparat do selfie</translation>
@@ -61,6 +62,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1289185460362160437">Możesz wrócić w: <ph name="COME_BACK_DAY_OF_WEEK" /> o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1293264513303784526">Urządzenie USB-C (lewy port)</translation>
+<translation id="1293556467332435079">Pliki</translation>
 <translation id="1294929383540927798">Zmień ustawienia powiadomień na ekranie blokady</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Pokaż ustawienia Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1419738280318246476">Odblokuj urządzenie, by zareagować na powiadomienie</translation>
 <translation id="1420408895951708260">Włącz lub wyłącz Podświetlenie nocne. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Tak</translation>
+<translation id="1438357537418863713">Strumieniowe przesyłanie aplikacji zostało skonfigurowane. Gdy zaczniesz korzystać z tej funkcji, w tym miejscu pojawią się ostatnio uruchomione aplikacje.</translation>
 <translation id="144853431011121127">Odbieraj powiadomienia z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Pokaż ustawienia języka</translation>
 <translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
@@ -246,6 +249,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2778650143428714839">Urządzenie <ph name="DEVICE_TYPE" /> zarządzane przez <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Zamknij tryb przechwytywania</translation>
 <translation id="2792498699870441125">Alt+Szukaj</translation>
+<translation id="2805756323405976993">Aplikacje</translation>
 <translation id="2814448776515246190">Przechwytywanie części ekranu</translation>
 <translation id="2819276065543622893">Zostaniesz teraz wylogowany.</translation>
 <translation id="28232023175184696">Nie udało się połączyć z internetem. Kliknij, by spróbować jeszcze raz.</translation>
@@ -374,6 +378,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3665889125180354336">Nagrywanie z mikrofonu</translation>
 <translation id="3680908746918359504">Wyczyść wszystkie pisaki</translation>
 <translation id="36813544980941320">Twój telefon i <ph name="DEVICE_NAME" /> będą wspólnie korzystać z sieci Wi-Fi</translation>
+<translation id="3694122362646626770">Witryny</translation>
 <translation id="3701206655856637070">Teraz możesz zmienić lokalizację zapisywania zrzutów ekranu</translation>
 <translation id="3702809606464356667">Pokazuję okna z aktualnego biurka, naciśnij klawisz strzałki w górę, aby wyświetlić okna ze wszystkich biurek</translation>
 <translation id="3702846122927433391">Populacja Nigerii</translation>
@@ -535,6 +540,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4774338217796918551">Możesz wrócić jutro o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Hasło dla <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Sklep Play</translation>
 <translation id="4778095205580009397">Asystent Google jest niedostępny w sesji demonstracyjnej.</translation>
 <translation id="4782311465517282004">Kliknij tekst prawym przyciskiem lub naciśnij go i przytrzymaj, aby zobaczyć definicję, tłumaczenie lub konwersję jednostek</translation>
 <translation id="479989351350248267">search</translation>
@@ -590,6 +596,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
 <translation id="5147567197700016471">Odblokowano</translation>
 <translation id="5155897006997040331">Szybkość czytania</translation>
+<translation id="5166007464919321363">Zapisz biurko jako szablon</translation>
 <translation id="5166918508782100047">Ustawienia szybkich podpowiedzi</translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
@@ -799,6 +806,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6777216307882431711">Zasilanie podłączonych urządzeń USB-C</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6803622936009808957">Nie można wyświetlić odbicia lustrzanego, ponieważ nie znaleziono obsługiwanych rozdzielczości. Zamiast tego został włączony pulpit rozszerzony.</translation>
+<translation id="6811454077060061666">Dysk Google na komputer jest niedostępny</translation>
 <translation id="6816797338148849397">Dostępne są informacje związane z zaznaczoną treścią. Aby je otworzyć, naciśnij klawisz strzałki w górę.</translation>
 <translation id="6818242057446442178">Cofnij o jedno słowo</translation>
 <translation id="6820676911989879663">Zrób sobie przerwę</translation>
@@ -933,6 +941,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7796353162336583443">Kliknij przycisk rysika na półce, by zrobić notatkę lub zrzut ekranu, skorzystać z Asystenta Google albo użyć wskaźnika laserowego lub lupy.</translation>
 <translation id="7798302898096527229">Aby anulować, naciśnij Szukaj lub Shift.</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
+<translation id="7807067443225230855">Wyszukiwanie i Asystent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">silny sygnał</translation>
 <translation id="7837740436429729974">Czas minął</translation>
@@ -997,6 +1006,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, bateria telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Naciśnij Enter, by odblokować dla: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Usuń</translation>
+<translation id="8281279285293265212">Nie udało się zapisać screencastu</translation>
 <translation id="8284362522226889623">Aby przełączyć się na poprzednie biurko, przesuń 4 palcami w lewo</translation>
 <translation id="828708037801473432">Wyłączono</translation>
 <translation id="8297006494302853456">Słaby</translation>
@@ -1101,6 +1111,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9070640332319875144">Ustawienia Asystenta</translation>
 <translation id="9072519059834302790">Czas pozostały do całkowitego rozładowania baterii: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Szablony</translation>
 <translation id="9077515519330855811">Sterowanie multimediami, teraz odtwarzane: <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Aby przejść na stronę główną, przesuń w górę</translation>

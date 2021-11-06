@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">ਮੱਧਮ ਸੁਰਮਈ ਨੀਲਾ</translation>
 <translation id="5140016802771803559">ਬੈਂਗਣੀ</translation>
 <translation id="5142101052131610456">ਸਾਰੇ ਪਾਠ</translation>
-<translation id="5152605892605507188">ਸੱਜੇ ਲਿਜਾਓ</translation>
 <translation id="5158275234811857234">ਕਵਰ</translation>
 <translation id="516076699907426116">ਜਾਰੀ ਰੱਖਣ ਲਈ, ਅਗਲਾ ਪਾਠ ਬਟਨ ਲੱਭਣ ਲਈ ਸਪਰਸ਼ ਰਾਹੀਂ ਪੜਚੋਲ ਕਰੋ। ਫਿਰ ਜਾਰੀ ਰੱਖਣ ਲਈ ਡਬਲ ਟੈਪ ਕਰੋ।</translation>
 <translation id="5170206230005240598">ਬਰੇਲ ਲਿਪੀ ਸੁਰਖੀਆਂ ਚਾਲੂ</translation>
@@ -752,7 +751,6 @@
 <translation id="6142308968191113180">ਸਿਰਲੇਖ 4</translation>
 <translation id="6150023170003443621">ਤੋਤੇਰੰਗਾ</translation>
 <translation id="6158882249329863701">ਕਤਾਰ <ph name="TABLECELLROWINDEX" /> ਕਾਲਮ <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">ਖੱਬੇ ਲਿਜਾਓ</translation>
 <translation id="6164829606128959761">ਮੀਟਰ</translation>
 <translation id="6165508094623778733">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6166362019018438352">ਬਰੇਲ ਲਿਪੀ ਸੁਰਖੀਆਂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
@@ -845,7 +843,6 @@
 <translation id="6910969481785184048">ਚਾਲੂ ਕਰਨਾ, ਬੰਦ ਕਰਨਾ, ਅਤੇ ਰੋਕਣਾ</translation>
 <translation id="6919104639734799681">ਟੇਬਪ ਸੂਚੀ ਦਿਖਾਓ</translation>
 <translation id="692135145298539227">ਮਿਟਾਓ</translation>
-<translation id="6935674530832500465">ਹੇਠਾਂ ਲਿਜਾਓ</translation>
 <translation id="6945221475159498467">ਚੁਣੋ</translation>
 <translation id="6949846980769640811">ਮੱਧਮ ਕਾਸਣੀ</translation>
 <translation id="6951482098621102657">ਕੋਈ ਹੋਰ ਪੱਧਰ 5 ਸਿਰਲੇਖ ਨਹੀਂ</translation>
@@ -1043,14 +1040,12 @@
 <translation id="826825447994856889">ਜਾਣ-ਪਛਾਣ</translation>
 <translation id="827266600368092403">ਚੋਣ ਸ਼ੁਰੂ ਜਾਂ ਖਤਮ ਕਰੋ</translation>
 <translation id="827422111966801947">ਜਾਮਨੀ ਨੀਲਾ</translation>
-<translation id="827496561804786391">ਉੱਪਰ ਲਿਜਾਓ</translation>
 <translation id="8276439074553447000">ਪਿਛਲੀ ਫੋਕਸੇਬਲ ਆਈਟਮ ਤੇ ਜਾਓ</translation>
 <translation id="8279039817939141096">ਇਸ ਦਾ ਫੰਕਸ਼ਨ ਸਿੱਖਣ ਲਈ qwerty ਕੁੰਜੀ, ਰਿਫ੍ਰੈਸ਼ ਹੋਣ ਯੋਗ ਬਰੇਲ ਲਿਪੀ ਕੁੰਜੀ ਜਾਂ ਸਪਰਸ਼ ਇਸ਼ਾਰੇ ਨੂੰ ਦਬਾਓ। ਬਾਹਰ ਜਾਣ ਲਈ control ਨਾਲ w, space ਨਾਲ Z, ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਜਾਂ escape ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ।</translation>
 <translation id="8283603667300770666">ਅਗਲਾ ਫ਼ਾਰਮ ਖੇਤਰ</translation>
 <translation id="8310185481635255431">ਕੋਈ ਅਗਲਾ ਲਿੰਕ ਨਹੀਂ</translation>
 <translation id="831207808878314375">ਪਰਿਭਾਸ਼ਾ</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">ਸਭ ਅਣਚੁਣਿਆ ਕਰੋ</translation>
 <translation id="8316881042119029234">ਘਸਮੈਲਾ ਚਿੱਟਾ</translation>
 <translation id="8324974933005349667">'ਲਿਖਤ ਤੋਂ ਬੋਲੀ' ਸੈਟਿੰਗਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਓ</translation>
 <translation id="8326783648485765113">ਘਾਹੀ ਹਰਾ</translation>

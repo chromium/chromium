@@ -48,6 +48,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> se ha conectado.</translation>
 <translation id="1246890715821376239">Aplicaciones no admitidas</translation>
 <translation id="1247372569136754018">Micrófono (interno)</translation>
+<translation id="1247519845643687288">Aplicaciones recientes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">¿Qué tiempo hace?</translation>
 <translation id="1266097335951928626">Iniciar cámara frontal</translation>
@@ -61,6 +62,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1289185460362160437">Vuelve el <ph name="COME_BACK_DAY_OF_WEEK" /> a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1293264513303784526">Dispositivo USB-C (puerto izquierdo)</translation>
+<translation id="1293556467332435079">Archivos</translation>
 <translation id="1294929383540927798">Cambia la configuración de las notificaciones de la pantalla de bloqueo</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Muestra la configuración de Bluetooth. <ph name="STATE_TEXT" />.</translation>
@@ -79,6 +81,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1419738280318246476">Desbloquea el dispositivo para hacer lo que indica la notificación</translation>
 <translation id="1420408895951708260">Activa o desactiva la luz nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sí</translation>
+<translation id="1438357537418863713">El streaming de aplicaciones se ha configurado. Cuando empieces a usarlo, las últimas aplicaciones que abras aparecerán aquí.</translation>
 <translation id="144853431011121127">Recibe notificaciones de tu teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Mostrar los ajustes de idioma</translation>
 <translation id="1460620680449458626">El volumen está silenciado.</translation>
@@ -246,6 +249,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionado por <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Salir del modo de captura</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
+<translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Tu sesión se cerrará ahora.</translation>
 <translation id="28232023175184696">No es posible conectarse a Internet. Haz clic aquí para volver a intentarlo.</translation>
@@ -374,6 +378,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3665889125180354336">Grabar micrófono</translation>
 <translation id="3680908746918359504">Eliminar todos los marcadores</translation>
 <translation id="36813544980941320">Tu teléfono y el dispositivo <ph name="DEVICE_NAME" /> compartirán las redes Wi‑Fi</translation>
+<translation id="3694122362646626770">Sitios web</translation>
 <translation id="3701206655856637070">Ahora puedes cambiar dónde se guardan las capturas de pantalla</translation>
 <translation id="3702809606464356667">Se muestran las ventanas del escritorio actual. Pulsa la tecla de la flecha hacia arriba para ver las ventanas de todos los escritorios.</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
@@ -536,6 +541,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4774338217796918551">Vuelve mañana a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Contraseña de <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">El Asistente de Google no está disponible en las sesiones de demostración.</translation>
 <translation id="4782311465517282004">Consulta definiciones, traducciones o conversiones de unidades haciendo clic con el botón derecho en un texto o manteniéndolo pulsado</translation>
 <translation id="479989351350248267">buscar</translation>
@@ -591,6 +597,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5136175204352732067">Se ha conectado otro teclado</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5155897006997040331">Velocidad de lectura</translation>
+<translation id="5166007464919321363">Guardar escritorio como plantilla</translation>
 <translation id="5166918508782100047">Ajustes de Respuestas rápidas</translation>
 <translation id="5168181903108465623">Dispositivos de transmisión disponibles</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
@@ -800,6 +807,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6777216307882431711">Alimentando dispositivos USB‑C conectados</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6803622936009808957">No se han podido proyectar las pantallas porque no se han encontrado resoluciones compatibles. Se ha utilizado el modo de escritorio ampliado en su lugar.</translation>
+<translation id="6811454077060061666">Google Drive para ordenadores no está disponible.</translation>
 <translation id="6816797338148849397">Hay disponible información relacionada con tu selección. Utiliza la flecha hacia arriba para consultarla.</translation>
 <translation id="6818242057446442178">Retroceder por palabra</translation>
 <translation id="6820676911989879663">Haz una pausa</translation>
@@ -934,6 +942,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7796353162336583443">Toca el botón del lápiz óptico situado en la estantería para tomar una nota, hacer una captura de pantalla o utilizar el Asistente de Google, el puntero láser o la lupa.</translation>
 <translation id="7798302898096527229">Pulsa la tecla de búsqueda o Mayús para cancelarlo.</translation>
 <translation id="780301667611848630">No, gracias</translation>
+<translation id="7807067443225230855">Búsqueda y Asistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> y <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Señal fuerte</translation>
 <translation id="7837740436429729974">Tiempo agotado</translation>
@@ -998,6 +1007,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Pulsa Intro para desbloquearla para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8281279285293265212">No se ha podido guardar la captura de pantalla de vídeo.</translation>
 <translation id="8284362522226889623">Desliza cuatro dedos hacia la izquierda por la pantalla para cambiar al escritorio anterior</translation>
 <translation id="828708037801473432">Desactivada</translation>
 <translation id="8297006494302853456">Débil</translation>
@@ -1102,6 +1112,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="9070640332319875144">Ajustes del Asistente</translation>
 <translation id="9072519059834302790">Tiempo restante para que se agote la batería: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Plantillas</translation>
 <translation id="9077515519330855811">Controles multimedia reproduciendo <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Desliza el dedo hacia arriba para ir a la página principal</translation>

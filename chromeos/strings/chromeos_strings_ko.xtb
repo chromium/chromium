@@ -132,6 +132,7 @@
 <translation id="315738237743207937">종속 포털 감지됨</translation>
 <translation id="3170673040743561620">스캐너에 문서를 올리세요.</translation>
 <translation id="3188257591659621405">내 파일</translation>
+<translation id="3192947282887913208">오디오 파일</translation>
 <translation id="3199982728237701504">서류 급지(양면)</translation>
 <translation id="3226405216343213872">스캐너 검색 중</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
+<translation id="3771294271822695279">동영상 파일</translation>
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
@@ -347,6 +349,7 @@
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6379086450106841622">터치스크린</translation>
 <translation id="6388847657025262518">스캐너의 급지대에 용지가 걸렸습니다. 급지대를 확인한 후 다시 시도해 보세요.</translation>
+<translation id="6410257289063177456">이미지 파일</translation>
 <translation id="641081527798843608">주제 일치</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">약함(<ph name="SIGNAL_STRENGTH" />)</translation>

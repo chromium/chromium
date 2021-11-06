@@ -61,6 +61,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1289185460362160437">Gunakan lagi hari <ph name="COME_BACK_DAY_OF_WEEK" /> pukul <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Sinyal lemah</translation>
 <translation id="1293264513303784526">Perangkat USB-C (port sebelah kiri)</translation>
+<translation id="1293556467332435079">File</translation>
 <translation id="1294929383540927798">Ubah setelan notifikasi layar kunci</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Tampilkan setelan Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -246,6 +247,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Keluar dari mode tangkapan layar</translation>
 <translation id="2792498699870441125">Alt+Telusuri</translation>
+<translation id="2805756323405976993">Apl</translation>
 <translation id="2814448776515246190">Tangkapan layar sebagian</translation>
 <translation id="2819276065543622893">Anda akan dikeluarkan sekarang.</translation>
 <translation id="28232023175184696">Tidak dapat terhubung ke internet. Klik untuk mencoba lagi.</translation>
@@ -374,6 +376,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3665889125180354336">Rekam mikrofon</translation>
 <translation id="3680908746918359504">Hapus semua penanda</translation>
 <translation id="36813544980941320">Ponsel dan <ph name="DEVICE_NAME" /> akan menggunakan jaringan Wi-Fi yang sama</translation>
+<translation id="3694122362646626770">Situs web</translation>
 <translation id="3701206655856637070">Anda kini dapat mengubah tempat penyimpanan screenshot</translation>
 <translation id="3702809606464356667">Menampilkan jendela dari desktop saat ini, tekan tombol Panah atas untuk menampilkan jendela dari semua desktop</translation>
 <translation id="3702846122927433391">Populasi di Nigeria</translation>
@@ -535,6 +538,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4774338217796918551">Gunakan lagi besok pukul <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Sandi untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Asisten Google tidak tersedia dalam sesi demo.</translation>
 <translation id="4782311465517282004">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks</translation>
 <translation id="479989351350248267">search</translation>
@@ -933,6 +937,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7796353162336583443">Ketuk tombol stilus di rak untuk mencatat, mengambil screenshot, menggunakan asisten, penunjuk laser, atau kaca pembesar.</translation>
 <translation id="7798302898096527229">Tekan Search atau Shift untuk membatalkan.</translation>
 <translation id="780301667611848630">Lain kali</translation>
+<translation id="7807067443225230855">Penelusuran dan Asisten</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dan <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Sinyal kuat</translation>
 <translation id="7837740436429729974">Waktu habis</translation>

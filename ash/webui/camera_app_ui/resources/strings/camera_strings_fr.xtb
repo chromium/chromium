@@ -3,6 +3,7 @@
 <translationbundle lang="fr">
 <translation id="1113173431709655881">Mode caméra</translation>
 <translation id="1175958423215084756">Lien détecté. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Faire pivoter de 90 degrés vers la droite</translation>
 <translation id="1276998909102132017">Images de la galerie</translation>
 <translation id="1300209025925956156">Scanner votre document</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Recherche+Flèche vers la gauche pour y accéder.</translation>
@@ -54,6 +55,7 @@
 <translation id="3517926952904427380">Impossible de prendre une photo en mode portrait</translation>
 <translation id="3569311554794739032">Voulez-vous vraiment supprimer <ph name="FILE" /> ?</translation>
 <translation id="3573890771273113519">Passer au mode de numérisation</translation>
+<translation id="3789724198583203151">Faire pivoter de 90 degrés vers la gauche</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3838931309141338733">Lire le code-barres</translation>
 <translation id="3892148308691398805">Copier le texte</translation>

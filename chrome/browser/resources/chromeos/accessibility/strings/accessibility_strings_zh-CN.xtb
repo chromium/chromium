@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">中岩蓝色</translation>
 <translation id="5140016802771803559">瑞贝卡紫</translation>
 <translation id="5142101052131610456">所有课程</translation>
-<translation id="5152605892605507188">右移</translation>
 <translation id="5158275234811857234">封面</translation>
 <translation id="516076699907426116">若要继续，请使用“触摸浏览”功能找到“下一课”按钮。然后，点按两次以继续。</translation>
 <translation id="5170206230005240598">已启用盲文字幕</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">浅灰色</translation>
 <translation id="6036135911048686884">触摸浏览</translation>
 <translation id="6037602951055904232">向前平移</translation>
+<translation id="604240746417122825">语法错误</translation>
 <translation id="6082768461603900813">基本导航操作</translation>
 <translation id="609281021724813947">没有上一个滑块</translation>
 <translation id="6100239002225743044">上移 1 行</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">4 级标题标记</translation>
 <translation id="6150023170003443621">黄绿色</translation>
 <translation id="6158882249329863701">第 <ph name="TABLECELLROWINDEX" /> 行，第 <ph name="TABLECELLCOLUMNINDEX" /> 列</translation>
-<translation id="6159796324830296161">左移</translation>
 <translation id="6164829606128959761">计量条</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6166362019018438352">已停用盲文字幕</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">开启、关闭和停止</translation>
 <translation id="6919104639734799681">显示表格列表</translation>
 <translation id="692135145298539227">删除</translation>
-<translation id="6935674530832500465">下移</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6949846980769640811">中碧蓝色</translation>
 <translation id="6951482098621102657">没有下一个 5 级标题</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">简介</translation>
 <translation id="827266600368092403">开始或结束选择</translation>
 <translation id="827422111966801947">靛青色</translation>
-<translation id="827496561804786391">上移</translation>
 <translation id="8276439074553447000">跳转到上一个可设置为焦点的项</translation>
 <translation id="8279039817939141096">如需了解该模式的功能，请按 QWERTY 键盘上的某个键或按某个可刷新式盲文键，或者使用触摸手势。若要退出，请按 Ctrl + W 或按空格键 + Z 或按 Esc 键，或者用 2 根手指向左滑动。</translation>
 <translation id="8283603667300770666">下一个表单字段</translation>
 <translation id="8310185481635255431">没有下一个链接</translation>
 <translation id="831207808878314375">定义</translation>
 <translation id="8313653172105209786">目录</translation>
-<translation id="8314546933558091113">取消全选</translation>
 <translation id="8316881042119029234">旧蕾丝色</translation>
 <translation id="8324974933005349667">个性化文字转语音设置</translation>
 <translation id="8326783648485765113">草绿色</translation>

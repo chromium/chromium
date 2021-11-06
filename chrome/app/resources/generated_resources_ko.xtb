@@ -6,7 +6,6 @@
 <translation id="1003088604756913841">새 <ph name="APP" /> 창에서 링크 열기</translation>
 <translation id="100323615638474026">USB 기기(<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">사이트 액세스</translation>
-<translation id="100524763483954942">설정으로 돌아가기</translation>
 <translation id="1005274289863221750">마이크와 카메라 사용</translation>
 <translation id="1005333234656240382">ADB 디버깅을 사용 설정하시겠습니까?</translation>
 <translation id="1006873397406093306">이 확장 프로그램은 사이트에서 내 데이터를 읽고 변경할 수 있습니다. 사용자는 확장 프로그램에서 액세스할 수 있는 사이트를 제어할 수 있습니다.</translation>
@@ -784,7 +783,6 @@
 <translation id="1780273119488802839">북마크 가져오기...</translation>
 <translation id="178092663238929451">주변의 사람과 파일을 주고받으려면 Nearby Share를 설정하세요.</translation>
 <translation id="1781291988450150470">현재 PIN</translation>
-<translation id="1781398670452016618"><ph name="DOMAIN" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다.</translation>
 <translation id="1781502536226964113">새 탭 페이지 열기</translation>
 <translation id="1781771911845953849">계정 및 동기화</translation>
 <translation id="1781979858217752599">창 오디오 공유</translation>
@@ -1455,7 +1453,6 @@
 <translation id="2459703812219683497">활성화 코드 감지됨</translation>
 <translation id="2462724976360937186">인증 기관 키 ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> 추가됨</translation>
-<translation id="2465237718053447668"><ph name="DOMAIN" />에서 지금 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.</translation>
 <translation id="2467755475704469005">감지된 기기가 없습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">터치패드 스크롤 가속</translation>
 <translation id="2468205691404969808">페이지를 방문하지 않더라도 쿠키를 통해 환경설정 저장</translation>
@@ -4743,7 +4740,6 @@
 <translation id="5979353814339191480">이 옵션은 데이터 요금제 또는 모바일 네트워크 동글을 사용하거나 휴대용 핫스팟에 테더링된 Chromebook에 적용됩니다.</translation>
 <translation id="5979421442488174909"><ph name="LANGUAGE" />(으)로 번역(&amp;T)</translation>
 <translation id="5979469435153841984">페이지를 북마크에 추가하려면 검색주소창에서 별표를 클릭하세요.</translation>
-<translation id="5983831175889857946">검토 완료됨</translation>
 <translation id="5984222099446776634">최근 방문</translation>
 <translation id="5985458664595100876">URL 형식이 잘못되었습니다. \\server\share 및 smb://server/share 형식이 지원됩니다.</translation>
 <translation id="598810097218913399">할당 삭제</translation>
@@ -5678,7 +5674,6 @@
 <translation id="6991665348624301627">대상 선택</translation>
 <translation id="6992554835374084304">향상된 맞춤법 검사 기능 사용 설정</translation>
 <translation id="6993000214273684335">이름이 지정되지 않은 그룹에서 탭이 제거됨 - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6993050154661569036">Chrome 브라우저 업데이트 중</translation>
 <translation id="6994069045767983299">반전</translation>
 <translation id="6995899638241819463">데이터 유출로 인해 비밀번호가 노출된 경우 알림</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 활동 로그</translation>
@@ -5818,7 +5813,6 @@
 <translation id="7133578150266914903">관리자가 이 기기를 롤백하는 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="7134098520442464001">텍스트 축소</translation>
 <translation id="7135729336746831607">블루투스를 사용 설정하시겠습니까?</translation>
-<translation id="7136639886842764730"><ph name="DOMAIN" />에서 <ph name="DEVICE_TYPE" /> 기기를 즉시 업데이트할 것을 요청합니다.</translation>
 <translation id="7136694880210472378">기본으로 설정</translation>
 <translation id="7136993520339022828">오류가 발생했습니다. 다른 이미지를 선택하고 다시 시도해 보세요.</translation>
 <translation id="7138515695467025690">사용 안함 / 일몰 시 자동으로 켜짐</translation>

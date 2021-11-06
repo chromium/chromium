@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Откриен е портал за проверка</translation>
 <translation id="3170673040743561620">Ставете го документот на скенерот</translation>
 <translation id="3188257591659621405">Мои датотеки</translation>
+<translation id="3192947282887913208">Аудиодатотеки</translation>
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
 <translation id="3226405216343213872">Се бараат скенери</translation>
 <translation id="3246869037381808805">Задачите за печатење постари од 1 ден ќе се отстранат</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> рецензии)</translation>
 <translation id="3748026146096797577">Не е поврзана</translation>
 <translation id="3749289110408117711">Име на датотека</translation>
+<translation id="3771294271822695279">Видеодатотеки</translation>
 <translation id="38114475217616659">Избриши ја целата историја</translation>
 <translation id="3820172043799983114">Неважечки PIN.</translation>
 <translation id="3838338534323494292">Нова лозинка</translation>
@@ -347,6 +349,7 @@
 <translation id="636850387210749493">Запишување компанија</translation>
 <translation id="6379086450106841622">Екран на допир</translation>
 <translation id="6388847657025262518">Фиоката за документи на скенерот е заглавена. Проверете ја и обидете се повторно.</translation>
+<translation id="6410257289063177456">Датотеки со слики</translation>
 <translation id="641081527798843608">Совпаѓање на предмети</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>

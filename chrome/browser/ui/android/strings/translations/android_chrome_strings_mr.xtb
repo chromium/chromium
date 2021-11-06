@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">पेज न सोडता वेबसाइटवरील विषयांबद्दल जाणून घ्या. शोधण्यासाठी स्पर्श करा हे शब्द आणि त्याच्या आसपासचा संदर्भ Google Search ला पाठवते आणि व्याख्या, पिक्चर, शोध परिणाम आणि इतर तपशील मिळवते.
 
 शोधण्यासाठी कोणत्याही शब्दाला स्पर्श करा आणि धरून ठेवा. तुमचा शोध रिफाइन करण्यासाठी, जास्त किंवा कमी शब्द निवडा. तुमचा शोध संपादित करण्यासाठी, पॅनल उघडा, नवीन टॅबमध्ये उघडण्यासाठी आयकनवर टॅप करा आणि सर्च बॉक्समध्ये तुमचे बदल करा.</translation>
+<translation id="2451607499823206582">ट्रॅक करणे</translation>
 <translation id="2459390580524506445">वर्धित व्हॉइस शोध</translation>
 <translation id="2461822463642141190">सद्य</translation>
 <translation id="247737702124049222">इमेजची वर्णने सुरू आहेत</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">क्लिपबोर्डवरील आशय लपवा</translation>
 <translation id="2532336938189706096">वेब दृश्य</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले</translation>
+<translation id="2534582914273493287">Google ला तुम्ही भेट दिलेल्या URLs पाठवल्या जातात</translation>
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
 <translation id="2561519700418191927">व्हिडिओची पूर्वावलोकने</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">डिव्हाइसमध्ये सेव्ह करा</translation>
 <translation id="3236059992281584593">1 मिनिट शिल्लक</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">तुम्ही Chrome वापर अहवालदेखील शेअर केल्यास, त्या अहवालांमध्ये तुम्ही भेट दिलेल्या URLs चा समावेश होतो</translation>
 <translation id="3250563604907490871">तुम्ही वाय-फायशी कनेक्ट करता तेव्हा इमेजची वर्णने पुन्हा सुरू होतील</translation>
 <translation id="3254409185687681395">या पृष्ठास बुकमार्क करा</translation>
 <translation id="3259831549858767975">पृष्ठावरील प्रत्येकगोष्ट आणखी लहान बनवा</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB उपलब्ध</translation>
 <translation id="3549657413697417275">तुमचा इतिहास शोधा</translation>
+<translation id="3557272988124495906">किंमत कमी झाल्यावर सूचना मिळवा</translation>
 <translation id="3557336313807607643">संपर्कांमध्ये जोडा</translation>
 <translation id="3563767357928833671">क्लिपबोर्डचा आशय दाखवला</translation>
 <translation id="3566923219790363270">Chrome अजूनही VR ची तयारी करत आहे. Chrome नंतर रीस्टार्ट करा.</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="3778956594442850293">होम स्क्रीनवर जोडले</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{एक टॅब}other{# टॅब}}</translation>
+<translation id="3803783897442799486">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />सेवा अटी<ph name="END_LINK1" /> यांना सहमती दर्शवता.\nअ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश डेटा पाठवते. <ph name="BEGIN_LINK2" />व्यवस्थापित करा<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">ऑटोप्ले व्यवस्थापित करा</translation>
 <translation id="3810838688059735925">व्हिडिओ</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
@@ -606,6 +611,7 @@
 <translation id="47217992755561375">तुमच्या टॉप साइट पहा</translation>
 <translation id="4732120983431207637">स्टॅक अनवाइंडर</translation>
 <translation id="4738836084190194332">अखेरचे संकालित: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">तुम्हाला अ‍ॅड्रेस बारमध्ये सुधारित सूचना मिळतील</translation>
 <translation id="4742970037960872810">हायलाइट काढून टाका</translation>
 <translation id="4749960740855309258">एक नवीन टॅब उघडा</translation>
 <translation id="4758061975920522644">फक्त इमेज शेअर करा</translation>
@@ -1173,6 +1179,7 @@
 <translation id="7975379999046275268">पेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
 <translation id="7981313251711023384">जलद ब्राउझिंग आणि शोधाकरता पेज आधीच लोड करा</translation>
 <translation id="7986497153528221272">पासवर्ड पाहण्यासाठी, प्रथम तुमच्या डिव्हाइसवर स्क्रीन लॉक सेट करा</translation>
+<translation id="799576009106109668">तुम्हाला आणखी जलद ब्राउझ करता येईल कारण तुमच्या सध्याच्या वेबपेज भेटीच्या आधारावर आशय प्रोॲक्टिव्हपणे लोड केला जातो</translation>
 <translation id="7998918019931843664">बंद केलेले टॅब पुन्हा उघडा</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8013372441983637696">तुमचा या डिव्हाइसवरील Chrome डेटा देखील साफ करा</translation>
@@ -1220,6 +1227,7 @@
 <translation id="8218052821161047641">जलद पेज</translation>
 <translation id="8218622182176210845">तुमचे खाते व्यवस्थापित करा</translation>
 <translation id="8223642481677794647">फीड कार्ड मेनू</translation>
+<translation id="8242868071038398515">कोणत्याही साइटवर किंमत कमी झाल्यास तुम्हाला सूचित केले जाईल</translation>
 <translation id="8250920743982581267">दस्तऐवज</translation>
 <translation id="825412236959742607">हे पेज खूप जास्त मेमरी वापरत असल्यामुळे, Chrome ने काही आशय काढून टाकला आहे.</translation>
 <translation id="8260126382462817229">पुन्हा साइन इन करण्याचा प्रयत्न करा</translation>
@@ -1238,6 +1246,7 @@
 <translation id="8354977102499939946">तुमचा आवाज वापरून झटपट शोधा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड रिस्टोअर केले</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइट पहा</translation>
+<translation id="8368001212524806591">किंमत ट्रॅक करणे</translation>
 <translation id="8387617938027387193">हे तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="8393700583063109961">संदेश पाठवा</translation>
 <translation id="8410695015584479363">किमती ट्रॅक करा</translation>
