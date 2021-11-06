@@ -60708,6 +60708,65 @@ Called by update_net_trust_anchors.py.-->
   <int value="40" label="5190"/>
   <int value="41" label="5210"/>
   <int value="42" label="5230"/>
+  <int value="43" label="5955"/>
+  <int value="44" label="5975"/>
+  <int value="45" label="5995"/>
+  <int value="46" label="6015"/>
+  <int value="47" label="6035"/>
+  <int value="48" label="6055"/>
+  <int value="49" label="6075"/>
+  <int value="50" label="6095"/>
+  <int value="51" label="6115"/>
+  <int value="52" label="6135"/>
+  <int value="53" label="6155"/>
+  <int value="54" label="6175"/>
+  <int value="55" label="6195"/>
+  <int value="56" label="6215"/>
+  <int value="57" label="6235"/>
+  <int value="58" label="6255"/>
+  <int value="59" label="6275"/>
+  <int value="60" label="6295"/>
+  <int value="61" label="6315"/>
+  <int value="62" label="6335"/>
+  <int value="63" label="6355"/>
+  <int value="64" label="6375"/>
+  <int value="65" label="6395"/>
+  <int value="66" label="6415"/>
+  <int value="67" label="6435"/>
+  <int value="68" label="6455"/>
+  <int value="69" label="6475"/>
+  <int value="70" label="6495"/>
+  <int value="71" label="6515"/>
+  <int value="72" label="6535"/>
+  <int value="73" label="6555"/>
+  <int value="74" label="6575"/>
+  <int value="75" label="6595"/>
+  <int value="76" label="6615"/>
+  <int value="77" label="6635"/>
+  <int value="78" label="6655"/>
+  <int value="79" label="6675"/>
+  <int value="80" label="6695"/>
+  <int value="81" label="6715"/>
+  <int value="82" label="6735"/>
+  <int value="83" label="6755"/>
+  <int value="84" label="6775"/>
+  <int value="85" label="6795"/>
+  <int value="86" label="6815"/>
+  <int value="87" label="6835"/>
+  <int value="88" label="6855"/>
+  <int value="89" label="6875"/>
+  <int value="90" label="6895"/>
+  <int value="91" label="6915"/>
+  <int value="92" label="6935"/>
+  <int value="93" label="6955"/>
+  <int value="94" label="6975"/>
+  <int value="95" label="6995"/>
+  <int value="96" label="7015"/>
+  <int value="97" label="7035"/>
+  <int value="98" label="7055"/>
+  <int value="99" label="7075"/>
+  <int value="100" label="7095"/>
+  <int value="101" label="7115"/>
 </enum>
 
 <enum name="NetworkClockStates">
