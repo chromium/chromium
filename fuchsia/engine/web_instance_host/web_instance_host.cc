@@ -21,7 +21,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base_paths_fuchsia.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -29,11 +28,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -171,9 +170,8 @@ bool HandleDataDirectoryParam(fuchsia::web::CreateContextParams* params,
     return false;
   }
 
-  base::FilePath data_path;
-  CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_path));
-  launch_info->flat_namespace->paths.push_back(data_path.value());
+  launch_info->flat_namespace->paths.push_back(
+      base::kPersistedDataDirectoryPath);
   launch_info->flat_namespace->directories.push_back(
       std::move(data_directory_channel));
   if (params->has_data_quota_bytes()) {

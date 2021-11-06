@@ -25,7 +25,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/base_paths_fuchsia.h"
+#include "base/base_paths.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"

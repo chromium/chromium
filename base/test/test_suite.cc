@@ -73,10 +73,6 @@
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
 #endif
 
-#if defined(OS_FUCHSIA)
-#include "base/base_paths_fuchsia.h"
-#endif
-
 #if defined(OS_WIN)
 #if defined(_DEBUG)
 #include <crtdbg.h>

@@ -6,7 +6,6 @@
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/barrier_closure.h"
-#include "base/base_paths_fuchsia.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/path_service.h"

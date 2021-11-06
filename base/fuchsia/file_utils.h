@@ -12,8 +12,7 @@
 
 namespace base {
 
-// Persisted data directory, i.e. /data . Returned as DIR_APP_DATA from
-// PathService.
+// Persisted data directory, i.e. /data .
 BASE_EXPORT extern const char kPersistedDataDirectoryPath[];
 
 // Persisted cache directory, i.e. /cache .

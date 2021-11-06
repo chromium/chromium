@@ -1651,7 +1651,6 @@ component("base") {
   if (is_fuchsia) {
     sources += [
       "base_paths_fuchsia.cc",
-      "base_paths_fuchsia.h",
       "debug/debugger_fuchsia.cc",
       "debug/elf_reader.cc",
       "debug/elf_reader.h",

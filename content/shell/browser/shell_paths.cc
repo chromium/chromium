@@ -4,20 +4,17 @@
 
 #include "content/shell/browser/shell_paths.h"
 
+#include "base/base_paths.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
-#include "base/base_paths_win.h"
+#if defined(OS_FUCHSIA)
+#include "base/fuchsia/file_utils.h"
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "base/nix/xdg_util.h"
-#elif defined(OS_MAC)
-#include "base/base_paths_mac.h"
-#elif defined(OS_FUCHSIA)
-#include "base/base_paths_fuchsia.h"
 #endif
 
 namespace content {
@@ -40,8 +37,8 @@ bool GetDefaultUserDataDirectory(base::FilePath* result) {
   CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, result));
   *result = result->Append(FILE_PATH_LITERAL("content_shell"));
 #elif defined(OS_FUCHSIA)
-  CHECK(base::PathService::Get(base::DIR_APP_DATA, result));
-  *result = result->Append(FILE_PATH_LITERAL("content_shell"));
+  *result = base::FilePath(base::kPersistedDataDirectoryPath)
+                .Append(FILE_PATH_LITERAL("content_shell"));
 #else
   NOTIMPLEMENTED();
   return false;

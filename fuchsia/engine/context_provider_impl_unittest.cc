@@ -19,7 +19,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base_paths_fuchsia.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -67,8 +66,7 @@ MULTIPROCESS_TEST_MAIN(SpawnContextServer) {
 
   LOG(INFO) << "SpawnContextServer test component started.";
 
-  base::FilePath data_dir;
-  CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_dir));
+  base::FilePath data_dir(base::kPersistedDataDirectoryPath);
   if (base::PathExists(data_dir.AppendASCII(kTestDataFileIn))) {
     auto out_file = data_dir.AppendASCII(kTestDataFileOut);
     CHECK_EQ(base::WriteFile(out_file, nullptr, 0), 0);

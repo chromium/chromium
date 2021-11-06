@@ -15,7 +15,7 @@
 #include <lib/zx/channel.h>
 #include <zircon/processargs.h>
 
-#include "base/base_paths_fuchsia.h"
+#include "base/base_paths.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
@@ -44,11 +44,11 @@
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_devtools_list_fetcher.h"
 #include "fuchsia/base/test/url_request_rewrite_test_util.h"
-#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/cast_runner_switches.h"
 #include "fuchsia/runners/cast/fake_api_bindings.h"
 #include "fuchsia/runners/cast/fake_application_config_manager.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "testing/gtest/include/gtest/gtest.h"

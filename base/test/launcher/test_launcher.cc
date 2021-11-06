@@ -86,11 +86,9 @@
 #include <lib/zx/job.h>
 #include <lib/zx/time.h>
 #include "base/atomic_sequence_num.h"
-#include "base/base_paths_fuchsia.h"
 #include "base/fuchsia/default_job.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/path_service.h"
 #endif
 
 namespace base {

@@ -11,7 +11,7 @@
 #include <iostream>
 #include <utility>
 
-#include "base/base_paths_fuchsia.h"
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"

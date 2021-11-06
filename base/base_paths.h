@@ -12,8 +12,6 @@
 
 #if defined(OS_WIN)
 #include "base/base_paths_win.h"
-#elif defined(OS_FUCHSIA)
-#include "base/base_paths_fuchsia.h"
 #elif defined(OS_APPLE)
 #include "base/base_paths_mac.h"
 #elif defined(OS_ANDROID)

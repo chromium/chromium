@@ -6,7 +6,6 @@
 
 #include <stdlib.h>
 
-#include "base/base_paths_fuchsia.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
@@ -23,9 +22,6 @@ bool PathProviderFuchsia(int key, FilePath* result) {
       return false;
     case FILE_EXE:
       *result = CommandLine::ForCurrentProcess()->GetProgram();
-      return true;
-    case DIR_APP_DATA:
-      *result = base::FilePath(base::kPersistedDataDirectoryPath);
       return true;
     case DIR_ASSETS:
       *result = base::FilePath(base::kPackageRootDirectoryPath);

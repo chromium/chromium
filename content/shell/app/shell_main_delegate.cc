@@ -7,6 +7,7 @@
 #include <iostream>
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -74,10 +75,6 @@
 #if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
 #include "v8/include/v8-wasm-trap-handler-posix.h"
 #endif
-
-#if defined(OS_FUCHSIA)
-#include "base/base_paths_fuchsia.h"
-#endif  // OS_FUCHSIA
 
 namespace {
 

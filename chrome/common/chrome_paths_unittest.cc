@@ -36,8 +36,8 @@ TEST(ChromePaths, UserCacheDir) {
   // Fuchsia uses the Component's cache directory as the base.
   expected_cache_dir = base::FilePath(base::kPersistedCacheDirectoryPath);
   // TODO(crbug.com/1263566): Support profile-specific cache and uncomment this.
-  // ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &test_profile_dir));
-  // test_profile_dir = test_profile_dir.Append("foobar");
+  // test_profile_dir =
+  //     base::FilePath(base::kPersistedDataDirectoryPath).Append("foobar");
   // expected_cache_dir = expected_cache_dir.Append("foobar");
 #elif defined(OS_MAC)
   ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &test_profile_dir));

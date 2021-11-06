@@ -77,7 +77,6 @@
 #include <zircon/process.h>
 #include <zircon/processargs.h>
 #include <zircon/syscalls.h>
-#include "base/base_paths_fuchsia.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
