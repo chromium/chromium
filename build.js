@@ -70,7 +70,7 @@ function computeBuildId() {
   // Note: this build ID doesn't include revision etc. information for v8 or other inner git
   // repositories. It would be good to either fix this or enforce that the chromium revision
   // gets bumped whenever an inner repository changes.
-  const chromiumRevision = spawnChecked("git", ["rev-parse", "--short", "HEAD"]).stdout.toString().trim();
+  const chromiumRevision = spawnChecked("git", ["rev-parse", "--short=12", "HEAD"]).stdout.toString().trim();
   const chromiumDate = spawnChecked("git", [
     "show",
     "HEAD",
