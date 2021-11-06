@@ -365,10 +365,14 @@ class AutofillMetricsTest : public testing::Test {
   // unmasking.
   void SetFidoEligibility(bool is_verifiable);
 
-  // Mocks a RPC response from payments.
+  // Mocks a RPC response from Payments.
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
                        const std::string& real_pan,
                        bool is_virtual_card = false);
+
+  // Mocks a RPC response from Payments, but where a non-HTTP_OK response
+  // stopped it from parsing a valid response.
+  void OnDidGetRealPanWithNonHttpOkResponse();
 
   // Purge recorded UKM metrics for running more tests.
   void PurgeUKM();
@@ -526,6 +530,24 @@ void AutofillMetricsTest::OnDidGetRealPan(
                            ? AutofillClient::PaymentsRpcCardType::kVirtualCard
                            : AutofillClient::PaymentsRpcCardType::kServerCard;
   full_card_request->OnDidGetRealPan(result, response.with_real_pan(real_pan));
+}
+
+void AutofillMetricsTest::OnDidGetRealPanWithNonHttpOkResponse() {
+  payments::FullCardRequest* full_card_request =
+      browser_autofill_manager_->credit_card_access_manager_
+          ->GetOrCreateCVCAuthenticator()
+          ->full_card_request_.get();
+  DCHECK(full_card_request);
+
+  // Fake user response.
+  payments::FullCardRequest::UserProvidedUnmaskDetails details;
+  details.cvc = u"123";
+  full_card_request->OnUnmaskPromptAccepted(details);
+
+  payments::PaymentsClient::UnmaskResponseDetails response;
+  // Don't set |response.card_type|, so that it stays as kUnknown.
+  full_card_request->OnDidGetRealPan(
+      AutofillClient::PaymentsRpcResult::kPermanentFailure, response);
 }
 
 void AutofillMetricsTest::RecreateCreditCards(
@@ -5949,6 +5971,45 @@ TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_ServerCard) {
         "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
     histogram_tester.ExpectTotalCount(
         "Autofill.UnmaskPrompt.GetRealPanDuration.ServerCard.Failure", 1);
+  }
+}
+
+// Test that a malformed or non-HTTP_OK response doesn't cause problems, per
+// crbug/1267105.
+TEST_F(AutofillMetricsTest, CreditCardGetRealPanDuration_BadServerResponse) {
+  // Creating masked card.
+  RecreateCreditCards(false /* include_local_credit_card */,
+                      true /* include_masked_server_credit_card */,
+                      false /* include_full_server_credit_card */,
+                      false /* masked_card_is_enrolled_for_virtual_card */);
+  // Set up our form data.
+  FormData form;
+  test::CreateTestCreditCardFormData(&form,
+                                     /*is_https=*/true,
+                                     /*use_month_type=*/true,
+                                     /*split_name=*/false);
+  std::vector<ServerFieldType> field_types{
+      CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+      CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, CREDIT_CARD_VERIFICATION_CODE};
+  ASSERT_EQ(form.fields.size(), field_types.size());
+
+  // Simulate having seen this form on page load.
+  // |form_structure| will be owned by |browser_autofill_manager_|.
+  browser_autofill_manager_->AddSeenForm(form, field_types, field_types);
+
+  {
+    // Simulating filling a masked card server suggestion.
+    base::HistogramTester histogram_tester;
+    // Masked server card.
+    std::string guid("10000000-0000-0000-0000-000000000002");
+    browser_autofill_manager_->FillOrPreviewForm(
+        mojom::RendererFormDataAction::kFill, 0, form, form.fields.back(),
+        browser_autofill_manager_->MakeFrontendIDForTest(guid, std::string()));
+    OnDidGetRealPanWithNonHttpOkResponse();
+    histogram_tester.ExpectTotalCount(
+        "Autofill.UnmaskPrompt.GetRealPanDuration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.UnmaskPrompt.GetRealPanDuration.UnknownCard.Failure", 1);
   }
 }
 

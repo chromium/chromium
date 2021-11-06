@@ -80,6 +80,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Autofill.PaymentsRpcCardType">
   <variant name="ServerCard" summary="The card is a server card."/>
+  <variant name="UnknownCard" summary="The card type was unknown."/>
   <variant name="VirtualCard" summary="The card is a virtual card."/>
 </variants>
 

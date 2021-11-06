@@ -1683,8 +1683,11 @@ void AutofillMetrics::LogRealPanDuration(
       card_type_suffix = "VirtualCard";
       break;
     case AutofillClient::PaymentsRpcCardType::kUnknown:
-      NOTREACHED();
-      return;
+      // Unknown card types imply UnmaskCardRequest::ParseResponse() was never
+      // called, due to bad internet connection or otherwise. Log anyway so that
+      // we have a rough idea of the magnitude of this problem.
+      card_type_suffix = "UnknownCard";
+      break;
   }
 
   switch (result) {
