@@ -27,7 +27,7 @@ class CORE_EXPORT WritableStreamDefaultController final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static WritableStreamDefaultController* From(ScriptValue);
+  static WritableStreamDefaultController* From(ScriptState*, ScriptValue);
 
   // The JavaScript-exposed constructor throws automatically as no constructor
   // is specified in the IDL. This constructor is used internally during
