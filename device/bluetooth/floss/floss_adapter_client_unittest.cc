@@ -31,6 +31,15 @@ MATCHER_P(HasMemberOf, member, "") {
   return arg->GetMember() == member;
 }
 
+constexpr char kTestMethod0[] = "TestMethod0";
+constexpr char kTestMethod1[] = "TestMethod1";
+constexpr char kTestMethod2[] = "TestMethod2";
+
+constexpr uint8_t kFakeU8Return = 100;
+constexpr char kFakeStrReturn[] = "fake return";
+constexpr uint32_t kFakeU32Param = 30;
+constexpr char kFakeStrParam[] = "fake param";
+
 }  // namespace
 
 namespace floss {
@@ -448,6 +457,135 @@ TEST_F(FlossAdapterClientTest, CreateBond) {
       base::BindOnce(&FlossAdapterClientTest::ExpectValidCreateBond,
                      weak_ptr_factory_.GetWeakPtr()),
       bond, transport);
+}
+
+TEST_F(FlossAdapterClientTest, CallAdapterMethods) {
+  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
+
+  // Method of 0 parameters with no return.
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(HasMemberOf(kTestMethod0), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have no parameters.
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with no return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        std::move(*cb).Run(response.get(), nullptr);
+      });
+  client_->CallAdapterMethod0(
+      base::BindOnce([](const absl::optional<Void>& ret,
+                        const absl::optional<Error>& err) {
+        // Check that there should be no return and error.
+        EXPECT_FALSE(err.has_value());
+        EXPECT_FALSE(ret.has_value());
+      }),
+      kTestMethod0);
+
+  // Method of 0 parameters with uint8_t return.
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(HasMemberOf(kTestMethod0), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have no parameters.
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with a return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendByte(kFakeU8Return);
+        std::move(*cb).Run(response.get(), nullptr);
+      });
+  client_->CallAdapterMethod0(
+      base::BindOnce([](const absl::optional<uint8_t>& ret,
+                        const absl::optional<Error>& err) {
+        // Check that return is correctly parsed and there should be no error.
+        EXPECT_FALSE(err.has_value());
+        EXPECT_TRUE(ret.has_value());
+        EXPECT_EQ(100, ret);
+      }),
+      kTestMethod0);
+
+  // Method of 1 parameter with string return.
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(HasMemberOf(kTestMethod1), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 1 parameter.
+        uint32_t param1;
+        ASSERT_TRUE(msg.PopUint32(&param1));
+        EXPECT_EQ(kFakeU32Param, param1);
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with a return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendString(kFakeStrReturn);
+        std::move(*cb).Run(response.get(), nullptr);
+      });
+  client_->CallAdapterMethod1(
+      base::BindOnce([](const absl::optional<std::string>& ret,
+                        const absl::optional<Error>& err) {
+        // Check that return is correctly parsed and there should be no error.
+        EXPECT_FALSE(err.has_value());
+        EXPECT_TRUE(ret.has_value());
+        EXPECT_EQ(kFakeStrReturn, ret);
+      }),
+      kTestMethod1, kFakeU32Param);
+
+  // Method of 2 parameters with no return.
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(HasMemberOf(kTestMethod2), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 2 parameter.
+        uint32_t param1;
+        std::string param2;
+        ASSERT_TRUE(msg.PopUint32(&param1));
+        ASSERT_TRUE(msg.PopString(&param2));
+        EXPECT_EQ(kFakeU32Param, param1);
+        EXPECT_EQ(kFakeStrParam, param2);
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with no return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        std::move(*cb).Run(response.get(), nullptr);
+      });
+  std::string str_param(kFakeStrParam);
+  client_->CallAdapterMethod2(
+      base::BindOnce([](const absl::optional<Void>& ret,
+                        const absl::optional<Error>& err) {
+        // Check that there should be no return and error.
+        EXPECT_FALSE(err.has_value());
+        EXPECT_FALSE(ret.has_value());
+      }),
+      kTestMethod2, kFakeU32Param, str_param);
+
+  // Method of 0 parameters with invalid return.
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(HasMemberOf(kTestMethod0), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have no parameters.
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with a return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendUint32(kFakeU8Return);
+        std::move(*cb).Run(response.get(), nullptr);
+      });
+  client_->CallAdapterMethod0(
+      base::BindOnce([](const absl::optional<uint8_t>& ret,
+                        const absl::optional<Error>& err) {
+        // Check that return cannot be parsed and there should be an error.
+        EXPECT_TRUE(err.has_value());
+        EXPECT_FALSE(ret.has_value());
+        EXPECT_EQ(FlossDBusClient::kErrorInvalidReturn, err->name);
+        EXPECT_EQ(std::string(), err->message);
+      }),
+      kTestMethod0);
 }
 
 }  // namespace floss

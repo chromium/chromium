@@ -85,7 +85,8 @@ struct Error {
 
 // Represents void return type of D-Bus (no return). Needed so that we can use
 // "void" as a type in C++ templates.
-struct Void {};
+// Needs to be exported because there are template instantiations using this.
+struct DEVICE_BLUETOOTH_EXPORT Void {};
 
 template <typename T>
 using ResponseCallback =
@@ -97,10 +98,13 @@ using ResponseCallback =
 class FlossDBusClient {
  public:
   // Error: No response from bus.
-  static const char kErrorNoResponse[];
+  static const char DEVICE_BLUETOOTH_EXPORT kErrorNoResponse[];
 
   // Error: Invalid parameters.
-  static const char kErrorInvalidParameters[];
+  static const char DEVICE_BLUETOOTH_EXPORT kErrorInvalidParameters[];
+
+  // Error: Invalid return.
+  static const char DEVICE_BLUETOOTH_EXPORT kErrorInvalidReturn[];
 
   FlossDBusClient(const FlossDBusClient&) = delete;
   FlossDBusClient& operator=(const FlossDBusClient&) = delete;

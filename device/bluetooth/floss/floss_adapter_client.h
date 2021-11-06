@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -190,6 +191,30 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   std::string adapter_address_;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(FlossAdapterClientTest, CallAdapterMethods);
+
+  template <typename T>
+  static void WriteDBusParam(dbus::MessageWriter* writer, const T& data);
+
+  template <typename R, typename F>
+  void CallAdapterMethod(ResponseCallback<R> callback,
+                         const char* member,
+                         F write_data);
+
+  template <typename R>
+  void CallAdapterMethod0(ResponseCallback<R> callback, const char* member);
+
+  template <typename R, typename T1>
+  void CallAdapterMethod1(ResponseCallback<R> callback,
+                          const char* member,
+                          const T1& arg1);
+
+  template <typename R, typename T1, typename T2>
+  void CallAdapterMethod2(ResponseCallback<R> callback,
+                          const char* member,
+                          const T1& arg1,
+                          const T2& arg2);
+
   // Object path for exported callbacks registered against adapter interface.
   static const char kExportedCallbacksPath[];
 
