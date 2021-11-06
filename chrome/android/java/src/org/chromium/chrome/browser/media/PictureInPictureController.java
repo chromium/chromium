@@ -266,7 +266,8 @@ public class PictureInPictureController {
     public void onEnteredPictureInPictureMode() {
         // Inform the WebContents when we enter and when we leave PiP.
         final WebContents webContents = getWebContents();
-        assert webContents != null;
+        // If we're closing the tab, just stop here.
+        if (webContents == null) return;
 
         webContents.setHasPersistentVideo(true);
 
