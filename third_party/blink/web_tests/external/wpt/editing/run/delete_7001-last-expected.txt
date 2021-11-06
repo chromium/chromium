@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 174 tests; 171 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 210 tests; 207 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandState("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandValue("delete") after
@@ -174,5 +174,41 @@ PASS [["delete",""]] "<div style=white-space:nowrap>foo\nb[]</div>" queryCommand
 PASS [["delete",""]] "<div style=white-space:nowrap>foo\nb[]</div>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<div style=white-space:nowrap>foo\nb[]</div>" queryCommandState("delete") after
 PASS [["delete",""]] "<div style=white-space:nowrap>foo\nb[]</div>" queryCommandValue("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>" checks for modifications to non-editable content
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>" compare innerHTML
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>" queryCommandState("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>" queryCommandValue("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>" queryCommandState("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>" queryCommandValue("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>" checks for modifications to non-editable content
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>" compare innerHTML
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>" queryCommandState("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>" queryCommandValue("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>" queryCommandState("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>" queryCommandValue("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>" checks for modifications to non-editable content
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>" compare innerHTML
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>" queryCommandState("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>" queryCommandValue("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>" queryCommandState("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>" queryCommandValue("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>": execCommand("delete", false, "") return value
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>" checks for modifications to non-editable content
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>" compare innerHTML
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>" queryCommandIndeterm("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>" queryCommandState("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>" queryCommandValue("delete") before
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>" queryCommandIndeterm("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>" queryCommandState("delete") after
+PASS [["delete",""]] "<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>" queryCommandValue("delete") after
 Harness: the test ran to completion.
 

@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-FAIL willValidate assert_false: with readonly attribute expected false got true
-PASS willValidate after upgrade
-PASS willValidate should throw NotSupportedError if the target element is not a form-associated custom element
+PASS willValidate
 FAIL validity and setValidity() assert_throws_js: setValidity() requires the second argument if the first argument contains true function "() => { control.i.setValidity({valueMissing: true}); }" threw object "TypeMismatchError: Failed to execute 'setValidity' on 'ElementInternals': The second argument should not be empty if one or more flags in the first argument are true." ("TypeMismatchError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
 PASS "anchor" argument of setValidity()
 PASS checkValidity()

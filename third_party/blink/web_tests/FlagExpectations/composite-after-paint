@@ -7,3 +7,6 @@
 
 virtual/composite-after-paint/* [ Skip ]
 virtual/stable/* [ Skip ]
+
+# ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/custom-elements/form-associated/ElementInternals-validation.html [ Crash ]

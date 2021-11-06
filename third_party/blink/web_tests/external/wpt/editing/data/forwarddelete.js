@@ -2598,4 +2598,27 @@ var browserTests = [
     "<div style=\"white-space:nowrap\">[]bar</div>",
     [true],
     {"forwarddelete":[false,false,"",false,false,""]}],
+["<p contenteditable=\"false\"><span contenteditable>a[b]c</span></p>",
+    [["forwarddelete",""]],
+    "<p contenteditable=\"false\"><span contenteditable=\"\">ac</span></p>",
+    [true],
+    {"forwarddelete":[false,false,"",false,false,""]}],
+["<p contenteditable=\"false\"><unknown-element contenteditable>a[b]c</unknown-element></p>",
+    [["forwarddelete",""]],
+    "<p contenteditable=\"false\"><unknown-element contenteditable=\"\">ac</unknown-element></p>",
+    [true],
+    {"forwarddelete":[false,false,"",false,false,""]}],
+// Although it seems that browsers should put <br> element to make the inline
+// editing host has one-line height, but currently Blink and Firefox do not do
+// it.
+["<p contenteditable=\"false\"><span contenteditable>[abc]</span></p>",
+    [["forwarddelete",""]],
+    "<p contenteditable=\"false\"><span contenteditable=\"\"></span></p>",
+    [true],
+    {"forwarddelete":[false,false,"",false,false,""]}],
+["<p contenteditable=\"false\"><unknown-element contenteditable>[abc]</unknown-element></p>",
+    [["forwarddelete",""]],
+    "<p contenteditable=\"false\"><unknown-element contenteditable=\"\"></unknown-element></p>",
+    [true],
+    {"forwarddelete":[false,false,"",false,false,""]}],
 ]

@@ -89435,7 +89435,7 @@
       ]
      ],
      "quotes-021.html": [
-      "518ba53bef4720eb2276b8f36a9413c7000ff67e",
+      "bf23f1b033f231dec307f5e69a9b457b81efc6de",
       [
        null,
        [
@@ -233584,7 +233584,7 @@
        []
       ],
       "quotes-021-ref.html": [
-       "022dd1678181509b36e7d756510c9a134d647e82",
+       "f87212a64926982e204839893e9d865518eca413",
        []
       ],
       "quotes-022-ref.html": [
@@ -265505,7 +265505,7 @@
     },
     "form-associated": {
      "ElementInternals-validation-expected.txt": [
-      "02fab551c01dc3b26122fab38baa37cf145c2f15",
+      "507b7ed6b64fc651c9611556849361ce1c9429d8",
       []
      ]
     },
@@ -266953,7 +266953,7 @@
       []
      ],
      "delete.js": [
-      "183451ec3d30c86a8b49dbc6a99f7f0062a8b81d",
+      "88ed59d9918ee79f27b065af202865f58d091f07",
       []
      ],
      "fontname.js": [
@@ -266973,7 +266973,7 @@
       []
      ],
      "forwarddelete.js": [
-      "cc03bcd26eed87c9a94db63772002481d548b775",
+      "a61b28303d4afa9e3452655f56cc3419ba94be6f",
       []
      ],
      "hilitecolor.js": [
@@ -267141,7 +267141,7 @@
       []
      ],
      "exec-command-with-text-editor.tentative-expected.txt": [
-      "1e4e44b7fc26501466bf7983fadf6557c04fc995",
+      "d2e8d68a70b8421fe6ee47531194aac439fb2ece",
       []
      ],
      "exec-command-without-editable-element.tentative-expected.txt": [
@@ -267255,7 +267255,7 @@
       []
      ],
      "delete_7001-last-expected.txt": [
-      "8bdf33fc4ac8c45a93ec48d186715e01fc7a31ce",
+      "a7e6d30ae6724c8b8d9456c45a14ccd3837216af",
       []
      ],
      "fontname-expected.txt": [
@@ -276752,7 +276752,7 @@
          []
         ],
         "transformations.yaml": [
-         "bca161728bebd88ae6f281d3fd31f9eab09cba86",
+         "b6aaec73c5fac62fae3c716857f407aa17b306af",
          []
         ],
         "video.yaml": [
@@ -276822,7 +276822,7 @@
          []
         ],
         "transformations.yaml": [
-         "5a784f4025c6a99edfdfe9356be03377b6b97a33",
+         "ab5e6d5a6245e381d90a0632a76ef14059db527d",
          []
         ]
        }
@@ -277935,7 +277935,7 @@
       []
      ],
      "idlharness.worker-expected.txt": [
-      "37457334c41a163603e3d55250d76bf542b5accc",
+      "304734de6f90c662af44afa55f615a66072035fb",
       []
      ],
      "new-harness.js": [
@@ -288304,14 +288304,6 @@
       "structured-clone-expected.txt": [
        "a85baeb2bba8f2f6954334a721ea10f6ad4ef066",
        []
-      ],
-      "structured-clone.any-expected.txt": [
-       "e72c9f52a2668d890eb789c6391a3dd87b5d13c8",
-       []
-      ],
-      "structured-clone.any.worker-expected.txt": [
-       "c6a86222810e8bee7fa0245f047c6849fb166c4a",
-       []
       ]
      },
      "system-state-and-capabilities": {
@@ -297754,7 +297746,7 @@
      []
     ],
     "find-range-from-text-directive-target.html": [
-     "8e119d6448a6072dbc822dd3ad06b235e569d9b7",
+     "dc02ebd87415581b82941bf57cb14871e86c52f9",
      []
     ],
     "force-load-at-top-target.html": [
@@ -299258,6 +299250,10 @@
       "c6d12e4eb7e735632515bb1894d874417eb39a35",
       []
      ],
+     "partitioned-service-worker-getRegistrations.tentative.https-expected.txt": [
+      "318c2cbf9e749e08dc509baf58046f5b9ba33921",
+      []
+     ],
      "partitioned-service-worker.tentative.https-expected.txt": [
       "4575ec80a5c2f4b283991ad57ea5b34ca265a6b0",
       []
@@ -300259,16 +300255,20 @@
        "835046d472b2b3bb46aa7e4cba2976d367b29894",
        []
       ],
+      "partitioned-service-worker-third-party-iframe-getRegistrations.html": [
+       "de44184fce48fc22314a0c3bc2e4edc3865cce1b",
+       []
+      ],
       "partitioned-service-worker-third-party-iframe.html": [
        "56c04b6b92f752642a73f4e904f787abc23903ae",
        []
       ],
       "partitioned-service-worker-third-party-window.html": [
-       "21a83807503332cc71d4ed19397149bd44c770d0",
+       "65ac002bd5389061996ba99b1db88b96457b3116",
        []
       ],
       "partitioned-storage-sw.js": [
-       "6abf10a751747cfafbd15bd53cd5ccd85d5ee56c",
+       "63131acfae5341cf7f907982533025ccd2345064",
        []
       ],
       "pass-through-worker.js": [
@@ -305061,6 +305061,10 @@
       []
      ]
     },
+    "non-fully-active.tentative.https-expected.txt": [
+     "6240b22873bf73da05845ec4992435fddb7b9cd7",
+     []
+    ],
     "resources": {
      "helpers.js": [
       "4b3311eee6290e62cfb5f504f0319ad7a64d28b9",
@@ -370565,7 +370569,7 @@
       ]
      ],
      "ElementInternals-validation.html": [
-      "f67e96465bd626750eb50eba1766228eecab9644",
+      "6b2ef8739795cea2b069253977b2c3e2395d6bec",
       [
        null,
        {}
@@ -371201,6 +371205,15 @@
     ]
    },
    "delegated-ink": {
+    "delete-presentation-area.html": [
+     "2408c7eeaf568858a0f6ead7094ec6f05ebd76f3",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "exception-thrown-bad-color.tentative.html": [
      "54c28efb5c1c28a0d448dd4084bb5ccb2a24aacf",
      [
@@ -375204,7 +375217,7 @@
       ]
      ],
      "exec-command-with-text-editor.tentative.html": [
-      "f9e60947d8d1b4fddd8e9611a20df2e3d13c0998",
+      "f2c1fce52222c2d683728f91425a746df25cdc3b",
       [
        null,
        {}
@@ -375318,6 +375331,69 @@
        {
         "timeout": "long"
        }
+      ]
+     ],
+     "legacy-edit-command.html": [
+      "81ff89d81bd9037e2ffb5d2929951ad862e19bed",
+      [
+       "editing/other/legacy-edit-command.html?command=contentReadOnly&param=false",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=contentReadOnly&param=true",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=decreaseFontSize",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=getHTML",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=heading&param=h1",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=heading&param=h2",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=heading&param=h3",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=heading&param=h4",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=heading&param=h5",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=heading&param=h6",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=increaseFontSize",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=insertBrOrReturn&param=false",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=insertBrOrReturn&param=true",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=readonly&param=false",
+       {}
+      ],
+      [
+       "editing/other/legacy-edit-command.html?command=readonly&param=true",
+       {}
       ]
      ],
      "move-inserted-node-from-DOMNodeInserted-during-exec-command-insertHTML.html": [
@@ -413387,22 +413463,8 @@
        ]
       },
       "transformations": {
-       "2d.transformation.combined.3d.transforms.html": [
-        "cff458207ce78b6e1a9c0cb5f6dbc0f1c73b06dc",
-        [
-         null,
-         {}
-        ]
-       ],
        "2d.transformation.order.html": [
         "0aa6c4a33fb3df4837947bd7e96da681281e15d7",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.perspective.html": [
-        "6aa4a224d4bb1aba901c4594c1899e8ab5513f31",
         [
          null,
          {}
@@ -413450,48 +413512,6 @@
          {}
         ]
        ],
-       "2d.transformation.rotate3d.html": [
-        "104e0870f27c5464ef107e978740364e0c11c523",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.x.html": [
-        "284ffd484aaf0008187548ad6ea5b0ebf284e9d6",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.y.html": [
-        "d1dae9653e1d8afc944ea9410f2a23ea1593b777",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.z.html": [
-        "2012a12368385ccc6773dd9a6102f058ab4e8b2d",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.rotateAxis.html": [
-        "be0785a7d3606dbc5f0e1a77cb176d996ce375f3",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.scale.3d.html": [
-        "0231b3bfba8ed5d956f93a9efbd30905d6742524",
-        [
-         null,
-         {}
-        ]
-       ],
        "2d.transformation.scale.basic.html": [
         "83e77491520991f7f7486463429af279c3969010",
         [
@@ -413534,13 +413554,6 @@
          {}
         ]
        ],
-       "2d.transformation.setTransform.3d.html": [
-        "bcafbd15990880b00a5e93f07dba4b07108edbf6",
-        [
-         null,
-         {}
-        ]
-       ],
        "2d.transformation.setTransform.multiple.html": [
         "7e90537113eea070fa5213554e101870aa6f5541",
         [
@@ -413557,13 +413570,6 @@
        ],
        "2d.transformation.setTransform.skewed.html": [
         "0381679538a662aae08b27fcfd3458d0791d076c",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.transform.3d.html": [
-        "657fc5d20bd76b206973375cc393b8168e46cb93",
         [
          null,
          {}
@@ -413592,13 +413598,6 @@
        ],
        "2d.transformation.transform.skewed.html": [
         "a873fe85eeccf8cee51be7d646eaf477fcc5d3cc",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.translate.3d.html": [
-        "f3c68ce05060afb4547175e91839252cd84de875",
         [
          null,
          {}
@@ -425840,20 +425839,6 @@
        ]
       },
       "transformations": {
-       "2d.transformation.combined.3d.transforms.html": [
-        "e0987b4bb29859abe6199a499f282651786c257a",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.combined.3d.transforms.worker.js": [
-        "d3a2d1e03607836f0accfc7b9d566965fcfdb336",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.combined.3d.transforms.worker.html",
-         {}
-        ]
-       ],
        "2d.transformation.order.html": [
         "127472dde11607f5966d3a4ce7f62ebc42e0f5fe",
         [
@@ -425865,20 +425850,6 @@
         "6585412abe3d9a6b639830f57391909405ef3fc7",
         [
          "html/canvas/offscreen/transformations/2d.transformation.order.worker.html",
-         {}
-        ]
-       ],
-       "2d.transformation.perspective.html": [
-        "e6bc88095c8c2e30123ead1bf56b7fe2dfb8caad",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.perspective.worker.js": [
-        "a155ebfeb98475acc0b2bd16156fdec62689be93",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.perspective.worker.html",
          {}
         ]
        ],
@@ -425966,90 +425937,6 @@
          {}
         ]
        ],
-       "2d.transformation.rotate3d.html": [
-        "4925c114efdeba8e5c04182dbbe8d950a9da1c06",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.worker.js": [
-        "785b0e233dd45d31921ce7a7cd124b6fb71754ac",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.rotate3d.worker.html",
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.x.html": [
-        "2905ac390aa68779caef81333f03acbdeacd8c2a",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.x.worker.js": [
-        "fcee7c17146822bb04b8edac9b4f9952d02d7434",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.rotate3d.x.worker.html",
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.y.html": [
-        "27b4eff56927c4df0a5426478c4591be7f7cf904",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.y.worker.js": [
-        "c4cfd34340143b664b349ffae35592f5660e0113",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.rotate3d.y.worker.html",
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.z.html": [
-        "96405e804fa2bf8c2774e97e44d1d68a79f4a64e",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.rotate3d.z.worker.js": [
-        "f3c59135387d89b114e4f53fb89c62f54e4de660",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.rotate3d.z.worker.html",
-         {}
-        ]
-       ],
-       "2d.transformation.rotateAxis.html": [
-        "d7257a23b49219221f31b13f11d4cfcd97d099fe",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.rotateAxis.worker.js": [
-        "f17356c075851ee20435b75d89d92b56a4d329f9",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.rotateAxis.worker.html",
-         {}
-        ]
-       ],
-       "2d.transformation.scale.3d.html": [
-        "ffd2287939dd0fd706dad3932e63ed4a1194a650",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.scale.3d.worker.js": [
-        "692967f48a8eeca7e6e98eb7f1f1f7655a096830",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.scale.3d.worker.html",
-         {}
-        ]
-       ],
        "2d.transformation.scale.basic.html": [
         "60ba3593f480fe71ba0f991a3afa06cf634c98f0",
         [
@@ -426134,20 +426021,6 @@
          {}
         ]
        ],
-       "2d.transformation.setTransform.3d.html": [
-        "fb31cda3f5731746a80128a48cbc5804ef79e183",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.setTransform.3d.worker.js": [
-        "aa6c033f81c4cd52a9aa260783adb473993eaac8",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.setTransform.3d.worker.html",
-         {}
-        ]
-       ],
        "2d.transformation.setTransform.multiple.html": [
         "4d73261d7f22bfa1e77df20cb28189326e4baf75",
         [
@@ -426187,20 +426060,6 @@
         "77d5265480483a5b86d0669f5b2ca6b9f7e98e0a",
         [
          "html/canvas/offscreen/transformations/2d.transformation.setTransform.skewed.worker.html",
-         {}
-        ]
-       ],
-       "2d.transformation.transform.3d.html": [
-        "2dfc718eab0f4ba23683365e9915f29a0a9388d8",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.transform.3d.worker.js": [
-        "976c4e0b0fcd497ac3bf2863bbd013fc007f79d4",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.transform.3d.worker.html",
          {}
         ]
        ],
@@ -426257,20 +426116,6 @@
         "0c9f9d200aabfc9f653e11713c17c36cbcc51c80",
         [
          "html/canvas/offscreen/transformations/2d.transformation.transform.skewed.worker.html",
-         {}
-        ]
-       ],
-       "2d.transformation.translate.3d.html": [
-        "73abc7eda2854804a931fc3f1160fea56bd0add1",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.transformation.translate.3d.worker.js": [
-        "4336022e71e1a0d0bd294ca61b82e4f81a290ffc",
-        [
-         "html/canvas/offscreen/transformations/2d.transformation.translate.3d.worker.html",
          {}
         ]
        ],
@@ -438103,7 +437948,7 @@
         ]
        ],
        "show-picker.tentative.html": [
-        "cf9446c32f15ecb82114a7d3957067e0be4745e6",
+        "73ddec109611edb6af99c6d6301fe03bc79c036b",
         [
          null,
          {
@@ -479923,7 +479768,7 @@
    },
    "scroll-to-text-fragment": {
     "find-range-from-text-directive.html": [
-     "ce05a92b2125dad0dfac13c7ca5f94b72cb5d810",
+     "229f082747b4ca32ce5724e2785269789b2d016f",
      [
       null,
       {
@@ -483168,8 +483013,15 @@
        {}
       ]
      ],
+     "partitioned-service-worker-getRegistrations.tentative.https.html": [
+      "3e798791af395726ece9c47ad0a400b9e44443d1",
+      [
+       null,
+       {}
+      ]
+     ],
      "partitioned-service-worker.tentative.https.html": [
-      "c006e09d438cc29d3c6b46821692d5586f6834d2",
+      "b31b0ef88aaf77b51147b8ec29924842a242e053",
       [
        null,
        {}
@@ -492602,6 +492454,13 @@
        null,
        {}
       ]
+     ],
+     "svgtransformlist-replaceitem.html": [
+      "3322dc91abc51956c67b3d8d82515d33cf1b2fc5",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "extensibility": {
@@ -493914,6 +493773,13 @@
       ],
       "textpath-textlength-text-anchor-001.tentative.svg": [
        "6c4f50fe871b0126548557976e8391c1d973b5fe",
+       [
+        null,
+        {}
+       ]
+      ],
+      "transform-dynamic-update.html": [
+       "3a65c007de659b64af86b2215331b30366a2102d",
        [
         null,
         {}
@@ -503186,7 +503052,7 @@
       ]
      ],
      "script-reuse-web-bundle-resource.https.tentative.html": [
-      "65a12816909ce5e2a922d04975e8e98edea4625d",
+      "5775c0a061aecbc66a400d2476e738b2a338338b",
       [
        null,
        {}
@@ -503900,6 +503766,13 @@
         ]
        ]
       }
+     ]
+    ],
+    "non-fully-active.tentative.https.html": [
+     "de82ef6d13cf55db485d760f3779d68fa508c011",
+     [
+      null,
+      {}
      ]
     ],
     "non-secure-context.tentative.any.js": [
@@ -509255,7 +509128,7 @@
        {}
       ]
      ],
-     "detached-iframe.tentative.html": [
+     "detached-iframe.html": [
       "b9b06c3a46463bf50a88ebc545f1ad9ed6ac496a",
       [
        null,
@@ -509302,14 +509175,7 @@
       ]
      ],
      "workers.html": [
-      "16fea069309f5738e51305a0bd53bd1413e86f11",
-      [
-       null,
-       {}
-      ]
-     ],
-     "workers.tentative.html": [
-      "e72fa365fd78613cd40069da5101334b91f45365",
+      "8b55492f3cffb35664ed26fe1f3687f52ff457e0",
       [
        null,
        {}
