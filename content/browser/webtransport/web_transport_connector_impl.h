@@ -45,12 +45,8 @@ class WebTransportConnectorImpl final
       const GURL& url,
       std::vector<network::mojom::WebTransportCertificateFingerprintPtr>
           fingerprints,
-      mojo::PendingReceiver<network::mojom::WebTransportHandshakeClient>
-          client_receiver,
       mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
-          original_handshake_client,
-      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
-          browser_handshake_client,
+          handshake_client,
       absl::optional<network::mojom::WebTransportErrorPtr> error);
 
   const int process_id_;

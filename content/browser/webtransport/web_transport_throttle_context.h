@@ -36,7 +36,7 @@ class WebTransportThrottleContext final : public base::SupportsUserData::Data {
   CheckResult CheckThrottle();
 
   // Records the start of a WebTransport handshake.
-  void OnCreateWebTransport();
+  void StartThrottling();
 
   // Records the successful end of a WebTransport handshake.
   void OnHandshakeEstablished();

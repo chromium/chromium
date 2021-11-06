@@ -20,9 +20,9 @@ WebTransportThrottleContext::CheckThrottle() {
              : CheckResult::kTooManyPendingSessions;
 }
 
-void WebTransportThrottleContext::OnCreateWebTransport() {
-  DVLOG(1) << "WebTransportThrottleContext::OnCreateWebTransport() this="
-           << this << " pending_session_count_= " << pending_session_count_;
+void WebTransportThrottleContext::StartThrottling() {
+  DVLOG(1) << "WebTransportThrottleContext::StartThrottling() this=" << this
+           << " pending_session_count_= " << pending_session_count_;
   DCHECK_LT(pending_session_count_, kMaxPendingSessions);
   ++pending_session_count_;
 }
