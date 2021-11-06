@@ -210,6 +210,7 @@ Length InterpolableLength::CreateLength(
   if (IsExpression())
     return Length(expression_->ToCalcValue(conversion_data, range, true));
 
+  DCHECK(IsLengthArray());
   bool has_percentage = HasPercentage();
   double pixels = 0;
   double percentage = 0;
@@ -227,9 +228,15 @@ Length InterpolableLength::CreateLength(
   if (percentage != 0)
     has_percentage = true;
   if (pixels != 0 && has_percentage) {
+    pixels = ClampTo<float>(pixels);
+    if (percentage == 0) {
+      // Match the clamping behavior in the StyleBuilder code path,
+      // which goes through CSSPrimitiveValue::CreateFromLength and then
+      // CSSPrimitiveValue::ConvertToLength.
+      pixels = CSSPrimitiveValue::ClampToCSSLengthRange(pixels);
+    }
     return Length(CalculationValue::Create(
-        PixelsAndPercent(ClampTo<float>(pixels), ClampTo<float>(percentage)),
-        range));
+        PixelsAndPercent(pixels, ClampTo<float>(percentage)), range));
   }
   if (has_percentage)
     return Length::Percent(ClampToRange(percentage, range));
