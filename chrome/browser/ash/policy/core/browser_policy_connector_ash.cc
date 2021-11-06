@@ -224,7 +224,8 @@ void BrowserPolicyConnectorAsh::Init(
         std::make_unique<ActiveDirectoryDeviceStateUploader>(
             /*client_id=*/GetInstallAttributes()->GetDeviceId(),
             device_management_service(), state_keys_broker_.get(),
-            url_loader_factory, std::make_unique<DMTokenStorage>(local_state));
+            url_loader_factory, std::make_unique<DMTokenStorage>(local_state),
+            local_state);
     active_directory_device_state_uploader_->Init();
   }
 

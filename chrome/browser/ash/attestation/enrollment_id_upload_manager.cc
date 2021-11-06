@@ -65,7 +65,7 @@ EnrollmentIdUploadManager::EnrollmentIdUploadManager(
 
 EnrollmentIdUploadManager::~EnrollmentIdUploadManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(DeviceSettingsService::IsInitialized());
+  DCHECK(device_settings_service_);
   device_settings_service_->RemoveObserver(this);
 }
 
@@ -82,19 +82,25 @@ void EnrollmentIdUploadManager::Start() {
   if (!policy_data || !policy_data->enrollment_id_needed())
     return;
 
-  ObtainAndUploadEnrollmentId();
+  // Do not check the result of the upload request, because DMServer will
+  // inform us if the enrollment ID is needed the next time device policies
+  // are fetched.
+  ObtainAndUploadEnrollmentId(base::DoNothing());
 }
 
-void EnrollmentIdUploadManager::ObtainAndUploadEnrollmentId() {
+void EnrollmentIdUploadManager::ObtainAndUploadEnrollmentId(
+    UploadManagerCallback callback) {
+  DCHECK(!callback.is_null());
+
+  bool start = upload_manager_callbacks_.empty();
+  upload_manager_callbacks_.push(std::move(callback));
+
   // Do not allow multiple concurrent requests.
-  if (request_in_flight_)
-    return;
-
-  request_in_flight_ = true;
-
-  certificate_uploader_->ObtainAndUploadCertificate(base::BindOnce(
-      &EnrollmentIdUploadManager::OnEnrollmentCertificateUploaded,
-      weak_factory_.GetWeakPtr()));
+  if (start) {
+    certificate_uploader_->ObtainAndUploadCertificate(base::BindOnce(
+        &EnrollmentIdUploadManager::OnEnrollmentCertificateUploaded,
+        weak_factory_.GetWeakPtr()));
+  }
 }
 
 void EnrollmentIdUploadManager::OnEnrollmentCertificateUploaded(
@@ -102,7 +108,7 @@ void EnrollmentIdUploadManager::OnEnrollmentCertificateUploaded(
   switch (status) {
     case EnrollmentCertificateUploader::Status::kSuccess:
       // Enrollment certificate uploaded successfully. No need to compute EID.
-      request_in_flight_ = false;
+      RunCallbacks(/*status=*/true);
       break;
     case EnrollmentCertificateUploader::Status::kFailedToFetch:
       LOG(WARNING) << "EnrollmentIdUploadManager: Failed to fetch certificate. "
@@ -112,7 +118,7 @@ void EnrollmentIdUploadManager::OnEnrollmentCertificateUploaded(
     case EnrollmentCertificateUploader::Status::kFailedToUpload:
       // Enrollment certificate was fetched but not uploaded. It can be uploaded
       // later so we will not proceed with computed EID.
-      request_in_flight_ = false;
+      RunCallbacks(/*status=*/false);
       break;
   }
 }
@@ -124,14 +130,14 @@ void EnrollmentIdUploadManager::GetEnrollmentId() {
   // AIK certificate sent to request an enrollment certificate does not
   // contain an EID).
   if (did_upload_empty_eid_) {
-    request_in_flight_ = false;
+    RunCallbacks(/*status=*/false);
     return;
   }
 
   // We expect a registered CloudPolicyClient.
   if (!policy_client_->is_registered()) {
     LOG(ERROR) << "EnrollmentIdUploadManager: Invalid CloudPolicyClient.";
-    request_in_flight_ = false;
+    RunCallbacks(/*status=*/false);
     return;
   }
 
@@ -168,7 +174,7 @@ void EnrollmentIdUploadManager::RescheduleGetEnrollmentId() {
         base::Seconds(retry_delay_));
   } else {
     LOG(WARNING) << "EnrollmentIdUploadManager: Retry limit exceeded.";
-    request_in_flight_ = false;
+    RunCallbacks(/*status=*/false);
   }
 }
 
@@ -177,17 +183,30 @@ void EnrollmentIdUploadManager::OnUploadComplete(
     bool status) {
   const std::string& printable_enrollment_id = base::ToLowerASCII(
       base::HexEncode(enrollment_id.data(), enrollment_id.size()));
-  request_in_flight_ = false;
-  if (status) {
-    if (enrollment_id.empty())
-      did_upload_empty_eid_ = true;
-  } else {
+
+  if (!status) {
     LOG(ERROR) << "Failed to upload Enrollment Identifier \""
                << printable_enrollment_id << "\" to DMServer.";
+    RunCallbacks(/*status=*/false);
     return;
   }
+
+  if (enrollment_id.empty())
+    did_upload_empty_eid_ = true;
+
   VLOG(1) << "Enrollment Identifier \"" << printable_enrollment_id
           << "\" uploaded to DMServer.";
+  RunCallbacks(/*status=*/true);
+}
+
+void EnrollmentIdUploadManager::RunCallbacks(bool status) {
+  std::queue<UploadManagerCallback> callbacks;
+  callbacks.swap(upload_manager_callbacks_);
+
+  while (!callbacks.empty()) {
+    std::move(callbacks.front()).Run(status);
+    callbacks.pop();
+  }
 }
 
 }  // namespace attestation

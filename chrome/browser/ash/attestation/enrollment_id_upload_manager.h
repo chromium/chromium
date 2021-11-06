@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_ATTESTATION_ENROLLMENT_ID_UPLOAD_MANAGER_H_
 
 #include <memory>
+#include <queue>
 #include <string>
 
 #include "base/callback.h"
@@ -27,6 +28,8 @@ namespace attestation {
 // for enrollment if necessary.
 class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
  public:
+  using UploadManagerCallback = base::OnceCallback<void(bool success)>;
+
   // The manager immediately connects with DeviceSettingsService to listen for
   // policy changes. The EnrollmentCertificateUploader is used to attempt to
   // upload enrollment certificate first. If it fails, the manager attempts to
@@ -50,9 +53,17 @@ class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
 
   ~EnrollmentIdUploadManager() override;
 
-  // Sets the retry limit in number of tries; useful in testing.
+  // Obtains a fresh enrollment certificate, which contains enrollment ID, and
+  // uploads it. If it fails, the manager will attempt to upload enrollment ID.
+  // Calls the callback when the processing is complete, with `success` set to
+  // `true` if either the enrollment certificate or the enrollment ID was
+  // uploaded, or `false`, otherwise.
+  void ObtainAndUploadEnrollmentId(UploadManagerCallback callback);
+
+  // Sets the retry limit in number of tries; useful for testing.
   void set_retry_limit_for_testing(int limit) { retry_limit_ = limit; }
-  // Sets the retry delay in seconds; useful in testing.
+
+  // Sets the retry delay in seconds; useful for testing.
   void set_retry_delay_for_testing(int retry_delay) {
     retry_delay_ = retry_delay;
   }
@@ -63,10 +74,6 @@ class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
 
   // Checks enrollment setting and starts any necessary work.
   void Start();
-
-  // Obtains a fresh enrollment certificate, which contains enrollment ID, and
-  // uploads it. If it fails, the manager will attempt to upload enrollment ID.
-  void ObtainAndUploadEnrollmentId();
 
   // Handles certificate upload status. If succeeded or failed to upload - does
   // nothing more. If failed to fetch - starts computed enrollment ID flow.
@@ -88,18 +95,23 @@ class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
   // the enrollment identifier that was uploaded.
   void OnUploadComplete(const std::string& enrollment_id, bool status);
 
+  // Run all callbacks with |status|.
+  void RunCallbacks(bool status);
+
   DeviceSettingsService* const device_settings_service_;
   policy::CloudPolicyClient* const policy_client_;
   EnrollmentCertificateUploader* const certificate_uploader_;
   int num_retries_;
   int retry_limit_;
   int retry_delay_;
-  // Whether we are requesting an EID right now.
-  bool request_in_flight_ = false;
+
   // Used to remember we uploaded an empty identifier this session for
   // devices that can't obtain the identifier until they are powerwashed or
   // updated and rebooted (see http://crbug.com/867724).
   bool did_upload_empty_eid_ = false;
+
+  // Callbacks for the enrollment ID upload that is in progress.
+  std::queue<UploadManagerCallback> upload_manager_callbacks_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
