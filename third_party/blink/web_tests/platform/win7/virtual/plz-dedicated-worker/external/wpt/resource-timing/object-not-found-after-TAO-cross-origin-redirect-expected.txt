@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Cannot read properties of undefined (reading 'redirectStart')
+PASS window.performance is defined
+PASS window.performance.getEntriesByName is defined
+FAIL There should be one entry. assert_equals: There should be one entry. expected 1 but got 0
+Harness: the test ran to completion.
+
