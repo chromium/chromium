@@ -1773,11 +1773,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PrintCommand) {
   print_observer.WaitForPrintPreview();
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, ContextMenuPrintCommand) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       ContextMenuPrintCommandExtensionMainFrame) {
   content::WebContents* guest_contents =
       LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
   ASSERT_TRUE(plugin_frame);
+
+  // Makes sure that the correct frame invoked the context menu.
+  content::ContextMenuInterceptor menu_interceptor(
+      guest_contents->GetMainFrame());
 
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
@@ -1786,6 +1791,27 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, ContextMenuPrintCommand) {
   guest_contents->GetMainFrame()->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitForPrintPreview();
+  menu_interceptor.Wait();
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, ContextMenuPrintCommandPluginFrame) {
+  content::WebContents* guest_contents =
+      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
+  ASSERT_TRUE(plugin_frame);
+
+  // Makes sure that the correct frame invoked the context menu.
+  content::ContextMenuInterceptor menu_interceptor(plugin_frame);
+
+  // Executes the print command as soon as the context menu is shown.
+  ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
+
+  PrintObserver print_observer(guest_contents, plugin_frame);
+  SetInputFocusOnPlugin(guest_contents);
+  plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
+      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  print_observer.WaitForPrintPreview();
+  menu_interceptor.Wait();
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PrintButton) {
@@ -2125,9 +2151,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
       content::FindAccessibilityNode(guest_contents, find_criteria);
   ASSERT_TRUE(pdf_root);
 
-  auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>(
-          GetPluginFrame(guest_contents));
+  content::ContextMenuInterceptor context_menu_interceptor(
+      GetPluginFrame(guest_contents));
 
   ContextMenuWaiter menu_waiter;
   // Invoke kShowContextMenu accessibility action on the node with the kPdfRoot
@@ -2137,9 +2162,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PdfAccessibilityContextMenuAction) {
   pdf_root->AccessibilityPerformAction(data);
   menu_waiter.WaitForMenuOpenAndClose();
 
-  context_menu_interceptor->Wait();
+  context_menu_interceptor.Wait();
   blink::UntrustworthyContextMenuParams params =
-      context_menu_interceptor->get_params();
+      context_menu_interceptor.get_params();
 
   // Validate the context menu params for selection.
   EXPECT_EQ(blink::mojom::ContextMenuDataMediaType::kPlugin, params.media_type);
@@ -3248,8 +3273,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, ContextMenuCoordinates) {
 
   // Observe context menu IPC.
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
-  auto context_menu_interceptor =
-      std::make_unique<content::ContextMenuInterceptor>(plugin_frame);
+  content::ContextMenuInterceptor context_menu_interceptor(plugin_frame);
 
   ContextMenuWaiter menu_observer;
 
@@ -3266,9 +3290,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   ASSERT_EQ(context_menu_position.y(), menu_observer.params().y);
 
   // We expect the IPC, received from the renderer, to be using local coords.
-  context_menu_interceptor->Wait();
+  context_menu_interceptor.Wait();
   blink::UntrustworthyContextMenuParams params =
-      context_menu_interceptor->get_params();
+      context_menu_interceptor.get_params();
   gfx::Point received_context_menu_position =
       plugin_frame->GetRenderWidgetHost()
           ->GetView()
