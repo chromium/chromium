@@ -7260,3 +7260,10 @@ crbug.com/1266221 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system
 crbug.com/1263354 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-adds-entry.html [ Failure Pass Timeout ]
 
 crbug.com/1267076 wpt_internal/fenced_frame/navigator-keyboard-layout-map.https.html [ Failure ]
+
+# Sheriff 2021-11-05
+crbug.com/1267433 [ Linux ] images/color-profile-image-canvas-pattern.html [ Failure Pass ]
+crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested-1.html [ Failure ]
+crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Failure ]
+crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested-3.html [ Failure ]
+crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Failure ]
