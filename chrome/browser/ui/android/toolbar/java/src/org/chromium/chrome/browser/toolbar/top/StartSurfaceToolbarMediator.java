@@ -49,6 +49,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -72,10 +73,11 @@ class StartSurfaceToolbarMediator {
     private final boolean mIsTabGroupsAndroidContinuationEnabled;
     private final UserEducationHelper mUserEducationHelper;
     private final BooleanSupplier mIsIncognitoModeEnabledSupplier;
+    private final TabModelSelectorObserver mTabModelSelectorObserver;
+    private final IncognitoTabModelObserver mIncognitoTabModelObserver;
 
     private TabModelSelector mTabModelSelector;
     private TabCountProvider mTabCountProvider;
-    private TabModelSelectorObserver mTabModelSelectorObserver;
     private LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private MenuButtonCoordinator mMenuButtonCoordinator;
@@ -147,11 +149,39 @@ class StartSurfaceToolbarMediator {
         }
         mShouldShowTabSwitcherButtonOnHomepage = shouldShowTabSwitcherButtonOnHomepage;
         mIsAnimationEnabled = isAnimationEnabled;
+
+        mTabModelSelectorObserver = new TabModelSelectorObserver() {
+            @Override
+            public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
+                mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
+                updateIdentityDisc(mIdentityDiscButtonSupplier.get());
+            }
+
+            @Override
+            public void onTabStateInitialized() {
+                maybeInitializeIncognitoToggle();
+            }
+        };
+
+        mIncognitoTabModelObserver = new IncognitoTabModelObserver() {
+            @Override
+            public void wasFirstTabCreated() {
+                updateIncognitoToggleTabVisibility();
+            }
+
+            @Override
+            public void didBecomeEmpty() {
+                updateIncognitoToggleTabVisibility();
+            }
+        };
     }
 
     void destroy() {
-        if (mTabModelSelectorObserver != null) {
+        if (mTabModelSelector != null && mTabModelSelectorObserver != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+        }
+        if (mTabModelSelector != null && mIncognitoTabModelObserver != null) {
+            mTabModelSelector.removeIncognitoTabModelObserver(mIncognitoTabModelObserver);
         }
         if (mLayoutStateObserver != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
@@ -242,29 +272,12 @@ class StartSurfaceToolbarMediator {
     void setTabModelSelector(TabModelSelector selector) {
         mTabModelSelector = selector;
 
-        if (mTabModelSelectorObserver == null) {
-            mTabModelSelectorObserver = new TabModelSelectorObserver() {
-                @Override
-                public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
-                    mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
-                    updateIdentityDisc(mIdentityDiscButtonSupplier.get());
-                    updateIncognitoToggleTabVisibility();
-                    // New tab view text is only visible when incognito toggle layout is not shown.
-                    updateNewTabViewTextVisibility();
-                }
-
-                @Override
-                public void onTabStateInitialized() {
-                    maybeInitializeIncognitoToggle();
-                }
-            };
-        }
-        if (mTabModelSelector.isTabStateInitialized()) {
-            maybeInitializeIncognitoToggle();
-        }
+        if (mTabModelSelector.isTabStateInitialized()) maybeInitializeIncognitoToggle();
         mPropertyModel.set(IS_INCOGNITO, mTabModelSelector.isIncognitoSelected());
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
+
+        mTabModelSelector.addIncognitoTabModelObserver(mIncognitoTabModelObserver);
     }
 
     private void maybeInitializeIncognitoToggle() {
@@ -279,6 +292,7 @@ class StartSurfaceToolbarMediator {
         if (mStartSurfaceState != StartSurfaceState.SHOWN_TABSWITCHER
                 && mStartSurfaceState != StartSurfaceState.SHOWING_TABSWITCHER) {
             mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
+            updateNewTabViewTextVisibility();
             return;
         }
 
@@ -287,6 +301,7 @@ class StartSurfaceToolbarMediator {
         } else {
             mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, true);
         }
+        updateNewTabViewTextVisibility();
     }
 
     // TODO(crbug.com/1042997): share with TabSwitcherModeTTPhone.
