@@ -1099,11 +1099,12 @@ const base::Feature kWebAppManifestPolicyAppIdentityUpdate{
     "WebAppManifestPolicyAppIdentityUpdate", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// When enabled, the web (PWA) Kiosk session uses Lacros-chrome as the web
-// browser to launch web (PWA) applications . When disabled, the Ash-chrome will
-// be used instead.
+// When this feature flag is enabled together with the LacrosAvailability
+// policy, the web (PWA) Kiosk session uses Lacros-chrome as the web browser to
+// launch web (PWA) applications. When disabled, the Ash-chrome will be used
+// instead.
 const base::Feature kWebKioskEnableLacros{"WebKioskEnableLacros",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, the Ash browser only manages system web apps, and non-system
 // web apps are managed by the Lacros browser. When disabled, the Ash browser
