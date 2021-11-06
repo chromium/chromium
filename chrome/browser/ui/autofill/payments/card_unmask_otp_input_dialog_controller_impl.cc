@@ -7,6 +7,7 @@
 #include <string>
 
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
+#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -39,6 +40,9 @@ void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(
   delegate_ = delegate;
   dialog_view_ =
       CardUnmaskOtpInputDialogView::CreateAndShow(this, web_contents());
+
+  DCHECK(dialog_view_);
+  AutofillMetrics::LogOtpInputDialogShown();
 }
 
 void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
@@ -54,6 +58,11 @@ void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
       break;
     case OtpUnmaskResult::kOtpExpired:
     case OtpUnmaskResult::kOtpMismatch:
+      temporary_error_shown_ = true;
+      AutofillMetrics::LogOtpInputDialogErrorMessageShown(
+          result == OtpUnmaskResult::kOtpMismatch
+              ? AutofillMetrics::OtpInputDialogError::kOtpMismatchError
+              : AutofillMetrics::OtpInputDialogError::kOtpExpiredError);
       ShowInvalidState(result);
       break;
     case OtpUnmaskResult::kUnknownType:
@@ -63,15 +72,40 @@ void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
 }
 
 void CardUnmaskOtpInputDialogControllerImpl::OnDialogClosed(
-    bool user_closed_dialog) {
+    bool user_closed_dialog,
+    bool server_request_succeeded) {
   if (delegate_)
     delegate_->OnUnmaskPromptClosed(user_closed_dialog);
 
+  if (user_closed_dialog) {
+    AutofillMetrics::LogOtpInputDialogResult(
+        ok_button_clicked_ ? AutofillMetrics::OtpInputDialogResult::
+                                 kDialogCancelledByUserAfterConfirmation
+                           : AutofillMetrics::OtpInputDialogResult::
+                                 kDialogCancelledByUserBeforeConfirmation,
+        temporary_error_shown_);
+  } else if (server_request_succeeded) {
+    AutofillMetrics::LogOtpInputDialogResult(
+        AutofillMetrics::OtpInputDialogResult::
+            kDialogClosedAfterVerificationSucceeded,
+        temporary_error_shown_);
+  } else {
+    AutofillMetrics::LogOtpInputDialogResult(
+        AutofillMetrics::OtpInputDialogResult::
+            kDialogClosedAfterVerificationFailed,
+        temporary_error_shown_);
+  }
+
+  // Resets the variables to their initial states since the controller will stay
+  // even if the view is gone.
   dialog_view_ = nullptr;
+  temporary_error_shown_ = false;
+  ok_button_clicked_ = false;
 }
 
 void CardUnmaskOtpInputDialogControllerImpl::OnOkButtonClicked(
     const std::u16string& otp) {
+  ok_button_clicked_ = true;
   if (delegate_)
     delegate_->OnUnmaskPromptAccepted(otp);
 }
@@ -79,6 +113,8 @@ void CardUnmaskOtpInputDialogControllerImpl::OnOkButtonClicked(
 void CardUnmaskOtpInputDialogControllerImpl::OnNewCodeLinkClicked() {
   if (delegate_)
     delegate_->OnNewOtpRequested();
+
+  AutofillMetrics::LogOtpInputDialogNewOtpRequested();
 }
 
 std::u16string CardUnmaskOtpInputDialogControllerImpl::GetWindowTitle() const {
@@ -137,13 +173,6 @@ std::u16string CardUnmaskOtpInputDialogControllerImpl::GetConfirmationMessage()
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_SUCCESS);
 }
-
-#if defined(UNIT_TEST)
-CardUnmaskOtpInputDialogView*
-CardUnmaskOtpInputDialogControllerImpl::GetDialogViewForTesting() {
-  return dialog_view_;
-}
-#endif
 
 CardUnmaskOtpInputDialogControllerImpl::CardUnmaskOtpInputDialogControllerImpl(
     content::WebContents* web_contents)

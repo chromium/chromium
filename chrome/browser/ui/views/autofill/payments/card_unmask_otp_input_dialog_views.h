@@ -63,7 +63,7 @@ class CardUnmaskOtpInputDialogViews : public CardUnmaskOtpInputDialogView,
 
   void HideInvalidState();
 
-  void CloseWidget(bool user_closed_dialog);
+  void CloseWidget(bool user_closed_dialog, bool server_request_succeeded);
 
   CardUnmaskOtpInputDialogController* controller_ = nullptr;
 

@@ -6480,6 +6480,26 @@ others/histograms.xml -->
       label="OTP auth temporarily failed due to OTP being incorrect"/>
 </enum>
 
+<enum name="AutofillOtpInputDialogError">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="OTP expired temporary error was shown"/>
+  <int value="2" label="OTP mismatch temporary error was shown"/>
+</enum>
+
+<enum name="AutofillOtpInputDialogResult">
+  <int value="0" label="Unknown result"/>
+  <int value="1"
+      label="User closed the OTP input dialog before pressing the OK button"/>
+  <int value="3"
+      label="User closed the OTP input dialog after pressing the OK button"/>
+  <int value="4"
+      label="OTP input dialog closed automatically after the OTP verification
+             succeeded"/>
+  <int value="5"
+      label="OTP input dialog closed automatically after a server failure
+             response"/>
+</enum>
+
 <enum name="AutofillPredictionSource">
   <int value="0" label="PREDICTION_SOURCE_UNKNOWN"/>
   <int value="1" label="PREDICTION_SOURCE_HEURISTIC"/>

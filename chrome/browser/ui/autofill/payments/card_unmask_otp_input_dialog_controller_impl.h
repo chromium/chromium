@@ -38,7 +38,8 @@ class CardUnmaskOtpInputDialogControllerImpl
   void OnOtpVerificationResult(OtpUnmaskResult result);
 
   // CardUnmaskOtpInputDialogController:
-  void OnDialogClosed(bool user_closed_dialog) override;
+  void OnDialogClosed(bool user_closed_dialog,
+                      bool server_request_succeeded) override;
   void OnOkButtonClicked(const std::u16string& otp) override;
   void OnNewCodeLinkClicked() override;
   std::u16string GetWindowTitle() const override;
@@ -54,13 +55,16 @@ class CardUnmaskOtpInputDialogControllerImpl
   std::u16string GetConfirmationMessage() const override;
 
 #if defined(UNIT_TEST)
-  CardUnmaskOtpInputDialogView* GetDialogViewForTesting();
+  CardUnmaskOtpInputDialogView* GetDialogViewForTesting() {
+    return dialog_view_;
+  }
 #endif
 
- private:
+ protected:
   explicit CardUnmaskOtpInputDialogControllerImpl(
       content::WebContents* web_contents);
 
+ private:
   friend class content::WebContentsUserData<
       CardUnmaskOtpInputDialogControllerImpl>;
 
@@ -68,11 +72,21 @@ class CardUnmaskOtpInputDialogControllerImpl
   // |otp_unmask_result|.
   void ShowInvalidState(OtpUnmaskResult otp_unmask_result);
 
+  // The length of the OTP expected to be entered by the user.
   size_t otp_length_;
 
+  // Weak reference to the delegate. Used to handle events of the dialog.
   base::WeakPtr<OtpUnmaskDelegate> delegate_;
 
   CardUnmaskOtpInputDialogView* dialog_view_ = nullptr;
+
+  // Indicates whether any temporary error has been shown on the dialog. Used
+  // for logging.
+  bool temporary_error_shown_ = false;
+
+  // Indicates whether the OK button in the dialog has been clicked. Used for
+  // logging.
+  bool ok_button_clicked_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

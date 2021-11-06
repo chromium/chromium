@@ -25,7 +25,11 @@ class CardUnmaskOtpInputDialogController {
   // Called whenever the dialog is closed, and it sets the |dialog_view_|
   // variable in this class to nullptr. |user_closed_dialog| indicates whether
   // the user closed the dialog and cancelled the flow.
-  virtual void OnDialogClosed(bool user_closed_dialog) = 0;
+  // |server_request_succeeded| indicates if the server call succeeded, this is
+  // only meaningful if the dialog closure is not triggered by user
+  // cancellation.
+  virtual void OnDialogClosed(bool user_closed_dialog,
+                              bool server_request_succeeded) = 0;
 
   // Invoked when the OK button of the dialog is clicked.
   virtual void OnOkButtonClicked(const std::u16string& otp) = 0;
