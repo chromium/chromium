@@ -2629,8 +2629,8 @@ Output.RULES = {
         braille: `$state $cellIndexText $node(tableCellColumnHeaders)
             $nameFromNode $roleDescription`,
       },
-      speak: `$name $cellIndexText $node(tableCellColumnHeaders)
-          $roleDescription $state $description`,
+      speak: `$nameFromNode $descendants $cellIndexText
+          $node(tableCellColumnHeaders) $roleDescription $state $description`,
       braille: `$state
           $name $cellIndexText $node(tableCellColumnHeaders) $roleDescription
           $description

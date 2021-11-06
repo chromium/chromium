@@ -893,6 +893,8 @@ CommandHandler.onCommand = function(command) {
       return false;
     // Table commands.
     case 'previousRow': {
+      skipSync = true;
+      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       const tableOpts = {row: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
@@ -902,6 +904,8 @@ CommandHandler.onCommand = function(command) {
       shouldWrap = false;
     } break;
     case 'previousCol': {
+      skipSync = true;
+      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       const tableOpts = {col: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
@@ -911,6 +915,8 @@ CommandHandler.onCommand = function(command) {
       shouldWrap = false;
     } break;
     case 'nextRow': {
+      skipSync = true;
+      shouldSetSelection = true;
       const tableOpts = {row: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
           current.start.node, tableOpts);
@@ -919,6 +925,8 @@ CommandHandler.onCommand = function(command) {
       shouldWrap = false;
     } break;
     case 'nextCol': {
+      skipSync = true;
+      shouldSetSelection = true;
       const tableOpts = {col: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
           current.start.node, tableOpts);
@@ -928,6 +936,8 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToRowFirstCell':
     case 'goToRowLastCell': {
+      skipSync = true;
+      shouldSetSelection = true;
       while (node && node.role !== RoleType.ROW) {
         node = node.parent;
       }
@@ -942,6 +952,8 @@ CommandHandler.onCommand = function(command) {
       }
     } break;
     case 'goToColFirstCell': {
+      skipSync = true;
+      shouldSetSelection = true;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
@@ -958,6 +970,8 @@ CommandHandler.onCommand = function(command) {
       shouldWrap = false;
     } break;
     case 'goToColLastCell': {
+      skipSync = true;
+      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
@@ -986,6 +1000,8 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToFirstCell':
     case 'goToLastCell': {
+      skipSync = true;
+      shouldSetSelection = true;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }

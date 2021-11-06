@@ -628,18 +628,15 @@ editing.EditableLine = class {
     const lineNodes =
         /** @type {Array<!AutomationNode>} */ (this.value_.getSpansInstanceOf(
             /** @type {function()} */ (this.startContainer_.constructor)));
-    let queueMode = QueueMode.CATEGORY_FLUSH;
     for (let i = 0, cur; cur = lineNodes[i]; i++) {
       if (cur.children.length) {
         continue;
       }
 
-      const o = new Output()
-                    .withRichSpeech(
-                        Range.fromNode(cur),
-                        prev ? Range.fromNode(prev) : Range.fromNode(cur),
-                        OutputEventType.NAVIGATE)
-                    .withQueueMode(queueMode);
+      const o = new Output().withRichSpeech(
+          Range.fromNode(cur),
+          prev ? Range.fromNode(prev) : Range.fromNode(cur),
+          OutputEventType.NAVIGATE);
 
       // Ignore whitespace only output except if it is leading content on the
       // line.
@@ -647,7 +644,6 @@ editing.EditableLine = class {
         o.go();
       }
       prev = cur;
-      queueMode = QueueMode.QUEUE;
     }
   }
 

@@ -103,7 +103,7 @@ editing.TextEditHandler = class {
       return;
     }
 
-    this.editableText_.onUpdate(evt.eventFrom, evt.intents);
+    this.editableText_.onUpdate(evt.intents);
   }
 
   /**
@@ -180,10 +180,9 @@ const AutomationEditableText = class extends ChromeVoxEditableTextBase {
 
   /**
    * Called when the text field has been updated.
-   * @param {string|undefined} eventFrom
    * @param {!Array<AutomationIntent>} intents
    */
-  onUpdate(eventFrom, intents) {
+  onUpdate(intents) {
     const oldValue = this.value;
     const oldStart = this.start;
     const oldEnd = this.end;
@@ -394,7 +393,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
   }
 
   /** @override */
-  onUpdate(eventFrom, intents) {
+  onUpdate(intents) {
     const root = this.node_.root;
     if (!root.selectionStartObject || !root.selectionEndObject ||
         root.selectionStartOffset === undefined ||
