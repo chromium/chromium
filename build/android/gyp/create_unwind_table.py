@@ -120,7 +120,7 @@ def EncodeAsBytes(*values: int) -> bytes:
   This function validates that the inputs are within the range that can be
   represented as bytes.
 
-  Argument:
+  Args:
     values: Integers in range [0, 255].
 
   Returns:
@@ -135,7 +135,7 @@ def EncodeAsBytes(*values: int) -> bytes:
 def Uleb128Encode(value: int) -> bytes:
   """Encodes the argument int to ULEB128 format.
 
-  Argument:
+  Args:
     value: Unsigned integer.
 
   Returns:
@@ -156,7 +156,7 @@ def Uleb128Encode(value: int) -> bytes:
 def EncodeStackPointerUpdate(offset: int) -> bytes:
   """Encodes a stack pointer update as arm unwind instructions.
 
-  Argument:
+  Args:
     offset: Offset to apply on stack pointer. Should be in range [-0x204, inf).
 
   Returns:
@@ -189,7 +189,7 @@ def EncodeStackPointerUpdate(offset: int) -> bytes:
 def EncodePop(registers: Sequence[int]) -> bytes:
   """Encodes popping of a sequence of registers as arm unwind instructions.
 
-  Argument:
+  Args:
     registers: Collection of target registers to accept values popped from
       stack. Register value order in the sequence does not matter. Values are
       popped based on register index order.
@@ -282,7 +282,7 @@ class FunctionUnwind(NamedTuple):
 def EncodeAddressUnwind(address_unwind: AddressUnwind) -> bytes:
   """Encodes an `AddressUnwind` object as arm unwind instructions.
 
-  Argument:
+  Args:
     address_unwind: Record representing unwind information for an address within
       a function.
 
@@ -328,7 +328,7 @@ class UnwindInstructionsParser(abc.ABC):
                      match: re.Match) -> Tuple[AddressUnwind, int]:
     """Returns the regex matching the breakpad instructions.
 
-    Arguments:
+    Args:
       address_offset: Offset from function start address.
       cfa_sp_offset: CFA stack pointer offset.
 
@@ -470,7 +470,7 @@ def EncodeUnwindInstructionTable(complete_instruction_sequences: Iterable[bytes]
   unwind instructions to execute for each function, separated by offset
   into the function.
 
-  Argument:
+  Args:
     complete_instruction_sequences: An iterable of encoded unwind instruction
       sequences. The sequences represent the series of unwind instructions to
       execute corresponding to offsets within each function.
@@ -534,7 +534,7 @@ def EncodeAddressUnwinds(address_unwinds: Tuple[AddressUnwind, ...]
   """Encodes the unwind instructions and offset for the addresses within a
   function.
 
-  Argument:
+  Args:
     address_unwinds: A tuple of unwind state for addresses within a function.
 
   Returns:
@@ -622,7 +622,7 @@ def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
     This function assumes that min function start address is the text section
     start address.
 
-  Argument:
+  Args:
     function_unwinds: An iterable of function unwind states.
 
   Returns:
@@ -687,7 +687,7 @@ def EncodeFunctionOffsetTable(
   The function offset table maps local address_offset from function
   start to the location in the unwind instruction table.
 
-  Argument:
+  Args:
     encoded_address_unwind_sequences: An iterable of encoded address unwind
       sequences.
     unwind_instruction_table_offsets: The offset mapping returned from
@@ -729,7 +729,7 @@ def EncodePageTableAndFunctionTable(
   A table that contains the mapping from page_offset to the location of an entry
   in the function offset table.
 
-  Arguments:
+  Args:
     function_unwinds: All encoded function unwinds in the module.
     function_offset_table_offsets: The offset mapping returned from
       `EncodeFunctionOffsetTable`.
@@ -798,7 +798,7 @@ def ParseAddressCfi(address_cfi: AddressCfi, function_start_address: int,
                     ) -> Tuple[Union[AddressUnwind, None], bool, int]:
   """Parses address CFI with given parsers.
 
-  Arguments:
+  Args:
     address_cfi: The CFI for an address in the function.
     function_start_address: The start address of the function.
     parsers: Available parsers to try on CFI data.
@@ -837,7 +837,7 @@ def GenerateUnwinds(function_cfis: Iterable[FunctionCfi],
   This function parses `FunctionCfi`s to `FunctionUnwind`s using
   `UnwindInstructionParser`.
 
-  Argument:
+  Args:
     function_cfis: An iterable of function CFI data.
     parsers: Available parsers to try on CFI address data.
 
@@ -886,3 +886,113 @@ def GenerateUnwinds(function_cfis: Iterable[FunctionCfi],
   logging.info('%d functions.', functions)
   logging.info('%d/%d addresses handled.', handled_addresses, addresses)
   logging.info('epilogues_seen: %d.', epilogues_seen)
+
+
+def EncodeUnwindInfo(page_table: bytes, function_table: bytes,
+                     function_offset_table: bytes,
+                     unwind_instruction_table: bytes) -> bytes:
+  """Encodes all unwind tables as a single binary.
+
+  Concats all unwind table binaries together and attach a header at the start
+  with a offset-size pair for each table.
+
+  offset: The offset to the target table from the start of the unwind info
+    binary in bytes.
+  size: The declared size of the target table.
+
+  Both offset and size are represented as 32bit integers.
+  See `base::ChromeUnwindInfoHeaderAndroid` for more details.
+
+  Args:
+    page_table: The page table as bytes.
+    function_table: The function table as bytes.
+    function_offset_table: The function offset table as bytes.
+    unwind_instruction_table: The unwind instruction table as bytes.
+
+  Returns:
+    A single binary containing
+    - A header that points to the location of each table.
+    - All unwind tables.
+  """
+  unwind_info_header = bytearray()
+  # Each table is represented as (offset, size) pair, both offset and size
+  # are represented as 4 byte integer.
+  unwind_info_header_size = 4 * 2 * 4
+  unwind_info_body = bytearray()
+
+  # Both the page_table and the function table need to be aligned because their
+  # contents are interpreted as multi-byte integers. However, the byte size of
+  # the header, the page table, the function table are all multiples of 4 and
+  # the resource will be memory mapped at a 4 byte boundary, so no extra care
+  # is required to align the page table and the function table.
+  #
+  # The function offset table and the unwind instruction table are accessed
+  # byte by byte, so they only need 1 byte alignment.
+
+  assert len(page_table) % 4 == 0, (
+      'Each entry in the page table should be 4-byte integer.')
+  assert len(function_table) % 4 == 0, (
+      'Each entry in the function table should be a pair of 2 2-byte integers.')
+
+  for table in page_table, function_table:
+    offset = unwind_info_header_size + len(unwind_info_body)
+    # For the page table and the function_table, declared size is the number of
+    # entries in each table. The tables will be aligned to a 4 byte boundary
+    # because the resource will be memory mapped at a 4 byte boundary and the
+    # header is a multiple of 4 bytes.
+    declared_size = len(table) // 4
+    unwind_info_header += struct.pack('II', offset, declared_size)
+    unwind_info_body += table
+
+  for table in function_offset_table, unwind_instruction_table:
+    offset = unwind_info_header_size + len(unwind_info_body)
+    # Because both the function offset table and the unwind instruction table
+    # contain variable length encoded numbers, the declared size is simply the
+    # number of bytes in each table. The tables only require 1 byte alignment.
+    declared_size = len(table)
+    unwind_info_header += struct.pack('II', offset, declared_size)
+    unwind_info_body += table
+
+  return bytes(unwind_info_header + unwind_info_body)
+
+
+def GenerateUnwindTables(
+    encoded_function_unwinds_iterable: Iterable[EncodedFunctionUnwind]
+) -> Tuple[bytes, bytes, bytes, bytes]:
+  """Generates all unwind tables as bytes.
+
+  Args:
+    encoded_function_unwinds_iterable: Encoded function unwinds for all
+      functions in the ELF binary.
+
+  Returns:
+    A tuple containing:
+    - The page table as bytes.
+    - The function table as bytes.
+    - The function offset table as bytes.
+    - The unwind instruction table as bytes.
+  """
+  encoded_function_unwinds: List[EncodedFunctionUnwind] = list(
+      encoded_function_unwinds_iterable)
+  complete_instruction_sequences: List[bytes] = []
+  encoded_address_unwind_sequences: List[Tuple[EncodedAddressUnwind, ...]] = []
+
+  for encoded_function_unwind in encoded_function_unwinds:
+    encoded_address_unwind_sequences.append(
+        encoded_function_unwind.address_unwinds)
+    for address_unwind in encoded_function_unwind.address_unwinds:
+      complete_instruction_sequences.append(
+          address_unwind.complete_instruction_sequence)
+
+  unwind_instruction_table, unwind_instruction_table_offsets = (
+      EncodeUnwindInstructionTable(complete_instruction_sequences))
+
+  function_offset_table, function_offset_table_offsets = (
+      EncodeFunctionOffsetTable(encoded_address_unwind_sequences,
+                                unwind_instruction_table_offsets))
+
+  page_table, function_table = EncodePageTableAndFunctionTable(
+      encoded_function_unwinds, function_offset_table_offsets)
+
+  return (page_table, function_table, function_offset_table,
+          unwind_instruction_table)
