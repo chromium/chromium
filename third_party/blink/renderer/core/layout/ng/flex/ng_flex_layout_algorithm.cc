@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_item_iterator.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
@@ -815,12 +816,15 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     main_axis_start_offset = BorderScrollbarPadding().inline_start;
     main_axis_end_offset = BorderScrollbarPadding().inline_end;
   }
+
+  Vector<NGFlexLine> flex_line_outputs;
   FlexLine* line;
   while ((
       line = algorithm_.ComputeNextFlexLine(container_builder_.InlineSize()))) {
     line->SetContainerMainInnerSize(
         MainAxisContentExtent(line->sum_hypothetical_main_size_));
     line->FreezeInflexibleItems();
+    flex_line_outputs.push_back(NGFlexLine());
     while (!line->ResolveFlexibleLengths()) {
       continue;
     }
@@ -881,6 +885,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     // in to the next iteration.
     line->ComputeLineItemsPosition(main_axis_start_offset, main_axis_end_offset,
                                    cross_axis_offset);
+    flex_line_outputs.back().line_cross_size = line->cross_axis_extent_;
   }
 
   LayoutUnit previously_consumed_block_size;
@@ -917,7 +922,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
       ConstraintSpace(), Style(), BorderPadding(), total_intrinsic_block_size,
       container_builder_.InlineSize());
 
-  ApplyFinalAlignmentAndReversals();
+  ApplyFinalAlignmentAndReversals(&flex_line_outputs);
   bool success = GiveItemsFinalPositionAndSize();
   if (!success)
     return nullptr;
@@ -955,6 +960,10 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     container_builder_.CheckNoBlockFragmentation();
 #endif
   }
+
+#if DCHECK_IS_ON()
+  CheckFlexLines(flex_line_outputs);
+#endif
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
   freeze_scrollbars.reset();
@@ -1000,7 +1009,8 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
       flex_item.ng_input_node_.Layout(child_space, /* break_token */ nullptr);
 }
 
-void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals() {
+void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
+    Vector<NGFlexLine>* flex_line_outputs) {
   Vector<FlexLine>& line_contexts = algorithm_.FlexLines();
   const LayoutUnit cross_axis_start_edge =
       line_contexts.IsEmpty() ? LayoutUnit()
@@ -1013,10 +1023,12 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals() {
   if (is_column_)
     std::swap(final_content_main_size, final_content_cross_size);
 
-  if (!algorithm_.IsMultiline() && !line_contexts.IsEmpty())
+  if (!algorithm_.IsMultiline() && !line_contexts.IsEmpty()) {
     line_contexts[0].cross_axis_extent_ = final_content_cross_size;
+    (*flex_line_outputs)[0].line_cross_size = final_content_cross_size;
+  }
 
-  algorithm_.AlignFlexLines(final_content_cross_size);
+  algorithm_.AlignFlexLines(final_content_cross_size, flex_line_outputs);
 
   algorithm_.AlignChildren();
 
@@ -1366,5 +1378,18 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
   sizes += BorderScrollbarPadding().InlineSum();
   return MinMaxSizesResult(sizes, depends_on_block_constraints);
 }
+
+#if DCHECK_IS_ON()
+void NGFlexLayoutAlgorithm::CheckFlexLines(
+    const Vector<NGFlexLine>& flex_line_outputs) const {
+  const Vector<FlexLine>& flex_lines = algorithm_.flex_lines_;
+
+  DCHECK_EQ(flex_line_outputs.size(), flex_lines.size());
+  for (wtf_size_t i = 0; i < flex_line_outputs.size(); i++) {
+    DCHECK_EQ(flex_line_outputs[i].line_cross_size,
+              flex_lines[i].cross_axis_extent_);
+  }
+}
+#endif
 
 }  // namespace blink

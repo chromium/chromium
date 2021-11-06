@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 
 namespace blink {
@@ -797,7 +798,9 @@ LayoutUnit FlexLayoutAlgorithm::IntrinsicContentBlockSize() const {
          (flex_lines_.size() - 1) * gap_between_lines_;
 }
 
-void FlexLayoutAlgorithm::AlignFlexLines(LayoutUnit cross_axis_content_extent) {
+void FlexLayoutAlgorithm::AlignFlexLines(
+    LayoutUnit cross_axis_content_extent,
+    Vector<NGFlexLine>* flex_line_outputs) {
   const StyleContentAlignmentData align_content = ResolvedAlignContent(*style_);
   if (align_content.GetPosition() == ContentPosition::kFlexStart &&
       gap_between_lines_ == 0) {
@@ -814,7 +817,8 @@ void FlexLayoutAlgorithm::AlignFlexLines(LayoutUnit cross_axis_content_extent) {
   LayoutUnit line_offset = InitialContentPositionOffset(
       StyleRef(), available_cross_axis_space, align_content, flex_lines_.size(),
       is_reversed);
-  for (FlexLine& line_context : flex_lines_) {
+  for (wtf_size_t i = 0; i < flex_lines_.size(); i++) {
+    FlexLine& line_context = flex_lines_[i];
     line_context.cross_axis_offset_ += line_offset;
 
     for (FlexItem& flex_item : line_context.line_items_) {
@@ -825,6 +829,10 @@ void FlexLayoutAlgorithm::AlignFlexLines(LayoutUnit cross_axis_content_extent) {
       line_context.cross_axis_extent_ +=
           available_cross_axis_space /
           static_cast<unsigned>(flex_lines_.size());
+      if (flex_line_outputs) {
+        (*flex_line_outputs)[i].line_cross_size =
+            line_context.cross_axis_extent_;
+      }
     }
 
     line_offset +=

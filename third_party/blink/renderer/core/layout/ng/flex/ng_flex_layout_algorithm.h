@@ -66,7 +66,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
           absl::nullopt) const;
   void ConstructAndAppendFlexItems();
   void ApplyStretchAlignmentToChild(FlexItem& flex_item);
-  void ApplyFinalAlignmentAndReversals();
+  void ApplyFinalAlignmentAndReversals(Vector<NGFlexLine>* flex_line_outputs);
   bool GiveItemsFinalPositionAndSize();
   bool PropagateFlexItemInfo(FlexItem* flex_item,
                              wtf_size_t flex_line_idx,
@@ -94,6 +94,10 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   void LayoutWithBlockFragmentation(FlexItem& flex_item,
                                     LayoutUnit block_offset,
                                     const NGBlockBreakToken* item_break_token);
+
+#if DCHECK_IS_ON()
+  void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;
+#endif
 
   const bool is_column_;
   const bool is_horizontal_flow_;

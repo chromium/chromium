@@ -50,6 +50,7 @@ class FlexLayoutAlgorithm;
 class NGFlexLayoutAlgorithm;
 class LayoutBox;
 struct MinMaxSizes;
+struct NGFlexLine;
 
 enum FlexSign {
   kPositiveFlexibility,
@@ -419,7 +420,8 @@ class FlexLayoutAlgorithm {
   // Positions flex lines by modifying FlexLine::cross_axis_offset, and
   // FlexItem::desired_position. When lines stretch, also modifies
   // FlexLine::cross_axis_extent.
-  void AlignFlexLines(LayoutUnit cross_axis_content_extent);
+  void AlignFlexLines(LayoutUnit cross_axis_content_extent,
+                      Vector<NGFlexLine>* flex_line_outputs = nullptr);
 
   // Positions flex items by modifying FlexItem::offset.
   // When lines stretch, also modifies FlexItem::cross_axis_size.
