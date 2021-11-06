@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_TWO_CLIENT_WEB_APPS_INTEGRATION_TEST_BASE_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_TWO_CLIENT_WEB_APPS_INTEGRATION_TEST_BASE_H_
 
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "content/public/test/browser_test.h"
 
@@ -17,7 +16,7 @@ class CommandLine;
 namespace web_app {
 
 class TwoClientWebAppsIntegrationTestBase
-    : public SyncTest,
+    : public WebAppsSyncTestBase,
       public WebAppIntegrationTestDriver::TestDelegate {
  public:
   TwoClientWebAppsIntegrationTestBase();
@@ -42,7 +41,6 @@ class TwoClientWebAppsIntegrationTestBase
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
   WebAppIntegrationTestDriver helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace web_app

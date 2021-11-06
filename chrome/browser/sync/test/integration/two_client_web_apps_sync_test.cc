@@ -7,11 +7,10 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -24,15 +23,10 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
 
 namespace web_app {
 
@@ -57,15 +51,9 @@ class DisplayModeChangeWaiter : public AppRegistrarObserver {
 
 }  // namespace
 
-class TwoClientWebAppsSyncTest : public SyncTest {
+class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
  public:
-  TwoClientWebAppsSyncTest() : SyncTest(TWO_CLIENT) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
-#endif
-  }
+  TwoClientWebAppsSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {}
 
   TwoClientWebAppsSyncTest(const TwoClientWebAppsSyncTest&) = delete;
   TwoClientWebAppsSyncTest& operator=(const TwoClientWebAppsSyncTest&) = delete;
@@ -101,7 +89,6 @@ class TwoClientWebAppsSyncTest : public SyncTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };
 

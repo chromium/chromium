@@ -4,28 +4,16 @@
 
 #include "chrome/browser/sync/test/integration/two_client_web_apps_integration_test_base.h"
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "services/network/public/cpp/network_switches.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
 
 namespace web_app {
 
 TwoClientWebAppsIntegrationTestBase::TwoClientWebAppsIntegrationTestBase()
-    : SyncTest(TWO_CLIENT), helper_(this) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-  scoped_feature_list_.InitWithFeatures(
-      {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
-#endif
-}
+    : WebAppsSyncTestBase(TWO_CLIENT), helper_(this) {}
 
 // WebAppIntegrationBrowserTestBase::TestDelegate
 Browser* TwoClientWebAppsIntegrationTestBase::CreateBrowser(Profile* profile) {

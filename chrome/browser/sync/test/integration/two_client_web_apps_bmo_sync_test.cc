@@ -7,11 +7,10 @@
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -28,17 +27,12 @@
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_application_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
 
 namespace web_app {
 namespace {
@@ -52,18 +46,12 @@ std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
   return provider;
 }
 
-class TwoClientWebAppsBMOSyncTest : public SyncTest {
+class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
  public:
   TwoClientWebAppsBMOSyncTest()
-      : SyncTest(TWO_CLIENT),
+      : WebAppsSyncTestBase(TWO_CLIENT),
         fake_web_app_provider_creator_(
-            base::BindRepeating(&CreateFakeWebAppProvider)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
-#endif
-  }
+            base::BindRepeating(&CreateFakeWebAppProvider)) {}
 
   TwoClientWebAppsBMOSyncTest(const TwoClientWebAppsBMOSyncTest&) = delete;
   TwoClientWebAppsBMOSyncTest& operator=(const TwoClientWebAppsBMOSyncTest&) =
@@ -200,7 +188,6 @@ class TwoClientWebAppsBMOSyncTest : public SyncTest {
 
  private:
   FakeWebAppProviderCreator fake_web_app_provider_creator_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test is flaky (crbug.com/1097050)
@@ -313,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 
   WebAppProvider::GetForTest(GetProfile(1))
       ->sync_bridge()
-      .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser,
+      .SetAppUserDisplayMode(app_id, DisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
   // Install a 'dummy' app & wait for installation to ensure sync has processed
@@ -325,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 
   // The change should have synced to profile 0.
   EXPECT_EQ(GetRegistrar(GetProfile(0)).GetAppUserDisplayMode(app_id),
-            web_app::DisplayMode::kBrowser);
+            DisplayMode::kBrowser);
   // The user display settings is synced, so it should match.
   EXPECT_EQ(GetRegistrar(GetProfile(0)).GetAppUserDisplayMode(app_id),
             GetRegistrar(GetProfile(1)).GetAppUserDisplayMode(app_id));
@@ -410,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
   // on profile 0. So changes should propagate from profile 0 to profile 1 now.
   WebAppProvider::GetForTest(GetProfile(0))
       ->sync_bridge()
-      .SetAppUserDisplayMode(app_id, web_app::DisplayMode::kBrowser,
+      .SetAppUserDisplayMode(app_id, DisplayMode::kBrowser,
                              /*is_user_action=*/false);
 
   // Install a 'dummy' app & wait for installation to ensure sync has processed
@@ -420,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
 
   // Check that profile 1 has the display mode change.
   EXPECT_EQ(GetRegistrar(GetProfile(1)).GetAppUserDisplayMode(app_id),
-            web_app::DisplayMode::kBrowser);
+            DisplayMode::kBrowser);
 
   // The user display settings is syned, so it should match.
   EXPECT_EQ(GetRegistrar(GetProfile(0)).GetAppUserDisplayMode(app_id),

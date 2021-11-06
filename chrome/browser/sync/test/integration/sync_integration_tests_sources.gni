@@ -68,6 +68,8 @@ if (!is_android) {
     "../browser/sync/test/integration/two_client_web_apps_integration_test_base.cc",
     "../browser/sync/test/integration/two_client_web_apps_integration_test_base.h",
     "../browser/sync/test/integration/two_client_web_apps_sync_test.cc",
+    "../browser/sync/test/integration/web_apps_sync_test_base.cc",
+    "../browser/sync/test/integration/web_apps_sync_test_base.h",
   ]
 }
 

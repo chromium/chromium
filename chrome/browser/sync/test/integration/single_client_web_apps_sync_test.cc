@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
-#include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -31,6 +29,7 @@
 using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
 
+namespace web_app {
 namespace {
 
 // Default time (creation and last modified) used when creating entities.
@@ -69,15 +68,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-class SingleClientWebAppsSyncTest : public SyncTest {
+class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
  public:
-  SingleClientWebAppsSyncTest() : SyncTest(SINGLE_CLIENT) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
-#endif
-  }
+  SingleClientWebAppsSyncTest() : WebAppsSyncTestBase(SINGLE_CLIENT) {}
   ~SingleClientWebAppsSyncTest() override = default;
 
   bool SetupClients() override {
@@ -86,7 +79,7 @@ class SingleClientWebAppsSyncTest : public SyncTest {
     }
 
     for (Profile* profile : GetAllProfiles()) {
-      auto* web_app_provider = web_app::WebAppProvider::GetForTest(profile);
+      auto* web_app_provider = WebAppProvider::GetForTest(profile);
       base::RunLoop loop;
       web_app_provider->on_registry_ready().Post(FROM_HERE, loop.QuitClosure());
       loop.Run();
@@ -103,19 +96,19 @@ class SingleClientWebAppsSyncTest : public SyncTest {
       const std::string& app_id,
       const GURL& url,
       absl::optional<std::string> manifest_id = absl::nullopt) {
-    web_app::WebApp app(app_id);
+    WebApp app(app_id);
     app.SetName(app_id);
     app.SetStartUrl(url);
-    app.SetUserDisplayMode(web_app::DisplayMode::kBrowser);
+    app.SetUserDisplayMode(DisplayMode::kBrowser);
     app.SetManifestId(manifest_id);
 
-    web_app::WebApp::SyncFallbackData sync_fallback_data;
+    WebApp::SyncFallbackData sync_fallback_data;
     sync_fallback_data.name = app_id;
     app.SetSyncFallbackData(std::move(sync_fallback_data));
 
     sync_pb::EntitySpecifics entity_specifics;
 
-    *(entity_specifics.mutable_web_app()) = web_app::WebAppToSyncProto(app);
+    *(entity_specifics.mutable_web_app()) = WebAppToSyncProto(app);
 
     fake_server_->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
@@ -140,9 +133,6 @@ class SingleClientWebAppsSyncTest : public SyncTest {
             /*non_unique_name=*/"", app_id, entity, kDefaultTime,
             kDefaultTime));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -161,14 +151,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithValidIdSyncInstalled) {
   GURL url("https://example.com/");
-  const std::string app_id =
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, url);
+  const std::string app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
   InjectWebAppEntityToFakeServer(app_id, url);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar();
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 }
 
@@ -176,12 +165,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        PRE_BookmarkAppNotSyncInstalled) {
   std::string url = "https://example.com/";
   const std::string app_id =
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(url));
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(url));
   InjectBookmarkAppEntityToFakeServer(app_id, url);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
   auto& web_app_registrar =
-      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_EQ(web_app_registrar.GetAppById(app_id), nullptr);
 }
@@ -192,11 +181,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        BookmarkAppNotSyncInstalled) {
   std::string url = "https://example.com/";
   const std::string app_id =
-      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(url));
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(url));
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
   auto& web_app_registrar =
-      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
 }
@@ -211,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.description = u"Test description";
   info.start_url = GURL("http://www.chromium.org/path");
   info.scope = GURL("http://www.chromium.org/");
-  web_app::AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
+  AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
   ASSERT_TRUE(SetupSync());
 
   fake_server::FakeServerVerifier fake_server_verifier(fake_server_.get());
@@ -230,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
 }
@@ -239,14 +228,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithIdSpecifiedSyncInstalled) {
   const absl::optional<std::string> manifest_id("explicit_id");
   GURL url("https://example.com/start");
-  const std::string app_id = web_app::GenerateAppId(manifest_id, url);
+  const std::string app_id = GenerateAppId(manifest_id, url);
 
   InjectWebAppEntityToFakeServer(app_id, url, manifest_id);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
@@ -257,10 +246,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.start_url = url;
   info.scope = url;
   info.manifest_id = manifest_id;
-  const web_app::AppId installed_app_id =
+  const AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 
-  const std::string expected_app_id = web_app::GenerateAppId(
+  const std::string expected_app_id = GenerateAppId(
       /*manifest_id=*/absl::nullopt, GURL("https://example.com/explicit_id"));
   EXPECT_EQ(expected_app_id, installed_app_id);
 }
@@ -269,14 +258,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithIdSpecifiedAsEmptyStringSyncInstalled) {
   const absl::optional<std::string> manifest_id("");
   GURL url("https://example.com/start");
-  const std::string app_id = web_app::GenerateAppId(manifest_id, url);
+  const std::string app_id = GenerateAppId(manifest_id, url);
 
   InjectWebAppEntityToFakeServer(app_id, url, manifest_id);
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      web_app::WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar();
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
@@ -287,11 +276,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   info.start_url = url;
   info.scope = url;
   info.manifest_id = manifest_id;
-  const web_app::AppId installed_app_id =
+  const AppId installed_app_id =
       apps_helper::InstallWebApp(GetProfile(0), info);
 
-  const std::string expected_app_id = web_app::GenerateAppId(
+  const std::string expected_app_id = GenerateAppId(
       /*manifest_id=*/absl::nullopt, GURL("https://example.com/"));
   EXPECT_EQ(expected_app_id, installed_app_id);
 }
 }  // namespace
+}  // namespace web_app
