@@ -76000,6 +76000,19 @@
        {}
       ]
      ],
+     "border-image-width-should-extend-to-padding.html": [
+      "575921a0454a64a979c8ff210cc23a2ed04533a2",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/border-image-width-should-extend-to-padding-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "border-radius-001.xht": [
       "5029dd0f15105294d85612a0f50a6b28caaf7da0",
       [
@@ -230894,6 +230907,10 @@
      ],
      "border-image-width-008-ref.html": [
       "9a066443920726b79d69a0301d814b5211b7df0a",
+      []
+     ],
+     "border-image-width-should-extend-to-padding-ref.html": [
+      "d9e1ec372e67ecf4ca92dd939252bbe34b135055",
       []
      ],
      "border-radius-001-ref.xht": [
