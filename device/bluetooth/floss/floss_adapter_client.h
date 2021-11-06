@@ -119,13 +119,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   const std::string& GetAddress() const { return adapter_address_; }
 
   // Start a discovery session.
-  virtual void StartDiscovery(ResponseCallback callback);
+  virtual void StartDiscovery(ResponseCallback<Void> callback);
 
   // Cancel the active discovery session.
-  virtual void CancelDiscovery(ResponseCallback callback);
+  virtual void CancelDiscovery(ResponseCallback<Void> callback);
 
   // Create a bond with the given device and transport.
-  virtual void CreateBond(ResponseCallback callback,
+  virtual void CreateBond(ResponseCallback<Void> callback,
                           FlossDeviceId device,
                           BluetoothTransport transport);
 

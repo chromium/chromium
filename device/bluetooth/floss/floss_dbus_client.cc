@@ -96,17 +96,20 @@ Error FlossDBusClient::ErrorResponseToError(const std::string& default_name,
   return result;
 }
 
-void FlossDBusClient::DefaultResponseWithCallback(
-    ResponseCallback callback,
+template <>
+void FlossDBusClient::DefaultResponseWithCallback<Void>(
+    ResponseCallback<Void> callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response) {
   if (response) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(/*ret=*/absl::nullopt, /*err=*/absl::nullopt);
     return;
   }
 
-  std::move(callback).Run(ErrorResponseToError(
-      kErrorNoResponse, /*default_message=*/std::string(), error_response));
+  std::move(callback).Run(
+      /*ret=*/absl::nullopt,
+      ErrorResponseToError(kErrorNoResponse, /*default_message=*/std::string(),
+                           error_response));
 }
 
 void FlossDBusClient::DefaultResponse(const std::string& caller,

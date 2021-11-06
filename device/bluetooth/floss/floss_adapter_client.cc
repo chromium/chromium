@@ -38,43 +38,46 @@ constexpr char FlossAdapterClient::kErrorUnknownAdapter[] =
 constexpr char FlossAdapterClient::kExportedCallbacksPath[] =
     "/org/chromium/bluetooth/adapterclient";
 
-void FlossAdapterClient::StartDiscovery(ResponseCallback callback) {
+void FlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, adapter_path_);
   if (!object_proxy) {
-    std::move(callback).Run(Error(kErrorUnknownAdapter, std::string()));
+    std::move(callback).Run(absl::nullopt,
+                            Error(kErrorUnknownAdapter, std::string()));
     return;
   }
 
   dbus::MethodCall method_call(kAdapterInterface, adapter::kStartDiscovery);
   object_proxy->CallMethodWithErrorResponse(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&FlossAdapterClient::DefaultResponseWithCallback,
+      base::BindOnce(&FlossAdapterClient::DefaultResponseWithCallback<Void>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void FlossAdapterClient::CancelDiscovery(ResponseCallback callback) {
+void FlossAdapterClient::CancelDiscovery(ResponseCallback<Void> callback) {
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, adapter_path_);
   if (!object_proxy) {
-    std::move(callback).Run(Error(kErrorUnknownAdapter, std::string()));
+    std::move(callback).Run(absl::nullopt,
+                            Error(kErrorUnknownAdapter, std::string()));
     return;
   }
 
   dbus::MethodCall method_call(kAdapterInterface, adapter::kCancelDiscovery);
   object_proxy->CallMethodWithErrorResponse(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&FlossAdapterClient::DefaultResponseWithCallback,
+      base::BindOnce(&FlossAdapterClient::DefaultResponseWithCallback<Void>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void FlossAdapterClient::CreateBond(ResponseCallback callback,
+void FlossAdapterClient::CreateBond(ResponseCallback<Void> callback,
                                     FlossDeviceId device,
                                     BluetoothTransport transport) {
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, adapter_path_);
   if (!object_proxy) {
-    std::move(callback).Run(Error(kErrorUnknownAdapter, std::string()));
+    std::move(callback).Run(absl::nullopt,
+                            Error(kErrorUnknownAdapter, std::string()));
     return;
   }
 
@@ -85,7 +88,7 @@ void FlossAdapterClient::CreateBond(ResponseCallback callback,
 
   object_proxy->CallMethodWithErrorResponse(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&FlossAdapterClient::DefaultResponseWithCallback,
+      base::BindOnce(&FlossAdapterClient::DefaultResponseWithCallback<Void>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 

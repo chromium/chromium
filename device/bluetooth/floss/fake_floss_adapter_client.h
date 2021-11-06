@@ -25,9 +25,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const std::string& adapter_path) override;
-  void StartDiscovery(ResponseCallback callback) override;
-  void CancelDiscovery(ResponseCallback callback) override;
-  void CreateBond(ResponseCallback callback,
+  void StartDiscovery(ResponseCallback<Void> callback) override;
+  void CancelDiscovery(ResponseCallback<Void> callback) override;
+  void CreateBond(ResponseCallback<Void> callback,
                   FlossDeviceId device,
                   BluetoothTransport transport) override;
 

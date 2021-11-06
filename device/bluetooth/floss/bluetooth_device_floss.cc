@@ -21,6 +21,7 @@ namespace floss {
 namespace {
 
 void OnCreateBond(BluetoothDeviceFloss::ConnectCallback callback,
+                  const absl::optional<Void>& ret,
                   const absl::optional<Error>& error) {
   if (error.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed to create bond: " << error->name << ": "

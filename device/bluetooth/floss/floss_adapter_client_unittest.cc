@@ -175,7 +175,8 @@ class FlossAdapterClientTest : public testing::Test {
     std::move(*cb).Run(response.get(), nullptr);
   }
 
-  void ExpectValidCreateBond(const absl::optional<Error>& err) {
+  void ExpectValidCreateBond(const absl::optional<Void>& ret,
+                             const absl::optional<Error>& err) {
     EXPECT_FALSE(err.has_value());
   }
 

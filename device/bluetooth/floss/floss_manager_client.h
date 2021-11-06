@@ -89,7 +89,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Enable or disable an adapter.
   virtual void SetAdapterEnabled(int adapter,
                                  bool enabled,
-                                 ResponseCallback callback);
+                                 ResponseCallback<Void> callback);
 
   // Initializes the manager client.
   void Init(dbus::Bus* bus,

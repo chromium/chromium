@@ -238,6 +238,7 @@ bool BluetoothAdapterFloss::IsDiscovering() const {
 void BluetoothAdapterFloss::OnMethodResponse(
     base::OnceClosure callback,
     ErrorCallback error_callback,
+    const absl::optional<Void>& ret,
     const absl::optional<Error>& error) {
   if (error.has_value()) {
     std::move(error_callback).Run();
@@ -249,6 +250,7 @@ void BluetoothAdapterFloss::OnMethodResponse(
 
 void BluetoothAdapterFloss::OnStartDiscovery(
     DiscoverySessionResultCallback callback,
+    const absl::optional<Void>& ret,
     const absl::optional<Error>& error) {
   if (error.has_value()) {
     // Adapter path only exists if active adapter hasn't disappeared
@@ -279,6 +281,7 @@ void BluetoothAdapterFloss::OnStartDiscovery(
 
 void BluetoothAdapterFloss::OnStopDiscovery(
     DiscoverySessionResultCallback callback,
+    const absl::optional<Void>& ret,
     const absl::optional<Error>& error) {
   if (error.has_value()) {
     // Adapter path only exists if active adapter hasn't disappeared

@@ -83,7 +83,14 @@ struct Error {
   std::string message;
 };
 
-using ResponseCallback = base::OnceCallback<void(const absl::optional<Error>&)>;
+// Represents void return type of D-Bus (no return). Needed so that we can use
+// "void" as a type in C++ templates.
+struct Void {};
+
+template <typename T>
+using ResponseCallback =
+    base::OnceCallback<void(const absl::optional<T>& ret,
+                            const absl::optional<Error>& err)>;
 
 // Restrict all access to DBus client initialization to FlossDBusManager so we
 // can enforce the proper ordering of initialization and shutdowns.
@@ -116,8 +123,9 @@ class FlossDBusClient {
   void LogErrorResponse(const std::string& message, dbus::ErrorResponse* error);
 
   // Default handler that runs |callback| with the callback with an optional
-  // error.
-  void DefaultResponseWithCallback(ResponseCallback callback,
+  // return and optional error.
+  template <typename T>
+  void DefaultResponseWithCallback(ResponseCallback<T> callback,
                                    dbus::Response* response,
                                    dbus::ErrorResponse* error_response);
 

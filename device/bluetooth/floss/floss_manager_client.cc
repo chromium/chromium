@@ -136,11 +136,12 @@ void FlossManagerClient::SetFlossEnabled(bool enabled) {
 
 void FlossManagerClient::SetAdapterEnabled(int adapter,
                                            bool enabled,
-                                           ResponseCallback callback) {
+                                           ResponseCallback<Void> callback) {
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, dbus::ObjectPath(kManagerObject));
   if (!object_proxy) {
-    std::move(callback).Run(Error(kUnknownManagerError, std::string()));
+    std::move(callback).Run(absl::nullopt,
+                            Error(kUnknownManagerError, std::string()));
     return;
   }
 
@@ -153,7 +154,7 @@ void FlossManagerClient::SetAdapterEnabled(int adapter,
 
   object_proxy->CallMethodWithErrorResponse(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&FlossManagerClient::DefaultResponseWithCallback,
+      base::BindOnce(&FlossManagerClient::DefaultResponseWithCallback<Void>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 

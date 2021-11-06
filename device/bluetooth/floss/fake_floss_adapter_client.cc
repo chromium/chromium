@@ -25,22 +25,24 @@ void FakeFlossAdapterClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
                                   const std::string& adapter_path) {}
 
-void FakeFlossAdapterClient::StartDiscovery(ResponseCallback callback) {
+void FakeFlossAdapterClient::StartDiscovery(ResponseCallback<Void> callback) {
   // Simulate devices being discovered.
 
   for (auto& observer : observers_) {
     observer.AdapterFoundDevice(FlossDeviceId({kJustWorksAddress, ""}));
   }
 
-  PostDelayedTask(base::BindOnce(std::move(callback), absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
+                                 /*err=*/absl::nullopt));
 }
 
-void FakeFlossAdapterClient::CancelDiscovery(ResponseCallback callback) {
+void FakeFlossAdapterClient::CancelDiscovery(ResponseCallback<Void> callback) {
   // Will need to stop simulated discovery once the simulation grows.
-  PostDelayedTask(base::BindOnce(std::move(callback), absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
+                                 /*err=*/absl::nullopt));
 }
 
-void FakeFlossAdapterClient::CreateBond(ResponseCallback callback,
+void FakeFlossAdapterClient::CreateBond(ResponseCallback<Void> callback,
                                         FlossDeviceId device,
                                         BluetoothTransport transport) {
   // TODO(b/202874707): Simulate pairing failures.
@@ -50,7 +52,8 @@ void FakeFlossAdapterClient::CreateBond(ResponseCallback callback,
                                     FlossAdapterClient::BondState::kBonded);
   }
 
-  PostDelayedTask(base::BindOnce(std::move(callback), absl::nullopt));
+  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
+                                 /*err=*/absl::nullopt));
 }
 
 void FakeFlossAdapterClient::PostDelayedTask(base::OnceClosure callback) {
