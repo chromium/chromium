@@ -140,7 +140,7 @@ void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
     case ui::ET_GESTURE_LONG_PRESS:
     case ui::ET_GESTURE_LONG_TAP:
       for (auto* grid_item : grid_items_)
-        grid_item->UpdateDeleteButtonVisibility();
+        grid_item->UpdateHoverButtonsVisibility();
       return;
     default:
       return;

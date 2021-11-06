@@ -24,7 +24,7 @@ DesksTemplatesDeleteButton::~DesksTemplatesDeleteButton() = default;
 
 void DesksTemplatesDeleteButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
-  element_style::DecorateMediumCloseButton(this, kTrashCanIcon);
+  element_style::DecorateMediumCloseButton(this, kCloseButtonIcon);
 }
 
 BEGIN_METADATA(DesksTemplatesDeleteButton, views::ImageButton)

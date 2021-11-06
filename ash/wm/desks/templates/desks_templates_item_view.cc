@@ -9,12 +9,15 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/button_style.h"
 #include "ash/wm/desks/templates/desks_templates_delete_button.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -40,7 +43,7 @@ constexpr int kCornerRadius = 16;
 // TODO(richui): Replace these temporary values once specs come out.
 constexpr gfx::Size kViewSize(250, 20);
 constexpr int kDeleteButtonMargin = 8;
-constexpr int kDeleteButtonSize = 24;
+constexpr int kDeleteButtonSize = 20;
 
 constexpr char kAmPmTimeDateFmtStr[] = "%d:%02d%s, %d-%02d-%02d";
 
@@ -72,7 +75,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
       &DesksTemplatesItemView::OnGridItemPressed, base::Unretained(this));
 
   views::View* spacer;
-  views::BoxLayoutView* container;
+  views::BoxLayoutView* card_container;
   views::Builder<DesksTemplatesItemView>(this)
       .SetPreferredSize(kPreferredSize)
       .SetUseDefaultFillLayout(true)
@@ -85,7 +88,7 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
           kCornerRadius))
       .AddChildren(
           views::Builder<views::BoxLayoutView>()
-              .CopyAddressTo(&container)
+              .CopyAddressTo(&card_container)
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
               .SetCrossAxisAlignment(
                   views::BoxLayout::CrossAxisAlignment::kStart)
@@ -105,25 +108,38 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
                   views::Builder<views::View>().CopyAddressTo(&spacer),
                   views::Builder<DesksTemplatesIconContainer>().CopyAddressTo(
                       &icon_container_view_)),
-          views::Builder<DesksTemplatesDeleteButton>()
-              .CopyAddressTo(&delete_button_)
-              .SetCallback(std::move(delete_button_callback)))
+          views::Builder<views::View>()
+              .CopyAddressTo(&hover_container_)
+              .AddChild(views::Builder<DesksTemplatesDeleteButton>()
+                            .CopyAddressTo(&delete_button_)
+                            .SetCallback(std::move(delete_button_callback))))
       .BuildChildren();
 
+  // TODO(crbug.com/1267470): Make `PillButton` work with views::Builder.
+  launch_button_ = hover_container_->AddChildView(std::make_unique<PillButton>(
+      base::BindRepeating(&DesksTemplatesItemView::OnGridItemPressed,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON),
+      PillButton::Type::kIconless, /*icon=*/nullptr));
+  hover_container_->SetUseDefaultFillLayout(true);
+
   icon_container_view_->PopulateIconContainerFromTemplate(desk_template);
-  container->SetFlexForView(spacer, 1);
-  UpdateDeleteButtonVisibility();
+  card_container->SetFlexForView(spacer, 1);
+  UpdateHoverButtonsVisibility();
 }
 
 DesksTemplatesItemView::~DesksTemplatesItemView() = default;
 
-void DesksTemplatesItemView::UpdateDeleteButtonVisibility() {
-  // For switch access, setting the delete button to visible allows users to
+void DesksTemplatesItemView::UpdateHoverButtonsVisibility() {
+  // For switch access, setting the hover buttons to visible allows users to
   // navigate to it.
-  // TODO(richui): update `force_show_delete_button_` based on touch events.
-  delete_button_->SetVisible(
-      (IsMouseHovered() || force_show_delete_button_ ||
-       Shell::Get()->accessibility_controller()->IsSwitchAccessRunning()));
+  // TODO(richui): update `force_show_hover_buttons_` based on touch events.
+  const bool visible =
+      (IsMouseHovered() || force_show_hover_buttons_ ||
+       Shell::Get()->accessibility_controller()->IsSwitchAccessRunning());
+
+  hover_container_->SetVisible(visible);
+  icon_container_view_->SetVisible(!visible);
 }
 
 void DesksTemplatesItemView::Layout() {
@@ -132,6 +148,13 @@ void DesksTemplatesItemView::Layout() {
   delete_button_->SetBoundsRect(
       gfx::Rect(width() - kDeleteButtonSize - kDeleteButtonMargin,
                 kDeleteButtonMargin, kDeleteButtonSize, kDeleteButtonSize));
+
+  const gfx::Size launch_button_preferred_size =
+      launch_button_->CalculatePreferredSize();
+  launch_button_->SetBoundsRect(gfx::Rect(
+      {(width() - launch_button_preferred_size.width()) / 2,
+       height() - launch_button_preferred_size.height() - kVerticalPaddingDp},
+      launch_button_preferred_size));
 }
 
 void DesksTemplatesItemView::OnDeleteButtonPressed() {

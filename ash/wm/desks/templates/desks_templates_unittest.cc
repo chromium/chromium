@@ -115,6 +115,8 @@ class DesksTemplatesItemViewTestApi {
     return item_view_->delete_button_;
   }
 
+  const PillButton* launch_button() const { return item_view_->launch_button_; }
+
   const base::GUID uuid() const { return item_view_->uuid_; }
 
   const std::vector<DesksTemplatesIconView*>& icon_views() const {
@@ -341,6 +343,7 @@ class DesksTemplatesTest : public OverviewTestBase {
     const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
     auto* event_generator = GetEventGenerator();
     event_generator->MoveMouseTo(view_center);
+    DCHECK(view->GetVisible());
     event_generator->ClickLeftButton();
   }
 
@@ -759,6 +762,8 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonDisabledOnMaxTemplates) {
 }
 
 // Tests that launching templates from the templates grid functions correctly.
+// We test both clicking on the card, as well as clicking on the "Use template"
+// button that shows up on hover. Both should do the same thing.
 TEST_F(DesksTemplatesTest, LaunchTemplate) {
   DesksController* desks_controller = DesksController::Get();
   ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
@@ -774,10 +779,12 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
   ToggleOverviewAndShowTemplatesGrid();
 
   // Click on the grid item to launch the template.
-  DeskSwitchAnimationWaiter waiter;
-  ClickOnView(GetItemViewFromOverviewGrid(/*grid_item_index=*/0));
-  WaitForUI();
-  waiter.Wait();
+  {
+    DeskSwitchAnimationWaiter waiter;
+    ClickOnView(GetItemViewFromOverviewGrid(/*grid_item_index=*/0));
+    WaitForUI();
+    waiter.Wait();
+  }
 
   // Verify that we have created and activated a new desk.
   EXPECT_EQ(2ul, desks_controller->desks().size());
@@ -785,6 +792,22 @@ TEST_F(DesksTemplatesTest, LaunchTemplate) {
 
   // Launching a template creates and activates a new desk, which also results
   // in exiting overview mode, so we check to make sure overview is closed.
+  EXPECT_FALSE(InOverviewSession());
+
+  // This section tests clicking on the "Use template" button to launch the
+  // template.
+  ToggleOverviewAndShowTemplatesGrid();
+  {
+    DeskSwitchAnimationWaiter waiter;
+    DesksTemplatesItemView* item_view = GetItemViewFromOverviewGrid(
+        /*grid_item_index=*/0);
+    ClickOnView(DesksTemplatesItemViewTestApi(item_view).launch_button());
+    WaitForUI();
+    waiter.Wait();
+  }
+
+  EXPECT_EQ(3ul, desks_controller->desks().size());
+  EXPECT_EQ(2, desks_controller->GetActiveDeskIndex());
   EXPECT_FALSE(InOverviewSession());
 }
 

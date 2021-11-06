@@ -19,6 +19,7 @@ namespace ash {
 class DesksTemplatesDeleteButton;
 class DesksTemplatesIconContainer;
 class DeskTemplate;
+class PillButton;
 
 // A view that represents each individual template item in the desks templates
 // grid.
@@ -31,9 +32,9 @@ class DesksTemplatesItemView : public views::Button {
   DesksTemplatesItemView& operator=(const DesksTemplatesItemView&) = delete;
   ~DesksTemplatesItemView() override;
 
-  // Updates the visibility state of the delete button depending on whether this
-  // view is mouse hovered, or if switch access is enabled.
-  void UpdateDeleteButtonVisibility();
+  // Updates the visibility state of the delete and launch buttons depending on
+  // whether this view is mouse hovered, or if switch access is enabled.
+  void UpdateHoverButtonsVisibility();
 
   // views::View:
   void Layout() override;
@@ -50,10 +51,13 @@ class DesksTemplatesItemView : public views::Button {
   views::Label* time_view_ = nullptr;
   DesksTemplatesIconContainer* icon_container_view_ = nullptr;
   DesksTemplatesDeleteButton* delete_button_ = nullptr;
+  PillButton* launch_button_ = nullptr;
+  // Container used for holding all the views that appear on hover.
+  views::View* hover_container_ = nullptr;
 
-  // We force showing the delete button when `this` is long pressed or tapped
+  // We force show the hover buttons when `this` is long pressed or tapped
   // using touch gestures.
-  bool force_show_delete_button_ = false;
+  bool force_show_hover_buttons_ = false;
 
   // The desk template's unique identifier.
   const base::GUID uuid_;
