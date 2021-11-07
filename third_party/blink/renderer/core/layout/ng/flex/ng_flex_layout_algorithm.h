@@ -16,6 +16,7 @@ class NGBlockNode;
 class NGBlockBreakToken;
 class NGBoxFragment;
 struct DevtoolsFlexInfo;
+struct NGFlexItem;
 
 class CORE_EXPORT NGFlexLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,
@@ -61,13 +62,16 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   // |block_offset_for_fragmentation| should only be set when running the final
   // layout pass for fragmentation.
   NGConstraintSpace BuildSpaceForLayout(
-      const FlexItem& flex_item,
+      const NGBlockNode& flex_item_node,
+      LayoutUnit item_main_axis_final_size,
       absl::optional<LayoutUnit> block_offset_for_fragmentation =
           absl::nullopt) const;
   void ConstructAndAppendFlexItems();
-  void ApplyStretchAlignmentToChild(FlexItem& flex_item);
+  scoped_refptr<const NGLayoutResult> ApplyStretchAlignmentToChild(
+      NGFlexItem& flex_item,
+      LayoutUnit line_cross_size);
   void ApplyFinalAlignmentAndReversals(Vector<NGFlexLine>* flex_line_outputs);
-  bool GiveItemsFinalPositionAndSize();
+  bool GiveItemsFinalPositionAndSize(Vector<NGFlexLine>& flex_line_outputs);
   bool PropagateFlexItemInfo(FlexItem* flex_item,
                              wtf_size_t flex_line_idx,
                              LayoutPoint location,
@@ -91,9 +95,10 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       absl::optional<LayoutUnit>* fallback_baseline);
 
   // Re-layout a given flex item, taking fragmentation into account.
-  void LayoutWithBlockFragmentation(FlexItem& flex_item,
-                                    LayoutUnit block_offset,
-                                    const NGBlockBreakToken* item_break_token);
+  scoped_refptr<const NGLayoutResult> LayoutWithBlockFragmentation(
+      NGFlexItem& flex_item,
+      LayoutUnit block_offset,
+      const NGBlockBreakToken* item_break_token);
 
 #if DCHECK_IS_ON()
   void CheckFlexLines(const Vector<NGFlexLine>& flex_line_outputs) const;

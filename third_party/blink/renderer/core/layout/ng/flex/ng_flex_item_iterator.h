@@ -11,8 +11,8 @@
 namespace blink {
 
 class NGBlockBreakToken;
-class FlexItem;
-class FlexLine;
+struct NGFlexItem;
+struct NGFlexLine;
 
 // A utility class for flexbox layout which given a list of flex lines and a
 // break token will iterate through unfinished flex items.
@@ -30,7 +30,7 @@ class CORE_EXPORT NGFlexItemIterator {
   STACK_ALLOCATED();
 
  public:
-  NGFlexItemIterator(const Vector<FlexLine>& flex_lines,
+  NGFlexItemIterator(const Vector<NGFlexLine>& flex_lines,
                      const NGBlockBreakToken* break_token);
 
   // Returns the next flex item which should be laid out, along with its
@@ -39,10 +39,10 @@ class CORE_EXPORT NGFlexItemIterator {
   Entry NextItem();
 
  private:
-  FlexItem* FindNextItem(const NGBlockBreakToken* item_break_token = nullptr);
+  NGFlexItem* FindNextItem(const NGBlockBreakToken* item_break_token = nullptr);
 
-  FlexItem* next_unstarted_item_ = nullptr;
-  const Vector<FlexLine>& flex_lines_;
+  NGFlexItem* next_unstarted_item_ = nullptr;
+  const Vector<NGFlexLine>& flex_lines_;
   const NGBlockBreakToken* break_token_;
 
   // An index into break_token_'s ChildBreakTokens() vector. Used for keeping
@@ -60,7 +60,7 @@ struct NGFlexItemIterator::Entry {
   STACK_ALLOCATED();
 
  public:
-  Entry(FlexItem* flex_item,
+  Entry(NGFlexItem* flex_item,
         wtf_size_t flex_item_idx,
         wtf_size_t flex_line_idx,
         const NGBlockBreakToken* token)
@@ -69,7 +69,7 @@ struct NGFlexItemIterator::Entry {
         flex_line_idx(flex_line_idx),
         token(token) {}
 
-  FlexItem* flex_item;
+  NGFlexItem* flex_item;
   wtf_size_t flex_item_idx;
   wtf_size_t flex_line_idx;
   const NGBlockBreakToken* token;

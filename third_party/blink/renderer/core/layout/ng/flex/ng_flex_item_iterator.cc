@@ -4,18 +4,18 @@
 
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_item_iterator.h"
 
-#include "third_party/blink/renderer/core/layout/flexible_box_algorithm.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 
 namespace blink {
 
-NGFlexItemIterator::NGFlexItemIterator(const Vector<FlexLine>& flex_lines,
+NGFlexItemIterator::NGFlexItemIterator(const Vector<NGFlexLine>& flex_lines,
                                        const NGBlockBreakToken* break_token)
     : flex_lines_(flex_lines), break_token_(break_token) {
   if (flex_lines_.size()) {
-    DCHECK(flex_lines_[0].line_items_.size());
+    DCHECK(flex_lines_[0].line_items.size());
     next_unstarted_item_ =
-        const_cast<FlexItem*>(&flex_lines_[0].line_items_[0]);
+        const_cast<NGFlexItem*>(&flex_lines_[0].line_items[0]);
     flex_item_idx_++;
   }
   if (break_token_) {
@@ -36,7 +36,7 @@ NGFlexItemIterator::NGFlexItemIterator(const Vector<FlexLine>& flex_lines,
 
 NGFlexItemIterator::Entry NGFlexItemIterator::NextItem() {
   const NGBlockBreakToken* current_child_break_token = nullptr;
-  FlexItem* current_item = next_unstarted_item_;
+  NGFlexItem* current_item = next_unstarted_item_;
   wtf_size_t current_item_idx = flex_item_idx_ - 1;
   wtf_size_t current_line_idx = flex_line_idx_;
 
@@ -68,15 +68,15 @@ NGFlexItemIterator::Entry NGFlexItemIterator::NextItem() {
                current_child_break_token);
 }
 
-FlexItem* NGFlexItemIterator::FindNextItem(
+NGFlexItem* NGFlexItemIterator::FindNextItem(
     const NGBlockBreakToken* item_break_token) {
   while (flex_line_idx_ < flex_lines_.size()) {
     const auto& flex_line = flex_lines_[flex_line_idx_];
-    while (flex_item_idx_ < flex_line.line_items_.size()) {
-      FlexItem* flex_item =
-          const_cast<FlexItem*>(&flex_line.line_items_[flex_item_idx_++]);
+    while (flex_item_idx_ < flex_line.line_items.size()) {
+      NGFlexItem* flex_item =
+          const_cast<NGFlexItem*>(&flex_line.line_items[flex_item_idx_++]);
       if (!item_break_token ||
-          flex_item->ng_input_node_ == item_break_token->InputNode())
+          flex_item->ng_input_node == item_break_token->InputNode())
         return flex_item;
     }
     flex_item_idx_ = 0;
