@@ -56,6 +56,7 @@
 
 #if defined(OS_WIN)
 #include "content/browser/media/dcomp_surface_registry_broker.h"
+#include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #endif  // defined(OS_WIN)
 
@@ -177,8 +178,9 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
   void CreateDCOMPSurfaceRegistry(
       mojo::PendingReceiver<media::mojom::DCOMPSurfaceRegistry> receiver)
       override {
-    if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption) &&
-        media::MediaFoundationCdm::IsAvailable()) {
+    if (media::SupportMediaFoundationClearPlayback() ||
+        (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption) &&
+         media::MediaFoundationCdm::IsAvailable())) {
       // TODO(crbug.com/1233379): Pass IO task runner and remove the PostTask()
       // in DCOMPSurfaceRegistryBroker after bug fixed.
       mojo::MakeSelfOwnedReceiver(
@@ -452,8 +454,10 @@ MediaInterfaceProxy::GetMediaFoundationServiceInterfaceFactory(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // TODO(xhwang): Also check protected media identifier content setting.
-  if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
-    DLOG(ERROR) << "Hardware secure decryption disabled!";
+  if (!media::SupportMediaFoundationClearPlayback() &&
+      !base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
+    DLOG(ERROR) << "Both hardware secure decryption & media foundation for "
+                   "clear are disabled!";
     return nullptr;
   }
 

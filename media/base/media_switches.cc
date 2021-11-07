@@ -780,6 +780,11 @@ const base::Feature kMediaFoundationD3D11VideoCapture{
 const base::Feature MEDIA_EXPORT kMediaFoundationVP8Decoding{
     "MediaFoundationVP8Decoding", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the use of MediaFoundationRenderer for clear content on supported
+// systems.
+const base::Feature kMediaFoundationClearPlayback{
+    "MediaFoundationClearPlayback", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use the AUDCLNT_STREAMOPTIONS_RAW option on WASAPI input audio streams in
 // combination with  the IAudioClient2::SetClientProperties() API.
 // The audio stream is a 'raw' stream that bypasses all signal processing except

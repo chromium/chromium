@@ -24,9 +24,7 @@ component("media_foundation_util") {
     "mf_initializer.h",
     "mf_initializer_export.h",
   ]
-  configs += [
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
   deps = [
     "//base",
     "//media:shared_memory_support",

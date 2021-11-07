@@ -440,6 +440,10 @@ source_set("base") {
       "//media/base/win:dcomp_texture_wrapper",
       "//media/base/win:mf_cdm_proxy",
     ]
+    sources += [
+      "win/mf_feature_checks.cc",
+      "win/mf_feature_checks.h",
+    ]
   }
 
   # TODO(ziyangch): Check |is_chromecast| first when using cast media pipeline

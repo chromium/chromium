@@ -7,6 +7,7 @@
 #include <d3d11.h>
 
 #include "base/check_op.h"
+#include "base/win/windows_version.h"
 
 namespace media {
 

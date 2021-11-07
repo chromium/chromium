@@ -3335,6 +3335,13 @@ const FeatureEntry kFeatureEntries[] = {
         kOsWin,
         FEATURE_VALUE_TYPE(media::kHardwareSecureDecryption),
     },
+    {
+        "enable-media-foundation-clear",
+        flag_descriptions::kMediaFoundationClearName,
+        flag_descriptions::kMediaFoundationClearDescription,
+        kOsWin,
+        FEATURE_VALUE_TYPE(media::kMediaFoundationClearPlayback),
+    },
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {

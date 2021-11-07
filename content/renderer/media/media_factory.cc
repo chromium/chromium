@@ -125,6 +125,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
+#include "media/base/win/mf_feature_checks.h"
 #include "media/cdm/win/media_foundation_cdm.h"
 #include "media/mojo/clients/win/media_foundation_renderer_client_factory.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -728,8 +729,10 @@ MediaFactory::CreateRendererFactorySelector(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  // Only use MediaFoundationRenderer when MediaFoundationCdm is available.
-  if (media::MediaFoundationCdm::IsAvailable()) {
+  bool use_mf_for_clear = media::SupportMediaFoundationClearPlayback();
+  // Only use MediaFoundationRenderer when MediaFoundationCdm is available or
+  // MediaFoundation for Clear is supported.
+  if (media::MediaFoundationCdm::IsAvailable() || use_mf_for_clear) {
     auto dcomp_texture_creation_cb =
         base::BindRepeating(&DCOMPTextureWrapperImpl::Create,
                             render_thread->GetDCOMPTextureFactory(),
@@ -740,6 +743,17 @@ MediaFactory::CreateRendererFactorySelector(
         std::make_unique<media::MediaFoundationRendererClientFactory>(
             media_log, std::move(dcomp_texture_creation_cb),
             CreateMojoRendererFactory()));
+
+    if (use_mf_for_clear) {
+      // We want to use Media Foundation even for non-explicit Media Foundation
+      // clients, register Media Foundation as the base renderer type.
+      // We don't use AddBaseFactory here because if ENABLE_MOJO_RENDERER
+      // is set then we may have already called it previously and it is
+      // expected that AddBaseFactory will only be called when there is not
+      // already a base factory type set. Instead manually set the new base
+      // factory type with SetBaseRendererType.
+      factory_selector->SetBaseRendererType(RendererType::kMediaFoundation);
+    }
   }
 #endif  // BUILDFLAG(IS_WIN)
 

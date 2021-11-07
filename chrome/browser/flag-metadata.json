@@ -2218,6 +2218,13 @@
     "expiry_milestone": 96
   },
   {
+    "name": "enable-media-foundation-clear",
+    "owners": [
+      "wicarr@microsoft.com"
+    ],
+    "expiry_milestone": 103
+  },
+  {
     "name": "enable-media-foundation-video-capture",
     "owners": [ "agpalak", "guidou" ],
     "expiry_milestone": 99
