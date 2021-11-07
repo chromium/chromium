@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">З’єднання</translation>
 <translation id="4832079907277790330">Вибрати папку в додатку "Файли"…</translation>
 <translation id="4835901797422965222">Немає активних мереж</translation>
+<translation id="4839698083503556542">Створюйте власний фільм</translation>
 <translation id="484790837831576105">Перетворення DNS (Android)</translation>
 <translation id="4848429997038228357">ТРИВАЄ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Залишилися {0} спроби}many{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроби}}</translation>
