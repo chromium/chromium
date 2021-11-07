@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Guruhda yangi varaqda ochish</translation>
 <translation id="1103142993930332957">Chromeni yaxshilashga yordam berasizmi?</translation>
 <translation id="1105960400813249514">Ekranni suratga olish</translation>
+<translation id="1108938384783527433">Tarix sinxronizatsiyasi</translation>
 <translation id="1110914759170138831">Belgilov qisqartirildi</translation>
 <translation id="1111673857033749125">Boshqa qurilmalaringizda saqlangan xatcho‘plar shu yerda ko‘rsatiladi.</translation>
 <translation id="1113597929977215864">Soddalashgan shaklda ko‘rsatish</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Manzillar qatori va qidiruv oynasida kiritilgan so‘rovlar va ba’zi cookie ma’lumotlarni standart qidiruv tizimiga yuboradi</translation>
 <translation id="200114059308480249">Google qidiruvlariga qamrovli matn kiritilsinmi?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ta fayl}other{# ta fayl}}</translation>
+<translation id="2020309681647789787">Brauzer tarixingiz barcha qurilmalaringizda sinxronlanadi va ishni qolgan joyingizdan davom ettira olasiz</translation>
 <translation id="2021896219286479412">To‘liq ekranli rejim sozlamalari</translation>
 <translation id="2038563949887743358">Saytning to‘liq versiyasini ko‘rish</translation>
 <translation id="204321170514947529">Chrome brauzeridagi <ph name="APP_NAME" /> maʼlumotlari ham tozalanadi</translation>
@@ -847,6 +849,7 @@ Privacy Sandbox hali ishlab chiqish jarayonida va faqatgina ayrim mamlakatlarda 
 <translation id="6070730414166672373">Bankka murojaat qilinmoqda\u2026</translation>
 <translation id="6085886413119427067">Xavfsiz aloqadan foydalanadigan saytlarga qanday ulanishini aniqlaydi</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> soat qoldi</translation>
+<translation id="6095578583683628124">Agar Google birlamcnhi qidiruv tizmingiz boʻlsa, qidiruvda yanada yaxshi va yanada mos takliflar olasiz</translation>
 <translation id="6108923351542677676">Sozlanmoqda...</translation>
 <translation id="6111020039983847643">sarflangan trafik</translation>
 <translation id="6112702117600201073">Sahifa yangilanmoqda</translation>
@@ -1392,6 +1395,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="9148126808321036104">Qaytadan kiring</translation>
 <translation id="9155898266292537608">Shuningdek so‘z ustiga bosib qidirish mumkin</translation>
 <translation id="9158770349521403363">Faqat kontentni ulashish</translation>
+<translation id="916446198114569890">Tashrif qilingan URL manzillar Google hisobingizda saqlanadi</translation>
 <translation id="9169507124922466868">Sahifalar tarixi yarim hajmda ochildi</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 daqiqa oldin tekshirilgan}other{# daqiqa oldin tekshirilgan}}</translation>
 <translation id="9204836675896933765">1 fayl qoldi</translation>

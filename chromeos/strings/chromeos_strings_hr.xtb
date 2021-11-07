@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">Veza</translation>
 <translation id="4832079907277790330">Odaberi mapu u aplikaciji Datoteke...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
+<translation id="4839698083503556542">Snimite vlastiti film</translation>
 <translation id="484790837831576105">(Android) Razrješavanje DNS-a</translation>
 <translation id="4848429997038228357">IZVODI SE</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostao je {0} pokušaj.}one{<ph name="ERROR_MESSAGE" /> Preostao je {0} pokušaj.}few{<ph name="ERROR_MESSAGE" /> Preostala su {0} pokušaja.}other{<ph name="ERROR_MESSAGE" /> Preostalo je {0} pokušaja.}}</translation>
