@@ -1767,6 +1767,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Vpn.OpenVPNCipher" enum="VPNOpenVPNCipher"
+    expires_after="2022-06-30">
+  <owner>taoyl@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS network metric emitted on each successful OpenVPN connection that
+    tracks the cipher algorithm negotiated with server.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Vpn.RemoteAuthenticationType"
     enum="VPNRemoteAuthenticationType" expires_after="2022-05-01">
   <owner>jiejiang@chromium.org</owner>

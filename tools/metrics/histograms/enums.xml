@@ -88166,6 +88166,13 @@ others/histograms.xml -->
   <int value="1" label="Tunnel group is used"/>
 </enum>
 
+<enum name="VPNOpenVPNCipher">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="BF-CBC"/>
+  <int value="2" label="AES-256-GCM"/>
+  <int value="3" label="AES-128-GCM"/>
+</enum>
+
 <enum name="VPNRemoteAuthenticationType">
   <int value="0" label="OpenVPN Default"/>
   <int value="1" label="OpenVPN Certificate"/>
