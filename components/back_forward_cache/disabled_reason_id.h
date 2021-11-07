@@ -51,4 +51,4 @@ enum class DisabledReasonId : uint16_t {
 
 }  // namespace back_forward_cache
 
-#endif  // define COMPONENTS_BACK_FORWARD_CACHE_DISABLED_REASON_ID_H_
+#endif  // COMPONENTS_BACK_FORWARD_CACHE_DISABLED_REASON_ID_H_

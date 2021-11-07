@@ -15,4 +15,4 @@ constexpr int kSecurePaymentConfirmationInstrumentIconHeightPx = 20;
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CORE_PAYMENT_SIZES_H_
+#endif  // COMPONENTS_PAYMENTS_CORE_SIZES_H_

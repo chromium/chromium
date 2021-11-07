@@ -30,4 +30,4 @@ class MockMediaDialogDelegate : public MediaDialogDelegate {
 }  // namespace test
 }  // namespace global_media_controls
 
-#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_TEST_MOCK_MEDIA_ITEM_MANAGER_H_
+#endif  // COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_TEST_MOCK_MEDIA_DIALOG_DELEGATE_H_

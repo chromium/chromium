@@ -31,4 +31,4 @@ enum class AccuracyTipInteraction {
 
 }  // namespace accuracy_tips
 
-#endif  // COMPONENTS_ACCURACY_TIPS_accuracy_tip_interaction_H_
+#endif  // COMPONENTS_ACCURACY_TIPS_ACCURACY_TIP_INTERACTION_H_

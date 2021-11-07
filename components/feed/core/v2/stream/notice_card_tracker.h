@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
@@ -74,4 +75,4 @@ class NoticeCardTracker {
 
 }  // namespace feed
 
-#endif  // COMPONENTS_FEED_CORE_V2_STREAM_NOTICE_CARD_TRACKER_H_s
+#endif  // COMPONENTS_FEED_CORE_V2_STREAM_NOTICE_CARD_TRACKER_H_

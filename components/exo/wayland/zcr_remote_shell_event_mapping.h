@@ -104,4 +104,4 @@ struct WaylandRemoteShellEventMapping {
   int set_use_default_scale_cancellation_since_version;
 };
 
-#endif  // COMPONENTS_EXO_WAYLAND_ZCR_REMOTE_SHELL_EVENT_MAPPNG_H_
+#endif  // COMPONENTS_EXO_WAYLAND_ZCR_REMOTE_SHELL_EVENT_MAPPING_H_
