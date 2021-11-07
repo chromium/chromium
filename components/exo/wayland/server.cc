@@ -48,9 +48,11 @@
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/buildflags.h"
+#include "components/exo/capabilities.h"
 #include "components/exo/display.h"
 #include "components/exo/wayland/overlay_prioritizer.h"
 #include "components/exo/wayland/serial_tracker.h"
+#include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/surface_augmenter.h"
 #include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wayland/wayland_watcher.h"
@@ -159,10 +161,12 @@ void wayland_log(const char* fmt, va_list argp) {
 ////////////////////////////////////////////////////////////////////////////////
 // Server, public:
 
-Server::Server(Display* display) : display_(display) {
+Server::Server(Display* display, std::unique_ptr<Capabilities> capabilities)
+    : display_(display), capabilities_(std::move(capabilities)) {
   wl_log_set_handler_server(wayland_log);
 
   wl_display_.reset(wl_display_create());
+  SetCapabilities(wl_display_.get(), capabilities_.get());
 }
 
 void Server::Initialize() {
@@ -271,7 +275,8 @@ void Server::Initialize() {
 #if BUILDFLAG(ENABLE_WESTON_TEST)
   weston_test_data_ = std::make_unique<WestonTestState>();
   wl_global_create(wl_display_.get(), &weston_test_interface,
-                   kWestonTestVersion, weston_test_data_.get(), bind_weston_test);
+                   kWestonTestVersion, weston_test_data_.get(),
+                   bind_weston_test);
 #endif
 
   zcr_keyboard_extension_data_ =
@@ -308,6 +313,7 @@ void Server::Initialize() {
 }
 
 Server::~Server() {
+  RemoveCapabilities(wl_display_.get());
   // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
   // methods.
   serial_tracker_->Shutdown();
@@ -328,12 +334,15 @@ std::unique_ptr<Server> Server::Create(Display* display) {
     socket_name =
         command_line->GetSwitchValueASCII(switches::kWaylandServerSocket);
   }
-  return Create(display, base::FilePath(runtime_dir_str).Append(socket_name));
+  return Create(display, Capabilities::GetDefaultCapabilities(),
+                base::FilePath(runtime_dir_str).Append(socket_name));
 }
 
 // static
-std::unique_ptr<Server> Server::Create(Display* display,
-                                       const base::FilePath& socket_path) {
+std::unique_ptr<Server> Server::Create(
+    Display* display,
+    std::unique_ptr<Capabilities> capabilities,
+    const base::FilePath& socket_path) {
   if (!socket_path.IsAbsolute()) {
     LOG(ERROR) << "Unable to create a wayland server. The provided path must "
                   "be absolute, got: "
@@ -352,7 +361,7 @@ std::unique_ptr<Server> Server::Create(Display* display,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  std::unique_ptr<Server> server(new Server(display));
+  std::unique_ptr<Server> server(new Server(display, std::move(capabilities)));
   server->Initialize();
   if (!server->AddSocket(socket_path.MaybeAsASCII().c_str())) {
     LOG(ERROR) << "Failed to add socket: " << socket_path;

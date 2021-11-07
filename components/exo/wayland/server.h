@@ -22,6 +22,7 @@ struct wl_resource;
 struct wl_client;
 
 namespace exo {
+class Capabilities;
 class Display;
 
 namespace wayland {
@@ -43,7 +44,7 @@ class WaylandWatcher;
 // requests are dispatched into the given Exosphere display.
 class Server : public display::DisplayObserver {
  public:
-  explicit Server(Display* display);
+  Server(Display* display, std::unique_ptr<Capabilities> capabilities);
 
   Server(const Server&) = delete;
   Server& operator=(const Server&) = delete;
@@ -55,8 +56,10 @@ class Server : public display::DisplayObserver {
   static std::unique_ptr<Server> Create(Display* display);
 
   // As above, but where the socket's name is |socket_path|.
-  static std::unique_ptr<Server> Create(Display* display,
-                                        const base::FilePath& socket_path);
+  static std::unique_ptr<Server> Create(
+      Display* display,
+      std::unique_ptr<Capabilities> capabilities,
+      const base::FilePath& socket_path);
 
   void Initialize();
 
@@ -84,6 +87,11 @@ class Server : public display::DisplayObserver {
 
   Display* GetDisplay() { return display_; }
 
+  // Public version of the protected accessor below, to be used in tests.
+  wl_display* GetWaylandDisplayForTesting() const {
+    return GetWaylandDisplay();
+  }
+
  protected:
   void AddWaylandOutput(int64_t id,
                         std::unique_ptr<WaylandDisplayOutput> output);
@@ -91,6 +99,7 @@ class Server : public display::DisplayObserver {
 
  private:
   Display* const display_;
+  std::unique_ptr<Capabilities> capabilities_;
   // Deleting wl_display depends on SerialTracker.
   std::unique_ptr<SerialTracker> serial_tracker_;
   std::unique_ptr<wl_display, WlDisplayDeleter> wl_display_;

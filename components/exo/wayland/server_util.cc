@@ -4,6 +4,9 @@
 
 #include "components/exo/wayland/server_util.h"
 
+#include <wayland-server-core.h>
+
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/exo/data_offer.h"
 #include "ui/display/display.h"
@@ -25,6 +28,11 @@ DEFINE_UI_CLASS_PROPERTY_KEY(wl_resource*, kSurfaceResourceKey, nullptr)
 // A property key containing the data offer resource that is associated with
 // data offer object.
 DEFINE_UI_CLASS_PROPERTY_KEY(wl_resource*, kDataOfferResourceKey, nullptr)
+
+// Wayland provides no convenient way to annotate a wl_display with arbitrary
+// data. Therefore, to map displays to their capabilities, we maintain this
+// mapping.
+base::flat_map<wl_display*, Capabilities*> g_display_capability_map;
 
 }  // namespace
 
@@ -51,6 +59,25 @@ wl_resource* GetDataOfferResource(const DataOffer* data_offer) {
 void SetDataOfferResource(DataOffer* data_offer,
                           wl_resource* data_offer_resource) {
   data_offer->SetProperty(kDataOfferResourceKey, data_offer_resource);
+}
+
+void SetCapabilities(wl_display* display, Capabilities* capabilities) {
+  auto emplace_result = g_display_capability_map.emplace(display, capabilities);
+  DCHECK(emplace_result.second);
+}
+
+void RemoveCapabilities(wl_display* display) {
+  DCHECK(g_display_capability_map.contains(display));
+  g_display_capability_map.erase(display);
+}
+
+Capabilities* GetCapabilities(wl_display* display) {
+  DCHECK(g_display_capability_map.contains(display));
+  return g_display_capability_map[display];
+}
+
+Capabilities* GetCapabilities(wl_client* client) {
+  return GetCapabilities(wl_client_get_display(client));
 }
 
 }  // namespace wayland

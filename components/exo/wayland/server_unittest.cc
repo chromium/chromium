@@ -19,8 +19,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread.h"
 #include "build/chromeos_buildflags.h"
+#include "components/exo/capabilities.h"
 #include "components/exo/display.h"
 #include "components/exo/test/exo_test_base_views.h"
+#include "components/exo/wayland/server_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -68,7 +70,8 @@ class ServerTest : public TestBase {
 
 TEST_F(ServerTest, AddSocket) {
   std::unique_ptr<Display> display(new Display);
-  std::unique_ptr<Server> server(new Server(display.get()));
+  std::unique_ptr<Server> server(
+      new Server(display.get(), Capabilities::GetDefaultCapabilities()));
   server->Initialize();
   // Check that calling AddSocket() with a unique socket name succeeds.
   bool rv = server->AddSocket(GetUniqueSocketName());
@@ -77,7 +80,8 @@ TEST_F(ServerTest, AddSocket) {
 
 TEST_F(ServerTest, GetFileDescriptor) {
   std::unique_ptr<Display> display(new Display);
-  std::unique_ptr<Server> server(new Server(display.get()));
+  std::unique_ptr<Server> server(
+      new Server(display.get(), Capabilities::GetDefaultCapabilities()));
   server->Initialize();
   bool rv = server->AddSocket(GetUniqueSocketName());
   EXPECT_TRUE(rv);
@@ -93,8 +97,9 @@ TEST_F(ServerTest, CustomSocketPath) {
   base::ScopedTempDir non_xdg_dir;
   ASSERT_TRUE(non_xdg_dir.CreateUniqueTempDir());
 
-  std::unique_ptr<Server> server = Server::Create(
-      display.get(), non_xdg_dir.GetPath().Append("custom-socket"));
+  std::unique_ptr<Server> server =
+      Server::Create(display.get(), Capabilities::GetDefaultCapabilities(),
+                     non_xdg_dir.GetPath().Append("custom-socket"));
   EXPECT_TRUE(server);
 
   // Check that Create() has put the socket in the directory. Actually two files
@@ -103,6 +108,19 @@ TEST_F(ServerTest, CustomSocketPath) {
                                   base::FileEnumerator::FILES);
   EXPECT_TRUE(base::StartsWith(enumerator.Next().BaseName().MaybeAsASCII(),
                                "custom-socket"));
+}
+
+TEST_F(ServerTest, CapabilityAssociation) {
+  std::unique_ptr<Capabilities> capabilities =
+      Capabilities::GetDefaultCapabilities();
+  Capabilities* capability_ptr = capabilities.get();
+
+  Display display;
+  Server server(&display, std::move(capabilities));
+  server.Initialize();
+
+  EXPECT_EQ(GetCapabilities(server.GetWaylandDisplayForTesting()),
+            capability_ptr);
 }
 
 void ConnectToServer(const std::string socket_name,
@@ -116,7 +134,8 @@ void ConnectToServer(const std::string socket_name,
 
 TEST_F(ServerTest, Dispatch) {
   std::unique_ptr<Display> display(new Display);
-  std::unique_ptr<Server> server(new Server(display.get()));
+  std::unique_ptr<Server> server(
+      new Server(display.get(), Capabilities::GetDefaultCapabilities()));
   server->Initialize();
 
   std::string socket_name = GetUniqueSocketName();
@@ -144,7 +163,8 @@ TEST_F(ServerTest, Dispatch) {
 
 TEST_F(ServerTest, Flush) {
   std::unique_ptr<Display> display(new Display);
-  std::unique_ptr<Server> server(new Server(display.get()));
+  std::unique_ptr<Server> server(
+      new Server(display.get(), Capabilities::GetDefaultCapabilities()));
   server->Initialize();
 
   bool rv = server->AddSocket(GetUniqueSocketName());
