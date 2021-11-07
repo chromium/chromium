@@ -796,39 +796,32 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   Vector<NGFlexLine> flex_line_outputs;
   PlaceFlexItems(flex_line_outputs);
 
-  LayoutUnit previously_consumed_block_size;
-  if (UNLIKELY(BreakToken()))
-    previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
-
   // |total_intrinsic_block_size| is the intrinsic block size for the entire
   // flex container, whereas |intrinsic_block_size_| is tracked during layout
   // when fragmenting and is the intrinsic block size of the flex container in
   // the current fragmentainer. When not fragmenting,
   // |total_intrinsic_block_size| and |intrinsic_block_size_| will be
   // equivalent.
-  LayoutUnit total_intrinsic_block_size = BorderScrollbarPadding().block_start;
-  intrinsic_block_size_ = total_intrinsic_block_size;
-
   bool use_empty_line_block_size =
-      algorithm_.FlexLines().IsEmpty() && Node().HasLineIfEmpty();
-  if (use_empty_line_block_size) {
-    total_intrinsic_block_size += Node().EmptyLineBlockSize(BreakToken());
-    if (ConstraintSpace().HasBlockFragmentation()) {
-      intrinsic_block_size_ =
-          (total_intrinsic_block_size - previously_consumed_block_size)
-              .ClampNegativeToZero();
-    }
-  } else {
-    total_intrinsic_block_size += algorithm_.IntrinsicContentBlockSize();
-  }
-
-  total_intrinsic_block_size = ClampIntrinsicBlockSize(
-      ConstraintSpace(), Node(), BorderScrollbarPadding(),
-      total_intrinsic_block_size + BorderScrollbarPadding().block_end);
+      flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
+  LayoutUnit total_intrinsic_block_size =
+      CalculateTotalIntrinsicBlockSize(use_empty_line_block_size);
 
   total_block_size_ = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), total_intrinsic_block_size,
       container_builder_.InlineSize());
+
+  LayoutUnit previously_consumed_block_size;
+  if (UNLIKELY(BreakToken()))
+    previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
+
+  intrinsic_block_size_ = BorderScrollbarPadding().block_start;
+  if (use_empty_line_block_size && ConstraintSpace().HasBlockFragmentation()) {
+    intrinsic_block_size_ =
+        (total_intrinsic_block_size - BorderScrollbarPadding().block_end -
+         previously_consumed_block_size)
+            .ClampNegativeToZero();
+  }
 
   ApplyFinalAlignmentAndReversals(&flex_line_outputs);
   bool success = GiveItemsFinalPositionAndSize(flex_line_outputs);
@@ -977,6 +970,20 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
                                    cross_axis_offset);
     flex_line_outputs.back().line_cross_size = line->cross_axis_extent_;
   }
+}
+
+LayoutUnit NGFlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
+    bool use_empty_line_block_size) {
+  LayoutUnit total_intrinsic_block_size = BorderScrollbarPadding().block_start;
+
+  if (use_empty_line_block_size)
+    total_intrinsic_block_size += Node().EmptyLineBlockSize(BreakToken());
+  else
+    total_intrinsic_block_size += algorithm_.IntrinsicContentBlockSize();
+
+  return ClampIntrinsicBlockSize(
+      ConstraintSpace(), Node(), BorderScrollbarPadding(),
+      total_intrinsic_block_size + BorderScrollbarPadding().block_end);
 }
 
 scoped_refptr<const NGLayoutResult>
