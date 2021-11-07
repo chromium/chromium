@@ -8,6 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -70,6 +71,11 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   unsigned SequenceNumber() const {
     DCHECK(!IsBreakBefore());
     return sequence_number_;
+  }
+
+  const NGFlexBreakTokenData& FlexData() const {
+    DCHECK(flex_data_);
+    return *flex_data_;
   }
 
   const NGGridBreakTokenData& GridData() const {
@@ -181,6 +187,9 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   LayoutUnit consumed_block_size_;
   LayoutUnit consumed_block_size_legacy_adjustment_;
 
+  // TODO(almaher): We won't ever need both of these at the same time.
+  // Consider subclasses instead.
+  std::unique_ptr<const NGFlexBreakTokenData> flex_data_;
   std::unique_ptr<const NGGridBreakTokenData> grid_data_;
 
   unsigned sequence_number_ = 0;

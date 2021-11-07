@@ -538,6 +538,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return *grid_layout_data_.get();
   }
 
+  void SetFlexBreakTokenData(
+      std::unique_ptr<const NGFlexBreakTokenData> flex_break_token_data) {
+    flex_break_token_data_ = std::move(flex_break_token_data);
+  }
+
   void SetGridBreakTokenData(
       std::unique_ptr<const NGGridBreakTokenData> grid_break_token_data) {
     grid_break_token_data_ = std::move(grid_break_token_data);
@@ -656,6 +661,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Table cell specific types.
   absl::optional<wtf_size_t> table_cell_column_index_;
+
+  // Flex specific types.
+  std::unique_ptr<const NGFlexBreakTokenData> flex_break_token_data_;
 
   // Grid specific types.
   std::unique_ptr<NGGridLayoutData> grid_layout_data_;

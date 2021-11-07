@@ -17,6 +17,7 @@ namespace {
 
 struct SameSizeAsNGBlockBreakToken : NGBreakToken {
   LayoutUnit block_sizes[2];
+  std::unique_ptr<void> flex_data;
   std::unique_ptr<void> grid_data;
   unsigned numbers[2];
 };
@@ -47,6 +48,8 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGBoxFragmentBuilder* builder)
   is_at_block_end_ = builder->is_at_block_end_;
   has_unpositioned_list_marker_ =
       static_cast<bool>(builder->UnpositionedListMarker());
+  if (builder->flex_break_token_data_)
+    flex_data_ = std::move(builder->flex_break_token_data_);
   if (builder->grid_break_token_data_)
     grid_data_ = std::move(builder->grid_break_token_data_);
   for (wtf_size_t i = 0; i < builder->child_break_tokens_.size(); ++i)
