@@ -498,8 +498,9 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     @Override
     protected void animatePanelToState(
             @Nullable @PanelState Integer state, @StateChangeReason int reason, long duration) {
-        // If the in bar chip showing animation is running, do not run the new panel animation.
-        if (haveSearchBarControl()
+        // If the in bar chip showing animation is running, do not run the new panel animation
+        // unless it needs to animate to a different state.
+        if (state == getPanelState() && haveSearchBarControl()
                 && getSearchBarControl().inBarRelatedSearchesAnimationIsRunning()) {
             return;
         }
