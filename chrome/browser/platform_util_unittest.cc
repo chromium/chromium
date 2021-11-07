@@ -133,7 +133,7 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     auto app = apps::mojom::App::New();
     app->app_id = "invalid-chrome-app";
     app->app_type = apps::mojom::AppType::kExtension;
-    app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
+    app->handles_intents = apps::mojom::OptionalBool::kTrue;
     app->readiness = apps::mojom::Readiness::kReady;
     app->intent_filters =
         apps_util::CreateChromeAppIntentFilters(extension.get());

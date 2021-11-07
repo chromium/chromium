@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -293,6 +294,13 @@ void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,
     app->show_in_management = chromeos_data.show_in_management
                                   ? apps::mojom::OptionalBool::kTrue
                                   : apps::mojom::OptionalBool::kFalse;
+
+    app->handles_intents = app->show_in_launcher;
+    if (web_app::IsSystemAppIdWithFileHandlers(web_app->app_id())) {
+      // TODO(crbug.com/1240906): add handles_intents to chromeos_data() so that
+      // SWAs can stipulate it themselves rather than needing this check.
+      app->handles_intents = apps::mojom::OptionalBool::kTrue;
+    }
     return;
   }
 
@@ -302,6 +310,7 @@ void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,
   app->show_in_shelf = show;
   app->show_in_search = show;
   app->show_in_management = show;
+  app->handles_intents = show;
 }
 
 void WebAppPublisherHelper::PopulateWebAppPermissions(

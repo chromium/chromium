@@ -79,6 +79,9 @@ class AppUpdateMojomTest : public testing::Test {
   apps::mojom::OptionalBool expect_show_in_management_;
   bool expect_show_in_management_changed_;
 
+  apps::mojom::OptionalBool expect_handles_intents_;
+  bool expect_handles_intents_changed_;
+
   apps::mojom::OptionalBool expect_allow_uninstall_;
   bool expect_allow_uninstall_changed_;
 
@@ -131,6 +134,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_show_in_shelf_changed_ = false;
     expect_show_in_search_changed_ = false;
     expect_show_in_management_changed_ = false;
+    expect_handles_intents_changed_ = false;
     expect_allow_uninstall_changed_ = false;
     expect_has_badge_changed_ = false;
     expect_paused_changed_ = false;
@@ -205,6 +209,9 @@ class AppUpdateMojomTest : public testing::Test {
     EXPECT_EQ(expect_show_in_management_, u.ShowInManagement());
     EXPECT_EQ(expect_show_in_management_changed_, u.ShowInManagementChanged());
 
+    EXPECT_EQ(expect_handles_intents_, u.HandlesIntents());
+    EXPECT_EQ(expect_handles_intents_changed_, u.HandlesIntentsChanged());
+
     EXPECT_EQ(expect_allow_uninstall_, u.AllowUninstall());
     EXPECT_EQ(expect_allow_uninstall_changed_, u.AllowUninstallChanged());
 
@@ -255,6 +262,7 @@ class AppUpdateMojomTest : public testing::Test {
     expect_show_in_shelf_ = apps::mojom::OptionalBool::kUnknown;
     expect_show_in_search_ = apps::mojom::OptionalBool::kUnknown;
     expect_show_in_management_ = apps::mojom::OptionalBool::kUnknown;
+    expect_handles_intents_ = apps::mojom::OptionalBool::kUnknown;
     expect_allow_uninstall_ = apps::mojom::OptionalBool::kUnknown;
     expect_has_badge_ = apps::mojom::OptionalBool::kUnknown;
     expect_paused_ = apps::mojom::OptionalBool::kUnknown;
@@ -693,6 +701,28 @@ class AppUpdateMojomTest : public testing::Test {
       delta->show_in_management = apps::mojom::OptionalBool::kTrue;
       expect_show_in_management_ = apps::mojom::OptionalBool::kTrue;
       expect_show_in_management_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // HandlesIntents tests.
+
+    if (state) {
+      state->handles_intents = apps::mojom::OptionalBool::kFalse;
+      expect_handles_intents_ = apps::mojom::OptionalBool::kFalse;
+      expect_handles_intents_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->handles_intents = apps::mojom::OptionalBool::kTrue;
+      expect_handles_intents_ = apps::mojom::OptionalBool::kTrue;
+      expect_handles_intents_changed_ = true;
       CheckExpects(u);
     }
 

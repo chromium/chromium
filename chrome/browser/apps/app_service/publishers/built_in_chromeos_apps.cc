@@ -83,6 +83,7 @@ apps::mojom::AppPtr Convert(const app_list::InternalApp& internal_app) {
                               : apps::mojom::OptionalBool::kFalse;
   app->show_in_management = apps::mojom::OptionalBool::kFalse;
   app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
+  app->handles_intents = app->show_in_launcher;
 
   return app;
 }

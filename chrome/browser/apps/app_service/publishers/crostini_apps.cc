@@ -356,6 +356,7 @@ void CrostiniApps::OnCrostiniEnabledChanged() {
   app->show_in_launcher = show;
   app->show_in_shelf = show;
   app->show_in_search = apps::mojom::OptionalBool::kTrue;
+  app->handles_intents = show;
   PublisherBase::Publish(std::move(app), subscribers_);
 }
 

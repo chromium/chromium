@@ -63,6 +63,10 @@ struct App {
   OptionalBool show_in_search;
   OptionalBool show_in_management;
 
+  // kTrue if the app is able to handle intents and should be shown in intent
+  // surfaces.
+  OptionalBool handles_intents;
+
   // Whether the app publisher allows the app to be uninstalled.
   OptionalBool allow_uninstall;
 

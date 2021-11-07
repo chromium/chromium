@@ -68,6 +68,7 @@ void SetAppAllowed(apps::mojom::App* app, bool allowed) {
   app->show_in_launcher = opt_allowed;
   app->show_in_shelf = opt_allowed;
   app->show_in_search = opt_allowed;
+  app->handles_intents = opt_allowed;
 }
 
 void SetShowInAppManagement(apps::mojom::App* app, bool installed) {

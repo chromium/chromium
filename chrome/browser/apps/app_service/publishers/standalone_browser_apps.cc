@@ -52,6 +52,7 @@ apps::mojom::AppPtr StandaloneBrowserApps::GetStandaloneBrowserApp() {
   app->show_in_search = apps::mojom::OptionalBool::kTrue;
   app->show_in_management = apps::mojom::OptionalBool::kTrue;
   app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
+  app->handles_intents = apps::mojom::OptionalBool::kTrue;
   return app;
 }
 

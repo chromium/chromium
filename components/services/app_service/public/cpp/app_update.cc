@@ -131,6 +131,9 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   if (delta->show_in_management != apps::mojom::OptionalBool::kUnknown) {
     state->show_in_management = delta->show_in_management;
   }
+  if (delta->handles_intents != apps::mojom::OptionalBool::kUnknown) {
+    state->handles_intents = delta->handles_intents;
+  }
   if (delta->allow_uninstall != apps::mojom::OptionalBool::kUnknown) {
     state->allow_uninstall = delta->allow_uninstall;
   }
@@ -699,6 +702,25 @@ bool AppUpdate::ShowInManagementChanged() const {
                             mojom_state_->show_in_management));
 }
 
+apps::mojom::OptionalBool AppUpdate::HandlesIntents() const {
+  if (mojom_delta_ &&
+      (mojom_delta_->handles_intents != apps::mojom::OptionalBool::kUnknown)) {
+    return mojom_delta_->handles_intents;
+  }
+  if (mojom_state_) {
+    return mojom_state_->handles_intents;
+  }
+  return apps::mojom::OptionalBool::kUnknown;
+}
+
+bool AppUpdate::HandlesIntentsChanged() const {
+  return mojom_delta_ &&
+         (mojom_delta_->handles_intents !=
+          apps::mojom::OptionalBool::kUnknown) &&
+         (!mojom_state_ ||
+          (mojom_delta_->handles_intents != mojom_state_->handles_intents));
+}
+
 apps::mojom::OptionalBool AppUpdate::AllowUninstall() const {
   if (mojom_delta_ &&
       (mojom_delta_->allow_uninstall != apps::mojom::OptionalBool::kUnknown)) {
@@ -852,6 +874,8 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   out << "ShowInShelf: " << app.ShowInShelf() << std::endl;
   out << "ShowInSearch: " << app.ShowInSearch() << std::endl;
   out << "ShowInManagement: " << app.ShowInManagement() << std::endl;
+  out << "HandlesIntents: " << app.HandlesIntents() << std::endl;
+  out << "AllowUninstall: " << app.AllowUninstall() << std::endl;
   out << "HasBadge: " << app.HasBadge() << std::endl;
   out << "Paused: " << app.Paused() << std::endl;
   out << "IntentFilters: " << std::endl;

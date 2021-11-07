@@ -157,6 +157,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::mojom::OptionalBool ShowInManagement() const;
   bool ShowInManagementChanged() const;
 
+  apps::mojom::OptionalBool HandlesIntents() const;
+  bool HandlesIntentsChanged() const;
+
   apps::mojom::OptionalBool AllowUninstall() const;
   bool AllowUninstallChanged() const;
 

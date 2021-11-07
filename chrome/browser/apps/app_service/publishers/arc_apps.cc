@@ -1593,6 +1593,7 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
   // persisted.
   app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
   app->show_in_launcher = show;
+  app->handles_intents = show;
 
   if (app_id == arc::kPlayGamesAppId &&
       show == apps::mojom::OptionalBool::kFalse) {

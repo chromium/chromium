@@ -290,6 +290,7 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->show_in_management = extension->ShouldDisplayInAppLauncher()
                                   ? apps::mojom::OptionalBool::kTrue
                                   : apps::mojom::OptionalBool::kFalse;
+    app->handles_intents = show;
 
     const extensions::ManagementPolicy* policy =
         extensions::ExtensionSystem::Get(profile_)->management_policy();

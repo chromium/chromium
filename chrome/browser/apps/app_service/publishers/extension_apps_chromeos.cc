@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
@@ -637,8 +638,10 @@ void ExtensionAppsChromeOs::SetShowInFields(
     apps::mojom::AppPtr& app,
     const extensions::Extension* extension) {
   if (extension->id() == extension_misc::kWallpaperManagerId) {
-    // Explicitly show the Wallpaper Picker app in search only.
+    // Explicitly show the Wallpaper Picker app in search only. But permit it to
+    // handle intents.
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
+    app->handles_intents = apps::mojom::OptionalBool::kTrue;
 
     // Hide from shelf and search if new Personalization SWA is enabled.
     auto should_show = ash::features::IsWallpaperWebUIEnabled()
@@ -651,6 +654,13 @@ void ExtensionAppsChromeOs::SetShowInFields(
     return;
   }
   ExtensionAppsBase::SetShowInFields(app, extension);
+
+  // Explicitly mark these apps as being able to handle intents even though they
+  // are otherwise hidden from the user.
+  if (extension->id() == file_manager::kAudioPlayerAppId ||
+      extension->id() == extension_misc::kQuickOfficeComponentExtensionId) {
+    app->handles_intents = apps::mojom::OptionalBool::kTrue;
+  }
 }
 
 bool ExtensionAppsChromeOs::ShouldShownInLauncher(

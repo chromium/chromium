@@ -38,6 +38,25 @@
 
 namespace apps {
 
+namespace {
+
+// Utility struct used in GetAppsForIntent.
+struct IndexAndGeneric {
+  size_t index;
+  bool is_generic;
+};
+
+std::string GetActivityLabel(const apps::mojom::IntentFilterPtr& filter,
+                             const apps::AppUpdate& update) {
+  if (filter->activity_label && !filter->activity_label->empty()) {
+    return filter->activity_label.value();
+  } else {
+    return update.Name();
+  }
+}
+
+}  // anonymous namespace
+
 AppServiceProxyBase::InnerIconLoader::InnerIconLoader(AppServiceProxyBase* host)
     : host_(host), overriding_icon_loader_for_testing_(nullptr) {}
 
@@ -387,37 +406,6 @@ std::vector<std::string> AppServiceProxyBase::GetAppIdsForUrl(
   return app_ids;
 }
 
-bool ShouldIgnoreApp(const apps::AppUpdate& update) {
-  // We don't ignore apps disabled by policy as they cause URL loads to be
-  // blocked.
-  bool is_ready =
-      update.Readiness() == apps::mojom::Readiness::kReady ||
-      update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy;
-  bool show_in_launcher =
-      update.ShowInLauncher() == apps::mojom::OptionalBool::kTrue;
-  // TODO(1240906): Find a way to properly filter in/out apps that should
-  // participate in intent handling.
-  bool is_exempt =
-      web_app::IsSystemAppIdWithFileHandlers(update.AppId()) ||
-      update.AppId() == file_manager::kAudioPlayerAppId ||
-      update.AppId() == extension_misc::kQuickOfficeComponentExtensionId;
-  return !is_ready || (!show_in_launcher && !is_exempt);
-}
-
-std::string GetActivityLabel(const apps::mojom::IntentFilterPtr& filter,
-                             const apps::AppUpdate& update) {
-  if (filter->activity_label && !filter->activity_label->empty()) {
-    return filter->activity_label.value();
-  } else {
-    return update.Name();
-  }
-}
-
-struct IndexAndGeneric {
-  size_t index;
-  bool is_generic;
-};
-
 std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     const apps::mojom::IntentPtr& intent,
     bool exclude_browsers,
@@ -433,7 +421,13 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
                                     &exclude_browsers,
                                     &exclude_browser_tab_apps](
                                        const apps::AppUpdate& update) {
-      if (ShouldIgnoreApp(update)) {
+      if (update.Readiness() != apps::mojom::Readiness::kReady &&
+          update.Readiness() != apps::mojom::Readiness::kDisabledByPolicy) {
+        // We consider apps disabled by policy to be ready as they cause URL
+        // loads to be blocked.
+        return;
+      }
+      if (update.HandlesIntents() != apps::mojom::OptionalBool::kTrue) {
         return;
       }
       if (exclude_browser_tab_apps &&

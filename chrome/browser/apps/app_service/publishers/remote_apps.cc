@@ -58,6 +58,7 @@ apps::mojom::AppPtr RemoteApps::Convert(
   app->show_in_search = mojom::OptionalBool::kTrue;
   app->show_in_shelf = mojom::OptionalBool::kFalse;
   app->allow_uninstall = mojom::OptionalBool::kFalse;
+  app->handles_intents = mojom::OptionalBool::kTrue;
   app->icon_key = icon_key_factory_.MakeIconKey(IconEffects::kNone);
   return app;
 }

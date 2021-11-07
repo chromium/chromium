@@ -196,11 +196,13 @@ void ExtensionAppsBase::SetShowInFields(
     app->show_in_shelf = show;
     app->show_in_search = show;
     app->show_in_management = show;
+    app->handles_intents = show;
   } else {
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
     app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
     app->show_in_search = apps::mojom::OptionalBool::kFalse;
     app->show_in_management = apps::mojom::OptionalBool::kFalse;
+    app->handles_intents = apps::mojom::OptionalBool::kFalse;
   }
 }
 

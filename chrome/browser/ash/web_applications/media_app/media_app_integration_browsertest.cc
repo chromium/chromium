@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
@@ -9,13 +11,17 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/web_applications/media_app/media_web_app_info.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/error_reporting/mock_chrome_js_error_report_processor.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -232,6 +238,18 @@ content::WebContents* MediaAppIntegrationTest::LaunchWithOneTestFile(
   return PrepareActiveBrowserForTest();
 }
 
+std::vector<apps::IntentLaunchInfo> GetAppsForMimeType(
+    apps::AppServiceProxy* proxy,
+    const std::string& mime_type) {
+  std::vector<apps::mojom::IntentFilePtr> intent_files;
+  auto file = apps::mojom::IntentFile::New();
+  file->url = GURL("filesystem://path/to/file.bin");
+  file->mime_type = mime_type;
+  file->is_directory = apps::mojom::OptionalBool::kFalse;
+  intent_files.push_back(std::move(file));
+  return proxy->GetAppsForFiles(std::move(intent_files));
+}
+
 }  // namespace
 
 // Test that the Media App installs and launches correctly. Runs some spot
@@ -327,6 +345,48 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest,
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioDisabledTest,
                        MediaAppWithLaunchSystemWebAppAsync) {
   MediaAppWithLaunchSystemWebAppAsync(false);
+}
+
+// Test that the Media App appears as a handler for files in the App Service.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppHandlesIntents) {
+  WaitForTestSystemAppInstall();
+  auto* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  const std::string media_app_id =
+      *GetManager().GetAppIdForSystemApp(web_app::SystemAppType::MEDIA);
+
+  {
+    // Smoke test that a binary blob is not handled by Media App.
+    std::vector<apps::IntentLaunchInfo> intent_launch_info =
+        GetAppsForMimeType(proxy, "application/octet-stream");
+
+    // Media App should not be in the returned list of handlers.
+    EXPECT_FALSE(base::ranges::any_of(
+        intent_launch_info,
+        [&media_app_id](const apps::IntentLaunchInfo& info) {
+          return info.app_id == media_app_id;
+        }));
+  }
+
+  auto media_app_info = CreateWebAppInfoForMediaWebApp();
+
+  // Ensure that Media App is returned as a handler for every mime type listed
+  // in its file handlers.
+  for (const auto& file_handler : media_app_info->file_handlers) {
+    for (const auto& accept : file_handler.accept) {
+      std::vector<apps::IntentLaunchInfo> intent_launch_info =
+          GetAppsForMimeType(proxy, accept.mime_type);
+
+      // Media App should be in the returned list of handlers.
+      EXPECT_FALSE(intent_launch_info.empty()) << " at " << accept.mime_type;
+      EXPECT_TRUE(base::ranges::any_of(
+          intent_launch_info,
+          [&media_app_id](const apps::IntentLaunchInfo& info) {
+            return info.app_id == media_app_id;
+          }))
+          << " at " << accept.mime_type;
+    }
+  }
 }
 
 // Regression test for b/172881869.
