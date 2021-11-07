@@ -82,6 +82,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppShimNewCloseBehavior;
 #endif  // defined(OS_MAC)
 
+#if defined(OS_CHROMEOS)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kArcPiGhostWindow;
+#endif  // defined(OS_CHROMEOS)
+
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kAsyncDns;
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
