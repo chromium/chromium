@@ -792,102 +792,9 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     freeze_scrollbars.emplace();
 
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
-  ConstructAndAppendFlexItems();
-
-  LayoutUnit main_axis_start_offset;
-  LayoutUnit main_axis_end_offset;
-  LayoutUnit cross_axis_offset = BorderScrollbarPadding().block_start;
-  if (is_column_) {
-    const bool is_column_reverse =
-        Style().ResolvedIsColumnReverseFlexDirection();
-    main_axis_start_offset =
-        is_column_reverse ? LayoutUnit() : BorderScrollbarPadding().block_start;
-    main_axis_end_offset =
-        is_column_reverse ? LayoutUnit() : BorderScrollbarPadding().block_end;
-    cross_axis_offset = BorderScrollbarPadding().inline_start;
-  } else if (Style().ResolvedIsRowReverseFlexDirection()) {
-    main_axis_start_offset = BorderScrollbarPadding().inline_end;
-    main_axis_end_offset = BorderScrollbarPadding().inline_start;
-  } else {
-    main_axis_start_offset = BorderScrollbarPadding().inline_start;
-    main_axis_end_offset = BorderScrollbarPadding().inline_end;
-  }
 
   Vector<NGFlexLine> flex_line_outputs;
-  flex_line_outputs.ReserveCapacity(algorithm_.NumItems());
-
-  FlexLine* line;
-  while ((
-      line = algorithm_.ComputeNextFlexLine(container_builder_.InlineSize()))) {
-    line->SetContainerMainInnerSize(
-        MainAxisContentExtent(line->sum_hypothetical_main_size_));
-    line->FreezeInflexibleItems();
-    while (!line->ResolveFlexibleLengths()) {
-      continue;
-    }
-
-    // TODO(almaher): How should devtools be handled for multiple fragments?
-    if (UNLIKELY(layout_info_for_devtools_ && !IsResumingLayout(BreakToken())))
-      layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
-
-    flex_line_outputs.push_back(NGFlexLine(line->line_items_.size()));
-    for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
-      FlexItem& flex_item = line->line_items_[i];
-      NGFlexItem& flex_item_output = flex_line_outputs.back().line_items[i];
-
-      flex_item.offset_ = &flex_item_output.offset;
-      flex_item_output.ng_input_node = flex_item.ng_input_node_;
-      flex_item_output.main_axis_final_size = flex_item.FlexedBorderBoxSize();
-
-      NGConstraintSpace child_space = BuildSpaceForLayout(
-          flex_item.ng_input_node_, flex_item.FlexedBorderBoxSize());
-
-      // We need to get the item's cross axis size given its new main size. If
-      // the new main size is the item's inline size, then we have to do a
-      // layout to get its new block size. But if the new main size is the
-      // item's block size, we can skip layout in some cases and just calculate
-      // the inline size from the constraint space.
-      // Even when we only need inline size, we have to lay out the item if:
-      //  * this is the item's last chance to layout (i.e. doesn't stretch), OR
-      //  * the item has not yet been laid out. (ComputeLineItemsPosition
-      //    relies on the fragment's baseline, which comes from the post-layout
-      //    fragment)
-      if (DoesItemStretch(flex_item.ng_input_node_) &&
-          flex_item.layout_result_) {
-        DCHECK(!MainAxisIsInlineAxis(flex_item.ng_input_node_));
-        NGBoxStrut border =
-            ComputeBorders(child_space, flex_item.ng_input_node_);
-        NGBoxStrut padding =
-            ComputePadding(child_space, flex_item.ng_input_node_.Style());
-        if (flex_item.ng_input_node_.IsReplaced()) {
-          LogicalSize logical_border_box_size = ComputeReplacedSize(
-              flex_item.ng_input_node_, child_space, border + padding);
-          flex_item.cross_axis_size_ = logical_border_box_size.inline_size;
-        } else {
-          flex_item.cross_axis_size_ = ComputeInlineSizeForFragment(
-              child_space, flex_item.ng_input_node_, border + padding);
-        }
-      } else {
-        DCHECK((child_space.CacheSlot() == NGCacheSlot::kLayout) ||
-               !flex_item.layout_result_)
-            << "If we already have a 'measure' result from "
-               "ConstructAndAppendFlexItems, we don't want to evict it.";
-        flex_item.layout_result_ = flex_item.ng_input_node_.Layout(
-            child_space, nullptr /*break token*/);
-        // TODO(layout-dev): Handle abortions caused by block fragmentation.
-        DCHECK_EQ(flex_item.layout_result_->Status(), NGLayoutResult::kSuccess);
-        flex_item.cross_axis_size_ =
-            is_horizontal_flow_
-                ? flex_item.layout_result_->PhysicalFragment().Size().height
-                : flex_item.layout_result_->PhysicalFragment().Size().width;
-      }
-    }
-    // cross_axis_offset is updated in each iteration of the loop, for passing
-    // in to the next iteration.
-    line->ComputeLineItemsPosition(main_axis_start_offset, main_axis_end_offset,
-                                   cross_axis_offset);
-    flex_line_outputs.back().line_cross_size = line->cross_axis_extent_;
-  }
+  PlaceFlexItems(flex_line_outputs);
 
   LayoutUnit previously_consumed_block_size;
   if (UNLIKELY(BreakToken()))
@@ -971,6 +878,105 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
   return container_builder_.ToBoxFragment();
+}
+
+void NGFlexLayoutAlgorithm::PlaceFlexItems(
+    Vector<NGFlexLine>& flex_line_outputs) {
+  ConstructAndAppendFlexItems();
+
+  LayoutUnit main_axis_start_offset;
+  LayoutUnit main_axis_end_offset;
+  LayoutUnit cross_axis_offset = BorderScrollbarPadding().block_start;
+  if (is_column_) {
+    const bool is_column_reverse =
+        Style().ResolvedIsColumnReverseFlexDirection();
+    main_axis_start_offset =
+        is_column_reverse ? LayoutUnit() : BorderScrollbarPadding().block_start;
+    main_axis_end_offset =
+        is_column_reverse ? LayoutUnit() : BorderScrollbarPadding().block_end;
+    cross_axis_offset = BorderScrollbarPadding().inline_start;
+  } else if (Style().ResolvedIsRowReverseFlexDirection()) {
+    main_axis_start_offset = BorderScrollbarPadding().inline_end;
+    main_axis_end_offset = BorderScrollbarPadding().inline_start;
+  } else {
+    main_axis_start_offset = BorderScrollbarPadding().inline_start;
+    main_axis_end_offset = BorderScrollbarPadding().inline_end;
+  }
+
+  flex_line_outputs.ReserveCapacity(algorithm_.NumItems());
+
+  FlexLine* line;
+  while ((
+      line = algorithm_.ComputeNextFlexLine(container_builder_.InlineSize()))) {
+    line->SetContainerMainInnerSize(
+        MainAxisContentExtent(line->sum_hypothetical_main_size_));
+    line->FreezeInflexibleItems();
+    while (!line->ResolveFlexibleLengths()) {
+      continue;
+    }
+
+    // TODO(almaher): How should devtools be handled for multiple fragments?
+    if (UNLIKELY(layout_info_for_devtools_ && !IsResumingLayout(BreakToken())))
+      layout_info_for_devtools_->lines.push_back(DevtoolsFlexInfo::Line());
+
+    flex_line_outputs.push_back(NGFlexLine(line->line_items_.size()));
+    for (wtf_size_t i = 0; i < line->line_items_.size(); ++i) {
+      FlexItem& flex_item = line->line_items_[i];
+      NGFlexItem& flex_item_output = flex_line_outputs.back().line_items[i];
+
+      flex_item.offset_ = &flex_item_output.offset;
+      flex_item_output.ng_input_node = flex_item.ng_input_node_;
+      flex_item_output.main_axis_final_size = flex_item.FlexedBorderBoxSize();
+
+      NGConstraintSpace child_space = BuildSpaceForLayout(
+          flex_item.ng_input_node_, flex_item.FlexedBorderBoxSize());
+
+      // We need to get the item's cross axis size given its new main size. If
+      // the new main size is the item's inline size, then we have to do a
+      // layout to get its new block size. But if the new main size is the
+      // item's block size, we can skip layout in some cases and just calculate
+      // the inline size from the constraint space.
+      // Even when we only need inline size, we have to lay out the item if:
+      //  * this is the item's last chance to layout (i.e. doesn't stretch), OR
+      //  * the item has not yet been laid out. (ComputeLineItemsPosition
+      //    relies on the fragment's baseline, which comes from the post-layout
+      //    fragment)
+      if (DoesItemStretch(flex_item.ng_input_node_) &&
+          flex_item.layout_result_) {
+        DCHECK(!MainAxisIsInlineAxis(flex_item.ng_input_node_));
+        NGBoxStrut border =
+            ComputeBorders(child_space, flex_item.ng_input_node_);
+        NGBoxStrut padding =
+            ComputePadding(child_space, flex_item.ng_input_node_.Style());
+        if (flex_item.ng_input_node_.IsReplaced()) {
+          LogicalSize logical_border_box_size = ComputeReplacedSize(
+              flex_item.ng_input_node_, child_space, border + padding);
+          flex_item.cross_axis_size_ = logical_border_box_size.inline_size;
+        } else {
+          flex_item.cross_axis_size_ = ComputeInlineSizeForFragment(
+              child_space, flex_item.ng_input_node_, border + padding);
+        }
+      } else {
+        DCHECK((child_space.CacheSlot() == NGCacheSlot::kLayout) ||
+               !flex_item.layout_result_)
+            << "If we already have a 'measure' result from "
+               "ConstructAndAppendFlexItems, we don't want to evict it.";
+        flex_item.layout_result_ = flex_item.ng_input_node_.Layout(
+            child_space, nullptr /*break token*/);
+        // TODO(layout-dev): Handle abortions caused by block fragmentation.
+        DCHECK_EQ(flex_item.layout_result_->Status(), NGLayoutResult::kSuccess);
+        flex_item.cross_axis_size_ =
+            is_horizontal_flow_
+                ? flex_item.layout_result_->PhysicalFragment().Size().height
+                : flex_item.layout_result_->PhysicalFragment().Size().width;
+      }
+    }
+    // cross_axis_offset is updated in each iteration of the loop, for passing
+    // in to the next iteration.
+    line->ComputeLineItemsPosition(main_axis_start_offset, main_axis_end_offset,
+                                   cross_axis_offset);
+    flex_line_outputs.back().line_cross_size = line->cross_axis_extent_;
+  }
 }
 
 scoped_refptr<const NGLayoutResult>

@@ -33,6 +33,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   scoped_refptr<const NGLayoutResult> RelayoutIgnoringChildScrollbarChanges();
   scoped_refptr<const NGLayoutResult> LayoutInternal();
 
+  void PlaceFlexItems(Vector<NGFlexLine>& flex_line_outputs);
+
   Length GetUsedFlexBasis(const NGBlockNode& child) const;
   // This has an optional out parameter so that callers can avoid a subsequent
   // redundant call to GetUsedFlexBasis.
