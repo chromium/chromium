@@ -318,6 +318,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
   EXPECT_EQ("0", EvalJs(test_shell(), "document.title"));
 
   // An event is sent when Screen work area changes.
+  // work_area translates into Screen.available_rect.
   display::Display display = screen()->display_list().displays()[0];
   display.set_work_area(gfx::Rect(101, 102, 903, 904));
   EXPECT_NE(0u, screen()->display_list().UpdateDisplay(display));

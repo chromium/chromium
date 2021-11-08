@@ -3911,6 +3911,11 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
     View()->CancelPagePopup();
   }
 
+  const bool window_screen_has_changed =
+      !Screen::AreWebExposedScreenPropertiesEqual(
+          previous_original_screen_infos.current(),
+          original_screen_infos.current());
+
   // Update Screens interface data before firing any events. The API is designed
   // to offer synchronous access to the most up-to-date cached screen
   // information when a change event is fired.  It is not required but it
@@ -3920,20 +3925,17 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
       LocalRootImpl()->GetFrame(),
       WTF::BindRepeating(
           [](const display::ScreenInfos& original_screen_infos,
-             WebLocalFrameImpl* local_frame) {
+             bool window_screen_has_changed, WebLocalFrameImpl* local_frame) {
             CoreInitializer::GetInstance().DidUpdateScreens(
                 *local_frame->GetFrame(), original_screen_infos);
+            if (window_screen_has_changed) {
+              local_frame->GetFrame()->DomWindow()->screen()->DispatchEvent(
+                  *Event::Create(event_type_names::kChange));
+            }
           },
-          original_screen_infos));
+          original_screen_infos, window_screen_has_changed));
 
   if (previous_original_screen_infos != original_screen_infos) {
-    if (!Screen::AreWebExposedScreenPropertiesEqual(
-            previous_original_screen_infos.current(),
-            original_screen_infos.current())) {
-      local_root_->GetFrame()->DomWindow()->screen()->DispatchEvent(
-          *Event::Create(event_type_names::kChange));
-    }
-
     // Propagate changes down to child local root RenderWidgets and
     // BrowserPlugins in other frame trees/processes.
     ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
