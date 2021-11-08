@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 

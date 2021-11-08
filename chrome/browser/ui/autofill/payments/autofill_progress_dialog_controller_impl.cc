@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
 
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"

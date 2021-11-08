@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/payments/test_local_card_migration_manager.h"
 
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"

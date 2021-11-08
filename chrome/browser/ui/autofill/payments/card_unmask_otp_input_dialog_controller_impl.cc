@@ -7,7 +7,7 @@
 #include <string>
 
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"

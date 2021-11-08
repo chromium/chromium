@@ -10,7 +10,7 @@
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/address_contact_form_label_formatter.h"
 #include "components/autofill/core/browser/ui/address_email_form_label_formatter.h"
 #include "components/autofill/core/browser/ui/address_form_label_formatter.h"

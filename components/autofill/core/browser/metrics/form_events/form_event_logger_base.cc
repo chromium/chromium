@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/metrics/form_event_logger_base.h"
+#include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"

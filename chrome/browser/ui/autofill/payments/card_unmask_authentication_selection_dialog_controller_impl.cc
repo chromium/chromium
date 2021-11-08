@@ -7,7 +7,7 @@
 #include <string>
 
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
