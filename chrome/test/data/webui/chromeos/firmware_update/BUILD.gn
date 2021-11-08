@@ -13,6 +13,7 @@ js_type_check("closure_compile") {
                   ]
   deps = [
     ":fake_update_provider_test",
+    ":firmware_update_dialog_test",
     ":firmware_update_test",
     ":firmware_update_unified_test",
     ":peripheral_updates_list_test",
@@ -26,6 +27,14 @@ js_library("fake_update_provider_test") {
     "//ash/webui/firmware_update_ui/resources:fake_data",
     "//ash/webui/firmware_update_ui/resources:fake_update_provider",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("firmware_update_dialog_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/firmware_update_ui/resources:firmware_update_dialog",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

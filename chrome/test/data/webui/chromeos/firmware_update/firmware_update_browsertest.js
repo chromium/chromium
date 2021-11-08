@@ -43,6 +43,7 @@ FirmwareUpdateAppBrowserTest.prototype = {
 const debug_suites_list = [
   'FakeUpdateProviderTest',
   'FirmwareUpdateApp',
+  'FirmwareUpdateDialog',
   'PeripheralUpdatesListTest',
   'UpdateCardTest',
 ];
