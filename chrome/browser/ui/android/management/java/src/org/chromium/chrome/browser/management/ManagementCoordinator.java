@@ -25,13 +25,12 @@ class ManagementCoordinator {
      * @param profile The current Profile.
      */
     public ManagementCoordinator(Context context, Profile profile) {
-        PropertyModel model =
-                new PropertyModel.Builder(ManagementProperties.ALL_KEYS)
-                        .with(ManagementProperties.BROWSER_IS_MANAGED,
-                                ManagedBrowserUtils.hasBrowserPoliciesApplied(profile))
-                        .with(ManagementProperties.ACCOUNT_MANAGER_NAME,
-                                ManagedBrowserUtils.getAccountManagerName(profile))
-                        .build();
+        PropertyModel model = new PropertyModel.Builder(ManagementProperties.ALL_KEYS)
+                                      .with(ManagementProperties.BROWSER_IS_MANAGED,
+                                              ManagedBrowserUtils.isBrowserManaged(profile))
+                                      .with(ManagementProperties.ACCOUNT_MANAGER_NAME,
+                                              ManagedBrowserUtils.getAccountManagerName(profile))
+                                      .build();
 
         mView = (ManagementView) LayoutInflater.from(context).inflate(
                 R.layout.enterprise_management, null);

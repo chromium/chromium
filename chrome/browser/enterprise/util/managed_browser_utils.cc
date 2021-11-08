@@ -116,7 +116,7 @@ bool CertMatchesSelectionFilters(
 
 }  // namespace
 
-bool HasBrowserPoliciesApplied(Profile* profile) {
+bool IsBrowserManaged(Profile* profile) {
   DCHECK(profile);
   DCHECK(profile->GetProfilePolicyConnector());
 
@@ -237,10 +237,10 @@ std::string GetAccountManagerName(Profile* profile) {
 }
 
 // static
-jboolean JNI_ManagedBrowserUtils_HasBrowserPoliciesApplied(
+jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& profile) {
-  return HasBrowserPoliciesApplied(ProfileAndroid::FromProfileAndroid(profile));
+  return IsBrowserManaged(ProfileAndroid::FromProfileAndroid(profile));
 }
 
 // static

@@ -48,7 +48,7 @@ MATCHER_P(CertEq, expected_cert, "") {
 TEST(ManagedBrowserUtils, NoPolicies) {
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
-  EXPECT_FALSE(chrome::enterprise_util::HasBrowserPoliciesApplied(&profile));
+  EXPECT_FALSE(chrome::enterprise_util::IsBrowserManaged(&profile));
 }
 
 TEST(ManagedBrowserUtils, HasManagedConnector) {
@@ -57,8 +57,7 @@ TEST(ManagedBrowserUtils, HasManagedConnector) {
   builder.OverridePolicyConnectorIsManagedForTesting(true);
 
   std::unique_ptr<TestingProfile> profile = builder.Build();
-  EXPECT_TRUE(
-      chrome::enterprise_util::HasBrowserPoliciesApplied(profile.get()));
+  EXPECT_TRUE(chrome::enterprise_util::IsBrowserManaged(profile.get()));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -88,7 +87,7 @@ TEST_F(ManagedBrowserUtilsTest, HasMachineLevelPolicies) {
           base::Value("hello"), nullptr);
   mock_provider_->UpdateChromePolicy(map);
 
-  EXPECT_TRUE(chrome::enterprise_util::HasBrowserPoliciesApplied(&profile));
+  EXPECT_TRUE(chrome::enterprise_util::IsBrowserManaged(&profile));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

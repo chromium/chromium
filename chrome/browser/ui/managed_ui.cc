@@ -76,7 +76,7 @@ bool ShouldDisplayManagedUi(Profile* profile) {
     return false;
 #endif
 
-  return enterprise_util::HasBrowserPoliciesApplied(profile);
+  return enterprise_util::IsBrowserManaged(profile);
 }
 
 #if !defined(OS_ANDROID)

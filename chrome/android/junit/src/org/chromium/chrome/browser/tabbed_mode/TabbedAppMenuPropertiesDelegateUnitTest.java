@@ -450,7 +450,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                          R.string.menu_add_to_homescreen, R.string.add))
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .getAddToHomeScreenTitle(mTab);
-        when(mManagedBrowserUtilsJniMock.hasBrowserPoliciesApplied(any())).thenReturn(true);
+        when(mManagedBrowserUtilsJniMock.isBrowserManaged(any())).thenReturn(true);
     }
 
     private void setUpIncognitoMocks() {
