@@ -9,23 +9,6 @@ import("//build/config/zip.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
-# The animated_poodle_java target is overridden downstream and used
-# instead of this one if the enable_chrome_android_internal flag is
-# enabled.
-android_library("animated_poodle_java") {
-  deps = [
-    "//base:base_java",
-    "//chrome/android:chrome_java",
-    "//components/autofill_assistant/android:animated_poodle_resources",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
-  ]
-
-  sources = [ "java/src/org/chromium/chrome/browser/" +
-              "autofill_assistant/header/AnimatedPoodle.java" ]
-  resources_package = "org.chromium.chrome.autofill_assistant.poodle"
-}
-
 android_library("java") {
   resources_package = "org.chromium.chrome.autofill_assistant"
   deps = [
@@ -79,7 +62,7 @@ android_library("java") {
   if (enable_chrome_android_internal) {
     deps += [ "//clank/features/autofill_assistant:animated_poodle_java" ]
   } else {
-    deps += [ ":animated_poodle_java" ]
+    deps += [ "//components/autofill_assistant/android:animated_poodle_java" ]
   }
 
   sources = [
