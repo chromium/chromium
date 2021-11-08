@@ -51,11 +51,11 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
       // Allows loading video file thumbnail.
-      "img-src https://*.googleusercontent.com;");
+      "img-src 'self' https://*.googleusercontent.com;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc,
       // Allows streaming video.
-      "media-src https://*.drive.google.com;");
+      "media-src 'self' https://*.drive.google.com;");
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
