@@ -58,3 +58,55 @@ The GPU work has been submitted and we signal that we want to present the result
 
 ### `[17]` Presentation
 This is when the GPU has finished all the work and the display controller started scanning out the results. The pixels are finally visible on the screen. Depending on the platform, before this could happen the system compositor might need to do its work. Unfortunately it's not possible to get the exact timestamp on every platform and Chrome makes best efforts to estimate it. This estimation can be something like the swap time (on mac where we don't have any better information), the completion time for work on the GPU aligned to the next vblank as a good estimate, or a signal from the OS with the exact time the content was displayed.
+
+## PipelineReporter trace events
+
+Multiple stages of the pipeline are highlighted for each frame in the traces titled **PipelineReporter**. Stages that are tracked in PipelineReporter events are:
+- BeginImplFrameToSendBeginMainFrame
+- SendBeginMainFrameToCommit
+- Commit
+- EndCommitToActivation
+- Activation
+- EndActivateToSubmitCompositorFrame
+- SubmitCompositorFrameToPresentationCompositorFrame
+
+Image below shows how each segment of the Pipeline is tracked in PipelineReporter trace events.
+
+![segmented flow diagram](images/Life_of_frame_segmented.png)
+
+In the traces these pipeline reporters would look like
+
+![PipelineReporter trace event](images/PipelineReporter.png)
+
+In which the length of each segment demonstrates the latency of that stage.
+Also SubmitCompositorFrameToPresentationCompositorFrame would have its own, which are:
+- SubmitToReceiveCompositorFrame: The time of communicating the submit (step `[9]`)
+- ReceiveCompositorFrameToStartDraw: The time it takes for steps `[10]` to `[14]`
+- StartDrawToSwapStart: The time that “Draw” takes in GPU Main (step `[15]`)
+- Swap: The time that “Swap” takes in GPU Main (step `[16]`)
+- SwapEndToPresentationCompositorFrame: The remaining time until presentation (step `[17]`)
+
+## Overlapping pipeline reporter events
+
+One advantage of having multiple processes handling the frame is that multiple frames can be worked on simultaneously. This might create some overlapping pipeline reporter events. In this section we would explore a few examples of these cases.
+
+### Example 1:
+
+![PipelineReporter trace event example_1](images/PipelineReporter_example_1.png)
+
+In this example the PipelineReporter(PR) on the bottom started earlier and while it was in the *EndActivateToSubmitCompositorFrame*, vsync for the next frame is reached. In this stage, the compositor thread is already done with activation and is waiting for the deadline to submit the compositor frame, so it can start working on the second frame (top PR).
+When we reach the deadline for submission of frame#1, the frame#2 is in the stage of *SendBeginMainFrameToCommit* (on the main thread). Frame#1 will be submitted while frame#2 will continue on its stages and will be submitted in the next vsync.
+
+### Example 2:
+
+![PipelineReporter trace event example_2](images/PipelineReporter_example_2.png)
+
+In this example the two PipelineReporters start at the same time but would not end at the same time. If we look into the arguments of each we would notice that they both correspond to the same sequence number (this would be expected for PRs that start at the same time corresponding to the same vsync).
+In this case, the PR on top has been in middle of *SendBeginMainFrameToCommit* while the second PR moves to *EndActivateToSubmitCompositorFrame* and then *SubmitCompositorFrameToPresentationCompositorFrame*. That means that while the main thread work was taking place we reached the deadline and submitted the compositor updates that were ready (bottom PR), and the PR on top would do the same with main thread updates on the next vsync.
+
+### Example 3:
+
+![PipelineReporter trace event example_3](images/PipelineReporter_example_3.png)
+
+In this example the two PRs started at different times but are ending at the same time. This would often happen when a PR takes longer than one vsync and its last stage (e.g. *SubmitCompositorFrameToPresentationCompositorFrame*) would be synced with the next PR (top PR on the image).
+In such cases the combined update from two PRs would be submitted to the GPU process and be presented together.
