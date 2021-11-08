@@ -89,6 +89,7 @@
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -678,6 +679,14 @@
 - (void)showAddCreditCard {
   [self.addCreditCardCoordinator start];
 }
+
+#if !defined(NDEBUG)
+- (void)viewSource {
+  ViewSourceBrowserAgent* viewSourceAgent =
+      ViewSourceBrowserAgent::FromBrowser(self.browser);
+  viewSourceAgent->ViewSourceForActiveWebState();
+}
+#endif  // !defined(NDEBUG)
 
 #pragma mark - DefaultPromoCommands
 

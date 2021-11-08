@@ -55,11 +55,6 @@ class GURL;
 // Closes all tabs.
 - (void)closeAllTabs;
 
-#if !defined(NDEBUG)
-// Shows the source of the current page.
-- (void)viewSource;
-#endif
-
 // Shows the translate infobar.
 - (void)showTranslate;
 

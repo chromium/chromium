@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -64,6 +65,12 @@ void AttachBrowserAgents(Browser* browser) {
 
   // WebStateDelegateBrowserAgent requires TabInsertionBrowserAgent.
   WebStateDelegateBrowserAgent::CreateForBrowser(browser);
+
+  // ViewSourceBrowserAgent requires TabInsertionBrowserAgent, and is only used
+  // in debug builds.
+#if !defined(NDEBUG)
+  ViewSourceBrowserAgent::CreateForBrowser(browser);
+#endif  // !defined(NDEBUG)
 
   // UrlLoadingBrowserAgent requires UrlLoadingNotifierBrowserAgent.
   UrlLoadingBrowserAgent::CreateForBrowser(browser);

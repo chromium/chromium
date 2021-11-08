@@ -54,6 +54,8 @@ source_set("agents") {
   sources = [
     "tab_insertion_browser_agent.h",
     "tab_insertion_browser_agent.mm",
+    "view_source_browser_agent.h",
+    "view_source_browser_agent.mm",
     "web_state_list_metrics_browser_agent.h",
     "web_state_list_metrics_browser_agent.mm",
   ]
@@ -75,6 +77,7 @@ source_set("agents") {
     "//ios/chrome/browser/web:tab_helper_delegates",
     "//ios/components/security_interstitials:security_interstitials",
     "//ios/web/public",
+    "//ios/web/public/deprecated",
   ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]

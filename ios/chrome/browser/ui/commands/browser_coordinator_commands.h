@@ -42,6 +42,11 @@
 // Dismisses the Badge popup menu.
 - (void)dismissPopupMenu;
 
+#if !defined(NDEBUG)
+// Inserts a new tab showing the HTML source of the current page.
+- (void)viewSource;
+#endif
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_BROWSER_COORDINATOR_COMMANDS_H_

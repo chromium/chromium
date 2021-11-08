@@ -9,7 +9,6 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#include "base/base64.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -3859,37 +3858,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self ensureVoiceSearchControllerCreated];
   [_voiceSearchController prepareToAppear];
 }
-
-#if !defined(NDEBUG)
-- (void)viewSource {
-  DCHECK(self.currentWebState);
-  NSString* script = @"document.documentElement.outerHTML;";
-  __weak BrowserViewController* weakSelf = self;
-  auto completionHandlerBlock = ^(id result, NSError*) {
-    web::WebState* webState = weakSelf.currentWebState;
-    if (!webState)
-      return;
-    if (![result isKindOfClass:[NSString class]])
-      result = @"Not an HTML page";
-    std::string base64HTML;
-    base::Base64Encode(base::SysNSStringToUTF8(result), &base64HTML);
-    GURL URL(std::string("data:text/plain;charset=utf-8;base64,") + base64HTML);
-    web::Referrer referrer(webState->GetLastCommittedURL(),
-                           web::ReferrerPolicyDefault);
-    web::NavigationManager::WebLoadParams loadParams(URL);
-    loadParams.referrer = referrer;
-    loadParams.transition_type = ui::PAGE_TRANSITION_LINK;
-    TabInsertionBrowserAgent* insertionAgent =
-        TabInsertionBrowserAgent::FromBrowser(self.browser);
-    insertionAgent->InsertWebState(
-        loadParams, webState, true, TabInsertion::kPositionAutomatically,
-        /*in_background=*/false, /*inherit_opener=*/false);
-  };
-  [self.currentWebState->GetJSInjectionReceiver()
-      executeJavaScript:script
-      completionHandler:completionHandlerBlock];
-}
-#endif  // !defined(NDEBUG)
 
 - (void)showTranslate {
   feature_engagement::Tracker* engagement_tracker =
