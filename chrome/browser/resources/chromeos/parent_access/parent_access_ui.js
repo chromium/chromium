@@ -124,7 +124,10 @@ Polymer({
 
     switch (decodedParentAccessResult.status) {
       case parentAccessUi.mojom.ParentAccessResultStatus.kParentVerified:
-        // TODO(b/199753153): notify app that successful result was received.
+        this.dispatchEvent(new CustomEvent('show-after', {
+          bubbles: true,
+          composed: true,
+        }));
         break;
 
       // ConsentDeclined result status is not currently supported, so show an

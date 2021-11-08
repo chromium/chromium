@@ -9,6 +9,24 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_browsertest_base.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
+
+var ParentAccessAppTest = class extends PolymerTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://parent-access/test_loader.html?module=' +
+        'chromeos/parent_access/parent_access_app_test.js';
+  }
+
+  /** @param {string} testName The name of the test to run. */
+  runMochaTest(testName) {
+    runMochaTest(parent_access_app_tests.suiteName, testName);
+  }
+};
+
+TEST_F('ParentAccessAppTest', 'TestShowAfterFlow', function() {
+  this.runMochaTest(parent_access_app_tests.TestNames.TestShowAfterFlow);
+});
+
 var ParentAccessControllerTest = class extends testing.Test {
   /** @override */
   get browsePreload() {
