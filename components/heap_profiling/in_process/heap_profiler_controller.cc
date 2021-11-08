@@ -104,12 +104,6 @@ void HeapProfilerController::RetrieveAndSendSnapshot() {
   if (samples.empty())
     return;
 
-  size_t malloc_usage =
-      base::ProcessMetrics::CreateCurrentProcessMetrics()->GetMallocUsage();
-  int malloc_usage_mb = static_cast<int>(malloc_usage >> 20);
-  base::UmaHistogramMemoryLargeMB("Memory.HeapProfiler.Browser.Malloc",
-                                  malloc_usage_mb);
-
   base::ModuleCache module_cache;
   metrics::CallStackProfileParams params(
       metrics::CallStackProfileParams::Process::kBrowser,

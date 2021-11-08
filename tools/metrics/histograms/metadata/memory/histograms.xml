@@ -1579,6 +1579,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.HeapProfiler.Browser.Malloc" units="MB"
     expires_after="M81">
+  <obsolete>
+    Removed from Chrome code in Sept 2021.
+  </obsolete>
   <owner>alph@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>
