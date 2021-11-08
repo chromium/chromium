@@ -1146,5 +1146,9 @@ const base::Feature kAutoExpandDetailsElement{"AutoExpandDetailsElement",
 const base::Feature kEarlyCodeCache{"EarlyCodeCache",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Warn developers via a DevTools issue if requested client hint is deprecated.
+const base::Feature kClientHintDeprecationIssue{
+    "ClientHintDeprecationIssue", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
