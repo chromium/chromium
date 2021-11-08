@@ -1,0 +1,9 @@
+<img src="/images/anim-gr.png">
+<script>
+const run_test = async () => {
+  await new Promise(resolve => {
+    new PerformanceObserver(list => resolve())
+      .observe({type: "largest-contentful-paint", buffered: true});
+  });
+};
+</script>

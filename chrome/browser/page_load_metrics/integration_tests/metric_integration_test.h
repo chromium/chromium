@@ -92,6 +92,10 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   void ExpectUKMPageLoadMetric(base::StringPiece metric_name,
                                int64_t expected_value);
 
+  void ExpectUKMPageLoadMetricFlagSet(base::StringPiece metric_name,
+                                      uint32_t flag_set,
+                                      bool expected);
+
   void ExpectUKMPageLoadMetricNear(base::StringPiece metric_name,
                                    double expected_value,
                                    double epsilon);

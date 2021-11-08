@@ -139,6 +139,15 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
       !largest_image_record->first_animated_frame_time.is_null()) {
     time = largest_image_record->first_animated_frame_time;
   }
+
+  // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
+  // default, we'd be able to use the value of
+  // largest_image_record->first_animated_frame_time directly.
+  bool is_animated = largest_image_record &&
+                     largest_image_record->cached_image &&
+                     largest_image_record->cached_image
+                         ->IsAnimatedImageWithPaintedFirstFrame();
+
   const uint64_t size =
       largest_image_record ? largest_image_record->first_size : 0;
   PaintTimingDetector& detector = frame_view_->GetPaintTimingDetector();
@@ -149,7 +158,7 @@ ImageRecord* ImagePaintTimingDetector::UpdateCandidate() {
   // So when they are unchanged, the candidate is considered unchanged.
   bool changed = detector.NotifyIfChangedLargestImagePaint(
       time, size, records_manager_.LargestRemovedImagePaintTime(),
-      records_manager_.LargestRemovedImageSize());
+      records_manager_.LargestRemovedImageSize(), is_animated);
   if (changed) {
     if (!time.is_null() && largest_image_record->loaded) {
       ReportCandidateToTrace(*largest_image_record);

@@ -435,6 +435,15 @@ uint64_t PerformanceTiming::LargestImagePaintSize() const {
   return paint_timing_detector->LargestImagePaintSize();
 }
 
+LargestContentfulPaintTypeMask PerformanceTiming::LargestContentfulPaintType()
+    const {
+  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
+  if (!paint_timing_detector) {
+    return 0;
+  }
+  return paint_timing_detector->LargestContentfulPaintType();
+}
+
 uint64_t PerformanceTiming::LargestTextPaint() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)

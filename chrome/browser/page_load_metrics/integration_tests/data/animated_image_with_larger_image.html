@@ -1,0 +1,23 @@
+<body>
+<img src="/images/anim-gr.png">
+<script>
+const run_test = async () => {
+  await new Promise(resolve => {
+    new PerformanceObserver(list => {
+      const entries = list.getEntries();
+      for (let entry of entries) {
+        // Once we have an LCP entry for the animated PNG,
+        // add the larger image and wait for it.
+        if (entry.url.includes("anim-gr.png")) {
+          const blue = new Image();
+          blue.src = "/images/blue.png";
+          document.body.appendChild(blue);
+        } else if (entry.url.includes("blue.png")) {
+          resolve();
+        }
+      }
+    }).observe({type: "largest-contentful-paint", buffered: true});
+  });
+};
+</script>
+

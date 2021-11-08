@@ -11,6 +11,7 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 
 namespace content {
 
@@ -25,25 +26,31 @@ class ContentfulPaintTimingInfo {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class LargestContentType {
+  enum class LargestContentTextOrImage {
     kImage = 0,
     kText = 1,
     kMaxValue = kText,
   };
 
-  explicit ContentfulPaintTimingInfo(LargestContentType largest_content_type,
-                                     bool in_main_frame);
+  explicit ContentfulPaintTimingInfo(
+      LargestContentTextOrImage largest_content_type,
+      bool in_main_frame,
+      blink::LargestContentfulPaintTypeMask type);
   explicit ContentfulPaintTimingInfo(
       const absl::optional<base::TimeDelta>&,
       const uint64_t& size,
-      const LargestContentType largest_content_type,
-      bool in_main_frame);
-  explicit ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
-  void Reset(const absl::optional<base::TimeDelta>&, const uint64_t& size);
+      const LargestContentTextOrImage largest_content_type,
+      bool in_main_frame,
+      blink::LargestContentfulPaintTypeMask type);
+  ContentfulPaintTimingInfo(const ContentfulPaintTimingInfo& other);
+  void Reset(const absl::optional<base::TimeDelta>&,
+             const uint64_t& size,
+             blink::LargestContentfulPaintTypeMask type);
   absl::optional<base::TimeDelta> Time() const { return time_; }
   bool InMainFrame() const { return in_main_frame_; }
+  blink::LargestContentfulPaintTypeMask Type() const { return type_; }
   uint64_t Size() const { return size_; }
-  LargestContentType Type() const { return type_; }
+  LargestContentTextOrImage TextOrImage() const { return text_or_image_; }
 
   // Returns true iff this object does not represent any paint.
   bool Empty() const {
@@ -60,18 +67,21 @@ class ContentfulPaintTimingInfo {
 
   std::unique_ptr<base::trace_event::TracedValue> DataAsTraceValue() const;
 
- private:
   ContentfulPaintTimingInfo() = delete;
-  std::string TypeInString() const;
+
+ private:
+  std::string TextOrImageInString() const;
   absl::optional<base::TimeDelta> time_;
   uint64_t size_;
-  LargestContentType type_;
+  LargestContentTextOrImage text_or_image_;
+  blink::LargestContentfulPaintTypeMask type_ = 0;
   bool in_main_frame_;
 };
 
 class ContentfulPaint {
  public:
-  explicit ContentfulPaint(bool in_main_frame);
+  explicit ContentfulPaint(bool in_main_frame,
+                           blink::LargestContentfulPaintTypeMask type);
   ContentfulPaintTimingInfo& Text() { return text_; }
   const ContentfulPaintTimingInfo& Text() const { return text_; }
   ContentfulPaintTimingInfo& Image() { return image_; }
@@ -101,7 +111,8 @@ class LargestContentfulPaintHandler {
           largest_contentful_paint,
       absl::optional<base::TimeDelta>* largest_content_paint_time,
       uint64_t* largest_content_paint_size,
-      ContentfulPaintTimingInfo::LargestContentType* largest_content_type);
+      ContentfulPaintTimingInfo::LargestContentTextOrImage*
+          largest_content_type);
 
   void RecordTiming(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&

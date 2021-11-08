@@ -73,8 +73,8 @@ namespace {
 using GeneratedNavigation = ukm::builders::GeneratedNavigation;
 using LargestContentState =
     page_load_metrics::PageLoadMetricsObserver::LargestContentState;
-using LargestContentType =
-    page_load_metrics::ContentfulPaintTimingInfo::LargestContentType;
+using LargestContentTextOrImage =
+    page_load_metrics::ContentfulPaintTimingInfo::LargestContentTextOrImage;
 using PageLoad = ukm::builders::PageLoad;
 using MobileFriendliness = ukm::builders::MobileFriendliness;
 using PageLoad_Internal = ukm::builders::PageLoad_Internal;
@@ -151,10 +151,12 @@ class UkmPageLoadMetricsObserverTest
   }
 
   // Tests that LCP reports the given |value|,
-  // and tests that the LCP content type reported is |type|. If
+  // and tests that the LCP content type reported is |text_or_image|. If
   // |test_main_frame| is set, also tests that the main frame LCP histograms
   // also report |value|.
-  void TestLCP(int value, LargestContentType type, bool test_main_frame) {
+  void TestLCP(int value,
+               LargestContentTextOrImage text_or_image,
+               bool test_main_frame) {
     std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
         tester()->test_ukm_recorder().GetMergedEntriesByName(
             PageLoad::kEntryName);
@@ -187,7 +189,7 @@ class UkmPageLoadMetricsObserverTest
     tester()->test_ukm_recorder().ExpectEntryMetric(
         internal_entry,
         PageLoad_Internal::kPaintTiming_LargestContentfulPaint_ContentTypeName,
-        static_cast<int>(type));
+        static_cast<int>(text_or_image));
     tester()->test_ukm_recorder().ExpectEntryMetric(
         internal_entry,
         PageLoad_Internal::
@@ -408,7 +410,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImagePaint) {
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(600, LargestContentType::kImage, true /* test_main_frame */);
+  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestImageLoading) {
@@ -457,7 +459,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestImageLoadingSmallerThanText) {
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(600, LargestContentType::kText, true /* test_main_frame */);
+  TestLCP(600, LargestContentTextOrImage::kText, true /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
@@ -604,7 +606,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, FCPPlusPlus_ReportLastCandidate) {
 
   // There's a tie here and in this case the LCP handler returns image as the
   // type.
-  TestLCP(600, LargestContentType::kImage, true /* test_main_frame */);
+  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestTextPaint) {
@@ -623,7 +625,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestTextPaint) {
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(600, LargestContentType::kText, true /* test_main_frame */);
+  TestLCP(600, LargestContentTextOrImage::kText, true /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_Trace) {
@@ -728,7 +730,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_OnlyText) {
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(600, LargestContentType::kText, true /* test_main_frame */);
+  TestLCP(600, LargestContentTextOrImage::kText, true /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_OnlyImage) {
@@ -748,7 +750,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, LargestContentfulPaint_OnlyImage) {
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(600, LargestContentType::kImage, true /* test_main_frame */);
+  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
@@ -772,7 +774,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(600, LargestContentType::kImage, true /* test_main_frame */);
+  TestLCP(600, LargestContentTextOrImage::kImage, true /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
@@ -807,7 +809,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(4780, LargestContentType::kImage, false /* test_main_frame */);
+  TestLCP(4780, LargestContentTextOrImage::kImage, false /* test_main_frame */);
 
   // Now test that there is no main-frame LCP.
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
@@ -894,7 +896,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(4780, LargestContentType::kImage, true /* test_main_frame */);
+  TestLCP(4780, LargestContentTextOrImage::kImage, true /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
@@ -1008,7 +1010,7 @@ TEST_F(UkmPageLoadMetricsObserverTest,
   // Simulate closing the tab.
   DeleteContents();
 
-  TestLCP(990, LargestContentType::kImage, false /* test_main_frame */);
+  TestLCP(990, LargestContentTextOrImage::kImage, false /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,
@@ -2063,8 +2065,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, LCPHiddenWhileFlushing) {
   DeleteContents();
 
   // Check that we reported the LCP UKM.
-  TestLCP(time_to_first_background.InMilliseconds(), LargestContentType::kImage,
-          true /* test_main_frame */);
+  TestLCP(time_to_first_background.InMilliseconds(),
+          LargestContentTextOrImage::kImage, true /* test_main_frame */);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest, AppEnterBackground) {

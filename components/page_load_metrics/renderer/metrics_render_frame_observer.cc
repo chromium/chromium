@@ -593,6 +593,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         perf.LargestImagePaint() == 0.0
             ? base::TimeDelta()
             : ClampDelta(perf.LargestImagePaint(), start);
+    timing->paint_timing->largest_contentful_paint->type =
+        perf.LargestContentfulPaintType();
   }
   if (perf.LargestTextPaintSize() > 0) {
     // LargestTextPaint and LargestTextPaintSize should be available at the
@@ -615,6 +617,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
         perf.ExperimentalLargestImagePaint() == 0.0
             ? base::TimeDelta()
             : ClampDelta(perf.ExperimentalLargestImagePaint(), start);
+    timing->paint_timing->experimental_largest_contentful_paint->type =
+        perf.LargestContentfulPaintType();
   }
   if (perf.ExperimentalLargestTextPaintSize() > 0) {
     // ExperimentalLargestTextPaint and ExperimentalLargestTextPaintSize should
