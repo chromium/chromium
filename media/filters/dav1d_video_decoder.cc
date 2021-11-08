@@ -186,44 +186,20 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Compute the ideal thread count values. We'll then clamp these based on the
   // maximum number of recommended threads (using number of processors, etc).
-  //
-  // dav1d will spawn |n_tile_threads| per frame thread.
-  GetDecoderThreadCounts(config.coded_size().height(), &s.n_tile_threads,
-                         &s.n_frame_threads);
+  int tile_threads, frame_threads;
+  GetDecoderThreadCounts(config.coded_size().height(), &tile_threads,
+                         &frame_threads);
 
-  const int max_threads = VideoDecoder::GetRecommendedThreadCount(
-      s.n_frame_threads * (s.n_tile_threads + 1));
+  // While dav1d has switched to a thread pool, preserve the same thread counts
+  // we used when tile and frame threads were configured distinctly. It may be
+  // possible to lower this after some performance analysis of the new system.
+  s.n_threads = VideoDecoder::GetRecommendedThreadCount(frame_threads *
+                                                        (tile_threads + 1));
 
-  // First clamp tile threads to the allowed maximum. We prefer tile threads
-  // over frame threads since dav1d folk indicate they are more efficient. In an
-  // ideal world this would be auto-detected by dav1d from the content.
-  //
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=1536783#c0
-  s.n_tile_threads = std::min(max_threads, s.n_tile_threads);
-
-  // Now clamp frame threads based on the number of total threads that would be
-  // created with the given |n_tile_threads| value. Note: A thread count of 1
-  // generates no additional threads since the calling thread (this thread) is
-  // counted as a thread.
-  //
   // We only want 1 frame thread in low delay mode, since otherwise we'll
   // require at least two buffers before the first frame can be output.
-  //
-  // If a system has the cores for it, we'll end up using the following:
-  // <300p: 2 tile threads, 2 frame threads = 2 * 2 + 2 = 6 total threads.
-  // <700p: 3 tile threads, 2 frame threads = 3 * 2 + 2 = 8 total threads.
-  //
-  // For higher resolutions we hit limits::kMaxVideoThreads (16):
-  // >700p: 4 tile threads, 3 frame threads = 4 * 3 + 3  = 15 total threads.
-  //
-  // Due to the (surprising) performance issues which occurred when setting
-  // |n_frame_threads|=1 (https://crbug.com/957511) the minimum total number of
-  // threads is 6 (two tile and two frame) regardless of core count. The maximum
-  // is min(2 * base::SysInfo::NumberOfProcessors(), limits::kMaxVideoThreads).
   if (low_delay || config.is_rtc())
-    s.n_frame_threads = 1;
-  else if (s.n_frame_threads * (s.n_tile_threads + 1) > max_threads)
-    s.n_frame_threads = std::max(2, max_threads / (s.n_tile_threads + 1));
+    s.max_frame_delay = 1;
 
   // Route dav1d internal logs through Chrome's DLOG system.
   s.logger = {nullptr, &LogDav1dMessage};
