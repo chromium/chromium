@@ -13,9 +13,10 @@ TimerSamplingEventSource::TimerSamplingEventSource(base::TimeDelta interval)
 
 TimerSamplingEventSource::~TimerSamplingEventSource() = default;
 
-void TimerSamplingEventSource::Start(SamplingEventCallback callback) {
+bool TimerSamplingEventSource::Start(SamplingEventCallback callback) {
   DCHECK(callback);
   timer_.Start(FROM_HERE, interval_, std::move(callback));
+  return true;
 }
 
 }  // namespace power_sampler

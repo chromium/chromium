@@ -20,7 +20,7 @@ class TimerSamplingEventSource : public SamplingEventSource {
   ~TimerSamplingEventSource() override;
 
   // SamplingEventSource:
-  void Start(SamplingEventCallback callback) override;
+  bool Start(SamplingEventCallback callback) override;
 
  private:
   const base::TimeDelta interval_;

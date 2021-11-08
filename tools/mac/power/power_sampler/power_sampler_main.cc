@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 #include "tools/mac/power/power_sampler/csv_exporter.h"
+#include "tools/mac/power/power_sampler/iopm_power_source_sampling_event_source.h"
 #include "tools/mac/power/power_sampler/json_exporter.h"
 #include "tools/mac/power/power_sampler/main_display_sampler.h"
 #include "tools/mac/power/power_sampler/sample_counter.h"
@@ -36,15 +37,17 @@ void InitLogging() {
   CHECK(logging_res);
 }
 
-const char kSwitchHelp[] = "h";
-const char kSwitchSampleInterval[] = "sample-interval";
-const char kSwitchSampleCount[] = "sample-count";
-const char kSwitchJsonOutputFile[] = "json-output-file";
+constexpr char kSwitchHelp[] = "h";
+constexpr char kSwitchSampleInterval[] = "sample-interval";
+constexpr char kSwitchSampleCount[] = "sample-count";
+constexpr char kSwitchJsonOutputFile[] = "json-output-file";
+constexpr char kSwitchSampleOnNotification[] = "sample-on-notification";
 
 // Prints main usage text.
 void PrintUsage(std::ostream& err) {
   err << "Usage: powermetrics [--sample-interval=sample_interval] "
-         "[--sample-count=sample_count] [--json-output-file=path]"
+         "[--sample-count=sample_count] [--json-output-file=path]  "
+         "[--sample-on-notificaton]"
       << std::endl;
 }
 
@@ -56,6 +59,7 @@ enum StatusCode {
   kStatusSuccess = 0,
   kStatusUsage = 1,
   kStatusInvalidParam = 2,
+  kStatusRuntimeError = 3,
 };
 
 int main(int argc, char** argv) {
@@ -72,6 +76,12 @@ int main(int argc, char** argv) {
 
   base::TimeDelta sampling_interval = base::Seconds(60);
   if (command_line.HasSwitch(kSwitchSampleInterval)) {
+    if (command_line.HasSwitch(kSwitchSampleOnNotification)) {
+      LOG(ERROR) << "--sample-interval should not be specified with "
+                    "--sample-on-notification";
+      return kStatusInvalidParam;
+    }
+
     std::string interval_seconds_switch =
         command_line.GetSwitchValueASCII(kSwitchSampleInterval);
     uint64_t interval_seconds = 0;
@@ -105,7 +115,16 @@ int main(int argc, char** argv) {
     }
   }
 
-  base::SingleThreadTaskExecutor executor(base::MessagePumpType::DEFAULT);
+  std::unique_ptr<power_sampler::SamplingEventSource> event_source;
+  if (command_line.HasSwitch(kSwitchSampleOnNotification)) {
+    event_source =
+        std::make_unique<power_sampler::IOPMPowerSourceSamplingEventSource>();
+  } else {
+    event_source = std::make_unique<power_sampler::TimerSamplingEventSource>(
+        sampling_interval);
+  }
+
+  base::SingleThreadTaskExecutor executor(base::MessagePumpType::NS_RUNLOOP);
   power_sampler::SamplingController controller;
 
   std::unique_ptr<power_sampler::Sampler> sampler =
@@ -139,16 +158,17 @@ int main(int argc, char** argv) {
 
   base::RunLoop run_loop;
 
-  power_sampler::TimerSamplingEventSource sampling_event_source(
-      sampling_interval);
-  sampling_event_source.Start(BindRepeating(
-      [](power_sampler::SamplingController* controller,
-         base::OnceClosure quit_closure) {
-        if (controller->OnSamplingEvent()) {
-          std::move(quit_closure).Run();
-        }
-      },
-      base::Unretained(&controller), run_loop.QuitClosure()));
+  if (!event_source->Start(BindRepeating(
+          [](power_sampler::SamplingController* controller,
+             base::OnceClosure quit_closure) {
+            if (controller->OnSamplingEvent()) {
+              std::move(quit_closure).Run();
+            }
+          },
+          base::Unretained(&controller), run_loop.QuitClosure()))) {
+    LOG(ERROR) << "Could not start the sampling event source";
+    return kStatusRuntimeError;
+  }
 
   run_loop.Run();
 

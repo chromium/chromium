@@ -16,9 +16,9 @@ class SamplingEventSource {
 
   virtual ~SamplingEventSource() = 0;
 
-  // Starts generating sampling events. |callback| is invoked for every sampling
-  // event.
-  virtual void Start(SamplingEventCallback callback) = 0;
+  // Starts generating sampling events. Returns whether the operation succeeded.
+  // |callback| is invoked for every sampling event.
+  virtual bool Start(SamplingEventCallback callback) = 0;
 };
 
 }  // namespace power_sampler

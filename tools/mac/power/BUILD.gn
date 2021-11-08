@@ -28,6 +28,8 @@ static_library("power_sampler_lib") {
     "power_sampler/battery_sampler.mm",
     "power_sampler/csv_exporter.cc",
     "power_sampler/csv_exporter.h",
+    "power_sampler/iopm_power_source_sampling_event_source.cc",
+    "power_sampler/iopm_power_source_sampling_event_source.h",
     "power_sampler/json_exporter.cc",
     "power_sampler/json_exporter.h",
     "power_sampler/main_display_sampler.cc",
