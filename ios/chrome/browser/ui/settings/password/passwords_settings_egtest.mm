@@ -1436,9 +1436,7 @@ void CopyPasswordDetailWithID(int detail_id) {
 }
 
 // Checks that attempts to edit a password provide appropriate feedback.
-// Disabled test due to multiple builder failulres.
-// TODO(crbug.com/1245004): re-enable the test with fix.
-- (void)DISABLED_testEditPassword {
+- (void)testEditPassword {
   SaveExamplePasswordForm();
 
   OpenPasswordSettings();
@@ -1458,7 +1456,7 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   // Check that empty password is not allowed, and done button is disabled.
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
-      performAction:grey_clearText()];
+      performAction:grey_replaceText(@"")];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(),
