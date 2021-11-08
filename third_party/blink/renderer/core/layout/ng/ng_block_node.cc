@@ -492,16 +492,25 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
     layout_result = nullptr;
   }
 
-  // Fragment geometry scrollbars are potentially size constrained, and cannot
-  // be used for comparison with their after layout size.
+  // All these variables may change after layout due to scrollbars changing.
   NGBoxStrut scrollbars_before = ComputeScrollbars(constraint_space, *this);
-  bool intrinsic_logical_widths_dirty_before =
+  const LayoutUnit inline_size_before =
+      fragment_geometry->border_box_size.inline_size;
+  const bool intrinsic_logical_widths_dirty_before =
       box_->IntrinsicLogicalWidthsDirty();
 
   if (!layout_result)
     layout_result = LayoutWithAlgorithm(params);
 
   FinishLayout(block_flow, constraint_space, break_token, layout_result);
+
+  // We may be intrinsicly sized (shrink-to-fit), if our intrinsic logical
+  // widths are now dirty, re-calculate our inline-size for comparison.
+  if (!intrinsic_logical_widths_dirty_before &&
+      box_->IntrinsicLogicalWidthsDirty()) {
+    fragment_geometry =
+        CalculateInitialFragmentGeometry(constraint_space, *this);
+  }
 
   // We may need to relayout if:
   // - Our scrollbars have changed causing our size to change (shrink-to-fit)
@@ -512,8 +521,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   // ClearLayoutResults() when in this state is forbidden.
   NGBoxStrut scrollbars_after = ComputeScrollbars(constraint_space, *this);
   if ((scrollbars_before != scrollbars_after ||
-       (!intrinsic_logical_widths_dirty_before &&
-        box_->IntrinsicLogicalWidthsDirty())) &&
+       inline_size_before != fragment_geometry->border_box_size.inline_size) &&
       !NGDisableSideEffectsScope::IsDisabled()) {
     bool freeze_horizontal = false, freeze_vertical = false;
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
