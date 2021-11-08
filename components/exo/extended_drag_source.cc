@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "base/check.h"
@@ -41,8 +42,8 @@ ExtendedDragSource* ExtendedDragSource::instance_ = nullptr;
 // Internal representation of a toplevel window, backed by an Exo shell surface,
 // which is being dragged. It supports both already mapped/visible windows as
 // well as newly created ones (i.e: not added to a root window yet), in which
-// case OnDraggedWindowVisibilityChanging callback is called to notify when it
-// is about to get visible.
+// case OnDraggedWindowVisibilityChanged callback is called to notify when it
+// has just got visible.
 class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
  public:
   DraggedWindowHolder(Surface* surface,
@@ -81,10 +82,10 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
     surface_->window()->RemoveObserver(this);
   }
 
-  void OnWindowVisibilityChanging(aura::Window* window, bool visible) override {
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
     DCHECK(window);
     if (window == toplevel_window_)
-      source_->OnDraggedWindowVisibilityChanging(visible);
+      source_->OnDraggedWindowVisibilityChanged(visible);
   }
 
   bool FindToplevelWindow() {
@@ -250,15 +251,26 @@ void ExtendedDragSource::StartDrag(aura::Window* toplevel,
   auto move_source = drag_event_source_ == ui::mojom::DragEventSource::kTouch
                          ? ::wm::WINDOW_MOVE_SOURCE_TOUCH
                          : ::wm::WINDOW_MOVE_SOURCE_MOUSE;
+
+  auto end_closure = base::BindOnce(
+      [](aura::Window* toplevel,
+         ash::ToplevelWindowEventHandler::DragResult result) {
+        if (toplevel) {
+          toplevel->ClearProperty(ash::kIsDraggingTabsKey);
+          toplevel->ClearProperty(ash::kTabDraggingSourceWindowKey);
+        }
+      },
+      base::Unretained(toplevel));
+
   // TODO(crbug.com/1167581): Experiment setting |update_gesture_target| back
   // to true when capture is removed from drag and drop.
-  toplevel_handler->AttemptToStartDrag(
-      toplevel, pointer_location, HTCAPTION, move_source,
-      ash::ToplevelWindowEventHandler::EndClosure(),
-      /*update_gesture_target=*/false, /*grab_capture=*/false);
+  toplevel_handler->AttemptToStartDrag(toplevel, pointer_location, HTCAPTION,
+                                       move_source, std::move(end_closure),
+                                       /*update_gesture_target=*/false,
+                                       /*grab_capture=*/false);
 }
 
-void ExtendedDragSource::OnDraggedWindowVisibilityChanging(bool visible) {
+void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
   DCHECK(dragged_window_holder_);
   DVLOG(1) << "Dragged window visibility changed. visible=" << visible;
 
@@ -269,6 +281,13 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanging(bool visible) {
 
   aura::Window* toplevel = dragged_window_holder_->toplevel_window();
   DCHECK(toplevel);
+
+  DCHECK(drag_source_window_);
+  toplevel->SetProperty(ash::kIsDraggingTabsKey, true);
+  if (drag_source_window_ != toplevel) {
+    toplevel->SetProperty(ash::kTabDraggingSourceWindowKey,
+                          drag_source_window_);
+  }
 
   // The |toplevel| window for the dragged surface has just been created and
   // it's about to be mapped. Calculate and set its position based on

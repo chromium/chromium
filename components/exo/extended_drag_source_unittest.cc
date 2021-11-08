@@ -10,7 +10,9 @@
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
 #include "ash/shell.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "components/exo/buffer.h"
 #include "components/exo/data_source.h"
 #include "components/exo/data_source_delegate.h"
@@ -20,6 +22,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -33,6 +36,9 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
+
+using ::testing::_;
+using ::testing::InvokeWithoutArgs;
 
 namespace exo {
 namespace {
@@ -223,6 +229,41 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceAlreadyMapped) {
   EXPECT_EQ(gfx::Point(200, 200), window->GetBoundsInScreen().origin());
 }
 
+// This class installs an observer to the window being dragged.
+// The goal is to ensure the drag 'n drop only effectively starts
+// off of the aura::WindowObserver::OnWindowVisibilityChanged() hook,
+// when it is guarantee the its state is properly set.
+class WindowObserverHookChecker : public aura::WindowObserver {
+ public:
+  WindowObserverHookChecker(aura::Window* surface_window)
+      : surface_window_(surface_window) {
+    DCHECK(!surface_window_->GetRootWindow());
+    surface_window_->AddObserver(this);
+  }
+  ~WindowObserverHookChecker() {
+    DCHECK(dragged_window_);
+    dragged_window_->RemoveObserver(this);
+  }
+
+  void OnWindowAddedToRootWindow(aura::Window* window) override {
+    dragged_window_ = surface_window_->GetToplevelWindow();
+    dragged_window_->AddObserver(this);
+    surface_window_->RemoveObserver(this);
+  }
+  MOCK_METHOD(void,
+              OnWindowVisibilityChanging,
+              (aura::Window*, bool),
+              (override));
+  MOCK_METHOD(void,
+              OnWindowVisibilityChanged,
+              (aura::Window*, bool),
+              (override));
+
+ private:
+  aura::Window* surface_window_ = nullptr;
+  aura::Window* dragged_window_ = nullptr;
+};
+
 TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
   // Create and Map the drag origin surface
   auto surface = std::make_unique<Surface>();
@@ -251,6 +292,24 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
   EXPECT_TRUE(extended_drag_source_->GetDragOffsetForTesting().has_value());
   EXPECT_EQ(gfx::Vector2d(10, 10),
             *extended_drag_source_->GetDragOffsetForTesting());
+
+  // Ensure drag 'n drop starts after
+  // ExtendedDragSource::OnDraggedWindowVisibilityChanged()
+  WindowObserverHookChecker checker(detached_surface->window());
+  EXPECT_CALL(checker, OnWindowVisibilityChanging(_, _))
+      .Times(1)
+      .WillOnce(InvokeWithoutArgs([]() {
+        auto* toplevel_handler =
+            ash::Shell::Get()->toplevel_window_event_handler();
+        EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
+      }));
+  EXPECT_CALL(checker, OnWindowVisibilityChanged(_, _))
+      .Times(1)
+      .WillOnce(InvokeWithoutArgs([]() {
+        auto* toplevel_handler =
+            ash::Shell::Get()->toplevel_window_event_handler();
+        EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
+      }));
 
   // Map the |detached_surface|.
   auto detached_buffer = CreateBuffer({50, 50});
