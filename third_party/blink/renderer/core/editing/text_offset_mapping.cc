@@ -99,7 +99,7 @@ LayoutObject* NextForInlineContents(const LayoutObject& layout_object,
     return layout_object.NextSibling();
   const Node* const node = layout_object.NonPseudoNode();
   if (node && ShouldSkipChildren(*node))
-    return layout_object.NextSibling();
+    return layout_object.NextInPreOrderAfterChildren(&container);
   return layout_object.NextInPreOrder(&container);
 }
 
