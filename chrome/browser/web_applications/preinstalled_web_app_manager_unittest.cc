@@ -40,6 +40,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -68,7 +69,12 @@ constexpr char kAppChildUrl[] = "https://www.google.com/child";
 
 class PreinstalledWebAppManagerTest : public testing::Test {
  public:
-  PreinstalledWebAppManagerTest() = default;
+  PreinstalledWebAppManagerTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+#endif
+  }
   PreinstalledWebAppManagerTest(const PreinstalledWebAppManagerTest&) = delete;
   PreinstalledWebAppManagerTest& operator=(
       const PreinstalledWebAppManagerTest&) = delete;
@@ -202,6 +208,8 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // To support primary/non-primary users.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;

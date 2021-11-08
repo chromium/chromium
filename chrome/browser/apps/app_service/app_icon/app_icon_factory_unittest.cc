@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -44,9 +45,11 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/md_icon_normalizer.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #endif
@@ -495,6 +498,15 @@ TEST_F(AppIconFactoryTest, ArcActivityIconsToImageSkias) {
 
 class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
  public:
+  WebAppIconFactoryTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+#endif
+  }
+
+  ~WebAppIconFactoryTest() override = default;
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -665,6 +677,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
   web_app::WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   web_app::WebAppProvider* web_app_provider_;
   web_app::WebAppIconManager* icon_manager_;
   web_app::WebAppSyncBridge* sync_bridge_;
