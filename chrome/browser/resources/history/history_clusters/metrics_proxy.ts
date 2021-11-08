@@ -13,6 +13,7 @@
  */
 export enum ClusterAction {
   DELETED = 'Deleted',
+  OPENED_IN_TAB_GROUP = 'OpenedInTabGroup',
   RELATED_SEARCH_CLICKED = 'RelatedSearchClicked',
   RELATED_VISITS_VISIBILITY_TOGGLED = 'RelatedVisitsVisibilityToggled',
   VISIT_CLICKED = 'RelatedSearchClicked',

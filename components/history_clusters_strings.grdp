@@ -18,6 +18,12 @@
   <message name="IDS_HISTORY_CLUSTERS_LIST_TAB_LABEL" desc="A label for the section in Chrome History (chrome://history) where a list of history items are shown to the user.">
     List
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_LOAD_MORE_BUTTON_LABEL" desc="A label for the button that loads more history clusters at the bottom of the history clusters list.">
+    Load more
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_OPEN_ALL_IN_TABGROUP" desc="Label of the item in drop-down menu that allows the user to open a group of urls in a tab group.">
+    Open all in new tab group
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_RELATED_SEARCHES_HEADER" desc="Header text shown for the section containing search suggestions related to a group of search and browsing activities.">
     Related searches
   </message>
@@ -35,8 +41,5 @@
   </message>
   <message name="IDS_HISTORY_CLUSTERS_SHOW_MORE_BUTTON_LABEL" desc="A label for the button that expands the view showing more history items.">
     Show more
-  </message>
-  <message name="IDS_HISTORY_CLUSTERS_LOAD_MORE_BUTTON_LABEL" desc="A label for the button that loads more history clusters at the bottom of the history clusters list.">
-    Load more
   </message>
 </grit-part>

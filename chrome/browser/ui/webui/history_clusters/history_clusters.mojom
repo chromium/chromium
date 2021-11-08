@@ -143,6 +143,9 @@ interface PageHandler {
   // of URLs whose information is preserved in `visits`. The returned Promise
   // indicates if the request was accepted by the browser.
   RemoveVisits(array<URLVisit> visits) => (bool accepted);
+
+  // Requests to open the URLs in `visits` in a new tab group.
+  OpenVisitUrlsInTabGroup(array<URLVisit> visits);
 };
 
 // WebUI-side handler for requests from the browser.

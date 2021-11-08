@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/prefs/pref_service.h"
@@ -278,6 +279,38 @@ void HistoryClustersHandler::RemoveVisits(
                      weak_ptr_factory_.GetWeakPtr(), std::move(visits)),
       &remove_task_tracker_);
   std::move(callback).Run(true);
+}
+
+void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
+    std::vector<mojom::URLVisitPtr> visits) {
+  const auto* browser = chrome::FindTabbedBrowser(profile_, false);
+  if (!browser) {
+    return;
+  }
+
+  auto* model = browser->tab_strip_model();
+  std::vector<int> tab_indices;
+  tab_indices.reserve(visits.size());
+  auto* opener = web_contents_;
+  for (const auto& visit_ptr : visits) {
+    auto* opened_web_contents = opener->OpenURL(
+        content::OpenURLParams(visit_ptr->normalized_url, content::Referrer(),
+                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                               ui::PAGE_TRANSITION_AUTO_BOOKMARK, false));
+
+    // The url may have opened a new window or clobbered the current one.
+    // Replace `opener` to be sure. `opened_web_contents` may be null in tests.
+    if (opened_web_contents) {
+      opener = opened_web_contents;
+    }
+
+    // Only add those tabs to a new group that actually opened in this browser.
+    const int tab_index = model->GetIndexOfWebContents(opened_web_contents);
+    if (tab_index != TabStripModel::kNoTab) {
+      tab_indices.push_back(tab_index);
+    }
+  }
+  model->AddToNewGroup(tab_indices);
 }
 
 void HistoryClustersHandler::OnDebugMessage(const std::string& message) {

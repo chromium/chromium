@@ -601,6 +601,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ClusterAction">
     <variant name="Deleted" summary="deletes a history cluster"/>
+    <variant name="OpenedInTabGroup"
+        summary="opens the visit urls in a history cluster in a new tab group"/>
     <variant name="RelatedSearchClicked"
         summary="clicks a related search suggestion"/>
     <variant name="RelatedVisitsVisibilityToggled"

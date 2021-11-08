@@ -55,6 +55,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void QueryClusters(mojom::QueryParamsPtr query_params) override;
   void RemoveVisits(std::vector<mojom::URLVisitPtr> visits,
                     RemoveVisitsCallback callback) override;
+  void OpenVisitUrlsInTabGroup(std::vector<mojom::URLVisitPtr> visits) override;
 
   // HistoryClustersService::Observer:
   void OnDebugMessage(const std::string& message) override;

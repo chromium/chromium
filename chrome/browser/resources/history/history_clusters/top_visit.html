@@ -72,11 +72,11 @@
     transform: rotate(180deg);
   }
 </style>
-<url-visit visit="[[visit]]" index="0" is-top-visit
-    has-related-visits$="[[hasRelatedVisits_]]">
+<url-visit visit="[[visit]]" cluster-index="[[clusterIndex]]" index="0"
+    has-related-visits$="[[hasRelatedVisits_]]" is-top-visit>
 </url-visit>
 <template is="dom-repeat" items="[[visibleRelatedVisits_]]">
-  <url-visit visit="[[item]]"
+  <url-visit visit="[[item]]" cluster-index="[[clusterIndex]]"
       index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
   </url-visit>
 </template>
@@ -84,7 +84,7 @@
      easily handle it. -->
 <iron-collapse opened="[[expanded_]]" no-animation>
   <template is="dom-repeat" items="[[hiddenRelatedVisits_]]">
-    <url-visit visit="[[item]]"
+    <url-visit visit="[[item]]" cluster-index="[[clusterIndex]]"
         index="[[getVisitIndex_(item, visit.relatedVisits.*)]]">
     </url-visit>
   </template>

@@ -12,8 +12,9 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Annotation, URLVisit} from './history_clusters.mojom-webui.js';
-import {MetricsProxyImpl, VisitAction, VisitType} from './metrics_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import {Annotation, PageHandlerRemote, URLVisit} from './history_clusters.mojom-webui.js';
+import {ClusterAction, MetricsProxyImpl, VisitAction, VisitType} from './metrics_proxy.js';
 import {OpenWindowProxyImpl} from './open_window_proxy.js';
 
 /**
@@ -54,6 +55,14 @@ class VisitRowElement extends PolymerElement {
 
   static get properties() {
     return {
+      /**
+       * The index of the cluster this visit belongs to.
+       */
+      clusterIndex: {
+        type: Number,
+        value: -1,  // Initialized to an invalid value.
+      },
+
       /**
        * Whether this is a top visit.
        */
@@ -98,8 +107,19 @@ class VisitRowElement extends PolymerElement {
   // Properties
   //============================================================================
 
+  clusterIndex: number;
   index: number;
   visit: URLVisit;
+  private pageHandler_: PageHandlerRemote;
+
+  //============================================================================
+  // Overridden methods
+  //============================================================================
+
+  constructor() {
+    super();
+    this.pageHandler_ = BrowserProxyImpl.getInstance().handler;
+  }
 
   //============================================================================
   // Event handlers
@@ -145,6 +165,16 @@ class VisitRowElement extends PolymerElement {
     this.onAuxClick_();
 
     OpenWindowProxyImpl.getInstance().open(this.visit.normalizedUrl.url);
+  }
+
+  private onOpenAllButtonClick_() {
+    this.pageHandler_.openVisitUrlsInTabGroup(
+        [this.visit, ...this.visit.relatedVisits]);
+
+    this.$.actionMenu.get().close();
+
+    MetricsProxyImpl.getInstance().recordClusterAction(
+        ClusterAction.OPENED_IN_TAB_GROUP, this.clusterIndex);
   }
 
   private onRemoveAllButtonClick_() {
