@@ -2519,6 +2519,8 @@ static_library("browser") {
       "policy/messaging_layer/util/heartbeat_event.h",
       "policy/messaging_layer/util/heartbeat_event_factory.cc",
       "policy/messaging_layer/util/heartbeat_event_factory.h",
+      "policy/system_features_disable_list_policy_handler.cc",
+      "policy/system_features_disable_list_policy_handler.h",
     ]
   }
   if (is_linux || is_chromeos) {

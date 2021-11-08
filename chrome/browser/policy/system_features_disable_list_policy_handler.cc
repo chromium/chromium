@@ -4,7 +4,6 @@
 
 #include "system_features_disable_list_policy_handler.h"
 
-#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,6 +12,10 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_pref_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
 
@@ -57,16 +60,12 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
   DCHECK(filtered_list.is_list());
 
   base::Value enums_list(base::Value::Type::LIST);
-  bool os_settings_enabled = true;
-
   base::Value* old_list = nullptr;
   prefs->GetValue(policy_prefs::kSystemFeaturesDisableList, &old_list);
 
   for (const auto& element : filtered_list.GetList()) {
     SystemFeature feature = ConvertToEnum(element.GetString());
     enums_list.Append(feature);
-    if (feature == SystemFeature::kOsSettings)
-      os_settings_enabled = false;
 
     if (!old_list ||
         !base::Contains(old_list->GetList(), base::Value(feature))) {
@@ -75,9 +74,13 @@ void SystemFeaturesDisableListPolicyHandler::ApplyList(
     }
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool os_settings_disabled = base::Contains(
+      enums_list.GetList(), base::Value(SystemFeature::kOsSettings));
+  prefs->SetBoolean(ash::prefs::kOsSettingsEnabled, !os_settings_disabled);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   prefs->SetValue(policy_prefs::kSystemFeaturesDisableList,
                   std::move(enums_list));
-  prefs->SetBoolean(ash::prefs::kOsSettingsEnabled, os_settings_enabled);
 }
 
 SystemFeature SystemFeaturesDisableListPolicyHandler::ConvertToEnum(

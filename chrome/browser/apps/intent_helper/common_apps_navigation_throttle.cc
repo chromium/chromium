@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
@@ -38,10 +39,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/display/types/display_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace apps {
 
 namespace {
@@ -49,7 +46,6 @@ namespace {
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
 // TODO(crbug.com/1251490 ) Update to make disabled page works in Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string GetAppDisabledErrorPage() {
   base::DictionaryValue strings;
 
@@ -83,6 +79,7 @@ bool IsAppDisabled(const std::string& app_id) {
   policy::SystemFeature system_feature =
       policy::SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
           app_id);
+
   if (system_feature == policy::SystemFeature::kUnknownSystemFeature)
     return false;
 
@@ -90,7 +87,6 @@ bool IsAppDisabled(const std::string& app_id) {
       disabled_system_features_pref->GetList();
   return base::Contains(disabled_system_features, base::Value(system_feature));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Usually we want to only capture navigations from clicking a link. For a
 // subset of apps, we want to capture typing into the omnibox as well.
@@ -254,7 +250,6 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
     content::NavigationHandle* handle) {
   content::WebContents* web_contents = handle->GetWebContents();
@@ -279,6 +274,5 @@ ThrottleCheckResult CommonAppsNavigationThrottle::MaybeShowCustomResult() {
                              net::ERR_BLOCKED_BY_ADMINISTRATOR,
                              GetAppDisabledErrorPage());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace apps

@@ -2389,8 +2389,6 @@ static_library("ui") {
       "webui/chromeos/cellular_setup/mobile_setup_ui.h",
       "webui/chromeos/certificate_manager_dialog_ui.cc",
       "webui/chromeos/certificate_manager_dialog_ui.h",
-      "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.cc",
-      "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h",
       "webui/chromeos/connectivity_diagnostics_dialog.cc",
       "webui/chromeos/connectivity_diagnostics_dialog.h",
       "webui/chromeos/crostini_installer/crostini_installer_dialog.cc",
@@ -3059,6 +3057,8 @@ static_library("ui") {
       "views/frame/top_controls_slide_controller_chromeos.h",
       "views/platform_keys_certificate_selector_chromeos.cc",
       "views/platform_keys_certificate_selector_chromeos.h",
+      "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.cc",
+      "webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h",
     ]
     deps += [
       "//chrome/app:generated_resources",

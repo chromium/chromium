@@ -42,10 +42,8 @@ class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
 
  private:
   bool ShouldCancelNavigation(content::NavigationHandle* handle) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool ShouldShowDisablePage(content::NavigationHandle* handle) override;
   ThrottleCheckResult MaybeShowCustomResult() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace apps
