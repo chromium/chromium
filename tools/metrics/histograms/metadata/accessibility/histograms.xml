@@ -419,8 +419,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Accessibility.CrosLargeCursorSize" units="dip"
     expires_after="2021-11-21">
-  <owner>sarakato@chromium.org</owner>
-  <owner>dmazzoni@chromium.org</owner>
+  <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Cursor size of the Chrome OS Large Cursor (logged once 45 secs after
