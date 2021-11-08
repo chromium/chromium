@@ -58,7 +58,6 @@ constexpr net::NetworkTrafficAnnotationTag
          policy_exception_justification:
            "This request is made based on OEM customization and does not "
            "send/store any sensitive data."
-         }
         })");
 
 void CreateWallpaperDirectory(const base::FilePath& wallpaper_dir,

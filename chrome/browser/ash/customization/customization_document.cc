@@ -123,7 +123,6 @@ constexpr net::NetworkTrafficAnnotationTag kCustomizationDocumentNetworkTag =
          policy_exception_justification:
            "This request is made based on OEM customization and does not "
            "send/store any sensitive data."
-         }
         })");
 
 struct CustomizationDocumentTestOverride {
