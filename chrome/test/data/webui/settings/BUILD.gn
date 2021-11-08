@@ -8,6 +8,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 # Test files that contain // <if expr> and therefore require preprocessing.
 preprocessed_files = [
+  "about_page_tests.ts",
   "clear_browsing_data_test.ts",
   "privacy_page_test.js",
   "route_tests.js",
@@ -26,7 +27,6 @@ non_preprocessed_files = [
   "a11y/manage_profile_a11y_test.js",
   "a11y/passwords_a11y_test.js",
   "a11y/sign_out_a11y_test.js",
-  "about_page_tests.js",
   "advanced_page_test.js",
   "all_sites_tests.js",
   "appearance_fonts_page_test.js",
@@ -50,7 +50,7 @@ non_preprocessed_files = [
   "extension_controlled_indicator_tests.ts",
   "fake_language_settings_private.js",
   "fake_settings_private.js",
-  "help_page_test.js",
+  "help_page_test.ts",
   "idle_load_tests.ts",
   "languages_page_metrics_test_browser.js",
   "languages_page_tests.js",

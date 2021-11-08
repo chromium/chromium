@@ -7,6 +7,7 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {getPage, getSection} from './settings_page_test_util.js';
@@ -15,7 +16,7 @@ import {getPage, getSection} from './settings_page_test_util.js';
 // Register mocha tests.
 suite('SettingsHelpPage', function() {
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     // The ChromeContentBrowserClient will rewrite chrome://help to
     // chrome://settings/help.
     window.history.pushState('', 'Test', 'chrome://settings/help');
@@ -28,6 +29,6 @@ suite('SettingsHelpPage', function() {
 
   test('about section', async () => {
     const page = await getPage('about');
-    expectTrue(!!getSection(page, 'about'));
+    assertTrue(!!getSection(page, 'about'));
   });
 });
