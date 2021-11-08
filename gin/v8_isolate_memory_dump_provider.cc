@@ -82,6 +82,9 @@ void DumpCodeStatistics(base::trace_event::MemoryAllocatorDump* dump,
   dump->AddScalar("external_script_source_size",
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   code_statistics.external_script_source_size());
+  dump->AddScalar("cpu_profiler_metadata_size",
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  code_statistics.cpu_profiler_metadata_size());
 }
 
 // Dump the number of native and detached contexts.
@@ -154,7 +157,7 @@ bool CanHaveMultipleIsolates(IsolateHolder::IsolateType isolate_type) {
   LOG(FATAL) << "Unreachable code";
 }
 
-}  // namespace anonymous
+}  // namespace
 
 void V8IsolateMemoryDumpProvider::DumpHeapStatistics(
     const base::trace_event::MemoryDumpArgs& args,

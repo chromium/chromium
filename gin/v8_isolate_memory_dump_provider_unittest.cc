@@ -159,6 +159,7 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
   bool did_dump_bytecode_size = false;
   bool did_dump_code_size = false;
   bool did_dump_external_scripts_size = false;
+  bool did_dump_cpu_profiler_metadata_size = false;
 
   for (const auto& name_dump : allocator_dumps) {
     const std::string& name = name_dump.first;
@@ -171,6 +172,8 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
           did_dump_code_size = true;
         } else if (entry.name == "external_script_source_size") {
           did_dump_external_scripts_size = true;
+        } else if (entry.name == "cpu_profiler_metadata_size") {
+          did_dump_cpu_profiler_metadata_size = true;
         }
       }
     }
@@ -180,6 +183,7 @@ TEST_F(V8MemoryDumpProviderTest, DumpCodeStatistics) {
   ASSERT_TRUE(did_dump_bytecode_size);
   ASSERT_TRUE(did_dump_code_size);
   ASSERT_TRUE(did_dump_external_scripts_size);
+  ASSERT_TRUE(did_dump_cpu_profiler_metadata_size);
 }
 
 // Tests that a deterministic memory dump request performs a GC.
