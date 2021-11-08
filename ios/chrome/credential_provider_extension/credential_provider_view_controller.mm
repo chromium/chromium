@@ -74,7 +74,7 @@
 
 + (void)initialize {
   if (self == [CredentialProviderViewController self]) {
-    if (crash_helper::common::CanCrashpadStart()) {
+    if (crash_helper::common::CanUseCrashpad()) {
       crash_helper::common::StartCrashpad();
     }
   }

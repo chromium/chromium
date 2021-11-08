@@ -61,7 +61,7 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
 
 + (void)initialize {
   if (self == [ContentWidgetViewController self]) {
-    if (crash_helper::common::CanCrashpadStart()) {
+    if (crash_helper::common::CanUseCrashpad()) {
       crash_helper::common::StartCrashpad();
     }
   }

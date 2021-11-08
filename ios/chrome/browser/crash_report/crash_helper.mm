@@ -139,7 +139,7 @@ void Start() {
   // can be displayed to the user on the about:crashes page.  Use the app group
   // so crashes can be shared by plugins.
   logging::SetLogMessageHandler(&FatalMessageHandler);
-  if (common::CanCrashpadStart()) {
+  if (common::CanUseCrashpad()) {
     base::PathService::Override(ios::DIR_CRASH_DUMPS,
                                 common::CrashpadDumpLocation());
     bool initialized = common::StartCrashpad();
@@ -175,10 +175,10 @@ void SetEnabled(bool enabled) {
   // the function will update its preference based on finch.
   [[MainThreadFreezeDetector sharedInstance] setEnabled:enabled];
 
-  // Crashpad is always running, don't shut it off. Using CanCrashpadStart()
+  // Crashpad is always running, don't shut it off. Using CanUseCrashpad()
   // here, because if Crashpad fails to init, do not unintentionally enable
   // breakpad.
-  if (common::CanCrashpadStart()) {
+  if (common::CanUseCrashpad()) {
     return;
   }
 
@@ -228,7 +228,7 @@ void SetUploadingEnabled(bool enabled) {
     return;
   }
 
-  if (common::CanCrashpadStart()) {
+  if (common::CanUseCrashpad()) {
     return;
   }
 
@@ -250,7 +250,7 @@ void CleanupCrashReports(BOOL after_upgrade) {
     return;
   }
 
-  if (common::CanCrashpadStart()) {
+  if (common::CanUseCrashpad()) {
     return;
   }
 
