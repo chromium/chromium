@@ -44,6 +44,16 @@ const WelcomeScreenState = {
   Polymer.Element);
 
 /**
+ * @typedef {{
+ *   welcomeScreen:  OobeWelcomeDialog,
+ *   demoModeConfirmationDialog:  OobeModalDialogElement,
+ *   editRequisitionDialog:  OobeModalDialogElement,
+ *   editRequisitionInput: CrInputElement,
+ *   remoraRequisitionDialog: OobeModalDialogElement,
+ * }}
+ */
+OobeWelcomeScreenBase.$;
+/**
  * @polymer
  */
 class OobeWelcomeScreen extends OobeWelcomeScreenBase {
@@ -210,7 +220,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /**
    * This is called when UI strings are changed.
    * Overridden from LoginScreenBehavior.
-   * @suppress {missingProperties}
    */
   updateLocalizedContent() {
     this.languages = /** @type {!Array<OobeTypes.LanguageDsc>} */ (
@@ -285,7 +294,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * Updates "device in tablet mode" state when tablet mode is changed.
    * Overridden from LoginScreenBehavior.
    * @param {boolean} isInTabletMode True when in tablet mode.
-   * @suppress {missingProperties}
    */
   setTabletModeState(isInTabletMode) {
     this.$.welcomeScreen.isInTabletMode = isInTabletMode;
@@ -441,7 +449,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /**
    * On-tap event handler for demo mode confirmation dialog cancel button.
    * @private
-   * @suppress {missingProperties}
    */
   onDemoModeDialogCancelTap_() {
     this.$.demoModeConfirmationDialog.hideDialog();
@@ -450,7 +457,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   /**
    * On-tap event handler for demo mode confirmation dialog confirm button.
    * @private
-   * @suppress {missingProperties}
    */
   onDemoModeDialogConfirmTap_() {
     this.userActed('setupDemoMode');
@@ -459,7 +465,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   /**
    * Shows confirmation dialog for starting Demo mode
-   * @suppress {missingProperties}
    */
   showDemoModeConfirmationDialog() {
     // Ensure the ChromeVox hint dialog is closed.
@@ -473,24 +478,17 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   /**
    * Shows the device requisition prompt.
-   * @suppress {missingProperties}
    */
   showEditRequisitionDialog(requisition) {
     this.$.editRequisitionDialog.showDialog();
     this.$.editRequisitionInput.focus();
   }
 
-  /**
-   * @suppress {missingProperties}
-   */
   onEditRequisitionCancel_() {
     chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
     this.$.editRequisitionDialog.hideDialog();
   }
 
-  /**
-   * @suppress {missingProperties}
-   */
   onEditRequisitionConfirm_() {
     const requisition = this.$.editRequisitionInput.value;
     chrome.send('WelcomeScreen.setDeviceRequisition', [requisition]);
@@ -499,7 +497,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   /**
    * Shows the special remora/shark device requisition prompt.
-   * @suppress {missingProperties}
    */
   showRemoraRequisitionDialog() {
     this.$.remoraRequisitionDialog.showDialog();
@@ -507,7 +504,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   /**
    * Shows the special remora/shark device requisition prompt.
-   * @suppress {missingProperties}
    */
   onRemoraCancel_() {
     chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
@@ -516,7 +512,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   /**
    * Shows the special remora/shark device requisition prompt.
-   * @suppress {missingProperties}
    */
   onRemoraConfirm_() {
     chrome.send('WelcomeScreen.setDeviceRequisition', ['remora']);
@@ -653,15 +648,12 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   }
 
   /**
-   * @suppress {missingProperties}
-   * @private
    */
   showChromeVoxHint_() {
     this.$.welcomeScreen.showChromeVoxHint();
   }
 
   /**
-   * @suppress {missingProperties}
    * @private
    */
   closeChromeVoxHint_() {
@@ -754,7 +746,6 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * @param {!chrome.tts.TtsOptions} options
    * @param {boolean} isDefaultHint
    * @private
-   * @suppress {missingProperties}
    */
   giveChromeVoxHint_(locale, options, isDefaultHint) {
     if (this.chromeVoxHintGiven_) {

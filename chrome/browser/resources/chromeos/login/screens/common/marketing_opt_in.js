@@ -115,7 +115,6 @@ class MarketingOptIn extends MarketingScreenElementBase {
 
   /**
    * This is 'on-tap' event handler for 'AcceptAndContinue/Next' buttons.
-   * @suppress {missingProperties}
    * @private
    */
   onGetStarted_() {

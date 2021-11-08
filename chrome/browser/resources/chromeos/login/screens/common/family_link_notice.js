@@ -18,6 +18,13 @@ const FamilyLinkScreenElementBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
     Polymer.Element);
 
+/**
+ * @typedef {{
+ *   familyLinkDialog:  OobeAdaptiveDialogElement,
+ * }}
+ */
+FamilyLinkScreenElementBase.$;
+
 class FamilyLinkNotice extends FamilyLinkScreenElementBase {
   static get is() {
     return 'family-link-notice-element';
@@ -78,7 +85,6 @@ class FamilyLinkNotice extends FamilyLinkScreenElementBase {
   /**
    * Returns default event target element.
    * @type {Object}
-   * @suppress {missingProperties}
    */
   get defaultControl() {
     return this.$.familyLinkDialog;

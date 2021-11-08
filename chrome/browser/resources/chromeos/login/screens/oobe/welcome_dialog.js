@@ -14,7 +14,16 @@
   [OobeI18nBehavior, OobeDialogHostBehavior],
   Polymer.Element);
 
-class OobeWelcomeDialog extends OobeWelcomeDialogBase {
+/**
+ * @typedef {{
+ *   title:  HTMLAnchorElement,
+ *   chromeVoxHint:  OobeModalDialogElement,
+ *   welcomeAnimation:  CrLottieElement,
+ * }}
+ */
+OobeWelcomeDialogBase.$;
+
+/* #export */ class OobeWelcomeDialog extends OobeWelcomeDialogBase {
 
   static get is() { return 'oobe-welcome-dialog'; }
 
@@ -112,9 +121,6 @@ class OobeWelcomeDialog extends OobeWelcomeDialogBase {
     this.dispatchEvent(new CustomEvent('launch-advanced-options', { bubbles: true, composed: true }));
   }
 
-  /**
-   * @suppress {missingProperties}
-   */
   attached() {
     this.titleLongTouchDetector_ = new LongTouchDetector(
         this.$.title, () => void this.onTitleLongTouch_());
@@ -131,9 +137,6 @@ class OobeWelcomeDialog extends OobeWelcomeDialogBase {
     this.focus();
   }
 
-  /**
-   * @suppress {missingProperties}
-   */
   focus() {
     if (!this.focusedElement_) {
       this.focusedElement_ = 'getStarted';
@@ -182,7 +185,6 @@ class OobeWelcomeDialog extends OobeWelcomeDialogBase {
 
   /**
    * Called to show the ChromeVox hint dialog.
-   * @suppress {missingProperties}
    */
   showChromeVoxHint() {
     this.$.chromeVoxHint.showDialog();
@@ -191,7 +193,6 @@ class OobeWelcomeDialog extends OobeWelcomeDialogBase {
 
   /**
    * Called to close the ChromeVox hint dialog.
-   * @suppress {missingProperties}
    */
   closeChromeVoxHint() {
     this.setVideoPlay_(true);

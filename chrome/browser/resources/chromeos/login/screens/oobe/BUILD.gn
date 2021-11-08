@@ -177,6 +177,7 @@ js_library("update.m") {
 js_library("welcome.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome.m.js" ]
   deps = [
+    ":welcome_dialog.m",
     "../..:display_manager.m",
     "../../components:oobe_select.m",
     "../../components:oobe_types.m",
@@ -187,6 +188,7 @@ js_library("welcome.m") {
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "../../components/dialogs:oobe_modal_dialog.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
   extra_deps = [ ":welcome_module" ]
   externs_list = [ "$externs_path/tts.js" ]
