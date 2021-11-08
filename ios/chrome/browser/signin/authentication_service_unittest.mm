@@ -46,6 +46,7 @@
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -711,7 +712,13 @@ TEST_F(AuthenticationServiceTest, SigninDisallowedCrash) {
 // Tests that reauth prompt is not set if the primary identity is restricted and
 // |OnPrimaryAccountRestricted| is forwarded.
 TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
+  id<AuthenticationServiceObserving> observer_delegate =
+      OCMStrictProtocolMock(@protocol(AuthenticationServiceObserving));
+  AuthenticationServiceObserverBridge observer_bridge(authentication_service(),
+                                                      observer_delegate);
+
   // Sign in.
+  OCMExpect([observer_delegate onPrimaryAccountRestricted]);
   SetExpectationsForSignInAndSync();
   authentication_service()->SignIn(identity(0));
   authentication_service()->GrantSyncConsent(identity(0));
@@ -722,8 +729,6 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
 
   // Set the authentication service as "In Background" and run the loop.
   base::RunLoop().RunUntilIdle();
-  id<AuthenticationServiceObserving> observer =
-      OCMStrictProtocolMock(@protocol(AuthenticationServiceObserving));
 
   // User is signed out (no corresponding identity), and reauth prompt is set.
   EXPECT_TRUE(identity_manager()
@@ -734,5 +739,5 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   EXPECT_FALSE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   EXPECT_FALSE(authentication_service()->ShouldReauthPromptForSignInAndSync());
-  OCMExpect([observer primaryAccountRestricted]);
+  EXPECT_OCMOCK_VERIFY(observer_delegate);
 }

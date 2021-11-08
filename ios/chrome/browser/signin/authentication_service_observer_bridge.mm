@@ -9,20 +9,17 @@
 #import "ios/chrome/browser/signin/authentication_service_observer_bridge.h"
 
 AuthenticationServiceObserverBridge::AuthenticationServiceObserverBridge(
+    AuthenticationService* service,
     id<AuthenticationServiceObserving> observer)
     : observer_(observer) {
   DCHECK(observer_);
+  scoped_observation_.Observe(service);
 }
 
 AuthenticationServiceObserverBridge::~AuthenticationServiceObserverBridge() =
     default;
 
-void AuthenticationServiceObserverBridge::Observe(
-    AuthenticationService* service) {
-  scoped_observation_.Observe(service);
-}
-
 void AuthenticationServiceObserverBridge::OnPrimaryAccountRestricted() {
-  if ([observer_ respondsToSelector:@selector(primaryAccountRestricted)])
-    [observer_ primaryAccountRestricted];
+  if ([observer_ respondsToSelector:@selector(onPrimaryAccountRestricted)])
+    [observer_ onPrimaryAccountRestricted];
 }
