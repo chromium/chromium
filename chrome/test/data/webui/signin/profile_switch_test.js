@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://profile-picker/lazy_load.js';
+
 import {ProfileSwitchElement} from 'chrome://profile-picker/lazy_load.js';
 
 import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';

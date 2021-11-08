@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LocalProfileCustomizationElement} from 'chrome://profile-picker/lazy_load.js';
+import 'chrome://profile-picker/lazy_load.js';
 
+import {LocalProfileCustomizationElement} from 'chrome://profile-picker/lazy_load.js';
 import {ManageProfilesBrowserProxyImpl, navigateToStep, ProfileCreationSteps, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

@@ -133,6 +133,7 @@ preprocess_if_expr("preprocess_gen") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "signin_shared_css.ts",
