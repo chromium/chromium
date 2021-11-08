@@ -7156,6 +7156,12 @@ crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure P
 # Sheriff 2021-10-04
 crbug.com/1226112 [ Win ] http/tests/text-autosizing/wide-iframe.html [ Pass Timeout ]
 
+# Temporarily disable to land DevTools changes
+crbug.com/1260776 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
+crbug.com/1260776 http/tests/devtools/network/script-as-text-loading-long-url.js [ Failure Pass ]
+crbug.com/1260776 http/tests/devtools/network/script-as-text-loading-with-caret.js [ Failure Pass ]
+crbug.com/1260776 http/tests/devtools/sources/debugger/async-callstack-network-initiator.js [ Failure Pass ]
+
 # DevTools roll
 crbug.com/1222126 http/tests/devtools/domdebugger/domdebugger-getEventListeners.js [ Skip ]
 crbug.com/1222126 http/tests/devtools/cache-storage/cache-live-update-list.js [ Skip ]
