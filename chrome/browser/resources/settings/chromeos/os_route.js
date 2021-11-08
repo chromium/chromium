@@ -250,6 +250,8 @@ cr.define('settings', function() {
     r.ACCOUNTS = createSubpage(
         r.OS_PRIVACY, mojom.MANAGE_OTHER_PEOPLE_SUBPAGE_PATH_V2,
         Subpage.kManageOtherPeopleV2);
+    r.SMART_PRIVACY = createSubpage(
+        r.OS_PRIVACY, mojom.SMART_PRIVACY_SUBPAGE_PATH, Subpage.kSmartPrivacy);
 
     // Languages and Input section.
     r.OS_LANGUAGES = createSection(

@@ -28,6 +28,15 @@
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <div class="hr"></div>
+      <template is="dom-if" if="[[isSnoopingProtectionEnabled_]]" restamp>
+        <cr-link-row id="smartPrivacySubpageTrigger"
+            on-click="onSmartPrivacy_"
+            label="$i18n{smartPrivacyTitle}"
+            sub-label="$i18n{smartPrivacySubtext}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <div class="hr"></div>
+      </template>
     </template>
 
 <if expr="_google_chrome">
@@ -129,6 +138,12 @@
       <settings-subpage page-title="$i18n{manageOtherPeople}">
         <settings-users-page prefs="{{prefs}}">
         </settings-users-page>
+      </settings-subpage>
+    </template>
+    <template is="dom-if" route-path="/osPrivacy/smartPrivacy">
+      <settings-subpage page-title="$i18n{smartPrivacyTitle}">
+        <settings-smart-privacy-page prefs="{{prefs}}">
+        </settings-smart-privacy-page>
       </settings-subpage>
     </template>
   </template>

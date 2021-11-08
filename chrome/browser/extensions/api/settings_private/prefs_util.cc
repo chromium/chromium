@@ -801,6 +801,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[::prefs::kUserPrintersAllowed] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
+  // Privacy settings.
+  (*s_allowlist)[::ash::prefs::kSnoopingProtectionEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+
 #else
   // System settings.
   (*s_allowlist)[::prefs::kBackgroundModeEnabled] =

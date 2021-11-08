@@ -130,6 +130,18 @@ Polymer({
     },
 
     /**
+     * True if snooping protection is enabled.
+     * @private
+     */
+    isSnoopingProtectionEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isSnoopingProtectionEnabled');
+      },
+      readOnly: true,
+    },
+
+    /**
      * Whether the user is in guest mode.
      * @private {boolean}
      */
@@ -284,6 +296,11 @@ Polymer({
   /** @private */
   onManageOtherPeople_() {
     Router.getInstance().navigateTo(routes.ACCOUNTS);
+  },
+
+  /** @private */
+  onSmartPrivacy_() {
+    Router.getInstance().navigateTo(routes.SMART_PRIVACY);
   },
 
   /**

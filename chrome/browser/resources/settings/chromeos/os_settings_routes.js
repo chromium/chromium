@@ -84,6 +84,7 @@
  *   SEARCH: !settings.Route,
  *   SEARCH_SUBPAGE: !settings.Route,
  *   SMART_LOCK: !settings.Route,
+ *   SMART_PRIVACY: !settings.Route,
  *   SMB_SHARES: !settings.Route,
  *   STORAGE: !settings.Route,
  *   STYLUS: !settings.Route,

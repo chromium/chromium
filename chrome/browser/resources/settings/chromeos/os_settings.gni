@@ -464,6 +464,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/os_privacy_page/os_privacy_page.html",
                                  "chrome/browser/resources/settings/chromeos/os_privacy_page/peripheral_data_access_brower_proxy.html",
                                  "chrome/browser/resources/settings/chromeos/os_privacy_page/peripheral_data_access_protection_dialog.html",
+                                 "chrome/browser/resources/settings/chromeos/os_privacy_page/smart_privacy_page.html",
                                  "chrome/browser/resources/settings/chromeos/os_reset_page/os_powerwash_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/os_reset_page/os_powerwash_dialog_esim_item.html",
                                  "chrome/browser/resources/settings/chromeos/os_reset_page/os_reset_browser_proxy.html",

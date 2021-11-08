@@ -254,8 +254,17 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"peripheralDataAccessProtectionDisableButton",
        IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL},
       {"privacyPageTitle", IDS_SETTINGS_PRIVACY_V2},
+      {"smartPrivacyTitle", IDS_OS_SETTINGS_SMART_PRIVACY_TITLE},
+      {"smartPrivacySubtext", IDS_OS_SETTINGS_SMART_PRIVACY_SUBTEXT},
+      {"smartPrivacySnoopingTitle",
+       IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE},
+      {"smartPrivacySnoopingSubtext",
+       IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddBoolean("isSnoopingProtectionEnabled",
+                          ash::features::IsSnoopingProtectionEnabled());
 
   html_source->AddString("suggestedContentLearnMoreURL",
                          chrome::kSuggestedContentLearnMoreURL);
