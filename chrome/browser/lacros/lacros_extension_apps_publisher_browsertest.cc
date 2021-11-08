@@ -8,7 +8,7 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/lacros/lacros_extension_apps_utility.h"
-#include "chrome/browser/lacros/window_utility.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #include "content/public/test/browser_test.h"

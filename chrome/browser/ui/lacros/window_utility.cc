@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/lacros/window_utility.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"

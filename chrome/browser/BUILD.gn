@@ -5131,8 +5131,6 @@ static_library("browser") {
       "lacros/web_contents_can_go_back_observer.h",
       "lacros/web_page_info_lacros.cc",
       "lacros/web_page_info_lacros.h",
-      "lacros/window_utility.cc",
-      "lacros/window_utility.h",
       "metrics/enrollment_status.h",
       "metrics/lacros_metrics_provider.cc",
       "metrics/lacros_metrics_provider.h",
@@ -5152,6 +5150,8 @@ static_library("browser") {
       "task_manager/providers/crosapi/task_manager_controller_lacros.h",
       "ui/lacros/window_properties.cc",
       "ui/lacros/window_properties.h",
+      "ui/lacros/window_utility.cc",
+      "ui/lacros/window_utility.h",
     ]
     deps += [
       "//chromeos/crosapi/cpp",

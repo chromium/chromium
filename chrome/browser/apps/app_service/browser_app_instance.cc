@@ -11,7 +11,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "extensions/common/constants.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/window_utility.h"
+#include "chrome/browser/ui/lacros/window_utility.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps {
