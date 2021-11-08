@@ -68,7 +68,7 @@ void SearchControllerImplNew::InitializeRankers() {
   ranker_->AddRanker(std::make_unique<CategoryUsageRanker>(profile_));
   ranker_->AddRanker(std::make_unique<TopMatchRanker>());
   ranker_->AddRanker(std::make_unique<FilteringRanker>());
-  ranker_->AddRanker(std::make_unique<RemovedResultsRanker>());
+  ranker_->AddRanker(std::make_unique<RemovedResultsRanker>(profile_));
 }
 
 void SearchControllerImplNew::Start(const std::u16string& query) {
@@ -120,11 +120,14 @@ void SearchControllerImplNew::InvokeResultAction(
   if (!result)
     return;
 
-  if (result->result_type() == ash::AppListSearchResultType::kOmnibox) {
-    // Special case: Omnibox results.
-    // These are handled by the Omnibox autocomplete controller. The Omnibox is
-    // unique amongst our search providers in that it has a backend which
-    // supports result removal.
+  // In the special case, actions are delegated to the result itself. This is
+  // when, for example, actions are handled by a provider backend, as is the
+  // case with Omnibox results.
+  //
+  // In the general case, actions are forwarded to the RemovedResultsRanker.
+  // Currently only "remove" actions are supported (and not e.g. "append"
+  // actions).
+  if (RemovedResultsRanker::ShouldDelegateToResult(result->result_type())) {
     result->InvokeAction(action);
   } else if (action == ash::SearchResultActionType::kRemove) {
     // All other result removals are handled by the ranking system.
