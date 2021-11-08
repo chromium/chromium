@@ -9,7 +9,7 @@
 import argparse
 import sys
 import io
-from os import path, getcwd
+from os import path, getcwd, makedirs
 from polymer import process_v3_ready
 
 _CWD = getcwd()
@@ -29,11 +29,13 @@ def main(argv):
   for js_file in args.js_files:
     # Detect file extension, since it can be either a .ts or .js file.
     extension = path.splitext(js_file)[1]
-    html_file = path.basename(js_file).replace(extension, '.html')
+    html_file = js_file[:-len(extension)] + '.html'
     result = process_v3_ready(
         path.join(in_folder, js_file), path.join(in_folder, html_file))
 
-    with io.open(path.join(out_folder, result[1]), mode='wb') as f:
+    out_folder_for_file = path.join(out_folder, path.dirname(js_file))
+    makedirs(out_folder_for_file, exist_ok=True)
+    with io.open(path.join(out_folder, js_file), mode='wb') as f:
       for l in result[0]:
         f.write(l.encode('utf-8'))
   return
