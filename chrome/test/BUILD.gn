@@ -1156,6 +1156,7 @@ if (!is_android && !is_fuchsia) {
       "//components/javascript_dialogs",
       "//components/language/core/browser",
       "//components/language/core/common",
+      "//components/lens",
       "//components/live_caption",
       "//components/live_caption:constants",
       "//components/lookalikes/core",
