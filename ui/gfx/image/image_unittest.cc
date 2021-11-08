@@ -19,7 +19,11 @@
 #include "base/mac/foundation_util.h"
 #include "skia/ext/skia_utils_ios.h"
 #elif defined(OS_MAC)
+#include <CoreGraphics/CoreGraphics.h>
+
 #include "base/mac/foundation_util.h"
+#include "base/mac/mac_util.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "skia/ext/skia_utils_mac.h"
 #endif
 
@@ -30,6 +34,15 @@ const bool kUsesSkiaNatively = false;
 #else
 const bool kUsesSkiaNatively = true;
 #endif
+
+#if defined(OS_MAC)
+bool IsSystemColorSpaceSRGB() {
+  CGColorSpaceRef color_space = base::mac::GetSystemColorSpace();
+  base::ScopedCFTypeRef<CFStringRef> name(CGColorSpaceCopyName(color_space));
+  return name &&
+         CFStringCompare(name, kCGColorSpaceSRGB, 0) == kCFCompareEqualTo;
+}
+#endif  // defined(OS_MAC)
 
 class ImageTest : public testing::Test {
  public:
@@ -430,6 +443,13 @@ TEST_F(ImageTest, CheckSkiaColor) {
 }
 
 TEST_F(ImageTest, SkBitmapConversionPreservesOrientation) {
+#if defined(OS_MAC)
+  LOG_IF(WARNING, !IsSystemColorSpaceSRGB())
+      << "This test is designed to pass with the sRGB color space, which is "
+         "not set for your main display currently. Thus, colors can be off by "
+         "too big a margin, and the test can fail.";
+#endif  // defined(OS_MAC)
+
   const int width = 50;
   const int height = 50;
   SkBitmap bitmap;
