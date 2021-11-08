@@ -55,6 +55,15 @@ class AccountManagerFacadeFactoryLacros {
     return ash_account_manager_.get();
   }
 
+  // Reset the pointers.
+  void Reset() {
+    // AccountManagerFacade depends on AccountManagerMojoService.
+    account_manager_facade_.reset();
+    // AccountManagerMojoService depends on AccountManager.
+    account_manager_mojo_service_.reset();
+    ash_account_manager_.reset();
+  }
+
  private:
   void InitializeAccountManagerFacade() {
     if (ash_account_manager_) {
@@ -81,15 +90,6 @@ class AccountManagerFacadeFactoryLacros {
             /*account_manager_for_tests=*/nullptr);
   }
 
-  // Reset the pointers.
-  void Reset() {
-    // AccountManagerFacade depends on AccountManagerMojoService.
-    account_manager_facade_.reset();
-    // AccountManagerMojoService depends on AccountManager.
-    account_manager_mojo_service_.reset();
-    ash_account_manager_.reset();
-  }
-
   std::unique_ptr<account_manager::AccountManagerFacadeImpl>
       account_manager_facade_;
   // Set only in tests:
@@ -105,15 +105,21 @@ AccountManagerFacadeFactoryLacros* GetAccountManagerFacadeFactoryLacros() {
 
 }  // namespace
 
+ScopedAshAccountManagerForTests::ScopedAshAccountManagerForTests() {
+  DCHECK(!MaybeGetAshAccountManagerForTests())  // IN-TEST
+      << "Nested ScopedAshAccountManagerForTests are not supported.";
+  GetAccountManagerFacadeFactoryLacros()
+      ->CreateAshAccountManagerForTests();  // IN-TEST
+}
+
+ScopedAshAccountManagerForTests::~ScopedAshAccountManagerForTests() {
+  GetAccountManagerFacadeFactoryLacros()->Reset();
+}
+
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     const std::string& profile_path) {
   // Multi-Login is disabled with Lacros. Always return the same instance.
   return GetAccountManagerFacadeFactoryLacros()->GetAccountManagerFacade();
-}
-
-void CreateAshAccountManagerForTests() {
-  GetAccountManagerFacadeFactoryLacros()
-      ->CreateAshAccountManagerForTests();  // IN-TEST
 }
 
 account_manager::AccountManager* MaybeGetAshAccountManagerForTests() {

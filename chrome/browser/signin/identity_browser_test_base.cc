@@ -28,7 +28,8 @@ class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
  public:
   void PreProfileInit() override {
     // Create and initialize Ash AccountManager.
-    CreateAshAccountManagerForTests();
+    scoped_ash_account_manager_ =
+        std::make_unique<ScopedAshAccountManagerForTests>();
     auto* account_manager = MaybeGetAshAccountManagerForTests();
     CHECK(account_manager);
     account_manager->InitializeInEphemeralMode(
@@ -54,6 +55,9 @@ class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
       }
     }
   }
+
+ private:
+  std::unique_ptr<ScopedAshAccountManagerForTests> scoped_ash_account_manager_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
