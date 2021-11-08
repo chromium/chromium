@@ -399,20 +399,16 @@ try_.chromium_android_builder(
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
 )
 
-try_.chromium_android_builder(
+try_.chromium_android_orchestrator_pair(
     name = "android-marshmallow-x86-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
-    # TODO(crbug.com/1251739): Go back to targeting one core amount after
-    # collecting experiment results.
-    cores = "16|32",
-    goma_jobs = goma.jobs.J300,
-    ssd = True,
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(),
-    # TODO(crbug/1202741)
-    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
+    orchestrator_cores = 4,
+    orchestrator_tryjob = try_.job(),
+    compilator_cores = 32,
+    compilator_goma_jobs = goma.jobs.J300,
+    compilator_name = "android-marshmallow-x86-rel-compilator",
 )
 
 try_.chromium_android_builder(
@@ -1315,20 +1311,6 @@ try_.chromium_linux_orchestrator_pair(
     compilator_cores = 16,
     compilator_goma_jobs = goma.jobs.J150,
     compilator_name = "linux-rel-compilator",
-)
-
-try_.chromium_android_orchestrator_pair(
-    name = "android-marshmallow-x86-rel-orchestrator",
-    main_list_view = "try",
-    use_java_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    orchestrator_cores = 4,
-    orchestrator_tryjob = try_.job(
-        experiment_percentage = 10,
-    ),
-    compilator_cores = 32,
-    compilator_goma_jobs = goma.jobs.J300,
-    compilator_name = "android-marshmallow-x86-rel-compilator",
 )
 
 try_.chromium_linux_builder(
