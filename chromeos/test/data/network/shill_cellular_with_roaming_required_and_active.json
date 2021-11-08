@@ -1,0 +1,11 @@
+{
+  "Type": "cellular",
+  "Cellular.ICCID": "test_iccid",
+  "Cellular.RoamingState": "home",
+  "Device": {
+    // The provider requiring roaming should only override the roaming state for
+    // the active SIM.
+    "Cellular.ICCID": "test_iccid",
+    "Cellular.ProviderRequiresRoaming": true
+  }
+}
