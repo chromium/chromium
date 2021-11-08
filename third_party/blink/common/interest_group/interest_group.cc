@@ -126,7 +126,7 @@ bool InterestGroup::IsValid() const {
     }
   }
 
-  return true;
+  return EstimateSize() < blink::mojom::kMaxInterestGroupSize;
 }
 
 size_t InterestGroup::EstimateSize() const {

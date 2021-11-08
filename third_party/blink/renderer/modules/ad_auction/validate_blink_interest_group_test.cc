@@ -479,4 +479,24 @@ TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
   EXPECT_FALSE(interest_group.IsValid());
 }
 
+TEST_F(ValidateBlinkInterestGroupTest, TooLarge) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  std::string long_string(51200, 'n');
+  blink_interest_group->name = String(long_string);
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, "size" /* expected_error_field_name */,
+      "51219" /* expected_error_field_value */,
+      "interest groups must be less than 51200 bytes" /* expected_error */);
+
+  EXPECT_FALSE(CanSerializeAndDeserialize(blink_interest_group));
+
+  // Almost too big enough should still work.
+  long_string = std::string(51200 - 20, 'n');
+  blink_interest_group->name = String(long_string);
+
+  ExpectInterestGroupIsValid(blink_interest_group);
+  EXPECT_TRUE(CanSerializeAndDeserialize(blink_interest_group));
+}
+
 }  // namespace blink

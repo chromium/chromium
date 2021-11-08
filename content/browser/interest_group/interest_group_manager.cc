@@ -35,14 +35,6 @@ namespace content {
 
 namespace {
 
-// The maximum interest group size that can be joined in bytes. Note that this
-// limit doesn't apply to interest group updates, whose size is goverened by
-// kMaxUpdateSize -- it may be possible to construct a set of updates such that
-// each update changes a different field of size kMaxUpdateSize, thus causing
-// the total bytes stored for a given interest group to somewhat exceed
-// kMaxInterestGroupSize.
-constexpr size_t kMaxInterestGroupSize = 50 * 1024;
-
 // 10 kb update size limit. We are potentially fetching many interest group
 // updates, so don't let this get too large.
 constexpr size_t kMaxUpdateSize = 10 * 1024;
@@ -90,9 +82,6 @@ InterestGroupManager::~InterestGroupManager() = default;
 
 void InterestGroupManager::JoinInterestGroup(blink::InterestGroup group,
                                              const GURL& joining_url) {
-  // TODO(crbug.com/1186444): Report error to devtools.
-  if (group.EstimateSize() > kMaxInterestGroupSize)
-    return;
   impl_.AsyncCall(&InterestGroupStorage::JoinInterestGroup)
       .WithArgs(std::move(group), std::move(joining_url));
 }

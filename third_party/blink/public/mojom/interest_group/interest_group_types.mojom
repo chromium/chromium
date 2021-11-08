@@ -17,6 +17,9 @@ struct InterestGroupAd {
   string? metadata;
 };
 
+// The maximum size of a valid interest group in bytes.
+const uint32 kMaxInterestGroupSize = 51200; // 50 * 1024
+
 // Interest group description, passed to JoinInterestGroup(). If an entry keyed
 // by (owner, name) already exists, we "merge" by overwriting specified fields,
 // leaving other existing fields intact.

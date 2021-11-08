@@ -44,29 +44,38 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
                                 String& error_field_name,
                                 String& error_field_value,
                                 String& error) {
+  size_t size = 0u;
+  size += group.owner->ToString().length();
+  size += group.name.length();
   if (group.owner->Protocol() != url::kHttpsScheme) {
-    error_field_name = String::FromUTF8("owner");
+    error_field_name = "owner";
     error_field_value = group.owner->ToString();
-    error = String::FromUTF8("owner origin must be HTTPS.");
+    error = "owner origin must be HTTPS.";
     return false;
   }
 
-  if (group.bidding_url && !IsUrlAllowed(*group.bidding_url, group)) {
-    error_field_name = String::FromUTF8("biddingUrl");
-    error_field_value = group.bidding_url->GetString();
-    error = String::FromUTF8(
-        "biddingUrl must have the same origin as the InterestGroup owner "
-        "and have no fragment identifier or embedded credentials.");
-    return false;
+  if (group.bidding_url) {
+    if (!IsUrlAllowed(*group.bidding_url, group)) {
+      error_field_name = "biddingUrl";
+      error_field_value = group.bidding_url->GetString();
+      error =
+          "biddingUrl must have the same origin as the InterestGroup owner "
+          "and have no fragment identifier or embedded credentials.";
+      return false;
+    }
+    size += group.bidding_url->GetString().length();
   }
 
-  if (group.update_url && !IsUrlAllowed(*group.update_url, group)) {
-    error_field_name = String::FromUTF8("updateUrl");
-    error_field_value = group.update_url->GetString();
-    error = String::FromUTF8(
-        "updateUrl must have the same origin as the InterestGroup owner "
-        "and have no fragment identifier or embedded credentials.");
-    return false;
+  if (group.update_url) {
+    if (!IsUrlAllowed(*group.update_url, group)) {
+      error_field_name = "updateUrl";
+      error_field_value = group.update_url->GetString();
+      error =
+          "updateUrl must have the same origin as the InterestGroup owner "
+          "and have no fragment identifier or embedded credentials.";
+      return false;
+    }
+    size += group.update_url->GetString().length();
   }
 
   if (group.trusted_bidding_signals_url) {
@@ -75,15 +84,23 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     // query parameter needs to be set as part of running an auction.
     if (!IsUrlAllowed(*group.trusted_bidding_signals_url, group) ||
         !group.trusted_bidding_signals_url->Query().IsEmpty()) {
-      error_field_name = String::FromUTF8("trustedBiddingSignalsUrl");
+      error_field_name = "trustedBiddingSignalsUrl";
       error_field_value = group.trusted_bidding_signals_url->GetString();
-      error = String::FromUTF8(
+      error =
           "trustedBiddingSignalsUrl must have the same origin as the "
           "InterestGroup owner and have no query string, fragment identifier "
-          "or embedded credentials.");
+          "or embedded credentials.";
       return false;
     }
+    size += group.trusted_bidding_signals_url->GetString().length();
   }
+
+  if (group.trusted_bidding_signals_keys) {
+    for (const String& key : *group.trusted_bidding_signals_keys)
+      size += key.length();
+  }
+
+  size += group.user_bidding_signals.length();
 
   if (group.ads) {
     for (WTF::wtf_size_t i = 0; i < group.ads.value().size(); ++i) {
@@ -91,10 +108,11 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
       if (!IsUrlAllowedForRenderUrls(render_url)) {
         error_field_name = String::Format("ad[%u].renderUrl", i);
         error_field_value = render_url.GetString();
-        error = String::FromUTF8(
-            "renderUrls must be HTTPS and have no embedded credentials.");
+        error = "renderUrls must be HTTPS and have no embedded credentials.";
         return false;
       }
+      size += render_url.GetString().length();
+      size += group.ads.value()[i]->metadata.length();
     }
   }
 
@@ -104,11 +122,20 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
       if (!IsUrlAllowedForRenderUrls(render_url)) {
         error_field_name = String::Format("adComponent[%u].renderUrl", i);
         error_field_value = render_url.GetString();
-        error = String::FromUTF8(
-            "renderUrls must be HTTPS and have no embedded credentials.");
+        error = "renderUrls must be HTTPS and have no embedded credentials.";
         return false;
       }
+      size += render_url.GetString().length();
+      size += group.ad_components.value()[i]->metadata.length();
     }
+  }
+
+  if (size >= mojom::blink::kMaxInterestGroupSize) {
+    error_field_name = "size";
+    error_field_value = String::Number(size);
+    error = String::Format("interest groups must be less than %u bytes",
+                           mojom::blink::kMaxInterestGroupSize);
+    return false;
   }
 
   return true;
