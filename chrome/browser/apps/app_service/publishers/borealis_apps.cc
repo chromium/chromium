@@ -116,6 +116,15 @@ void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
   }
 }
 
+bool IsBorealisLauncherAllowed(Profile* profile) {
+  return borealis::BorealisService::GetForProfile(profile)
+             ->Features()
+             .IsAllowed() &&
+         !borealis::BorealisService::GetForProfile(profile)
+              ->Features()
+              .IsEnabled();
+}
+
 }  // namespace
 
 namespace apps {
@@ -131,10 +140,8 @@ BorealisApps::BorealisApps(AppServiceProxy* proxy)
                             apps::mojom::AppType::kBorealis);
 
   std::vector<std::unique_ptr<App>> apps;
-  apps.push_back(CreateBorealisLauncher(
-      profile_, borealis::BorealisService::GetForProfile(profile_)
-                    ->Features()
-                    .IsAllowed()));
+  apps.push_back(
+      CreateBorealisLauncher(profile_, IsBorealisLauncherAllowed(profile_)));
 
   for (const auto& pair :
        Registry()->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
@@ -243,10 +250,8 @@ void BorealisApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
     apps::mojom::ConnectOptionsPtr opts) {
   std::vector<apps::mojom::AppPtr> apps;
-  apps.push_back(GetBorealisLauncher(
-      profile_, borealis::BorealisService::GetForProfile(profile_)
-                    ->Features()
-                    .IsAllowed()));
+  apps.push_back(
+      GetBorealisLauncher(profile_, IsBorealisLauncherAllowed(profile_)));
 
   for (const auto& pair :
        Registry()->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
@@ -363,6 +368,16 @@ void BorealisApps::OnRegistryUpdated(
         std::make_unique<App>(AppType::kBorealis, app_id);
     app->readiness = Readiness::kUninstalledByUser;
     AppPublisher::Publish(std::move(app));
+
+    // If main app is removed, re-add the Borealis launcher.
+    if (app_id == borealis::kBorealisMainAppId) {
+      bool borealis_allowed = borealis::BorealisService::GetForProfile(profile_)
+                                  ->Features()
+                                  .IsAllowed();
+      PublisherBase::Publish(GetBorealisLauncher(profile_, borealis_allowed),
+                             subscribers_);
+      AppPublisher::Publish(CreateBorealisLauncher(profile_, borealis_allowed));
+    }
   }
 
   for (const std::string& app_id : inserted_apps) {
@@ -371,6 +386,19 @@ void BorealisApps::OnRegistryUpdated(
                              subscribers_);
       AppPublisher::Publish(
           CreateApp(*registration, /*generate_new_icon_key=*/true));
+    }
+    // If main app is installed, remove the Borealis launcher.
+    if (app_id == borealis::kBorealisMainAppId) {
+      apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
+      mojom_app->app_type = apps::mojom::AppType::kBorealis;
+      mojom_app->app_id = borealis::kBorealisAppId;
+      mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
+      PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+      std::unique_ptr<App> app =
+          std::make_unique<App>(AppType::kBorealis, app_id);
+      app->readiness = Readiness::kUninstalledByUser;
+      AppPublisher::Publish(std::move(app));
     }
   }
 }
