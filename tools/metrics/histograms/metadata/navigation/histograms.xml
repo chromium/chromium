@@ -1199,11 +1199,18 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Navigation.SecureSchemeHasSSLStatus" enum="BooleanPresent"
     expires_after="M85">
+  <obsolete>
+    Removed November 2021.
+  </obsolete>
   <owner>jam@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     True counts the events when a https URL commits with a SSL certificate.
     False is when the certificate is missing. This should be at 100%, anything
     less is probably a bug.
+
+    This histogram is recorded when the primary main frame's renderer navigated
+    to https scheme page without error.
   </summary>
 </histogram>
 

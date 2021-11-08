@@ -1405,12 +1405,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
 
   NotifyNavigationEntryCommitted(details);
 
-  if (active_entry->GetURL().SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-      !navigation_request->DidEncounterError()) {
-    UMA_HISTOGRAM_BOOLEAN("Navigation.SecureSchemeHasSSLStatus",
-                          !!active_entry->GetSSL().certificate);
-  }
-
   if (overriding_user_agent_changed)
     delegate_->UpdateOverridingUserAgent();
 
@@ -1678,13 +1672,6 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
       // only tildes. Until we understand that better, don't copy the cert in
       // this case.
       new_entry->GetSSL() = SSLStatus();
-
-      if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-          !request->DidEncounterError()) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.SecureSchemeHasSSLStatus.NewPageInPageOriginMismatch",
-            !!new_entry->GetSSL().certificate);
-      }
     }
 
     // It is expected that |frame_entry| is now owned by |new_entry|. This means
@@ -1692,12 +1679,6 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     // due to the local variable |frame_entry|, and another due to |new_entry|
     // also retaining one. This should never fail, because it's the main frame.
     CHECK(!frame_entry->HasOneRef() && frame_entry->HasAtLeastOneRef());
-
-    if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        !request->DidEncounterError()) {
-      UMA_HISTOGRAM_BOOLEAN("Navigation.SecureSchemeHasSSLStatus.NewPageInPage",
-                            !!new_entry->GetSSL().certificate);
-    }
   }
 
   // If this is an activation navigation from a prerendered page, transfer the
@@ -1729,13 +1710,6 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
 
     new_entry->GetSSL() =
         SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
-
-    if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        !request->DidEncounterError()) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Navigation.SecureSchemeHasSSLStatus.NewPagePendingEntryMatches",
-          !!new_entry->GetSSL().certificate);
-    }
   }
 
   // For cross-document commits with no matching pending entry, create a new
@@ -1763,13 +1737,6 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
 
     new_entry->GetSSL() =
         SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
-
-    if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        !request->DidEncounterError()) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Navigation.SecureSchemeHasSSLStatus.NewPageNoMatchingEntry",
-          !!new_entry->GetSSL().certificate);
-    }
   }
 
   // TODO(crbug.com/1179428) - determine which parts of the entry need to be set
@@ -1872,22 +1839,6 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
       entry->GetSSL() =
           SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
     }
-
-    if (params.url.SchemeIs(url::kHttpsScheme) &&
-        !request->DidEncounterError()) {
-      bool has_cert = !!entry->GetSSL().certificate;
-      if (is_same_document) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.SecureSchemeHasSSLStatus."
-            "ExistingPageSameDocumentIntendedAsNew",
-            has_cert);
-      } else {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.SecureSchemeHasSSLStatus."
-            "ExistingPageDifferentDocumentIntendedAsNew",
-            has_cert);
-      }
-    }
   } else if (const int nav_entry_id = request->commit_params().nav_entry_id) {
     // This is a browser-initiated navigation (back/forward/reload).
     entry = GetEntryWithUniqueID(nav_entry_id);
@@ -1917,31 +1868,6 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
         entry->GetSSL() = SSLStatus();
       }
     }
-
-    if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        !request->DidEncounterError()) {
-      bool has_cert = !!entry->GetSSL().certificate;
-      if (is_same_document && was_restored) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.SecureSchemeHasSSLStatus."
-            "ExistingPageSameDocumentRestoredBrowserInitiated",
-            has_cert);
-      } else if (is_same_document && !was_restored) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.SecureSchemeHasSSLStatus."
-            "ExistingPageSameDocumentBrowserInitiated",
-            has_cert);
-      } else if (!is_same_document && was_restored) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.SecureSchemeHasSSLStatus."
-            "ExistingPageRestoredBrowserInitiated",
-            has_cert);
-      } else {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.SecureSchemeHasSSLStatus.ExistingPageBrowserInitiated",
-            has_cert);
-      }
-    }
   } else {
     // This is renderer-initiated. The only kinds of renderer-initated
     // navigations that are EXISTING_ENTRY are same-document navigations that
@@ -1963,22 +1889,6 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     if (!is_same_document)
       entry->GetSSL() =
           SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
-
-    if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
-        !request->DidEncounterError()) {
-      bool has_cert = !!entry->GetSSL().certificate;
-      if (is_same_document) {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.SecureSchemeHasSSLStatus."
-            "ExistingPageSameDocumentRendererInitiated",
-            has_cert);
-      } else {
-        UMA_HISTOGRAM_BOOLEAN(
-            "Navigation.SecureSchemeHasSSLStatus."
-            "ExistingPageDifferentDocumentRendererInitiated",
-            has_cert);
-      }
-    }
   }
   DCHECK(entry);
 

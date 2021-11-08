@@ -8125,6 +8125,9 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="NavigationType" separator=".">
+  <obsolete>
+    Removed as of November 2021.
+  </obsolete>
   <suffix name="ExistingPageBrowserInitiated"
       label="existing page browser-initiated navigation"/>
   <suffix name="ExistingPageDifferentDocumentIntendedAsNew"
