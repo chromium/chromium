@@ -363,12 +363,6 @@
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_BLOCKED_LIST" desc="Summary text explaining that mobile view of sites will be requested by default. To be shown in the list of permission categories.">
     Off
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_DESKTOP_SITE_ALLOW" desc="The description for the request desktop view for a specific site dialog.">
-    Always request desktop view for a specific site.
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_DESKTOP_SITE_BLOCK" desc="The description for the request mobile view for a specific site dialog.">
-    Always request mobile view for a specific site.
-  </message>
 
   <!-- Idle Detection -->
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_IDLE_DETECTION_ASK" desc="The description for the option to allow sites to ask for permission to access your activity state">

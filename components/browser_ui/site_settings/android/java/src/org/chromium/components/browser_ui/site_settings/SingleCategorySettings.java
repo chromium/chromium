@@ -622,11 +622,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             assert WebsitePreferenceBridge.isCategoryEnabled(
                     browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT);
             resource = R.string.website_settings_add_site_description_auto_dark_block;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE)) {
-            resource = WebsitePreferenceBridge.isCategoryEnabled(
-                               browserContextHandle, ContentSettingsType.REQUEST_DESKTOP_SITE)
-                    ? R.string.website_settings_add_site_description_desktop_site_block
-                    : R.string.website_settings_add_site_description_desktop_site_allow;
         }
         assert resource > 0;
         return getString(resource);
@@ -728,8 +723,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT)
                 && WebsitePreferenceBridge.isCategoryEnabled(
                         browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT)) {
-            allowSpecifyingExceptions = true;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE)) {
             allowSpecifyingExceptions = true;
         }
         if (allowSpecifyingExceptions) {
