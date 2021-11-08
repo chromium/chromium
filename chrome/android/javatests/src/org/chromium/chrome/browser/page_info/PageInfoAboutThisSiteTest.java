@@ -115,8 +115,9 @@ public class PageInfoAboutThisSiteTest {
         mTestServerRule.setServerUsesHttps(true);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
 
-        RecordHistogram.forgetHistogramForTesting("Security.PageInfo.TimeOpen.AboutThisSite");
-        RecordHistogram.forgetHistogramForTesting("Security.PageInfo.TimeOpen.NoAboutThisSite");
+        RecordHistogram.forgetHistogramForTesting("Security.PageInfo.TimeOpen.AboutThisSiteShown");
+        RecordHistogram.forgetHistogramForTesting(
+                "Security.PageInfo.TimeOpen.AboutThisSiteNotShown");
     }
 
     private void openPageInfo() {
