@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher_impl.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -34,6 +35,6 @@ PasswordScriptsFetcherFactory::GetForBrowserContext(
 KeyedService* PasswordScriptsFetcherFactory::BuildServiceInstanceFor(
     content::BrowserContext* browser_context) const {
   return new password_manager::PasswordScriptsFetcherImpl(
-      browser_context->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
+      version_info::GetVersion(), browser_context->GetDefaultStoragePartition()
+                                      ->GetURLLoaderFactoryForBrowserProcess());
 }

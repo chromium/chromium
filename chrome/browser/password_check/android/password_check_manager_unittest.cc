@@ -95,15 +95,10 @@ class MockPasswordScriptsFetcher
 
   MOCK_METHOD(void,
               FetchScriptAvailability,
-              (const url::Origin&,
-               const base::Version&,
-               base::OnceCallback<void(bool)>),
+              (const url::Origin&, base::OnceCallback<void(bool)>),
               (override));
 
-  MOCK_METHOD(bool,
-              IsScriptAvailable,
-              (const url::Origin&, const base::Version&),
-              (const override));
+  MOCK_METHOD(bool, IsScriptAvailable, (const url::Origin&), (const override));
 };
 
 BulkLeakCheckService* CreateAndUseBulkLeakCheckService(

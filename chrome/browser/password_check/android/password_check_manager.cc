@@ -21,7 +21,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
-#include "components/version_info/version_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -296,8 +295,7 @@ CompromisedCredentialForUI PasswordCheckManager::MakeUICredential(
   ui_credential.has_startable_script =
       !credential.username.empty() && ShouldFetchPasswordScripts() &&
       password_script_fetcher_->IsScriptAvailable(
-          url::Origin::Create(ui_credential.url.DeprecatedGetOriginAsURL()),
-          version_info::GetVersion());
+          url::Origin::Create(ui_credential.url.DeprecatedGetOriginAsURL()));
   ui_credential.has_auto_change_button =
       ui_credential.has_startable_script && IsEligibleForAutoChange(credential);
 
