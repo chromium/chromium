@@ -740,9 +740,43 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
     EXPECT_FALSE(overview_grid->IsShowingDesksTemplatesGrid());
 }
 
-// Tests that the SaveDeskAsTemplate button is disabled when the max number of
-// templates has been reached.
-TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonDisabledOnMaxTemplates) {
+// Tests that the save desk as template button is disabled when the maximum
+// number of templates has been reached.
+TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonDisabled) {
+  // Create a test window in the current desk.
+  auto test_window = CreateTestWindow();
+
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  // Open overview.
+  ToggleOverview();
+  WaitForUI();
+  ASSERT_TRUE(GetOverviewSession());
+  auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
+  EXPECT_TRUE(save_template->IsVisible());
+  ClickOnView(save_template->GetContentsView());
+  // The desks templates grid is now visible and `save_template` is no longer
+  // visible, so exit overview to be able to click on it again.
+  ToggleOverview();
+  // Verify that the entry has been added.
+  ASSERT_EQ(1ul, GetAllEntries().size());
+
+  // Verify that the button is disabled after the maximum number of templates
+  // have been added.
+  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template3", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template4", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template5", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template6", base::Time::Now());
+  ToggleOverview();
+  ASSERT_EQ(6ul, GetAllEntries().size());
+  auto* button = static_cast<PillButton*>(
+      GetSaveDeskAsTemplateButtonForRoot(root)->GetContentsView());
+  EXPECT_EQ(views::Button::STATE_DISABLED, button->GetState());
+}
+
+// Tests that clicking the save desk as template button shows the templates
+// grid.
+TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonShowsDesksTemplatesGrid) {
   // There are no saved template entries and one test window initially.
   auto test_window = CreateTestWindow();
   ToggleOverview();
@@ -755,20 +789,12 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonDisabledOnMaxTemplates) {
   ASSERT_TRUE(save_desk_as_template_widget);
   EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
 
-  // Verify that the entry has been added.
+  // Click on `save_desk_as_template_widget` button.
   ClickOnView(save_desk_as_template_widget->GetContentsView());
   ASSERT_EQ(1ul, GetAllEntries().size());
 
-  // Verify that the button is disabled after 5 more entries are added.
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
-  ClickOnView(save_desk_as_template_widget->GetContentsView());
-  ASSERT_EQ(6ul, GetAllEntries().size());
-  auto* button =
-      static_cast<PillButton*>(save_desk_as_template_widget->GetContentsView());
-  EXPECT_EQ(views::Button::STATE_DISABLED, button->GetState());
+  // Expect that the Desk Templates grid is visible.
+  EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
 }
 
 // Tests that launching templates from the templates grid functions correctly.

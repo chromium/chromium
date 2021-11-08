@@ -215,9 +215,12 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
   // to display the Templates grid after a template has been added.
 
   // Update the button here in case it has been disabled.
-  for (auto& overview_grid : overview_session_->grid_list()) {
+  const auto& grid_list = overview_session_->grid_list();
+  DCHECK(!grid_list.empty());
+  overview_session_->ShowDesksTemplatesGrids(
+      grid_list[0]->desks_bar_view()->IsZeroState());
+  for (auto& overview_grid : grid_list)
     overview_grid->UpdateSaveDeskAsTemplateButton();
-  }
 }
 
 }  // namespace ash
