@@ -273,8 +273,12 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
     command_line->AppendSwitch(chromeos::switches::kLoginManager);
     command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
     // The test app has to be allowlisted for sign-in screen.
+    // This test is intentionally not migrated to the new
+    // kAllowlistedExtensionID switch to test that the deprecated one keeps
+    // working.
     command_line->AppendSwitchASCII(
-        extensions::switches::kAllowlistedExtensionID, kTestExtensionId);
+        extensions::switches::kDEPRECATED_AllowlistedExtensionID,
+        kTestExtensionId);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

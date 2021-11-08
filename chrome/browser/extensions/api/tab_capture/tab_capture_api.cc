@@ -134,6 +134,18 @@ Browser* GetLastActiveBrowser(const Profile* profile,
   return target_browser;
 }
 
+// Get the id of the allowlisted extension. At the moment two switches can
+// contain it. Prioritize the non-deprecated one.
+std::string GetAllowlistedExtensionID() {
+  std::string id = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      switches::kAllowlistedExtensionID);
+  if (id.empty()) {
+    id = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+        switches::kDEPRECATED_AllowlistedExtensionID);
+  }
+  return id;
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
@@ -178,8 +190,7 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   if (!extension()->permissions_data()->HasAPIPermissionForTab(
           sessions::SessionTabHelper::IdForTab(target_contents).id(),
           mojom::APIPermissionID::kTabCaptureForTab) &&
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kAllowlistedExtensionID) != extension_id) {
+      (GetAllowlistedExtensionID() != extension_id)) {
     return RespondNow(Error(kGrantError));
   }
 
@@ -254,8 +265,7 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
   if (!extension()->permissions_data()->HasAPIPermissionForTab(
           sessions::SessionTabHelper::IdForTab(target_contents).id(),
           mojom::APIPermissionID::kTabCaptureForTab) &&
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kAllowlistedExtensionID) != extension_id) {
+      (GetAllowlistedExtensionID() != extension_id)) {
     return RespondNow(Error(kGrantError));
   }
 
