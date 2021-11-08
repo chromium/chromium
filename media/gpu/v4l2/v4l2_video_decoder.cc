@@ -689,45 +689,6 @@ CroStatus V4L2VideoDecoder::ContinueChangeResolution(
     return CroStatus::Codes::kFailedToChangeResolution;
   }
 
-  // Some drivers override our requested buffer size. We need to check if the
-  // new buffer size is larger than the buffers we currently hold. If so, we
-  // need to reallocate buffers, otherwise we might end up with insufficient
-  // space.
-  size_t original_sizeimage = 0;
-  {
-    auto input_v4l2_buffer = input_queue_->GetFreeBuffer();
-    if (!input_v4l2_buffer) {
-      VLOGF(1) << "There is no free V4L2 buffer.";
-      SetState(State::kError);
-      return CroStatus::Codes::kFailedToChangeResolution;
-    }
-    original_sizeimage = input_v4l2_buffer->GetPlaneSize(0);
-  }
-
-  const auto format = input_queue_->GetFormat().first;
-  if (!format) {
-    VLOGF(1) << "Failed to get input format.";
-    SetState(State::kError);
-    return CroStatus::Codes::kFailedToChangeResolution;
-  }
-
-  const auto new_sizeimage = format->fmt.pix_mp.plane_fmt[0].sizeimage;
-  if (original_sizeimage < new_sizeimage) {
-    DVLOGF(3) << "Buffer size increased. Reallocating buffers.";
-
-    if (!input_queue_->DeallocateBuffers()) {
-      SetState(State::kError);
-      return CroStatus::Codes::kFailedToChangeResolution;
-    }
-
-    if (input_queue_->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP) ==
-        0) {
-      VLOGF(1) << "Failed to request input buffers.";
-      SetState(State::kError);
-      return CroStatus::Codes::kFailedToChangeResolution;
-    }
-  }
-
   if (!SetupOutputFormat(pic_size, visible_rect)) {
     VLOGF(1) << "Failed to setup output format.";
     SetState(State::kError);
