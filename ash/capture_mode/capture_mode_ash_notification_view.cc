@@ -23,9 +23,6 @@ CaptureModeAshNotificationView::CaptureModeAshNotificationView(
   // Creates the extra view which will depend on the type of the notification.
   if (!notification.image().IsEmpty())
     CreateExtraView();
-
-  // Observes image container to make changes to the extra view if necessary.
-  image_container_view()->AddObserver(this);
 }
 
 CaptureModeAshNotificationView::~CaptureModeAshNotificationView() = default;
@@ -68,23 +65,6 @@ void CaptureModeAshNotificationView::Layout() {
   }
 
   extra_view_->SetBoundsRect(extra_view_bounds);
-}
-
-void CaptureModeAshNotificationView::OnViewVisibilityChanged(
-    views::View* observed_view,
-    views::View* starting_view) {
-  if (observed_view == image_container_view() &&
-      starting_view == image_container_view()) {
-    if (!image_container_view()->GetVisible())
-      extra_view_ = nullptr;
-    else if (image_container_view()->children().empty())
-      CreateExtraView();
-  }
-}
-
-void CaptureModeAshNotificationView::OnViewIsDeleting(View* observed_view) {
-  DCHECK_EQ(observed_view, image_container_view());
-  views::View::RemoveObserver(this);
 }
 
 void CaptureModeAshNotificationView::CreateExtraView() {

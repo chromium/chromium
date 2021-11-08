@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ui/message_center/views/notification_view.h"
-#include "ui/views/view_observer.h"
 
 namespace ash {
 
@@ -16,8 +15,7 @@ namespace ash {
 // notification by either showing a banner on top of the notification image for
 // image captures, or a play icon on top of the video thumbnail.
 class ASH_EXPORT CaptureModeNotificationView
-    : public message_center::NotificationView,
-      public views::ViewObserver {
+    : public message_center::NotificationView {
  public:
   CaptureModeNotificationView(const message_center::Notification& notification,
                               CaptureModeType capture_type);
@@ -42,11 +40,6 @@ class ASH_EXPORT CaptureModeNotificationView
 
   // message_center::NotificationView:
   void Layout() override;
-
-  // views::ViewObserver:
-  void OnViewVisibilityChanged(View* observed_view,
-                               View* starting_view) override;
-  void OnViewIsDeleting(View* observed_view) override;
 
  private:
   void CreateExtraView();
