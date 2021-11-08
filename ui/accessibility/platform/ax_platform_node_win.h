@@ -1244,7 +1244,6 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
  private:
   AXPlatformNodeWin* GetParentPlatformNodeWin() const;
 
-  bool IsWebAreaForPresentationalIframe();
   bool ShouldNodeHaveFocusableState() const;
   int GetAnnotationTypeImpl() const;
   void AugmentNameWithImageAnnotationIfApplicable(std::wstring* name) const;

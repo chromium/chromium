@@ -320,6 +320,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
                                     int col_index) const override;
   absl::optional<int32_t> CellIndexToId(int cell_index) const override;
   bool IsCellOrHeaderOfAriaGrid() const override;
+  bool IsWebAreaForPresentationalIframe() const override;
 
   // Ordered-set-like and item-like nodes.
   bool IsOrderedSetItem() const override;
@@ -376,7 +377,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
   std::set<ui::AXPlatformNode*> GetNodesForNodeIds(
       const std::set<int32_t>& ids);
 
-  AXPlatformNodeDelegate* GetParentDelegate();
+  AXPlatformNodeDelegate* GetParentDelegate() const;
 };
 
 }  // namespace ui

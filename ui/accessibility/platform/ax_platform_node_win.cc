@@ -5297,7 +5297,7 @@ int AXPlatformNodeWin::MSAARole() {
   // If this is a web area for a presentational iframe, give it a role of
   // something other than DOCUMENT so that the fact that it's a separate doc
   // is not exposed to AT.
-  if (IsWebAreaForPresentationalIframe())
+  if (GetDelegate()->IsWebAreaForPresentationalIframe())
     return ROLE_SYSTEM_GROUPING;
 
   switch (GetRole()) {
@@ -5823,17 +5823,6 @@ AXPlatformNodeWin* AXPlatformNodeWin::GetParentPlatformNodeWin() const {
       AXPlatformNode::FromNativeViewAccessible(GetParent()));
 }
 
-bool AXPlatformNodeWin::IsWebAreaForPresentationalIframe() {
-  if (!IsPlatformDocument())
-    return false;
-
-  AXPlatformNodeBase* parent = FromNativeViewAccessible(GetParent());
-  if (!parent)
-    return false;
-
-  return parent->GetRole() == ax::mojom::Role::kIframePresentational;
-}
-
 int32_t AXPlatformNodeWin::ComputeIA2State() {
   int32_t ia2_state = IA2_STATE_OPAQUE;
 
@@ -5908,7 +5897,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
   // If this is a web area for a presentational iframe, give it a role of
   // something other than DOCUMENT so that the fact that it's a separate doc
   // is not exposed to AT.
-  if (IsWebAreaForPresentationalIframe()) {
+  if (GetDelegate()->IsWebAreaForPresentationalIframe()) {
     return ROLE_SYSTEM_GROUPING;
   }
 
@@ -6144,7 +6133,7 @@ std::wstring AXPlatformNodeWin::UIAAriaRole() {
   // If this is a web area for a presentational iframe, give it a role of
   // something other than document so that the fact that it's a separate doc
   // is not exposed to AT.
-  if (IsWebAreaForPresentationalIframe())
+  if (GetDelegate()->IsWebAreaForPresentationalIframe())
     return L"group";
 
   switch (GetRole()) {
@@ -6843,7 +6832,7 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
   // If this is a web area for a presentational iframe, give it a role of
   // something other than document so that the fact that it's a separate doc
   // is not exposed to AT.
-  if (IsWebAreaForPresentationalIframe())
+  if (GetDelegate()->IsWebAreaForPresentationalIframe())
     return UIA_GroupControlTypeId;
 
   switch (GetRole()) {

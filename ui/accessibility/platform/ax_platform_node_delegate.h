@@ -539,6 +539,9 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // or treegrid.
   virtual bool IsCellOrHeaderOfAriaGrid() const = 0;
 
+  // True if this is a web area, and its grandparent is a presentational iframe.
+  virtual bool IsWebAreaForPresentationalIframe() const = 0;
+
   // Ordered-set-like and item-like nodes.
   virtual bool IsOrderedSetItem() const = 0;
   virtual bool IsOrderedSet() const = 0;
