@@ -33,13 +33,9 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
     mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver =
         remote.InitWithNewPipeAndPassReceiver();
 
-    manager_->CreatePaymentRequest(web_contents()->GetMainFrame(),
-                                   std::move(delegate), std::move(receiver),
-                                   nullptr);
-
-    // Return the most recently inserted PaymentRequest, which should be the
-    // one created above.
-    return manager_->GetPaymentRequestsForTesting().rbegin()->first;
+    return manager_->CreateAndReturnPaymentRequestForTesting(
+        web_contents()->GetMainFrame(), std::move(delegate),
+        std::move(receiver), nullptr);
   }
 
   // The PaymentRequestWebContentsManager under test.
@@ -56,8 +52,7 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
   autofill::TestPersonalDataManager test_personal_data_manager_;
 };
 
-// Disabled due to test flakiness. https://crbug.com/1267079.
-TEST_F(PaymentRequestWebContentsManagerTest, DISABLED_SPCTransactionMode) {
+TEST_F(PaymentRequestWebContentsManagerTest, SPCTransactionMode) {
   // Initially there should be no automated transaction mode enabled.
   PaymentRequest* request1 = CreateAndReturnPaymentRequest();
   ASSERT_EQ(request1->spc_transaction_mode(), SPCTransactionMode::NONE);
