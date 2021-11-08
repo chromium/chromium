@@ -156,7 +156,7 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
   // scale factor has changed, then recompute the on-screen font size. Since
   // the computation of layout attributes uses the text metrics, we need to
   // update them before updating the layout attributes.
-  if (needs_text_metrics_update_) {
+  if (needs_text_metrics_update_ || needs_transform_update_) {
     // Recompute the transform before updating font and corresponding
     // metrics. At this point our bounding box may be incorrect, so
     // any box relative transforms will be incorrect. Since the scaled
@@ -170,6 +170,7 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
     }
 
     UpdateFont();
+    SetNeedsCollectInlines(true);
     needs_text_metrics_update_ = false;
   }
 
