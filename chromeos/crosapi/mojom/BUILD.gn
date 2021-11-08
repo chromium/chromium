@@ -105,7 +105,7 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.IconType"
-          cpp = "::apps::mojom::IconType"
+          cpp = "::apps::IconType"
         },
         {
           mojom = "crosapi.mojom.IconValue"
@@ -162,6 +162,7 @@ mojom("mojom") {
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
+        "//components/services/app_service/public/cpp/icon_types.h",
         "//components/services/app_service/public/mojom/types.mojom.h",
       ]
       traits_sources = [
@@ -170,6 +171,7 @@ mojom("mojom") {
       ]
       traits_public_deps = [
         "//components/services/app_service/public/cpp:browser_app_instance_registry_update",
+        "//components/services/app_service/public/cpp:icon_types",
         "//components/services/app_service/public/mojom:mojom",
       ]
     },

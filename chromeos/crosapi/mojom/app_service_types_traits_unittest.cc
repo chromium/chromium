@@ -700,34 +700,34 @@ TEST(AppServiceTypesTraitsTest, RoundTripUninstallSource) {
 
 // Test that serialization and deserialization works with icon type.
 TEST(AppServiceTypesTraitsTest, RoundTripIconType) {
-  apps::mojom::IconType input;
+  apps::IconType input;
   {
-    input = apps::mojom::IconType::kUnknown;
-    apps::mojom::IconType output;
+    input = apps::IconType::kUnknown;
+    apps::IconType output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
         input, output));
-    EXPECT_EQ(output, apps::mojom::IconType::kUnknown);
+    EXPECT_EQ(output, apps::IconType::kUnknown);
   }
   {
-    input = apps::mojom::IconType::kUncompressed;
-    apps::mojom::IconType output;
+    input = apps::IconType::kUncompressed;
+    apps::IconType output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
         input, output));
-    EXPECT_EQ(output, apps::mojom::IconType::kUncompressed);
+    EXPECT_EQ(output, apps::IconType::kUncompressed);
   }
   {
-    input = apps::mojom::IconType::kCompressed;
-    apps::mojom::IconType output;
+    input = apps::IconType::kCompressed;
+    apps::IconType output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
         input, output));
-    EXPECT_EQ(output, apps::mojom::IconType::kCompressed);
+    EXPECT_EQ(output, apps::IconType::kCompressed);
   }
   {
-    input = apps::mojom::IconType::kStandard;
-    apps::mojom::IconType output;
+    input = apps::IconType::kStandard;
+    apps::IconType output;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconType>(
         input, output));
-    EXPECT_EQ(output, apps::mojom::IconType::kStandard);
+    EXPECT_EQ(output, apps::IconType::kStandard);
   }
 }
 

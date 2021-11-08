@@ -48,7 +48,7 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
                     GetMenuModelCallback callback) override;
   void LoadIcon(const std::string& app_id,
                 apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
+                apps::IconType icon_type,
                 int32_t size_hint_in_dip,
                 LoadIconCallback callback) override;
   void OpenNativeSettings(const std::string& app_id) override;

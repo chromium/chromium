@@ -61,8 +61,6 @@ component("app_update") {
     "app_update.h",
     "capability_access_update.cc",
     "capability_access_update.h",
-    "icon_types.cc",
-    "icon_types.h",
   ]
 
   defines = [ "IS_APP_UPDATE_IMPL" ]
@@ -73,6 +71,7 @@ component("app_update") {
   ]
 
   deps = [
+    ":icon_types",
     ":intents",
     "//ui/gfx",
   ]
@@ -139,6 +138,20 @@ source_set("icon_loader_test_support") {
   ]
 
   deps = [ ":icon_loader" ]
+}
+
+component("icon_types") {
+  output_name = "ICON_TYPES"
+  sources = [
+    "icon_types.cc",
+    "icon_types.h",
+  ]
+
+  defines = [ "IS_ICON_TYPES_IMPL" ]
+
+  public_deps = [ "//components/services/app_service/public/mojom" ]
+
+  deps = [ "//ui/gfx" ]
 }
 
 source_set("intents") {

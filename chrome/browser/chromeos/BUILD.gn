@@ -399,6 +399,7 @@ source_set("chromeos") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//components/services/app_service:lib",
     "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:icon_types",
     "//components/services/app_service/public/cpp:instance_update",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:types",

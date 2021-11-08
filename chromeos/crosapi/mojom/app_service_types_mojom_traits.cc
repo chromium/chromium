@@ -602,37 +602,37 @@ bool StructTraits<crosapi::mojom::CapabilityAccessDataView,
 }
 
 crosapi::mojom::IconType
-EnumTraits<crosapi::mojom::IconType, apps::mojom::IconType>::ToMojom(
-    apps::mojom::IconType input) {
+EnumTraits<crosapi::mojom::IconType, apps::IconType>::ToMojom(
+    apps::IconType input) {
   switch (input) {
-    case apps::mojom::IconType::kUnknown:
+    case apps::IconType::kUnknown:
       return crosapi::mojom::IconType::kUnknown;
-    case apps::mojom::IconType::kUncompressed:
+    case apps::IconType::kUncompressed:
       return crosapi::mojom::IconType::kUncompressed;
-    case apps::mojom::IconType::kCompressed:
+    case apps::IconType::kCompressed:
       return crosapi::mojom::IconType::kCompressed;
-    case apps::mojom::IconType::kStandard:
+    case apps::IconType::kStandard:
       return crosapi::mojom::IconType::kStandard;
   }
 
   NOTREACHED();
 }
 
-bool EnumTraits<crosapi::mojom::IconType, apps::mojom::IconType>::FromMojom(
+bool EnumTraits<crosapi::mojom::IconType, apps::IconType>::FromMojom(
     crosapi::mojom::IconType input,
-    apps::mojom::IconType* output) {
+    apps::IconType* output) {
   switch (input) {
     case crosapi::mojom::IconType::kUnknown:
-      *output = apps::mojom::IconType::kUnknown;
+      *output = apps::IconType::kUnknown;
       return true;
     case crosapi::mojom::IconType::kUncompressed:
-      *output = apps::mojom::IconType::kUncompressed;
+      *output = apps::IconType::kUncompressed;
       return true;
     case crosapi::mojom::IconType::kCompressed:
-      *output = apps::mojom::IconType::kCompressed;
+      *output = apps::IconType::kCompressed;
       return true;
     case crosapi::mojom::IconType::kStandard:
-      *output = apps::mojom::IconType::kStandard;
+      *output = apps::IconType::kStandard;
       return true;
   }
 
@@ -644,7 +644,7 @@ bool StructTraits<
     crosapi::mojom::IconValueDataView,
     apps::mojom::IconValuePtr>::Read(crosapi::mojom::IconValueDataView data,
                                      apps::mojom::IconValuePtr* out) {
-  apps::mojom::IconType icon_type;
+  apps::IconType icon_type;
   if (!data.ReadIconType(&icon_type))
     return false;
 
@@ -657,7 +657,7 @@ bool StructTraits<
     return false;
 
   auto icon_value = apps::mojom::IconValue::New();
-  icon_value->icon_type = icon_type;
+  icon_value->icon_type = apps::ConvertIconTypeToMojomIconType(icon_type);
   icon_value->uncompressed = std::move(uncompressed);
   icon_value->compressed = std::move(compressed);
   icon_value->is_placeholder_icon = data.is_placeholder_icon();

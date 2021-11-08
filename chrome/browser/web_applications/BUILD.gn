@@ -629,6 +629,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/permissions:permissions",
     "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:icon_types",
     "//components/services/app_service/public/cpp:intents",
     "//components/webapps/browser",
     "//components/webapps/services/web_app_origin_association/test:test_support",

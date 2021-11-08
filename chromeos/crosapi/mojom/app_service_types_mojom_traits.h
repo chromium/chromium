@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -296,17 +297,16 @@ struct StructTraits<crosapi::mojom::CapabilityAccessDataView,
 };
 
 template <>
-struct EnumTraits<crosapi::mojom::IconType, apps::mojom::IconType> {
-  static crosapi::mojom::IconType ToMojom(apps::mojom::IconType input);
-  static bool FromMojom(crosapi::mojom::IconType input,
-                        apps::mojom::IconType* output);
+struct EnumTraits<crosapi::mojom::IconType, apps::IconType> {
+  static crosapi::mojom::IconType ToMojom(apps::IconType input);
+  static bool FromMojom(crosapi::mojom::IconType input, apps::IconType* output);
 };
 
 template <>
 struct StructTraits<crosapi::mojom::IconValueDataView,
                     apps::mojom::IconValuePtr> {
-  static apps::mojom::IconType icon_type(const apps::mojom::IconValuePtr& r) {
-    return r->icon_type;
+  static apps::IconType icon_type(const apps::mojom::IconValuePtr& r) {
+    return apps::ConvertMojomIconTypeToIconType(r->icon_type);
   }
 
   static const gfx::ImageSkia& uncompressed(

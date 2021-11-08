@@ -22,6 +22,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/crosapi_utils.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
@@ -81,7 +82,8 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
 
   const uint32_t icon_effects = icon_key->icon_effects;
   controller_->LoadIcon(
-      app_id, std::move(icon_key), icon_type, size_hint_in_dip,
+      app_id, std::move(icon_key), ConvertMojomIconTypeToIconType(icon_type),
+      size_hint_in_dip,
       base::BindOnce(&WebAppsCrosapi::OnLoadIcon, weak_factory_.GetWeakPtr(),
                      icon_effects, size_hint_in_dip, std::move(callback)));
 }

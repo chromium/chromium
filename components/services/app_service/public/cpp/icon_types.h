@@ -13,7 +13,7 @@
 
 namespace apps {
 
-struct COMPONENT_EXPORT(APP_UPDATE) IconKey {
+struct COMPONENT_EXPORT(ICON_TYPES) IconKey {
   IconKey();
   IconKey(uint64_t timeline, int32_t resource_id, uint32_t icon_effects);
 
@@ -76,7 +76,7 @@ enum class IconType {
 // The return value for the App Service LoadIcon method. The icon will be
 // provided in either an uncompressed representation (gfx::ImageSkia), or a
 // compressed representation (PNG-encoded bytes) depending on |icon_type|.
-struct COMPONENT_EXPORT(APP_UPDATE) IconValue {
+struct COMPONENT_EXPORT(ICON_TYPES) IconValue {
   IconValue();
 
   IconValue(const IconValue&) = delete;
@@ -102,25 +102,25 @@ using LoadIconCallback = base::OnceCallback<void(std::unique_ptr<IconValue>)>;
 
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.
-COMPONENT_EXPORT(APP_UPDATE)
+COMPONENT_EXPORT(ICON_TYPES)
 std::unique_ptr<IconKey> ConvertMojomIconKeyToIconKey(
     apps::mojom::IconKeyPtr mojom_icon_key);
 
-COMPONENT_EXPORT(APP_UPDATE)
+COMPONENT_EXPORT(ICON_TYPES)
 apps::mojom::IconType ConvertIconTypeToMojomIconType(IconType icon_type);
 
-COMPONENT_EXPORT(APP_UPDATE)
+COMPONENT_EXPORT(ICON_TYPES)
 IconType ConvertMojomIconTypeToIconType(apps::mojom::IconType mojom_icon_type);
 
-COMPONENT_EXPORT(APP_UPDATE)
+COMPONENT_EXPORT(ICON_TYPES)
 apps::mojom::IconValuePtr ConvertIconValueToMojomIconValue(
     std::unique_ptr<IconValue> icon_value);
 
-COMPONENT_EXPORT(APP_UPDATE)
+COMPONENT_EXPORT(ICON_TYPES)
 std::unique_ptr<IconValue> ConvertMojomIconValueToIconValue(
     apps::mojom::IconValuePtr mojom_icon_value);
 
-COMPONENT_EXPORT(APP_UPDATE)
+COMPONENT_EXPORT(ICON_TYPES)
 base::OnceCallback<void(std::unique_ptr<IconValue>)>
 IconValueToMojomIconValueCallback(
     base::OnceCallback<void(apps::mojom::IconValuePtr)> callback);

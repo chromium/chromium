@@ -107,7 +107,7 @@ void LacrosExtensionAppsController::GetMenuModel(
 
 void LacrosExtensionAppsController::LoadIcon(const std::string& app_id,
                                              apps::mojom::IconKeyPtr icon_key,
-                                             apps::mojom::IconType icon_type,
+                                             apps::IconType icon_type,
                                              int32_t size_hint_in_dip,
                                              LoadIconCallback callback) {
   Profile* profile = nullptr;
@@ -116,8 +116,7 @@ void LacrosExtensionAppsController::LoadIcon(const std::string& app_id,
       lacros_extension_apps_utility::DemuxId(app_id, &profile, &extension);
   if (success && icon_key) {
     LoadIconFromExtension(
-        apps::ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
-        profile, extension->id(),
+        icon_type, size_hint_in_dip, profile, extension->id(),
         static_cast<apps::IconEffects>(icon_key->icon_effects),
         apps::IconValueToMojomIconValueCallback(std::move(callback)));
     return;

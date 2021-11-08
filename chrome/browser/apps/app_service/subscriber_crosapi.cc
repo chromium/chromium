@@ -131,14 +131,14 @@ void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
 
 void SubscriberCrosapi::LoadIcon(const std::string& app_id,
                                  apps::mojom::IconKeyPtr icon_key,
-                                 apps::mojom::IconType icon_type,
+                                 IconType icon_type,
                                  int32_t size_hint_in_dip,
                                  LoadIconCallback callback) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  proxy->LoadIconFromIconKey(proxy->AppRegistryCache().GetAppType(app_id),
-                             app_id, std::move(icon_key), icon_type,
-                             size_hint_in_dip, /*allow_placeholder_icon=*/false,
-                             std::move(callback));
+  proxy->LoadIconFromIconKey(
+      proxy->AppRegistryCache().GetAppType(app_id), app_id, std::move(icon_key),
+      ConvertIconTypeToMojomIconType(icon_type), size_hint_in_dip,
+      /*allow_placeholder_icon=*/false, std::move(callback));
 }
 
 void SubscriberCrosapi::AddPreferredApp(const std::string& app_id,

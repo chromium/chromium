@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -80,7 +81,8 @@ void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
     return;
   }
 
-  controller_->LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
+  controller_->LoadIcon(app_id, std::move(icon_key),
+                        ConvertMojomIconTypeToIconType(icon_type),
                         size_hint_in_dip, std::move(callback));
 }
 
