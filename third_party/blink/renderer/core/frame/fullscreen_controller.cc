@@ -58,7 +58,7 @@ mojom::blink::FullscreenOptionsPtr ToMojoOptions(
     FullscreenRequestType request_type) {
   auto fullscreen_options = mojom::blink::FullscreenOptions::New();
   fullscreen_options->prefers_navigation_bar =
-      options->navigationUI() != "hide";
+      options->navigationUI() == "show";
   if (options->hasScreen()) {
     DCHECK(RuntimeEnabledFeatures::WindowPlacementEnabled(frame->DomWindow()));
     if (options->screen()->DisplayId() != Screen::kInvalidDisplayId)
