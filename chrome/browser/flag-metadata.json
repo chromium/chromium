@@ -1576,7 +1576,7 @@
     "name": "enable-container-queries",
     "owners": [ "andruud", "futhark" ],
     // This flag is used to get developer feedback on the API.
-    "expiry_milestone": 97
+    "expiry_milestone": 105
   },
   {
     "name": "enable-cooperative-scheduling",
