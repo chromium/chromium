@@ -307,14 +307,11 @@ uint8_t CSSPrimitiveValue::ComputeLength(
 template <>
 float CSSPrimitiveValue::ComputeLength(
     const CSSToLengthConversionData& conversion_data) const {
-  // TODO(crbug.com/1133390): ClampTo function could occur the DECHECK failure
-  // for NaN value. Therefore, infinity and NaN values should not be clamped
-  // here.
-  float value = ComputeLengthDouble(conversion_data);
+  double value = ComputeLengthDouble(conversion_data);
   if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
-    return CSSValueClampingUtils::ClampLength(value);
+    value = CSSValueClampingUtils::ClampLength(value);
   }
-  return value;
+  return ClampTo<float>(value);
 }
 
 template <>
