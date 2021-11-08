@@ -43,7 +43,7 @@ namespace em = enterprise_management;
 namespace enterprise_reporting {
 namespace {
 
-constexpr char kProfile[] = "Profile";
+constexpr char kProfile[] = "Default";
 constexpr char16_t kProfile16[] = u"Profile";
 constexpr char kIdleProfile[] = "IdleProfile";
 constexpr char16_t kIdleProfile16[] = u"IdleProfile";
