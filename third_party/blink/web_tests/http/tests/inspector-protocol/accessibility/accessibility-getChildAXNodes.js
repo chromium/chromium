@@ -10,6 +10,10 @@
       return printNodeAndChildren(node.children[0], leadingSpace);
     }
 
+    if (node.ignored) {
+      return node.children.map((child) => printNodeAndChildren(child, leadingSpace)).join("\n");
+    }
+
     let string = leadingSpace;
     if (node.role)
       string += node.role.value;
@@ -58,7 +62,7 @@
   const rootNode = Array.from(nodeMap.values()).find(node => !node.parent);
   testRunner.log("\nAfter getFullAXTree:\n" + printNodeAndChildren(rootNode))
 
-  const article = rootNode.children[0].children[0];
+  const article = rootNode.children[0].children[0].children[0].children[0];
   let childResult = await dp.Accessibility.getChildAXNodes({id: article.nodeId});
   result = childResult.result;
   for (const node of result.nodes) {
@@ -85,7 +89,9 @@
   const rootWebArea = iframeResult.result.nodes;
   // To test that frameIds are handled correctly, we can now fetch the children of the iframe root using
   // `getChildAXNodes` with the frameId of the iframe.
-  const heading = await dp.Accessibility.getChildAXNodes({id: rootWebArea[0].nodeId, frameId});
+  const genericResult = await dp.Accessibility.getChildAXNodes({id: rootWebArea[0].nodeId, frameId});
+  const generic = genericResult.result.nodes;
+  const heading = await dp.Accessibility.getChildAXNodes({id: generic[0].childIds[0], frameId});
 
   iframeNode.childIds = [rootWebArea[0].nodeId];
   for (const node of [...rootWebArea, ...heading.result.nodes])

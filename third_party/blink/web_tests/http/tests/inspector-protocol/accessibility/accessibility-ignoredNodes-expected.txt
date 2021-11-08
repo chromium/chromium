@@ -2,7 +2,9 @@ Tests accessibility values of ignored nodes.
 
 RootWebArea
   *none
+  *none
 {
+    childIds : <object>
     domNode : html
     ignored : true
     ignoredReasons : [
@@ -15,8 +17,10 @@ RootWebArea
 }
 
 RootWebArea
-  img
-    *img
+  none
+    none
+      img
+        *img
 {
     childIds : <object>
     domNode : svg
@@ -53,8 +57,12 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
+      *none
 {
+    childIds : <object>
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -74,8 +82,13 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      none
+        *none
+        *none
 {
+    childIds : <object>
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -99,8 +112,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : ol
     ignored : true
     ignoredReasons : [
@@ -120,8 +136,12 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
+      *none
 {
+    childIds : <object>
     domNode : li
     ignored : true
     ignoredReasons : [
@@ -141,8 +161,10 @@ RootWebArea
 }
 
 RootWebArea
-  *generic
-    StaticText "Div in list isn't presentational"
+  none
+    none
+      *generic
+        StaticText "Div in list isn't presentational"
 {
     childIds : <object>
     domNode : div
@@ -175,8 +197,10 @@ RootWebArea
 }
 
 RootWebArea
-  *LabelText
-    StaticText "Content within label refers to label container"
+  none
+    none
+      *LabelText
+        StaticText "Content within label refers to label container"
 {
     childIds : <object>
     domNode : label
@@ -209,9 +233,12 @@ RootWebArea
 }
 
 RootWebArea
-  LabelText
-    *none
+  none
+    none
+      LabelText
+        *none
 {
+    childIds : <object>
     domNode : span
     ignored : true
     ignoredReasons : [
@@ -231,8 +258,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -252,8 +282,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : span
     ignored : true
     ignoredReasons : [
@@ -273,8 +306,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : canvas
     ignored : true
     ignoredReasons : [
@@ -294,8 +330,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : canvas
     ignored : true
     ignoredReasons : [
@@ -315,11 +354,13 @@ RootWebArea
 }
 
 RootWebArea
-  *combobox
-    MenuListPopup
-      menuitem "Options should be"
-      menuitem "sent down even though"
-      menuitem "they are grandchildren"
+  none
+    none
+      *combobox
+        MenuListPopup
+          menuitem "Options should be"
+          menuitem "sent down even though"
+          menuitem "they are grandchildren"
 {
     childIds : <object>
     domNode : select
@@ -388,9 +429,11 @@ RootWebArea
 }
 
 RootWebArea
-  combobox
-    MenuListPopup
-      *menuitem "Options should be"
+  none
+    none
+      combobox
+        MenuListPopup
+          *menuitem "Options should be"
 {
     childIds : <object>
     domNode : option
@@ -440,8 +483,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : button
     ignored : true
     ignoredReasons : [
@@ -461,8 +507,12 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      none
+        *none
 {
+    childIds : <object>
     domNode : button
     ignored : true
     ignoredReasons : [
@@ -487,8 +537,10 @@ RootWebArea
 }
 
 RootWebArea
-  *generic "span with ARIA label"
-    StaticText "should not be ignored"
+  none
+    none
+      *generic "span with ARIA label"
+        StaticText "should not be ignored"
 {
     childIds : <object>
     domNode : span
@@ -530,8 +582,11 @@ RootWebArea
 }
 
 RootWebArea
-  *none
+  none
+    none
+      *none
 {
+    childIds : <object>
     domNode : div
     ignored : true
     ignoredReasons : [
@@ -551,8 +606,10 @@ RootWebArea
 }
 
 RootWebArea
-  *generic
-    StaticText "summary element without details parent is ignored"
+  none
+    none
+      *generic
+        StaticText "summary element without details parent is ignored"
 {
     childIds : <object>
     description : {
@@ -589,8 +646,10 @@ RootWebArea
 }
 
 RootWebArea
-  *button "Ignored parent shouldn't cause descendant to be missing from the tree"
-    StaticText "Ignored parent shouldn't cause descendant to be missing from the tree"
+  none
+    none
+      *button "Ignored parent shouldn't cause descendant to be missing from the tree"
+        StaticText "Ignored parent shouldn't cause descendant to be missing from the tree"
 {
     childIds : <object>
     domNode : button

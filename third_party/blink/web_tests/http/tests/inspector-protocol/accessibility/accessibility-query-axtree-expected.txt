@@ -86,6 +86,7 @@ dump both an ignored and an unignored axnode
 }
 {
     backendDOMNodeId : <number>
+    childIds : <object>
     ignored : true
     ignoredReasons : [
         [0] : {
@@ -108,6 +109,7 @@ dump both an ignored and an unignored axnode
 }
 {
     backendDOMNodeId : <number>
+    childIds : <object>
     ignored : true
     ignoredReasons : [
         [0] : {

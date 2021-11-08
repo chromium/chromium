@@ -78,7 +78,7 @@ class MODULES_EXPORT InspectorAccessibilityAgent
       int backend_node_id) const;
   std::unique_ptr<AXNode> BuildProtocolAXNodeForAXObject(
       AXObject&,
-      bool force_name_and_role) const;
+      bool force_name_and_role = false) const;
   std::unique_ptr<AXNode> BuildProtocolAXNodeForIgnoredAXObject(
       AXObject&,
       bool force_name_and_role) const;

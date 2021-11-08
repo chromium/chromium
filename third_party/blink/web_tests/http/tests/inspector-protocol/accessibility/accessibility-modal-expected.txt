@@ -188,6 +188,7 @@ Tests accessibility values in modal dialog.
     }
 }
 {
+    childIds : <object>
     domNode : dialog
     ignored : true
     ignoredReasons : [

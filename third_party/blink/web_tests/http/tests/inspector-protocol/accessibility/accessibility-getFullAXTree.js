@@ -29,6 +29,10 @@
         return printNodeAndChildren(node.children[0], leadingSpace);
       }
 
+      if (node.ignored) {
+        return node.children.map((child) => printNodeAndChildren(child, leadingSpace)).join("\n");
+      }
+
       let string = leadingSpace;
       if (node.role)
         string += node.role.value;
