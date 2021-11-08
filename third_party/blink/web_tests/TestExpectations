@@ -7273,3 +7273,6 @@ crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested-1
 crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Failure ]
 crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested-3.html [ Failure ]
 crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Failure ]
+
+# Sheriff 2021-11-08
+crbug.com/1267734 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
