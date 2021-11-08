@@ -65,6 +65,10 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1263233
   "security.SharedFilesystemState",
+
+  # https://crbug.com/1267943: Flaky.
+  "ui.DesktopControl",
+  "ui.WindowControl",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
