@@ -46,6 +46,7 @@
 #include "base/files/file_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/buildflags.h"
 #include "components/exo/capabilities.h"
@@ -154,6 +155,65 @@ bool IsDrmAtomicAvailable() {
 
 void wayland_log(const char* fmt, va_list argp) {
   LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
+}
+
+std::unique_ptr<Server> CreateInitialServer(
+    Display* display,
+    std::unique_ptr<Capabilities> capabilities) {
+  std::unique_ptr<Server> server(new Server(display, std::move(capabilities)));
+  server->Initialize();
+  return server;
+}
+
+std::unique_ptr<Server> SetUpServer(std::unique_ptr<Server> server,
+                                    const base::FilePath& socket_path) {
+  if (!socket_path.IsAbsolute()) {
+    LOG(ERROR) << "Unable to create a wayland server. The provided path must "
+                  "be absolute, got: "
+               << socket_path;
+    return nullptr;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On debugging chromeos-chrome on linux platform,
+  // try to ensure the directory if missing.
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    base::FilePath runtime_dir = socket_path.DirName();
+    CHECK(base::DirectoryExists(runtime_dir) ||
+          base::CreateDirectory(runtime_dir))
+        << "Failed to create XDG_RUNTIME_DIR";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (!server->AddSocket(socket_path.MaybeAsASCII().c_str())) {
+    LOG(ERROR) << "Failed to add socket: " << socket_path;
+    return nullptr;
+  }
+
+  // Change permissions on the socket.
+  struct group wayland_group;
+  struct group* wayland_group_res = nullptr;
+  char buf[10000];
+  if (HANDLE_EINTR(getgrnam_r(kWaylandSocketGroup, &wayland_group, buf,
+                              sizeof(buf), &wayland_group_res)) < 0) {
+    PLOG(ERROR) << "getgrnam_r";
+    return nullptr;
+  }
+  if (wayland_group_res) {
+    if (HANDLE_EINTR(chown(socket_path.MaybeAsASCII().c_str(), -1,
+                           wayland_group.gr_gid)) < 0) {
+      PLOG(ERROR) << "chown";
+      return nullptr;
+    }
+  } else {
+    LOG(WARNING) << "Group '" << kWaylandSocketGroup << "' not found";
+  }
+
+  if (!base::SetPosixFilePermissions(socket_path, 0660)) {
+    PLOG(ERROR) << "Could not set permissions: " << socket_path.value();
+    return nullptr;
+  }
+  return server;
 }
 
 }  // namespace
@@ -312,6 +372,12 @@ void Server::Initialize() {
 #endif
 }
 
+void Server::Finalize() {
+  // At this point, server creation was successful, so we should instantiate the
+  // watcher.
+  wayland_watcher_ = std::make_unique<wayland::WaylandWatcher>(this);
+}
+
 Server::~Server() {
   RemoveCapabilities(wl_display_.get());
   // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
@@ -343,61 +409,33 @@ std::unique_ptr<Server> Server::Create(
     Display* display,
     std::unique_ptr<Capabilities> capabilities,
     const base::FilePath& socket_path) {
-  if (!socket_path.IsAbsolute()) {
-    LOG(ERROR) << "Unable to create a wayland server. The provided path must "
-                  "be absolute, got: "
-               << socket_path;
-    return nullptr;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On debugging chromeos-chrome on linux platform,
-  // try to ensure the directory if missing.
-  if (!base::SysInfo::IsRunningOnChromeOS()) {
-    base::FilePath runtime_dir = socket_path.DirName();
-    CHECK(base::DirectoryExists(runtime_dir) ||
-          base::CreateDirectory(runtime_dir))
-        << "Failed to create XDG_RUNTIME_DIR";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  std::unique_ptr<Server> server(new Server(display, std::move(capabilities)));
-  server->Initialize();
-  if (!server->AddSocket(socket_path.MaybeAsASCII().c_str())) {
-    LOG(ERROR) << "Failed to add socket: " << socket_path;
-    return nullptr;
-  }
-
-  // Change permissions on the socket.
-  struct group wayland_group;
-  struct group* wayland_group_res = nullptr;
-  char buf[10000];
-  if (HANDLE_EINTR(getgrnam_r(kWaylandSocketGroup, &wayland_group, buf,
-                              sizeof(buf), &wayland_group_res)) < 0) {
-    PLOG(ERROR) << "getgrnam_r";
-    return nullptr;
-  }
-  if (wayland_group_res) {
-    if (HANDLE_EINTR(chown(socket_path.MaybeAsASCII().c_str(), -1,
-                           wayland_group.gr_gid)) < 0) {
-      PLOG(ERROR) << "chown";
-      return nullptr;
-    }
-  } else {
-    LOG(WARNING) << "Group '" << kWaylandSocketGroup << "' not found";
-  }
-
-  if (!base::SetPosixFilePermissions(socket_path, 0660)) {
-    PLOG(ERROR) << "Could not set permissions: " << socket_path.value();
-    return nullptr;
-  }
-
-  // At this point, server creation was successful, so we should instantiate the
-  // watcher.
-  server->wayland_watcher_ =
-      std::make_unique<wayland::WaylandWatcher>(server.get());
-
+  std::unique_ptr<Server> server =
+      CreateInitialServer(display, std::move(capabilities));
+  server = SetUpServer(std::move(server), socket_path);
+  if (server)
+    server->Finalize();
   return server;
+}
+
+// static
+void Server::CreateAsync(
+    Display* display,
+    std::unique_ptr<Capabilities> capabilities,
+    const base::FilePath& socket_path,
+    base::OnceCallback<void(std::unique_ptr<Server>)> callback) {
+  std::unique_ptr<Server> server =
+      CreateInitialServer(display, std::move(capabilities));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::MayBlock(),
+      base::BindOnce(&SetUpServer, std::move(server), socket_path),
+      base::BindOnce(
+          [](base::OnceCallback<void(std::unique_ptr<Server>)> callback,
+             std::unique_ptr<Server> server) {
+            if (server)
+              server->Finalize();
+            std::move(callback).Run(std::move(server));
+          },
+          std::move(callback)));
 }
 
 bool Server::AddSocket(const std::string name) {

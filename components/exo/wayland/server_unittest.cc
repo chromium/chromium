@@ -15,6 +15,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/process_handle.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread.h"
@@ -23,6 +24,7 @@
 #include "components/exo/display.h"
 #include "components/exo/test/exo_test_base_views.h"
 #include "components/exo/wayland/server_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -62,6 +64,11 @@ class ServerTest : public TestBase {
     setenv("XDG_RUNTIME_DIR", xdg_temp_dir_.GetPath().MaybeAsASCII().c_str(),
            1 /* overwrite */);
     TestBase::SetUp();
+  }
+
+ protected:
+  base::FilePath GetUniqueSocketPath() const {
+    return xdg_temp_dir_.GetPath().Append(GetUniqueSocketName());
   }
 
  private:
@@ -121,6 +128,29 @@ TEST_F(ServerTest, CapabilityAssociation) {
 
   EXPECT_EQ(GetCapabilities(server.GetWaylandDisplayForTesting()),
             capability_ptr);
+}
+
+TEST_F(ServerTest, CreateAsync) {
+  std::unique_ptr<Display> display(new Display);
+
+  base::ScopedTempDir non_xdg_dir;
+  ASSERT_TRUE(non_xdg_dir.CreateUniqueTempDir());
+
+  base::RunLoop run_loop;
+  testing::MockFunction<void(std::unique_ptr<Server>)> server_callback;
+  EXPECT_CALL(server_callback, Call(testing::_))
+      .WillOnce(testing::Invoke([&run_loop](std::unique_ptr<Server> server) {
+        EXPECT_TRUE(server);
+        run_loop.Quit();
+      }));
+
+  Server::CreateAsync(
+      display.get(), Capabilities::GetDefaultCapabilities(),
+      GetUniqueSocketPath(),
+      base::BindOnce(
+          &testing::MockFunction<void(std::unique_ptr<Server>)>::Call,
+          base::Unretained(&server_callback)));
+  run_loop.Run();
 }
 
 void ConnectToServer(const std::string socket_name,

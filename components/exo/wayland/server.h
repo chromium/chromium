@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -61,7 +62,16 @@ class Server : public display::DisplayObserver {
       std::unique_ptr<Capabilities> capabilities,
       const base::FilePath& socket_path);
 
+  // As above, but asynchronously.
+  static void CreateAsync(
+      Display* display,
+      std::unique_ptr<Capabilities> capabilities,
+      const base::FilePath& socket_path,
+      base::OnceCallback<void(std::unique_ptr<Server>)> callback);
+
   void Initialize();
+
+  void Finalize();
 
   // This adds a Unix socket to the Wayland display server which can be used
   // by clients to connect to the display server.
