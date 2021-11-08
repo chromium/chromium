@@ -13,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 #include "tools/mac/power/power_sampler/csv_exporter.h"
 #include "tools/mac/power/power_sampler/json_exporter.h"
@@ -21,6 +20,7 @@
 #include "tools/mac/power/power_sampler/sample_counter.h"
 #include "tools/mac/power/power_sampler/sampler.h"
 #include "tools/mac/power/power_sampler/sampling_controller.h"
+#include "tools/mac/power/power_sampler/timer_sampling_event_source.h"
 #include "tools/mac/power/power_sampler/user_idle_level_sampler.h"
 
 namespace {
@@ -138,18 +138,17 @@ int main(int argc, char** argv) {
   controller.StartSession();
 
   base::RunLoop run_loop;
-  // TODO(siggi): Support battery notifications to drive OnSamplingEvent().
-  base::RepeatingTimer timer(
-      FROM_HERE, sampling_interval,
-      BindRepeating(
-          [](power_sampler::SamplingController* controller,
-             base::OnceClosure quit_closure) {
-            if (controller->OnSamplingEvent()) {
-              std::move(quit_closure).Run();
-            }
-          },
-          base::Unretained(&controller), run_loop.QuitClosure()));
-  timer.Reset();
+
+  power_sampler::TimerSamplingEventSource sampling_event_source(
+      sampling_interval);
+  sampling_event_source.Start(BindRepeating(
+      [](power_sampler::SamplingController* controller,
+         base::OnceClosure quit_closure) {
+        if (controller->OnSamplingEvent()) {
+          std::move(quit_closure).Run();
+        }
+      },
+      base::Unretained(&controller), run_loop.QuitClosure()));
 
   run_loop.Run();
 
