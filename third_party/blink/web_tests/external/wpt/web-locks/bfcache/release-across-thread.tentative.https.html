@@ -31,4 +31,16 @@
     },
     shouldBeCached: false,
   }, "A held lock on worker must prevent bfcache even after main thread releases locks");
+
+  runWebLocksBfcacheTest({
+    funcBeforeNavigation: async () => {
+      const controller = new AbortController();
+      navigator.locks.request(uniqueNameByQuery(), { signal: controller.signal }, () => new Promise(() => { }));
+      window.worker = new SharedWorker("/web-locks/resources/worker.js");
+      worker.port.start();
+      await postToWorkerAndWait(worker.port, { op: "request", name: uniqueNameByQuery() });
+      controller.abort();
+    },
+    shouldBeCached: false,
+  }, "A held lock on shared worker must prevent bfcache even after main thread releases locks");
 </script>

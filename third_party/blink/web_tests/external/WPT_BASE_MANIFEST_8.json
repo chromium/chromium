@@ -163185,6 +163185,19 @@
        {}
       ]
      ],
+     "text-decoration-line-through-wavy-covers-whole-line-length-001.html": [
+      "20837062ac1d1053cc585e7bc461b879e382366d",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-wavy-covers-whole-line-length-001-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-decoration-line.html": [
       "792bda47fa020f82a2e7962570a8c0c0b462f6a4",
       [
@@ -163193,6 +163206,19 @@
         [
          "/css/css-text-decor/reference/text-decoration-line-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-overline-wavy-covers-whole-line-length-001.html": [
+      "4dfd0901733c1730a59ff3c29964938412174526",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-wavy-covers-whole-line-length-001-notref.html",
+         "!="
         ]
        ],
        {}
@@ -163707,6 +163733,19 @@
         [
          "/css/css-text-decor/reference/text-decoration-underline-position-vertical-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-underline-wavy-covers-whole-line-length-001.html": [
+      "9ff8cd00b2d514efda5bad117d2751dc8749c178",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-wavy-covers-whole-line-length-001-notref.html",
+         "!="
         ]
        ],
        {}
@@ -256620,6 +256659,10 @@
        "2370054a8fbd5cb8c00bfb95401129d01de38d00",
        []
       ],
+      "text-decoration-wavy-covers-whole-line-length-001-notref.html": [
+       "43ba81451d53b87640906aea3e73eae92b4d6977",
+       []
+      ],
       "text-emphasis-color-001-ref.xht": [
        "b38d04110e361bfb3e08e444b92d993e26e8b25c",
        []
@@ -272935,7 +272978,7 @@
          []
         ],
         "helper.sub.js": [
-         "ba34a0b15a8c5e875e48bc494a3dd69c5c8d8f5d",
+         "b2087d9de507ede95c59a3862696603ef1e20e41",
          []
         ]
        }
@@ -305074,7 +305117,7 @@
     ],
     "bfcache": {
      "abort.tentative.https-expected.txt": [
-      "895528b4f6002e501890f61e0d3c7d772fdc0926",
+      "6ab7a4a7862c9a0a05628326d96e0d173204f2bf",
       []
      ],
      "helpers.js": [
@@ -305082,7 +305125,7 @@
       []
      ],
      "release.tentative.https-expected.txt": [
-      "c41ff93a132347adf5017e53e369f54c7a3f9ced",
+      "dc5d3a9f22bdddeb241a4fcc13dc5aa10413bce5",
       []
      ]
     },
@@ -305112,7 +305155,7 @@
       []
      ],
      "worker.js": [
-      "af5c73411279dd8675152f69c8f0613fd609ffea",
+      "cc71631ba6fa22b126bf39d399f8db991d74a267",
       []
      ]
     }
@@ -503241,7 +503284,7 @@
     ],
     "bfcache": {
      "abort.tentative.https.html": [
-      "678d8b69a8c1d5ab82dc64b6d2fc15b106c09597",
+      "59231f9fe9f987c91de8cd7f77e19772905072ef",
       [
        null,
        {
@@ -503250,7 +503293,7 @@
       ]
      ],
      "held.tentative.https.html": [
-      "cfd89d65a73e7cbb4fed03cb60da04e2209e9072",
+      "dc35e5facaba26a91faf80bcb085a30aac6d2e4c",
       [
        null,
        {
@@ -503259,7 +503302,7 @@
       ]
      ],
      "release-across-thread.tentative.https.html": [
-      "6568d2731e0d08846352d46bef559a36787ab18c",
+      "cf5b914cee40dc918786810121ca3f3521436a9d",
       [
        null,
        {
@@ -503268,7 +503311,16 @@
       ]
      ],
      "release.tentative.https.html": [
-      "d117270940053db78a57ec2f3b8458f400ff995c",
+      "928073919c0ae4d6345b8639feb01e39b6b186e2",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "sharedworker-multiple.tentative.https.html": [
+      "febb0e1781e39aca64b8b7aa23ba709924dc2a03",
       [
        null,
        {

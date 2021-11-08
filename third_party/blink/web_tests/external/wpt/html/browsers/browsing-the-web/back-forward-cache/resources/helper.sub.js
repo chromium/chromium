@@ -104,6 +104,26 @@ function runEventTest(params, description) {
   runBfcacheTest(params, description);
 }
 
+async function navigateAndThenBack(pageA, pageB, urlB) {
+  await pageA.execute_script(
+    (url) => {
+      prepareNavigation(() => {
+        location.href = url;
+      });
+    },
+    [urlB]
+  );
+
+  await pageB.execute_script(waitForPageShow);
+  await pageB.execute_script(
+    () => {
+      prepareNavigation(() => { history.back(); });
+    }
+  );
+
+  await pageA.execute_script(waitForPageShow);
+}
+
 function runBfcacheTest(params, description) {
   const defaultParams = {
     openFunc: url => window.open(url, '_blank', 'noopener'),
@@ -132,27 +152,12 @@ function runBfcacheTest(params, description) {
         const script = document.createElement("script");
         script.src = src;
         document.head.append(script);
+        return new Promise(resolve => script.onload = resolve);
       }, [src]);
     }
 
     await pageA.execute_script(params.funcBeforeNavigation);
-    await pageA.execute_script(
-      (url) => {
-        prepareNavigation(() => {
-          location.href = url;
-        });
-      },
-      [urlB]
-    );
-
-    await pageB.execute_script(waitForPageShow);
-    await pageB.execute_script(
-      () => {
-        prepareNavigation(() => { history.back(); });
-      }
-    );
-
-    await pageA.execute_script(waitForPageShow);
+    await navigateAndThenBack(pageA, pageB, urlB);
 
     if (params.shouldBeCached) {
       await assert_bfcached(pageA);
