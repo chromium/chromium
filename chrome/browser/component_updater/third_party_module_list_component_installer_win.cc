@@ -84,7 +84,7 @@ ThirdPartyModuleListComponentInstallerPolicy::
 
 bool ThirdPartyModuleListComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool ThirdPartyModuleListComponentInstallerPolicy::RequiresNetworkEncryption()
