@@ -15,11 +15,9 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/inspector_protocol/crdtp/cbor.h"
 #include "third_party/inspector_protocol/crdtp/maybe.h"
 #include "third_party/inspector_protocol/crdtp/protocol_core.h"
 #include "third_party/inspector_protocol/crdtp/serializable.h"
-#include "third_party/inspector_protocol/crdtp/serializer_traits.h"
 #include "v8/include/v8-inspector.h"
 #include "v8/include/v8-script.h"
 
@@ -111,26 +109,6 @@ struct hash<WTF::String> {
 
 // See third_party/inspector_protocol/crdtp/serializer_traits.h.
 namespace crdtp {
-template <>
-struct SerializerTraits<WTF::String> {
-  static void Serialize(const WTF::String& str, std::vector<uint8_t>* out) {
-    if (str.length() == 0) {
-      cbor::EncodeString8(span<uint8_t>(nullptr, 0), out);  // Empty string.
-      return;
-    }
-    if (str.Is8Bit()) {
-      cbor::EncodeFromLatin1(
-          span<uint8_t>(reinterpret_cast<const uint8_t*>(str.Characters8()),
-                        str.length()),
-          out);
-      return;
-    }
-    cbor::EncodeFromUTF16(
-        span<uint16_t>(reinterpret_cast<const uint16_t*>(str.Characters16()),
-                       str.length()),
-        out);
-  }
-};
 
 template <>
 struct ProtocolTypeTraits<WTF::String> {
