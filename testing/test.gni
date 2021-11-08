@@ -533,6 +533,7 @@ template("test") {
 
       if (ios_use_shared_bundle_id_for_test_apps) {
         bundle_identifier = "$ios_app_bundle_id_prefix.gtest.unittests"
+        not_needed([ "_output_name" ])
       } else {
         bundle_identifier = "$ios_app_bundle_id_prefix.gtest." +
                             string_replace(_output_name, "_", "-")
