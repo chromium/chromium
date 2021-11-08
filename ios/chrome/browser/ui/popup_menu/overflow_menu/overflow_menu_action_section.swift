@@ -9,10 +9,13 @@ struct OverflowMenuActionSection: View {
   @ObservedObject var actionGroup: OverflowMenuActionGroup
 
   var body: some View {
-    let footer = actionGroup.footer.flatMap { actionFooter in
-      OverflowMenuFooterRow(footer: actionFooter)
+    let footer: OverflowMenuFooterRow?
+    if let actionFooter = actionGroup.footer {
+      footer = OverflowMenuFooterRow(footer: actionFooter)
+    } else {
+      footer = nil
     }
-    Section(footer: footer) {
+    return Section(footer: footer) {
       ForEach(actionGroup.actions) { action in
         OverflowMenuActionRow(action: action)
       }
