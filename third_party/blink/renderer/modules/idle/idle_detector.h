@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_IDLE_IDLE_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_IDLE_IDLE_DETECTOR_H_
 
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -15,20 +15,22 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
 class AbortSignal;
 class ExceptionState;
 
-class IdleDetector final : public EventTargetWithInlineData,
-                           public ActiveScriptWrappable<IdleDetector>,
-                           public ExecutionContextClient,
-                           public mojom::blink::IdleMonitor {
+class MODULES_EXPORT IdleDetector final
+    : public EventTargetWithInlineData,
+      public ActiveScriptWrappable<IdleDetector>,
+      public ExecutionContextClient,
+      public mojom::blink::IdleMonitor {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -56,18 +58,34 @@ class IdleDetector final : public EventTargetWithInlineData,
 
   void Trace(Visitor*) const override;
 
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
  private:
   // mojom::blink::IdleMonitor implementation. Invoked on a state change, and
   // causes an event to be dispatched.
-  void Update(mojom::blink::IdleStatePtr state) override;
+  void Update(mojom::blink::IdleStatePtr state,
+              bool is_overridden_by_devtools) override;
 
+  void DispatchUserIdleEvent(TimerBase*);
   void Abort(AbortSignal*);
   void OnMonitorDisconnected();
   void OnAddMonitor(ScriptPromiseResolver*,
                     mojom::blink::IdleManagerError,
                     mojom::blink::IdleStatePtr);
 
-  mojom::blink::IdleStatePtr state_;
+  // State currently visible to script.
+  bool has_state_ = false;
+  bool screen_locked_ = false;
+  bool user_idle_ = false;
+
+  // Task runner for change events. Overridden for testing.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  // If script has specified a threshold longer than the default this timer is
+  // used to delay the update until the user has been idle for the specified
+  // threshold.
+  HeapTaskRunnerTimer<IdleDetector> timer_;
 
   base::TimeDelta threshold_ = base::Seconds(60);
   Member<AbortSignal> signal_;

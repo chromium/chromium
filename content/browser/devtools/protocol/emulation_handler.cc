@@ -22,7 +22,6 @@
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
-#include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
 #include "ui/display/mojom/screen_orientation.mojom.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
 
@@ -130,13 +129,7 @@ Response EmulationHandler::SetIdleOverride(bool is_user_active,
                                            bool is_screen_unlocked) {
   if (!host_)
     return Response::InternalError();
-  blink::mojom::UserIdleState user_state =
-      is_user_active ? blink::mojom::UserIdleState::kActive
-                     : blink::mojom::UserIdleState::kIdle;
-  blink::mojom::ScreenIdleState screen_idle_state =
-      is_screen_unlocked ? blink::mojom::ScreenIdleState::kUnlocked
-                         : blink::mojom::ScreenIdleState::kLocked;
-  host_->GetIdleManager()->SetIdleOverride(user_state, screen_idle_state);
+  host_->GetIdleManager()->SetIdleOverride(is_user_active, is_screen_unlocked);
   return Response::Success();
 }
 

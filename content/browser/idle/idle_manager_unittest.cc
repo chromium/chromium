@@ -11,6 +11,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
@@ -33,8 +35,6 @@
 using blink::mojom::IdleManagerError;
 using blink::mojom::IdleMonitorPtr;
 using blink::mojom::IdleStatePtr;
-using blink::mojom::ScreenIdleState;
-using blink::mojom::UserIdleState;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -46,11 +46,19 @@ namespace {
 
 const char kTestUrl[] = "https://www.google.com";
 
-constexpr base::TimeDelta kThreshold = base::Seconds(60);
+enum UserIdleState {
+  kActive,
+  kIdle,
+};
+
+enum ScreenIdleState {
+  kUnlocked,
+  kLocked,
+};
 
 class MockIdleMonitor : public blink::mojom::IdleMonitor {
  public:
-  MOCK_METHOD1(Update, void(IdleStatePtr));
+  MOCK_METHOD2(Update, void(IdleStatePtr, bool));
 };
 
 class MockIdleTimeProvider : public IdleTimeProvider {
@@ -106,43 +114,42 @@ class IdleManagerTest : public RenderViewHostTestHarness {
         .WillByDefault(Return(permission_status));
   }
 
-  std::tuple<UserIdleState, ScreenIdleState> AddMonitorRequest(
-      base::TimeDelta threshold) {
-    base::RunLoop loop;
-    UserIdleState user_result;
-    ScreenIdleState screen_result;
-
-    service_remote_->AddMonitor(
-        threshold, monitor_receiver_.BindNewPipeAndPassRemote(),
-        base::BindLambdaForTesting(
-            [&loop, &user_result, &screen_result](IdleManagerError error,
-                                                  IdleStatePtr state) {
-              EXPECT_EQ(IdleManagerError::kSuccess, error);
-              user_result = state->user;
-              screen_result = state->screen;
-              loop.Quit();
-            }));
-    loop.Run();
-    return std::make_tuple(user_result, screen_result);
+  std::tuple<UserIdleState, ScreenIdleState> AddMonitorRequest() {
+    base::test::TestFuture<IdleManagerError, IdleStatePtr> future;
+    service_remote_->AddMonitor(monitor_receiver_.BindNewPipeAndPassRemote(),
+                                future.GetCallback());
+    EXPECT_EQ(IdleManagerError::kSuccess, future.Get<0>());
+    return std::make_tuple(
+        future.Get<1>()->idle_time.has_value() ? UserIdleState::kIdle
+                                               : UserIdleState::kActive,
+        future.Get<1>()->screen_locked ? ScreenIdleState::kLocked
+                                       : ScreenIdleState::kUnlocked);
   }
 
-  std::tuple<UserIdleState, ScreenIdleState> GetIdleStatus() {
+  std::tuple<UserIdleState, ScreenIdleState> GetIdleStatus(
+      bool expect_override) {
     base::RunLoop loop;
-    UserIdleState user_result;
-    ScreenIdleState screen_result;
+    IdleStatePtr result;
 
-    EXPECT_CALL(idle_monitor_, Update(_))
-        .WillOnce(
-            Invoke([&loop, &user_result, &screen_result](IdleStatePtr state) {
-              user_result = state->user;
-              screen_result = state->screen;
-              loop.Quit();
-            }));
+    EXPECT_CALL(idle_monitor_, Update(_, expect_override))
+        .WillOnce(Invoke([&loop, &result](IdleStatePtr state,
+                                          bool is_overridden_by_devtools) {
+          result = std::move(state);
+          loop.Quit();
+        }));
 
-    // Fast forward to run polling task.
-    task_environment()->FastForwardBy(base::Seconds(1));
+    if (!expect_override) {
+      // If we aren't expecting an override then we need to fast forward in
+      // order to run the polling task.
+      task_environment()->FastForwardBy(base::Seconds(1));
+    }
+
     loop.Run();
-    return std::make_tuple(user_result, screen_result);
+    return std::make_tuple(result->idle_time.has_value()
+                               ? UserIdleState::kIdle
+                               : UserIdleState::kActive,
+                           result->screen_locked ? ScreenIdleState::kLocked
+                                                 : ScreenIdleState::kUnlocked);
   }
 
   void DisconnectRenderer() {
@@ -184,7 +191,7 @@ TEST_F(IdleManagerTest, AddMonitor) {
       .WillOnce(Return(false));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
-            AddMonitorRequest(kThreshold));
+            AddMonitorRequest());
 }
 
 TEST_F(IdleManagerTest, Idle) {
@@ -197,7 +204,7 @@ TEST_F(IdleManagerTest, Idle) {
       .WillOnce(Return(false));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
-            AddMonitorRequest(kThreshold));
+            AddMonitorRequest());
 
   // Simulates a user going idle.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
@@ -206,7 +213,7 @@ TEST_F(IdleManagerTest, Idle) {
       .WillOnce(Return(true));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kIdle, ScreenIdleState::kLocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/false));
 
   // Simulates a user going active, calling a callback under the threshold.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
@@ -215,7 +222,7 @@ TEST_F(IdleManagerTest, Idle) {
       .WillOnce(Return(false));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/false));
 }
 
 TEST_F(IdleManagerTest, UnlockingScreen) {
@@ -228,7 +235,7 @@ TEST_F(IdleManagerTest, UnlockingScreen) {
       .WillOnce(Return(true));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kIdle, ScreenIdleState::kLocked),
-            AddMonitorRequest(kThreshold));
+            AddMonitorRequest());
 
   // Simulates a user unlocking the screen.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
@@ -237,7 +244,7 @@ TEST_F(IdleManagerTest, UnlockingScreen) {
       .WillOnce(Return(false));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/false));
 }
 
 TEST_F(IdleManagerTest, LockingScreen) {
@@ -250,7 +257,7 @@ TEST_F(IdleManagerTest, LockingScreen) {
       .WillOnce(Return(false));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
-            AddMonitorRequest(kThreshold));
+            AddMonitorRequest());
 
   // Simulates a user locking the screen.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
@@ -259,7 +266,7 @@ TEST_F(IdleManagerTest, LockingScreen) {
       .WillOnce(Return(true));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kLocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/false));
 }
 
 TEST_F(IdleManagerTest, LockingScreenThenIdle) {
@@ -272,7 +279,7 @@ TEST_F(IdleManagerTest, LockingScreenThenIdle) {
       .WillOnce(Return(false));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
-            AddMonitorRequest(kThreshold));
+            AddMonitorRequest());
 
   // Simulates a user locking screen.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
@@ -281,7 +288,7 @@ TEST_F(IdleManagerTest, LockingScreenThenIdle) {
       .WillOnce(Return(true));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kLocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/false));
 
   // Simulates a user going idle, while the screen is still locked.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
@@ -290,7 +297,7 @@ TEST_F(IdleManagerTest, LockingScreenThenIdle) {
       .WillOnce(Return(true));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kIdle, ScreenIdleState::kLocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/false));
 }
 
 TEST_F(IdleManagerTest, LockingScreenAfterIdle) {
@@ -303,7 +310,7 @@ TEST_F(IdleManagerTest, LockingScreenAfterIdle) {
       .WillOnce(Return(false));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
-            AddMonitorRequest(kThreshold));
+            AddMonitorRequest());
 
   // Simulates a user going idle, but with the screen still unlocked.
   EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
@@ -312,7 +319,7 @@ TEST_F(IdleManagerTest, LockingScreenAfterIdle) {
       .WillOnce(Return(false));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kIdle, ScreenIdleState::kUnlocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/false));
 
   // Simulates the screen getting locked by the system after the user goes
   // idle (e.g. screensaver kicks in first, throwing idleness, then getting
@@ -323,7 +330,7 @@ TEST_F(IdleManagerTest, LockingScreenAfterIdle) {
       .WillOnce(Return(true));
 
   EXPECT_EQ(std::make_tuple(UserIdleState::kIdle, ScreenIdleState::kLocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/false));
 }
 
 TEST_F(IdleManagerTest, RemoveMonitorStopsPolling) {
@@ -332,46 +339,13 @@ TEST_F(IdleManagerTest, RemoveMonitorStopsPolling) {
 
   SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
 
-  AddMonitorRequest(kThreshold);
+  AddMonitorRequest();
 
   EXPECT_TRUE(IdlePollingService::GetInstance()->IsPollingForTest());
 
   DisconnectRenderer();
 
   EXPECT_FALSE(IdlePollingService::GetInstance()->IsPollingForTest());
-}
-
-TEST_F(IdleManagerTest, Threshold) {
-  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
-
-  // Initial state of the system.
-  EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
-      .WillOnce(Return(base::Seconds(90)));
-  EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
-      .WillOnce(Return(false));
-
-  EXPECT_EQ(
-      AddMonitorRequest(base::Seconds(91)),
-      std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked));
-}
-
-TEST_F(IdleManagerTest, InvalidThreshold) {
-  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
-  mojo::test::BadMessageObserver bad_message_observer;
-
-  MockIdleMonitor monitor;
-  mojo::Receiver<blink::mojom::IdleMonitor> monitor_receiver(&monitor);
-
-  // Should not start initial state of the system.
-  EXPECT_CALL(*idle_time_provider(), CalculateIdleTime()).Times(0);
-  EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked()).Times(0);
-
-  service_remote_->AddMonitor(base::Seconds(50),
-                              monitor_receiver.BindNewPipeAndPassRemote(),
-                              base::NullCallback());
-
-  EXPECT_EQ("Minimum threshold is 1 minute.",
-            bad_message_observer.WaitForBadMessage());
 }
 
 TEST_F(IdleManagerTest, PermissionDenied) {
@@ -386,7 +360,7 @@ TEST_F(IdleManagerTest, PermissionDenied) {
 
   base::RunLoop loop;
   service_remote_->AddMonitor(
-      kThreshold, monitor_receiver.BindNewPipeAndPassRemote(),
+      monitor_receiver.BindNewPipeAndPassRemote(),
       base::BindLambdaForTesting(
           [&loop](IdleManagerError error, IdleStatePtr state) {
             EXPECT_EQ(IdleManagerError::kPermissionDisabled, error);
@@ -401,18 +375,18 @@ TEST_F(IdleManagerTest, SetAndClearOverrides) {
 
   // Verify initial state without overrides.
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
-            AddMonitorRequest(kThreshold));
+            AddMonitorRequest());
 
   // Set overrides and verify overriden values returned.
   auto* impl = GetIdleManager();
-  impl->SetIdleOverride(UserIdleState::kIdle, ScreenIdleState::kLocked);
+  impl->SetIdleOverride(/*is_user_active=*/false, /*is_screen_unlocked=*/false);
   EXPECT_EQ(std::make_tuple(UserIdleState::kIdle, ScreenIdleState::kLocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/true));
 
   // Clear overrides and verify initial values returned.
   impl->ClearIdleOverride();
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
-            GetIdleStatus());
+            GetIdleStatus(/*expect_override=*/false));
 }
 
 }  // namespace content

@@ -23,21 +23,19 @@ using blink::mojom::IdleManagerError;
 using blink::mojom::IdleState;
 using blink::mojom::PermissionStatus;
 
-constexpr base::TimeDelta kMinimumThreshold = base::Seconds(60);
+constexpr base::TimeDelta kUserInputThreshold =
+    base::Milliseconds(blink::mojom::IdleManager::kUserInputThresholdMs);
 
 }  // namespace
 
 IdleManagerImpl::IdleManagerImpl(RenderFrameHost* render_frame_host)
-    : render_frame_host_(render_frame_host) {}
+    : render_frame_host_(render_frame_host) {
+  monitors_.set_disconnect_handler(base::BindRepeating(
+      &IdleManagerImpl::OnMonitorDisconnected, base::Unretained(this)));
+}
 
 IdleManagerImpl::~IdleManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  while (!monitors_.empty()) {
-    IdleMonitor* monitor = monitors_.head()->value();
-    monitor->RemoveFromList();
-    delete monitor;
-  }
 }
 
 void IdleManagerImpl::CreateService(
@@ -47,51 +45,53 @@ void IdleManagerImpl::CreateService(
   receivers_.Add(this, std::move(receiver));
 }
 
-void IdleManagerImpl::SetIdleOverride(
-    blink::mojom::UserIdleState user_state,
-    blink::mojom::ScreenIdleState screen_state) {
-  state_override_ = IdleState::New(user_state, screen_state);
-  OnIdleStateChange(IdlePollingService::GetInstance()->GetIdleState());
+void IdleManagerImpl::SetIdleOverride(bool is_user_active,
+                                      bool is_screen_unlocked) {
+  state_override_ = true;
+  observer_.Reset();
+
+  last_state_ = IdleState::New();
+  if (!is_user_active)
+    last_state_->idle_time = base::Seconds(0);
+  last_state_->screen_locked = !is_screen_unlocked;
+
+  for (const auto& monitor : monitors_) {
+    monitor->Update(last_state_->Clone(), /*is_overridden_by_devtools=*/true);
+  }
 }
 
 void IdleManagerImpl::ClearIdleOverride() {
-  state_override_ = nullptr;
-  OnIdleStateChange(IdlePollingService::GetInstance()->GetIdleState());
+  state_override_ = false;
+
+  if (monitors_.empty()) {
+    return;
+  }
+
+  observer_.Observe(IdlePollingService::GetInstance());
+  last_state_ = CheckIdleState();
+  for (const auto& monitor : monitors_) {
+    monitor->Update(last_state_->Clone(), /*is_overridden_by_devtools=*/false);
+  }
 }
 
 void IdleManagerImpl::AddMonitor(
-    base::TimeDelta threshold,
     mojo::PendingRemote<blink::mojom::IdleMonitor> monitor_remote,
     AddMonitorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (threshold < kMinimumThreshold) {
-    receivers_.ReportBadMessage("Minimum threshold is 1 minute.");
-    return;
-  }
 
   if (!HasPermission()) {
     std::move(callback).Run(IdleManagerError::kPermissionDisabled, nullptr);
     return;
   }
 
-  if (monitors_.empty()) {
+  if (monitors_.empty() && !state_override_) {
     observer_.Observe(IdlePollingService::GetInstance());
+    last_state_ = CheckIdleState();
   }
 
-  blink::mojom::IdleStatePtr current_state = CheckIdleState(threshold);
-  auto response_state = current_state->Clone();
-  auto monitor = std::make_unique<IdleMonitor>(
-      std::move(monitor_remote), std::move(current_state), threshold);
+  monitors_.Add(std::move(monitor_remote));
 
-  // This unretained reference is safe because IdleManagerImpl owns all
-  // IdleMonitor instances.
-  monitor->SetErrorHandler(
-      base::BindOnce(&IdleManagerImpl::RemoveMonitor, base::Unretained(this)));
-
-  monitors_.Append(monitor.release());
-
-  std::move(callback).Run(IdleManagerError::kSuccess,
-                          std::move(response_state));
+  std::move(callback).Run(IdleManagerError::kSuccess, last_state_->Clone());
 }
 
 bool IdleManagerImpl::HasPermission() {
@@ -106,52 +106,41 @@ bool IdleManagerImpl::HasPermission() {
   return status == PermissionStatus::GRANTED;
 }
 
-void IdleManagerImpl::RemoveMonitor(IdleMonitor* monitor) {
+void IdleManagerImpl::OnMonitorDisconnected(mojo::RemoteSetElementId id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  monitor->RemoveFromList();
-  delete monitor;
 
   if (monitors_.empty()) {
     observer_.Reset();
   }
 }
 
-blink::mojom::IdleStatePtr IdleManagerImpl::CheckIdleState(
-    base::TimeDelta threshold) {
-  if (state_override_) {
-    return state_override_->Clone();
-  }
-
-  const IdlePollingService::State& state =
-      IdlePollingService::GetInstance()->GetIdleState();
-
-  blink::mojom::UserIdleState user;
-  if (state.idle_time >= threshold) {
-    user = blink::mojom::UserIdleState::kIdle;
-  } else {
-    user = blink::mojom::UserIdleState::kActive;
-  }
-
-  blink::mojom::ScreenIdleState screen;
-  if (state.locked) {
-    screen = blink::mojom::ScreenIdleState::kLocked;
-  } else {
-    screen = blink::mojom::ScreenIdleState::kUnlocked;
-  }
-
-  return IdleState::New(user, screen);
-}
-
 void IdleManagerImpl::OnIdleStateChange(
     const IdlePollingService::State& state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto* node = monitors_.head(); node != monitors_.end();
-       node = node->next()) {
-    IdleMonitor* monitor = node->value();
-    monitor->SetLastState(CheckIdleState(monitor->threshold()));
+  blink::mojom::IdleStatePtr new_state = CreateIdleState(state);
+  if (new_state == last_state_) {
+    return;
   }
+
+  last_state_ = std::move(new_state);
+  for (const auto& monitor : monitors_) {
+    monitor->Update(last_state_->Clone(), /*is_overridden_by_devtools=*/false);
+  }
+}
+
+blink::mojom::IdleStatePtr IdleManagerImpl::CreateIdleState(
+    const IdlePollingService::State& state) {
+  auto result = IdleState::New();
+  if (state.idle_time >= kUserInputThreshold) {
+    result->idle_time = state.idle_time - kUserInputThreshold;
+  }
+  result->screen_locked = state.locked;
+  return result;
+}
+
+blink::mojom::IdleStatePtr IdleManagerImpl::CheckIdleState() {
+  return CreateIdleState(IdlePollingService::GetInstance()->GetIdleState());
 }
 
 }  // namespace content

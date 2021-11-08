@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+
 namespace blink {
 
 namespace {
@@ -32,6 +34,12 @@ const char kFeaturePolicyBlocked[] =
     "policy.";
 
 constexpr base::TimeDelta kMinimumThreshold = base::Seconds(60);
+constexpr base::TimeDelta kUserInputThreshold =
+    base::Milliseconds(mojom::blink::IdleManager::kUserInputThresholdMs);
+
+static_assert(
+    kMinimumThreshold >= kUserInputThreshold,
+    "Browser threshold can't be less than the minimum allowed by the API");
 
 }  // namespace
 
@@ -41,7 +49,10 @@ IdleDetector* IdleDetector::Create(ScriptState* script_state) {
 }
 
 IdleDetector::IdleDetector(ExecutionContext* context)
-    : ExecutionContextClient(context), receiver_(this, context) {}
+    : ExecutionContextClient(context),
+      task_runner_(context->GetTaskRunner(TaskType::kMiscPlatformAPI)),
+      timer_(task_runner_, this, &IdleDetector::DispatchUserIdleEvent),
+      receiver_(this, context) {}
 
 IdleDetector::~IdleDetector() = default;
 
@@ -60,27 +71,17 @@ bool IdleDetector::HasPendingActivity() const {
 }
 
 String IdleDetector::userState() const {
-  if (!state_)
+  if (!has_state_)
     return String();
 
-  switch (state_->user) {
-    case mojom::blink::UserIdleState::kActive:
-      return "active";
-    case mojom::blink::UserIdleState::kIdle:
-      return "idle";
-  }
+  return user_idle_ ? "idle" : "active";
 }
 
 String IdleDetector::screenState() const {
-  if (!state_)
+  if (!has_state_)
     return String();
 
-  switch (state_->screen) {
-    case mojom::blink::ScreenIdleState::kLocked:
-      return "locked";
-    case mojom::blink::ScreenIdleState::kUnlocked:
-      return "unlocked";
-  }
+  return screen_locked_ ? "locked" : "unlocked";
 }
 
 // static
@@ -135,22 +136,24 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // See https://bit.ly/2S0zRAS for task types.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      context->GetTaskRunner(TaskType::kMiscPlatformAPI);
-
   mojo::PendingRemote<mojom::blink::IdleMonitor> remote;
-  receiver_.Bind(remote.InitWithNewPipeAndPassReceiver(), task_runner);
+  receiver_.Bind(remote.InitWithNewPipeAndPassReceiver(), task_runner_);
   receiver_.set_disconnect_handler(WTF::Bind(
       &IdleDetector::OnMonitorDisconnected, WrapWeakPersistent(this)));
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   IdleManager::From(context)->AddMonitor(
-      threshold_, std::move(remote),
+      std::move(remote),
       WTF::Bind(&IdleDetector::OnAddMonitor, WrapWeakPersistent(this),
                 WrapPersistent(resolver)));
   return promise;
+}
+
+void IdleDetector::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  task_runner_ = std::move(task_runner);
+  timer_.MoveToNewTaskRunner(task_runner_);
 }
 
 void IdleDetector::Abort(AbortSignal* signal) {
@@ -165,6 +168,7 @@ void IdleDetector::Abort(AbortSignal* signal) {
     resolver_ = nullptr;
   }
 
+  has_state_ = false;
   receiver_.reset();
 }
 
@@ -175,6 +179,7 @@ void IdleDetector::OnMonitorDisconnected() {
     resolver_ = nullptr;
   }
 
+  has_state_ = false;
   receiver_.reset();
 }
 
@@ -190,27 +195,72 @@ void IdleDetector::OnAddMonitor(ScriptPromiseResolver* resolver,
     case IdleManagerError::kSuccess:
       DCHECK(state);
       resolver->Resolve();
-      Update(std::move(state));
+      Update(std::move(state), /*is_overridden_by_devtools=*/false);
       break;
   }
 
   resolver_ = nullptr;
 }
 
-void IdleDetector::Update(mojom::blink::IdleStatePtr state) {
+void IdleDetector::Update(mojom::blink::IdleStatePtr state,
+                          bool is_overridden_by_devtools) {
   DCHECK(receiver_.is_bound());
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
     return;
 
-  if (state_ && state->Equals(*state_))
-    return;
+  bool fire_event = false;
+  if (!has_state_) {
+    has_state_ = true;
+    fire_event = true;
+  }
 
-  state_ = std::move(state);
+  if (state->screen_locked != screen_locked_) {
+    screen_locked_ = state->screen_locked;
+    fire_event = true;
+  }
 
+  if (state->idle_time.has_value()) {
+    DCHECK_GE(threshold_, kUserInputThreshold);
+    if (!is_overridden_by_devtools &&
+        threshold_ > kUserInputThreshold + *state->idle_time) {
+      base::TimeDelta delay =
+          threshold_ - kUserInputThreshold - *state->idle_time;
+      timer_.StartOneShot(delay, FROM_HERE);
+
+      // Normally this condition is unsatisfiable because state->idle_time
+      // cannot move backwards but it can if the state was previously overridden
+      // by DevTools.
+      if (user_idle_) {
+        user_idle_ = false;
+        fire_event = true;
+      }
+    } else if (!user_idle_) {
+      user_idle_ = true;
+      fire_event = true;
+    }
+  } else {
+    // The user is now active, so cancel any scheduled task to notify script
+    // that the user is idle.
+    timer_.Stop();
+
+    if (user_idle_) {
+      user_idle_ = false;
+      fire_event = true;
+    }
+  }
+
+  if (fire_event) {
+    DispatchEvent(*Event::Create(event_type_names::kChange));
+  }
+}
+
+void IdleDetector::DispatchUserIdleEvent(TimerBase*) {
+  user_idle_ = true;
   DispatchEvent(*Event::Create(event_type_names::kChange));
 }
 
 void IdleDetector::Trace(Visitor* visitor) const {
+  visitor->Trace(timer_);
   visitor->Trace(signal_);
   visitor->Trace(resolver_);
   visitor->Trace(receiver_);

@@ -36,14 +36,15 @@ promise_setup(async t => {
 promise_test(async t => {
   let monitor;
 
-  expect(addMonitor).andReturn((threshold, monitorPtr) => {
+  expect(addMonitor).andReturn(async (monitorPtr) => {
       monitor = monitorPtr;
-      return Promise.resolve({
+      return {
+        error: IdleDetectorError.SUCCESS,
         state: {
-          user: UserIdleState.ACTIVE,
-          screen: ScreenIdleState.UNLOCKED
+          idleTime: null,
+          screenLocked: false
         }
-      });
+      };
     });
 
   const controller = new AbortController();
@@ -58,10 +59,13 @@ promise_test(async t => {
 
   setMainWindowHidden(true);
 
-  monitor.update({
-    user: UserIdleState.IDLE,
-    screen: ScreenIdleState.UNLOCKED
-  });
+  monitor.update(
+          {
+            idleTime: { milliseconds: 0 },
+            screenLocked: false
+          },
+          /*is_overridden_by_devtools=*/true
+        );
 
   // Assert that the detector works while the page is not visible.
   await watcher.wait_for("change");
@@ -69,10 +73,13 @@ promise_test(async t => {
 
   setMainWindowHidden(false);
 
-  monitor.update({
-    user: UserIdleState.ACTIVE,
-    screen: ScreenIdleState.UNLOCKED
-  });
+  monitor.update(
+          {
+            idleTime: null,
+            screenLocked: false
+          },
+          /*is_overridden_by_devtools=*/true
+        );
 
   await watcher.wait_for("change");
   assert_equals(detector.userState, "active");

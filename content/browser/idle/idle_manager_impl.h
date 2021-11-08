@@ -5,17 +5,16 @@
 #ifndef CONTENT_BROWSER_IDLE_IDLE_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_IDLE_IDLE_MANAGER_IMPL_H_
 
-#include "base/containers/linked_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "content/browser/idle/idle_monitor.h"
 #include "content/browser/idle/idle_polling_service.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
 #include "url/origin.h"
 
@@ -35,12 +34,10 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
   void CreateService(mojo::PendingReceiver<blink::mojom::IdleManager> receiver);
 
   // blink.mojom.IdleManager:
-  void AddMonitor(base::TimeDelta threshold,
-                  mojo::PendingRemote<blink::mojom::IdleMonitor> monitor_remote,
+  void AddMonitor(mojo::PendingRemote<blink::mojom::IdleMonitor> monitor_remote,
                   AddMonitorCallback callback) final;
 
-  void SetIdleOverride(blink::mojom::UserIdleState user_state,
-                       blink::mojom::ScreenIdleState screen_state);
+  void SetIdleOverride(bool is_user_active, bool is_screen_unlocked);
   void ClearIdleOverride();
 
  private:
@@ -48,19 +45,21 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
   // enabled for this frame.
   bool HasPermission();
 
-  // Called internally when a monitor's pipe closes to remove it from
-  // |monitors_|.
-  void RemoveMonitor(IdleMonitor* monitor);
+  // When a monitor's pipe closes and it has been removed from |monitors_|.
+  void OnMonitorDisconnected(mojo::RemoteSetElementId id);
 
   // Notifies |monitors_| of the new idle state.
   void OnIdleStateChange(const IdlePollingService::State& state) override;
 
-  blink::mojom::IdleStatePtr CheckIdleState(base::TimeDelta threshold);
+  blink::mojom::IdleStatePtr CreateIdleState(
+      const IdlePollingService::State& state);
+  blink::mojom::IdleStatePtr CheckIdleState();
 
+  // |observer_| and |state_override_| are mutually exclusive as when DevTools
+  // has provided an override we no longer need to poll for the actual state.
   base::ScopedObservation<IdlePollingService, IdlePollingService::Observer>
       observer_{this};
-
-  blink::mojom::IdleStatePtr state_override_;
+  bool state_override_ = false;
 
   // Raw pointer is safe because this object is owned by |render_frame_host_|.
   RenderFrameHost* const render_frame_host_;
@@ -68,8 +67,10 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
   // Registered clients.
   mojo::ReceiverSet<blink::mojom::IdleManager> receivers_;
 
-  // Owns Monitor instances, added when clients call AddMonitor().
-  base::LinkedList<IdleMonitor> monitors_;
+  blink::mojom::IdleStatePtr last_state_;
+
+  // Registered IdleMonitor instances, added when clients call AddMonitor().
+  mojo::RemoteSet<blink::mojom::IdleMonitor> monitors_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<IdleManagerImpl> weak_factory_{this};
