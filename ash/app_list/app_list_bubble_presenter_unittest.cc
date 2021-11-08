@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/test/widget_test.h"
@@ -169,6 +170,29 @@ TEST_F(AppListBubblePresenterTest, BubbleIsNotShowingAfterDismiss) {
   presenter->Dismiss();
 
   EXPECT_FALSE(presenter->IsShowing());
+}
+
+TEST_F(AppListBubblePresenterTest, CannotShowWhileAnimatingClosed) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Enable animations.
+  base::test::ScopedFeatureList features(
+      features::kProductivityLauncherAnimation);
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  WidgetDestroyedWaiter waiter(presenter->bubble_widget_for_test());
+  presenter->Dismiss();
+  // Widget is still showing because it is animating closed.
+  EXPECT_TRUE(presenter->IsShowing());
+
+  // Attempt to abort the dismiss by showing again.
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Widget closes anyway.
+  waiter.Wait();
+  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
 }
 
 TEST_F(AppListBubblePresenterTest, DoesNotCrashWhenNativeWidgetDestroyed) {

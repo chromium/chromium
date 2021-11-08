@@ -128,43 +128,17 @@ TEST_F(ScrollViewGradientHelperTest, ShowsGradientsBasedOnScrollPosition) {
   EXPECT_FALSE(HasGradientAtBottom());
 }
 
-TEST_F(ScrollViewGradientHelperTest, HideGradientRemovesMaskLayer) {
+TEST_F(ScrollViewGradientHelperTest, DeletingHelperRemovesMaskLayer) {
   // Create a tall contents view.
   AddScrollViewContentsWithHeight(500);
   gradient_helper_->UpdateGradientZone();
 
-  // Precondition: Mask layer and delegate exist.
+  // Precondition: Mask layer exists.
   ASSERT_TRUE(scroll_view_->layer()->layer_mask_layer());
-  ASSERT_TRUE(gradient_helper_->gradient_layer_for_test());
 
-  // Hiding the gradient removes the layer and delegate.
-  auto gradient_disabler1 = std::make_unique<ScopedScrollViewGradientDisabler>(
-      gradient_helper_.get());
+  // Deleting the helper removes the mask layer.
+  gradient_helper_.reset();
   EXPECT_FALSE(scroll_view_->layer()->layer_mask_layer());
-  EXPECT_FALSE(gradient_helper_->gradient_layer_for_test());
-
-  // Updating the gradient does not restore the layer.
-  gradient_helper_->UpdateGradientZone();
-  EXPECT_FALSE(scroll_view_->layer()->layer_mask_layer());
-  EXPECT_FALSE(gradient_helper_->gradient_layer_for_test());
-
-  // Multiple scoped disablers are supported.
-  auto gradient_disabler2 = std::make_unique<ScopedScrollViewGradientDisabler>(
-      gradient_helper_.get());
-  EXPECT_FALSE(scroll_view_->layer()->layer_mask_layer());
-  EXPECT_FALSE(gradient_helper_->gradient_layer_for_test());
-
-  // Destroying the second disabler does not restore the gradient, because the
-  // first disabler is still in scope.
-  gradient_disabler2.reset();
-  EXPECT_FALSE(scroll_view_->layer()->layer_mask_layer());
-  EXPECT_FALSE(gradient_helper_->gradient_layer_for_test());
-
-  // Destroying the first disabler shows the gradient, which restores the layer
-  // and delegate.
-  gradient_disabler1.reset();
-  EXPECT_TRUE(scroll_view_->layer()->layer_mask_layer());
-  EXPECT_TRUE(gradient_helper_->gradient_layer_for_test());
 }
 
 }  // namespace

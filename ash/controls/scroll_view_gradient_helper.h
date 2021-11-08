@@ -21,11 +21,16 @@ class GradientLayerDelegate;
 // mask if no gradient is showing (i.e. if the scroll view contents fit in the
 // viewport and hence the view cannot be scrolled).
 //
+// The gradient is created on the first call to UpdateGradientZone(), not in the
+// constructor. This allows the helper to be created any time during view tree
+// construction, even before the scroll view contents are known.
+//
 // Views using this helper should call UpdateGradientZone() whenever the scroll
 // view bounds or contents bounds change (e.g. from Layout()).
 //
-// The gradient can be disabled with ScopedScrollViewGradientDisabler below.
-// This may improve animation performance.
+// The gradient is destroyed when this object is destroyed. This does not add
+// extra work in the common views::View teardown case (the layer would be
+// destroyed anyway).
 class ASH_EXPORT ScrollViewGradientHelper {
  public:
   // `scroll_view` must have a layer.
@@ -48,32 +53,12 @@ class ASH_EXPORT ScrollViewGradientHelper {
   // The scroll view being decorated.
   views::ScrollView* const scroll_view_;
 
-  // When greater than 0, the gradient is disabled.
-  int disable_count_ = 0;
-
   // Draws the fade in/out gradients via a `scroll_view_` mask layer.
   std::unique_ptr<GradientLayerDelegate> gradient_layer_;
 
   // Callback subscriptions.
   base::CallbackListSubscription on_contents_scrolled_subscription_;
   base::CallbackListSubscription on_contents_scroll_ended_subscription_;
-};
-
-// Disables the gradient mask and destroys its layer. This may improve
-// animation performance if the layer's bounds are changing. The gradient is
-// restored when the returned object is destroyed.
-class ASH_EXPORT ScopedScrollViewGradientDisabler {
- public:
-  // `helper` must outlive this object.
-  explicit ScopedScrollViewGradientDisabler(ScrollViewGradientHelper* helper);
-  ScopedScrollViewGradientDisabler(const ScopedScrollViewGradientDisabler&) =
-      delete;
-  ScopedScrollViewGradientDisabler& operator=(
-      const ScopedScrollViewGradientDisabler&) = delete;
-  ~ScopedScrollViewGradientDisabler();
-
- private:
-  ScrollViewGradientHelper* const helper_;
 };
 
 }  // namespace ash

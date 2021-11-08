@@ -12,6 +12,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
+#include "ui/views/controls/scroll_view.h"
 
 namespace ash {
 namespace {
@@ -54,6 +55,22 @@ TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {
   // At the end of the animation, the recent apps layer is still destroyed,
   // even though the layer existed at the start of the second animation.
   EXPECT_FALSE(recent_apps->layer());
+}
+
+TEST_F(AppListBubbleAppsPageTest, GradientMaskCreatedWhenAnimationsDisabled) {
+  // Force disable animation.
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(features::kProductivityLauncherAnimation);
+
+  // Show an app list with enough apps to fill the page and trigger a gradient
+  // at the bottom.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(50);
+  helper->ShowAppList();
+
+  // Scroll view gradient mask layer is created.
+  auto* apps_page = helper->GetBubbleAppsPage();
+  EXPECT_TRUE(apps_page->scroll_view()->layer()->layer_mask_layer());
 }
 
 }  // namespace
