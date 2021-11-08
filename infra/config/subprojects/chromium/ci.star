@@ -1908,6 +1908,9 @@ ci.chromium_builder(
 
 ci.chromiumos_builder(
     name = "linux-ash-chromium-generator-rel",
+    # This builder gets triggered against multiple branches, so it shouldn't be
+    # bootstrapped
+    bootstrap = False,
     console_view_entry = consoles.console_view_entry(
         category = "default",
     ),
