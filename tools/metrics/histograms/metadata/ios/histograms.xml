@@ -60,9 +60,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContentExtension.DisplayCount" units="count"
-    expires_after="2022-04-24">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-11-02">
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <summary>
     The number of times the Content Extension was displayed since last Chrome
     foregrounding. Reported when Chrome is put in foregrounded. Note: events
@@ -71,9 +71,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContentExtension.Index" units="index"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-11-02">
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <summary>
     The index of the URL selected by the user in the Content Extension.
   </summary>
@@ -1128,16 +1128,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SearchExtension.Action" enum="IOSSearchExtensionAction"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-11-02">
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <summary>The action selected by the user in the Search Extension.</summary>
 </histogram>
 
 <histogram name="IOS.SearchExtension.DisplayCount" units="count"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-11-02">
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <summary>
     The number of times the Search Extension was displayed since last Chrome
     foregrounding. Reported when Chrome is put in foreground. Note: events where
@@ -1159,9 +1159,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntriesCount" units="files"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-11-02">
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <summary>
     The number of items received simultaneously in Chrome from the IOS share
     extension.
@@ -1169,16 +1169,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntry"
-    enum="IOSShareExtensionReceivedEntryType" expires_after="2022-05-01">
-  <owner>javierrobles@chromium.org</owner>
+    enum="IOSShareExtensionReceivedEntryType" expires_after="2022-11-02">
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <summary>Type of the item received from the iOS share extension.</summary>
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntryDelay" units="ms"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-11-02">
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <summary>
     The delay in milliseconds between the item creation in the extension and its
     processing in Chrome.
@@ -1186,9 +1186,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ShareExtension.Source"
-    enum="IOSShareExtensionReceivedEntrySource" expires_after="2022-05-01">
-  <owner>javierrobles@chromium.org</owner>
+    enum="IOSShareExtensionReceivedEntrySource" expires_after="2022-11-02">
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <summary>
     The source application that sent the external command to Chrome.
   </summary>
