@@ -109,21 +109,13 @@ export async function initMetrics() {
 }
 
 /**
- * Parameters for logging launch event. |ackMigrate| stands for whether
- * the user acknowledged to migrate during launch.
- * @typedef {{ackMigrate: boolean}}
- */
-export let LaunchEventParam;
-
-/**
  * Sends launch type event.
- * @param {!LaunchEventParam} param
  */
-export function sendLaunchEvent({ackMigrate}) {
+export function sendLaunchEvent() {
   sendEvent({
     eventCategory: 'launch',
     eventAction: 'start',
-    eventLabel: ackMigrate ? 'ack-migrate' : '',
+    eventLabel: '',
   });
 }
 

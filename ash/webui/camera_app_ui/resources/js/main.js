@@ -337,7 +337,7 @@ export class App {
       }
     })();
 
-    metrics.sendLaunchEvent({ackMigrate: false});
+    metrics.sendLaunchEvent();
     return Promise.all([showWindow, startCamera, preloadImages]);
   }
 
