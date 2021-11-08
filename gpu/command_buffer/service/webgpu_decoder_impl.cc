@@ -596,7 +596,7 @@ void WebGPUDecoderImpl::DoRequestDevice(
 
   dawn_native::DeviceDescriptor device_descriptor;
   if (request_device_properties.textureCompressionBC) {
-    device_descriptor.requiredFeatures.push_back("texture_compression_bc");
+    device_descriptor.requiredFeatures.push_back("texture-compression-bc");
   }
   if (request_device_properties.textureCompressionETC2) {
     device_descriptor.requiredFeatures.push_back("texture-compression-etc2");
@@ -605,19 +605,19 @@ void WebGPUDecoderImpl::DoRequestDevice(
     device_descriptor.requiredFeatures.push_back("texture-compression-astc");
   }
   if (request_device_properties.shaderFloat16) {
-    device_descriptor.requiredFeatures.push_back("shader_float16");
+    device_descriptor.requiredFeatures.push_back("shader-float16");
   }
   if (request_device_properties.pipelineStatisticsQuery) {
-    device_descriptor.requiredFeatures.push_back("pipeline_statistics_query");
+    device_descriptor.requiredFeatures.push_back("pipeline-statistics-query");
   }
   if (request_device_properties.timestampQuery) {
-    device_descriptor.requiredFeatures.push_back("timestamp_query");
+    device_descriptor.requiredFeatures.push_back("timestamp-query");
   }
   if (request_device_properties.depthClamping) {
-    device_descriptor.requiredFeatures.push_back("depth_clamping");
+    device_descriptor.requiredFeatures.push_back("depth-clamping");
   }
   if (request_device_properties.invalidFeature) {
-    device_descriptor.requiredFeatures.push_back("invalid_feature");
+    device_descriptor.requiredFeatures.push_back("invalid-feature");
   }
 
   // We need to request internal usage to be able to do operations with internal
