@@ -23,6 +23,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/display/de_jelly.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -258,7 +259,8 @@ SurfaceAggregator::SurfaceAggregator(SurfaceManager* manager,
       provider_(provider),
       aggregate_only_damaged_(aggregate_only_damaged),
       needs_surface_damage_rect_list_(needs_surface_damage_rect_list),
-      de_jelly_enabled_(DeJellyEnabled()) {
+      de_jelly_enabled_(DeJellyEnabled()),
+      clip_prewalk_damage_(features::IsClipPrewalkDamageEnabled()) {
   DCHECK(manager_);
   DCHECK(provider_);
 }
@@ -1584,6 +1586,14 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
       }
     }
 
+    if (clip_prewalk_damage_) {
+      // Clip the quad damage to the quad visible before converting back to
+      // render pass coordinate space. Expanded damage outside the quad rect for
+      // filters are added to |damage_rect| directly so this only clips damage
+      // from drawing the quad itself.
+      quad_damage_rect.Intersect(quad->visible_rect);
+    }
+
     if (!quad_damage_rect.IsEmpty()) {
       // Convert the quad damage rect into its target space and clip it if
       // needed. Ignore tiny errors to avoid artificially inflating the
@@ -1600,10 +1610,24 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
     }
   }
 
-  // Expand the damage to cover entire |output_rect| if the |render_pass| has
-  // pixel-moving foreground filter.
-  if (!damage_rect.IsEmpty() && render_pass.filters.HasFilterThatMovesPixels())
-    damage_rect.Union(render_pass.output_rect);
+  if (!damage_rect.IsEmpty()) {
+    if (render_pass.filters.HasFilterThatMovesPixels()) {
+      // Expand the damage to cover entire |output_rect| if the |render_pass|
+      // has pixel-moving foreground filter.
+      damage_rect.Union(render_pass.output_rect);
+    }
+
+    if (clip_prewalk_damage_) {
+      // The added damage from quads in the render pass is transformed back
+      // into the render pass coordinate space without clipping, so it can
+      // extend beyond the edge of the current render pass. Coordinates outside
+      // the output_rect are invalid in this render passes coordinate space but
+      // they may be valid coordinates in the embedder coordinate space, causing
+      // unnecessary damage expansion.
+      damage_rect.Intersect(render_pass.output_rect);
+    }
+  }
+
   return damage_rect;
 }
 

@@ -345,6 +345,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Whether de-jelly may be active.
   const bool de_jelly_enabled_;
 
+  const bool clip_prewalk_damage_;
+
   bool output_is_secure_ = false;
 
   // The color space for the root render pass. If this is different from its

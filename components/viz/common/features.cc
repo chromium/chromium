@@ -182,6 +182,13 @@ bool IsAdpfEnabled() {
   return base::FeatureList::IsEnabled(kAdpf);
 }
 
+bool IsClipPrewalkDamageEnabled() {
+  static constexpr base::Feature kClipPrewalkDamage{
+      "ClipPrewalkDamage", base::FEATURE_DISABLED_BY_DEFAULT};
+
+  return base::FeatureList::IsEnabled(kClipPrewalkDamage);
+}
+
 bool IsOverlayPrioritizationEnabled() {
   return base::FeatureList::IsEnabled(kEnableOverlayPrioritization);
 }
