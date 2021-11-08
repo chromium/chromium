@@ -13,7 +13,13 @@ if (is_android) {
 source_set("power_save_blocker") {
   visibility = [
     # Crosapi power API needs to directly use the Ash PowerBlocker .
+    # TODO(b/193670013): Remove visibility after Wayland idle inhibitor replaces
+    # crosapi power service.
     "//chrome/browser/ash/crosapi",
+
+    # Exo Wayland idle inhibit protocol needs to directly use the Ash
+    # PowerBlocker.
+    "//components/exo/wayland",
 
     # //remoting runs in a separate process which is outside of the context of
     # the ServiceManager-based world. Instead of embedding a Service Manager
