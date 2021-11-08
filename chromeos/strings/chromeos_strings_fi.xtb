@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">Yhteys</translation>
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
 <translation id="4835901797422965222">Ei aktiivisia verkkoja</translation>
+<translation id="4839698083503556542">Luo oma elokuva</translation>
 <translation id="484790837831576105">(Android) DNS-selvitys</translation>
 <translation id="4848429997038228357">KÄYNNISSÄ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} yritys jäljellä}other{<ph name="ERROR_MESSAGE" /> {0} yritystä jäljellä}}</translation>

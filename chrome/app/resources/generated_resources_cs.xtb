@@ -4067,6 +4067,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5265562206369321422">Offline déle než týden</translation>
 <translation id="5265797726250773323">Při instalaci došlo k chybě</translation>
 <translation id="5266113311903163739">Chyba při importu certifikační autority</translation>
+<translation id="526622169288322445">Další akce: <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Tisk se nezdařil</translation>
 <translation id="5275352920323889391">Pes</translation>
 <translation id="527605982717517565">Vždy povolovat JavaScript z webu <ph name="HOST" /></translation>
@@ -5442,6 +5443,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6775163072363532304">Zde se budou zobrazovat dostupná zařízení.</translation>
 <translation id="6777817260680419853">Bylo zablokováno přesměrování</translation>
 <translation id="6778737459546443941">Rodič ti přístup na web dosud neschválil.</translation>
+<translation id="6779092717724412415">Pokud chcete vytvořit podobné zvýraznění, vyberte text a klikněte pravým tlačítkem.</translation>
 <translation id="6779447100905857289">vaše nákupní košíky</translation>
 <translation id="677965093459947883">Velmi malé</translation>
 <translation id="6781005693196527806">&amp;Spravovat vyhledávače…</translation>
@@ -5587,6 +5589,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6914783257214138813">Vaše hesla uvidí každý, kdo může zobrazit exportovaný soubor.</translation>
 <translation id="6916590542764765824">Spravovat rozšíření</translation>
 <translation id="6919868320029503575">Slabá hesla</translation>
+<translation id="6919952941889172531">Zapnout Vylepšené Bezpečné prohlížení i pro tento profil Chrome?</translation>
 <translation id="6920989436227028121">Otevřít jako běžnou kartu</translation>
 <translation id="6921104647315081813">Vymazat aktivity</translation>
 <translation id="692114467174262153">Prohlížeč <ph name="ALTERNATIVE_BROWSER_NAME" /> se nepodařilo otevřít</translation>
@@ -6255,6 +6258,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7625823789272218216">Nová karta vlevo</translation>
 <translation id="7628201176665550262">Obnovovací frekvence</translation>
 <translation id="7629827748548208700">Karta: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Toto zařízení spravuje doména <ph name="MANAGER" />, která vyžaduje, abyste se pokaždé přihlásili.</translation>
 <translation id="7631014249255418691">Aplikace a soubory systému Linux byly úspěšně zálohovány</translation>
 <translation id="7631205654593498032">Propojením zařízení vyjadřujete souhlas s tím, že zařízení <ph name="DEVICE_TYPE" /> může:</translation>
 <translation id="7631887513477658702">Vždy otevír&amp;at soubory tohoto typu</translation>

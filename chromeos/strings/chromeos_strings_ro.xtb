@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">Conexiune</translation>
 <translation id="4832079907277790330">Selectează dosarul în aplicația Fișiere...</translation>
 <translation id="4835901797422965222">Nu există rețele active</translation>
+<translation id="4839698083503556542">Creează propriul film</translation>
 <translation id="484790837831576105">(Android) Rezolvare DNS</translation>
 <translation id="4848429997038228357">RULEAZĂ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} încercare rămasă}few{<ph name="ERROR_MESSAGE" /> {0} încercări rămase}other{<ph name="ERROR_MESSAGE" /> {0} de încercări rămase}}</translation>

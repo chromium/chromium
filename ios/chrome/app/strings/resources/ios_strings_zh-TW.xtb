@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">登入時發生問題。</translation>
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
 <translation id="1923342640370224680">前一個小時</translation>
+<translation id="1930989359703290198">貴機構規定你只能使用特定帳戶登入。系統已隱藏不適用的帳戶。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">輕觸兩下即可複製。</translation>
 <translation id="1952172573699511566">Chrome 會儘可能以你慣用的語言顯示網站文字。</translation>
 <translation id="1965935827552890526">請完成你在其他已開啟的 Chrome 視窗中正在執行的動作。</translation>
@@ -225,6 +226,7 @@
 <translation id="3080525922482950719">你可以儲存頁面以便稍後閱讀或離線閱讀</translation>
 <translation id="3081338492074632642">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
 <translation id="3112556859945124369">標示…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看你可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕分頁。</translation>
 <translation id="3153862085237805241">儲存卡片</translation>
@@ -386,6 +388,8 @@
 <translation id="4802417911091824046">通關密語加密保護的資料不包括 Google Pay 的付款方式和地址。
 
 如要變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">由貴機構管理。
+<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">卡號無效</translation>
 <translation id="4808744395915275922">更新</translation>
 <translation id="4818522717893377262">新增語言...</translation>

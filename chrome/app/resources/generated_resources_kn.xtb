@@ -4076,6 +4076,7 @@
 <translation id="5265562206369321422">ಒಂದು ವಾರಕ್ಕಿಂತಲೂ ಹೆಚ್ಚು ಕಾಲ ಆಫ್‌ಲೈನ್</translation>
 <translation id="5265797726250773323">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಾಗ ದೋಷ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="5266113311903163739">ಪ್ರಮಾಣಪತ್ರದ ಅಧಿಕಾರ ಆಮದು ದೋಷ</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="5269977353971873915">ಮುದ್ರಣ ವಿಫಲಗೊಂಡಿದೆ</translation>
 <translation id="5275352920323889391">ನಾಯಿ</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ನಲ್ಲಿ JavaScript ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
@@ -5452,6 +5453,7 @@
 <translation id="6775163072363532304">ಲಭ್ಯವಿರುವ ಸಾಧನಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="6777817260680419853">ಮರುನಿರ್ದೇಶಿಸುವಿಕೆಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6778737459546443941">ನಿಮ್ಮ ಪೋಷಕರು ಇನ್ನೂ ಇದನ್ನು ಅಂಗೀಕರಿಸಿಲ್ಲ</translation>
+<translation id="6779092717724412415">ಈ ರೀತಿಯ ಹೈಲೈಟ್ ರಚಿಸಲು, ಯಾವುದೇ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="6779447100905857289">ನಿಮ್ಮ ಕಾರ್ಟ್‌ಗಳು</translation>
 <translation id="677965093459947883">ತುಂಬಾ ಚಿಕ್ಕದು</translation>
 <translation id="6781005693196527806">ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳನ್ನು &amp;ನಿರ್ವಹಿಸಿ...</translation>
@@ -5597,6 +5599,7 @@
 <translation id="6914783257214138813">ರಫ್ತು ಮಾಡಲಾದ ಫೈಲ್ ಅನ್ನು ನೋಡುವ ಯಾರಿಗಾದರೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="6916590542764765824">ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6919868320029503575">ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
+<translation id="6919952941889172531">ಈ Chrome ಪ್ರೊಫೈಲ್‌ಗಾಗಿ ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಸಹ ಆನ್ ಮಾಡುವುದೇ?</translation>
 <translation id="6920989436227028121">ದಿನನಿತ್ಯದ ಟ್ಯಾಬ್ ಅಂತೆ ತೆರೆಯಿರಿ</translation>
 <translation id="6921104647315081813">ಚಟುವಟಿಕೆಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -6266,6 +6269,7 @@
 <translation id="7625823789272218216">ಎಡಭಾಗದಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="7628201176665550262">ರಿಫ್ರೆಶ್ ರೇಟ್</translation>
 <translation id="7629827748548208700">ಟ್ಯಾಬ್: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ ಮತ್ತು ನೀವು ಪ್ರತಿ ಬಾರಿಯೂ ಸೈನ್ ಇನ್ ಮಾಡುವ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="7631014249255418691">Linux ಆ್ಯಪ್‌ಗಳು &amp; ಫೈಲ್‌ಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಬ್ಯಾಕಪ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7631205654593498032">ನಿಮ್ಮ ಸಾಧನಗಳನ್ನು ನೀವು ಸಂಪರ್ಕಿಸಿದಾಗ, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಇವುಗಳನ್ನು ಮಾಡಬಹುದು ಎಂಬುದನ್ನು ನೀವು ಒಪ್ಪುತ್ತೀರಿ:</translation>
 <translation id="7631887513477658702">&amp;ಯಾವಾಗಲೂ ಈ ಪ್ರಕಾರದ ಫೈಲ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>

@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">Tenging</translation>
 <translation id="4832079907277790330">Velja möppu í forritinu Skrár...</translation>
 <translation id="4835901797422965222">Engin virk net</translation>
+<translation id="4839698083503556542">Búðu til eigin kvikmynd</translation>
 <translation id="484790837831576105">(Android) DNS-lausn</translation>
 <translation id="4848429997038228357">Í GANGI</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>

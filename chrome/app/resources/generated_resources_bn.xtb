@@ -4082,6 +4082,7 @@
 <translation id="5265562206369321422">এক সপ্তাহের বেশী অফলাইন</translation>
 <translation id="5265797726250773323">ইনস্টল করার সময় সমস্যা</translation>
 <translation id="5266113311903163739">শংসাকরণ কর্তৃপক্ষ আমদানি ত্রুটি</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="5269977353971873915">প্রিন্ট করা যায়নি</translation>
 <translation id="5275352920323889391">কুকুর</translation>
 <translation id="527605982717517565">সর্বদা <ph name="HOST" />-এ জাভাস্ক্রিপ্ট মঞ্জুর করুন</translation>
@@ -5458,6 +5459,7 @@
 <translation id="6775163072363532304">উপলভ্য ডিভাইসগুলি এখানে দেখা যাবে।</translation>
 <translation id="6777817260680419853">রিডাইরেক্ট ব্লক করা হয়েছে</translation>
 <translation id="6778737459546443941">আপনার পিতামাতা এখনও এটি অনুমোদন করেন নি</translation>
+<translation id="6779092717724412415">এইরকম একটি হাইলাইট তৈরি করতে, যেকোনও টেক্সট বেছে নিন এবং ডানদিকের বোতামে ক্লিক করুন।</translation>
 <translation id="6779447100905857289">আপনার কার্ট</translation>
 <translation id="677965093459947883">অতি ক্ষুদ্র</translation>
 <translation id="6781005693196527806">সার্চ ইঞ্জিন &amp;ম্যানেজ করুন...</translation>
@@ -5603,6 +5605,7 @@
 <translation id="6914783257214138813">এক্সপোর্ট করা ফাইল যারা দেখতে পান তারা আপনার পাসওয়ার্ডগুলিও দেখতে পাবেন।</translation>
 <translation id="6916590542764765824">এক্সটেনশানগুলি পরিচালনা করুন</translation>
 <translation id="6919868320029503575">দুর্বল পাসওয়ার্ড</translation>
+<translation id="6919952941889172531">এছাড়াও এই Chrome প্রোফাইলের জন্য উন্নত Safe Browsing চালু করবেন?</translation>
 <translation id="6920989436227028121">নিয়মিত ট্যাব রূপে খুলুন</translation>
 <translation id="6921104647315081813">অ্যাক্টিভিটি খালি করুন</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> চালু করা যাচ্ছে না</translation>
@@ -6271,6 +6274,7 @@
 <translation id="7625823789272218216">বাঁদিকে নতুন ট্যাব</translation>
 <translation id="7628201176665550262">রিফ্রেশ রেট</translation>
 <translation id="7629827748548208700">ট্যাব: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং এর জন্য আপনাকে প্রতিবার অ্যাকাউন্টে সাইন-ইন করতে হবে।</translation>
 <translation id="7631014249255418691">Linux অ্যাপ ও ফাইলের ব্যাক-আপ নেওয়া হয়ে গেছে</translation>
 <translation id="7631205654593498032">আপনি ডিভাইস কানেক্ট করার মানে হল আপনি মেনে নিচ্ছেন <ph name="DEVICE_TYPE" /> এই কাজগুলি করতে পারবে:</translation>
 <translation id="7631887513477658702">&amp;সবসময় এই ধরনের ফাইল খুলুন</translation>

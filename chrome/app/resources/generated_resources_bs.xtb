@@ -2399,6 +2399,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3449393517661170867">Novi prozor u kartici</translation>
 <translation id="3449839693241009168">Pritisnite tipku <ph name="SEARCH_KEY" /> da pošaljete komande ekstenziji <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Postotak zauzetosti stanja neaktivnosti</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> zahtijeva da se sada povežete s WiFi mrežom i preuzmete ažuriranje.</translation>
 <translation id="3451753556629288767">Dozvoljeno je otvaranje određenih vrsta fajlova</translation>
 <translation id="3452999110156026232">Pristup roditelja</translation>
 <translation id="3453612417627951340">Potrebno je odobrenje</translation>
@@ -4081,6 +4082,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5265562206369321422">Van mreže duže od sedmicu dana</translation>
 <translation id="5265797726250773323">Greška prilikom instalacije</translation>
 <translation id="5266113311903163739">Greška prilikom uvoza organa za izdavanje potvrde</translation>
+<translation id="526622169288322445">Više radnji za adresu <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Štampanje nije uspjelo</translation>
 <translation id="5275352920323889391">Pas</translation>
 <translation id="527605982717517565">Uvijek omogući JavaScript na web lokaciji <ph name="HOST" /></translation>
@@ -4262,6 +4264,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5472627187093107397">Sačuvaj lozinke za ovu web lokaciju</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN mora sadržavati najmanje jedan znak.}one{PIN mora sadržavati najmanje # znak.}few{PIN mora sadržavati najmanje # znaka.}other{PIN mora sadržavati najmanje # znakova.}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> zahtijeva da se sada povežete s WiFi mrežom i preuzmete ažuriranje. Možete ga preuzeti i putem veze s naplatom (mogu nastati troškovi).</translation>
 <translation id="5481273127572794904">Nije dozvoljeno automatsko preuzimanje više fajlova</translation>
 <translation id="5481941284378890518">Dodaj štampače u blizini</translation>
 <translation id="5483785310822538350">Opozovi pristup fajlu i uređaju</translation>
@@ -4684,6 +4687,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="592880897588170157">Preuzmite PDF fajlove umjesto automatskog otvaranja u Chromeu.</translation>
 <translation id="592919310198008711">Kada kliknem na ekstenziju</translation>
 <translation id="5932124097031739492">Linux je uspješno nadograđen.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> zahtijeva da odmah ažurirate uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5932224571077948991">Web-lokacija prikazuje ometajuće ili obmanjujuće oglase</translation>
 <translation id="59324397759951282">USB uređaj proizvođača <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Nemate dovoljno dostupnih licenci da prijavite ovaj hardverski uređaj za Google Meet. Kontaktirajte prodaju da kupite još licenci. Ako mislite da vam se ova poruka prikazuje greškom, kontaktirajte podršku.</translation>
@@ -5456,6 +5460,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6775163072363532304">Ovdje će se prikazati dostupni uređaji.</translation>
 <translation id="6777817260680419853">Preusmjeravanje je blokirano</translation>
 <translation id="6778737459546443941">Roditelj ga još uvijek nije odobrio</translation>
+<translation id="6779092717724412415">Da kreirate istaknuti tekst poput ovog, odaberite bilo koji tekst i kliknite desnim klikom.</translation>
 <translation id="6779447100905857289">vaša kolica</translation>
 <translation id="677965093459947883">Vrlo mali</translation>
 <translation id="6781005693196527806">&amp;Upravljajte pretraživačima...</translation>
@@ -5601,7 +5606,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6914783257214138813">Vaše lozinke će biti vidljive svima koji mogu vidjeti izvezeni fajl.</translation>
 <translation id="6916590542764765824">Upravljanje ekstenzijama</translation>
 <translation id="6919868320029503575">Slabe lozinke</translation>
-<translation id="6919952941889172531">Želite li također uključiti poboljšano sigurno pregledavanje za ovaj profil u Chromeu?</translation>
+<translation id="6919952941889172531">Također uključiti poboljšano Sigurno pregledanje za ovaj Chrome profil?</translation>
 <translation id="6920989436227028121">Otvori kao običnu karticu</translation>
 <translation id="6921104647315081813">Obriši aktivnosti</translation>
 <translation id="692114467174262153">Otvaranje preglednika <ph name="ALTERNATIVE_BROWSER_NAME" /> nije uspjelo</translation>
@@ -6270,6 +6275,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7625823789272218216">Nova kartica s lijeve strane</translation>
 <translation id="7628201176665550262">Brzina osvježavanja</translation>
 <translation id="7629827748548208700">Kartica: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Ovim uređajem upravlja <ph name="MANAGER" /> i morate se prijaviti svaki put.</translation>
 <translation id="7631014249255418691">Sigurnosna kopija za Linux aplikacije i fajlove je uspješno kreirana</translation>
 <translation id="7631205654593498032">Kada povežete uređaje, saglasni ste da vaš uređaj <ph name="DEVICE_TYPE" /> može:</translation>
 <translation id="7631887513477658702">&amp;Uvijek otvori fajlove ove vrste</translation>

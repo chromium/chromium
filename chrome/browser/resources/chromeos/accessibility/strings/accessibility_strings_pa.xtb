@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">ਕਾਪੀ ਕਰੋ</translation>
 <translation id="135978014023467274">ਤੁਹਾਨੂੰ ChromeVox 63 ਲਈ ਅੱਪਡੇਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ!</translation>
 <translation id="1360699455582016846">ਰੂਟਿੰਗ ਕੁੰਜੀ <ph name="ROUTING_KEY_NUMBER" /> ਦੇ ਅਧੀਨ ਆਈਟਮ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="1376703628032300005">ਅਗਲੇ ਅੱਖਰ-ਚਿੰਨ੍ਹ 'ਤੇ ਜਾਓ</translation>
 <translation id="1377925789329510816">ਇਹ ਆਖਰੀ ਸਿਰਲੇਖ ਹੈ। ਪਹਿਲੇ ਸਿਰਲੇਖ ਤੱਕ ਸੀਮਾਬੱਧ ਕਰਨ ਲਈ Search+H ਦਬਾਓ, ਜਾਂ ਇਸ ਪੰਨੇ 'ਤੇ ਦੂਜੇ ਸਿਰਲੇਖ ਤੱਕ ਜਾਣ ਲਈ Search+Shift+H ਦਬਾਓ।</translation>
 <translation id="138218114945450791">ਹਲਕਾ ਨੀਲਾ</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">ਚੈੱਕ-ਬਾਕਸ</translation>
 <translation id="2461822463642141190">ਮੌਜੂਦਾ</translation>
 <translation id="2462626033734746142">ਰੇਡੀਓ ਬਟਨ ਗਰੁੱਪ</translation>
+<translation id="2467741090055146971">ਅਣਚੁਣਿਆ</translation>
 <translation id="2471138580042810658">ਸਿਰਲੇਖ 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{ਤਾਰਾ ਚਿੰਨ੍ਹ}one{# ਤਾਰਾ ਚਿੰਨ੍ਹ}other{# ਤਾਰਾ ਚਿੰਨ੍ਹ}}</translation>
 <translation id="2490721194269245365">ਗੁਲਾਬੀ ਭੂਰਾ</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">ਕੋਈ ਪਿਛਲਾ ਮੀਡੀਆ ਵਿਜੇਟ ਨਹੀਂ</translation>
 <translation id="4855927945655956315">ਅਹਿਮ ਕੁੰਜੀਆਂ: Control</translation>
 <translation id="4862744964787595316">ਗੂੜ੍ਹਾ ਨਹੀਂ</translation>
+<translation id="4865995900839719272">ਪਿਛਲੀ ਲਾਈਨ 'ਤੇ ਜਾਓ</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS ਲੌਗਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, ਟੈਬ</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5310788376443009632">ਹਟਾਇਆ:</translation>
+<translation id="5316825363044614340">ਅਗਲੀ ਲਾਈਨ 'ਤੇ ਜਾਓ</translation>
 <translation id="5320727453979144100">ਸਟਿਕੀ ਮੋਡ ਸਮਰਥਿਤ</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{ਕਾਮਾ}one{# ਕਾਮੇ}other{# ਕਾਮੇ}}</translation>
 <translation id="532485153932049746">ਲਿਖਤ ਫਾਰਮੈਟਿੰਗ
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">ਕੋਈ ਪਿਛਲਾ ਫ਼ਾਰਮ ਖੇਤਰ ਨਹੀਂ</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">ਮਦਦ</translation>
 <translation id="7317017974771324508">ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="7322442671176251901">ਸਪਰਸ਼ ਰਾਹੀਂ ਪੜਚੋਲ ਕਰੋ</translation>
 <translation id="7344012264516629579">ਵਧੀਕ ਜੰਪ ਆਦੇਸ਼ਾਂ ਵਿੱਚ ਲਿੰਕ, ਬਟਨ ਅਤੇ ਚੈੱਕ-ਬਾਕਸ ਰਾਹੀਂ ਜਾਣ ਵਰਗੀਆਂ ਕੁਝ ਚੀਜ਼ਾਂ ਸ਼ਾਮਲ ਹਨ। ਜੰਪ ਆਦੇਸ਼ਾਂ ਦੀ ਪੂਰੀ ਸੂਚੀ ਨੂੰ ChromeVox ਮੀਨੂਆਂ ਵਿੱਚ ਲੱਭਿਆ ਜਾ ਸਕਦਾ ਹੈ, ਜਿਸਨੂੰ Search + Period ਦਬਾ ਕੇ ਖੋਲ੍ਹਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox ਟਿਊਟੋਰੀਅਲ</translation>
 <translation id="9040132695316389094">ਸਿਰਲੇਖ 1</translation>
 <translation id="9061884144798498064">ਕੋਈ 8-ਬਿੰਦੀ ਬ੍ਰੇਲ ਸਾਰਨੀ ਚੁਣੋ:</translation>
+<translation id="9063946545000394379">ਪਿਛਲੇ ਅੱਖਰ-ਚਿੰਨ੍ਹ 'ਤੇ ਜਾਓ</translation>
 <translation id="9065283790526219006">+ਪੌਪਅਪ</translation>
 <translation id="9065912140022662363">ਕੋਈ ਅਗਲਾ ਰੇਡੀਓ ਬਟਨ ਨਹੀਂ</translation>
 <translation id="9067522039955793016">ਪੰਨਾ ਬ੍ਰੇਕ</translation>

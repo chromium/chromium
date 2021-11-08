@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">ಸಮಸ್ಯೆ ನಿವಾರಣೆ ಮಾಡುವ ಹಂತಗಳನ್ನು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="2104796393919810494">ದುರಸ್ತಿ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB ಯಲ್ಲಿನ <ph name="AVAILABLE_MEMORY" /> GB ಲಭ್ಯವಿದೆ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -237,6 +238,7 @@
 <translation id="4813345808229079766">ಸಂಪರ್ಕ</translation>
 <translation id="4832079907277790330">Files ಆ್ಯಪ್‌ನಲ್ಲಿ ಫೋಲ್ಡರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ...</translation>
 <translation id="4835901797422965222">ಯಾವುದೇ ಸಕ್ರಿಯ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಲ್ಲ</translation>
+<translation id="4839698083503556542">ನಿಮ್ಮದೇ ಆದ ಮೂವಿ ರಚಿಸಿ</translation>
 <translation id="484790837831576105">(Android) DNS ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="4848429997038228357">ರನ್‌ ಆಗುತ್ತಿದೆ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ಪ್ರಯತ್ನ ಬಾಕಿ ಉಳಿದಿದೆ}one{<ph name="ERROR_MESSAGE" /> {0} ಪ್ರಯತ್ನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}other{<ph name="ERROR_MESSAGE" /> {0} ಪ್ರಯತ್ನಗಳು ಬಾಕಿ ಉಳಿದಿವೆ}}</translation>

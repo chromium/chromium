@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">在群組的新分頁中開啟</translation>
 <translation id="1103142993930332957">要協助改善 Chrome 嗎？</translation>
 <translation id="1105960400813249514">擷取螢幕畫面</translation>
+<translation id="1108938384783527433">同步處理歷史記錄</translation>
 <translation id="1110914759170138831">已縮短突顯文字長度</translation>
 <translation id="1111673857033749125">儲存在其他裝置上的書籤會在這裡顯示。</translation>
 <translation id="1113597929977215864">顯示簡化檢視模式</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">將部分 Cookie，以及網址列和搜尋框中的搜尋內容傳送至預設搜尋引擎</translation>
 <translation id="200114059308480249">要加入上下文來執行 Google 搜尋嗎？</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
+<translation id="2020309681647789787">你可以在所有已同步的裝置上查看歷史記錄，繼續執行先前的任何工作</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
 <translation id="2038563949887743358">開啟「切換為電腦版網站」</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> 在 Chrome 中也有資料</translation>
@@ -847,6 +849,7 @@
 <translation id="6070730414166672373">正在聯絡銀行\u2026</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連接網站</translation>
 <translation id="60923314841986378">尚餘 <ph name="HOURS" /> 小時</translation>
+<translation id="6095578583683628124">如果 Google 也是預設的搜尋引擎，你將能取得更實用、更符合需求的建議</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6111020039983847643">數據用量</translation>
 <translation id="6112702117600201073">正在重新整理網頁</translation>
@@ -1392,6 +1395,7 @@
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9155898266292537608">您亦可以透過快速輕按某個字詞進行搜尋</translation>
 <translation id="9158770349521403363">只分享內容</translation>
+<translation id="916446198114569890">系統會將你造訪的網址儲存到 Google 帳戶</translation>
 <translation id="9169507124922466868">導覽記錄喺畫面下半部分顯示</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{曾在 1 分鐘前檢查}other{曾在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">尚餘 1 個檔案</translation>

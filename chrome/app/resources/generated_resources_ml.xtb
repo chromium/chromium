@@ -4065,6 +4065,7 @@
 <translation id="5265562206369321422">ഒരു ആഴ്‌ചയിലേറെയായി ഓഫ്‌ലൈനിലാണ്</translation>
 <translation id="5265797726250773323">ഇൻസ്‌റ്റാൾ ചെയ്യുന്നതിനിടെ പിശക്</translation>
 <translation id="5266113311903163739">സര്‍ട്ടിഫിക്കേഷന്‍ അതോറിറ്റി ഇറക്കുമതി പിശക്</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> എന്നയാൾക്കുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="5269977353971873915">പ്രിന്‍റ് ചെയ്യൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5275352920323889391">നായ</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ല്‍‌ എപ്പോഴുംJavaScript അനുവദിക്കുക</translation>
@@ -5442,6 +5443,7 @@
 <translation id="6775163072363532304">ലഭ്യമായ ഉപകരണങ്ങൾ ഇവിടെ ദൃശ്യമാകും.</translation>
 <translation id="6777817260680419853">റീഡയറക്ട് ചെയ്യുന്നത് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="6778737459546443941">നിങ്ങളുടെ രക്ഷിതാവ് ഇതുവരെ അംഗീകാരം നൽകിയിട്ടില്ല</translation>
+<translation id="6779092717724412415">ഇതുപോലുള്ള ഹൈലൈറ്റ് സൃഷ്ടിക്കാൻ ഏതെങ്കിലും ടെക്സ്റ്റ് തിരഞ്ഞെടുത്ത് വലത്-ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="6779447100905857289">നിങ്ങളുടെ കാർട്ടുകൾ</translation>
 <translation id="677965093459947883">വളരെ ചെറുത്</translation>
 <translation id="6781005693196527806">&amp;തിരയൽ യന്ത്രങ്ങൾ മാനേജ് ചെയ്യുക...</translation>
@@ -6256,6 +6258,7 @@
 <translation id="7625823789272218216">പുതിയ ടാബ് ഇടതുവശത്തേക്ക്</translation>
 <translation id="7628201176665550262">പുതുക്കൽ നിരക്ക്</translation>
 <translation id="7629827748548208700">ടാബ്: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്, ഓരോ തവണയും നിങ്ങൾ സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="7631014249255418691">Linux ആപ്പുകളും ഫയലുകളും വിജയകരമായി ബാക്കപ്പെടുത്തു</translation>
 <translation id="7631205654593498032">ഉപകരണങ്ങൾ കണക്‌റ്റ് ചെയ്യുമ്പോൾ, <ph name="DEVICE_TYPE" /> എന്നതിന് ഇനിപ്പറയുന്ന കാര്യങ്ങൾ ചെയ്യാനാകുമെന്ന് നിങ്ങൾ അംഗീകരിക്കുന്നു:</translation>
 <translation id="7631887513477658702">&amp;എല്ലായ്‌പ്പോഴും ഈ തരം ഫയലുകള്‍ തുറക്കുക</translation>

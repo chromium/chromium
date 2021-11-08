@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">সমস্যার সমাধান করার বিভিন্ন ধাপ অনুসরণ করে দেখুন</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">আরও সেটিংস</translation>
+<translation id="2104796393919810494">রিপেয়ার হয়ে গেছে</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ভার্সন <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> জিবির মধ্যে <ph name="AVAILABLE_MEMORY" /> জিবি উপলভ্য</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -237,6 +238,7 @@
 <translation id="4813345808229079766">কানেকশন</translation>
 <translation id="4832079907277790330">Files অ্যাপে ফোল্ডার বেছে নিন...</translation>
 <translation id="4835901797422965222">কোনও অ্যাক্টিভ নেটওয়ার্ক নেই</translation>
+<translation id="4839698083503556542">নিজের সিনেমা তৈরি করুন</translation>
 <translation id="484790837831576105">(Android) DNS রেজোলিউশন</translation>
 <translation id="4848429997038228357">টেস্ট করা হচ্ছে</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}one{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}other{<ph name="ERROR_MESSAGE" /> আর {0} বার চেষ্টা করতে পারবেন}}</translation>

@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">连接</translation>
 <translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
 <translation id="4835901797422965222">未连接到任何网络</translation>
+<translation id="4839698083503556542">创建您自己的影片</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
 <translation id="4848429997038228357">正在运行</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}other{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}}</translation>

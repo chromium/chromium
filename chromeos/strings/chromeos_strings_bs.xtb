@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">Pokušajte s koracima za rješavanje problema</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Više postavki</translation>
+<translation id="2104796393919810494">Popravka je završena</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostupno je <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -237,7 +238,7 @@
 <translation id="4813345808229079766">Veza</translation>
 <translation id="4832079907277790330">Odaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
-<translation id="4839698083503556542">Snimite vlastiti film</translation>
+<translation id="4839698083503556542">Kreirajte vlastiti film</translation>
 <translation id="484790837831576105">(Android) DNS rezolucija</translation>
 <translation id="4848429997038228357">U TOKU</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostao je još {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostao je još {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostala su još {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostalo je još {0} pokušaja}}</translation>

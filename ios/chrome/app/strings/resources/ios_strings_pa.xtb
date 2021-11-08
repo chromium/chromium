@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">ਸਾਈਨ-ਇਨ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="1911619930368729126">Google ਡ੍ਰਾਈਵ ਤੇ ਅਪਲੋਡ ਕਰੋ</translation>
 <translation id="1923342640370224680">ਪਿਛਲਾ ਘੰਟਾ</translation>
+<translation id="1930989359703290198">ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਨੂੰ ਸਿਰਫ਼ ਕੁਝ ਖਾਤਿਆਂ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿੰਦੀ ਹੈ। ਉਨ੍ਹਾਂ ਖਾਤਿਆਂ ਨੂੰ ਲੁਕਾਇਆ ਗਿਆ ਹੈ, ਜਿਨ੍ਹਾਂ ਨੂੰ ਆਗਿਆ ਨਹੀਂ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">ਕਾਪੀ ਕਰਨ ਲਈ ਦੋ ਵਾਰ ਟੈਪ ਕਰੋ।</translation>
 <translation id="1952172573699511566">ਜਦੋਂ ਸੰਭਵ ਹੋਵੇ, ਵੈੱਬਸਾਈਟਾਂ ਤੁਹਾਡੀ ਤਰਜੀਹੀ ਭਾਸ਼ਾ ਵਿੱਚ ਲਿਖਤ ਦਿਖਾਉਣਗੀਆਂ।</translation>
 <translation id="1965935827552890526">ਤੁਸੀਂ ਆਪਣੀ ਦੂਜੀ ਖੁੱਲ੍ਹੀ Chrome ਵਿੰਡੋ ਵਿੱਚ ਜੋ ਕੰਮ ਕਰ ਰਹੇ ਸੀ, ਉਸਨੂੰ ਪੂਰਾ ਕਰੋ।</translation>
@@ -384,6 +385,8 @@
 <translation id="4802417911091824046">ਪਾਸਫਰੇਜ਼ ਇਨਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।
 
 ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, <ph name="BEGIN_LINK" />ਸਮਕਾਲੀਕਰਨ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।
+<ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">ਅਵੈਧ ਕਾਰਡ ਨੰਬਰ</translation>
 <translation id="4808744395915275922">ਅੱਪਡੇਟ</translation>
 <translation id="4818522717893377262">ਭਾਸ਼ਾ ਸ਼ਾਮਲ ਕਰੋ...</translation>

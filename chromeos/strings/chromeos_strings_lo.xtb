@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">ການ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="4832079907277790330">ເລືອກໂຟນເດີໃນແອັບ Files...</translation>
 <translation id="4835901797422965222">ບໍ່ມີເຄືອຂ່າຍທີ່ເປີດນຳໃຊ້ຢູ່</translation>
+<translation id="4839698083503556542">ສ້າງໜັງຂອງທ່ານເອງ</translation>
 <translation id="484790837831576105">(Android) DNS resolution</translation>
 <translation id="4848429997038228357">ກຳລັງດຳເນີນຢູ່</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}other{ຍັງເຫຼືອຄວາມພະຍາຍາມອີກ <ph name="ERROR_MESSAGE" /> {0} ຄັ້ງ}}</translation>
