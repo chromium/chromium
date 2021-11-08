@@ -60,6 +60,14 @@ void CheckCanOpenURL(Browser* browser, const std::string& spec) {
   EXPECT_NE(blocked_page_title, contents->GetTitle());
 }
 
+void CheckCanOpenViewSourceURL(Browser* browser, const std::string& spec) {
+  GURL view_source_url("view-source:" + spec);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, view_source_url));
+  content::WebContents* contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(view_source_url, contents->GetURL());
+}
+
 // Handler for embedded http-server, returns a small page with javascript
 // variable and a link to increment it. It's for JavascriptBlocklistable test.
 std::unique_ptr<net::test_server::HttpResponse> JSIncrementerPageHandler(
@@ -138,6 +146,49 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklist) {
   CheckCanOpenURL(browser(), kURLS[2]);
   CheckCanOpenURL(browser(), kURLS[3]);
   CheckCanOpenURL(browser(), kURLS[4]);
+}
+
+IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistViewSource) {
+  // Checks that blocklisted urls are blocked when accessed by via view-source:,
+  // and that blocklisting view-source:* blocks all view-source urls.
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const std::string kURL_A =
+      embedded_test_server()->GetURL("aaa.com", "/empty.html").spec();
+  const std::string kURL_B =
+      embedded_test_server()->GetURL("bbb.com", "/empty.html").spec();
+
+  // Ensure that no urls are blocked by default.
+  CheckCanOpenURL(browser(), kURL_A);
+  CheckCanOpenURL(browser(), kURL_B);
+  CheckCanOpenViewSourceURL(browser(), kURL_A);
+  CheckCanOpenViewSourceURL(browser(), kURL_B);
+
+  // Block bbb.com urls.
+  base::ListValue blocklist;
+  blocklist.Append("bbb.com");
+  PolicyMap policies;
+  policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+  UpdateProviderPolicy(policies);
+  FlushBlocklistPolicy();
+
+  // Verify that blocking bbb.com also blocks view-source:bbb.com.
+  CheckURLIsBlocked(browser(), kURL_B);
+  CheckViewSourceURLIsBlocked(browser(), kURL_B);
+
+  // Block all view-source urls.
+  blocklist.Append("view-source:*");
+  policies.Set(key::kURLBlocklist, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_CLOUD, blocklist.Clone(), nullptr);
+  UpdateProviderPolicy(policies);
+  FlushBlocklistPolicy();
+
+  // Verify that blocking view-source:* blocks view-source:aaa.com but does not
+  // block http://aaa.com.
+  CheckViewSourceURLIsBlocked(browser(), kURL_A);
+  CheckCanOpenURL(browser(), kURL_A);
 }
 
 IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistIncognito) {

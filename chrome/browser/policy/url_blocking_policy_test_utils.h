@@ -29,6 +29,9 @@ class UrlBlockingPolicyTest : public PolicyTest {
 
   // Verifies that access to the given url |spec| is blocked.
   void CheckURLIsBlocked(Browser* browser, const std::string& spec);
+
+  // Verifies that access to |view-source:spec| is blocked.
+  void CheckViewSourceURLIsBlocked(Browser* browser, const std::string& spec);
 };
 
 }  // namespace policy
