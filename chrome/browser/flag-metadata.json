@@ -4338,6 +4338,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "per-desk-wallpaper",
+    "owners": ["xiaohuic", "skau", "janetmac"],
+    "expiry_milestone": 102
+  },
+  {
     "name": "percent-based-scrolling",
     "owners": [ "arakeri@microsoft.com", "gerchiko@microsoft.com" ],
     "expiry_milestone": 100

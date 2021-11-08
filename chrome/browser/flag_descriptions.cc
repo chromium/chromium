@@ -2655,6 +2655,11 @@ const char kWallpaperFullScreenPreviewDescription[] =
     "Allows users to minimize all active windows to preview their current "
     "wallpaper";
 
+const char kWallpaperPerDeskName[] =
+    "Enable setting different wallpapers per desk";
+const char kWallpaperPerDeskDescription[] =
+    "Allow users to set different wallpapers on each of their active desks";
+
 const char kWebBluetoothNewPermissionsBackendName[] =
     "Use the new permissions backend for Web Bluetooth";
 const char kWebBluetoothNewPermissionsBackendDescription[] =

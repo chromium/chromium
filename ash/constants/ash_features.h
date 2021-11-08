@@ -465,6 +465,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWallpaperFullScreenPreview;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWallpaperGooglePhotosIntegration;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kWallpaperPerDesk;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kWebApkGenerator;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kWebUITabStripTabDragIntegration;
@@ -618,6 +620,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperWebUIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperFullScreenPreviewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsWallpaperGooglePhotosIntegrationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperPerDeskEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebUITabStripTabDragIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWifiSyncAndroidEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWindowControlMenuEnabled();

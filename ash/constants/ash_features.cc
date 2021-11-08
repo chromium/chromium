@@ -1225,6 +1225,10 @@ const base::Feature kWallpaperFullScreenPreview{
 const base::Feature kWallpaperGooglePhotosIntegration{
     "WallpaperGooglePhotosIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable different wallpapers per desk.
+const base::Feature kWallpaperPerDesk{"WallpaperPerDesk",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Generates WebAPKs representing installed PWAs and installs them inside ARC.
 const base::Feature kWebApkGenerator{"WebApkGenerator",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1796,6 +1800,10 @@ bool IsWallpaperFullScreenPreviewEnabled() {
 bool IsWallpaperGooglePhotosIntegrationEnabled() {
   return IsWallpaperWebUIEnabled() &&
          base::FeatureList::IsEnabled(kWallpaperGooglePhotosIntegration);
+}
+
+bool IsWallpaperPerDeskEnabled() {
+  return base::FeatureList::IsEnabled(kWallpaperPerDesk);
 }
 
 bool IsWebUITabStripTabDragIntegrationEnabled() {

@@ -49278,6 +49278,7 @@ from previous Chrome versions.
   <int value="-1417122729"
       label="AutofillCreditCardAblationExperiment:disabled"/>
   <int value="-1416754663" label="enable-mac-views-native-app-windows"/>
+  <int value="-1416610483" label="WallpaperPerDesk:enabled"/>
   <int value="-1416184931" label="TranslateRankerEnforcement:enabled"/>
   <int value="-1415244717" label="CrostiniVirtualKeyboardSupport:disabled"/>
   <int value="-1412230070" label="query-tiles-instant-background-task"/>
@@ -51464,6 +51465,7 @@ from previous Chrome versions.
   <int value="265830810" label="BackgroundTaskComponentUpdate:enabled"/>
   <int value="266322815" label="ChromeModernDesign:disabled"/>
   <int value="266702296" label="disable-plugin-power-saver"/>
+  <int value="267706621" label="WallpaperPerDesk:disabled"/>
   <int value="268535107"
       label="ash-new-touch-support-for-screen-magnification"/>
   <int value="268794953" label="MessagesForAndroidSafetyTip:disabled"/>

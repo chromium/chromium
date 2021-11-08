@@ -1513,6 +1513,9 @@ extern const char kWallpaperWebUIDescription[];
 extern const char kWallpaperFullScreenPreviewName[];
 extern const char kWallpaperFullScreenPreviewDescription[];
 
+extern const char kWallpaperPerDeskName[];
+extern const char kWallpaperPerDeskDescription[];
+
 extern const char kWebBluetoothNewPermissionsBackendName[];
 extern const char kWebBluetoothNewPermissionsBackendDescription[];
 
