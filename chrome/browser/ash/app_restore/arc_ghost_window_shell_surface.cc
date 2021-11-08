@@ -27,15 +27,16 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
     ArcWindowHandler* window_handler,
     const std::string& app_id,
     int window_id,
-    int64_t display_id,
+    absl::optional<int64_t> display_id,
     gfx::Rect bounds,
-    bool launch_as_minimized,
+    absl::optional<chromeos::WindowStateType> window_state,
     absl::optional<gfx::Size> maximum_size,
     absl::optional<gfx::Size> minimum_size,
     absl::optional<std::u16string> title,
     absl::optional<uint32_t> color,
     base::RepeatingClosure close_callback) {
-  absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id);
+  int64_t display_id_value = display_id.value_or(display::kInvalidDisplayId);
+  absl::optional<double> scale_factor = GetDisplayScaleFactor(display_id_value);
   DCHECK(scale_factor.has_value());
 
   // TODO(sstan): Fallback to system default color or other topic color, if
@@ -54,11 +55,12 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
 
   // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(
-      shell_surface.get(), window_handler, window_id, display_id, bounds));
+      shell_surface.get(), window_handler, window_id, display_id_value,
+      bounds));
   shell_surface->set_close_callback(std::move(close_callback));
 
   shell_surface->SetAppId(app_id.c_str());
-  shell_surface->SetBounds(display_id, bounds);
+  shell_surface->SetBounds(display_id_value, bounds);
 
   if (maximum_size.has_value())
     shell_surface->SetMaximumSize(maximum_size.value());
@@ -87,7 +89,8 @@ std::unique_ptr<exo::ClientControlledShellSurface> InitArcGhostWindow(
 
   // Change the minimized at the last operation, since we need create the window
   // entity first and hide it on ash shelf.
-  if (launch_as_minimized) {
+  if (window_state.has_value() &&
+      *window_state == chromeos::WindowStateType::kMinimized) {
     shell_surface->SetMinimized();
     shell_surface->controller_surface()->Commit();
   }

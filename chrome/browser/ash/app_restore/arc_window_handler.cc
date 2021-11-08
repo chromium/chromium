@@ -99,12 +99,10 @@ void ArcWindowHandler::LaunchArcGhostWindow(
   session_id_to_shell_surface_.emplace(
       session_id,
       InitArcGhostWindow(
-          this, app_id, session_id, restore_data->display_id.value(),
-          adjust_bounds,
-          restore_data->window_state_type ==
-              chromeos::WindowStateType::kMinimized,
-          restore_data->maximum_size, restore_data->minimum_size,
-          restore_data->title, restore_data->status_bar_color,
+          this, app_id, session_id, restore_data->display_id, adjust_bounds,
+          restore_data->window_state_type, restore_data->maximum_size,
+          restore_data->minimum_size, restore_data->title,
+          restore_data->status_bar_color,
           base::BindRepeating(&ArcWindowHandler::CloseWindow,
                               weak_ptr_factory_.GetWeakPtr(), session_id)));
 }
