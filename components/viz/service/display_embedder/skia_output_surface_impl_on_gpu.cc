@@ -2061,19 +2061,17 @@ SkiaOutputSurfaceImplOnGpu::GetAsyncReadResultLock() const {
   return async_read_result_lock_;
 }
 
-void SkiaOutputSurfaceImplOnGpu::AddAsyncReadResultHelper(
+void SkiaOutputSurfaceImplOnGpu::AddAsyncReadResultHelperWithLock(
     AsyncReadResultHelper* helper) {
+  async_read_result_lock_->lock().AssertAcquired();
   DCHECK(helper);
-
-  base::AutoLock auto_lock(async_read_result_lock_->lock());
   async_read_result_helpers_.insert(helper);
 }
 
-void SkiaOutputSurfaceImplOnGpu::RemoveAsyncReadResultHelper(
+void SkiaOutputSurfaceImplOnGpu::RemoveAsyncReadResultHelperWithLock(
     AsyncReadResultHelper* helper) {
+  async_read_result_lock_->lock().AssertAcquired();
   DCHECK(helper);
-
-  base::AutoLock auto_lock(async_read_result_lock_->lock());
   DCHECK(async_read_result_helpers_.count(helper));
   async_read_result_helpers_.erase(helper);
 }
