@@ -103,20 +103,6 @@ class BASE_EXPORT OSInfo {
     OTHER_ARCHITECTURE,
   };
 
-  // Whether a process is running under WOW64 (the wrapper that allows 32-bit
-  // processes to run on 64-bit versions of Windows).  This will return
-  // WOW64_DISABLED for both "32-bit Chrome on 32-bit Windows" and "64-bit
-  // Chrome on 64-bit Windows".  WOW64_UNKNOWN means "an error occurred", e.g.
-  // the process does not have sufficient access rights to determine this.
-  // TODO(crbug.com/978257) This enum will be replaced with the "IsWow..."
-  // helper functions, since there are multiple configurations in which
-  // the WOW64 wrapper might be used.
-  enum WOW64Status {
-    WOW64_DISABLED,
-    WOW64_ENABLED,
-    WOW64_UNKNOWN,
-  };
-
   static OSInfo* GetInstance();
 
   OSInfo(const OSInfo&) = delete;
@@ -125,10 +111,6 @@ class BASE_EXPORT OSInfo {
   // Separate from the rest of OSInfo so it can be used during early process
   // initialization.
   static WindowsArchitecture GetArchitecture();
-
-  // Like wow64_status(), but for the supplied handle instead of the current
-  // process.  This doesn't touch member state, so you can bypass the singleton.
-  static WOW64Status GetWOW64StatusForProcess(HANDLE process_handle);
 
   // Returns the OS Version as returned from a call to GetVersionEx().
   const Version& version() const { return version_; }
@@ -166,12 +148,6 @@ class BASE_EXPORT OSInfo {
   const size_t& allocation_granularity() const {
     return allocation_granularity_;
   }
-
-  // Returns the |WOW64Status| of the running process. See above for definitions
-  // of the values.
-  // DEPRECATED: This function is being replaced with the |IsWow*| helper
-  // functions above.
-  WOW64Status wow64_status() const { return wow64_status_; }
 
   // Processor name as read from registry.
   std::string processor_model_name();
@@ -223,6 +199,8 @@ class BASE_EXPORT OSInfo {
   // emulator.
   WowNativeMachine GetWowNativeMachineArchitecture(const int native_machine);
 
+  void InitializeWowStatusValuesFromLegacyApi(HANDLE process_handle);
+
   void InitializeWowStatusValuesForProcess(HANDLE process_handle);
 
   Version version_;
@@ -246,7 +224,6 @@ class BASE_EXPORT OSInfo {
   std::string service_pack_str_;
   int processors_;
   size_t allocation_granularity_;
-  const WOW64Status wow64_status_;
   WowProcessMachine wow_process_machine_;
   WowNativeMachine wow_native_machine_;
   std::string processor_model_name_;

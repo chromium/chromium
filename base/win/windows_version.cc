@@ -127,7 +127,6 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
                const _SYSTEM_INFO& system_info,
                int os_type)
     : version_(Version::PRE_XP),
-      wow64_status_(GetWOW64StatusForProcess(GetCurrentProcess())),
       wow_process_machine_(WowProcessMachine::kUnknown),
       wow_native_machine_(WowNativeMachine::kUnknown) {
   version_number_.major = version_info.dwMajorVersion;
@@ -300,14 +299,6 @@ std::string OSInfo::processor_model_name() {
   return processor_model_name_;
 }
 
-// static
-OSInfo::WOW64Status OSInfo::GetWOW64StatusForProcess(HANDLE process_handle) {
-  BOOL is_wow64 = FALSE;
-  if (!::IsWow64Process(process_handle, &is_wow64))
-    return WOW64_UNKNOWN;
-  return is_wow64 ? WOW64_ENABLED : WOW64_DISABLED;
-}
-
 // With the exception of Server 2003, server variants are treated the same as
 // the corresponding workstation release.
 // static
@@ -408,23 +399,25 @@ OSInfo::WowNativeMachine OSInfo::GetWowNativeMachineArchitecture(
   return OSInfo::WowNativeMachine::kOther;
 }
 
+void OSInfo::InitializeWowStatusValuesFromLegacyApi(HANDLE process_handle) {
+  BOOL is_wow64 = FALSE;
+  if (!::IsWow64Process(process_handle, &is_wow64))
+    return;
+  if (is_wow64) {
+    wow_process_machine_ = WowProcessMachine::kX86;
+    wow_native_machine_ = WowNativeMachine::kAMD64;
+  } else {
+    wow_process_machine_ = WowProcessMachine::kDisabled;
+  }
+}
+
 void OSInfo::InitializeWowStatusValuesForProcess(HANDLE process_handle) {
   static const auto is_wow64_process2 =
       reinterpret_cast<decltype(&IsWow64Process2)>(::GetProcAddress(
           ::GetModuleHandle(L"kernel32.dll"), "IsWow64Process2"));
   if (!is_wow64_process2) {
-    WOW64Status wow64_status = GetWOW64StatusForProcess(process_handle);
-    switch (wow64_status) {
-      case WOW64_DISABLED:
-        wow_process_machine_ = WowProcessMachine::kDisabled;
-        return;
-      case WOW64_ENABLED:
-        wow_process_machine_ = WowProcessMachine::kX86;
-        wow_native_machine_ = WowNativeMachine::kAMD64;
-        return;
-      case WOW64_UNKNOWN:
-        return;
-    }
+    InitializeWowStatusValuesFromLegacyApi(process_handle);
+    return;
   }
 
   USHORT process_machine = IMAGE_FILE_MACHINE_UNKNOWN;
