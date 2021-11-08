@@ -445,7 +445,6 @@ public abstract class ChromeFeatureList {
     public static final String PROBABILISTIC_CRYPTID_RENDERER = "ProbabilisticCryptidRenderer";
     public static final String PUSH_MESSAGING_DISALLOW_SENDER_IDS =
             "PushMessagingDisallowSenderIDs";
-    public static final String PWA_INSTALL_USE_BOTTOMSHEET = "PwaInstallUseBottomSheet";
     public static final String PWA_UPDATE_DIALOG_FOR_NAME_AND_ICON =
             "PwaUpdateDialogForNameAndIcon";
     public static final String QUERY_TILES_GEO_FILTER = "QueryTilesGeoFilter";

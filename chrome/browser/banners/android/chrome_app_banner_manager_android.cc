@@ -15,7 +15,6 @@
 #include "chrome/browser/android/webapk/webapk_ukm_recorder.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerInProductHelpControllerProvider_jni.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/webapps/android/features.h"
 #include "chrome/browser/webapps/android/pwa_bottom_sheet_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -56,11 +55,7 @@ InstallableParams
 ChromeAppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
   InstallableParams params =
       AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck();
-  if (base::FeatureList::IsEnabled(
-          webapps::features::kPwaInstallUseBottomSheet)) {
-    params.fetch_screenshots = true;
-  }
-
+  params.fetch_screenshots = true;
   return params;
 }
 

@@ -1596,11 +1596,6 @@ const char kMobileIdentityConsistencyFREDescription[] =
     "Enables stronger identity consistency on mobile with different UIs for "
     "the First Run Experience.";
 
-const char kMobilePwaInstallUseBottomSheetName[] =
-    "Mobile PWA Installation bottom sheet";
-const char kMobilePwaInstallUseBottomSheetDescription[] =
-    "Enables use of a rich bottom sheet when offering mobile PWA installation.";
-
 const char kMojoLinuxChannelSharedMemName[] =
     "Enable Mojo Shared Memory Channel";
 const char kMojoLinuxChannelSharedMemDescription[] =

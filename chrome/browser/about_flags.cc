@@ -216,7 +216,6 @@
 #include "chrome/browser/android/explore_sites/explore_sites_feature.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/notifications/chime/android/features.h"
-#include "chrome/browser/webapps/android/features.h"
 #include "components/browser_ui/photo_picker/android/features.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/reactions/core/reactions_features.h"
@@ -7066,13 +7065,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"send-tab-to-self-v2", flag_descriptions::kSendTabToSelfV2Name,
      flag_descriptions::kSendTabToSelfV2Description, kOsAll,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfV2)},
-
-#if defined(OS_ANDROID)
-    {"mobile-pwa-install-use-bottom-sheet",
-     flag_descriptions::kMobilePwaInstallUseBottomSheetName,
-     flag_descriptions::kMobilePwaInstallUseBottomSheetDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(webapps::features::kPwaInstallUseBottomSheet)},
-#endif
 
 #if defined(OS_WIN)
     {"raw-audio-capture", flag_descriptions::kRawAudioCaptureName,

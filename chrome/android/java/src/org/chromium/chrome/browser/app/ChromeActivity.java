@@ -2508,14 +2508,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (id == R.id.add_to_homescreen_id) {
             RecordUserAction.record("MobileMenuAddToHomescreen");
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)) {
-                PwaBottomSheetController controller =
-                        PwaBottomSheetControllerProvider.from(getWindowAndroid());
-                if (controller != null
-                        && controller.requestOrExpandBottomSheetInstaller(
-                                currentTab.getWebContents(), InstallTrigger.MENU)) {
-                    return true;
-                }
+            PwaBottomSheetController controller =
+                    PwaBottomSheetControllerProvider.from(getWindowAndroid());
+            if (controller != null
+                    && controller.requestOrExpandBottomSheetInstaller(
+                            currentTab.getWebContents(), InstallTrigger.MENU)) {
+                return true;
             }
             AddToHomescreenCoordinator.showForAppMenu(this, getWindowAndroid(),
                     getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);

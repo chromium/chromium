@@ -915,9 +915,6 @@ extern const char kMetricsSettingsAndroidDescription[];
 extern const char kMobileIdentityConsistencyFREName[];
 extern const char kMobileIdentityConsistencyFREDescription[];
 
-extern const char kMobilePwaInstallUseBottomSheetName[];
-extern const char kMobilePwaInstallUseBottomSheetDescription[];
-
 extern const char kMojoLinuxChannelSharedMemName[];
 extern const char kMojoLinuxChannelSharedMemDescription[];
 

@@ -3833,11 +3833,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "mobile-pwa-install-use-bottom-sheet",
-    "owners": [ "finnur", "hartmanng", "peter" ],
-    "expiry_milestone": 94
-  },
-  {
     "name": "modern-tab-strip",
     "owners": [ "bling-flags@google.com" ],
     "expiry_milestone": 92

@@ -804,7 +804,6 @@ public class AppBannerManagerTest {
     @Test
     @SmallTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
     public void testBottomSheet() throws Exception {
         triggerBottomSheet(mTabbedActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithManifest(
@@ -859,10 +858,8 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET,
-            "disable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE})
-    public void
-    testAppInstalledEventBottomSheet() throws Exception {
+    @CommandLineFlags.Add("disable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE)
+    public void testAppInstalledEventBottomSheet() throws Exception {
         triggerBottomSheet(mTabbedActivityTestRule,
                 WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                         WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL,
@@ -900,7 +897,6 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
     @DisabledTest(message = "crbug.com/1238320 test is flaky")
     public void testDismissBottomSheetResolvesUserChoice() throws Exception {
         triggerBottomSheet(mTabbedActivityTestRule,
@@ -929,7 +925,6 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
     public void testBlockedBottomSheetDoesNotAppearAgainForMonths() throws Exception {
         String url = WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                 WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL, "call_stashed_prompt_on_click");
@@ -963,7 +958,6 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
     public void testBottomSheetSkipsHiddenWebContents() throws Exception {
         String url = WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                 WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL, "call_stashed_prompt_on_click");
@@ -1044,7 +1038,6 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add("enable-features=" + ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)
     public void testInProductHelpSkipsHiddenWebContents() throws Exception {
         String url = WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
                 WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL, "call_stashed_prompt_on_click");

@@ -22,7 +22,6 @@
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/video_tutorials/switches.h"
-#include "chrome/browser/webapps/android/features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -363,7 +362,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,
     &webapps::features::kInstallableAmbientBadgeInfoBar,
-    &webapps::features::kPwaInstallUseBottomSheet,
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
