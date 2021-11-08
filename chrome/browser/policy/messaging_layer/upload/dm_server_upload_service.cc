@@ -219,7 +219,7 @@ void DmServerUploadService::InitRecordHandler(
     std::unique_ptr<DmServerUploadService> uploader,
     base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
         created_cb) {
-  auto* client = uploader->GetClient();
+  auto* const client = uploader->GetClient();
   if (client == nullptr) {
     std::move(created_cb)
         .Run(Status(error::FAILED_PRECONDITION, "Client was null"));

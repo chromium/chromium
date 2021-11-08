@@ -209,7 +209,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
     absl::optional<base::Value> response) {
-  if (!response.has_value()) {
+  if (!response.has_value() || !response.value().is_dict()) {
     Schedule(&RecordHandlerImpl::ReportUploader::HandleFailedUpload,
              base::Unretained(this));
     return;
@@ -232,14 +232,7 @@ void RecordHandlerImpl::ReportUploader::HandleFailedUpload() {
 }
 
 void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
-  if (!last_response_.is_dict()) {
-    LOG(ERROR) << "Server responded with a non-dictionary response: "
-               << last_response_;
-    Complete(
-        Status(error::FAILED_PRECONDITION, "Response is not a dictionary"));
-    return;
-  }
-
+  DCHECK(last_response_.is_dict());
   //  {
   //    "lastSucceedUploadedRecord": ... // SequenceInformation proto
   //    "firstFailedUploadedRecord": {
