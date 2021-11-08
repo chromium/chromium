@@ -32,8 +32,16 @@ struct PartitionDirectMapExtent {
 // Metadata page for direct-mapped allocations.
 template <bool thread_safe>
 struct PartitionDirectMapMetadata {
+  // |page| and |subsequent_page| are needed to match the layout of normal
+  // buckets (specifically, of single-slot slot spans), with the caveat that
+  // only the first subsequent page is needed (for SubsequentPageMetadata) and
+  // others aren't used for direct map.
   PartitionPage<thread_safe> page;
   PartitionPage<thread_safe> subsequent_page;
+  // The following fields are metadata specific to direct map allocations. All
+  // these fields will easily fit into the precalculated metadata region,
+  // because a direct map allocation starts no further than half way through the
+  // super page.
   PartitionBucket<thread_safe> bucket;
   PartitionDirectMapExtent<thread_safe> direct_map_extent;
 };
