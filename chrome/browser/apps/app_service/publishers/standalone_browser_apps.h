@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,7 +27,9 @@ class BrowserAppInstanceRegistry;
 // which launches the lacros-chrome binary.
 //
 // See components/services/app_service/README.md.
-class StandaloneBrowserApps : public apps::PublisherBase, public AppPublisher {
+class StandaloneBrowserApps : public apps::PublisherBase,
+                              public AppPublisher,
+                              public crosapi::BrowserManagerObserver {
  public:
   explicit StandaloneBrowserApps(AppServiceProxy* proxy);
   ~StandaloneBrowserApps() override;
@@ -41,9 +46,6 @@ class StandaloneBrowserApps : public apps::PublisherBase, public AppPublisher {
 
   // Returns an IconKey with appropriate effects.
   apps::mojom::IconKeyPtr NewIconKey();
-
-  // Callback when the binary download completes.
-  void OnLoadComplete(bool success);
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
@@ -72,11 +74,20 @@ class StandaloneBrowserApps : public apps::PublisherBase, public AppPublisher {
                     GetMenuModelCallback callback) override;
   void StopApp(const std::string& app_id) override;
 
+  // crosapi::BrowserManagerObserver
+  void OnLoadComplete(bool success) override;
+
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   Profile* const profile_;
   bool is_browser_load_success_ = true;
   BrowserAppInstanceRegistry* browser_app_instance_registry_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
+
+  // Used to observe the browser manager for image load changes.
+  base::ScopedObservation<crosapi::BrowserManager,
+                          crosapi::BrowserManagerObserver>
+      observation_{this};
+
   base::WeakPtrFactory<StandaloneBrowserApps> weak_factory_{this};
 };
 

@@ -13,7 +13,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -60,10 +59,8 @@ StandaloneBrowserApps::StandaloneBrowserApps(AppServiceProxy* proxy)
 
   auto* browser_manager = crosapi::BrowserManager::Get();
   // |browser_manager| may be null in tests. For tests, assume Lacros is ready.
-  if (browser_manager && !browser_manager->IsReady()) {
-    browser_manager->SetLoadCompleteCallback(base::BindOnce(
-        &StandaloneBrowserApps::OnLoadComplete, weak_factory_.GetWeakPtr()));
-  }
+  if (browser_manager && !observation_.IsObserving())
+    observation_.Observe(browser_manager);
 }
 
 StandaloneBrowserApps::~StandaloneBrowserApps() = default;

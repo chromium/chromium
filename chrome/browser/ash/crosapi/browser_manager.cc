@@ -327,11 +327,6 @@ BrowserManager::~BrowserManager() {
   g_instance = nullptr;
 }
 
-bool BrowserManager::IsReady() const {
-  return state_ != State::NOT_INITIALIZED && state_ != State::MOUNTING &&
-         state_ != State::UNAVAILABLE;
-}
-
 bool BrowserManager::IsRunning() const {
   return state_ == State::RUNNING;
 }
@@ -339,12 +334,6 @@ bool BrowserManager::IsRunning() const {
 bool BrowserManager::IsRunningOrWillRun() const {
   return state_ == State::RUNNING || state_ == State::STARTING ||
          state_ == State::CREATING_LOG_FILE || state_ == State::TERMINATING;
-}
-
-void BrowserManager::SetLoadCompleteCallback(LoadCompleteCallback callback) {
-  // We only support one client waiting.
-  DCHECK(!load_complete_callback_);
-  load_complete_callback_ = std::move(callback);
 }
 
 void BrowserManager::NewWindow(bool incognito) {
@@ -990,9 +979,10 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path,
   lacros_path_ = path;
   lacros_selection_ = absl::optional<LacrosSelection>(selection);
   SetState(path.empty() ? State::UNAVAILABLE : State::STOPPED);
-  if (load_complete_callback_) {
-    const bool success = !path.empty();
-    std::move(load_complete_callback_).Run(success);
+
+  const bool success = !path.empty();
+  for (auto& observer : observers_) {
+    observer.OnLoadComplete(success);
   }
 
   if (state_ == State::STOPPED && !shutdown_requested_ &&
@@ -1097,6 +1087,11 @@ void BrowserManager::UpdateKeepAliveInBrowserIfNecessary(bool enabled) {
     return;
   }
   browser_service_->service->UpdateKeepAlive(enabled);
+}
+
+bool BrowserManager::IsReady() const {
+  return state_ != State::NOT_INITIALIZED && state_ != State::MOUNTING &&
+         state_ != State::UNAVAILABLE;
 }
 
 void BrowserManager::RecordLacrosLaunchMode() {

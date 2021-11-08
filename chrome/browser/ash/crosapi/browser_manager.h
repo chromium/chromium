@@ -63,9 +63,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   ~BrowserManager() override;
 
+  // TODO(crbug.com/1237235): Make this function private in preparation for
+  // browser manager reload support.
   // Returns true if the binary is ready to launch or already launched.
-  // Typical usage is to check IsReady(), then if it returns false,
-  // call SetLoadCompleteCallback() to be notified when the download completes.
   bool IsReady() const;
 
   // Returns true if Lacros is in running state.
@@ -79,11 +79,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Lacros running and multiple users signed in simultaneously).
   // Virtual for testing.
   virtual bool IsRunningOrWillRun() const;
-
-  // Sets a callback to be called when the binary download completes. The
-  // download may not be successful.
-  using LoadCompleteCallback = base::OnceCallback<void(bool success)>;
-  void SetLoadCompleteCallback(LoadCompleteCallback callback);
 
   // Opens the browser window in lacros-chrome.
   // If lacros-chrome is not yet launched, it triggers to launch. If this is
@@ -385,9 +380,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // {browser version} {channel}
   // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
   std::string browser_version_;
-
-  // Called when the binary download completes.
-  LoadCompleteCallback load_complete_callback_;
 
   // Time when the lacros process was launched.
   base::TimeTicks lacros_launch_time_;
