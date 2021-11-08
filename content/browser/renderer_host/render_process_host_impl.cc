@@ -4609,8 +4609,16 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   // spawning two processes at the same time.  In this case the call to
   // PrepareForFutureRequests will be postponed until later (e.g. until the
   // navigation commits or a cross-site redirect happens).
-  if (spare_was_taken)
+  if (spare_was_taken
+#if defined(OS_ANDROID)
+      // If we're in the experiment to always create a spare renderer on Android
+      // don't start it right away on since the system is busy; this will happen
+      // when the page stops loading.
+      && !base::FeatureList::IsEnabled(features::kSpareRenderer)
+#endif
+  ) {
     spare_process_manager.PrepareForFutureRequests(browser_context);
+  }
 
   if (is_unmatched_service_worker) {
     UnmatchedServiceWorkerProcessTracker::Register(render_process_host,

@@ -4371,8 +4371,19 @@ void NavigationRequest::CommitNavigation() {
   // Give SpareRenderProcessHostManager a heads-up about the most recently used
   // BrowserContext.  This is mostly needed to make sure the spare is warmed-up
   // if it wasn't done in RenderProcessHostImpl::GetProcessHostForSiteInstance.
-  RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
-      render_frame_host_->GetSiteInstance()->GetBrowserContext());
+#if defined(OS_ANDROID)
+  // If we're in the experiment to always create a spare renderer on Android
+  // don't start it right away since the system is busy; this will happen when
+  // the page stops loading.
+  bool should_notify_spare_manager =
+      !base::FeatureList::IsEnabled(features::kSpareRenderer);
+#else
+  bool should_notify_spare_manager = true;
+#endif
+  if (should_notify_spare_manager) {
+    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
+        render_frame_host_->GetSiteInstance()->GetBrowserContext());
+  }
 
   SendDeferredConsoleMessages();
 }

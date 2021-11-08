@@ -7278,6 +7278,13 @@ void WebContentsImpl::DidStopLoading() {
   }
 
   LoadingStateChanged(true, details.get());
+
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSpareRenderer)) {
+    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
+        GetBrowserContext());
+  }
+#endif
 }
 
 void WebContentsImpl::DidChangeLoadProgress() {
