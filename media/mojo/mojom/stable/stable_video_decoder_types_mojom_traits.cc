@@ -22,7 +22,8 @@ StructTraits<media::stable::mojom::ColorSpaceDataView,
              gfx::ColorSpace>::primaries(const gfx::ColorSpace& input) {
   static_assert(
       std::is_same<decltype(::gfx::ColorSpace::primaries_),
-                   gfx::ColorSpace::PrimaryID>::value,
+                   decltype(
+                       media::stable::mojom::ColorSpace::primaries)>::value,
       "Unexpected type for gfx::ColorSpace::primaries_. If you need to "
       "change this assertion, please contact chromeos-gfx-video@google.com.");
   return input.primaries_;
@@ -34,7 +35,7 @@ StructTraits<media::stable::mojom::ColorSpaceDataView,
              gfx::ColorSpace>::transfer(const gfx::ColorSpace& input) {
   static_assert(
       std::is_same<decltype(::gfx::ColorSpace::transfer_),
-                   gfx::ColorSpace::TransferID>::value,
+                   decltype(media::stable::mojom::ColorSpace::transfer)>::value,
       "Unexpected type for gfx::ColorSpace::transfer_. If you need to "
       "change this assertion, please contact chromeos-gfx-video@google.com.");
   return input.transfer_;
@@ -46,7 +47,7 @@ StructTraits<media::stable::mojom::ColorSpaceDataView, gfx::ColorSpace>::matrix(
     const gfx::ColorSpace& input) {
   static_assert(
       std::is_same<decltype(::gfx::ColorSpace::matrix_),
-                   gfx::ColorSpace::MatrixID>::value,
+                   decltype(media::stable::mojom::ColorSpace::matrix)>::value,
       "Unexpected type for gfx::ColorSpace::matrix_. If you need to "
       "change this assertion, please contact chromeos-gfx-video@google.com.");
   return input.matrix_;
@@ -58,7 +59,7 @@ StructTraits<media::stable::mojom::ColorSpaceDataView, gfx::ColorSpace>::range(
     const gfx::ColorSpace& input) {
   static_assert(
       std::is_same<decltype(::gfx::ColorSpace::range_),
-                   gfx::ColorSpace::RangeID>::value,
+                   decltype(media::stable::mojom::ColorSpace::range)>::value,
       "Unexpected type for gfx::ColorSpace::range_. If you need to "
       "change this assertion, please contact chromeos-gfx-video@google.com.");
   return input.range_;
