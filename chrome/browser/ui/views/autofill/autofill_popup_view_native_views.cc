@@ -1476,7 +1476,12 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
     // Deduce the arrow and the position.
     BubbleBorder::Arrow arrow = GetOptimalBubblePlacement(
         content_area_bounds, element_bounds, preferred_size,
-        controller_->IsRTL(), scroll_width, 120, popup_bounds);
+        controller_->IsRTL(), scroll_width,
+        autofill::features::kAutofillMaximumPixelsToMoveSuggestionopupToCenter
+            .Get(),
+        autofill::features::
+            kAutofillMaxiumWidthPercentageToMoveSuggestionPopupToCenter.Get(),
+        popup_bounds);
 
     // Those values are not supported for adding an arrow.
     // Currenrly, they can not be returned by GetOptimalBubblePlacement().

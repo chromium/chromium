@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -408,7 +409,8 @@ BubbleBorder::Arrow GetOptimalBubblePlacement(
     const gfx::Size& bubble_preferred_size,
     bool right_to_left,
     int scrollbar_width,
-    int maximum_offset_to_center,
+    int maximum_pixel_offset_to_center,
+    int maximum_width_percentage_to_center,
     gfx::Rect& bubble_bounds) {
   // Determine the best side of the element to put the bubble and get a
   // corresponding arrow.
@@ -438,10 +440,11 @@ BubbleBorder::Arrow GetOptimalBubblePlacement(
 
   // Move the content bounds towards to center of the field.
   // Note that for |right_to_left|, this will be a negative value.
-  bubble_bounds.Offset(
-      std::min(maximum_offset_to_center, element_bounds.width() / 2) *
-          (right_to_left ? -1 : 1),
-      0);
+  bubble_bounds.Offset(std::min(maximum_pixel_offset_to_center,
+                                maximum_width_percentage_to_center *
+                                    element_bounds.width() / 100) *
+                           (right_to_left ? -1 : 1),
+                       0);
 
   // In case the bubble the exceeds the right edge of the view port, move it
   // back until it completely fits.
