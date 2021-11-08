@@ -1709,6 +1709,9 @@ C++ sources can depend on shared sources only, by referencing the
 `"${target_name}_shared"` target, e.g. `"//foo/mojom:mojom_shared"` in the
 example above.
 
+For converting between Blink and non-Blink variants, please see
+`//third_party/blink/public/platform/cross_variant_mojo_util.h`.
+
 ## Versioning Considerations
 
 For general documentation of versioning in the Mojom IDL see
