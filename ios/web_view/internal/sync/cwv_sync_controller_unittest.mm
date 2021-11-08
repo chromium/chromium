@@ -141,6 +141,28 @@ TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
   EXPECT_TRUE(sync_controller.passphraseNeeded);
 }
 
+TEST_F(CWVSyncControllerTest, TrustedVaultKeysRequired) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  sync_service_.SetTrustedVaultKeyRequiredForPreferredDataTypes(false);
+  EXPECT_FALSE(sync_controller.trustedVaultKeysRequired);
+  sync_service_.SetTrustedVaultKeyRequiredForPreferredDataTypes(true);
+  EXPECT_TRUE(sync_controller.trustedVaultKeysRequired);
+}
+
+TEST_F(CWVSyncControllerTest, TrustedVaultRecoverabilityDegraded) {
+  CWVSyncController* sync_controller = [[CWVSyncController alloc]
+      initWithSyncService:&sync_service_
+          identityManager:identity_test_environment_.identity_manager()
+              prefService:&pref_service_];
+  sync_service_.SetTrustedVaultRecoverabilityDegraded(false);
+  EXPECT_FALSE(sync_controller.trustedVaultRecoverabilityDegraded);
+  sync_service_.SetTrustedVaultRecoverabilityDegraded(true);
+  EXPECT_TRUE(sync_controller.trustedVaultRecoverabilityDegraded);
+}
+
 TEST_F(CWVSyncControllerTest, DelegateDidStartAndStopSync) {
   CWVSyncController* sync_controller = [[CWVSyncController alloc]
       initWithSyncService:&sync_service_

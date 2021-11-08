@@ -182,6 +182,16 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
       ->IsPassphraseRequiredForPreferredDataTypes();
 }
 
+- (BOOL)isTrustedVaultKeysRequired {
+  return _syncService->GetUserSettings()
+      ->IsTrustedVaultKeyRequiredForPreferredDataTypes();
+}
+
+- (BOOL)isTrustedVaultRecoverabilityDegraded {
+  return _syncService->GetUserSettings()
+      ->IsTrustedVaultRecoverabilityDegraded();
+}
+
 - (void)startSyncWithIdentity:(CWVIdentity*)identity {
   DCHECK(!self.currentIdentity)
       << "Already syncing! Call -stopSyncAndClearIdentity first.";
