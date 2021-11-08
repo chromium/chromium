@@ -116,7 +116,6 @@ if (include_js_tests) {
 
     deps = [
       "net_internals:preprocess",
-      "signin:preprocess",
       "//build:branding_buildflags",
       "//chrome/browser/ui",
       "//services/network/public/cpp",
@@ -196,7 +195,6 @@ if (include_js_tests) {
     data = [
       "$root_gen_dir/chrome/test/data/webui/net_internals/main_test.js",
       "$root_gen_dir/chrome/test/data/webui/net_internals/test_util.js",
-      "$root_gen_dir/chrome/test/data/webui/signin/test_manage_profiles_browser_proxy.js",
       "$root_gen_dir/ui/webui/resources/js/load_time_data.js",
     ]
 
@@ -618,7 +616,6 @@ generate_grd("build_grd") {
     "bookmarks:build_grdp",
     "downloads:build_grdp",
     "settings:build_grdp",
-    "signin:build_grdp",
   ]
 
   grdp_files = [
@@ -626,7 +623,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/chai_resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",
     "$target_gen_dir/settings/resources.grdp",
-    "$target_gen_dir/signin/resources.grdp",
     "$target_gen_dir/web_ui_test_mojo_resources.grdp",
   ]
 
@@ -636,8 +632,14 @@ generate_grd("build_grd") {
   }
 
   if (!is_chromeos_ash && !is_android) {
-    deps += [ "welcome:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/welcome/resources.grdp" ]
+    deps += [
+      "signin:build_grdp",
+      "welcome:build_grdp",
+    ]
+    grdp_files += [
+      "$target_gen_dir/welcome/resources.grdp",
+      "$target_gen_dir/signin/resources.grdp",
+    ]
   }
 }
 
