@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.AccessibilityWithTalkBack" enum="BooleanEnabled"
     expires_after="2022-04-10">
   <owner>hirokisato@chromium.org</owner>
-  <owner>sarakato@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
   <summary>
     Whether the ARC window is opened with TalkBack enabled or not. Counted when
     a user opens a window or toggles the feature. Checked only when the spoken
