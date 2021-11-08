@@ -9251,6 +9251,21 @@
             ]
         }
     ],
+    "WebViewUseMetricsUploadService": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "WebViewUseMetricsUploadService",
+                    "enable_features": [
+                        "WebViewUseMetricsUploadService"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebviewAccelerateSmallCanvases": [
         {
             "platforms": [
