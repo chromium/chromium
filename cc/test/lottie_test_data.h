@@ -73,6 +73,8 @@ constexpr base::StringPiece kLottieDataWithoutAssets2 =
 
 // A test animation generated in Adobe AE that displays image_0 for a second,
 // then image_1 for another second.
+constexpr int kLottieDataWith2AssetsWidth = 690;
+constexpr int kLottieDataWith2AssetsHeight = 455;
 constexpr base::StringPiece kLottieDataWith2Assets =
     R"({
   "v": "5.7.4",

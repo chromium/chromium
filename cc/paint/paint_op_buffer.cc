@@ -2489,6 +2489,9 @@ bool PaintOp::OpHasDiscardableImages(const PaintOp* op) {
   } else if (op->GetType() == PaintOpType::DrawRecord &&
              static_cast<const DrawRecordOp*>(op)->HasDiscardableImages()) {
     return true;
+  } else if (op->GetType() == PaintOpType::DrawSkottie &&
+             static_cast<const DrawSkottieOp*>(op)->HasDiscardableImages()) {
+    return true;
   }
 
   return false;
@@ -2665,6 +2668,10 @@ DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
 DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
 
 DrawSkottieOp::~DrawSkottieOp() = default;
+
+bool DrawSkottieOp::HasDiscardableImages() const {
+  return !images.empty();
+}
 
 bool DrawRecordOp::HasDiscardableImages() const {
   return record->HasDiscardableImages();

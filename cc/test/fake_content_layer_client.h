@@ -11,9 +11,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/skottie_frame_data.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect.h"
@@ -40,6 +43,21 @@ class FakeContentLayerClient : public ContentLayerClient {
     gfx::Transform transform;
     SkSamplingOptions sampling;
     PaintFlags flags;
+  };
+
+  struct SkottieData {
+    SkottieData(scoped_refptr<SkottieWrapper> skottie,
+                const gfx::Rect& dst,
+                float t,
+                SkottieFrameDataMap images);
+    SkottieData(const SkottieData& other);
+    SkottieData& operator=(const SkottieData& other);
+    ~SkottieData();
+
+    scoped_refptr<SkottieWrapper> skottie;
+    gfx::Rect dst;
+    float t;
+    SkottieFrameDataMap images;
   };
 
   FakeContentLayerClient();
@@ -110,6 +128,10 @@ class FakeContentLayerClient : public ContentLayerClient {
     draw_images_.push_back(data);
   }
 
+  void add_draw_skottie(SkottieData skottie_data) {
+    skottie_data_.push_back(std::move(skottie_data));
+  }
+
   SkCanvas* last_canvas() const { return last_canvas_; }
 
   void set_bounds(gfx::Size bounds) {
@@ -130,6 +152,7 @@ class FakeContentLayerClient : public ContentLayerClient {
   bool contains_slow_paths_ = false;
   bool has_non_aa_paint_ = false;
   bool has_draw_text_op_ = false;
+  std::vector<SkottieData> skottie_data_;
 };
 
 }  // namespace cc

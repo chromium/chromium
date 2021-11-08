@@ -3586,6 +3586,44 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithImageProvider) {
                     images_in.at(HashSkottieResourceId("image_1")).image)));
   }
 }
+
+TEST(PaintOpBufferTest, DiscardableImagesTrackingSkottieOpNoImages) {
+  PaintOpBuffer buffer;
+  buffer.push<DrawSkottieOp>(
+      CreateSkottie(gfx::Size(100, 100), /*duration_secs=*/1),
+      /*dst=*/SkRect::MakeWH(100, 100), /*t=*/0.1f, SkottieFrameDataMap());
+  EXPECT_FALSE(buffer.HasDiscardableImages());
+}
+
+TEST(PaintOpBufferTest, DiscardableImagesTrackingSkottieOpWithImages) {
+  PaintOpBuffer buffer;
+  scoped_refptr<SkottieWrapper> skottie =
+      CreateSkottieFromString(kLottieDataWith2Assets);
+  SkRect skottie_rect = SkRect::MakeWH(100, 100);
+  SkottieFrameDataMap images_in = GetTestImagesForSkottie(
+      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh);
+  ASSERT_FALSE(images_in.empty());
+  buffer.push<DrawSkottieOp>(skottie, skottie_rect, /*t=*/0.1f, images_in);
+  EXPECT_TRUE(buffer.HasDiscardableImages());
+}
+
+TEST(PaintOpBufferTest, OpHasDiscardableImagesSkottieOpNoImages) {
+  DrawSkottieOp op(CreateSkottie(gfx::Size(100, 100), /*duration_secs=*/1),
+                   /*dst=*/SkRect::MakeWH(100, 100), /*t=*/0.1f,
+                   SkottieFrameDataMap());
+  EXPECT_FALSE(PaintOp::OpHasDiscardableImages(&op));
+}
+
+TEST(PaintOpBufferTest, OpHasDiscardableImagesSkottieOpWithImages) {
+  scoped_refptr<SkottieWrapper> skottie =
+      CreateSkottieFromString(kLottieDataWith2Assets);
+  SkRect skottie_rect = SkRect::MakeWH(100, 100);
+  SkottieFrameDataMap images_in = GetTestImagesForSkottie(
+      *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh);
+  ASSERT_FALSE(images_in.empty());
+  DrawSkottieOp op(skottie, skottie_rect, /*t=*/0.1f, images_in);
+  EXPECT_TRUE(PaintOp::OpHasDiscardableImages(&op));
+}
 #endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
 
 TEST(PaintOpBufferTest, CustomData) {

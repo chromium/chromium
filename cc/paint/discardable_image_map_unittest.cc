@@ -17,10 +17,15 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_recorder.h"
+#include "cc/paint/skottie_frame_data.h"
+#include "cc/paint/skottie_resource_metadata.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_recording_source.h"
+#include "cc/test/lottie_test_data.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_paint_worklet_input.h"
+#include "skia/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkGraphics.h"
@@ -32,6 +37,12 @@
 
 namespace cc {
 namespace {
+using ::testing::Contains;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::FloatNear;
+using ::testing::IsEmpty;
+using ::testing::SizeIs;
 using Rects = base::StackVector<gfx::Rect, 1>;
 
 struct PositionScaleDrawImage {
@@ -1165,6 +1176,104 @@ TEST_F(DiscardableImageMapTest, ContentColorUsage) {
   EXPECT_EQ(display_list->discardable_image_map().content_color_usage(),
             gfx::ContentColorUsage::kHDR);
 }
+
+#if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
+TEST_F(DiscardableImageMapTest,
+       GetDiscardableImagesInRectSkottieWithoutImages) {
+  gfx::Rect visible_rect(2048, 2048);
+  FakeContentLayerClient content_layer_client;
+  content_layer_client.set_bounds(visible_rect.size());
+  content_layer_client.add_draw_skottie(FakeContentLayerClient::SkottieData(
+      CreateSkottie(gfx::Size(2048, 2048), /*duration_secs=*/1.f),
+      /*dst=*/gfx::Rect(2048, 2048), /*t=*/0.1f, SkottieFrameDataMap()));
+
+  scoped_refptr<DisplayItemList> display_list =
+      content_layer_client.PaintContentsToDisplayList();
+  display_list->GenerateDiscardableImagesMetadata();
+  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  EXPECT_THAT(GetDiscardableImagesInRect(image_map, gfx::Rect(2048, 2048)),
+              IsEmpty());
+}
+
+TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectSkottieWithImages) {
+  gfx::Rect visible_rect(2048, 2048);
+  FakeContentLayerClient content_layer_client;
+  content_layer_client.set_bounds(visible_rect.size());
+  // Skottie animation only is rendered in the right half of the screen.
+  scoped_refptr<SkottieWrapper> skottie =
+      CreateSkottieFromString(kLottieDataWith2Assets);
+
+  SkottieFrameDataMap images_in;
+  PaintImage image_0 = CreateDiscardablePaintImage(
+      gfx::Size(kLottieDataWith2AssetsWidth, kLottieDataWith2AssetsHeight));
+  PaintImage image_1 = CreateDiscardablePaintImage(
+      gfx::Size(kLottieDataWith2AssetsWidth, kLottieDataWith2AssetsHeight));
+  images_in[HashSkottieResourceId("image_0")] = {
+      .image = image_0, .quality = PaintFlags::FilterQuality::kHigh};
+  images_in[HashSkottieResourceId("image_1")] = {
+      .image = image_1, .quality = PaintFlags::FilterQuality::kHigh};
+  content_layer_client.add_draw_skottie(FakeContentLayerClient::SkottieData(
+      CreateSkottieFromString(kLottieDataWith2Assets),
+      /*dst=*/gfx::Rect(1024, 0, 1024, 2048),
+      /*t=*/0.1f, images_in));
+
+  scoped_refptr<DisplayItemList> display_list =
+      content_layer_client.PaintContentsToDisplayList();
+  display_list->GenerateDiscardableImagesMetadata();
+  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  // Left Half of screen should return no images.
+  EXPECT_THAT(GetDiscardableImagesInRect(image_map, gfx::Rect(1023, 2048)),
+              IsEmpty());
+  // Right Half of screen should return 2 images.
+  std::vector<PositionScaleDrawImage> images_out =
+      GetDiscardableImagesInRect(image_map, gfx::Rect(1024, 0, 1024, 2048));
+  ASSERT_THAT(images_out, SizeIs(2));
+  EXPECT_THAT(images_out,
+              Contains(Field(&PositionScaleDrawImage::image, Eq(image_0))));
+  EXPECT_THAT(images_out,
+              Contains(Field(&PositionScaleDrawImage::image, Eq(image_1))));
+}
+
+TEST_F(DiscardableImageMapTest,
+       GetDiscardableImagesInRectSkottieWithImagesScalesProperly) {
+  gfx::Rect visible_rect(kLottieDataWith2AssetsWidth * 2,
+                         kLottieDataWith2AssetsHeight * 3);
+  FakeContentLayerClient content_layer_client;
+  content_layer_client.set_bounds(visible_rect.size());
+  scoped_refptr<SkottieWrapper> skottie =
+      CreateSkottieFromString(kLottieDataWith2Assets);
+
+  SkottieFrameDataMap images_in;
+  PaintImage image_0 = CreateDiscardablePaintImage(
+      gfx::Size(kLottieDataWith2AssetsWidth, kLottieDataWith2AssetsHeight));
+  PaintImage image_1 = CreateDiscardablePaintImage(
+      gfx::Size(kLottieDataWith2AssetsWidth, kLottieDataWith2AssetsHeight));
+  images_in[HashSkottieResourceId("image_0")] = {
+      .image = image_0, .quality = PaintFlags::FilterQuality::kHigh};
+  images_in[HashSkottieResourceId("image_1")] = {
+      .image = image_1, .quality = PaintFlags::FilterQuality::kHigh};
+  content_layer_client.add_draw_skottie(FakeContentLayerClient::SkottieData(
+      CreateSkottieFromString(kLottieDataWith2Assets),
+      /*dst=*/visible_rect,
+      /*t=*/0.1f, images_in));
+
+  scoped_refptr<DisplayItemList> display_list =
+      content_layer_client.PaintContentsToDisplayList();
+  display_list->GenerateDiscardableImagesMetadata();
+  const DiscardableImageMap& image_map = display_list->discardable_image_map();
+  std::vector<PositionScaleDrawImage> images_out =
+      GetDiscardableImagesInRect(image_map, visible_rect);
+  ASSERT_THAT(images_out, SizeIs(2));
+  for (const PositionScaleDrawImage& image_out : images_out) {
+    static constexpr float kScaleTolerance = .01f;
+    EXPECT_THAT(image_out.scale.width(), FloatNear(2.f, kScaleTolerance));
+    // Even though the destination rect's height is 3x the animation frame's
+    // height, the image should not get stretched.
+    EXPECT_THAT(image_out.scale.height(), FloatNear(2.f, kScaleTolerance));
+  }
+}
+
+#endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
 
 class DiscardableImageMapColorSpaceTest
     : public DiscardableImageMapTest,

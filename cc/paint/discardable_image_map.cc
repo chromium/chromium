@@ -17,6 +17,7 @@
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -147,6 +148,42 @@ class DiscardableImageGenerator {
         AddImage(image_rect_op->image,
                  image_rect_op->flags.useDarkModeForImage(), image_rect_op->src,
                  op_rect, matrix, image_rect_op->flags.getFilterQuality());
+      } else if (op_type == PaintOpType::DrawSkottie) {
+        auto* skottie_op = static_cast<DrawSkottieOp*>(op);
+        for (const auto& image_pair : skottie_op->images) {
+          const SkottieFrameData& frame_data = image_pair.second;
+          // Add the whole image (no cropping).
+          SkRect image_src_rect = SkRect::MakeIWH(frame_data.image.width(),
+                                                  frame_data.image.height());
+          // It is too difficult to tell which specific portion of the animation
+          // frame this image will ultimately occupy. So just assume it occupies
+          // the whole animation frame for the purposes of finding which images
+          // overlap with a given rectangle on the screen.
+          gfx::Rect dst_rect = op_rect;
+          // Skottie ultimately takes care of scaling and positioning the image
+          // internally within the animation frame. However, the image that gets
+          // cached in the ImageDecodeCache should have dimensions that at least
+          // roughly reflect the ultimate output both for cache space
+          // consumption reasons and to make Skottie's scaling job easier
+          // (performance). For this reason, the DrawImage submitted to the
+          // cache is scaled by the same amount that the entire animation frame
+          // itself is scaled. This should get the image dimensions in the right
+          // ballpark in the event that the animation's native size and the
+          // destination's size differ drastically.
+          //
+          // Do not allow stretching the image in 1 dimension when scaling. This
+          // matches Skottie's scaling behavior.
+          static constexpr SkMatrix::ScaleToFit kScalingMode =
+              SkMatrix::kCenter_ScaleToFit;
+          SkRect skottie_frame_native_size =
+              SkRect::MakeSize(skottie_op->skottie->size());
+          SkM44 matrix = ctm * SkM44(SkMatrix::RectToRect(
+                                   skottie_frame_native_size,
+                                   gfx::RectToSkRect(dst_rect), kScalingMode));
+          AddImage(frame_data.image, /*use_dark_mode=*/false,
+                   std::move(image_src_rect), std::move(dst_rect), matrix,
+                   frame_data.quality);
+        }
       } else if (op_type == PaintOpType::DrawRecord) {
         GatherDiscardableImages(
             static_cast<const DrawRecordOp*>(op)->record.get(),

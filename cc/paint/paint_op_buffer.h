@@ -579,9 +579,6 @@ class CC_PAINT_EXPORT DrawImageOp final : public PaintOpWithFlags {
   SkSamplingOptions sampling;
 
  private:
-  // For access to serialization helper functions.
-  friend class DrawSkottieOp;
-
   DrawImageOp();
 
   // Scale that has already been applied to the decoded image during
@@ -803,9 +800,6 @@ class CC_PAINT_EXPORT DrawRRectOp final : public PaintOpWithFlags {
 
 class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
  public:
-  // TODO(crbug.com/1266047): Override HasDiscardableImages() to reflect the
-  // contents of |images|. Feature is currently under development and just
-  // haven't gotten to it yet.
   static constexpr PaintOpType kType = PaintOpType::DrawSkottie;
   static constexpr bool kIsDrawOp = true;
   DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
@@ -820,6 +814,7 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
     return !!skottie && !dst.isEmpty() && t >= 0 && t <= 1.f;
   }
   static bool AreEqual(const PaintOp* left, const PaintOp* right);
+  bool HasDiscardableImages() const;
   HAS_SERIALIZATION_FUNCTIONS();
 
   scoped_refptr<SkottieWrapper> skottie;

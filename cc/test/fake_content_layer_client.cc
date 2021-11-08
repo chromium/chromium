@@ -33,6 +33,22 @@ FakeContentLayerClient::ImageData::ImageData(const ImageData& other) = default;
 
 FakeContentLayerClient::ImageData::~ImageData() = default;
 
+FakeContentLayerClient::SkottieData::SkottieData(
+    scoped_refptr<SkottieWrapper> skottie,
+    const gfx::Rect& dst,
+    float t,
+    SkottieFrameDataMap images)
+    : skottie(std::move(skottie)), dst(dst), t(t), images(std::move(images)) {}
+
+FakeContentLayerClient::SkottieData::SkottieData(const SkottieData& other) =
+    default;
+
+FakeContentLayerClient::SkottieData&
+FakeContentLayerClient::SkottieData::operator=(const SkottieData& other) =
+    default;
+
+FakeContentLayerClient::SkottieData::~SkottieData() = default;
+
 FakeContentLayerClient::FakeContentLayerClient() = default;
 
 FakeContentLayerClient::~FakeContentLayerClient() = default;
@@ -83,6 +99,14 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
       display_list->push<RestoreOp>();
       display_list->EndPaintOfPairedEnd();
     }
+  }
+
+  for (const SkottieData& skottie_data : skottie_data_) {
+    display_list->StartPaint();
+    display_list->push<DrawSkottieOp>(skottie_data.skottie,
+                                      gfx::RectToSkRect(skottie_data.dst),
+                                      skottie_data.t, skottie_data.images);
+    display_list->EndPaintOfUnpaired(PaintableRegion());
   }
 
   if (contains_slow_paths_) {
