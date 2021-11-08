@@ -179,8 +179,10 @@ TEST_F(WebCryptoRsaPssTest, VerifyKnownAnswer) {
        ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::DictionaryValue* test;
-    ASSERT_TRUE(tests->GetDictionary(test_index, &test));
+    const base::Value& test_value = tests->GetList()[test_index];
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoAlgorithm hash = GetDigestAlgorithm(test, "hash");
 

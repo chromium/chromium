@@ -82,8 +82,10 @@ TEST_F(WebCryptoEcdhTest, DeriveBitsKnownAnswer) {
        ++test_index) {
     SCOPED_TRACE(test_index);
 
-    const base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+    const base::Value& test_value = tests.GetList()[test_index];
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     // Import the keys.
     blink::WebCryptoKey public_key;
@@ -127,7 +129,9 @@ TEST_F(WebCryptoEcdhTest, DeriveBitsKnownAnswer) {
   for (size_t test_index = 0; test_index < tests.GetList().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
-    EXPECT_TRUE(tests.GetDictionary(test_index, &test));
+    const base::Value& test_value = tests.GetList()[test_index];
+    EXPECT_TRUE(test_value.is_dict());
+    test = &base::Value::AsDictionaryValue(test_value);
     absl::optional<bool> keys = test->FindBoolKey("valid_p521_keys");
     if (keys && keys.value()) {
       valid_p521_keys = true;
@@ -307,8 +311,10 @@ TEST_F(WebCryptoEcdhTest, ImportKeyEmptyUsage) {
   base::ListValue tests;
   ASSERT_TRUE(ReadJsonTestFileToList("ecdh.json", &tests));
 
-  const base::DictionaryValue* test;
-  ASSERT_TRUE(tests.GetDictionary(0, &test));
+  const base::Value& test_value = tests.GetList()[0];
+  ASSERT_TRUE(test_value.is_dict());
+  const base::DictionaryValue* test =
+      &base::Value::AsDictionaryValue(test_value);
 
   // Import the public key.
   const base::DictionaryValue* public_key_json = nullptr;
