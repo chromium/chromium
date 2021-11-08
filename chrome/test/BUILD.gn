@@ -8297,6 +8297,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/views/extensions/extensions_menu_view_interactive_uitest.cc",
       "../browser/ui/views/extensions/extensions_toolbar_browsertest.cc",
       "../browser/ui/views/extensions/extensions_toolbar_browsertest.h",
+      "../browser/ui/views/page_info/page_info_bubble_view_interactive_uitest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_browsertest.cc",
       "../browser/webauth_interactive_uitest.cc",
