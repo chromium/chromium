@@ -156,6 +156,9 @@ bool IsWebAppsCrosapiEnabled();
 // Enables System Web Apps so we can test SWA features in Lacros, even we don't
 // have actual SWAs in Lacros.
 void EnableSystemWebAppsInLacrosForTesting();
+
+// Allow user web apps on profiles other than the main profile.
+void SkipMainProfileCheckForTesting();
 #endif
 
 }  // namespace web_app

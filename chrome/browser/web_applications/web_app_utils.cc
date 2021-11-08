@@ -34,6 +34,10 @@
 namespace {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool g_enable_system_web_apps_in_lacros_for_testing = false;
+
+// Denotes whether user web apps may be installed on profiles other than the
+// main profile. This may be modified by SkipMainProfileCheckForTesting().
+bool g_skip_main_profile_check_for_testing = false;
 #endif
 }  // namespace
 
@@ -71,6 +75,9 @@ bool AreWebAppsUserInstallable(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // With Lacros, web apps are not installed using the Ash browser.
   if (IsWebAppsCrosapiEnabled())
+    return false;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile() && !g_skip_main_profile_check_for_testing)
     return false;
 #endif
   return AreWebAppsEnabled(profile) && !profile->IsGuestSession() &&
@@ -315,6 +322,10 @@ bool IsWebAppsCrosapiEnabled() {
 void EnableSystemWebAppsInLacrosForTesting() {
   g_enable_system_web_apps_in_lacros_for_testing = true;
 }
+
+void SkipMainProfileCheckForTesting() {
+  g_skip_main_profile_check_for_testing = true;
+}
 #endif
 
 void PersistProtocolHandlersUserChoice(
@@ -323,11 +334,10 @@ void PersistProtocolHandlersUserChoice(
     const GURL& protocol_url,
     bool allowed,
     base::OnceClosure update_finished_callback) {
-  web_app::WebAppProvider* const provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
+  WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
 
-  web_app::OsIntegrationManager& os_integration_manager =
+  OsIntegrationManager& os_integration_manager =
       provider->os_integration_manager();
   const std::vector<ProtocolHandler> original_protocol_handlers =
       os_integration_manager.GetAppProtocolHandlers(app_id);
@@ -360,13 +370,12 @@ void PersistFileHandlersUserChoice(Profile* profile,
                                    base::OnceClosure update_finished_callback) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kDesktopPWAsFileHandlingSettingsGated));
-  web_app::WebAppProvider* const provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
+  WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
 
   {
     ScopedRegistryUpdate update(&provider->sync_bridge());
-    web_app::WebApp* app_to_update = update->UpdateApp(app_id);
+    WebApp* app_to_update = update->UpdateApp(app_id);
     app_to_update->SetFileHandlerApprovalState(
         allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed);
   }

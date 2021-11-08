@@ -111,6 +111,11 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
 TEST_F(WebAppUtilsTest, AreWebAppsUserInstallable) {
   Profile* regular_profile = profile();
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  EXPECT_FALSE(AreWebAppsUserInstallable(regular_profile));
+  SkipMainProfileCheckForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   EXPECT_FALSE(AreWebAppsEnabled(nullptr));
   EXPECT_TRUE(AreWebAppsUserInstallable(regular_profile));
   EXPECT_FALSE(AreWebAppsUserInstallable(

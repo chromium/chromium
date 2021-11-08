@@ -11,6 +11,10 @@
 #include "chrome/common/chrome_features.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif
+
 namespace web_app {
 
 WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
@@ -19,6 +23,10 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
   // Disable WebAppsCrosapi, so that Web Apps get synced in the Ash browser.
   scoped_feature_list_.InitWithFeatures(
       {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  SkipMainProfileCheckForTesting();
 #endif
 }
 
