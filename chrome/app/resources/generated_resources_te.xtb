@@ -4082,6 +4082,7 @@
 <translation id="5265562206369321422">వారానికి పైగా ఆఫ్‌లైన్‌లో ఉంది</translation>
 <translation id="5265797726250773323">ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
 <translation id="5266113311903163739">సర్టిఫికెట్ అధికారి దిగుమతి ఎర్రర్</translation>
+<translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> కోసం మరిన్ని చర్యలు</translation>
 <translation id="5269977353971873915">ముద్రణ విఫలమైంది</translation>
 <translation id="5275352920323889391">కుక్క</translation>
 <translation id="527605982717517565"><ph name="HOST" />పై ఎల్లప్పుడూ JavaScriptను అనుమతించు</translation>
@@ -5457,6 +5458,7 @@
 <translation id="6775163072363532304">అందుబాటులో ఉన్న పరికరాలు ఇక్కడ కనిపిస్తాయి.</translation>
 <translation id="6777817260680419853">మళ్ళింపు బ్లాక్ చేయబడింది</translation>
 <translation id="6778737459546443941">మీ తల్లి/తండ్రి దీన్ని ఇంకా ఆమోదించలేదు</translation>
+<translation id="6779092717724412415">ఇటువంటి హైలైట్‌ను క్రియేట్ చేయడానికి, ఏదైనా టెక్స్ట్‌ను ఎంచుకొని, దానిపై కుడి క్లిక్ చేయండి.</translation>
 <translation id="6779447100905857289">మీ కార్ట్‌లు</translation>
 <translation id="677965093459947883">చాలా చిన్నవిగా</translation>
 <translation id="6781005693196527806">సెర్చ్ ఇంజిన్‌లను &amp;మేనేజ్ చేయండి...</translation>
@@ -6270,6 +6272,7 @@
 <translation id="7625823789272218216">ఎడమ వైపున కొత్త ట్యాబ్</translation>
 <translation id="7628201176665550262">రిఫ్రెష్ రేటు</translation>
 <translation id="7629827748548208700">ట్యాబ్: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">ఈ పరికరం <ph name="MANAGER" /> ద్వారా మేనేజ్ చేయబడుతోంది, మీరు ప్రతిసారి సైన్ ఇన్ చేయాల్సి ఉంటుంది.</translation>
 <translation id="7631014249255418691">Linux యాప్‌లు, ఫైళ్లు విజయవంతంగా బ్యాకప్ చేయబడ్డాయి</translation>
 <translation id="7631205654593498032">మీరు మీ పరికరాలను కనెక్ట్ చేసినప్పుడు, మీ <ph name="DEVICE_TYPE" /> ఈ కింది వాటిని చేయవచ్చని అంగీకరిస్తున్నారు:</translation>
 <translation id="7631887513477658702">&amp;ఎల్లప్పుడూ ఈ రకం ఫైళ్ళను తెరువు</translation>

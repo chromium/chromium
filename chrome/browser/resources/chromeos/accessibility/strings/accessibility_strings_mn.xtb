@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">хуулах</translation>
 <translation id="135978014023467274">Та ChromeVox 63-н хувилбарыг шинэчилсэн байна!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" />маршрутын түлхүүр доорх зүйлийг дарах</translation>
+<translation id="1376703628032300005">дараагийн тэмдэгт рүү очих</translation>
 <translation id="1377925789329510816">Энэ нь сүүлийн гарчиг юм. Эхний гарчгийг хураахын тулд Search+H, эсвэл энэ хуудасны хоёрдугаар гарчигт очихын тулд Search+Shift+H-г дарна уу.</translation>
 <translation id="138218114945450791">Бүдэг цэнхэр</translation>
 <translation id="1383876407941801731">Хайлт</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Олон сонголттой талбар</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
 <translation id="2462626033734746142">Радио товчийн бүлэг</translation>
+<translation id="2467741090055146971">сонголтыг болиулах</translation>
 <translation id="2471138580042810658">Гарчиг 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{ од тэмдэг}other{ # од тэмдэгтүүд}}</translation>
 <translation id="2490721194269245365">Нил ягаан өнгөний туяатай бор</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Өмнөх медиа жижиг хэрэгсэл алга байна</translation>
 <translation id="4855927945655956315">Үндсэн товчнууд: Control</translation>
 <translation id="4862744964787595316">Тод биш байна</translation>
+<translation id="4865995900839719272">өмнөх мөр лүү очих</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS тэмдэглэлийг идэвхжүүлэх</translation>
 <translation id="4886524826165775965"><ph name="INDEX" /> / <ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, цонх</translation>
 <translation id="5308380583665731573">Холбо</translation>
 <translation id="5310788376443009632">устгасан:</translation>
+<translation id="5316825363044614340">дараагийн мөр лүү очих</translation>
 <translation id="5320727453979144100">Sticky горим идэвхжсэн</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{ таслал}other{ # таслал}}</translation>
 <translation id="532485153932049746">Текстийн форматчилал
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Өмнөх маягтын талбар алга байна</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">тусламж</translation>
 <translation id="7317017974771324508">хэсэгчлэн сонгосон</translation>
 <translation id="7322442671176251901">Хүрэлтээр сонсох</translation>
 <translation id="7344012264516629579">Нэмэлт үсрэх тушаалаас хэдийг нэрлэхэд холбоос, товчлуур болон тэмдэглэх нүдээр үсрэх зэрэг багтана. Үсрэх тушаалын бүрэн жагсаалтыг Хайлт + Period-г дарснаар нээж болох ChromeVox-н цэсээс олж болно.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox-н практик хичээл</translation>
 <translation id="9040132695316389094">Гарчиг 1</translation>
 <translation id="9061884144798498064">8 цэгт брайлийн хүснэгтийг сонгоно уу:</translation>
+<translation id="9063946545000394379">өмнөх тэмдэгт рүү очих</translation>
 <translation id="9065283790526219006">+зар сурталчилгаа</translation>
 <translation id="9065912140022662363">Дараагийн радио товчлуур алга байна</translation>
 <translation id="9067522039955793016">Хуудас тусгаарлагч</translation>

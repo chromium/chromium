@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">Соединение</translation>
 <translation id="4832079907277790330">Выбрать папку в приложении Files…</translation>
 <translation id="4835901797422965222">Нет активных сетей.</translation>
+<translation id="4839698083503556542">Создайте свой фильм</translation>
 <translation id="484790837831576105">DNS-преобразование (Android)</translation>
 <translation id="4848429997038228357">ВЫПОЛНЯЕТСЯ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}one{<ph name="ERROR_MESSAGE" /> Осталась {0} попытка.}few{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}many{<ph name="ERROR_MESSAGE" /> Осталось {0} попыток.}other{<ph name="ERROR_MESSAGE" /> Осталось {0} попытки.}}</translation>

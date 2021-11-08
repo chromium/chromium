@@ -705,6 +705,15 @@
 <translation id="1862267110714201519">停用 ghost 視窗功能。</translation>
 <translation id="1865417998205858223">金鑰權限</translation>
 <translation id="186719019195685253">使用 AC 電源的情況下，系統在達到閒置延遲時間時所採取的動作</translation>
+<translation id="1881649377321404593">
+      這項政策已在 M80 版中遭到移除，因為 WebDriver 現階段與所有現有政策相容，因此不再需要使用這項政策。
+
+      這項政策可讓使用 WebDriver 功能的使用者覆寫可能干擾此功能運作的政策。
+
+      目前這項政策停用了 SitePerProcess 和 IsolateOrigins 政策。
+
+      如果啟用這項政策，WebDriver 將可以覆寫不相容的政策。
+      如果停用這項政策或未設定，WebDriver 將無法覆寫不相容的政策。</translation>
 <translation id="1885782360784839335">允許顯示完整分頁宣傳內容</translation>
 <translation id="1888871729456797026">電腦上的雲端政策註冊憑證</translation>
 <translation id="1894790493260633497">預設啟用背景圖形列印模式</translation>
@@ -2745,6 +2754,16 @@
       自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。
 
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域的執行個體、在 Windows 10 專業版上執行的執行個體，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。在 <ph name="MAC_OS_NAME" /> 上，這項功能僅適用於透過行動裝置管理 (MDM) 軟體進行管理或透過 MCX 加入網域的執行個體。</translation>
+<translation id="4268014245533736105">Chrome 會封鎖在沙箱 iframe 中瀏覽外部通訊協定的作業，詳情請參閱 https://chromestatus.com/features/5680742077038592。
+
+      如果將這項政策設為 True，就代表允許 Chrome 封鎖這類瀏覽作業。
+
+      如果將這項政策設為 False，則表示禁止 Chrome 封鎖這類瀏覽作業。
+
+      本政策預設為 True，也就是啟用安全性功能。
+
+      如果管理員需要更多時間更新受此新限制影響的內部網站，就可以採用這項設定。這項 Enterprise 政策僅是暫時性措施，預計將於 <ph name="PRODUCT_NAME" /> 第 104 版之後移除。
+      </translation>
 <translation id="4268586991084547853">與 Microsoft IE/Edge 企業模式網站清單的相容性更高。</translation>
 <translation id="4269859918103560644">允許使用者決定</translation>
 <translation id="4274691295133617461">如果將這項政策設為 3，網站即可要求透過 File System API 讀取主機作業系統中檔案系統的檔案和目錄。如果將這項政策設為 2，系統會拒絕網站存取。
@@ -4079,6 +4098,12 @@
 <translation id="5997543603646547632">預設使用 24 小時制時鐘</translation>
 <translation id="5997846976342452720">指定是否要停用外掛程式尋找工具 (已淘汰)</translation>
 <translation id="5998198091336830580">這項政策屬於下列不可部分完成的群組 (系統僅會套用群組中最高優先來源所設定的政策)：</translation>
+<translation id="6004575267180297869">
+      指定是否可以跨來源傳送 WebAssembly 模組至其他視窗或工作站。跨來源 WebAssembly 模組分享功能將隨著 document.domain 一併淘汰，詳情請參閱 https://github.com/mikewest/deprecating-document-domain。這項政策可以重新啟用跨來源 WebAssembly 模組分享功能，藉此延長淘汰過程中的過渡期。
+
+      如果將這項政策設為 True，網站即可不受限制地跨來源傳送 WebAssembly 模組。
+
+      如果設為 False 或未設定，網站就只能將 WebAssembly 模組傳送到相同來源的視窗和工作站。</translation>
 <translation id="6009062900206392980">將這項政策設為 None 時，系統會在登入畫面停用螢幕放大功能。
 
        如果設定這項政策，使用者可暫時啟用或停用放大鏡。當登入畫面重新載入或閒置達一分鐘時，放大鏡會還原成原始狀態。
@@ -4254,6 +4279,7 @@
      這項政策的用途是讓企業能彈性停用音訊沙箱，避免安全性軟體的設定干擾沙箱運作。</translation>
 <translation id="624818583115864448">通訊埠 554 (2021 年 10 月 15 日前可解除封鎖)</translation>
 <translation id="6252773211180267325">允許使用者執行 <ph name="BOREALIS_NAME" /></translation>
+<translation id="6258658183356534534">控制 User-Agent Client Hints GREASE Update 功能。</translation>
 <translation id="6261643884958898336">回報裝置識別資訊</translation>
 <translation id="6265892395051519509">允許在這些網站上存取感應器</translation>
 <translation id="6273015149273504999">
@@ -4336,6 +4362,7 @@
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
+<translation id="6331943515692769234">強制採用舊版 User-Agent GREASE 演算法。</translation>
 <translation id="6332546092866098577">禁止這些網站透過 File System API 進行讀取</translation>
 <translation id="6334330017384340264">這項政策會指定哪些應用程式和網址應加入個別應用程式使用限制的許可清單。
         系統會將已設定的許可清單套用到 <ph name="PRODUCT_OS_NAME" />上安裝的應用程式，適用於設有個別應用程式時間限制的指定使用者。
@@ -4673,6 +4700,10 @@
 
       注意：這項政策也會影響使用 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 強制安裝的擴充功能和應用程式。</translation>
 <translation id="6731757988219967594">過濾含有成人內容的頂層網站 (而非嵌入的 iframe)</translation>
+<translation id="6733851879899284032">
+      指定 SharedArrayBuffers 是否可用於非跨來源隔離內容。由於網路相容性方面的原因，自 <ph name="PRODUCT_NAME" /> 91 版 (2021 年 5 月 25 日推出) 起，<ph name="PRODUCT_NAME" /> 會要求使用 SharedArrayBuffers 時進行跨來源隔離。詳情請前往：https://developer.chrome.com/blog/enabling-shared-array-buffer/。
+      如果啟用這項政策，網站就可以不受限制地使用 SharedArrayBuffer。
+      如果設為停用或未設定，則網站在進行跨來源隔離時才能使用 SharedArrayBuffers。</translation>
 <translation id="6735701345096330595">強制執行拼字檢查的語言</translation>
 <translation id="6740611636377710500">允許這位使用者執行 PluginVm。
 
@@ -4865,6 +4896,9 @@
 <translation id="6929746927224321095">停用自動填入功能</translation>
 <translation id="6931242315485576290">停用 Google 資料同步處理功能</translation>
 <translation id="6940243892299228102">禁止使用者使用桌面範本</translation>
+<translation id="694071740172924905">啟用 User-Agent Client Hints GREASE Update 功能後，這項功能會採用最新的 User-Agent GREASE 演算法規格。
+      如果網站會限制要求中可包含的字元，更新的規格可能會導致這類網站無法正常運作。詳情請參閱規格：https://wicg.github.io/ua-client-hints/#grease
+      如果將這項政策設為啟用或不設定，系統會啟用 User-Agent Client Hints GREASE Update 功能。如果停用這項政策，則會採用舊版 User-Agent GREASE 演算法。</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好設定名稱：</translation>
 <translation id="6946652757373377924">
       這項政策已在 M77 版中移除。
@@ -5225,6 +5259,7 @@
 
       如果不設定這項政策，在預設情況下，受企業管理的使用者將無法使用 Smart Lock 登入功能，其他一般的使用者則可使用這項登入功能。</translation>
 <translation id="7295019613773647480">啟用受監管的使用者</translation>
+<translation id="7297476773981993405">允許執行更新的 User-Agent GREASE 演算法。</translation>
 <translation id="7302043767260300182">在 AC 供電環境下執行時的螢幕鎖定延遲時間</translation>
 <translation id="7303902834678570827">受管理訪客工作階段的使用者無法儲存整部裝置的顯示設定</translation>
 <translation id="731208205557053914">回報 VPD 資訊</translation>
@@ -5330,6 +5365,13 @@
 <translation id="7491720878670299691">系統針對事件輪詢和檢查網路資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 1 分鐘的預設頻率。</translation>
+<translation id="7498595166686106721">
+      螢幕擷取權限政策會依據以下網址所列規格，限制 getDisplayMedia() 的存取權：https://www.w3.org/TR/screen-capture/#feature-policy-integration。不過，如果停用這項政策，系統就不會強制執行相關規範，而會允許透過禁止的結構定義呼叫 getDisplayMedia()。這項 Enterprise 政策僅是暫時性措施，預計將於 <ph name="PRODUCT_NAME" /> 第 100 版之後移除。若 Enterprise 使用者的應用程式不符合規格要求，但需要時間進行修正，本政策即可用於解除封鎖這類使用者。
+
+      如果啟用或不設定這項政策，只有在螢幕擷取權限政策將來源結構定義列入許可清單時，網站才能呼叫 getDisplayMedia()。
+
+      如果停用這項政策，即使螢幕擷取權限政策未將來源結構定義列入許可清單，網站仍可呼叫 getDisplayMedia()。
+      請注意，getDisplayMedia() 的存取權還是有可能受到其他限制。</translation>
 <translation id="7506745375479451616">這項政策可控管從 <ph name="IE_PRODUCT_NAME" /> 切換到 Chrome 時，在 <ph name="PRODUCT_NAME" /> 中開啟網址時使用的指令。你可以將這項政策設為執行檔路徑，或是設為 <ph name="PRODUCT_NAME_PLACEHOLDER" />，讓系統自動偵測 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果未設定這項政策，從 Internet Explorer 啟動 <ph name="PRODUCT_NAME" /> 時，<ph name="IE_PRODUCT_NAME" /> 會自動偵測 <ph name="PRODUCT_NAME" /> 自己的可執行路徑。
@@ -5936,6 +5978,18 @@
 <translation id="8266778278542911985">如果將這項政策設為 3，網站將可要求存取序列埠。如果將這項政策設為 2，網站將無法存取序列埠。
 
       如果不設定，網站可要求存取序列埠，但使用者可以變更這項設定。</translation>
+<translation id="8267887696930711948">這項政策自 M69 起已淘汰，請改用 OverrideSecurityRestrictionsOnInsecureOrigin。
+
+      這項政策可指定要視為安全內容的來源 (網址) 或主機名稱模式 (例如「*.example.com」)，清單中的內容來源將不會套用針對不安全來源所設的安全性限制。
+
+      這項政策的用途是讓機構為無法部署傳輸層安全標準 (TLS) 的舊版應用程式設定許可來源，或是方便機構設定內部網頁開發所需的暫存伺服器。這樣一來，機構的開發人員就能測試需要安全內容的功能，而不必在暫存伺服器上部署傳輸層安全標準 (TLS)。此外，這項政策也能避免系統在網址列中將指定來源加上「不安全」標籤。
+
+      你可以在這項政策中設定網址清單，或是將「--unsafely-treat-insecure-origin-as-secure」指令列旗標設定至相同的網址清單 (以半形逗號分隔)，兩者的效果相同。如果設定這項政策，就會覆寫指令列旗標。
+
+      這項政策自 M69 起已淘汰，由 OverrideSecurityRestrictionsOnInsecureOrigin 取代。如果兩項政策同時存在，OverrideSecurityRestrictionsOnInsecureOrigin 將會覆寫這項政策。
+
+      如要進一步瞭解安全內容，請參閱 https://www.w3.org/TR/secure-contexts/
+      </translation>
 <translation id="8270320981823560179">雲端硬碟</translation>
 <translation id="827054846390793641">連線時，在主機桌面啟用連線相關 UI</translation>
 <translation id="8274603902181597201">清除使用者的 eCryptfs 主目錄，改用全新的 Ext4 加密主目錄。</translation>
