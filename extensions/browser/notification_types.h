@@ -59,10 +59,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174743): Remove.
   NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
 
-  // Sent when a background page is ready so other components can load.
-  // TODO(https://crbug.com/1174744): Remove.
-  NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-
   // Sent when an bookmarks extensions API function was successfully invoked.
   // The source is the id of the extension that invoked the function, and the
   // details are a pointer to the const BookmarksFunction in question.

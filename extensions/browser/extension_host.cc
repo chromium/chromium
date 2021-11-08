@@ -272,13 +272,6 @@ void ExtensionHost::DocumentAvailableInMainFrame(
 
   ExtensionHostRegistry::Get(browser_context_)
       ->ExtensionHostDocumentElementAvailable(this);
-
-  if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage) {
-    content::NotificationService::current()->Notify(
-        extensions::NOTIFICATION_EXTENSION_BACKGROUND_PAGE_READY,
-        content::Source<const Extension>(extension_),
-        content::NotificationService::NoDetails());
-  }
 }
 
 void ExtensionHost::CloseContents(WebContents* contents) {
