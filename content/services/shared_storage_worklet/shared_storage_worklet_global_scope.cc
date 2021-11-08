@@ -34,22 +34,6 @@ void InitV8() {
   gin::V8Initializer::LoadV8Snapshot();
 #endif
 
-  // Each script is run once using its own isolate, so tune down V8 to use as
-  // little memory as possible.
-  static const char kOptimizeForSize[] = "--optimize_for_size";
-  v8::V8::SetFlagsFromString(kOptimizeForSize, strlen(kOptimizeForSize));
-
-  // Running v8 in jitless mode allows dynamic code to be disabled in the
-  // process, and since each isolate is used only once, this may be best for
-  // performance as well.
-  static const char kJitless[] = "--jitless";
-  v8::V8::SetFlagsFromString(kJitless, strlen(kJitless));
-
-  // WebAssembly isn't encountered during resolution, so reduce the potential
-  // attack surface.
-  static const char kNoExposeWasm[] = "--no-expose-wasm";
-  v8::V8::SetFlagsFromString(kNoExposeWasm, strlen(kNoExposeWasm));
-
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
                                  gin::ArrayBufferAllocator::SharedInstance());
 }
