@@ -192,7 +192,8 @@ HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
       moved_network_transaction_to_writers_(false),
       websocket_handshake_stream_base_create_helper_(nullptr),
       in_do_loop_(false) {
-  TRACE_EVENT0("io", "HttpCacheTransaction::Transaction");
+  TRACE_EVENT1("io", "HttpCacheTransaction::Transaction", "priority",
+               RequestPriorityToString(priority));
   static_assert(HttpCache::Transaction::kNumValidationHeaders ==
                     base::size(kValidationHeaders),
                 "invalid number of validation headers");
@@ -240,6 +241,7 @@ int HttpCache::Transaction::Start(const HttpRequestInfo* request,
                                   const NetLogWithSource& net_log) {
   DCHECK(request);
   DCHECK(!callback.is_null());
+  TRACE_EVENT1("io", "HttpCacheTransaction::Start", "url", request->url);
 
   // Ensure that we only have one asynchronous call at a time.
   DCHECK(callback_.is_null());
