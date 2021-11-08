@@ -125,6 +125,12 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
             "disable-blink-features=PaymentRequestBasicCard"})
     public void
     testCannotMakePayment_UserAbort() throws TimeoutException {
+        // Install the apps so CanMakePayment returns true.
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://kylepay.com/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+
         // Initiate a payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "queryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
@@ -141,9 +147,10 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
                 new String[] {"User closed the Payment Request UI."});
 
         // Make sure the canMakePayment events were logged correctly.
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.CAN_MAKE_PAYMENT_TRUE
-                | Event.HAS_ENROLLED_INSTRUMENT_FALSE | Event.REQUEST_METHOD_OTHER
-                | Event.NEEDS_COMPLETION_PAYMENT;
+        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_TRUE
+                | Event.REQUEST_METHOD_OTHER | Event.HAS_ENROLLED_INSTRUMENT_TRUE
+                | Event.AVAILABLE_METHOD_OTHER;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
@@ -207,10 +214,16 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     @CommandLineFlags.Add({"disable-features=StrictHasEnrolledAutofillInstrument",
-            "enable-features=PaymentRequestBasicCard",
-            "enable-blink-features=PaymentRequestBasicCard"})
+            "disable-features=PaymentRequestBasicCard",
+            "disable-blink-features=PaymentRequestBasicCard"})
     public void
     testCannotMakePayment_Complete() throws TimeoutException {
+        // Install the apps so CanMakePayment returns true.
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://kylepay.com/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+
         mPaymentRequestTestRule.triggerUIAndWait(
                 "queryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
 
@@ -526,6 +539,12 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
             "disable-blink-features=PaymentRequestBasicCard"})
     public void
     testNoQuery_UserAbort() throws TimeoutException {
+        // Install the apps so CanMakePayment returns true.
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://kylepay.com/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+
         // Initiate a payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "noQueryShowWithUrlMethods", mPaymentRequestTestRule.getReadyForInput());
@@ -542,8 +561,9 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
                 new String[] {"User closed the Payment Request UI."});
 
         // Make sure no canMakePayment events were logged.
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.REQUEST_METHOD_OTHER
-                | Event.NEEDS_COMPLETION_PAYMENT;
+        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_METHOD_OTHER
+                | Event.AVAILABLE_METHOD_OTHER;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
