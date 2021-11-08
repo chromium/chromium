@@ -6,6 +6,8 @@
 #import <string>
 
 #include "base/ios/ios_util.h"
+#include "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
@@ -82,6 +84,19 @@ GURL TestPageURL() {
 @end
 
 @implementation RecentTabsTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testSyncTypesListDisabled)]) {
+    // Configure the policy.
+    config.additional_args.push_back(
+        "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+    config.additional_args.push_back(
+        "<dict><key>SyncTypesListDisabled</key><array><string>tabs</"
+        "string></array></dict>");
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -406,6 +421,22 @@ GURL TestPageURL() {
                             grey_userInteractionEnabled(), nil)]
       performAction:grey_tap()];
 
+  OpenRecentTabsPanel();
+
+  // Check that the sign-in promo is not visible.
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+
+  // Check that the 'Other Devices' section is managed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_RECENT_TABS_DISABLED_BY_ORGANIZATION)),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the sign-in promo isn't shown and the 'Other Devices' section is
+// managed when the SyncTypesListDisabled tabs item policy is selected.
+- (void)testSyncTypesListDisabled {
   OpenRecentTabsPanel();
 
   // Check that the sign-in promo is not visible.

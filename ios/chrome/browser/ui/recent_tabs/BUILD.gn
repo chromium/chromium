@@ -193,6 +193,7 @@ source_set("eg2_tests") {
     ":recent_tabs_ui_constants",
     "//base/test:test_support",
     "//components/policy:policy_code_generate",
+    "//components/policy/core/common:common_constants",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
