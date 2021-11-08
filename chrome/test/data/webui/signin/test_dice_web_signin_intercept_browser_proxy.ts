@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {DiceWebSigninInterceptBrowserProxy, InterceptionParameters} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {DiceWebSigninInterceptBrowserProxy} */
-export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy {
+export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy
+    implements DiceWebSigninInterceptBrowserProxy {
+  private interceptionParameters_: InterceptionParameters;
+
   constructor() {
     super(['accept', 'cancel', 'guest', 'pageLoaded']);
-    /** @private {!InterceptionParameters} */
+
     this.interceptionParameters_ = {
       headerText: '',
       bodyTitle: '',
@@ -22,27 +25,22 @@ export class TestDiceWebSigninInterceptBrowserProxy extends TestBrowserProxy {
     };
   }
 
-  /** @param {!InterceptionParameters} parameters */
-  setInterceptionParameters(parameters) {
+  setInterceptionParameters(parameters: InterceptionParameters) {
     this.interceptionParameters_ = parameters;
   }
 
-  /** @override */
   accept() {
     this.methodCalled('accept');
   }
 
-  /** @override */
   cancel() {
     this.methodCalled('cancel');
   }
 
-  /** @override */
   guest() {
     this.methodCalled('guest');
   }
 
-  /** @override */
   pageLoaded() {
     this.methodCalled('pageLoaded');
     return Promise.resolve(this.interceptionParameters_);

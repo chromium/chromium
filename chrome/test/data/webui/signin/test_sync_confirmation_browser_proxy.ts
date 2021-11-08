@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SyncConfirmationBrowserProxy} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {settings.ProfileInfoBrowserProxy} */
-export class TestSyncConfirmationBrowserProxy extends TestBrowserProxy {
+export class TestSyncConfirmationBrowserProxy extends TestBrowserProxy
+    implements SyncConfirmationBrowserProxy {
   constructor() {
     super([
       'confirm',
@@ -16,27 +17,22 @@ export class TestSyncConfirmationBrowserProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
-  confirm(description, confirmation) {
+  confirm(description: string[], confirmation: string) {
     this.methodCalled('confirm', [description, confirmation]);
   }
 
-  /** @override */
   undo() {
     this.methodCalled('undo');
   }
 
-  /** @override */
-  goToSettings(description, confirmation) {
+  goToSettings(description: string[], confirmation: string) {
     this.methodCalled('goToSettings', [description, confirmation]);
   }
 
-  /** @override */
-  initializedWithSize(height) {
+  initializedWithSize(height: number[]) {
     this.methodCalled('initializedWithSize', height);
   }
 
-  /** @override */
   requestAccountInfo() {
     this.methodCalled('requestAccountInfo');
   }
