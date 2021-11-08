@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import logging
+import multiprocessing
 import os
 import select
 import socket
@@ -90,13 +91,6 @@ WEB_TESTS_PATH_PREFIX = '/third_party/blink/' + WEB_TESTS_LAST_COMPONENT
 # Paths to the directory where the fonts are copied to. Must match the path in
 # content/shell/app/blink_test_platform_support_fuchsia.cc .
 FONTS_DEVICE_PATH = '/system/fonts'
-
-# Number of CPU cores in qemu.
-CPU_CORES = 4
-
-# Number of content_shell instances to run in parallel.
-# Allow for two CPU cores per instance.
-MAX_WORKERS = CPU_CORES / 2
 
 PROCESS_START_TIMEOUT = 20
 
@@ -206,8 +200,8 @@ class FuchsiaPort(base.Port):
         self._version = 'fuchsia'
         self._target_device = self.get_option('device')
 
-        # TODO(sergeyu): Add support for arm64.
-        self._architecture = 'x86_64'
+        self._architecture = 'x86_64' if self._target_cpu(
+        ) == 'x64' else 'arm64'
 
         self.server_process_constructor = FuchsiaServerProcess
 
@@ -229,19 +223,33 @@ class FuchsiaPort(base.Port):
         if self._zircon_logger:
             self._zircon_logger.close()
 
+    def _target_cpu(self):
+        return self.get_option('fuchsia_target_cpu')
+
+    def _cpu_cores(self):
+        # Revise the processor count on arm64, the trybots on arm64 are in
+        # dockers and cannot use all processors.
+        # For x64, fvdl always assumes hyperthreading is supported by intel
+        # processors, but the cpu_count returns the number regarding if the core
+        # is a physical one or a hyperthreading one, so the number should be
+        # divided by 2 to avoid creating more threads than the processor
+        # supports.
+        return max(multiprocessing.cpu_count() / 2 -
+                   1, 4) if self._target_cpu() == 'x64' else 4
+
     def setup_test_run(self):
         super(FuchsiaPort, self).setup_test_run()
         try:
             target_args = Namespace(
                 out_dir=self._build_path(),
                 fuchsia_out_dir=self.get_option('fuchsia_out_dir'),
-                target_cpu=self.get_option('fuchsia_target_cpu'),
+                target_cpu=self._target_cpu(),
                 ssh_config=self.get_option('fuchsia_ssh_config'),
                 os_check='ignore',
                 host=self.get_option('fuchsia_host'),
                 port=self.get_option('fuchsia_port'),
                 node_name=self.get_option('fuchsia_node_name'),
-                cpu_cores=CPU_CORES,
+                cpu_cores=self._cpu_cores(),
                 require_kvm=True,
                 ram_size_mb=8192,
                 enable_graphics=False,
@@ -276,7 +284,7 @@ class FuchsiaPort(base.Port):
 
     def num_workers(self, requested_num_workers):
         # Run a single qemu instance.
-        return min(MAX_WORKERS, requested_num_workers)
+        return min(self._cpu_cores(), requested_num_workers)
 
     def _default_timeout_ms(self):
         # Use 20s timeout instead of the default 6s. This is necessary because

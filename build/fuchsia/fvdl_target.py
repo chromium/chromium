@@ -40,12 +40,14 @@ class FvdlTarget(emu_target.EmuTarget):
   _FVDL_PATH = os.path.join(common.SDK_ROOT, 'tools', 'x64', 'fvdl')
 
   def __init__(self, out_dir, target_cpu, require_kvm, enable_graphics,
-               hardware_gpu, with_network, ram_size_mb, logs_dir, custom_image):
+               hardware_gpu, with_network, cpu_cores, ram_size_mb, logs_dir,
+               custom_image):
     super(FvdlTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._require_kvm = require_kvm
     self._enable_graphics = enable_graphics
     self._hardware_gpu = hardware_gpu
     self._with_network = with_network
+    self._cpu_cores = cpu_cores
     self._ram_size_mb = ram_size_mb
     self._custom_image = custom_image
 
@@ -73,8 +75,8 @@ class FvdlTarget(emu_target.EmuTarget):
   def CreateFromArgs(args):
     return FvdlTarget(args.out_dir, args.target_cpu, args.require_kvm,
                       args.enable_graphics, args.hardware_gpu,
-                      args.with_network, args.ram_size_mb, args.logs_dir,
-                      args.custom_image)
+                      args.with_network, args.cpu_cores, args.ram_size_mb,
+                      args.logs_dir, args.custom_image)
 
   @staticmethod
   def RegisterArgs(arg_parser):
@@ -133,7 +135,9 @@ class FvdlTarget(emu_target.EmuTarget):
 
         # Use this flag and temp file to define ram size.
         '--device-proto',
-        self._device_proto_file.name
+        self._device_proto_file.name,
+        '--cpu-count',
+        str(self._cpu_cores)
     ]
     self._ConfigureEmulatorLog(emu_command)
 

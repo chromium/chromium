@@ -27,7 +27,8 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
                           with_network=False,
                           ram_size_mb=8192,
                           logs_dir=None,
-                          custom_image=None)
+                          custom_image=None,
+                          cpu_cores=10)
     common.EnsurePathExists = mock.MagicMock(return_value='image')
     boot_data.ProvisionSSH = mock.MagicMock()
     FvdlTarget.Shutdown = mock.MagicMock()
