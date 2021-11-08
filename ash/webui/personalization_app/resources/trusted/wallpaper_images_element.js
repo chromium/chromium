@@ -17,23 +17,41 @@ import {DisplayableImage, WallpaperType} from './personalization_reducers.js';
 import {PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
+let sendCurrentWallpaperAssetIdFunction = sendCurrentWallpaperAssetId;
 let sendImagesFunction = sendImages;
 
-export function promisifySendImagesForTesting() {
-  let resolver;
-  const promise = new Promise((resolve) => resolver = resolve);
-  sendImagesFunction = (...args) => resolver(args);
-  return promise;
+/**
+ * Mock out the images iframe api functions for testing. Return promises that
+ * are resolved when the function is called by |WallpaperImagesElement|.
+ * @return {{
+ *   sendCurrentWallpaperAssetId: Promise<?>,
+ *   sendImages: Promise<?>,
+ * }}
+ */
+export function promisifyImagesIframeFunctionsForTesting() {
+  const resolvers = {};
+  const promises =
+      [sendCurrentWallpaperAssetId, sendImages].reduce((result, next) => {
+        result[next.name] =
+            new Promise(resolve => resolvers[next.name] = resolve);
+        return result;
+      }, {});
+  sendCurrentWallpaperAssetIdFunction = (...args) =>
+      resolvers[sendCurrentWallpaperAssetId.name](args);
+  sendImagesFunction = (...args) => resolvers[sendImages.name](args);
+  return promises;
 }
 
 /**
- * If |current| is set and is an online wallpaper, return the assetId of that
- * image. Otherwise returns null.
+ * If |current| is set and is an online wallpaper (include daily refresh
+ * wallpaper), return the assetId of that image. Otherwise returns null.
  * @param {?ash.personalizationApp.mojom.CurrentWallpaper} current
  * @return {?bigint}
  */
 function getAssetId(current) {
-  if (current?.type !== WallpaperType.kOnline) {
+  const currentType = current?.type;
+  if (!(currentType === WallpaperType.kOnline ||
+        currentType === WallpaperType.kDaily)) {
     return null;
   }
   try {
@@ -206,7 +224,7 @@ export class WallpaperImages extends WithPersonalizationStore {
   async onCurrentSelectedChanged_(selected) {
     const assetId = getAssetId(selected);
     const iframe = await this.iframePromise_;
-    sendCurrentWallpaperAssetId(
+    sendCurrentWallpaperAssetIdFunction(
         /** @type {!Window} */ (iframe.contentWindow), assetId);
   }
 
