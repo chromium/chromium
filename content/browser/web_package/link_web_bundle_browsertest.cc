@@ -313,8 +313,8 @@ IN_PROC_BROWSER_TEST_P(LinkWebBundleBrowserTest, MAYBE_ChangeLinkElementHref) {
   EXPECT_EQ("\"webbundle loaded after change\"", message);
 }
 
-#if defined(OS_MAC)
-// TODO(https://crbug.com/1263334): Flakes on macOS.
+#if defined(OS_MAC) || defined(OS_WIN)
+// TODO(https://crbug.com/1263334): Flakes on macOS and Windows.
 #define MAYBE_RemoveLinkElement DISABLED_RemoveLinkElement
 #else
 #define MAYBE_RemoveLinkElement RemoveLinkElement
