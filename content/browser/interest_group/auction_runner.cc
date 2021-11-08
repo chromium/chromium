@@ -245,8 +245,11 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
       url_loader_factory.InitWithNewPipeAndPassReceiver(),
       base::BindRepeating(&Delegate::GetFrameURLLoaderFactory,
                           base::Unretained(delegate_)),
-      frame_origin_, /*is_for_seller_=*/true, /*client_security_state=*/nullptr,
-      seller_url);
+      base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
+                          base::Unretained(delegate_)),
+      browser_signals_->top_frame_origin, frame_origin_,
+      /*is_for_seller_=*/true, delegate_->GetClientSecurityState(), seller_url,
+      /*trusted_signals_base_url=*/absl::nullopt);
   mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
       worklet_receiver = seller_worklet_.BindNewPipeAndPassReceiver();
   seller_worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
@@ -290,45 +293,19 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
   auction_worklet::mojom::BiddingInterestGroup* bidder =
       bid_state->bidder.bidding_group.get();
 
-  // Assemble list of URLs the bidder can request.
-
-  // TODO(mmenke): This largely duplicates logic in the auction worklet
-  // service. Avoid duplicating code.
-  absl::optional<GURL> trusted_bidding_signals_full_url;
-  if (bidder->group.trusted_bidding_signals_url &&
-      bidder->group.trusted_bidding_signals_keys) {
-    std::string query_params =
-        "hostname=" + net::EscapeQueryParamValue(
-                          browser_signals_->top_frame_origin.host(), true);
-    query_params += "&keys=";
-    bool first_key = true;
-    for (const auto& key : *bidder->group.trusted_bidding_signals_keys) {
-      if (first_key) {
-        first_key = false;
-      } else {
-        query_params.append(",");
-      }
-      query_params.append(net::EscapeQueryParamValue(key, true));
-    }
-
-    GURL::Replacements replacements;
-    replacements.SetQueryStr(query_params);
-    trusted_bidding_signals_full_url =
-        bidder->group.trusted_bidding_signals_url->ReplaceComponents(
-            replacements);
-  }
-
   mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
   GURL bidding_url =
       bid_state->bidder.bidding_group->group.bidding_url.value_or(GURL());
   bid_state->url_loader_factory =
       std::make_unique<AuctionURLLoaderFactoryProxy>(
           url_loader_factory.InitWithNewPipeAndPassReceiver(),
+          // BidderWorklets don't need frame URLLoaderFactories.
+          AuctionURLLoaderFactoryProxy::GetUrlLoaderFactoryCallback(),
           base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
                               base::Unretained(delegate_)),
-          frame_origin_, /*is_for_seller=*/false,
-          delegate_->GetClientSecurityState(), bidding_url,
-          trusted_bidding_signals_full_url);
+          browser_signals_->top_frame_origin, frame_origin_,
+          /*is_for_seller=*/false, delegate_->GetClientSecurityState(),
+          bidding_url, bidder->group.trusted_bidding_signals_url);
 
   bid_state->state = BidState::State::kGeneratingBid;
 

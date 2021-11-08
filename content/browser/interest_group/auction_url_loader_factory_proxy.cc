@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -33,22 +34,25 @@ namespace content {
 
 AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-    GetUrlLoaderFactoryCallback get_url_loader_factory,
+    GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
+    GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
+    const url::Origin& top_frame_origin,
     const url::Origin& frame_origin,
     bool is_for_seller,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const GURL& script_url,
-    const absl::optional<GURL>& trusted_signals_url)
+    const absl::optional<GURL>& trusted_signals_base_url)
     : receiver_(this, std::move(pending_receiver)),
-      get_url_loader_factory_(std::move(get_url_loader_factory)),
+      get_frame_url_loader_factory_(std::move(get_frame_url_loader_factory)),
+      get_trusted_url_loader_factory_(
+          std::move(get_trusted_url_loader_factory)),
+      top_frame_origin_(top_frame_origin),
       frame_origin_(frame_origin),
       is_for_seller_(is_for_seller),
       client_security_state_(std::move(client_security_state)),
       script_url_(script_url),
-      trusted_signals_url_(trusted_signals_url) {
-  // If this is for a bidder worklet, `client_security_state_` must be non-null.
-  if (!is_for_seller_)
-    DCHECK(client_security_state_);
+      trusted_signals_base_url_(trusted_signals_base_url) {
+  DCHECK(client_security_state_);
 }
 
 AuctionURLLoaderFactoryProxy::~AuctionURLLoaderFactoryProxy() = default;
@@ -69,13 +73,15 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   }
 
   bool is_request_allowed = false;
+  bool is_trusted_bidding_signals_request = false;
 
   if (url_request.url == script_url_ &&
       accept_header == "application/javascript") {
     is_request_allowed = true;
-  } else if (trusted_signals_url_ && url_request.url == *trusted_signals_url_ &&
+  } else if (CouldBeTrustedSignalsUrl(url_request.url) &&
              accept_header == "application/json") {
     is_request_allowed = true;
+    is_trusted_bidding_signals_request = true;
   }
 
   if (!is_request_allowed) {
@@ -96,8 +102,33 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
   new_request.request_initiator = frame_origin_;
 
+  GetUrlLoaderFactoryCallback url_loader_factory_getter =
+      get_trusted_url_loader_factory_;
   if (is_for_seller_) {
+    // Seller requests are made to base URLs specified by the publisher page,
+    // These URLs are generally cross-origin to the publisher, so need to always
+    // use CORS.
     new_request.mode = network::mojom::RequestMode::kCors;
+
+    if (!is_trusted_bidding_signals_request) {
+      // The script URL is provided in its entirety by the frame initiating the
+      // auction, so just use its URLLoaderFactory for those requests.
+      url_loader_factory_getter = get_frame_url_loader_factory_;
+    } else {
+      // Other URLs combine a base URL from the frame's Javascript and data from
+      // bidding interest groups, so use a (single) transient IsolationInfo for
+      // them, to prevent exposing data across sites.
+      if (isolation_info_for_seller_signals_.IsEmpty()) {
+        isolation_info_for_seller_signals_ =
+            net::IsolationInfo::CreateTransient();
+      }
+
+      new_request.trusted_params = network::ResourceRequest::TrustedParams();
+      new_request.trusted_params->isolation_info =
+          isolation_info_for_seller_signals_;
+      new_request.trusted_params->client_security_state =
+          client_security_state_.Clone();
+    }
   } else {
     // Treat this as a subresource request from the owner's origin, using the
     // trusted URLLoaderFactory.
@@ -118,7 +149,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   // TODO(mmenke): Investigate whether `devtools_observer` or
   // `report_raw_headers` should be set when devtools is open.
 
-  get_url_loader_factory_.Run()->CreateLoaderAndStart(
+  url_loader_factory_getter.Run()->CreateLoaderAndStart(
       std::move(receiver),
       // These are browser-initiated requests, so give them a browser request
       // ID. Extension APIs may expect these to be unique.
@@ -130,6 +161,19 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 void AuctionURLLoaderFactoryProxy::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
   NOTREACHED();
+}
+
+bool AuctionURLLoaderFactoryProxy::CouldBeTrustedSignalsUrl(
+    const GURL& url) const {
+  if (!trusted_signals_base_url_)
+    return false;
+  std::string full_prefix = base::StringPrintf(
+      "%s?hostname=%s&keys=", trusted_signals_base_url_->spec().c_str(),
+      top_frame_origin_.host().c_str());
+  if (!base::StartsWith(url.spec(), full_prefix, base::CompareCase::SENSITIVE))
+    return false;
+  return url.spec().find_first_of("&#=", full_prefix.size()) ==
+         std::string::npos;
 }
 
 }  // namespace content
