@@ -56,9 +56,9 @@ class StackingBarLabelButton : public PillButton {
         features::IsNotificationsRefreshEnabled()
             ? gfx::kPlaceholderColor
             : message_center_style::kUnifiedMenuButtonColorActive;
-    style_util::SetUpInkDropForButton(this, TrayPopupInkDropStyle::FILL_BOUNDS,
-                                      /*highlight_on_hover=*/true,
-                                      /*highlight_on_focus=*/true, bg_color);
+    StyleUtil::SetUpInkDropForButton(this, TrayPopupInkDropStyle::FILL_BOUNDS,
+                                     /*highlight_on_hover=*/true,
+                                     /*highlight_on_focus=*/true, bg_color);
   }
 
   StackingBarLabelButton(const StackingBarLabelButton&) = delete;

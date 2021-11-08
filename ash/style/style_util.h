@@ -5,31 +5,54 @@
 #ifndef ASH_STYLE_STYLE_UTIL_H_
 #define ASH_STYLE_STYLE_UTIL_H_
 
+#include "ash/ash_export.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ui/gfx/color_palette.h"
 
 namespace views {
 class Button;
+class View;
 }  // namespace views
 
 namespace ash {
 
-namespace style_util {
+class ASH_EXPORT StyleUtil {
+ public:
+  // InkDrop attributes that can be configured through
+  // ConfigureInkDropAttributes. Including the base color, inkdrop and highlight
+  // opacity.
+  enum InkDropAttributes {
+    kBaseColor = 1,
+    kInkDropOpacity = 1 << 1,
+    kHighlightOpacity = 1 << 2
+  };
 
-// TODO: Migrate the TrayPopupInkDropStyle to ash/style, remove
-// TrayPopupUtils::ConfigureTrayPopupButton and migrate all its clients to this
-// function.
-// Sets up the inkdrop for the given `button`. Including setting the callback
-// for InkDrop, Ripple, Highlight. Inside the callback functions, they will
-// setup whether to show the highlight on hover or focus, inkdrop color, opacity
-// etc.
-void SetUpInkDropForButton(views::Button* button,
-                           TrayPopupInkDropStyle style,
-                           bool highlight_on_hover,
-                           bool highlight_on_focus,
-                           SkColor bg_color = gfx::kPlaceholderColor);
+  // TODO: Migrate the TrayPopupInkDropStyle to ash/style, remove
+  // TrayPopupUtils::ConfigureTrayPopupButton and migrate all its clients to
+  // this function.
+  // Sets up the inkdrop for the given `button`. Including
+  // setting the callback for InkDrop, Ripple, Highlight. Inside the callback
+  // functions, they will setup whether to show the highlight on hover or focus,
+  // inkdrop color, opacity etc.
+  static void SetUpInkDropForButton(views::Button* button,
+                                    TrayPopupInkDropStyle style,
+                                    bool highlight_on_hover,
+                                    bool highlight_on_focus,
+                                    SkColor bg_color = gfx::kPlaceholderColor);
 
-}  // namespace style_util
+  // Configures the InkDropAttributes for the given `view` based on
+  // `attributes`. Note, `attributes` is a bitmask from InkDropAttributes.
+  static void ConfigureInkDropAttributes(
+      views::View* view,
+      uint32_t attributes,
+      SkColor bg_color = gfx::kPlaceholderColor);
+
+ private:
+  StyleUtil() = default;
+  StyleUtil(const StyleUtil&) = delete;
+  StyleUtil& operator=(const StyleUtil&) = delete;
+  ~StyleUtil() = default;
+};
 
 }  // namespace ash
 

@@ -16,10 +16,6 @@ class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
 
-namespace views {
-class InkDropHost;
-}  // namespace views
-
 namespace ash {
 class ColorModeObserver;
 
@@ -84,18 +80,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // Same as above, but returns the color based on the current inverted color
   // mode and color theme.
   SkColor GetInvertedBackgroundColor() const;
-
-  // Decorates the ink drop managed by `host`. `ink_drop_config_flags` is a
-  // bitmask which specifies the ink drop attributes to modify. `bg_color` is
-  // the background color of the UI element that wants to show ink drop.
-  enum InkDropConfigParam {
-    kConfigBaseColor = 1,
-    kConfigVisibleOpacity = 1 << 1,
-    kConfigHighlightOpacity = 1 << 2
-  };
-  void DecorateInkDrop(views::InkDropHost* host,
-                       int ink_drop_config_flags,
-                       SkColor bg_color = gfx::kPlaceholderColor);
 
   // Whether the system color mode is themed, by default is true. If true, the
   // background color will be calculated based on extracted wallpaper color.

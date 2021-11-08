@@ -29,6 +29,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
@@ -159,14 +160,12 @@ class SortUiControl : public views::ImageButton {
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    auto* inkdrop_host = views::InkDrop::Get(this);
-    AshColorProvider::Get()->DecorateInkDrop(
-        inkdrop_host, AshColorProvider::kConfigBaseColor |
-                          AshColorProvider::kConfigHighlightOpacity |
-                          AshColorProvider::kConfigHighlightOpacity);
+    StyleUtil::ConfigureInkDropAttributes(
+        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity |
+                  StyleUtil::kHighlightOpacity);
     views::InstallFixedSizeCircleHighlightPathGenerator(
         this, kSortUiControlPreferredSize / 2);
-    views::InkDrop::UseInkDropForFloodFillRipple(inkdrop_host,
+    views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                  /*highlight_on_hover=*/true,
                                                  /*highlight_on_focus=*/true);
   }

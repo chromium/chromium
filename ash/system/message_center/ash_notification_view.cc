@@ -660,10 +660,10 @@ AshNotificationView::GenerateNotificationLabelButton(
                                    /*icon=*/nullptr);
   // Override the inkdrop configuration to make sure it will show up when hover
   // or focus on the button.
-  style_util::SetUpInkDropForButton(actions_button.get(),
-                                    TrayPopupInkDropStyle::FILL_BOUNDS,
-                                    /*highlight_on_hover=*/true,
-                                    /*highlight_on_focus=*/true);
+  StyleUtil::SetUpInkDropForButton(actions_button.get(),
+                                   TrayPopupInkDropStyle::FILL_BOUNDS,
+                                   /*highlight_on_hover=*/true,
+                                   /*highlight_on_focus=*/true);
   return actions_button;
 }
 

@@ -8,11 +8,10 @@
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
-
-namespace style_util {
 
 namespace {
 
@@ -58,11 +57,12 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
 
 }  // namespace
 
-void SetUpInkDropForButton(views::Button* button,
-                           TrayPopupInkDropStyle ink_drop_style,
-                           bool highlight_on_hover,
-                           bool highlight_on_focus,
-                           SkColor bg_color) {
+// static
+void StyleUtil::SetUpInkDropForButton(views::Button* button,
+                                      TrayPopupInkDropStyle ink_drop_style,
+                                      bool highlight_on_hover,
+                                      bool highlight_on_focus,
+                                      SkColor bg_color) {
   button->SetInstallFocusRingOnFocus(true);
   views::InkDropHost* const ink_drop = views::InkDrop::Get(button);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -75,6 +75,22 @@ void SetUpInkDropForButton(views::Button* button,
       base::BindRepeating(&CreateInkDropHighlight, button, bg_color));
 }
 
-}  // namespace style_util
+// static
+void StyleUtil::ConfigureInkDropAttributes(views::View* view,
+                                           uint32_t ripple_config_attributes,
+                                           SkColor bg_color) {
+  const AshColorProvider::RippleAttributes ripple_attributes =
+      AshColorProvider::Get()->GetRippleAttributes(bg_color);
+
+  auto* host = views::InkDrop::Get(view);
+  if (ripple_config_attributes & kBaseColor)
+    host->SetBaseColor(ripple_attributes.base_color);
+
+  if (ripple_config_attributes & kInkDropOpacity)
+    host->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+
+  if (ripple_config_attributes & kHighlightOpacity)
+    host->SetHighlightOpacity(ripple_attributes.highlight_opacity);
+}
 
 }  // namespace ash

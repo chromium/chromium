@@ -24,7 +24,6 @@
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/views/animation/ink_drop_host_view.h"
 
 namespace ash {
 
@@ -234,22 +233,6 @@ SkColor AshColorProvider::GetBackgroundColor() const {
 SkColor AshColorProvider::GetInvertedBackgroundColor() const {
   return IsThemed() ? GetInvertedBackgroundThemedColor()
                     : GetInvertedBackgroundDefaultColor();
-}
-
-void AshColorProvider::DecorateInkDrop(views::InkDropHost* host,
-                                       int ink_drop_config_flags,
-                                       SkColor bg_color) {
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      GetRippleAttributes(bg_color);
-
-  if (ink_drop_config_flags & kConfigBaseColor)
-    host->SetBaseColor(ripple_attributes.base_color);
-
-  if (ink_drop_config_flags & kConfigVisibleOpacity)
-    host->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
-
-  if (ink_drop_config_flags & kConfigHighlightOpacity)
-    host->SetHighlightOpacity(ripple_attributes.highlight_opacity);
 }
 
 void AshColorProvider::AddObserver(ColorModeObserver* observer) {
