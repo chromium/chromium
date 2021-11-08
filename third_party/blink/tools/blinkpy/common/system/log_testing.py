@@ -67,7 +67,7 @@ class TestLogStream(object):
 
     def assertMessages(self, messages):
         """Asserts that the given messages match the logged messages."""
-        self._test_case.assertEqual(messages, self.messages)
+        self._test_case.assertEqual(sorted(messages), sorted(self.messages))
 
 
 class LogTesting(object):

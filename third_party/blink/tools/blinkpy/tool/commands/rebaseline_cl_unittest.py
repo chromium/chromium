@@ -598,11 +598,12 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         test_baseline_set.add('one/flaky-fail.html', Build('MOCK Bar4', 200))
         self.command.fill_in_missing_results(test_baseline_set)
         self.assertEqual(
-            test_baseline_set.build_port_pairs('one/flaky-fail.html'), [
-                (Build('MOCK Foo12', 100), 'foo-foo12'),
-                (Build('MOCK Bar4', 200), 'bar-bar4'),
-                (Build('MOCK Foo12', 100), 'foo-foo45'),
+            sorted(test_baseline_set.build_port_pairs('one/flaky-fail.html')),
+            [
                 (Build('MOCK Bar4', 200), 'bar-bar3'),
+                (Build('MOCK Bar4', 200), 'bar-bar4'),
+                (Build('MOCK Foo12', 100), 'foo-foo12'),
+                (Build('MOCK Foo12', 100), 'foo-foo45'),
             ])
         self.assertLog([
             'INFO: For one/flaky-fail.html:\n',

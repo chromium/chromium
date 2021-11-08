@@ -60,11 +60,12 @@ class HelpCommand(Command):
             relevant_commands = self._tool.commands[:]
         else:
             epilog = 'Common %prog commands:\n'
-            relevant_commands = filter(self._tool.should_show_in_main_help,
-                                       self._tool.commands)
+            relevant_commands = list(
+                filter(self._tool.should_show_in_main_help,
+                       self._tool.commands))
         longest_name_length = max(
             len(command.name) for command in relevant_commands)
-        relevant_commands.sort(lambda a, b: cmp(a.name, b.name))
+        relevant_commands.sort(key=lambda a: a.name)
         command_help_texts = [
             '   %s   %s\n' % (command.name.ljust(longest_name_length),
                               command.help_text)
