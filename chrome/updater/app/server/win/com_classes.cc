@@ -5,6 +5,8 @@
 #include "chrome/updater/app/server/win/com_classes.h"
 
 #include <wchar.h>
+#include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -21,6 +23,7 @@
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/win/win_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -221,6 +224,53 @@ HRESULT UpdaterImpl::RunPeriodicTasks(IUpdaterCallback* callback) {
   return S_OK;
 }
 
+namespace {
+
+// Filters the download progress events to avoid spamming the RPC client
+// with too many download progress notifications. The filter only notifies
+// the client at most once for every unit of download progress made.
+//
+// The instance of this class is owned by the repeating callback which is
+// invoking `OnStateChange`.
+class StateChangeCallbackFilter {
+ public:
+  StateChangeCallbackFilter(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      Microsoft::WRL::ComPtr<IUpdaterObserver> observer)
+      : task_runner_(task_runner), observer_(observer) {}
+  StateChangeCallbackFilter(const StateChangeCallbackFilter&) = delete;
+  StateChangeCallbackFilter& operator=(const StateChangeCallbackFilter&) =
+      delete;
+
+  void OnStateChange(const UpdateService::UpdateState& update_state) {
+    int cur_progress = GetDownloadProgress(update_state.downloaded_bytes,
+                                           update_state.total_bytes);
+    if (update_state.state == UpdateService::UpdateState::State::kDownloading &&
+        progress_seen_ && *progress_seen_ == cur_progress) {
+      return;
+    }
+    progress_seen_ = cur_progress;
+    task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&IUpdaterObserver::OnStateChange, observer_,
+                       Microsoft::WRL::Make<UpdateStateImpl>(update_state)),
+        base::BindOnce([](HRESULT hr) {
+          DVLOG(4) << "IUpdaterObserver::OnStateChange returned " << std::hex
+                   << hr;
+        }));
+  }
+
+ private:
+  // Calls the COM function IUpdaterObserver::OnStateChange on `observer_`.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  Microsoft::WRL::ComPtr<IUpdaterObserver> observer_;
+
+  // Most recent download progress value the client has been notified about.
+  absl::optional<int> progress_seen_;
+};
+
+}  // namespace
+
 // Called by the COM RPC runtime on one of its threads. Invokes the in-process
 // `update_service` on the main sequence. The callbacks received from
 // `update_service` arrive in the main sequence too. Since handling these
@@ -228,40 +278,27 @@ HRESULT UpdaterImpl::RunPeriodicTasks(IUpdaterCallback* callback) {
 // calls must be done through a task runner, bound to the closures provided
 // as parameters for the UpdateService::Update call.
 HRESULT UpdaterImpl::Update(const wchar_t* app_id, IUpdaterObserver* observer) {
-  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
-  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
-
   // This task runner is responsible for sequencing the callbacks posted
   // by the `UpdateService` and calling the outbound COM functions to
   // notify the client about state changes in the `UpdateService`.
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
+  using IUpdaterObserverPtr = Microsoft::WRL::ComPtr<IUpdaterObserver>;
+  auto observer_local = IUpdaterObserverPtr(observer);
+
+  scoped_refptr<ComServerApp> com_server = AppServerSingletonInstance();
   com_server->main_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<UpdateService> update_service,
              scoped_refptr<base::SequencedTaskRunner> task_runner,
-             const std::string app_id, IUpdaterObserverPtr observer) {
+             const std::string& app_id, IUpdaterObserverPtr observer) {
             update_service->Update(
                 app_id, UpdateService::Priority::kForeground,
-                base::BindRepeating(
-                    [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                       IUpdaterObserverPtr observer,
-                       const UpdateService::UpdateState& update_state) {
-                      task_runner->PostTaskAndReplyWithResult(
-                          FROM_HERE,
-                          base::BindOnce(&IUpdaterObserver::OnStateChange,
-                                         observer,
-                                         Microsoft::WRL::Make<UpdateStateImpl>(
-                                             update_state)),
-                          base::BindOnce([](HRESULT hr) {
-                            DVLOG(4)
-                                << "IUpdaterObserver::OnStateChange returned "
-                                << std::hex << hr;
-                          }));
-                    },
-                    task_runner, observer),
+                base::BindRepeating(&StateChangeCallbackFilter::OnStateChange,
+                                    base::Owned(new StateChangeCallbackFilter(
+                                        task_runner, observer))),
                 base::BindOnce(
                     [](scoped_refptr<base::SequencedTaskRunner> task_runner,
                        IUpdaterObserverPtr observer,
@@ -280,7 +317,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id, IUpdaterObserver* observer) {
                     task_runner, observer));
           },
           com_server->update_service(), task_runner, base::WideToUTF8(app_id),
-          IUpdaterObserverPtr(observer)));
+          observer_local));
 
   // Always return S_OK from this function. Errors must be reported using the
   // observer interface.
