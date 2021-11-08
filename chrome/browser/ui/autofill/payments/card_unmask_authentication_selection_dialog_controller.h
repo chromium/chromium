@@ -30,8 +30,11 @@ class CardUnmaskAuthenticationSelectionDialogController {
   // Called whenever the dialog is closed, and it sets the |dialog_view_|
   // variable in this class to nullptr. If |user_closed_dialog| is true it means
   // the user has cancelled the flow or closed the tab/browser. The backend
-  // status will need to be reset.
-  virtual void OnDialogClosed(bool user_closed_dialog) = 0;
+  // status will need to be reset. If |server_success| is true it means the
+  // Payments server has responded with a success response to the current flow's
+  // step. For example, in the SMS OTP flow, it would signify the issuer has
+  // sent the OTP, and we can move on to the OTP Input Dialog.
+  virtual void OnDialogClosed(bool user_closed_dialog, bool server_success) = 0;
 
   // Event handler function. Invoked when the OK button is clicked.
   virtual void OnOkButtonClicked(

@@ -313,6 +313,31 @@ class AutofillMetrics {
     kMaxValue = OFFER_NOTIFICATION_INFOBAR_IGNORED,
   };
 
+  // Metrics to track events in CardUnmaskAuthenticationSelectionDialog.
+  enum class CardUnmaskAuthenticationSelectionDialogResultMetric {
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+
+    // Default value, should never be used.
+    kUnknown = 0,
+    // User canceled the dialog before selecting a challenge option.
+    kCanceledByUserBeforeSelection = 1,
+    // User canceled the dialog after selecting a challenge option, while the
+    // dialog was in a pending state.
+    kCanceledByUserAfterSelection = 2,
+    // Server success after user chose a challenge option. For instance, in the
+    // SMS OTP case, a server success indicates that the server successfully
+    // requested the issuer to send an OTP, and we can move on to the next step
+    // in this flow.
+    kDismissedByServerRequestSuccess = 3,
+    // Server failure after user chose a challenge option. For instance, in the
+    // SMS OTP case, a server failure indicates that the server unsuccessfully
+    // requested the issuer to send an OTP, and we can not move on to the next
+    // step in this flow.
+    kDismissedByServerRequestFailure = 4,
+    kMaxValue = kDismissedByServerRequestFailure,
+  };
+
   enum CreditCardUploadFeedbackMetric {
     // The loading indicator animation which indicates uploading is in progress
     // is successfully shown.
@@ -1278,6 +1303,15 @@ class AutofillMetrics {
   // user accepts upload, logs whether the final cardholder name was changed
   // from its prefilled value or not.
   static void LogSaveCardCardholderNameWasEdited(bool edited);
+
+  // When the Card Unmask Authentication Selection Dialog is shown, logs the
+  // result of what the user did with the dialog.
+  static void LogCardUnmaskAuthenticationSelectionDialogResultMetric(
+      CardUnmaskAuthenticationSelectionDialogResultMetric metric);
+
+  // Logs true every time the Card Unmask Authentication Selection Dialog is
+  // shown.
+  static void LogCardUnmaskAuthenticationSelectionDialogShown();
 
   // |upload_decision_metrics| is a bitmask of |CardUploadDecisionMetric|.
   static void LogCardUploadDecisionMetrics(int upload_decision_metrics);

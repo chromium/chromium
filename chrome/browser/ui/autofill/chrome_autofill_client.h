@@ -97,7 +97,7 @@ class ChromeAutofillClient
       base::OnceCallback<void(const std::string&)>
           confirm_unmask_challenge_option_callback,
       base::OnceClosure cancel_unmasking_closure) override;
-  void DismissUnmaskAuthenticatorSelectionDialog() override;
+  void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
 #if !defined(OS_ANDROID)
   std::vector<std::string> GetAllowedMerchantsForVirtualCards() override;
   std::vector<std::string> GetAllowedBinRangesForVirtualCards() override;

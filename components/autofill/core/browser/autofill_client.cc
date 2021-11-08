@@ -68,7 +68,8 @@ void AutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }
 
-void AutofillClient::DismissUnmaskAuthenticatorSelectionDialog() {
+void AutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
+    bool server_success) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
 }

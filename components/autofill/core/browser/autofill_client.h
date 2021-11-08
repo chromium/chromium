@@ -405,8 +405,11 @@ class AutofillClient : public RiskDataLoader {
       base::OnceClosure cancel_unmasking_closure);
   // This should be invoked upon server accepting the authentication method, in
   // which case, we dismiss the selection dialog to open the authentication
-  // dialog.
-  virtual void DismissUnmaskAuthenticatorSelectionDialog();
+  // dialog. |server_success| dictates whether we received a success response
+  // from the server, with true representing success and false representing
+  // failure. A successful server response means that the issuer has sent an OTP
+  // and we can move on to the next portion of this flow.
+  virtual void DismissUnmaskAuthenticatorSelectionDialog(bool server_success);
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
   // Returns the list of allowed merchants and BIN ranges for virtual cards.

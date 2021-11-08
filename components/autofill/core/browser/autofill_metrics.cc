@@ -877,6 +877,21 @@ void AutofillMetrics::LogSaveCardCardholderNameWasEdited(bool edited) {
 }
 
 // static
+void AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogResultMetric(
+    CardUnmaskAuthenticationSelectionDialogResultMetric metric) {
+  DCHECK_LE(metric,
+            CardUnmaskAuthenticationSelectionDialogResultMetric::kMaxValue);
+  base::UmaHistogramEnumeration(
+      "Autofill.CardUnmaskAuthenticationSelectionDialog.Result", metric);
+}
+
+// static
+void AutofillMetrics::LogCardUnmaskAuthenticationSelectionDialogShown() {
+  base::UmaHistogramBoolean(
+      "Autofill.CardUnmaskAuthenticationSelectionDialog.Shown", true);
+}
+
+// static
 void AutofillMetrics::LogCardUploadDecisionMetrics(
     int upload_decision_metrics) {
   DCHECK(upload_decision_metrics);

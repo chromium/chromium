@@ -44,7 +44,8 @@ CardUnmaskAuthenticationSelectionDialogViews::
   // called, the |controller_| will not be nullptr only if the dialog is closed
   // by the user. For other cases, the |controller_| should already be reset.
   if (controller_) {
-    controller_->OnDialogClosed(/*user_closed_dialog=*/true);
+    controller_->OnDialogClosed(/*user_closed_dialog=*/true,
+                                /*server_success=*/false);
     controller_ = nullptr;
   }
 }
@@ -61,9 +62,10 @@ CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
 }
 
 void CardUnmaskAuthenticationSelectionDialogViews::Dismiss(
-    bool user_closed_dialog) {
+    bool user_closed_dialog,
+    bool server_success) {
   if (controller_) {
-    controller_->OnDialogClosed(user_closed_dialog);
+    controller_->OnDialogClosed(user_closed_dialog, server_success);
     controller_ = nullptr;
   }
   GetWidget()->Close();
