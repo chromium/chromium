@@ -14,16 +14,19 @@
 namespace account_manager {
 class AccountManagerFacade;
 class AccountManager;
+class AccountManagerUI;
 }  // namespace account_manager
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Create a new instance of `account_manager::AccountManager` for tests. Should
 // be called before the first call to `GetAccountManagerFacade()`. After this
 // call `GetAccountManagerFacade()` will be returning an instance that is
-// connected to `AccountManagerMojoService`.
+// connected to `AccountManagerMojoService` and `AccountManagerMojoService` will
+// delegate all UI tasks to `account_manager_ui`.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) ScopedAshAccountManagerForTests {
  public:
-  ScopedAshAccountManagerForTests();
+  explicit ScopedAshAccountManagerForTests(
+      std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui);
   ~ScopedAshAccountManagerForTests();
 
   ScopedAshAccountManagerForTests(const ScopedAshAccountManagerForTests&) =
@@ -46,6 +49,11 @@ account_manager::AccountManagerFacade* COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 // otherwise return `nullptr`.
 account_manager::AccountManager* COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
     MaybeGetAshAccountManagerForTests();
+
+// Return a `AccountManagerUI` instance if it was created for tests,
+// otherwise return `nullptr`.
+account_manager::AccountManagerUI* COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+    MaybeGetAshAccountManagerUIForTests();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_FACADE_FACTORY_H_

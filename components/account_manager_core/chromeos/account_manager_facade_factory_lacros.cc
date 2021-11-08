@@ -36,12 +36,16 @@ mojo::Remote<crosapi::mojom::AccountManager> GetAccountManagerRemote() {
 
 class AccountManagerFacadeFactoryLacros {
  public:
-  void CreateAshAccountManagerForTests() {
+  void CreateAshAccountManagerForTests(
+      std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui) {
     Reset();
     ash_account_manager_ = std::make_unique<account_manager::AccountManager>();
     account_manager_mojo_service_ =
         std::make_unique<crosapi::AccountManagerMojoService>(
             ash_account_manager_.get());
+    account_manager_ui_ = account_manager_ui.get();
+    account_manager_mojo_service_->SetAccountManagerUI(
+        std::move(account_manager_ui));
   }
 
   account_manager::AccountManagerFacadeImpl* GetAccountManagerFacade() {
@@ -55,6 +59,10 @@ class AccountManagerFacadeFactoryLacros {
     return ash_account_manager_.get();
   }
 
+  account_manager::AccountManagerUI* MaybeGetAshAccountManagerUIForTests() {
+    return account_manager_ui_;
+  }
+
   // Reset the pointers.
   void Reset() {
     // AccountManagerFacade depends on AccountManagerMojoService.
@@ -62,6 +70,7 @@ class AccountManagerFacadeFactoryLacros {
     // AccountManagerMojoService depends on AccountManager.
     account_manager_mojo_service_.reset();
     ash_account_manager_.reset();
+    account_manager_ui_ = nullptr;
   }
 
  private:
@@ -92,10 +101,13 @@ class AccountManagerFacadeFactoryLacros {
 
   std::unique_ptr<account_manager::AccountManagerFacadeImpl>
       account_manager_facade_;
+
   // Set only in tests:
   std::unique_ptr<account_manager::AccountManager> ash_account_manager_;
   std::unique_ptr<crosapi::AccountManagerMojoService>
       account_manager_mojo_service_;
+  // Owned by `account_manager_mojo_service_`:
+  account_manager::AccountManagerUI* account_manager_ui_ = nullptr;
 };
 
 AccountManagerFacadeFactoryLacros* GetAccountManagerFacadeFactoryLacros() {
@@ -105,11 +117,12 @@ AccountManagerFacadeFactoryLacros* GetAccountManagerFacadeFactoryLacros() {
 
 }  // namespace
 
-ScopedAshAccountManagerForTests::ScopedAshAccountManagerForTests() {
+ScopedAshAccountManagerForTests::ScopedAshAccountManagerForTests(
+    std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui) {
   DCHECK(!MaybeGetAshAccountManagerForTests())  // IN-TEST
       << "Nested ScopedAshAccountManagerForTests are not supported.";
-  GetAccountManagerFacadeFactoryLacros()
-      ->CreateAshAccountManagerForTests();  // IN-TEST
+  GetAccountManagerFacadeFactoryLacros()->CreateAshAccountManagerForTests(
+      std::move(account_manager_ui));  // IN-TEST
 }
 
 ScopedAshAccountManagerForTests::~ScopedAshAccountManagerForTests() {
@@ -125,4 +138,9 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
 account_manager::AccountManager* MaybeGetAshAccountManagerForTests() {
   return GetAccountManagerFacadeFactoryLacros()
       ->MaybeGetAshAccountManagerForTests();  // IN-TEST
+}
+
+account_manager::AccountManagerUI* MaybeGetAshAccountManagerUIForTests() {
+  return GetAccountManagerFacadeFactoryLacros()
+      ->MaybeGetAshAccountManagerUIForTests();  // IN-TEST
 }

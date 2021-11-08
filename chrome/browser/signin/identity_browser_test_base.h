@@ -13,6 +13,10 @@ namespace content {
 class BrowserMainParts;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class FakeAccountManagerUI;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 // Base class for browser tests that depend on AccountManager on Lacros - e.g.
 // tests that manage accounts by calling methods like
 // `signin::MakePrimaryAccountAvailable` from identity_test_utils.
@@ -24,6 +28,10 @@ class IdentityBrowserTestBase : public InProcessBrowserTest {
   IdentityBrowserTestBase(const IdentityBrowserTestBase&) = delete;
   IdentityBrowserTestBase& operator=(const IdentityBrowserTestBase&) = delete;
   ~IdentityBrowserTestBase() override = default;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  FakeAccountManagerUI* GetFakeAccountManagerUI() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  protected:
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;

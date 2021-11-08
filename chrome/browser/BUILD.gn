@@ -7620,6 +7620,10 @@ static_library("test_support") {
     ]
   }
 
+  if (is_chromeos) {
+    deps += [ "//components/account_manager_core:test_support" ]
+  }
+
   if (is_win) {
     sources += [
       "notifications/win/fake_itoastnotification.cc",
