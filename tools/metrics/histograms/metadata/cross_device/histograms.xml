@@ -1604,7 +1604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result"
-    enum="BooleanSuccess" expires_after="2022-04-17">
+    enum="BooleanSuccess" expires_after="2022-06-01">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result of trying to find eligible devices.</summary>
@@ -1613,7 +1613,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result.FailureReason"
     enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
-    expires_after="2021-12-12">
+    expires_after="2022-06-01">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1624,7 +1624,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceEnrollmentNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2022-02-02">
+    expires_after="2022-06-01">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result for when ForceEnrollmentNow is called.</summary>
@@ -1632,7 +1632,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceSyncNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2022-05-01">
+    expires_after="2022-06-01">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result for when ForceSyncNow is called.</summary>
@@ -1640,7 +1640,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Disable.FailedFeature"
-    enum="MultiDevice_DeviceSyncService_Features" expires_after="2021-12-12">
+    enum="MultiDevice_DeviceSyncService_Features" expires_after="2022-06-01">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1650,14 +1650,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Enable.FailedFeature"
-    enum="MultiDevice_DeviceSyncService_Features" expires_after="2021-12-12">
+    enum="MultiDevice_DeviceSyncService_Features" expires_after="2022-06-01">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Breaks down which features failed when attempted to enable.</summary>
 </histogram>
 
 <histogram name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result"
-    enum="BooleanSuccess" expires_after="2022-03-20">
+    enum="BooleanSuccess" expires_after="2022-06-01">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result of enabling and disabling features for devices.</summary>
@@ -1666,7 +1666,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result.FailureReason"
     enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
-    expires_after="2021-12-12">
+    expires_after="2022-06-01">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
