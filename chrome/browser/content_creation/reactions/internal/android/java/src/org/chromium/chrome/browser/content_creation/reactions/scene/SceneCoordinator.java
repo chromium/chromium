@@ -184,28 +184,33 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
     @Override
     public void duplicateReaction(ReactionLayout reactionLayout) {
-        ReactionLayout newReactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
-                mActivity, R.layout.reaction_layout, null);
-        newReactionLayout.init(reactionLayout.getReaction(), this);
+        ReactionMetadata reaction = reactionLayout.getReaction().getMetadata();
+        mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
+            ReactionLayout newReactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
+                    mActivity, R.layout.reaction_layout, null);
+            ReactionGifDrawable drawable =
+                    new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888);
+            newReactionLayout.init(drawable, this);
 
-        RelativeLayout.LayoutParams oldLayoutParams =
-                (RelativeLayout.LayoutParams) reactionLayout.getLayoutParams();
-        RelativeLayout.LayoutParams newLayoutParams =
-                new RelativeLayout.LayoutParams(reactionLayout.getLayoutParams());
-        int offsetPx = ViewUtils.dpToPx(mActivity, REACTION_OFFSET_DP);
-        newLayoutParams.leftMargin = oldLayoutParams.leftMargin + offsetPx;
-        newLayoutParams.topMargin = oldLayoutParams.topMargin + offsetPx;
-        newLayoutParams.rightMargin = oldLayoutParams.rightMargin + offsetPx;
-        newLayoutParams.bottomMargin = oldLayoutParams.bottomMargin + offsetPx;
-        newReactionLayout.setRotation(reactionLayout.getRotation());
+            RelativeLayout.LayoutParams oldLayoutParams =
+                    (RelativeLayout.LayoutParams) reactionLayout.getLayoutParams();
+            RelativeLayout.LayoutParams newLayoutParams =
+                    new RelativeLayout.LayoutParams(reactionLayout.getLayoutParams());
+            int offsetPx = ViewUtils.dpToPx(mActivity, REACTION_OFFSET_DP);
+            newLayoutParams.leftMargin = oldLayoutParams.leftMargin + offsetPx;
+            newLayoutParams.topMargin = oldLayoutParams.topMargin + offsetPx;
+            newLayoutParams.rightMargin = oldLayoutParams.rightMargin + offsetPx;
+            newLayoutParams.bottomMargin = oldLayoutParams.bottomMargin + offsetPx;
+            newReactionLayout.setRotation(reactionLayout.getRotation());
 
-        if (isOutOfBoundsToTheBottomRight(newLayoutParams, reactionLayout.getRotation())) {
-            newLayoutParams.leftMargin = oldLayoutParams.leftMargin - offsetPx;
-            newLayoutParams.topMargin = oldLayoutParams.topMargin - offsetPx;
-            newLayoutParams.rightMargin = oldLayoutParams.rightMargin - offsetPx;
-            newLayoutParams.bottomMargin = oldLayoutParams.bottomMargin - offsetPx;
-        }
-        addReactionLayoutToScene(newReactionLayout, newLayoutParams);
+            if (isOutOfBoundsToTheBottomRight(newLayoutParams, reactionLayout.getRotation())) {
+                newLayoutParams.leftMargin = oldLayoutParams.leftMargin - offsetPx;
+                newLayoutParams.topMargin = oldLayoutParams.topMargin - offsetPx;
+                newLayoutParams.rightMargin = oldLayoutParams.rightMargin - offsetPx;
+                newLayoutParams.bottomMargin = oldLayoutParams.bottomMargin - offsetPx;
+            }
+            addReactionLayoutToScene(newReactionLayout, newLayoutParams);
+        });
     }
 
     @Override
