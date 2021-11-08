@@ -168,6 +168,36 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
+    public void continueButtonClickShowsSearchEnginePageWhenItIsEnabled() {
+        when(mLocalManagerDelegateMock.getSearchEnginePromoShowType())
+                .thenReturn(SearchEnginePromoType.SHOW_NEW);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivity();
+        ensureCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
+
+        clickButton(R.id.signin_fre_continue_button);
+
+        ensureCurrentPageIs(DefaultSearchEngineFirstRunFragment.class);
+    }
+
+    @Test
+    @MediumTest
+    public void dismissButtonClickShowsSearchEnginePageWhenItIsEnabled() {
+        when(mLocalManagerDelegateMock.getSearchEnginePromoShowType())
+                .thenReturn(SearchEnginePromoType.SHOW_NEW);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        launchFirstRunActivity();
+        ensureCurrentPageIs(SigninFirstRunFragment.class);
+        onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
+
+        clickButton(R.id.signin_fre_dismiss_button);
+
+        ensureCurrentPageIs(DefaultSearchEngineFirstRunFragment.class);
+    }
+
+    @Test
+    @MediumTest
     public void acceptingSyncShowsDataReductionPage() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
