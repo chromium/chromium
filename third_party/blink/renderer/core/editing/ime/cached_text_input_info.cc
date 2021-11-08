@@ -188,10 +188,13 @@ PlainTextRange CachedTextInputInfo::GetPlainTextRange(
       range.IsCollapsed()
           ? start_offset
           : RangeLength(EphemeralRange(container_start, range.EndPosition()));
+// TODO(crbug.com/1256635): This DCHECK is triggered by Crostini on CrOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK_EQ(
       static_cast<unsigned>(TextIterator::RangeLength(
           EphemeralRange(container_start, range.EndPosition()), Behavior())),
       end_offset);
+#endif
   return PlainTextRange(start_offset, end_offset);
 }
 
