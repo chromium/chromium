@@ -1186,10 +1186,6 @@ void WizardController::SkipToLoginForTesting() {
   OnDeviceDisabledChecked(false /* device_disabled */);
 }
 
-void WizardController::EndOnboardingAfterToS() {
-  wizard_context_->end_onboarding_after_tos = true;
-}
-
 void WizardController::OnScreenExit(OobeScreenId screen,
                                     const std::string& exit_reason) {
   VLOG(1) << "Wizard screen " << screen
@@ -1548,11 +1544,12 @@ void WizardController::OnTermsOfServiceScreenExit(
   switch (result) {
     case TermsOfServiceScreen::Result::ACCEPTED:
     case TermsOfServiceScreen::Result::NOT_APPLICABLE:
-      if (wizard_context_->end_onboarding_after_tos) {
+      if (wizard_context_->screen_after_managed_tos ==
+          OobeScreen::SCREEN_UNKNOWN) {
         OnOobeFlowFinished();
         return;
       }
-      ShowFamilyLinkNoticeScreen();
+      AdvanceToScreen(wizard_context_->screen_after_managed_tos);
       break;
     case TermsOfServiceScreen::Result::DECLINED:
       // End the session and return to the login screen.
@@ -1906,15 +1903,20 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   screen_show_times_[new_current->screen_id()] = base::TimeTicks::Now();
 
   // First remember how far have we reached so that we can resume if needed.
-  if (is_out_of_box_ && !demo_setup_controller_ &&
-      IsResumableOobeScreen(current_screen_->screen_id())) {
-    StartupUtils::SaveOobePendingScreen(current_screen_->screen_id().name);
-  } else if (!demo_setup_controller_ &&
-             IsResumablePostLoginScreen(current_screen_->screen_id())) {
-    user_manager::KnownUser(GetLocalState())
-        .SetPendingOnboardingScreen(
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
-            current_screen_->screen_id().name);
+  if (!demo_setup_controller_) {
+    if (is_out_of_box_ && IsResumableOobeScreen(current_screen_->screen_id())) {
+      StartupUtils::SaveOobePendingScreen(current_screen_->screen_id().name);
+    } else if (IsResumablePostLoginScreen(current_screen_->screen_id()) &&
+               wizard_context_->screen_after_managed_tos !=
+                   OobeScreen::SCREEN_UNKNOWN) {
+      // If screen_after_managed_tos == SCREEN_UNKNOWN means that the onboarding
+      // has already been finished by the user and we don't need to save the
+      // state here.
+      user_manager::KnownUser(GetLocalState())
+          .SetPendingOnboardingScreen(
+              user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
+              current_screen_->screen_id().name);
+    }
   }
 
   UpdateStatusAreaVisibilityForScreen(current_screen_->screen_id());

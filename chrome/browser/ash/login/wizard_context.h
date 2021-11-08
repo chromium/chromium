@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/values.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chromeos/login/auth/user_context.h"
 
@@ -61,11 +62,6 @@ class WizardContext {
   // when screen is skipped or when cancel action is called.
   bool is_user_creation_enabled = false;
 
-  // Whether to exit WizardController right after accepting the terms of
-  // service. Set by WizardController::EndOnboardingAfterToS. Used for showing
-  // terms of service screen to managed users before entering the session.
-  bool end_onboarding_after_tos = false;
-
   // When --tpm-is-dynamic switch is set TPM ownership check is happening
   // right before enrollment. If TPM is owned TpmErrorScreen occurs and this
   // flag helps to set right error message.
@@ -78,6 +74,13 @@ class WizardContext {
   // another possible auth factor. Can be empty (if PIN is not supported).
   // In future will be replaced by AuthSession.
   std::unique_ptr<UserContext> extra_factors_auth_session;
+
+  // If the onboarding flow wasn't completed by the user we will try to show
+  // TermsOfServiceScreen to them first and then continue the flow with this
+  // screen. If the user has already completed onboarding, but
+  // TermsOfServiceScreen should be shown on login this will be set to
+  // OobeScreen::SCREEN_UNKNOWN.
+  OobeScreenId screen_after_managed_tos;
 };
 
 }  // namespace ash
