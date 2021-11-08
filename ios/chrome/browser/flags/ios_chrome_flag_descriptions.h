@@ -183,10 +183,6 @@ extern const char kEnableLongMessageDurationDescription[];
 extern const char kEnableManualPasswordGenerationName[];
 extern const char kEnableManualPasswordGenerationDescription[];
 
-// Title and description for the flag to enable the NTP memory enhancements.
-extern const char kEnableNTPMemoryEnhancementName[];
-extern const char kEnableNTPMemoryEnhancementDescription[];
-
 // Title and description for the flag to enable optimization guide.
 extern const char kEnableOptimizationGuideName[];
 extern const char kEnableOptimizationGuideDescription[];

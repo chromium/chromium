@@ -211,10 +211,6 @@ const char kEnableManualPasswordGenerationDescription[] =
     "Enable UI that allows to generate a strong password for any password "
     "field";
 
-const char kEnableNTPMemoryEnhancementName[] = "Enable NTP Memory Enhancement";
-const char kEnableNTPMemoryEnhancementDescription[] =
-    "NTP will consume less memory.";
-
 const char kEnableOptimizationGuideName[] = "Enable optimization guide";
 const char kEnableOptimizationGuideDescription[] =
     "Enables the optimization guide to provide intelligence for page loads.";

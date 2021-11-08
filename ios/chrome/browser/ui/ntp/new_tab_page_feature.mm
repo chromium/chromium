@@ -19,9 +19,6 @@ const base::Feature kEnableDiscoverFeedAppFlows{
 const base::Feature kEnableDiscoverFeedShorterCache{
     "EnableDiscoverFeedShorterCache", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableNTPMemoryEnhancement{
-    "EnableNTPMemoryEnhancement", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kEnableDiscoverFeedDiscoFeedEndpoint{
     "EnableDiscoFeedEndpoint", base::FEATURE_DISABLED_BY_DEFAULT};
 

@@ -14,9 +14,6 @@ extern const base::Feature kEnableDiscoverFeedPreview;
 // Feature flag to enable shorter cache so that more ghost cards appear.
 extern const base::Feature kEnableDiscoverFeedShorterCache;
 
-// Feature flag to enable improving the usage of memory of the NTP.
-extern const base::Feature kEnableNTPMemoryEnhancement;
-
 // Feature flag to enable static resource serving for the Discover feed.
 extern const base::Feature kEnableDiscoverFeedStaticResourceServing;
 
