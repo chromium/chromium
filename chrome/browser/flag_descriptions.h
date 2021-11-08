@@ -2454,6 +2454,12 @@ extern const char kCrostiniUseLxd4Description[];
 extern const char kCrostiniMultiContainerName[];
 extern const char kCrostiniMultiContainerDescription[];
 
+extern const char kCrostiniImeSupportName[];
+extern const char kCrostiniImeSupportDescription[];
+
+extern const char kCrostiniVirtualKeyboardSupportName[];
+extern const char kCrostiniVirtualKeyboardSupportDescription[];
+
 extern const char kDisableBufferBWCompressionName[];
 extern const char kDisableBufferBWCompressionDescription[];
 
