@@ -61,12 +61,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDelegate.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerMediator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerProperties.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/ExistingAccountRowViewBinder.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/OnClickListenerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/account_picker/WebSigninAccountPickerDelegate.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/FreUMADialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunMediator.java",
@@ -136,8 +136,8 @@ android_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/signin/SignOutDialogFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SigninPromoControllerTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/SigninPromoUtilLaunchSigninPromoTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerDelegateImplTest.java",
     "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/signin/account_picker/WebSigninAccountPickerDelegateTest.java",
   ]
   deps = [
     ":java",

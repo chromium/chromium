@@ -47,10 +47,10 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
- * This class tests the {@link AccountPickerDelegateImpl}.
+ * This class tests the {@link WebSigninAccountPickerDelegate}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AccountPickerDelegateImplTest {
+public class WebSigninAccountPickerDelegateTest {
     private static final String CONTINUE_URL = "https://test-continue-url.com";
     private static final String TEST_EMAIL = "test.account@gmail.com";
 
@@ -88,7 +88,7 @@ public class AccountPickerDelegateImplTest {
     @Captor
     private ArgumentCaptor<WebSigninBridge.Listener> mWebSigninBridgeListenerCaptor;
 
-    private AccountPickerDelegateImpl mDelegate;
+    private WebSigninAccountPickerDelegate mDelegate;
 
     private CoreAccountInfo mCoreAccountInfo;
 
@@ -102,8 +102,8 @@ public class AccountPickerDelegateImplTest {
 
         mCoreAccountInfo = mAccountManagerTestRule.addAccount(TEST_EMAIL);
 
-        mDelegate =
-                new AccountPickerDelegateImpl(mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
+        mDelegate = new WebSigninAccountPickerDelegate(
+                mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
         when(mWebSigninBridgeFactoryMock.create(eq(mProfileMock), any(), any()))
                 .thenReturn(mWebSigninBridgeMock);
     }

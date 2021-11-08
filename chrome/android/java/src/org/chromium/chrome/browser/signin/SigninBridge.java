@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
-import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegateImpl;
+import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninAccountPickerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -113,7 +113,7 @@ final class SigninBridge {
         final TabModel regularTabModel =
                 tabModelSelectorSupplier.get().getModel(/*incognito=*/false);
         new AccountPickerBottomSheetCoordinator(windowAndroid, bottomSheetController,
-                new AccountPickerDelegateImpl(TabModelUtils.getCurrentTab(regularTabModel),
+                new WebSigninAccountPickerDelegate(TabModelUtils.getCurrentTab(regularTabModel),
                         new WebSigninBridge.Factory(), continueUrl));
     }
 

@@ -23,8 +23,8 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.content_public.browser.LoadUrlParams;
 
-/** TODO(crbug.com/1219434): Rename to WebSigninAccountPickerDelegate and update docs. */
-public class AccountPickerDelegateImpl implements AccountPickerDelegate {
+/** Implementation of {@link AccountPickerDelegate} for the web-signin flow. */
+public class WebSigninAccountPickerDelegate implements AccountPickerDelegate {
     private final Tab mCurrentTab;
     private final WebSigninBridge.Factory mWebSigninBridgeFactory;
     private final String mContinueUrl;
@@ -38,7 +38,7 @@ public class AccountPickerDelegateImpl implements AccountPickerDelegate {
      *         WebSigninBridge} instances.
      * @param continueUrl The URL that the user would be redirected to after sign-in succeeds.
      */
-    public AccountPickerDelegateImpl(
+    public WebSigninAccountPickerDelegate(
             Tab currentTab, WebSigninBridge.Factory webSigninBridgeFactory, String continueUrl) {
         mCurrentTab = currentTab;
         mWebSigninBridgeFactory = webSigninBridgeFactory;
@@ -80,7 +80,7 @@ public class AccountPickerDelegateImpl implements AccountPickerDelegate {
 
                         @Override
                         public void onSignInAborted() {
-                            AccountPickerDelegateImpl.this.destroyWebSigninBridge();
+                            WebSigninAccountPickerDelegate.this.destroyWebSigninBridge();
                         }
                     });
         });
