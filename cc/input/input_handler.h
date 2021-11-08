@@ -17,7 +17,6 @@
 #include "cc/input/touch_action.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/paint/element_id.h"
-#include "cc/trees/swap_promise_monitor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/events/types/scroll_types.h"
@@ -35,6 +34,7 @@ class LatencyInfo;
 namespace cc {
 
 class CompositorDelegateForInput;
+class LatencyInfoSwapPromiseMonitor;
 class ScrollElasticityHelper;
 
 enum class PointerResultType { kUnhandled = 0, kScrollbarScroll };
@@ -330,12 +330,12 @@ class CC_EXPORT InputHandler {
   EventListenerTypeForTouchStartOrMoveAt(const gfx::Point& viewport_point,
                                          TouchAction* out_touch_action) = 0;
 
-  // Calling CreateLatencyInfoSwapPromiseMonitor() to get a scoped
-  // LatencyInfoSwapPromiseMonitor. During the life time of the
-  // LatencyInfoSwapPromiseMonitor, if SetNeedsRedraw() or SetNeedsRedrawRect()
-  // is called on LayerTreeHostImpl, the original latency info will be turned
-  // into a LatencyInfoSwapPromise.
-  virtual std::unique_ptr<SwapPromiseMonitor>
+  // Calling `CreateLatencyInfoSwapPromiseMonitor()` to get a scoped
+  // `LatencyInfoSwapPromiseMonitor`. During the life time of the
+  // `LatencyInfoSwapPromiseMonitor`, if `SetNeedsRedraw()` or
+  // `SetNeedsRedrawRect()` is called on `LayerTreeHostImpl`, the original
+  // latency info will be turned into a `LatencyInfoSwapPromise`.
+  virtual std::unique_ptr<LatencyInfoSwapPromiseMonitor>
   CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) = 0;
 
   // Returns a new instance of `EventsMetricsManager::ScopedMonitor` to monitor

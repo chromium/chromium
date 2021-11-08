@@ -49,6 +49,7 @@
 #include "cc/test/fake_video_frame_provider.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
+#include "cc/test/mock_latency_info_swap_promise_monitor.h"
 #include "cc/test/push_properties_counting_layer.h"
 #include "cc/test/push_properties_counting_layer_impl.h"
 #include "cc/test/render_pass_test_utils.h"
@@ -100,6 +101,7 @@ using testing::_;
 using testing::AnyNumber;
 using testing::AtLeast;
 using testing::Mock;
+using testing::StrictMock;
 
 namespace cc {
 namespace {
@@ -6500,28 +6502,6 @@ class LayerTreeHostTestDeferSwapPromiseForVisibility
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestDeferSwapPromiseForVisibility);
 
-class SimpleSwapPromiseMonitor : public SwapPromiseMonitor {
- public:
-  SimpleSwapPromiseMonitor(LayerTreeHost* layer_tree_host,
-                           int* set_needs_commit_count,
-                           int* set_needs_redraw_count)
-      : SwapPromiseMonitor(layer_tree_host
-                               ? layer_tree_host->GetSwapPromiseManager()
-                               : nullptr),
-        set_needs_commit_count_(set_needs_commit_count) {}
-
-  ~SimpleSwapPromiseMonitor() override = default;
-
-  void OnSetNeedsCommitOnMain() override { (*set_needs_commit_count_)++; }
-
-  void OnSetNeedsRedrawOnImpl() override {
-    ADD_FAILURE() << "Should not get called on main thread.";
-  }
-
- private:
-  int* set_needs_commit_count_;
-};
-
 class LayerTreeHostTestSwapPromiseDuringCommit : public LayerTreeHostTest {
  protected:
   LayerTreeHostTestSwapPromiseDuringCommit() = default;
@@ -6530,20 +6510,19 @@ class LayerTreeHostTestSwapPromiseDuringCommit : public LayerTreeHostTest {
     if (TestEnded())
       return;
 
-    std::unique_ptr<SwapPromise> swap_promise(
-        new TestSwapPromise(&swap_promise_result_[0]));
-    int set_needs_commit_count = 0;
-    int set_needs_redraw_count = 0;
+    std::unique_ptr<SwapPromise> swap_promise =
+        std::make_unique<TestSwapPromise>(&swap_promise_result_[0]);
 
     {
-      std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-          new SimpleSwapPromiseMonitor(layer_tree_host(),
-                                       &set_needs_commit_count,
-                                       &set_needs_redraw_count));
-      layer_tree_host()->QueueSwapPromise(std::move(swap_promise));
+      StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(
+          layer_tree_host()->GetSwapPromiseManager());
+
       // Queueing a swap promise from WillBeginMainFrame should not cause
       // another commit to be scheduled.
-      EXPECT_EQ(0, set_needs_commit_count);
+      EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
+      EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(0);
+
+      layer_tree_host()->QueueSwapPromise(std::move(swap_promise));
     }
   }
 
@@ -6553,20 +6532,19 @@ class LayerTreeHostTestSwapPromiseDuringCommit : public LayerTreeHostTest {
     if (TestEnded())
       return;
 
-    std::unique_ptr<SwapPromise> swap_promise(
-        new TestSwapPromise(&swap_promise_result_[1]));
-    int set_needs_commit_count = 0;
-    int set_needs_redraw_count = 0;
+    std::unique_ptr<SwapPromise> swap_promise =
+        std::make_unique<TestSwapPromise>(&swap_promise_result_[1]);
 
     {
-      std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-          new SimpleSwapPromiseMonitor(layer_tree_host(),
-                                       &set_needs_commit_count,
-                                       &set_needs_redraw_count));
-      layer_tree_host()->QueueSwapPromise(std::move(swap_promise));
+      StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(
+          layer_tree_host()->GetSwapPromiseManager());
+
       // Queueing a swap promise from DidBeginMainFrame should not cause a
       // subsequent main frame to be scheduled.
-      EXPECT_EQ(0, set_needs_commit_count);
+      EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
+      EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(0);
+
+      layer_tree_host()->QueueSwapPromise(std::move(swap_promise));
     }
 
     EndTest();
@@ -6577,7 +6555,8 @@ class LayerTreeHostTestSwapPromiseDuringCommit : public LayerTreeHostTest {
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestSwapPromiseDuringCommit);
 
-class LayerTreeHostTestSimpleSwapPromiseMonitor : public LayerTreeHostTest {
+class LayerTreeHostTestLatencyInfoSwapPromiseMonitor
+    : public LayerTreeHostTest {
  public:
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
@@ -6585,50 +6564,41 @@ class LayerTreeHostTestSimpleSwapPromiseMonitor : public LayerTreeHostTest {
     if (TestEnded())
       return;
 
-    int set_needs_commit_count = 0;
-    int set_needs_redraw_count = 0;
-
     {
-      std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-          new SimpleSwapPromiseMonitor(layer_tree_host(),
-                                       &set_needs_commit_count,
-                                       &set_needs_redraw_count));
+      StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(
+          layer_tree_host()->GetSwapPromiseManager());
+
+      EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(1);
+      EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(0);
+
       layer_tree_host()->SetNeedsCommit();
-      EXPECT_EQ(1, set_needs_commit_count);
-      EXPECT_EQ(0, set_needs_redraw_count);
     }
 
-    // Now the monitor is destroyed, SetNeedsCommit() is no longer being
-    // monitored.
-    layer_tree_host()->SetNeedsCommit();
-    EXPECT_EQ(1, set_needs_commit_count);
-    EXPECT_EQ(0, set_needs_redraw_count);
-
     {
-      std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-          new SimpleSwapPromiseMonitor(layer_tree_host(),
-                                       &set_needs_commit_count,
-                                       &set_needs_redraw_count));
+      StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(
+          layer_tree_host()->GetSwapPromiseManager());
+
+      EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(1);
+      EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(0);
+
       layer_tree_host()->SetNeedsUpdateLayers();
-      EXPECT_EQ(2, set_needs_commit_count);
-      EXPECT_EQ(0, set_needs_redraw_count);
     }
 
     {
-      std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-          new SimpleSwapPromiseMonitor(layer_tree_host(),
-                                       &set_needs_commit_count,
-                                       &set_needs_redraw_count));
+      StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(
+          layer_tree_host()->GetSwapPromiseManager());
+
+      EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(1);
+      EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(0);
+
       layer_tree_host()->SetNeedsAnimate();
-      EXPECT_EQ(3, set_needs_commit_count);
-      EXPECT_EQ(0, set_needs_redraw_count);
     }
 
     EndTest();
   }
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestSimpleSwapPromiseMonitor);
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestLatencyInfoSwapPromiseMonitor);
 
 class LayerTreeHostTestHighResRequiredAfterEvictingUIResources
     : public LayerTreeHostTest {

@@ -276,13 +276,14 @@ DEFINE_SCOPED_UMA_HISTOGRAM_TIMER(PendingTreeRasterDurationHistogramTimer,
                                   "Scheduling.%s.PendingTreeRasterDuration")
 
 void LayerTreeHostImpl::DidUpdateScrollAnimationCurve() {
-  // Because we updated the animation target, notify the SwapPromiseMonitor
-  // to tell it that something happened that will cause a swap in the future.
-  // This will happen within the scope of the dispatch of a gesture scroll
-  // update input event. If we don't notify during the handling of the input
-  // event, the LatencyInfo associated with the input event will not be
-  // added as a swap promise and we won't get any swap results.
-  NotifySwapPromiseMonitorsOfSetNeedsRedraw();
+  // Because we updated the animation target, notify the
+  // `LatencyInfoSwapPromiseMonitor` to tell it that something happened that
+  // will cause a swap in the future. This will happen within the scope of the
+  // dispatch of a gesture scroll update input event. If we don't notify during
+  // the handling of the input event, the `LatencyInfo` associated with the
+  // input event will not be added as a swap promise and we won't get any swap
+  // results.
+  NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
 }
 
@@ -996,10 +997,10 @@ void LayerTreeHostImpl::SetNeedsAnimateInput() {
   SetNeedsOneBeginImplFrame();
 }
 
-std::unique_ptr<SwapPromiseMonitor>
+std::unique_ptr<LatencyInfoSwapPromiseMonitor>
 LayerTreeHostImpl::CreateLatencyInfoSwapPromiseMonitor(
     ui::LatencyInfo* latency) {
-  return base::WrapUnique(new LatencyInfoSwapPromiseMonitor(latency, this));
+  return std::make_unique<LatencyInfoSwapPromiseMonitor>(latency, this);
 }
 
 std::unique_ptr<EventsMetricsManager::ScopedMonitor>
@@ -3464,16 +3465,13 @@ void LayerTreeHostImpl::SetVisible(bool visible) {
 }
 
 void LayerTreeHostImpl::SetNeedsOneBeginImplFrame() {
-  // TODO(miletus): This is just the compositor-thread-side call to the
-  // SwapPromiseMonitor to say something happened that may cause a swap in the
-  // future. The name should not refer to SetNeedsRedraw but it does for now.
-  NotifySwapPromiseMonitorsOfSetNeedsRedraw();
+  NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
   client_->SetNeedsOneBeginImplFrameOnImplThread();
 }
 
 void LayerTreeHostImpl::SetNeedsRedraw() {
-  NotifySwapPromiseMonitorsOfSetNeedsRedraw();
+  NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
   client_->SetNeedsRedrawOnImplThread();
 }
@@ -4778,18 +4776,19 @@ void LayerTreeHostImpl::ScheduleMicroBenchmark(
   micro_benchmark_controller_.ScheduleRun(std::move(benchmark));
 }
 
-void LayerTreeHostImpl::InsertSwapPromiseMonitor(SwapPromiseMonitor* monitor) {
-  swap_promise_monitor_.insert(monitor);
+void LayerTreeHostImpl::InsertLatencyInfoSwapPromiseMonitor(
+    LatencyInfoSwapPromiseMonitor* monitor) {
+  latency_info_swap_promise_monitor_.insert(monitor);
 }
 
-void LayerTreeHostImpl::RemoveSwapPromiseMonitor(SwapPromiseMonitor* monitor) {
-  swap_promise_monitor_.erase(monitor);
+void LayerTreeHostImpl::RemoveLatencyInfoSwapPromiseMonitor(
+    LatencyInfoSwapPromiseMonitor* monitor) {
+  latency_info_swap_promise_monitor_.erase(monitor);
 }
 
-void LayerTreeHostImpl::NotifySwapPromiseMonitorsOfSetNeedsRedraw() {
-  auto it = swap_promise_monitor_.begin();
-  for (; it != swap_promise_monitor_.end(); it++)
-    (*it)->OnSetNeedsRedrawOnImpl();
+void LayerTreeHostImpl::NotifyLatencyInfoSwapPromiseMonitors() {
+  for (auto* monitor : latency_info_swap_promise_monitor_)
+    monitor->OnSetNeedsRedrawOnImpl();
 }
 
 bool LayerTreeHostImpl::IsElementInPropertyTrees(

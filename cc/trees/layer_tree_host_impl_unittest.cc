@@ -59,6 +59,7 @@
 #include "cc/test/fake_video_frame_provider.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
+#include "cc/test/mock_latency_info_swap_promise_monitor.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
 #include "cc/test/test_paint_worklet_layer_painter.h"
@@ -103,6 +104,7 @@
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform_operations.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/latency/latency_info.h"
 
 #define EXPECT_SCOPED(statements) \
   {                               \
@@ -116,6 +118,7 @@ using ::testing::AnyNumber;
 using ::testing::AtLeast;
 using ::testing::Mock;
 using ::testing::Return;
+using ::testing::StrictMock;
 
 using ScrollThread = cc::InputHandler::ScrollThread;
 
@@ -11976,73 +11979,39 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, HiddenSelectionBoundsStayHidden) {
 }
 #endif  // defined(OS_ANDROID)
 
-class SimpleSwapPromiseMonitor : public SwapPromiseMonitor {
- public:
-  SimpleSwapPromiseMonitor(LayerTreeHostImpl* layer_tree_host_impl,
-                           int* set_needs_commit_count,
-                           int* set_needs_redraw_count)
-      : SwapPromiseMonitor(layer_tree_host_impl),
-        set_needs_commit_count_(set_needs_commit_count),
-        set_needs_redraw_count_(set_needs_redraw_count) {}
-
-  ~SimpleSwapPromiseMonitor() override = default;
-
-  void OnSetNeedsCommitOnMain() override { (*set_needs_commit_count_)++; }
-
-  void OnSetNeedsRedrawOnImpl() override { (*set_needs_redraw_count_)++; }
-
- private:
-  int* set_needs_commit_count_;
-  int* set_needs_redraw_count_;
-};
-
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, SimpleSwapPromiseMonitor) {
-  int set_needs_commit_count = 0;
-  int set_needs_redraw_count = 0;
-
   {
-    std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-        new SimpleSwapPromiseMonitor(host_impl_.get(), &set_needs_commit_count,
-                                     &set_needs_redraw_count));
+    StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(host_impl_.get());
+    EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
+    EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(1);
+
     host_impl_->SetNeedsRedraw();
-    EXPECT_EQ(0, set_needs_commit_count);
-    EXPECT_EQ(1, set_needs_redraw_count);
   }
 
-  // Now the monitor is destroyed, SetNeedsRedraw() is no longer being
-  // monitored.
-  host_impl_->SetNeedsRedraw();
-  EXPECT_EQ(0, set_needs_commit_count);
-  EXPECT_EQ(1, set_needs_redraw_count);
-
   {
-    std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-        new SimpleSwapPromiseMonitor(host_impl_.get(), &set_needs_commit_count,
-                                     &set_needs_redraw_count));
+    StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(host_impl_.get());
+    EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
+    EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(1);
+
     // Redraw with damage.
     host_impl_->SetFullViewportDamage();
     host_impl_->SetNeedsRedraw();
-    EXPECT_EQ(0, set_needs_commit_count);
-    EXPECT_EQ(2, set_needs_redraw_count);
   }
 
   {
-    std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-        new SimpleSwapPromiseMonitor(host_impl_.get(), &set_needs_commit_count,
-                                     &set_needs_redraw_count));
+    StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(host_impl_.get());
+    EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
+    EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(1);
+
     // Redraw without damage.
     host_impl_->SetNeedsRedraw();
-    EXPECT_EQ(0, set_needs_commit_count);
-    EXPECT_EQ(3, set_needs_redraw_count);
   }
 
-  set_needs_commit_count = 0;
-  set_needs_redraw_count = 0;
-
   {
-    std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-        new SimpleSwapPromiseMonitor(host_impl_.get(), &set_needs_commit_count,
-                                     &set_needs_redraw_count));
+    StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(host_impl_.get());
+    EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
+    EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(1);
+
     SetupViewportLayersInnerScrolls(gfx::Size(50, 50), gfx::Size(100, 100));
 
     // Scrolling normally should not trigger any forwarding.
@@ -12061,8 +12030,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SimpleSwapPromiseMonitor) {
             .did_scroll);
     GetInputHandler().ScrollEnd();
 
-    EXPECT_EQ(0, set_needs_commit_count);
-    EXPECT_EQ(1, set_needs_redraw_count);
+    EXPECT_TRUE(Mock::VerifyAndClearExpectations(&monitor));
+
+    EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
+    EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(1);
 
     // Scrolling with a scroll handler should defer the swap to the main
     // thread.
@@ -12081,9 +12052,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SimpleSwapPromiseMonitor) {
                               .get())
             .did_scroll);
     GetInputHandler().ScrollEnd();
-
-    EXPECT_EQ(0, set_needs_commit_count);
-    EXPECT_EQ(2, set_needs_redraw_count);
   }
 }
 
@@ -13375,11 +13343,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAnimated) {
   {
     // Creating the animation should set 'needs redraw'. This is required
     // for LatencyInfo's to be propagated along with the CompositorFrame
-    int set_needs_commit_count = 0;
-    int set_needs_redraw_count = 0;
-    std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-        new SimpleSwapPromiseMonitor(host_impl_.get(), &set_needs_commit_count,
-                                     &set_needs_redraw_count));
+    StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(host_impl_.get());
+    EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
+    EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(AtLeast(1));
+
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD,
               GetInputHandler()
                   .ScrollBegin(BeginState(gfx::Point(), gfx::Vector2d(0, 50),
@@ -13389,9 +13356,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAnimated) {
                   .thread);
     GetInputHandler().ScrollUpdate(
         AnimatedUpdateState(gfx::Point(), gfx::Vector2d(0, 50)).get());
-
-    EXPECT_EQ(0, set_needs_commit_count);
-    EXPECT_GT(set_needs_redraw_count, 0);
   }
 
   LayerImpl* scrolling_layer = OuterViewportScrollLayer();
@@ -13419,18 +13383,14 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAnimated) {
   {
     // Updating the animation should set 'needs redraw'. This is required
     // for LatencyInfo's to be propagated along with the CompositorFrame
-    int set_needs_commit_count = 0;
-    int set_needs_redraw_count = 0;
-    std::unique_ptr<SimpleSwapPromiseMonitor> swap_promise_monitor(
-        new SimpleSwapPromiseMonitor(host_impl_.get(), &set_needs_commit_count,
-                                     &set_needs_redraw_count));
+    StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(host_impl_.get());
+    EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(0);
+    EXPECT_CALL(monitor, OnSetNeedsRedrawOnImpl()).Times(1);
+
     // Update target.
     GetInputHandler().ScrollUpdate(
         AnimatedUpdateState(gfx::Point(), gfx::Vector2d(0, 50)).get());
     GetInputHandler().ScrollEnd();
-
-    EXPECT_EQ(0, set_needs_commit_count);
-    EXPECT_EQ(1, set_needs_redraw_count);
   }
 
   host_impl_->DidFinishImplFrame(begin_frame_args);

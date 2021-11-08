@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/threading/platform_thread.h"
 #include "cc/trees/latency_info_swap_promise.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -34,16 +33,33 @@ namespace cc {
 LatencyInfoSwapPromiseMonitor::LatencyInfoSwapPromiseMonitor(
     ui::LatencyInfo* latency,
     SwapPromiseManager* swap_promise_manager)
-    : SwapPromiseMonitor(swap_promise_manager), latency_(latency) {}
+    : latency_(latency), swap_promise_manager_(swap_promise_manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  DCHECK(swap_promise_manager);
+  swap_promise_manager_->InsertLatencyInfoSwapPromiseMonitor(this);
+}
 
 LatencyInfoSwapPromiseMonitor::LatencyInfoSwapPromiseMonitor(
     ui::LatencyInfo* latency,
     LayerTreeHostImpl* host_impl)
-    : SwapPromiseMonitor(host_impl), latency_(latency) {}
+    : latency_(latency), host_impl_(host_impl) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(impl_sequence_checker_);
+  DCHECK(host_impl);
+  host_impl_->InsertLatencyInfoSwapPromiseMonitor(this);
+}
 
-LatencyInfoSwapPromiseMonitor::~LatencyInfoSwapPromiseMonitor() = default;
+LatencyInfoSwapPromiseMonitor::~LatencyInfoSwapPromiseMonitor() {
+  if (swap_promise_manager_) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+    swap_promise_manager_->RemoveLatencyInfoSwapPromiseMonitor(this);
+  } else if (host_impl_) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(impl_sequence_checker_);
+    host_impl_->RemoveLatencyInfoSwapPromiseMonitor(this);
+  }
+}
 
 void LatencyInfoSwapPromiseMonitor::OnSetNeedsCommitOnMain() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (AddRenderingScheduledComponent(latency_, true /* on_main */)) {
     std::unique_ptr<SwapPromise> swap_promise(
         new LatencyInfoSwapPromise(*latency_));
@@ -52,6 +68,7 @@ void LatencyInfoSwapPromiseMonitor::OnSetNeedsCommitOnMain() {
 }
 
 void LatencyInfoSwapPromiseMonitor::OnSetNeedsRedrawOnImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(impl_sequence_checker_);
   if (AddRenderingScheduledComponent(latency_, false /* on_main */)) {
     std::unique_ptr<SwapPromise> swap_promise(
         new LatencyInfoSwapPromise(*latency_));

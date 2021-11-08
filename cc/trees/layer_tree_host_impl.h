@@ -98,6 +98,7 @@ class EvictionTilePriorityQueue;
 class DroppedFrameCounter;
 class ImageAnimationController;
 class LCDTextMetricsReporter;
+class LatencyInfoSwapPromiseMonitor;
 class LayerImpl;
 class LayerTreeFrameSink;
 class LayerTreeImpl;
@@ -113,7 +114,6 @@ class RenderFrameMetadataObserver;
 class RenderingStatsInstrumentation;
 class ResourcePool;
 class SwapPromise;
-class SwapPromiseMonitor;
 class SynchronousTaskGraphRunner;
 class TaskGraphRunner;
 class UIResourceBitmap;
@@ -295,8 +295,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                float page_scale,
                                base::TimeDelta duration);
   void SetNeedsAnimateInput();
-  std::unique_ptr<SwapPromiseMonitor> CreateLatencyInfoSwapPromiseMonitor(
-      ui::LatencyInfo* latency);
+  std::unique_ptr<LatencyInfoSwapPromiseMonitor>
+  CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency);
   std::unique_ptr<EventsMetricsManager::ScopedMonitor>
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback);
@@ -763,12 +763,14 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return viewport_rect_for_tile_priority_;
   }
 
-  // When a SwapPromiseMonitor is created on the impl thread, it calls
-  // InsertSwapPromiseMonitor() to register itself with LayerTreeHostImpl.
-  // When the monitor is destroyed, it calls RemoveSwapPromiseMonitor()
-  // to unregister itself.
-  void InsertSwapPromiseMonitor(SwapPromiseMonitor* monitor);
-  void RemoveSwapPromiseMonitor(SwapPromiseMonitor* monitor);
+  // When a `LatencyInfoSwapPromiseMonitor` is created on the impl thread, it
+  // calls `InsertLatencyInfoSwapPromiseMonitor()` to register itself with
+  // `LayerTreeHostImpl`. When the monitor is destroyed, it calls
+  // `RemoveLatencyInfoSwapPromiseMonitor()` to unregister itself.
+  void InsertLatencyInfoSwapPromiseMonitor(
+      LatencyInfoSwapPromiseMonitor* monitor);
+  void RemoveLatencyInfoSwapPromiseMonitor(
+      LatencyInfoSwapPromiseMonitor* monitor);
 
   // TODO(weiliangc): Replace RequiresHighResToDraw with scheduler waits for
   // ReadyToDraw. crbug.com/469175
@@ -990,7 +992,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                             const gpu::SyncToken& sync_token,
                             bool lost);
 
-  void NotifySwapPromiseMonitorsOfSetNeedsRedraw();
+  void NotifyLatencyInfoSwapPromiseMonitors();
 
  private:
   void SetContextVisibility(bool is_visible);
@@ -1161,7 +1163,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   TaskGraphRunner* task_graph_runner_;
   int id_;
 
-  std::set<SwapPromiseMonitor*> swap_promise_monitor_;
+  std::set<LatencyInfoSwapPromiseMonitor*> latency_info_swap_promise_monitor_;
 
   bool requires_high_res_to_draw_ = false;
   bool is_likely_to_require_a_draw_ = false;

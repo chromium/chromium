@@ -718,7 +718,7 @@ void LayerTreeHost::OnDeferCommitsChanged(bool defer_status,
 DISABLE_CFI_PERF
 void LayerTreeHost::SetNeedsAnimate() {
   proxy_->SetNeedsAnimate();
-  swap_promise_manager_.NotifySwapPromiseMonitorsOfSetNeedsCommit();
+  swap_promise_manager_.NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
 }
 
@@ -730,13 +730,13 @@ void LayerTreeHost::SetNeedsAnimateIfNotInsideMainFrame() {
 DISABLE_CFI_PERF
 void LayerTreeHost::SetNeedsUpdateLayers() {
   proxy_->SetNeedsUpdateLayers();
-  swap_promise_manager_.NotifySwapPromiseMonitorsOfSetNeedsCommit();
+  swap_promise_manager_.NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
 }
 
 void LayerTreeHost::SetNeedsCommit() {
   proxy_->SetNeedsCommit();
-  swap_promise_manager_.NotifySwapPromiseMonitorsOfSetNeedsCommit();
+  swap_promise_manager_.NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
 }
 

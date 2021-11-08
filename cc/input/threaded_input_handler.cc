@@ -14,12 +14,12 @@
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/layers/viewport.h"
 #include "cc/trees/compositor_commit_data.h"
+#include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/property_tree.h"
 #include "cc/trees/scroll_node.h"
-
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -848,7 +848,7 @@ ThreadedInputHandler::EventListenerTypeForTouchStartOrMoveAt(
                      : InputHandler::TouchStartOrMoveEventListenerType::HANDLER;
 }
 
-std::unique_ptr<SwapPromiseMonitor>
+std::unique_ptr<LatencyInfoSwapPromiseMonitor>
 ThreadedInputHandler::CreateLatencyInfoSwapPromiseMonitor(
     ui::LatencyInfo* latency) {
   return compositor_delegate_.GetImplDeprecated()
@@ -1791,12 +1791,12 @@ void ThreadedInputHandler::ScrollLatchedScroller(ScrollState* scroll_state,
 
       if (animation_updated) {
         // Because we updated the animation target, consume delta so we notify
-        // the SwapPromiseMonitor to tell it that something happened that will
-        // cause a swap in the future.  This will happen within the scope of
-        // the dispatch of a gesture scroll update input event. If we don't
-        // notify during the handling of the input event, the LatencyInfo
-        // associated with the input event will not be added as a swap promise
-        // and we won't get any swap results.
+        // the `LatencyInfoSwapPromiseMonitor` to tell it that something
+        // happened that will cause a swap in the future. This will happen
+        // within the scope of the dispatch of a gesture scroll update input
+        // event. If we don't notify during the handling of the input event, the
+        // `LatencyInfo` associated with the input event will not be added as a
+        // swap promise and we won't get any swap results.
         applied_delta = delta;
       } else {
         TRACE_EVENT_INSTANT0("cc", "Didn't Update Animation",

@@ -337,7 +337,7 @@ void WidgetBaseInputHandler::HandleInputEvent(
   ui::LatencyInfo swap_latency_info(coalesced_event.latency_info());
   swap_latency_info.AddLatencyNumber(
       ui::LatencyComponentType::INPUT_EVENT_LATENCY_RENDERER_MAIN_COMPONENT);
-  cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
+  cc::LatencyInfoSwapPromiseMonitor latency_info_swap_promise_monitor(
       &swap_latency_info, widget_->LayerTreeHost()->GetSwapPromiseManager());
   std::unique_ptr<cc::EventMetrics> cloned_metrics;
   cc::EventsMetricsManager::ScopedMonitor::DoneCallback done_callback;
@@ -610,13 +610,14 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
 
   gfx::PointF position = PositionInWidgetFromInputEvent(input_event);
   for (const InjectScrollGestureParams& params : injected_scroll_params) {
-    // Set up a new LatencyInfo for the injected scroll - this is the original
-    // LatencyInfo for the input event that was being handled when the scroll
-    // was injected. This new LatencyInfo will have a modified type, and an
-    // additional scroll update component. Also set up a SwapPromiseMonitor that
-    // will cause the LatencyInfo to be sent up with the compositor frame, if
-    // the GSU causes a commit. This allows end to end latency to be logged for
-    // the injected scroll, annotated with the correct type.
+    // Set up a new `LatencyInfo` for the injected scroll - this is the original
+    // `LatencyInfo` for the input event that was being handled when the scroll
+    // was injected. This new `LatencyInfo` will have a modified type, and an
+    // additional scroll update component. Also set up a
+    // `LatencyInfoSwapPromiseMonitor` that will cause the `LatencyInfo` to be
+    // sent up with the compositor frame, if the GSU causes a commit. This
+    // allows end to end latency to be logged for the injected scroll, annotated
+    // with the correct type.
     ui::LatencyInfo scrollbar_latency_info(original_latency_info);
 
     // Currently only scrollbar is supported - if this DCHECK hits due to a
@@ -671,7 +672,7 @@ void WidgetBaseInputHandler::HandleInjectedScrollGestures(
     }
 
     {
-      cc::LatencyInfoSwapPromiseMonitor swap_promise_monitor(
+      cc::LatencyInfoSwapPromiseMonitor latency_info_swap_promise_monitor(
           &scrollbar_latency_info,
           widget_->LayerTreeHost()->GetSwapPromiseManager());
       std::unique_ptr<cc::EventMetrics> metrics =

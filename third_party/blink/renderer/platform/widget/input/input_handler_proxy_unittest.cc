@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
-#include "cc/trees/swap_promise_monitor.h"
+#include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -121,8 +121,8 @@ class MockInputHandler : public cc::InputHandler {
       cc::InputHandlerPointerResult(const gfx::PointF& mouse_position));
   void NotifyInputEvent() override {}
 
-  std::unique_ptr<cc::SwapPromiseMonitor> CreateLatencyInfoSwapPromiseMonitor(
-      ui::LatencyInfo* latency) override {
+  std::unique_ptr<cc::LatencyInfoSwapPromiseMonitor>
+  CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) override {
     return nullptr;
   }
 

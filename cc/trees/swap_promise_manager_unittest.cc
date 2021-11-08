@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "cc/trees/swap_promise_monitor.h"
+#include "cc/test/mock_latency_info_swap_promise_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,16 +15,6 @@ using ::testing::StrictMock;
 
 namespace cc {
 namespace {
-
-class MockSwapPromiseMonitor : public SwapPromiseMonitor {
- public:
-  explicit MockSwapPromiseMonitor(SwapPromiseManager* manager)
-      : SwapPromiseMonitor(manager) {}
-  ~MockSwapPromiseMonitor() override = default;
-
-  MOCK_METHOD0(OnSetNeedsCommitOnMain, void());
-  void OnSetNeedsRedrawOnImpl() override {}
-};
 
 class MockSwapPromise : public SwapPromise {
  public:
@@ -43,12 +33,12 @@ class MockSwapPromise : public SwapPromise {
 
 TEST(SwapPromiseManagerTest, SwapPromiseMonitors) {
   SwapPromiseManager manager;
-  StrictMock<MockSwapPromiseMonitor> monitor(&manager);
+  StrictMock<MockLatencyInfoSwapPromiseMonitor> monitor(&manager);
 
   EXPECT_CALL(monitor, OnSetNeedsCommitOnMain()).Times(2);
 
-  manager.NotifySwapPromiseMonitorsOfSetNeedsCommit();
-  manager.NotifySwapPromiseMonitorsOfSetNeedsCommit();
+  manager.NotifyLatencyInfoSwapPromiseMonitors();
+  manager.NotifyLatencyInfoSwapPromiseMonitors();
 }
 
 TEST(SwapPromiseManagerTest, SwapPromises) {

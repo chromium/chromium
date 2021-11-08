@@ -26,6 +26,7 @@
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/blink/public/common/features.h"
@@ -442,9 +443,10 @@ void InputHandlerProxy::DispatchSingleInputEvent(
     std::unique_ptr<EventWithCallback> event_with_callback,
     const base::TimeTicks now) {
   ui::LatencyInfo monitored_latency_info = event_with_callback->latency_info();
-  std::unique_ptr<cc::SwapPromiseMonitor> latency_info_swap_promise_monitor =
-      input_handler_->CreateLatencyInfoSwapPromiseMonitor(
-          &monitored_latency_info);
+  std::unique_ptr<cc::LatencyInfoSwapPromiseMonitor>
+      latency_info_swap_promise_monitor =
+          input_handler_->CreateLatencyInfoSwapPromiseMonitor(
+              &monitored_latency_info);
 
   current_overscroll_params_.reset();
 

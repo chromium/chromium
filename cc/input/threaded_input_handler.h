@@ -31,12 +31,12 @@ class Vector2dF;
 
 namespace cc {
 
+class LatencyInfoSwapPromiseMonitor;
 class LayerImpl;
 class ScrollbarController;
 class ScrollElasticityHelper;
 struct ScrollNode;
 class ScrollTree;
-class SwapPromiseMonitor;
 class Viewport;
 
 class CC_EXPORT ThreadedInputHandler : public InputHandler,
@@ -86,8 +86,8 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   EventListenerTypeForTouchStartOrMoveAt(
       const gfx::Point& viewport_port,
       TouchAction* out_touch_action) override;
-  std::unique_ptr<SwapPromiseMonitor> CreateLatencyInfoSwapPromiseMonitor(
-      ui::LatencyInfo* latency) override;
+  std::unique_ptr<LatencyInfoSwapPromiseMonitor>
+  CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) override;
   std::unique_ptr<EventsMetricsManager::ScopedMonitor>
   GetScopedEventMetricsMonitor(
       EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) override;

@@ -116,6 +116,8 @@
 // animation with the new scroller length is kicked off.
 
 namespace cc {
+class LayerTreeHostImpl;
+
 // This class is responsible for hit testing composited scrollbars, event
 // handling and creating gesture scroll deltas.
 class CC_EXPORT ScrollbarController {

@@ -16,8 +16,6 @@
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "cc/trees/paint_holding_reason.h"
-#include "cc/trees/swap_promise.h"
-#include "cc/trees/swap_promise_monitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view_delegate.h"
 #include "ui/gfx/geometry/rect.h"
