@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVIdentity;
 @protocol CWVSyncControllerDataSource;
 @protocol CWVSyncControllerDelegate;
+@protocol CWVTrustedVaultProvider;
 
 // Used to manage syncing for autofill and password data. Usage:
 // 1. Set the |dataSource| and |delegate|.
@@ -21,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 // 3. Call |stopSyncAndClearIdentity| to stop syncing.
 CWV_EXPORT
 @interface CWVSyncController : NSObject
+
+// The trusted vault provider for CWVSyncController.
+@property(class, nonatomic, weak, nullable) id<CWVTrustedVaultProvider>
+    trustedVaultProvider;
 
 // The data source of CWVSyncController.
 @property(class, nonatomic, weak, nullable) id<CWVSyncControllerDataSource>

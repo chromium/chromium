@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addTrustedVaultObserver:(CWVTrustedVaultObserver*)observer;
 
 // Removes an observer of the trusted vault.
+// |observer| is not guaranteed to be the same instance as the instance passed
+// in |addTrustedVaultObserver:|. To ensure the correct |observer| is removed,
+// you must compare them using -[NSObject isEqual:].
 - (void)removeTrustedVaultObserver:(CWVTrustedVaultObserver*)observer;
 
 // Fetch the necessary keys for the trusted vault.

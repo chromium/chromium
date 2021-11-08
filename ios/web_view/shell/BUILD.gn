@@ -101,6 +101,8 @@ source_set("shell") {
     "shell_exe_main.m",
     "shell_translation_delegate.h",
     "shell_translation_delegate.m",
+    "shell_trusted_vault_provider.h",
+    "shell_trusted_vault_provider.m",
     "shell_view_controller.h",
     "shell_view_controller.m",
   ]

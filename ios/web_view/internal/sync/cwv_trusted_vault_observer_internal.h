@@ -13,6 +13,8 @@
 - (instancetype)initWithTrustedVaultObserver:
     (syncer::TrustedVaultClient::Observer*)observer NS_DESIGNATED_INITIALIZER;
 
+@property(nonatomic, readonly) syncer::TrustedVaultClient::Observer* observer;
+
 @end
 
 #endif  // IOS_WEB_VIEW_INTERNAL_SYNC_CWV_TRUSTED_VAULT_OBSERVER_INTERNAL_H_

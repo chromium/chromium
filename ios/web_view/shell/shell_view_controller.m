@@ -10,6 +10,7 @@
 #import "ios/web_view/shell/shell_auth_service.h"
 #import "ios/web_view/shell/shell_autofill_delegate.h"
 #import "ios/web_view/shell/shell_translation_delegate.h"
+#import "ios/web_view/shell/shell_trusted_vault_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -57,7 +58,10 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 // A controller to show a "Share" menu for the downloaded file.
 @property(nonatomic, strong, nullable)
     UIDocumentInteractionController* documentInteractionController;
+// Service that provides authentication to ChromeWebView.
 @property(nonatomic, strong) ShellAuthService* authService;
+// Provides trusted vault functions to ChromeWebView.
+@property(nonatomic, strong) ShellTrustedVaultProvider* trustedVaultProvider;
 // The newly opened popup windows e.g., by JavaScript function "window.open()",
 // HTML "<a target='_blank'>".
 @property(nonatomic, strong) NSMutableArray<CWVWebView*>* popupWebViews;
@@ -88,6 +92,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 @synthesize downloadFilePath = _downloadFilePath;
 @synthesize documentInteractionController = _documentInteractionController;
 @synthesize authService = _authService;
+@synthesize trustedVaultProvider = _trustedVaultProvider;
 @synthesize popupWebViews = _popupWebViews;
 
 - (void)viewDidLoad {
@@ -264,6 +269,9 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
   _authService = [[ShellAuthService alloc] init];
   CWVSyncController.dataSource = _authService;
+
+  _trustedVaultProvider = [[ShellTrustedVaultProvider alloc] init];
+  CWVSyncController.trustedVaultProvider = _trustedVaultProvider;
 
   CWVWebViewConfiguration* configuration =
       [CWVWebViewConfiguration defaultConfiguration];

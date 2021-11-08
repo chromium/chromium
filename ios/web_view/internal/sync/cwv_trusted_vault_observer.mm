@@ -10,9 +10,7 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation CWVTrustedVaultObserver {
-  syncer::TrustedVaultClient::Observer* _observer;
-}
+@implementation CWVTrustedVaultObserver
 
 - (instancetype)initWithTrustedVaultObserver:
     (syncer::TrustedVaultClient::Observer*)observer {
@@ -33,6 +31,23 @@
 - (void)trustedVaultProviderDidChangeRecoverability:
     (id<CWVTrustedVaultProvider>)provider {
   _observer->OnTrustedVaultRecoverabilityChanged();
+}
+
+#pragma mark - NSObject
+
+- (BOOL)isEqual:(CWVTrustedVaultObserver*)otherObserver {
+  if (self == otherObserver) {
+    return YES;
+  }
+  if (![otherObserver isKindOfClass:[CWVTrustedVaultObserver class]]) {
+    return NO;
+  }
+
+  return self.observer == otherObserver.observer;
+}
+
+- (NSUInteger)hash {
+  return (NSUInteger)self.observer;
 }
 
 @end
