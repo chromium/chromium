@@ -29,6 +29,7 @@ Tests name sources in buttons.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -85,6 +86,7 @@ Tests name sources in buttons.
         value : button2-content
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -136,6 +138,7 @@ Tests name sources in buttons.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -192,6 +195,7 @@ Tests name sources in buttons.
         value : cake
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -248,6 +252,7 @@ Tests name sources in buttons.
         value : I love !
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -304,6 +309,7 @@ Tests name sources in buttons.
         value : I love cake !
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -359,6 +365,7 @@ Tests name sources in buttons.
         value : button7-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -423,6 +430,7 @@ Tests name sources in buttons.
         value : button8-content
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -478,6 +486,7 @@ Tests name sources in buttons.
         value : button9-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -542,6 +551,7 @@ Tests name sources in buttons.
         value : cake
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -612,6 +622,7 @@ Tests name sources in buttons.
         value : label-for-button11
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid

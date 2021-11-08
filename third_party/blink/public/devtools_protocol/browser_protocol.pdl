@@ -176,10 +176,14 @@ experimental domain Accessibility
       optional AXValue value
       # All other properties
       optional array of AXProperty properties
+      # ID for this node's parent.
+      optional AXNodeId parentId
       # IDs for each of this node's child nodes.
       optional array of AXNodeId childIds
       # The backend ID for the associated DOM node, if any.
       optional DOM.BackendNodeId backendDOMNodeId
+      # The frame ID for the frame associated with this nodes document.
+      optional Page.FrameId frameId
 
   # Disables the accessibility domain.
   command disable

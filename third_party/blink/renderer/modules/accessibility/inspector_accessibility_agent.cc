@@ -650,6 +650,14 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForAXObject(
   if (node)
     protocol_node->setBackendDOMNodeId(IdentifiersFactory::IntIdForNode(node));
 
+  const AXObject* parent = ax_object.ParentObjectIncludedInTree();
+  if (parent) {
+    protocol_node->setParentId(String::Number(parent->AXObjectID()));
+  } else {
+    auto& frame_token =
+        ax_object.GetDocument()->GetFrame()->GetDevToolsFrameToken();
+    protocol_node->setFrameId(IdentifiersFactory::IdFromToken(frame_token));
+  }
   return protocol_node;
 }
 

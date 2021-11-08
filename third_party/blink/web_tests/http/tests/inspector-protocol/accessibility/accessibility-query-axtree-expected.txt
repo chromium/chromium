@@ -33,6 +33,7 @@ dump both an ignored and an unignored axnode
         value : title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : level
@@ -65,6 +66,7 @@ dump both an ignored and an unignored axnode
         value : title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -77,6 +79,7 @@ dump both an ignored and an unignored axnode
     childIds : <object>
     ignored : false
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -102,6 +105,7 @@ dump both an ignored and an unignored axnode
         value : title
     }
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : heading
@@ -130,6 +134,7 @@ dump both an ignored and an unignored axnode
         value : title
     }
     nodeId : <string>
+    parentId : <string>
     role : {
         type : internalRole
         value : StaticText

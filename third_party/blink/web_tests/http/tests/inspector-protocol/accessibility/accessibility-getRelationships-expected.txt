@@ -39,6 +39,7 @@ Tests relationship accessibility values.
         value : Lunch Options
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -125,6 +126,7 @@ Tests relationship accessibility values.
         value : Drink Options
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable

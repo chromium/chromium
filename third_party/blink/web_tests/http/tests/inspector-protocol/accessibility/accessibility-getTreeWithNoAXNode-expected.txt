@@ -21,6 +21,7 @@ RootWebArea
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none

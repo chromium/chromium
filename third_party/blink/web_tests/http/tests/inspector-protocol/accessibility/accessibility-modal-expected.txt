@@ -22,6 +22,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focused
@@ -69,6 +70,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -99,6 +101,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : modal
@@ -136,6 +139,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : modal
@@ -173,6 +177,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : modal
@@ -201,6 +206,7 @@ Tests accessibility values in modal dialog.
         }
     ]
     nodeId : <string>
+    parentId : <string>
     role : {
         type : role
         value : none
@@ -229,6 +235,7 @@ Tests accessibility values in modal dialog.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : modal

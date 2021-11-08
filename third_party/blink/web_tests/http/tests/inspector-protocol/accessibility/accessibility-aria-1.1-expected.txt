@@ -34,6 +34,7 @@ Tests ARIA 1.1 accessibility markup.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -139,6 +140,7 @@ Tests ARIA 1.1 accessibility markup.
         value : Label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : details
@@ -194,6 +196,7 @@ Tests ARIA 1.1 accessibility markup.
         value : Select All
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -252,6 +255,7 @@ Tests ARIA 1.1 accessibility markup.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid

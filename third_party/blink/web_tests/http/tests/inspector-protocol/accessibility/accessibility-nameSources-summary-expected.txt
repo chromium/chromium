@@ -29,6 +29,7 @@ Tests name sources in details and summary.
         value : summary2-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -89,6 +90,7 @@ Tests name sources in details and summary.
         value : summary3-contents
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -158,6 +160,7 @@ Tests name sources in details and summary.
         value : summary4-aria-label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -243,6 +246,7 @@ Tests name sources in details and summary.
         value : summary5-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable

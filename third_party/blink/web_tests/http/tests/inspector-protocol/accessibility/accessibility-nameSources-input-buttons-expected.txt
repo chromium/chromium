@@ -33,6 +33,7 @@ Tests name sources in input[type=button].
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -98,6 +99,7 @@ Tests name sources in input[type=button].
         value : button-value2
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -171,6 +173,7 @@ Tests name sources in input[type=button].
         value : button-value3
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -230,6 +233,7 @@ Tests name sources in input[type=button].
         value : button-title4
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -301,6 +305,7 @@ Tests name sources in input[type=button].
         value : button-label-5
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -384,6 +389,7 @@ Tests name sources in input[type=button].
         value : button-label-6
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -479,6 +485,7 @@ Tests name sources in input[type=button].
         value : button-label-7
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -583,6 +590,7 @@ Tests name sources in input[type=button].
         value : button-aria-label-8
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -691,6 +699,7 @@ Tests name sources in input[type=button].
         value : button9-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -764,6 +773,7 @@ Tests name sources in input[type=button].
         value : Submit
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -829,6 +839,7 @@ Tests name sources in input[type=button].
         value : submit-value2
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -897,6 +908,7 @@ Tests name sources in input[type=button].
         value : Submit
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -957,6 +969,7 @@ Tests name sources in input[type=button].
         value : Reset
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1038,6 +1051,7 @@ Tests name sources in input[type=button].
         value : Submit
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1125,6 +1139,7 @@ Tests name sources in input[type=button].
         value : image-input-value2
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1217,6 +1232,7 @@ Tests name sources in input[type=button].
         value : image-input-alt3
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1313,6 +1329,7 @@ Tests name sources in input[type=button].
         value : image-input-alt4
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid
@@ -1407,6 +1424,7 @@ Tests name sources in input[type=button].
         value : image-input-title5
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : invalid

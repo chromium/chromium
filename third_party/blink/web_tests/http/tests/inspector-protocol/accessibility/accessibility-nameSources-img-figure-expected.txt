@@ -26,6 +26,7 @@ Tests name sources in images and figures.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -64,6 +65,7 @@ Tests name sources in images and figures.
         value : figure2-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -120,6 +122,7 @@ Tests name sources in images and figures.
         value : figcaption3
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : labelledby
@@ -197,6 +200,7 @@ Tests name sources in images and figures.
         value : figure4-aria-label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -278,6 +282,7 @@ Tests name sources in images and figures.
         value : figure5-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : labelledby
@@ -325,6 +330,7 @@ Tests name sources in images and figures.
         value : 
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -363,6 +369,7 @@ Tests name sources in images and figures.
         value : img2-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -414,6 +421,7 @@ Tests name sources in images and figures.
         value : img3-alt
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -474,6 +482,7 @@ Tests name sources in images and figures.
         value : img4-aria-label
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
@@ -550,6 +559,7 @@ Tests name sources in images and figures.
         value : img5-aria-labelledby
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : labelledby
@@ -601,6 +611,7 @@ Tests name sources in images and figures.
         value : I like ice cream.
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
         [0] : {
             name : focusable
@@ -647,6 +658,7 @@ Tests name sources in images and figures.
         value : svg1-title
     }
     nodeId : <string>
+    parentId : <string>
     properties : [
     ]
     role : {
