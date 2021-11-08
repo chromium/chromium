@@ -24,6 +24,7 @@
 
   if (is_android) {
     import("//build/config/android/config.gni")
+    import("//build/config/android/rules.gni")
   }
 
   config("grpc_config") {
@@ -45,6 +46,12 @@
       "GRPC_NO_XDS",
       "GRPC_NO_RLS",
     ]
+
+    if (!is_android) {
+      # This prevents android specific object files from getting
+      # included in shared library built for other platforms
+      defines += [ "GRPC_NO_BINDER", ]
+    }
 
     cflags = [
       "-Wno-implicit-fallthrough",
@@ -558,3 +565,16 @@
   }
 
   group("fuzzers") {}
+
+  if (is_android) {
+    # gRPC BinderTransport's Java API and internal code, which cannot be handled by GN's source_set
+    # and we need manually create a android_library target for them.
+    android_library("binder_java_helper") {
+      sources = [
+        "src/src/core/ext/transport/binder/java/io/grpc/binder/cpp/GrpcBinderConnection.java",
+        "src/src/core/ext/transport/binder/java/io/grpc/binder/cpp/GrpcCppServerBuilder.java",
+        "src/src/core/ext/transport/binder/java/io/grpc/binder/cpp/NativeConnectionHelper.java",
+      ]
+    }
+  }
+
