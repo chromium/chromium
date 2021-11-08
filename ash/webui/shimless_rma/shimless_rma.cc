@@ -61,11 +61,18 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_CURRENT_VERSION_OUT_OF_DATE},
       {"currentVersionUpToDateText",
        IDS_SHIMLESS_RMA_CURRENT_VERSION_UP_TO_DATE},
+      {"updateVersionRestartLabel",
+       IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART},
+      // RSU code page
+      {"rsuCodePageTitleText", IDS_SHIMLESS_RMA_RSU_CODE_PAGE_TITLE},
+      {"rsuCodeInstructionsText", IDS_SHIMLESS_RMA_RSU_CODE_INSTRUCTIONS},
+      {"rsuChallengeLabelText", IDS_SHIMLESS_RMA_RSU_CHALLENGE_LABEL},
+      {"rsuHardwareIdText", IDS_SHIMLESS_RMA_RSU_HWID},
+      {"rsuCodeLabelText", IDS_SHIMLESS_RMA_RSU_CODE_LABEL},
+      {"rsuCodePlaceHolderText", IDS_SHIMLESS_RMA_RSU_CODE_PLACEHOLDER},
       // Repair complete page
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
       {"reworkFlowLinkText", IDS_SHIMLESS_RMA_REWORK_FLOW_LINK},
-      {"updateVersionRestartLabel",
-       IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

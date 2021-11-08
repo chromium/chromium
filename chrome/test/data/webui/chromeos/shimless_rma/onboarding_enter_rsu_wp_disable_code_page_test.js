@@ -6,7 +6,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {fakeRsuChallengeQrCode} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {OnboardingEnterRsuWpDisableCodePageElement} from 'chrome://shimless-rma/onboarding_enter_rsu_wp_disable_code_page.js';
+import {OnboardingEnterRsuWpDisableCodePage} from 'chrome://shimless-rma/onboarding_enter_rsu_wp_disable_code_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
@@ -21,7 +21,7 @@ function suppressedComponentCanvasSize_(component) {
 }
 
 export function onboardingEnterRsuWpDisableCodePageTest() {
-  /** @type {?OnboardingEnterRsuWpDisableCodePageElement} */
+  /** @type {?OnboardingEnterRsuWpDisableCodePage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -56,7 +56,7 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
     service.setGetRsuDisableWriteProtectChallengeQrCodeResponse(
         fakeRsuChallengeQrCode);
 
-    component = /** @type {!OnboardingEnterRsuWpDisableCodePageElement} */ (
+    component = /** @type {!OnboardingEnterRsuWpDisableCodePage} */ (
         document.createElement('onboarding-enter-rsu-wp-disable-code-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
@@ -88,7 +88,7 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
   test('EnterRsuWpDisableCodePageDisplaysHwid', async () => {
     await initializeEnterRsuWpDisableCodePage('', 'device hwid');
     const rsuHwidComponent = component.shadowRoot.querySelector('#rsuHwid');
-    assertEquals('device hwid', rsuHwidComponent.innerHTML);
+    assertTrue(rsuHwidComponent.innerHTML.includes('device hwid'));
   });
 
   test('EnterRsuWpDisableCodePageRendersQrCode', async () => {

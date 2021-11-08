@@ -6,7 +6,8 @@ import './shimless_rma_shared_css.js';
 import './base_page.js';
 import '//resources/cr_elements/cr_input/cr_input.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {QrCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
@@ -23,7 +24,18 @@ const QR_CODE_FILL_STYLE = '#000000';
  * 'onboarding-enter-rsu-wp-disable-code-page' asks the user for the RSU disable
  * code.
  */
-export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const OnboardingEnterRsuWpDisableCodePageBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class OnboardingEnterRsuWpDisableCodePage extends
+    OnboardingEnterRsuWpDisableCodePageBase {
   static get is() {
     return 'onboarding-enter-rsu-wp-disable-code-page';
   }
@@ -163,5 +175,5 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
 }
 
 customElements.define(
-    OnboardingEnterRsuWpDisableCodePageElement.is,
-    OnboardingEnterRsuWpDisableCodePageElement);
+    OnboardingEnterRsuWpDisableCodePage.is,
+    OnboardingEnterRsuWpDisableCodePage);

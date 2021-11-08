@@ -3,10 +3,9 @@
 
 <base-page orientation="column">
   <div slot="header">
-    <!-- TODO(gavindodd): Update text for i18n -->
-    <h1>Enter RSU Hardware Write Protection Disable Code</h1>
-
-    <p>Challenge:</p>
+    <h1>[[i18n('rsuCodePageTitleText')]]</h1>
+    <div>[[i18n('rsuCodeInstructionsText')]]</div>
+    <div>[[i18n('rsuChallengeLabelText')]]</div>
     <div id="rsuChallenge">
       <template id="rsuChallengeParts" is="dom-repeat" items="[[rsuChallenge_]]" as="row">
         <template id="rsuChallengePart" is="dom-repeat" items="[[row]]" as="segment">
@@ -15,11 +14,11 @@
         <br/>
       </template>
     </div>
-    <p>HWID: <span id="rsuHwid">[[rsuHwid_]]</span></p>
+    <div id="rsuHwid">[[i18n('rsuHardwareIdText', rsuHwid_)]]</div>
     <cr-input
         on-change="onRsuCodeChanged_"
-        label="RSU Code:"
-        placeholder="Enter RSU Code"
+        label="[[i18n('rsuCodeLabelText')]]"
+        placeholder="[[i18n('rsuCodePlaceHolderText')]]"
         id="rsuCode"
         value="{{rsuCode_}}">
     </cr-input>
