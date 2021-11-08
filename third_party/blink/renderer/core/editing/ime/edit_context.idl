@@ -4,8 +4,11 @@
 
 // The goal of the EditContext is to expose the lower-level APIs provided by
 // modern operating systems to facilitate various input modalities to unlock
-// advanced editing scenarios. For more information please refer
-// https://github.com/w3c/editing/blob/gh-pages/docs/EditContext/explainer.md
+// advanced editing scenarios.
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#the-editcontext-interface
+
 [
     Exposed=Window,
     ActiveScriptWrappable,

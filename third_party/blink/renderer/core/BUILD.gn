@@ -496,6 +496,7 @@ generate_event_interfaces("core_event_interfaces") {
     "dom/events/custom_event.idl",
     "dom/events/event.idl",
     "editing/ime/character_bounds_update_event.idl",
+    "editing/ime/text_format.idl",
     "editing/ime/text_format_update_event.idl",
     "editing/ime/text_update_event.idl",
     "events/animation_event.idl",

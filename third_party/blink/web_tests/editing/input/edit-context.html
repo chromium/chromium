@@ -226,14 +226,7 @@ test(function() {
   assert_not_equals(editContext, null);
   const test = document.getElementById('test');
   test.innerHTML = "";
-  let formatRangeStart = 0;
-  let formatRangeEnd = 0;
-  let underlineColor = "";
-  let backgroundColor = "";
-  let textColor = "";
-  let suggestionHighlightColor = "";
-  let compositionTextUnderlineStyle = "";
-  let compositionTextUnderlineThickness = "";
+  let textFormats = [];
   // Add EditContext event listeners
   editContext.addEventListener("textupdate", e => {
     // Update the text in the div
@@ -242,27 +235,20 @@ test(function() {
   });
   editContext.addEventListener("textformatupdate", e => {
     //TODO: Currently Chromium only fires default styles
-    formatRangeStart = e.formatRangeStart;
-    formatRangeEnd = e.formatRangeEnd;
-    underlineColor = e.underlineColor;
-    backgroundColor = e.backgroundColor;
-    textColor = e.textColor;
-    suggestionHighlightColor = e.suggestionHighlightColor;
-    compositionTextUnderlineStyle = e.underlineStyle;
-    compositionTextUnderlineThickness = e.underlineThickness;
+    textFormats = e.getTextFormats();
   });
   test.editContext = editContext;
   test.focus();
   textInputController.setComposition("foo");
   assert_equals(test.innerHTML, "FOO");
-  assert_equals(formatRangeStart, 0);
-  assert_equals(formatRangeEnd, 3);
-  assert_equals(underlineColor, "rgba(0, 0, 0, 0)");
-  assert_equals(backgroundColor, "rgba(0, 0, 0, 0)");
-  assert_equals(textColor, "rgba(0, 0, 0, 0)");
-  assert_equals(suggestionHighlightColor, "rgba(0, 0, 0, 0)");
-  assert_equals(compositionTextUnderlineStyle, "Solid");
-  assert_equals(compositionTextUnderlineThickness, "Thin");
+  assert_equals(textFormats.length, 1);
+  assert_equals(textFormats[0].rangeStart, 0);
+  assert_equals(textFormats[0].rangeEnd, 3);
+  assert_equals(textFormats[0].underlineColor, "rgba(0, 0, 0, 0)");
+  assert_equals(textFormats[0].backgroundColor, "rgba(0, 0, 0, 0)");
+  assert_equals(textFormats[0].textColor, "rgba(0, 0, 0, 0)");
+  assert_equals(textFormats[0].underlineStyle, "Solid");
+  assert_equals(textFormats[0].underlineThickness, "Thin");
 }, 'Testing EditContext TextFormatUpdate');
 
 test(function() {

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ime/character_bounds_update_event.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
+#include "third_party/blink/renderer/core/editing/ime/text_format.h"
 #include "third_party/blink/renderer/core/editing/ime/text_format_update_event.h"
 #include "third_party/blink/renderer/core/editing/ime/text_update_event.h"
 #include "third_party/blink/renderer/core/editing/state_machines/backward_grapheme_boundary_state_machine.h"
@@ -128,19 +129,20 @@ void EditContext::DispatchTextUpdateEvent(const String& text,
 
 void EditContext::DispatchTextFormatEvent(
     const WebVector<ui::ImeTextSpan>& ime_text_spans) {
-  // Loop through the vector and fire textformatupdate event for individual text
-  // spans as there could be multiple formats in the spans.
-  // TODO(snianu): Try to accumulate the ranges with similar formats and fire
-  // one event.
+  // Loop through IME text spans to prepare an array of TextFormat and
+  // fire textformateupdate event.
   DCHECK(has_composition_);
-  String underline_thickness;
-  String underline_style;
-  for (const auto& ime_text_span : ime_text_spans) {
-    const int format_range_start =
-        ime_text_span.start_offset + composition_range_start_;
-    const int format_range_end =
-        ime_text_span.end_offset + composition_range_start_;
+  HeapVector<Member<TextFormat>> text_formats;
+  text_formats.ReserveCapacity(
+      static_cast<WTF::wtf_size_t>(ime_text_spans.size()));
 
+  for (const auto& ime_text_span : ime_text_spans) {
+    const int range_start =
+        ime_text_span.start_offset + composition_range_start_;
+    const int range_end = ime_text_span.end_offset + composition_range_start_;
+
+    String underline_thickness;
+    String underline_style;
     switch (ime_text_span.thickness) {
       case ui::ImeTextSpan::Thickness::kNone:
         underline_thickness = "None";
@@ -169,19 +171,21 @@ void EditContext::DispatchTextFormatEvent(
         underline_style = "Squiggle";
         break;
     }
-    TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(
-        format_range_start, format_range_end,
-        cssvalue::CSSColor::SerializeAsCSSComponentValue(
-            ime_text_span.underline_color),
-        cssvalue::CSSColor::SerializeAsCSSComponentValue(
-            ime_text_span.background_color),
-        cssvalue::CSSColor::SerializeAsCSSComponentValue(
-            ime_text_span.suggestion_highlight_color),
-        cssvalue::CSSColor::SerializeAsCSSComponentValue(
-            ime_text_span.text_color),
-        underline_thickness, underline_style);
-    DispatchEvent(*event);
+
+    text_formats.push_back(
+        TextFormat::Create(range_start, range_end,
+                           cssvalue::CSSColor::SerializeAsCSSComponentValue(
+                               ime_text_span.text_color),
+                           cssvalue::CSSColor::SerializeAsCSSComponentValue(
+                               ime_text_span.background_color),
+                           cssvalue::CSSColor::SerializeAsCSSComponentValue(
+                               ime_text_span.underline_color),
+                           underline_style, underline_thickness));
   }
+
+  TextFormatUpdateEvent* event =
+      MakeGarbageCollected<TextFormatUpdateEvent>(text_formats);
+  DispatchEvent(*event);
 }
 
 void EditContext::Focus() {

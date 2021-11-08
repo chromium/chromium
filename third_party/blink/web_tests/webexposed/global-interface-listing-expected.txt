@@ -8688,17 +8688,20 @@ interface TextEvent : UIEvent
     getter data
     method constructor
     method initTextEvent
-interface TextFormatUpdateEvent : Event
+interface TextFormat
     attribute @@toStringTag
     getter backgroundColor
-    getter formatRangeEnd
-    getter formatRangeStart
-    getter suggestionHighlightColor
+    getter rangeEnd
+    getter rangeStart
     getter textColor
     getter underlineColor
     getter underlineStyle
     getter underlineThickness
     method constructor
+interface TextFormatUpdateEvent : Event
+    attribute @@toStringTag
+    method constructor
+    method getTextFormats
 interface TextMetrics
     attribute @@toStringTag
     getter actualBoundingBoxAscent

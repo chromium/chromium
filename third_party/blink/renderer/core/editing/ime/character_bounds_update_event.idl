@@ -6,6 +6,7 @@
 // the information of the character bounds are needed by the text input
 // service. Authors are responsible to provide the information via
 // updateCharacterBounds when receiving this event.
+
 // Spec draft:
 // https://w3c.github.io/editing/docs/EditContext/index.html#characterboundsupdateevent
 [

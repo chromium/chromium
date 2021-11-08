@@ -160,6 +160,8 @@ blink_core_sources_editing = [
   "ime/ime_text_span_vector_builder.h",
   "ime/input_method_controller.cc",
   "ime/input_method_controller.h",
+  "ime/text_format.cc",
+  "ime/text_format.h",
   "ime/text_format_update_event.cc",
   "ime/text_format_update_event.h",
   "ime/text_update_event.cc",
