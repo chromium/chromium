@@ -45,6 +45,9 @@ group("closure_compile_module") {
 
     # Local targets
     ":display_manager_types.m",
+    ":gaia_button.m",
+    ":gaia_header.m",
+    ":gaia_input_form.m",
     ":hd_iron_icon.m",
     ":html_echo.m",
     ":long_touch_detector.m",
@@ -79,6 +82,12 @@ group("polymer3_elements") {
                   ":oobe_a11y_option_module",
                   ":oobe_icons_module",
                   ":oobe_i18n_dropdown_module",
+                  ":gaia_button_module",
+                  ":gaia_header_module",
+                  ":gaia_input_form_module",
+                  ":oobe_i18n_dropdown_module",
+                  ":oobe_a11y_option_module",
+                  ":oobe_icons_module",
                   ":oobe_network_icons_module",
                 ] + [ ":modulize" ]
 }
@@ -222,6 +231,31 @@ js_library("web_view_loader.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("gaia_header.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_header.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":gaia_header_module" ]
+}
+
+js_library("gaia_input_form.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_input_form.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":gaia_input_form_module" ]
+}
+
+js_library("gaia_button.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_button.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+  extra_deps = [ ":gaia_button_module" ]
+}
+
 polymer_modulizer("hd_iron_icon") {
   js_file = "hd_iron_icon.js"
   html_file = "hd_iron_icon.html"
@@ -274,6 +308,30 @@ polymer_modulizer("oobe_network_icons") {
   js_file = "oobe_network_icons.m.js"
   html_file = "oobe_network_icons.html"
   html_type = "iron-iconset"
+}
+
+polymer_modulizer("gaia_header") {
+  js_file = "gaia_header.js"
+  html_file = "gaia_header.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("gaia_input_form") {
+  js_file = "gaia_input_form.js"
+  html_file = "gaia_input_form.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("gaia_button") {
+  js_file = "gaia_button.js"
+  html_file = "gaia_button.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
 
 js_modulizer("modulize") {

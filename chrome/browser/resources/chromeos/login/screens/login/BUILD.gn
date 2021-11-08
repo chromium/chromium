@@ -14,6 +14,7 @@ group("polymer3_elements") {
     ":gaia_password_changed_module",
     ":lacros_data_migration_module",
     ":management_transition_module",
+    ":offline_login_module",
   ]
 }
 
@@ -23,10 +24,7 @@ group("closure_compile") {
 
 js_type_check("closure_compile_local") {
   uses_legacy_modules = true
-  deps = [
-    ":offline_login",
-    ":update_required_card",
-  ]
+  deps = [ ":update_required_card" ]
 }
 
 js_type_check("closure_compile_module") {
@@ -38,23 +36,12 @@ js_type_check("closure_compile_module") {
     ":gaia_password_changed.m",
     ":lacros_data_migration.m",
     ":management_transition.m",
+    ":offline_login.m",
   ]
 }
 
 ###############################
 # Closure compiler libraries below
-
-js_library("offline_login") {
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_next_button",
-    "../../components/dialogs:oobe_content_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-  ]
-}
 
 js_library("update_required_card") {
   deps = [
@@ -133,6 +120,19 @@ js_library("management_transition.m") {
   extra_deps = [ ":management_transition_module" ]
 }
 
+js_library("offline_login.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/offline_login.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+  ]
+  extra_deps = [ ":offline_login_module" ]
+}
+
 polymer_modulizer("active_directory_password_change") {
   js_file = "active_directory_password_change.js"
   html_file = "active_directory_password_change.html"
@@ -169,6 +169,14 @@ polymer_modulizer("lacros_data_migration") {
 polymer_modulizer("management_transition") {
   js_file = "management_transition.js"
   html_file = "management_transition.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("offline_login") {
+  js_file = "offline_login.js"
+  html_file = "offline_login.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

@@ -2,20 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-  is: 'gaia-input-form',
+/**
+ * @fileoverview Polymer element wrapping gaia styled input form for login/oobe.
+ */
 
-  properties: {
-    disabled: {
-      type: Boolean,
-      observer: 'onDisabledChanged_',
-    },
+/* #js_imports_placeholder */
 
-    buttonText: {
-      type: String,
-      value: '',
-    }
-  },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ */
+const GaiaInputFormBase = Polymer.mixinBehaviors([], Polymer.Element);
+
+/**
+ * @typedef {{
+ *   inputs: HTMLSlotElement,
+ * }}
+ */
+GaiaInputFormBase.$;
+
+class GaiaInputForm extends GaiaInputFormBase {
+  static get is() {
+    return 'gaia-input-form';
+  }
+
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      disabled: {
+        type: Boolean,
+        observer: 'onDisabledChanged_',
+      },
+
+      buttonText: {
+        type: String,
+        value: '',
+      }
+    };
+  }
 
   /** @public */
   reset() {
@@ -24,16 +49,17 @@ Polymer({
       inputs[i].value = '';
       inputs[i].isInvalid = false;
     }
-  },
+  }
 
   submit() {
-    this.fire('submit');
-  },
+    this.dispatchEvent(
+        new CustomEvent('submit', {bubbles: true, composed: true}));
+  }
 
   /** @private */
   onButtonClicked_() {
     this.submit();
-  },
+  }
 
   /**
    * @private
@@ -41,7 +67,7 @@ Polymer({
    */
   getInputs_() {
     return Polymer.dom(this.$.inputs).getDistributedNodes();
-  },
+  }
 
   /** @private */
   onKeyDown_(e) {
@@ -50,7 +76,7 @@ Polymer({
     if (this.getInputs_().indexOf(e.target) == -1)
       return;
     this.onButtonClicked_();
-  },
+  }
 
   /**
    * @private
@@ -60,7 +86,7 @@ Polymer({
     var controls = this.getInputs_();
     controls.push(this.$.button);
     return controls.concat(Polymer.dom(this).querySelectorAll('gaia-button'));
-  },
+  }
 
   /** @private */
   onDisabledChanged_(disabled) {
@@ -68,4 +94,6 @@ Polymer({
       control.disabled = disabled;
     });
   }
-});
+}
+
+customElements.define(GaiaInputForm.is, GaiaInputForm);

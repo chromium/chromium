@@ -21,6 +21,7 @@ import 'chrome://oobe/screens/login/encryption_migration.m.js';
 import 'chrome://oobe/screens/login/gaia_password_changed.m.js';
 import 'chrome://oobe/screens/login/lacros_data_migration.m.js';
 import 'chrome://oobe/screens/login/management_transition.m.js';
+import 'chrome://oobe/screens/login/offline_login.m.js';
 import 'chrome://oobe/screens/oobe/auto_enrollment_check.m.js';
 import 'chrome://oobe/screens/oobe/demo_preferences.m.js';
 import 'chrome://oobe/screens/oobe/demo_setup.m.js';
