@@ -2716,12 +2716,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "auth.basic_over_http_enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BasicAuthOverHttpEnabled": false
         },
         "prefs": {
           "auth.basic_over_http_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }
@@ -5830,11 +5841,22 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "bookmark_bar.show_on_all_tabs": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value: true.",
         "policies": {
           "BookmarkBarEnabled": true
         },
         "prefs": {
-          "bookmark_bar.show_on_all_tabs": {}
+          "bookmark_bar.show_on_all_tabs": {
+            "value": true
+          }
         }
       }
     ]
@@ -5850,11 +5872,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "bookmarks.editing_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "EditBookmarksEnabled": false
         },
         "prefs": {
-          "bookmarks.editing_enabled": {}
+          "bookmarks.editing_enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -14443,11 +14476,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.chrome_path": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherChromePath": "chrome.exe"
         },
         "prefs": {
-          "browser_switcher.chrome_path": {}
+          "browser_switcher.chrome_path": {
+            "value": "chrome.exe"
+          }
         }
       }
     ]
@@ -14458,13 +14502,26 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.chrome_parameters": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherChromeParameters": [
             "--force-dark-mode"
           ]
         },
         "prefs": {
-          "browser_switcher.chrome_parameters": {}
+          "browser_switcher.chrome_parameters": {
+            "value": [
+              "--force-dark-mode"
+            ]
+          }
         }
       }
     ]
@@ -14477,6 +14534,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.url_list": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherUrlList": [
             "example.com",
@@ -14484,7 +14550,12 @@
           ]
         },
         "prefs": {
-          "browser_switcher.url_list": {}
+          "browser_switcher.url_list": {
+            "value": [
+              "example.com",
+              "google.com"
+            ]
+          }
         }
       }
     ]
@@ -14497,6 +14568,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.url_greylist": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherUrlGreylist": [
             "example.com",
@@ -14504,7 +14584,12 @@
           ]
         },
         "prefs": {
-          "browser_switcher.url_greylist": {}
+          "browser_switcher.url_greylist": {
+            "value": [
+              "example.com",
+              "google.com"
+            ]
+          }
         }
       }
     ]
@@ -14515,11 +14600,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.use_ie_sitelist": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherUseIeSitelist": true
         },
         "prefs": {
-          "browser_switcher.use_ie_sitelist": {}
+          "browser_switcher.use_ie_sitelist": {
+            "value": true
+          }
         }
       }
     ]
@@ -14532,11 +14628,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.external_sitelist_url": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherExternalSitelistUrl": "file:///C:/src/sitelist.xml"
         },
         "prefs": {
-          "browser_switcher.external_sitelist_url": {}
+          "browser_switcher.external_sitelist_url": {
+            "value": "file:///C:/src/sitelist.xml"
+          }
         }
       }
     ]
@@ -14549,11 +14656,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.external_greylist_url": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherExternalGreylistUrl": "file:///C:/src/greylist.xml"
         },
         "prefs": {
-          "browser_switcher.external_greylist_url": {}
+          "browser_switcher.external_greylist_url": {
+            "value": "file:///C:/src/greylist.xml"
+          }
         }
       }
     ]
@@ -14566,11 +14684,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.delay": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherDelay": 10000
         },
         "prefs": {
-          "browser_switcher.delay": {}
+          "browser_switcher.delay": {
+            "value": 10000
+          }
         }
       }
     ]
@@ -14583,11 +14712,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherEnabled": true
         },
         "prefs": {
-          "browser_switcher.enabled": {}
+          "browser_switcher.enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -14600,11 +14740,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.parsing_mode": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherParsingMode": 1
         },
         "prefs": {
-          "browser_switcher.parsing_mode": {}
+          "browser_switcher.parsing_mode": {
+            "value": 1
+          }
         }
       }
     ]
@@ -14617,11 +14768,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.keep_last_tab": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "BrowserSwitcherKeepLastChromeTab": false
         },
         "prefs": {
-          "browser_switcher.keep_last_tab": {}
+          "browser_switcher.keep_last_tab": {
+            "value": false
+          }
         }
       }
     ]
@@ -15917,6 +16079,15 @@
       "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_labs_enabled": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
       {
         "policies": {
           "BrowserLabsEnabled": false
