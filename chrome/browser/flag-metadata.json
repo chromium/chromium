@@ -5208,11 +5208,6 @@
     "expiry_milestone": 101
   },
   {
-    "name": "tab-search-media-tabs",
-    "owners": ["elainechien", "romanarora"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "tabs-bulkactions-ios",
     "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
     "expiry_milestone": 98
