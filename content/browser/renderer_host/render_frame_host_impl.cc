@@ -1412,10 +1412,11 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   if (frame_tree_->is_prerendering()) {
     // TODO(https://crbug.com/1132752): Check the prerendering page is
     // same-origin to the prerender trigger page.
-    broker_.ApplyMojoBinderPolicies(
+    mojo_binder_policy_applier_ =
         MojoBinderPolicyApplier::CreateForSameOriginPrerendering(base::BindOnce(
             &RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy,
-            base::Unretained(this))));
+            base::Unretained(this)));
+    broker_.ApplyMojoBinderPolicies(mojo_binder_policy_applier_.get());
   }
 
   if (lifecycle_state_ != LifecycleStateImpl::kSpeculative) {
@@ -2117,8 +2118,8 @@ RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
 void RenderFrameHostImpl::GetCanonicalUrl(
     base::OnceCallback<void(const absl::optional<GURL>&)> callback) {
   if (IsRenderFrameCreated()) {
-    // Validate that the URL returned by the renderer is HTTP(S) only. It is allowed to be
-    // cross-origin.
+    // Validate that the URL returned by the renderer is HTTP(S) only. It is
+    // allowed to be cross-origin.
     auto validate_and_forward =
         [](base::OnceCallback<void(const absl::optional<GURL>&)> callback,
            const absl::optional<GURL>& url) {
@@ -2502,6 +2503,13 @@ void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
   // this request sounded like the right way to handle this.
   if (!associated_registry_)
     return;
+
+  // Perform Mojo capability control if `mojo_binder_policy_applier_` exists.
+  if (mojo_binder_policy_applier_ &&
+      !mojo_binder_policy_applier_->ApplyPolicyToAssociatedBinder(
+          interface_name)) {
+    return;
+  }
 
   if (associated_registry_->TryBindInterface(interface_name, &handle))
     return;
@@ -3300,8 +3308,11 @@ void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
   // Release Mojo capability control to run the binders. The RenderFrameHostImpl
   // may have been created after activation started, in which case it already
   // does not have Mojo capability control applied.
-  if (broker_.GetMojoBinderPolicyApplier())
+  if (mojo_binder_policy_applier_) {
+    mojo_binder_policy_applier_->GrantAll();
+    mojo_binder_policy_applier_.reset();
     broker_.ReleaseMojoBinderPolicies();
+  }
 }
 
 void RenderFrameHostImpl::SetCrossOriginOpenerPolicyReporter(
@@ -6465,9 +6476,9 @@ void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
     // RenderFrameHostImpl::DidCommitNavigation(). So before binding a new
     // receiver end of BrowserInterfaceBroker, RenderFrameHostImpl should drop
     // all deferred binders to avoid connecting Mojo pipes with old documents.
-    auto* applier = broker_.GetMojoBinderPolicyApplier();
-    DCHECK(applier) << "prerendering pages should have a policy applier";
-    applier->DropDeferredBinders();
+    DCHECK(mojo_binder_policy_applier_)
+        << "prerendering pages should have a policy applier";
+    mojo_binder_policy_applier_->DropDeferredBinders();
   }
   broker_receiver_.Bind(std::move(receiver));
   broker_receiver_.SetFilter(std::make_unique<ActiveURLMessageFilter>(this));
@@ -8435,10 +8446,6 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
   associated_registry_->AddInterface(base::BindRepeating(
       [](RenderFrameHostImpl* impl,
          mojo::PendingAssociatedReceiver<mojom::PepperHost> receiver) {
-        if (impl->frame_tree()->is_prerendering()) {
-          impl->CancelPrerendering(PrerenderHost::FinalStatus::kPlugin);
-          return;
-        }
         impl->pepper_host_receiver_.Bind(std::move(receiver));
         impl->pepper_host_receiver_.SetFilter(
             impl->CreateMessageFilterForAssociatedReceiver(
@@ -9402,9 +9409,9 @@ void RenderFrameHostImpl::RendererWillActivateForPrerendering() {
   // binders, because the Mojo message pipes are not channel-associated and we
   // should ensure that ActivateForPrerendering() arrives on the renderer
   // earlier than these deferred messages.
-  auto* applier = broker_.GetMojoBinderPolicyApplier();
-  DCHECK(applier) << "prerendering pages should have a policy applier";
-  applier->PrepareToGrantAll();
+  DCHECK(mojo_binder_policy_applier_)
+      << "prerendering pages should have a policy applier";
+  mojo_binder_policy_applier_->PrepareToGrantAll();
 }
 
 void RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver(

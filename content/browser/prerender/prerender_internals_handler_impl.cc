@@ -34,8 +34,6 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
       return "MainFrameNavigation";
     case PrerenderHost::FinalStatus::kMojoBinderPolicy:
       return "MojoBinderPolicy";
-    case PrerenderHost::FinalStatus::kPlugin:
-      return "Plugin";
     case PrerenderHost::FinalStatus::kRendererProcessCrashed:
       return "RendererProcessCrashed";
     case PrerenderHost::FinalStatus::kRendererProcessKilled:

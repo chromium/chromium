@@ -63,7 +63,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kNavigationRequestBlockedByCsp = 9,
     kMainFrameNavigation = 10,
     kMojoBinderPolicy = 11,
-    kPlugin = 12,
+    // kPlugin = 12,  // No longer used.
     kRendererProcessCrashed = 13,
     kRendererProcessKilled = 14,
     kDownload = 15,

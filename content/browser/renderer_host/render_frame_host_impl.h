@@ -3697,6 +3697,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
 
+  // Performs Mojo capability control on this RenderFrameHost when
+  // `mojo_binder_policy_applier_` is not null. Mojo binder polices will be
+  // applied to interfaces that are registered with BrowserInterfaceBrokerImpl
+  // and AssociatedInterfaceRegistry before invoking their binders.
+  // Currently, it is non-null pointer only if this RenderFrameHost is being
+  // prerendered.
+  std::unique_ptr<MojoBinderPolicyApplier> mojo_binder_policy_applier_;
+
   // Logs interface requests that arrive after the frame has already committed a
   // non-same-document navigation, and has already unbound
   // |broker_receiver_| from the interface connection that had been used to

@@ -1119,8 +1119,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // about capability control.
   //
   // The embedder can add entries to `policy_map` for interfaces that it
-  // registers in `RegisterBrowserInterfaceBindersForFrame()`. It should not
-  // change or remove existing entries.
+  // registers in `RegisterBrowserInterfaceBindersForFrame()` and
+  // `BindAssociatedReceiverFromFrame()`. It should not change or remove
+  // existing entries.
   //
   // This function is called at most once, when the first RenderFrameHost is
   // created for prerendering a page that is same-origin to the page that

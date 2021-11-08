@@ -1744,12 +1744,12 @@ class MojoCapabilityControlTestContentBrowserClient
 
   void RegisterMojoBinderPoliciesForSameOriginPrerendering(
       MojoBinderPolicyMap& policy_map) override {
-    policy_map.SetPolicy<mojom::TestInterfaceForGrant>(
-        MojoBinderPolicy::kGrant);
-    policy_map.SetPolicy<mojom::TestInterfaceForCancel>(
-        MojoBinderPolicy::kCancel);
-    policy_map.SetPolicy<mojom::TestInterfaceForUnexpected>(
-        MojoBinderPolicy::kUnexpected);
+    policy_map.SetNonAssociatedPolicy<mojom::TestInterfaceForGrant>(
+        MojoBinderNonAssociatedPolicy::kGrant);
+    policy_map.SetNonAssociatedPolicy<mojom::TestInterfaceForCancel>(
+        MojoBinderNonAssociatedPolicy::kCancel);
+    policy_map.SetNonAssociatedPolicy<mojom::TestInterfaceForUnexpected>(
+        MojoBinderNonAssociatedPolicy::kUnexpected);
   }
 
   void BindDeferInterface(
@@ -2669,7 +2669,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       prerender_helper());
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kPlugin, 1);
+      PrerenderHost::FinalStatus::kMojoBinderPolicy, 1);
 
   // TODO(https://crbug.com/1215031): Remove this reload after fixing the issue.
   // Now a document cannot trigger prerendering twice, even if the first started
@@ -2681,7 +2681,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PluginsCancelPrerendering) {
       prerender_helper());
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus",
-      PrerenderHost::FinalStatus::kPlugin, 2);
+      PrerenderHost::FinalStatus::kMojoBinderPolicy, 2);
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
