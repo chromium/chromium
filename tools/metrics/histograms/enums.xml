@@ -20775,6 +20775,7 @@ Called by update_debug_scenarios.py.-->
   <int value="37" label="Drawer - Issues"/>
   <int value="38" label="Settings - Shortcuts (custom)"/>
   <int value="39" label="CSS Overview"/>
+  <int value="40" label="Recorder"/>
 </enum>
 
 <enum name="DevToolsSetting">
