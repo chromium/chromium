@@ -1771,8 +1771,7 @@ bool TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
       observer.WillCloseAllTabs(this);
   }
 
-  DetachNotifications notifications(GetWebContentsAtImpl(active_index()),
-                                    selection_model_);
+  DetachNotifications notifications(GetActiveWebContents(), selection_model_);
   const bool closed_all =
       CloseWebContentses(items, close_types, &notifications);
 
