@@ -84,7 +84,7 @@ class StateChangeTestEngine {
   static constexpr vec_size_t kDone = kNotStarted - 1;
 
   // Implementation of the callback created by Watch().
-  void GotState(UpdateService::UpdateState state);
+  void GotState(const UpdateService::UpdateState& state);
 
   // Push the next event (if any).
   void Next();
@@ -214,7 +214,7 @@ void StateChangeTestEngine::Finish() {
                                                    std::move(done_cb_));
 }
 
-void StateChangeTestEngine::GotState(UpdateService::UpdateState state) {
+void StateChangeTestEngine::GotState(const UpdateService::UpdateState& state) {
   if (next_observation_ == kDone) {
     ADD_FAILURE() << "StateChangeTestEngine received StateChangeCallback "
                      "event after it became done.";
@@ -467,8 +467,9 @@ TEST_F(MacUpdateServiceProxyTest, DISABLED_NoProductsUpdateAll) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         service_->UpdateAll(
-            base::BindRepeating(&ExpectNoCalls<UpdateService::UpdateState>,
-                                "no state updates expected"),
+            base::BindRepeating(
+                &ExpectNoCalls<const UpdateService::UpdateState&>,
+                "no state updates expected"),
             base::BindLambdaForTesting(
                 [this](UpdateService::Result actual_result) {
                   EXPECT_EQ(UpdateService::Result::kAppNotFound, actual_result);

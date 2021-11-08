@@ -180,7 +180,7 @@ STDMETHODIMP LegacyOnDemandImpl::checkForUpdate() {
                 obj->app_id(), UpdateService::Priority::kForeground,
                 base::BindRepeating(
                     [](LegacyOnDemandImplPtr obj,
-                       UpdateService::UpdateState state_update) {
+                       const UpdateService::UpdateState& state_update) {
                       obj->task_runner_->PostTask(
                           FROM_HERE,
                           base::BindOnce(

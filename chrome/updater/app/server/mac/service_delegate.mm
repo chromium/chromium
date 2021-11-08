@@ -106,7 +106,7 @@
       }));
 
   auto sccb = base::BindRepeating(base::RetainBlock(^(
-      updater::UpdateService::UpdateState state) {
+      const updater::UpdateService::UpdateState& state) {
     NSString* version = base::SysUTF8ToNSString(
         state.next_version.IsValid() ? state.next_version.GetString() : "");
 
@@ -153,7 +153,7 @@
       }));
 
   auto sccb = base::BindRepeating(base::RetainBlock(^(
-      updater::UpdateService::UpdateState state) {
+      const updater::UpdateService::UpdateState& state) {
     NSString* version = base::SysUTF8ToNSString(
         state.next_version.IsValid() ? state.next_version.GetString() : "");
 

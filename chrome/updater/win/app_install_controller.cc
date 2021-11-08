@@ -410,7 +410,7 @@ class AppInstallControllerImpl : public AppInstallController,
   DWORD GetUIThreadID() const;
 
   // Receives the state changes during handling of the Install function call.
-  void StateChange(UpdateService::UpdateState update_state);
+  void StateChange(const UpdateService::UpdateState& update_state);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -505,7 +505,7 @@ void AppInstallControllerImpl::InstallComplete(UpdateService::Result result) {
 }
 
 void AppInstallControllerImpl::StateChange(
-    UpdateService::UpdateState update_state) {
+    const UpdateService::UpdateState& update_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(install_progress_observer_ipc_);
 

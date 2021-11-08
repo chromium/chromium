@@ -159,7 +159,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
   };
 
   using Callback = base::OnceCallback<void(Result)>;
-  using StateChangeCallback = base::RepeatingCallback<void(UpdateState)>;
+  using StateChangeCallback = base::RepeatingCallback<void(const UpdateState&)>;
   using RegisterAppCallback =
       base::OnceCallback<void(const RegistrationResponse&)>;
 

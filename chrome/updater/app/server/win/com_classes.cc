@@ -248,7 +248,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id, IUpdaterObserver* observer) {
                 base::BindRepeating(
                     [](scoped_refptr<base::SequencedTaskRunner> task_runner,
                        IUpdaterObserverPtr observer,
-                       UpdateService::UpdateState update_state) {
+                       const UpdateService::UpdateState& update_state) {
                       task_runner->PostTaskAndReplyWithResult(
                           FROM_HERE,
                           base::BindOnce(&IUpdaterObserver::OnStateChange,

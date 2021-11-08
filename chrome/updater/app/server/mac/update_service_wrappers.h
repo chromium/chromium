@@ -12,7 +12,7 @@
 #include "chrome/updater/update_service.h"
 
 using StateChangeCallback =
-    base::RepeatingCallback<void(updater::UpdateService::UpdateState)>;
+    base::RepeatingCallback<void(const updater::UpdateService::UpdateState&)>;
 
 @interface CRUUpdateStateObserver : NSObject <CRUUpdateStateObserving>
 
