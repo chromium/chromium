@@ -2375,7 +2375,7 @@ source_set("browser") {
     ]
   }
 
-  if (!is_fuchsia && !is_android) {
+  if (!is_android) {
     deps += [ "//content/browser/devtools:devtools_resources" ]
   }
 
