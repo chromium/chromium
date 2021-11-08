@@ -113,7 +113,7 @@ id<GREYMatcher> YearOfExpiryTextField() {
   [self typeNickname:@"To be removed"];
 
   [[EarlGrey selectElementWithMatcher:NicknameTextField()]
-      performAction:grey_clearText()];
+      performAction:grey_replaceText(@"")];
 
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       assertWithMatcher:grey_allOf(grey_sufficientlyVisible(), grey_enabled(),
