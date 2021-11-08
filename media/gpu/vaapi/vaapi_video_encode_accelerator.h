@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "media/base/bitrate.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
@@ -29,7 +30,8 @@ namespace media {
 // A VideoEncodeAccelerator implementation that uses VA-API
 // (https://01.org/vaapi) for HW-accelerated video encode.
 class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
-    : public VideoEncodeAccelerator {
+    : public VideoEncodeAccelerator,
+      public base::trace_event::MemoryDumpProvider {
  public:
   VaapiVideoEncodeAccelerator();
 
@@ -52,6 +54,10 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
   bool IsFlushSupported() override;
+
+  // base::trace_event::MemoryDumpProvider implementation.
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
  private:
   friend class VaapiVideoEncodeAcceleratorTest;
@@ -76,11 +82,15 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // Maximum size is four to support the worst case of a given input of a
   // different resolution than the maximum number of spatial layers (3).
+  static constexpr size_t kMaxNumSpatialLayersPlusOne = 3 + 1;
   using ScopedVASurfacesMap =
       base::small_map<std::map<gfx::Size,
                                std::vector<std::unique_ptr<ScopedVASurface>>,
                                SizeComparator>,
-                      4>;
+                      kMaxNumSpatialLayersPlusOne>;
+  using ScopedVASurfacesCountMap =
+      base::small_map<std::map<gfx::Size, size_t, SizeComparator>,
+                      kMaxNumSpatialLayersPlusOne>;
 
   // Holds input frames coming from the client ready to be encoded.
   struct InputFrameRef;
@@ -137,6 +147,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   bool CreateSurfacesIfNeeded(
       VaapiWrapper& vaapi_wrapper,
       ScopedVASurfacesMap& scoped_surfaces_map,
+      ScopedVASurfacesCountMap& scoped_surfaces_count_map,
       const gfx::Size& encode_size,
       const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints,
       size_t num_surfaces);
@@ -243,6 +254,13 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // Map of available destination surfaces for scaling and cropping, and input
   // surfaces for encoding indexed by a layer resolution..
   ScopedVASurfacesMap available_vpp_dest_surfaces_;
+
+  // Map of the number of allocated input or reconstructed surfaces for encoding
+  // indexed by a layer resolution.
+  ScopedVASurfacesCountMap encode_surfaces_count_;
+  // Map of the number of allocated destination surfaces for scaling and
+  // cropping, and input surfaces for encoding indexed by a layer resolution..
+  ScopedVASurfacesCountMap vpp_dest_surfaces_count_;
 
   // VA buffers for coded frames.
   std::vector<VABufferID> available_va_buffer_ids_;
