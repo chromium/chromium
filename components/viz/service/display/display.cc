@@ -483,6 +483,9 @@ void Display::Resize(const gfx::Size& size) {
 
 void Display::InvalidateCurrentSurfaceId() {
   current_surface_id_ = SurfaceId();
+  // Force a gc as the display may not be visible (gc occurs after drawing,
+  // which won't happen when display is hidden).
+  surface_manager_->GarbageCollectSurfaces();
 }
 
 void Display::DisableSwapUntilResize(
