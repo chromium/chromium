@@ -14,6 +14,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
@@ -74,8 +75,12 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
-    return {{BookmarkModelFactory::GetInstance(),
-             BookmarkModelFactory::GetDefaultFactory()}};
+    TestingProfile::TestingFactories factories = {
+        {BookmarkModelFactory::GetInstance(),
+         BookmarkModelFactory::GetDefaultFactory()}};
+    IdentityTestEnvironmentProfileAdaptor::
+        AppendIdentityTestEnvironmentFactories(&factories);
+    return factories;
   }
 
  protected:

@@ -38,6 +38,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -48,6 +49,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -137,6 +139,12 @@ class ProfileManagerTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     lacros_service_test_helper_ =
         std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
+
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ProfileManagerTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
 #endif
 
     // Create a new temporary directory, and store the path
@@ -224,6 +232,13 @@ class ProfileManagerTest : public testing::Test {
     entry->SetIsEphemeral(true);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Helper function to register an user with id |user_id| and create profile
   // with a correct path.
@@ -304,6 +319,8 @@ class ProfileManagerTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
       lacros_service_test_helper_;
+
+  base::CallbackListSubscription create_services_subscription_;
 #endif
 };
 
