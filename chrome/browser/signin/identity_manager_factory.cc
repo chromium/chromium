@@ -142,14 +142,14 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The system and (original profile of the) guest profiles are not regular.
+  const bool is_regular_profile = profile->IsRegularProfile();
   params.account_manager_facade =
-      base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)
+      (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency) &&
+       is_regular_profile)
           ? ProfileAccountManagerFactory::GetForProfile(profile)
           : GetAccountManagerFacade(profile->GetPath().value());
-  // Lacros runs inside a user session and is not used to render Chrome OS's
-  // Login Screen, or its Lock Screen. Hence, all Profiles in Lacros are regular
-  // Profiles.
-  params.is_regular_profile = true;
+  params.is_regular_profile = is_regular_profile;
 #endif
 
 #if defined(OS_WIN)
