@@ -5,6 +5,7 @@
 #include "base/memory/platform_shared_memory_region.h"
 
 #include "base/check.h"
+#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/process/process_metrics.h"
 #include "base/ranges/algorithm.h"

@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "base/bind.h"
+#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"

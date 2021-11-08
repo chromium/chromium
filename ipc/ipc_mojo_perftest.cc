@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"

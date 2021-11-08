@@ -5,6 +5,7 @@
 #include "chromecast/renderer/cast_demo_bindings.h"
 
 #include "base/check.h"
+#include "base/macros.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"

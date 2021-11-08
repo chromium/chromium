@@ -5,6 +5,7 @@
 #include "components/history/core/browser/in_memory_database.h"
 
 #include "base/files/file_path.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"

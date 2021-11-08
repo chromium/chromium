@@ -6,6 +6,7 @@
 
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"

@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/character_encoding.h"
 #include "base/lazy_instance.h"
+#include "base/macros.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"

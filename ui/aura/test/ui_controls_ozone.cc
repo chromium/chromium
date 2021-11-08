@@ -4,6 +4,7 @@
 
 #include "ui/aura/test/ui_controls_ozone.h"
 
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/events/event_utils.h"

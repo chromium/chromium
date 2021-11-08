@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 
+#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

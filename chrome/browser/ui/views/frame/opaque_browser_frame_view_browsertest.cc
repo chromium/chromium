@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view.h"
 
 #include "base/files/file_util.h"
+#include "base/macros.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"

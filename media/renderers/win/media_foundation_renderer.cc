@@ -11,6 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"

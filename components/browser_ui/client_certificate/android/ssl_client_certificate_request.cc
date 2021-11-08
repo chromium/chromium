@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
 #include "content/public/browser/browser_task_traits.h"

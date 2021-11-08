@@ -7,6 +7,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"

@@ -45,6 +45,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/singleton.h"
 #include "base/numerics/safe_conversions.h"

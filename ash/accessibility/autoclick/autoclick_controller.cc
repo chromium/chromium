@@ -18,6 +18,7 @@
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"

@@ -11,6 +11,7 @@
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #import "base/mac/foundation_util.h"
+#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
 #import "content/browser/accessibility/browser_accessibility_mac.h"

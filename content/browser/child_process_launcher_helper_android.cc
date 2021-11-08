@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/task/post_task.h"
 #include "content/browser/child_process_launcher.h"

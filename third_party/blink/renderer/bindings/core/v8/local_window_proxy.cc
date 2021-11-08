@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"

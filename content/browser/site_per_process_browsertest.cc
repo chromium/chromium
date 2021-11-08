@@ -27,6 +27,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"

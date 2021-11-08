@@ -4,6 +4,7 @@
 
 #include "content/public/common/referrer.h"
 
+#include "base/macros.h"
 #include "base/test/gtest_util.h"
 #include "net/url_request/referrer_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"

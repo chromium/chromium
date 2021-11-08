@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_last_error.h"
 
+#include "base/macros.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"

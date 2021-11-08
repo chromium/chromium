@@ -4,6 +4,7 @@
 
 #include "content/public/test/test_storage_partition.h"
 
+#include "base/macros.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"

@@ -5,6 +5,7 @@
 #include "components/remote_cocoa/app_shim/application_bridge.h"
 
 #include "base/bind.h"
+#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/remote_cocoa/app_shim/alert.h"
 #include "components/remote_cocoa/app_shim/color_panel_bridge.h"

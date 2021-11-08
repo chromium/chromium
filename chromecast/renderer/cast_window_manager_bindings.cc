@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/common/feature_constants.h"

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"

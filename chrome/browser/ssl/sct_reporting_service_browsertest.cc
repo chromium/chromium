@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+
 #include "base/callback.h"
+#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"

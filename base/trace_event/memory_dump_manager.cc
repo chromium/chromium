@@ -17,6 +17,7 @@
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"

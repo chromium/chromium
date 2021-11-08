@@ -14,6 +14,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "sandbox/linux/seccomp-bpf/syscall.h"
 #include "sandbox/linux/services/syscall_wrappers.h"

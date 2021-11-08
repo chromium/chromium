@@ -7,6 +7,7 @@
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
 #include "base/check.h"
+#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"

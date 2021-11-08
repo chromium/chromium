@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/macros.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

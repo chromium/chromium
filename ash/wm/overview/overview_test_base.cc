@@ -17,6 +17,7 @@
 #include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 #include "ash/wm/window_preview_view.h"
+#include "base/macros.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/test_utils.h"

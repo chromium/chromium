@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/safe_sprintf.h"
 #include "build/chromeos_buildflags.h"

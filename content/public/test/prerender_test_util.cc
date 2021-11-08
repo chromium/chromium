@@ -5,6 +5,7 @@
 #include "content/public/test/prerender_test_util.h"
 
 #include "base/callback_helpers.h"
+#include "base/macros.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"

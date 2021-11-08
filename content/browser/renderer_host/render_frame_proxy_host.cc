@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/hash/hash.h"
 #include "base/lazy_instance.h"
+#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/trace_event/typed_macros.h"

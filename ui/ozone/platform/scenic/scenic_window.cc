@@ -14,6 +14,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/events/event.h"

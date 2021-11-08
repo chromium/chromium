@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
 #include "sql/database.h"
 #include "sql/statement.h"
