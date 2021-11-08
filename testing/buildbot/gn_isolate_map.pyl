@@ -1456,6 +1456,7 @@
     ],
     "label": "//content/test:performance_web_engine_test_suite",
     "script": "//testing/scripts/run_performance_tests.py",
+    "python3": True,
     "type": "script",
   },
   "performance_webview_test_suite": {
