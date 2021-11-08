@@ -14,30 +14,30 @@ let origin;
 
 // Test that parent window passed its origin in the URL parameters correctly.
 test(() => {
-  assert_true(window.location.search.startsWith('?origin='));
+  assert_true(window.location.search.startsWith("?origin="));
   origin = decodeURIComponent(window.location.search.slice(
-      window.location.search.indexOf('?origin=') + 8));
-}, 'Cross-site window opened correctly');
+      window.location.search.indexOf("?origin=") + 8));
+}, "Cross-site window opened correctly");
 
 // Test that the request to the parent window's origin does not contain the
 // partitioned cookie.
 testHttpPartitionedCookies({
   origin,
-  cookieNames: ['__Host-pchttp', '__Host-pcdom'],
+  cookieNames: ["__Host-pchttp", "__Host-pcdom"],
   expectsCookie: false,
 });
 
-promise_test(async t => {
-  // Create a cross-site <iframe> which embeds the cookies' origin into this
-  // page.
-  const iframe = document.createElement('iframe');
-  const url = new URL(
-      '/cookies/partitioned-cookies/resources/partitioned-cookies-cross-site-embed.html', origin);
-  iframe.src = String(url);
-  document.body.appendChild(iframe);
+// Create a cross-site <iframe> which embeds the cookies' origin into this
+// page.
+const iframe = document.createElement("iframe");
+const url = new URL(
+    "/cookies/partitioned-cookies/resources/" +
+        "partitioned-cookies-cross-site-embed.html",
+    origin);
+iframe.src = String(url);
+document.body.appendChild(iframe);
 
-  fetch_tests_from_window(iframe.contentWindow);
-}, 'Opening embedded cookie site frame');
+fetch_tests_from_window(iframe.contentWindow);
 
 </script>
 </body>

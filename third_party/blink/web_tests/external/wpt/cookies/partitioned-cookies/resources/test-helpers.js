@@ -12,25 +12,25 @@ function testHttpPartitionedCookies({origin, cookieNames, expectsCookie}) {
           cookies.hasOwnProperty(cookieName), expectsCookie,
           getPartitionedCookieAssertDesc(expectsCookie, cookieName));
     }
-  }, getPartitionedCookieTestName(expectsCookie, 'HTTP'));
+  }, getPartitionedCookieTestName(expectsCookie, "HTTP"));
 }
 
 function getPartitionedCookieTestName(expectsCookie, cookieType) {
   if (expectsCookie) {
-    return 'Partitioned cookies accessible on the top-level site they are ' +
+    return "Partitioned cookies accessible on the top-level site they are " +
         `created in via ${cookieType}`;
   }
-  return 'Partitioned cookies are not accessible on a different top-level ' +
+  return "Partitioned cookies are not accessible on a different top-level " +
       `site via ${cookieType}`;
 }
 
 function getPartitionedCookieAssertDesc(expectsCookie, cookieName) {
   if (expectsCookie) {
     return `Expected ${cookieName} to be available on the top-level site it ` +
-        'was created in';
+        "was created in";
   }
   return `Expected ${cookieName} to not be available on a different ` +
-      'top-level site';
+      "top-level site";
 }
 
 function testDomPartitionedCookies({cookieNames, expectsCookie}) {
@@ -40,7 +40,7 @@ function testDomPartitionedCookies({cookieNames, expectsCookie}) {
           document.cookie.includes(cookieName), expectsCookie,
           getPartitionedCookieAssertDesc(expectsCookie, cookieName));
     }
-  }, getPartitionedCookieTestName(expectsCookie, 'DOM'));
+  }, getPartitionedCookieTestName(expectsCookie, "DOM"));
 }
 
 function testCookieStorePartitionedCookies({cookieNames, expectsCookie}) {
@@ -51,5 +51,5 @@ function testCookieStorePartitionedCookies({cookieNames, expectsCookie}) {
           !!cookies.find(c => c.name === cookieName), expectsCookie,
           getPartitionedCookieAssertDesc(expectsCookie, cookieName));
     }
-  }, getPartitionedCookieTestName(expectsCookie, 'CookieStore'));
+  }, getPartitionedCookieTestName(expectsCookie, "CookieStore"));
 }

@@ -12,25 +12,25 @@
 <body>
 <script>
 
-promise_test(async t => {
+document.body.onload = async () => {
   // First, the test sets a SameSite=None;Partitioned; cookie.
-  const attributes = 'Secure;Path=/;SameSite=None;Partitioned';
-  const httpCookieName = '__Host-pchttp';
+  const attributes = "Secure;Path=/;SameSite=None;Partitioned";
+  const httpCookieName = "__Host-pchttp";
   await credFetch(
       `${self.origin}/cookies/resources/set.py?${httpCookieName}=foobar;${
           attributes}`);
 
   // Set another partitioned cookie using document.cookie.
-  const domCookieName = '__Host-pcdom';
+  const domCookieName = "__Host-pcdom";
   document.cookie = `${domCookieName}=foobar;${attributes}`;
 
   // Set another partitioned cookie using the CookieStore API.
-  const cookieStoreCookieName = '__Host-pccookistore';
+  const cookieStoreCookieName = "__Host-pccookistore";
   await cookieStore.set({
     name: cookieStoreCookieName,
-    value: 'foobar',
-    path: '/',
-    sameSite: 'none',
+    value: "foobar",
+    path: "/",
+    sameSite: "none",
     partitioned: true,
   });
 
@@ -62,7 +62,7 @@ promise_test(async t => {
       get_host_info().HTTPS_NOTSAMESITE_ORIGIN + self.location.pathname);
   const popup = window.open(crossSiteUrl);
   fetch_tests_from_window(popup);
-}, 'Test partitioned cookies');
+};
 
 </script>
 </body>
