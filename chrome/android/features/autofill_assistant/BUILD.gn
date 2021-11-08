@@ -14,9 +14,9 @@ import("//tools/grit/grit_rule.gni")
 # enabled.
 android_library("animated_poodle_java") {
   deps = [
-    ":animated_poodle_resources",
     "//base:base_java",
     "//chrome/android:chrome_java",
+    "//components/autofill_assistant/android:animated_poodle_resources",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
   ]
@@ -26,14 +26,9 @@ android_library("animated_poodle_java") {
   resources_package = "org.chromium.chrome.autofill_assistant.poodle"
 }
 
-android_resources("animated_poodle_resources") {
-  sources = [ "java/res_poodle/drawable/ic_autofill_assistant_24dp.xml" ]
-}
-
 android_library("java") {
   resources_package = "org.chromium.chrome.autofill_assistant"
   deps = [
-    ":java_resources",
     "//base:base_java",
     "//chrome/android:base_module_java",
     "//chrome/android:chrome_java",
@@ -49,6 +44,7 @@ android_library("java") {
     "//chrome/browser/util:java",
     "//chrome/browser/version:java",
     "//components/autofill/android:autofill_java",
+    "//components/autofill_assistant/android:java_resources",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
@@ -384,88 +380,6 @@ android_library("test_java") {
   ]
 
   data = [ "//components/test/data/autofill_assistant/" ]
-}
-
-android_resources("java_resources") {
-  sources = [
-    "java/res/drawable/autofill_assistant_actions_gradient.xml",
-    "java/res/drawable/autofill_assistant_circle_background.xml",
-    "java/res/drawable/autofill_assistant_default_details.xml",
-    "java/res/drawable/autofill_assistant_details_bg.xml",
-    "java/res/drawable/autofill_assistant_details_list_divider.xml",
-    "java/res/drawable/autofill_assistant_lightblue_rect_bg.xml",
-    "java/res/drawable/autofill_assistant_rounded_corner_background.xml",
-    "java/res/drawable/autofill_assistant_swipe_indicator.xml",
-    "java/res/drawable/ic_add_outline_white_24dp.xml",
-    "java/res/drawable/ic_airline_seat_recline_normal_black_24dp.xml",
-    "java/res/drawable/ic_autofill_assistant_add_circle_24dp.xml",
-    "java/res/drawable/ic_autofill_assistant_default_progress_start_black_24dp.xml",
-    "java/res/drawable/ic_check_circle_black_24dp.xml",
-    "java/res/drawable/ic_clear_black_chrome_24dp.xml",
-    "java/res/drawable/ic_confirmation_number_black_24dp.xml",
-    "java/res/drawable/ic_directions_car_black_24dp.xml",
-    "java/res/drawable/ic_done_black_24dp.xml",
-    "java/res/drawable/ic_fastfood_black_24dp.xml",
-    "java/res/drawable/ic_grocery_black_24dp.xml",
-    "java/res/drawable/ic_local_dining_black_24dp.xml",
-    "java/res/drawable/ic_overflow_black_24dp.xml",
-    "java/res/drawable/ic_payment_black_24dp.xml",
-    "java/res/drawable/ic_refresh_black_24dp.xml",
-    "java/res/drawable/ic_remove_outline_white_24dp.xml",
-    "java/res/drawable/ic_settings_black_24dp.xml",
-    "java/res/drawable/ic_shopping_basket_black_24dp.xml",
-    "java/res/drawable/ic_shopping_basket_black_24dp.xml",
-    "java/res/drawable/ic_vpn_key_black_24dp.xml",
-    "java/res/layout/autofill_assistant_address_full.xml",
-    "java/res/layout/autofill_assistant_address_summary.xml",
-    "java/res/layout/autofill_assistant_base_onboarding.xml",
-    "java/res/layout/autofill_assistant_bottom_sheet_content.xml",
-    "java/res/layout/autofill_assistant_bottom_sheet_toolbar.xml",
-    "java/res/layout/autofill_assistant_button_assistive.xml",
-    "java/res/layout/autofill_assistant_button_filled.xml",
-    "java/res/layout/autofill_assistant_button_hairline.xml",
-    "java/res/layout/autofill_assistant_contact_full.xml",
-    "java/res/layout/autofill_assistant_contact_summary.xml",
-    "java/res/layout/autofill_assistant_datetime.xml",
-    "java/res/layout/autofill_assistant_details.xml",
-    "java/res/layout/autofill_assistant_form_checkbox.xml",
-    "java/res/layout/autofill_assistant_form_counter.xml",
-    "java/res/layout/autofill_assistant_form_counter_input.xml",
-    "java/res/layout/autofill_assistant_form_information.xml",
-    "java/res/layout/autofill_assistant_form_radiobutton.xml",
-    "java/res/layout/autofill_assistant_form_selection_input.xml",
-    "java/res/layout/autofill_assistant_header.xml",
-    "java/res/layout/autofill_assistant_info_box.xml",
-    "java/res/layout/autofill_assistant_login.xml",
-    "java/res/layout/autofill_assistant_onboarding_no_button.xml",
-    "java/res/layout/autofill_assistant_onboarding_yes_button.xml",
-    "java/res/layout/autofill_assistant_payment_method_full.xml",
-    "java/res/layout/autofill_assistant_payment_method_summary.xml",
-    "java/res/layout/autofill_assistant_payment_request_section_divider.xml",
-    "java/res/layout/autofill_assistant_payment_request_section_title.xml",
-    "java/res/layout/autofill_assistant_payment_request_terms_and_conditions.xml",
-    "java/res/layout/autofill_assistant_popup_list_section.xml",
-    "java/res/layout/autofill_assistant_static_text_section.xml",
-    "java/res/menu/profile_icon_menu.xml",
-    "java/res/values-night-v17/colors.xml",
-    "java/res/values-v17/attrs.xml",
-    "java/res/values-v17/colors.xml",
-    "java/res/values-v17/dimens.xml",
-    "java/res/values-v17/styles.xml",
-  ]
-  deps = [
-    ":java_strings_grd",
-    "//chrome/android:chrome_app_java_resources",
-    "//components/browser_ui/styles/android:java_resources",
-  ]
-}
-
-java_strings_grd("java_strings_grd") {
-  defines = chrome_grit_defines
-  grd_file = "java/strings/android_chrome_autofill_assistant_strings.grd"
-  outputs = [ "values/android_chrome_autofill_assistant_strings.xml" ] + process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/android_chrome_autofill_assistant_strings.xml" ])
 }
 
 if (!incremental_install) {
