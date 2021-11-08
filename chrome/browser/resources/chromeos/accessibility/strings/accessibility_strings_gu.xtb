@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">કૉપિ કરો</translation>
 <translation id="135978014023467274">તમને ChromeVox 63 પર અપડેટ કરવામાં આવ્યા છે!</translation>
 <translation id="1360699455582016846">રૂટિંગ કી <ph name="ROUTING_KEY_NUMBER" /> હેઠળની આઇટમને ક્લિક કરો</translation>
+<translation id="1376703628032300005">આગલા અક્ષર પર ખસેડો</translation>
 <translation id="1377925789329510816">આ છેલ્લું મથાળું છે. આ પેજ પર સીધા જ પ્રથમ મથાળા પર જવા માટે શોધ+H, અથવા બીજા મથાળા પર જવા માટે શોધ+Shift+H દબાવો.</translation>
 <translation id="138218114945450791">આછો વાદળી</translation>
 <translation id="1383876407941801731">શોધો</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">ચેક બૉક્સ</translation>
 <translation id="2461822463642141190">વર્તમાન</translation>
 <translation id="2462626033734746142">રેડિઓ બટન જૂથ</translation>
+<translation id="2467741090055146971">નાપસંદ કરો</translation>
 <translation id="2471138580042810658">મથાળું 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{તારક ચિહ્ન}one{# તારક ચિહ્ન}other{# તારક ચિહ્ન}}</translation>
 <translation id="2490721194269245365">ગુલાબી કથ્થઈ</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">કોઈ પાછલું મીડિયા વિજેટ નથી</translation>
 <translation id="4855927945655956315">આવશ્યક કી: Control</translation>
 <translation id="4862744964787595316">બોલ્ડ નથી</translation>
+<translation id="4865995900839719272">પાછલી લાઇન પર ખસેડો</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS લોગિંગને ચાલુ કરો</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, ટેબ</translation>
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
 <translation id="5310788376443009632">દૂર કર્યું:</translation>
+<translation id="5316825363044614340">આગલી લાઇન પર ખસેડો</translation>
 <translation id="5320727453979144100">સ્ટીકી મોડ સક્ષમ કર્યો</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{અલ્પવિરામ}one{# અલ્પવિરામ}other{# અલ્પવિરામ}}</translation>
 <translation id="532485153932049746">ટેક્સ્ટ ફોર્મેટિંગ
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">કોઈ પાછલી ફોર્મ ફીલ્ડ નથી</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">સહાય</translation>
 <translation id="7317017974771324508">આંશિકરૂપે પસંદ કરેલ</translation>
 <translation id="7322442671176251901">ટચ કરીને શોધખોળ કરો</translation>
 <translation id="7344012264516629579">જમ્પ આદેશોના થોડા નામ આપીએ, તો તેમાં લિંક, બટન અને ચેકબૉક્સ મુજબ જમ્પ કરવાના આદેશો શામેલ છે. ChromeVox મેનૂમાં જમ્પ આદેશોની સંપૂર્ણ સૂચિ મળી શકશે, જેને શોધ + પૂર્ણવિરામ દબાવીને ખોલી શકાશે.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVoxનું ટ્યૂટૉરિઅલ</translation>
 <translation id="9040132695316389094">મથાળું 1</translation>
 <translation id="9061884144798498064">8-ડૉટ બ્રેઇલ કોષ્ટક પસંદ કરો:</translation>
+<translation id="9063946545000394379">પાછલા અક્ષર પર ખસેડો</translation>
 <translation id="9065283790526219006">+પૉપઅપ</translation>
 <translation id="9065912140022662363">કોઈ આગલું રેડિયો બટન નથી</translation>
 <translation id="9067522039955793016">પેજ વિભાજન</translation>

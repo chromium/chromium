@@ -326,6 +326,7 @@
 <translation id="334252345105450327">સ્ક્રીનશૉટ લો</translation>
 <translation id="3351879221545518001">તમે હાલમાં સ્ક્રીનને કાસ્ટ કરી રહ્યા છો.</translation>
 <translation id="3364721542077212959">સ્ટાઇલસનાં સાધનો</translation>
+<translation id="3365977133351922112">તમારો ફોન ઘણો દૂર છે. તમારો ફોન થોડો નજીક લાવો.</translation>
 <translation id="3368922792935385530">કનેક્ટેડ</translation>
 <translation id="3371140690572404006">USB-C ઉપકરણ (જમણી બાજુનું આગળનું પોર્ટ)</translation>
 <translation id="3375634426936648815">કનેક્ટ કરેલું</translation>
@@ -602,6 +603,7 @@
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
 <translation id="5176318573511391780">આંશિક સ્ક્રીન રેકોર્ડ કરો</translation>
 <translation id="5199367439331364630">શું તમારી Chromebookમાં સાઇન ઇન કરવા માટે પાસવર્ડ દાખલ કરો</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{અન્ય 1 નોટિફિકેશન}one{અન્ય # નોટિફિકેશન}other{અન્ય # નોટિફિકેશન}}</translation>
 <translation id="5207949376430453814">ટેક્સ્ટ કૅરેટને હાઇલાઇટ કરો</translation>
 <translation id="5208059991603368177">ચાલુ</translation>
@@ -884,6 +886,7 @@
 <translation id="7398254312354928459">સ્વિચ કરેલ નેટવર્ક કનેક્શન</translation>
 <translation id="7405710164030118432">ડિવાઇસને અનલૉક કરવા માટે, તમારી Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો</translation>
 <translation id="7406608787870898861">તમારા મોબાઇલ નેટવર્કનું સેટઅપ કરવાનું પૂર્ણ કરો</translation>
+<translation id="740790383907119240">ઍપ શૉર્ટકટ</translation>
 <translation id="741244894080940828">રૂપાંતરણ</translation>
 <translation id="7413851974711031813">બંધ કરવા માટે Escape કી દબાવો</translation>
 <translation id="742594950370306541">કૅમેરો ઉપયોગમાં છે.</translation>
@@ -986,6 +989,7 @@
 <translation id="8061464966246066292">ઉચ્ચ કોન્ટ્રાસ્ટ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> પર સ્ક્રીન કાસ્ટ કરવાનું રોકો</translation>
 <translation id="8113423164597455979">ચાલુ, બધી ઍપ</translation>
+<translation id="8120151603115102514">તમારા ફોનમાં લૉક સ્ક્રીનની સુવિધા ચાલુ નથી. તમારી Chromebook અનલૉક કરવા માટે પાસવર્ડ દાખલ કરો.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8132487352815776550">ઉપશીર્ષકો રોકો</translation>
@@ -1034,6 +1038,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />માં <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />છે.</translation>
 <translation id="8477270416194247200">રદ કરવા માટે Alt+શોધો અથવા Shift દબાવો.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" />ને સપોર્ટ આપતું નથી. રિઝોલ્યુશનને <ph name="FALLBACK_RESOLUTION" /> પર બદલવામાં આવ્યું હતું. ફેરફારો રાખવા માટે કન્ફર્મ પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
+<translation id="85123341071060231">તમારી Chromebookનું બ્લૂટૂથ બંધ છે. તમારી Chromebook અનલૉક કરવા માટે પાસવર્ડ દાખલ કરો.</translation>
 <translation id="8513108775083588393">ઑટો રોટેટ</translation>
 <translation id="851458219935658693">વર્તમાન ડેસ્કમાંની બધી વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
 <translation id="8517041960877371778">તમારું <ph name="DEVICE_TYPE" /> ચાલુ હોય ત્યારે તે ચાર્જ ન થાય તેવું બની શકે.</translation>

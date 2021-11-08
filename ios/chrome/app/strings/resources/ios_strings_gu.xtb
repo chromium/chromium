@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">સાઇન ઇન કરતી વખતે કંઈક ખોટું થયું.</translation>
 <translation id="1911619930368729126">Google ડ્રાઇવ પર અપલોડ કરો</translation>
 <translation id="1923342640370224680">છેલ્લી કલાક</translation>
+<translation id="1930989359703290198">તમારી સંસ્થા માત્ર અમુક ચોક્કસ એકાઉન્ટ વડે તમને સાઇન ઇન કરવાની મંજૂરી આપે છે. મંજૂરી ન હોય એવા એકાઉન્ટને છુપાવવામાં આવે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">કૉપિ કરવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="1952172573699511566">જ્યારે શક્ય હશે, ત્યારે વેબસાઇટ તમારી પસંદગીની ભાષામાં ટેક્સ્ટ બતાવશે.</translation>
 <translation id="1965935827552890526">તમે અન્ય ખુલ્લી Chrome વિંડોમાં જે કાર્ય કરતા તા તે પૂર્ણ કરો.</translation>
@@ -386,6 +387,8 @@
 <translation id="4802417911091824046">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસ સામેલ હોતા નથી. 
 
 આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />સિંકને રીસેટ કરો<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે.
+<ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">અમાન્ય કાર્ડ નંબર</translation>
 <translation id="4808744395915275922">અપડેટ</translation>
 <translation id="4818522717893377262">ભાષા ઉમેરો...</translation>

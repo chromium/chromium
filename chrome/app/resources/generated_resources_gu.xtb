@@ -2384,6 +2384,7 @@
 <translation id="3449393517661170867">નવી ટૅબવાળી વિંડો</translation>
 <translation id="3449839693241009168">આદેશોને <ph name="EXTENSION_NAME" /> પર મોકલવા માટે <ph name="SEARCH_KEY" /> દબાવો</translation>
 <translation id="3450157232394774192">નિષ્ક્રિય સ્થિતિ અક્યુપન્સિ ટકા</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે હમણાં વાઇ-ફાઇથી કનેક્ટ થાઓ અને અપડેટ ડાઉનલોડ કરો.</translation>
 <translation id="3451753556629288767">આમની પાસે આ પ્રકારની ફાઇલો ખોલવાની મંજૂરી છે</translation>
 <translation id="3452999110156026232">માતાપિતા માટે ઍક્સેસ</translation>
 <translation id="3453612417627951340">પ્રમાણિતની જરૂર છે</translation>
@@ -4247,6 +4248,7 @@
 <translation id="5472627187093107397">આ સાઇટ માટેનો પાસવર્ડ સાચવો</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{પિન ઓછામાં ઓછો એક અક્ષરનો હોવો આવશ્યક છે}one{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}other{પિન ઓછામાં ઓછો # અક્ષરનો હોવો આવશ્યક છે}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે હમણાં વાઇ-ફાઇથી કનેક્ટ થાઓ અને અપડેટ ડાઉનલોડ કરો. અથવા મીટર્ડ (ડેટા નિયંત્રણ) કનેક્શન પરથી ડાઉનલોડ કરો (શુલ્ક લાગુ થઈ શકે છે).</translation>
 <translation id="5481273127572794904">એકથી વધારે ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરવાની મંજૂરી નથી</translation>
 <translation id="5481941284378890518">નજીકના પ્રિન્ટર્સ ઉમેરો</translation>
 <translation id="5483785310822538350">ફાઇલ અને ઉપકરણ ઍક્સેસને રદબાતલ કરો</translation>
@@ -4670,6 +4672,7 @@
 <translation id="592880897588170157">PDF ફાઇલોને ઑટોમૅટિક રીતે Chromeમાં ખોલવાને બદલે તેને ડાઉનલોડ કરો</translation>
 <translation id="592919310198008711">જ્યારે હું એક્સ્ટેન્શન પર ક્લિક કરું</translation>
 <translation id="5932124097031739492">Linuxને સફળતાપૂર્વક અપગ્રેડ કરવામાં આવ્યું છે.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે તમારી <ph name="DEVICE_TYPE" /> તરત જ અપડેટ કરો.</translation>
 <translation id="5932224571077948991">સાઇટ ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવે છે</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" />નું
 USB ડિવાઇસ</translation>

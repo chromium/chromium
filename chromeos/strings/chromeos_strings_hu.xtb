@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">Problémamegoldási lépések kipróbálása</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">További beállítások</translation>
+<translation id="2104796393919810494">Javítás befejezve</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" />/<ph name="AVAILABLE_MEMORY" /> GB áll rendelkezésre.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -237,6 +238,7 @@
 <translation id="4813345808229079766">Kapcsolat</translation>
 <translation id="4832079907277790330">Mappa kiválasztása a Fájlok alkalmazásban…</translation>
 <translation id="4835901797422965222">Nincs aktív hálózat</translation>
+<translation id="4839698083503556542">Készítsen saját filmet</translation>
 <translation id="484790837831576105">(Android) DNS-felbontás</translation>
 <translation id="4848429997038228357">FUT</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} próbálkozás maradt.}other{<ph name="ERROR_MESSAGE" /> {0} próbálkozás maradt.}}</translation>
