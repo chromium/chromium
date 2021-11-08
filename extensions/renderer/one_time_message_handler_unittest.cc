@@ -16,6 +16,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/api_request_handler.h"
 #include "extensions/renderer/message_target.h"
@@ -97,6 +98,8 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndDontExpectReply) {
                        SerializationFormat::kJson);
   const Message message("\"Hello\"", SerializationFormat::kJson, false);
 
+  v8::HandleScope handle_scope(isolate());
+
   // We should open a message port, send a message, and then close it
   // immediately.
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
@@ -107,17 +110,17 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndDontExpectReply) {
   EXPECT_CALL(*ipc_message_sender(),
               SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
 
-  message_handler()->SendMessage(script_context(), port_id, target,
-                                 messaging_util::kSendMessageChannel, message,
-                                 v8::Local<v8::Function>());
+  message_handler()->SendMessage(
+      script_context(), port_id, target, messaging_util::kSendMessageChannel,
+      message, binding::AsyncResponseType::kNone, v8::Local<v8::Function>());
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
 }
 
-// Tests sending a message and expecting a reply, as in
+// Tests sending a message and expecting a callback reply, as in
 // chrome.runtime.sendMessage({foo: 'bar'}, function(reply) { ... });
-TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectReply) {
+TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectCallbackReply) {
   const PortId port_id(script_context()->context_id(), 0, true,
                        SerializationFormat::kJson);
   const Message message("\"Hello\"", SerializationFormat::kJson, false);
@@ -140,9 +143,9 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectReply) {
                                      messaging_util::kSendMessageChannel));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
 
-  message_handler()->SendMessage(script_context(), port_id, target,
-                                 messaging_util::kSendMessageChannel, message,
-                                 callback);
+  message_handler()->SendMessage(
+      script_context(), port_id, target, messaging_util::kSendMessageChannel,
+      message, binding::AsyncResponseType::kCallback, callback);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 
   // We should have added a pending request to the APIRequestHandler, but
@@ -166,9 +169,58 @@ TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectReply) {
   EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
 }
 
-// Tests disconnecting an opener (initiator of a sendMessage() call); this can
-// happen when no receiving end exists (i.e., no listener to runtime.onMessage).
-TEST_F(OneTimeMessageHandlerTest, DisconnectOpener) {
+// Tests sending a message and expecting a promise reply, as in
+// promise = chrome.runtime.sendMessage({foo: 'bar'});
+TEST_F(OneTimeMessageHandlerTest, SendMessageAndExpectPromiseReply) {
+  const PortId port_id(script_context()->context_id(), 0, true,
+                       SerializationFormat::kJson);
+  const Message message("\"Hello\"", SerializationFormat::kJson, false);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  APIRequestHandler* request_handler =
+      bindings_system()->api_system()->request_handler();
+  EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
+
+  // We should open a message port and send a message, and the message port
+  // should remain open (to allow for a reply).
+  MessageTarget target(MessageTarget::ForExtension(extension()->id()));
+  EXPECT_CALL(*ipc_message_sender(),
+              SendOpenMessageChannel(script_context(), port_id, target,
+                                     messaging_util::kSendMessageChannel));
+  EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
+
+  v8::Local<v8::Promise> promise = message_handler()->SendMessage(
+      script_context(), port_id, target, messaging_util::kSendMessageChannel,
+      message, binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
+  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+  ASSERT_FALSE(promise.IsEmpty());
+
+  // We should have added a pending request to the APIRequestHandler, but
+  // shouldn't yet have fulfilled the related promise.
+  EXPECT_FALSE(request_handler->GetPendingRequestIdsForTesting().empty());
+  EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+  // Deliver the reply; the message port should close.
+  EXPECT_CALL(*ipc_message_sender(),
+              SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
+  const Message reply("\"Hi\"", SerializationFormat::kJson, false);
+  message_handler()->DeliverMessage(script_context(), reply, port_id);
+  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+  EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
+
+  // And the callback should have been triggered, completing the request.
+  EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+  EXPECT_EQ("\"Hi\"", V8ToString(promise->Result(), context));
+  EXPECT_TRUE(request_handler->GetPendingRequestIdsForTesting().empty());
+}
+
+// Tests disconnecting an opener (initiator of a sendMessage() call) when using
+// callbacks. This can happen when no receiving end exists (i.e., no listener to
+// runtime.onMessage).
+TEST_F(OneTimeMessageHandlerTest, DisconnectOpenerCallback) {
   const PortId port_id(script_context()->context_id(), 0, true,
                        SerializationFormat::kJson);
   const Message message("\"Hello\"", SerializationFormat::kJson, false);
@@ -183,9 +235,9 @@ TEST_F(OneTimeMessageHandlerTest, DisconnectOpener) {
               SendOpenMessageChannel(script_context(), port_id, target,
                                      messaging_util::kSendMessageChannel));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
-  message_handler()->SendMessage(script_context(), port_id, target,
-                                 messaging_util::kSendMessageChannel, message,
-                                 callback);
+  message_handler()->SendMessage(
+      script_context(), port_id, target, messaging_util::kSendMessageChannel,
+      message, binding::AsyncResponseType::kCallback, callback);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 
   EXPECT_EQ("undefined", GetGlobalProperty(context, "replyArgs"));
@@ -197,6 +249,40 @@ TEST_F(OneTimeMessageHandlerTest, DisconnectOpener) {
   message_handler()->Disconnect(script_context(), port_id, "No receiving end");
   EXPECT_EQ("[]", GetGlobalProperty(context, "replyArgs"));
   EXPECT_EQ("\"No receiving end\"", GetGlobalProperty(context, "lastError"));
+  EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
+}
+
+// Tests disconnecting an opener (initiator of a sendMessage() call) when using
+// promises. This can happen when no receiving end exists (i.e., no listener to
+// runtime.onMessage).
+TEST_F(OneTimeMessageHandlerTest, DisconnectOpenerPromise) {
+  const PortId port_id(script_context()->context_id(), 0, true,
+                       SerializationFormat::kJson);
+  const Message message("\"Hello\"", SerializationFormat::kJson, false);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  MessageTarget target(MessageTarget::ForExtension(extension()->id()));
+  EXPECT_CALL(*ipc_message_sender(),
+              SendOpenMessageChannel(script_context(), port_id, target,
+                                     messaging_util::kSendMessageChannel));
+  EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
+  v8::Local<v8::Promise> promise = message_handler()->SendMessage(
+      script_context(), port_id, target, messaging_util::kSendMessageChannel,
+      message, binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
+  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+  // Disconnect the opener with an error. The promise should be rejected with
+  // the error and the port should be removed.
+  message_handler()->Disconnect(script_context(), port_id, "No receiving end");
+  EXPECT_EQ(v8::Promise::kRejected, promise->State());
+  ASSERT_TRUE(promise->Result()->IsNativeError());
+  EXPECT_EQ("\"No receiving end\"",
+            GetStringPropertyFromObject(promise->Result().As<v8::Object>(),
+                                        context, "message"));
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
 }
 

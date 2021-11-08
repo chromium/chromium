@@ -24,6 +24,7 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/renderer/api_activity_logger.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/get_script_context.h"
@@ -209,8 +210,15 @@ void NativeRendererMessagingService::SendOneTimeMessage(
   PortId port_id(script_context->context_id(), data->next_port_id++, is_opener,
                  message.format);
 
-  one_time_message_handler_.SendMessage(
-      script_context, port_id, target, method_name, message, response_callback);
+  // TODO(tjudkins): The AsyncResponseType will need to be specified by the
+  // callers to this function when we add promise support to the APIs that call
+  // through to here.
+  binding::AsyncResponseType async_type =
+      response_callback.IsEmpty() ? binding::AsyncResponseType::kNone
+                                  : binding::AsyncResponseType::kCallback;
+  one_time_message_handler_.SendMessage(script_context, port_id, target,
+                                        method_name, message, async_type,
+                                        response_callback);
 }
 
 void NativeRendererMessagingService::PostMessageToPort(

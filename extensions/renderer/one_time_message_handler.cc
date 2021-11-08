@@ -169,15 +169,16 @@ bool OneTimeMessageHandler::HasPort(ScriptContext* script_context,
                            : base::Contains(data->receivers, port_id);
 }
 
-void OneTimeMessageHandler::SendMessage(
+v8::Local<v8::Promise> OneTimeMessageHandler::SendMessage(
     ScriptContext* script_context,
     const PortId& new_port_id,
     const MessageTarget& target,
     const std::string& method_name,
     const Message& message,
+    binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
   v8::Isolate* isolate = script_context->isolate();
-  v8::HandleScope handle_scope(isolate);
+  v8::EscapableHandleScope handle_scope(isolate);
 
   DCHECK(new_port_id.is_opener);
   DCHECK_EQ(script_context->context_id(), new_port_id.context_id);
@@ -187,16 +188,24 @@ void OneTimeMessageHandler::SendMessage(
                                                    kCreateIfMissing);
   DCHECK(data);
 
-  bool wants_response = !response_callback.IsEmpty();
+  v8::Local<v8::Promise> promise;
+  bool wants_response = async_type != binding::AsyncResponseType::kNone;
   int routing_id = RoutingIdForScriptContext(script_context);
   if (wants_response) {
+    // If this is a promise based request no callback should have been passed
+    // in.
+    if (async_type == binding::AsyncResponseType::kPromise)
+      DCHECK(response_callback.IsEmpty());
+
     APIRequestHandler::RequestDetails details =
         bindings_system_->api_system()->request_handler()->AddPendingRequest(
-            script_context->v8_context(), binding::AsyncResponseType::kCallback,
-            response_callback);
+            script_context->v8_context(), async_type, response_callback);
     OneTimeOpener& port = data->openers[new_port_id];
     port.request_id = details.request_id;
     port.routing_id = routing_id;
+    promise = details.promise;
+    DCHECK_EQ(async_type == binding::AsyncResponseType::kPromise,
+              !promise.IsEmpty());
   }
 
   IPCMessageSender* ipc_sender = bindings_system_->GetIPCMessageSender();
@@ -214,6 +223,8 @@ void OneTimeMessageHandler::SendMessage(
     bool close_channel = true;
     ipc_sender->SendCloseMessagePort(routing_id, new_port_id, close_channel);
   }
+
+  return handle_scope.Escape(promise);
 }
 
 void OneTimeMessageHandler::AddReceiver(ScriptContext* script_context,
