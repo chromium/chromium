@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/queue_with_sizes.h"
@@ -606,7 +607,9 @@ void ReadableStreamDefaultController::SetUpFromUnderlyingSource(
   // This method is only called when a WritableStream is being constructed by
   // JavaScript. So the execution context should be valid and this call should
   // not crash.
-  auto controller_value = ToV8(controller, script_state);
+  auto controller_value = ToV8Traits<ReadableStreamDefaultController>::ToV8(
+                              script_state, controller)
+                              .ToLocalChecked();
 
   // 3. Let startAlgorithm be the following steps:
   //   a. Return ? InvokeOrNoop(underlyingSource, "start", « controller »).

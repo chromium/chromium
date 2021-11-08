@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
@@ -23,21 +24,26 @@ ReadableStreamBYOBReader::ReadIntoRequest::ReadIntoRequest(
 void ReadableStreamBYOBReader::ReadIntoRequest::ChunkSteps(
     ScriptState* script_state,
     DOMArrayBufferView* chunk) const {
-  resolver_->Resolve(script_state,
-                     ReadableStream::CreateReadResult(
-                         script_state, ToV8(chunk, script_state), false, true));
+  resolver_->Resolve(script_state, ReadableStream::CreateReadResult(
+                                       script_state,
+                                       ToV8Traits<DOMArrayBufferView>::ToV8(
+                                           script_state, chunk)
+                                           .ToLocalChecked(),
+                                       false, true));
 }
 
 void ReadableStreamBYOBReader::ReadIntoRequest::CloseSteps(
     ScriptState* script_state,
     DOMArrayBufferView* chunk) const {
-  resolver_->Resolve(script_state,
-                     ReadableStream::CreateReadResult(
-                         script_state,
-                         chunk ? ToV8(chunk, script_state)
-                               : static_cast<v8::Local<v8::Value>>(
-                                     v8::Undefined(script_state->GetIsolate())),
-                         true, true));
+  resolver_->Resolve(
+      script_state,
+      ReadableStream::CreateReadResult(
+          script_state,
+          chunk ? ToV8Traits<DOMArrayBufferView>::ToV8(script_state, chunk)
+                      .ToLocalChecked()
+                : static_cast<v8::Local<v8::Value>>(
+                      v8::Undefined(script_state->GetIsolate())),
+          true, true));
 }
 
 void ReadableStreamBYOBReader::ReadIntoRequest::ErrorSteps(

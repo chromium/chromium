@@ -7,6 +7,7 @@
 #include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_abort_signal.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
@@ -1148,7 +1149,8 @@ void ReadableStream::InitWithCountQueueingStrategy(
   auto strategy = CreateTrivialQueuingStrategy(isolate, high_water_mark);
 
   v8::Local<v8::Value> underlying_source_v8 =
-      ToV8(underlying_source, script_state);
+      ToV8Traits<UnderlyingSourceBase>::ToV8(script_state, underlying_source)
+          .ToLocalChecked();
 
   InitInternal(script_state, ScriptValue(isolate, underlying_source_v8),
                strategy, true, exception_state);

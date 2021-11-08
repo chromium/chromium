@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
@@ -13,7 +14,6 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -231,7 +231,9 @@ void WritableStreamDefaultController::SetUpFromUnderlyingSink(
   // This method is only called when a WritableStream is being constructed by
   // JavaScript. So the execution context should be valid and this call should
   // not crash.
-  auto controller_value = ToV8(controller, script_state);
+  auto controller_value = ToV8Traits<WritableStreamDefaultController>::ToV8(
+                              script_state, controller)
+                              .ToLocalChecked();
 
   //  3. Let startAlgorithm be the following steps:
   //      a. Return ? InvokeOrNoop(underlyingSink, "start", « controller »).

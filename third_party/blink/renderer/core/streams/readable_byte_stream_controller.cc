@@ -348,7 +348,9 @@ void ReadableByteStreamController::Enqueue(
       //     ii. Let transferredView be ! Construct(%Uint8Array%, «
       //     transferredBuffer, byteOffset, byteLength »).
       v8::Local<v8::Value> const transferred_view = v8::Uint8Array::New(
-          ToV8(transferred_buffer, script_state).As<v8::ArrayBuffer>(),
+          ToV8Traits<DOMArrayBuffer>::ToV8(script_state, transferred_buffer)
+              .ToLocalChecked()
+              .As<v8::ArrayBuffer>(),
           byte_offset, byte_length);
       //     iii. Perform ! ReadableStreamFulfillReadRequest(stream,
       //     transferredView, false).
@@ -598,8 +600,11 @@ void ReadableByteStreamController::CommitPullIntoDescriptor(
   if (pull_into_descriptor->reader_type == ReaderType::kDefault) {
     //   a. Perform ! ReadableStreamFulfillReadRequest(stream, filledView,
     //   done).
-    ReadableStream::FulfillReadRequest(script_state, stream,
-                                       ToV8(filled_view, script_state), done);
+    ReadableStream::FulfillReadRequest(
+        script_state, stream,
+        ToV8Traits<DOMArrayBufferView>::ToV8(script_state, filled_view)
+            .ToLocalChecked(),
+        done);
   } else {
     // 6. Otherwise,
     //   a. Assert: pullIntoDescriptor’s reader type is "byob".
@@ -803,7 +808,9 @@ void ReadableByteStreamController::SetUpFromUnderlyingSource(
   // undefined.
   StreamAlgorithm* cancel_algorithm = CreateTrivialStreamAlgorithm();
 
-  const auto controller_value = ToV8(controller, script_state);
+  const auto controller_value =
+      ToV8Traits<ReadableByteStreamController>::ToV8(script_state, controller)
+          .ToLocalChecked();
   // 5. If underlyingSourceDict["start"] exists, then set startAlgorithm to an
   // algorithm which returns the result of invoking
   // underlyingSourceDict["start"] with argument list « controller » and
@@ -811,7 +818,10 @@ void ReadableByteStreamController::SetUpFromUnderlyingSource(
   if (underlying_source_dict->hasStart()) {
     start_algorithm = CreateByteStreamStartAlgorithm(
         script_state, underlying_source,
-        ToV8(underlying_source_dict->start(), script_state), controller_value);
+        ToV8Traits<V8UnderlyingSourceStartCallback>::ToV8(
+            script_state, underlying_source_dict->start())
+            .ToLocalChecked(),
+        controller_value);
   }
   // 6. If underlyingSourceDict["pull"] exists, then set pullAlgorithm to an
   // algorithm which returns the result of invoking underlyingSourceDict["pull"]
@@ -819,7 +829,10 @@ void ReadableByteStreamController::SetUpFromUnderlyingSource(
   if (underlying_source_dict->hasPull()) {
     pull_algorithm = CreateAlgorithmFromResolvedMethod(
         script_state, underlying_source,
-        ToV8(underlying_source_dict->pull(), script_state), controller_value);
+        ToV8Traits<V8UnderlyingSourcePullCallback>::ToV8(
+            script_state, underlying_source_dict->pull())
+            .ToLocalChecked(),
+        controller_value);
   }
   // 7. If underlyingSourceDict["cancel"] exists, then set cancelAlgorithm to an
   // algorithm which takes an argument reason and returns the result of invoking
@@ -828,7 +841,10 @@ void ReadableByteStreamController::SetUpFromUnderlyingSource(
   if (underlying_source_dict->hasCancel()) {
     cancel_algorithm = CreateAlgorithmFromResolvedMethod(
         script_state, underlying_source,
-        ToV8(underlying_source_dict->cancel(), script_state), controller_value);
+        ToV8Traits<V8UnderlyingSourceCancelCallback>::ToV8(
+            script_state, underlying_source_dict->cancel())
+            .ToLocalChecked(),
+        controller_value);
   }
   // 8. Let autoAllocateChunkSize be
   // underlyingSourceDict["autoAllocateChunkSize"], if it exists, or undefined
@@ -1491,8 +1507,10 @@ StreamPromiseResolver* ReadableByteStreamController::PullSteps(
     return StreamPromiseResolver::CreateResolved(
         script_state,
         ReadableStream::CreateReadResult(
-            script_state, ToV8(view, script_state), false,
-            To<ReadableStreamDefaultReader>(reader)->for_author_code_));
+            script_state,
+            ToV8Traits<DOMUint8Array>::ToV8(script_state, view)
+                .ToLocalChecked(),
+            false, To<ReadableStreamDefaultReader>(reader)->for_author_code_));
   }
   // 4. Let autoAllocateChunkSize be this.[[autoAllocateChunkSize]].
   const size_t auto_allocate_chunk_size = auto_allocate_chunk_size_;

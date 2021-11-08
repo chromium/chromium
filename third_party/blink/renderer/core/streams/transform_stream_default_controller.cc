@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -13,7 +14,6 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -179,7 +179,9 @@ v8::Local<v8::Value> TransformStreamDefaultController::SetUpFromTransformer(
   // This method is only called when a TransformStream is being constructed by
   // JavaScript. So the execution context should be valid and this call should
   // not crash.
-  auto controller_value = ToV8(controller, script_state);
+  auto controller_value = ToV8Traits<TransformStreamDefaultController>::ToV8(
+                              script_state, controller)
+                              .ToLocalChecked();
 
   // The following steps are reordered from the standard for efficiency, but the
   // effect is the same.

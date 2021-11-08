@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
@@ -57,16 +58,18 @@ class TransformStreamTest : public ::testing::Test {
     ReadableStream* readable = Stream()->Readable();
     WritableStream* writable = Stream()->Writable();
     v8::Local<v8::Object> global = script_state->GetContext()->Global();
-    EXPECT_TRUE(global
-                    ->Set(scope.GetContext(),
-                          V8String(scope.GetIsolate(), "readable"),
-                          ToV8(readable, script_state))
-                    .IsJust());
-    EXPECT_TRUE(global
-                    ->Set(scope.GetContext(),
-                          V8String(scope.GetIsolate(), "writable"),
-                          ToV8(writable, script_state))
-                    .IsJust());
+    EXPECT_TRUE(
+        global
+            ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "readable"),
+                  ToV8Traits<ReadableStream>::ToV8(script_state, readable)
+                      .ToLocalChecked())
+            .IsJust());
+    EXPECT_TRUE(
+        global
+            ->Set(scope.GetContext(), V8String(scope.GetIsolate(), "writable"),
+                  ToV8Traits<WritableStream>::ToV8(script_state, writable)
+                      .ToLocalChecked())
+            .IsJust());
   }
 
  private:
