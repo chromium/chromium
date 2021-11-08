@@ -1136,13 +1136,14 @@ LayoutBlockFlow DIV id="mc"
 LayoutNGBlockFlow DIV id="mc"
   +--LayoutMultiColumnFlowThread (anonymous)
   |  +--LayoutNGBlockFlow (anonymous)
-  |  |  +--LayoutInline SPAN
-  |  |  |  +--LayoutText #text "x"
-  |  +--LayoutNGBlockFlow (anonymous)
-  |  |  +--LayoutNGBlockFlow DIV id="inner"
-  |  +--LayoutNGBlockFlow (anonymous)
-  |  |  +--LayoutInline SPAN
-  |  |  |  +--LayoutText #text "y"
+  |  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  |  +--LayoutInline SPAN
+  |  |  |  |  +--LayoutText #text "x"
+  |  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  |  +--LayoutNGBlockFlow DIV id="inner"
+  |  |  +--LayoutNGBlockFlow (anonymous)
+  |  |  |  +--LayoutInline SPAN
+  |  |  |  |  +--LayoutText #text "y"
   +--LayoutMultiColumnSet (anonymous)
 )DUMP",
               ToSimpleLayoutTree(container));
