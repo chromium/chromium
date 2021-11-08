@@ -2035,8 +2035,7 @@ int HttpCache::Transaction::DoTruncateCachedData() {
   TransitionToState(STATE_TRUNCATE_CACHED_DATA_COMPLETE);
   if (!entry_)
     return OK;
-  if (net_log_.IsCapturing())
-    net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_WRITE_DATA);
+  net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_WRITE_DATA);
   // Truncate the stream.
   return WriteToEntry(kResponseContentIndex, 0, nullptr, 0, io_callback_);
 }
@@ -2044,10 +2043,8 @@ int HttpCache::Transaction::DoTruncateCachedData() {
 int HttpCache::Transaction::DoTruncateCachedDataComplete(int result) {
   TRACE_EVENT0("io", "HttpCacheTransaction::DoInitEntry");
   if (entry_) {
-    if (net_log_.IsCapturing()) {
-      net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_WRITE_DATA,
-                                        result);
-    }
+    net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_WRITE_DATA,
+                                      result);
   }
 
   TransitionToState(STATE_PARTIAL_HEADERS_RECEIVED);
@@ -2254,8 +2251,7 @@ int HttpCache::Transaction::DoCacheReadData() {
   DCHECK(entry_);
   TransitionToState(STATE_CACHE_READ_DATA_COMPLETE);
 
-  if (net_log_.IsCapturing())
-    net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_READ_DATA);
+  net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_READ_DATA);
   if (partial_) {
     return partial_->CacheRead(entry_->disk_entry, read_buf_.get(),
                                read_buf_len_, io_callback_);
@@ -2268,10 +2264,8 @@ int HttpCache::Transaction::DoCacheReadData() {
 
 int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
   TRACE_EVENT0("io", "HttpCacheTransaction::DoCacheReadDataComplete");
-  if (net_log_.IsCapturing()) {
-    net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_READ_DATA,
-                                      result);
-  }
+  net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_READ_DATA,
+                                    result);
 
   if (!cache_.get()) {
     TransitionToState(STATE_NONE);
@@ -3098,8 +3092,7 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
   if (!entry_)
     return OK;
 
-  if (net_log_.IsCapturing())
-    net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_WRITE_INFO);
+  net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_WRITE_INFO);
 
   // Do not cache content with cert errors. This is to prevent not reporting net
   // errors when loading a resource from the cache.  When we load a page over
@@ -3116,8 +3109,8 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
 
     bool stopped = StopCachingImpl(false);
     DCHECK(stopped);
-    if (net_log_.IsCapturing())
-      net_log_.EndEvent(NetLogEventType::HTTP_CACHE_WRITE_INFO);
+    net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_WRITE_INFO,
+                                      OK);
     return OK;
   }
 
@@ -3148,10 +3141,8 @@ int HttpCache::Transaction::WriteResponseInfoToEntry(
 int HttpCache::Transaction::OnWriteResponseInfoToEntryComplete(int result) {
   if (!entry_)
     return OK;
-  if (net_log_.IsCapturing()) {
-    net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_WRITE_INFO,
-                                      result);
-  }
+  net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_WRITE_INFO,
+                                    result);
 
   if (result != io_buf_len_) {
     DLOG(ERROR) << "failed to write response info to cache";
