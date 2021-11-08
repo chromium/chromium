@@ -54,7 +54,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
@@ -123,22 +122,6 @@ Profile* GetMainProfile() {
   return *main_it;
 }
 
-bool IsMainUserAffiliated() {
-  const enterprise_management::PolicyData* policy =
-      policy::PolicyLoaderLacros::main_user_policy_data();
-  const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  if (policy && !policy->user_affiliation_ids().empty() && init_params &&
-      init_params->device_properties &&
-      init_params->device_properties->device_affiliation_ids.has_value()) {
-    const auto& user_ids = policy->user_affiliation_ids();
-    const auto& device_ids =
-        init_params->device_properties->device_affiliation_ids.value();
-    return policy::IsAffiliated({user_ids.begin(), user_ids.end()},
-                                {device_ids.begin(), device_ids.end()});
-  }
-  return false;
-}
 #endif
 
 }  // namespace
@@ -580,7 +563,8 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata() {
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   const bool include_device_info = user && user->IsAffiliated();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  const bool include_device_info = IsMainUserAffiliated();
+  const bool include_device_info =
+      policy::PolicyLoaderLacros::IsMainUserAffiliated();
 #else
   const bool include_device_info = !reporting_settings.value().per_profile;
 #endif

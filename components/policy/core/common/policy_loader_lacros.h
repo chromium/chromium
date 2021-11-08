@@ -56,6 +56,9 @@ class POLICY_EXPORT PolicyLoaderLacros
   // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
   static bool IsMainUserManaged();
 
+  // Return if the main user is affiliated or not.
+  static bool IsMainUserAffiliated();
+
   // Returns the policy data corresponding to the main user to be used by
   // Enterprise Connector policies.
   // TODO(crbug/1245077): Remove once Lacros handles all profiles the same way.
