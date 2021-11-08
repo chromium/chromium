@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/core/common/chrome_schema.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/external_data_manager.h"

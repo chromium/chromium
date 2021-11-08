@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_application_info.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {

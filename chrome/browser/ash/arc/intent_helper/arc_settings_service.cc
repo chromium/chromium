@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/components/settings/timezone_settings.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -33,7 +34,6 @@
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/callback_list.h"
@@ -16,7 +17,6 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"

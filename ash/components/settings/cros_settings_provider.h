@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SETTINGS_CROS_SETTINGS_PROVIDER_H_
-#define CHROMEOS_SETTINGS_CROS_SETTINGS_PROVIDER_H_
+#ifndef ASH_COMPONENTS_SETTINGS_CROS_SETTINGS_PROVIDER_H_
+#define ASH_COMPONENTS_SETTINGS_CROS_SETTINGS_PROVIDER_H_
 
 #include <string>
 
@@ -16,7 +16,7 @@ class Value;
 
 namespace chromeos {
 
-class COMPONENT_EXPORT(CHROMEOS_SETTINGS) CrosSettingsProvider {
+class COMPONENT_EXPORT(ASH_SETTINGS) CrosSettingsProvider {
  public:
   // The callback type that is called to notify the CrosSettings observers
   // about a setting change.
@@ -75,4 +75,4 @@ namespace ash {
 using ::chromeos::CrosSettingsProvider;
 }
 
-#endif  // CHROMEOS_SETTINGS_CROS_SETTINGS_PROVIDER_H_
+#endif  // ASH_COMPONENTS_SETTINGS_CROS_SETTINGS_PROVIDER_H_

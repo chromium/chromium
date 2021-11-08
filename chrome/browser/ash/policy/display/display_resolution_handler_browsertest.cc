@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/shell.h"
@@ -23,7 +24,6 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"

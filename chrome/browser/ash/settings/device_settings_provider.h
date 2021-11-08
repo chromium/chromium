@@ -8,12 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_provider.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "components/ownership/owner_settings_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"

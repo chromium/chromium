@@ -137,6 +137,7 @@ source_set("crosapi") {
   deps = [
     "//ash",
     "//ash/components/account_manager",
+    "//ash/components/settings:settings",
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
@@ -164,7 +165,6 @@ source_set("crosapi") {
     "//chromeos/login/login_state",
     "//chromeos/network",
     "//chromeos/services/machine_learning/public/cpp",
-    "//chromeos/settings:settings",
     "//chromeos/startup:constants",
     "//chromeos/system",
     "//chromeos/tpm",

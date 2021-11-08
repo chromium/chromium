@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/settings/timezone_settings_helper.h"
+#include "ash/components/settings/timezone_settings_helper.h"
 
 #include "base/check.h"
 #include "base/component_export.h"
@@ -10,7 +10,7 @@
 namespace chromeos {
 namespace system {
 
-COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+COMPONENT_EXPORT(ASH_SETTINGS)
 const icu::TimeZone* GetKnownTimezoneOrNull(
     const icu::TimeZone& timezone,
     const std::vector<std::unique_ptr<icu::TimeZone>>& timezone_list) {

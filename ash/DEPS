@@ -81,7 +81,6 @@ include_rules = [
   "+chromeos/services/nearby/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",
-  "+chromeos/settings/timezone_settings.h",
   "+chromeos/strings",
   "+chromeos/system",
   "+chromeos/ui",

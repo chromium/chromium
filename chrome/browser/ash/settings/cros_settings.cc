@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/system_settings_provider.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -16,8 +18,6 @@
 #include "chrome/browser/ash/settings/device_settings_provider.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/supervised_user_cros_settings_provider.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/system_settings_provider.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {

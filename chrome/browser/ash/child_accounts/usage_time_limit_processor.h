@@ -13,9 +13,9 @@
 #include <set>
 #include <unordered_map>
 
+#include "ash/components/settings/timezone_settings.h"
 #include "base/macros.h"
 #include "base/time/time.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

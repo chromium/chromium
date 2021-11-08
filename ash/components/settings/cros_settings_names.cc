@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/settings/cros_settings_names.h"
+#include "ash/components/settings/cros_settings_names.h"
 
 namespace chromeos {
 

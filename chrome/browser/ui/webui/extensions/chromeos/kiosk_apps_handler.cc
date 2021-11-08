@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/crx_file/id_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"

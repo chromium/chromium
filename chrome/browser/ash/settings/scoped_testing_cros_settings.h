@@ -10,7 +10,7 @@
 #include "base/macros.h"
 // TODO(https://crbug.com/1164001): forward declare SystemSettingsProvider when
 // moved to ash.
-#include "chromeos/settings/system_settings_provider.h"
+#include "ash/components/settings/system_settings_provider.h"
 
 namespace ash {
 

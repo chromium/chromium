@@ -493,6 +493,7 @@ static_library("test_support") {
       "//ash",
       "//ash:test_support",
       "//ash/components/account_manager",
+      "//ash/components/settings",
       "//ash/constants",
       "//ash/public/cpp:test_support",
       "//chrome/browser/chromeos",
@@ -500,7 +501,6 @@ static_library("test_support") {
       "//chromeos/dbus/tpm_manager",
       "//chromeos/dbus/userdataauth",
       "//chromeos/login/login_state",
-      "//chromeos/settings",
       "//chromeos/tpm",
       "//chromeos/tpm:test_support",
       "//components/exo",
@@ -9526,11 +9526,11 @@ if (is_chromeos_ash) {
     ]
     deps = [
       ":consistency_golden_proto",
+      "//ash/components/settings",
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser/chromeos",
-      "//chromeos/settings",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/icu",

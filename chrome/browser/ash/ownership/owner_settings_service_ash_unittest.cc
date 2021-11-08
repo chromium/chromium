@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
@@ -22,7 +23,6 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

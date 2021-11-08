@@ -10,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/timezone_settings.h"
 #include "base/bind.h"
 #include "base/environment.h"
 #include "base/macros.h"
@@ -48,8 +50,6 @@
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/device_management_backend.pb.h"

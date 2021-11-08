@@ -4,8 +4,8 @@
 
 #include <memory>
 
+#include "ash/components/settings/timezone_settings_helper.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/settings/timezone_settings_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"

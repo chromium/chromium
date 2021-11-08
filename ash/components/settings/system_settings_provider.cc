@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/settings/system_settings_provider.h"
+#include "ash/components/settings/system_settings_provider.h"
 
 #include <memory>
 #include <string>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/settings/cros_settings_names.h"
 
 namespace chromeos {
 namespace {

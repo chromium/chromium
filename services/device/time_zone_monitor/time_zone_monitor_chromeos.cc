@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/components/settings/timezone_settings.h"
 #include "base/macros.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace device {

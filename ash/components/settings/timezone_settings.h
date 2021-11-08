@@ -2,24 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_H_
-#define CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_H_
+#ifndef ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_
+#define ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_
 
 #include <string>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_provider.h"
 #include "base/component_export.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace chromeos {
 namespace system {
 
 // Canonical name of UTC timezone.
-COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kUTCTimezoneName[];
+COMPONENT_EXPORT(ASH_SETTINGS) extern const char kUTCTimezoneName[];
 
 // This interface provides access to Chrome OS timezone settings.
-class COMPONENT_EXPORT(CHROMEOS_SETTINGS) TimezoneSettings {
+class COMPONENT_EXPORT(ASH_SETTINGS) TimezoneSettings {
  public:
   class Observer {
    public:
@@ -62,4 +62,4 @@ using ::chromeos::system::TimezoneSettings;
 }  // namespace system
 }  // namespace ash
 
-#endif  // CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_H_
+#endif  // ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/date_time_handler.h"
 
+#include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/bind.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"

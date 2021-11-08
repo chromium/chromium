@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/handlers/lock_to_single_user_manager.h"
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -16,7 +17,6 @@
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/login/session/session_termination_manager.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
 using RebootOnSignOutPolicy =

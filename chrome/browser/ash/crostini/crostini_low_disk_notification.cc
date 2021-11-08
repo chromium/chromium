@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"

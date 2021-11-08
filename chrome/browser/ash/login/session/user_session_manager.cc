@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base_paths.h"
@@ -127,7 +128,6 @@
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/prepare_tpm.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"

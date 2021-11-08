@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_HELPER_H_
-#define CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_HELPER_H_
+#ifndef ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_HELPER_H_
+#define ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_HELPER_H_
 
 #include <memory>
 #include <vector>
@@ -23,4 +23,4 @@ const icu::TimeZone* GetKnownTimezoneOrNull(
 }  // namespace system
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SETTINGS_TIMEZONE_SETTINGS_HELPER_H_
+#endif  // ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_HELPER_H_

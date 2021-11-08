@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SETTINGS_SYSTEM_SETTINGS_PROVIDER_H_
-#define CHROMEOS_SETTINGS_SYSTEM_SETTINGS_PROVIDER_H_
+#ifndef ASH_COMPONENTS_SETTINGS_SYSTEM_SETTINGS_PROVIDER_H_
+#define ASH_COMPONENTS_SETTINGS_SYSTEM_SETTINGS_PROVIDER_H_
 
 #include <memory>
 #include <string>
 
+#include "ash/components/settings/cros_settings_provider.h"
+#include "ash/components/settings/timezone_settings.h"
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "chromeos/settings/cros_settings_provider.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {
@@ -21,7 +21,7 @@ class Value;
 
 namespace chromeos {
 
-class COMPONENT_EXPORT(CHROMEOS_SETTINGS) SystemSettingsProvider
+class COMPONENT_EXPORT(ASH_SETTINGS) SystemSettingsProvider
     : public CrosSettingsProvider,
       public system::TimezoneSettings::Observer {
  public:
@@ -57,4 +57,4 @@ namespace ash {
 using ::chromeos::SystemSettingsProvider;
 }  // namespace ash
 
-#endif  // CHROMEOS_SETTINGS_SYSTEM_SETTINGS_PROVIDER_H_
+#endif  // ASH_COMPONENTS_SETTINGS_SYSTEM_SETTINGS_PROVIDER_H_

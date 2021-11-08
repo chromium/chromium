@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_provider.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "components/prefs/pref_value_map.h"
 
 namespace ash {

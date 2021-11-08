@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "apps/test/app_window_waiter.h"
+#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
@@ -90,7 +91,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/disks/disk_mount_manager.h"
-#include "chromeos/settings/cros_settings_provider.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/prefs/pref_service.h"

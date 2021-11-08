@@ -6,6 +6,7 @@
 
 #include "ash/components/audio/cras_audio_handler.h"
 #include "ash/components/geolocation/simple_geolocation_provider.h"
+#include "ash/components/settings/timezone_settings.h"
 #include "ash/components/timezone/timezone_request.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -89,7 +90,6 @@
 #include "chromeos/dbus/userdataauth/fake_install_attributes_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/test/chromeos_test_utils.h"

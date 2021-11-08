@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
@@ -92,7 +93,6 @@
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/session/session_termination_manager.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_util.h"

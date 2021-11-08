@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/disks/disk_mount_manager.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/arc/session/arc_service_manager.h"
 #include "components/keyed_service/core/keyed_service.h"

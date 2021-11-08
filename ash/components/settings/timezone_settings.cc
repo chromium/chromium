@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/settings/timezone_settings.h"
+#include "ash/components/settings/timezone_settings.h"
 
 #include <stddef.h>
 
 #include <memory>
 #include <string>
 
+#include "ash/components/settings/timezone_settings_helper.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
@@ -25,7 +26,6 @@
 #include "base/task/post_task.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chromeos/settings/timezone_settings_helper.h"
 
 namespace chromeos {
 namespace system {

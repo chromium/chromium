@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <utility>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/guid.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
@@ -18,7 +19,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printer_translator.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"

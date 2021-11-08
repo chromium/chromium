@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/browser_util.h"
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
@@ -24,7 +25,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/scoped_user_manager.h"

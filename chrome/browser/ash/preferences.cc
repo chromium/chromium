@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
+#include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/timezone/timezone_resolver.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -50,7 +51,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/pciguard/pciguard_client.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/system/devicemode.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/drive/drive_pref_names.h"

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/components/settings/timezone_settings.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/task_executor_with_retries.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "services/device/public/mojom/wake_lock.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"

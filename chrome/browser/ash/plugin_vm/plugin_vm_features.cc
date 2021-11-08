@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "base/feature_list.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"

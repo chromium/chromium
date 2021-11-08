@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/settings/chromeos/date_time_section.h"
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "ash/components/settings/system_settings_provider.h"
+#include "ash/components/settings/timezone_settings.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,9 +17,6 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/settings/system_settings_provider.h"
-#include "chromeos/settings/timezone_settings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
