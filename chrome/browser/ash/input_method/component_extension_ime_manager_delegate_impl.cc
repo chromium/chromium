@@ -199,10 +199,8 @@ void ComponentExtensionIMEManagerDelegateImpl::Load(
     // IME extension when the feature 'ImeMojoDecoder' is enabled.
     // See http://b/181170189 for more details.
     // TODO(http://b/170278753): Remove this once NaCl decoder is removed.
-    if (base::FeatureList::IsEnabled(features::kImeMojoDecoder)) {
-      base::ReplaceFirstSubstringAfterOffset(manifest_cp, 0, "background.html",
-                                             "background_mojo.html");
-    }
+    base::ReplaceFirstSubstringAfterOffset(manifest_cp, 0, "background.html",
+                                           "background_mojo.html");
     DoLoadExtension(profile, extension_id, *manifest_cp, file_path);
     return;
   }

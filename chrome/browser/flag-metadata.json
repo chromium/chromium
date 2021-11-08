@@ -1634,11 +1634,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enable-cros-ime-service-decoder",
-    "owners": [ "essential-inputs-team@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "enable-cros-ime-stylus-handwriting",
     "owners": ["jopalmer", "essential-inputs-team@google.com"],
     "expiry_milestone" : 100

@@ -680,10 +680,6 @@ const base::Feature kHoldingSpaceIncognitoProfileIntegration{
 const base::Feature kSnoopingProtection{"SnoopingProtection",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable or disable IME decoder via Mojo connection on Chrome OS.
-const base::Feature kImeMojoDecoder{"ImeMojoDecoder",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable or disable MOZC IME to use protobuf as interactive message format.
 const base::Feature kImeMozcProto{"ImeMozcProto",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1335,8 +1331,7 @@ bool IsArcNetworkDiagnosticsButtonEnabled() {
 }
 
 bool IsAssistiveMultiWordEnabled() {
-  return base::FeatureList::IsEnabled(kImeMojoDecoder) &&
-         base::FeatureList::IsEnabled(kSystemLatinPhysicalTyping) &&
+  return base::FeatureList::IsEnabled(kSystemLatinPhysicalTyping) &&
          base::FeatureList::IsEnabled(kAssistMultiWord);
 }
 
@@ -1760,23 +1755,19 @@ bool IsStylusBatteryStatusEnabled() {
 }
 
 bool IsSystemChinesePhysicalTypingEnabled() {
-  return base::FeatureList::IsEnabled(kImeMojoDecoder) &&
-         base::FeatureList::IsEnabled(kSystemChinesePhysicalTyping);
+  return base::FeatureList::IsEnabled(kSystemChinesePhysicalTyping);
 }
 
 bool IsSystemJapanesePhysicalTypingEnabled() {
-  return base::FeatureList::IsEnabled(kImeMojoDecoder) &&
-         base::FeatureList::IsEnabled(kSystemJapanesePhysicalTyping);
+  return base::FeatureList::IsEnabled(kSystemJapanesePhysicalTyping);
 }
 
 bool IsSystemKoreanPhysicalTypingEnabled() {
-  return base::FeatureList::IsEnabled(kImeMojoDecoder) &&
-         base::FeatureList::IsEnabled(kSystemKoreanPhysicalTyping);
+  return base::FeatureList::IsEnabled(kSystemKoreanPhysicalTyping);
 }
 
 bool IsSystemLatinPhysicalTypingEnabled() {
-  return base::FeatureList::IsEnabled(kImeMojoDecoder) &&
-         base::FeatureList::IsEnabled(kSystemLatinPhysicalTyping);
+  return base::FeatureList::IsEnabled(kSystemLatinPhysicalTyping);
 }
 
 bool IsTabClusterUIEnabled() {

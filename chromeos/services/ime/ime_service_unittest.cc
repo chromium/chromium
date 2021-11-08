@@ -173,8 +173,7 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
  protected:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kImeMojoDecoder,
-                              features::kSystemLatinPhysicalTyping},
+        /*enabled_features=*/{features::kSystemLatinPhysicalTyping},
         /*disabled_features=*/{});
 
     FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state_));

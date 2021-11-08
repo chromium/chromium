@@ -223,23 +223,10 @@ TEST_F(AssistiveSuggesterTest,
 }
 
 TEST_F(AssistiveSuggesterTest,
-       MultiWordDisabledWhenFeatureFlagEnabledButImeServiceDisabled) {
+       MultiWordDisabledWhenFeatureFlagEnabledButSystemPkDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{features::kEmojiSuggestAddition,
-                             features::kAssistPersonalInfo,
-                             features::kImeMojoDecoder});
-
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest,
-       MultiWordDisabledWhenFeatureFlagAndImeServiceEnableButSystemPkDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord,
-                            features::kImeMojoDecoder},
       /*disabled_features=*/{features::kEmojiSuggestAddition,
                              features::kAssistPersonalInfo,
                              features::kSystemLatinPhysicalTyping});
@@ -251,7 +238,6 @@ TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistMultiWord,
-                            features::kImeMojoDecoder,
                             features::kSystemLatinPhysicalTyping},
       /*disabled_features=*/{features::kEmojiSuggestAddition,
                              features::kAssistPersonalInfo});

@@ -159,7 +159,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName,
                               features::kEmojiSuggestAddition,
-                              features::kImeMojoDecoder,
                               features::kSystemLatinPhysicalTyping},
         /*disabled_features=*/{});
 
@@ -182,7 +181,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName,
                               features::kEmojiSuggestAddition,
-                              features::kImeMojoDecoder,
                               features::kSystemLatinPhysicalTyping,
                               features::kAssistMultiWord},
         /*disabled_features=*/{});
@@ -588,7 +586,6 @@ class NativeInputMethodEngineWithRenderViewHostTest
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName,
                               features::kEmojiSuggestAddition,
-                              features::kImeMojoDecoder,
                               features::kSystemLatinPhysicalTyping},
         /*disabled_features=*/{});
 
