@@ -91,9 +91,9 @@ GURL StreamingRuntimeApplication::InitializeAndGetInitialURL(
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
       task_runner(), network_context_getter_, std::move(server_port), this,
-      true,
-      app_config().app_id() !=
-          openscreen::cast::GetIosAppStreamingAudioVideoAppId());
+      /* supports_audio= */ app_config().app_id() !=
+          openscreen::cast::GetIosAppStreamingAudioVideoAppId(),
+      /* supports_video= */ true);
   receiver_session_client_->LaunchStreamingReceiverAsync(cast_web_contents);
 
   std::string streaming_url =

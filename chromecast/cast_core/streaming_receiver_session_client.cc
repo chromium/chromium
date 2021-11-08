@@ -346,11 +346,16 @@ bool StreamingReceiverSessionClient::OnMessage(
 
   auto constraints = CreateConstraints(*deserializer);
   if (!supports_audio_) {
+    LOG(WARNING) << "Disallowing audio for this streaming session!";
     constraints.audio_codecs.clear();
     constraints.audio_limits.clear();
   }
   if (!supports_video_) {
+    LOG(WARNING) << "Disallowing video for this streaming session!";
     constraints.video_codecs.clear();
+  }
+  if (supports_audio_ && supports_video_) {
+    DLOG(INFO) << "Allowing both audio and video for this streaming session!";
   }
 
   streaming_state_ |= LaunchState::kAVSettingsReceived;
