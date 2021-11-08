@@ -9,6 +9,7 @@ import("//tools/polymer/html_to_js.gni")
 polymer_element_files = [
   "google_photos_element.js",
   "local_images_element.js",
+  "personalization_grid_item_element.js",
   "personalization_router_element.js",
   "personalization_toast_element.js",
   "wallpaper_breadcrumb_element.js",
@@ -84,6 +85,7 @@ js_library("personalization_app") {
   deps = [
     ":google_photos_element",
     ":local_images_element",
+    ":personalization_grid_item_element",
     ":personalization_message_handler",
     ":personalization_reducers",
     ":personalization_router_element",
@@ -104,6 +106,13 @@ js_library("personalization_controller") {
     ":personalization_actions",
     ":personalization_store",
     "../common:utils",
+  ]
+}
+
+js_library("personalization_grid_item_element") {
+  deps = [
+    "../common:styles",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -231,6 +240,7 @@ js_type_check("closure_compile") {
     ":mojo_interface_provider",
     ":personalization_actions",
     ":personalization_app",
+    ":personalization_grid_item_element",
     ":personalization_reducers",
     ":personalization_router_element",
     ":personalization_store",

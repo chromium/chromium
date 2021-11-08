@@ -171,14 +171,10 @@ export class GooglePhotos extends WithPersonalizationStore {
     document.title = this.i18n('googlePhotosLabel');
     this.shadowRoot.getElementById('main').focus();
 
-    // When iron-list items change while their parent element is hidden, the
-    // iron-list will render incorrectly. Force another layout to happen by
-    // firing an iron-resize event when this element becomes visible.
-    afterNextRender(this, () => {
-      [...this.shadowRoot.querySelectorAll('iron-list')].forEach(ironList => {
-        ironList.fire('iron-resize');
-      });
-    });
+    // When grid items change while their parent element is hidden, the grid
+    // will render incorrectly. Force relayout by invalidating the grid for the
+    // currently selected tab when this element becomes visible.
+    afterNextRender(this, () => this.invalidateGrid_());
   }
 
   /**
@@ -290,12 +286,41 @@ export class GooglePhotos extends WithPersonalizationStore {
    * @private
    */
   onTabSelected_(e) {
+    const previousTab = this.tab_;
+
     switch (e.currentTarget.id) {
       case 'albumsTab':
         this.tab_ = Tab.Albums;
-        return;
+        break;
       case 'photosTab':
         this.tab_ = Tab.Photos;
+        break;
+      default:
+        assertNotReached();
+        break;
+    }
+
+    // When grid items change while their parent element is hidden, the grid
+    // will render incorrectly. Force relayout by invalidating the grid for the
+    // currently selected tab when it becomes visible.
+    if (this.tab_ !== previousTab) {
+      afterNextRender(this, () => this.invalidateGrid_());
+    }
+  }
+
+  /**
+   * Invalidates the grid for the currently selected tab to force relayout.
+   * @private
+   */
+  invalidateGrid_() {
+    switch (this.tab_) {
+      case Tab.Albums:
+        // Firing 'iron-resize' event forces relayout of 'iron-list'.
+        this.shadowRoot.querySelector('#albumsGrid').fire('iron-resize');
+        return;
+      case Tab.Photos:
+        // Firing 'iron-resize' event forces relayout of 'iron-list'.
+        this.shadowRoot.querySelector('#photosGrid').fire('iron-resize');
         return;
       default:
         assertNotReached();

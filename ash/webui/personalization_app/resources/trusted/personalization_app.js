@@ -11,6 +11,7 @@
 import '/strings.m.js';
 import './google_photos_element.js';
 import './local_images_element.js';
+import './personalization_grid_item_element.js';
 import './personalization_router_element.js';
 import './personalization_test_api.js';
 import './personalization_toast_element.js';
