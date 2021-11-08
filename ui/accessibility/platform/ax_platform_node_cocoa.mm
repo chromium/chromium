@@ -955,11 +955,10 @@ bool IsAXSetter(SEL selector) {
     case ax::mojom::Role::kTab:
       // There is no NSAccessibilityTabRole or similar (AXRadioButton is used
       // instead). Do the same as NSTabView and put "tab" in the description.
-      return [l10n_util::GetNSStringWithFixup(IDS_ACCNAME_TAB_ROLE_DESCRIPTION)
-          lowercaseString];
+      return [l10n_util::GetNSStringWithFixup(IDS_AX_ROLE_TAB) lowercaseString];
     case ax::mojom::Role::kDisclosureTriangle:
-      return [l10n_util::GetNSStringWithFixup(
-          IDS_ACCNAME_DISCLOSURE_TRIANGLE_ROLE_DESCRIPTION) lowercaseString];
+      return [l10n_util::GetNSStringWithFixup(IDS_AX_ROLE_DISCLOSURE_TRIANGLE)
+          lowercaseString];
     default:
       break;
   }
