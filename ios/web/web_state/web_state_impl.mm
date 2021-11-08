@@ -147,6 +147,14 @@ void WebStateImpl::SetDelegate(WebStateDelegate* delegate) {
   }
 }
 
+bool WebStateImpl::IsRealized() const {
+  return true;
+}
+
+WebState* WebStateImpl::ForceRealized() {
+  return this;
+}
+
 void WebStateImpl::AddObserver(WebStateObserver* observer) {
   DCHECK(!observers_.HasObserver(observer));
   observers_.AddObserver(observer);

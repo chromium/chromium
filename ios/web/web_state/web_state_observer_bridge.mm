@@ -147,6 +147,12 @@ void WebStateObserverBridge::RenderProcessGone(web::WebState* web_state) {
   }
 }
 
+void WebStateObserverBridge::WebStateRealized(web::WebState* web_state) {
+  if ([observer_ respondsToSelector:@selector(webStateRealized:)]) {
+    [observer_ webStateRealized:web_state];
+  }
+}
+
 void WebStateObserverBridge::WebStateDestroyed(web::WebState* web_state) {
   SEL selector = @selector(webStateDestroyed:);
   if ([observer_ respondsToSelector:selector]) {

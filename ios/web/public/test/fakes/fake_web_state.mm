@@ -83,6 +83,15 @@ WebStateDelegate* FakeWebState::GetDelegate() {
 
 void FakeWebState::SetDelegate(WebStateDelegate* delegate) {}
 
+bool FakeWebState::IsRealized() const {
+  // FakeWebState cannot be unrealized.
+  return true;
+}
+
+WebState* FakeWebState::ForceRealized() {
+  return this;
+}
+
 BrowserState* FakeWebState::GetBrowserState() const {
   return browser_state_;
 }

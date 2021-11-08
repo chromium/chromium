@@ -143,6 +143,10 @@ class WebStateObserver {
   // possibly by other means).
   virtual void RenderProcessGone(WebState* web_state) {}
 
+  // Invoked when the WebState becomes realized (e.g. when it becomes fully
+  // operational after being restored).
+  virtual void WebStateRealized(WebState* web_state) {}
+
   // Invoked when the WebState is being destroyed. Gives subclasses a chance
   // to cleanup.
   virtual void WebStateDestroyed(WebState* web_state) {}

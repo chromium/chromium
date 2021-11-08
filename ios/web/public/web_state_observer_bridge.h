@@ -77,6 +77,9 @@ class NavigationContext;
 // Invoked by WebStateObserverBridge::RenderProcessGone.
 - (void)renderProcessGoneForWebState:(web::WebState*)webState;
 
+// Invoked by WebStateObserverBridge::WebStateRealized.
+- (void)webStateRealized:(web::WebState*)webState;
+
 // Note: after |webStateDestroyed:| is invoked, the WebState being observed
 // is no longer valid.
 - (void)webStateDestroyed:(web::WebState*)webState;
@@ -123,6 +126,7 @@ class WebStateObserverBridge : public web::WebStateObserver {
   void WebFrameWillBecomeUnavailable(WebState* web_state,
                                      WebFrame* web_frame) override;
   void RenderProcessGone(web::WebState* web_state) override;
+  void WebStateRealized(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:

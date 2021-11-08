@@ -189,6 +189,8 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   OnceGetter CreateDefaultOnceGetter() override;
   WebStateDelegate* GetDelegate() override;
   void SetDelegate(WebStateDelegate* delegate) override;
+  bool IsRealized() const final;
+  WebState* ForceRealized() final;
   bool IsWebUsageEnabled() const override;
   void SetWebUsageEnabled(bool enabled) override;
   UIView* GetView() override;
