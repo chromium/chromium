@@ -20,6 +20,13 @@ import os
 import re
 import sys
 
+_DISALLOW_NON_BLINK_MOJOM = (
+    # network::mojom::Foo is allowed to use as non-blink mojom type.
+    '(|::)(?!network::)(\w+::)?mojom::(?!blink).+',
+    'Using non-blink mojom types, consider using "::mojom::blink::Foo" instead'
+    'of "::mojom::Foo" unless you have clear reasons not to do so.',
+    'Warning')
+
 _CONFIG = [
     {
         'paths': ['third_party/blink/renderer/'],
@@ -621,10 +628,7 @@ _CONFIG = [
              'However, it is fine to use std containers at the boundary layer between Blink and Chromium. '
              'If you are in this case, you can use --bypass-hooks option to avoid the presubmit check when uploading your CL.'
              ),
-            # network::mojom::Foo is allowed to use as non-blink mojom type.
-            ('(|::)(?!network::)(\w+::)?mojom::(?!blink).+',
-             'Using non-blink mojom types, consider using "::mojom::blink::Foo" instead of "::mojom::Foo" unless you have clear reasons not to do so',
-             'Warning'),
+            _DISALLOW_NON_BLINK_MOJOM,
         ],
     },
     {
@@ -1312,6 +1316,11 @@ _CONFIG = [
         # WTF::RefCounted should be used instead. base::RefCountedThreadSafe is
         # still needed for cross_thread_copier.h though.
         'allowed': ['base::RefCountedThreadSafe', '(?!base::RefCounted).+'],
+        'disallowed': [
+            # TODO(https://crbug.com/1267866): this warning is shown twice for
+            # renderer/platform/ violations.
+            _DISALLOW_NON_BLINK_MOJOM,
+        ]
     },
     {
         'paths': [
@@ -1739,9 +1748,8 @@ def check(path, contents):
         idx = line.find('//')
         if idx >= 0:
             line = line[:idx]
-        match = _IDENTIFIER_WITH_NAMESPACE_RE.search(line)
-        if match:
-            identifier = match.group(0)
+        identifiers = _IDENTIFIER_WITH_NAMESPACE_RE.findall(line)
+        for identifier in identifiers:
             if not _check_entries_for_identifier(entries, identifier):
                 advice, warning = _find_advice_for_identifier(
                     entries, identifier)
