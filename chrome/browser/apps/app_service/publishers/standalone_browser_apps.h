@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,12 +24,9 @@ class BrowserAppInstanceRegistry;
 // which launches the lacros-chrome binary.
 //
 // See components/services/app_service/README.md.
-class StandaloneBrowserApps : public apps::PublisherBase {
+class StandaloneBrowserApps : public apps::PublisherBase, public AppPublisher {
  public:
-  StandaloneBrowserApps(
-      const mojo::Remote<apps::mojom::AppService>& app_service,
-      Profile* profile,
-      BrowserAppInstanceRegistry* registry);
+  explicit StandaloneBrowserApps(AppServiceProxy* proxy);
   ~StandaloneBrowserApps() override;
 
   StandaloneBrowserApps(const StandaloneBrowserApps&) = delete;
@@ -36,14 +34,24 @@ class StandaloneBrowserApps : public apps::PublisherBase {
 
  private:
   // Returns the single lacros app.
+  std::unique_ptr<App> CreateStandaloneBrowserApp();
+
+  // Returns the single lacros app.
   apps::mojom::AppPtr GetStandaloneBrowserApp();
 
-  // Returns an IconKey with appropriate effects for the binary ready state.
-  enum class State { kError, kReady };
-  apps::mojom::IconKeyPtr NewIconKey(State state);
+  // Returns an IconKey with appropriate effects.
+  apps::mojom::IconKeyPtr NewIconKey();
 
   // Callback when the binary download completes.
   void OnLoadComplete(bool success);
+
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
 
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -66,6 +74,7 @@ class StandaloneBrowserApps : public apps::PublisherBase {
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   Profile* const profile_;
+  bool is_browser_load_success_ = true;
   BrowserAppInstanceRegistry* browser_app_instance_registry_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
   base::WeakPtrFactory<StandaloneBrowserApps> weak_factory_{this};

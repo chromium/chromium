@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,9 +21,12 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "components/arc/test/fake_app_instance.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -148,6 +152,42 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
               l10n_util::GetStringUTF8(internal_app.name_string_resource_id),
               Readiness::kReady);
   }
+}
+
+class StandaloneBrowserPublisherTest : public PublisherTest {
+ public:
+  StandaloneBrowserPublisherTest() {
+    crosapi::browser_util::SetLacrosEnabledForTest(true);
+  }
+
+  StandaloneBrowserPublisherTest(const StandaloneBrowserPublisherTest&) =
+      delete;
+  StandaloneBrowserPublisherTest& operator=(
+      const StandaloneBrowserPublisherTest&) = delete;
+  ~StandaloneBrowserPublisherTest() override = default;
+
+  // PublisherTest:
+  void SetUp() override {
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* fake_user_manager = user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(user_manager));
+
+    // Login a user. The "email" must match the TestingProfile's
+    // GetProfileUserName() so that profile() will be the primary profile.
+    const AccountId account_id = AccountId::FromUserEmail("testing_profile");
+    fake_user_manager->AddUser(account_id);
+    fake_user_manager->LoginUser(account_id);
+
+    PublisherTest::SetUp();
+  }
+
+ private:
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+};
+
+TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
+  VerifyApp(extension_misc::kLacrosAppId, "Lacros", Readiness::kReady);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

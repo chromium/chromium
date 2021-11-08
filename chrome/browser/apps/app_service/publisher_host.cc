@@ -104,8 +104,7 @@ void PublisherHost::Initialize() {
   // profile and ensures there is only one instance of StandaloneBrowserApps.
   if (crosapi::browser_util::IsLacrosEnabled() &&
       chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
-    standalone_browser_apps_ = std::make_unique<StandaloneBrowserApps>(
-        app_service, profile, proxy_->BrowserAppInstanceRegistry());
+    standalone_browser_apps_ = std::make_unique<StandaloneBrowserApps>(proxy_);
   }
   web_apps_ = std::make_unique<web_app::WebApps>(
       app_service, &proxy_->InstanceRegistry(), profile);
