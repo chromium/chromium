@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/gpu/wayland_gl_egl_utility.h"
 
+#include <algorithm>
+
 // From ANGLE's egl/eglext.h. Follows the same approach as in
 // ui/gl/gl_surface_egl.cc
 #ifndef EGL_ANGLE_platform_angle_device_type_swiftshader
