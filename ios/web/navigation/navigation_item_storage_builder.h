@@ -19,10 +19,10 @@ class NavigationItemStorageBuilder {
   // Returns approximate sizes of the given |navigation_item| without building
   // storage. Only string sizes are added.
   int ItemStoredSize(const NavigationItemImpl* navigation_item) const;
-  // Creates a serialized NavigationItem from |navigation_Item|.
+  // Creates a serialized NavigationItem from |navigation_item|.
   CRWNavigationItemStorage* BuildStorage(
       const NavigationItemImpl* navigation_item) const;
-  // Creates a NavigationItem from |navigation_Item_storage|.
+  // Creates a NavigationItem from |navigation_item_storage|.
   std::unique_ptr<NavigationItemImpl> BuildNavigationItemImpl(
       CRWNavigationItemStorage* navigation_item_storage) const;
 };
