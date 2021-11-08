@@ -286,6 +286,19 @@ chromium-metrics-reviews@google.com.
   <summary>Number of minutes until Secure cookie expires when set.</summary>
 </histogram>
 
+<histogram name="Cookie.FirstPartySets.ComponentIsV1Format" units="Boolean"
+    expires_after="M105">
+  <owner>cfredric@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    Whether the First-Party Sets component was in the V1 format (as opposed to
+    the V2 format, or invalid).
+
+    This metric is sampled every time the component is loaded; i.e., on Chrome
+    startup, or if the Network Service gets reconfigured after a crash.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.FirstPartySets.ComputeContext.Latency"
     units="microseconds" expires_after="M105">
   <owner>cfredric@chromium.org</owner>

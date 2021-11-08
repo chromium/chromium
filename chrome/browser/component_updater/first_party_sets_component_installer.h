@@ -47,6 +47,7 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   static void ResetForTesting();
 
   static const char kDogfoodInstallerAttributeName[];
+  static const char kV2FormatOptIn[];
 
   // Seeds a component at `install_dir` with the given `contents`. Only to be
   // used in testing.
@@ -68,6 +69,8 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
                            GetInstallerAttributes_NonDogfooder);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            GetInstallerAttributes_Dogfooder);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+                           GetInstallerAttributes_V2OptOut);
 
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;

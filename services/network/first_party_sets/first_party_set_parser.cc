@@ -207,4 +207,20 @@ FirstPartySetParser::ParseSetsFromComponentUpdater(base::StringPiece raw_sets) {
   return map;
 }
 
+base::flat_map<net::SchemefulSite, net::SchemefulSite>
+FirstPartySetParser::ParseSetsFromStream(std::istream& input) {
+  base::flat_map<net::SchemefulSite, net::SchemefulSite> map;
+  base::flat_set<net::SchemefulSite> elements;
+  for (std::string line; std::getline(input, line);) {
+    absl::optional<base::Value> maybe_value = base::JSONReader::Read(
+        line, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+    if (!maybe_value.has_value())
+      return {};
+    if (!ParseSet(*maybe_value, map, elements))
+      return {};
+  }
+
+  return map;
+}
+
 }  // namespace network

@@ -90,10 +90,22 @@ FirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
     return &sets_;
 
   sets_ = FirstPartySetParser::ParseSetsFromComponentUpdater(raw_sets);
+  OnComponentSetsReceived();
+  return &sets_;
+}
+
+void FirstPartySets::ParseAndSetFromStream(std::istream& input) {
+  if (!net::cookie_util::IsFirstPartySetsEnabled())
+    return;
+
+  sets_ = FirstPartySetParser::ParseSetsFromStream(input);
+  OnComponentSetsReceived();
+}
+
+void FirstPartySets::OnComponentSetsReceived() {
   ApplyManuallySpecifiedSet();
   component_sets_ready_ = true;
   ClearSiteDataOnChangedSetsIfReady();
-  return &sets_;
 }
 
 bool FirstPartySets::IsContextSamePartyWithSite(

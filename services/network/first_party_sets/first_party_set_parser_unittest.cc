@@ -4,6 +4,8 @@
 
 #include "services/network/first_party_sets/first_party_set_parser.h"
 
+#include <sstream>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -44,6 +46,16 @@ TEST(FirstPartySetParser, RejectsNonemptyMalformed) {
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
               IsEmpty());
+}
+
+TEST(FirstPartySetParser, Streamed_RejectsNonemptyMalformed) {
+  // If the input isn't valid JSON, we should
+  // reject it.
+  const std::string input = "certainly not valid JSON";
+
+  ASSERT_FALSE(base::JSONReader::Read(input));
+  std::istringstream stream(input);
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonListInput) {
@@ -90,6 +102,18 @@ TEST(FirstPartySetParser, AcceptsMinimal) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://aaaa.test"),
+                                        SerializesTo("https://example.test"))));
+}
+
+TEST(FirstPartySetParser, Streamed_AcceptsMinimal) {
+  const std::string input =
+      R"({"owner": "https://example.test", "members": ["https://aaaa.test"]})";
+
+  std::istringstream stream(input);
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://aaaa.test"),
@@ -277,6 +301,25 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test"))));
+}
+
+TEST(FirstPartySetParser, Streamed_AcceptsMultipleSets) {
+  const std::string input =
+      "{\"owner\": \"https://example.test\", \"members\": "
+      "[\"https://member1.test\"]}\n"
+      "{\"owner\": \"https://foo.test\", \"members\": "
+      "[\"https://member2.test\"]}";
+
+  std::istringstream stream(input);
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member1.test"),

@@ -86,6 +86,10 @@ void SetFirstPartySetsConfig(
           on_sets_ready));
 }
 
+std::string BoolToString(bool b) {
+  return b ? "true" : "false";
+}
+
 }  // namespace
 
 namespace component_updater {
@@ -106,6 +110,9 @@ FirstPartySetsComponentInstallerPolicy::
 const char
     FirstPartySetsComponentInstallerPolicy::kDogfoodInstallerAttributeName[] =
         "_internal_experimental_sets";
+
+const char FirstPartySetsComponentInstallerPolicy::kV2FormatOptIn[] =
+    "_v2_format_plz";
 
 bool FirstPartySetsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
@@ -177,7 +184,12 @@ FirstPartySetsComponentInstallerPolicy::GetInstallerAttributes() const {
   return {
       {
           kDogfoodInstallerAttributeName,
-          net::features::kFirstPartySetsIsDogfooder.Get() ? "true" : "false",
+          BoolToString(net::features::kFirstPartySetsIsDogfooder.Get()),
+      },
+      {
+          kV2FormatOptIn,
+          BoolToString(base::FeatureList::IsEnabled(
+              net::features::kFirstPartySetsV2ComponentFormat)),
       },
   };
 }

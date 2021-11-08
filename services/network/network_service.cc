@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -781,7 +782,18 @@ void NetworkService::BindTestInterface(
 }
 
 void NetworkService::SetFirstPartySets(const std::string& raw_sets) {
-  first_party_sets_->ParseAndSet(raw_sets);
+  bool is_v1_format = raw_sets.find('[') < raw_sets.find('{');
+  if (is_v1_format) {
+    // The file is a single list of records; V1 format.
+    first_party_sets_->ParseAndSet(raw_sets);
+  } else {
+    // The file is invalid, or is a newline-delimited sequence of
+    // records; V2 format.
+    std::istringstream stream(raw_sets);
+    first_party_sets_->ParseAndSetFromStream(stream);
+  }
+  base::UmaHistogramBoolean("Cookie.FirstPartySets.ComponentIsV1Format",
+                            is_v1_format);
 }
 
 void NetworkService::SetPersistedFirstPartySetsAndGetCurrentSets(

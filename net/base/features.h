@@ -392,6 +392,10 @@ NET_EXPORT extern const base::Feature kPartitionedCookies;
 // feature flag, assuming no breakage occurs with it enabled.
 NET_EXPORT extern const base::Feature kExtraCookieValidityChecks;
 
+// When enabled, the client will opt in to the V2 component format for the
+// First-Party Sets component.
+NET_EXPORT extern const base::Feature kFirstPartySetsV2ComponentFormat;
+
 }  // namespace features
 }  // namespace net
 

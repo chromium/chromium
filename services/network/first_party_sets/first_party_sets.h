@@ -49,6 +49,18 @@ class FirstPartySets {
   base::flat_map<net::SchemefulSite, net::SchemefulSite>* ParseAndSet(
       base::StringPiece raw_sets);
 
+  // Overwrites the current members-to-owners map with the values in `input`,
+  // which should be a newline-delimited collection of JSON-encoded set
+  // declarations according to the format specified in this document:
+  // https://github.com/privacycg/first-party-sets. Exactly one JSON record must
+  // be on each line.
+  //
+  // In case of invalid input, clears the current members-to-owners map, but
+  // keeps any manually-specified set (i.e. a set provided on the command line).
+  //
+  // Has no effect if `kFirstPartySets` is disabled.
+  void ParseAndSetFromStream(std::istream& input);
+
   // Returns whether the `site` is same-party with the `party_context`, and
   // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
   // same as the owners of every member of `party_context` and of
@@ -103,6 +115,10 @@ class FirstPartySets {
       base::OnceCallback<void(const std::string&)> callback);
 
  private:
+  // Performs bookkeeping after receiving a new set of sets from Component
+  // Updater.
+  void OnComponentSetsReceived();
+
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
   // or `nullopt` if `site` has no owner. Must not return `nullopt` if
   // `infer_singleton_sets` is true.

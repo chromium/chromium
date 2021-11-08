@@ -5,6 +5,7 @@
 #include "services/network/first_party_sets/first_party_sets.h"
 
 #include <initializer_list>
+#include <sstream>
 
 #include "base/json/json_reader.h"
 #include "base/test/bind.h"
@@ -42,8 +43,11 @@ class FirstPartySetsDisabledTest : public ::testing::Test {
     feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
   }
 
+  FirstPartySets& sets() { return sets_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  FirstPartySets sets_;
 };
 
 TEST_F(FirstPartySetsDisabledTest, ParseAndSet_IgnoresValid) {
@@ -55,6 +59,16 @@ TEST_F(FirstPartySetsDisabledTest, ParseAndSet_IgnoresValid) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   EXPECT_THAT(FirstPartySets().ParseAndSet(input), Pointee(IsEmpty()));
+}
+
+TEST_F(FirstPartySetsDisabledTest, ParseAndSetFromStream_IgnoresValid) {
+  const std::string input =
+      "{\"owner\": \"https://example.test\",\"members\": "
+      "[\"https://aaaa.test\"]}";
+
+  std::istringstream stream(input);
+  sets().ParseAndSetFromStream(stream);
+  EXPECT_THAT(sets().Sets(), IsEmpty());
 }
 
 TEST_F(FirstPartySetsDisabledTest, SetsManuallySpecified_IgnoresValid) {
@@ -115,8 +129,11 @@ class FirstPartySetsTest : public ::testing::Test {
     feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
   }
 
+  FirstPartySets& sets() { return sets_; }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  FirstPartySets sets_;
 };
 
 TEST_F(FirstPartySetsTest, Sets_IsEmpty) {
@@ -141,6 +158,20 @@ TEST_F(FirstPartySetsTest, AcceptsMinimal) {
                        SerializesTo("https://example.test")),
                   Pair(SerializesTo("https://aaaa.test"),
                        SerializesTo("https://example.test")))));
+}
+
+TEST_F(FirstPartySetsTest, Streamed_AcceptsMinimal) {
+  const std::string input =
+      "{\"owner\": \"https://example.test\",\"members\": "
+      "[\"https://aaaa.test\",],}";
+
+  std::istringstream stream(input);
+  sets().ParseAndSetFromStream(stream);
+  EXPECT_THAT(sets().Sets(),
+              UnorderedElementsAre(Pair(
+                  SerializesTo("https://example.test"),
+                  UnorderedElementsAre(SerializesTo("https://example.test"),
+                                       SerializesTo("https://aaaa.test")))));
 }
 
 TEST_F(FirstPartySetsTest, AcceptsMultipleSets) {
@@ -168,6 +199,26 @@ TEST_F(FirstPartySetsTest, AcceptsMultipleSets) {
                                         SerializesTo("https://foo.test")),
                                    Pair(SerializesTo("https://member2.test"),
                                         SerializesTo("https://foo.test")))));
+}
+
+TEST_F(FirstPartySetsTest, Streamed_AcceptsMultipleSets) {
+  const std::string input =
+      "{\"owner\": \"https://example.test\",\"members\": "
+      "[\"https://member1.test\"]}\n"
+      "{\"owner\": \"https://foo.test\",\"members\": "
+      "[\"https://member2.test\"]}";
+
+  std::istringstream stream(input);
+  sets().ParseAndSetFromStream(stream);
+  EXPECT_THAT(
+      sets().Sets(),
+      UnorderedElementsAre(
+          Pair(SerializesTo("https://example.test"),
+               UnorderedElementsAre(SerializesTo("https://example.test"),
+                                    SerializesTo("https://member1.test"))),
+          Pair(SerializesTo("https://foo.test"),
+               UnorderedElementsAre(SerializesTo("https://foo.test"),
+                                    SerializesTo("https://member2.test")))));
 }
 
 TEST_F(FirstPartySetsTest, ClearsPreloadedOnError) {
