@@ -517,7 +517,8 @@ void LayoutObject::AddChild(LayoutObject* new_child,
     DCHECK(LayoutNGTextCombine::ShouldBeParentOf(*new_child)) << new_child;
     new_child->SetStyle(Style());
     children->InsertChildNode(this, new_child, before_child);
-  } else if (LayoutNGTextCombine::ShouldBeParentOf(*new_child)) {
+  } else if (!IsHorizontalWritingMode() &&
+             LayoutNGTextCombine::ShouldBeParentOf(*new_child)) {
     if (before_child) {
       if (IsA<LayoutNGTextCombine>(before_child)) {
         DCHECK(!DynamicTo<LayoutNGTextCombine>(before_child->PreviousSibling()))
@@ -535,15 +536,13 @@ void LayoutObject::AddChild(LayoutObject* new_child,
     } else if (auto* const last_child =
                    DynamicTo<LayoutNGTextCombine>(SlowLastChild())) {
       last_child->AddChild(new_child);
-    } else if (UNLIKELY(IsHorizontalWritingMode())) {
-      // In case of <br style="writing-mode:vertical-rl">
-      // See http://crbug.com/1222121
-      children->InsertChildNode(this, new_child, before_child);
     } else {
       children->AppendChildNode(this, LayoutNGTextCombine::CreateAnonymous(
                                           To<LayoutText>(new_child)));
     }
   } else {
+    // In case of append/insert <br style="writing-mode:vertical-rl">
+    // See http://crbug.com/1222121 and http://crbug.com/1258331
     DCHECK(!new_child->IsHorizontalWritingMode()) << new_child;
     DCHECK(new_child->IsText()) << new_child;
     children->InsertChildNode(this, new_child, before_child);

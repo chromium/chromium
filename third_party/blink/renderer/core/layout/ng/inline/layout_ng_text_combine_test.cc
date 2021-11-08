@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_test.h"
@@ -521,6 +522,25 @@ LayoutNGBlockFlow DIV id="root"
   +--LayoutText #text "de"
 )DUMP",
             ToSimpleLayoutTree(root_layout_object));
+}
+
+// http://crbug.com/1258331
+// See also VerticalWritingModeByWBR
+TEST_F(LayoutNGTextCombineTest, InsertBR) {
+  InsertStyleElement(
+      "br { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div id=root>x</div>");
+  auto& root = *GetElementById("root");
+  root.insertBefore(MakeGarbageCollected<HTMLBRElement>(GetDocument()),
+                    root.lastChild());
+  RunDocumentLifecycle();
+
+  EXPECT_EQ(R"DUMP(
+LayoutNGBlockFlow DIV id="root"
+  +--LayoutBR BR
+  +--LayoutText #text "x"
+)DUMP",
+            ToSimpleLayoutTree(*root.GetLayoutObject()));
 }
 
 // http://crbug.com/1215026
