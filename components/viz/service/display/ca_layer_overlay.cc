@@ -455,12 +455,7 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
   CALayerResult result = CA_LAYER_SUCCESS;
 
   size_t num_visible_quads = quad_list.size();
-  for (const auto* quad : quad_list) {
-    if (quad->shared_quad_state->opacity == 0.f ||
-        quad->visible_rect.IsEmpty()) {
-      num_visible_quads--;
-    }
-  }
+
   if (num_visible_quads < max_quad_list_size_)
     ca_layer_overlays->reserve(num_visible_quads);
   else
