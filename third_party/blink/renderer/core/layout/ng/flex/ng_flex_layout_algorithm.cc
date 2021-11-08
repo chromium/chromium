@@ -793,23 +793,37 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
-  Vector<NGFlexLine> flex_line_outputs;
-  PlaceFlexItems(flex_line_outputs);
-
   // |total_intrinsic_block_size| is the intrinsic block size for the entire
   // flex container, whereas |intrinsic_block_size_| is tracked during layout
   // when fragmenting and is the intrinsic block size of the flex container in
   // the current fragmentainer. When not fragmenting,
   // |total_intrinsic_block_size| and |intrinsic_block_size_| will be
   // equivalent.
-  bool use_empty_line_block_size =
-      flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
-  LayoutUnit total_intrinsic_block_size =
-      CalculateTotalIntrinsicBlockSize(use_empty_line_block_size);
+  LayoutUnit total_intrinsic_block_size;
+  Vector<NGFlexLine> flex_line_outputs;
+  bool use_empty_line_block_size;
+  if (IsResumingLayout(BreakToken())) {
+    auto& flex_data = BreakToken()->FlexData();
+    total_intrinsic_block_size = flex_data.intrinsic_block_size;
+    flex_line_outputs = flex_data.flex_lines;
+
+    use_empty_line_block_size =
+        flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
+  } else {
+    PlaceFlexItems(flex_line_outputs);
+
+    use_empty_line_block_size =
+        flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
+    total_intrinsic_block_size =
+        CalculateTotalIntrinsicBlockSize(use_empty_line_block_size);
+  }
 
   total_block_size_ = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), total_intrinsic_block_size,
       container_builder_.InlineSize());
+
+  if (!IsResumingLayout(BreakToken()))
+    ApplyFinalAlignmentAndReversals(&flex_line_outputs);
 
   LayoutUnit previously_consumed_block_size;
   if (UNLIKELY(BreakToken()))
@@ -823,7 +837,6 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
             .ClampNegativeToZero();
   }
 
-  ApplyFinalAlignmentAndReversals(&flex_line_outputs);
   bool success = GiveItemsFinalPositionAndSize(flex_line_outputs);
   if (!success)
     return nullptr;
@@ -863,8 +876,15 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   }
 
 #if DCHECK_IS_ON()
-  CheckFlexLines(flex_line_outputs);
+  if (!IsResumingLayout(BreakToken()))
+    CheckFlexLines(flex_line_outputs);
 #endif
+
+  if (ConstraintSpace().HasKnownFragmentainerBlockSize()) {
+    container_builder_.SetFlexBreakTokenData(
+        std::make_unique<NGFlexBreakTokenData>(flex_line_outputs,
+                                               total_intrinsic_block_size));
+  }
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
   freeze_scrollbars.reset();
