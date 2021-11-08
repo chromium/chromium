@@ -56,6 +56,9 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
   }
   if (is_side_panel_request) {
     query_parameters.insert({kSurfaceQueryParameter, kSidePanel});
+  } else {
+    // Set the surface parameter to an empty string to represent default value.
+    query_parameters.insert({kSurfaceQueryParameter, ""});
   }
   int64_t current_time_ms = base::Time::Now().ToJavaTime();
   query_parameters.insert(

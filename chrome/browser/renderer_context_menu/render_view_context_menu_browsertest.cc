@@ -1626,7 +1626,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
   EXPECT_EQ(expected_content.substr(0, query_start_pos),
             new_tab_content.substr(0, query_start_pos));
   // Match the query parameters, without the value of start_time.
-  EXPECT_THAT(new_tab_content, testing::MatchesRegex(".*ep=ccm&st=\\d+"));
+  EXPECT_THAT(new_tab_content, testing::MatchesRegex(".*ep=ccm&s=&st=\\d+"));
 }
 
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithUnseasonedOverride,
