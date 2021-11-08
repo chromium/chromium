@@ -60,7 +60,7 @@ SafetyTipsComponentInstallerPolicy::~SafetyTipsComponentInstallerPolicy() =
 
 bool SafetyTipsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool SafetyTipsComponentInstallerPolicy::RequiresNetworkEncryption() const {
