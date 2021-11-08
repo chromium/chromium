@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -36,7 +35,8 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PassphraseTypeDialogFragmentTest extends DummyUiActivityTestCase {
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus().setRevision(1).build();
 
     private static final String TAG = "PassphraseTypeDialogFragmentTest";
 
@@ -78,12 +78,9 @@ public class PassphraseTypeDialogFragmentTest extends DummyUiActivityTestCase {
                 new TypeOptions(PassphraseType.KEYSTORE_PASSPHRASE, DISABLED, UNCHECKED));
     }
 
-    /*
-     * @SmallTest
-     * @Feature({"Sync"})
-     */
     @Test
-    @FlakyTest(message = "crbug.com/588050")
+    @SmallTest
+    @Feature({"Sync"})
     public void testFrozenImplicitEncryptionOptions() {
         createFragment(PassphraseType.FROZEN_IMPLICIT_PASSPHRASE, true);
         assertPassphraseTypeOptions(true,

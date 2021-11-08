@@ -163,7 +163,8 @@ public class PassphraseTypeDialogFragment
 
         // Configure the hint to reset the passphrase settings
         // Only show this hint if encryption has been set to use sync passphrase
-        if (currentType == PassphraseType.CUSTOM_PASSPHRASE) {
+        if (currentType == PassphraseType.CUSTOM_PASSPHRASE
+                || currentType == PassphraseType.FROZEN_IMPLICIT_PASSPHRASE) {
             TextViewWithClickableSpans instructionsView =
                     new TextViewWithClickableSpans(getActivity());
             instructionsView.setPadding(0,
