@@ -105,6 +105,9 @@ PageInfoHoverButton::PageInfoHoverButton(
 
   if (action_image_icon.has_value()) {
     AddChildView(CreateIconView(action_image_icon.value()));
+  } else {
+    // Fill the cell with an empty view at column 4.
+    AddChildView(std::make_unique<views::View>());
   }
 
   if (title_resource_id)

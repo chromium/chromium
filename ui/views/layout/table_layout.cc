@@ -375,11 +375,9 @@ ProposedLayout TableLayout::CalculateProposedLayout(
   layout.host_size = SizeRowsAndColumns(size_bounds);
   layout.host_size.SetToMax(minimum_size_);
 
-  // Hiding all children here and then re-showing all the sized ones below has
-  // the effect of leaving any excess children invisible.
   for (View* child : GetChildViewsInPaintOrder(host_view())) {
     if (!IsChildViewIgnoredByLayout(child))
-      layout.child_layouts.push_back({child, false, {}, {}});
+      layout.child_layouts.push_back({child, true, {}, {}});
   }
 
   // Size each view.
@@ -407,7 +405,6 @@ ProposedLayout TableLayout::CalculateProposedLayout(
                                  &ChildLayout::child_view);
     DCHECK(it != layout.child_layouts.cend());
     it->bounds = gfx::Rect(x, y, width, height);
-    it->visible = true;
     it->available_size = SizeBounds(width, height);
   }
 
@@ -444,8 +441,11 @@ void TableLayout::SetViewStates() const {
         break;
       col = 0;
     }
-    if (row == rows_.size())
+    if (row == rows_.size()) {
+      NOTREACHED() << "There're not enough cells for layout. Did you forget to "
+                      "call AddRows()?";
       break;
+    }
 
     // Construct a ViewState for this `child`.
     const gfx::Size* span = child->GetProperty(kTableColAndRowSpanKey);

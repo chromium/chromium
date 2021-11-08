@@ -522,6 +522,9 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
 
       .AddRows(1, views::TableLayout::kFixedSize);
 
+  // FocusRing is a child of Button. Ignore it.
+  layout->SetChildViewIgnoredByLayout(views::FocusRing::Get(this), true);
+
   if (!GetEnabled()) {
     auto policy_enforced_icon = std::make_unique<views::ImageView>();
     policy_enforced_icon->SetImage(
