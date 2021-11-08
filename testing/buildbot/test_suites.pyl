@@ -7510,9 +7510,10 @@
         'variants': [
           'LACROS_TOT',
           # TODO(crbug.com/1236127) Adds stable.
-          'LACROS_VERSION_SKEW_CANARY',
-          'LACROS_VERSION_SKEW_DEV',
-          'LACROS_VERSION_SKEW_BETA',
+          # TODO(crbug.com/1267906) re-enable.
+          # 'LACROS_VERSION_SKEW_CANARY',
+          # 'LACROS_VERSION_SKEW_DEV',
+          # 'LACROS_VERSION_SKEW_BETA',
         ]
       },
     },
