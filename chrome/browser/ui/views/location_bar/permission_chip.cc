@@ -137,6 +137,16 @@ void PermissionChip::AddedToWidget() {
   }
 }
 
+void PermissionChip::VisibilityChanged(views::View* /*starting_from*/,
+                                       bool is_visible) {
+  auto* prompt_bubble = GetPromptBubbleWidget();
+  if (!is_visible && prompt_bubble) {
+    // In case if the prompt bubble isn't closed on focus loss, manually close
+    // it when chip is hidden.
+    prompt_bubble->Close();
+  }
+}
+
 void PermissionChip::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   // If permission request is still active after the prompt was closed,
