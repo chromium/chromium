@@ -913,7 +913,7 @@
   {
     "name": "credential-provider-extension-promo",
     "owners": ["ginnyhuang","bling-flags@google.com"],
-    "expiry_milestone": 99
+    "expiry_milestone": 100
   },
   {
     "name": "cros-regions-mode",

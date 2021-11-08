@@ -6,6 +6,10 @@ source_set("ui") {
   sources = [
     "consent_coordinator.h",
     "consent_coordinator.mm",
+    "consent_legacy_coordinator.h",
+    "consent_legacy_coordinator.mm",
+    "consent_legacy_view_controller.h",
+    "consent_legacy_view_controller.mm",
     "consent_view_controller.h",
     "consent_view_controller.mm",
     "credential_details_consumer.h",
@@ -54,6 +58,7 @@ source_set("ui") {
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/elements:form_input_accessory",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/resources:default_world_favicon",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/credential_provider_extension:metrics_util",

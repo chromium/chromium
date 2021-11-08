@@ -13,12 +13,14 @@
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
+#import "ios/chrome/credential_provider_extension/ui/consent_legacy_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_consumer.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_mediator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/empty_credentials_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,6 +29,7 @@
 
 @interface CredentialListCoordinator () <ConfirmationAlertActionHandler,
                                          ConsentCoordinatorDelegate,
+                                         ConsentLegacyCoordinatorDelegate,
                                          CredentialListUIHandler,
                                          CredentialDetailsConsumerDelegate>
 
@@ -49,8 +52,14 @@
 @property(nonatomic, strong)
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
 
+// Legacy consent coordinator that shows a view requesting device auth in order
+// to enable the extension. Will be used when
+// IsCredentialProviderExtensionPromoEnabled() == NO.
+@property(nonatomic, strong) ConsentLegacyCoordinator* consentLegacyCoordinator;
+
 // Consent coordinator that shows a view requesting device auth in order to
-// enable the extension.
+// enable the extension. Will be used when
+// IsCredentialProviderExtensionPromoEnabled() == YES.
 @property(nonatomic, strong) ConsentCoordinator* consentCoordinator;
 
 // Coordinator that shows a view for the user to create a new password.
@@ -105,13 +114,23 @@
   BOOL isConsentGiven =
       [user_defaults boolForKey:kUserDefaultsCredentialProviderConsentVerified];
   if (!isConsentGiven) {
-    self.consentCoordinator = [[ConsentCoordinator alloc]
-           initWithBaseViewController:self.viewController
-                              context:self.context
-              reauthenticationHandler:self.reauthenticationHandler
-        isInitialConfigurationRequest:NO];
-    self.consentCoordinator.delegate = self;
-    [self.consentCoordinator start];
+    if (IsCredentialProviderExtensionPromoEnabled()) {
+      self.consentCoordinator = [[ConsentCoordinator alloc]
+             initWithBaseViewController:self.viewController
+                                context:self.context
+                reauthenticationHandler:self.reauthenticationHandler
+          isInitialConfigurationRequest:NO];
+      self.consentCoordinator.delegate = self;
+      [self.consentCoordinator start];
+    } else {
+      self.consentLegacyCoordinator = [[ConsentLegacyCoordinator alloc]
+             initWithBaseViewController:self.viewController
+                                context:self.context
+                reauthenticationHandler:self.reauthenticationHandler
+          isInitialConfigurationRequest:NO];
+      self.consentLegacyCoordinator.delegate = self;
+      [self.consentLegacyCoordinator start];
+    }
   } else {
     [self.mediator fetchCredentials];
   }
@@ -123,6 +142,14 @@
                          completion:nil];
   self.viewController = nil;
   self.mediator = nil;
+}
+
+#pragma mark - ConsentLegacyCoordinatorDelegate
+
+- (void)consentLegacyCoordinatorDidAcceptConsent:
+    (ConsentLegacyCoordinator*)consentCoordinator {
+  [consentCoordinator stop];
+  [self.mediator fetchCredentials];
 }
 
 #pragma mark - ConsentCoordinatorDelegate

@@ -31,6 +31,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/promo_style:constants",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

@@ -15,6 +15,7 @@ source_set("promo_style") {
     "promo_style_view_controller_delegate.h",
   ]
   deps = [
+    ":constants",
     "//base",
     "//base:i18n",
     "//ios/chrome/app/strings",
@@ -25,4 +26,13 @@ source_set("promo_style") {
     "//ios/chrome/common/ui/util:dynamic_type_util",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }

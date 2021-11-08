@@ -8,6 +8,7 @@
 #include "base/i18n/rtl.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/common/ui/promo_style/highlighted_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #include "ios/chrome/common/ui/util/device_util.h"
@@ -17,21 +18,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-NSString* const kPromoStyleTitleAccessibilityIdentifier =
-    @"kPromoStyleTitleAccessibilityIdentifier";
-NSString* const kPromoStyleSubtitleAccessibilityIdentifier =
-    @"kPromoStyleSubtitleAccessibilityIdentifier";
-NSString* const kPromoStylePrimaryActionAccessibilityIdentifier =
-    @"kPromoStylePrimaryActionAccessibilityIdentifier";
-NSString* const kPromoStyleSecondaryActionAccessibilityIdentifier =
-    @"kPromoStyleSecondaryActionAccessibilityIdentifier";
-NSString* const kPromoStyleTertiaryActionAccessibilityIdentifier =
-    @"kPromoStyleTertiaryActionAccessibilityIdentifier";
-NSString* const kPromoStyleLearnMoreActionAccessibilityIdentifier =
-    @"kPromoStyleLearnMoreActionAccessibilityIdentifier";
-NSString* const kPromoStyleScrollViewAccessibilityIdentifier =
-    @"kPromoStyleScrollViewAccessibilityIdentifier";
 
 namespace {
 
@@ -157,7 +143,8 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
                                  constant:-2 * kDefaultMargin],
 
     // Scroll view constraints.
-    [self.scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [self.scrollView.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [self.scrollView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
     [self.scrollView.trailingAnchor

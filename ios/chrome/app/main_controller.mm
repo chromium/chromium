@@ -993,6 +993,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   NSNumber* passwordCreationVersion =
       [NSNumber numberWithInt:kPasswordCreationFeatureVersion];
 
+  NSNumber* credentialProviderExtensionPromoValue =
+      [NSNumber numberWithBool:base::FeatureList::IsEnabled(
+                                   kCredentialProviderExtensionPromo)];
+  NSNumber* credentialProviderExtensionPromoVersion =
+      [NSNumber numberWithInt:kCredentialProviderExtensionPromoFeatureVersion];
+
   // Add other field trial values here if they are needed by extensions.
   // The general format is
   // {
@@ -1005,6 +1011,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     base::SysUTF8ToNSString(kPasswordCreationEnabled.name) : @{
       kFieldTrialValueKey : passwordCreationValue,
       kFieldTrialVersionKey : passwordCreationVersion,
+    },
+    base::SysUTF8ToNSString(kCredentialProviderExtensionPromo.name) : @{
+      kFieldTrialValueKey : credentialProviderExtensionPromoValue,
+      kFieldTrialVersionKey : credentialProviderExtensionPromoVersion,
     }
   };
   [sharedDefaults setObject:fieldTrialValues

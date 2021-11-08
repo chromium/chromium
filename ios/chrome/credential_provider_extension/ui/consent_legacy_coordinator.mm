@@ -1,29 +1,29 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
+#import "ios/chrome/credential_provider_extension/ui/consent_legacy_coordinator.h"
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
-#import "ios/chrome/credential_provider_extension/ui/consent_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/consent_legacy_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface ConsentCoordinator () <PromoStyleViewControllerDelegate>
+@interface ConsentLegacyCoordinator () <ConfirmationAlertActionHandler>
 
 // Base view controller from where |viewController| is presented.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
 // The view controller of this coordinator.
-@property(nonatomic, strong) ConsentViewController* viewController;
+@property(nonatomic, strong) ConsentLegacyViewController* viewController;
 
 // Popover used to show learn more info, not nil when presented.
 @property(nonatomic, strong)
@@ -41,7 +41,7 @@
 
 @end
 
-@implementation ConsentCoordinator
+@implementation ConsentLegacyCoordinator
 
 - (instancetype)
        initWithBaseViewController:(UIViewController*)baseViewController
@@ -60,8 +60,8 @@
 }
 
 - (void)start {
-  self.viewController = [[ConsentViewController alloc] init];
-  self.viewController.delegate = self;
+  self.viewController = [[ConsentLegacyViewController alloc] init];
+  self.viewController.actionHandler = self;
   self.viewController.modalInPresentation = YES;
   self.viewController.modalPresentationStyle =
       self.isInitialConfigurationRequest ? UIModalPresentationFullScreen
@@ -79,10 +79,17 @@
   self.viewController = nil;
 }
 
-#pragma mark - PromoStyleViewControllerDelegate
+#pragma mark - ConfirmationAlertActionHandler
 
-// Invoked when the primary action button is tapped.
-- (void)didTapPrimaryActionButton {
+- (void)confirmationAlertDismissAction {
+  NSError* error =
+      [[NSError alloc] initWithDomain:ASExtensionErrorDomain
+                                 code:ASExtensionErrorCodeUserCanceled
+                             userInfo:nil];
+  [self.context cancelRequestWithError:error];
+}
+
+- (void)confirmationAlertPrimaryAction {
   [self.reauthenticationHandler
       verifyUserWithCompletionHandler:^(ReauthenticationResult result) {
         if (result != ReauthenticationResult::kFailure) {
@@ -93,15 +100,14 @@
           if (self.isInitialConfigurationRequest) {
             [self.context completeExtensionConfigurationRequest];
           } else {
-            [self.delegate consentCoordinatorDidAcceptConsent:self];
+            [self.delegate consentLegacyCoordinatorDidAcceptConsent:self];
           }
         }
       }
       presentReminderOnViewController:self.viewController];
 }
 
-// Invoked when the learn more button is tapped.
-- (void)didTapLearnMoreButton {
+- (void)confirmationAlertLearnMoreAction {
   NSString* message =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_MORE_INFO_STRING",
                         @"The information provided in the consent popover.");
@@ -110,8 +116,8 @@
   [self.viewController presentViewController:self.learnMoreViewController
                                     animated:YES
                                   completion:nil];
-  self.learnMoreViewController.popoverPresentationController.sourceView =
-      self.viewController.learnMoreButton.imageView;
+  self.learnMoreViewController.popoverPresentationController.barButtonItem =
+      self.viewController.helpButton;
   self.learnMoreViewController.popoverPresentationController
       .permittedArrowDirections = UIPopoverArrowDirectionUp;
 }
