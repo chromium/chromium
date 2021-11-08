@@ -5377,7 +5377,10 @@
       'weblayer_skew_tests': {
         'swarming': {
           'shards': 2,
-        }
+        },
+        'args': [
+          '--additional-apk=apks/WebLayerShellSystemWebView.apk',
+        ],
       },
     },
 
@@ -5387,6 +5390,7 @@
           'shards': 2,
         },
         'args': [
+          '--additional-apk=apks/WebLayerShellSystemWebView.apk',
           '--additional-apk=apks/ChromePublic.apk'
         ],
       },
