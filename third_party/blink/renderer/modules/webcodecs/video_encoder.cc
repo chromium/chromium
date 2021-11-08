@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_avc_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_metadata.h"
@@ -1015,7 +1016,11 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
     auto* support = VideoEncoderSupport::Create();
     support->setConfig(config_copy);
     support->setSupported(false);
-    return ScriptPromise::Cast(script_state, ToV8(support, script_state));
+
+    return ScriptPromise::Cast(
+        script_state,
+        ToV8Traits<VideoEncoderSupport>::ToV8(script_state, support)
+            .ToLocalChecked());
   }
 
   // Create promises for resolving hardware and software encoding support and

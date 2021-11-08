@@ -21,6 +21,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
@@ -37,7 +38,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -349,7 +349,10 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
     return ScriptPromise();
 
   support->setConfig(config_copy);
-  return ScriptPromise::Cast(script_state, ToV8(support, script_state));
+
+  return ScriptPromise::Cast(
+      script_state, ToV8Traits<VideoDecoderSupport>::ToV8(script_state, support)
+                        .ToLocalChecked());
 }
 
 ScriptPromise VideoDecoder::IsAcceleratedConfigSupported(

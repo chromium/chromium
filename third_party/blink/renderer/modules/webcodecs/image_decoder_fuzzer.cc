@@ -4,8 +4,10 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybufferallowshared_arraybufferviewallowshared_readablestream.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
@@ -182,10 +184,15 @@ DEFINE_BINARY_PROTO_FUZZER(
 
         const size_t current_chunk_size =
             std::min(data_copy->ByteLength() - offset, chunk_size);
-        underlying_source->Enqueue(ScriptValue(
-            script_state->GetIsolate(),
-            ToV8(DOMUint8Array::Create(data_copy, offset, current_chunk_size),
-                 script_state)));
+
+        v8::Local<v8::Value> v8_data_array;
+        ASSERT_TRUE(ToV8Traits<DOMUint8Array>::ToV8(
+                        script_state, DOMUint8Array::Create(data_copy, offset,
+                                                            current_chunk_size))
+                        .ToLocal(&v8_data_array));
+
+        underlying_source->Enqueue(
+            ScriptValue(script_state->GetIsolate(), v8_data_array));
         offset += chunk_size;
       }
 

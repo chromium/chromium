@@ -16,6 +16,7 @@
 #include "media/base/waiting.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_support.h"
@@ -185,7 +186,9 @@ ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
   support->setSupported(media::IsSupportedAudioType(audio_type));
   support->setConfig(CopyConfig(*config));
 
-  return ScriptPromise::Cast(script_state, ToV8(support, script_state));
+  return ScriptPromise::Cast(
+      script_state, ToV8Traits<AudioDecoderSupport>::ToV8(script_state, support)
+                        .ToLocalChecked());
 }
 
 // static

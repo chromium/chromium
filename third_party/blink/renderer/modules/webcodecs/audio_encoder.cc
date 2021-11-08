@@ -17,6 +17,7 @@
 #include "media/base/mime_util.h"
 #include "media/base/offloading_audio_encoder.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
@@ -360,7 +361,10 @@ ScriptPromise AudioEncoder::isConfigSupported(ScriptState* script_state,
   auto* support = AudioEncoderSupport::Create();
   support->setSupported(VerifyCodecSupportStatic(parsed_config, nullptr));
   support->setConfig(CopyConfig(*config));
-  return ScriptPromise::Cast(script_state, ToV8(support, script_state));
+
+  return ScriptPromise::Cast(
+      script_state, ToV8Traits<AudioEncoderSupport>::ToV8(script_state, support)
+                        .ToLocalChecked());
 }
 
 }  // namespace blink
