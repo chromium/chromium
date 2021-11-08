@@ -10,7 +10,7 @@
     }
 
     try {
-      await window.getDigitalGoodsService('https://play.google.com/billing');
+      await window.getDigitalGoodsService('https://example.com/billing');
       parent.postMessage('Success', '*');
     } catch (error) {
       parent.postMessage('Failure: ' + error.name + ': ' + error.message, '*');
