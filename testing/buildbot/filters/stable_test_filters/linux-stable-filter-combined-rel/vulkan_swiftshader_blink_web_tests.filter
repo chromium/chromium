@@ -7,12 +7,13 @@
 -fast/canvas/canvas-toDataURL-bitmaprenderer.html
 -images/color-profile-background-image-repeat.html
 -images/color-profile-image-canvas.html
--images/color-profile-image-filter-all.html
 -images/color-profile-reflection.html
 -images/embed-does-not-propagate-dimensions-to-object-ancestor.html
 -images/image-empty-src-no-display.html
 -images/onload-event-when-reloading-image-after-interrupted-broken-image-load.html
 -images/rgb-png-with-cmyk-color-profile.html
+-media/encrypted-media/encrypted-media-lifetime-mediakeys-with-session.html
+-media/encrypted-media/encrypted-media-session-multiple-close.html
 -media/invalid-media-url-crash.html
 -media/track/text-track-cue-is-reachable.html
 -transforms/container-transform-crash.html

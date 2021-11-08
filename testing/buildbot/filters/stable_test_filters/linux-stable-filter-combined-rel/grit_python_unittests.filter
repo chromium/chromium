@@ -209,11 +209,14 @@
 -grit.node.node_io_unittest.FileNodeUnittest.testIffyness
 -grit.node.node_io_unittest.FileNodeUnittest.testLangCodeMapping
 -grit.node.node_io_unittest.FileNodeUnittest.testLoadTranslations
+-grit.node.structure_unittest.StructureUnittest.testBrotliLottie
 -grit.node.structure_unittest.StructureUnittest.testCompressBrotli
 -grit.node.structure_unittest.StructureUnittest.testCompressGzip
 -grit.node.structure_unittest.StructureUnittest.testCompressGzipByDefault
 -grit.node.structure_unittest.StructureUnittest.testGetPath
 -grit.node.structure_unittest.StructureUnittest.testGetPathNoBasedir
+-grit.node.structure_unittest.StructureUnittest.testGzippedLottie
+-grit.node.structure_unittest.StructureUnittest.testLottie
 -grit.node.structure_unittest.StructureUnittest.testNotCompressed
 -grit.node.structure_unittest.StructureUnittest.testRunCommandOnCurrentPlatform
 -grit.node.structure_unittest.StructureUnittest.testSkeleton

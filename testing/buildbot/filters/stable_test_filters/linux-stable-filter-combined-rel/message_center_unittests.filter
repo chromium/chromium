@@ -1,6 +1,1 @@
 -NotificationListTest.GetNotificationsByOriginUrl
--NotificationViewBaseTest.ManuallyExpandedOrCollapsed
--NotificationViewTest.ExpandLongMessage
--NotificationViewTest.InlineSettingsInkDropAnimation
--NotificationViewTest.PreferredSize
--NotificationViewTest.UpdateType

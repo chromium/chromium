@@ -19,3 +19,6 @@
 -Cronet_UrlRequestCallbackTest.TestCreate
 -Cronet_UrlRequestStatusListenerTest.TestCreate
 -Cronet_UrlRequestTest.TestCreate
+-URLRequestContextConfigTest.SetDisableTlsZeroRtt
+-URLRequestContextConfigTest.SetSpdyGoAwayOnIPChange
+-URLRequestContextConfigTest.WrongSpdyGoAwayOnIPChangeValue
