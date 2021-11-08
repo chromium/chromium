@@ -49,6 +49,9 @@ constexpr CGFloat kIconSize = 16;
 // nil.
 @property(nonatomic, strong, readonly) UIImage* icon;
 
+// Visual effect view used to add a blur effect to the popover.
+@property(nonatomic, strong) UIVisualEffectView* blurBackgroundView;
+
 @end
 
 @implementation PopoverLabelViewController
@@ -244,14 +247,7 @@ constexpr CGFloat kIconSize = 16;
   heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   heightConstraint.active = YES;
 
-  // Set up a blurred background.
-  UIBlurEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
-  UIVisualEffectView* blurBackgroundView =
-      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-  blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  blurBackgroundView.frame = self.view.bounds;
-  [self.view insertSubview:blurBackgroundView atIndex:0];
+  [self updateBackgroundColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -267,6 +263,47 @@ constexpr CGFloat kIconSize = 16;
        previousTraitCollection.horizontalSizeClass)) {
     [self updatePreferredContentSize];
   }
+
+  if (self.traitCollection.userInterfaceStyle !=
+      previousTraitCollection.userInterfaceStyle) {
+    [self updateBackgroundColor];
+  }
+}
+
+#pragma mark - Private methods
+
+- (void)updateBackgroundColor {
+  // The popover background in dark mode needs more contrast.
+  BOOL darkMode = UITraitCollection.currentTraitCollection.userInterfaceStyle ==
+                  UIUserInterfaceStyleDark;
+
+  self.view.backgroundColor =
+      darkMode ? [UIColor colorNamed:kTertiaryBackgroundColor]
+               : UIColor.clearColor;
+
+  if (darkMode && self.blurBackgroundView.superview) {
+    // Remove blurred background in dark mode if it has been added.
+    [self.blurBackgroundView removeFromSuperview];
+  } else if (!darkMode && !self.blurBackgroundView.superview) {
+    // Add blurred background in light mode only if it has not been added
+    // already.
+    [self.view insertSubview:self.blurBackgroundView atIndex:0];
+  }
+}
+
+#pragma mark - Properties
+
+- (UIVisualEffectView*)blurBackgroundView {
+  if (!_blurBackgroundView) {
+    // Set up a blurred background.
+    UIBlurEffect* blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+    _blurBackgroundView =
+        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    _blurBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    _blurBackgroundView.frame = self.view.bounds;
+  }
+  return _blurBackgroundView;
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
