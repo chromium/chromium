@@ -5196,58 +5196,11 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.CertVerifier_Job_Latency"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="EmePromise" separator=".">
-  <suffix name="CloseSession" label="CloseSession promises only."/>
-  <suffix name="CreateSession" label="CreateSession promises only.">
-    <obsolete>
-      Replaced by GenerateRequest.
-    </obsolete>
-  </suffix>
-  <suffix name="GenerateRequest" label="GenerateRequest promises only."/>
-  <suffix name="LoadSession" label="LoadSession promises only."/>
-  <suffix name="RemoveSession" label="RemoveSession promises only."/>
-  <suffix name="SetServerCertificate"
-      label="SetServerCertificate promises only."/>
-  <suffix name="UpdateSession" label="UpdateSession promises only."/>
-  <affected-histogram name="Media.EME.ClearKey"/>
-  <affected-histogram name="Media.EME.Unknown"/>
-  <affected-histogram name="Media.EME.Widevine"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="EmePromiseSystemCode" separator="."
-    ordering="prefix,3">
-  <suffix name="CloseSession" label="CloseSession promises only."/>
-  <suffix name="GenerateRequest" label="GenerateRequest promises only."/>
-  <suffix name="GetStatusForPolicy" label="GetStatusForPolicy promises only."/>
-  <suffix name="LoadSession" label="LoadSession promises only."/>
-  <suffix name="RemoveSession" label="RemoveSession promises only."/>
-  <suffix name="SetServerCertificate"
-      label="SetServerCertificate promises only."/>
-  <suffix name="UpdateSession" label="UpdateSession promises only."/>
-  <affected-histogram name="Media.EME.ClearKey.SystemCode"/>
-  <affected-histogram name="Media.EME.Unknown.SystemCode"/>
-  <affected-histogram name="Media.EME.Widevine.SystemCode"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="EmeTimeToHandleFileOperation" separator=".">
   <suffix base="true" name="DeleteFile" label="Delete File operations only."/>
   <suffix base="true" name="ReadFile" label="Read File operations only."/>
   <suffix base="true" name="WriteFile" label="Write File operations only."/>
   <affected-histogram name="Media.EME.CdmFileIO.TimeTo"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="EmeTimeToResolvePromise" separator=".">
-  <suffix name="CloseSession" label="CloseSession promises only."/>
-  <suffix name="GenerateRequest" label="GenerateRequest promises only."/>
-  <suffix name="GetStatusForPolicy" label="GetStatusForPolicy promises only."/>
-  <suffix name="LoadSession" label="LoadSession promises only."/>
-  <suffix name="RemoveSession" label="RemoveSession promises only."/>
-  <suffix name="SetServerCertificate"
-      label="SetServerCertificate promises only."/>
-  <suffix name="UpdateSession" label="UpdateSession promises only."/>
-  <affected-histogram name="Media.EME.ClearKey.TimeTo"/>
-  <affected-histogram name="Media.EME.Unknown.TimeTo"/>
-  <affected-histogram name="Media.EME.Widevine.TimeTo"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="EncryptionLevel" separator=".">
@@ -6824,31 +6777,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="NoUserGestureSinceLoad" label=""/>
   <suffix name="UserGestureSinceLoad" label=""/>
   <affected-histogram name="JSDialogs.CharacterCount"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="KeySystemPrefix" separator="." ordering="prefix,2">
-  <suffix name="ClearKey" label="Clear Key key system"/>
-  <suffix name="Unknown" label="Unknown key system"/>
-  <suffix name="Widevine" label="Widevine key system"/>
-  <affected-histogram name="Media.EME.addKey"/>
-  <affected-histogram name="Media.EME.cancelKeyRequest"/>
-  <affected-histogram name="Media.EME.CreateCdm"/>
-  <affected-histogram name="Media.EME.CreateCdmTime"/>
-  <affected-histogram name="Media.EME.CreateSession.SessionType"/>
-  <affected-histogram name="Media.EME.generateKeyRequest"/>
-  <affected-histogram name="Media.EME.KeyAdded"/>
-  <affected-histogram name="Media.EME.KeyError"/>
-  <affected-histogram name="Media.EME.KeyStatusSystemCode"/>
-  <affected-histogram name="Media.EME.LibraryCdmAvailable"/>
-  <affected-histogram name="Media.EME.SystemCode"/>
-  <affected-histogram name="Media.EME.TimeTo"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="KeySystemSuffix" separator=".">
-  <suffix name="ClearKey" label="Clear Key key system"/>
-  <suffix name="Unknown" label="Unknown key system"/>
-  <suffix name="Widevine" label="Widevine key system"/>
-  <affected-histogram name="Media.EME"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="LateBindingExperiment" separator="_">
@@ -14470,14 +14398,6 @@ chromium-metrics-reviews@google.com.
       label="Measurement taken on the compositor thread."/>
   <suffix name="Main" label="Measurement taken on the main/render thread."/>
   <affected-histogram name="AnimatedImage.NumOfFramesSkipped"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="RequestMediaKeySystemAccessKeySystems" separator=".">
-  <suffix name="ClearKey" label="Requests for the Clear Key key system."/>
-  <suffix name="Unknown"
-      label="Requests for an unknown or unsupported key system."/>
-  <suffix name="Widevine" label="Requests for the Widevine key system."/>
-  <affected-histogram name="Media.EME.RequestMediaKeySystemAccess"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="RequestThrottlerTypes" separator="_">
