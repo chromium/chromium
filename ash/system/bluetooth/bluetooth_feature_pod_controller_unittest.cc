@@ -13,8 +13,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/unified/feature_pod_button.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
-#include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/number_formatting.h"
@@ -54,12 +55,10 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
 
     feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
-    tray_controller_ =
-        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
-    tray_view_ = base::WrapUnique(tray_controller_->CreateView());
+    GetPrimaryUnifiedSystemTray()->ShowBubble();
+
     bluetooth_pod_controller_ =
-        std::make_unique<BluetoothFeaturePodController>(tray_controller_.get());
+        std::make_unique<BluetoothFeaturePodController>(tray_controller());
     feature_pod_button_ =
         base::WrapUnique(bluetooth_pod_controller_->CreateButton());
 
@@ -68,9 +67,6 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
 
   void TearDown() override {
     bluetooth_pod_controller_.reset();
-    tray_view_.reset();
-    tray_controller_.reset();
-    tray_model_.reset();
 
     AshTestBase::TearDown();
   }
@@ -83,9 +79,9 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
   }
 
   void ExpectBluetoothDetailedViewFocused() {
-    EXPECT_TRUE(tray_view_->detailed_view());
+    EXPECT_TRUE(tray_view()->detailed_view());
     const FeaturePodIconButton::Views& children =
-        tray_view_->detailed_view()->children();
+        tray_view()->detailed_view()->children();
     EXPECT_EQ(1u, children.size());
     EXPECT_STREQ("BluetoothDetailedViewImpl", children.at(0)->GetClassName());
   }
@@ -138,14 +134,19 @@ class BluetoothFeaturePodControllerTest : public AshTestBase {
     return scoped_bluetooth_config_test_helper_.fake_device_cache();
   }
 
+  UnifiedSystemTrayController* tray_controller() {
+    return GetPrimaryUnifiedSystemTray()->bubble()->controller_for_test();
+  }
+
+  UnifiedSystemTrayView* tray_view() {
+    return GetPrimaryUnifiedSystemTray()->bubble()->unified_view();
+  }
+
  protected:
   std::unique_ptr<FeaturePodButton> feature_pod_button_;
 
  private:
   std::unique_ptr<BluetoothFeaturePodController> bluetooth_pod_controller_;
-  std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
-  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
-  std::unique_ptr<UnifiedSystemTrayView> tray_view_;
   base::test::ScopedFeatureList feature_list_;
   chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
       scoped_bluetooth_config_test_helper_;
