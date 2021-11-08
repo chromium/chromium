@@ -848,6 +848,37 @@
   <fields>;
 }
 
+# File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.5.0.jar:META-INF/proguard/coroutines.pro
+# Files in this directory will be ignored starting with Android Gradle Plugin 3.6.0+
+
+# When editing this file, update the following files as well for AGP 3.6.0+:
+# - META-INF/com.android.tools/proguard/coroutines.pro
+# - META-INF/com.android.tools/r8-upto-1.6.0/coroutines.pro
+
+-keep class kotlinx.coroutines.android.AndroidDispatcherFactory {*;}
+
+# File: ../../third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.5.0.jar:META-INF/proguard/coroutines.pro
+# ServiceLoader support
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+
+# Most of volatile fields are updated with AFU and should not be mangled
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# Same story for the standard library's SafeContinuation that also uses AtomicReferenceFieldUpdater
+-keepclassmembers class kotlin.coroutines.SafeContinuation {
+    volatile <fields>;
+}
+
+# These classes are only required by kotlinx.coroutines.debug.AgentPremain, which is only loaded when
+# kotlinx-coroutines-core is used as a Java agent, so these are not needed in contexts where ProGuard is used.
+-dontwarn java.lang.instrument.ClassFileTransformer
+-dontwarn sun.misc.SignalHandler
+-dontwarn java.lang.instrument.Instrumentation
+-dontwarn sun.misc.Signal
+
 # File: //build/android/gyp/proguard.py (generated rules)
 -ignorewarnings
 # THIS LINE WAS OMITTED
