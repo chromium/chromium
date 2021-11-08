@@ -27,6 +27,10 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif
+
 namespace {
 
 // Check whether the target origin is allowed to access to the device
@@ -88,6 +92,8 @@ bool IsAffiliatedUser() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   return user && user->IsAffiliated();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return policy::PolicyLoaderLacros::IsMainUserAffiliated();
 #else
   return false;
 #endif
