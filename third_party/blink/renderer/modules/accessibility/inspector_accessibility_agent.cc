@@ -23,7 +23,9 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/inspector_type_builder_helper.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node_data.h"
 
 namespace blink {
 
@@ -43,37 +45,37 @@ namespace {
 
 static const AXID kIDForInspectedNodeWithNoAXNode = 0;
 
-void AddHasPopupProperty(ax::mojom::HasPopup has_popup,
+void AddHasPopupProperty(ax::mojom::blink::HasPopup has_popup,
                          protocol::Array<AXProperty>& properties) {
   switch (has_popup) {
-    case ax::mojom::HasPopup::kFalse:
+    case ax::mojom::blink::HasPopup::kFalse:
       break;
-    case ax::mojom::HasPopup::kTrue:
+    case ax::mojom::blink::HasPopup::kTrue:
       properties.emplace_back(
           CreateProperty(AXPropertyNameEnum::HasPopup,
                          CreateValue("true", AXValueTypeEnum::Token)));
       break;
-    case ax::mojom::HasPopup::kMenu:
+    case ax::mojom::blink::HasPopup::kMenu:
       properties.emplace_back(
           CreateProperty(AXPropertyNameEnum::HasPopup,
                          CreateValue("menu", AXValueTypeEnum::Token)));
       break;
-    case ax::mojom::HasPopup::kListbox:
+    case ax::mojom::blink::HasPopup::kListbox:
       properties.emplace_back(
           CreateProperty(AXPropertyNameEnum::HasPopup,
                          CreateValue("listbox", AXValueTypeEnum::Token)));
       break;
-    case ax::mojom::HasPopup::kTree:
+    case ax::mojom::blink::HasPopup::kTree:
       properties.emplace_back(
           CreateProperty(AXPropertyNameEnum::HasPopup,
                          CreateValue("tree", AXValueTypeEnum::Token)));
       break;
-    case ax::mojom::HasPopup::kGrid:
+    case ax::mojom::blink::HasPopup::kGrid:
       properties.emplace_back(
           CreateProperty(AXPropertyNameEnum::HasPopup,
                          CreateValue("grid", AXValueTypeEnum::Token)));
       break;
-    case ax::mojom::HasPopup::kDialog:
+    case ax::mojom::blink::HasPopup::kDialog:
       properties.emplace_back(
           CreateProperty(AXPropertyNameEnum::HasPopup,
                          CreateValue("dialog", AXValueTypeEnum::Token)));
@@ -82,21 +84,32 @@ void AddHasPopupProperty(ax::mojom::HasPopup has_popup,
 }
 
 void FillLiveRegionProperties(AXObject& ax_object,
+                              const ui::AXNodeData& node_data,
                               protocol::Array<AXProperty>& properties) {
-  if (!ax_object.LiveRegionRoot())
+  if (!node_data.IsActiveLiveRegionRoot())
     return;
 
-  properties.emplace_back(
-      CreateProperty(AXPropertyNameEnum::Live,
-                     CreateValue(ax_object.ContainerLiveRegionStatus(),
-                                 AXValueTypeEnum::Token)));
+  const String& live =
+      node_data
+          .GetStringAttribute(
+              ax::mojom::blink::StringAttribute::kContainerLiveStatus)
+          .c_str();
   properties.emplace_back(CreateProperty(
-      AXPropertyNameEnum::Atomic,
-      CreateBooleanValue(ax_object.ContainerLiveRegionAtomic())));
+      AXPropertyNameEnum::Live, CreateValue(live, AXValueTypeEnum::Token)));
+
+  const bool atomic = node_data.GetBoolAttribute(
+      ax::mojom::blink::BoolAttribute::kContainerLiveAtomic);
+  properties.emplace_back(
+      CreateProperty(AXPropertyNameEnum::Atomic, CreateBooleanValue(atomic)));
+
+  const String& relevant =
+      node_data
+          .GetStringAttribute(
+              ax::mojom::blink::StringAttribute::kContainerLiveRelevant)
+          .c_str();
   properties.emplace_back(
       CreateProperty(AXPropertyNameEnum::Relevant,
-                     CreateValue(ax_object.ContainerLiveRegionRelevant(),
-                                 AXValueTypeEnum::TokenList)));
+                     CreateValue(relevant, AXValueTypeEnum::TokenList)));
 
   if (!ax_object.IsLiveRegionRoot()) {
     properties.emplace_back(CreateProperty(
@@ -106,8 +119,9 @@ void FillLiveRegionProperties(AXObject& ax_object,
 }
 
 void FillGlobalStates(AXObject& ax_object,
+                      const ui::AXNodeData& node_data,
                       protocol::Array<AXProperty>& properties) {
-  if (ax_object.Restriction() == kRestrictionDisabled) {
+  if (node_data.GetRestriction() == ax::mojom::blink::Restriction::kDisabled) {
     properties.emplace_back(
         CreateProperty(AXPropertyNameEnum::Disabled, CreateBooleanValue(true)));
   }
@@ -120,16 +134,16 @@ void FillGlobalStates(AXObject& ax_object,
                        CreateRelatedNodeListValue(*hidden_root)));
   }
 
-  ax::mojom::InvalidState invalid_state = ax_object.GetInvalidState();
+  ax::mojom::blink::InvalidState invalid_state = node_data.GetInvalidState();
   switch (invalid_state) {
-    case ax::mojom::InvalidState::kNone:
+    case ax::mojom::blink::InvalidState::kNone:
       break;
-    case ax::mojom::InvalidState::kFalse:
+    case ax::mojom::blink::InvalidState::kFalse:
       properties.emplace_back(
           CreateProperty(AXPropertyNameEnum::Invalid,
                          CreateValue("false", AXValueTypeEnum::Token)));
       break;
-    case ax::mojom::InvalidState::kTrue:
+    case ax::mojom::blink::InvalidState::kTrue:
       properties.emplace_back(
           CreateProperty(AXPropertyNameEnum::Invalid,
                          CreateValue("true", AXValueTypeEnum::Token)));
@@ -139,11 +153,16 @@ void FillGlobalStates(AXObject& ax_object,
       // invalid value
       properties.emplace_back(CreateProperty(
           AXPropertyNameEnum::Invalid,
-          CreateValue(ax_object.AriaInvalidValue(), AXValueTypeEnum::String)));
+          CreateValue(
+              node_data
+                  .GetStringAttribute(
+                      ax::mojom::blink::StringAttribute::kAriaInvalidValue)
+                  .c_str(),
+              AXValueTypeEnum::String)));
       break;
   }
 
-  if (ax_object.CanSetFocusAttribute()) {
+  if (node_data.HasState(ax::mojom::blink::State::kFocusable)) {
     properties.emplace_back(CreateProperty(
         AXPropertyNameEnum::Focusable,
         CreateBooleanValue(true, AXValueTypeEnum::BooleanOrUndefined)));
@@ -153,33 +172,26 @@ void FillGlobalStates(AXObject& ax_object,
         AXPropertyNameEnum::Focused,
         CreateBooleanValue(true, AXValueTypeEnum::BooleanOrUndefined)));
   }
-  if (ax_object.IsEditable()) {
+
+  if (node_data.HasState(ax::mojom::blink::State::kEditable)) {
     properties.emplace_back(CreateProperty(
         AXPropertyNameEnum::Editable,
-        CreateValue(ax_object.IsRichlyEditable() ? "richtext" : "plaintext",
+        CreateValue(node_data.HasState(ax::mojom::blink::State::kRichlyEditable)
+                        ? "richtext"
+                        : "plaintext",
                     AXValueTypeEnum::Token)));
   }
-  if (ax_object.CanSetValueAttribute()) {
+  if (node_data.HasAction(ax::mojom::blink::Action::kSetValue)) {
     properties.emplace_back(CreateProperty(
         AXPropertyNameEnum::Settable,
         CreateBooleanValue(true, AXValueTypeEnum::BooleanOrUndefined)));
   }
 }
 
-bool RoleAllowsModal(ax::mojom::Role role) {
-  return role == ax::mojom::Role::kDialog ||
-         role == ax::mojom::Role::kAlertDialog;
-}
-
 bool RoleAllowsMultiselectable(ax::mojom::Role role) {
   return role == ax::mojom::Role::kGrid || role == ax::mojom::Role::kListBox ||
          role == ax::mojom::Role::kTabList ||
          role == ax::mojom::Role::kTreeGrid || role == ax::mojom::Role::kTree;
-}
-
-bool RoleAllowsOrientation(ax::mojom::Role role) {
-  return role == ax::mojom::Role::kScrollBar ||
-         role == ax::mojom::Role::kSplitter || role == ax::mojom::Role::kSlider;
 }
 
 bool RoleAllowsReadonly(ax::mojom::Role role) {
@@ -204,94 +216,76 @@ bool RoleAllowsRequired(ax::mojom::Role role) {
          role == ax::mojom::Role::kTreeGrid;
 }
 
-bool RoleAllowsSort(ax::mojom::Role role) {
-  return role == ax::mojom::Role::kColumnHeader ||
-         role == ax::mojom::Role::kRowHeader;
-}
-
 void FillWidgetProperties(AXObject& ax_object,
+                          const ui::AXNodeData& node_data,
                           protocol::Array<AXProperty>& properties) {
-  ax::mojom::blink::Role role = ax_object.ComputeFinalRoleForSerialization();
-  String autocomplete = ax_object.AutoComplete();
+  ax::mojom::blink::Role role = node_data.role;
+  const String& autocomplete =
+      node_data
+          .GetStringAttribute(ax::mojom::blink::StringAttribute::kAutoComplete)
+          .c_str();
   if (!autocomplete.IsEmpty())
     properties.emplace_back(
         CreateProperty(AXPropertyNameEnum::Autocomplete,
                        CreateValue(autocomplete, AXValueTypeEnum::Token)));
 
-  AddHasPopupProperty(ax_object.HasPopup(), properties);
+  AddHasPopupProperty(node_data.GetHasPopup(), properties);
 
-  int heading_level = ax_object.HeadingLevel();
+  const int heading_level = node_data.GetIntAttribute(
+      ax::mojom::blink::IntAttribute::kHierarchicalLevel);
   if (heading_level > 0) {
     properties.emplace_back(
         CreateProperty(AXPropertyNameEnum::Level, CreateValue(heading_level)));
   }
-  int hierarchical_level = ax_object.HierarchicalLevel();
-  if (hierarchical_level > 0 ||
-      ax_object.HasAttribute(html_names::kAriaLevelAttr)) {
-    properties.emplace_back(CreateProperty(AXPropertyNameEnum::Level,
-                                           CreateValue(hierarchical_level)));
-  }
 
   if (RoleAllowsMultiselectable(role)) {
-    bool multiselectable = ax_object.IsMultiSelectable();
+    const bool multiselectable =
+        node_data.HasState(ax::mojom::blink::State::kMultiselectable);
     properties.emplace_back(
         CreateProperty(AXPropertyNameEnum::Multiselectable,
                        CreateBooleanValue(multiselectable)));
   }
 
-  if (RoleAllowsOrientation(role)) {
-    AccessibilityOrientation orientation = ax_object.Orientation();
-    switch (orientation) {
-      case kAccessibilityOrientationVertical:
-        properties.emplace_back(
-            CreateProperty(AXPropertyNameEnum::Orientation,
-                           CreateValue("vertical", AXValueTypeEnum::Token)));
-        break;
-      case kAccessibilityOrientationHorizontal:
-        properties.emplace_back(
-            CreateProperty(AXPropertyNameEnum::Orientation,
-                           CreateValue("horizontal", AXValueTypeEnum::Token)));
-        break;
-      case kAccessibilityOrientationUndefined:
-        break;
-    }
+  if (node_data.HasState(ax::mojom::blink::State::kVertical)) {
+    properties.emplace_back(
+        CreateProperty(AXPropertyNameEnum::Orientation,
+                       CreateValue("vertical", AXValueTypeEnum::Token)));
+  } else if (node_data.HasState(ax::mojom::blink::State::kHorizontal)) {
+    properties.emplace_back(
+        CreateProperty(AXPropertyNameEnum::Orientation,
+                       CreateValue("horizontal", AXValueTypeEnum::Token)));
   }
 
   if (role == ax::mojom::Role::kTextField) {
-    properties.emplace_back(
-        CreateProperty(AXPropertyNameEnum::Multiline,
-                       CreateBooleanValue(ax_object.IsMultiline())));
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Multiline,
+        CreateBooleanValue(
+            node_data.HasState(ax::mojom::blink::State::kMultiline))));
   }
 
   if (RoleAllowsReadonly(role)) {
     properties.emplace_back(CreateProperty(
         AXPropertyNameEnum::Readonly,
-        CreateBooleanValue(ax_object.Restriction() == kRestrictionReadOnly)));
+        CreateBooleanValue(node_data.GetRestriction() ==
+                           ax::mojom::blink::Restriction::kReadOnly)));
   }
 
   if (RoleAllowsRequired(role)) {
-    properties.emplace_back(
-        CreateProperty(AXPropertyNameEnum::Required,
-                       CreateBooleanValue(ax_object.IsRequired())));
-  }
-
-  if (RoleAllowsSort(role)) {
-    // TODO(aboxhall): sort
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Required,
+        CreateBooleanValue(
+            node_data.HasState(ax::mojom::blink::State::kRequired))));
   }
 
   if (ax_object.IsRangeValueSupported()) {
-    float min_value;
-    if (ax_object.MinValueForRange(&min_value)) {
-      properties.emplace_back(
-          CreateProperty(AXPropertyNameEnum::Valuemin, CreateValue(min_value)));
-    }
-
-    float max_value;
-    if (ax_object.MaxValueForRange(&max_value)) {
-      properties.emplace_back(
-          CreateProperty(AXPropertyNameEnum::Valuemax, CreateValue(max_value)));
-    }
-
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Valuemin,
+        CreateValue(node_data.GetFloatAttribute(
+            ax::mojom::blink::FloatAttribute::kMinValueForRange))));
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Valuemax,
+        CreateValue(node_data.GetFloatAttribute(
+            ax::mojom::blink::FloatAttribute::kMaxValueForRange))));
     properties.emplace_back(CreateProperty(
         AXPropertyNameEnum::Valuetext,
         CreateValue(
@@ -302,10 +296,11 @@ void FillWidgetProperties(AXObject& ax_object,
 }
 
 void FillWidgetStates(AXObject& ax_object,
+                      const ui::AXNodeData& node_data,
                       protocol::Array<AXProperty>& properties) {
-  ax::mojom::blink::Role role = ax_object.ComputeFinalRoleForSerialization();
+  ax::mojom::blink::Role role = node_data.role;
   const char* checked_prop_val = nullptr;
-  switch (ax_object.CheckedState()) {
+  switch (node_data.GetCheckedState()) {
     case ax::mojom::CheckedState::kTrue:
       checked_prop_val = "true";
       break;
@@ -327,41 +322,29 @@ void FillWidgetStates(AXObject& ax_object,
         CreateValue(checked_prop_val, AXValueTypeEnum::Tristate)));
   }
 
-  AccessibilityExpanded expanded = ax_object.IsExpanded();
-  switch (expanded) {
-    case kExpandedUndefined:
-      break;
-    case kExpandedCollapsed:
-      properties.emplace_back(CreateProperty(
-          AXPropertyNameEnum::Expanded,
-          CreateBooleanValue(false, AXValueTypeEnum::BooleanOrUndefined)));
-      break;
-    case kExpandedExpanded:
-      properties.emplace_back(CreateProperty(
-          AXPropertyNameEnum::Expanded,
-          CreateBooleanValue(true, AXValueTypeEnum::BooleanOrUndefined)));
-      break;
-  }
-
-  AccessibilitySelectedState selected = ax_object.IsSelected();
-  switch (selected) {
-    case kSelectedStateUndefined:
-      break;
-    case kSelectedStateFalse:
-      properties.emplace_back(CreateProperty(
-          AXPropertyNameEnum::Selected,
-          CreateBooleanValue(false, AXValueTypeEnum::BooleanOrUndefined)));
-      break;
-    case kSelectedStateTrue:
-      properties.emplace_back(CreateProperty(
-          AXPropertyNameEnum::Selected,
-          CreateBooleanValue(true, AXValueTypeEnum::BooleanOrUndefined)));
-      break;
-  }
-
-  if (RoleAllowsModal(role)) {
+  if (node_data.HasState(ax::mojom::blink::State::kCollapsed)) {
     properties.emplace_back(CreateProperty(
-        AXPropertyNameEnum::Modal, CreateBooleanValue(ax_object.IsModal())));
+        AXPropertyNameEnum::Expanded,
+        CreateBooleanValue(false, AXValueTypeEnum::BooleanOrUndefined)));
+  } else if (node_data.HasState(ax::mojom::blink::State::kExpanded)) {
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Expanded,
+        CreateBooleanValue(true, AXValueTypeEnum::BooleanOrUndefined)));
+  }
+
+  if (node_data.HasBoolAttribute(ax::mojom::blink::BoolAttribute::kSelected)) {
+    properties.emplace_back(CreateProperty(
+        AXPropertyNameEnum::Selected,
+        CreateBooleanValue(node_data.GetBoolAttribute(
+                               ax::mojom::blink::BoolAttribute::kSelected),
+                           AXValueTypeEnum::BooleanOrUndefined)));
+  }
+
+  if (node_data.HasBoolAttribute(ax::mojom::blink::BoolAttribute::kModal)) {
+    properties.emplace_back(
+        CreateProperty(AXPropertyNameEnum::Modal,
+                       CreateBooleanValue(node_data.GetBoolAttribute(
+                           ax::mojom::blink::BoolAttribute::kModal))));
   }
 }
 
@@ -416,10 +399,8 @@ void GetObjectsFromAXIDs(const AXObjectCacheImpl& cache,
 }
 
 void FillSparseAttributes(AXObject& ax_object,
+                          const ui::AXNodeData& node_data,
                           protocol::Array<AXProperty>& properties) {
-  ui::AXNodeData node_data;
-  ax_object.Serialize(&node_data, ui::kAXModeComplete);
-
   if (node_data.HasBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy)) {
     const auto is_busy =
         node_data.GetBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy);
@@ -698,21 +679,21 @@ InspectorAccessibilityAgent::BuildProtocolAXNodeForIgnoredAXObject(
 std::unique_ptr<AXNode>
 InspectorAccessibilityAgent::BuildProtocolAXNodeForUnignoredAXObject(
     AXObject& ax_object) const {
-  ax::mojom::blink::Role role = ax_object.ComputeFinalRoleForSerialization();
   std::unique_ptr<AXNode> node_object =
       AXNode::create()
           .setNodeId(String::Number(ax_object.AXObjectID()))
           .setIgnored(false)
           .build();
-  node_object->setRole(CreateRoleNameValue(role));
-
   auto properties = std::make_unique<protocol::Array<AXProperty>>();
-  FillLiveRegionProperties(ax_object, *(properties.get()));
-  FillGlobalStates(ax_object, *(properties.get()));
-  FillWidgetProperties(ax_object, *(properties.get()));
-  FillWidgetStates(ax_object, *(properties.get()));
+  ui::AXNodeData node_data;
+  ax_object.Serialize(&node_data, ui::kAXModeComplete);
+  node_object->setRole(CreateRoleNameValue(node_data.role));
+  FillLiveRegionProperties(ax_object, node_data, *(properties.get()));
+  FillGlobalStates(ax_object, node_data, *(properties.get()));
+  FillWidgetProperties(ax_object, node_data, *(properties.get()));
+  FillWidgetStates(ax_object, node_data, *(properties.get()));
   FillRelationships(ax_object, *(properties.get()));
-  FillSparseAttributes(ax_object, *(properties.get()));
+  FillSparseAttributes(ax_object, node_data, *(properties.get()));
 
   AXObject::NameSources name_sources;
   String computed_name = ax_object.GetName(&name_sources);
@@ -945,29 +926,37 @@ Response InspectorAccessibilityAgent::queryAXTree(
   auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
   AXObject* root_ax_node = cache.GetOrCreate(root_dom_node);
 
-  const String sought_name = accessible_name.fromMaybe("");
-
   HeapVector<Member<AXObject>> reachable;
   if (root_ax_node)
     reachable.push_back(root_ax_node);
 
   while (!reachable.IsEmpty()) {
     AXObject* ax_object = reachable.back();
+    ui::AXNodeData node_data;
+    ax_object->Serialize(&node_data, ui::kAXModeComplete);
     reachable.pop_back();
     const AXObject::AXObjectVector& children =
         ax_object->ChildrenIncludingIgnored();
     reachable.AppendRange(children.rbegin(), children.rend());
 
+    const bool ignored = ax_object->AccessibilityIsIgnored();
     // if querying by name: skip if name of current object does not match.
-    if (accessible_name.isJust() && sought_name != ax_object->ComputedName())
-      continue;
-
-    // if querying by role: skip if role of current object does not match.
-    if (role.isJust() &&
-        role.fromJust() !=
-            AXObject::RoleName(ax_object->ComputeFinalRoleForSerialization())) {
+    // For now, we need to handle names of ignored nodes separately, since they
+    // do not get a name assigned when serializing to AXNodeData.
+    if (ignored && accessible_name.isJust() &&
+        accessible_name.fromJust() != ax_object->ComputedName()) {
       continue;
     }
+    if (!ignored && accessible_name.isJust() &&
+        accessible_name.fromJust().Utf8() !=
+            node_data.GetStringAttribute(
+                ax::mojom::blink::StringAttribute::kName)) {
+      continue;
+    }
+
+    // if querying by role: skip if role of current object does not match.
+    if (role.isJust() && role.fromJust() != AXObject::RoleName(node_data.role))
+      continue;
 
     // both name and role are OK, so we can add current object to the result.
     (*nodes)->push_back(BuildProtocolAXNodeForAXObject(*ax_object, true));

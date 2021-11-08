@@ -363,6 +363,13 @@ RootWebArea
             }
         }
         [2] : {
+            name : hasPopup
+            value : {
+                type : token
+                value : menu
+            }
+        }
+        [3] : {
             name : expanded
             value : {
                 type : booleanOrUndefined
