@@ -358,15 +358,12 @@ function fillUsernameAndPassword_(inputs, formData, username, password) {
     return false;
   }
   // If username was provided on a read-only or disabled field, fill the form.
-  if (usernameInput && (usernameInput.readOnly || usernameInput.disabled)) {
-    __gCrWeb.fill.setInputElementValue(password, passwordInput);
-    return true;
-  } else {
+  if (!(usernameInput && (usernameInput.readOnly || usernameInput.disabled))) {
     __gCrWeb.fill.setInputElementValue(username, usernameInput);
-    __gCrWeb.fill.setInputElementValue(password, passwordInput);
-    return true;
   }
-  return false;
+
+  __gCrWeb.fill.setInputElementValue(password, passwordInput);
+  return true;
 }
 
 /**
