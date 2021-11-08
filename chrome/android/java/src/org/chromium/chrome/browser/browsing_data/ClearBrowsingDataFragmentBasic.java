@@ -78,7 +78,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
 
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
-        if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
+        if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // Update the Clear Browsing History text based on the sign-in/sync state and whether
             // the link to MyActivity is displayed inline or at the bottom of the page.
             // Note: when the flag is enabled but sync is disabled, the default string is used, so
@@ -114,7 +114,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         // Google-related links to delete search history and other browsing activity.
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
                 || defaultSearchEngine == null
-                || !identityManager.hasPrimaryAccount(ConsentLevel.SYNC)) {
+                || !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // One of three cases:
             // 1. The feature is disabled.
             // 2. The default search engine is disabled.
