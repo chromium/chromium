@@ -820,7 +820,8 @@ TEST_F(SystemPerfettoTest, MAYBE_SystemTraceWhileLocalStartupTracing) {
 }
 
 #if defined(OS_ANDROID)
-TEST_F(SystemPerfettoTest, SystemToLowAPILevel) {
+// Failing on android-pie-arm64-dbg, see crbug.com/1262132.
+TEST_F(SystemPerfettoTest, DISABLED_SystemToLowAPILevel) {
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P) {
     LOG(INFO) << "Skipping SystemToLowAPILevel test, this phone supports the "
