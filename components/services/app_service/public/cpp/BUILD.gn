@@ -237,8 +237,10 @@ source_set("unit_tests") {
 
   sources = [
     "app_capability_access_cache_unittest.cc",
+    "app_capability_access_cache_wrapper_unittest.cc",
     "app_registry_cache_mojom_unittest.cc",
     "app_registry_cache_unittest.cc",
+    "app_registry_cache_wrapper_unittest.cc",
     "app_update_mojom_unittest.cc",
     "app_update_unittest.cc",
     "capability_access_update_unittest.cc",
