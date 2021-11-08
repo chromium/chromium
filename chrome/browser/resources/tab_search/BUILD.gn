@@ -17,6 +17,7 @@ preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
 preprocess_fuse_manifest = "preprocessed_fuse_manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 preprocess_mojo_tab_groups_manifest = "preprocess_mojo_tab_groups.json"
+preprocess_tabs_manifest = "preprocessed_tabs_manifest.json"
 
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
@@ -58,10 +59,12 @@ generate_grd("build_grd") {
     deps = [
       ":build",
       ":preprocess_fuse",
+      ":preprocess_tabs",
     ]
     manifest_files = [
       "$target_gen_dir/$preprocess_fuse_manifest",
       "$target_gen_dir/$build_manifest",
+      "$target_gen_dir/$preprocess_tabs_manifest",
     ]
     resource_path_rewrites += [ "tab_search.rollup.js|tab_search.js" ]
   } else {
@@ -70,6 +73,7 @@ generate_grd("build_grd") {
       ":preprocess_fuse",
       ":preprocess_mojo",
       ":preprocess_mojo_tab_groups",
+      ":preprocess_tabs",
       ":preprocess_web_components",
     ]
     manifest_files = [
@@ -78,6 +82,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/$preprocess_mojo_manifest",
       "$target_gen_dir/$preprocess_mojo_tab_groups_manifest",
       "$target_gen_dir/$preprocess_web_components_manifest",
+      "$target_gen_dir/$preprocess_tabs_manifest",
     ]
   }
 }
@@ -96,6 +101,14 @@ preprocess_if_expr("preprocess") {
     "tab_search_utils.js",
     "title_item.js",
   ]
+}
+
+preprocess_if_expr("preprocess_tabs") {
+  deps = [ "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js" ]
+  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_tabs_manifest"
+  in_files = [ "tabs.mojom-webui.js" ]
 }
 
 preprocess_if_expr("preprocess_web_components") {
@@ -163,6 +176,9 @@ js_type_check("closure_compile") {
                 root_build_dir),
         "js_module_root=" + rebase_path(
                 "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom",
+                root_build_dir),
+        "js_module_root=" + rebase_path(
+                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs",
                 root_build_dir),
       ]
   deps = [

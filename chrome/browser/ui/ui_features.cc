@@ -190,6 +190,9 @@ const char kTabSearchSearchThresholdName[] = "TabSearchSearchThreshold";
 const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
     &kTabSearchFuzzySearch, "TabSearchSearchIgnoreLocation", false};
 
+const base::Feature kTabSearchMediaTabs{"TabSearchMediaTabs",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::FeatureParam<int> kTabSearchSearchDistance{
     &kTabSearchFuzzySearch, "TabSearchSearchDistance", 200};
 

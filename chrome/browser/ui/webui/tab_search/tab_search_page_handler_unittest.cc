@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -13,6 +14,8 @@
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -22,6 +25,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/test/test_web_ui.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/color_utils.h"
 
@@ -366,6 +370,31 @@ TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+}
+
+TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kTabSearchMediaTabs);
+  std::unique_ptr<content::WebContents> test_web_contents(
+      content::WebContentsTester::CreateTestWebContents(
+          content::WebContents::CreateParams(profile())));
+  content::WebContentsTester::For(test_web_contents.get())
+      ->SetIsCurrentlyAudible(true);
+  AddTab(browser(), GURL(kTabUrl1));
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tab_strip_model->ReplaceWebContentsAt(0, std::move(test_web_contents));
+  NavigateAndCommitActiveTab(GURL(kTabUrl1));
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            auto* window1 = profile_tabs->windows[0].get();
+            auto* tab1 = window1->tabs[0].get();
+            EXPECT_EQ(TabAlertState::AUDIO_PLAYING, tab1->alert_states[0]);
+          });
+  handler()->GetProfileData(std::move(callback));
+
+  // Tab will be removed on tear down.
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {

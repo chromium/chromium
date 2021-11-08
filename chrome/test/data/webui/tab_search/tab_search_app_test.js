@@ -438,6 +438,7 @@ suite('TabSearchAppTest', () => {
     assertEquals('Google', tabSearchItem.data.tab.title);
     assertEquals('https://www.google.com', tabSearchItem.data.tab.url.url);
     const updatedTab = /** @type {!Tab} */ ({
+      alertStates: [],
       index: 0,
       tabId: 1,
       title: 'Example',
@@ -472,6 +473,7 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [1]);
 
     const updatedTab = /** @type {!Tab} */ ({
+      alertStates: [],
       index: 1,
       tabId: 2,
       title: 'Example',

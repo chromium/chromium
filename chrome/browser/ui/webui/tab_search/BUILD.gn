@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "tab_search.mojom" ]
   public_deps = [
+    "//chrome/browser/ui/webui/tabs:mojo_bindings",
     "//components/tab_groups/public/mojom:mojo_bindings",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",

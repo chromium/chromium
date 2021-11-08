@@ -15,6 +15,7 @@ export const SAMPLE_WINDOW_DATA = [
     height: SAMPLE_WINDOW_HEIGHT,
     tabs: [
       {
+        alertStates: [],
         index: 0,
         tabId: 1,
         title: 'Google',
@@ -23,6 +24,7 @@ export const SAMPLE_WINDOW_DATA = [
         lastActiveElapsedText: '',
       },
       {
+        alertStates: [],
         index: 1,
         tabId: 5,
         title: 'Amazon',
@@ -31,6 +33,7 @@ export const SAMPLE_WINDOW_DATA = [
         lastActiveElapsedText: '',
       },
       {
+        alertStates: [],
         index: 2,
         tabId: 6,
         title: 'Apple',
@@ -45,6 +48,7 @@ export const SAMPLE_WINDOW_DATA = [
     height: SAMPLE_WINDOW_HEIGHT,
     tabs: [
       {
+        alertStates: [],
         index: 0,
         tabId: 2,
         title: 'Bing',
@@ -53,6 +57,7 @@ export const SAMPLE_WINDOW_DATA = [
         lastActiveElapsedText: '',
       },
       {
+        alertStates: [],
         index: 1,
         tabId: 3,
         title: 'Yahoo',
@@ -61,6 +66,7 @@ export const SAMPLE_WINDOW_DATA = [
         lastActiveElapsedText: '',
       },
       {
+        alertStates: [],
         index: 2,
         tabId: 4,
         title: 'Apple',
@@ -117,6 +123,7 @@ export function sampleSiteNames(count) {
 export function generateSampleTabsFromSiteNames(siteNames, hasIndex = true) {
   return siteNames.map((siteName, i) => {
     const tab = /** @type {!Tab} */ ({
+      alertStates: [],
       tabId: i + 1,
       title: siteName,
       url: {url: 'https://www.' + siteName.toLowerCase() + '.com'},

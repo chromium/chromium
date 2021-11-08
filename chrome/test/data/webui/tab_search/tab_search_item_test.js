@@ -86,6 +86,7 @@ suite('TabSearchItemTest', () => {
   test('CloseButtonPresence', async () => {
     const tab = /** @type {!Tab} */ ({
       active: true,
+      alertStates: [],
       index: 0,
       isDefaultFavicon: true,
       lastActiveTimeTicks: {internalValue: BigInt(0)},
@@ -119,6 +120,7 @@ suite('TabSearchItemTest', () => {
     const token = sampleToken(1, 1);
     const tab = /** @type {!Tab} */ ({
       active: true,
+      alertStates: [],
       index: 0,
       isDefaultFavicon: true,
       lastActiveTimeTicks: {internalValue: BigInt(0)},
