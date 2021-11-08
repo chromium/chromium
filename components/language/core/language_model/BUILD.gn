@@ -8,6 +8,8 @@ static_library("language_model") {
     "baseline_language_model.h",
     "fluent_language_model.cc",
     "fluent_language_model.h",
+    "ulp_language_model.cc",
+    "ulp_language_model.h",
   ]
 
   deps = [
