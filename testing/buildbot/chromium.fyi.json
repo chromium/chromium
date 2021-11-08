@@ -17109,7 +17109,7 @@
             ]
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 12
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },
@@ -18384,7 +18384,7 @@
             ]
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 6
+          "shards": 12
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_perf_unittests/"
       },

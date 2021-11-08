@@ -738,7 +738,7 @@
         ],
         'swarming': {
           'idempotent': False,  # https://crbug.com/549140
-          'shards': 6,
+          'shards': 12,
         },
         'resultdb': {
           'enable': True,
