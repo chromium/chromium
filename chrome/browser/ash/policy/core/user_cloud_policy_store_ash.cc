@@ -225,8 +225,8 @@ void UserCloudPolicyStoreAsh::OnPolicyRetrieved(
   if (policy_blob.empty()) {
     // session_manager doesn't have policy. Adjust internal state and notify
     // the world about the policy update.
+    ResetPolicy();
     policy_map_.Clear();
-    policy_.reset();
     policy_signature_public_key_.clear();
     NotifyStoreLoaded();
     return;
@@ -267,8 +267,8 @@ void UserCloudPolicyStoreAsh::OnRetrievedPolicyValidated(
     return;
   }
 
-  policy_fetch_response_ = std::move(validator->policy());
-  InstallPolicy(std::move(validator->policy_data()),
+  InstallPolicy(std::move(validator->policy()),
+                std::move(validator->policy_data()),
                 std::move(validator->payload()),
                 cached_policy_key_loader_->cached_policy_key());
   status_ = STATUS_OK;

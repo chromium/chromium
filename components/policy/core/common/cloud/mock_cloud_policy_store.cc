@@ -12,10 +12,6 @@ MockCloudPolicyStore::MockCloudPolicyStore() = default;
 
 MockCloudPolicyStore::~MockCloudPolicyStore() = default;
 
-void MockCloudPolicyStore::InitPolicyData() {
-  policy_ = std::make_unique<enterprise_management::PolicyData>();
-}
-
 MockCloudPolicyStoreObserver::MockCloudPolicyStoreObserver() = default;
 
 MockCloudPolicyStoreObserver::~MockCloudPolicyStoreObserver() = default;

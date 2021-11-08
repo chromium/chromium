@@ -503,9 +503,10 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
   ASSERT_FALSE(manager_->IsClientRegistered());
   ASSERT_FALSE(IsRequestActive());
 
-  mock_store_->policy_ = std::make_unique<enterprise_management::PolicyData>();
-  mock_store_->policy_->set_request_token("fake token");
-  mock_store_->policy_->set_device_id("fake client id");
+  auto data = std::make_unique<enterprise_management::PolicyData>();
+  data->set_request_token("fake token");
+  data->set_device_id("fake client id");
+  mock_store_->set_policy_data_for_testing(std::move(data));
 
   // Complete initialization of the store.
   mock_store_->NotifyStoreLoaded();

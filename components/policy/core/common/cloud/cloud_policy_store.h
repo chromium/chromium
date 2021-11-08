@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -19,6 +20,7 @@
 
 namespace enterprise_management {
 class PolicyData;
+class PolicyFetchResponse;
 }
 
 namespace policy {
@@ -87,7 +89,9 @@ class POLICY_EXPORT CloudPolicyStore {
   }
   bool has_policy() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return policy_.get() != NULL;
+    DCHECK_EQ(policy_.get() != nullptr,
+              policy_fetch_response_.get() != nullptr);
+    return policy_.get() != nullptr;
   }
   const enterprise_management::PolicyData* policy() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -175,6 +179,12 @@ class POLICY_EXPORT CloudPolicyStore {
   // Updates whether or not the first policies were loaded.
   virtual void UpdateFirstPoliciesLoaded();
 
+  void SetPolicy(
+      std::unique_ptr<enterprise_management::PolicyFetchResponse>
+          policy_fetch_response,
+      std::unique_ptr<enterprise_management::PolicyData> policy_data);
+  void ResetPolicy();
+
   // Assert non-concurrent usage in debug builds.
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -183,11 +193,6 @@ class POLICY_EXPORT CloudPolicyStore {
 
   // Decoded version of the currently effective policy.
   PolicyMap policy_map_;
-
-  // Currently effective policy.
-  std::unique_ptr<enterprise_management::PolicyData> policy_;
-  std::unique_ptr<enterprise_management::PolicyFetchResponse>
-      policy_fetch_response_;
 
   // Latest status code.
   Status status_ = STATUS_OK;
@@ -212,6 +217,12 @@ class POLICY_EXPORT CloudPolicyStore {
   // Whether the store has completed asynchronous initialization, which is
   // triggered by calling Load().
   bool is_initialized_ = false;
+
+  // Currently effective policy. Should be always in sync and kept private.
+  // Use `SetPolicy()` and `ResetPolicy()` to alter the fields.
+  std::unique_ptr<enterprise_management::PolicyFetchResponse>
+      policy_fetch_response_;
+  std::unique_ptr<enterprise_management::PolicyData> policy_;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
 };

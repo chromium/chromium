@@ -50,11 +50,12 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     // Set up the protobuf timestamp to be one minute in the past. Since the
     // protobuf field only has millisecond precision, we convert the actual
     // value back to get a millisecond-clamped time stamp for the checks below.
-    store_.policy_ = std::make_unique<em::PolicyData>();
     base::Time now = base::Time::NowFromSystemTime();
     base::TimeDelta initial_age = base::Minutes(kInitialCacheAgeMinutes);
-    store_.policy_->set_timestamp((now - initial_age).ToJavaTime());
-    last_update_ = base::Time::FromJavaTime(store_.policy_->timestamp());
+    policy_data_.set_timestamp((now - initial_age).ToJavaTime());
+    store_.set_policy_data_for_testing(
+        std::make_unique<em::PolicyData>(policy_data_));
+    last_update_ = base::Time::FromJavaTime(store_.policy()->timestamp());
     last_update_ticks_ = base::TimeTicks::Now() +
                          (last_update_ - base::Time::NowFromSystemTime());
   }
@@ -178,6 +179,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   MockCloudPolicyClient client_;
   MockCloudPolicyStore store_;
+  em::PolicyData policy_data_;
   std::unique_ptr<MockCloudPolicyService> service_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
@@ -187,7 +189,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
 };
 
 TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshNoPolicy) {
-  store_.policy_.reset();
+  store_.set_policy_data_for_testing(std::make_unique<em::PolicyData>());
   std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
       CreateRefreshScheduler());
   EXPECT_TRUE(task_runner_->HasPendingTask());
@@ -198,7 +200,9 @@ TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshNoPolicy) {
 }
 
 TEST_F(CloudPolicyRefreshSchedulerTest, InitialRefreshUnmanaged) {
-  store_.policy_->set_state(em::PolicyData::UNMANAGED);
+  policy_data_.set_state(em::PolicyData::UNMANAGED);
+  store_.set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_data_));
   std::unique_ptr<CloudPolicyRefreshScheduler> scheduler(
       CreateRefreshScheduler());
   CheckTiming(scheduler.get(),

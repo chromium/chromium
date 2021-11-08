@@ -159,12 +159,12 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   }
 
   void LoadStore() {
-    em::PolicyData* data = new em::PolicyData();
-    data->set_username(PolicyBuilder::kFakeUsername);
-    data->set_request_token(PolicyBuilder::kFakeToken);
-    data->set_device_id(PolicyBuilder::kFakeDeviceId);
-    data->set_public_key_version(PolicyBuilder::kFakePublicKeyVersion);
-    store_.policy_.reset(data);
+    auto policy_data = std::make_unique<em::PolicyData>();
+    policy_data->set_username(PolicyBuilder::kFakeUsername);
+    policy_data->set_request_token(PolicyBuilder::kFakeToken);
+    policy_data->set_device_id(PolicyBuilder::kFakeDeviceId);
+    policy_data->set_public_key_version(PolicyBuilder::kFakePublicKeyVersion);
+    store_.set_policy_data_for_testing(std::move(policy_data));
     store_.policy_signature_public_key_ = public_key_;
     store_.NotifyStoreLoaded();
     RunUntilIdle();
@@ -539,7 +539,7 @@ TEST_F(ComponentCloudPolicyServiceTest, SignOut) {
   // from the cache. It does not trigger a refresh.
   EXPECT_CALL(delegate_, OnComponentCloudPolicyUpdated());
   core_.Disconnect();
-  store_.policy_.reset();
+  store_.set_policy_data_for_testing(std::make_unique<em::PolicyData>());
   Mock::VerifyAndClearExpectations(&store_);
   store_.NotifyStoreLoaded();
   RunUntilIdle();
@@ -662,7 +662,9 @@ TEST_F(ComponentCloudPolicyServiceTest, KeyRotation) {
 
   // Update the signing key in the store.
   store_.policy_signature_public_key_ = builder_.GetPublicSigningKeyAsString();
-  store_.policy_->set_public_key_version(kNewPublicKeyVersion);
+  auto policy_data = std::make_unique<em::PolicyData>(*store_.policy());
+  policy_data->set_public_key_version(kNewPublicKeyVersion);
+  store_.set_policy_data_for_testing(std::move(policy_data));
   store_.NotifyStoreLoaded();
   RunUntilIdle();
 

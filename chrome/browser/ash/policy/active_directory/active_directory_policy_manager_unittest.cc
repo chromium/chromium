@@ -166,8 +166,8 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, DontWait_HasCachedPolicy) {
 
   // Configure policy fetch to fail.
   fake_client()->set_refresh_user_policy_error(authpolicy::ERROR_UNKNOWN);
-
-  mock_store()->policy_ = std::make_unique<enterprise_management::PolicyData>();
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
   mock_store()->NotifyStoreLoaded();
   // Trigger mock policy fetch from authpolicyd.
   InitPolicyManagerAndVerifyExpectations();
@@ -202,7 +202,8 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
   InitPolicyManagerAndVerifyExpectations();
 
   // Simulate successful store load.
-  mock_store()->policy_ = std::make_unique<enterprise_management::PolicyData>();
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
   mock_store()->NotifyStoreLoaded();
   EXPECT_FALSE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
@@ -230,7 +231,8 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
   InitPolicyManagerAndVerifyExpectations();
 
   // Simulate successful store load.
-  mock_store()->policy_ = std::make_unique<enterprise_management::PolicyData>();
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
   mock_store()->NotifyStoreLoaded();
   EXPECT_FALSE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
@@ -257,7 +259,8 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadSuccess_FetchFail) {
   InitPolicyManagerAndVerifyExpectations();
 
   // Simulate successful store load.
-  mock_store()->policy_ = std::make_unique<enterprise_management::PolicyData>();
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
   mock_store()->NotifyStoreLoaded();
   EXPECT_FALSE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
@@ -292,7 +295,8 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_FetchFail_LoadSuccess) {
   EXPECT_FALSE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
   // Simulate successful store load.
-  mock_store()->policy_ = std::make_unique<enterprise_management::PolicyData>();
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
   mock_store()->NotifyStoreLoaded();
   EXPECT_TRUE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 }
@@ -322,7 +326,8 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_LoadFail_FetchFail) {
   ExpectSessionExited();
 
   // Simulate successful store load.
-  mock_store()->policy_ = std::make_unique<enterprise_management::PolicyData>();
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
   mock_store()->NotifyStoreLoaded();
   EXPECT_TRUE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 }
@@ -341,7 +346,8 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
   InitPolicyManagerAndVerifyExpectations();
 
   // Simulate successful store load.
-  mock_store()->policy_ = std::make_unique<enterprise_management::PolicyData>();
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
   mock_store()->NotifyStoreLoaded();
   EXPECT_FALSE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
@@ -373,7 +379,8 @@ TEST_F(UserActiveDirectoryPolicyManagerTest,
   EXPECT_FALSE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
   // Simulate successful store load.
-  mock_store()->policy_ = std::make_unique<enterprise_management::PolicyData>();
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
   mock_store()->NotifyStoreLoaded();
   EXPECT_TRUE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 }
@@ -416,7 +423,8 @@ TEST_F(UserActiveDirectoryPolicyManagerTest, WaitFinite_FetchSucces_LongLoad) {
   EXPECT_FALSE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
   // Simulate successful store load.
-  mock_store()->policy_ = std::make_unique<enterprise_management::PolicyData>();
+  mock_store()->set_policy_data_for_testing(
+      std::make_unique<enterprise_management::PolicyData>());
   mock_store()->NotifyStoreLoaded();
   EXPECT_TRUE(policy_manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 }

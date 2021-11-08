@@ -219,7 +219,8 @@ TEST_F(CloudPolicyManagerTest, InitAndShutdown) {
   Mock::VerifyAndClearExpectations(&observer_);
 
   store_.policy_map_ = policy_map_.Clone();
-  store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
+  store_.set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_.policy_data()));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_.NotifyStoreLoaded();
   Mock::VerifyAndClearExpectations(&observer_);
@@ -301,7 +302,8 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
   manager_->core()->Connect(std::unique_ptr<CloudPolicyClient>(client));
 
   // Simulate a store load.
-  store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
+  store_.set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_.policy_data()));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   EXPECT_CALL(*client, SetupRegistration(_, _, _));
   store_.NotifyStoreLoaded();
@@ -341,7 +343,8 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
 
 TEST_F(CloudPolicyManagerTest, SignalOnError) {
   // Simulate a failed load and verify that it triggers OnUpdatePolicy().
-  store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
+  store_.set_policy_data_for_testing(
+      std::make_unique<em::PolicyData>(policy_.policy_data()));
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_.NotifyStoreError();
   Mock::VerifyAndClearExpectations(&observer_);

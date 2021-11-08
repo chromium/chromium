@@ -129,6 +129,11 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
     return policy_data_.get();
   }
 
+  const enterprise_management::PolicyFetchResponse* policy_fetch_response()
+      const {
+    return policy_fetch_response_.get();
+  }
+
   // Returns the currently active device settings. Returns nullptr if the device
   // settings have not been retrieved from session_manager yet.
   const enterprise_management::ChromeDeviceSettingsProto*
@@ -265,6 +270,8 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
   // Ownership status before the current session manager operation.
   OwnershipStatus previous_ownership_status_ = OWNERSHIP_UNKNOWN;
 
+  std::unique_ptr<enterprise_management::PolicyFetchResponse>
+      policy_fetch_response_;
   std::unique_ptr<enterprise_management::PolicyData> policy_data_;
   std::unique_ptr<enterprise_management::ChromeDeviceSettingsProto>
       device_settings_;

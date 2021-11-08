@@ -57,6 +57,12 @@ class SessionManagerOperation {
   std::unique_ptr<enterprise_management::PolicyData>& policy_data() {
     return policy_data_;
   }
+
+  std::unique_ptr<enterprise_management::PolicyFetchResponse>&
+  policy_fetch_response() {
+    return policy_fetch_response_;
+  }
+
   std::unique_ptr<enterprise_management::ChromeDeviceSettingsProto>&
   device_settings() {
     return device_settings_;
@@ -97,6 +103,9 @@ class SessionManagerOperation {
   bool force_key_load_ = false;
 
   bool force_immediate_load_ = false;
+
+  std::unique_ptr<enterprise_management::PolicyFetchResponse>
+      policy_fetch_response_;
 
  private:
   // Loads the owner key from disk. Must be run on a thread that can do I/O.
@@ -181,8 +190,6 @@ class StoreSettingsOperation : public SessionManagerOperation {
  private:
   // Handles the result of the store operation and triggers the load.
   void HandleStoreResult(bool success);
-
-  std::unique_ptr<enterprise_management::PolicyFetchResponse> policy_;
 
   base::WeakPtrFactory<StoreSettingsOperation> weak_factory_{this};
 };

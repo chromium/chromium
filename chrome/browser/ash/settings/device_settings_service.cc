@@ -318,6 +318,7 @@ void DeviceSettingsService::HandleCompletedOperation(
     Status status) {
   store_status_ = status;
   if (status == STORE_SUCCESS) {
+    policy_fetch_response_ = std::move(operation->policy_fetch_response());
     policy_data_ = std::move(operation->policy_data());
     device_settings_ = std::move(operation->device_settings());
     // Update "OffHours" policy state and apply "OffHours" policy to current

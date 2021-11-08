@@ -194,19 +194,20 @@ PolicyLoadResult MachineLevelUserCloudPolicyStore::LoadExternalCachedPolicies(
 
 std::unique_ptr<UserCloudPolicyValidator>
 MachineLevelUserCloudPolicyStore::CreateValidator(
-    std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
+    std::unique_ptr<enterprise_management::PolicyFetchResponse>
+        policy_fetch_response,
     CloudPolicyValidatorBase::ValidateTimestampOption option) {
   auto validator = std::make_unique<UserCloudPolicyValidator>(
-      std::move(policy), background_task_runner());
+      std::move(policy_fetch_response), background_task_runner());
   validator->ValidatePolicyType(
       GetMachineLevelUserCloudPolicyTypeForCurrentOS());
   validator->ValidateDMToken(machine_dm_token_.value(),
                              CloudPolicyValidatorBase::DM_TOKEN_REQUIRED);
   validator->ValidateDeviceId(machine_client_id_,
                               CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  if (policy_) {
-    validator->ValidateTimestamp(base::Time::FromJavaTime(policy_->timestamp()),
-                                 option);
+  if (has_policy()) {
+    validator->ValidateTimestamp(
+        base::Time::FromJavaTime(policy()->timestamp()), option);
   }
   validator->ValidatePayload();
   return validator;

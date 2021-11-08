@@ -143,9 +143,10 @@ TEST_F(LookupKeyUploaderTest, UploadsEvenWhenSubmittedBeforeIfForcedByPolicy) {
   EXPECT_FALSE(NeedsUpload());
 
   // We set the policy for obtaining RSU lookup key.
-  policy_store_.policy_ = std::make_unique<enterprise_management::PolicyData>();
-  policy_store_.policy_->mutable_client_action_required()
+  auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+  policy_data->mutable_client_action_required()
       ->set_enrollment_certificate_needed(true);
+  policy_store_.set_policy_data_for_testing(std::move(policy_data));
 
   // We expect the ObtainAndUploadCertificate to called twice.
   AdvanceTime();

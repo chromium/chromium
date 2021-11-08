@@ -36,11 +36,11 @@ class BrowserSignalsDecoratorTest : public testing::Test {
   }
 
   void SetFakePolicyData() {
-    mock_cloud_policy_store_.InitPolicyData();
-    mock_cloud_policy_store_.GetMutablePolicyData()->set_obfuscated_customer_id(
-        kFakeCustomerId);
-    mock_cloud_policy_store_.GetMutablePolicyData()->set_managed_by(
-        kFakeEnrollmentDomain);
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    policy_data->set_obfuscated_customer_id(kFakeCustomerId);
+    policy_data->set_managed_by(kFakeEnrollmentDomain);
+    mock_cloud_policy_store_.set_policy_data_for_testing(
+        std::move(policy_data));
   }
 
   void ValidateStaticSignals(const DeviceTrustSignals& signals) {

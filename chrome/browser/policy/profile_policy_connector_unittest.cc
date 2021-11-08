@@ -155,11 +155,10 @@ TEST_F(ProfilePolicyConnectorTest, IsManagedForManagedUsers) {
                  g_browser_process->browser_policy_connector(), false);
   EXPECT_FALSE(connector.IsManaged());
 
-  cloud_policy_store_.policy_ =
-      std::make_unique<enterprise_management::PolicyData>();
-  cloud_policy_store_.policy_->set_username("test@testdomain.com");
-  cloud_policy_store_.policy_->set_state(
-      enterprise_management::PolicyData::ACTIVE);
+  auto policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_username("test@testdomain.com");
+  policy->set_state(enterprise_management::PolicyData::ACTIVE);
+  cloud_policy_store_.set_policy_data_for_testing(std::move(policy));
   EXPECT_TRUE(connector.IsManaged());
 
   // Cleanup.
@@ -177,15 +176,17 @@ TEST_F(ProfilePolicyConnectorTest, IsManagedForActiveDirectoryUsers) {
   connector.Init(user.get(), &schema_registry_, cloud_policy_manager_.get(),
                  &cloud_policy_store_,
                  g_browser_process->browser_policy_connector(), false);
-  cloud_policy_store_.policy_ =
-      std::make_unique<enterprise_management::PolicyData>();
-  cloud_policy_store_.policy_->set_state(
-      enterprise_management::PolicyData::ACTIVE);
+  auto policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_state(enterprise_management::PolicyData::ACTIVE);
+  cloud_policy_store_.set_policy_data_for_testing(std::move(policy));
   EXPECT_TRUE(connector.IsManaged());
 
   // Policy username does not override management realm for Active Directory
   // user.
-  cloud_policy_store_.policy_->set_username("test@testdomain.com");
+  policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_state(enterprise_management::PolicyData::ACTIVE);
+  policy->set_username("test@testdomain.com");
+  cloud_policy_store_.set_policy_data_for_testing(std::move(policy));
   EXPECT_TRUE(connector.IsManaged());
 
   // Cleanup.
@@ -198,10 +199,9 @@ TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
   user_manager::ScopedUserManager scoped_user_manager_enabler(
       std::move(user_manager_unique_ptr));
 
-  cloud_policy_store_.policy_ =
-      std::make_unique<enterprise_management::PolicyData>();
-  cloud_policy_store_.policy_->set_state(
-      enterprise_management::PolicyData::ACTIVE);
+  auto policy = std::make_unique<enterprise_management::PolicyData>();
+  policy->set_state(enterprise_management::PolicyData::ACTIVE);
+  cloud_policy_store_.set_policy_data_for_testing(std::move(policy));
   cloud_policy_store_.policy_map_.Set(
       key::kAutofillAddressEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
       POLICY_SOURCE_CLOUD, base::Value(false), nullptr);

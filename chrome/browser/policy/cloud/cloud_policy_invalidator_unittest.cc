@@ -39,6 +39,7 @@
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -292,7 +293,7 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(PolicyObject object,
                                                  int64_t invalidation_version,
                                                  bool policy_changed,
                                                  const base::Time& time) {
-  em::PolicyData* data = new em::PolicyData();
+  auto data = std::make_unique<em::PolicyData>();
   if (object != POLICY_OBJECT_NONE) {
     // CloudPolicyInvalidator expects the topic to subscribe in this field.
     data->set_policy_invalidation_topic(GetPolicyTopic(object));
@@ -304,7 +305,7 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(PolicyObject object,
         policy_value_b_ : policy_value_a_;
   data->set_policy_value(policy_value_cur_);
   store_.invalidation_version_ = invalidation_version;
-  store_.policy_.reset(data);
+  store_.set_policy_data_for_testing(std::move(data));
   base::DictionaryValue policies;
   policies.SetInteger(
       key::kMaxInvalidationFetchDelay,
