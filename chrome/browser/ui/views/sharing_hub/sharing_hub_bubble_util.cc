@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_util.h"
 
+#include "base/bind.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -14,8 +15,8 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace sharing_hub {
 
@@ -28,35 +29,33 @@ constexpr int kPaddingColumnWidth = 10;
 TitleWithBackButtonView::TitleWithBackButtonView(
     views::Button::PressedCallback back_callback,
     const std::u16string& window_title) {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-
-  using ColumnSize = views::GridLayout::ColumnSize;
-  // Add columns for the back button, padding, and the title label.
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize, ColumnSize::kUsePreferred,
-                     0, 0);
-  columns->AddPaddingColumn(views::GridLayout::kFixedSize, kPaddingColumnWidth);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.f,
-                     ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-
-  auto back_button = views::CreateVectorImageButtonWithNativeTheme(
-      std::move(back_callback), vector_icons::kBackArrowIcon);
-  back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
-  back_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
-  back_button->SizeToPreferredSize();
-  InstallCircleHighlightPathGenerator(back_button.get());
-  layout->AddView(std::move(back_button));
-
-  auto title = std::make_unique<views::Label>(
-      window_title, views::style::CONTEXT_DIALOG_TITLE);
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title->SetCollapseWhenHidden(true);
-  title->SetMultiLine(true);
-  layout->AddView(std::move(title));
+  views::Builder<TitleWithBackButtonView>(this)
+      .AddColumn(views::LayoutAlignment::kStart,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, kPaddingColumnWidth)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kCenter, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, views::TableLayout::kFixedSize, 0)
+      .AddChildren(
+          views::Builder<views::ImageButton>(
+              views::CreateVectorImageButtonWithNativeTheme(
+                  std::move(back_callback), vector_icons::kBackArrowIcon))
+              .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK))
+              .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK))
+              .CustomConfigure(base::BindOnce([](views::ImageButton* view) {
+                view->SizeToPreferredSize();
+                InstallCircleHighlightPathGenerator(view);
+              })),
+          views::Builder<views::Label>()
+              .SetText(window_title)
+              .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .SetCollapseWhenHidden(true)
+              .SetMultiLine(true))
+      .BuildChildren();
 }
 
 TitleWithBackButtonView::~TitleWithBackButtonView() = default;

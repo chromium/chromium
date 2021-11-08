@@ -9,13 +9,13 @@
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/table_layout_view.h"
 
 namespace sharing_hub {
 
 // Defines a title view with a back button and a label. Used by first party
 // action dialogs for the sharing hub (e.g. qr code, send tab to self).
-class TitleWithBackButtonView : public views::View {
+class TitleWithBackButtonView : public views::TableLayoutView {
  public:
   METADATA_HEADER(TitleWithBackButtonView);
   explicit TitleWithBackButtonView(views::Button::PressedCallback callback,
@@ -27,6 +27,11 @@ class TitleWithBackButtonView : public views::View {
   gfx::Size GetMinimumSize() const override;
 };
 
+BEGIN_VIEW_BUILDER(, TitleWithBackButtonView, views::TableLayoutView)
+END_VIEW_BUILDER
+
 }  // namespace sharing_hub
+
+DEFINE_VIEW_BUILDER(, sharing_hub::TitleWithBackButtonView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SHARING_HUB_SHARING_HUB_BUBBLE_UTIL_H_
