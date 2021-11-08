@@ -447,6 +447,10 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
         views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
     mute_button->SetImageVerticalAlignment(
         views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
+    mute_button->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_MUTE));
+    mute_button->SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_MUTE));
     mute_button_ = util_buttons_container->AddChildView(std::move(mute_button));
 
     AddChildView(std::move(util_buttons_container));
@@ -601,8 +605,16 @@ void MediaNotificationViewModernImpl::UpdateDeviceSelectorAvailability(
 }
 
 void MediaNotificationViewModernImpl::UpdateWithMuteStatus(bool mute) {
-  if (mute_button_)
+  if (mute_button_) {
     mute_button_->SetToggled(mute);
+    const auto mute_button_description_id =
+        mute ? IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_UNMUTE
+             : IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_MUTE;
+    mute_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(mute_button_description_id));
+    mute_button_->SetAccessibleName(
+        l10n_util::GetStringUTF16(mute_button_description_id));
+  }
 
   if (volume_slider_)
     volume_slider_->SetMute(mute);
