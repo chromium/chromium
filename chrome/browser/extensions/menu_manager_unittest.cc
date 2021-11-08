@@ -641,9 +641,9 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   ASSERT_TRUE(info->GetString("selectionText", &tmp16));
   ASSERT_EQ(params.selection_text, tmp16);
 
-  bool bool_tmp = true;
-  ASSERT_TRUE(info->GetBoolean("editable", &bool_tmp));
-  ASSERT_EQ(params.is_editable, bool_tmp);
+  absl::optional<bool> editable = info->FindBoolKey("editable");
+  ASSERT_TRUE(editable.has_value());
+  ASSERT_EQ(params.is_editable, editable.value());
 
   delete list;
 }

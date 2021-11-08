@@ -380,12 +380,12 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_Candidate) {
   EXPECT_GT(arg_dict->FindIntKey("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict->FindIntKey("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 2);
-  bool isMainFrame;
-  EXPECT_TRUE(arg_dict->GetBoolean("isMainFrame", &isMainFrame));
-  EXPECT_EQ(true, isMainFrame);
-  bool isOOPIF;
-  EXPECT_TRUE(arg_dict->GetBoolean("isOOPIF", &isOOPIF));
-  EXPECT_EQ(false, isOOPIF);
+  absl::optional<bool> isMainFrame = arg_dict->FindBoolKey("isMainFrame");
+  EXPECT_TRUE(isMainFrame.has_value());
+  EXPECT_EQ(true, isMainFrame.value());
+  absl::optional<bool> isOOPIF = arg_dict->FindBoolKey("isOOPIF");
+  EXPECT_TRUE(isOOPIF.has_value());
+  EXPECT_EQ(false, isOOPIF.value());
   EXPECT_EQ(arg_dict->FindIntKey("frame_x").value_or(-1), 8);
   EXPECT_EQ(arg_dict->FindIntKey("frame_y").value_or(-1), 8);
   EXPECT_EQ(arg_dict->FindIntKey("frame_width").value_or(-1), 5);
@@ -432,12 +432,12 @@ TEST_P(ImagePaintTimingDetectorTest,
   EXPECT_GT(arg_dict->FindIntKey("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict->FindIntKey("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 2);
-  bool isMainFrame;
-  EXPECT_TRUE(arg_dict->GetBoolean("isMainFrame", &isMainFrame));
-  EXPECT_EQ(false, isMainFrame);
-  bool isOOPIF;
-  EXPECT_TRUE(arg_dict->GetBoolean("isOOPIF", &isOOPIF));
-  EXPECT_EQ(false, isOOPIF);
+  absl::optional<bool> isMainFrame = arg_dict->FindBoolKey("isMainFrame");
+  EXPECT_TRUE(isMainFrame.has_value());
+  EXPECT_EQ(false, isMainFrame.value());
+  absl::optional<bool> isOOPIF = arg_dict->FindBoolKey("isOOPIF");
+  EXPECT_TRUE(isOOPIF.has_value());
+  EXPECT_EQ(false, isOOPIF.value());
   EXPECT_EQ(arg_dict->FindIntKey("frame_x").value_or(-1), 10);
   EXPECT_EQ(arg_dict->FindIntKey("frame_y").value_or(-1), 10);
   EXPECT_EQ(arg_dict->FindIntKey("frame_width").value_or(-1), 200);
@@ -477,12 +477,12 @@ TEST_P(ImagePaintTimingDetectorTest, LargestImagePaint_TraceEvent_NoCandidate) {
     base::DictionaryValue* arg_dict;
     EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
     EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 1);
-    bool is_main_frame;
-    EXPECT_TRUE(arg_dict->GetBoolean("isMainFrame", &is_main_frame));
-    EXPECT_EQ(true, is_main_frame);
-    bool is_oopif;
-    EXPECT_TRUE(arg_dict->GetBoolean("isOOPIF", &is_oopif));
-    EXPECT_EQ(false, is_oopif);
+    absl::optional<bool> is_main_frame = arg_dict->FindBoolKey("isMainFrame");
+    EXPECT_TRUE(is_main_frame.has_value());
+    EXPECT_EQ(true, is_main_frame.value());
+    absl::optional<bool> is_oopif = arg_dict->FindBoolKey("isOOPIF");
+    EXPECT_TRUE(is_oopif.has_value());
+    EXPECT_EQ(false, is_oopif.value());
   }
 
   // Use block to reuse the temp variable names.

@@ -458,9 +458,10 @@ bool DictionaryToUnlockKey(const base::DictionaryValue& dictionary,
 
   // TODO(crbug.com/848477): Migrate |unlockable| into
   // |supported_software_features|.
-  bool unlockable;
-  if (dictionary.GetBoolean(kExternalDeviceKeyUnlockable, &unlockable))
-    external_device->set_unlockable(unlockable);
+  absl::optional<bool> unlockable =
+      dictionary.FindBoolKey(kExternalDeviceKeyUnlockable);
+  if (unlockable.has_value())
+    external_device->set_unlockable(unlockable.value());
 
   std::string last_update_time_millis_str;
   if (dictionary.GetString(kExternalDeviceKeyLastUpdateTimeMillis,
@@ -486,13 +487,15 @@ bool DictionaryToUnlockKey(const base::DictionaryValue& dictionary,
   if (dictionary.GetList(kExternalDeviceKeyBeaconSeeds, &beacon_seeds))
     AddBeaconSeedsToExternalDevice(*beacon_seeds, external_device);
 
-  bool arc_plus_plus;
-  if (dictionary.GetBoolean(kExternalDeviceKeyArcPlusPlus, &arc_plus_plus))
-    external_device->set_arc_plus_plus(arc_plus_plus);
+  absl::optional<bool> arc_plus_plus =
+      dictionary.FindBoolKey(kExternalDeviceKeyArcPlusPlus);
+  if (arc_plus_plus.has_value())
+    external_device->set_arc_plus_plus(arc_plus_plus.value());
 
-  bool pixel_phone;
-  if (dictionary.GetBoolean(kExternalDeviceKeyPixelPhone, &pixel_phone))
-    external_device->set_pixel_phone(pixel_phone);
+  absl::optional<bool> pixel_phone =
+      dictionary.FindBoolKey(kExternalDeviceKeyPixelPhone);
+  if (pixel_phone.has_value())
+    external_device->set_pixel_phone(pixel_phone.value());
 
   std::string no_pii_device_name_b64;
   if (dictionary.GetString(kExternalDeviceKeyNoPiiDeviceName,
@@ -505,18 +508,17 @@ bool DictionaryToUnlockKey(const base::DictionaryValue& dictionary,
     }
   }
 
-  bool unlock_key = false;
-  dictionary.GetBoolean(kExternalDeviceKeyUnlockKey, &unlock_key);
-  bool mobile_hotspot_supported = false;
-  dictionary.GetBoolean(kExternalDeviceKeyMobileHotspotSupported,
-                        &mobile_hotspot_supported);
+  absl::optional<bool> unlock_key =
+      dictionary.FindBoolKey(kExternalDeviceKeyUnlockKey);
+  absl::optional<bool> mobile_hotspot_supported =
+      dictionary.FindBoolKey(kExternalDeviceKeyMobileHotspotSupported);
 
   const base::DictionaryValue* software_features_dictionary;
   if (dictionary.GetDictionary(kDictionaryKeySoftwareFeatures,
                                &software_features_dictionary)) {
-    AddSoftwareFeaturesToExternalDevice(*software_features_dictionary,
-                                        external_device, unlock_key,
-                                        mobile_hotspot_supported);
+    AddSoftwareFeaturesToExternalDevice(
+        *software_features_dictionary, external_device,
+        unlock_key.value_or(false), mobile_hotspot_supported.value_or(false));
   }
 
   return true;

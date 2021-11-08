@@ -278,15 +278,20 @@ bool RequestContentScript::InitScriptData(const base::DictionaryValue* dict,
     }
   }
   if (dict->HasKey(declarative_content_constants::kAllFrames)) {
-    if (!dict->GetBoolean(declarative_content_constants::kAllFrames,
-                          &script_data->all_frames))
+    absl::optional<bool> all_frames =
+        dict->FindBoolKey(declarative_content_constants::kAllFrames);
+    if (!all_frames.has_value())
       return false;
+
+    script_data->all_frames = all_frames.value();
   }
   if (dict->HasKey(declarative_content_constants::kMatchAboutBlank)) {
-    if (!dict->GetBoolean(declarative_content_constants::kMatchAboutBlank,
-                          &script_data->match_about_blank)) {
+    absl::optional<bool> match_about_blank =
+        dict->FindBoolKey(declarative_content_constants::kMatchAboutBlank);
+    if (!match_about_blank.has_value())
       return false;
-    }
+
+    script_data->match_about_blank = match_about_blank.value();
   }
 
   return true;

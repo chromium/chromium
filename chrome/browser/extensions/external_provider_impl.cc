@@ -369,14 +369,14 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
     }
 
     int creation_flags = creation_flags_;
-    bool is_bookmark_app;
-    if (extension_dict->GetBoolean(kIsBookmarkApp, &is_bookmark_app) &&
-        is_bookmark_app) {
+    absl::optional<bool> is_bookmark_app =
+        extension_dict->FindBoolKey(kIsBookmarkApp);
+    if (is_bookmark_app.value_or(false)) {
       creation_flags |= Extension::FROM_BOOKMARK;
     }
-    bool is_from_webstore = false;
-    if (extension_dict->GetBoolean(kIsFromWebstore, &is_from_webstore) &&
-        is_from_webstore) {
+    absl::optional<bool> is_from_webstore =
+        extension_dict->FindBoolKey(kIsFromWebstore);
+    if (is_from_webstore.value_or(false)) {
       creation_flags |= Extension::FROM_WEBSTORE;
     }
 
@@ -410,14 +410,14 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       }
     }
 
-    bool was_installed_by_oem = false;
-    if (extension_dict->GetBoolean(kWasInstalledByOem, &was_installed_by_oem) &&
-        was_installed_by_oem) {
+    absl::optional<bool> was_installed_by_oem =
+        extension_dict->FindBoolKey(kWasInstalledByOem);
+    if (was_installed_by_oem.value_or(false)) {
       creation_flags |= Extension::WAS_INSTALLED_BY_OEM;
     }
-    bool may_be_untrusted = false;
-    if (extension_dict->GetBoolean(kMayBeUntrusted, &may_be_untrusted) &&
-        may_be_untrusted) {
+    absl::optional<bool> may_be_untrusted =
+        extension_dict->FindBoolKey(kMayBeUntrusted);
+    if (may_be_untrusted.value_or(false)) {
       creation_flags |= Extension::MAY_BE_UNTRUSTED;
     }
 
@@ -600,10 +600,9 @@ bool ExternalProviderImpl::HandleDoNotInstallForEnterprise(
     const base::DictionaryValue* extension,
     const std::string& extension_id,
     std::set<std::string>* unsupported_extensions) {
-  bool do_not_install_for_enterprise = false;
-  if (extension->GetBoolean(kDoNotInstallForEnterprise,
-                            &do_not_install_for_enterprise) &&
-      do_not_install_for_enterprise) {
+  absl::optional<bool> do_not_install_for_enterprise =
+      extension->FindBoolKey(kDoNotInstallForEnterprise);
+  if (do_not_install_for_enterprise.value_or(false)) {
     const policy::ProfilePolicyConnector* const connector =
         profile_->GetProfilePolicyConnector();
     if (connector->IsManaged()) {

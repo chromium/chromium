@@ -287,15 +287,16 @@ testing::AssertionResult ExtensionServiceTestBase::ValidateBooleanPref(
         << "extension pref does not exist " << msg;
   }
 
-  bool val = false;
-  if (!pref->GetBoolean(pref_path, &val)) {
+  absl::optional<bool> val = pref->FindBoolPath(pref_path);
+  if (!val.has_value()) {
     return testing::AssertionFailure()
         << pref_path << " pref not found " << msg;
   }
 
-  return expected_val == val
-      ? testing::AssertionSuccess()
-      : testing::AssertionFailure() << "base::Value is incorrect " << msg;
+  return expected_val == val.value() ? testing::AssertionSuccess()
+                                     : testing::AssertionFailure()
+                                           << "base::Value is incorrect "
+                                           << msg;
 }
 
 void ExtensionServiceTestBase::ValidateIntegerPref(

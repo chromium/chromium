@@ -84,9 +84,9 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
   uint64_t GetAsMask(const base::DictionaryValue* dict,
                      std::string path,
                      uint64_t mask_value) {
-    bool result;
-    EXPECT_TRUE(dict->GetBoolean(path, &result)) << "for " << path;
-    return result ? mask_value : 0;
+    absl::optional<bool> result = dict->FindBoolPath(path);
+    EXPECT_TRUE(result.has_value()) << "for " << path;
+    return result.value() ? mask_value : 0;
   }
 
   void RunBrowsingDataRemoveFunctionAndCompareRemovalMask(

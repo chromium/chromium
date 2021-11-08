@@ -709,14 +709,7 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
                    const std::string& pref_path) {
     const base::DictionaryValue* pref =
         GetExtensionPref(extension_id, pref_path);
-    if (!pref) {
-      return false;
-    }
-    bool val;
-    if (!pref->GetBoolean(pref_path, &val)) {
-      return false;
-    }
-    return true;
+    return pref && pref->FindBoolPath(pref_path).has_value();
   }
 
   bool DoesIntegerPrefExist(const std::string& extension_id,

@@ -263,9 +263,10 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
   average_rating_ = *average_rating_setting;
   rating_count_ = *rating_count_setting;
 
-  // Optional.
-  show_user_count_ = true;
-  webstore_data->GetBoolean(kShowUserCountKey, &show_user_count_);
+  // Showing user count is optional.
+  absl::optional<bool> show_user_count_opt =
+      webstore_data->FindBoolKey(kShowUserCountKey);
+  show_user_count_ = show_user_count_opt.value_or(true);
 
   if (average_rating_ < ExtensionInstallPrompt::kMinExtensionRating ||
       average_rating_ > ExtensionInstallPrompt::kMaxExtensionRating) {

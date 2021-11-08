@@ -321,12 +321,12 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_Candidate) {
   EXPECT_GT(arg_dict->FindIntKey("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict->FindIntKey("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 1);
-  bool is_main_frame;
-  EXPECT_TRUE(arg_dict->GetBoolean("isMainFrame", &is_main_frame));
-  EXPECT_EQ(true, is_main_frame);
-  bool is_oopif;
-  EXPECT_TRUE(arg_dict->GetBoolean("isOOPIF", &is_oopif));
-  EXPECT_EQ(false, is_oopif);
+  absl::optional<bool> is_main_frame = arg_dict->FindBoolKey("isMainFrame");
+  EXPECT_TRUE(is_main_frame.has_value());
+  EXPECT_EQ(true, is_main_frame.value());
+  absl::optional<bool> is_oopif = arg_dict->FindBoolKey("isOOPIF");
+  EXPECT_TRUE(is_oopif.has_value());
+  EXPECT_EQ(false, is_oopif.value());
   EXPECT_GT(arg_dict->FindIntKey("frame_x").value_or(-1), 0);
   EXPECT_GT(arg_dict->FindIntKey("frame_y").value_or(-1), 0);
   EXPECT_GT(arg_dict->FindIntKey("frame_width").value_or(-1), 0);
@@ -372,12 +372,12 @@ TEST_F(TextPaintTimingDetectorTest,
   EXPECT_GT(arg_dict->FindIntKey("DOMNodeId").value_or(-1), 0);
   EXPECT_GT(arg_dict->FindIntKey("size").value_or(-1), 0);
   EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 1);
-  bool is_main_frame;
-  EXPECT_TRUE(arg_dict->GetBoolean("isMainFrame", &is_main_frame));
-  EXPECT_EQ(false, is_main_frame);
-  bool is_oopif;
-  EXPECT_TRUE(arg_dict->GetBoolean("isOOPIF", &is_oopif));
-  EXPECT_EQ(false, is_oopif);
+  absl::optional<bool> is_main_frame = arg_dict->FindBoolKey("isMainFrame");
+  EXPECT_TRUE(is_main_frame.has_value());
+  EXPECT_EQ(false, is_main_frame.value());
+  absl::optional<bool> is_oopif = arg_dict->FindBoolKey("isOOPIF");
+  EXPECT_TRUE(is_oopif.has_value());
+  EXPECT_EQ(false, is_oopif.value());
   // There's sometimes a 1 pixel offset for the y dimensions.
   EXPECT_EQ(arg_dict->FindIntKey("frame_x").value_or(-1), 10);
   EXPECT_GE(arg_dict->FindIntKey("frame_y").value_or(-1), 9);
@@ -418,12 +418,12 @@ TEST_F(TextPaintTimingDetectorTest, LargestTextPaint_TraceEvent_NoCandidate) {
   base::DictionaryValue* arg_dict;
   EXPECT_TRUE(arg.GetAsDictionary(&arg_dict));
   EXPECT_EQ(arg_dict->FindIntKey("candidateIndex").value_or(-1), 2);
-  bool is_main_frame;
-  EXPECT_TRUE(arg_dict->GetBoolean("isMainFrame", &is_main_frame));
-  EXPECT_EQ(true, is_main_frame);
-  bool is_oopif;
-  EXPECT_TRUE(arg_dict->GetBoolean("isOOPIF", &is_oopif));
-  EXPECT_EQ(false, is_oopif);
+  absl::optional<bool> is_main_frame = arg_dict->FindBoolKey("isMainFrame");
+  EXPECT_TRUE(is_main_frame.has_value());
+  EXPECT_EQ(true, is_main_frame.value());
+  absl::optional<bool> is_oopif = arg_dict->FindBoolKey("isOOPIF");
+  EXPECT_TRUE(is_oopif.has_value());
+  EXPECT_EQ(false, is_oopif.value());
 }
 
 TEST_F(TextPaintTimingDetectorTest, AggregationBySelfPaintingInlineElement) {

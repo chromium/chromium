@@ -441,10 +441,10 @@ void ExternalInstallError::OnWebstoreResponseParseSuccess(
 
   default_dialog_button_setting_ = GetDefaultDialogButton(*webstore_data.get());
 
-  bool show_user_count = true;
-  webstore_data->GetBoolean(kShowUserCountKey, &show_user_count);
+  absl::optional<bool> show_user_count =
+      webstore_data->FindBoolKey(kShowUserCountKey);
 
-  prompt_->SetWebstoreData(localized_user_count, show_user_count,
+  prompt_->SetWebstoreData(localized_user_count, show_user_count.value_or(true),
                            *average_rating, *rating_count);
   OnFetchComplete();
 }
