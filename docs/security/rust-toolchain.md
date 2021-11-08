@@ -38,6 +38,12 @@ That said, if presence of Rust would make your feature easier, we are keen
 for you to join in our experiments. Here's how. Please also let us know
 your interest via `rust-dev@chromium.org`.
 
+# Building with Rust support
+
+Add `enable_rust = true` in your `gn` arguments. At the moment, this works
+only for Linux platforms (but [see below](#Building-on-non-Linux-platforms)
+for how to enable on other platforms).
+
 # GN support
 
 Assume you want to add some Rust code to an existing C++ `source_set`.
@@ -164,4 +170,45 @@ layering here is fragile so we'd rather discuss it.)
 # Example
 
 To see an example of all this, look at `//build/rust/tests/test_variable_source_set`.
+
+# Tooling
+
+## Known cases which don't work
+
+* At the moment LTO doesn't work, so you can't use `is_official_build = true`. ([Bug.](https://crbug.com/1229423))
+* Windows doesn't work just yet. ([Bug.](https://crbug.com/1268157))
+
+## Building on non-Linux platforms
+
+The Rust toolchain is provided only for Linux and Android. To use it on
+other platforms, you will need to provide your own nightly Rust toolchain.
+You can then tell `gn` about it using these `gn` arguments:
+
+```
+enable_rust=true
+use_unverified_rust_toolchain=true
+rust_bin_dir="/Users/you/.rustup/toolchains/<toolchain name>/bin"
+# added_rust_stdlib_libs=[]
+# removed_rust_stdlib_libs=[]
+```
+
+The last two arguments are any Rust standard library .rlibs which have been
+added or removed between the version that's distributed for Linux/Android,
+and the version you're using. They should rarely be necessary; if you get errors
+about missing standard libraries then adjust `removed_rust_stdlib_libs`; if
+you get errors about undefined symbols then have a look in your equivalent
+of the `.rustup/toolchains/<toolchain name>/lib/rustlib/<target>/lib`
+directory and add any new libraries which are not listed in
+`//build/rust/std/BUILD.gn` to the `added_rust_stlib_libs` list.
+
+## Using VSCode
+
+1. Ensure you're using the `rust-analyzer` extension for VSCode, rather than
+   earlier forms of Rust support.
+2. Run `gn` with this extra flag: `gn gen out/Release --export-rust-project`.
+3. `ln -s out/Release/rust-project.json rust-project.json`
+4. When you run VSCode, or any other IDE that uses [rust-analyzer](https://rust-analyzer.github.io/)
+   it should detect the `rust-project.json` and use this to give you rich
+   browsing, autocompletion, type annotations etc. for all the Rust within
+   the Chromium codebase.
 
