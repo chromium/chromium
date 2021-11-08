@@ -1097,7 +1097,7 @@ TEST_P(PaintLayerTest, SubsequenceCachingSVG) {
 TEST_P(PaintLayerTest, SubsequenceCachingMuticol) {
   SetBodyInnerHTML(R"HTML(
     <div style='columns: 2'>
-      <div id='target' style='position: relative'></div>
+      <div id='target' style='position: relative; height: 20px;'></div>
     </div>
   )HTML");
 

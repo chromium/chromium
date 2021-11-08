@@ -3189,15 +3189,22 @@ bool PaintLayer::SupportsSubsequenceCaching() const {
   if (EnclosingPaginationLayer())
     return false;
 
-  // SVG root and SVG foreign object paint atomically.
-  if (GetLayoutObject().IsSVGRoot() || GetLayoutObject().IsSVGForeignObject())
-    return true;
+  if (const LayoutBox* box = GetLayoutBox()) {
+    // TODO(crbug.com/1253797): Revisit this when implementing correct paint
+    // order of fragmented stacking contexts.
+    if (box->PhysicalFragmentCount() > 1)
+      return false;
 
-  // Don't create subsequence for the document element because the subsequence
-  // for LayoutView serves the same purpose. This can avoid unnecessary paint
-  // chunks that would otherwise be forced by the subsequence.
-  if (GetLayoutObject().IsDocumentElement())
-    return false;
+    // SVG root and SVG foreign object paint atomically.
+    if (box->IsSVGRoot() || box->IsSVGForeignObject())
+      return true;
+
+    // Don't create subsequence for the document element because the subsequence
+    // for LayoutView serves the same purpose. This can avoid unnecessary paint
+    // chunks that would otherwise be forced by the subsequence.
+    if (box->IsDocumentElement())
+      return false;
+  }
 
   // Create subsequence for only stacked objects whose paintings are atomic.
   return GetLayoutObject().IsStacked();
