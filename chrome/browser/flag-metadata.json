@@ -4334,8 +4334,8 @@
   },
   {
     "name": "pdf-unseasoned",
-    "owners": [ "dhoss", "kmoon", "nigi", "thestig"],
-    "expiry_milestone": 97
+    "owners": [ "//pdf/OWNERS" ],
+    "expiry_milestone": 103
   },
   {
     "name": "pdf-xfa-forms",
