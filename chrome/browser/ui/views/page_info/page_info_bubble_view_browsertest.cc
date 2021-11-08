@@ -219,7 +219,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     PageInfo* presenter = nullptr;
     presenter = static_cast<PageInfoBubbleView*>(
                     PageInfoBubbleView::GetPageInfoBubbleForTesting())
-                    ->presenter_.get();
+                    ->presenter_for_testing();
     DCHECK(presenter);
     return presenter;
   }

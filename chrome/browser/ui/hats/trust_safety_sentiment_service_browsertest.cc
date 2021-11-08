@@ -46,19 +46,16 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  PageInfo* GetPresenter() {
-    auto* bubble = PageInfoBubbleView::GetPageInfoBubbleForTesting();
-    return static_cast<PageInfoBubbleView*>(bubble)->presenter_.get();
-  }
-
   void ChangePermission() {
     PageInfo::PermissionInfo permission;
     permission.type = ContentSettingsType::NOTIFICATIONS;
     permission.setting = ContentSetting::CONTENT_SETTING_BLOCK;
     permission.default_setting = ContentSetting::CONTENT_SETTING_ASK;
 
-    GetPresenter()->OnSitePermissionChanged(permission.type, permission.setting,
-                                            permission.is_one_time);
+    auto* bubble = static_cast<PageInfoBubbleView*>(
+        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+    bubble->presenter_for_testing()->OnSitePermissionChanged(
+        permission.type, permission.setting, permission.is_one_time);
   }
 
   void OpenEnoughNewTabs() {

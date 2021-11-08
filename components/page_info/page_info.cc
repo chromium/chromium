@@ -638,6 +638,9 @@ permissions::ObjectPermissionContextBase* PageInfo::GetChooserContextFromUIInfo(
 }
 
 std::u16string PageInfo::GetSimpleSiteName() const {
+  if (!site_name_for_testing_.empty())
+    return site_name_for_testing_;
+
   return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
       site_url_);
 }
@@ -1097,6 +1100,11 @@ std::vector<ContentSettingsType> PageInfo::GetAllPermissionsForTesting() {
     permission_list.push_back(type);
 
   return permission_list;
+}
+
+void PageInfo::SetSiteNameForTesting(const std::u16string& site_name) {
+  site_name_for_testing_ = site_name;
+  PresentSiteIdentity();
 }
 
 void PageInfo::GetSafeBrowsingStatusByMaliciousContentStatus(

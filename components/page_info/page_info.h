@@ -290,6 +290,8 @@ class PageInfo {
 
   PageInfoUI* ui_for_testing() const { return ui_; }
 
+  void SetSiteNameForTesting(const std::u16string& site_name);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            NonFactoryDefaultAndRecentlyChangedPermissionsShown);
@@ -445,6 +447,8 @@ class PageInfo {
   // Whether the "About this site" data was available for the site and "About
   // this site" section was shown in the page info.
   bool was_about_this_site_shown_ = false;
+
+  std::u16string site_name_for_testing_;
 
   base::WeakPtrFactory<PageInfo> weak_factory_{this};
 };

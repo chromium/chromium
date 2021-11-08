@@ -15,10 +15,6 @@ class PageInfoViewFactory;
 
 enum class ContentSettingsType;
 
-namespace test {
-class PageInfoBubbleViewTestApi;
-}  // namespace test
-
 // The views implementation of the page info UI.
 class PageInfoBubbleView : public PageInfoBubbleViewBase,
                            public PageInfoNavigationHandler {
@@ -51,12 +47,9 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   // WebContentsObserver:
   void DidChangeVisibleSecurityState() override;
 
- private:
-  friend class PageInfoBubbleViewBrowserTest;
-  friend class PageInfoBubbleViewDialogBrowserTest;
-  friend class test::PageInfoBubbleViewTestApi;
-  friend class TrustSafetySentimentServiceBrowserTest;
+  PageInfo* presenter_for_testing() { return presenter_.get(); }
 
+ private:
   PageInfoBubbleView(views::View* anchor_view,
                      const gfx::Rect& anchor_rect,
                      gfx::NativeView parent_window,

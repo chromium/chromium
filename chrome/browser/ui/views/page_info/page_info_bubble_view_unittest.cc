@@ -85,7 +85,7 @@ namespace test {
 
 class PageInfoBubbleViewTestApi {
  public:
-  PageInfoBubbleViewTestApi(gfx::NativeView parent,
+  PageInfoBubbleViewTestApi(gfx::NativeWindow parent,
                             content::WebContents* web_contents)
       : bubble_delegate_(nullptr),
         parent_(parent),
@@ -103,12 +103,13 @@ class PageInfoBubbleViewTestApi {
     }
 
     views::View* anchor_view = nullptr;
-    auto* bubble = new PageInfoBubbleView(
-        anchor_view, gfx::Rect(), parent_, web_contents_, GURL(kUrl),
-        base::DoNothing(),
-        base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
-                       base::Unretained(this), run_loop_.QuitClosure()));
-    presenter_ = bubble->presenter_.get();
+    auto* bubble = static_cast<PageInfoBubbleView*>(
+        PageInfoBubbleView::CreatePageInfoBubble(
+            anchor_view, gfx::Rect(), parent_, web_contents_, GURL(kUrl),
+            base::DoNothing(),
+            base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
+                           base::Unretained(this), run_loop_.QuitClosure())));
+    presenter_ = bubble->presenter_for_testing();
     navigation_handler_ = bubble;
     bubble_delegate_ = bubble;
     toggle_rows_ =
@@ -273,7 +274,7 @@ class PageInfoBubbleViewTestApi {
   PageInfoNavigationHandler* navigation_handler_ = nullptr;
 
   // For recreating the view.
-  gfx::NativeView parent_;
+  gfx::NativeWindow parent_;
   content::WebContents* web_contents_;
   base::RunLoop run_loop_;
   absl::optional<bool> reload_prompt_;
@@ -373,7 +374,7 @@ class PageInfoBubbleViewTest : public testing::Test {
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents));
     api_ = std::make_unique<test::PageInfoBubbleViewTestApi>(
-        parent_window_->GetNativeView(), web_contents);
+        parent_window_->GetNativeWindow(), web_contents);
   }
 
   void TearDown() override {
