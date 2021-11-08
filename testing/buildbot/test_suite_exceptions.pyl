@@ -2956,6 +2956,9 @@
 
       'Win10 Tests x64',
       'Win10 Tests x64 20h2',
+
+      # TODO(https://crbug.com/1267161): Re-enable when platform is supported.
+      'mac11-arm64-rel-tests',
     ],
   },
   'test_buildbucket_api_gpu_use_cases': {
