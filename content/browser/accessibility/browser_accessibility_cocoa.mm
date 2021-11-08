@@ -2914,8 +2914,10 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     BrowserAccessibility::AXPosition position =
         CreatePositionFromTextMarker(parameter);
     if (!position->IsNullPosition()) {
-      return ToBrowserAccessibilityCocoa(
-          _owner->manager()->GetFromAXNode(position->GetAnchor()));
+      BrowserAccessibility* ui_element =
+          _owner->manager()->GetFromAXNode(position->GetAnchor());
+      if (ui_element)
+        return ToBrowserAccessibilityCocoa(ui_element);
     }
 
     return nil;
