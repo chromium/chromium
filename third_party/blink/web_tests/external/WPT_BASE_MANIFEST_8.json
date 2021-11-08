@@ -76617,6 +76617,19 @@
        {}
       ]
      ],
+     "box-shadow-calc.html": [
+      "14011859851b1234674bbdf6374670c674b56968",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/box-shadow-calc-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "box-shadow-currentcolor.html": [
       "cdb0b9d9fc20e864c1c81b261661b84ac8bca0df",
       [
@@ -231038,6 +231051,10 @@
        ]
       }
      },
+     "box-shadow-calc-ref.html": [
+      "3a1c1366d6d18310e8ab86034e62d706f69005ed",
+      []
+     ],
      "box-shadow-currentcolor-ref.html": [
       "4bb4cbd4178090ef89be1133a069e22d21fd5fbc",
       []
@@ -293651,6 +293668,10 @@
      "7124712de3869cb417579d73d8751445b4704722",
      []
     ],
+    "minimize-expected.txt": [
+     "ce2afdd300e9c9076150a0192825c99d91a01baf",
+     []
+    ],
     "prerender_call-expected.txt": [
      "9723be91341ae8795da7a0b8e6d6c6205b63adc6",
      []
@@ -297534,7 +297555,7 @@
      []
     ],
     "testdriver.js": [
-     "f2df26cda1ccdf6d6b5c17adf664b07f2b6cd7ea",
+     "3b654f8139939aa52a6c597211f5684f08de5c23",
      []
     ],
     "testdriver.js.headers": [
@@ -361637,6 +361658,13 @@
      ],
      "transform-2d-getComputedStyle-001.html": [
       "8fc4f9380fe4739334032975da15f626964277d3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "transform-and-individual-transform-properties-computed-style.html": [
+      "56968eeefa91e9f241493d68d75ff4f2e109aa23",
       [
        null,
        {}
@@ -459888,6 +459916,16 @@
      [
       null,
       {}
+     ]
+    ],
+    "minimize.html": [
+     "64ae22c7a3b314055218dbb42f67678eaa350906",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
      ]
     ],
     "onvisibilitychange.html": [
