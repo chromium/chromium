@@ -148,6 +148,8 @@ class BASE_EXPORT OSInfo {
   bool IsWowDisabled() const;    // Chrome bitness matches OS bitness.
   bool IsWowX86OnAMD64() const;  // Chrome x86 on an AMD64 host machine.
   bool IsWowX86OnARM64() const;  // Chrome x86 on an ARM64 host machine.
+  bool IsWowAMD64OnARM64()
+      const;                     // Chrome AMD64 build on an ARM64 host machine.
   bool IsWowX86OnOther() const;  // Chrome x86 on some other x64 host machine.
 
   // Functions to determine Version Type (e.g. Enterprise/Home) and Service Pack

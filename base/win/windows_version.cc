@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
+#include "build/build_config.h"
 
 #if !defined(__clang__) && _MSC_FULL_VER < 191125507
 #error VS 2017 Update 3.2 or higher is required
@@ -266,6 +267,20 @@ bool OSInfo::IsWowX86OnAMD64() const {
 bool OSInfo::IsWowX86OnARM64() const {
   return (wow_process_machine_ == WowProcessMachine::kX86 &&
           wow_native_machine_ == WowNativeMachine::kARM64);
+}
+
+bool OSInfo::IsWowAMD64OnARM64() const {
+#if defined(ARCH_CPU_X86_64)
+  // An AMD64 process running on an ARM64 device results in the incorrect
+  // identification of the device architecture (AMD64 is reported). However,
+  // IsWow64Process2 will return the correct device type for the native
+  // machine, even though the OS doesn't consider an AMD64 process on an ARM64
+  // processor a classic Windows-on-Windows setup.
+  return (wow_process_machine_ == WowProcessMachine::kDisabled &&
+          wow_native_machine_ == WowNativeMachine::kARM64);
+#else
+  return false;
+#endif
 }
 
 bool OSInfo::IsWowX86OnOther() const {

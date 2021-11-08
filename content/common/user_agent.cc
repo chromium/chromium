@@ -112,7 +112,12 @@ std::string GetLowEntropyCpuArchitecture() {
 #if defined(OS_WIN)
   base::win::OSInfo::WindowsArchitecture windows_architecture =
       base::win::OSInfo::GetInstance()->GetArchitecture();
-  if (windows_architecture == base::win::OSInfo::ARM64_ARCHITECTURE) {
+  base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
+  // When running a Chrome x86_64 (AMD64) build on an ARM64 device,
+  // the OS lies and returns 0x9 (PROCESSOR_ARCHITECTURE_AMD64)
+  // for wProcessorArchitecture.
+  if (windows_architecture == base::win::OSInfo::ARM64_ARCHITECTURE ||
+      os_info->IsWowX86OnARM64() || os_info->IsWowAMD64OnARM64()) {
     return "arm";
   } else if ((windows_architecture == base::win::OSInfo::X86_ARCHITECTURE) ||
              (windows_architecture == base::win::OSInfo::X64_ARCHITECTURE)) {
