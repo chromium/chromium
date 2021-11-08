@@ -53,7 +53,6 @@ blink_platform_sources("heap") {
     "thread_state.h",
     "thread_state_scopes.h",
     "trace_traits.h",
-    "unified_heap_marking_visitor.h",
     "visitor.h",
     "write_barrier.h",
   ]

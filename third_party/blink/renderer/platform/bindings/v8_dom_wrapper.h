@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/heap/unified_heap_marking_visitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "v8/include/v8.h"
@@ -112,11 +111,6 @@ inline void V8DOMWrapper::SetNativeInfoInternal(
   void* values[] = {wrappable, const_cast<WrapperTypeInfo*>(wrapper_type_info)};
   wrapper->SetAlignedPointerInInternalFields(base::size(indices), indices,
                                              values);
-  // The following write barrier is necessary as V8 might not see the newly
-  // created object during garbage collection, e.g., when the object is black
-  // allocated.
-  UnifiedHeapMarkingVisitor::WriteBarrier(isolate, wrapper, wrapper_type_info,
-                                          wrappable);
 }
 
 inline void V8DOMWrapper::ClearNativeInfo(v8::Isolate* isolate,
