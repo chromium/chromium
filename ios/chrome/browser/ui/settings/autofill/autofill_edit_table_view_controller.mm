@@ -148,17 +148,19 @@
   if (!cellPath || !offset)
     return nil;
 
-  NSInteger cellSection = [cellPath section];
-  NSInteger nextCellRow = [cellPath row] + offset;
-
-  if (nextCellRow >= 0 && nextCellRow < [self.tableView
-                                            numberOfRowsInSection:cellSection])
+  const NSInteger cellSection = [cellPath section];
+  const NSInteger nextCellRow = [cellPath row] + offset;
+  if ((0 <= nextCellRow) &&
+      (nextCellRow < [self.tableView numberOfRowsInSection:cellSection])) {
     return [NSIndexPath indexPathForRow:nextCellRow inSection:cellSection];
+  }
 
-  NSInteger nextCellSection = cellSection + offset;
-  if (nextCellSection >= 0 &&
-      nextCellSection < [self.tableView numberOfSections])
+  const NSInteger nextCellSection = cellSection + offset;
+  if ((0 <= nextCellSection) &&
+      (nextCellSection < [self.tableView numberOfSections]) &&
+      ([self.tableView numberOfRowsInSection:nextCellSection] > 0)) {
     return [NSIndexPath indexPathForRow:0 inSection:nextCellSection];
+  }
 
   return nil;
 }
