@@ -7276,3 +7276,4 @@ crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested.h
 
 # Sheriff 2021-11-08
 crbug.com/1267734 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]
+crbug.com/1267736 [ Win ] http/tests/devtools/bindings/jssourcemap-bindings-overlapping-sources.js [ Failure Pass ]
