@@ -46,13 +46,13 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
 
  private:
   struct DelayedTaskInfo {
-    DelayedTaskInfo(base::TimeTicks ready_time, size_t task_id);
+    DelayedTaskInfo(base::TimeTicks ready_time, uint64_t task_id);
 
     // Used for std::map<> ordering.
     bool operator<(const DelayedTaskInfo& other) const;
 
     base::TimeTicks ready_time;
-    size_t task_id;
+    uint64_t task_id;
   };
 
   // Runs a single PostTask-task.
@@ -68,7 +68,7 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
   base::Lock lock_;
   // The next delayed task gets assigned this ID which then increments. Used for
   // task execution ordering, see |delayed_tasks_| comment.
-  size_t next_task_id_ GUARDED_BY(lock_) = 0u;
+  uint64_t next_task_id_ GUARDED_BY(lock_) = 0;
   // The map's order ensures tasks are ordered by desired execution time. If two
   // tasks have the same |ready_time| then they are ordered by the ID, i.e. the
   // order they were posted.
@@ -78,7 +78,7 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
 
 WebRtcMetronomeTaskQueue::DelayedTaskInfo::DelayedTaskInfo(
     base::TimeTicks ready_time,
-    size_t task_id)
+    uint64_t task_id)
     : ready_time(std::move(ready_time)), task_id(task_id) {}
 
 bool WebRtcMetronomeTaskQueue::DelayedTaskInfo::operator<(
