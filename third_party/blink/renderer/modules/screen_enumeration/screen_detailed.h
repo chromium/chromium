@@ -21,6 +21,10 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
  public:
   ScreenDetailed(LocalDOMWindow* window, int64_t display_id);
 
+  static bool AreWebExposedScreenDetailedPropertiesEqual(
+      const display::ScreenInfo& prev,
+      const display::ScreenInfo& current);
+
   // Web-exposed interface (Screen overrides):
   int height() const override;
   int width() const override;

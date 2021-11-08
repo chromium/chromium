@@ -103,7 +103,10 @@ void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
 
   // (3) Send a change event if the current screen has changed.
   if (prev_screen_infos_.screen_infos.empty() ||
-      prev_screen_infos_.current() != new_infos.current()) {
+      prev_screen_infos_.current().display_id !=
+          new_infos.current().display_id ||
+      !ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
+          prev_screen_infos_.current(), new_infos.current())) {
     DispatchEvent(*Event::Create(event_type_names::kCurrentscreenchange));
   }
 
@@ -131,9 +134,9 @@ void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
     DCHECK(new_it != new_infos.screen_infos.end());
     auto old_it = base::ranges::find(prev_screen_infos_.screen_infos, id,
                                      &display::ScreenInfo::display_id);
-    if (old_it != prev_screen_infos_.screen_infos.end() && *old_it != *new_it) {
-      // TODO(enne): http://crbug.com/1202981 only send this event when
-      // properties on ScreenDetailed (vs anything in ScreenInfo) change.
+    if (old_it != prev_screen_infos_.screen_infos.end() &&
+        !ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(*old_it,
+                                                                    *new_it)) {
       screen->DispatchEvent(*Event::Create(event_type_names::kChange));
 
       // Note: screen may no longer be valid and screens_ may have been

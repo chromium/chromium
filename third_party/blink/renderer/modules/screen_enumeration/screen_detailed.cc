@@ -31,6 +31,31 @@ const display::ScreenInfo& GetScreenInfo(LocalFrame& frame,
 ScreenDetailed::ScreenDetailed(LocalDOMWindow* window, int64_t display_id)
     : Screen(window), display_id_(display_id) {}
 
+// static
+bool ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
+    const display::ScreenInfo& prev,
+    const display::ScreenInfo& current) {
+  if (!Screen::AreWebExposedScreenPropertiesEqual(prev, current))
+    return false;
+
+  // left() / top()
+  if (prev.rect.origin() != current.rect.origin())
+    return false;
+
+  // isPrimary()
+  if (prev.is_primary != current.is_primary)
+    return false;
+
+  // isInternal()
+  if (prev.is_internal != current.is_internal)
+    return false;
+
+  // Note: devicePixelRatio() covered by Screen base function
+  // TODO: handle label() when it gets implemented.
+
+  return true;
+}
+
 int ScreenDetailed::height() const {
   if (!DomWindow())
     return 0;

@@ -3927,10 +3927,9 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
           original_screen_infos));
 
   if (previous_original_screen_infos != original_screen_infos) {
-    // TODO(enne): http://crbug.com/1202981 only send this event when properties
-    // on Screen (vs anything in ScreenInfo) change.
-    if (previous_original_screen_infos.current() !=
-        original_screen_infos.current()) {
+    if (!Screen::AreWebExposedScreenPropertiesEqual(
+            previous_original_screen_infos.current(),
+            original_screen_infos.current())) {
       local_root_->GetFrame()->DomWindow()->screen()->DispatchEvent(
           *Event::Create(event_type_names::kChange));
     }
