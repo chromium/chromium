@@ -31,6 +31,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_html.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -61,8 +63,16 @@ EditorCommand GetCommand(Document* document, const String& command_name) {
 }  // namespace
 
 bool Document::execCommand(const String& command_name,
-                           bool,
+                           bool unused_bool,
                            const String& value,
+                           ExceptionState& exception_state) {
+  V8UnionStringOrTrustedHTML tmp(value);
+  return execCommand(command_name, unused_bool, &tmp, exception_state);
+}
+
+bool Document::execCommand(const String& command_name,
+                           bool,
+                           const V8UnionStringOrTrustedHTML* value,
                            ExceptionState& exception_state) {
   if (!IsHTMLDocument() && !IsXHTMLDocument()) {
     exception_state.ThrowDOMException(
@@ -97,13 +107,22 @@ bool Document::execCommand(const String& command_name,
 
   // Count how often the error condition of crbug.com/1230567 occurs.
   if (CodeUnitCompareIgnoringASCIICase(command_name, "insertHTML") == 0 &&
+      value && value->IsString() &&
       RequireTrustedTypesCheck(GetExecutionContext())) {
     UseCounter::Count(*this, WebFeature::kExecCommandWithTrustedTypes);
   }
 
+  // Extract the (unchecked) string from value.
+  // TODO(vogelheim): Once crbug.com/1230567 is resolved, this can be removed.
+  String string_value;
+  if (value->IsTrustedHTML())
+    string_value = value->GetAsTrustedHTML()->toString();
+  else if (value->IsString())
+    string_value = value->GetAsString();
+
   base::UmaHistogramSparse("WebCore.Document.execCommand",
                            editor_command.IdForHistogram());
-  return editor_command.Execute(value);
+  return editor_command.Execute(string_value);
 }
 
 bool Document::queryCommandEnabled(const String& command_name,
