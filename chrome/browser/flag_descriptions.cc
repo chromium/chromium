@@ -2477,11 +2477,6 @@ const char kTabOutlinesInLowContrastThemesDescription[] =
     "Expands the range of situations in which tab outline strokes are "
     "displayed, improving accessiblity in dark and incognito mode.";
 
-const char kTabRestoreSubMenusName[] = "Show app menu history sub menus";
-const char kTabRestoreSubMenusDescription[] =
-    "Show app menu history sub menus for the contents of recently closed tab "
-    "groups and windows.";
-
 const char kTabSearchFuzzySearchName[] = "Fuzzy search for Tab Search";
 const char kTabSearchFuzzySearchDescription[] =
     "Enable fuzzy search for Tab Search.";

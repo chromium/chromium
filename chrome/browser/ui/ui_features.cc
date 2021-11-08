@@ -174,10 +174,6 @@ const char kTabHoverCardAlternateFormat[] = "alternate_format";
 const base::Feature kTabOutlinesInLowContrastThemes{
     "TabOutlinesInLowContrastThemes", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables submenus under each tab group or window within the app menu history.
-const base::Feature kTabRestoreSubMenus{"TabRestoreSubMenus",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kTabSearchChevronIcon{"TabSearchChevronIcon",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 

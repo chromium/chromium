@@ -274,19 +274,8 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(6, &url, &title));
 }
 
-class RecentTabsSubMenuModelTabRestoreTest : public RecentTabsSubMenuModelTest {
- public:
-  RecentTabsSubMenuModelTabRestoreTest() {
-    scoped_features_.InitAndEnableFeature(features::kTabRestoreSubMenus);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
 // Test recently closed groups with no foreign tabs.
-TEST_F(RecentTabsSubMenuModelTabRestoreTest,
-       RecentlyClosedGroupsFromCurrentSession) {
+TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
   DisableSync();
 
   TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
@@ -352,7 +341,7 @@ TEST_F(RecentTabsSubMenuModelTabRestoreTest,
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(6, &url, &title));
 }
 
-TEST_F(RecentTabsSubMenuModelTabRestoreTest,
+TEST_F(RecentTabsSubMenuModelTest,
        RecentlyClosedTabsAndWindowsFromLastSession) {
   DisableSync();
 

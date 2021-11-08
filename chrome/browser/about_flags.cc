@@ -7417,10 +7417,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionWorkflowJustificationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kExtensionWorkflowJustification)},
 
-    {"tab-restore-sub-menus", flag_descriptions::kTabRestoreSubMenusName,
-     flag_descriptions::kTabRestoreSubMenusDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabRestoreSubMenus)},
-
     {"tab-search-fuzzy-search", flag_descriptions::kTabSearchFuzzySearchName,
      flag_descriptions::kTabSearchFuzzySearchDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabSearchFuzzySearch,
