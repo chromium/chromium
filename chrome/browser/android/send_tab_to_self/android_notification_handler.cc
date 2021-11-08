@@ -206,6 +206,10 @@ void AndroidNotificationHandler::OnMessageDismissed(
   }
 }
 
+const Profile* AndroidNotificationHandler::profile() const {
+  return profile_;
+}
+
 void AndroidNotificationHandler::UpdateWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
