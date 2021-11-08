@@ -33,30 +33,31 @@ struct NSStringComparator {
   }
 };
 
-const auto kValidAttributes = base::MakeFixedFlatSet<NSString*>(
-    {NSAccessibilityAccessKeyAttribute,
-     NSAccessibilityARIAAtomicAttribute,
-     NSAccessibilityARIABusyAttribute,
-     NSAccessibilityARIACurrentAttribute,
-     NSAccessibilityARIALiveAttribute,
-     NSAccessibilityARIARelevantAttribute,
-     NSAccessibilityAutocompleteValueAttribute,
-     NSAccessibilityColumnHeaderUIElementsAttribute,
-     NSAccessibilityDetailsElementsAttribute,
-     NSAccessibilityMathFractionNumeratorAttribute,
-     NSAccessibilityMathFractionDenominatorAttribute,
-     NSAccessibilityMathRootRadicandAttribute,
-     NSAccessibilityMathRootIndexAttribute,
-     NSAccessibilityMathBaseAttribute,
-     NSAccessibilityMathSubscriptAttribute,
-     NSAccessibilityMathSuperscriptAttribute,
-     NSAccessibilityMathUnderAttribute,
-     NSAccessibilityMathOverAttribute,
-     NSAccessibilityMathPostscriptsAttribute,
-     NSAccessibilityMathPrescriptsAttribute},
-    NSStringComparator());
-
 bool IsValidAttribute(const std::string& attribute) {
+  // static local to avoid a global static constructor.
+  static auto kValidAttributes = base::MakeFixedFlatSet<NSString*>(
+      {NSAccessibilityAccessKeyAttribute,
+       NSAccessibilityARIAAtomicAttribute,
+       NSAccessibilityARIABusyAttribute,
+       NSAccessibilityARIACurrentAttribute,
+       NSAccessibilityARIALiveAttribute,
+       NSAccessibilityARIARelevantAttribute,
+       NSAccessibilityAutocompleteValueAttribute,
+       NSAccessibilityColumnHeaderUIElementsAttribute,
+       NSAccessibilityDetailsElementsAttribute,
+       NSAccessibilityMathFractionNumeratorAttribute,
+       NSAccessibilityMathFractionDenominatorAttribute,
+       NSAccessibilityMathRootRadicandAttribute,
+       NSAccessibilityMathRootIndexAttribute,
+       NSAccessibilityMathBaseAttribute,
+       NSAccessibilityMathSubscriptAttribute,
+       NSAccessibilityMathSuperscriptAttribute,
+       NSAccessibilityMathUnderAttribute,
+       NSAccessibilityMathOverAttribute,
+       NSAccessibilityMathPostscriptsAttribute,
+       NSAccessibilityMathPrescriptsAttribute},
+      NSStringComparator());
+
   return kValidAttributes.contains(base::SysUTF8ToNSString(attribute));
 }
 
