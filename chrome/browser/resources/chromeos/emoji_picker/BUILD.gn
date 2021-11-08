@@ -95,7 +95,7 @@ action_foreach("emoji_data") {
   script = "tools/emoji_data.py"
 
   metadata_json = [
-    "//third_party/emoji-metadata/src/emoji_13_1_ordering.json",
+    "//third_party/emoji-metadata/src/emoji_14_0_ordering.json",
     "./emoji_test_ordering.json",
   ]
   keyword_xmls = [

@@ -18,7 +18,7 @@ import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_
 import {RecentEmojiStore} from './store.js';
 import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji} from './types.js';
 
-const EMOJI_ORDERING_JSON = '/emoji_13_1_ordering.json';
+const EMOJI_ORDERING_JSON = '/emoji_14_0_ordering.json';
 
 // the name attributes below are used to label the group buttons.
 // the ordering group names are used for the group headings in the emoji picker.
