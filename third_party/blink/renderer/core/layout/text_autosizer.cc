@@ -746,12 +746,9 @@ TextAutosizer::BlockFlags TextAutosizer::ClassifyBlock(
     if (mask & POTENTIAL_ROOT)
       flags |= POTENTIAL_ROOT;
 
-    LayoutMultiColumnFlowThread* flow_thread = nullptr;
-    if (auto* block_flow = DynamicTo<LayoutBlockFlow>(block))
-      flow_thread = block_flow->MultiColumnFlowThread();
     if ((mask & INDEPENDENT) &&
         (IsIndependentDescendant(block) || block->IsTable() ||
-         (flow_thread && flow_thread->ColumnCount() > 1)))
+         block->StyleRef().SpecifiesColumns()))
       flags |= INDEPENDENT;
 
     if ((mask & EXPLICIT_WIDTH) && HasExplicitWidth(block))
