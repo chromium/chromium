@@ -903,6 +903,9 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     chromeos::DBusThreadManager::Initialize();
     chromeos::DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         base::WrapUnique<chromeos::UpdateEngineClient>(update_engine_client_));
+    // Async tasks posted when calling `chromeos::DBusThreadManager::Initialize`
+    // need to be flushed.
+    base::RunLoop().RunUntilIdle();
 
     chromeos::CrasAudioHandler::InitializeForTesting();
     chromeos::UserDataAuthClient::InitializeFake();
