@@ -11,14 +11,10 @@ import os
 
 
 def GetBinaryPath():
-  # TODO: Node 16.0 will likely ship with an official universal node binary
-  # on macOS. Once node 16.0 is released, remove this special case here
-  # and use node-darwin-universal in the dict in the main return statement.
-  if platform.system() == 'Darwin' and platform.machine() == 'arm64':
-      return os.path.join(os_path.join(os_path.dirname(__file__), 'mac',
-                          'node-darwin-arm64', 'bin', 'node'))
+  darwin_name = ('node-darwin-arm64' if platform.machine() == 'arm64' else
+                 'node-darwin-x64')
   return os_path.join(os_path.dirname(__file__), *{
-    'Darwin': ('mac', 'node-darwin-x64', 'bin', 'node'),
+    'Darwin': ('mac', darwin_name, 'bin', 'node'),
     'Linux': ('linux', 'node-linux-x64', 'bin', 'node'),
     'Windows': ('win', 'node.exe'),
   }[platform.system()])
