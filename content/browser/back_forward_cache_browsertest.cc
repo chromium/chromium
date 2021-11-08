@@ -1110,14 +1110,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   // 2) Navigate to B. The previous document can't enter the BackForwardCache,
   // because of the popup.
   ASSERT_TRUE(ExecJs(rfh_a.get(), JsReplace("location = $1;", url_b.spec())));
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
   RenderFrameHostImplWrapper rfh_b(current_frame_host());
   EXPECT_EQ(2u, rfh_b->GetSiteInstance()->GetRelatedActiveContentsCount());
 
   // 3) Go back to A. The previous document can't enter the BackForwardCache,
   // because of the popup.
   ASSERT_TRUE(ExecJs(rfh_b.get(), "history.back();"));
-  rfh_b.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
 
   // 4) Make the popup drop the window.opener connection. It happens when the
   //    user does an omnibox-initiated navigation, which happens in a new
@@ -1482,7 +1482,7 @@ IN_PROC_BROWSER_TEST_F(
         ExpectCached(rfhs[j], /*cached=*/i != j,
                      /*backgrounded=*/false);
       } else {
-        rfhs[j].WaitUntilRenderFrameDeleted();
+        ASSERT_TRUE(rfhs[j].WaitUntilRenderFrameDeleted());
       }
     }
   }
@@ -1533,7 +1533,7 @@ IN_PROC_BROWSER_TEST_F(
         ExpectCached(rfhs[j], /*cached=*/i != j,
                      /*backgrounded=*/i != j);
       } else {
-        rfhs[j].WaitUntilRenderFrameDeleted();
+        ASSERT_TRUE(rfhs[j].WaitUntilRenderFrameDeleted());
       }
     }
   }
@@ -1609,7 +1609,7 @@ IN_PROC_BROWSER_TEST_F(
       /*foreground=*/true);
 
   // The page should be evicted.
-  rfhs[1].WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfhs[1].WaitUntilRenderFrameDeleted());
 
   // Check that a0 is cached and backgrounded.
   ExpectCached(rfhs[0], /*cached=*/true, /*backgrounded=*/true);
@@ -5733,7 +5733,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheHTTPDocumentOnly) {
 
     // When the RenderFrameHost is not reused and it's not stored in the
     // back-forward cache, it will eventually be deleted.
-    rfh.WaitUntilRenderFrameDeleted();
+    ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
   }
 }
 
@@ -6011,7 +6011,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       "executeCommandOnServiceWorker('PostMessageToStoredClients')";
   EXPECT_EQ("DONE",
             EvalJs(tab_to_execute_service_worker, script_to_post_message));
-  rfh.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 
   // 6) Go back to A in |tab_to_be_bfcached|.
   tab_to_be_bfcached->web_contents()->GetController().GoBack();

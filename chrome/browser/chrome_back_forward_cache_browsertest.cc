@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // Ensure |rfh_a| is evicted from the cache because it is not allowed to
   // service the GEOLOCATION permission request.
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
 
   // The page uses Picture-in-Picture so it must be evicted from the cache and
   // deleted.
-  rfh.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 }
 
 #if defined(OS_ANDROID)
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
 
   // The page uses WebShare so it must be evicted from the cache and deleted.
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back.
   web_contents()->GetController().GoBack();
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url_b));
 
   // The page uses WebNfc so it must be evicted from the cache and deleted.
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 3) Go back.
   web_contents()->GetController().GoBack();

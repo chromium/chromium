@@ -6179,7 +6179,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(
       main_frame, embedded_test_server()->GetURL("b.com", "/title2.html")));
 
-  main_frame_wrapper.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(main_frame_wrapper.WaitUntilRenderFrameDeleted());
 
   // The destructors of DestructorLifetimeDocumentService and
   // DestructorLifetimeDocumentUserData also perform googletest
@@ -6259,7 +6259,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(
       child_frame, embedded_test_server()->GetURL("b.com", "/title2.html")));
 
-  child_frame_wrapper.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(child_frame_wrapper.WaitUntilRenderFrameDeleted());
 
   // The destructors of DestructorLifetimeDocumentService and
   // DestructorLifetimeDocumentUserData also perform googletest

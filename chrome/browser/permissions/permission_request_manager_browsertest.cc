@@ -884,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   EXPECT_EQ(0, bubble_factory()->show_count());
   EXPECT_EQ(0, bubble_factory()->TotalRequestCount());
   // Page gets evicted if bubble would have been shown.
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
@@ -928,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   EXPECT_TRUE(req_a_1.cancelled());
 
   // Page gets evicted if bubble would have been shown.
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // Cleanup before we delete the requests.
   GetPermissionRequestManager()->Dismiss();

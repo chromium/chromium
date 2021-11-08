@@ -474,13 +474,14 @@ bool RenderFrameDeletedObserver::deleted() const {
   return rfh_id_ == GlobalRenderFrameHostId();
 }
 
-void RenderFrameDeletedObserver::WaitUntilDeleted() {
+bool RenderFrameDeletedObserver::WaitUntilDeleted() {
   if (deleted())
-    return;
+    return true;
 
   runner_ = std::make_unique<base::RunLoop>();
   runner_->Run();
   runner_.reset();
+  return deleted();
 }
 
 RenderFrameHostWrapper::RenderFrameHostWrapper(RenderFrameHost* rfh)
@@ -501,9 +502,10 @@ bool RenderFrameHostWrapper::IsDestroyed() const {
 
 // See RenderFrameDeletedObserver for notes on the difference between
 // RenderFrame being deleted and RenderFrameHost being destroyed.
-void RenderFrameHostWrapper::WaitUntilRenderFrameDeleted() {
-  deleted_observer_->WaitUntilDeleted();
+bool RenderFrameHostWrapper::WaitUntilRenderFrameDeleted() {
+  return deleted_observer_->WaitUntilDeleted();
 }
+
 bool RenderFrameHostWrapper::IsRenderFrameDeleted() const {
   return deleted_observer_->deleted();
 }

@@ -105,7 +105,7 @@ class BFCachePolicyBrowserTest
                                  content::RenderFrameHostWrapper& rfh) {
     if (should_be_evicted) {
       // When the page is evicted the RenderFrame will be deleted.
-      rfh.WaitUntilRenderFrameDeleted();
+      ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
     } else {
       // BFCachePolicy runs asynchronously. So we need to wait for the result
       // before checking.

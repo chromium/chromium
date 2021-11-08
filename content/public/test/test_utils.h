@@ -352,7 +352,9 @@ class RenderFrameDeletedObserver : public WebContentsObserver {
   // Overridden WebContentsObserver methods.
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
-  void WaitUntilDeleted();
+  // TODO(1267073): Add WARN_UNUSED_RESULT
+  // Returns true if the frame was deleted before the timeout.
+  bool WaitUntilDeleted();
   bool deleted() const;
 
  private:
@@ -384,7 +386,8 @@ class RenderFrameHostWrapper {
 
   // See RenderFrameDeletedObserver for notes on the difference between
   // RenderFrame being deleted and RenderFrameHost being destroyed.
-  void WaitUntilRenderFrameDeleted();
+  // Returns true if the frame was deleted before the timeout.
+  WARN_UNUSED_RESULT bool WaitUntilRenderFrameDeleted();
   bool IsRenderFrameDeleted() const;
 
   // Pointerish operators. Feel free to add more if you need them.

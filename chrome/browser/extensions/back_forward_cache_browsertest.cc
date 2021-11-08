@@ -645,8 +645,7 @@ IN_PROC_BROWSER_TEST_F(
       WaitForLoadStop(browser()->tab_strip_model()->GetActiveWebContents()));
 
   // 4) Expect that `rfh_a` is deleted.
-  rfh_a.WaitUntilRenderFrameDeleted();
-  EXPECT_TRUE(rfh_a.IsRenderFrameDeleted());
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
 
   // 5) Go back to A.
   content::WebContents* web_contents =

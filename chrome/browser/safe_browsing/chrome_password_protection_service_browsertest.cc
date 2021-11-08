@@ -1040,7 +1040,7 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTestWithActivation,
   // Navigate back. It will be loaded anew without an activation.
   GetWebContents()->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
-  rfh_a.WaitUntilRenderFrameDeleted();
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
   EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), url_a);
 }
 
