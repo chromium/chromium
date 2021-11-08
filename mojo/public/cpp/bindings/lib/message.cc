@@ -569,9 +569,12 @@ uint64_t Message::GetTraceId() const {
 
 void Message::WriteIntoTrace(perfetto::TracedValue ctx) const {
   perfetto::TracedDictionary dict = std::move(ctx).WriteDictionary();
-  dict.Add("name", header()->name);
-  dict.Add("flags", header()->flags);
-  dict.Add("trace_nonce", header()->trace_nonce);
+
+  if (header()) {
+    dict.Add("name", header()->name);
+    dict.Add("flags", header()->flags);
+    dict.Add("trace_nonce", header()->trace_nonce);
+  }
 }
 
 bool MessageReceiver::PrefersSerializedMessages() {
