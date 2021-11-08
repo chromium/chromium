@@ -156,8 +156,15 @@ void AssistiveWindowController::SetBounds(const Bounds& bounds) {
   // TODO(crbug/1112982): Investigate getting bounds to suggester before sending
   // show suggestion request.
   if (suggestion_window_view_ && !tracking_last_suggestion_) {
-    suggestion_window_view_->SetAnchorRect(
-        confirmed_length_ == 0 ? bounds.caret : bounds.composition_text);
+    // TODO(crbug/1146266): Composition text is no longer available which means
+    //     bounds.composition_text is always 0x0. For the moment we can just use
+    //     bounds.caret to at least position the suggestion window in the right
+    //     location. Although for multiword completion suggestions, this window
+    //     will always be to the right of the correct position. Imagine the
+    //     following suggestion `ho|` -> `how are you`, with bounds.caret the
+    //     left edge of the window will be under the caret, whereas it should
+    //     be placed underneath the left edge of the `h` character.
+    suggestion_window_view_->SetAnchorRect(bounds.caret);
   }
   if (grammar_suggestion_window_) {
     grammar_suggestion_window_->SetBounds(bounds_.caret);
