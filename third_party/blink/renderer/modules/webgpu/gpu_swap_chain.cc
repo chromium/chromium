@@ -173,6 +173,9 @@ scoped_refptr<StaticBitmapImage> GPUSwapChain::SnapshotInternal(
 
 bool GPUSwapChain::CopyToResourceProvider(
     CanvasResourceProvider* resource_provider) const {
+  if (!texture_)
+    return false;
+
   return CopyTextureToResourceProvider(texture_->GetHandle(), Size(),
                                        resource_provider);
 }
@@ -186,9 +189,6 @@ bool GPUSwapChain::CopyTextureToResourceProvider(
   DCHECK(resource_provider->GetSharedImageUsageFlags() &
          gpu::SHARED_IMAGE_USAGE_WEBGPU);
   DCHECK(resource_provider->IsOriginTopLeft());
-
-  if (!texture)
-    return false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
       SharedGpuContext::ContextProviderWrapper();
