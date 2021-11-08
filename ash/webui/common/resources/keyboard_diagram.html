@@ -58,7 +58,7 @@
     grid-row: 2;
   }
 
-  #arrowKeyCluster keyboard-key:first-child {
+  #arrowKeyCluster #upArrow {
     grid-column: 2;
     grid-row: 1;
   }
@@ -154,6 +154,21 @@
     grid-column: span 7;
   }
 
+  /* Modifications for Dell Enterprise keyboards */
+
+  [data-physical-layout='dell-enterprise'] #leftCtrlKey {
+    grid-column: span 3;
+  }
+
+  [data-physical-layout='dell-enterprise'] #leftAltKey {
+    grid-column: span 2;
+  }
+
+  #arrowKeyCluster #dellPageUpKey,
+  #arrowKeyCluster #dellPageDownKey {
+    grid-row: 1;
+  }
+
   /* Number pad */
 
   #numberPad {
@@ -202,7 +217,8 @@
 <div id="keyboard"
     data-show-number-pad$="[[showNumberPad]]">
   <div class="main-cluster"
-      data-mech-layout$="[[mechanicalLayout]]">
+      data-mech-layout$="[[mechanicalLayout]]"
+      data-physical-layout$="[[physicalLayout]]">
     <div id="topRow">
       <keyboard-key main-glyph="esc"></keyboard-key>
       <!-- TODO(crbug.com/1207678): Use icons for the top row keys. -->
@@ -216,6 +232,9 @@
       <keyboard-key main-glyph="[m]"></keyboard-key>
       <keyboard-key main-glyph="[vd]"></keyboard-key>
       <keyboard-key main-glyph="[vu]"></keyboard-key>
+      <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+        <keyboard-key id="dellDeleteKey" main-glyph="delete"></keyboard-key>
+      </template>
       <keyboard-key main-glyph="[p]"></keyboard-key>
     </div>
 
@@ -288,6 +307,11 @@
     <keyboard-key id="rightShiftKey" class="right" main-glyph="shift"></keyboard-key>
 
     <keyboard-key id="leftCtrlKey" class="left" main-glyph="ctrl"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+      <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
+      <!-- TODO(crbug.com/1207678): Add an icon for the layout switch key. -->
+      <keyboard-key id="layoutSwitchKey" main-glyph="[g]"></keyboard-key>
+    </template>
     <keyboard-key id="leftAltKey" class="left" main-glyph="alt"></keyboard-key>
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
       <keyboard-key id="jisAlphanumericKey" main-glyph="英数"></keyboard-key>
@@ -301,7 +325,13 @@
 
     <!-- TODO(crbug.com/1207678): Use proper icons for the arrow keys. -->
     <div id="arrowKeyCluster">
-      <keyboard-key main-glyph="↑"></keyboard-key>
+      <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+        <keyboard-key id="dellPageUpKey" main-glyph="pg up"></keyboard-key>
+      </template>
+      <keyboard-key id="upArrow" main-glyph="↑"></keyboard-key>
+      <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
+        <keyboard-key id="dellPageDownKey" main-glyph="pg dn"></keyboard-key>
+      </template>
       <keyboard-key main-glyph="←"></keyboard-key>
       <keyboard-key main-glyph="↓"></keyboard-key>
       <keyboard-key main-glyph="→"></keyboard-key>

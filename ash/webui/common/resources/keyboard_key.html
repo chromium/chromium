@@ -66,6 +66,16 @@
     right: 0;
     top: var(--travel);
   }
+
+  :host(.disabled) #foreground {
+    background-color: var(--google-grey-200);
+    border-color: var(--google-grey-700);
+    color: var(--google-grey-600);
+  }
+
+  :host(.disabled) #background {
+    background-color: hsl(0deg 0% 59%);
+  }
 </style>
 <div id="background"></div>
 <div id="foreground">

@@ -25,6 +25,15 @@ export const MechanicalLayout = {
   kJis: 'jis',
 };
 
+/**
+ * Enum of physical styles supported by the component.
+ * @enum {string}
+ */
+export const PhysicalLayout = {
+  kChromeOS: 'chrome-os',
+  kChromeOSDellEnterprise: 'dell-enterprise',
+};
+
 export class KeyboardDiagramElement extends PolymerElement {
   static get is() {
     return 'keyboard-diagram';
@@ -41,6 +50,13 @@ export class KeyboardDiagramElement extends PolymerElement {
        * @type {?MechanicalLayout}
        */
       mechanicalLayout: String,
+
+      /**
+       * The physical style of the keyboard to be displayed, or null for the
+       * default.
+       * @type {?PhysicalLayout}
+       */
+      physicalLayout: String,
 
       /** Whether to show a Chrome OS-style number pad.  */
       showNumberPad: {
