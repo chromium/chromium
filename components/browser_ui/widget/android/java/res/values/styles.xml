@@ -113,6 +113,8 @@
         <item name="android:paddingEnd">@dimen/text_bubble_with_snooze_padding_horizontal</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
     </style>
 
 </resources>

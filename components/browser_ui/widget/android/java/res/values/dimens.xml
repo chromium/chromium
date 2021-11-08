@@ -97,6 +97,7 @@
     <dimen name="text_bubble_arrow_height">10dp</dimen>
     <dimen name="iph_pulse_baseline_radius">16dp</dimen>
     <dimen name="text_bubble_with_snooze_padding_horizontal">24dp</dimen>
+    <dimen name="text_bubble_with_snooze_padding_end">4dp</dimen>
 
     <!-- Default list dimensions -->
     <dimen name="default_list_row_padding">16dp</dimen>
