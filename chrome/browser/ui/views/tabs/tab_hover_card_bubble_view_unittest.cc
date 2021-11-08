@@ -41,7 +41,11 @@ namespace {
 enum OmitOnPlatforms {
   kRunOnAllPlatforms = 0,
   kOmitOnWin7 = 1 << 0,
-  kOmitOnOSX_10_11 = 1 << 1
+  kOmitOnOSX_10_11 = 1 << 1,
+
+  // TODO(crbug/1267013): Remove once emoji (including modified/joined emoji)
+  // are supported on Fuchsia.
+  kOmitOnFuchsia = 1 << 2,
 };
 
 bool ShouldOmitOnPlatform(int omit_on) {
@@ -53,6 +57,9 @@ bool ShouldOmitOnPlatform(int omit_on) {
 #elif defined(OS_MAC)
   if (omit_on & kOmitOnOSX_10_11)
     return base::mac::IsOS10_11();
+#elif defined(OS_FUCHSIA)
+  if (omit_on & kOmitOnFuchsia)
+    return true;
 #endif
   return false;
 }
@@ -290,28 +297,28 @@ const ElideTestParams kElideTestParams[]{
      "Two-character emoji fully elided between lines."},
     {u"abc" MAN_EMOJI MEDIUM_SKIN_TONE_MODIFIER u"efg", 4, 7, 3,
      u"abc" MAN_EMOJI MEDIUM_SKIN_TONE_MODIFIER u"\nefg",
-     "First line ends with modified emoji.", kOmitOnWin7},
+     "First line ends with modified emoji.", kOmitOnWin7 | kOmitOnFuchsia},
     {u"abc" MAN_EMOJI MEDIUM_SKIN_TONE_MODIFIER u"efg", 3, 3, 2,
      ELLIPSIZE(u"abc", u"fg"), "Modified emoji fully elided between lines."},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efg", 4, 10, 3,
      u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"\nefg",
      "First line ends with joined emoji, full string returned.",
-     kOmitOnWin7 | kOmitOnOSX_10_11},
+     kOmitOnWin7 | kOmitOnOSX_10_11 | kOmitOnFuchsia},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efgh", 4, 10, 3,
      ELLIPSIZE(u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE, u"fgh"),
      "First line ends with joined emoji, string cut in middle (1).",
-     kOmitOnWin7 | kOmitOnOSX_10_11},
+     kOmitOnWin7 | kOmitOnOSX_10_11 | kOmitOnFuchsia},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"defghi", 5, 11, 4,
      ELLIPSIZE(u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"d", u"fghi"),
      "First line ends with joined emoji, string cut in middle (2).",
-     kOmitOnWin7 | kOmitOnOSX_10_11},
+     kOmitOnWin7 | kOmitOnOSX_10_11 | kOmitOnFuchsia},
     {u"abc" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"efg", 3, 3, 2,
      ELLIPSIZE(u"abc", u"fg"), "Joined emoji fully elided between lines."},
     {u"abcde" MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE
          MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"fg",
      4, 4, 9, ELLIPSIZE(u"abcd", MALE_HEALTH_WORKER_MEDIUM_SKIN_TONE u"fg"),
      "Joined emoji in sequence; first emoji is elided but not second.",
-     kOmitOnWin7 | kOmitOnOSX_10_11},
+     kOmitOnWin7 | kOmitOnOSX_10_11 | kOmitOnFuchsia},
     // These test the combined function of the Elide() method, including the
     // intelligent overlapping and positioning of lines and extensions.
     {u"abcdef", 5, 5, 4, u"abcde\nf", "Wrap at last possible location."},
