@@ -158,15 +158,22 @@ void DesksTemplatesDialogController::ShowReplaceDialog(
 
 void DesksTemplatesDialogController::ShowDeleteDialog(
     aura::Window* root_window,
-    const std::u16string& template_name) {
-  auto dialog = views::Builder<DesksTemplatesDialog>()
-                    .SetTitleText(IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE)
-                    .SetConfirmButtonText(
-                        IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON)
-                    .SetDescriptionText(l10n_util::GetStringFUTF16(
-                        IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
-                        GetStringWithQuotes(template_name)))
-                    .Build();
+    const std::u16string& template_name,
+    base::OnceClosure on_accept_callback) {
+  auto dialog =
+      views::Builder<DesksTemplatesDialog>()
+          .SetTitleText(IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_TITLE)
+          .SetButtonLabel(
+              ui::DIALOG_BUTTON_OK,
+              l10n_util::GetStringUTF16(
+                  IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_CONFIRM_BUTTON))
+          .SetDescriptionText(l10n_util::GetStringFUTF16(
+              IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
+              GetStringWithQuotes(template_name)))
+          .SetAcceptCallback(std::move(on_accept_callback))
+          .SetCancelCallback(base::DoNothing())
+          .Build();
+
   CreateDialogWidget(std::move(dialog), root_window);
 }
 

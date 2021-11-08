@@ -42,6 +42,7 @@ class DesksTemplatesItemView : public views::Button {
  private:
   friend class DesksTemplatesItemViewTestApi;
 
+  void OnDeleteTemplate();
   void OnDeleteButtonPressed();
 
   void OnGridItemPressed();

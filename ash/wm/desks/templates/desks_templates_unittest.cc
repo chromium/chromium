@@ -45,6 +45,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace ash {
 
@@ -702,7 +703,16 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
     ASSERT_NE(grid_items.end(), iter);
 
     ClickOnView(DesksTemplatesItemViewTestApi(*iter).delete_button());
-    WaitForUI();
+    // Check if delete dialog is called.
+    EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
+    // Click delete button on the delete dialog.
+    // Show delete dialog and select accept.
+    auto* dialog_controller = DesksTemplatesDialogController::Get();
+    auto* dialog_delegate = dialog_controller->dialog_widget()
+                                ->widget_delegate()
+                                ->AsDialogDelegate();
+    dialog_delegate->AcceptDialog();
+    base::RunLoop().RunUntilIdle();
   };
 
   EXPECT_EQ(2ul, desk_model()->GetEntryCount());

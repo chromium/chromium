@@ -44,8 +44,12 @@ class ASH_EXPORT DesksTemplatesDialogController : public views::WidgetObserver {
       const std::vector<aura::Window*>& unsupported_apps);
   void ShowReplaceDialog(aura::Window* root_window,
                          const std::u16string& template_name);
+  // Show the delete template dialog when user press the delete button.
+  // The `template_name` shows the name of the template which will be deleted in
+  // the dialog description.
   void ShowDeleteDialog(aura::Window* root_window,
-                        const std::u16string& template_name);
+                        const std::u16string& template_name,
+                        base::OnceClosure on_accept_callback);
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

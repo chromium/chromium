@@ -13,6 +13,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/button_style.h"
 #include "ash/wm/desks/templates/desks_templates_delete_button.h"
+#include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "base/notreached.h"
@@ -157,8 +158,17 @@ void DesksTemplatesItemView::Layout() {
       launch_button_preferred_size));
 }
 
-void DesksTemplatesItemView::OnDeleteButtonPressed() {
+void DesksTemplatesItemView::OnDeleteTemplate() {
   DesksTemplatesPresenter::Get()->DeleteEntry(uuid_.AsLowercaseString());
+}
+
+void DesksTemplatesItemView::OnDeleteButtonPressed() {
+  // Show the dialog to confirm the deletion.
+  auto* dialog_controller = DesksTemplatesDialogController::Get();
+  dialog_controller->ShowDeleteDialog(
+      Shell::GetPrimaryRootWindow(), name_view_->GetAccessibleName(),
+      base::BindOnce(&DesksTemplatesItemView::OnDeleteTemplate,
+                     base::Unretained(this)));
 }
 
 void DesksTemplatesItemView::OnGridItemPressed() {
