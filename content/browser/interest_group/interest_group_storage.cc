@@ -30,6 +30,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/sqlite/sqlite3.h"
 #include "url/origin.h"
 
 namespace content {
@@ -65,8 +66,6 @@ const int kCompatibleVersionNumber = 5;
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
 const int kDeprecatedVersionNumber = 4;
-
-// TODO(crbug.com/1195852): Add UMA to count errors.
 
 enum class KAnonType {
   kOwnerAndName = 1,
@@ -1509,6 +1508,7 @@ bool InterestGroupStorage::InitializeDB() {
   db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{});
   db_->set_error_callback(base::BindRepeating(
       &InterestGroupStorage::DatabaseErrorCallback, base::Unretained(this)));
+  db_->set_histogram_tag("InterestGroups");
 
   if (path_to_database_.empty()) {
     if (!db_->OpenInMemory()) {
@@ -1795,6 +1795,10 @@ base::Time InterestGroupStorage::GetLastMaintenanceTimeForTesting() const {
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,
                                                  sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Only save the basic error code (not extended) to UMA.
+  base::UmaHistogramExactLinear("Storage.InterestGroup.DBErrors",
+                                extended_error & 0xFF,
+                                /*sqlite error max+1*/ SQLITE_WARNING + 1);
 
   if (sql::IsErrorCatastrophic(extended_error)) {
     // Normally this will poison the database, causing any subsequent operations

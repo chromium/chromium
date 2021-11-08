@@ -431,6 +431,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.InterestGroup.DBErrors" units="count"
+    expires_after="M100">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the number of database errors that occur when accessing interest
+    group storage.
+  </summary>
+</histogram>
+
 <histogram name="Storage.InterestGroup.DBMaintenanceTime" units="microseconds"
     expires_after="2022-05-01">
   <owner>behamilton@google.com</owner>
