@@ -2273,7 +2273,6 @@ try_.presubmit_builder(
         ],
     },
     tryjob = try_.job(
-        experiment_percentage = 100,
         location_regexp = [r".+/[+]/tools/clang/scripts/update.py"],
     ),
 )
