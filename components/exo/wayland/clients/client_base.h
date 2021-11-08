@@ -92,6 +92,7 @@ class ClientBase {
     std::unique_ptr<zwp_linux_explicit_synchronization_v1>
         linux_explicit_synchronization;
     std::unique_ptr<zcr_vsync_feedback_v1> vsync_feedback;
+    std::unique_ptr<zcr_color_manager_v1> color_manager;
     std::unique_ptr<zcr_stylus_v2> stylus;
   };
 

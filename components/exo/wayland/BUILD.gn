@@ -301,6 +301,7 @@ source_set("client_support") {
 
   public_deps = [
     "//components/exo/wayland/protocol:aura_shell_protocol",
+    "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
     "//components/exo/wayland/protocol:surface_augmenter_protocol",
     "//skia",
@@ -709,6 +710,25 @@ if (ozone_platform_drm) {
       ":client_support",
       "//base",
       "//build/config/linux/libdrm",
+      "//skia",
+      "//third_party/wayland:wayland_client",
+      "//third_party/wayland-protocols:linux_dmabuf_protocol",
+      "//third_party/wayland-protocols:presentation_time_protocol",
+      "//ui/gfx/geometry",
+    ]
+
+    configs += [ "//ui/gl:gl_config" ]
+    deps += [ "//third_party/minigbm" ]
+  }
+
+  executable("wayland_hdr_client") {
+    sources = [ "clients/hdr.cc" ]
+
+    deps = [
+      ":client_support",
+      "//base",
+      "//build/config/linux/libdrm",
+      "//components/exo/wayland/protocol:chrome_color_management_protocol",
       "//skia",
       "//third_party/wayland:wayland_client",
       "//third_party/wayland-protocols:linux_dmabuf_protocol",
