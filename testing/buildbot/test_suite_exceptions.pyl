@@ -1765,6 +1765,8 @@
       'Win 7 Tests x64 (1)',
       'Win7 Tests (1)',
       'Win7 Tests (dbg)(1)',
+      # TODO(https://crbug.com/1267125): Re-enable.
+      'mac11-arm64-rel-tests',
     ],
   },
   'hardware_accelerated_feature_tests': {
