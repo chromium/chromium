@@ -413,6 +413,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script) {
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Document) {
+  TestScript(R"~~(data:text/html,
+                    <input id='textbox' aria-label='input'>)~~",
+             {"document.AXRole"},
+             R"~~(document.AXRole='AXWebArea'
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                        Script_ByDOMId) {
   TestScript(R"~~(data:text/html,
                     <input id='textbox' aria-label='input'>)~~",
