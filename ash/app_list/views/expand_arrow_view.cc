@@ -156,8 +156,8 @@ ExpandArrowView::ExpandArrowView(ContentsView* contents_view,
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(GetCircleBounds()),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            color_provider->GetRippleAttributesBaseColor(),
-            color_provider->GetRippleAttributesInkDropOpacity());
+            color_provider->GetInkDropBaseColor(),
+            color_provider->GetInkDropOpacity());
       },
       this));
 

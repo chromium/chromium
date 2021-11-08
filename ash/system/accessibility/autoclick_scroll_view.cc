@@ -41,9 +41,10 @@ constexpr int kScrollPadButtonHypotenuseDips = 192;
 constexpr int kScrollPadIconPadding = 30;
 
 SkColor HoveredButtonColor() {
-  const AshColorProvider::RippleAttributes attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  return SkColorSetA(attributes.base_color, 255 * attributes.highlight_opacity);
+  const std::pair<SkColor, float> base_color_and_opacity =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+  return SkColorSetA(base_color_and_opacity.first,
+                     255 * base_color_and_opacity.second);
 }
 
 }  // namespace

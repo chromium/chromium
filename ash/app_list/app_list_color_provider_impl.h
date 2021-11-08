@@ -41,11 +41,9 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetGridBackgroundCardInactiveColor() const override;
   SkColor GetSeparatorColor() const override;
   SkColor GetFocusRingColor() const override;
-  SkColor GetRippleAttributesBaseColor(
+  SkColor GetInkDropBaseColor(
       SkColor bg_color = gfx::kPlaceholderColor) const override;
-  float GetRippleAttributesInkDropOpacity(
-      SkColor bg_color = gfx::kPlaceholderColor) const override;
-  float GetRippleAttributesHighlightOpacity(
+  float GetInkDropOpacity(
       SkColor bg_color = gfx::kPlaceholderColor) const override;
   SkColor GetSearchResultViewHighlightColor() const override;
 

@@ -111,18 +111,11 @@ SkColor TestAppListColorProvider::GetFocusRingColor() const {
   return gfx::kGoogleBlue600;
 }
 
-SkColor TestAppListColorProvider::GetRippleAttributesBaseColor(
-    SkColor bg_color) const {
+SkColor TestAppListColorProvider::GetInkDropBaseColor(SkColor bg_color) const {
   return SK_ColorWHITE;
 }
 
-float TestAppListColorProvider::GetRippleAttributesInkDropOpacity(
-    SkColor bg_color) const {
-  return 0.08f;
-}
-
-float TestAppListColorProvider::GetRippleAttributesHighlightOpacity(
-    SkColor bg_color) const {
+float TestAppListColorProvider::GetInkDropOpacity(SkColor bg_color) const {
   return 0.08f;
 }
 

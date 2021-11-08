@@ -8,11 +8,10 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_button_delegate.h"
-#include "ash/style/default_color_constants.h"
+#include "ash/style/style_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_impl.h"
 
 namespace ash {
 
@@ -23,11 +22,6 @@ ShelfButton::ShelfButton(Shelf* shelf,
       shelf_button_delegate_(shelf_button_delegate) {
   DCHECK(shelf_button_delegate_);
   SetHideInkDropWhenShowingContextMenu(false);
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
-  views::InkDrop::Get(this)->SetVisibleOpacity(
-      ripple_attributes.inkdrop_opacity);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::InkDrop::Get(this)->SetMode(
       views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
@@ -42,6 +36,12 @@ ShelfButton::~ShelfButton() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // views::View
+
+void ShelfButton::OnThemeChanged() {
+  views::Button::OnThemeChanged();
+  StyleUtil::ConfigureInkDropAttributes(
+      this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
+}
 
 const char* ShelfButton::GetClassName() const {
   return "ash/ShelfButton";

@@ -10,6 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/element_style.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
@@ -85,14 +86,9 @@ void ClipboardHistoryDeleteButton::OnThemeChanged() {
 
   views::ImageButton::OnThemeChanged();
   element_style::DecorateSmallCloseButton(this, kCloseButtonIcon);
-
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
-  views::InkDrop::Get(this)->SetVisibleOpacity(
-      ripple_attributes.inkdrop_opacity);
-  views::InkDrop::Get(this)->SetHighlightOpacity(
-      ripple_attributes.highlight_opacity);
+  StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor |
+                                                  StyleUtil::kInkDropOpacity |
+                                                  StyleUtil::kHighlightOpacity);
 }
 
 void ClipboardHistoryDeleteButton::RemoveLayerBeneathView(ui::Layer* layer) {

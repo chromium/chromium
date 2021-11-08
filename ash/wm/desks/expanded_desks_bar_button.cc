@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
@@ -84,8 +85,8 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
         AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
     if (!enabled)
       background_color_ = AshColorProvider::GetDisabledColor(background_color_);
-    views::InkDrop::Get(this)->SetVisibleOpacity(
-        color_provider->GetRippleAttributes(background_color_).inkdrop_opacity);
+    StyleUtil::ConfigureInkDropAttributes(
+        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
     SchedulePaint();
   }
 

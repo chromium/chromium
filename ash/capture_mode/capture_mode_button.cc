@@ -7,13 +7,11 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -33,25 +31,9 @@ CaptureModeButton::CaptureModeButton(views::Button::PressedCallback callback,
 // static
 void CaptureModeButton::ConfigureButton(views::ImageButton* button,
                                         views::FocusRing* focus_ring) {
-  views::InkDrop::Get(button)->SetMode(views::InkDropHost::InkDropMode::ON);
-  button->SetHasInkDropActionOnClick(true);
-  views::InkDrop::Get(button)->SetVisibleOpacity(
-      capture_mode::kInkDropVisibleOpacity);
-  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(button),
-                                               /*highlight_on_hover=*/false,
-                                               /*highlight_on_focus=*/false);
-  views::InkDrop::Get(button)->SetCreateHighlightCallback(base::BindRepeating(
-      [](views::Button* host) {
-        auto highlight = std::make_unique<views::InkDropHighlight>(
-            gfx::SizeF(host->size()),
-            views::InkDrop::Get(host)->GetBaseColor());
-        highlight->set_visible_opacity(
-            capture_mode::kInkDropHighlightVisibleOpacity);
-        return highlight;
-      },
-      button));
-  views::InkDrop::Get(button)->SetBaseColor(capture_mode::kInkDropBaseColor);
-
+  StyleUtil::SetUpInkDropForButton(button, gfx::Insets(),
+                                   /*highlight_on_hover=*/false,
+                                   /*highlight_on_focus=*/false);
   button->SetImageHorizontalAlignment(ALIGN_CENTER);
   button->SetImageVerticalAlignment(ALIGN_MIDDLE);
   button->SetPreferredSize(capture_mode::kButtonSize);

@@ -105,7 +105,7 @@ PillButton::PillButton(PressedCallback callback,
   // TODO: Unify the font size, weight under ash/style as well.
   label()->SetFontList(views::Label::GetDefaultFontList().Derive(
       1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-  StyleUtil::SetUpInkDropForButton(this, TrayPopupInkDropStyle::FILL_BOUNDS,
+  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
   if (rounded_highlight_path) {

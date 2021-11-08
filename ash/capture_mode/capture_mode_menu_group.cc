@@ -13,13 +13,12 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -60,24 +59,9 @@ views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view) {
 }
 
 void SetInkDropForButton(views::Button* button) {
-  auto* ink_drop = views::InkDrop::Get(button);
-  ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
-  button->SetHasInkDropActionOnClick(true);
-  ink_drop->SetVisibleOpacity(capture_mode::kInkDropVisibleOpacity);
-  views::InkDrop::UseInkDropForFloodFillRipple(ink_drop,
-                                               /*highlight_on_hover=*/false,
-                                               /*highlight_on_focus=*/false);
-  ink_drop->SetCreateHighlightCallback(base::BindRepeating(
-      [](views::Button* host) {
-        const AshColorProvider::RippleAttributes ripple_attributes =
-            AshColorProvider::Get()->GetRippleAttributes();
-        auto highlight = std::make_unique<views::InkDropHighlight>(
-            gfx::SizeF(host->size()), ripple_attributes.base_color);
-        highlight->set_visible_opacity(ripple_attributes.highlight_opacity);
-        return highlight;
-      },
-      button));
-  ink_drop->SetBaseColor(capture_mode::kInkDropBaseColor);
+  StyleUtil::SetUpInkDropForButton(button, gfx::Insets(),
+                                   /*highlight_on_hover=*/false,
+                                   /*highlight_on_focus=*/false);
   views::InstallRectHighlightPathGenerator(button);
 }
 

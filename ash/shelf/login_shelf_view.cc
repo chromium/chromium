@@ -28,6 +28,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
+#include "ash/style/style_util.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -234,11 +235,8 @@ class LoginShelfButton : public views::LabelButton {
     SetFocusPainter(nullptr);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
-    AshColorProvider::RippleAttributes ripple_attributes =
-        color_provider->GetRippleAttributes();
-    views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
-    views::InkDrop::Get(this)->SetVisibleOpacity(
-        ripple_attributes.inkdrop_opacity);
+    StyleUtil::ConfigureInkDropAttributes(
+        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
     views::InkDrop::UseInkDropWithoutAutoHighlight(
         views::InkDrop::Get(this), /*highlight_on_hover=*/false);
 
@@ -339,11 +337,8 @@ class KioskAppsButton : public views::MenuButton,
     views::InkDrop::UseInkDropWithoutAutoHighlight(
         views::InkDrop::Get(this), /*highlight_on_hover=*/false);
 
-    const AshColorProvider::RippleAttributes ripple_attributes =
-        AshColorProvider::Get()->GetRippleAttributes();
-    views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
-    views::InkDrop::Get(this)->SetVisibleOpacity(
-        ripple_attributes.inkdrop_opacity);
+    StyleUtil::ConfigureInkDropAttributes(
+        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
 
     // Layer rendering is required when the shelf background is visible, which
     // happens when the wallpaper is not blurred.

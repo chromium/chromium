@@ -7,23 +7,12 @@
 #include "ash/style/ash_color_provider.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
 
 namespace {
-
-constexpr gfx::Insets kInkDropInsets(4);
-
-gfx::Insets GetInkDropInsets(TrayPopupInkDropStyle ink_drop_style) {
-  if (ink_drop_style == TrayPopupInkDropStyle::HOST_CENTERED ||
-      ink_drop_style == TrayPopupInkDropStyle::INSET_BOUNDS) {
-    return kInkDropInsets;
-  }
-  return gfx::Insets();
-}
 
 std::unique_ptr<views::InkDrop> CreateInkDrop(views::Button* host,
                                               bool highlight_on_hover,
@@ -33,33 +22,41 @@ std::unique_ptr<views::InkDrop> CreateInkDrop(views::Button* host,
 }
 
 std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
-    TrayPopupInkDropStyle ink_drop_style,
-    const views::Button* host,
+    const gfx::Insets& insets,
+    const views::View* host,
     SkColor bg_color) {
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes(bg_color);
+  const std::pair<SkColor, float> base_color_and_opacity =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(bg_color);
   return std::make_unique<views::FloodFillInkDropRipple>(
-      host->size(), GetInkDropInsets(ink_drop_style),
+      host->size(), insets,
       views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-      ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
+      base_color_and_opacity.first, base_color_and_opacity.second);
 }
 
 std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
-    const views::View* host,
+    views::View* host,
     SkColor bg_color) {
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes(bg_color);
+  const std::pair<SkColor, float> base_color_and_opacity =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(bg_color);
   auto highlight = std::make_unique<views::InkDropHighlight>(
-      gfx::SizeF(host->size()), ripple_attributes.base_color);
-  highlight->set_visible_opacity(ripple_attributes.highlight_opacity);
+      gfx::SizeF(host->size()), base_color_and_opacity.first);
+  highlight->set_visible_opacity(base_color_and_opacity.second);
   return highlight;
 }
 
 }  // namespace
 
 // static
+void StyleUtil::SetRippleParams(views::View* host,
+                                const gfx::Insets& insets,
+                                SkColor bg_color) {
+  views::InkDrop::Get(host)->SetCreateRippleCallback(
+      base::BindRepeating(&CreateInkDropRipple, insets, host, bg_color));
+}
+
+// static
 void StyleUtil::SetUpInkDropForButton(views::Button* button,
-                                      TrayPopupInkDropStyle ink_drop_style,
+                                      const gfx::Insets& ripple_insets,
                                       bool highlight_on_hover,
                                       bool highlight_on_focus,
                                       SkColor bg_color) {
@@ -70,7 +67,7 @@ void StyleUtil::SetUpInkDropForButton(views::Button* button,
   ink_drop->SetCreateInkDropCallback(base::BindRepeating(
       &CreateInkDrop, button, highlight_on_hover, highlight_on_focus));
   ink_drop->SetCreateRippleCallback(base::BindRepeating(
-      &CreateInkDropRipple, ink_drop_style, button, bg_color));
+      &CreateInkDropRipple, ripple_insets, button, bg_color));
   ink_drop->SetCreateHighlightCallback(
       base::BindRepeating(&CreateInkDropHighlight, button, bg_color));
 }
@@ -79,18 +76,18 @@ void StyleUtil::SetUpInkDropForButton(views::Button* button,
 void StyleUtil::ConfigureInkDropAttributes(views::View* view,
                                            uint32_t ripple_config_attributes,
                                            SkColor bg_color) {
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes(bg_color);
+  const std::pair<SkColor, float> base_color_and_opacity =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(bg_color);
 
   auto* host = views::InkDrop::Get(view);
   if (ripple_config_attributes & kBaseColor)
-    host->SetBaseColor(ripple_attributes.base_color);
+    host->SetBaseColor(base_color_and_opacity.first);
 
   if (ripple_config_attributes & kInkDropOpacity)
-    host->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
+    host->SetVisibleOpacity(base_color_and_opacity.second);
 
   if (ripple_config_attributes & kHighlightOpacity)
-    host->SetHighlightOpacity(ripple_attributes.highlight_opacity);
+    host->SetHighlightOpacity(base_color_and_opacity.second);
 }
 
 }  // namespace ash

@@ -19,6 +19,7 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/style/style_util.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
@@ -46,9 +47,7 @@
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -216,44 +215,11 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf)
   DCHECK(shelf_);
   SetNotifyEnterExitOnChild(true);
 
-  auto ripple_attributes = AshColorProvider::Get()->GetRippleAttributes();
-  views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
-  views::InkDrop::Get(this)->SetVisibleOpacity(
-      ripple_attributes.inkdrop_opacity);
-
+  // Override the settings of inkdrop ripple only since others like Highlight
+  // has been set up in the base class ActionableView.
+  StyleUtil::SetRippleParams(this, GetBackgroundInsets());
   views::InkDrop::Get(this)->SetMode(
       views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
-      [](TrayBackgroundView* host) {
-        gfx::Rect bounds = host->GetBackgroundBounds();
-        // Currently, we don't handle view resize. To compensate for that,
-        // enlarge the bounds by two tray icons so that the highlight looks good
-        // even if two more icons are added when it is visible. Note that ink
-        // drop mask handles resize correctly, so the extra highlight would be
-        // clipped.
-        // TODO(mohsen): Remove this extra size when resize is handled properly
-        // (see https://crbug.com/669253).
-        const int icon_size = kTrayIconSize + 2 * kTrayImageItemPadding;
-        bounds.set_width(bounds.width() + 2 * icon_size);
-        bounds.set_height(bounds.height() + 2 * icon_size);
-        const AshColorProvider::RippleAttributes ripple_attributes =
-            AshColorProvider::Get()->GetRippleAttributes();
-        auto highlight = std::make_unique<views::InkDropHighlight>(
-            gfx::SizeF(bounds.size()), ripple_attributes.base_color);
-        highlight->set_visible_opacity(ripple_attributes.highlight_opacity);
-        return highlight;
-      },
-      this));
-  views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
-      [](TrayBackgroundView* host) -> std::unique_ptr<views::InkDropRipple> {
-        const AshColorProvider::RippleAttributes ripple_attributes =
-            AshColorProvider::Get()->GetRippleAttributes();
-        return std::make_unique<views::FloodFillInkDropRipple>(
-            host->size(), host->GetBackgroundInsets(),
-            views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            ripple_attributes.base_color, ripple_attributes.inkdrop_opacity);
-      },
-      this));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetInstallFocusRingOnFocus(true);
@@ -466,6 +432,9 @@ std::unique_ptr<ui::Layer> TrayBackgroundView::RecreateLayer() {
 void TrayBackgroundView::OnThemeChanged() {
   ActionableView::OnThemeChanged();
   UpdateBackground();
+  StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor |
+                                                  StyleUtil::kInkDropOpacity |
+                                                  StyleUtil::kHighlightOpacity);
 }
 
 void TrayBackgroundView::OnVirtualKeyboardVisibilityChanged() {

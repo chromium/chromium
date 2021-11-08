@@ -70,7 +70,7 @@ AssistantOverlay::AssistantOverlay(HomeButton* host_view)
     : ripple_layer_(std::make_unique<ui::Layer>()),
       host_view_(host_view),
       circle_layer_delegate_(
-          AshColorProvider::Get()->GetRippleAttributes().base_color,
+          AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first,
           kRippleCircleInitRadiusDip) {
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   layer()->SetName("AssistantOverlay:ROOT_LAYER");
@@ -215,7 +215,7 @@ const char* AssistantOverlay::GetClassName() const {
 void AssistantOverlay::OnThemeChanged() {
   views::View::OnThemeChanged();
   circle_layer_delegate_.set_color(
-      AshColorProvider::Get()->GetRippleAttributes().base_color);
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first);
   SchedulePaint();
 }
 

@@ -135,20 +135,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kHighlightColorHover
   };
 
-  // Attributes of ripple, includes the base color, opacity of inkdrop and
-  // highlight.
-  struct RippleAttributes {
-    RippleAttributes(SkColor color,
-                     float opacity_of_inkdrop,
-                     float opacity_of_highlight)
-        : base_color(color),
-          inkdrop_opacity(opacity_of_inkdrop),
-          highlight_opacity(opacity_of_highlight) {}
-    const SkColor base_color;
-    const float inkdrop_opacity;
-    const float highlight_opacity;
-  };
-
   static ColorProvider* Get();
 
   // Gets the color of |type| of the corresponding layer based on the current
@@ -158,13 +144,14 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   virtual SkColor GetControlsLayerColor(ControlsLayerType type) const = 0;
   virtual SkColor GetContentLayerColor(ContentLayerType type) const = 0;
 
-  // Gets the attributes of ripple on |bg_color|. |bg_color| is the background
-  // color of the UI element that wants to show inkdrop. Applies the color from
-  // GetBackgroundColor if |bg_color| is not given. This means the background
-  // color of the UI element is from Shiled or Base layer. See
-  // GetShieldLayerColor and GetBaseLayerColor.
-  virtual RippleAttributes GetRippleAttributes(
-      SkColor bg_color = gfx::kPlaceholderColor) const = 0;
+  // Gets the ink drop base color and opacity. Since the inkdrop ripple and
+  // highlight have the same opacity, we are keeping only one opacity here. The
+  // base color will be gotten based on current color mode, which will be WHITE
+  // on dark mode and BLACK on light mode. Please provide `background_color` if
+  // different base color needed on current color mode. See more details of
+  // IsDarkModeEnabled for current color mode.
+  virtual std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
+      SkColor background_color = gfx::kPlaceholderColor) const = 0;
 
   virtual void AddObserver(ColorModeObserver* observer) = 0;
   virtual void RemoveObserver(ColorModeObserver* observer) = 0;

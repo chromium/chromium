@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/bind.h"
@@ -86,11 +87,9 @@ class FilesAppChip : public views::Button {
             AshColorProvider::ControlsLayerType::kFocusRingColor));
 
     // Ink drop.
-    const AshColorProvider::RippleAttributes ripple_attributes =
-        ash_color_provider->GetRippleAttributes();
-    views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
-    views::InkDrop::Get(this)->SetVisibleOpacity(
-        ripple_attributes.inkdrop_opacity);
+    StyleUtil::ConfigureInkDropAttributes(
+        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity |
+                  StyleUtil::kHighlightOpacity);
   }
 
   void Init() {

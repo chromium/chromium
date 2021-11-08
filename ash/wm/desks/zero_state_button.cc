@@ -6,6 +6,7 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -23,8 +24,6 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
@@ -64,31 +63,9 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
 
   // Do not show highlight on hover and focus. Since the button will be painted
   // with a background, see `should_paint_background_` for more details.
-  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
-                                               /*highlight_on_hover=*/false,
-                                               /*highlight_on_focus=*/false);
-  views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
-      [](DeskButtonBase* host) {
-        auto highlight = std::make_unique<views::InkDropHighlight>(
-            gfx::SizeF(host->size()),
-            views::InkDrop::Get(host)->GetBaseColor());
-        highlight->set_visible_opacity(
-            AshColorProvider::Get()
-                ->GetRippleAttributes(host->background_color_)
-                .highlight_opacity);
-        return highlight;
-      },
-      this));
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](DeskButtonBase* host) {
-        return AshColorProvider::Get()
-            ->GetRippleAttributes(host->background_color_)
-            .base_color;
-      },
-      this));
-
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  SetHasInkDropActionOnClick(true);
+  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                   /*highlight_on_hover=*/false,
+                                   /*highlight_on_focus=*/false);
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
@@ -120,6 +97,7 @@ void DeskButtonBase::OnThemeChanged() {
   LabelButton::OnThemeChanged();
   background_color_ = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor);
   SchedulePaint();
 }
 

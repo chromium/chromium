@@ -87,9 +87,9 @@ SearchResultImageButton::SearchResultImageButton(
         const SkColor bg_color = color_provider->GetSearchBoxBackgroundColor();
         auto highlight = std::make_unique<views::InkDropHighlight>(
             gfx::SizeF(host->size()),
-            color_provider->GetRippleAttributesBaseColor(bg_color));
+            color_provider->GetInkDropBaseColor(bg_color));
         highlight->set_visible_opacity(
-            color_provider->GetRippleAttributesHighlightOpacity(bg_color));
+            color_provider->GetInkDropOpacity(bg_color));
         return highlight;
       },
       this));
@@ -106,8 +106,8 @@ SearchResultImageButton::SearchResultImageButton(
         return std::make_unique<views::FloodFillInkDropRipple>(
             host->size(), host->GetLocalBounds().InsetsFrom(bounds),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            color_provider->GetRippleAttributesBaseColor(bg_color),
-            color_provider->GetRippleAttributesInkDropOpacity(bg_color));
+            color_provider->GetInkDropBaseColor(bg_color),
+            color_provider->GetInkDropOpacity(bg_color));
       },
       this));
 

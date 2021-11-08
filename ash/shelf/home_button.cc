@@ -165,7 +165,7 @@ void HomeButton::StartNudgeAnimation() {
   nudge_ripple_layer_ = std::make_unique<ui::Layer>();
   float ripple_diameter = layer()->size().width();
   ripple_layer_delegate_ = std::make_unique<views::CircleLayerDelegate>(
-      AshColorProvider::Get()->GetRippleAttributes().base_color,
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first,
       /*radius=*/ripple_diameter / 2);
 
   // The bounds are set with respect to |shelf_container_layer| stated below.
@@ -308,7 +308,7 @@ void HomeButton::OnThemeChanged() {
   ShelfControlButton::OnThemeChanged();
   if (ripple_layer_delegate_) {
     ripple_layer_delegate_->set_color(
-        AshColorProvider::Get()->GetRippleAttributes().base_color);
+        AshColorProvider::Get()->GetInkDropBaseColorAndOpacity().first);
   }
   SchedulePaint();
 }

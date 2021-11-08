@@ -230,10 +230,10 @@ ShelfWidget::DelegateView::DelegateView(ShelfWidget* shelf_widget, Shelf* shelf)
   drag_handle_ = AddChildView(
       std::make_unique<DragHandle>(kDragHandleCornerRadius, shelf));
 
-  const AshColorProvider::RippleAttributes ripple_attributes =
-      AshColorProvider::Get()->GetRippleAttributes();
-  animating_drag_handle_.SetColor(ripple_attributes.base_color);
-  animating_drag_handle_.SetOpacity(ripple_attributes.inkdrop_opacity + 0.075);
+  const std::pair<SkColor, float> base_color_and_opacity =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+  animating_drag_handle_.SetColor(base_color_and_opacity.first);
+  animating_drag_handle_.SetOpacity(base_color_and_opacity.second + 0.075);
   animating_drag_handle_.SetRoundedCornerRadius(
       {kDragHandleCornerRadius, kDragHandleCornerRadius,
        kDragHandleCornerRadius, kDragHandleCornerRadius});

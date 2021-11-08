@@ -10,6 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -119,11 +120,8 @@ class OverviewCloseButton : public views::ImageButton {
         AshColorProvider::ContentLayerType::kButtonIconColor);
     SetImage(views::Button::STATE_NORMAL,
              gfx::CreateVectorIcon(kOverviewWindowCloseIcon, color));
-
-    const auto ripple_attributes = color_provider->GetRippleAttributes(color);
-    views::InkDrop::Get(this)->SetBaseColor(ripple_attributes.base_color);
-    views::InkDrop::Get(this)->SetVisibleOpacity(
-        ripple_attributes.inkdrop_opacity);
+    StyleUtil::ConfigureInkDropAttributes(
+        this, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity, color);
   }
 };
 

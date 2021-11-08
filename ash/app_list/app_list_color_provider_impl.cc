@@ -206,11 +206,13 @@ SkColor AppListColorProviderImpl::GetContentsBackgroundColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetGridBackgroundCardActiveColor() const {
-  SkColor base_color = GetGridBackgroundCardInactiveColor();
-  AshColorProvider::RippleAttributes ripple =
-      AshColorProvider::Get()->GetRippleAttributes(base_color);
-  return SkColorSetA(base_color, SkColorGetA(base_color) +
-                                     255 * (1.0f + ripple.highlight_opacity));
+  const SkColor background_color = GetGridBackgroundCardInactiveColor();
+  return SkColorSetA(
+      background_color,
+      SkColorGetA(background_color) +
+          255 * (1.0f + AshColorProvider::Get()
+                            ->GetInkDropBaseColorAndOpacity(background_color)
+                            .second));
 }
 
 SkColor AppListColorProviderImpl::GetGridBackgroundCardInactiveColor() const {
@@ -234,19 +236,12 @@ SkColor AppListColorProviderImpl::GetFocusRingColor() const {
   return gfx::kGoogleBlue600;  // default_color
 }
 
-SkColor AppListColorProviderImpl::GetRippleAttributesBaseColor(
-    SkColor bg_color) const {
-  return ash_color_provider_->GetRippleAttributes(bg_color).base_color;
+SkColor AppListColorProviderImpl::GetInkDropBaseColor(SkColor bg_color) const {
+  return ash_color_provider_->GetInkDropBaseColorAndOpacity(bg_color).first;
 }
 
-float AppListColorProviderImpl::GetRippleAttributesInkDropOpacity(
-    SkColor bg_color) const {
-  return ash_color_provider_->GetRippleAttributes(bg_color).inkdrop_opacity;
-}
-
-float AppListColorProviderImpl::GetRippleAttributesHighlightOpacity(
-    SkColor bg_color) const {
-  return ash_color_provider_->GetRippleAttributes(bg_color).highlight_opacity;
+float AppListColorProviderImpl::GetInkDropOpacity(SkColor bg_color) const {
+  return ash_color_provider_->GetInkDropBaseColorAndOpacity(bg_color).second;
 }
 
 SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
@@ -256,9 +251,8 @@ SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
         AshColorProvider::ContentLayerType::kHighlightColorHover);
   }
   // Use inkdrop colors by default.
-  return SkColorSetA(
-      GetRippleAttributesBaseColor(GetSearchBoxBackgroundColor()),
-      GetRippleAttributesHighlightOpacity(GetSearchBoxBackgroundColor()) * 255);
+  return SkColorSetA(GetInkDropBaseColor(GetSearchBoxBackgroundColor()),
+                     GetInkDropOpacity(GetSearchBoxBackgroundColor()) * 255);
 }
 
 bool AppListColorProviderImpl::ShouldUseDarkLightColors() const {

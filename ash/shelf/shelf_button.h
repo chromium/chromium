@@ -23,6 +23,7 @@ class ASH_EXPORT ShelfButton : public views::Button {
   ~ShelfButton() override;
 
   // views::Button:
+  void OnThemeChanged() override;
   const char* GetClassName() const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;

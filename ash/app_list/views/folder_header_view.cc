@@ -62,8 +62,8 @@ SkColor GetFolderBackgroundColor(bool is_active) {
     return SK_ColorTRANSPARENT;
 
   const AppListColorProvider* color_provider = AppListColorProvider::Get();
-  return SkColorSetA(color_provider->GetRippleAttributesBaseColor(),
-                     color_provider->GetRippleAttributesInkDropOpacity() * 255);
+  return SkColorSetA(color_provider->GetInkDropBaseColor(),
+                     color_provider->GetInkDropOpacity() * 255);
 }
 
 }  // namespace

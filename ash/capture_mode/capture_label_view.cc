@@ -11,6 +11,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -160,12 +161,8 @@ CaptureLabelView::CaptureLabelView(
 
   views::InkDrop::Get(label_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON);
-  const auto ripple_attributes =
-      color_provider->GetRippleAttributes(background_color);
-  views::InkDrop::Get(label_button_)
-      ->SetVisibleOpacity(ripple_attributes.inkdrop_opacity);
-  views::InkDrop::Get(label_button_)
-      ->SetBaseColor(ripple_attributes.base_color);
+  StyleUtil::ConfigureInkDropAttributes(
+      label_button_, StyleUtil::kBaseColor | StyleUtil::kInkDropOpacity);
   label_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   label_ = AddChildView(std::make_unique<views::Label>(std::u16string()));

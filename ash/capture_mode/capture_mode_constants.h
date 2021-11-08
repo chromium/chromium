@@ -17,12 +17,6 @@ constexpr gfx::Size kButtonSize{32, 32};
 
 constexpr gfx::Insets kButtonPadding{0};
 
-constexpr float kInkDropVisibleOpacity = 0.2f;
-
-constexpr float kInkDropHighlightVisibleOpacity = 0.3f;
-
-constexpr SkColor kInkDropBaseColor = SK_ColorWHITE;
-
 // The spacing used by the BoxLayout manager to space out child views in the
 // CaptureModeBarView.
 constexpr int kBetweenChildSpacing = 16;
