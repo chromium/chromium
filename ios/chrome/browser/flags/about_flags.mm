@@ -814,6 +814,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLazilyCreateWebStateOnRestorationDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableUnrealizedWebStates)},
+    {"reading-list-time-to-read", flag_descriptions::kReadingListTimeToReadName,
+     flag_descriptions::kReadingListTimeToReadDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kReadingListTimeToRead)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

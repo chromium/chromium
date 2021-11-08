@@ -14,12 +14,20 @@ const char kReadingListMessagesOnlyJavaScriptExecutionParam[] =
 const base::Feature kReadingListMessages{"ReadingListMessages",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kReadingListTimeToRead{"ReadingListTimeToRead",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsReadingListMessagesEnabled() {
   return base::FeatureList::IsEnabled(kReadingListMessages);
 }
 
-bool ShouldOnlyExecuteJavascript() {
+bool IsReadingListTimeToReadEnabled() {
+  return base::FeatureList::IsEnabled(kReadingListTimeToRead);
+}
+
+bool ShouldNotPresentReadingListMessage() {
   return base::GetFieldTrialParamByFeatureAsBool(
-      kReadingListMessages, kReadingListMessagesOnlyJavaScriptExecutionParam,
-      false);
+             kReadingListMessages,
+             kReadingListMessagesOnlyJavaScriptExecutionParam, false) ||
+         IsReadingListTimeToReadEnabled();
 }
