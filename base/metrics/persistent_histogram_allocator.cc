@@ -100,10 +100,8 @@ size_t CalculateRequiredCountsBytes(size_t bucket_count) {
 
 }  // namespace
 
-const Feature kPersistentHistogramsFeature{
-  "PersistentHistograms", FEATURE_DISABLED_BY_DEFAULT
-};
-
+const Feature kPersistentHistogramsFeature{"PersistentHistograms",
+                                           FEATURE_ENABLED_BY_DEFAULT};
 
 PersistentSparseHistogramDataManager::PersistentSparseHistogramDataManager(
     PersistentMemoryAllocator* allocator)

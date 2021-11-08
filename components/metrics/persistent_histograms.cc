@@ -9,6 +9,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/strings/string_util.h"
@@ -19,9 +20,14 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/persistent_system_profile.h"
-#include "components/variations/variations_associated_data.h"
 
 namespace {
+
+constexpr char kMappedFileStr[] = "MappedFile";
+constexpr char kLocalMemoryStr[] = "LocalMemory";
+
+const base::FeatureParam<std::string> kPersistentHistogramsStorage{
+    &base::kPersistentHistogramsFeature, "storage", kMappedFileStr};
 
 // Creating a "spare" file for persistent metrics involves a lot of I/O and
 // isn't important so delay the operation for a while after startup.
@@ -230,25 +236,17 @@ void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
 
 const char kBrowserMetricsName[] = "BrowserMetrics";
 
-void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
-                                     bool default_local_memory) {
-  // TODO(crbug.com/1183166): Enable feature by default and use its state to
-  // determine if persistent histograms should be disabled. Move it out of base.
-  std::string storage = variations::GetVariationParamValueByFeature(
-      base::kPersistentHistogramsFeature, "storage");
-
-  static const char kMappedFileStr[] = "MappedFile";
-  static const char kLocalMemoryStr[] = "LocalMemory";
-
-  PersistentHistogramsMode mode;
-  if (storage == kMappedFileStr) {
-    mode = kMappedFile;
-  } else if (storage == kLocalMemoryStr) {
-    mode = kLocalMemory;
-  } else if (storage.empty()) {
-    mode = (default_local_memory ? kLocalMemory : kMappedFile);
-  } else {
-    mode = kNotEnabled;
+void InstantiatePersistentHistograms(const base::FilePath& metrics_dir) {
+  PersistentHistogramsMode mode = kNotEnabled;
+  // Note: The extra feature check is needed so that we don't use the default
+  // value of the storage param if the feature is disabled.
+  if (base::FeatureList::IsEnabled(base::kPersistentHistogramsFeature)) {
+    const std::string storage = kPersistentHistogramsStorage.Get();
+    if (storage == kMappedFileStr) {
+      mode = kMappedFile;
+    } else if (storage == kLocalMemoryStr) {
+      mode = kLocalMemory;
+    }
   }
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
