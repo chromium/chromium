@@ -2980,11 +2980,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.view endEditing:YES];
   }
 
-  // Close the omnibox when opening the thumb strip
-  if (nextViewRevealState == ViewRevealState::Peeked) {
-    [self.omniboxHandler cancelOmniboxEdit];
-  }
-
   // Stop scrolling in the current web state when transitioning.
   if (self.currentWebState) {
     if (self.isNTPActiveForCurrentWebState) {
@@ -3069,6 +3064,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
         }
       }
     }
+  } else if (viewRevealState == ViewRevealState::Peeked) {
+    // Close the omnibox after opening the thumb strip
+    [self.omniboxHandler cancelOmniboxEdit];
   }
 }
 
