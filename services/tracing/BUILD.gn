@@ -118,6 +118,7 @@ source_set("tests") {
     ":test_utils",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp:buildflags",
     "//services/tracing/public/cpp/background_tracing:unit_tests",
