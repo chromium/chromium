@@ -224,11 +224,6 @@ uint64_t WebPerformance::ExperimentalLargestImagePaintSize() const {
   return 0u;
 }
 
-LargestContentfulPaintTypeMask WebPerformance::LargestContentfulPaintType()
-    const {
-  return private_->timing()->LargestContentfulPaintType();
-}
-
 double WebPerformance::ExperimentalLargestTextPaint() const {
   return 0.0;
 }

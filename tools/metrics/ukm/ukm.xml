@@ -13210,13 +13210,6 @@ be describing additional metrics about the same event.
       anytime after that happens.
     </summary>
   </metric>
-  <metric name="PaintTiming.LargestContentfulPaintType">
-    <summary>
-      Indicates that type of the LargestContentfulPaint candidate. This value is
-      a packed set of flags, defined in
-      third_party/blink/public/common/performance/largest_contentful_paint_type.h
-    </summary>
-  </metric>
   <metric name="PaintTiming.NavigationToExperimentalLargestContentfulPaint">
     <obsolete>
       Replaced by PaintTiming.NavigationToLargestContentfulPaint2 on Oct 2020.

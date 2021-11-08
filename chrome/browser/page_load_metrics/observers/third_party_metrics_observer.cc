@@ -353,9 +353,9 @@ void ThirdPartyMetricsObserver::RecordMetrics(
               .MergeMainFrameAndSubframes();
   if (third_party_font_loaded_ &&
       all_frames_largest_contentful_paint.ContainsValidTime() &&
-      all_frames_largest_contentful_paint.TextOrImage() ==
-          page_load_metrics::ContentfulPaintTimingInfo::
-              LargestContentTextOrImage::kText &&
+      all_frames_largest_contentful_paint.Type() ==
+          page_load_metrics::ContentfulPaintTimingInfo::LargestContentType::
+              kText &&
       WasStartedInForegroundOptionalEventInForeground(
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(

@@ -1062,7 +1062,7 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
                         main_frame_largest_contentful_paint.Time().value());
     UMA_HISTOGRAM_ENUMERATION(
         internal::kHistogramLargestContentfulPaintMainFrameContentType,
-        main_frame_largest_contentful_paint.TextOrImage());
+        main_frame_largest_contentful_paint.Type());
   }
 
   const page_load_metrics::ContentfulPaintTimingInfo&
@@ -1096,7 +1096,7 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
             all_frames_largest_contentful_paint.Time().value()));
     UMA_HISTOGRAM_ENUMERATION(
         internal::kHistogramLargestContentfulPaintContentType,
-        all_frames_largest_contentful_paint.TextOrImage());
+        all_frames_largest_contentful_paint.Type());
     TRACE_EVENT_MARK_WITH_TIMESTAMP1(
         "loading", "NavStartToLargestContentfulPaint::AllFrames::UMA",
         GetDelegate().GetNavigationStart() +

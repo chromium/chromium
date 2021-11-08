@@ -25,8 +25,8 @@
 using content::NavigationSimulator;
 using content::RenderFrameHost;
 using content::RenderFrameHostTester;
-using LargestContentTextOrImage =
-    page_load_metrics::ContentfulPaintTimingInfo::LargestContentTextOrImage;
+using LargestContentType =
+    page_load_metrics::ContentfulPaintTimingInfo::LargestContentType;
 using UserInteractionLatenciesPtr =
     page_load_metrics::mojom::UserInteractionLatenciesPtr;
 using UserInteractionLatencies =
@@ -74,15 +74,14 @@ class UmaPageLoadMetricsObserverTest
         internal::kHistogramLargestContentfulPaintMainFrameContentType, 0);
   }
 
-  void TestAllFramesLCP(int value, LargestContentTextOrImage text_or_image) {
+  void TestAllFramesLCP(int value, LargestContentType type) {
     EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                     internal::kHistogramLargestContentfulPaint),
                 testing::ElementsAre(base::Bucket(value, 1)));
-    EXPECT_THAT(
-        tester()->histogram_tester().GetAllSamples(
-            internal::kHistogramLargestContentfulPaintContentType),
-        testing::ElementsAre(base::Bucket(
-            static_cast<base::HistogramBase::Sample>(text_or_image), 1)));
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
+                    internal::kHistogramLargestContentfulPaintContentType),
+                testing::ElementsAre(base::Bucket(
+                    static_cast<base::HistogramBase::Sample>(type), 1)));
   }
 
   void TestCrossSiteSubFrameLCP(int value) {
@@ -92,15 +91,15 @@ class UmaPageLoadMetricsObserverTest
         testing::ElementsAre((base::Bucket(value, 1))));
   }
 
-  void TestMainFrameLCP(int value, LargestContentTextOrImage text_or_image) {
+  void TestMainFrameLCP(int value, LargestContentType type) {
     EXPECT_THAT(tester()->histogram_tester().GetAllSamples(
                     internal::kHistogramLargestContentfulPaintMainFrame),
                 testing::ElementsAre(base::Bucket(value, 1)));
     EXPECT_THAT(
         tester()->histogram_tester().GetAllSamples(
             internal::kHistogramLargestContentfulPaintMainFrameContentType),
-        testing::ElementsAre(base::Bucket(
-            static_cast<base::HistogramBase::Sample>(text_or_image), 1)));
+        testing::ElementsAre(
+            base::Bucket(static_cast<base::HistogramBase::Sample>(type), 1)));
   }
 
   void TestEmptyMainFrameLCP() {
@@ -775,7 +774,7 @@ TEST_F(UmaPageLoadMetricsObserverTest, LargestImageLoadingSmallerThanText) {
   // Navigate again to force histogram recording.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
-  TestAllFramesLCP(4780, LargestContentTextOrImage::kText);
+  TestAllFramesLCP(4780, LargestContentType::kText);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest,
@@ -813,7 +812,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   // Navigate again to force histogram recording in the main frame.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
-  TestAllFramesLCP(4780, LargestContentTextOrImage::kImage);
+  TestAllFramesLCP(4780, LargestContentType::kImage);
   TestEmptyMainFrameLCP();
 }
 
@@ -893,8 +892,8 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   // Navigate again to force histogram recording in the main frame.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
-  TestAllFramesLCP(4780, LargestContentTextOrImage::kImage);
-  TestMainFrameLCP(4780, LargestContentTextOrImage::kImage);
+  TestAllFramesLCP(4780, LargestContentType::kImage);
+  TestMainFrameLCP(4780, LargestContentType::kImage);
 }
 
 // This is to test whether LargestContentfulPaintAllFrames could merge
@@ -939,8 +938,8 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   // Navigate again to force histogram recording in the main frame.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
-  TestAllFramesLCP(4780, LargestContentTextOrImage::kImage);
-  TestMainFrameLCP(9382, LargestContentTextOrImage::kImage);
+  TestAllFramesLCP(4780, LargestContentType::kImage);
+  TestMainFrameLCP(9382, LargestContentType::kImage);
 }
 
 // This is to test whether LargestContentfulPaintAllFrames could merge
@@ -984,8 +983,8 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   // Navigate again to force histogram recording in the main frame.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
-  TestAllFramesLCP(4780, LargestContentTextOrImage::kText);
-  TestMainFrameLCP(4780, LargestContentTextOrImage::kText);
+  TestAllFramesLCP(4780, LargestContentType::kText);
+  TestMainFrameLCP(4780, LargestContentType::kText);
 }
 
 // This tests a trade-off we have made - aggregating all subframe candidates,
@@ -1032,7 +1031,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
   // Ensure that the largest_image_paint timing for the main frame is recorded.
-  TestAllFramesLCP(4780, LargestContentTextOrImage::kImage);
+  TestAllFramesLCP(4780, LargestContentType::kImage);
 }
 
 // This tests a trade-off we have made - aggregating all subframe candidates,
@@ -1080,7 +1079,7 @@ TEST_F(
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
   // Ensure that the largest_image_paint timing for the main frame is recorded.
-  TestAllFramesLCP(990, LargestContentTextOrImage::kImage);
+  TestAllFramesLCP(990, LargestContentType::kImage);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest, LargestContentfulPaint_NoTextOrImage) {
@@ -1115,7 +1114,7 @@ TEST_F(UmaPageLoadMetricsObserverTest, LargestContentfulPaint_OnlyText) {
   // Navigate again to force histogram recording.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
-  TestAllFramesLCP(4780, LargestContentTextOrImage::kText);
+  TestAllFramesLCP(4780, LargestContentType::kText);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest, LargestContentfulPaint_OnlyImage) {
@@ -1133,7 +1132,7 @@ TEST_F(UmaPageLoadMetricsObserverTest, LargestContentfulPaint_OnlyImage) {
   // Navigate again to force histogram recording.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
-  TestAllFramesLCP(4780, LargestContentTextOrImage::kImage);
+  TestAllFramesLCP(4780, LargestContentType::kImage);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest,
@@ -1155,7 +1154,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   // Navigate again to force histogram recording.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
-  TestAllFramesLCP(4780, LargestContentTextOrImage::kImage);
+  TestAllFramesLCP(4780, LargestContentType::kImage);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest,
@@ -1177,7 +1176,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   // Navigate again to force histogram recording.
   NavigateAndCommit(GURL(kDefaultTestUrl2));
 
-  TestAllFramesLCP(990, LargestContentTextOrImage::kText);
+  TestAllFramesLCP(990, LargestContentType::kText);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest,
