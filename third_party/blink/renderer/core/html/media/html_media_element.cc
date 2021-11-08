@@ -3523,7 +3523,17 @@ void HTMLMediaElement::SourceWasAdded(HTMLSourceElement* source) {
   SetShouldDelayLoadEvent(true);
 
   // 24. Set the networkState back to NETWORK_LOADING.
-  SetNetworkState(kNetworkLoading);
+  // Changing the network state might trigger media controls to add new nodes
+  // to the DOM which is forbidden while source is being inserted into this
+  // node. This is a problem as ContainerNode::NotifyNodeInsertedInternal,
+  // which is always indirectly triggering this function, prohibits event
+  // dispatch and adding new nodes will run
+  // blink::DispatchChildInsertionEvents.
+  //
+  // We still need to update the media controls. This will be done after
+  // load_timer_ fires a new event - which is setup in ScheduleNextSourceChild
+  // below so skipping that step here should be OK.
+  SetNetworkState(kNetworkLoading, false /* update_media_controls */);
 
   // 25. Jump back to the find next candidate step above.
   next_child_node_to_consider_ = source;
@@ -4345,12 +4355,13 @@ void HTMLMediaElement::CreatePlaceholderTracksIfNecessary() {
   }
 }
 
-void HTMLMediaElement::SetNetworkState(NetworkState state) {
+void HTMLMediaElement::SetNetworkState(NetworkState state,
+                                       bool update_media_controls) {
   if (network_state_ == state)
     return;
 
   network_state_ = state;
-  if (GetMediaControls())
+  if (update_media_controls && GetMediaControls())
     GetMediaControls()->NetworkStateChanged();
 }
 

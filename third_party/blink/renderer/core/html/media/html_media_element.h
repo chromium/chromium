@@ -640,7 +640,7 @@ class CORE_EXPORT HTMLMediaElement
   // their track info.
   void CreatePlaceholderTracksIfNecessary();
 
-  void SetNetworkState(NetworkState);
+  void SetNetworkState(NetworkState, bool update_media_controls = true);
 
   void AudioTracksTimerFired(TimerBase*);
 
