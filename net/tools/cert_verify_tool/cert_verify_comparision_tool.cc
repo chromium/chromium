@@ -254,13 +254,14 @@ int RunCert(base::File* input_file,
     }
 
     net::TrialComparisonResult result = net::IsSynchronouslyIgnorableDifference(
-        platform_error, platform_result, builtin_error, builtin_result);
+        platform_error, platform_result, builtin_error, builtin_result,
+        /*sha1_local_anchors_enabled=*/false);
 
     // TODO(hchao): gather stats on result values.
 
     if (result != net::TrialComparisonResult::kInvalid) {
       std::cerr << "Host " << cert_chain.host()
-                << " has ignorable verify results!";
+                << " has ignorable verify results!\n";
       return 0;
     }
 

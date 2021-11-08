@@ -24,7 +24,11 @@ enum class TrialComparisonResult {
   kIgnoredDifferentPathReVerifiesEquivalent = 8,
   kIgnoredLocallyTrustedLeaf = 9,
   kIgnoredConfigurationChanged = 10,
-  kMaxValue = kIgnoredConfigurationChanged
+  kIgnoredSHA1SignaturePresent = 11,
+  kIgnoredWindowsRevCheckingEnabled = 12,
+  kIgnoredBothAuthorityInvalid = 13,
+  kIgnoredBothKnownRoot = 14,
+  kMaxValue = kIgnoredBothKnownRoot
 };
 
 NET_EXPORT_PRIVATE bool CertVerifyResultEqual(const CertVerifyResult& a,
@@ -34,7 +38,8 @@ NET_EXPORT_PRIVATE TrialComparisonResult
 IsSynchronouslyIgnorableDifference(int primary_error,
                                    const CertVerifyResult& primary_result,
                                    int trial_error,
-                                   const CertVerifyResult& trial_result);
+                                   const CertVerifyResult& trial_result,
+                                   bool sha1_local_anchors_enabled);
 
 }  // namespace net
 

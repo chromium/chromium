@@ -394,6 +394,15 @@ void TrialComparisonCertVerifier::Job::OnTrialJobCompleted(int result) {
   }
 #endif
 
+  TrialComparisonResult ignorable_difference =
+      IsSynchronouslyIgnorableDifference(primary_error_, primary_result_,
+                                         trial_error_, trial_result_,
+                                         config_.enable_sha1_local_anchors);
+  if (ignorable_difference != TrialComparisonResult::kInvalid) {
+    FinishSuccess(ignorable_difference);  // Note: Will delete |this|.
+    return;
+  }
+
   const bool chains_equal = primary_result_.verified_cert->EqualsIncludingChain(
       trial_result_.verified_cert.get());
 
@@ -419,14 +428,6 @@ void TrialComparisonCertVerifier::Job::OnTrialJobCompleted(int result) {
       // Note: May delete |this|.
       OnPrimaryReverifyWithSecondaryChainCompleted(rv);
     }
-    return;
-  }
-
-  TrialComparisonResult ignorable_difference =
-      IsSynchronouslyIgnorableDifference(primary_error_, primary_result_,
-                                         trial_error_, trial_result_);
-  if (ignorable_difference != TrialComparisonResult::kInvalid) {
-    FinishSuccess(ignorable_difference);  // Note: Will delete |this|.
     return;
   }
 
@@ -461,7 +462,8 @@ void TrialComparisonCertVerifier::Job::
   }
 
   if (IsSynchronouslyIgnorableDifference(result, reverification_result_,
-                                         trial_error_, trial_result_) !=
+                                         trial_error_, trial_result_,
+                                         config_.enable_sha1_local_anchors) !=
       TrialComparisonResult::kInvalid) {
     // The new result matches if ignoring differences. Still use the
     // |kIgnoredDifferentPathReVerifiesEquivalent| code rather than the result
