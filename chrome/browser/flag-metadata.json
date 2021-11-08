@@ -1872,6 +1872,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "enable-docked-magnifier-resizing",
+    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-drdc",
     "owners": [ "vikassoni", "sunnyps" ],
     "expiry_milestone": 102

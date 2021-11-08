@@ -94,6 +94,13 @@ AX_BASE_EXPORT extern const base::Feature
 // following mode in Magnifier settings is enabled.
 AX_BASE_EXPORT bool IsMagnifierContinuousMouseFollowingModeSettingEnabled();
 
+// Enables ability to resize Docked Magnifier.
+AX_BASE_EXPORT extern const base::Feature kDockedMagnifierResizing;
+
+// Returns true if the feature which adds ability for user to grab and resize
+// bottom of Docked Magnifier is enabled.
+AX_BASE_EXPORT bool IsDockedMagnifierResizingEnabled();
+
 // Enables dictation to use on-device speech recognition when available.
 AX_BASE_EXPORT extern const base::Feature
     kExperimentalAccessibilityDictationOffline;
