@@ -48,7 +48,7 @@ domains that users without technical backgrounds may confuse for another site.
 ## Lookalike checks are imperfect
 
 Chrome's lookalike checks are not always right. Chrome can not detect all
-lookalike domains, and often lookalike domains are not malicious.  Our
+lookalike domains, and often lookalike domains are not malicious. Our
 intent with Chrome's lookalike warnings is not to make spoofing impossible,
 but to force attackers to use less convincing lookalikes, allowing users to
 notice spoofs more easily.
@@ -121,14 +121,18 @@ control both sites using a special form of
    instance, in our example, you would upload the files at both
    `https://example.com/.well-known/assetlinks.json` and
    `https://example.net/.well-known/assetlinks.json`.
-4. Fill out a self-verification [request](https://forms.gle/DsoM64EmSZ5H4bNd8).
+4. **Fill out an automated verification [request](https://forms.gle/DsoM64EmSZ5H4bNd8)**.
 
-Once you submit the request, please allow a few days for all warnings to stop.
-If verification fails, you should be notified via email within a few hours. If
-you don't get an email indicating verification failure and your sites still show
-a warning after a week, please submit a manual review using the process below.
+Once you submit the [request](https://forms.gle/DsoM64EmSZ5H4bNd8), please allow
+a few days for all warnings to stop. If verification fails, you should be
+notified via email within a few hours. If you don't get an email indicating
+verification failure and your sites still show a warning after a week, please
+submit a manual review using the process below.
 
 Important notes:
+ * You only need to submit the verification request form once with a single
+   domain. All other domains are discovered automatically, since you should have
+   listed them in the first domain's `assetlinks.json` file.
  * You must keep the `assetlinks.json` file in place so long as you wish to
    suppress the warnings. If you remove either file, Chrome may resume showing
    warnings.
@@ -150,7 +154,8 @@ after that warning would have started (i.e. after Chrome introduces the check).
 After that time, we encourage developers to test their new sites in Chrome to
 ensure that their new domain does not trigger warnings.
 
-If you would like to request a review, please fill out a
+If you are unable to use the automated process above, and would like to request
+a manual review, please fill out a manual review
 [request](https://forms.gle/BxV3JGbCbRjucDxq6).
 
 
