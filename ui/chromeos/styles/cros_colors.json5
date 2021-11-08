@@ -118,6 +118,10 @@
     text_color_positive: "$color_positive",
     text_color_warning: "$color_warning",
     text_color_alert: "$color_alert",
+    text_highlight_color: {
+      light: "rgba($google_blue_600_rgb, 0.3)",
+      dark: "rgba($google_blue_400_rgb, 0.3)",
+    },
 
     /*
      * Icon colors.
@@ -383,12 +387,15 @@
     },
     textfield_input_color: "$icon_color_primary",
     /* textfield:focus */
+    textfield_cursor_color_focus: "$color_prominent",
     textfield_label_color_focus: "$color_prominent",
     /* textfield[error] */
     textfield_label_color_error: {
       light: "$google_red_600",
       dark: "$google_red_300",
     },
+    textfield_underline_color_error: "$color_alert",
+    textfield_cursor_color_error: "$color_alert",
     /* textfield[disabled] */
     textfield_background_color_disabled: {
       light: "rgba($google_grey_100_rgb, 0.38)",
