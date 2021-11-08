@@ -59,7 +59,8 @@ chromium-metrics-reviews@google.com.
   <variant name="RendererExtensionEventProcess" summary=""/>
   <variant name="RendererExtensionPersistentProcess" summary=""/>
   <variant name="RendererProcess" summary=""/>
-  <variant name="Total" summary="Sum of all processes, no matter the name."/>
+<!-- "Total" variant used to exist but was folded into the histogram names and could not be made obsolete. -->
+
   <variant name="UtilityProcess" summary=""/>
   <variant name="WorkerProcess" summary=""/>
 </variants>
@@ -12578,8 +12579,9 @@ chromium-metrics-reviews@google.com.
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definitioin of PerformanceClass.AverageCPU2.ProcessName. This histogram
-    applies to all processes when under the {UsageScenario} usage scenario.
+    See definitioin of PerformanceClass.AverageCPU2.ProcessName. This is
+    recorded for {UsageScenario} (an interval represents 2 minutes of Chrome
+    runtime, see go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12633,9 +12635,9 @@ chromium-metrics-reviews@google.com.
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definition of PerformanceMonitor.EnergyImpact.ProcessName. This
-    histogram applies to all processes when under the {UsageScenario} usage
-    scenario.
+    See definition of PerformanceMonitor.EnergyImpact.ProcessName. This is
+    recorded for {UsageScenario} (an interval represents 2 minutes of Chrome
+    runtime, see go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12681,8 +12683,9 @@ chromium-metrics-reviews@google.com.
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definition of PerformanceMonitor.IdleWakeups.ProcessName. This histogram
-    applies to all processes when under the {UsageScenario} usage scenario.
+    See definition of PerformanceMonitor.IdleWakeups.ProcessName. This is
+    recorded for {UsageScenario} (an interval represents 2 minutes of Chrome
+    runtime, see go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12713,8 +12716,8 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.orgg</owner>
   <summary>
     See definition of PerformanceMonitor.PackageExitIdleWakeups.ProcessName.
-    This histogram applies to all processes when under the {UsageScenario} usage
-    scenario.
+    This is recorded for {UsageScenario} (an interval represents 2 minutes of
+    Chrome runtime, see go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12757,9 +12760,10 @@ chromium-metrics-reviews@google.com.
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    The IO reads reported by the resource coalition mechanism on macOS. Reported
-    every 2 minutes. The data is reported as the rate per second during this
-    interval with a millibyte granularity.
+    The IO reads reported by the resource coalition mechanism on macOS. The data
+    is reported as the rate per second during this interval with a millibyte
+    granularity. This is recorded for {UsageScenario} (an interval represents 2
+    minutes of Chrome runtime, see go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12772,9 +12776,11 @@ chromium-metrics-reviews@google.com.
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    The IO writes reported by the resource coalition mechanism on macOS.
-    Reported every 2 minutes. The data is reported as the rate per second during
-    this interval with a millibyte granularity.
+    The IO writes reported by the resource coalition mechanism on macOS. The
+    data is reported as the rate per second during this interval with a
+    millibyte granularity. This is recorded for {UsageScenario} (an interval
+    represents 2 minutes of Chrome runtime, see
+    go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12804,10 +12810,11 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     Average CPU utilization reported by the resource coalition mechanism on
-    macOS. Read out at each two-minute interval. The utilization is in the
-    0-100% range per CPU, which is then summed up and multiplied by 100. The
-    histogram is capped at 20000 (equivalent to 2 cores fully loaded). I.e. 4
-    cores busy at 25% each will read as 25 * 4 * 100 = 10000.
+    macOS. The utilization is in the 0-100% range per CPU, which is then summed
+    up and multiplied by 100. The histogram is capped at 20000 (equivalent to 2
+    cores fully loaded). I.e. 4 cores busy at 25% each will read as 25 * 4 * 100
+    = 10000. This is recorded for {UsageScenario} (an interval represents 2
+    minutes of Chrome runtime, see go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12837,13 +12844,16 @@ chromium-metrics-reviews@google.com.
     (Mac only) A synthetic power use estimate, as displayed in macOS Activity
     Monitor and the battery menu. This incorporates CPU utilization, idle
     wakeups, IO, and task QoS level using per-machine-model weights. Divide by
-    100 to match Activity Monitor's scale. Recorded every two minutes, only
-    available on macs with an Intel CPU.
+    100 to match Activity Monitor's scale. Only available on macs with an Intel
+    CPU.
 
     This EnergyImpact score is computed from the usage reported by the resource
     coalition mechanism on macOS. It accounts for the resource usage of all
     Chrome processes no matter how short-lived, as well as XPC services running
     on Chrome's behalf.
+
+    This is recorded for {UsageScenario} (an interval represents 2 minutes of
+    Chrome runtime, see go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12872,9 +12882,10 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     Average GPU utilization reported by the resource coalition mechanism on
-    macOS. Read out at each two-minute interval. The utilization is in the
-    0-100% range and is multiplied by 100. The histogram is capped at 10000
-    (equivalent to the GPU being used 100% of the time).
+    macOS. The utilization is in the 0-100% range and is multiplied by 100. The
+    histogram is capped at 10000 (equivalent to the GPU being used 100% of the
+    time). This is recorded for {UsageScenario} (an interval represents 2
+    minutes of Chrome runtime, see go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12888,8 +12899,10 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     The interrupt wakeup rate reported by the resource coalition mechanism on
-    macOS. Reported every 2 minutes. The data is reported as the rate per second
-    during this interval with a milliwakeup granularity.
+    macOS. The data is reported as the rate per second during this interval with
+    a milliwakeup granularity. This is recorded for {UsageScenario} (an interval
+    represents 2 minutes of Chrome runtime, see
+    go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12903,8 +12916,10 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     The platform idle wakeup rate reported by the resource coalition mechanism
-    on macOS. Reported every 2 minutes. The data is reported as the rate per
-    second during this interval with a milliwakeup granularity.
+    on macOS. The data is reported as the rate per second during this interval
+    with a milliwakeup granularity. This is recorded for {UsageScenario} (an
+    interval represents 2 minutes of Chrome runtime, see
+    go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12916,8 +12931,10 @@ chromium-metrics-reviews@google.com.
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    The power usage reported by the resource coalition mechanism on macOS.
-    Reported every 2 minutes. Only available on devices with an ARM CPU.
+    The power usage reported by the resource coalition mechanism on macOS. Only
+    available on devices with an ARM CPU. This is recorded for {UsageScenario}
+    (an interval represents 2 minutes of Chrome runtime, see
+    go/chrome_power_use_per_scenario).
   </summary>
 <!-- Usage scenario variant defined in tools/metrics/histograms/metadata/power/histograms.xml  -->
 
@@ -12931,9 +12948,11 @@ chromium-metrics-reviews@google.com.
   <owner>catan-team@chromium.org</owner>
   <summary>
     Average CPU time spent in a given QoS level, as reported by the resource
-    coalition mechanism on macOS. Read out at each two-minute interval. The
-    utilization is in the 0-100% range and is multiplied by 100. The histogram
-    is capped at 10000 (equivalent to the GPU being used 100% of the time).
+    coalition mechanism on macOS. The utilization is in the 0-100% range and is
+    multiplied by 100. The histogram is capped at 10000 (equivalent to the GPU
+    being used 100% of the time). This is recorded for {UsageScenario} (an
+    interval represents 2 minutes of Chrome runtime, see
+    go/chrome_power_use_per_scenario).
   </summary>
   <token key="QoSLevel">
     <variant name="Background"/>

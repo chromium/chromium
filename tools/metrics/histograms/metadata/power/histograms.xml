@@ -28,33 +28,37 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   When changing this variant changes need to verified against histograms there.
 -->
 
-  <variant name=".AllTabsHidden" summary="Chrome had tabs, but none visible"/>
+  <variant name="" summary="all intervals"/>
+  <variant name=".AllTabsHidden"
+      summary="intervals during which Chrome had tabs, but none visible"/>
   <variant name=".Audio"
-      summary="Chrome had at least 1 visible tab and was audible, but there
-               was no video playback or video capture"/>
+      summary="intervals during which Chrome had at least 1 visible tab and
+               was audible, but there was no video playback or video capture"/>
   <variant name=".EmbeddedVideo_NoNavigation"
-      summary="Chrome played a video in a visible tab, and there was no
-               navigation or video capture"/>
+      summary="intervals during which Chrome played a video in a visible tab,
+               and there was no navigation or video capture"/>
   <variant name=".EmbeddedVideo_WithNavigation"
-      summary="Chrome played a video in a visible tab, there was a
-               navigation, but no video capture"/>
+      summary="intervals during which Chrome played a video in a visible tab,
+               there was a navigation, but no video capture"/>
   <variant name=".FullscreenVideo"
-      summary="Chrome played a video in fullscreen, and there was no video
-               capture"/>
+      summary="intervals during which Chrome played a video in fullscreen,
+               and there was no video capture"/>
   <variant name=".Interaction"
-      summary="Chrome had at least 1 visible tab and received a user
-               interaction, but no navigation, audio, video playback or video
-               capture"/>
+      summary="intervals during which Chrome had at least 1 visible tab and
+               received a user interaction, but no navigation, audio, video
+               playback or video capture"/>
   <variant name=".Navigation"
-      summary="Chrome had at least 1 visible tab and a navigation, but no
-               audio, video playback or video capture"/>
+      summary="intervals during which Chrome had at least 1 visible tab and a
+               navigation, but no audio, video playback or video capture"/>
   <variant name=".Passive"
-      summary="Chrome had at least 1 visible tab, but there was no user
-               interaction, navigation, audio, video playback or video
-               capture"/>
+      summary="intervals during which Chrome had at least 1 visible tab, but
+               there was no user interaction, navigation, audio, video
+               playback or video capture"/>
   <variant name=".VideoCapture"
-      summary="Chrome had at least 1 visible tab and captured video"/>
-  <variant name=".ZeroWindow" summary="Chrome had no window"/>
+      summary="intervals during which Chrome had at least 1 visible tab and
+               captured video"/>
+  <variant name=".ZeroWindow"
+      summary="intervals during which Chrome had no window"/>
 </variants>
 
 <histogram name="Power.ApproxCpuTimeSecondsPerCoreTypeAndFrequency"
@@ -129,26 +133,15 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryDischargeMode" enum="BatteryDischargeMode"
-    expires_after="2022-04-10">
-  <owner>etiennep@chromium.org</owner>
-  <owner>olivierli@chromium.org</owner>
-  <summary>
-    Battery discharge mode describing whether BatteryDischargeRate2 could be
-    reported or not, and why. Reported every time the battery charge level is
-    sampled. This is reported on Mac and Windows. See
-    go/chrome_power_use_per_scenario for more details.
-  </summary>
-</histogram>
-
 <histogram name="Power.BatteryDischargeMode{UsageScenario}"
     enum="BatteryDischargeMode" expires_after="2021-11-26">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>
-    See definition of Power.BatteryDischargeMode. This histogram is reported
-    when the browser is under the {UsageScenario} usage scenario. See
-    go/chrome_power_use_per_scenario for more details.
+    Battery discharge mode describing whether BatteryDischargeRate2 could be
+    reported or not, and why. This is recorded for {UsageScenario} (an interval
+    represents 2 minutes of Chrome runtime, see
+    go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
@@ -163,8 +156,8 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryDischargeRate2" units="hundredth of percent"
-    expires_after="2022-04-10">
+<histogram name="Power.BatteryDischargeRate2{UsageScenario}"
+    units="hundredth of percent" expires_after="2021-11-26">
   <owner>etiennep@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
@@ -174,19 +167,9 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
     the interval: 3900 mAh; - Battery charge at the end of the interval: 3700
     mAh; - Discharge proportion: (3900-3700) / 4000 = 0.05 - Reported value:
     500. This metric is only recorded when on battery power. This is reported on
-    Mac and Windows. See go/chrome_power_use_per_scenario for more details.
-  </summary>
-</histogram>
-
-<histogram name="Power.BatteryDischargeRate2{UsageScenario}"
-    units="hundredth of percent" expires_after="2021-11-26">
-  <owner>etiennep@chromium.org</owner>
-  <owner>olivierli@chromium.org</owner>
-  <owner>lgrey@chromium.org</owner>
-  <summary>
-    See definition of Power.BatteryDischargeRate2. This histogram is reported
-    when the browser is under the {UsageScenario} usage scenario. See
-    go/chrome_power_use_per_scenario for more details.
+    Mac and Windows. This is recorded for {UsageScenario} (an interval
+    represents 2 minutes of Chrome runtime, see
+    go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
