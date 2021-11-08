@@ -380,24 +380,12 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
     // into both the "measure" and "layout" cache slots. So the stretch
     // layout will reuse this "measure" result if it can.
     space_builder.SetCacheSlot(NGCacheSlot::kMeasure);
-  } else if (ConstraintSpace().HasBlockFragmentation()) {
-    if (block_offset_for_fragmentation) {
-      SetupSpaceBuilderForFragmentation(ConstraintSpace(), flex_item_node,
-                                        *block_offset_for_fragmentation,
-                                        &space_builder,
-                                        /* is_new_fc */ true);
-    } else if (!is_horizontal_flow_ && !algorithm_.IsMultiline()) {
-      // TODO(almaher): Support multi-line and row fragmentation.
-
-      // TODO(almaher): Should we consider caching this separately in a new
-      // slot type rather than not caching at all? And should we cache other
-      // item information to avoid relaying out on every pass?
-
-      // We will re-layout later to take fragmentation into account. Don't
-      // cache the initial layout pass since we do not want to override any
-      // results from previous fragmentainers.
-      space_builder.SetShouldNotCacheResult();
-    }
+  } else if (block_offset_for_fragmentation) {
+    DCHECK(ConstraintSpace().HasBlockFragmentation());
+    SetupSpaceBuilderForFragmentation(ConstraintSpace(), flex_item_node,
+                                      *block_offset_for_fragmentation,
+                                      &space_builder,
+                                      /* is_new_fc */ true);
   }
 
   space_builder.SetAvailableSize(available_size);

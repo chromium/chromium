@@ -3309,9 +3309,6 @@ void LayoutBox::SetCachedLayoutResult(
   DCHECK(!result->PhysicalFragment().BreakToken());
   DCHECK(To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode());
 
-  if (!result->GetConstraintSpaceForCaching().ShouldCacheResult())
-    return;
-
   if (result->GetConstraintSpaceForCaching().CacheSlot() ==
       NGCacheSlot::kMeasure) {
     // We don't early return here, when setting the "measure" result we also
@@ -3512,9 +3509,6 @@ scoped_refptr<const NGLayoutResult> LayoutBox::CachedLayoutResult(
     NGLayoutCacheStatus* out_cache_status) {
   NOT_DESTROYED();
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;
-
-  if (!new_space.ShouldCacheResult())
-    return nullptr;
 
   const bool use_layout_cache_slot =
       new_space.CacheSlot() == NGCacheSlot::kLayout &&

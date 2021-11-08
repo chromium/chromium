@@ -758,10 +758,6 @@ class CORE_EXPORT NGConstraintSpace final {
     rare_data_->ReplaceTableRowData(table_data, row_index);
   }
 
-  bool ShouldCacheResult() const {
-    return !HasRareData() || rare_data_->should_cache_result;
-  }
-
   String ToString() const;
 
  private:
@@ -806,8 +802,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_inside_balanced_columns(false),
           is_in_column_bfc(false),
           min_block_size_should_encompass_intrinsic_size(false),
-          min_break_appeal(kBreakAppealLastResort),
-          should_cache_result(true) {}
+          min_break_appeal(kBreakAppealLastResort) {}
     RareData(const RareData& other)
         : percentage_resolution_size(other.percentage_resolution_size),
           replaced_percentage_resolution_block_size(
@@ -828,8 +823,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_in_column_bfc(other.is_in_column_bfc),
           min_block_size_should_encompass_intrinsic_size(
               other.min_block_size_should_encompass_intrinsic_size),
-          min_break_appeal(other.min_break_appeal),
-          should_cache_result(other.should_cache_result) {
+          min_break_appeal(other.min_break_appeal) {
       switch (data_union_type) {
         case kNone:
           break;
@@ -1171,7 +1165,6 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_in_column_bfc : 1;
     unsigned min_block_size_should_encompass_intrinsic_size : 1;
     unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
-    unsigned should_cache_result : 1;
 
    private:
     struct BlockData {
