@@ -37,6 +37,7 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/os_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
@@ -1154,8 +1155,21 @@ MULTIPROCESS_TEST_MAIN(ProcessUtilsVerifyStdio) {
 }
 
 TEST_F(ProcessUtilTest, FDRemappingIncludesStdio) {
-  int dev_null = open("/dev/null", O_RDONLY);
-  ASSERT_LT(2, dev_null);
+#if BUILDFLAG(IS_FUCHSIA)
+  // The fd obtained from fdio_fd_create_null cannot be cloned while spawning a
+  // child proc, so open a true file in a transient temp dir.
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath temp_file_path;
+  ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &temp_file_path));
+  File temp_file(temp_file_path,
+                 File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE);
+  ASSERT_TRUE(temp_file.IsValid());
+  ScopedFD some_fd(temp_file.TakePlatformFile());
+#else   // BUILDFLAG(IS_FUCHSIA)
+  ScopedFD some_fd(open("/dev/null", O_RDONLY));
+#endif  // BUILDFLAG(IS_FUCHSIA)
+  ASSERT_LT(2, some_fd.get());
 
   // Backup stdio and replace it with the write end of a pipe, for our
   // child process to inherit.
@@ -1169,7 +1183,7 @@ TEST_F(ProcessUtilTest, FDRemappingIncludesStdio) {
 
   // Launch the test process, which should inherit our pipe stdio.
   LaunchOptions options;
-  options.fds_to_remap.emplace_back(dev_null, dev_null);
+  options.fds_to_remap.emplace_back(some_fd.get(), some_fd.get());
   Process process = SpawnChildWithOptions("ProcessUtilsVerifyStdio", options);
   ASSERT_TRUE(process.IsValid());
 
@@ -1184,8 +1198,8 @@ TEST_F(ProcessUtilTest, FDRemappingIncludesStdio) {
 
   result = IGNORE_EINTR(close(backup_stdio));
   ASSERT_EQ(0, result);
-  result = IGNORE_EINTR(close(dev_null));
-  ASSERT_EQ(0, result);
+  // Also close the remapped descriptor.
+  some_fd.reset();
 
   // Read from the pipe to verify that it is connected to the child
   // process' stdio.

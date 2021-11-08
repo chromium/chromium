@@ -3268,6 +3268,7 @@ test("base_unittests") {
     "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//build:os_buildflags",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/icu",

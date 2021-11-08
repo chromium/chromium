@@ -287,6 +287,7 @@ if (!is_ios) {
       "//base",
       "//base:i18n",
       "//base/test:test_support",
+      "//build:os_buildflags",
       "//crypto",
       "//mojo/core/test:test_support",
       "//testing/gtest",
