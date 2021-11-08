@@ -5010,6 +5010,7 @@ test("unit_tests") {
   if (is_chromeos_ash) {
     sources += [
       "../browser/ash/attestation/attestation_policy_unittest.cc",
+      "../browser/metrics/per_user_state_manager_chromeos_unittest.cc",
       "../browser/notifications/notification_platform_bridge_chromeos_unittest.cc",
       "../browser/performance_manager/mechanisms/working_set_trimmer_chromeos_unittest.cc",
       "../browser/performance_manager/policies/dynamic_tcmalloc_policy_chromeos_unittest.cc",

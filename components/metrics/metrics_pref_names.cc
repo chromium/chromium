@@ -85,8 +85,7 @@ const char kMetricsSessionID[] = "user_experience_metrics.session_id";
 
 // The prefix of the last-seen timestamp for persistent histogram files.
 // Values are named for the files themselves.
-const char kMetricsLastSeenPrefix[] =
-    "user_experience_metrics.last_seen.";
+const char kMetricsLastSeenPrefix[] = "user_experience_metrics.last_seen.";
 
 // Array of the number of samples in the memory mapped file.
 const char kMetricsFileMetricsMetadata[] =
@@ -125,7 +124,6 @@ const char kStabilityCrashCount[] =
 // due to a gms core update.
 const char kStabilityCrashCountDueToGmsCoreUpdate[] =
     "user_experience_metrics.stability.crash_count_due_to_gms_core_update";
-
 
 // True if the previous run of the program exited cleanly.
 const char kStabilityExitedCleanly[] =
@@ -235,6 +233,11 @@ const char kUmaCellDataUse[] = "user_experience_metrics.uma_cell_datause";
 // Dictionary for measuring cellular data used by user including chrome services
 // per day.
 const char kUserCellDataUse[] = "user_experience_metrics.user_call_datause";
+
+// String for holding user ID associated with the current ongoing UMA
+// log. This pref will be used to determine whether to send metrics in case
+// of a crash.
+const char kMetricsCurrentUserId[] = "metrics.current_user_id";
 
 }  // namespace prefs
 }  // namespace metrics

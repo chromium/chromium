@@ -183,6 +183,9 @@ class MetricsService : public base::HistogramFlattener {
   // before the user log store is unset.
   void UnsetUserLogStore();
 
+  // Returns true if a user log store has been bound.
+  bool HasUserLogStore();
+
   // Initializes per-user metrics collection. Logs recorded during a user
   // session will be stored within each user's directory and consent to send
   // these logs will be controlled by each user. Logs recorded before any user

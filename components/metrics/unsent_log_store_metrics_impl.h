@@ -13,13 +13,14 @@ namespace metrics {
 // Implementation for recording metrics from UnsentLogStore.
 class UnsentLogStoreMetricsImpl : public UnsentLogStoreMetrics {
  public:
-  UnsentLogStoreMetricsImpl() {}
+  // TODO(crbug/1265440): Refactor to use MetricsLogStore::StorageLimits.
+  UnsentLogStoreMetricsImpl() = default;
 
   UnsentLogStoreMetricsImpl(const UnsentLogStoreMetricsImpl&) = delete;
   UnsentLogStoreMetricsImpl& operator=(const UnsentLogStoreMetricsImpl&) =
       delete;
 
-  ~UnsentLogStoreMetricsImpl() override {}
+  ~UnsentLogStoreMetricsImpl() override = default;
 
   // UnsentLogStoreMetrics:
   void RecordCompressionRatio(

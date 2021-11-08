@@ -493,20 +493,24 @@ void MetricsService::UnsetUserLogStore() {
   }
 }
 
-void MetricsService::UpdateCurrentUserMetricsConsent(
-    bool user_metrics_consent) {
-  client_->UpdateCurrentUserMetricsConsent(user_metrics_consent);
+bool MetricsService::HasUserLogStore() {
+  return log_store()->has_alternate_ongoing_log_store();
 }
 
 void MetricsService::InitPerUserMetrics() {
   client_->InitPerUserMetrics();
 }
 
+void MetricsService::UpdateCurrentUserMetricsConsent(
+    bool user_metrics_consent) {
+  client_->UpdateCurrentUserMetricsConsent(user_metrics_consent);
+}
+
 void MetricsService::ResetClientId() {
   // Pref must be cleared in order for ForceClientIdCreation to generate a new
   // client ID.
   //
-  // TODO(jongahn): Add histogram to monitor how frequently this is called
+  // TODO(crbug/1264625): Add histogram to monitor how frequently this is called
   // before launching per-user collection.
   local_state_->ClearPref(prefs::kMetricsClientID);
   state_manager_->ForceClientIdCreation();

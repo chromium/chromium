@@ -71,6 +71,9 @@ extern const char kUkmCellDataUse[];
 extern const char kUmaCellDataUse[];
 extern const char kUserCellDataUse[];
 
+// For supporting per-user collection on Chrome OS.
+extern const char kMetricsCurrentUserId[];
+
 }  // namespace prefs
 }  // namespace metrics
 
