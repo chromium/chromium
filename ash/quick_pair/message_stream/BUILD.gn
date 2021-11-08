@@ -11,6 +11,9 @@ source_set("message_stream") {
   sources = [
     "message_stream.cc",
     "message_stream.h",
+    "message_stream_lookup.h",
+    "message_stream_lookup_impl.cc",
+    "message_stream_lookup_impl.h",
   ]
 
   deps = [
@@ -44,7 +47,10 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "message_stream_unittest.cc" ]
+  sources = [
+    "message_stream_lookup_unittest.cc",
+    "message_stream_unittest.cc",
+  ]
 
   deps = [
     ":message_stream",
