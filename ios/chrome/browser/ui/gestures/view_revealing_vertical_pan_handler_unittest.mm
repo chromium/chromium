@@ -121,7 +121,7 @@ const CGFloat kRevealThreshold = 1 / 3.0f;
 // traveled during a pan gesture simulation.
 const CGFloat kSmallOffset = 10.0f;
 // The delay in ms after the gesture ends before starting a new one.
-const int kAnimationDelay = 1;
+const int kAnimationDelay = 5;
 
 // The test class, passed as argument to TEST_F().
 using ViewRevealingVerticalPanHandlerTest = PlatformTest;
@@ -157,7 +157,7 @@ void SimulatePanGesture(ViewRevealingVerticalPanHandler* pan_handler,
 }
 
 // Simulates 4 transitions of state in a ViewRevealingVerticalPanHandler (Hidden
-// -> Peeked -> Revealed -> Peeked -> Hiiden), and observes the resulting change
+// -> Peeked -> Revealed -> Peeked -> Hidden), and observes the resulting change
 // of state in a fake animatee.
 TEST_F(ViewRevealingVerticalPanHandlerTest, DetectPan) {
   double remaining_height = kBaseViewHeight - kBVCHeightTabGrid;
