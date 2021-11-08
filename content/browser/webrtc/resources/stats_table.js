@@ -37,6 +37,18 @@ export class StatsTable {
     }
     const statsTable = this.ensureStatsTable_(peerConnectionElement, report);
 
+    if (['outbound-rtp', 'inbound-rtp'].includes(report.type)
+        && report.stats.values) {
+      // Show codec for inbound-rtp and outbound-rtp.
+      const codecIndex = report.stats.values.indexOf('[codec]');
+      if (codecIndex !== -1) {
+        const codecInfo = report.stats.values[codecIndex + 1].split(' ')[0];
+        // Update the summary.
+        statsTable.parentElement.firstElementChild.innerText =
+          report.id + ' (' + report.type + ', ' + codecInfo + ')';
+      }
+    }
+
     if (report.stats) {
       this.addStatsToTable_(
           statsTable, report.stats.timestamp, report.stats.values);
