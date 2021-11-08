@@ -56,10 +56,13 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // Make sure the "chrome" split is loaded before checking if ClassLoaders are equal.
         SplitChromeApplication.finishPreload(CHROME_SPLIT_NAME);
         ClassLoader chromeModuleClassLoader = ChromeBaseAppCompatActivity.class.getClassLoader();
-        if (!chromeModuleClassLoader.equals(
-                    ContextUtils.getApplicationContext().getClassLoader())) {
+        Context appContext = ContextUtils.getApplicationContext();
+        if (!chromeModuleClassLoader.equals(appContext.getClassLoader())) {
             // This should only happen on Android O. See crbug.com/1146745 for more info.
-            throw new IllegalStateException("ClassLoader mismatch detected.");
+            throw new IllegalStateException("ClassLoader mismatch detected.\nA: "
+                    + chromeModuleClassLoader + "\nB: " + appContext.getClassLoader()
+                    + "\nC: " + chromeModuleClassLoader.getParent()
+                    + "\nD: " + appContext.getClassLoader().getParent() + "\nE: " + appContext);
         }
         // If ClassLoader was corrected by SplitCompatAppComponentFactory, also need to correct
         // the reference in the associated Context.
