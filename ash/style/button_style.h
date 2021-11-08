@@ -5,7 +5,6 @@
 #ifndef ASH_STYLE_BUTTON_STYLE_H_
 #define ASH_STYLE_BUTTON_STYLE_H_
 
-#include "ash/system/tray/tray_popup_ink_drop_style.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -38,16 +37,6 @@ class PillButton : public views::LabelButton {
     // `kIconlessAccent` button without background.
     kIconlessAccentFloating,
   };
-
-  // TODO: Move this function outside of PillButton after we built up more
-  // button styles under this file. And remove all the corresponding functions
-  // from TrayPopupUtils to make all the clients get the ink drop styles from
-  // ash/style.
-  static void ConfigureInkDrop(views::Button* button,
-                               TrayPopupInkDropStyle style,
-                               bool highlight_on_hover,
-                               bool highlight_on_focus,
-                               SkColor bg_color = gfx::kPlaceholderColor);
 
   // Keeps the button in light mode if `use_light_colors` is true.
   // InstallRoundRectHighlightPathGenerator for the button only if

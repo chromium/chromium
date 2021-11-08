@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/button_style.h"
+#include "ash/style/style_util.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_input_container.h"
 #include "ash/system/message_center/message_center_constants.h"
@@ -659,10 +660,10 @@ AshNotificationView::GenerateNotificationLabelButton(
                                    /*icon=*/nullptr);
   // Override the inkdrop configuration to make sure it will show up when hover
   // or focus on the button.
-  PillButton::ConfigureInkDrop(actions_button.get(),
-                               TrayPopupInkDropStyle::FILL_BOUNDS,
-                               /*highlight_on_hover=*/true,
-                               /*highlight_on_focus=*/true);
+  style_util::SetUpInkDropForButton(actions_button.get(),
+                                    TrayPopupInkDropStyle::FILL_BOUNDS,
+                                    /*highlight_on_hover=*/true,
+                                    /*highlight_on_focus=*/true);
   return actions_button;
 }
 
