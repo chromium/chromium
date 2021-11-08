@@ -993,6 +993,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.LabeledInTaskManager"
+    units="BooleanLabeledRendererTask" expires_after="2022-09-01">
+  <owner>creis@chromium.org</owner>
+  <owner>avi@chromium.org</owner>
+  <summary>
+    Reports false each time the Task Manager displays an unlabeled renderer
+    process using the fallback task provider, indicating that a type of renderer
+    process is missing a task provider, which is a bug. For comparison, this
+    reports true when renderer processes are properly labeled by a primary task
+    provider. These values are only reported when the Task Manager is open. This
+    can be removed when no unlabeled cases remain, per https://crbug.com/739782.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.SpareProcessMaybeTakeAction"
     enum="SpareProcessMaybeTakeAction" expires_after="2022-01-02">
   <owner>alexmos@chromium.org</owner>
