@@ -286,6 +286,7 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
     }
   }
   SetFreelistHead(head);
+  freelist_is_sorted = true;
 }
 
 namespace {

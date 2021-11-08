@@ -114,10 +114,16 @@ using AllocationStateMap =
 //   from the empty/decommitted list on to the active list.
 template <bool thread_safe>
 struct __attribute__((packed)) SlotSpanMetadata {
+ private:
   PartitionFreelistEntry* freelist_head = nullptr;
+
+ public:
   SlotSpanMetadata<thread_safe>* next_slot_span = nullptr;
   PartitionBucket<thread_safe>* const bucket = nullptr;
 
+  // TODO(lizeb): Make as many fields as possible private or const, to
+  // encapsulate things more clearly.
+  //
   // Deliberately signed, 0 for empty or decommitted slot spans, -n for full
   // slot spans:
   int16_t num_allocated_slots = 0;
@@ -125,7 +131,8 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // -1 if not in the empty cache. < kMaxFreeableSpans.
   int16_t empty_cache_index : kEmptyCacheIndexBits;
   uint16_t can_store_raw_size : 1;
-  uint16_t unused : (16 - kEmptyCacheIndexBits - 1);
+  uint16_t freelist_is_sorted : 1;
+  uint16_t unused : (16 - kEmptyCacheIndexBits - 1 - 1);
   // Cannot use the full 64 bits in this bitfield, as this structure is embedded
   // in PartitionPage, which has other fields as well, and must fit in 32 bytes.
 
@@ -148,6 +155,7 @@ struct __attribute__((packed)) SlotSpanMetadata {
   // Public API
   // Note the matching Alloc() functions are in PartitionPage.
   BASE_EXPORT NOINLINE void FreeSlowPath();
+  ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(size_t size);
   ALWAYS_INLINE void Free(void* ptr);
 
   void Decommit(PartitionRoot<thread_safe>* root);
@@ -175,6 +183,9 @@ struct __attribute__((packed)) SlotSpanMetadata {
   ALWAYS_INLINE void SetRawSize(size_t raw_size);
   ALWAYS_INLINE size_t GetRawSize() const;
 
+  ALWAYS_INLINE PartitionFreelistEntry* get_freelist_head() const {
+    return freelist_head;
+  }
   ALWAYS_INLINE void SetFreelistHead(PartitionFreelistEntry* new_head);
 
   // Returns size of the region used within a slot. The used region comprises
@@ -258,7 +269,10 @@ struct __attribute__((packed)) SlotSpanMetadata {
   static SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
   constexpr SlotSpanMetadata() noexcept
-      : empty_cache_index(0), can_store_raw_size(false), unused(0) {}
+      : empty_cache_index(0),
+        can_store_raw_size(false),
+        freelist_is_sorted(true),
+        unused(0) {}
 };
 static_assert(sizeof(SlotSpanMetadata<ThreadSafe>) <= kPageMetadataSize,
               "SlotSpanMetadata must fit into a Page Metadata slot.");
@@ -594,6 +608,23 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetFreelistHead(
             (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
                 (reinterpret_cast<uintptr_t>(new_head) & kSuperPageBaseMask));
   freelist_head = new_head;
+  // Inserted something new in the freelist, assume that it is not sorted
+  // anymore.
+  freelist_is_sorted = false;
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE PartitionFreelistEntry*
+SlotSpanMetadata<thread_safe>::PopForAlloc(size_t size) {
+  // Not using bucket->slot_size directly as the compiler doesn't know that
+  // |bucket->slot_size| is the same as |size|.
+  PA_DCHECK(size == bucket->slot_size);
+  PartitionFreelistEntry* result = freelist_head;
+  // Not setting freelist_is_sorted to false since this doesn't destroy
+  // ordering.
+  freelist_head = freelist_head->GetNext(size);
+  num_allocated_slots++;
+  return result;
 }
 
 template <bool thread_safe>

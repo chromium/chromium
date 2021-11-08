@@ -713,7 +713,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // should not get here.)
   PA_DCHECK(num_slots + slot_span->num_allocated_slots == get_slots_per_span());
   // Similarly, make explicitly sure that the freelist is empty.
-  PA_DCHECK(!slot_span->freelist_head);
+  PA_DCHECK(!slot_span->get_freelist_head());
   PA_DCHECK(slot_span->num_allocated_slots >= 0);
 
   size_t size = slot_size;
@@ -767,7 +767,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     if (LIKELY(size <= kMaxMemoryTaggingSize)) {
       entry = memory::TagMemoryRangeRandomly(entry, size);
     }
-    if (!slot_span->freelist_head) {
+    if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
       PA_DCHECK(!free_list_entries_added);
       slot_span->SetFreelistHead(entry);
@@ -789,11 +789,14 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   PA_DCHECK(slots_to_provision == free_list_entries_added + 1);
   // We didn't necessarily provision more than one slot (e.g. if |slot_size|
   // is large), meaning that |slot_span->freelist_head| can be nullptr.
-  if (slot_span->freelist_head) {
+  if (slot_span->get_freelist_head()) {
     PA_DCHECK(free_list_entries_added);
-    slot_span->freelist_head->CheckFreeList(slot_size);
+    slot_span->get_freelist_head()->CheckFreeList(slot_size);
   }
 #endif
+
+  // We had no free slots, and created some (potentially 0) in sorted order.
+  slot_span->freelist_is_sorted = true;
 
   return return_slot;
 }
@@ -851,7 +854,14 @@ template <bool thread_safe>
 void PartitionBucket<thread_safe>::SortSlotSpanFreelists() {
   for (auto* slot_span = active_slot_spans_head; slot_span;
        slot_span = slot_span->next_slot_span) {
-    if (slot_span->num_allocated_slots > 0)
+    // No need to sort the freelist if it's already sorted. Note that if the
+    // freelist is sorted, this means that it didn't change at all since the
+    // last call. This may be a good signal to shrink it if possible (if an
+    // entire OS page is free, we can decommit it).
+    //
+    // Besides saving CPU, this also avoid touching memory of fully idle slot
+    // spans, which may required paging.
+    if (slot_span->num_allocated_slots > 0 && !slot_span->freelist_is_sorted)
       slot_span->SortFreelist();
   }
 }
@@ -870,7 +880,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   // when a higher-order alignment is requested, in which case the freelist
   // logic is bypassed and we go directly for slot span allocation.
   bool allocate_aligned_slot_span = slot_span_alignment > PartitionPageSize();
-  PA_DCHECK(!active_slot_spans_head->freelist_head ||
+  PA_DCHECK(!active_slot_spans_head->get_freelist_head() ||
             allocate_aligned_slot_span);
 
   SlotSpanMetadata<thread_safe>* new_slot_span = nullptr;
@@ -921,7 +931,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       PA_DCHECK(new_slot_span->is_empty() || new_slot_span->is_decommitted());
       empty_slot_spans_head = new_slot_span->next_slot_span;
       // Accept the empty slot span unless it got decommitted.
-      if (new_slot_span->freelist_head) {
+      if (new_slot_span->get_freelist_head()) {
         new_slot_span->next_slot_span = nullptr;
         new_slot_span->ToSuperPageExtent()
             ->IncrementNumberOfNonemptySlotSpans();
@@ -1003,11 +1013,9 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
 
   // If we found an active slot span with free slots, or an empty slot span, we
   // have a usable freelist head.
-  if (LIKELY(new_slot_span->freelist_head != nullptr)) {
-    PartitionFreelistEntry* entry = new_slot_span->freelist_head;
-    PartitionFreelistEntry* new_head = entry->GetNext(slot_size);
-    new_slot_span->SetFreelistHead(new_head);
-    new_slot_span->num_allocated_slots++;
+  if (LIKELY(new_slot_span->get_freelist_head() != nullptr)) {
+    PartitionFreelistEntry* entry =
+        new_slot_span->PopForAlloc(new_bucket->slot_size);
 
     // We likely set *is_already_zeroed to true above, make sure that the
     // freelist entry doesn't contain data.
