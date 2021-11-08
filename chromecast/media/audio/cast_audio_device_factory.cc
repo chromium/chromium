@@ -85,15 +85,28 @@ class NonSwitchableAudioRendererSink
     output_device_->Initialize(params, callback);
   }
 
-  void Start() override { output_device_->Start(); }
+  void Start() override {
+    DCHECK(output_device_);
+    output_device_->Start();
+  }
 
-  void Stop() override { output_device_->Stop(); }
+  void Stop() override {
+    if (output_device_)
+      output_device_->Stop();
+  }
 
-  void Pause() override { output_device_->Pause(); }
+  void Pause() override {
+    DCHECK(output_device_);
+    output_device_->Pause();
+  }
 
-  void Play() override { output_device_->Play(); }
+  void Play() override {
+    DCHECK(output_device_);
+    output_device_->Play();
+  }
 
   bool SetVolume(double volume) override {
+    DCHECK(output_device_);
     return output_device_->SetVolume(volume);
   }
 
@@ -139,10 +152,16 @@ class NonSwitchableAudioRendererSink
     std::move(callback).Run(::media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
   }
 
-  void Flush() override { output_device_->Flush(); }
+  void Flush() override {
+    DCHECK(output_device_);
+    output_device_->Flush();
+  }
 
  protected:
-  ~NonSwitchableAudioRendererSink() override { output_device_->Stop(); }
+  ~NonSwitchableAudioRendererSink() override {
+    if (output_device_)
+      output_device_->Stop();
+  }
 
  private:
   const blink::LocalFrameToken frame_token_;
