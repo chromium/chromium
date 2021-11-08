@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 java_cpp_enum("android_backend_java_enums_srcjar") {
@@ -16,33 +15,31 @@ android_library("android_backend_java_enums") {
   srcjar_deps = [ ":android_backend_java_enums_srcjar" ]
 }
 
-if (enable_chrome_android_internal) {
-  source_set("backend") {
-    visibility = [
-      ":unit_tests",
-      "//chrome/browser/password_manager:backend_factory",
-    ]
+source_set("backend") {
+  visibility = [
+    ":unit_tests",
+    "//chrome/browser/password_manager:backend_factory",
+  ]
 
-    sources = [
-      "android_backend_error.cc",
-      "android_backend_error.h",
-      "password_store_android_backend.cc",
-      "password_store_android_backend.h",
-      "password_store_android_backend_bridge.h",
-      "password_store_android_backend_bridge_impl.cc",
-      "password_store_android_backend_bridge_impl.h",
-    ]
+  sources = [
+    "android_backend_error.cc",
+    "android_backend_error.h",
+    "password_store_android_backend.cc",
+    "password_store_android_backend.h",
+    "password_store_android_backend_bridge.h",
+    "password_store_android_backend_bridge_impl.cc",
+    "password_store_android_backend_bridge_impl.h",
+  ]
 
-    public_deps = [ "//base" ]
+  public_deps = [ "//base" ]
 
-    deps = [
-      ":jni_headers",
-      "//components/password_manager/core/browser:browser",
-      "//components/password_manager/core/browser:password_form",
-      "//components/sync/model:model",
-      "//components/sync/protocol:protocol",
-    ]
-  }
+  deps = [
+    ":jni_headers",
+    "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/browser:password_form",
+    "//components/sync/model:model",
+    "//components/sync/protocol:protocol",
+  ]
 }
 
 android_library("java") {
@@ -69,10 +66,13 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
+  public_deps = [ ":backend_interface_java" ]
+
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordAccessReauthenticationHelper.java",
@@ -80,39 +80,32 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManager.java",
   ]
 
-  if (enable_chrome_android_internal) {
-    sources += [ "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java" ]
-    public_deps = [ ":backend_interface_java" ]
-  }
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   resources_package = "org.chromium.chrome.browser.password_manager"
 }
 
 generate_jni("jni_headers") {
-  visibility = [ "//chrome/browser" ]
+  visibility = [
+    ":backend",
+    "//chrome/browser",
+  ]
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/PasswordScriptsFetcherBridge.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
   ]
-
-  if (enable_chrome_android_internal) {
-    visibility += [ ":backend" ]
-    sources += [ "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeImpl.java" ]
-  }
 }
 
 junit_binary("password_manager_junit_tests") {
   testonly = true
 
   sources = [
+    "junit/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/settings/PasswordReauthenticationFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/settings/ReauthenticationManagerTest.java",
   ]
-  if (enable_chrome_android_internal) {
-    sources += [ "junit/src/org/chromium/chrome/browser/password_manager/PasswordStoreAndroidBackendBridgeTest.java" ]
-  }
 
   deps = [
     ":android_backend_java_enums",
@@ -193,12 +186,14 @@ source_set("unit_tests") {
     "generated_password_saved_message_delegate_unittest.cc",
     "password_accessory_controller_impl_unittest.cc",
     "password_generation_controller_impl_unittest.cc",
+    "password_store_android_backend_unittest.cc",
     "save_password_infobar_delegate_android_unittest.cc",
     "save_password_message_delegate_unittest.cc",
     "update_password_infobar_delegate_android_unittest.cc",
   ]
 
   deps = [
+    ":backend",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
@@ -220,9 +215,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base:base",
   ]
-
-  if (enable_chrome_android_internal) {
-    sources += [ "password_store_android_backend_unittest.cc" ]
-    deps += [ ":backend" ]
-  }
 }

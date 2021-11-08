@@ -2,27 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_android) {
-  import("//build/config/android/config.gni")
-  import("//build/config/android/rules.gni")
-}
-
 group("password_manager") {
   public_deps = [ ":backend_factory" ]
 }
 
 source_set("backend_factory") {
-  deps = [ "//components/password_manager/core/browser" ]
-  if (is_android && enable_chrome_android_internal) {
-    sources = [ "password_store_android_backend_factory.cc" ]
-
-    deps += [
-      "//chrome/browser/password_manager/android:backend",
-      "//components/password_manager/core/common:common",
-    ]
-  } else {
-    sources = [ "password_store_local_backend_factory.cc" ]
+  deps = [
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common:common",
+    "//components/prefs",
+  ]
+  if (is_android) {
+    deps += [ "//chrome/browser/password_manager/android:backend" ]
   }
 
-  deps += [ "//components/prefs" ]
+  sources = [ "password_store_backend_factory.cc" ]
 }
