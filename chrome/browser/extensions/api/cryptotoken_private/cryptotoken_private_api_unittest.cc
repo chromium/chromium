@@ -229,6 +229,7 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
 
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
+    feature_list_.InitAndEnableFeature(extensions_features::kU2FSecurityKeyAPI);
     const GURL url("http://example.com");
     AddTab(browser(), url);
 
@@ -318,11 +319,10 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
     return GetSingleBooleanResult(function.get(), out_result);
   }
 
-  base::test::ScopedFeatureList feature_list_;
-
  private:
   int tab_id_ = -1;
   std::unique_ptr<permissions::MockPermissionPromptFactory> prompt_factory_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(CryptoTokenPermissionTest, AttestationPrompt) {
@@ -389,7 +389,8 @@ TEST_F(CryptoTokenPermissionTest, RequestPrompt) {
 
 TEST_F(CryptoTokenPermissionTest, FeatureFlagOverridesRequestPrompt) {
   // Disabling the permission prompt feature flag should suppress it.
-  feature_list_.InitAndDisableFeature(device::kU2fPermissionPrompt);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(device::kU2fPermissionPrompt);
   bool result = false;
   ASSERT_TRUE(CanMakeU2fApiRequest("https://test.com",
                                    permissions::PermissionRequestManager::NONE,
@@ -403,8 +404,9 @@ TEST_F(CryptoTokenPermissionTest, EnterprisePolicyOverridesRequestPrompt) {
   // default-disabled, because the policy overrides that too.
   for (bool api_enabled : {false, true}) {
     SCOPED_TRACE(api_enabled);
-    feature_list_.InitWithFeatureState(extensions_features::kU2FSecurityKeyAPI,
-                                       api_enabled);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(extensions_features::kU2FSecurityKeyAPI,
+                                      api_enabled);
     browser()->profile()->GetPrefs()->Set(
         extensions::pref_names::kU2fSecurityKeyApiEnabled, base::Value(true));
     bool result = false;
@@ -412,7 +414,6 @@ TEST_F(CryptoTokenPermissionTest, EnterprisePolicyOverridesRequestPrompt) {
         "https://test.com", permissions::PermissionRequestManager::NONE,
         &result));
     EXPECT_TRUE(result);
-    feature_list_.Reset();
   }
 }
 
