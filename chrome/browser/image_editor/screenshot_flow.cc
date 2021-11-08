@@ -98,6 +98,8 @@ void ScreenshotFlow::CreateAndAddUIOverlay() {
 }
 
 void ScreenshotFlow::RemoveUIOverlay() {
+  if (capture_mode_ == CaptureMode::NOT_CAPTURING)
+    return;
   capture_mode_ = CaptureMode::NOT_CAPTURING;
   if (!web_contents_ || !screen_capture_layer_)
     return;
@@ -105,6 +107,8 @@ void ScreenshotFlow::RemoveUIOverlay() {
 #if defined(OS_MAC)
   views::Widget* widget = views::Widget::GetWidgetForNativeView(
       web_contents_->GetContentNativeView());
+  if (!widget)
+    return;
   ui::Layer* content_layer = widget->GetLayer();
   event_capture_mac_.reset();
 #else
