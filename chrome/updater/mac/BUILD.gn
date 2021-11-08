@@ -131,8 +131,6 @@ action("browser_install_script") {
 executable("ksadmin") {
   output_name = "ksadmin"
   sources = [
-    "keystone/ks_tickets.h",
-    "keystone/ks_tickets.mm",
     "keystone/ksadmin.h",
     "keystone/ksadmin.mm",
     "keystone/ksadmin_main.cc",

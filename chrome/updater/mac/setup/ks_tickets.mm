@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "chrome/updater/mac/keystone/ks_tickets.h"
+#import "chrome/updater/mac/setup/ks_tickets.h"
 
 #import <Foundation/Foundation.h>
 

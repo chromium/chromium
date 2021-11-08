@@ -186,6 +186,8 @@ if (is_win || is_mac) {
         "mac/net/network_fetcher.mm",
         "mac/setup/keystone.h",
         "mac/setup/keystone.mm",
+        "mac/setup/ks_tickets.h",
+        "mac/setup/ks_tickets.mm",
         "mac/setup/setup.h",
         "mac/setup/setup.mm",
         "mac/update_service_internal_proxy.h",
@@ -567,14 +569,11 @@ if (is_win || is_mac) {
 
     if (is_mac) {
       sources += [
-        "mac/keystone/ks_tickets.h",
-        "mac/keystone/ks_tickets.mm",
-        "mac/keystone/ks_tickets_unittest.mm",
         "mac/keystone/ksadmin_unittest.cc",
         "mac/net/network_unittest.cc",
         "mac/scoped_xpc_service_mock.h",
         "mac/scoped_xpc_service_mock.mm",
-        "mac/setup/keystone_unittest.cc",
+        "mac/setup/ks_tickets_unittest.mm",
         "mac/setup/setup_unittest.mm",
         "mac/update_service_proxy_test.mm",
         "policy/mac/managed_preference_policy_manager_impl_unittest.mm",
