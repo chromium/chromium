@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_FEATURES_CHROMEOS_FEATURES_H_
-#define CHROMEOS_FEATURES_CHROMEOS_FEATURES_H_
+#ifndef CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_
+#define CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_
 
 #include "base/feature_list.h"
 
@@ -16,4 +16,4 @@ extern const base::Feature kLacrosTtsSupport;
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_FEATURES_CHROMEOS_FEATURES_H_
+#endif  // CHROMEOS_CONSTANTS_CHROMEOS_FEATURES_H_

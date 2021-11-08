@@ -5198,10 +5198,10 @@ static_library("browser") {
       "//chrome/browser/metrics/structured",
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
+      "//chromeos/constants",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/constants",
-      "//chromeos/features",
       "//chromeos/ui/wm",
     ]
   }

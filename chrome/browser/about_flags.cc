@@ -209,7 +209,7 @@
 #endif
 
 #if defined(OS_CHROMEOS)
-#include "chromeos/features/chromeos_features.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 #if defined(OS_ANDROID)

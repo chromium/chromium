@@ -7,7 +7,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_client_lacros.h"
-#include "chromeos/features/chromeos_features.h"
+#include "chromeos/constants/chromeos_features.h"
 
 // static
 TtsPlatformImplLacros* TtsPlatformImplLacros::GetInstance() {

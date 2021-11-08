@@ -16,8 +16,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/crosapi_tts_engine_delegate_ash.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/tts.mojom.h"
-#include "chromeos/features/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/tts_controller.h"
 

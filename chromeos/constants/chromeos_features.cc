@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/features/chromeos_features.h"
+#include "chromeos/constants/chromeos_features.h"
 
 namespace chromeos {
 
