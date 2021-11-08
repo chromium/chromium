@@ -178,8 +178,7 @@ void AttributionInternalsHandlerImpl::GetReports(
 
     manager->GetPendingReportsForWebUI(
         base::BindOnce(&ForwardReportsToWebUI, std::move(callback),
-                       std::move(session_cached_reports)),
-        base::Time::Max());
+                       std::move(session_cached_reports)));
   } else {
     std::move(callback).Run({});
   }

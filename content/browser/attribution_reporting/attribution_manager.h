@@ -65,8 +65,7 @@ class CONTENT_EXPORT AttributionManager {
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI.
   virtual void GetPendingReportsForWebUI(
-      base::OnceCallback<void(std::vector<AttributionReport>)> callback,
-      base::Time max_report_time) = 0;
+      base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
 
   virtual const AttributionSessionStorage& GetSessionStorage() const
       WARN_UNUSED_RESULT = 0;

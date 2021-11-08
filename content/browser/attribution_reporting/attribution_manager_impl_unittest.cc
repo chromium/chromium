@@ -191,8 +191,8 @@ class AttributionManagerImplTest : public testing::Test {
           EXPECT_EQ(expected_num_reports, reports.size());
           report_loop.Quit();
         });
-    attribution_manager_->GetPendingReportsForWebUI(std::move(reports_callback),
-                                                    base::Time::Max());
+    attribution_manager_->GetPendingReportsForWebUI(
+        std::move(reports_callback));
     report_loop.Run();
   }
 
@@ -265,8 +265,7 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
         EXPECT_THAT(reports, ElementsAre(expected_report));
         run_loop.Quit();
       });
-  attribution_manager_->GetPendingReportsForWebUI(std::move(reports_callback),
-                                                  base::Time::Max());
+  attribution_manager_->GetPendingReportsForWebUI(std::move(reports_callback));
   run_loop.Run();
 }
 

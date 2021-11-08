@@ -239,10 +239,10 @@ void AttributionManagerImpl::GetActiveSourcesForWebUI(
 }
 
 void AttributionManagerImpl::GetPendingReportsForWebUI(
-    base::OnceCallback<void(std::vector<AttributionReport>)> callback,
-    base::Time max_report_time) {
+    base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
   const int kMaxReports = 1000;
-  GetAndHandleReports(std::move(callback), max_report_time, kMaxReports);
+  GetAndHandleReports(std::move(callback),
+                      /*max_report_time=*/base::Time::Max(), kMaxReports);
 }
 
 const AttributionSessionStorage& AttributionManagerImpl::GetSessionStorage()

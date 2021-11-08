@@ -113,8 +113,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StorableSource>)> callback) override;
   void GetPendingReportsForWebUI(
-      base::OnceCallback<void(std::vector<AttributionReport>)> callback,
-      base::Time max_report_time) override;
+      base::OnceCallback<void(std::vector<AttributionReport>)> callback)
+      override;
   const AttributionSessionStorage& GetSessionStorage() const override;
   void SendReportsForWebUI(base::OnceClosure done) override;
   const AttributionPolicy& GetAttributionPolicy() const override;

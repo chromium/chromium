@@ -164,8 +164,7 @@ void TestAttributionManager::GetActiveSourcesForWebUI(
 }
 
 void TestAttributionManager::GetPendingReportsForWebUI(
-    base::OnceCallback<void(std::vector<AttributionReport>)> callback,
-    base::Time max_report_time) {
+    base::OnceCallback<void(std::vector<AttributionReport>)> callback) {
   std::move(callback).Run(reports_);
 }
 
