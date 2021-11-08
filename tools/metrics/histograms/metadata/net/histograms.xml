@@ -2516,8 +2516,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.PushedStreamVaryResponseHeader"
-    enum="PushedStreamVaryResponseHeaderValues" expires_after="2021-12-19">
-  <owner>dschinazi@chromium.org</owner>
+    enum="PushedStreamVaryResponseHeaderValues" expires_after="2022-05-11">
+  <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Information about the value of the Vary response header in HTTP/2 pushed
@@ -2852,7 +2852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicHttpStream.ResponseStatus"
-    enum="QuicRstStreamErrorCodes" expires_after="2022-02-09">
+    enum="QuicRstStreamErrorCodes" expires_after="2022-05-11">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -2937,7 +2937,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.AcceptChForOrigin" enum="Boolean"
-    expires_after="2022-04-10">
+    expires_after="2022-05-11">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2949,7 +2949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.AcceptChFrameReceivedViaAlps"
-    enum="AcceptChEntries" expires_after="2022-04-10">
+    enum="AcceptChEntries" expires_after="2022-05-11">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5118,7 +5118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AcceptChForOrigin" enum="Boolean"
-    expires_after="M99">
+    expires_after="2022-05-11">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5130,7 +5130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AlpsAcceptChEntries" enum="AcceptChEntries"
-    expires_after="2022-04-10">
+    expires_after="2022-05-11">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5142,7 +5142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AlpsDecoderStatus" enum="AlpsDecoderError"
-    expires_after="2022-04-10">
+    expires_after="2022-05-11">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5153,7 +5153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.AlpsSettingParameterCount" units="parameters"
-    expires_after="2022-04-10">
+    expires_after="2022-05-11">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5178,7 +5178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.GoAwayReceived" enum="Http2WireErrorCodes"
-    expires_after="2022-07-22">
+    expires_after="2022-05-11">
   <owner>bnc@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
