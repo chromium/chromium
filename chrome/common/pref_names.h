@@ -908,10 +908,6 @@ extern const char kRelaunchHeadsUpPeriod[];
 extern const char kMacRestoreLocationPermissionsExperimentCount[];
 #endif  // defined(OS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kEnrollmentIdUploadedOnChromad[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if !defined(OS_ANDROID)
 extern const char kAttemptedToEnableAutoupdate[];
 

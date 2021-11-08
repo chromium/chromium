@@ -72,13 +72,13 @@ void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
 
 class EnrollmentCertificateUploaderTest : public ::testing::Test {
  public:
-  EnrollmentCertificateUploaderTest() : uploader_(&policy_client_) {
+  EnrollmentCertificateUploaderTest()
+      : uploader_(&policy_client_, &attestation_flow_) {
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
     policy_client_.SetDMToken("fake_dm_token");
 
     uploader_.set_retry_limit_for_testing(kRetryLimit);
     uploader_.set_retry_delay_for_testing(base::TimeDelta());
-    uploader_.set_attestation_flow_for_testing(&attestation_flow_);
   }
 
  protected:

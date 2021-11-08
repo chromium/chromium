@@ -2614,13 +2614,6 @@ const char kMacRestoreLocationPermissionsExperimentCount[] =
     "mac_restore_location_permissions_experiment_count";
 #endif  // defined(OS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Boolean indicating whether the Enrollment ID (EID) has already been uploaded
-// to DM Server. Only used on Chromad devices. If this pref is true, the device
-// is ready for the remote migration to cloud management.
-const char kEnrollmentIdUploadedOnChromad[] = "chromad.enrollment_id_uploaded";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // *************** SERVICE PREFS ***************
 // These are attached to the service process.
 

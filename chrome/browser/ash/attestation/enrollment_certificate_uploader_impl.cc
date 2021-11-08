@@ -56,7 +56,14 @@ namespace attestation {
 
 EnrollmentCertificateUploaderImpl::EnrollmentCertificateUploaderImpl(
     policy::CloudPolicyClient* policy_client)
+    : EnrollmentCertificateUploaderImpl(policy_client,
+                                        nullptr /* attestation_flow */) {}
+
+EnrollmentCertificateUploaderImpl::EnrollmentCertificateUploaderImpl(
+    policy::CloudPolicyClient* policy_client,
+    AttestationFlow* attestation_flow)
     : policy_client_(policy_client),
+      attestation_flow_(attestation_flow),
       retry_limit_(kRetryLimit),
       retry_delay_(kRetryDelay) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -17,19 +17,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
-class PrefRegistrySimple;
-class PrefService;
-
-namespace ash {
-class DeviceSettingsService;
-
-namespace attestation {
-class EnrollmentCertificateUploader;
-class EnrollmentCertificateUploaderImpl;
-class EnrollmentIdUploadManager;
-}  // namespace attestation
-}  // namespace ash
-
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -40,8 +27,7 @@ class DMTokenStorageBase;
 class DeviceManagementService;
 class ServerBackedStateKeysBroker;
 
-// Uploads state keys and the enrollment ID to DMServer for Active Directory
-// mode.
+// Uploads state keys to DMServer for Active Directory mode.
 class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
  public:
   ActiveDirectoryDeviceStateUploader(
@@ -49,15 +35,9 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
       DeviceManagementService* dm_service,
       ServerBackedStateKeysBroker* state_keys_broker,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<DMTokenStorageBase> dm_token_storage,
-      PrefService* local_state);
+      std::unique_ptr<DMTokenStorageBase> dm_token_storage);
 
   ~ActiveDirectoryDeviceStateUploader() override;
-
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
-  // Returns true if the enrollment ID has already been uploaded.
-  bool HasUploadedEnrollmentId() const;
 
   // Subscribes to state keys update signal to trigger state keys upload
   // whenever state keys are updated.
@@ -66,33 +46,15 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
   // Unsubscribes from state keys update signal.
   void Shutdown();
 
-  // Callback called when one of the following sequences completes successfully
-  // of fails: state keys upload or enrollment ID upload.
+  // Callback after state keys uploading sequence completed successfully or
+  // failed.
   using StatusCallback = base::OnceCallback<void(bool success)>;
 
   // Sets state keys uploading sequence status callback for testing.
-  void SetStateKeysCallbackForTesting(StatusCallback callback);
+  void SetStatusCallbackForTesting(StatusCallback callback);
 
-  // Sets enrollemt ID uploading sequence status callback for testing.
-  void SetEnrollmentIdCallbackForTesting(StatusCallback callback);
-
-  // Sets a custom device settings service that should be used for testing.
-  void SetDeviceSettingsServiceForTesting(
-      ash::DeviceSettingsService* device_settings_service);
-
-  // Sets the value of kEnrollmentIdUploadedOnChromad pref. Used in tests.
-  void SetEnrollmentIdUploadedForTesting(bool value);
-
-  // Sets a custom certificate uploader that should be used for testing.
-  void SetEnrollmentCertificateUploaderForTesting(
-      std::unique_ptr<ash::attestation::EnrollmentCertificateUploaderImpl>
-          enrollment_certificate_uploader_impl);
-
-  // Allows instantiating the `cloud_policy_client_` before calling `Init()`.
-  // Returns the recently created `CloudPolicyClient`. Used in tests.
-  CloudPolicyClient* CreateClientForTesting();
-
-  // Returns cloud policy client registration state. Used in tests.
+  // Returns cloud policy client registration state. This should be only used in
+  // tests.
   bool IsClientRegisteredForTesting() const;
 
   // Returns state keys to upload. This should be only used in tests.
@@ -103,9 +65,6 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
   }
 
  private:
-  // Instantiates the `cloud_policy_client_`.
-  void CreateClient();
-
   // Callback when state keys are updated.
   void OnStateKeysUpdated();
 
@@ -113,23 +72,16 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
   void OnDMTokenAvailable(const std::string& dm_token);
 
   // Registers cloud policy client. After registration is complete, the policy
-  // fetch to upload state keys is triggered. The enrollment ID will also be
-  // uploaded, if it hasn't been yet.
+  // fetch to upload state keys is triggered.
   void RegisterClient();
 
   // Cloud policy fetch to upload state keys.
   void FetchPolicyToUploadStateKeys();
 
-  // Uploads the enrollment ID to DMServer.
-  void UploadEnrollmentId();
-
   // CloudPolicyClient::Observer:
   void OnRegistrationStateChanged(CloudPolicyClient* client) override;
   void OnPolicyFetched(CloudPolicyClient* client) override;
   void OnClientError(CloudPolicyClient* client) override;
-
-  // Logs the result, and updates prefs if the upload succeeded.
-  void OnEnrollmentIdUploaded(bool success);
 
   // Assert non-concurrent usage in debug builds.
   SEQUENCE_CHECKER(sequence_checker_);
@@ -146,8 +98,8 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
 
   std::string dm_token_;
 
-  // Local state prefs, not owned.
-  PrefService* local_state_ = nullptr;
+  // Set to true if DM Token was requested.
+  bool dm_token_requested_ = false;
 
   std::unique_ptr<CloudPolicyClient> cloud_policy_client_;
 
@@ -156,17 +108,7 @@ class ActiveDirectoryDeviceStateUploader : public CloudPolicyClient::Observer {
   // List of state keys to upload by attaching to DM policy fetch request.
   std::vector<std::string> state_keys_to_upload_;
 
-  std::unique_ptr<ash::attestation::EnrollmentCertificateUploader>
-      enrollment_certificate_uploader_;
-  std::unique_ptr<ash::attestation::EnrollmentIdUploadManager>
-      enrollment_id_upload_manager_;
-
-  StatusCallback state_keys_callback_for_testing_;
-
-  StatusCallback enrollment_id_callback_for_testing_;
-
-  // Not owned.
-  ash::DeviceSettingsService* device_settings_service_for_testing_ = nullptr;
+  StatusCallback status_callback_for_testing_;
 
   // Must be last member.
   base::WeakPtrFactory<ActiveDirectoryDeviceStateUploader> weak_ptr_factory_{
