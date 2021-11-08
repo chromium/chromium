@@ -49,6 +49,7 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.io.IOException;
 
@@ -75,6 +76,9 @@ public class SyncErrorMessageTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
+
+    @Rule
+    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
 
     @Before
     public void setUp() {
@@ -205,8 +209,7 @@ public class SyncErrorMessageTest {
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
         // Wait until the message ui is shown.
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(view.getChildCount(), Matchers.not(0)));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
         mRenderTestRule.render(view, "sync_error_message_auth_error");
     }
 
@@ -219,8 +222,7 @@ public class SyncErrorMessageTest {
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
         // Wait until the message ui is shown.
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(view.getChildCount(), Matchers.not(0)));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
         mRenderTestRule.render(view, "sync_error_message_sync_setup_incomplete");
     }
 
@@ -235,8 +237,7 @@ public class SyncErrorMessageTest {
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
         // Wait until the message ui is shown.
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(view.getChildCount(), Matchers.not(0)));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
         mRenderTestRule.render(view, "sync_error_message_passphrase_required");
     }
 
@@ -250,8 +251,7 @@ public class SyncErrorMessageTest {
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         ViewGroup view = mSyncTestRule.getActivity().findViewById(R.id.message_container);
         // Wait until the message ui is shown.
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(view.getChildCount(), Matchers.not(0)));
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(view.getChildCount(), Matchers.is(1)));
         mRenderTestRule.render(view, "sync_error_message_client_out_of_date");
     }
 
