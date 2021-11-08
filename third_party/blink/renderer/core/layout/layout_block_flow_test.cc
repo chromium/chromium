@@ -24,7 +24,8 @@ var { column-count: 17179869184; }
   LayoutBlockFlow* kbd = To<LayoutBlockFlow>(GetLayoutObjectByElementId("kbd"));
   // The parent should be NG.
   ASSERT_TRUE(kbd->Parent()->IsLayoutNGBlockFlow());
-  ASSERT_FALSE(kbd->IsLayoutNGBlockFlow());  // Should be legacy.
+  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    ASSERT_FALSE(kbd->IsLayoutNGBlockFlow());  // Should be legacy.
   ASSERT_TRUE(kbd->CreatesNewFormattingContext());
   UpdateAllLifecyclePhasesForTest();
   GetElementById("text")->setAttribute("font-size", "100");
