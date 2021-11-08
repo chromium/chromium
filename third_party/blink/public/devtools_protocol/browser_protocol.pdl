@@ -222,6 +222,16 @@ experimental domain Accessibility
     returns
       array of AXNode nodes
 
+  # Fetches the root node.
+  # Requires `enable()` to have been called previously.
+  experimental command getRootAXNode
+    parameters
+      # The frame in whose document the node resides.
+      # If omitted, the root frame is used.
+      optional Page.FrameId frameId
+    returns
+      AXNode node
+
   # Fetches a particular accessibility node by AXNodeId.
   # Requires `enable()` to have been called previously.
   experimental command getChildAXNodes

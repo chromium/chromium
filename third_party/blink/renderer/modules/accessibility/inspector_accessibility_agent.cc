@@ -810,6 +810,33 @@ InspectorAccessibilityAgent::WalkAXNodesToDepth(Document* document,
   return nodes;
 }
 
+Response InspectorAccessibilityAgent::getRootAXNode(
+    Maybe<String> frame_id,
+    std::unique_ptr<AXNode>* node) {
+  LocalFrame* frame = FrameFromIdOrRoot(frame_id);
+  if (!frame) {
+    return Response::InvalidParams(
+        "Frame with the given frameId is not found.");
+  }
+  if (!enabled_.Get())
+    return Response::ServerError("Accessibility has not been enabled.");
+
+  Document* document = frame->GetDocument();
+  if (!document)
+    return Response::InternalError();
+  if (document->View()->NeedsLayout() || document->NeedsLayoutTreeUpdate())
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
+
+  RetainAXContextForDocument(document);
+  AXContext ax_context(*document, ui::kAXModeComplete);
+
+  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
+  auto& root = *cache.Root();
+  *node = BuildProtocolAXNodeForAXObject(root);
+
+  return Response::Success();
+}
+
 protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
     const String& in_id,
     Maybe<String> frame_id,
