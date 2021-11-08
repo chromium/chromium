@@ -57,4 +57,8 @@ EventCaptureMac::~EventCaptureMac() {
   [NSEvent removeMonitor:monitor_];
 }
 
+void EventCaptureMac::SetCrossCursor() {
+  [[NSCursor crosshairCursor] push];
+}
+
 }  // namespace image_editor

@@ -28,6 +28,10 @@ class EventCaptureMac {
 
   ~EventCaptureMac();
 
+  // Allows mouse move events over the affected region requests to set a cross
+  // cursor, using a native method.
+  static void SetCrossCursor();
+
  private:
   id monitor_;
   ui::WeakPtrNSObjectFactory<EventCaptureMac> factory_;

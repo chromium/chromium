@@ -16,6 +16,9 @@ const base::Feature kLensStandalone{"LensStandalone",
 const base::Feature kLensRegionSearch{"LensRegionSearch",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::FeatureParam<bool> kRegionSearchMacCursorFix{
+    &kLensRegionSearch, "region-search-mac-cursor-fix", true};
+
 const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1{
     &kLensRegionSearch, "use-menu-item-alt-text-1", false};
 
