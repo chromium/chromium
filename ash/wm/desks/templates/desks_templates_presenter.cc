@@ -186,6 +186,8 @@ void DesksTemplatesPresenter::OnDeleteEntry(
     return;
 
   GetAllEntries();
+
+  UpdateDesksTemplatesUI();
 }
 
 void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(

@@ -733,10 +733,13 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
 
   // After all templates have been deleted, check to ensure we have exited the
   // Desks Templates Grid on all displays. Also check to make sure the hidden
-  // windows are shown again.
+  // windows and the save template button are shown again.
   EXPECT_EQ(1.0f, test_window->layer()->opacity());
   for (auto& overview_grid : GetOverviewGridList())
     EXPECT_FALSE(overview_grid->IsShowingDesksTemplatesGrid());
+  auto* save_template =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+  EXPECT_TRUE(save_template->IsVisible());
 }
 
 // Tests that the save desk as template button is disabled when the maximum
