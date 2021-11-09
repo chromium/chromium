@@ -1913,7 +1913,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.PrivateSwapFootprint" units="MB"
-    expires_after="2021-12-17">
+    expires_after="2022-04-10">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -1927,7 +1927,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.ResidentSet" units="MiB"
-    expires_after="2021-12-17">
+    expires_after="2022-04-10">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -1951,7 +1951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.SharedMemoryFootprint"
-    units="MB" expires_after="2021-12-17">
+    units="MB" expires_after="2022-04-10">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
