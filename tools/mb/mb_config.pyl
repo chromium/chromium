@@ -80,7 +80,7 @@
       'Deterministic Android': 'android_without_codecs_release_bot_minimal_symbols',
       'Deterministic Android (dbg)': 'android_debug_bot',
 
-      'android-arm64-proguard-rel': 'android_release_bot_minimal_symbols_arm64_webview_google',
+      'android-arm64-proguard-rel': 'android_release_bot_minimal_symbols_arm64_webview_monochrome',
       'android-bfcache-rel': 'android_release_bot_minimal_symbols',
       'android-binary-size-generator': 'android_binary_size',
       'android-cronet-arm-dbg': 'android_cronet_debug_static_bot_arm_no_neon',
@@ -99,26 +99,26 @@
 
       'android-marshmallow-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google',
       'android-marshmallow-x86-rel-non-cq': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google',
-      'android-nougat-arm64-rel': 'android_release_bot_minimal_symbols_arm64_fastbuild_webview_google',
+      'android-nougat-arm64-rel': 'android_release_bot_minimal_symbols_arm64_fastbuild_webview_monochrome',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
-      'android-pie-arm64-coverage-experimental-rel': 'android_release_bot_arm64_webview_google_expectations',
-      'android-pie-arm64-rel': 'android_release_bot_minimal_symbols_arm64_webview_google',
+      'android-pie-arm64-coverage-experimental-rel': 'android_release_bot_arm64_webview_monochrome_expectations',
+      'android-pie-arm64-rel': 'android_release_bot_minimal_symbols_arm64_webview_monochrome',
       'android-pie-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome',
       'android-weblayer-with-aosp-webview-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
       # Use webview_monochrome as this builder triggers tests on Android O & P
       'android-weblayer-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_disable_proguard_webview_monochrome',
-      'android-10-arm64-rel': 'android_release_bot_minimal_symbols_arm64_fastbuild_webview_google',
+      'android-10-arm64-rel': 'android_release_bot_minimal_symbols_arm64_fastbuild_webview_trichrome',
       'android-11-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_trichrome',
     },
 
     'chromium.android.fyi': {
       'Android ASAN (dbg) (reclient)': 'android_clang_asan_debug_bot_reclient',
       'Android arm64 Builder (dbg) (reclient)': 'android_webview_google_debug_static_bot_arm64_reclient',
-      'Android WebView P FYI (rel)': 'android_release_bot_minimal_symbols_arm64_webview_google',
+      'Android WebView P FYI (rel)': 'android_release_bot_minimal_symbols_arm64_webview_monochrome',
       'android-12-x64-fyi-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome',
       'android-annotator-rel': 'android_release_bot_minimal_symbols_arm64_webview_google',
-      'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_google',
+      'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_monochrome',
       'android-web-platform-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome',
       'android-weblayer-pie-x86-wpt-smoketest': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome',
@@ -812,15 +812,15 @@
       'android-marshmallow-x86-rel-orchestrator': 'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google_coverage',
       'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google',
       'android-marshmallow-x86-rel-rts': 'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google',
-      'android-nougat-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_google',
+      'android-nougat-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_monochrome',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
-      'android-pie-arm64-coverage-rel': 'android_release_trybot_arm64_webview_google_native_coverage',
-      'android-pie-arm64-coverage-experimental-rel': 'android_release_trybot_arm64_webview_google_expectations_native_coverage',
-      'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_google_expectations_fastbuild',
-      'android-pie-arm64-rel-rts': 'android_release_trybot_arm64_webview_google_expectations_fastbuild',
-      'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_google',
+      'android-pie-arm64-coverage-rel': 'android_release_trybot_arm64_webview_monochrome_native_coverage',
+      'android-pie-arm64-coverage-experimental-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage',
+      'android-pie-arm64-rel': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild',
+      'android-pie-arm64-rel-rts': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild',
+      'android-pie-arm64-wpt-rel-non-cq': 'android_release_trybot_arm64_webview_monochrome',
       'android-pie-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-web-platform-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-weblayer-10-x86-rel-tests': 'android_release_trybot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google',
@@ -829,14 +829,14 @@
       'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-weblayer-pie-x86-wpt-smoketest': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android-webview-pie-arm64-fyi-rel': 'android_release_trybot_arm64_webview_google',
-      'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_google',
+      'android-webview-pie-arm64-fyi-rel': 'android_release_trybot_arm64_webview_monochrome',
+      'android-10-arm64-rel': 'android_release_trybot_arm64_fastbuild_webview_trichrome',
       'android-11-x86-rel': 'android_release_trybot_x86_fastbuild_webview_trichrome',
       'android-12-x64-fyi-rel': 'android_release_trybot_x64_fastbuild_webview_trichrome',
       'android-webview-marshmallow-arm64-dbg': 'android_release_trybot_arm64_webview_google',
-      'android-webview-nougat-arm64-dbg': 'android_release_trybot_arm64_webview_google',
-      'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_google',
-      'android-webview-pie-arm64-dbg': 'android_release_trybot_arm64_webview_google',
+      'android-webview-nougat-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
+      'android-webview-oreo-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
+      'android-webview-pie-arm64-dbg': 'android_release_trybot_arm64_webview_monochrome',
       'android-webview-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_webview_shell',
       'android_archive_rel_ng': 'android_release_trybot',
       'android_arm64_dbg_recipe': 'android_debug_trybot_compile_only_arm64_fastbuild',
@@ -1449,9 +1449,14 @@
       'strip_debug_info',
     ],
 
-    'android_release_bot_minimal_symbols_arm64_fastbuild_webview_google': [
+    'android_release_bot_minimal_symbols_arm64_fastbuild_webview_monochrome': [
       'android', 'release_bot', 'minimal_symbols', 'arm64',
-      'strip_debug_info', 'android_fastbuild', 'webview_google',
+      'strip_debug_info', 'android_fastbuild', 'webview_monochrome',
+    ],
+
+    'android_release_bot_minimal_symbols_arm64_fastbuild_webview_trichrome': [
+      'android', 'release_bot', 'minimal_symbols', 'arm64',
+      'strip_debug_info', 'android_fastbuild', 'webview_trichrome',
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_webview_shell': [
@@ -1467,6 +1472,11 @@
     'android_release_bot_minimal_symbols_arm64_webview_google': [
       'android', 'release_bot', 'minimal_symbols', 'arm64',
       'strip_debug_info', 'webview_google',
+    ],
+
+    'android_release_bot_minimal_symbols_arm64_webview_monochrome': [
+      'android', 'release_bot', 'minimal_symbols', 'arm64',
+      'strip_debug_info', 'webview_monochrome',
     ],
 
     'android_release_bot_minimal_symbols_x64_fastbuild_webview_trichrome': [
@@ -1510,9 +1520,14 @@
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
     ],
 
-    'android_release_trybot_arm64_fastbuild_webview_google': [
+    'android_release_trybot_arm64_fastbuild_webview_monochrome': [
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_google',
+      'android_fastbuild', 'webview_monochrome',
+    ],
+
+    'android_release_trybot_arm64_fastbuild_webview_trichrome': [
+      'android', 'release_trybot', 'arm64', 'strip_debug_info',
+      'android_fastbuild', 'webview_trichrome',
     ],
 
     'android_release_trybot_arm64_webview_google': [
@@ -1520,30 +1535,35 @@
       'webview_google',
     ],
 
-    'android_release_trybot_arm64_webview_google_expectations_fastbuild': [
+    'android_release_trybot_arm64_webview_monochrome': [
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_google', 'fail_on_android_expectations',
+      'webview_monochrome',
+    ],
+
+    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild': [
+      'android', 'release_trybot', 'arm64', 'strip_debug_info',
+      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
       'no_secondary_abi',
     ],
 
     # TODO(crbug/1182468) Remove these android coverage expectations after
     # existing CQ bot is running them.
-    'android_release_bot_arm64_webview_google_expectations': [
+    'android_release_bot_arm64_webview_monochrome_expectations': [
       'android', 'release_bot', 'arm64', 'strip_debug_info',
-      'webview_google', 'fail_on_android_expectations',
+      'webview_monochrome', 'fail_on_android_expectations',
     ],
 
     # TODO(crbug/1182468) Remove these android coverage expectations after
     # existing CQ bot is running them.
-    'android_release_trybot_arm64_webview_google_expectations_native_coverage': [
+    'android_release_trybot_arm64_webview_monochrome_expectations_native_coverage': [
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'webview_google', 'fail_on_android_expectations',
+      'webview_monochrome', 'fail_on_android_expectations',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
-    'android_release_trybot_arm64_webview_google_native_coverage': [
+    'android_release_trybot_arm64_webview_monochrome_native_coverage': [
       'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'webview_google',
+      'webview_monochrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
