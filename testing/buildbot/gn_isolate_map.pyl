@@ -1630,10 +1630,6 @@
       "--test-launcher-jobs=1",
     ],
   },
-  "shipped_binaries": {
-    "label": "//:shipped_binaries",
-    "type": "additional_compile_target",
-  },
   "skia_unittests": {
     "label": "//skia:skia_unittests",
     "type": "console_test_launcher",
@@ -1821,6 +1817,10 @@
     "skip_usage_check": True,  # Used by Pinpoint: crbug.com/1042778
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
+  },
+  "traffic_annotation_proto": {
+    "label": "//chrome/browser/privacy:traffic_annotation_proto",
+    "type": "additional_compile_target",
   },
   "trichrome_chrome_bundle_smoke_test": {
     "label": "//chrome/android:trichrome_chrome_bundle_smoke_test",

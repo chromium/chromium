@@ -28352,6 +28352,18 @@
         "test": "weblayer_junit_tests",
         "test_id_prefix": "ninja://weblayer/browser/java:weblayer_junit_tests/"
       }
+    ],
+    "scripts": [
+      {
+        "isolate_profile_data": true,
+        "name": "check_network_annotations",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "script": "check_network_annotations.py",
+        "swarming": {}
+      }
     ]
   },
   "android-marshmallow-x86-rel": {
@@ -30223,6 +30235,21 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/android/monochrome:monochrome_public_apk_checker/"
+      }
+    ],
+    "scripts": [
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
+        ],
+        "isolate_profile_data": true,
+        "name": "check_network_annotations",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "script": "check_network_annotations.py",
+        "swarming": {}
       }
     ]
   },
@@ -42217,6 +42244,17 @@
         "test": "webview_ui_test_app_test_apk",
         "test_id_prefix": "ninja://android_webview/tools/automated_ui_tests:webview_ui_test_app_test_apk/"
       }
+    ],
+    "scripts": [
+      {
+        "name": "check_network_annotations",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "script": "check_network_annotations.py",
+        "swarming": {}
+      }
     ]
   },
   "android-pie-x86-rel": {
@@ -47510,6 +47548,20 @@
         },
         "test": "zlib_unittests",
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
+      }
+    ],
+    "scripts": [
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
+        ],
+        "name": "check_network_annotations",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "script": "check_network_annotations.py",
+        "swarming": {}
       }
     ]
   },

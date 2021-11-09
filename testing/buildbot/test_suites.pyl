@@ -904,6 +904,12 @@
       'base_junit_tests': {},
     },
 
+    'chromium_android_scripts': {
+      'check_network_annotations': {
+        'script': 'check_network_annotations.py',
+      },
+    },
+
     'chromium_android_webkit_gtests': {
       'blink_heap_unittests': {},
       'webkit_unit_tests': {

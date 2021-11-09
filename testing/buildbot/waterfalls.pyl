@@ -915,6 +915,7 @@
           'gtest_tests': 'android_marshmallow_device_gtests',
           'junit_tests': 'chromium_junit_tests',
           'isolated_scripts': 'marshmallow_pie_isolated_scripts',
+          'scripts': 'chromium_android_scripts',
         },
         'os_type': 'android',
       },
@@ -931,6 +932,7 @@
         'test_suites': {
           'gtest_tests': 'android_marshmallow_emulator_gtests',
           'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
+          'scripts': 'chromium_android_scripts',
         },
       },
       'android-marshmallow-x86-rel-non-cq': {
@@ -1008,6 +1010,7 @@
           # TODO(crbug.com/1111436): Re-enable this if/when additional capacity
           # has been deployed.
           #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
+          'scripts': 'chromium_android_scripts',
         },
         'use_swarming': True,
         'os_type': 'android',
@@ -1023,6 +1026,7 @@
         'os_type': 'android',
         'test_suites': {
           'gtest_tests': 'android_pie_rel_emulator_gtests',
+          'scripts': 'chromium_android_scripts',
         }
       },
       'android-weblayer-marshmallow-x86-rel-tests': {
