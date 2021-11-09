@@ -38,7 +38,9 @@ suite('ProfileCardMenuTest', function() {
       userName: `User@gmail.com`,
       isManaged: false,
       avatarIcon: `AvatarUrl`,
+      // <if expr="lacros">
       isPrimaryLacrosProfile: false,
+      // </if>
     };
     profileCardMenuElement.profileState = testProfileState;
     return waitBeforeNextRender(profileCardMenuElement);

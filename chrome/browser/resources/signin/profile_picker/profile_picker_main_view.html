@@ -189,7 +189,7 @@
     <iron-icon icon="profiles:account-circle"></iron-icon>
     <div>$i18n{browseAsGuestButton}</div>
   </cr-button>
-  <cr-checkbox checked="{{askOnStartup_}}"
+  <cr-checkbox id="askOnStartup" checked="{{askOnStartup_}}"
       on-change="onAskOnStartupChangedByUser_" hidden$="[[hideAskOnStartup_]]">
     $i18n{askOnStartupCheckboxText}
   </cr-checkbox>

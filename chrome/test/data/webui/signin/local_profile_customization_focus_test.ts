@@ -5,7 +5,7 @@
 import 'chrome://profile-picker/profile_picker.js';
 
 import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, ProfilePickerMainViewElement, Routes} from 'chrome://profile-picker/profile_picker.js';
-import {isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -74,12 +74,15 @@ suite('LocalProfileCustomizationFocusTest', function() {
     const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
     assertTrue(!!choice);
     await whenCheck(choice!, () => choice!.classList.contains('active'));
+
+    // <if expr="lacros">
+    // Local profile creation is not enabled on Lacros.
+    assertFalse(!!choice!.shadowRoot!.querySelector('#notNowButton'));
+    return;
+    // </if>
+
+    // <if expr="not lacros">
     const notNowButton = choice!.$.notNowButton;
-    if (isLacros) {
-      // Local profile creation is not enabled on Lacros.
-      assertFalse(!!notNowButton);
-      return;
-    }
     notNowButton.focus();
     notNowButton.click();
     flush();
@@ -109,6 +112,7 @@ suite('LocalProfileCustomizationFocusTest', function() {
     await verifyProfileName(true, false);
     customization!.$.nameInput.value = 'Work';
     assertFalse(customization!.$.nameInput.invalid);
+    // </if>
   });
 
   test('BrowserSigninNotAllowed', async function() {

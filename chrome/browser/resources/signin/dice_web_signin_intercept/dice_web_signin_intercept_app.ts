@@ -10,6 +10,7 @@ import './signin_shared_css.js';
 import './signin_vars_css.js';
 import './strings.m.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,6 +18,13 @@ import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/
 import {DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
 
 const DiceWebSigninInterceptAppElementBase = WebUIListenerMixin(PolymerElement);
+
+export interface DiceWebSigninInterceptAppElement {
+  $: {
+    cancelButton: CrButtonElement,
+    acceptButton: CrButtonElement,
+  };
+}
 
 export class DiceWebSigninInterceptAppElement extends
     DiceWebSigninInterceptAppElementBase {
@@ -102,6 +110,12 @@ export class DiceWebSigninInterceptAppElement extends
         '--header-background-color', parameters.headerBackgroundColor);
     this.style.setProperty('--header-text-color', parameters.headerTextColor);
     this.notifyPath('interceptionParameters_.interceptedAccount.isManaged');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'dice-web-signin-intercept-app': DiceWebSigninInterceptAppElement;
   }
 }
 
