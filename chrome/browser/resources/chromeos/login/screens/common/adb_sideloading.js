@@ -6,73 +6,90 @@
  * @fileoverview Polymer element for displaying ARC ADB sideloading screen.
  */
 
-'use strict';
-
-(function() {
+/* #js_imports_placeholder */
 
 /**
  * UI mode for the dialog.
  * @enum {string}
  */
-const UIState = {
-  SETUP: 'setup',
+const AdbSideloadingState = {
   ERROR: 'error',
+  SETUP: 'setup',
 };
 
-// The constants need to be synced with EnableAdbSideloadingScreenView::UIState.
+/**
+ * The constants need to be synced with EnableAdbSideloadingScreenView::UIState
+ * @enum {number}
+ */
 const ADB_SIDELOADING_SCREEN_STATE = {
   ERROR: 1,
   SETUP: 2,
 };
 
-Polymer({
-  is: 'oobe-adb-sideloading-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+ const AdbSideloadingBase = Polymer.mixinBehaviors([OobeI18nBehavior,
+  LoginScreenBehavior, MultiStepBehavior], Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    OobeDialogHostBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @polymer
+ */
+class AdbSideloading extends AdbSideloadingBase {
 
-  EXTERNAL_API: [
-    'setScreenState',
-  ],
+  static get is() { return 'adb-sideloading-element'; }
 
-  UI_STEPS: UIState,
+  /* #html_template_placeholder */
+
+  constructor() {
+    super();
+  }
+
+  get EXTERNAL_API() {
+    return ['setScreenState'];
+  }
+
+  get UI_STEPS() {
+    return AdbSideloadingState;
+  }
 
   defaultUIStep() {
-    return UIState.SETUP;
-  },
+    return AdbSideloadingState.SETUP;
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('EnableAdbSideloadingScreen', {
       resetAllowed: true,
     });
-  },
+  }
 
   /*
    * Executed on language change.
    */
   updateLocalizedContent() {
     this.i18nUpdateLocale();
-  },
+  }
 
   onBeforeShow(data) {
-    this.setScreenState(this.SCREEN_STATE_SETUP);
-  },
+    this.setScreenState(ADB_SIDELOADING_SCREEN_STATE.SETUP);
+  }
 
   /**
    * Sets UI state for the dialog to show corresponding content.
-   * @param {ADB_SIDELOADING_SCREEN_STATE} state.
+   * @param {ADB_SIDELOADING_SCREEN_STATE} state
    */
   setScreenState(state) {
     if (state == ADB_SIDELOADING_SCREEN_STATE.ERROR) {
-      this.setUIStep(UIState.ERROR);
+      this.setUIStep(AdbSideloadingState.ERROR);
     } else if (state == ADB_SIDELOADING_SCREEN_STATE.SETUP) {
-      this.setUIStep(UIState.SETUP);
+      this.setUIStep(AdbSideloadingState.SETUP);
     }
-  },
+  }
 
   /**
    * On-tap event handler for enable button.
@@ -81,7 +98,7 @@ Polymer({
    */
   onEnableTap_() {
     this.userActed('enable-pressed');
-  },
+  }
 
   /**
    * On-tap event handler for cancel button.
@@ -90,7 +107,7 @@ Polymer({
    */
   onCancelTap_() {
     this.userActed('cancel-pressed');
-  },
+  }
 
   /**
    * On-tap event handler for learn more link.
@@ -99,6 +116,7 @@ Polymer({
    */
   onLearnMoreTap_() {
     this.userActed('learn-more-link');
-  },
-});
-})();
+  }
+}
+
+customElements.define(AdbSideloading.is, AdbSideloading);

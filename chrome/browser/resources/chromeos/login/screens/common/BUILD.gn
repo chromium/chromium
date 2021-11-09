@@ -12,6 +12,7 @@ assert(is_chromeos, "OOBE UI is only available on ChromeOS builds")
 
 group("polymer3_elements") {
   public_deps = [
+    ":adb_sideloading_module",
     ":app_downloading_module",
     ":autolaunch_module",
     ":device_disabled_module",
@@ -46,6 +47,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [
+    ":adb_sideloading.m",
     ":app_downloading.m",
     ":autolaunch.m",
     ":device_disabled.m",
@@ -76,6 +78,18 @@ js_library("os_install") {
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_modal_dialog",
   ]
+}
+
+js_library("adb_sideloading.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/adb_sideloading.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+  ]
+  extra_deps = [ ":adb_sideloading_module" ]
 }
 
 js_library("app_downloading.m") {
@@ -286,6 +300,14 @@ js_library("wrong_hwid.m") {
 polymer_modulizer("app_downloading") {
   js_file = "app_downloading.js"
   html_file = "app_downloading.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("adb_sideloading") {
+  js_file = "adb_sideloading.js"
+  html_file = "adb_sideloading.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
