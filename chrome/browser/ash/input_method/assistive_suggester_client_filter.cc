@@ -254,7 +254,7 @@ void GetLacrosChromeUrl(GetBrowserUrlCallback callback) {
   // browser_manager will exist whenever there is a lacros browser running.
   // GetActiveTabUrlSupported() will only return true if the current lacros
   // browser is being used by the user.
-  if (browser_manager && browser_manager->IsReady() &&
+  if (browser_manager && browser_manager->IsRunning() &&
       browser_manager->GetActiveTabUrlSupported()) {
     browser_manager->GetActiveTabUrl(
         base::BindOnce(&OnLacrosChromeUrlReturned, std::move(callback)));
