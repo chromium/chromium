@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/strong_alias.h"
@@ -123,6 +124,7 @@ class PasswordStoreAndroidBackend
       std::unordered_map<JobId, JobReturnHandler, JobId::Hasher>>;
 
   // Implements PasswordStoreBackend interface.
+  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override;
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;

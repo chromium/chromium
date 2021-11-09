@@ -136,6 +136,10 @@ PasswordStoreProxyBackend::PasswordStoreProxyBackend(
 
 PasswordStoreProxyBackend::~PasswordStoreProxyBackend() = default;
 
+base::WeakPtr<PasswordStoreBackend> PasswordStoreProxyBackend::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PasswordStoreProxyBackend::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
@@ -168,8 +172,7 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsReply callback) {
           .Then(std::move(callback)));
 
   auto sync_status_callback = base::BindOnce(
-      &PasswordStoreBackend::GetAllLoginsAsync,
-      base::Unretained(shadow_backend_),
+      &PasswordStoreBackend::GetAllLoginsAsync, shadow_backend_->GetWeakPtr(),
       base::BindOnce(&GetAllLoginsAsyncMetricsRecorder::RecordShadowResult,
                      handler));
 

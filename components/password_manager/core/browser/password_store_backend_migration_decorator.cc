@@ -38,6 +38,11 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
 PasswordStoreBackendMigrationDecorator::
     ~PasswordStoreBackendMigrationDecorator() = default;
 
+base::WeakPtr<PasswordStoreBackend>
+PasswordStoreBackendMigrationDecorator::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PasswordStoreBackendMigrationDecorator::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,

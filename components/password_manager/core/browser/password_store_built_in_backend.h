@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -79,6 +80,7 @@ class PasswordStoreBuiltInBackend : protected PasswordStoreSync,
                            UpdatePasswordsStoredForAffiliatedWebsites);
 
   // Implements PasswordStoreBackend interface.
+  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override;
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;

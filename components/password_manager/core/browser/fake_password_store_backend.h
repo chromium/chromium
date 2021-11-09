@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
 namespace password_manager {
@@ -28,6 +29,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
 
  private:
   // Implements PasswordStoreBackend interface.
+  base::WeakPtr<PasswordStoreBackend> GetWeakPtr() override;
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
@@ -76,6 +78,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 
   PasswordMap stored_passwords_;
+  base::WeakPtrFactory<FakePasswordStoreBackend> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

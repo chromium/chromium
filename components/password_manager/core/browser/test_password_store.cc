@@ -145,6 +145,10 @@ bool TestPasswordStore::IsEmpty() const {
 
 TestPasswordStore::~TestPasswordStore() = default;
 
+base::WeakPtr<PasswordStoreBackend> TestPasswordStore::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void TestPasswordStore::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,

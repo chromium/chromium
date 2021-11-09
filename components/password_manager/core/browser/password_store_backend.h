@@ -51,6 +51,8 @@ class PasswordStoreBackend {
   PasswordStoreBackend& operator=(PasswordStoreBackend&&) = delete;
   virtual ~PasswordStoreBackend() = default;
 
+  virtual base::WeakPtr<PasswordStoreBackend> GetWeakPtr() = 0;
+
   // TODO(crbug.bom/1226042): Rename this to Init after PasswordStoreImpl no
   // longer inherits PasswordStore.
   virtual void InitBackend(RemoteChangesReceived remote_form_changes_received,

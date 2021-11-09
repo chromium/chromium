@@ -262,6 +262,10 @@ bool PasswordStoreBuiltInBackend::DeleteAndRecreateDatabaseFile() {
   return login_db_ && login_db_->DeleteAndRecreateDatabaseFile();
 }
 
+base::WeakPtr<PasswordStoreBackend> PasswordStoreBuiltInBackend::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PasswordStoreBuiltInBackend::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
