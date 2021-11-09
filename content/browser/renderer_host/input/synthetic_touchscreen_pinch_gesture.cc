@@ -51,8 +51,8 @@ SyntheticGesture::Result SyntheticTouchscreenPinchGesture::ForwardInputEvents(
             content::mojom::GestureSourceType::kDefaultInput);
 
   if (!synthetic_pointer_driver_)
-    synthetic_pointer_driver_ =
-        SyntheticPointerDriver::Create(gesture_source_type_);
+    synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
+        gesture_source_type_, params_.from_devtools_debugger);
 
   if (gesture_source_type_ == content::mojom::GestureSourceType::kTouchInput) {
     ForwardTouchInputEvents(timestamp, target);
