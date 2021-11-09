@@ -109,6 +109,7 @@ class LOCKABLE BASE_EXPORT SpinningMutex {
   ALWAYS_INLINE void Release() UNLOCK_FUNCTION();
   ALWAYS_INLINE bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true);
   void AssertAcquired() const {}  // Not supported.
+  void Reinit() UNLOCK_FUNCTION();
 
  private:
   void LockSlow() EXCLUSIVE_LOCK_FUNCTION();

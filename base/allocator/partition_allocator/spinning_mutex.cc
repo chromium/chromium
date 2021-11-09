@@ -41,6 +41,30 @@
 namespace base {
 namespace internal {
 
+void SpinningMutex::Reinit() {
+#if !defined(OS_APPLE)
+  // On most platforms, no need to re-init the lock, can just unlock it.
+  Release();
+#else
+  // On macOS, os_unfair_lock cannot be unlocked from a thread which didn't lock
+  // it, otherwise an assertion is triggered inside its implementation.
+#if !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+
+  if (LIKELY(os_unfair_lock_trylock)) {
+    unfair_lock_ = OS_UNFAIR_LOCK_INIT;
+    return;
+  }
+
+#pragma clang diagnostic pop
+
+#endif  // !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
+
+  Release();
+#endif  // defined(OS_APPLE)
+}
+
 #if defined(PA_HAS_FAST_MUTEX)
 
 #if defined(PA_HAS_LINUX_KERNEL)

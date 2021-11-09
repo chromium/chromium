@@ -69,37 +69,47 @@ void BeforeForkInParent() NO_THREAD_SAFETY_ANALYSIS {
   internal::ThreadCacheRegistry::GetLock().Lock();
 }
 
-void ReleaseLocks() NO_THREAD_SAFETY_ANALYSIS {
+template <typename T>
+void UnlockOrReinit(T& lock, bool in_child) NO_THREAD_SAFETY_ANALYSIS {
+  // Only re-init the locks in the child process, in the parent can unlock
+  // normally.
+  if (in_child)
+    lock.Reinit();
+  else
+    lock.Unlock();
+}
+
+void ReleaseLocks(bool in_child) NO_THREAD_SAFETY_ANALYSIS {
   // In reverse order, even though there are no lock ordering dependencies.
-  internal::ThreadCacheRegistry::GetLock().Unlock();
+  UnlockOrReinit(internal::ThreadCacheRegistry::GetLock(), in_child);
 
   if (auto* nonquarantinable_root =
           internal::NonQuarantinableAllocator::Instance().root())
-    nonquarantinable_root->lock_.Unlock();
+    UnlockOrReinit(nonquarantinable_root->lock_, in_child);
 
   if (auto* nonscannable_root =
           internal::NonScannableAllocator::Instance().root())
-    nonscannable_root->lock_.Unlock();
+    UnlockOrReinit(nonscannable_root->lock_, in_child);
 
   auto* regular_root = internal::PartitionAllocMalloc::Allocator();
 
   auto* aligned_root = internal::PartitionAllocMalloc::AlignedAllocator();
   if (aligned_root != regular_root)
-    aligned_root->lock_.Unlock();
+    UnlockOrReinit(aligned_root->lock_, in_child);
 
   auto* original_root = internal::PartitionAllocMalloc::OriginalAllocator();
   if (original_root)
-    original_root->lock_.Unlock();
+    UnlockOrReinit(original_root->lock_, in_child);
 
-  regular_root->lock_.Unlock();
+  UnlockOrReinit(regular_root->lock_, in_child);
 }
 
 void AfterForkInParent() {
-  ReleaseLocks();
+  ReleaseLocks(/* in_child = */ false);
 }
 
 void AfterForkInChild() {
-  ReleaseLocks();
+  ReleaseLocks(/* in_child = */ true);
   // Unsafe, as noted in the name. This is fine here however, since at this
   // point there is only one thread, this one (unless another post-fork()
   // handler created a thread, but it would have needed to allocate, which would

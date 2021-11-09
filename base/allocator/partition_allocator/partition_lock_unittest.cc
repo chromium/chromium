@@ -10,6 +10,7 @@
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -140,6 +141,25 @@ TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
 
   EXPECT_DEATH(lock.AssertAcquired(), "");
 }
+
+#if defined(OS_APPLE)
+// On Apple OSes, it is not allowed to unlock a lock from another thread, so
+// we need to re-initialize it.
+TEST(PartitionAllocLockTest, ReinitInOtherThread) NO_THREAD_SAFETY_ANALYSIS {
+  MaybeLock<true> lock;
+  lock.Lock();
+
+  LambdaThreadDelegate delegate{
+      BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS {
+        lock.Reinit();
+        lock.Lock();
+        lock.Unlock();
+      })};
+  PlatformThreadHandle handle;
+  PlatformThread::Create(0, &delegate, &handle);
+  PlatformThread::Join(handle);
+}
+#endif  // defined(OS_APPLE)
 
 #endif  // defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
 

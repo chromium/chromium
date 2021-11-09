@@ -24,6 +24,10 @@ class LOCKABLE MaybeLock {
   void Lock() EXCLUSIVE_LOCK_FUNCTION() {}
   void Unlock() UNLOCK_FUNCTION() {}
   void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {}
+  // Re-initializes the lock. Only to be used after fork() in child processes.
+  // Marked UNLOCK_FUNCTION() as a lock starts unlocked, even though it's called
+  // from a NO_THREAD_SAFETY_ANALYSIS context.
+  void Reinit() UNLOCK_FUNCTION();
 };
 
 template <bool thread_safe>
@@ -108,6 +112,14 @@ class LOCKABLE MaybeLock<true> {
 #endif
   }
 
+  void Reinit() UNLOCK_FUNCTION() {
+    lock_.AssertAcquired();
+#if DCHECK_IS_ON()
+    owning_thread_ref_.store(PlatformThreadRef(), std::memory_order_release);
+#endif
+    lock_.Reinit();
+  }
+
  private:
   SpinningMutex lock_;
 
@@ -127,6 +139,7 @@ class LOCKABLE MaybeLock<false> {
   void Lock() EXCLUSIVE_LOCK_FUNCTION() {}
   void Unlock() UNLOCK_FUNCTION() {}
   void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {}
+  void Reinit() UNLOCK_FUNCTION() {}
 
   char padding_[sizeof(MaybeLock<true>)];
 };
