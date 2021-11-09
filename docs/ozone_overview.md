@@ -307,7 +307,9 @@ use_gtk=true
 
 Running some test suites requires a Wayland server. If you're not
 running one you can use a locally compiled version of Weston. This is
-what the build bots do. Add this to your gn args:
+what the build bots do. Please note that this is required for
+interactive_ui_tests, as those tests use a patched version of Weston's
+test plugin. Add this to your gn args:
 
 ``` shell
 use_bundled_weston = true
