@@ -253,6 +253,8 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   scoped_refptr<device::MockBluetoothAdapter> adapter_;
 };
 
+void WaitForDOMContentLoaded(RenderFrameHostImpl* rfh);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACK_FORWARD_CACHE_BROWSERTEST_H_

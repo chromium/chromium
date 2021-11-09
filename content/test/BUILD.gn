@@ -1085,6 +1085,7 @@ test("content_browsertests") {
     "../browser/back_forward_cache_browsertest.cc",
     "../browser/back_forward_cache_browsertest.h",
     "../browser/back_forward_cache_features_browsertest.cc",
+    "../browser/back_forward_cache_network_request_browsertest.cc",
     "../browser/background_sync/background_sync_base_browsertest.cc",
     "../browser/background_sync/background_sync_base_browsertest.h",
     "../browser/background_sync/one_shot_background_sync_browsertest.cc",
