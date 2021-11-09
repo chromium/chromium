@@ -14,7 +14,10 @@ import time
 from six.moves import urllib
 
 # Maximum amount of time to block while waiting for "pm serve" to come up.
-_PM_SERVE_LIVENESS_TIMEOUT_SECS = 10
+_PM_SERVE_LISTEN_TIMEOUT_SECS = 10
+
+# Amount of time to sleep in between busywaits for "pm serve"'s port file.
+_PM_SERVE_POLL_INTERVAL = 0.1
 
 _MANAGED_REPO_NAME = 'chrome-runner'
 
@@ -59,32 +62,33 @@ class ManagedPkgRepo(PkgRepo):
     logging.debug('Creating and serving temporary package root: {}.'.format(
         self._pkg_root))
 
-    serve_port = common.GetAvailableTcpPort()
-    # Flags for `pm serve`:
-    # https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/src/sys/pkg/bin/pm/cmd/pm/serve/serve.go
-    # -l <port>: Port to listen on
-    # -c 2: Use config.json format v2, the default for pkgctl
-    # -q: Don't print out information about requests
-    self._pm_serve_task = subprocess.Popen([
-        pm_tool, 'serve', '-d',
-        os.path.join(self._pkg_root, 'repository'), '-l',
-        ':%d' % serve_port, '-c', '2', '-q'
-    ])
+    with tempfile.NamedTemporaryFile() as pm_port_file:
+        # Flags for `pm serve`:
+        # https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/src/sys/pkg/bin/pm/cmd/pm/serve/serve.go
+        self._pm_serve_task = subprocess.Popen([
+            pm_tool, 'serve',
+            '-d', os.path.join(self._pkg_root, 'repository'),
+            '-c', '2',  # Use config.json format v2, the default for pkgctl.
+            '-q',  # Don't log transfer activity.
+            '-l', ':0',  # Bind to ephemeral port.
+            '-f', pm_port_file.name  # Publish port number to |pm_port_file|.
+        ])
 
-    # Block until "pm serve" starts serving HTTP traffic at |serve_port|.
-    timeout = time.time() + _PM_SERVE_LIVENESS_TIMEOUT_SECS
-    while True:
-      try:
-        urllib.request.urlopen('http://localhost:%d' % serve_port,
-                               timeout=1).read()
-        break
-      except urllib.error.URLError:
-        logging.info('Waiting until \'pm serve\' is up...')
+        # Busywait until 'pm serve' starts the server and publishes its port to
+        # a temporary file.
+        timeout = time.time() + _PM_SERVE_LISTEN_TIMEOUT_SECS
+        serve_port = None
+        while not serve_port:
+          if time.time() > timeout:
+            raise Exception('Timeout waiting for \'pm serve\' to publish its port.')
 
-      if time.time() >= timeout:
-        raise Exception('Timed out while waiting for \'pm serve\'.')
+          with open(pm_port_file.name, 'r', encoding='utf8') as serve_port_file:
+            serve_port = serve_port_file.read()
 
-      time.sleep(1)
+          time.sleep(_PM_SERVE_POLL_INTERVAL)
+
+        serve_port = int(serve_port)
+        logging.debug('pm serve is active on port {}.'.format(serve_port))
 
     remote_port = common.ConnectPortForwardingTask(target, serve_port, 0)
     self._RegisterPkgRepository(self._pkg_root, remote_port)
