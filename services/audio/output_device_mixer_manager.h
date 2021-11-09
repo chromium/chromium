@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_parameters.h"
 #include "services/audio/device_output_listener.h"
@@ -72,6 +73,15 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   // the default ID.
   const std::string& ConvertToPhysicalDeviceId(const std::string& device_id);
 
+  // Returns a callback that call OnDeviceChange(), and that can be cancelled
+  // through invalidating |device_change_weak_ptr_factory_|.
+  // This is split out into its own method to simplify UTs.
+  base::OnceClosure GetOnDeviceChangeCallback();
+
+  media::AudioOutputStream* CreateMixerOwnedStream(
+      const std::string& device_id,
+      const media::AudioParameters& params);
+
   media::AudioOutputStream* CreateDeviceListenerStream(
       base::OnceClosure on_device_change_callback,
       const std::string& device_id,
@@ -92,6 +102,8 @@ class OutputDeviceMixerManager : public DeviceOutputListener {
   OutputDeviceMixer::CreateCallback create_mixer_callback_;
   OutputDeviceMixers output_device_mixers_;
   DeviceToListenersMap device_id_to_listeners_;
+  base::WeakPtrFactory<OutputDeviceMixerManager> device_change_weak_ptr_factory_
+      GUARDED_BY_CONTEXT(owning_sequence_);
 };
 
 }  // namespace audio

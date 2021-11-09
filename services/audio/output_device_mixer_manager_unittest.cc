@@ -206,6 +206,10 @@ class OutputDeviceMixerManagerTest
     EXPECT_CALL(*this, CreateOutputDeviceMixerCalled(_, _, _, _)).Times(0);
   }
 
+  base::OnceClosure GetOnDeviceChangeCallback() {
+    return output_mixer_manager_.GetOnDeviceChangeCallback();
+  }
+
   // Syntactic sugar, to differentiate from base::OnceClosure in tests.
   base::OnceClosure GetNoopDeviceChangeCallback() { return base::DoNothing(); }
 
@@ -497,6 +501,37 @@ TEST_F(OutputDeviceMixerManagerTest,
   // Force the recreation of output mixers, |post_mock_mixer_a| in this case.
   output_mixer_manager_.MakeOutputStream(kFakeDeviceId, default_params_,
                                          GetNoopDeviceChangeCallback());
+}
+
+// Makes sure OnDeviceChange() is only called once per device change.
+TEST_F(OutputDeviceMixerManagerTest, OnDeviceChange_OncePerDeviceChange) {
+  // Setup a mixer that expects exactly 1 device change.
+  MockOutputDeviceMixer* mixer = SetUpMockMixer_NoStreams(kFakeDeviceId);
+  EXPECT_CALL(*mixer, ProcessDeviceChange()).Times(1);
+
+  // Create the mixer.
+  ForceOutputMixerCreation(kFakeDeviceId);
+  auto first_device_change_callback = GetOnDeviceChangeCallback();
+  auto second_device_change_callback = GetOnDeviceChangeCallback();
+
+  // |mixer| should have been notified of the device change.
+  std::move(first_device_change_callback).Run();
+  testing::Mock::VerifyAndClearExpectations(mixer);
+
+  // Setup a new mixer.
+  testing::Mock::VerifyAndClearExpectations(this);
+  MockOutputDeviceMixer* new_mixer = SetUpMockMixer_NoStreams(kFakeDeviceId);
+
+  // Make sure it's not notified by the old callback.
+  EXPECT_CALL(*new_mixer, ProcessDeviceChange()).Times(0);
+  ForceOutputMixerCreation(kFakeDeviceId);
+  std::move(second_device_change_callback).Run();
+
+  testing::Mock::VerifyAndClearExpectations(new_mixer);
+
+  // Make sure the new mixer gets notified of changes through this new callback.
+  EXPECT_CALL(*new_mixer, ProcessDeviceChange()).Times(1);
+  GetOnDeviceChangeCallback().Run();
 }
 
 // Attach/detach listeners with no mixer.
