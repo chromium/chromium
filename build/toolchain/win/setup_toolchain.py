@@ -151,9 +151,12 @@ def _LoadToolchainEnv(cpu, toolchain_root, sdk_dir, target_store):
       # doesn't seem to cause problems.
       if 'VSINSTALLDIR' in os.environ:
         del os.environ['VSINSTALLDIR']
-        del os.environ['INCLUDE']
-        del os.environ['LIB']
-        del os.environ['LIBPATH']
+        if 'INCLUDE' in os.environ:
+          del os.environ['INCLUDE']
+        if 'LIB' in os.environ:
+          del os.environ['LIB']
+        if 'LIBPATH' in os.environ:
+          del os.environ['LIBPATH']
       other_path = os.path.normpath(os.path.join(
                                         os.environ['GYP_MSVS_OVERRIDE_PATH'],
                                         'VC/Auxiliary/Build/vcvarsall.bat'))
