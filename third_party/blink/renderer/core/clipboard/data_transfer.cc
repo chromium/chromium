@@ -487,9 +487,8 @@ static void WriteImageToDataObject(DataObject* data_object,
   if (!image_buffer || !image_buffer->size())
     return;
 
-  data_object->AddFileSharedBuffer(
-      image_buffer, cached_image->IsAccessAllowed(), image_url,
-      image->FilenameExtension(),
+  data_object->AddSharedBuffer(
+      image_buffer, image_url, image->FilenameExtension(),
       cached_image->GetResponse().HttpHeaderFields().Get(
           http_names::kContentDisposition));
 }

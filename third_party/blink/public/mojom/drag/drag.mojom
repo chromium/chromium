@@ -44,8 +44,6 @@ struct DragItemString {
 struct DragItemBinary {
   // Image data.
   mojo_base.mojom.BigBuffer data;
-  // True if image is same origin (or allowed crossorigin) as drag start frame.
-  bool is_accessible_from_start_frame;
   url.mojom.Url source_url;
   mojo_base.mojom.FilePath filename_extension;
   // Content-Disposition response header.
