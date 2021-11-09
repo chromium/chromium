@@ -159,6 +159,10 @@ class WTF_EXPORT StringBuilder {
 
   void erase(unsigned);
 
+  // ReleaseString is similar to ToString but releases the string_ object
+  // to the caller, preventing refcount trashing. Prefer it over ToString()
+  // if the StringBuilder is going to be destroyed or cleared afterwards.
+  String ReleaseString();
   String ToString();
   AtomicString ToAtomicString();
   String Substring(unsigned start, unsigned length) const;
@@ -247,6 +251,15 @@ class WTF_EXPORT StringBuilder {
   void CreateBuffer16(unsigned added_size);
   void ClearBuffer();
   bool HasBuffer() const { return has_buffer_; }
+
+  template <typename StringType>
+  void BuildString() {
+    if (is_8bit_)
+      string_ = StringType(Characters8(), length_);
+    else
+      string_ = StringType(Characters16(), length_);
+    ClearBuffer();
+  }
 
   String string_;
   union {
