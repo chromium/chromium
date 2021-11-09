@@ -82,10 +82,8 @@ function ccBuy() { // eslint-disable-line no-unused-vars
         });
     request.show()
         .then(function(resp) {
-          return resp.complete('success');
-        })
-        .then(function() {
           print(JSON.stringify(resp, undefined, 2));
+          return resp.complete('success');
         })
         .catch(function(error) {
           print(error);
