@@ -361,8 +361,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   WTF::Vector<scoped_refptr<CanvasResource>> canvas_resources_;
   bool resource_recycling_enabled_ = true;
   bool is_single_buffered_ = false;
+  bool oopr_uses_dmsaa_ = false;
 
-  // The maximum number of in-flight resources waiting to be used for recycling.
+  // The maximum number of in-flight resources waiting to be used for
+  // recycling.
   static constexpr int kMaxRecycledCanvasResources = 2;
   // The maximum number of draw ops executed on the canvas, after which the
   // underlying GrContext is flushed.

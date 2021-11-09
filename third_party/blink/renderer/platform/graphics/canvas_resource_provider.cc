@@ -1188,8 +1188,12 @@ CanvasResourceProvider::CanvasResourceProvider(
       is_origin_top_left_(is_origin_top_left),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   info_ = info;
-  if (context_provider_wrapper_)
+  if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
+    const auto& caps =
+        context_provider_wrapper_->ContextProvider()->GetCapabilities();
+    oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
+  }
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
@@ -1420,9 +1424,10 @@ void CanvasResourceProvider::RasterRecordOOP(
   const bool can_use_lcd_text =
       GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
   ri->BeginRasterCHROMIUM(background_color, needs_clear,
-                          /*msaa_sample_count=*/1,
-                          gpu::raster::MsaaMode::kDMSAA, can_use_lcd_text,
-                          GetColorSpace(), mailbox.name);
+                          /*msaa_sample_count=*/oopr_uses_dmsaa_ ? 1 : 0,
+                          oopr_uses_dmsaa_ ? gpu::raster::MsaaMode::kDMSAA
+                                           : gpu::raster::MsaaMode::kNoMSAA,
+                          can_use_lcd_text, GetColorSpace(), mailbox.name);
 
   ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
                      full_raster_rect, playback_rect, post_translate,
