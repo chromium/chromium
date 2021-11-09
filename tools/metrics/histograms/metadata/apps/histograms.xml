@@ -915,6 +915,7 @@ chromium-metrics-reviews@google.com.
     The bucket proportion is not meaningful, because impressions are a superset
     of the other buckets. Instead, the ratio between buckets is meaningful.
   </summary>
+  <token key="SearchView" variants="SearchView"/>
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}.LaunchIndex" units="index"
@@ -926,6 +927,7 @@ chromium-metrics-reviews@google.com.
     Emitted when launching a search result. Records the index of the launched
     result in the {SearchView} view. The top-most result is index zero.
   </summary>
+  <token key="SearchView" variants="SearchView"/>
 </histogram>
 
 <histogram name="Apps.AppList.Search.{SearchView}.{SearchAction}"
@@ -954,6 +956,8 @@ chromium-metrics-reviews@google.com.
     Impression. Emitted if either a) a set of results is displayed for 2 seconds
     or b) the user interacted with a result, eg. by clicking it.
   </summary>
+  <token key="SearchView" variants="SearchView"/>
+  <token key="SearchAction" variants="SearchAction"/>
 </histogram>
 
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
@@ -1044,9 +1048,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.LaunchIndex{LauncherUISurface}"
     units="index" expires_after="2022-08-15">
-  <obsolete>
-    Deprecated November 2021.
-  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -1056,6 +1057,10 @@ chromium-metrics-reviews@google.com.
     meaningful for this metric, because impressions are a superset of launches
     and abandons. Instead, the ratio between buckets can be used to calculate
     accurate overall CTR. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
   </summary>
   <token key="LauncherUISurface" variants="LauncherUISurface">
     <variant name=""/>
@@ -1064,9 +1069,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.Overall{LauncherUISurface}"
     enum="AppListUserEvent" expires_after="2022-08-15">
-  <obsolete>
-    Deprecated November 2021.
-  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -1076,6 +1078,10 @@ chromium-metrics-reviews@google.com.
     meaningful for this metric, because impressions are a superset of launches
     and abandons. Instead, the ratio between buckets can be used to calculate
     accurate overall CTR. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
   </summary>
   <token key="LauncherUISurface" variants="LauncherUISurface">
     <variant name=""/>
@@ -1084,9 +1090,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
     expires_after="2022-08-15">
-  <obsolete>
-    Deprecated November 2021.
-  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -1095,14 +1098,15 @@ chromium-metrics-reviews@google.com.
     box. Entering any number of characters is considered only one query, but
     deleting the contents of the search box and starting again is recorded as a
     new query.
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
   </summary>
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.TypeAbandon{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2022-08-15">
-  <obsolete>
-    Deprecated November 2021.
-  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -1114,6 +1118,10 @@ chromium-metrics-reviews@google.com.
 
     This metric is completed by a histogram suffix describing which UI surface
     the results are recorded from. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
   </summary>
   <token key="LauncherUISurface" variants="LauncherUISurface">
     <variant name=""/>
@@ -1122,9 +1130,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.TypeImpression{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2022-08-15">
-  <obsolete>
-    Deprecated November 2021.
-  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -1142,6 +1147,10 @@ chromium-metrics-reviews@google.com.
 
     This metric is completed by a histogram suffix describing which UI surface
     the results are recorded from. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
   </summary>
   <token key="LauncherUISurface" variants="LauncherUISurface">
     <variant name=""/>
@@ -1150,9 +1159,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppList.UserEvent.TypeLaunch{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2022-08-15">
-  <obsolete>
-    Deprecated November 2021.
-  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -1163,6 +1169,10 @@ chromium-metrics-reviews@google.com.
 
     This metric is completed by a histogram suffix describing which UI surface
     the results are recorded from. {LauncherUISurface}
+
+    This metric stopped collecting data in November 2021, but has not yet been
+    marked obsolete because the historical data is still being used for
+    analysis.
   </summary>
   <token key="LauncherUISurface" variants="LauncherUISurface">
     <variant name=""/>
