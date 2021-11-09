@@ -51,7 +51,4 @@ const char kInstallURLBlocklistHandlers[] = "install-url-blocklist-handlers";
 // A string used to override the default user agent with a custom one.
 const char kUserAgent[] = "user-agent";
 
-// Enable using the forced sign-in mode of the BrowserSignin policy.
-const char kEnableForcedSignInPolicy[] = "enable-forced-signin-policy";
-
 }  // namespace switches

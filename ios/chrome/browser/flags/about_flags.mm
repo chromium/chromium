@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #import "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
@@ -826,8 +825,7 @@ flags_ui::FlagsState& GetGlobalFlagsState() {
 }
 // Creates the experimental test policies map, used by AsyncPolicyLoader and
 // PolicyLoaderIOS to locally enable policies.
-NSMutableDictionary* CreateExperimentalTestingPolicies(
-    base::CommandLine* command_line) {
+NSMutableDictionary* CreateExperimentalTestingPolicies() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
   // Shared variables for all enterprise experimental flags.
@@ -951,13 +949,6 @@ NSMutableDictionary* CreateExperimentalTestingPolicies(
     --signin_policy_mode;
     DCHECK(signin_policy_mode >= 0);
 
-    if (signin_policy_mode ==
-        static_cast<NSInteger>(BrowserSigninMode::kForced)) {
-      // Allow the forced sign-in policy feature when the corresponding policy
-      // mode is specified.
-      command_line->AppendSwitch(switches::kEnableForcedSignInPolicy);
-    }
-
     [allowed_experimental_policies addObject:kSigninPolicyKey];
     [testing_policies addEntriesFromDictionary:@{
       kSigninPolicyKey : @(signin_policy_mode),
@@ -1017,8 +1008,7 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   }
 
   // Shared variables for all enterprise experimental flags.
-  NSMutableDictionary* testing_policies =
-      CreateExperimentalTestingPolicies(command_line);
+  NSMutableDictionary* testing_policies = CreateExperimentalTestingPolicies();
 
   // If a CBCM enrollment token is provided, force Chrome Browser Cloud
   // Management to enabled and add the token to the list of policies.
@@ -1108,8 +1098,7 @@ void MonitorExperimentalSettingsChanges() {
         // Publish update.
         NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
         NSMutableDictionary* testing_policies =
-            CreateExperimentalTestingPolicies(
-                base::CommandLine::ForCurrentProcess());
+            CreateExperimentalTestingPolicies();
         NSDictionary* registration_defaults =
             @{kPolicyLoaderIOSConfigurationKey : testing_policies};
         [defaults registerDefaults:registration_defaults];

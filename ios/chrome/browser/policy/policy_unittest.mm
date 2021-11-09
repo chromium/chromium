@@ -39,8 +39,6 @@ class PolicyTest : public PlatformTest {
         switches::kEnableEnterprisePolicy);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kInstallURLBlocklistHandlers);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableForcedSignInPolicy);
   }
 
   void SetUp() override {

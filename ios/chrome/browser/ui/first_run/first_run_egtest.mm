@@ -298,7 +298,6 @@ GREYLayoutConstraint* BelowConstraint() {
                             "</dict>";
   base::RemoveChars(policy_data, base::kWhitespaceASCII, &policy_data);
 
-  config.additional_args.push_back("--enable-forced-signin-policy");
   config.additional_args.push_back(
       "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
   config.additional_args.push_back(policy_data);

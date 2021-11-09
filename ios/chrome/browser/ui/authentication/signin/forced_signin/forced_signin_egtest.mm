@@ -149,9 +149,6 @@ void OpenAccountSettingsAndSignOut(BOOL syncEnabled) {
   // sync screen changing.
   config.features_disabled = std::vector<base::Feature>{kOldSyncStringFRE};
 
-  // Enable the possibility of using the forced sign-in policy.
-  config.additional_args.push_back("--enable-forced-signin-policy");
-
   // Configure the policy to force sign-in.
   config.additional_args.push_back(
       "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
