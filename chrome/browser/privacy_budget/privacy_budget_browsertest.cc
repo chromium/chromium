@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -156,12 +157,24 @@ class PrivacyBudgetBrowserTestBase : public SyncTest {
   std::unique_ptr<SyncServiceImplHarness> sync_test_harness_;
 };
 
-class PrivacyBudgetBrowserTest : public PrivacyBudgetBrowserTestBase {
+class PrivacyBudgetBrowserTestWithScopedConfig
+    : public PrivacyBudgetBrowserTestBase {
  public:
-  PrivacyBudgetBrowserTest() {
+  PrivacyBudgetBrowserTestWithScopedConfig() {
     privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
+    feature_list_.InitAndEnableFeatureWithParameters(
+        ukm::kUkmFeature,
+        base::FieldTrialParams{{"WhitelistEntries", "Identifiability"}});
   }
 
+ private:
+  test::ScopedPrivacyBudgetConfig privacy_budget_config_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class PrivacyBudgetBrowserTestWithTestRecorder
+    : public PrivacyBudgetBrowserTestWithScopedConfig {
+ public:
   void SetUpOnMainThread() override {
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     PrivacyBudgetBrowserTestBase::SetUpOnMainThread();
@@ -170,13 +183,13 @@ class PrivacyBudgetBrowserTest : public PrivacyBudgetBrowserTestBase {
   ukm::TestUkmRecorder& recorder() { return *ukm_recorder_; }
 
  private:
-  test::ScopedPrivacyBudgetConfig privacy_budget_config_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, BrowserSideSettingsIsActive) {
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
+                       BrowserSideSettingsIsActive) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
   const auto* settings = blink::IdentifiabilityStudySettings::Get();
   EXPECT_TRUE(settings->IsActive());
@@ -184,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, BrowserSideSettingsIsActive) {
 
 // When UKM resets the Client ID for some reason the study should reset its
 // local state as well.
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
                        UkmClientIdChangesResetStudyState) {
   EXPECT_TRUE(blink::IdentifiabilityStudySettings::Get()->IsActive());
   ASSERT_TRUE(EnableUkmRecording());
@@ -198,7 +211,8 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
       << "Active surface list still exists after resetting client ID";
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, SamplingScreenAPIs) {
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
+                       SamplingScreenAPIs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
@@ -258,7 +272,8 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, SamplingScreenAPIs) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, CallsCanvasToBlob) {
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
+                       CallsCanvasToBlob) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Ensure that the previous page won't be stored in the back/forward cache, so
@@ -317,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest, CallsCanvasToBlob) {
 #else
 #define MAYBE_CanvasToBlobDifferentDocument CanvasToBlobDifferentDocument
 #endif
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
                        MAYBE_CanvasToBlobDifferentDocument) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Ensure that the previous page won't be stored in the back/forward cache, so
@@ -378,6 +393,52 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTest,
               << " surface input hash " << surface.GetInputHash() << " value "
               << metric.second;
   }
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithScopedConfig,
+                       IncludesMetadata) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
+  ASSERT_TRUE(EnableUkmRecording());
+
+  constexpr blink::IdentifiableToken kDummyToken = 1;
+  constexpr blink::IdentifiableSurface kDummySurface =
+      blink::IdentifiableSurface::FromMetricHash(2125235);
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+
+  blink::IdentifiabilityMetricBuilder(ukm::UkmRecorder::GetNewSourceID())
+      .Add(kDummySurface, kDummyToken)
+      .Record(ukm_recorder);
+
+  blink::IdentifiabilitySampleCollector::Get()->Flush(ukm_recorder);
+
+  ukm::UkmTestHelper ukm_test_helper(ukm_service());
+  ukm_test_helper.BuildAndStoreLog();
+  std::unique_ptr<ukm::Report> ukm_report = ukm_test_helper.GetUkmReport();
+  ASSERT_TRUE(ukm_report);
+  ASSERT_NE(ukm_report->entries_size(), 0);
+
+  std::map<uint64_t, int64_t> seen_metrics;
+  for (const auto& entry : ukm_report->entries()) {
+    ASSERT_TRUE(entry.has_event_hash());
+    if (entry.event_hash() != ukm::builders::Identifiability::kEntryNameHash) {
+      continue;
+    }
+    for (const auto& metric : entry.metrics()) {
+      ASSERT_TRUE(metric.has_metric_hash());
+      ASSERT_TRUE(metric.has_value());
+      seen_metrics.insert({metric.metric_hash(), metric.value()});
+    }
+  }
+
+  const std::pair<uint64_t, int64_t> kExpectedGenerationEntry{
+      ukm::builders::Identifiability::kStudyGeneration_626NameHash,
+      test::ScopedPrivacyBudgetConfig::kDefaultGeneration};
+  EXPECT_THAT(seen_metrics, testing::Contains(kExpectedGenerationEntry));
+
+  const std::pair<uint64_t, int64_t> kExpectedGeneratorEntry{
+      ukm::builders::Identifiability::kGeneratorVersion_926NameHash,
+      IdentifiabilityStudyState::kGeneratorVersion};
+  EXPECT_THAT(seen_metrics, testing::Contains(kExpectedGeneratorEntry));
 }
 
 namespace {
