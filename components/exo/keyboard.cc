@@ -5,6 +5,7 @@
 #include "components/exo/keyboard.h"
 
 #include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/public/cpp/accelerators.h"
@@ -96,6 +97,8 @@ bool IsImeSupportedSurface(Surface* surface) {
       case ash::AppType::ARC_APP:
       case ash::AppType::LACROS:
         return true;
+      case ash::AppType::CROSTINI_APP:
+        return base::FeatureList::IsEnabled(ash::features::kCrostiniImeSupport);
       default:
         // Do nothing.
         break;
