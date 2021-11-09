@@ -63,7 +63,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.PassphraseType;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -536,19 +535,16 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
 
     /** Callback for PassphraseTypeDialogFragment.Listener */
     @Override
-    public void onPassphraseTypeSelected(@PassphraseType int type) {
+    public void onChooseCustomPassphraseRequested() {
         if (!mSyncService.isEngineInitialized()) {
             // If the engine was shut down since the dialog was opened, do nothing.
             return;
         }
 
-        boolean isAllDataEncrypted = mSyncService.isEncryptEverythingEnabled();
-        boolean isUsingExplicitPassphrase = mSyncService.isUsingExplicitPassphrase();
-
         // The passphrase type should only ever be selected if the account doesn't have
         // full encryption enabled. Otherwise both options should be disabled.
-        assert !isAllDataEncrypted;
-        assert !isUsingExplicitPassphrase;
+        assert !mSyncService.isEncryptEverythingEnabled();
+        assert !mSyncService.isUsingExplicitPassphrase();
         displayCustomPassphraseDialog();
     }
 

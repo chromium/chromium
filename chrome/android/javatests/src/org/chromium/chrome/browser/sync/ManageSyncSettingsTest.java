@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.sync;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Dialog;
@@ -51,7 +53,6 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.sync.ModelType;
-import org.chromium.components.sync.PassphraseType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Collection;
@@ -420,9 +421,7 @@ public class ManageSyncSettingsTest {
 
         final PassphraseTypeDialogFragment typeFragment = getPassphraseTypeDialogFragment();
         mSyncTestRule.stopSync();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            typeFragment.onItemClick(null, null, 0, PassphraseType.CUSTOM_PASSPHRASE);
-        });
+        onView(withId(R.id.explicit_passphrase_checkbox)).perform(click());
         // No crash means we passed.
     }
 
@@ -450,8 +449,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> fragment.onPassphraseTypeSelected(PassphraseType.CUSTOM_PASSPHRASE));
+        TestThreadUtils.runOnUiThreadBlocking(fragment::onChooseCustomPassphraseRequested);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         PassphraseCreationDialogFragment pcdf = getPassphraseCreationDialogFragment();
         AlertDialog dialog = (AlertDialog) pcdf.getDialog();
