@@ -243,12 +243,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus{EnterpriseAutoEnrollmentType}"
-    enum="EnterpriseDeviceManagementStatus" expires_after="2021-10-31">
+    enum="EnterpriseDeviceManagementStatus" expires_after="2022-10-31">
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
     Device management server request status for auto-enrollment PSM requests.
     {EnterpriseAutoEnrollmentType}
+
+    The histogram was expired (not recording data) from 2021-10-31 until
+    2021-11-09.
   </summary>
   <token key="EnterpriseAutoEnrollmentType"
       variants="EnterpriseAutoEnrollmentType">
