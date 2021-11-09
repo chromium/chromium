@@ -63,7 +63,6 @@ importer.Disposition = {
 importer.Setting = {
   HAS_COMPLETED_IMPORT: 'importer-has-completed-import',
   MACHINE_ID: 'importer-machine-id',
-  PHOTOS_APP_ENABLED: 'importer-photo-app-enabled',
   LAST_KNOWN_LOG_ID: 'importer-last-known-log-id'
 };
 
@@ -279,37 +278,6 @@ importer.getDirectory_ = (parent, name) => {
           resolve(null);
         });
   });
-};
-
-/**
- * Handles a message from Pulsar...in which we presume we are being
- * informed of its "Automatically import stuff." state.
- *
- * While the runtime message system is loosey goosey about types,
- * we fully expect message to be a boolean value.
- *
- * @param {*} message
- *
- * @return {!Promise} Resolves once the message has been handled.
- */
-importer.handlePhotosAppMessage = message => {
-  if (typeof message !== 'boolean') {
-    console.error(
-        'Unrecognized message type received from photos app: ' + message);
-    return Promise.reject();
-  }
-
-  const storage = importer.ChromeLocalStorage.getInstance();
-  return storage.set(importer.Setting.PHOTOS_APP_ENABLED, message);
-};
-
-/**
- * @return {!Promise<boolean>} Resolves with true when Cloud Import feature
- *     is enabled.
- */
-importer.isPhotosAppImportEnabled = () => {
-  const storage = importer.ChromeLocalStorage.getInstance();
-  return storage.get(importer.Setting.PHOTOS_APP_ENABLED, false);
 };
 
 /**

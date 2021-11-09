@@ -353,19 +353,8 @@ export class DeviceHandler extends EventTarget {
                * @param {!DirectoryEntry} directory
                */
               directory => {
-                return importer.isPhotosAppImportEnabled().then(
-                    /**
-                     * @param {boolean} appEnabled
-                     */
-                    appEnabled => {
-                      // We don't want to auto-open two windows when a user
-                      // inserts a removable device.  Only open Files app if
-                      // auto-import is disabled in Photos app.
-                      if (!appEnabled) {
-                        this.openMediaDirectory_(
-                            metadata.volumeId, null, directory.fullPath);
-                      }
-                    });
+                this.openMediaDirectory_(
+                    metadata.volumeId, null, directory.fullPath);
               })
         .catch(error => {
           if (metadata.deviceType && metadata.devicePath) {

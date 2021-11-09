@@ -120,28 +120,6 @@ export function testGetMachineId_Persisted(callback) {
   reportPromise(promise, callback);
 }
 
-export function testPhotosApp_DefaultDisabled(callback) {
-  const promise = importer.isPhotosAppImportEnabled().then(assertFalse);
-
-  reportPromise(promise, callback);
-}
-
-export function testPhotosApp_ImportEnabled(callback) {
-  const promise = importer.handlePhotosAppMessage(true).then(() => {
-    return importer.isPhotosAppImportEnabled().then(assertTrue);
-  });
-
-  reportPromise(promise, callback);
-}
-
-export function testPhotosApp_ImportDisabled(callback) {
-  const promise = importer.handlePhotosAppMessage(false).then(() => {
-    return importer.isPhotosAppImportEnabled().then(assertFalse);
-  });
-
-  reportPromise(promise, callback);
-}
-
 export function testHistoryFilename(callback) {
   const promise = importer.getHistoryFilename().then(firstName => {
     assertTrue(!!firstName && firstName.length > 10);
