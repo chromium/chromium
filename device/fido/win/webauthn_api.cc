@@ -355,7 +355,8 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       &exclude_credential_list,
       enterprise_attestation,
       WEBAUTHN_LARGE_BLOB_SUPPORT_NONE,
-      /*bPreferResidentKey=*/FALSE,
+      /*bPreferResidentKey=*/request_options.resident_key ==
+          ResidentKeyRequirement::kPreferred,
   };
 
   WEBAUTHN_CREDENTIAL_ATTESTATION* credential_attestation = nullptr;

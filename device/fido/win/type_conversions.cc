@@ -83,6 +83,7 @@ ToAuthenticatorMakeCredentialResponse(
   if (credential_attestation.dwVersion >=
       WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_4) {
     ret.enterprise_attestation_returned = credential_attestation.bEpAtt;
+    ret.is_resident_key = credential_attestation.bResidentKey;
   }
 
   return ret;
