@@ -879,6 +879,13 @@ void AwContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
   }
 }
 
+bool AwContentBrowserClient::ShouldAllowNoLongerUsedProcessToExit() {
+  // TODO(crbug.com/1268454): Add Android WebView support for allowing a
+  // renderer process to exit when only non-live RenderFrameHosts remain,
+  // without consulting the app's OnRenderProcessGone crash handlers.
+  return false;
+}
+
 bool AwContentBrowserClient::ShouldIsolateErrorPage(bool in_main_frame) {
   return false;
 }

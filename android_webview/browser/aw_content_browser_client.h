@@ -194,6 +194,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       int render_process_id,
       int render_frame_id,
       NonNetworkURLLoaderFactoryMap* factories) override;
+  bool ShouldAllowNoLongerUsedProcessToExit() override;
   bool ShouldIsolateErrorPage(bool in_main_frame) override;
   bool ShouldEnableStrictSiteIsolation() override;
   bool ShouldDisableSiteIsolation(

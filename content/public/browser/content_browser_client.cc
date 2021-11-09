@@ -261,6 +261,10 @@ bool ContentBrowserClient::ShouldSubframesTryToReuseExistingProcess(
   return true;
 }
 
+bool ContentBrowserClient::ShouldAllowNoLongerUsedProcessToExit() {
+  return true;
+}
+
 bool ContentBrowserClient::ShouldSwapBrowsingInstancesForNavigation(
     SiteInstance* site_instance,
     const GURL& current_effective_url,

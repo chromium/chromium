@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 function run_tests() {
-  // Compute the size of the popup.
-  var width = 0;
-  var height = 0;
+  // Compute the size of the popup, which will decrease each time.
+  var width = 1000;
+  var height = 1000;
   if (localStorage.height) {
     height = parseInt(localStorage.height);
   }
@@ -13,17 +13,18 @@ function run_tests() {
     width = parseInt(localStorage.width);
   }
 
+  // Write the new size for next time before generating the resize event.
+  var newWidth = width - 500;
+  var newHeight = height - 500;
+  localStorage.width = JSON.stringify(newWidth);
+  localStorage.height = JSON.stringify(newHeight);
+
   // Set the div's size.
   var test = document.getElementById("test");
   test.style.width = width + "px";
   test.style.height = height + "px";
   chrome.test.log("height: " + test.offsetHeight);
   chrome.test.log("width: " + test.offsetWidth);
-
-  height += 500;
-  width += 500;
-  localStorage.height = JSON.stringify(height);
-  localStorage.width = JSON.stringify(width);
 }
 
 window.addEventListener("load", function() {

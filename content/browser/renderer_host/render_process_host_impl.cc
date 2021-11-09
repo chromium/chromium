@@ -130,6 +130,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_factory.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -3856,6 +3857,38 @@ RenderProcessHostImpl::RegisterBlockStateChangedCallback(
   return blocked_state_changed_callback_list_.Add(cb);
 }
 
+bool RenderProcessHostImpl::HasOnlyNonLiveRenderFrameHosts() {
+  if (GetRenderFrameHostCount() == 0)
+    return false;
+
+  // Iterate over the RenderFrameHosts in this process. While listeners_ may
+  // also contain RenderViewHosts and RenderFrameProxyHosts, those on their own
+  // do not need to keep a process alive.
+  int found_rfh_count = 0;
+  for (auto rfh_id : render_frame_host_id_set_) {
+    // Note that some RenderFrameHosts in the set may not be found by FromID if
+    // we get here during their destructor (e.g., while deleting their subframe
+    // RenderFrameHosts).
+    if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id)) {
+      found_rfh_count++;
+      if (rfh->IsRenderFrameLive())
+        return false;
+    }
+  }
+
+  // If we didn't find all the known RenderFrameHosts via FromID (because some
+  // are in their destructor), consider them live until they finish destructing.
+  if (found_rfh_count < GetRenderFrameHostCount())
+    return false;
+
+  // We should never find more than render_frame_host_count_.
+  DCHECK_EQ(GetRenderFrameHostCount(), found_rfh_count);
+
+  // We accounted for all the RenderFrameHosts (at least one), and none were
+  // live.
+  return true;
+}
+
 void RenderProcessHostImpl::Cleanup() {
   TRACE_EVENT("shutdown", "RenderProcessHostImpl::Cleanup",
               ChromeTrackEvent::kRenderProcessHost, *this);
@@ -3878,9 +3911,22 @@ void RenderProcessHostImpl::Cleanup() {
   }
   delayed_cleanup_needed_ = false;
 
+  // Check whether there are only non-live RenderFrameHosts remaining (with at
+  // least one). If so, it is safe for the process to exit even if we keep the
+  // RenderProcessHost around for non-live listeners_. Allow embedders to skip
+  // this check (e.g., Android WebView does not yet cleanly handle this exit for
+  // its sole RenderProcessHost).
+  // TODO(crbug.com/1268454): Support this on Android WebView as well and remove
+  // the ContentBrowserClient method.
+  bool has_only_non_live_rfhs =
+      GetContentClient()->browser()->ShouldAllowNoLongerUsedProcessToExit() &&
+      HasOnlyNonLiveRenderFrameHosts();
+
   // Until there are no other owners of this object, we can't delete
-  // ourselves.
-  if (!listeners_.IsEmpty()) {
+  // ourselves. Note that it may be safe for the renderer process to exit even
+  // if some non-live listeners remain, though they still depend on this
+  // RenderProcessHost object.
+  if (!listeners_.IsEmpty() && !has_only_non_live_rfhs) {
     TRACE_EVENT(
         "shutdown", "RenderProcessHostImpl::Cleanup : Has listeners.",
         ChromeTrackEvent::kRenderProcessHost, *this,
@@ -3919,6 +3965,41 @@ void RenderProcessHostImpl::Cleanup() {
               ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
           proto->set_worker_ref_count(worker_ref_count_);
         });
+    return;
+  }
+
+  // If there are listeners but they do not include any live RenderFrameHosts
+  // (and there aren't other reasons to keep the process around), then it is
+  // safe for the process to cleanly exit but not for the RenderProcessHost to
+  // be deleted.
+  if (has_only_non_live_rfhs) {
+    DCHECK(!listeners_.IsEmpty());
+
+    // No need to terminate the renderer if it is already gone.
+    if (!IsInitializedAndNotDead())
+      return;
+
+    TRACE_EVENT("shutdown",
+                "RenderProcessHostImpl::Cleanup : Exit without full cleanup.",
+                ChromeTrackEvent::kRenderProcessHost, *this);
+
+    // Notify all observers that the process has exited cleanly, even though it
+    // will be destroyed a bit later. Observers shouldn't rely on this process
+    // anymore.
+    // Populates Android-only fields and closes the underlying base::Process.
+    ChildProcessTerminationInfo info =
+        child_process_launcher_->GetChildTerminationInfo(
+            false /* already_dead */);
+    info.status = base::TERMINATION_STATUS_NORMAL_TERMINATION;
+    info.exit_code = 0;
+    PopulateTerminationInfoRendererFields(&info);
+
+    // Set this before ProcessDied() so observers treat this process exit as
+    // similar to the fast shutdown case.
+    fast_shutdown_started_ = true;
+
+    // Notify observers using the clean exit info.
+    ProcessDied(false, &info);
     return;
   }
 

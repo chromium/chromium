@@ -551,6 +551,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldSubframesTryToReuseExistingProcess(
       RenderFrameHost* main_frame);
 
+  // Returns whether a process that no longer has active RenderFrameHosts (or
+  // other reasons to be kept alive) can safely exit. This should return true,
+  // unless the embedder cannot easily handle a process exit in non-live frames.
+  virtual bool ShouldAllowNoLongerUsedProcessToExit();
+
   // Called when a site instance is first associated with a process.
   virtual void SiteInstanceGotProcess(SiteInstance* site_instance) {}
 

@@ -845,6 +845,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // any other that hang off it.
   void ResetIPC();
 
+  // Returns whether this RenderProcessHost contains at least one
+  // RenderFrameHost, but all of its RenderFrameHosts are non-live. In this case
+  // the RenderProcessHost is needed but the renderer process is not.
+  bool HasOnlyNonLiveRenderFrameHosts();
+
   // Get an existing RenderProcessHost associated with the given browser
   // context, if possible.  The renderer process is chosen randomly from
   // suitable renderers that share the same context and type (determined by the
