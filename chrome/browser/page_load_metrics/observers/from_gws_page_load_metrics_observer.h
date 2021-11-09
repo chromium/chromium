@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_FROM_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/macros.h"
+#include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -126,6 +127,8 @@ class FromGWSPageLoadMetricsLogger {
       const page_load_metrics::PageLoadMetricsObserverDelegate& delegate);
 
   bool previously_committed_url_is_search_results_ = false;
+  google_util::GoogleSearchMode previously_committed_url_search_mode_ =
+      google_util::GoogleSearchMode::kUnspecified;
   bool previously_committed_url_is_search_redirector_ = false;
   bool navigation_initiated_via_link_ = false;
   bool provisional_url_has_search_hostname_ = false;

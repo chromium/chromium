@@ -385,4 +385,51 @@ GURL AppendToAsyncQueryParam(const GURL& url,
   return url.ReplaceComponents(replacements);
 }
 
+GoogleSearchMode GoogleSearchModeFromUrl(const GURL& url) {
+  static_assert(GoogleSearchMode::kMaxValue == GoogleSearchMode::kFlights,
+                "This function should be updated if new values are added to "
+                "GoogleSearchMode");
+
+  base::StringPiece query_str = url.query_piece();
+  url::Component query(0, static_cast<int>(url.query_piece().length()));
+  url::Component key, value;
+  GoogleSearchMode mode = GoogleSearchMode::kUnspecified;
+  while (url::ExtractQueryKeyValue(query_str.data(), &query, &key, &value)) {
+    base::StringPiece key_str = query_str.substr(key.begin, key.len);
+    if (key_str != "tbm") {
+      continue;
+    }
+    if (mode != GoogleSearchMode::kUnspecified) {
+      // There is more than one tbm parameter, which is not expected. Return
+      // kUnknown to signify the result can't be trusted.
+      return GoogleSearchMode::kUnknown;
+    }
+    base::StringPiece value_str = query_str.substr(value.begin, value.len);
+    if (value_str == "isch") {
+      mode = GoogleSearchMode::kImages;
+    } else if (value_str == "web") {
+      mode = GoogleSearchMode::kWeb;
+    } else if (value_str == "nws") {
+      mode = GoogleSearchMode::kNews;
+    } else if (value_str == "shop") {
+      mode = GoogleSearchMode::kShopping;
+    } else if (value_str == "vid") {
+      mode = GoogleSearchMode::kVideos;
+    } else if (value_str == "bks") {
+      mode = GoogleSearchMode::kBooks;
+    } else if (value_str == "flm") {
+      mode = GoogleSearchMode::kFlights;
+    } else if (value_str == "lcl") {
+      mode = GoogleSearchMode::kLocal;
+    } else {
+      mode = GoogleSearchMode::kUnknown;
+    }
+  }
+  if (mode == GoogleSearchMode::kUnspecified) {
+    // No tbm query parameter means this is the Web mode.
+    mode = GoogleSearchMode::kWeb;
+  }
+  return mode;
+}
+
 }  // namespace google_util

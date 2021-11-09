@@ -13427,6 +13427,13 @@ be describing additional metrics about the same event.
   <summary>
     Recorded for page loads that were navigated to via Google Search.
   </summary>
+  <metric name="GoogleSearchMode" enum="GoogleSearchMode">
+    <summary>
+      Google Search mode used by the user. This corresponds to the tab (e.g. web
+      result, image results, video results, etc.) the user is on. This
+      information is extracted from the tbm query parameter on the Search URL.
+    </summary>
+  </metric>
 </event>
 
 <event name="PageLoad.Internal" singular="True">

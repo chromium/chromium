@@ -337,8 +337,11 @@ FromGWSPageLoadMetricsLogger::FromGWSPageLoadMetricsLogger() = default;
 FromGWSPageLoadMetricsLogger::~FromGWSPageLoadMetricsLogger() = default;
 
 void FromGWSPageLoadMetricsLogger::SetPreviouslyCommittedUrl(const GURL& url) {
-  previously_committed_url_is_search_results_ =
-      page_load_metrics::IsGoogleSearchResultUrl(url);
+  if (page_load_metrics::IsGoogleSearchResultUrl(url)) {
+    previously_committed_url_is_search_results_ = true;
+    previously_committed_url_search_mode_ =
+        google_util::GoogleSearchModeFromUrl(url);
+  }
   previously_committed_url_is_search_redirector_ =
       page_load_metrics::IsGoogleSearchRedirectorUrl(url);
 }
@@ -449,8 +452,10 @@ void FromGWSPageLoadMetricsLogger::OnCommit(
     ukm::SourceId source_id) {
   if (!ShouldLogPostCommitMetrics(navigation_handle->GetURL()))
     return;
-  ukm::builders::PageLoad_FromGoogleSearch(source_id).Record(
-      ukm::UkmRecorder::Get());
+  ukm::builders::PageLoad_FromGoogleSearch(source_id)
+      .SetGoogleSearchMode(
+          static_cast<int64_t>(previously_committed_url_search_mode_))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void FromGWSPageLoadMetricsLogger::OnComplete(

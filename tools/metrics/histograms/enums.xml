@@ -40376,6 +40376,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="16" label="UNAUTHENTICATED"/>
 </enum>
 
+<enum name="GoogleSearchMode">
+  <int value="0" label="UNSPECIFIED"/>
+  <int value="1" label="UNKNOWN"/>
+  <int value="2" label="WEB"/>
+  <int value="3" label="IMAGES"/>
+  <int value="4" label="NEWS"/>
+  <int value="5" label="SHOPPING"/>
+  <int value="6" label="VIDEOS"/>
+  <int value="7" label="BOOKS"/>
+  <int value="8" label="LOCAL"/>
+  <int value="9" label="FLIGHTS"/>
+</enum>
+
 <enum name="GoogleServiceAuthError">
   <int value="0" label="NONE"/>
   <int value="1" label="INVALID_GAIA_CREDENTIALS"/>

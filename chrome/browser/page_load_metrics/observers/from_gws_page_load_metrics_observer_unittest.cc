@@ -367,6 +367,39 @@ TEST_F(FromGWSPageLoadMetricsObserverTest, SearchPreviousCommittedUrl4) {
   }
 }
 
+TEST_F(FromGWSPageLoadMetricsObserverTest, GoogleSearchModeLogged) {
+  // TODO: rm timing?
+  page_load_metrics::mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.parse_timing->parse_start = base::Milliseconds(1);
+  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.paint_timing->first_image_paint = base::Milliseconds(1);
+  PopulateRequiredTimingFields(&timing);
+  NavigateAndCommit(GURL("https://www.google.co.uk/search?q=test&tbm=vid"));
+  NavigateAndCommit(GURL(kExampleUrl));
+
+  tester()->SimulateTimingUpdate(timing);
+
+  // Navigate again to force logging.
+  tester()->NavigateToUntrackedUrl();
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramFromGWSFirstImagePaint, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramFromGWSFirstImagePaint,
+      timing.paint_timing->first_image_paint.value().InMilliseconds(), 1);
+
+  auto entries = tester()->test_ukm_recorder().GetEntriesByName(
+      ukm::builders::PageLoad_FromGoogleSearch::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const auto* const entry : entries) {
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        entry, ukm::builders::PageLoad_FromGoogleSearch::kGoogleSearchModeName,
+        static_cast<int64_t>(google_util::GoogleSearchMode::kVideos));
+    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry,
+                                                          GURL(kExampleUrl));
+  }
+}
+
 TEST_F(FromGWSPageLoadMetricsObserverTest, SearchToNonSearchToOtherPage) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);

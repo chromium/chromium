@@ -491,3 +491,51 @@ TEST(GoogleUtilTest, AppendToAsyncQueryParam) {
             google_util::AppendToAsyncQueryParam(
                 GURL("https://foo.com?async=bar:baz"), "bar", "buz"));
 }
+
+TEST(GoogleUtilTest, GoogleSearchMode) {
+  EXPECT_EQ(
+      google_util::GoogleSearchModeFromUrl(GURL("https://www.google.com/")),
+      google_util::GoogleSearchMode::kWeb);
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo")),
+            google_util::GoogleSearchMode::kWeb);
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=web")),
+            google_util::GoogleSearchMode::kWeb);
+
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=isch")),
+            google_util::GoogleSearchMode::kImages);
+
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=vid")),
+            google_util::GoogleSearchMode::kVideos);
+
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=shop")),
+            google_util::GoogleSearchMode::kShopping);
+
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=flm")),
+            google_util::GoogleSearchMode::kFlights);
+
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=bks")),
+            google_util::GoogleSearchMode::kBooks);
+
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=nws")),
+            google_util::GoogleSearchMode::kNews);
+
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=lcl")),
+            google_util::GoogleSearchMode::kLocal);
+
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=invalid")),
+            google_util::GoogleSearchMode::kUnknown);
+
+  EXPECT_EQ(google_util::GoogleSearchModeFromUrl(
+                GURL("https://www.google.com/search?q=foo&tbm=lcl&tbm=nws")),
+            google_util::GoogleSearchMode::kUnknown);
+}
