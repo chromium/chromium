@@ -87,13 +87,6 @@ else:
 # In the future we shoul, set all the variables listed here:
 # https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts
 
-# Avoid modifying the file if we don't need to, so downstream
-# build steps don't occur.
-flags_before = None
-if os.path.exists(args.output):
-  with open(args.output, "r") as flags:
-    flags_before = flags.read()
-
 # In the future, we could consider isolating this build script
 # into a chroot jail or similar on some platforms, but ultimately
 # we are always going to be reliant on code review to ensure the
@@ -104,12 +97,13 @@ proc = subprocess.run([args.build_script],
                       text=True,
                       capture_output=True)
 
-flags_after = ""
+flags = ""
 for line in proc.stdout.split("\n"):
   m = RUSTC_CFG_LINE.match(line.rstrip())
   if m:
-    flags_after = "%s--cfg\n%s\n" % (flags_after, m.group(1))
+    flags = "%s--cfg\n%s\n" % (flags, m.group(1))
 
-if flags_before != flags_after:
-  with build_utils.AtomicOutput(args.output) as output:
-    output.write(flags_after.encode("utf-8"))
+# AtomicOutput will ensure we only write to the file on disk if what we give to
+# write() is different than what's currently on disk.
+with build_utils.AtomicOutput(args.output) as output:
+  output.write(flags.encode("utf-8"))
