@@ -1078,9 +1078,18 @@ html[dir='rtl'] #search-box .clear {
 }
 
 .dialog-header.files-ng #pinned-toggle-label {
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-primary);
   margin-inline-end: 16px;
   margin-inline-start: 12px;
+}
+
+.dialog-header.files-ng cr-toggle {
+  --cr-toggle-checked-bar-color: var(--cros-switch-track-color-active);
+  --cr-toggle-checked-button-color: var(--cros-switch-knob-color-active);
+  --cr-toggle-checked-ripple-color: var(--cros-focus-aura-color);
+  --cr-toggle-unchecked-bar-color: var(--cros-switch-track-color-inactive);
+  --cr-toggle-unchecked-button-color: var(--cros-switch-knob-color-inactive);
+  --cr-toggle-unchecked-ripple-color: var(--cros-focus-aura-color);
 }
 
 /* Container for the detail and thumbnail list views. */
@@ -2632,7 +2641,7 @@ body.files-ng #list-container list li .detail-thumbnail > .thumbnail {
 }
 
 body.files-ng .table-row-cell > * {
-  color: var(--google-grey-700);
+  color: var(--cros-icon-color-secondary);
   padding: 0;
   padding-inline-start: 32px;
   padding-top: 0 !important;
@@ -2665,7 +2674,7 @@ body.files-ng #list-container .table-row-cell .size {
 }
 
 body.files-ng.check-select list:focus li[selected] .table-row-cell > * {
-  color: var(--google-blue-600);
+  color: var(--cros-icon-color-selection);
 }
 
 body.files-ng .table-row-cell:first-child > * {
