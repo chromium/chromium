@@ -189,6 +189,10 @@ class ShareOperationUnitTest : public ChromeRenderViewHostTestHarness {
     return fake_data_transfer_manager_;
   }
 
+  FakeDataTransferManagerInterop& fake_data_transfer_manager_interop() {
+    return scoped_fake_components_.fake_data_transfer_manager_interop();
+  }
+
  private:
   FakeDataTransferManager* fake_data_transfer_manager_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
@@ -250,6 +254,24 @@ TEST_F(ShareOperationUnitTest, BasicFields) {
   run_loop.Run();
 
   ASSERT_TRUE(post_data_requested_callback_invoked);
+}
+
+TEST_F(ShareOperationUnitTest, ShowShareUIForWindowFailure) {
+  fake_data_transfer_manager_interop().SetShowShareUIForWindowBehavior(
+      FakeDataTransferManagerInterop::ShowShareUIForWindowBehavior::
+          FailImmediately);
+
+  base::RunLoop run_loop;
+  std::vector<blink::mojom::SharedFilePtr> files;
+  ShareOperation operation{"shared title", "shared text",
+                           GURL("https://www.contoso.com"), std::move(files),
+                           web_contents()};
+  operation.Run(
+      base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
+        ASSERT_EQ(error, blink::mojom::ShareError::INTERNAL_ERROR);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
 }
 
 TEST_F(ShareOperationUnitTest, BasicFile) {

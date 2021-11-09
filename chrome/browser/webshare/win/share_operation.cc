@@ -465,14 +465,12 @@ void ShareOperation::OnDataRequested(IDataRequestedEventArgs* event_args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   blink::mojom::ShareError share_result;
-  if (!event_args || !web_contents()) {
+  if (!web_contents()) {
     share_result = blink::mojom::ShareError::CANCELED;
+  } else if (PutShareContentInEventArgs(event_args)) {
+    share_result = blink::mojom::ShareError::OK;
   } else {
-    if (PutShareContentInEventArgs(event_args)) {
-      share_result = blink::mojom::ShareError::OK;
-    } else {
-      share_result = blink::mojom::ShareError::INTERNAL_ERROR;
-    }
+    share_result = blink::mojom::ShareError::INTERNAL_ERROR;
   }
 
   // If the share operation failed or is not being deferred, mark it as complete
@@ -483,6 +481,8 @@ void ShareOperation::OnDataRequested(IDataRequestedEventArgs* event_args) {
 bool ShareOperation::PutShareContentInEventArgs(
     IDataRequestedEventArgs* event_args) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!event_args)
+    return false;
 
   ComPtr<IDataRequest> data_request;
   if (FAILED(event_args->get_Request(&data_request)))
