@@ -40,7 +40,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
@@ -114,21 +113,36 @@ class ThreadPriorityDelegate : public base::LaunchOptions::PreExecDelegate {
   }
 };
 
-base::FilePath LacrosLogLinkPath() {
+base::FilePath LacrosLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log");
 }
 
-base::FilePath LacrosPreviousLogLinkPath() {
+base::FilePath LacrosPreviousLogPath() {
   return browser_util::GetUserDataDir().Append("lacros.log.PREVIOUS");
 }
 
-base::FilePath LacrosLogPath() {
-  base::Time::Exploded now;
-  base::Time::Now().UTCExplode(&now);
-  std::string log_file_name = base::StringPrintf(
-      "lacros.%04d-%02d-%02d_%02d:%02d:%02d.%03d.log", now.year, now.month,
-      now.day_of_month, now.hour, now.minute, now.second, now.millisecond);
-  return browser_util::GetUserDataDir().Append(log_file_name);
+// Moves any existing lacros log file to lacros.log.PREVIOUS. Returns true if a
+// log file existed before being moved, and false if no log file was found.
+bool RotateLacrosLogs() {
+  // Remove lacros.log.PREVIOUS log entry if present.
+  base::FilePath previous_log_path = LacrosPreviousLogPath();
+  unlink(previous_log_path.value().c_str());
+
+  base::FilePath log_path = LacrosLogPath();
+  // Handle edge case where previous code created a symbolic link that could not
+  // correctly resolve by deleting that symbolic link.
+  if (base::IsLink(log_path)) {
+    unlink(log_path.value().c_str());
+    return true;
+  }
+
+  // If there is an existing log entry rename it to lacros.log.PREVIOUS.
+  if (base::PathExists(log_path)) {
+    base::Move(log_path, previous_log_path);
+    return true;
+  }
+
+  return false;
 }
 
 // This method runs some work on a background thread prior to launching lacros.
@@ -153,31 +167,8 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
     params.use_new_account_manager = true;
   }
 
-  base::FilePath log_link_path = LacrosLogLinkPath();
-
-  // If the log file already exists and is a symbolic link, resolve the link and
-  // create a new symbolic link to the previous log link path.
-  if (base::IsLink(log_link_path)) {
-    // Delete old symbolic link if it exists, as CreateSymbolicLink will not
-    // clobber it otherwise.
-    base::FilePath previous_log_link_path = LacrosPreviousLogLinkPath();
-    unlink(previous_log_link_path.value().c_str());
-    // Resolve the link to the current log and link it to the previous log.
-    base::FilePath previous_log_path;
-    if (base::NormalizeFilePath(log_link_path, &previous_log_path)) {
-      base::CreateSymbolicLink(previous_log_path, previous_log_link_path);
-    }
-  }
-
-  // Delete old log file symbolic link if exists.
-  if (unlink(log_link_path.value().c_str()) != 0) {
-    if (errno != ENOENT) {
-      // unlink() failed for reason other than the file not existing.
-      PLOG(ERROR) << "Failed to unlink the log file " << log_link_path;
-      return params;
-    }
-
-    // If log file link does not exist, most likely the user directory does not
+  if (!RotateLacrosLogs()) {
+    // If log file does not exist, most likely the user directory does not
     // exist either. So create it here.
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(browser_util::GetUserDataDir(),
@@ -189,20 +180,11 @@ LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
     }
   }
 
-  base::FilePath log_path = LacrosLogPath();
-
   int fd = HANDLE_EINTR(
-      open(log_path.value().c_str(), O_WRONLY | O_CREAT | O_EXCL, 0644));
+      open(LacrosLogPath().value().c_str(), O_WRONLY | O_CREAT | O_EXCL, 0644));
 
   if (fd < 0) {
-    PLOG(ERROR) << "Failed to get file descriptor for " << log_path;
-    return params;
-  }
-
-  // Create symbolic link from the timestamped log file back to the canonical
-  // lacros.log path.
-  if (!base::CreateSymbolicLink(log_path, log_link_path)) {
-    PLOG(ERROR) << "Failed to create log symlink for " << log_path;
+    PLOG(ERROR) << "Failed to get file descriptor for " << LacrosLogPath();
     return params;
   }
 

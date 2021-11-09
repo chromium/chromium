@@ -49,26 +49,13 @@ void LacrosLogFilesLogSource::Fetch(SysLogsSourceCallback callback) {
 void LacrosLogFilesLogSource::FindFiles(const base::FilePath& log_base_path,
                                         const std::string& log_key_base,
                                         SystemLogsResponse* response) {
-  // We are expecting the newest lacros.log file to be a symbolic link.
-  base::FilePath log_link_path = log_base_path.Append("lacros.log");
-  if (base::IsLink(log_link_path)) {
-    // Resolve the link and source that as the active log.
-    base::FilePath newest_log_path;
-    base::NormalizeFilePath(log_link_path, &newest_log_path);
-    ReadFile(newest_log_path, log_key_base, response);
+  base::FilePath log_path = log_base_path.Append("lacros.log");
+  ReadFile(log_path, log_key_base, response);
 
-    // Find the previous log file, if the symbolic link exists.
-    base::FilePath previous_log_link_path =
-        log_base_path.Append("lacros.log.PREVIOUS");
-    if (base::IsLink(previous_log_link_path)) {
-      base::FilePath previous_log_path;
-      base::NormalizeFilePath(previous_log_link_path, &previous_log_path);
-      ReadFile(previous_log_path, log_key_base + "_previous", response);
-    }
-  } else {
-    // This non-symbolic link file may be an older log file, attach it directly.
-    ReadFile(log_link_path, log_key_base, response);
-  }
+  base::FilePath previous_log_path =
+      log_base_path.Append("lacros.log.PREVIOUS");
+
+  ReadFile(previous_log_path, log_key_base + "_previous", response);
 }
 
 void LacrosLogFilesLogSource::ReadFile(const base::FilePath& log_file_path,
