@@ -47517,7 +47517,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--additional-apk=apks/ChromePublic.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
@@ -47606,7 +47605,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--additional-apk=apks/ChromePublic.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
@@ -47695,7 +47693,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--additional-apk=apks/ChromePublic.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
@@ -47784,7 +47781,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--additional-apk=apks/ChromePublic.apk",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
@@ -47873,7 +47869,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--additional-apk=apks/ChromePublic.apk",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
@@ -47962,7 +47957,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--additional-apk=apks/ChromePublic.apk",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
@@ -48126,7 +48120,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -48214,7 +48207,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -48302,7 +48294,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -48390,7 +48381,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -48478,7 +48468,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -48566,7 +48555,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -48729,7 +48717,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -48817,7 +48804,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -48905,7 +48891,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -48993,7 +48978,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -49081,7 +49065,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -49169,7 +49152,6 @@
       },
       {
         "args": [
-          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
