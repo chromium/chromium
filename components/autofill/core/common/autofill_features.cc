@@ -480,14 +480,6 @@ const base::Feature kAutofillEnableNewAddressProfileCreationInSettingsOnIOS{
 #endif
 
 #if defined(OS_ANDROID)
-// Controls whether Android autofill (WebView and WebLayer) should query the
-// Autofill server for the server field type predictions and send them to
-// Android autofill service.
-const base::Feature kAndroidAutofillQueryServerFieldTypes{
-    "AndroidAutofillQueryServerFieldTypes", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
-#if defined(OS_ANDROID)
 bool IsAutofillManualFallbackEnabled() {
   return base::FeatureList::IsEnabled(
              autofill::features::kAutofillKeyboardAccessory) &&
