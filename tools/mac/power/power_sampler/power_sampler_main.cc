@@ -42,13 +42,25 @@ constexpr char kSwitchSampleInterval[] = "sample-interval";
 constexpr char kSwitchSampleCount[] = "sample-count";
 constexpr char kSwitchJsonOutputFile[] = "json-output-file";
 constexpr char kSwitchSampleOnNotification[] = "sample-on-notification";
+constexpr char kUsageString[] = R"(Usage: power_sampler [options]
+
+A tool that samples power-related metrics and states. The tool outputs samples
+in CSV or JSON format.
+
+Options:
+  --sample-interval=<num>    Sample on a <num> second interval.
+  --sample-on-notification   Sample on power manager notifications.
+      Note that interval and event notifications are mutually exclusive.
+  --sample-count=<num>       Collect <num> samples before exiting.
+  --json-output-file=<path>  Produce JSON output to <path> before exit.
+      By default output is in CSV format on STDOUT.
+)";
 
 // Prints main usage text.
-void PrintUsage(std::ostream& err) {
-  err << "Usage: powermetrics [--sample-interval=sample_interval] "
-         "[--sample-count=sample_count] [--json-output-file=path]  "
-         "[--sample-on-notificaton]"
-      << std::endl;
+void PrintUsage(const char* error) {
+  if (error)
+    std::cerr << "Error: " << error << std::endl << std::endl;
+  std::cerr << kUsageString;
 }
 
 }  // namespace
@@ -70,23 +82,25 @@ int main(int argc, char** argv) {
   InitLogging();
 
   if (command_line.HasSwitch(kSwitchHelp)) {
-    PrintUsage(std::cerr);
+    PrintUsage(nullptr);
     return kStatusUsage;
   }
 
   base::TimeDelta sampling_interval = base::Seconds(60);
   if (command_line.HasSwitch(kSwitchSampleInterval)) {
     if (command_line.HasSwitch(kSwitchSampleOnNotification)) {
-      LOG(ERROR) << "--sample-interval should not be specified with "
-                    "--sample-on-notification";
+      PrintUsage(
+          "--sample-interval should not be specified with "
+          "--sample-on-notification.");
       return kStatusInvalidParam;
     }
 
     std::string interval_seconds_switch =
         command_line.GetSwitchValueASCII(kSwitchSampleInterval);
     uint64_t interval_seconds = 0;
-    if (!base::StringToUint64(interval_seconds_switch, &interval_seconds)) {
-      PrintUsage(std::cerr);
+    if (!base::StringToUint64(interval_seconds_switch, &interval_seconds) ||
+        interval_seconds < 1) {
+      PrintUsage("sample-interval must be numeric and larger than 0.");
       return kStatusInvalidParam;
     }
     sampling_interval = base::Seconds(interval_seconds);
@@ -95,12 +109,9 @@ int main(int argc, char** argv) {
   if (command_line.HasSwitch(kSwitchSampleCount)) {
     std::string sample_count_switch =
         command_line.GetSwitchValueASCII(kSwitchSampleCount);
-    if (!base::StringToInt64(sample_count_switch, &sample_count)) {
-      PrintUsage(std::cerr);
-      return kStatusInvalidParam;
-    }
-    if (sample_count < 1) {
-      LOG(ERROR) << "|sample_count| should be greater than 0.";
+    if (!base::StringToInt64(sample_count_switch, &sample_count) &&
+        sample_count < 1) {
+      PrintUsage("sample-count must be numeric and larger than 0.");
       return kStatusInvalidParam;
     }
   }
@@ -110,7 +121,7 @@ int main(int argc, char** argv) {
     json_output_file_path =
         command_line.GetSwitchValuePath(kSwitchJsonOutputFile);
     if (json_output_file_path.empty()) {
-      PrintUsage(std::cerr);
+      PrintUsage("must provide a file path for JSON output.");
       return kStatusInvalidParam;
     }
   }
@@ -154,10 +165,7 @@ int main(int argc, char** argv) {
         std::make_unique<power_sampler::SampleCounter>(sample_count));
   }
 
-  controller.StartSession();
-
   base::RunLoop run_loop;
-
   if (!event_source->Start(BindRepeating(
           [](power_sampler::SamplingController* controller,
              base::OnceClosure quit_closure) {
@@ -166,9 +174,11 @@ int main(int argc, char** argv) {
             }
           },
           base::Unretained(&controller), run_loop.QuitClosure()))) {
-    LOG(ERROR) << "Could not start the sampling event source";
+    PrintUsage("Could not start the sampling event source.");
     return kStatusRuntimeError;
   }
+
+  controller.StartSession();
 
   run_loop.Run();
 
