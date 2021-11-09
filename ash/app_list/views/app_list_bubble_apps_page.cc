@@ -17,7 +17,6 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/bubble/bubble_utils.h"
-#include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -27,7 +26,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
@@ -42,7 +40,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/widget/widget.h"
 
 using views::BoxLayout;
 
@@ -93,15 +90,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   // Arrow keys are used to select app icons.
   scroll_view_->SetAllowKeyboardScrolling(false);
 
-  // Scroll view will have a gradient mask layer.
+  // Set up fade in/fade out gradients at top/bottom of scroll view.
   scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  // When animations are enabled the gradient helper is created in the animation
-  // end callback.
-  if (!features::IsProductivityLauncherAnimationEnabled()) {
-    gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
-    // Layout() updates the gradient zone, since the gradient helper needs to
-    // know the bounds of the scroll view and contents view.
-  }
+  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
 
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
@@ -189,6 +180,10 @@ void AppListBubbleAppsPage::StartShowAnimation() {
             "Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage", value);
       })));
 
+  // Disable the gradient mask on the scroll view to improve performance.
+  gradient_disabler_ = std::make_unique<ScopedScrollViewGradientDisabler>(
+      gradient_helper_.get());
+
   // Animate the views. Each section is initially offset down, then slides up
   // into its final position. If a section isn't visible, skip it. The further
   // down the section, the greater its initial offset. This code uses multiple
@@ -274,11 +269,6 @@ void AppListBubbleAppsPage::StartSlideInAnimation(
       .SetTransform(view, kIdentity, gfx::Tween::LINEAR_OUT_SLOW_IN);
 }
 
-void AppListBubbleAppsPage::StartHideAnimation() {
-  // Remove the gradient mask from the scroll view to improve performance.
-  gradient_helper_.reset();
-}
-
 void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
   continue_section_->DisableFocusForShowingActiveFolder(disabled);
   recent_apps_->DisableFocusForShowingActiveFolder(disabled);
@@ -287,8 +277,7 @@ void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
 
 void AppListBubbleAppsPage::Layout() {
   views::View::Layout();
-  if (gradient_helper_)
-    gradient_helper_->UpdateGradientZone();
+  gradient_helper_->UpdateGradientZone();
 }
 
 void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
@@ -358,16 +347,8 @@ void AppListBubbleAppsPage::DestroyLayerForView(views::View* view) {
 }
 
 void AppListBubbleAppsPage::OnAppsGridViewAnimationEnded() {
-  // If the window is destroyed during an animation the animation will end, but
-  // there's no need to build the gradient mask layer.
-  if (GetWidget()->GetNativeWindow()->is_destroying())
-    return;
-
-  // Set up fade in/fade out gradients at top/bottom of scroll view. Wait until
-  // the end of the show animation because the animation performs better without
-  // the gradient mask layer.
-  gradient_helper_ = std::make_unique<ScrollViewGradientHelper>(scroll_view_);
-  gradient_helper_->UpdateGradientZone();
+  // Recreate the gradient mask, if necessary.
+  gradient_disabler_.reset();
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

@@ -335,59 +335,6 @@ TEST_F(AppListBubbleViewTest, ShowAnimationRecordsSmoothnessHistogram) {
       "Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage", 1);
 }
 
-TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {
-  base::HistogramTester histograms;
-
-  // Show the app list without animation.
-  AddAppItems(5);
-  ShowAppList();
-
-  // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  AppListBubbleView* view = GetBubblePresenter()->bubble_view_for_test();
-  ui::Compositor* compositor = view->layer()->GetCompositor();
-
-  // Run the hide animation and wait for it to finish. This doesn't use
-  // WaitForLayerAnimation() because the view and its layer are deleted at the
-  // end of the animation.
-  base::RunLoop run_loop;
-  view->StartHideAnimation(run_loop.QuitClosure());
-  run_loop.Run();
-
-  // Ensure there is one more frame presented after animation finishes to allow
-  // animation throughput data to be passed from cc to ui.
-  ignore_result(
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200)));
-
-  // Smoothness was recorded.
-  histograms.ExpectTotalCount(
-      "Apps.ClamshellLauncher.AnimationSmoothness.Close", 1);
-}
-
-TEST_F(AppListBubbleViewTest, ShutdownDuringHideAnimationDoesNotCrash) {
-  base::HistogramTester histograms;
-
-  // Enable animations.
-  base::test::ScopedFeatureList feature(
-      features::kProductivityLauncherAnimation);
-  ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  // Show the app list and wait for the show animation to finish.
-  AddAppItems(5);
-  ShowAppList();
-  WaitForLayerAnimation(GetAppsGridView()->layer());
-
-  // Dismiss the app list, but don't wait for the animation to finish.
-  GetAppListTestHelper()->Dismiss();
-
-  // No crash.
-}
-
 TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {
   ShowAppList();
 

@@ -206,7 +206,7 @@ ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {
 
 void AppListBubblePresenter::Dismiss() {
   DVLOG(1) << __PRETTY_FUNCTION__;
-  if (!bubble_widget_ || in_hide_animation_)
+  if (!bubble_widget_)
     return;
 
   // Reset keyboard traversal in case the user switches to tablet launcher.
@@ -218,14 +218,7 @@ void AppListBubblePresenter::Dismiss() {
 
   const int64_t display_id = GetDisplayId();
   controller_->OnVisibilityWillChange(/*visible=*/false, display_id);
-  if (features::IsProductivityLauncherAnimationEnabled()) {
-    in_hide_animation_ = true;
-    bubble_view_->StartHideAnimation(
-        base::BindRepeating(&AppListBubblePresenter::OnHideAnimationEnded,
-                            weak_factory_.GetWeakPtr()));
-  } else {
-    bubble_widget_->CloseNow();
-  }
+  bubble_widget_->CloseNow();
   controller_->OnVisibilityChanged(/*visible=*/false, display_id);
 
   // Clean up assistant. Must occur after CloseNow(), otherwise it will try to
@@ -281,14 +274,6 @@ int64_t AppListBubblePresenter::GetDisplayId() const {
   return display::Screen::GetScreen()
       ->GetDisplayNearestView(bubble_widget_->GetNativeView())
       .id();
-}
-
-void AppListBubblePresenter::OnHideAnimationEnded() {
-  in_hide_animation_ = false;
-  if (bubble_widget_)
-    bubble_widget_->CloseNow();
-  // OnWidgetDestroyed() resets state.
-  DCHECK(!bubble_widget_);
 }
 
 }  // namespace ash
