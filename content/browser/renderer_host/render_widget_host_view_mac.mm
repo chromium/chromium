@@ -443,10 +443,14 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
   if (!host()->is_hidden())
     return;
 
-  browser_compositor_->SetRenderWidgetHostIsHidden(false);
+  // SetRenderWidgetHostIsHidden may cause a state transition that switches to
+  // a new instance of DelegatedFrameHost and calls WasShown, which causes
+  // HasSavedFrame to always return true. So cache the HasSavedFrame result
+  // before the transition, and do not save this DelegatedFrameHost* locally.
+  const bool has_saved_frame =
+      browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame();
 
-  bool has_saved_frame =
-      browser_compositor_->has_saved_frame_before_state_transition();
+  browser_compositor_->SetRenderWidgetHostIsHidden(false);
 
   auto* visible_time_request_trigger = host()->GetVisibleTimeRequestTrigger();
   // The only way this should be null is if there is no RenderWidgetHostView.
