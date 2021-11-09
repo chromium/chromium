@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -27,13 +28,20 @@ class Location;
 
 namespace apps {
 
+class StandaloneBrowserPublisherTest;
+
 // An app publisher for crosapi web apps. This is a proxy publisher that lives
 // in ash-chrome, and the apps will be published over crosapi. This proxy
 // publisher will also handle reconnection when the crosapi connection drops.
 //
 // See components/services/app_service/README.md.
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
 class WebAppsCrosapi : public KeyedService,
                        public apps::PublisherBase,
+                       public apps::AppPublisher,
                        public crosapi::mojom::AppPublisher {
  public:
   explicit WebAppsCrosapi(AppServiceProxy* proxy);
@@ -48,6 +56,16 @@ class WebAppsCrosapi : public KeyedService,
       mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver);
 
  private:
+  friend class StandaloneBrowserPublisherTest;
+
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
+
   // apps::PublisherBase overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;
@@ -113,7 +131,7 @@ class WebAppsCrosapi : public KeyedService,
 
   void OnLoadIcon(uint32_t icon_effects,
                   int size_hint_in_dip,
-                  LoadIconCallback callback,
+                  apps::LoadIconCallback callback,
                   IconValuePtr icon_value);
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;

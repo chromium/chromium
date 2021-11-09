@@ -28,7 +28,8 @@
 
 namespace apps {
 
-WebAppsCrosapi::WebAppsCrosapi(AppServiceProxy* proxy) : proxy_(proxy) {
+WebAppsCrosapi::WebAppsCrosapi(AppServiceProxy* proxy)
+    : apps::AppPublisher(proxy), proxy_(proxy) {
   // This object may be created when the flag is on or off, but only register
   // the publisher if the flag is on.
   if (web_app::IsWebAppsCrosapiEnabled()) {
@@ -53,6 +54,25 @@ void WebAppsCrosapi::RegisterWebAppsCrosapiHost(
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
       &WebAppsCrosapi::OnCrosapiDisconnected, base::Unretained(this)));
+}
+
+void WebAppsCrosapi::LoadIcon(const std::string& app_id,
+                              const IconKey& icon_key,
+                              IconType icon_type,
+                              int32_t size_hint_in_dip,
+                              bool allow_placeholder_icon,
+                              apps::LoadIconCallback callback) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return;
+  }
+
+  const uint32_t icon_effects = icon_key.icon_effects;
+  controller_->LoadIcon(
+      app_id, ConvertIconKeyToMojomIconKey(icon_key), icon_type,
+      size_hint_in_dip,
+      base::BindOnce(&WebAppsCrosapi::OnLoadIcon, weak_factory_.GetWeakPtr(),
+                     icon_effects, size_hint_in_dip, std::move(callback)));
 }
 
 void WebAppsCrosapi::Connect(
@@ -84,7 +104,8 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
       app_id, std::move(icon_key), ConvertMojomIconTypeToIconType(icon_type),
       size_hint_in_dip,
       base::BindOnce(&WebAppsCrosapi::OnLoadIcon, weak_factory_.GetWeakPtr(),
-                     icon_effects, size_hint_in_dip, std::move(callback)));
+                     icon_effects, size_hint_in_dip,
+                     IconValueToMojomIconValueCallback(std::move(callback))));
 }
 
 void WebAppsCrosapi::Launch(const std::string& app_id,
@@ -321,6 +342,13 @@ void WebAppsCrosapi::SetPermission(const std::string& app_id,
 void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
   if (!web_app::IsWebAppsCrosapiEnabled())
     return;
+
+  std::vector<std::unique_ptr<App>> apps;
+  for (apps::mojom::AppPtr& delta : deltas) {
+    apps.push_back(ConvertMojomAppToApp(delta));
+  }
+  apps::AppPublisher::Publish(std::move(apps));
+
   for (auto& subscriber : subscribers_) {
     subscriber->OnApps(apps_util::CloneStructPtrVector(deltas),
                        apps::mojom::AppType::kWeb, should_notify_initialized_);
@@ -369,12 +397,11 @@ void WebAppsCrosapi::OnControllerDisconnected() {
 
 void WebAppsCrosapi::OnLoadIcon(uint32_t icon_effects,
                                 int size_hint_in_dip,
-                                LoadIconCallback callback,
+                                apps::LoadIconCallback callback,
                                 IconValuePtr icon_value) {
   // We apply the masking effect here, as masking is not implemented in Lacros.
   ApplyIconEffects(static_cast<IconEffects>(icon_effects), size_hint_in_dip,
-                   std::move(icon_value),
-                   IconValueToMojomIconValueCallback(std::move(callback)));
+                   std::move(icon_value), std::move(callback));
 }
 
 }  // namespace apps
