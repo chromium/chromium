@@ -656,7 +656,7 @@ TEST_F(DesksTemplatesTest, DesksTemplatesGridItems) {
 }
 
 // Tests that deleting templates in the templates grid functions correctly.
-TEST_F(DesksTemplatesTest, DeleteTemplate) {
+TEST_F(DesksTemplatesTest, DISABLED_DeleteTemplate) {
   UpdateDisplay("800x600,800x600");
 
   // Populate with several entries.
