@@ -133,9 +133,6 @@ class PasswordStore : public PasswordStoreInterface {
     kFailure,
   };
 
-  // TODO(crbug.com/1217071): Remove when local backend doesn't inherit from
-  // this class anymore.
-  PasswordStore();
   ~PasswordStore() override;
 
   // This member is called to perform the actual interaction with the storage.

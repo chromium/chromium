@@ -111,10 +111,7 @@ class OperationHandler {
 
 }  // namespace
 
-PasswordStore::PasswordStore() = default;
-
-PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
-    : PasswordStore() {
+PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend) {
   backend_deleter_ = std::move(backend);
   backend_ = backend_deleter_.get();
 }
