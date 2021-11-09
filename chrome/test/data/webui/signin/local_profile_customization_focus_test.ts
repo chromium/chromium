@@ -4,28 +4,23 @@
 
 import 'chrome://profile-picker/profile_picker.js';
 
-import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, Routes} from 'chrome://profile-picker/profile_picker.js';
+import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, ProfilePickerMainViewElement, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertEquals, assertTrue} from '../chai_assert.js';
-import {flushTasks, waitBeforeNextRender, whenAttributeIs, whenCheck} from '../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitBeforeNextRender, whenAttributeIs, whenCheck} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
 suite('LocalProfileCustomizationFocusTest', function() {
-  /** @type {!ProfilePickerAppElement} */
-  let testElement;
+  let testElement: ProfilePickerAppElement;
+  let browserProxy: TestManageProfilesBrowserProxy;
 
-  /** @type {!TestManageProfilesBrowserProxy} */
-  let browserProxy;
-
-  async function resetTestElement(route) {
+  async function resetTestElement(route: Routes) {
     document.body.innerHTML = '';
     navigateTo(route);
-    testElement = /** @type {!ProfilePickerAppElement} */ (
-        document.createElement('profile-picker-app'));
+    testElement = document.createElement('profile-picker-app');
     document.body.appendChild(testElement);
     await waitBeforeNextRender(testElement);
   }
@@ -37,8 +32,7 @@ suite('LocalProfileCustomizationFocusTest', function() {
   });
 
 
-  /** @param {!ProfilePickerMainViewElement} mainView */
-  async function setupMainView(mainView) {
+  async function setupMainView(mainView: ProfilePickerMainViewElement) {
     assertTrue(!!mainView);
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('initializeMainView');
@@ -47,10 +41,10 @@ suite('LocalProfileCustomizationFocusTest', function() {
     flushTasks();
   }
 
-  /** @param {!ProfilePickerMainViewElement} mainView */
-  function navigateToProfileCreationFromMainView(mainView) {
-    mainView.shadowRoot.querySelector('#addProfile').focus();
-    mainView.shadowRoot.querySelector('#addProfile').click();
+  function navigateToProfileCreationFromMainView(
+      mainView: ProfilePickerMainViewElement) {
+    mainView.$.addProfile.focus();
+    mainView.$.addProfile.click();
     flush();
   }
 
@@ -64,14 +58,10 @@ suite('LocalProfileCustomizationFocusTest', function() {
     await waitBeforeNextRender(testElement);
   }
 
-  /**
-   * @param {boolean} focused
-   * @param {boolean} valid
-   */
-  async function verifyProfileName(focused, valid) {
-    const profileNameInput = /** @type {!CrInputElement} */ (
-        testElement.shadowRoot.querySelector('local-profile-customization')
-            .shadowRoot.querySelector('#nameInput'));
+  async function verifyProfileName(focused: boolean, valid: boolean) {
+    const profileNameInput =
+        testElement.shadowRoot!.querySelector(
+                                   'local-profile-customization')!.$.nameInput;
     assertTrue(!!profileNameInput);
     await whenAttributeIs(profileNameInput, 'focused_', focused ? '' : null);
     assertEquals(!valid, profileNameInput.invalid);
@@ -81,13 +71,10 @@ suite('LocalProfileCustomizationFocusTest', function() {
     assertTrue(loadTimeData.getValue('isBrowserSigninAllowed'));
     navigateTo(Routes.NEW_PROFILE);
     await setupProfileCreation();
-    const choice = /** @type {!ProfileTypeChoiceElement} */ (
-        testElement.shadowRoot.querySelector('profile-type-choice'));
+    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
     assertTrue(!!choice);
-    await whenCheck(choice, () => choice.classList.contains('active'));
-    const notNowButton =
-        /** @type {!CrButtonElement} */ (
-            choice.shadowRoot.querySelector('#notNowButton'));
+    await whenCheck(choice!, () => choice!.classList.contains('active'));
+    const notNowButton = choice!.$.notNowButton;
     if (isLacros) {
       // Local profile creation is not enabled on Lacros.
       assertFalse(!!notNowButton);
@@ -98,32 +85,30 @@ suite('LocalProfileCustomizationFocusTest', function() {
     flush();
     await waitBeforeNextRender(testElement);
     const customization =
-        /** @type {!LocalProfileCustomizationElement} */ (
-            testElement.shadowRoot.querySelector(
-                'local-profile-customization'));
+        testElement.shadowRoot!.querySelector('local-profile-customization');
     assertTrue(!!customization);
     await whenCheck(
-        customization, () => customization.classList.contains('active'));
+        customization!, () => customization!.classList.contains('active'));
     await verifyProfileName(true, true);
 
     // Invalid profile name.
-    customization.shadowRoot.querySelector('#nameInput').value = '  ';
+    customization!.$.nameInput.value = '  ';
     await verifyProfileName(true, false);
-    customization.shadowRoot.querySelector('#backButton').focus();
+    customization!.$.backButton.focus();
     await verifyProfileName(false, false);
 
     // Navigate back and in again.
-    customization.shadowRoot.querySelector('#backButton').click();
+    choice!.$.backButton.click();
     flush();
-    await whenCheck(choice, () => choice.classList.contains('active'));
-    choice.shadowRoot.querySelector('#notNowButton').focus();
-    choice.shadowRoot.querySelector('#notNowButton').click();
+    await whenCheck(choice!, () => choice!.classList.contains('active'));
+    choice!.$.notNowButton.focus();
+    choice!.$.notNowButton.click();
     flush();
     await whenCheck(
-        customization, () => customization.classList.contains('active'));
+        customization!, () => customization!.classList.contains('active'));
     await verifyProfileName(true, false);
-    customization.shadowRoot.querySelector('#nameInput').value = 'Work';
-    assertFalse(customization.shadowRoot.querySelector('#nameInput').invalid);
+    customization!.$.nameInput.value = 'Work';
+    assertFalse(customization!.$.nameInput.invalid);
   });
 
   test('BrowserSigninNotAllowed', async function() {
@@ -131,21 +116,19 @@ suite('LocalProfileCustomizationFocusTest', function() {
       isBrowserSigninAllowed: false,
     });
     await resetTestElement(Routes.MAIN);
-    const mainView = /** @type {!ProfilePickerMainViewElement} */ (
-        testElement.shadowRoot.querySelector('profile-picker-main-view'));
+    const mainView =
+        testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
     await setupMainView(mainView);
     navigateToProfileCreationFromMainView(mainView);
     await setupProfileCreation();
     let customization =
-        /** @type {!LocalProfileCustomizationElement} */ (
-            testElement.shadowRoot.querySelector(
-                'local-profile-customization'));
+        testElement.shadowRoot!.querySelector('local-profile-customization')!;
     await whenCheck(
         customization, () => customization.classList.contains('active'));
     await verifyProfileName(true, true);
-    customization.shadowRoot.querySelector('#backButton').focus();
+    customization.$.backButton.focus();
     await verifyProfileName(false, false);
-    customization.shadowRoot.querySelector('#backButton').click();
+    customization.$.backButton.click();
     flush();
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     navigateToProfileCreationFromMainView(mainView);
@@ -159,9 +142,7 @@ suite('LocalProfileCustomizationFocusTest', function() {
     await resetTestElement(Routes.NEW_PROFILE);
     await setupProfileCreation();
     customization =
-        /** @type {!LocalProfileCustomizationElement} */ (
-            testElement.shadowRoot.querySelector(
-                'local-profile-customization'));
+        testElement.shadowRoot!.querySelector('local-profile-customization')!;
     await whenCheck(
         customization, () => customization.classList.contains('active'));
     await verifyProfileName(true, true);

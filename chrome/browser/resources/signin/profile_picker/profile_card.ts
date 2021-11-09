@@ -144,4 +144,10 @@ class ProfileCardElement extends ProfileCardElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-card': ProfileCardElement;
+  }
+}
+
 customElements.define(ProfileCardElement.is, ProfileCardElement);

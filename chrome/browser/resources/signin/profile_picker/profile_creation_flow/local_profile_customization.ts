@@ -16,6 +16,7 @@ import '../icons.js';
 import '../profile_picker_shared_css.js';
 
 import {Theme, ThemeInfo, ThemeType} from 'chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
@@ -30,10 +31,13 @@ import {isProfileCreationAllowed} from '../policy_helper.js';
 
 export interface LocalProfileCustomizationElement {
   $: {
+    backButton: HTMLElement,
+    doneButton: CrButtonElement,
     nameInput: CrInputElement,
-    wrapper: HTMLElement,
-    wrapperContainer: HTMLElement,
+    save: CrButtonElement,
     selectAvatarDialog: CrDialogElement,
+    wrapperContainer: HTMLElement,
+    wrapper: HTMLElement,
   };
 }
 
@@ -333,6 +337,12 @@ export class LocalProfileCustomizationElement extends
     // 'navigateTo' is meaningful if the picker is shown in a tab.
     navigateTo(Routes.MAIN);
     this.createInProgress_ = false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'local-profile-customization': LocalProfileCustomizationElement;
   }
 }
 

@@ -23,6 +23,7 @@ import {navigateTo, navigateToPreviousRoute, navigateToStep, ProfileCreationStep
 export interface ProfileTypeChoiceElement {
   $: {
     backButton: HTMLElement,
+    notNowButton: HTMLElement,
   };
 }
 
@@ -153,6 +154,12 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
     this.hasUnassignedAccounts_ = unassignedAccounts.length > 0;
   }
   // </if>
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-type-choice': ProfileTypeChoiceElement;
+  }
 }
 
 customElements.define(ProfileTypeChoiceElement.is, ProfileTypeChoiceElement);

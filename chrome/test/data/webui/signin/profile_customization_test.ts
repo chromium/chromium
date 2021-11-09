@@ -4,29 +4,23 @@
 
 import 'chrome://profile-customization/profile_customization_app.js';
 
+import {ProfileCustomizationAppElement} from 'chrome://profile-customization/profile_customization_app.js';
 import {ProfileCustomizationBrowserProxyImpl} from 'chrome://profile-customization/profile_customization_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {isChildVisible} from '../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestProfileCustomizationBrowserProxy} from './test_profile_customization_browser_proxy.js';
 
 suite('ProfileCustomizationTest', function() {
-  /** @type {!ProfileCustomizationAppElement} */
-  let app;
+  let app: ProfileCustomizationAppElement;
+  let browserProxy: TestProfileCustomizationBrowserProxy;
 
-  /** @type {!TestProfileCustomizationBrowserProxy} */
-  let browserProxy;
-
-  /** @type {string} */
   const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_1';
-  /** @type {string} */
   const AVATAR_URL_2 = 'chrome://theme/IDR_PROFILE_AVATAR_2';
-  /** @type {string} */
   const WELCOME_TEXT_1 = 'Welcome, Bob';
-  /** @type {string} */
   const WELCOME_TEXT_2 = 'Hi, Elisa';
 
   setup(function() {
@@ -42,15 +36,14 @@ suite('ProfileCustomizationTest', function() {
     });
     ProfileCustomizationBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
-    app = /** @type {!ProfileCustomizationAppElement} */ (
-        document.createElement('profile-customization-app'));
+    app = document.createElement('profile-customization-app');
     document.body.append(app);
     return browserProxy.whenCalled('initialized');
   });
 
-  function checkImageUrl(elementId, expectedUrl) {
+  function checkImageUrl(elementId: string, expectedUrl: string) {
     assertTrue(isChildVisible(app, elementId));
-    const img = app.shadowRoot.querySelector(elementId);
+    const img = app.shadowRoot!.querySelector<HTMLImageElement>(elementId)!;
     assertEquals(expectedUrl, img.src);
   }
 
@@ -58,7 +51,7 @@ suite('ProfileCustomizationTest', function() {
   // change the name.
   test('ClickDone', function() {
     assertTrue(isChildVisible(app, '#doneButton'));
-    const doneButton = app.shadowRoot.querySelector('#doneButton');
+    const doneButton = app.$.doneButton;
     assertFalse(doneButton.disabled);
     doneButton.click();
     return browserProxy.whenCalled('done').then(
@@ -67,7 +60,7 @@ suite('ProfileCustomizationTest', function() {
 
   // Checks that the name can be changed.
   test('ChangeName', function() {
-    const nameInput = app.shadowRoot.querySelector('#nameInput');
+    const nameInput = app.$.nameInput;
     // Check the default value for the input.
     assertEquals('TestName', nameInput.value);
     assertFalse(nameInput.invalid);
@@ -78,7 +71,7 @@ suite('ProfileCustomizationTest', function() {
 
     // The button is disabled.
     assertTrue(isChildVisible(app, '#doneButton'));
-    const doneButton = app.shadowRoot.querySelector('#doneButton');
+    const doneButton = app.$.doneButton;
     assertTrue(doneButton.disabled);
 
     // Empty name.
@@ -99,10 +92,9 @@ suite('ProfileCustomizationTest', function() {
   });
 
   test('ProfileInfo', function() {
-    const header = app.shadowRoot.querySelector('#header');
+    const header = app.shadowRoot!.querySelector<HTMLElement>('#header')!;
     // Check initial info.
-    assertEquals(
-        app.shadowRoot.querySelector('#title').innerText, WELCOME_TEXT_1);
+    assertEquals(app.$.title.innerText, WELCOME_TEXT_1);
     assertEquals('rgb(0, 255, 0)', getComputedStyle(header).backgroundColor);
     checkImageUrl('#avatar', AVATAR_URL_1);
     assertFalse(isChildVisible(app, '#badge'));
@@ -114,14 +106,13 @@ suite('ProfileCustomizationTest', function() {
       isManaged: true,
       welcomeTitle: WELCOME_TEXT_2,
     });
-    assertEquals(
-        app.shadowRoot.querySelector('#title').innerText, WELCOME_TEXT_2);
+    assertEquals(app.$.title.innerText, WELCOME_TEXT_2);
     assertEquals(color2, getComputedStyle(header).backgroundColor);
     checkImageUrl('#avatar', AVATAR_URL_2);
     assertTrue(isChildVisible(app, '#badge'));
   });
 
   test('ThemeSelector', function() {
-    assertTrue(!!app.shadowRoot.querySelector('#themeSelector'));
+    assertTrue(!!app.shadowRoot!.querySelector('#themeSelector'));
   });
 });

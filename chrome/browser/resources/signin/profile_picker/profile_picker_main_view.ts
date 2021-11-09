@@ -179,5 +179,11 @@ export class ProfilePickerMainViewElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-picker-main-view': ProfilePickerMainViewElement;
+  }
+}
+
 customElements.define(
     ProfilePickerMainViewElement.is, ProfilePickerMainViewElement);

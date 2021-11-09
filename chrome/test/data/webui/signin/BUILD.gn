@@ -11,7 +11,7 @@ assert(!is_chromeos_ash)
 
 # Test files that contain // <if expr> and therefore require preprocessing.
 preprocessed_files = [
-  "profile_card_menu_test.js",
+  "profile_card_menu_test.ts",
   "profile_picker_app_test.js",
   "test_manage_profiles_browser_proxy.ts",
 ]
@@ -22,14 +22,14 @@ non_preprocessed_files = [
   "account_selection_lacros_test.js",
   "dice_web_signin_intercept_test.js",
   "enterprise_profile_welcome_test.js",
-  "local_profile_customization_focus_test.js",
+  "local_profile_customization_focus_test.ts",
   "local_profile_customization_interactive_ui_test.js",
-  "local_profile_customization_test.js",
-  "profile_customization_test.js",
+  "local_profile_customization_test.ts",
+  "profile_customization_test.ts",
   "profile_picker_main_view_test.js",
-  "profile_switch_test.js",
-  "profile_type_choice_test.js",
-  "signin_reauth_test.js",
+  "profile_switch_test.ts",
+  "profile_type_choice_test.ts",
+  "signin_reauth_test.ts",
   "sync_confirmation_test.js",
   "test_dice_web_signin_intercept_browser_proxy.ts",
   "test_enterprise_profile_welcome_browser_proxy.ts",

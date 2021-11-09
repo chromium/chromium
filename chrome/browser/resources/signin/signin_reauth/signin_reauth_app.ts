@@ -15,15 +15,17 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {SigninReauthBrowserProxy, SigninReauthBrowserProxyImpl} from './signin_reauth_browser_proxy.js';
 
-interface SigninReauthAppElement {
+export interface SigninReauthAppElement {
   $: {
+    cancelButton: HTMLElement,
     confirmButton: HTMLElement,
+    signinReauthTitle: HTMLElement,
   };
 }
 
 const SigninReauthAppElementBase = WebUIListenerMixin(PolymerElement);
 
-class SigninReauthAppElement extends SigninReauthAppElementBase {
+export class SigninReauthAppElement extends SigninReauthAppElementBase {
   static get is() {
     return 'signin-reauth-app';
   }
@@ -101,6 +103,12 @@ class SigninReauthAppElement extends SigninReauthAppElementBase {
     }
     assertNotReached('No consent confirmation element found.');
     return '';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'signin-reauth-app': SigninReauthAppElement;
   }
 }
 

@@ -156,4 +156,10 @@ export class ProfilePickerAppElement extends ProfilePickerAppElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-picker-app': ProfilePickerAppElement;
+  }
+}
+
 customElements.define(ProfilePickerAppElement.is, ProfilePickerAppElement);

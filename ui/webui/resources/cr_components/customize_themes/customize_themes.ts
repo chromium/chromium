@@ -237,4 +237,10 @@ export class CustomizeThemesElement extends CustomizeThemesElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-customize-themes': CustomizeThemesElement;
+  }
+}
+
 customElements.define(CustomizeThemesElement.is, CustomizeThemesElement);

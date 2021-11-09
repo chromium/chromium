@@ -8,24 +8,20 @@ import {ProfileTypeChoiceElement} from 'chrome://profile-picker/lazy_load.js';
 import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
 import {isLacros} from 'chrome://resources/js/cr.m.js';
 
-import {assertEquals, assertTrue} from '../chai_assert.js';
-import {isChildVisible} from '../test_util.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
 suite('ProfileTypeChoiceTest', function() {
-  /** @type {!ProfileTypeChoiceElement} */
-  let choice;
-
-  /** @type {!TestManageProfilesBrowserProxy} */
-  let browserProxy;
+  let choice: ProfileTypeChoiceElement;
+  let browserProxy: TestManageProfilesBrowserProxy;
 
   setup(function() {
     browserProxy = new TestManageProfilesBrowserProxy();
     ManageProfilesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
-    choice = /** @type {!ProfileTypeChoiceElement} */ (
-        document.createElement('profile-type-choice'));
+    choice = document.createElement('profile-type-choice');
     document.body.append(choice);
   });
 

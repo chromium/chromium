@@ -217,4 +217,10 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'profile-card-menu': ProfileCardMenuElement;
+  }
+}
+
 customElements.define(ProfileCardMenuElement.is, ProfileCardMenuElement);

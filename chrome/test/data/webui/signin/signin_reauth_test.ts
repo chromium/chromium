@@ -7,21 +7,21 @@ import 'chrome://signin-reauth/signin_reauth_app.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {SigninReauthAppElement} from 'chrome://signin-reauth/signin_reauth_app.js';
 import {SigninReauthBrowserProxyImpl} from 'chrome://signin-reauth/signin_reauth_browser_proxy.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSigninReauthBrowserProxy} from './test_signin_reauth_browser_proxy.js';
 
 suite('SigninReauthTest', function() {
-  let app;
-
-  /** @type {TestSigninReauthBrowserProxy} */
-  let browserProxy;
+  let app: SigninReauthAppElement;
+  let browserProxy: TestSigninReauthBrowserProxy;
 
   setup(function() {
     browserProxy = new TestSigninReauthBrowserProxy();
     SigninReauthBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     app = document.createElement('signin-reauth-app');
     document.body.append(app);
   });
@@ -39,7 +39,7 @@ suite('SigninReauthTest', function() {
     assertDefaultLocale();
     assertEquals(
         'Use your Google Account to save and fill passwords?',
-        app.$.signinReauthTitle.textContent.trim());
+        app.$.signinReauthTitle.textContent!.trim());
   });
 
   test('ClickConfirm', function() {
@@ -56,18 +56,18 @@ suite('SigninReauthTest', function() {
     await browserProxy.whenCalled('initialize');
     assertFalse(isVisible(app.$.confirmButton));
     assertFalse(isVisible(app.$.cancelButton));
-    assertTrue(isVisible(app.shadowRoot.querySelector('paper-spinner-lite')));
+    assertTrue(isVisible(app.shadowRoot!.querySelector('paper-spinner-lite')));
 
     webUIListenerCallback('reauth-type-determined');
     flush();
 
     assertTrue(isVisible(app.$.confirmButton));
     assertTrue(isVisible(app.$.cancelButton));
-    assertFalse(isVisible(app.shadowRoot.querySelector('paper-spinner-lite')));
+    assertFalse(isVisible(app.shadowRoot!.querySelector('paper-spinner-lite')));
 
     assertEquals(getDeepActiveElement(), app.$.confirmButton);
 
     assertDefaultLocale();
-    assertEquals('Yes', app.$.confirmButton.textContent.trim());
+    assertEquals('Yes', app.$.confirmButton.textContent!.trim());
   });
 });
