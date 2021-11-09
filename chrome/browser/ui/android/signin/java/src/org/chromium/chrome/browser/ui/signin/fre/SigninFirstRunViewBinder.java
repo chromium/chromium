@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.ui.signin.fre;
 
+import android.transition.TransitionManager;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
@@ -40,7 +42,9 @@ class SigninFirstRunViewBinder {
                     .setEnabled(!isSelectedAccountSupervised);
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED) {
-            // TODO(https://crbug.com/1248931): Add a transition animation for the spinner
+            // Add a transition animation between the view changes.
+            final ViewGroup freContent = (ViewGroup) view.findViewById(R.id.signin_fre_content);
+            TransitionManager.beginDelayedTransition(freContent);
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.FRE_POLICY) {
             view.findViewById(R.id.fre_browser_managed_by_organization)
