@@ -18,6 +18,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/wm/always_on_top_controller.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -45,44 +46,43 @@ namespace ash {
 
 using ::chromeos::WindowStateType;
 
-WorkspaceLayoutManager::BubbleWindowObserver::BubbleWindowObserver(
+WorkspaceLayoutManager::FloatingWindowObserver::FloatingWindowObserver(
     WorkspaceLayoutManager* workspace_layout_manager)
     : workspace_layout_manager_(workspace_layout_manager) {}
 
-WorkspaceLayoutManager::BubbleWindowObserver::~BubbleWindowObserver() {
-  for (auto* window : windows_)
-    window->RemoveObserver(this);
+WorkspaceLayoutManager::FloatingWindowObserver::~FloatingWindowObserver() {
+  for (auto window : observed_windows_)
+    window.first->RemoveObserver(this);
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::ObserveWindow(
+void WorkspaceLayoutManager::FloatingWindowObserver::ObserveWindow(
     aura::Window* window) {
-  if (!windows_.count(window)) {
-    windows_.insert(window);
+  if (!observed_windows_.count(window)) {
+    observed_windows_[window] = window->parent();
     window->AddObserver(this);
   }
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowHierarchyChanged(
+void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
-  if (params.new_parent &&
-      params.new_parent !=
-          workspace_layout_manager_->settings_bubble_container_) {
+  auto* old_parent = observed_windows_[params.target];
+  if (params.new_parent && params.new_parent != old_parent) {
     StopOberservingWindow(params.target);
   }
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowVisibilityChanged(
+void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
   workspace_layout_manager_->NotifySystemUiAreaChanged();
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowDestroying(
+void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowDestroying(
     aura::Window* window) {
   StopOberservingWindow(window);
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowBoundsChanged(
+void WorkspaceLayoutManager::FloatingWindowObserver::OnWindowBoundsChanged(
     aura::Window* window,
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
@@ -90,9 +90,9 @@ void WorkspaceLayoutManager::BubbleWindowObserver::OnWindowBoundsChanged(
   workspace_layout_manager_->NotifySystemUiAreaChanged();
 }
 
-void WorkspaceLayoutManager::BubbleWindowObserver::StopOberservingWindow(
+void WorkspaceLayoutManager::FloatingWindowObserver::StopOberservingWindow(
     aura::Window* window) {
-  windows_.erase(window);
+  observed_windows_.erase(window);
   window->RemoveObserver(this);
 }
 
@@ -100,8 +100,7 @@ WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
     : window_(window),
       root_window_(window->GetRootWindow()),
       root_window_controller_(RootWindowController::ForWindow(root_window_)),
-      settings_bubble_window_observer_(this),
-      accessibility_bubble_window_observer_(this),
+      floating_window_observer_(this),
       work_area_in_parent_(
           screen_util::GetDisplayWorkAreaBoundsInParent(window_)),
       is_fullscreen_(GetWindowForFullscreenModeForContext(window) != nullptr) {
@@ -114,6 +113,8 @@ WorkspaceLayoutManager::WorkspaceLayoutManager(aura::Window* window)
       kShellWindowId_SettingBubbleContainer);
   accessibility_bubble_container_ = window->GetRootWindow()->GetChildById(
       kShellWindowId_AccessibilityBubbleContainer);
+  shelf_container_ =
+      window->GetRootWindow()->GetChildById(kShellWindowId_ShelfContainer);
   root_window_controller_->shelf()->AddObserver(this);
 }
 
@@ -121,10 +122,6 @@ WorkspaceLayoutManager::~WorkspaceLayoutManager() {
   root_window_controller_->shelf()->RemoveObserver(this);
   if (root_window_)
     root_window_->RemoveObserver(this);
-  if (settings_bubble_container_)
-    settings_bubble_container_->RemoveObserver(this);
-  if (accessibility_bubble_container_)
-    accessibility_bubble_container_->RemoveObserver(this);
   for (aura::Window* window : windows_) {
     WindowState* window_state = WindowState::Get(window);
     window_state->RemoveObserver(this);
@@ -264,10 +261,11 @@ void WorkspaceLayoutManager::OnKeyboardDisplacingBoundsChanged(
 void WorkspaceLayoutManager::OnWindowHierarchyChanged(
     const HierarchyChangeParams& params) {
   if (params.new_parent) {
-    if (params.new_parent == settings_bubble_container_)
-      settings_bubble_window_observer_.ObserveWindow(params.target);
-    if (params.new_parent == accessibility_bubble_container_)
-      accessibility_bubble_window_observer_.ObserveWindow(params.target);
+    if (params.new_parent == settings_bubble_container_ ||
+        params.new_parent == accessibility_bubble_container_ ||
+        IsPopupNotificationWindow(params.target)) {
+      floating_window_observer_.ObserveWindow(params.target);
+    }
   }
   // The window should have a parent (unless it's being removed), so we can
   // create WindowState, which requires its parent. (crbug.com/924305)
@@ -296,10 +294,11 @@ void WorkspaceLayoutManager::OnWindowHierarchyChanged(
 }
 
 void WorkspaceLayoutManager::OnWindowAdded(aura::Window* window) {
-  if (window->parent() == settings_bubble_container_)
-    settings_bubble_window_observer_.ObserveWindow(window);
-  if (window->parent() == accessibility_bubble_container_)
-    accessibility_bubble_window_observer_.ObserveWindow(window);
+  if (window->parent() == settings_bubble_container_ ||
+      window->parent() == accessibility_bubble_container_ ||
+      IsPopupNotificationWindow(window)) {
+    floating_window_observer_.ObserveWindow(window);
+  }
 }
 
 void WorkspaceLayoutManager::OnWindowPropertyChanged(aura::Window* window,
@@ -337,6 +336,8 @@ void WorkspaceLayoutManager::OnWindowDestroying(aura::Window* window) {
     settings_bubble_container_ = nullptr;
   if (accessibility_bubble_container_ == window)
     accessibility_bubble_container_ = nullptr;
+  if (shelf_container_ == window)
+    shelf_container_ = nullptr;
   Shell::Get()->desks_controller()->MaybeRemoveVisibleOnAllDesksWindow(window);
 }
 
@@ -558,7 +559,7 @@ void WorkspaceLayoutManager::UpdateAlwaysOnTop(
   }
 }
 
-void WorkspaceLayoutManager::NotifySystemUiAreaChanged() {
+void WorkspaceLayoutManager::NotifySystemUiAreaChanged() const {
   // The PIP avoids the accessibility bubble, so here we update the
   // accessibility bubble position before sending the WMEvent, so that if the
   // PIP is also being shown the PIPs calculation does not need to take place
@@ -570,7 +571,7 @@ void WorkspaceLayoutManager::NotifySystemUiAreaChanged() {
   }
 }
 
-void WorkspaceLayoutManager::NotifyAccessibilityWorkspaceChanged() {
+void WorkspaceLayoutManager::NotifyAccessibilityWorkspaceChanged() const {
   if (Shell::Get()->accessibility_controller()->autoclick().enabled()) {
     Shell::Get()
         ->accessibility_controller()
@@ -590,6 +591,13 @@ void WorkspaceLayoutManager::UpdateWindowWorkspace(aura::Window* window) {
     desks_controller->AddVisibleOnAllDesksWindow(window);
   else
     desks_controller->MaybeRemoveVisibleOnAllDesksWindow(window);
+}
+
+bool WorkspaceLayoutManager::IsPopupNotificationWindow(
+    aura::Window* window) const {
+  return window->parent() == shelf_container_ &&
+         window->GetName() ==
+             AshMessagePopupCollection::kMessagePopupWidgetName;
 }
 
 }  // namespace ash

@@ -5,8 +5,8 @@
 #ifndef ASH_WM_WORKSPACE_WORKSPACE_LAYOUT_MANAGER_H_
 #define ASH_WM_WORKSPACE_WORKSPACE_LAYOUT_MANAGER_H_
 
+#include <map>
 #include <memory>
-#include <set>
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
@@ -106,17 +106,19 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   friend class WorkspaceControllerTestApi;
   typedef std::set<aura::Window*> WindowSet;
 
-  // Observes changes in windows in the BubbleWindowObserver, and
+  // Observes changes in windows in the FloatingWindowObserver, and
   // notifies WorkspaceLayoutManager to send out system ui area change events.
-  class BubbleWindowObserver : public aura::WindowObserver {
+  // This class currently observes windows in |settings_bubble_container_|,
+  // |accessibility_bubble_container_|, and |shelf_container_|.
+  class FloatingWindowObserver : public aura::WindowObserver {
    public:
-    explicit BubbleWindowObserver(
+    explicit FloatingWindowObserver(
         WorkspaceLayoutManager* workspace_layout_manager);
 
-    BubbleWindowObserver(const BubbleWindowObserver&) = delete;
-    BubbleWindowObserver& operator=(const BubbleWindowObserver&) = delete;
+    FloatingWindowObserver(const FloatingWindowObserver&) = delete;
+    FloatingWindowObserver& operator=(const FloatingWindowObserver&) = delete;
 
-    ~BubbleWindowObserver() override;
+    ~FloatingWindowObserver() override;
 
     void ObserveWindow(aura::Window* window);
 
@@ -131,8 +133,10 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
 
    private:
     // WorkspaceLayoutManager has at least as long a lifetime as this class.
-    WorkspaceLayoutManager* workspace_layout_manager_;
-    WindowSet windows_;
+    const WorkspaceLayoutManager* workspace_layout_manager_;
+    // The key is the window to be observed, and the value is the parent of the
+    // window.
+    std::map<aura::Window*, aura::Window*> observed_windows_;
 
     void StopOberservingWindow(aura::Window* window);
   };
@@ -161,23 +165,25 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   // the keyboard or any window in the SettingsBubbleContainer or
   // |accessibility_bubble_container_|. Windows will only be notified about
   // changes to system ui areas on the display they are on.
-  void NotifySystemUiAreaChanged();
+  void NotifySystemUiAreaChanged() const;
 
   // Notifies the autoclick controller about a workspace event. If autoclick
   // is enabled, the autoclick bubble may need to move in response to that
   // event.
-  void NotifyAccessibilityWorkspaceChanged();
+  void NotifyAccessibilityWorkspaceChanged() const;
 
   // Updates the window workspace.
   void UpdateWindowWorkspace(aura::Window* window);
 
+  bool IsPopupNotificationWindow(aura::Window* window) const;
+
   aura::Window* window_;
   aura::Window* root_window_;
   RootWindowController* root_window_controller_;
+  FloatingWindowObserver floating_window_observer_;
   aura::Window* settings_bubble_container_;
-  BubbleWindowObserver settings_bubble_window_observer_;
   aura::Window* accessibility_bubble_container_;
-  BubbleWindowObserver accessibility_bubble_window_observer_;
+  aura::Window* shelf_container_;
 
   display::ScopedDisplayObserver display_observer_{this};
 
