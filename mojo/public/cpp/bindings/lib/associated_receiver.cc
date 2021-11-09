@@ -46,6 +46,12 @@ void AssociatedReceiverBase::set_disconnect_with_reason_handler(
       std::move(error_handler));
 }
 
+void AssociatedReceiverBase::reset_on_disconnect() {
+  DCHECK(is_bound());
+  set_disconnect_handler(
+      base::BindOnce(&AssociatedReceiverBase::reset, base::Unretained(this)));
+}
+
 void AssociatedReceiverBase::FlushForTesting() {
   endpoint_client_->FlushForTesting();  // IN-TEST
 }
