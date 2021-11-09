@@ -1,4 +1,52 @@
 <style include="firmware-fonts firmware-shared">
+  #cancelButton {
+    margin-inline-end: 12px;
+  }
+
+  [slot='button-container'] {
+    --cr-dialog-button-container-padding-bottom: 20px;
+    --cr-dialog-button-container-padding-end: 24px;
+    --cr-dialog-button-container-padding-start: 24px;
+    --cr-dialog-button-container-padding-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  [slot='body'] {
+    --cr-dialog-body-padding-horizontal: 24px;
+  }
+
+  #dialogTitle {
+    --cr-dialog-title-slot-padding-bottom: 24px;
+    --cr-dialog-title-slot-padding-end: 24px;
+    --cr-dialog-title-slot-padding-start: 24px;
+    --cr-dialog-title-slot-padding-top: 24px;
+  }
 </style>
-<cr-dialog id="firmwareUpdateDialog">
-</cr-dialog>
+<template is="dom-if"
+    if="[[shouldShowDevicePrepDialog_(dialogState)]]"
+    restamp>
+  <cr-dialog id="firmwareUpdateDialog" show-on-attach
+    on-close="closeDialog_">
+  <div slot="title">
+    <!-- TODO(michaelcheco): i18n string -->
+    Prepare your device
+  </div>
+  <div slot="body">
+    <div id="updateInstructions" hidden$="[[!update.updateModeInstructions]]">
+      [[update.updateModeInstructions]]
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" on-click="closeDialog_">
+      <!-- TODO(michaelcheco): i18n string -->
+      Cancel
+    </cr-button>
+    <cr-button class="action-button"
+        id="nextButton">
+      <!-- TODO(michaelcheco): i18n string -->
+      Next
+    </cr-button>
+  </div>
+  </cr-dialog>
+</template>

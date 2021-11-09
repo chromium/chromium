@@ -4,6 +4,7 @@
 
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
+import './firmware_update_dialog.js';
 import './peripheral_updates_list.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

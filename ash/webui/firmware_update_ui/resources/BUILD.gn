@@ -63,6 +63,7 @@ js_library("fake_update_provider") {
 
 js_library("firmware_update_app") {
   deps = [
+    ":firmware_update_dialog",
     ":peripheral_updates_list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -70,6 +71,7 @@ js_library("firmware_update_app") {
 
 js_library("firmware_update_dialog") {
   deps = [
+    ":firmware_update_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

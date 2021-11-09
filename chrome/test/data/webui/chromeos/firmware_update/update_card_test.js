@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {FirmwareUpdate, UpdatePriority} from 'chrome://accessory-update/firmware_update_types.js';
-import {DialogState, UpdateCardElement} from 'chrome://accessory-update/update_card.js';
+import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -45,30 +45,6 @@ export function updateCardTest() {
   function getPriorityTextElement() {
     return /** @type {!HTMLSpanElement} */ (
         updateCardElement.shadowRoot.querySelector('#priorityText'));
-  }
-
-  function getUpdateButton() {
-    return /** @type {!HTMLButtonElement} */ (
-        updateCardElement.shadowRoot.querySelector('#updateButton'));
-  }
-
-  /** @return {!Promise} */
-  function clickUpdateButton() {
-    getUpdateButton().click();
-    return flushTasks();
-  }
-
-  function getDevicePrepDialog() {
-    return /** @type {!CrDialogElement} */ (
-        updateCardElement.shadowRoot.querySelector('#devicePrepDialog'));
-  }
-
-  /**
-   * @suppress {visibility}
-   * @return {!DialogState}
-   */
-  function getDialogState() {
-    return updateCardElement.dialogState_;
   }
 
   test('UpdateCardPopulated', () => {
@@ -112,53 +88,5 @@ export function updateCardTest() {
       assertEquals(
           'Critical update', getPriorityTextElement().innerText.trim());
     });
-  });
-
-  test('DevicePreparationDialog', () => {
-    /** @type {!FirmwareUpdate} */
-    const fakeFirmwareUpdate = {
-      deviceId: '1',
-      deviceName: 'Logitech keyboard',
-      version: '2.1.12',
-      description:
-          'Update firmware for Logitech keyboard to improve performance',
-      priority: UpdatePriority.kCritical,
-      updateModeInstructions: 'Do a backflip before updating.',
-      screenshotUrl: '',
-    };
-    return initializeUpdateList(fakeFirmwareUpdate)
-        .then(() => {
-          assertFalse(isVisible(getDevicePrepDialog()));
-        })
-        .then(() => clickUpdateButton())
-        .then(() => {
-          assertEquals(DialogState.DEVICE_PREP, getDialogState());
-          assertTrue(getDevicePrepDialog().open);
-        });
-  });
-
-  test('UpdateWithNoInstructions', () => {
-    /** @type {!FirmwareUpdate} */
-    const fakeFirmwareUpdate = {
-      deviceId: '1',
-      deviceName: 'Logitech keyboard',
-      version: '2.1.12',
-      description:
-          'Update firmware for Logitech keyboard to improve performance',
-      priority: UpdatePriority.kCritical,
-      updateModeInstructions: '',
-      screenshotUrl: '',
-    };
-    return initializeUpdateList(fakeFirmwareUpdate)
-        .then(() => {
-          assertFalse(isVisible(getDevicePrepDialog()));
-        })
-        .then(() => clickUpdateButton())
-        .then(() => {
-          // TODO(michaelcheco): Update this test to verify that the update
-          // dialog is shown immediately if the update has no instructions.
-          assertEquals(DialogState.CLOSED, getDialogState());
-          assertFalse(isVisible(getDevicePrepDialog()));
-        });
   });
 }

@@ -7,6 +7,13 @@ import './firmware_shared_fonts.js';
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FirmwareUpdate} from './firmware_update_types.js';
+
+/** @enum {number} */
+export const DialogState = {
+  CLOSED: 0,
+  DEVICE_PREP: 1,
+};
 
 /**
  * @fileoverview
@@ -19,6 +26,57 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @type {!FirmwareUpdate} */
+      update: {
+        type: Object,
+      },
+
+      /** @type {!DialogState} */
+      dialogState: {
+        type: Number,
+        value: DialogState.CLOSED,
+      },
+    };
+  }
+
+  /** @override */
+  constructor() {
+    super();
+
+    /**
+     * Event callback for 'open-device-prep-dialog'.
+     * @param {!Event} e
+     * @private
+     */
+    this.openDevicePrepDialog_ = (e) => {
+      this.update = e.detail.update;
+      this.dialogState = DialogState.DEVICE_PREP;
+    };
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+
+    window.addEventListener(
+        'open-device-prep-dialog', (e) => this.openDevicePrepDialog_(e));
+  }
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  shouldShowDevicePrepDialog_() {
+    return this.dialogState === DialogState.DEVICE_PREP;
+  }
+
+  /** @protected */
+  closeDialog_() {
+    this.dialogState = DialogState.CLOSED;
   }
 }
 
