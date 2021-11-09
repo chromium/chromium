@@ -180,10 +180,6 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, Text) {
   // The text is in the clipboard and a notification is shown.
   std::vector<std::u16string> types = GetAvailableClipboardTypes();
   size_t expected_size = 1u;
-#if defined(OS_LINUX)
-  // Ozone/X11 and Wayland also set kMimeTypeTextUtf8 along with kMimeTypeText.
-  expected_size = 2u;
-#endif
   ASSERT_EQ(expected_size, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
   if (expected_size == 2u)
@@ -242,10 +238,6 @@ IN_PROC_BROWSER_TEST_F(RemoteCopyBrowserTest, TextThenImageUrl) {
   // The text is in the clipboard.
   std::vector<std::u16string> types = GetAvailableClipboardTypes();
   size_t expected_size = 1u;
-#if defined(OS_LINUX)
-  // Ozone/X11 and Wayland also set kMimeTypeTextUtf8 along with kMimeTypeText.
-  expected_size = 2u;
-#endif
   ASSERT_EQ(expected_size, types.size());
   ASSERT_EQ(ui::kMimeTypeText, base::UTF16ToASCII(types[0]));
   if (expected_size == 2u)
