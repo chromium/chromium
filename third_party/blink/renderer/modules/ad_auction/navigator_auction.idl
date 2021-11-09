@@ -26,6 +26,9 @@
   [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
   Promise<USVString?> runAdAuction(AuctionAdConfig config);
 
+  [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
+  sequence<USVString> adAuctionComponents([Clamp] unsigned short numComponents);
+
   // https://crbug.com/1249186
   // ToDo: Fully define params and types.
   [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]

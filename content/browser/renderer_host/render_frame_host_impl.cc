@@ -61,6 +61,7 @@
 #include "content/browser/download/data_url_blob_reader.h"
 #include "content/browser/feature_observer.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -10505,6 +10506,14 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       // when the current RenderFrameHost crashes before navigating to a new
       // URL.
       document_associated_data_.emplace(*this);
+    }
+
+    // This may only be done after creating the DocumentAssociatedData for the
+    // new document, if appropriate, since `fenced_frame_urls_map` hangs off of
+    // that.
+    if (navigation_request->pending_ad_components_map()) {
+      navigation_request->pending_ad_components_map()->ExportToMapping(
+          GetMainFrame()->GetPage().fenced_frame_urls_map());
     }
 
     // Continue observing the events for the committed navigation.

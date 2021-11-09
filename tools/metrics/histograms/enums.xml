@@ -35287,6 +35287,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4075" label="RunAdAuction"/>
   <int value="4076" label="JoinAdInterestGroup"/>
   <int value="4077" label="FileSystemUrlNavigation"/>
+  <int value="4078" label="V8Navigator_AdAuctionComponents_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

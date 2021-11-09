@@ -441,6 +441,11 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // List of URLs which are preloaded by HTTP Early Hints.
   WebVector<WebURL> early_hints_preloaded_resources;
+
+  // If this is a navigation to fenced frame from an interest group auction,
+  // contains URNs mapped to the ad components returned by the winning bid.
+  // Null, otherwise.
+  absl::optional<WebVector<WebURL>> ad_auction_components;
 };
 
 }  // namespace blink

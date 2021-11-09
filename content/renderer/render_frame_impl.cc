@@ -139,6 +139,7 @@
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -1078,6 +1079,17 @@ void FillMiscNavigationParams(
     item.SetAppHistoryId(WebString::FromUTF16(entry->id));
     item.SetURLString(WebString::FromUTF16(entry->url));
     navigation_params->app_history_forward_entries.emplace_back(item);
+  }
+
+  if (commit_params.ad_auction_components) {
+    DCHECK_EQ(blink::kMaxAdAuctionAdComponents,
+              commit_params.ad_auction_components->size());
+    navigation_params->ad_auction_components.emplace();
+    for (const GURL& urn : *commit_params.ad_auction_components) {
+      // `ad_auction_components` must be a list of URNs, to avoid leaking data.
+      DCHECK(urn.SchemeIs(url::kUrnScheme));
+      navigation_params->ad_auction_components->push_back(blink::WebURL(urn));
+    }
   }
 }
 

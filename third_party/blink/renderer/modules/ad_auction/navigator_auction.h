@@ -5,12 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AD_AUCTION_NAVIGATOR_AUCTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AD_AUCTION_NAVIGATOR_AUCTION_H_
 
+#include <stdint.h>
+
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -55,6 +59,24 @@ class MODULES_EXPORT NavigatorAuction final
                                     Navigator&,
                                     const AuctionAdConfig*,
                                     ExceptionState&);
+
+  // If called from a FencedFrame that was navigated to the URN resulting from
+  // an interest group ad auction, returns a Vector of ad component URNs
+  // associated with the winning bid in that auction.
+  //
+  // `num_ad_components` is the number of ad component URNs to put in the
+  // Vector. To avoid leaking data from the winning bidder worklet, the number
+  // of ad components in the winning bid is not exposed. Instead, it's padded
+  // with URNs to length kMaxAdAuctionAdComponents, and calling this method
+  // returns the first `num_ad_components` URNs.
+  //
+  // Throws an exception if `num_ad_components` is greater than
+  // kMaxAdAuctionAdComponents, or if called from a frame that was not navigated
+  // to a URN representing the winner of an ad auction.
+  static Vector<String> adAuctionComponents(ScriptState* script_state,
+                                            Navigator& navigator,
+                                            uint16_t num_ad_components,
+                                            ExceptionState& exception_state);
 
   // TODO(https://crbug.com/1249186): Add full impl of methods.
   ScriptPromise createAdRequest(ScriptState*, ExceptionState&);

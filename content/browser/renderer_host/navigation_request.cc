@@ -1125,7 +1125,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
               blink::mojom::
                   AppHistoryEntryPtr>() /* app_history_forward_entries */,
           /*early_hints_preloaded_resources=*/
-          std::vector<GURL>());
+          std::vector<GURL>(), absl::nullopt /* ad_auction_components */);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1249,7 +1249,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           std::vector<
               blink::mojom::
                   AppHistoryEntryPtr>() /* app_history_forward_entries */,
-          std::vector<GURL>() /* early_hints_preloaded_resources */);
+          std::vector<GURL>() /* early_hints_preloaded_resources */,
+          absl::nullopt /* ad_auction_components */);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -1777,11 +1778,16 @@ void NavigationRequest::BeginNavigationImpl() {
         is_inner_frame_tree
             ? frame_tree_node_->render_manager()->GetOuterDelegateNode()
             : frame_tree_node_;
+
+    absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
+        pending_ad_components_map;
     absl::optional<GURL> mapped_url =
         node_to_use->current_frame_host()
             ->GetPage()
             .fenced_frame_urls_map()
-            .ConvertFencedFrameURNToURL(common_params_->url);
+            .ConvertFencedFrameURNToURL(common_params_->url,
+                                        pending_ad_components_map);
+
     if (!mapped_url) {
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
@@ -1789,8 +1795,9 @@ void NavigationRequest::BeginNavigationImpl() {
           false /* collapse_frame */);
       return;
     }
-    common_params_->url = mapped_url.value();
-    commit_params_->original_url = mapped_url.value();
+    common_params_->url = *mapped_url;
+    commit_params_->original_url = *mapped_url;
+    pending_ad_components_map_ = std::move(pending_ad_components_map);
   }
 
 #if defined(OS_ANDROID)
@@ -4340,6 +4347,13 @@ void NavigationRequest::CommitNavigation() {
       // |web_bundle_handle_| not to pass it to |render_frame_host_|.
       web_bundle_handle_.reset();
     }
+  }
+
+  // If this is a result of an ad auction, need to pass its ad component URLs to
+  // the renderer.
+  if (pending_ad_components_map_) {
+    commit_params_->ad_auction_components =
+        pending_ad_components_map_->GetURNs();
   }
 
   if (!IsSameDocument())

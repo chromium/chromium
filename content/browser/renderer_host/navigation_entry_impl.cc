@@ -895,7 +895,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           std::vector<
               blink::mojom::
                   AppHistoryEntryPtr>() /* app_history_forward_entries */,
-          std::vector<GURL>() /* early_hints_preloaded_resources */);
+          std::vector<GURL>() /* early_hints_preloaded_resources */,
+          absl::nullopt /* ad_auction_components */);
 #if defined(OS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

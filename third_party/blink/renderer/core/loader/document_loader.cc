@@ -312,7 +312,8 @@ struct SameSizeAsDocumentLoader
   WebVector<WebHistoryItem> app_history_back_entries;
   WebVector<WebHistoryItem> app_history_forward_entries;
   std::unique_ptr<CodeCacheHost> code_cache_host;
-  HashSet<KURL> early_hints_preloaded_resources_;
+  HashSet<KURL> early_hints_preloaded_resources;
+  absl::optional<Vector<KURL>> ad_auction_components;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -470,6 +471,13 @@ DocumentLoader::DocumentLoader(
 
   if (IsBackForwardLoadType(params_->frame_load_type))
     DCHECK(history_item_);
+
+  if (params_->ad_auction_components) {
+    ad_auction_components_.emplace();
+    for (const WebURL& url : *params_->ad_auction_components) {
+      ad_auction_components_->emplace_back(KURL(url));
+    }
+  }
 }
 
 std::unique_ptr<WebNavigationParams>
@@ -539,6 +547,12 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       CopyForceEnabledOriginTrials(force_enabled_origin_trials_);
   for (const auto& resource : early_hints_preloaded_resources_)
     params->early_hints_preloaded_resources.push_back(resource);
+  if (ad_auction_components_) {
+    params->ad_auction_components.emplace();
+    for (const KURL& url : *ad_auction_components_) {
+      params->ad_auction_components->emplace_back(KURL(url));
+    }
+  }
   return params;
 }
 

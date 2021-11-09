@@ -3494,7 +3494,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           std::vector<
               blink::mojom::
                   AppHistoryEntryPtr>() /* app_history_forward_entries */,
-          std::vector<GURL>() /* early_hints_preloaded_resources */);
+          std::vector<GURL>() /* early_hints_preloaded_resources */,
+          absl::nullopt /* ad_auction_components */);
 #if defined(OS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();

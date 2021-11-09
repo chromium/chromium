@@ -22,8 +22,10 @@
 #include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -55,11 +57,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -125,6 +129,9 @@ class NetworkResponder {
         &NetworkResponder::RequestHandler, base::Unretained(this)));
   }
 
+  NetworkResponder(const NetworkResponder&) = delete;
+  NetworkResponder& operator=(const NetworkResponder&) = delete;
+
   void RegisterNetworkResponse(
       const std::string& url_path,
       const std::string& body,
@@ -134,6 +141,20 @@ class NetworkResponder {
     response.body = body;
     response.mime_type = mime_type;
     response_map_[url_path] = response;
+  }
+
+  // Register a response that's a bidder script. Takes the body of the
+  // generateBid() method.
+  void RegisterBidderScript(const std::string& url_path,
+                            const std::string& generate_bid_body) {
+    std::string script = base::StringPrintf(R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    unusedBrowserSignals) {
+  %s
+})",
+                                            generate_bid_body.c_str());
+    RegisterNetworkResponse(url_path, script, "application/javascript");
   }
 
  private:
@@ -269,6 +290,9 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     if (group.ads) {
       buf << ", ads: " << MakeAdsArg(*group.ads);
     }
+    if (group.ad_components) {
+      buf << ", adComponents: " << MakeAdsArg(*group.ad_components);
+    }
 
     buf << "}";
 
@@ -383,7 +407,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       const url::Origin& owner,
       const std::string& name,
       absl::optional<GURL> bidding_url = absl::nullopt,
-      absl::optional<std::vector<blink::InterestGroup::Ad>> ads =
+      absl::optional<std::vector<blink::InterestGroup::Ad>> ads = absl::nullopt,
+      absl::optional<std::vector<blink::InterestGroup::Ad>> ad_components =
           absl::nullopt) {
     return JoinInterestGroupAndWaitInJs(blink::InterestGroup(
         /*expiry=*/base::Time(), owner, name, std::move(bidding_url),
@@ -391,7 +416,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         /*trusted_bidding_signals_url=*/absl::nullopt,
         /*trusted_bidding_signals_keys=*/absl::nullopt,
         /*user_bidding_signals=*/absl::nullopt, std::move(ads),
-        /*ad_components=*/absl::nullopt));
+        std::move(ad_components)));
   }
 
   bool LeaveInterestGroupAndWait(const url::Origin& owner,
@@ -664,7 +689,6 @@ class InterestGroupFencedFrameBrowserTest
     GURL urn_url(urn_url_string.ExtractString());
     ASSERT_TRUE(urn_url.is_valid())
         << "URL is not valid: " << urn_url_string.ExtractString();
-
     EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
 
     NavigateFencedFrameAndWait(urn_url, expected_ad_url, *execution_target);
@@ -672,7 +696,8 @@ class InterestGroupFencedFrameBrowserTest
 
   // Navigates the only fenced frame in `execution_target` to `url` and waits
   // for the navigation to complete, expecting the frame to navigate to
-  // `expected_url` and make a network request for it.
+  // `expected_url`. Also checks that the URL is actually requested from the
+  // test server if `expected_url` is an HTTPS URL.
   void NavigateFencedFrameAndWait(const GURL& url,
                                   const GURL& expected_url,
                                   const ToRenderFrameHost& execution_target) {
@@ -685,10 +710,15 @@ class InterestGroupFencedFrameBrowserTest
         execution_target,
         JsReplace("document.querySelector('fencedframe').src = $1;", url)));
 
-    // Wait for the URL to be requested, to make sure the fenced frame has
-    // started loading. Used in both ShadowDOM and MPArch cases, but it's only
-    // needed in the MPArch case. On regression, this is likely to hang.
-    WaitForURL(expected_url);
+    // If the URL is HTTPS, wait for the URL to be requested, to make sure the
+    // fenced frame actually made the request and, in the MPArch case, to make
+    // sure the load actually started. On regression, this is likely to hang.
+    if (expected_url.SchemeIs(url::kHttpsScheme)) {
+      WaitForURL(expected_url);
+    } else {
+      // The only other URLs this should be used with are about:blank URLs.
+      ASSERT_EQ(GURL(url::kAboutBlankURL), expected_url);
+    }
 
     switch (GetParam()) {
       case blink::features::FencedFramesImplementationType::kShadowDOM: {
@@ -711,20 +741,27 @@ class InterestGroupFencedFrameBrowserTest
     // the URL will be `expected_url`, but IsErrorDocument() will be true, and
     // the last committed origin will be opaque.
     EXPECT_FALSE(fenced_frame_host->IsErrorDocument());
-    EXPECT_EQ(url::Origin::Create(expected_url),
-              fenced_frame_host->GetLastCommittedOrigin());
+    // If scheme is HTTP or HTTPS, check the last committed origin here. If
+    // scheme is about:blank, don't do so, since url::Origin::Create() will
+    // return an opaque origin in that case.
+    if (expected_url.SchemeIsHTTPOrHTTPS()) {
+      EXPECT_EQ(url::Origin::Create(expected_url),
+                fenced_frame_host->GetLastCommittedOrigin());
+    }
   }
 
-  // Returns the RenderFrameHost for a fenced frame in `execution_target`, which
-  // is assumed to contain only one fenced frame and no iframes.
-  RenderFrameHost* GetFencedFrameRenderFrameHost(
+  // Returns the RenderFrameHostImpl for a fenced frame in `execution_target`,
+  // which is assumed to contain only one fenced frame and no iframes.
+  RenderFrameHostImpl* GetFencedFrameRenderFrameHost(
       const ToRenderFrameHost& execution_target) {
     switch (GetParam()) {
       case blink::features::FencedFramesImplementationType::kShadowDOM: {
         // Make sure there's only one child frame.
         CHECK(!ChildFrameAt(execution_target, 1));
+        CHECK(ChildFrameAt(execution_target, 0));
 
-        return ChildFrameAt(execution_target, 0);
+        return static_cast<RenderFrameHostImpl*>(
+            ChildFrameAt(execution_target, 0));
       }
       case blink::features::FencedFramesImplementationType::kMPArch: {
         return GetFencedFrame(execution_target)->GetInnerRoot();
@@ -744,6 +781,154 @@ class InterestGroupFencedFrameBrowserTest
             ->GetFencedFrames();
     CHECK_EQ(1u, fenced_frames.size());
     return fenced_frames[0];
+  }
+
+  // Navigates the main frame, adds an interest group with a single component
+  // URL, and runs an auction where an ad with that component URL wins.
+  // Navigates a fenced frame to the winning render URL (which contains a nested
+  // fenced frame), and navigates that fenced frame to the component ad URL.
+  // Provides a common starting state for testing behavior of component ads and
+  // fenced frames.
+  //
+  // Writes URN for the component ad to `component_ad_urn`, if non-null.
+  void RunBasicAuctionWithAdComponents(const GURL& ad_component_url,
+                                       GURL* component_ad_urn = nullptr) {
+    GURL test_url =
+        https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+    ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+    GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/nested.html");
+    EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+        /*owner=*/url::Origin::Create(test_url),
+        /*name=*/"cars",
+        /*bidding_url=*/
+        https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+        /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
+        /*ad_components=*/{{{ad_component_url, /*metadata=*/absl::nullopt}}}));
+
+    ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+        ad_url, JsReplace(
+                    R"({
+seller: $1,
+decisionLogicUrl: $2,
+interestGroupBuyers: [$1]
+                    })",
+                    url::Origin::Create(test_url),
+                    https_server_->GetURL(
+                        "a.test", "/interest_group/decision_logic.js"))));
+
+    // Get first component URL from the fenced frame.
+    RenderFrameHost* ad_frame = GetFencedFrameRenderFrameHost(shell());
+    absl::optional<std::vector<GURL>> components =
+        GetAdAuctionComponentsInJS(ad_frame, 1);
+    ASSERT_TRUE(components);
+    ASSERT_EQ(1u, components->size());
+    EXPECT_EQ(url::kUrnScheme, (*components)[0].scheme_piece());
+    if (component_ad_urn)
+      *component_ad_urn = (*components)[0];
+
+    // Load the ad component in the nested fenced frame. The load should
+    // succeed.
+    NavigateFencedFrameAndWait((*components)[0], ad_component_url, ad_frame);
+  }
+
+  absl::optional<std::vector<GURL>> GetAdAuctionComponentsInJS(
+      const ToRenderFrameHost& execution_target,
+      int num_params) {
+    auto result = EvalJs(
+        execution_target,
+        base::StringPrintf("navigator.adAuctionComponents(%i)", num_params));
+    // Return nullopt if an exception was thrown, as should be the case for
+    // loading pages that are not the result of an auction.
+    if (!result.error.empty())
+      return absl::nullopt;
+
+    // Otherwise, adAuctionComponents should always return a list, since it
+    // forces its input to be a number, and clamps it to the expected range.
+    EXPECT_TRUE(result.value.is_list());
+    if (!result.value.is_list())
+      return absl::nullopt;
+
+    std::vector<GURL> out;
+    for (const auto& value : result.value.GetList()) {
+      if (!value.is_string()) {
+        ADD_FAILURE() << "Expected string: " << value;
+        return std::vector<GURL>();
+      }
+      GURL url(value.GetString());
+      if (!url.is_valid() || !url.SchemeIs(url::kUrnScheme)) {
+        ADD_FAILURE() << "Expected valid URN URL: " << value;
+        return std::vector<GURL>();
+      }
+      out.emplace_back(std::move(url));
+    }
+    return out;
+  }
+
+  // Validates that navigator.adAuctionComponents() returns URNs that map to
+  // `expected_ad_component_urls`. `expected_ad_component_urls` is padded with
+  // about:blank URLs up to blink::kMaxAdAuctionAdComponents. Calls
+  // adAuctionComponents() with a number of different input parameters to get a
+  // list of URNs and checks them against FencedFrameURLMapping to make sure
+  // they're mapped to `expected_ad_component_urls`, and in the same order.
+  void CheckAdComponents(std::vector<GURL> expected_ad_component_urls,
+                         RenderFrameHostImpl* render_frame_host) {
+    const FencedFrameURLMapping& fenced_frame_urls_map =
+        render_frame_host->GetPage().fenced_frame_urls_map();
+    while (expected_ad_component_urls.size() <
+           blink::kMaxAdAuctionAdComponents) {
+      expected_ad_component_urls.emplace_back(GURL(url::kAboutBlankURL));
+    }
+
+    absl::optional<std::vector<GURL>> all_component_urls =
+        GetAdAuctionComponentsInJS(render_frame_host,
+                                   blink::kMaxAdAuctionAdComponents);
+    ASSERT_TRUE(all_component_urls);
+    ASSERT_EQ(blink::kMaxAdAuctionAdComponents, all_component_urls->size());
+    for (size_t i = 0; i < all_component_urls->size(); ++i) {
+      // All ad component URLs should use the URN scheme.
+      EXPECT_EQ(url::kUrnScheme, (*all_component_urls)[i].scheme_piece());
+
+      // All ad component URLs should be unique.
+      for (size_t j = 0; j < i; ++j)
+        EXPECT_NE((*all_component_urls)[i], (*all_component_urls)[j]);
+
+      // Check URNs are mapped to the values in `expected_ad_component_urls`.
+      absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
+          ignored_ad_components;
+      absl::optional<GURL> mapped_url =
+          fenced_frame_urls_map.ConvertFencedFrameURNToURL(
+              (*all_component_urls)[i], ignored_ad_components);
+      EXPECT_EQ(expected_ad_component_urls[i], mapped_url);
+    }
+
+    // Make sure smaller values passed to GetAdAuctionComponentsInJS() return
+    // the first elements of the full kMaxAdAuctionAdComponents element list
+    // retrieved above.
+    for (size_t i = 0; i < blink::kMaxAdAuctionAdComponents; ++i) {
+      absl::optional<std::vector<GURL>> component_urls =
+          GetAdAuctionComponentsInJS(render_frame_host, i);
+      ASSERT_TRUE(component_urls);
+      EXPECT_THAT(*component_urls,
+                  testing::ElementsAreArray(all_component_urls->begin(),
+                                            all_component_urls->begin() + i));
+    }
+
+    // Test clamping behavior.
+    EXPECT_EQ(std::vector<GURL>(),
+              GetAdAuctionComponentsInJS(render_frame_host, -32769));
+    EXPECT_EQ(std::vector<GURL>(),
+              GetAdAuctionComponentsInJS(render_frame_host, -2));
+    EXPECT_EQ(std::vector<GURL>(),
+              GetAdAuctionComponentsInJS(render_frame_host, -1));
+    EXPECT_EQ(all_component_urls,
+              GetAdAuctionComponentsInJS(render_frame_host,
+                                         blink::kMaxAdAuctionAdComponents + 1));
+    EXPECT_EQ(all_component_urls,
+              GetAdAuctionComponentsInJS(render_frame_host,
+                                         blink::kMaxAdAuctionAdComponents + 2));
+    EXPECT_EQ(all_component_urls,
+              GetAdAuctionComponentsInJS(render_frame_host, 32768));
   }
 
  protected:
@@ -2414,6 +2599,340 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithInvalidAdUrl) {
                          test_origin,
                          https_server_->GetURL(
                              "a.test", "/interest_group/decision_logic.js"))));
+}
+
+// Test that when there are no ad components, an array of ad components is still
+// available, and they're all mapped to about:blank.
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, NoAdComponents) {
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  // Trying to retrieve the adAuctionComponents of the main frame should throw
+  // an exception.
+  EXPECT_FALSE(GetAdAuctionComponentsInJS(shell(), 1));
+
+  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/nested.html");
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/url::Origin::Create(test_url),
+      /*name=*/"cars",
+      /*bidding_url=*/
+      https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+      /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
+      /*ad_components=*/absl::nullopt));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+      ad_url, JsReplace(
+                  R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$1]
+}
+                  )",
+                  url::Origin::Create(test_url),
+                  https_server_->GetURL("a.test",
+                                        "/interest_group/decision_logic.js"))));
+
+  // Check that adAuctionComponents() returns an array of URNs that all map to
+  // about:blank.
+  RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
+  CheckAdComponents(/*expected_ad_component_urls=*/std::vector<GURL>{},
+                    ad_frame);
+
+  // Navigate the ad component fenced frame to some of the URNs, which
+  // should navigate it to about:blank. MPArch mode currently crashes on
+  // navigations to about:blank, so skip in that case.
+  //
+  // TODO(https://crbug.com/1268238): Always do this once MPArch can handle
+  // about:blank navigations.
+  if (GetParam() != blink::features::FencedFramesImplementationType::kMPArch) {
+    absl::optional<std::vector<GURL>> all_component_urls =
+        GetAdAuctionComponentsInJS(ad_frame, blink::kMaxAdAuctionAdComponents);
+    ASSERT_TRUE(all_component_urls);
+    NavigateFencedFrameAndWait((*all_component_urls)[0],
+                               GURL(url::kAboutBlankURL),
+                               GetFencedFrameRenderFrameHost(shell()));
+    NavigateFencedFrameAndWait(
+        (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
+        GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
+  }
+}
+
+// Test with an ad component. Run an auction with an ad component, load the ad
+// in a fenced frame, and the ad component in a nested fenced frame. Fully
+// exercise navigator.adAuctionComponents() on the main ad's fenced frame.
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, AdComponents) {
+  GURL ad_component_url = https_server_->GetURL(
+      "d.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
+
+  // Trying to retrieve the adAuctionComponents of the main frame should throw
+  // an exception.
+  EXPECT_FALSE(GetAdAuctionComponentsInJS(shell(), 1));
+
+  // Check that adAuctionComponents() returns an array of URNs, the first of
+  // which maps to `ad_component_url`, and the rest of which map to about:blank.
+  RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
+  CheckAdComponents(
+      /*expected_ad_component_urls=*/std::vector<GURL>{ad_component_url},
+      ad_frame);
+
+  // Navigate the ad component fenced frame to some of the about:blank URNs.
+  // MPArch mode currently crashes on navigations to about:blank, so skip in
+  // that case.
+  //
+  // TODO(https://crbug.com/1268238): Always do this once MPArch can handle
+  // about:blank navigations.
+  if (GetParam() != blink::features::FencedFramesImplementationType::kMPArch) {
+    absl::optional<std::vector<GURL>> all_component_urls =
+        GetAdAuctionComponentsInJS(ad_frame, blink::kMaxAdAuctionAdComponents);
+    ASSERT_TRUE(all_component_urls);
+    NavigateFencedFrameAndWait((*all_component_urls)[1],
+                               GURL(url::kAboutBlankURL),
+                               GetFencedFrameRenderFrameHost(shell()));
+    NavigateFencedFrameAndWait(
+        (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
+        GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
+  }
+}
+
+// Checked that navigator.adAuctionComponents() from an ad auction with
+// components aren't leaked to other frames. In particular, check that they
+// aren't provided to:
+// * The main frame. It will throw an exception.
+// * The fenced frame the ad component is loaded in, though it will have a list
+//   of URNs that map to about:blank.
+// * The ad fenced frame itself, after a renderer-initiated navigation.
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+                       AdComponentsNotLeaked) {
+  GURL ad_component_url =
+      https_server_->GetURL("d.test", "/fenced_frames/nested.html");
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
+
+  // The top frame should have no ad components.
+  EXPECT_FALSE(GetAdAuctionComponentsInJS(shell(), 1));
+
+  // Check that adAuctionComponents(), when invoked in the ad component's frame,
+  // returns an array of URNs that all map to about:blank.
+  RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
+  RenderFrameHostImpl* ad_component_frame =
+      GetFencedFrameRenderFrameHost(ad_frame);
+  CheckAdComponents(/*expected_ad_component_urls=*/std::vector<GURL>{},
+                    ad_component_frame);
+
+  // Navigate the ad component's nested fenced frame (3 fenced frames deep) to
+  // some of the URNs, which should navigate it to about:blank. MPArch mode
+  // currently crashes on navigations to about:blank, so skip in that case.
+  //
+  // TODO(https://crbug.com/1268238): Always do this once MPArch can handle
+  // about:blank navigations.
+  if (GetParam() != blink::features::FencedFramesImplementationType::kMPArch) {
+    absl::optional<std::vector<GURL>> all_component_urls =
+        GetAdAuctionComponentsInJS(ad_component_frame,
+                                   blink::kMaxAdAuctionAdComponents);
+    ASSERT_TRUE(all_component_urls);
+    NavigateFencedFrameAndWait((*all_component_urls)[0],
+                               GURL(url::kAboutBlankURL),
+                               GetFencedFrameRenderFrameHost(shell()));
+    NavigateFencedFrameAndWait(
+        (*all_component_urls)[blink::kMaxAdAuctionAdComponents - 1],
+        GURL(url::kAboutBlankURL), GetFencedFrameRenderFrameHost(shell()));
+  }
+
+  // Load a new URL in the top-level fenced frame, which should cause future
+  // navigator.adComponents() calls to fail. Use a new URL, so can wait for the
+  // server to see it. Same origin navigation so that the RenderFrameHost will
+  // be reused.
+  GURL new_url = https_server_->GetURL(
+      ad_frame->GetLastCommittedOrigin().host(), "/echoall");
+
+  // Use to wait for navigation completion in the ShadowDOM case only.
+  // Harmlessly created but not used in the MPArch case.
+  TestFrameNavigationObserver observer(ad_frame);
+
+  EXPECT_TRUE(ExecJs(ad_frame, JsReplace("document.location = $1;", new_url)));
+
+  // Wait for the URL to be requested, to make sure the fenced frame actually
+  // made the request and, in the MPArch case, to make sure the load actually
+  // started.
+  WaitForURL(new_url);
+
+  // Wait for the load to complete.
+  switch (GetParam()) {
+    case blink::features::FencedFramesImplementationType::kShadowDOM: {
+      observer.Wait();
+      break;
+    }
+    case blink::features::FencedFramesImplementationType::kMPArch: {
+      // Wait for the load to complete.
+      FencedFrame* fenced_frame = GetFencedFrame(shell());
+      fenced_frame->WaitForDidStopLoadingForTesting();
+    }
+  }
+
+  // Navigating the ad fenced frame may result in it using a new
+  // RenderFrameHost, invalidating the old `ad_frame`.
+  ad_frame = GetFencedFrameRenderFrameHost(shell());
+
+  // Make sure the expected page has loaded in the ad frame.
+  EXPECT_EQ(new_url, ad_frame->GetLastCommittedURL());
+
+  // Calling navigator.adAuctionComponents on the new frame should fail.
+  EXPECT_FALSE(GetAdAuctionComponentsInJS(ad_frame, 1));
+}
+
+// Test navigating multiple fenced frames to the same render URL from a single
+// auction, when the winning bid included ad components. All fenced frames
+// navigated to the URL should get ad component URLs from the winning bid.
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+                       AdComponentsMainAdLoadedInMultipleFrames) {
+  GURL ad_component_url = https_server_->GetURL(
+      "d.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/nested.html");
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/url::Origin::Create(test_url),
+      /*name=*/"cars",
+      /*bidding_url=*/
+      https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+      /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}},
+      /*ad_components=*/{{{ad_component_url, /*metadata=*/absl::nullopt}}}));
+
+  content::EvalJsResult urn_url_string = RunAuctionAndWait(JsReplace(
+      R"(
+{
+  seller: $1,
+  decisionLogicUrl: $2,
+  interestGroupBuyers: [$1]
+}
+      )",
+      url::Origin::Create(test_url),
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js")));
+  ASSERT_TRUE(urn_url_string.value.is_string())
+      << "Expected string, but got " << urn_url_string.value;
+
+  GURL urn_url(urn_url_string.ExtractString());
+  ASSERT_TRUE(urn_url.is_valid())
+      << "URL is not valid: " << urn_url_string.ExtractString();
+  EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
+
+  // Repeatedly load the URN in fenced frames.  The first two iterations use the
+  // original fenced frame, the next two use a new one that replaces the first.
+  for (int i = 0; i < 4; ++i) {
+    if (i == 2) {
+      EXPECT_TRUE(ExecJs(
+          shell(),
+          "document.querySelector('fencedframe').remove();"
+          "document.body.appendChild(document.createElement('fencedframe'));"));
+    }
+    ClearReceivedRequests();
+    NavigateFencedFrameAndWait(urn_url, ad_url, shell());
+
+    RenderFrameHost* ad_frame = GetFencedFrameRenderFrameHost(shell());
+    absl::optional<std::vector<GURL>> components =
+        GetAdAuctionComponentsInJS(ad_frame, 1);
+    ASSERT_TRUE(components);
+    ASSERT_EQ(1u, components->size());
+    EXPECT_EQ(url::kUrnScheme, (*components)[0].scheme_piece());
+    NavigateFencedFrameAndWait((*components)[0], ad_component_url, ad_frame);
+  }
+}
+
+// Test with multiple ad components. Also checks that ad component metadata is
+// passed in correctly.
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
+                       MultipleAdComponents) {
+  // Note that the extra "&1" and the like are added to make the URLs unique.
+  // They have no impact on the returned result, since they aren't a
+  // header/value pair.
+  std::vector<blink::InterestGroup::Ad> ad_components{
+      {https_server_->GetURL(
+           "d.test", "/set-header?Supports-Loading-Mode: fenced-frame&1"),
+       absl::nullopt},
+      {https_server_->GetURL(
+           "d.test", "/set-header?Supports-Loading-Mode: fenced-frame&2"),
+       "2"},
+      {https_server_->GetURL(
+           "d.test", "/set-header?Supports-Loading-Mode: fenced-frame&3"),
+       "[3, {'4': 'five'}]"},
+  };
+
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  // Register bidding script that validates interestGroup.adComponents and
+  // returns the first and third components in the offered bid.
+  std::string bidding_script = R"(
+let adComponents = interestGroup.adComponents;
+if (adComponents.length !== 3)
+  throw 'Incorrect length';
+if (adComponents[0].metadata !== undefined)
+  throw 'adComponents[0] has incorrect metadata: ' + adComponents[0].metadata;
+if (adComponents[1].metadata !== 2)
+  throw 'adComponents[1] has incorrect metadata: ' + adComponents[1].metadata;
+if (JSON.stringify(adComponents[2].metadata) !== '[3,{"4":"five"}]') {
+  throw 'adComponents[2] has incorrect metadata: ' + adComponents[2].metadata;
+}
+
+return {
+  ad: 'ad',
+  bid: 1,
+  render: interestGroup.ads[0].renderUrl,
+  adComponents: [interestGroup.adComponents[0].renderUrl,
+                 interestGroup.adComponents[2].renderUrl]
+};
+  )";
+  GURL bidding_url =
+      https_server_->GetURL("a.test", "/generated_bidding_logic.js");
+  network_responder_->RegisterBidderScript(bidding_url.path(), bidding_script);
+
+  GURL ad_url = https_server_->GetURL("c.test", "/fenced_frames/nested.html");
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
+      /*owner=*/url::Origin::Create(test_url),
+      /*name=*/"cars", bidding_url,
+      /*ads=*/{{{ad_url, /*metadata=*/absl::nullopt}}}, ad_components));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+      ad_url, JsReplace(
+                  R"({
+seller: $1,
+decisionLogicUrl: $2,
+interestGroupBuyers: [$1]
+                  })",
+                  url::Origin::Create(test_url),
+                  https_server_->GetURL("a.test",
+                                        "/interest_group/decision_logic.js"))));
+
+  // Validate ad components array. The bidder script should return only the
+  // first and last ad component URLs, skpping the second.
+  RenderFrameHostImpl* ad_frame = GetFencedFrameRenderFrameHost(shell());
+  CheckAdComponents(
+      /*expected_ad_component_urls=*/{ad_components[0].render_url,
+                                      ad_components[2].render_url},
+      ad_frame);
+
+  // Get first three URLs from the fenced frame.
+  absl::optional<std::vector<GURL>> components =
+      GetAdAuctionComponentsInJS(ad_frame, 3);
+  ASSERT_TRUE(components);
+  ASSERT_EQ(3u, components->size());
+
+  // Load each of the ad components in the nested fenced frame, validating the
+  // URLs they're mapped to.
+  NavigateFencedFrameAndWait((*components)[0], ad_components[0].render_url,
+                             ad_frame);
+  NavigateFencedFrameAndWait((*components)[1], ad_components[2].render_url,
+                             ad_frame);
+  // MPArch currently crashes on navigations to about:blank.
+  //
+  // TODO(https://crbug.com/1268238): Always do this once MPArch can handle
+  // about:blank navigations.
+  if (GetParam() != blink::features::FencedFramesImplementationType::kMPArch) {
+    NavigateFencedFrameAndWait((*components)[2], GURL(url::kAboutBlankURL),
+                               ad_frame);
+  }
 }
 
 // These end-to-end tests validate that information from navigator-exposed APIs

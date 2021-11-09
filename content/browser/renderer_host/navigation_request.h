@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/browser/prerender/prerender_host.h"
@@ -873,6 +874,11 @@ class CONTENT_EXPORT NavigationRequest
     DCHECK(prerender_frame_tree_node_id_.has_value())
         << "Must be called after StartNavigation()";
     return prerender_frame_tree_node_id_.value();
+  }
+
+  const absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>&
+  pending_ad_components_map() const {
+    return pending_ad_components_map_;
   }
 
   void RenderFallbackContentForObjectTag();
@@ -1900,6 +1906,13 @@ class CONTENT_EXPORT NavigationRequest
 
   // Indicates that this navigation is for PDF content in a renderer.
   bool is_pdf_ = false;
+
+  // If this navigation is a load in a fenced frame of a URN URL that resulted
+  // from an interest group auction, this contains the ad component URLs
+  // associated with that auction's winning bid, and the corresponding URNs that
+  // will be mapped to them.
+  absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
+      pending_ad_components_map_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
