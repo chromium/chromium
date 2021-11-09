@@ -4,6 +4,8 @@
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 // <if expr="chromeos or lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
@@ -43,6 +45,12 @@ export const ShowPasswordMixin = dedupingMixin(
 
         showPasswordTitle(password: string, hide: string, show: string) {
           return password ? hide : show;
+        }
+
+        getShowButtonLabel(password: string) {
+          return loadTimeData.getStringF(
+              (password) ? 'hidePasswordLabel' : 'showPasswordLabel',
+              this.entry.username, this.entry.urls.shown);
         }
 
         getIconClass() {
@@ -100,6 +108,11 @@ export interface ShowPasswordMixinInterface {
    * Gets the title text for the show/hide icon.
    */
   showPasswordTitle(password: string, hide: string, show: string): string;
+
+  /**
+   * Gets the a11y label for the show/hide button.
+   */
+  getShowButtonLabel(password: string): string;
 
   /**
    * Get the right icon to display when hiding/showing a password.

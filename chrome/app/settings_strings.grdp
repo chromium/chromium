@@ -708,7 +708,12 @@
   <message translateable="false" name="IDS_SETTINGS_TRUSTED_VAULT_OPT_IN_SUB_LABEL" desc="Sub-label for the link to the page to opt in to trusted vault encryption">
     Opt in to trusted vault
   </message>
-
+  <message name="IDS_SETTINGS_PASSWORD_SHOW_PASSWORD_A11Y" desc="The ARIA (accessibility) message for the 'Show Password' button, which sits in every row of the password list. For this row does not include a password, only information of the account. Reveals password when clicked.">
+    Show password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_PASSWORD_HIDE_PASSWORD_A11Y" desc="The ARIA (accessibility) message for the 'Hide Password' button, which sits in every row of the password list. For this row does not include a password, only information of the account. Hides password when clicked.">
+    Hide password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
+  </message>
 
   <!-- Default Browser Page -->
   <if expr="not chromeos and not lacros">

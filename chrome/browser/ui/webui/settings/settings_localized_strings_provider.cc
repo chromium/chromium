@@ -1092,7 +1092,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_TRUSTED_VAULT_OPT_IN_SUB_LABEL},
       {"noSearchResults", IDS_SEARCH_NO_RESULTS},
       {"searchResultsPlural", IDS_SEARCH_RESULTS_PLURAL},
-      {"searchResultsSingular", IDS_SEARCH_RESULTS_SINGULAR}};
+      {"searchResultsSingular", IDS_SEARCH_RESULTS_SINGULAR},
+      {"showPasswordLabel", IDS_SETTINGS_PASSWORD_SHOW_PASSWORD_A11Y},
+      {"hidePasswordLabel", IDS_SETTINGS_PASSWORD_HIDE_PASSWORD_A11Y}};
 
   GURL google_password_manager_url = GetGooglePasswordManagerURL(
       password_manager::ManagePasswordsReferrer::kChromeSettings);
