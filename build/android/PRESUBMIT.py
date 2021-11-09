@@ -37,9 +37,10 @@ def CommonChecks(input_api, output_api):
           files_to_skip=[
               r'.*_pb2\.py',
               # The following are all temporary due to: crbug.com/1100664
-              r'.*list_java_targets\.py',
               r'.*fast_local_dev_server\.py',
               r'.*incremental_javac_test_android_library.py',
+              r'.*list_class_verification_failures.py',
+              r'.*list_java_targets\.py',
           ] + build_pys,
           extra_paths_list=[
               J(),
