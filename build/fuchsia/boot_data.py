@@ -88,8 +88,13 @@ def GetBootImage(output_dir, target_arch, target_type):
   return image_dest_path
 
 
-def GetKernelArgs(output_dir):
-  return ['devmgr.epoch=%d' % time.time()]
+def GetKernelArgs():
+  """Returns a list of Zircon commandline arguments to use when booting a
+  system."""
+  return [
+      'devmgr.epoch=%d' % time.time(),
+      'blobfs.write-compression-algorithm=UNCOMPRESSED'
+  ]
 
 
 def AssertBootImagesExist(arch, platform):

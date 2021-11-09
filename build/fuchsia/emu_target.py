@@ -37,13 +37,6 @@ class EmuTarget(target.Target):
 
   def Start(self):
     emu_command = self._BuildCommand()
-
-    # We pass a separate stdin stream. Sharing stdin across processes
-    # leads to flakiness due to the OS prematurely killing the stream and the
-    # Python script panicking and aborting.
-    # The precise root cause is still nebulous, but this fix works.
-    # See crbug.com/741194.
-    logging.debug('Launching %s.' % (self.EMULATOR_NAME))
     logging.debug(' '.join(emu_command))
 
     # Zircon sends debug logs to serial port (see kernel.serial=legacy flag
@@ -66,7 +59,6 @@ class EmuTarget(target.Target):
                                          stdout=stdout,
                                          stderr=subprocess.STDOUT,
                                          env=self._SetEnv())
-
     try:
       self._WaitUntilReady()
       self.LogProcessStatistics('proc_stat_ready_log')

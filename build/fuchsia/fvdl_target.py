@@ -118,6 +118,8 @@ class FvdlTarget(emu_target.EmuTarget):
         # no-interactive requires a --vdl-output flag to shutdown the emulator.
         '--vdl-output',
         self._vdl_output_file.name,
+        '-c',
+        ' '.join(boot_data.GetKernelArgs()),
 
         # Use existing images instead of downloading new ones.
         '--kernel-image',
@@ -149,8 +151,6 @@ class FvdlTarget(emu_target.EmuTarget):
       emu_command.append('--host-gpu')
     if self._with_network:
       emu_command.append('-N')
-
-    logging.info('FVDL command: ' + ' '.join(emu_command))
 
     return emu_command
 

@@ -16,6 +16,7 @@ import select
 import subprocess
 import sys
 import threading
+import time
 import uuid
 
 from symbolizer import BuildIdsPaths, RunSymbolizer, SymbolizerFilter
@@ -67,7 +68,10 @@ def RunTestPackage(output_dir, target, package_paths, package_name,
   Returns the exit code of the remote package process."""
 
   with target.GetPkgRepo():
+    start_time = time.time()
     target.InstallPackage(package_paths)
+    logging.info('Test installed in {:.2f} seconds.'.format(time.time() -
+                                                            start_time))
 
     # TODO(crbug.com/1156768): Deprecate runtests.
     if args.code_coverage:
