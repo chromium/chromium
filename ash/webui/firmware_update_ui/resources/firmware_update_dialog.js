@@ -13,6 +13,7 @@ import {FirmwareUpdate} from './firmware_update_types.js';
 export const DialogState = {
   CLOSED: 0,
   DEVICE_PREP: 1,
+  UPDATING: 2,
 };
 
 /**
@@ -56,6 +57,16 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
       this.update = e.detail.update;
       this.dialogState = DialogState.DEVICE_PREP;
     };
+
+    /**
+     * Event callback for 'open-update-dialog'.
+     * @param {!Event} e
+     * @private
+     */
+    this.openUpdateDialog_ = (e) => {
+      this.update = e.detail.update;
+      this.dialogState = DialogState.UPDATING;
+    };
   }
 
   /** @override */
@@ -64,6 +75,9 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
 
     window.addEventListener(
         'open-device-prep-dialog', (e) => this.openDevicePrepDialog_(e));
+
+    window.addEventListener(
+        'open-update-dialog', (e) => this.openUpdateDialog_(e));
   }
 
   /**
@@ -77,6 +91,61 @@ export class FirmwareUpdateDialogElement extends PolymerElement {
   /** @protected */
   closeDialog_() {
     this.dialogState = DialogState.CLOSED;
+  }
+
+  /** @protected */
+  startUpdate_() {
+    // TODO(michaelcheco): Start update.
+    this.dialogState = DialogState.UPDATING;
+  }
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  shouldShowUpdateDialog_() {
+    // TODO(michaelchheco): Update when 'UPDATE_DONE' is added to the
+    // |DialogState| enum.
+    return this.isUpdateInProgress_();
+  }
+
+  /**
+   * @protected
+   * @return {number}
+   */
+  computePercentageValue_() {
+    // TODO(michaelcheco): Dynamically update this when 'onProgressChanged'
+    // observer is implemented.
+    return 0;
+  }
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  isUpdateInProgress_() {
+    return this.dialogState === DialogState.UPDATING;
+  }
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeUpdateDialogTitle_() {
+    if (this.isUpdateInProgress_()) {
+      return `Updating ${this.update.deviceName}`;
+    }
+    return '';
+  }
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeProgressText_() {
+    // TODO(michaelcheco): Dynamically update this when 'onProgressChanged'
+    // observer is implemented.
+    return 'Installing (1%)';
   }
 }
 

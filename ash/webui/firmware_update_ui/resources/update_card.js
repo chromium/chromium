@@ -41,13 +41,12 @@ export class UpdateCardElement extends PolymerElement {
 
   /** @protected */
   onUpdateButtonClicked_() {
-    if (this.update.updateModeInstructions) {
-      this.dispatchEvent(new CustomEvent(
-          'open-device-prep-dialog',
-          {bubbles: true, composed: true, detail: {update: this.update}}));
-    }
-    // TODO(michaelcheco): Show update dialog immediately if no instructions
-    // are provided.
+    const eventName = this.update.updateModeInstructions ?
+        'open-device-prep-dialog' :
+        'open-update-dialog';
+    this.dispatchEvent(new CustomEvent(
+        eventName,
+        {bubbles: true, composed: true, detail: {update: this.update}}));
   }
 }
 

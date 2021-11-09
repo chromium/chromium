@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-
 import {FirmwareUpdate, UpdatePriority} from 'chrome://accessory-update/firmware_update_types.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 
