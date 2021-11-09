@@ -145,6 +145,10 @@ void WebrtcFrameSchedulerSimple::OnEncodedFrameSent(
     webrtc::EncodedImageCallback::Result result,
     const WebrtcVideoEncoder::EncodedFrame& frame) {}
 
+void WebrtcFrameSchedulerSimple::SetMaxFramerateFps(int max_framerate_fps) {
+  // TODO(http://crbug.com/1268253): Implement this.
+}
+
 void WebrtcFrameSchedulerSimple::SetTickClockForTest(
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;

@@ -72,9 +72,9 @@ void WebrtcVideoStream::Start(
   capturer_ = std::move(desktop_capturer);
   capturer_->Start(this);
 
-  video_track_source_ =
-      new rtc::RefCountedObject<WebrtcVideoTrackSource>(base::BindRepeating(
-          &WebrtcVideoStream::OnEncoderReady, weak_factory_.GetWeakPtr()));
+  video_track_source_ = new rtc::RefCountedObject<WebrtcVideoTrackSource>(
+      base::BindRepeating(&WebrtcVideoStream::OnSinkAddedOrUpdated,
+                          weak_factory_.GetWeakPtr()));
   rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
       peer_connection_factory->CreateVideoTrack(kVideoLabel,
                                                 video_track_source_);
@@ -198,6 +198,15 @@ void WebrtcVideoStream::CaptureNextFrame() {
       event_timestamps_source_->TakeLastEventTimestamps();
 
   capturer_->CaptureFrame();
+}
+
+void WebrtcVideoStream::OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  OnEncoderReady();
+
+  VLOG(0) << "WebRTC requested max framerate: " << wants.max_framerate_fps
+          << " FPS";
+  scheduler_->SetMaxFramerateFps(wants.max_framerate_fps);
 }
 
 void WebrtcVideoStream::OnFrameEncoded(

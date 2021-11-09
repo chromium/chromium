@@ -47,6 +47,7 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   void Start(const base::RepeatingClosure& capture_callback) override;
   void Pause(bool pause) override;
   void OnFrameCaptured(const webrtc::DesktopFrame* frame) override;
+  void SetMaxFramerateFps(int max_framerate_fps) override;
 
   // Allows unit-tests to provide a mock clock.
   void SetTickClockForTest(const base::TickClock* tick_clock);

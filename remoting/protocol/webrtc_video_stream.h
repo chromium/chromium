@@ -82,6 +82,9 @@ class WebrtcVideoStream : public VideoStream,
   // Called by the |scheduler_|.
   void CaptureNextFrame();
 
+  // Called by |video_track_source_|.
+  void OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants);
+
   // Capturer used to capture the screen.
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
 

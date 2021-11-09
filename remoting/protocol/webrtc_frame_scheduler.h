@@ -33,6 +33,10 @@ class WebrtcFrameScheduler : public VideoChannelStateObserver {
   // Called after |frame| has been captured. |frame| may be set to nullptr
   // if the capture request failed.
   virtual void OnFrameCaptured(const webrtc::DesktopFrame* frame) = 0;
+
+  // Called when WebRTC requests the VideoTrackSource to provide frames
+  // at a maximum framerate.
+  virtual void SetMaxFramerateFps(int max_framerate_fps) = 0;
 };
 
 }  // namespace protocol

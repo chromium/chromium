@@ -20,9 +20,12 @@ namespace protocol {
 class WebrtcVideoTrackSource
     : public webrtc::Notifier<webrtc::VideoTrackSourceInterface> {
  public:
+  using AddSinkCallback =
+      base::RepeatingCallback<void(const rtc::VideoSinkWants& wants)>;
+
   // |add_sink_callback| is notified on the main thread whenever a sink is
   // added or updated.
-  explicit WebrtcVideoTrackSource(base::RepeatingClosure add_sink_callback);
+  explicit WebrtcVideoTrackSource(AddSinkCallback add_sink_callback);
   ~WebrtcVideoTrackSource() override;
   WebrtcVideoTrackSource(const WebrtcVideoTrackSource&) = delete;
   WebrtcVideoTrackSource& operator=(const WebrtcVideoTrackSource&) = delete;
@@ -52,7 +55,7 @@ class WebrtcVideoTrackSource
 
  private:
   rtc::VideoSinkInterface<webrtc::VideoFrame>* sink_ = nullptr;
-  base::RepeatingClosure add_sink_callback_;
+  AddSinkCallback add_sink_callback_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   // Incrementing ID to be attached to each VideoFrame, so that the
