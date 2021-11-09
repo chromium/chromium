@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "components/account_manager_core/account.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -26,13 +27,13 @@
 
 namespace {
 
-void DeleteProfile(const base::FilePath& profile_path) {
+void DeleteProfile(const base::FilePath& profile_path,
+                   ProfileMetrics::ProfileDelete delete_metric) {
   // Pass an empty callback because this should never delete the last profile.
   // TODO(https://crbug.com/1257610): ensure that the user cannot cancel the
   // profile deletion.
   g_browser_process->profile_manager()->MaybeScheduleProfileForDeletion(
-      profile_path, base::DoNothing(),
-      ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED);
+      profile_path, base::DoNothing(), delete_metric);
   // TODO(https://crbug.com/1257610): observe profile deletion and remove all
   // accounts from deleted profiles.
 }
@@ -45,6 +46,11 @@ AccountProfileMapper::AccountProfileMapper(
     : account_manager_facade_(facade), profile_attributes_storage_(storage) {
   DCHECK(profile_attributes_storage_);
   DCHECK(base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
+
+  // This must be done before OnGetAccountsCompleted() is called, to avoid
+  // unnecessary profile deletion.
+  MigrateOldProfiles();
+
   account_manager_facade_observation_.Observe(account_manager_facade_);
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
@@ -342,8 +348,11 @@ AccountProfileMapper::RemoveStaleAccounts() {
     }
     if (entry_needs_update)
       entry->SetGaiaIds(entry_ids);
-    if (ShouldDeleteProfile(entry))
-      DeleteProfile(entry->GetPath());
+    if (ShouldDeleteProfile(entry)) {
+      DeleteProfile(
+          entry->GetPath(),
+          ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS);
+    }
   }
   return removed_ids;
 }
@@ -475,9 +484,9 @@ bool AccountProfileMapper::ShouldDeleteProfile(
   if (Profile::IsMainProfilePath(entry->GetPath())) {
     // Never delete the main profile.
     if (primary_account_deleted) {
-      // Primary account of the main profile must never be deleted. A CHECK
-      // here can possibly put a device in a crash loop, so upload a crash
-      // report silently instead.
+      // Primary account of the main profile must never be deleted. A CHECK here
+      // can possibly put a device in a crash loop, so upload a crash report
+      // silently instead.
       DLOG(ERROR) << "Primary account has been removed from the main profile";
       base::debug::DumpWithoutCrashing();
     }
@@ -485,4 +494,29 @@ bool AccountProfileMapper::ShouldDeleteProfile(
   }
 
   return primary_account_deleted;
+}
+
+void AccountProfileMapper::MigrateOldProfiles() {
+  for (ProfileAttributesEntry* entry :
+       profile_attributes_storage_->GetAllProfilesAttributes()) {
+    // Populate missing Gaia Ids.
+    std::string primary_gaia_id = entry->GetGAIAId();
+    if (!primary_gaia_id.empty()) {
+      base::flat_set<std::string> gaia_ids = entry->GetGaiaIds();
+      auto inserted_result = gaia_ids.insert(primary_gaia_id);
+      if (inserted_result.second)
+        entry->SetGaiaIds(gaia_ids);
+    }
+
+    // Delete non-syncing profiles.
+    // TODO(https://crbug.com/1260291): Revisit this once non-syncing profiles
+    // are allowed.
+    base::FilePath profile_path = entry->GetPath();
+    if (!entry->IsAuthenticated() &&
+        !Profile::IsMainProfilePath(profile_path)) {
+      DeleteProfile(
+          profile_path,
+          ProfileMetrics::DELETE_PROFILE_SIGNIN_REQUIRED_MIRROR_LACROS);
+    }
+  }
 }

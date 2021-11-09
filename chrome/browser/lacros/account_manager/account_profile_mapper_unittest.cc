@@ -1009,3 +1009,50 @@ TEST_F(AccountProfileMapperTest, CreateNewProfileWithAccount) {
   EXPECT_TRUE(entry->IsEphemeral());
   EXPECT_EQ(entry->GetSigninState(), SigninState::kNotSignedIn);
 }
+
+// Checks that profiles in unsupported state are deleted. If a profile has a
+// sync account, but this account is not in `GetGaiaIds()`, the account is added
+// there, which can allow keeping the profile if the account exists in the
+// facade.
+TEST_F(AccountProfileMapperTest, FixProfilesAtStartup) {
+  base::FilePath syncing_path = GetProfilePath("Syncing");
+  base::FilePath signed_out_path = GetProfilePath("SignedOut");
+  base::FilePath unconsented_path = GetProfilePath("Unconsented");
+
+  // Create profiles without gaia ids.
+  SetAccountsInStorage({{main_path(), {}},
+                        {syncing_path, {}},
+                        {unconsented_path, {}},
+                        {signed_out_path, {}}});
+  // Set profiles in various signin states.
+  attributes_storage()
+      ->GetProfileAttributesWithPath(syncing_path)
+      ->SetAuthInfo(
+          /*gaia_id=*/"A", /*user_name=*/u"A",
+          /*is_consented_primary_account=*/true);
+  attributes_storage()
+      ->GetProfileAttributesWithPath(unconsented_path)
+      ->SetAuthInfo(
+          /*gaia_id=*/"B", /*user_name=*/u"B",
+          /*is_consented_primary_account=*/false);
+
+  auto mapper = std::make_unique<AccountProfileMapper>(mock_facade(),
+                                                       attributes_storage());
+
+  // TODO(https://crbug.com/1260291): Revisit this once non-syncing profiles are
+  // allowed.
+  // The main profile is not deleted, even though it does not have an account.
+  // The syncing profile was fixed, by adding the sync account in Gaia Ids.
+  // The other profiles (non-main and non-syncing) were deleted.
+  ExpectAccountsInStorage({{main_path(), {}}, {syncing_path, {"A"}}});
+}
+
+// Checks that profiles are correctly imported from Ash-based Chrome.
+TEST_F(AccountProfileMapperTest, MigrateAshProfile) {
+  // On Ash, the accounts are not explicitly assigned to the profile in
+  // `ProfileAttributesStorage`.
+  CreateMapper({{main_path(), {}}, {base::FilePath(), {"A", "B", "C"}}});
+
+  // All accounts have been assigned to the main profile.
+  ExpectAccountsInStorage({{main_path(), {"A", "B", "C"}}});
+}

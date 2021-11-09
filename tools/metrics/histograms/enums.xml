@@ -70225,8 +70225,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
     Deprecated. The user signed out on the web, and Chrome signout was
     prohibited.
   </int>
-  <int value="6" label="Primary account is not allowed.">
+  <int value="6" label="Primary account is not allowed">
     The primary account is a managed account and is no longer allowed by policy.
+  </int>
+  <int value="7" label="Primary account was removed (Lacros only)">
+    The primary account was removed from the device on Lacros.
+  </int>
+  <int value="8" label="Signin is required with Mirror (Lacros only)">
+    The profile is not signed in, which is unsupported on Lacros.
   </int>
 </enum>
 

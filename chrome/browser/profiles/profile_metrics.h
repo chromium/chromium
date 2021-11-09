@@ -92,7 +92,10 @@ class ProfileMetrics {
     DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED = 6,
     // Delete profile internally when a profile cannot exist without a primary
     // account and this account gets removed.
-    DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED = 7,
+    DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS = 7,
+    // Delete profile internally at startup, if a Lacros profile using Mirror is
+    // not signed in (as it is not supported yet).
+    DELETE_PROFILE_SIGNIN_REQUIRED_MIRROR_LACROS = 8,
     NUM_DELETE_PROFILE_METRICS
   };
 

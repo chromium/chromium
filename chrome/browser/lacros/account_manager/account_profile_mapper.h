@@ -189,6 +189,14 @@ class AccountProfileMapper
   // after a system accounts update.
   bool ShouldDeleteProfile(ProfileAttributesEntry* entry) const;
 
+  // Ensure the profiles are in good shape at startup. This is useful in
+  // particular to migrate old profiles that were created before this class and
+  // don't have their Gaia IDs populated. This migrates both Dice profiles and
+  // the Ash main profile.
+  // TODO(https://crbug.com/1266485): Consider deleting this code once all Dice
+  // profiles were converted.
+  void MigrateOldProfiles();
+
   // All requests are delayed until the first `GetAccounts()` call completes.
   bool initialized_ = false;
   std::vector<base::OnceClosure> initialization_callbacks_;
