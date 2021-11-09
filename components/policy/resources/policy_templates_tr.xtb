@@ -705,6 +705,17 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="1862267110714201519">Hayalet pencere özelliğini devre dışı bırak.</translation>
 <translation id="1865417998205858223">Temel İzinler</translation>
 <translation id="186719019195685253">Cihaz AC güçle çalışırken boşta kalma süresine ulaşıldığında yapılacak işlem</translation>
+<translation id="1881649377321404593">
+      WebDriver artık mevcut tüm politikalarla uyumlu olduğundan gerekliliğini yitiren
+      bu politika, M80 sürümünde kaldırılmıştır.
+
+      Bu politika, WebDriver özelliğini kullananların, bu özelliğin çalışmasını engelleyebilecek politikaları geçersiz kılmalarını sağlar.
+
+      Şu anda bu politika, SitePerProcess ve IsolateOrigins politikalarını devre dışı bırakmaktadır.
+
+      Politika etkinleştirilirse WebDriver, uyumlu olmayan politikaları geçersiz kılabilir.
+
+      Politika devre dışı bırakılır veya yapılandırılmazsa WebDriver'ın uyumlu olmayan politikaları geçersiz kılmasına izin verilmez.</translation>
 <translation id="1885782360784839335">Tap sekme tanıtım içeriğini göstermeyi etkinleştir</translation>
 <translation id="1888871729456797026">Masaüstünde bulut politikasının kayıt jetonu</translation>
 <translation id="1894790493260633497">Varsayılan olarak arka plan grafikleri yazdırma modunu etkinleştir</translation>
@@ -2761,6 +2772,17 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
       Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz modda da desteklenir.
 
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir. <ph name="MAC_OS_NAME" /> işletim sisteminde bu işlev yalnızca MDM ile çalışan veya MCX aracılığıyla bir alan adına katılmış örneklerde kullanılabilir.</translation>
+<translation id="4268014245533736105">Chrome, korumalı alana alınmış iframe içerisindeki harici protokollere
+      yönelik gezinmeleri engeller. https://chromestatus.com/features/5680742077038592 adresine bakın.
+
+      Politika, Doğru değerine ayarlandığında Chrome bu gezinmeleri engeller.
+
+      Politika, Yanlış değerine ayarlandığında Chrome'un bu gezinmeleri engellemesi önlenir.
+
+      Politika varsayılan olarak Doğru değerindeyse: Güvenlik özelliği etkindir.
+
+      Bu özellik, bu yeni kısıtlamadan etkilenen dahili web sitelerini güncellemek için daha fazla zamana ihtiyaç duyan yöneticiler tarafından kullanılabilir. Bu Kurumsal politika geçici olup <ph name="PRODUCT_NAME" /> 104 sürümünden sonra kaldırılması planlanmaktadır.
+      </translation>
 <translation id="4268586991084547853">Microsoft IE/Edge kurumsal mod site listeleriyle daha uyumlu.</translation>
 <translation id="4269859918103560644">Kullanıcının karar vermesine izin ver</translation>
 <translation id="4274691295133617461">Politika 3 değerine ayarlanırsa web siteleri, File System API üzerinden ana makine işletim sisteminin dosya sistemindeki dosya ve dizinlere okuma erişimi isteyebilir. Politikayı 2 değerine ayarlamak erişimi engeller.
@@ -4114,6 +4136,13 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="5997543603646547632">Varsayılan olarak 24 saatlik saat biçimini kullan</translation>
 <translation id="5997846976342452720">Eklenti bulucunun devre dışı bırakılıp bırakılmayacağını belirt (kullanımdan kaldırıldı)</translation>
 <translation id="5998198091336830580">Bu politika, aşağıdaki atom grubunun bir parçasıdır (yalnızca grupta bulunan en yüksek öncelikli kaynaktan gelen politikalar geçerlidir):</translation>
+<translation id="6004575267180297869">
+      WebAssembly modüllerinin kaynaklar arasında başka bir pencereye veya çalışana gönderilip gönderilemeyeceğini belirler. document.domain'in kullanımdan kaldırılması çalışmaları kapsamında, kaynaklar arası WebAssembly modülü paylaşımı kullanımdan kaldırılıyor. https://github.com/mikewest/deprecating-document-domain makalesine göz atın. Bu politika, kullanımdan kalkma sürecinde daha uzun bir geçiş dönemi sağlayabilmek amacıyla kaynaklar arası WebAssembly modülü paylaşımının yeniden etkinleştirilmesine imkan sağlıyor.
+
+      Doğru değerine ayarlandığında, siteler WebAssembly modüllerini kaynaklar arasında da kısıtlama olmadan gönderebilir.
+
+      Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa siteler, WebAssembly modüllerini yalnızca
+      aynı kaynaktaki pencerelere veya çalışanlara gönderir.</translation>
 <translation id="6009062900206392980">Politikayı None (Yok) değerine ayarlamak, oturum açma ekranında ekran büyütmeyi kapatır.
 
        Politikayı ayarlarsanız kullanıcılar ekran büyütecini geçici olarak açabilir veya kapatabilir. Oturum açma ekranı yeniden yüklendiğinde veya bir dakika boşta kaldığında orijinal durumuna geri döner.
@@ -4290,6 +4319,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Bu politika, korumalı alanın çalışmasını etkileyen güvenlik yazılımı yapılandırmaları kullanan işletmelere ses korumalı alanını devre dışı bırakma esnekliği sunmak amacıyla tasarlanmıştır.</translation>
 <translation id="624818583115864448">bağlantı noktası 554 (15.10.2021'e kadar engellemesi kaldırılabilir)</translation>
 <translation id="6252773211180267325"><ph name="BOREALIS_NAME" /> politikasının kullanıcı için çalışması engellenmesin</translation>
+<translation id="6258658183356534534">Kullanıcı aracısı istemci ipuçları GREASE güncelleme özelliğini kontrol et.</translation>
 <translation id="6261643884958898336">Makine Kimlik bilgilerini bildir</translation>
 <translation id="6265892395051519509">Bu sitelerde sensörlere erişime izin ver</translation>
 <translation id="6273015149273504999">
@@ -4372,6 +4402,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
           Politika değeri milisaniye olarak belirtilmelidir. Değerler boşta kalma gecikmesinin altında veya o gecikmeye eşit olacak şekilde ayarlanır.
 
           Uyarı mesajı yalnızca boşta kalma işlemi, çıkış yapma veya cihazı kapatma olduğunda gösterilir.</translation>
+<translation id="6331943515692769234">Önceki kullanıcı aracısı GREASE algoritmasını kullanmaya zorla.</translation>
 <translation id="6332546092866098577">Bu sitelerde File System API üzerinden okuma erişimini engelle</translation>
 <translation id="6334330017384340264">Bu politika, uygulama başına kullanım kısıtlamaları için hangi uygulamalara ve URL'lere izin verilmesi gerektiğini belirtir.
         Yapılandırılmış izin verilenler listesi, uygulama başına süre sınırlarına sahip belirtilen kullanıcı için <ph name="PRODUCT_OS_NAME" /> üzerinde yüklü uygulamalara uygulanır.
@@ -4711,6 +4742,12 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Not: Bu politika ayrıca <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> kullanılarak zorunlu yüklenmiş uzantıları ve uygulamaları da etkiler.</translation>
 <translation id="6731757988219967594">Üst düzey siteleri (ancak yerleştirilmiş iframe'leri değil) yetişkinlere yönelik içerik için filtrele</translation>
+<translation id="6733851879899284032">
+      Kökler arası erişime kapalı olmayan bir bağlamda SharedArrayBuffers kullanılıp kullanılamayacağını belirler. <ph name="PRODUCT_NAME" />, <ph name="PRODUCT_NAME" /> 91 ve sonrasında (25.05.2021) Web Uyumluluğu nedeniyle SharedArrayBuffers kullanımında kökler arası erişime kapalı olmayı gerektirecek. Daha fazla ayrıntıyı aşağıdaki adreste bulabilirsiniz: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+
+      Doğru değerine ayarlandığında, siteler kısıtlama olmadan SharedArrayBuffer kullanabilir.
+
+      Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa siteler, SharedArrayBuffers'ı yalnızca kökler arası erişime kapalı olduğunda kullanabilir.</translation>
 <translation id="6735701345096330595">Yazım denetimi dillerini etkinleştirmeye zorla</translation>
 <translation id="6740611636377710500">Bu kullanıcının PluginVm çalıştırmasına izin verir.
 
@@ -4902,6 +4939,9 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="6929746927224321095">Otomatik Doldurmayı Devre Dışı Bırak</translation>
 <translation id="6931242315485576290">Google ile veri senkronizasyonunu devre dışı bırak</translation>
 <translation id="6940243892299228102">Kullanıcıların masa şablonları kullanmalarına izin verme</translation>
+<translation id="694071740172924905">Kullanıcı aracısı istemci ipuçları GREASE güncelleme özelliği etkinleştirildiğinde, kullanıcı aracısı GREASE algoritmasını en son spesifikasyonla uyumlu hale getirir.
+      Güncellenen spesifikasyon, isteklerde yer alabilecek karakterleri kısıtlayan bazı web sitelerini bozabilir. Daha fazla bilgi edinmek için spesifikasyona göz atın: https://wicg.github.io/ua-client-hints/#grease
+      Bu politika etkinleştirilir veya ayarlanmadan bırakılırsa kullanıcı aracısı istemci ipuçları GREASE güncelleme özelliği etkinleştirilir. Politika devre dışı bırakılırsa önceki kullanıcı aracısı GREASE algoritması kullanılır.</translation>
 <translation id="6943577887654905793">Mac/Linux tercih adı:</translation>
 <translation id="6946652757373377924">
       Bu politika M77'de kaldırıldı.
@@ -5263,6 +5303,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 
       Bu politika ayarlanmadan bırakılırsa, varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
 <translation id="7295019613773647480">Denetlenen kullanıcıları etkinleştir</translation>
+<translation id="7297476773981993405">Güncellenen kullanıcı aracısı GREASE algoritmasını çalıştırmaya izin ver.</translation>
 <translation id="7302043767260300182">AC güçle çalışırken ekran kilidi gecikmesi</translation>
 <translation id="7303902834678570827">Yönetilen Misafir Oturumu kullanıcıları, cihaz genelindeki görüntü ayarlarını saklayamazlar.</translation>
 <translation id="731208205557053914">VPD bilgilerini raporla</translation>
@@ -5370,6 +5411,12 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7491720878670299691">Ağ verilerinin etkinlikler için sorgulanma ve kontrol edilme hızı. İzin verilen minimum sıklık 1 dakikadır.
 
       Ayarlanmazsa 1 dakikalık varsayılan süre geçerli olur.</translation>
+<translation id="7498595166686106721">
+      Görüntü yakalama izinleri politikası, https://www.w3.org/TR/screen-capture/#feature-policy-integration spesifikasyonuna göre getDisplayMedia() işlevine erişim sağlar. Ancak bu politika devre dışı ise bu şart zorunlu kılınmaz ve normalde yasaklanacak bağlamlardan kaynaklanan getDisplayMedia() işlevine izin verilir. Bu kurumsal politika geçici olup <ph name="PRODUCT_NAME" /> 100 sürümünden sonra kaldırılması planlanmaktadır. Uygulaması spesifikasyonlarla uyumlu olmayan ancak uygulamanın düzeltilmesi için zaman gereken Kurumsal kullanıcıların engelinin kaldırılması amaçlanmaktadır.
+
+      Politika etkinleştirildiğinde veya ayarlanmadığında siteler yalnızca görüntü yakalama izinleri politikasının izin verilenler listesine aldığı bağlamlardan getDisplayMedia() işlevini çağırabilir.
+
+      Politika devre dışı olduğunda ise siteler görüntü yakalama izinleri politikasının izin verilenler listesine almadığı bağlamlardan da getDisplayMedia() işlevini çağırabilir. Yine de diğer kısıtlamaların geçerli olabileceğini unutmayın.</translation>
 <translation id="7506745375479451616">Bu politika, <ph name="IE_PRODUCT_NAME" /> tarayıcısından geçiş yaparken <ph name="PRODUCT_NAME" /> içindeki açık URL'lerin kullanılmasına yönelik komutu kontrol eder. Bu politika, yürütülebilir dosya yolu olarak veya <ph name="PRODUCT_NAME" /> tarayıcısının konumunu otomatik olarak algılamak için <ph name="PRODUCT_NAME_PLACEHOLDER" /> değerine ayarlanabilir.
 
       Bu politika ayarlanmadan bırakılırsa <ph name="IE_PRODUCT_NAME" />, Internet Explorer'dan <ph name="PRODUCT_NAME" /> tarayıcısını açarken <ph name="PRODUCT_NAME" /> tarayıcısının kendi yürütülebilir yolunu otomatik olarak algılar.
@@ -5987,6 +6034,18 @@ Windows'da politika yapılandırmak için önerilen yol GPO kullanmaktır. Ancak
 <translation id="8266778278542911985">Politikayı 3 değerine ayarlarsanız web siteleri seri bağlantı noktalarına erişim izni isteyebilir. Politikayı 2 değerine ayarlarsanız seri bağlantı noktalarına erişim izni verilmez.
 
       Politikayı ayarlanmadan bırakırsanız web siteleri erişim izni isteyebilir. Kullanıcılar bu ayarı değiştirebilir.</translation>
+<translation id="8267887696930711948">M69 sürümünde kullanımdan kaldırılmıştır. Bunun yerine OverrideSecurityRestrictionsOnInsecureOrigin politikasını kullanın.
+
+      Bu politika, güvenli olmayan başlangıç noktalarında güvenlik kısıtlamalarının uygulanmayacağı başlangıç noktalarının (URL'ler) veya ana makine adı kalıplarının (örneğin, "*.example.com") bir listesini belirtir. 
+
+      Burada amaç, kuruluşların TLS dağıtamayan eski uygulamalar için başlangıç noktalarına izin vermelerine veya dahili web geliştirmeleri için hazırlık sunucusu kurulumu yapmalarına olanak tanımaktır. Böylece kuruluşların geliştiricileri hazırlık sunucusunda TLS dağıtmak zorunda kalmadan güvenli içerik gerektiren özellikleri test edebilirler. Bu politika, başlangıç noktasının çok amaçlı adres çubuğunda "Güvenli Değil" olarak etiketlenmesini de önler.
+
+      Bu politikada bir URL listesi ayarlamakla, aynı URL'lerin virgülle ayrılmış bir listesine "--unsafely-treat-insecure-origin-as-secure" komut satırı işaretini ayarlamak aynı sonucu verir. Bu politika ayarlanırsa, komut satırı işaretini geçersiz kılar.
+
+      Bu politika, M69 sürümünde kullanımdan kaldırılmış ve yerine OverrideSecurityRestrictionsOnInsecureOrigin kullanılması tavsiye edilmiştir. Her iki politika da mevcutsa, OverrideSecurityRestrictionsOnInsecureOrigin bu politikayı geçersiz kılar.
+
+      Güvenli içerikler hakkında daha fazla bilgi için https://www.w3.org/TR/secure-contexts/ adresine bakın.
+      </translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Bağlantı etkin olduğunda ana makine masaüstünde bağlantıyla ilgili kullanıcı arayüzünü etkinleştir</translation>
 <translation id="8274603902181597201">Kullanıcının ecryptfs ana dizinini sil ve yeni bir ext4-encrypted ana diziniyle başla.</translation>

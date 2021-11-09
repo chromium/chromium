@@ -326,6 +326,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="334252345105450327">Kumuha ng screenshot</translation>
 <translation id="3351879221545518001">Kasalukuyan kang nagka-cast ng screen.</translation>
 <translation id="3364721542077212959">Mga stylus tool</translation>
+<translation id="3365977133351922112">Masyadong malayo ang iyong telepono. Ilapit ang iyong telepono.</translation>
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3371140690572404006">USB-C device (port sa kanang bahagi sa harap)</translation>
 <translation id="3375634426936648815">Nakakonekta</translation>
@@ -602,6 +603,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5176318573511391780">I-record ang hindi buong screen</translation>
 <translation id="5199367439331364630">Para mag-sign in sa iyong Chromebook, ilagay ang password</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 pang notification}one{# pang notification}other{# pang notification}}</translation>
 <translation id="5207949376430453814">I-highlight ang text caret</translation>
 <translation id="5208059991603368177">Naka-on</translation>
@@ -885,6 +887,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7398254312354928459">Lumipat ng koneksyon ng network</translation>
 <translation id="7405710164030118432">Para i-unlock ang device, ilagay ang iyong access code ng magulang sa Family Link</translation>
 <translation id="7406608787870898861">Tapusin ang pag-set up ng iyong mobile network</translation>
+<translation id="740790383907119240">Mga Shortcut ng App</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7413851974711031813">Pindutin ang escape para isara</translation>
 <translation id="742594950370306541">Ginagamit ang camera.</translation>
@@ -987,6 +990,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8061464966246066292">Mataas na contrast</translation>
 <translation id="8098591350844501178">Ihinto ang pag-cast ng screen sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Naka-on lahat</translation>
+<translation id="8120151603115102514">Walang lock screen ang iyong telepono. Para i-unlock ang iyong Chromebook, ilagay ang password.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8132487352815776550">Ihinto ang mga closed caption</translation>
@@ -1035,6 +1039,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8473301994082929012">Ang <ph name="ORGANIZATION_NAME" /> ay may <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pindutin ang Alt+Search o Shift upang kanselahin.</translation>
 <translation id="8492573885090281069">Hindi sinusuportahan ng <ph name="DISPLAY_NAME" /> ang <ph name="SPECIFIED_RESOLUTION" />. Ginawang <ph name="FALLBACK_RESOLUTION" /> ang resolution. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga dating setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Naka-off ang Bluetooth ng iyong Chromebook. Para i-unlock ang Chromebook mo, ilagay ang password.</translation>
 <translation id="8513108775083588393">I-auto rotate</translation>
 <translation id="851458219935658693">Ipakita ang mga window mula sa kasalukuyang desk at piniling radio button</translation>
 <translation id="8517041960877371778">Maaaring hindi mag-charge ang iyong <ph name="DEVICE_TYPE" /> habang naka-on ito.</translation>

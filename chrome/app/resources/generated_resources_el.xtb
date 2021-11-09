@@ -4083,6 +4083,7 @@
 <translation id="5265562206369321422">Εκτός σύνδεσης για περισσότερο από μία εβδομάδα</translation>
 <translation id="5265797726250773323">Σφάλμα κατά την εγκατάσταση</translation>
 <translation id="5266113311903163739">Σφάλμα εισαγωγής της Αρχής Πιστοποίησης</translation>
+<translation id="526622169288322445">Περισσότερες ενέργειες για <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Η εκτύπωση απέτυχε</translation>
 <translation id="5275352920323889391">Σκύλος</translation>
 <translation id="527605982717517565">Να επιτρέπεται πάντα το JavaScript στο <ph name="HOST" /></translation>
@@ -5459,6 +5460,7 @@
 <translation id="6775163072363532304">Οι διαθέσιμες συσκευές θα εμφανίζονται εδώ.</translation>
 <translation id="6777817260680419853">Η ανακατεύθυνση αποκλείστηκε</translation>
 <translation id="6778737459546443941">Ο γονέας σου δεν τον έχει εγκρίνει ακόμα</translation>
+<translation id="6779092717724412415">Για τη δημιουργία μιας επισήμανσης όπως αυτής που βλέπετε εδώ, επιλέξτε οποιοδήποτε κείμενο και κάντε δεξί κλικ.</translation>
 <translation id="6779447100905857289">τα καλάθια σας</translation>
 <translation id="677965093459947883">Πολύ μικρό</translation>
 <translation id="6781005693196527806">&amp;Διαχείριση μηχανών αναζήτησης...</translation>
@@ -6273,6 +6275,7 @@
 <translation id="7625823789272218216">Νέα καρτέλα αριστερά</translation>
 <translation id="7628201176665550262">Ρυθμός ανανέωσης</translation>
 <translation id="7629827748548208700">Καρτέλα: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Η διαχείριση της συσκευής γίνεται από <ph name="MANAGER" /> και απαιτεί να συνδέεστε κάθε φορά.</translation>
 <translation id="7631014249255418691">Δημιουργήθηκαν επιτυχώς αντίγραφα ασφαλείας για τις εφαρμογές και τα αρχεία Linux</translation>
 <translation id="7631205654593498032">Όταν συνδέετε τις συσκευές σας, συμφωνείτε ότι η συσκευή <ph name="DEVICE_TYPE" /> μπορεί:</translation>
 <translation id="7631887513477658702">&amp;Πάντα Άνοιγμα Αρχείων Αυτού του Τύπου</translation>

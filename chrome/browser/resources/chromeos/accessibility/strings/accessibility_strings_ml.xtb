@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">പകർത്തുക</translation>
 <translation id="135978014023467274">നിങ്ങൾ ChromeVox 63-ലേക്ക് അപ്‌ഡേറ്റ് ചെയ്‌തിരിക്കുന്നു!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> റൂട്ടിംഗ് കീയ്ക്ക് ചുവടെയുള്ള ഇനം ക്ലിക്ക് ചെയ്യുക</translation>
+<translation id="1376703628032300005">അടുത്ത പ്രതീകത്തിലേക്ക് നീക്കുക</translation>
 <translation id="1377925789329510816">ഇത് അവസാനത്തെ തലക്കെട്ടാണ്. ഈ പേജിലെ ആദ്യ തലക്കെട്ട് റാപ്പ് ചെയ്യാൻ തിരയൽ+H അമർത്തുക അല്ലെങ്കിൽ രണ്ടാമത്തെ തലക്കെട്ടിലേക്ക് പോകാൻ തിരയൽ+Shift+H അമർത്തുക.</translation>
 <translation id="138218114945450791">ഇളം നീല</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">ചെക്ക് ബോക്‌സ്</translation>
 <translation id="2461822463642141190">നിലവിൽ</translation>
 <translation id="2462626033734746142">റേഡിയോ ബട്ടൺ ഗ്രൂപ്പ്</translation>
+<translation id="2467741090055146971">തിരഞ്ഞെടുത്തത് മാറ്റുക</translation>
 <translation id="2471138580042810658">ശീർഷകം 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{നക്ഷത്രചിഹ്നം}other{# നക്ഷത്രചിഹ്നങ്ങൾ}}</translation>
 <translation id="2490721194269245365">റോസി ബ്രൗൺ</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">മുമ്പത്തെ മീഡിയ വിജറ്റൊന്നുമില്ല</translation>
 <translation id="4855927945655956315">പ്രധാനപ്പെട്ട കീകൾ: Control</translation>
 <translation id="4862744964787595316">ബോൾഡ് അല്ല</translation>
+<translation id="4865995900839719272">മുമ്പത്തെ വരിയിലേക്ക് നീക്കുക</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS ലോഗിൻ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, ടാബ്</translation>
 <translation id="5308380583665731573">കണക്‌റ്റുചെയ്യുക</translation>
 <translation id="5310788376443009632">നീക്കംചെയ്‌തു:</translation>
+<translation id="5316825363044614340">അടുത്ത വരിയിലേക്ക് നീക്കുക</translation>
 <translation id="5320727453979144100">സ്‌റ്റിക്കി മോഡ് പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{കോമ}other{# കോമകൾ}}</translation>
 <translation id="532485153932049746">ടെക്‌സ്റ്റ് ഫോർമാറ്റ് ചെയ്യൽ
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">മുൻ ഫോം ഫീൽഡ് ഒന്നുമില്ല</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">സഹായിക്കുക</translation>
 <translation id="7317017974771324508">ഭാഗികമായി തിരഞ്ഞെടുത്തു</translation>
 <translation id="7322442671176251901">തൊട്ടറിയുക</translation>
 <translation id="7344012264516629579">ലിങ്ക്, ബട്ടൺ, ചെക്ക്ബോക്‌സ് എന്നിവ അനുസരിച്ചുള്ള ഒഴിവാക്കൽ പോലുള്ളവ, അധിക ജമ്പ് കമാൻഡുകളിൽ ഉൾപ്പെടുന്നു. ജമ്പ് കമാൻഡുകളുടെ പൂർണ്ണ ലിസ്റ്റ് ChromeVox മെനുകളിൽ കണ്ടെത്താം, തിരയൽ + വിരാമചിഹ്‌നം അമർത്തി അത് തുറക്കാം.</translation>
@@ -1128,6 +1133,7 @@
 <translation id="9014206344398081366">ChromeVox ട്യൂട്ടോറിയൽ</translation>
 <translation id="9040132695316389094">ശീർഷകം 1</translation>
 <translation id="9061884144798498064">8 ഡോട്ട് ബ്രെയ്‌ലി പട്ടിക തിരഞ്ഞെടുക്കുക:</translation>
+<translation id="9063946545000394379">മുമ്പത്തെ പ്രതീകത്തിലേക്ക് നീക്കുക</translation>
 <translation id="9065283790526219006">+പോപ്പ്അപ്പ്</translation>
 <translation id="9065912140022662363">അടുത്ത റേഡിയോ ബട്ടൺ ഒന്നുമില്ല</translation>
 <translation id="9067522039955793016">പേജ് ബ്രേക്ക്</translation>

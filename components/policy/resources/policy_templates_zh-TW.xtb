@@ -271,6 +271,13 @@
 <translation id="1352799151662469739">使用 AC 電源供電時的閒置時間長度 (以毫秒為單位)。如果使用者在這段時間內沒有任何動作，系統就會鎖定螢幕</translation>
 <translation id="1353416417709895349">停用 DNS 攔截檢查功能，以及你是不是要前往「http://intranetsite/」資訊列。</translation>
 <translation id="1354424209129232709">上限：</translation>
+<translation id="1355050231181289439"> 這項政策可控管系統是否要啟用經過改善的國際鍵盤快速鍵對應功能。
+      這項功能可確保鍵盤快速鍵的運作方式與國際鍵盤配置相同，並淘汰舊版快速鍵。
+
+      如果停用這項政策，系統將會停用經過改善的國際鍵盤快速鍵。
+      如果啟用這項政策，系統會啟用經過改善的國際鍵盤快速鍵。
+      如果不設定，系統會為受管理的裝置以及消費者擁有的裝置啟用這項政策。
+      請注意，這只是一項臨時政策，允許受管理的使用者仍可使用已淘汰的舊版快速鍵。這項政策將在自訂鍵盤快速鍵推出後遭到淘汰。</translation>
 <translation id="1359553908012294236">如果將這項政策設為 True 或未設定，<ph name="PRODUCT_NAME" /> 會啟用訪客登入。訪客登入是 <ph name="PRODUCT_NAME" /> 設定檔，其中的所有視窗都處於無痕模式。
 
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 將會禁止啟動訪客設定檔。</translation>
@@ -777,6 +784,7 @@
       如果將這項政策設為停用或不設定，則系統不會使用「快速轉換」。</translation>
 <translation id="1972134432340252414">封鎖瀏覽器程序中的舊版擴充點</translation>
 <translation id="1977581177449752640">如果設定這項政策，遠端存取主機會使用用戶端憑證和指定核發機構一般名稱 (CN)，向 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 進行驗證。如要使用任何可用的用戶端憑證，請將其設為 <ph name="WILDCARD_VALUE" />。如果設為空白或不設定，系統會停用這項功能。</translation>
+<translation id="1984423899110408165">在 Chrome 歷史記錄頁面上顯示叢集記錄</translation>
 <translation id="1986003348976870087">不要在登入畫面中提示使用者選取用戶端憑證。</translation>
 <translation id="1988345404999458987">為可用的列印伺服器提供設定。
 
@@ -1491,6 +1499,14 @@
 <translation id="2725855586003209701">如果將這項政策設為啟用或不設定，已註冊的裝置會回報近期登入的裝置使用者清單。
 
       如果將這項政策設為停用，已註冊的裝置不會回報使用者清單。</translation>
+<translation id="2725944143509568512">這項政策可控管 Chrome 歷史記錄頁面上的叢集記錄顯示設定。
+
+      如果將這項政策設為啟用，叢集記錄會顯示在 chrome://history/journeys 頁面上。
+
+      如果將這項政策設為停用，叢集記錄就不會顯示在 chrome://history/journeys 頁面上。
+
+      如果不設定這項政策，系統預設會在 chrome://history/journeys 頁面上顯示叢集記錄，且使用者可以變更叢集記錄的顯示設定。
+      </translation>
 <translation id="2730419309754848345">預設以圖片形式列印 PDF</translation>
 <translation id="2731627323327011390">禁止 ARC 應用程式使用「<ph name="PRODUCT_OS_NAME" />」憑證</translation>
 <translation id="2742843273354638707">在新分頁和 <ph name="PRODUCT_OS_NAME" />應用程式啟動畫面中隱藏 Chrome 線上應用程式商店和底端連結。
@@ -2132,6 +2148,7 @@
 
       如果將這項政策設為停用或不設定，系統將停用 DTC，也無法收集、處理或回報裝置的遙測與診斷資料。</translation>
 <translation id="3450649825886735618">不使用任何 Google 網路服務來協助解決拼字錯誤</translation>
+<translation id="3451422488938880786"> 允許啟用/停用國際鍵盤快速鍵重新對應功能</translation>
 <translation id="3451901387456196887">使用者可在 <ph name="PRODUCT_NAME" /> 選單中使用存取碼或掃描 QR 圖碼來選取投放裝置。</translation>
 <translation id="3456292544936505775">你可以透過這項政策控管要在哪些時段封鎖 <ph name="PRODUCT_OS_NAME" />裝置的自動檢查更新功能。如果為這項政策設定非空白的時段清單：
       裝置在指定時段將無法自動檢查更新。如果裝置需要進行企業復原作業，或是目前的 <ph name="PRODUCT_OS_NAME" />版本低於最低需求，則不受這項政策影響，以免發生潛在的安全性問題。此外，這項政策不會封鎖由使用者或系統管理員要求的更新檢查。從 M88 版開始，這項政策會在限制時段開始時取消正在進行的更新作業。待限制時段結束後，系統會在下一次自動更新時自動繼續更新。更新使用「快速修復版本」的裝置將不受這項政策影響。
@@ -2167,6 +2184,7 @@
        如果將封鎖清單的值設為「<ph name="ALL_EXTENSIONS" />」，系統會封鎖所有擴充功能，使用者只能安裝許可清單中列出的擴充功能。
 
           根據預設，系統會允許所有擴充功能。不過，如果你透過政策封鎖了擴充功能，請使用允許的擴充功能清單來變更該政策。</translation>
+<translation id="3501606938635483637">國際鍵盤快速鍵會對應至按鍵的字符，而非鍵盤的按鍵位置。</translation>
 <translation id="3502555714327823858">允許所有雙面列印模式</translation>
 <translation id="350443680860256679">設定 ARC</translation>
 <translation id="350797926066071931">啟用翻譯</translation>
@@ -3118,6 +3136,7 @@
 <translation id="4802905909524200151">設定 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 韌體更新行為</translation>
 <translation id="4804828344300125154">�在使用者登出時一律重新啟動。</translation>
 <translation id="4807950475297505572">移除近期登入次數最少的使用者，直到有足夠的可用空間</translation>
+<translation id="4811210934875253713">叢集記錄會顯示在 chrome://history/journeys 頁面上。</translation>
 <translation id="4812270373673968774">如果將這項政策設為 Always，系統會自動隱藏 <ph name="PRODUCT_OS_NAME" />檔案櫃。如果將這項政策設為 Never，系統一律不會自動隱藏檔案櫃。
 
       如果設定這項政策，使用者將無法變更。如果未設定，使用者可自行決定是否要自動隱藏檔案櫃。</translation>
@@ -3821,6 +3840,7 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="5620392548325769024">這會啟用歡迎頁面，並在作業系統升級後第一次啟動瀏覽器時顯示。</translation>
 <translation id="5622924058222112599">啟用預設的 CECPQ2 推出程序</translation>
+<translation id="5623304306796942802">有多個憑證相符時，顯示提示訊息</translation>
 <translation id="5625771176514429288">系統會允許 Chrome 應用程式在這些平台上執行。</translation>
 <translation id="5630352020869108293">還原上次工作階段</translation>
 <translation id="5633871703004128675">啟用插入點醒目顯示無障礙功能</translation>
@@ -4363,6 +4383,33 @@
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
 <translation id="6331943515692769234">強制採用舊版 User-Agent GREASE 演算法。</translation>
+<translation id="6332192586629642626">叢集記錄不會顯示在 chrome://history/journeys 頁面上。</translation>
+<translation id="6332489309596092806">你可以透過這項政策指定要以無訊息方式 (使用者無需操作) 安裝的網頁應用程式清單；使用者無法解除安裝或停用這些網頁應用程式。
+
+      這項政策的每個清單項目都是一個物件，由下列必要元素組成：
+      <ph name="URL_LABEL" /> (要安裝的網頁應用程式網址)
+
+      5 個選擇性元素：
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (設定網頁應用程式的開啟方式，預設值是在新分頁中開啟)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      (如要建立 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面捷徑，請設為 True)。
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 90 以上版本，可用於針對不是漸進式網頁應用程式 (PWA) 的應用程式覆寫名稱，或是針對暫時性安裝，而且需經過驗證才能完成安裝的 PWA 應用程式覆寫名稱。如果同時提供 <ph name="CUSTOM_NAME_LABEL" /> 和 <ph name="FALLBACK_APP_NAME_LABEL" />，後者會被忽略)。
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 96 以上版本，可用於為所有網頁應用程式和 PWA 永久覆寫應用程式名稱。
+
+      目前僅支援
+      <ph name="PRODUCT_OS_NAME" />)。
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (適用於 <ph name="PRODUCT_NAME" /> 96 以上版本，可用於覆寫安裝版應用程式的應用程式圖示。該圖示必須為方形，大小不得超過 1 MB，且採用下列其中一種格式：jpeg、png、gif、webp、ico。雜湊值必須是圖示檔案的 SHA256 雜湊。目前僅支援
+      <ph name="PRODUCT_OS_NAME" />)。
+
+      請參閱 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> 瞭解如何將應用程式固定到 <ph name="PRODUCT_OS_NAME" /> 檔案櫃。</translation>
 <translation id="6332546092866098577">禁止這些網站透過 File System API 進行讀取</translation>
 <translation id="6334330017384340264">這項政策會指定哪些應用程式和網址應加入個別應用程式使用限制的許可清單。
         系統會將已設定的許可清單套用到 <ph name="PRODUCT_OS_NAME" />上安裝的應用程式，適用於設有個別應用程式時間限制的指定使用者。
@@ -5786,6 +5833,7 @@
 
           如果將這項政策設為 Enabled，使用者可以使用 <ph name="LACROS_NAME" /> 瀏覽器。</translation>
 <translation id="802147957407376460">將畫面旋轉 0 度</translation>
+<translation id="8025620823136567878">國際鍵盤快速鍵會對應至鍵盤的按鍵位置，而非按鍵的字符。</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 圖片的 SHA-256 雜湊值。</translation>
 <translation id="8028814157747157754">啟用預設搜尋引擎，並允許使用者修改搜尋引擎清單</translation>
 <translation id="8029201909194194377">遠端存取連線所允許的工作階段持續時間上限</translation>
@@ -6560,6 +6608,7 @@
 <translation id="8931555638815157255">如果將這項政策設為啟用或不設定，已註冊的裝置會定期回報其 OS 版本和韌體版本。
 
       如果將這項政策設為停用，已註冊的裝置不會回報版本資訊。</translation>
+<translation id="8934618237639919190">根據預設，叢集記錄會顯示在 chrome://history/journeys 頁面上，且使用者可以變更叢集記錄的顯示設定。</translation>
 <translation id="8937282917198525844"> 自 M81 版起，我們為標準表單控制項元素 (例如 &lt;select&gt;、&lt;button&gt; 和 &lt;input type=date&gt;) 提供煥然一新的外觀和風格，不但強化了無障礙使用設計，在各種作業系統平台操作時，效果也能更一致。這項政策恢復納入了「舊版」表單控制項元素做為使用選項，並且一路提供到 M84 版。
 
       如果將這項政策設為 True，系統會針對所有網站使用「舊版」表單控制項元素。

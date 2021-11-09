@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">कॉपी करा</translation>
 <translation id="135978014023467274">तुम्हाला ChromeVox 63 वर अपडेट केले गेले आहे!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> राउटिंग की मधील आयटम क्लिक करा</translation>
+<translation id="1376703628032300005">पुढील वर्णावर हलवा</translation>
 <translation id="1377925789329510816">हे अंतिम शीर्षक आहे. पहिल्या शीर्षकावर वेष्टन घालण्‍यासाठी Search+H दाबा किंवा या पेजवरील दुसर्‍या शीर्षकावर जाण्यासाठी Search+Shift+H दाबा.</translation>
 <translation id="138218114945450791">फिकट न‍िळा</translation>
 <translation id="1383876407941801731">शोधा</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">चेक बॉक्‍स</translation>
 <translation id="2461822463642141190">सद्य</translation>
 <translation id="2462626033734746142">रेडिओ बटण गट</translation>
+<translation id="2467741090055146971">निवड रद्द करा</translation>
 <translation id="2471138580042810658">मथळा 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{चौफुली}other{# चौफुली}}</translation>
 <translation id="2490721194269245365">गुलाबी तपकिरी</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">मागील मीडिया विजेट नाही</translation>
 <translation id="4855927945655956315">अत्यावश्यक की: कंट्रोल</translation>
 <translation id="4862744964787595316">ठळक नाही</translation>
+<translation id="4865995900839719272">मागील ओळीवर हलवा</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS लॉगिंग सुरू करा</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, टॅब</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5310788376443009632">काढले:</translation>
+<translation id="5316825363044614340">पुढील ओळीवर हलवा</translation>
 <translation id="5320727453979144100">स्टिकी मोड सुरू केला</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{स्वल्पविराम}other{# स्वल्पविराम}}</translation>
 <translation id="532485153932049746">मजकूर फॉरमॅटिंग
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">मागील फॉर्म भाग नाही</translation>
 <translation id="731121099745151312">tr itm</translation>
+<translation id="7313717760367325059">मदत करा</translation>
 <translation id="7317017974771324508">अंशत: निवडलेले</translation>
 <translation id="7322442671176251901">स्‍पर्शाने एक्‍सप्‍लोर करा</translation>
 <translation id="7344012264516629579">अतिरिक्त जंप कमांडच्या उदाहरणांमध्ये लिंक, बटण आणि चेकबॉक्सद्वारे जंप करणे समाविष्ट आहे. जंप कमांडची संपूर्ण सूची ChromeVox मेनूमध्ये आढळू शकते, जी Search + Period दाबून उघडली जाऊ शकते.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox ट्यूटोरियल</translation>
 <translation id="9040132695316389094">मथळा 1</translation>
 <translation id="9061884144798498064">8-बिंदू ब्रेल सारणी निवडा:</translation>
+<translation id="9063946545000394379">मागील वर्णावर हलवा</translation>
 <translation id="9065283790526219006">+पॉपअप</translation>
 <translation id="9065912140022662363">पुढील रेडिओ बटण नाही</translation>
 <translation id="9067522039955793016">पेज ब्रेक</translation>

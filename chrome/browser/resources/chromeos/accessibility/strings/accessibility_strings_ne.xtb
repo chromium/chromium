@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">कपी गरियोस्</translation>
 <translation id="135978014023467274">ChromeVox ६३ मा अद्यावधिक गरिएको छ!</translation>
 <translation id="1360699455582016846">राउटिङ साँचो <ph name="ROUTING_KEY_NUMBER" /> भन्दा तलको वस्तुमा क्लिक गर्नुहोस्</translation>
+<translation id="1376703628032300005">कर्सर सारेर अर्को वर्णमा लगियोस्</translation>
 <translation id="1377925789329510816">यो अन्तिम शीर्षक हो। पहिलो शीर्षकमा जान खोज+H थिच्नुहोस् वा यस पृष्ठको दोस्रो शीर्षकमा जान खोज+सिफ्ट+H थिच्नुहोस्।</translation>
 <translation id="138218114945450791">हल्का निलो</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">चेक बाकस</translation>
 <translation id="2461822463642141190">हालको</translation>
 <translation id="2462626033734746142">रेडियो बटन समूह</translation>
+<translation id="2467741090055146971">चयन रद्द गर्नुहोस्</translation>
 <translation id="2471138580042810658">शीर्षक 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{नक्षत्र चिह्न}other{# नक्षत्र चिह्नहरू}}</translation>
 <translation id="2490721194269245365">गुलाबी खैरो</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">अघिल्लो कुनै पनि मिडिया विजेट छैन</translation>
 <translation id="4855927945655956315">अत्यावश्यक की: Control</translation>
 <translation id="4862744964787595316">बोल्ड होइन</translation>
+<translation id="4865995900839719272">कर्सर सारेर अघिल्लो हरफमा लगियोस्</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">टिटिएस लगइन सक्षम गर्नुहोस्</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, ट्याब</translation>
 <translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5310788376443009632">हटाइयो:</translation>
+<translation id="5316825363044614340">कर्सर सारेर अर्को हरफमा लगियोस्</translation>
 <translation id="5320727453979144100">स्टिकी मोड सक्षम बनाइयो</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{अल्पविराम}other{# अल्पविरामहरू}}</translation>
 <translation id="532485153932049746">पाठको ढाँचा
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">कुनै पनि अघिल्लो फारम क्षेत्र छैन</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">मद्दत</translation>
 <translation id="7317017974771324508">आंशिक रूपमा चयन गरिएको</translation>
 <translation id="7322442671176251901">छोएर अन्वेषण गर्ने सुविधा</translation>
 <translation id="7344012264516629579">अतिरिक्त जम्प कमान्डहरूमा लिंक, बटन र जाँच बाकस जस्ता अन्य कुराहरूमा क्लिक गरी सीधै जाने कार्य पर्छ। जम्प कमान्डहरूको पूर्ण सूची ChromeVox मेनुमा भेट्टाउन सकिन्छ। उक्त मेनु खोल्न Search + Period की थिच्नुहोस्।</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox को ट्युटोरियल</translation>
 <translation id="9040132695316389094">शीर्षक 1</translation>
 <translation id="9061884144798498064">८ डट भएको ब्रेल तालिका चयन गर्नुहोस्‌:</translation>
+<translation id="9063946545000394379">कर्सर सारेर अघिल्लो वर्णमा लगियोस्</translation>
 <translation id="9065283790526219006">+ पपअप</translation>
 <translation id="9065912140022662363">अर्को कुनै रेडियो बटन छैन</translation>
 <translation id="9067522039955793016">पृष्ठ विच्छेद</translation>

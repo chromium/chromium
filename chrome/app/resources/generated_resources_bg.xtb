@@ -4080,6 +4080,7 @@
 <translation id="5265562206369321422">Офлайн за повече от една седмица</translation>
 <translation id="5265797726250773323">Грешка при инсталирането</translation>
 <translation id="5266113311903163739">Грешка при импортирането на сертифициращ орган</translation>
+<translation id="526622169288322445">Още действия за „<ph name="ADDRESS_SUMMARY" />“</translation>
 <translation id="5269977353971873915">Отпечатването не бе успешно</translation>
 <translation id="5275352920323889391">Куче</translation>
 <translation id="527605982717517565">Да се разреши на <ph name="HOST" /> винаги да изпълнява JavaScript</translation>
@@ -5456,6 +5457,7 @@
 <translation id="6775163072363532304">Наличните устройства ще се показват тук.</translation>
 <translation id="6777817260680419853">Блокирано бе пренасочване</translation>
 <translation id="6778737459546443941">Родителят ви все още не е одобрил заявката</translation>
+<translation id="6779092717724412415">За да създадете такова открояване, изберете текст и кликнете с десния бутон.</translation>
 <translation id="6779447100905857289">вашите кошници</translation>
 <translation id="677965093459947883">Много малък</translation>
 <translation id="6781005693196527806">&amp;Управление на търсещите машини…</translation>
@@ -6270,6 +6272,7 @@
 <translation id="7625823789272218216">Нов раздел отляво</translation>
 <translation id="7628201176665550262">Честота на опресняване</translation>
 <translation id="7629827748548208700">Раздел: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">Това устройство се управлява от <ph name="MANAGER" /> и трябва всеки път да влизате в профила си.</translation>
 <translation id="7631014249255418691">Успешно бе създадено резервно копие на приложенията и файловете за Linux</translation>
 <translation id="7631205654593498032">Когато свържете устройствата си, приемате, че вашият <ph name="DEVICE_TYPE" /> може да:</translation>
 <translation id="7631887513477658702">&amp;Файловете от този тип да се отварят винаги</translation>
