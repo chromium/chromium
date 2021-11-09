@@ -139,9 +139,22 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
                                   const WaitingCB& /*waiting_cb*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(config.IsValidConfig());
-  DCHECK(state_ == State::kUninitialized || state_ == State::kInitialized ||
-         state_ == State::kDecoding);
   DVLOGF(3);
+
+  switch (state_) {
+    case State::kUninitialized:
+    case State::kInitialized:
+    case State::kDecoding:
+      // Expected state, do nothing.
+      break;
+    case State::kFlushing:
+    case State::kError:
+      VLOGF(1) << "V4L2 decoder should not be initialized at state: "
+               << static_cast<int>(state_);
+      std::move(init_cb).Run(
+          Status(Status::Codes::kDecoderInitializationFailed));
+      return;
+  }
 
   if (cdm_context || config.is_encrypted()) {
     VLOGF(1) << "V4L2 decoder does not support encrypted stream";
