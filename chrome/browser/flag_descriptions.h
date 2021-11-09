@@ -1465,9 +1465,6 @@ extern const char kTranslateIntentDescription[];
 extern const char kTreatInsecureOriginAsSecureName[];
 extern const char kTreatInsecureOriginAsSecureDescription[];
 
-extern const char kTreatUnsafeDownloadsAsActiveName[];
-extern const char kTreatUnsafeDownloadsAsActiveDescription[];
-
 extern const char kTrustTokensName[];
 extern const char kTrustTokensDescription[];
 

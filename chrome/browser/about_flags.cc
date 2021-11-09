@@ -5357,12 +5357,6 @@ const FeatureEntry kFeatureEntries[] = {
          network::switches::kUnsafelyTreatInsecureOriginAsSecure,
          "")},
 
-    {"treat-unsafe-downloads-as-active-content",
-     flag_descriptions::kTreatUnsafeDownloadsAsActiveName,
-     flag_descriptions::kTreatUnsafeDownloadsAsActiveDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kTreatUnsafeDownloadsAsActive)},
-
     {"detect-target-embedding-lookalikes",
      flag_descriptions::kDetectTargetEmbeddingLookalikesName,
      flag_descriptions::kDetectTargetEmbeddingLookalikesDescription,

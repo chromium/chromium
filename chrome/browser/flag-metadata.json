@@ -5294,11 +5294,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "treat-unsafe-downloads-as-active-content",
-    "owners": [ "jdeblasio", "cthomp" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "trim-on-memory-pressure",
     "owners": [ "bgeffon" ],
     "expiry_milestone": 90

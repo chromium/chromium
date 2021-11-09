@@ -2542,13 +2542,6 @@ const char kTreatInsecureOriginAsSecureDescription[] =
     "specified e.g. \"http://example.com\". For the definition of secure "
     "contexts, see https://w3c.github.io/webappsec-secure-contexts/";
 
-const char kTreatUnsafeDownloadsAsActiveName[] =
-    "Treat risky downloads over insecure connections as active mixed content";
-const char kTreatUnsafeDownloadsAsActiveDescription[] =
-    "Disallows downloads of unsafe files (files that can potentially execute "
-    "code), where the final download origin or any origin in the redirect "
-    "chain is insecure if the originating page is secure.";
-
 const char kTrustTokensName[] = "Enable Trust Tokens";
 const char kTrustTokensDescription[] =
     "Enables the prototype Trust Token API "
