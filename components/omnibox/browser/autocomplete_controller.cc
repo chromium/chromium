@@ -702,7 +702,15 @@ void AutocompleteController::UpdateResult(
        i != providers_.end(); ++i)
     result_.AppendMatches(input_, (*i)->matches());
 
-  if (done_ && OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled())
+  bool perform_tab_match = OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled();
+#if defined(OS_ANDROID)
+  // Do not look for matching tabs on Android unless we collected all the
+  // suggestions. Tab matching is an expensive process with multiple JNI calls
+  // involved. Run it only when all the suggestions are collected.
+  perform_tab_match &= done_;
+#endif
+
+  if (perform_tab_match)
     result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
 
   UpdateHeaderInfoFromZeroSuggestProvider(&result_);
