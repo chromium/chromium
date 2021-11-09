@@ -843,7 +843,7 @@ crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-002.xht [ 
 crbug.com/716930 external/wpt/css/CSS2/normal-flow/block-in-inline-float-in-layer-001.html [ Failure ]
 
 #### external/wpt/css/css-sizing
-crbug.com/1251788 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-002.html [ Failure ]
+crbug.com/1261306 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/slice-intrinsic-size.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure ]
 
