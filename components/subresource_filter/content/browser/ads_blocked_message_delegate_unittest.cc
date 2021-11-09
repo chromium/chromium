@@ -27,6 +27,8 @@ class MockAdsBlockedDialog : public AdsBlockedDialogBase {
  public:
   MOCK_METHOD(void, Show, (), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
+  MOCK_METHOD(void, Destroy, ());
+  ~MockAdsBlockedDialog() override { Destroy(); }
 };
 
 class AdsBlockedMessageDelegateTest
@@ -256,6 +258,22 @@ TEST_F(AdsBlockedMessageDelegateTest, RestoreDialog_OnLearnMoreClicked) {
 
   OnWebContentsFocused();
   EXPECT_FALSE(GetDelegate()->reprompt_required_flag_for_testing());
+}
+
+// Tests that the AdsBlockedDialog destructor is invoked when the
+// AdsBlockedMessageDelegate is destroyed.
+TEST_F(AdsBlockedMessageDelegateTest, DismissDialog_OnDelegateDestroyed) {
+  EnqueueMessage();
+
+  ExpectDismissMessageCall();
+  MockAdsBlockedDialog* mock_dialog = PrepareAdsBlockedDialog();
+  EXPECT_CALL(*mock_dialog, Show);
+  TriggerMessageManageClicked();
+
+  // Verify that the AdsBlockedDialog destructor is invoked when the
+  // AdsBlockedMessageDelegate is destroyed.
+  EXPECT_CALL(*mock_dialog, Destroy());
+  web_contents()->RemoveUserData(AdsBlockedMessageDelegate::UserDataKey());
 }
 
 }  // namespace subresource_filter
