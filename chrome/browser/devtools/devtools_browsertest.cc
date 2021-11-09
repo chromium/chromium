@@ -2517,7 +2517,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, NewWindowFromBrowserContext) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(window_);
 }
 
-IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
+// TODO(crbug.com/1268450): Flaky on ChromeOS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_InspectElement DISABLED_InspectElement
+#else
+#define MAYBE_InspectElement InspectElement
+#endif  // defined(OS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, MAYBE_InspectElement) {
   GURL url(embedded_test_server()->GetURL("a.com", "/devtools/oopif.html"));
   GURL iframe_url(
       embedded_test_server()->GetURL("b.com", "/devtools/oopif_frame.html"));
