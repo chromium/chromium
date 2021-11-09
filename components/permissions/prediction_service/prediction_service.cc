@@ -290,6 +290,11 @@ float PredictionService::GetRoundedRatio(int numerator, int denominator) {
 }
 
 // static
+int PredictionService::GetRoundedRatioForUkm(int numerator, int denominator) {
+  return GetRoundedRatio(numerator, denominator) * 100;
+}
+
+// static
 int PredictionService::BucketizeValue(int count) {
   for (const int bucket : kCountBuckets) {
     if (count >= bucket)
