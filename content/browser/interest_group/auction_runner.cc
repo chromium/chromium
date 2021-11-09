@@ -120,6 +120,7 @@ AuctionRunner::BidState::~BidState() = default;
 AuctionRunner::BidState::BidState(BidState&&) = default;
 
 void AuctionRunner::BidState::ClosePipes() {
+  url_loader_factory.reset();
   bidder_worklet_debug.reset();
   bidder_worklet.reset();
   process_handle.reset();
@@ -290,39 +291,10 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
   DCHECK_EQ(bid_state->state, BidState::State::kWaitingForProcess);
 
   bid_state->state = BidState::State::kGeneratingBid;
-  auction_worklet::mojom::BiddingInterestGroup* bidder =
-      bid_state->bidder.bidding_group.get();
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
-  GURL bidding_url =
-      bid_state->bidder.bidding_group->group.bidding_url.value_or(GURL());
-  bid_state->url_loader_factory =
-      std::make_unique<AuctionURLLoaderFactoryProxy>(
-          url_loader_factory.InitWithNewPipeAndPassReceiver(),
-          // BidderWorklets don't need frame URLLoaderFactories.
-          AuctionURLLoaderFactoryProxy::GetUrlLoaderFactoryCallback(),
-          base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
-                              base::Unretained(delegate_)),
-          browser_signals_->top_frame_origin, frame_origin_,
-          /*is_for_seller=*/false, delegate_->GetClientSecurityState(),
-          bidding_url, bidder->group.trusted_bidding_signals_url);
-
-  bid_state->state = BidState::State::kGeneratingBid;
-
-  mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
-      worklet_receiver = bid_state->bidder_worklet.BindNewPipeAndPassReceiver();
-  bid_state->bidder_worklet_debug =
-      base::WrapUnique(new DebuggableAuctionWorklet(
-          delegate_->GetFrame(), bidding_url, bid_state->bidder_worklet.get()));
-
-  bid_state->process_handle->GetService()->LoadBidderWorklet(
-      std::move(worklet_receiver),
-      bid_state->bidder_worklet_debug->should_pause_on_start(),
-      std::move(url_loader_factory), bidder->Clone());
-  bid_state->bidder_worklet.set_disconnect_handler(
-      base::BindOnce(&AuctionRunner::OnGenerateBidCrashed,
-                     weak_ptr_factory_.GetWeakPtr(), bid_state));
-
+  LoadBidderWorklet(*bid_state,
+                    /*disconnect_handler=*/base::BindOnce(
+                        &AuctionRunner::OnGenerateBidCrashed,
+                        weak_ptr_factory_.GetWeakPtr(), bid_state));
   bid_state->bidder_worklet->GenerateBid(
       auction_config_->auction_signals, PerBuyerSignals(bid_state),
       browser_signals_->top_frame_origin, browser_signals_->seller,
@@ -349,6 +321,10 @@ void AuctionRunner::OnGenerateBidComplete(
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
+  // Close the worklet's pipes. If the worklet ends up winning the auction, it
+  // will be reloaded to invoke its ReportWin() method.
+  state->ClosePipes();
+
   // Ignore invalid bids.
   if (bid) {
     state->bid_ad =
@@ -358,19 +334,11 @@ void AuctionRunner::OnGenerateBidComplete(
   }
 
   if (!bid) {
-    // On failure, close the worklet pipes.
-    state->ClosePipes();
-
     state->state = BidState::State::kScoringComplete;
     --outstanding_bids_;
     MaybeCompleteAuction();
     return;
   }
-
-  // On success, clear the disconnect handler. After generating a bid, a crashed
-  // bidder only matters if it's the winning bidder that crashed. That's checked
-  // for at the end of the auction.
-  state->bidder_worklet.set_disconnect_handler(base::OnceClosure());
 
   state->bid_result = std::move(bid);
   state->state = BidState::State::kWaitingOnSellerWorkletLoad;
@@ -507,7 +475,6 @@ void AuctionRunner::ReportSellerResult() {
 
   DCHECK(top_bidder_->bid_result);
   DCHECK_GT(top_bidder_->seller_score, 0);
-  DCHECK(top_bidder_->bidder_worklet);
 
   seller_worklet_->ReportResult(
       auction_config_.Clone(), browser_signals_->top_frame_origin,
@@ -532,12 +499,32 @@ void AuctionRunner::OnReportSellerResultComplete(
     return;
   }
 
-  ReportBidWin(signals_for_winner);
+  LoadBidderWorkletToReportBidWin(signals_for_winner);
+}
+
+void AuctionRunner::LoadBidderWorkletToReportBidWin(
+    const absl::optional<std::string>& signals_for_winner) {
+  DCHECK(top_bidder_->bid_result);
+
+  // Process handle should have been closed once the bid was generated.
+  DCHECK(!top_bidder_->process_handle);
+
+  top_bidder_->process_handle =
+      std::make_unique<AuctionProcessManager::ProcessHandle>();
+  if (interest_group_manager_->auction_process_manager().RequestWorkletService(
+          AuctionProcessManager::WorkletType::kBidder,
+          top_bidder_->bidder.bidding_group->group.owner,
+          top_bidder_->process_handle.get(),
+          base::BindOnce(&AuctionRunner::ReportBidWin,
+                         weak_ptr_factory_.GetWeakPtr(), signals_for_winner))) {
+    ReportBidWin(signals_for_winner);
+  }
 }
 
 void AuctionRunner::ReportBidWin(
     const absl::optional<std::string>& signals_for_winner) {
   DCHECK(top_bidder_->bid_result);
+
   std::string signals_for_winner_arg;
   if (signals_for_winner) {
     signals_for_winner_arg = *signals_for_winner;
@@ -550,16 +537,15 @@ void AuctionRunner::ReportBidWin(
     signals_for_winner_arg = "null";
   }
 
-  // Fail the auction if the winning bidder process has crashed.
-  if (!top_bidder_->bidder_worklet.is_connected()) {
-    FailAuction(
-        AuctionResult::kWinningBidderWorkletCrashed,
-        base::StrCat(
-            {top_bidder_->bidder.bidding_group->group.bidding_url->spec(),
-             " crashed while idle."}));
-    return;
-  }
-
+  // Load the script for the top-scoring bidder worklet again, and invoke its
+  // ReportWin() method.
+  LoadBidderWorklet(
+      *top_bidder_, /*disconnect_handler=*/base::BindOnce(
+          &AuctionRunner::FailAuction, weak_ptr_factory_.GetWeakPtr(),
+          AuctionResult::kWinningBidderWorkletCrashed,
+          base::StrCat(
+              {top_bidder_->bidder.bidding_group->group.bidding_url->spec(),
+               " crashed while trying to run reportWin()."})));
   top_bidder_->bidder_worklet->ReportWin(
       auction_config_->auction_signals, PerBuyerSignals(top_bidder_),
       browser_signals_->top_frame_origin, signals_for_winner_arg,
@@ -567,12 +553,6 @@ void AuctionRunner::ReportBidWin(
       top_bidder_->bid_result->bid,
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
                      weak_ptr_factory_.GetWeakPtr()));
-  top_bidder_->bidder_worklet.set_disconnect_handler(base::BindOnce(
-      &AuctionRunner::FailAuction, weak_ptr_factory_.GetWeakPtr(),
-      AuctionResult::kWinningBidderWorkletCrashed,
-      base::StrCat(
-          {top_bidder_->bidder.bidding_group->group.bidding_url->spec(),
-           " crashed while trying to run reportWin()."})));
 }
 
 void AuctionRunner::OnReportBidWinComplete(
@@ -655,6 +635,38 @@ void AuctionRunner::RecordResult(AuctionResult result) const {
     default:
       break;
   }
+}
+
+void AuctionRunner::LoadBidderWorklet(BidState& bid_state,
+                                      base::OnceClosure disconnect_handler) {
+  auction_worklet::mojom::BiddingInterestGroup* bidder =
+      bid_state.bidder.bidding_group.get();
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
+  GURL bidding_url =
+      bid_state.bidder.bidding_group->group.bidding_url.value_or(GURL());
+  bid_state.url_loader_factory = std::make_unique<AuctionURLLoaderFactoryProxy>(
+      url_loader_factory.InitWithNewPipeAndPassReceiver(),
+      // BidderWorklets don't need frame URLLoaderFactories.
+      AuctionURLLoaderFactoryProxy::GetUrlLoaderFactoryCallback(),
+      base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
+                          base::Unretained(delegate_)),
+      browser_signals_->top_frame_origin, frame_origin_,
+      /*is_for_seller=*/false, delegate_->GetClientSecurityState(), bidding_url,
+      bidder->group.trusted_bidding_signals_url);
+
+  mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
+      worklet_receiver = bid_state.bidder_worklet.BindNewPipeAndPassReceiver();
+  bid_state.bidder_worklet_debug =
+      base::WrapUnique(new DebuggableAuctionWorklet(
+          delegate_->GetFrame(), bidding_url, bid_state.bidder_worklet.get()));
+
+  bid_state.process_handle->GetService()->LoadBidderWorklet(
+      std::move(worklet_receiver),
+      bid_state.bidder_worklet_debug->should_pause_on_start(),
+      std::move(url_loader_factory), bidder->Clone());
+  bid_state.bidder_worklet.set_disconnect_handler(
+      std::move(disconnect_handler));
 }
 
 }  // namespace content

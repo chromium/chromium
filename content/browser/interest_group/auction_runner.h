@@ -291,13 +291,15 @@ class CONTENT_EXPORT AuctionRunner {
   void MaybeCompleteAuction();
 
   // Sequence of asynchronous methods to call into the bidder/seller results to
-  // report a a win, Will ultimately invoke ReportSuccess(), which will delete
+  // report a a win. Will ultimately invoke ReportSuccess(), which will delete
   // the auction.
   void ReportSellerResult();
   void OnReportSellerResultComplete(
       const absl::optional<std::string>& signals_for_winner,
       const absl::optional<GURL>& seller_report_url,
       const std::vector<std::string>& error_msgs);
+  void LoadBidderWorkletToReportBidWin(
+      const absl::optional<std::string>& signals_for_winner);
   void ReportBidWin(const absl::optional<std::string>& signals_for_winner);
   void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
                               const std::vector<std::string>& error_msgs);
@@ -313,6 +315,11 @@ class CONTENT_EXPORT AuctionRunner {
 
   // Logs the result of the auction to UMA.
   void RecordResult(AuctionResult result) const;
+
+  // Loads a bidder worklet for `bid_state`, setting the provided disconnect
+  // handler.
+  void LoadBidderWorklet(BidState& bid_state,
+                         base::OnceClosure disconnect_handler);
 
   Delegate* const delegate_;
   InterestGroupManager* const interest_group_manager_;
