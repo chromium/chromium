@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
@@ -59,7 +58,6 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private @PageCategory int mPageCategory;
     private boolean mVisible;
     private boolean mDismissed;
-    private boolean mUiShown;
     // The navigation index when CSN metadata was retrieved.
     private int mStartNavigationIndex;
     private int mSrpVisits;
@@ -67,8 +65,6 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
 
     @VisibleForTesting
     boolean mScrolled;
-    private boolean mProviderButtonClicked;
-    private boolean mItemClickedAtLeastOnce;
 
     @IntDef({TriggerMode.ALWAYS, TriggerMode.AFTER_SECOND_SRP, TriggerMode.ON_REVERSE_SCROLL})
     @Retention(RetentionPolicy.SOURCE)
@@ -114,15 +110,10 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private void reset() {
-        // Only record the metrics if the UI was shown.
-        if (mUiShown) recordUiMetrics();
         mModelList.clear();
         mDismissed = false;
         mOnSrp = false;
-        mUiShown = false;
         mScrolled = false;
-        mProviderButtonClicked = false;
-        mItemClickedAtLeastOnce = false;
         mSrpVisits = 0;
     }
 
@@ -316,18 +307,11 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                     navigationController.goToNavigationIndex(mStartNavigationIndex);
                 }
             }
-            mProviderButtonClicked = true;
         } else if (mCurrentTab != null && url != null) {
             LoadUrlParams params = new LoadUrlParams(url.getSpec());
             params.setReferrer(
                     new Referrer("https://www.google.com", ReferrerPolicy.STRICT_ORIGIN));
             mCurrentTab.loadUrl(params);
-
-            mItemClickedAtLeastOnce = true;
-            RecordHistogram.recordCount100Histogram(
-                    "Browser.ContinuousSearch.UI.ClickedItemPosition"
-                            + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
-                    resultPosition);
         }
         TraceEvent.end("ContinuousSearchListMediator#handleItemClick");
     }
@@ -335,28 +319,12 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private void setVisibility(boolean visibility, Runnable onFinished) {
         TraceEvent.begin("ContinuousSearchListMediator#setVisibility");
         mVisible = visibility;
-        if (mVisible) mUiShown = true;
         mSetLayoutVisibility.onResult(new VisibilitySettings(mVisible, onFinished));
         TraceEvent.end("ContinuousSearchListMediator#setVisibility");
     }
 
     void onScrolled() {
         mScrolled = true;
-    }
-
-    private void recordUiMetrics() {
-        String histogramSuffix = SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory);
-
-        RecordHistogram.recordBooleanHistogram(
-                "Browser.ContinuousSearch.UI.CarouselScrolled3" + histogramSuffix, mScrolled);
-        RecordHistogram.recordBooleanHistogram(
-                "Browser.ContinuousSearch.UI.ProviderButtonClicked" + histogramSuffix,
-                mProviderButtonClicked);
-        RecordHistogram.recordBooleanHistogram(
-                "Browser.ContinuousSearch.UI.ItemClickedAtLeastOnce" + histogramSuffix,
-                mItemClickedAtLeastOnce);
-        RecordHistogram.recordBooleanHistogram(
-                "Browser.ContinuousSearch.UI.DismissButtonClicked" + histogramSuffix, mDismissed);
     }
 
     private void initScrollObserver() {

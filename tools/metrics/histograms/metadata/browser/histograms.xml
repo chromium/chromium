@@ -28,8 +28,16 @@ chromium-metrics-reviews@google.com.
       Deprecated as of 2021-06.
     </obsolete>
   </variant>
-  <variant name=".News"/>
-  <variant name=".Organic"/>
+  <variant name=".News">
+    <obsolete>
+      Obsoleted as of 2021-11. The experiment has ended.
+    </obsolete>
+  </variant>
+  <variant name=".Organic">
+    <obsolete>
+      Obsoleted as of 2021-11. The experiment has ended.
+    </obsolete>
+  </variant>
 </variants>
 
 <variants name="TabSwitchingType">
@@ -123,6 +131,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Browser.ContinuousSearch.BackNavigationToSrp{ExperimentCategory}"
     units="count" expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted as of 2021-11. The experiment has ended.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -146,6 +157,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ContinuousSearch.DismissalCount" units="count"
     expires_after="2021-12-12">
+  <obsolete>
+    Obsoleted as of 2021-11. The experiment has ended.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -159,6 +173,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ContinuousSearch.NumberOfSearchResultsExtracted"
     units="count" expires_after="2022-04-17">
+  <obsolete>
+    Obsoleted as of 2021-11. The experiment has ended.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -171,6 +188,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Browser.ContinuousSearch.SearchResultExtractionStatus"
     enum="SearchResultExtractorClientStatus" expires_after="2022-04-10">
+  <obsolete>
+    Obsoleted as of 2021-11. The experiment has ended.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -204,6 +224,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Browser.ContinuousSearch.UI.CarouselScrolled3{ExperimentCategory}"
     enum="Boolean" expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted as of 2021-11. The experiment has ended.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -237,6 +260,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Browser.ContinuousSearch.UI.ClickedItemPosition{ExperimentCategory}"
     units="position" expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted as of 2021-11. The experiment has ended.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -250,6 +276,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Browser.ContinuousSearch.UI.DismissButtonClicked{ExperimentCategory}"
     enum="Boolean" expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted as of 2021-11. The experiment has ended.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -265,6 +294,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Browser.ContinuousSearch.UI.ItemClickedAtLeastOnce{ExperimentCategory}"
     enum="Boolean" expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted as of 2021-11. The experiment has ended.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -280,6 +312,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Browser.ContinuousSearch.UI.ProviderButtonClicked{ExperimentCategory}"
     enum="Boolean" expires_after="2021-12-20">
+  <obsolete>
+    Obsoleted as of 2021-11. The experiment has ended.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>

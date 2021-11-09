@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -55,7 +54,7 @@ public class ContinuousSearchTabHelperJUnitTest {
     }
 
     /**
-     * Tests initialization success of all tab observers.
+     * Tests successful initialization of the tab observer.
      */
     @Test
     @EnableFeatures({ChromeFeatureList.CONTINUOUS_SEARCH})
@@ -64,7 +63,7 @@ public class ContinuousSearchTabHelperJUnitTest {
 
         ContinuousSearchTabHelper.createForTab(mTabMock);
 
-        verify(mTabMock, times(2)).addObserver(any());
+        verify(mTabMock).addObserver(any());
     }
 
     /**
@@ -81,15 +80,15 @@ public class ContinuousSearchTabHelperJUnitTest {
     }
 
     /**
-     * Tests only metrics observer is initialized if the feature flag is off.
+     * Tests skip initialization if the feature flag is off.
      */
     @Test
     @DisableFeatures({ChromeFeatureList.CONTINUOUS_SEARCH})
-    public void testInitializeOnlyNavigationObserver() {
+    public void testFeatureDisabled() {
         when(mTabMock.isIncognito()).thenReturn(false);
 
         ContinuousSearchTabHelper.createForTab(mTabMock);
 
-        verify(mTabMock, times(1)).addObserver(any());
+        verify(mTabMock, never()).addObserver(any());
     }
 }

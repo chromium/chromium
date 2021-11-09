@@ -8,10 +8,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.continuous_search.SearchResultExtractorClientStatus;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -108,7 +106,6 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         if (mProducer == null) return;
 
         TraceEvent.begin("ContinuousSearchTabObserver#onResult");
-        reportStatus(mProducer.getSuccessStatus(), mProducer.getClass());
         mProducer = null;
 
         ContinuousNavigationUserDataImpl.getOrCreateForTab(mTab).updateData(
@@ -119,7 +116,6 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     @Override
     public void onError(int errorCode) {
         // TODO: Handle errors.
-        reportStatus(errorCode, mProducer.getClass());
         mProducer = null;
     }
 
@@ -145,14 +141,6 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
         if (mProducer != null) {
             mProducer.cancel();
             mProducer = null;
-        }
-    }
-
-    private void reportStatus(int status, Class<?> clazz) {
-        if (clazz == SearchResultExtractorProducer.class) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Browser.ContinuousSearch.SearchResultExtractionStatus", status,
-                    SearchResultExtractorClientStatus.MAX_VALUE);
         }
     }
 }

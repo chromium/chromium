@@ -27,8 +27,6 @@ public class ContinuousSearchTabHelper {
             return;
         }
 
-        new BackNavigationTabObserver(tab);
-
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CONTINUOUS_SEARCH)) return;
 
         new ContinuousSearchTabObserver(tab);
