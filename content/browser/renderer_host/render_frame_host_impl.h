@@ -3923,7 +3923,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // GetDocumentUserData(). Please refer to the description at
   // content/public/browser/document_user_data.h for more details.
   struct DocumentAssociatedData : public base::SupportsUserData {
-    DocumentAssociatedData(RenderFrameHostImpl& document);
+    explicit DocumentAssociatedData(RenderFrameHostImpl& document);
     ~DocumentAssociatedData() override;
     DocumentAssociatedData(const DocumentAssociatedData&) = delete;
     DocumentAssociatedData& operator=(const DocumentAssociatedData&) = delete;
