@@ -1457,7 +1457,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtResume" units="tabs" expires_after="2021-12-12">
+<histogram name="Tabs.CountAtResume" units="tabs" expires_after="2022-11-02">
   <owner>marq@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
