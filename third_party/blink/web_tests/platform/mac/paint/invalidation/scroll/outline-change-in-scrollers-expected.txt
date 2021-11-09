@@ -1,73 +1,73 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "position": [10, 10],
+      "bounds": [95, 95],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [10, 105],
+      "bounds": [95, 15],
+      "transform": 1
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [105, 10],
+      "bounds": [15, 95],
+      "transform": 1
+    },
+    {
+      "name": "Scroll corner of LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "position": [113, 8],
+      "bounds": [293, 130],
+      "contentsOpaqueForText": true
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "position": [10, 10],
+      "bounds": [150, 150],
+      "contentsOpaqueForText": true,
       "invalidations": [
-        [172, 172, 75, 75]
+        [0, 0, 75, 75]
+      ],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "position": [10, 10],
+      "bounds": [95, 95],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [142, 113],
+      "bounds": [130, 159],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [30, 59, 75, 75]
       ]
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
-      "bounds": [130, 130],
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
-      "position": [10, 105],
-      "bounds": [95, 15],
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
-      "position": [105, 10],
-      "bounds": [15, 95],
-      "transform": 1
-    },
-    {
-      "name": "Scroll Corner Layer",
-      "position": [105, 105],
-      "bounds": [15, 15],
-      "transform": 1
-    },
-    {
-      "name": "Scrolling Contents Layer",
-      "position": [10, 10],
-      "bounds": [150, 150],
-      "invalidations": [
-        [0, 0, 75, 75]
-      ],
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
-      "bounds": [130, 130],
-      "transform": 2
-    },
-    {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
-      "position": [10, 105],
-      "bounds": [95, 15],
-      "transform": 2
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [105, 10],
       "bounds": [15, 95],
       "transform": 2
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [105, 105],
-      "bounds": [15, 15],
-      "transform": 2
-    },
-    {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [95, 150],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [20, 0, 75, 75]
       ],
@@ -75,31 +75,34 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
-      "bounds": [130, 130],
+      "position": [10, 10],
+      "bounds": [95, 95],
+      "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [10, 105],
       "bounds": [95, 15],
       "transform": 3
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [105, 10],
       "bounds": [15, 95],
       "transform": 3
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [105, 105],
-      "bounds": [15, 15],
-      "transform": 3
+      "name": "Scroll corner of LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
+      "position": [276, 113],
+      "bounds": [130, 159],
+      "contentsOpaqueForText": true
     },
     {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [150, 150],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 0, 75, 75]
       ],
@@ -107,31 +110,28 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
-      "bounds": [130, 130],
+      "position": [25, 10],
+      "bounds": [95, 95],
+      "drawsContent": false,
       "transform": 4
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
-      "position": [25, 105],
-      "bounds": [95, 15],
-      "transform": 4
+      "name": "HorizontalScrollbar",
+      "position": [18, 247],
+      "bounds": [244, 15],
+      "contentsOpaqueForText": true
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [10, 10],
       "bounds": [15, 95],
       "transform": 4
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [10, 105],
-      "bounds": [15, 15],
-      "transform": 4
-    },
-    {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
       "position": [25, 10],
       "bounds": [95, 150],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [20, 0, 75, 75]
       ],
@@ -139,31 +139,29 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
-      "bounds": [130, 130],
+      "position": [10, 10],
+      "bounds": [95, 95],
+      "drawsContent": false,
       "transform": 5
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [10, 105],
       "bounds": [95, 15],
       "transform": 5
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [105, 10],
-      "bounds": [15, 95],
+      "bounds": [15, 110],
+      "contentsOpaqueForText": true,
       "transform": 5
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [105, 105],
-      "bounds": [15, 15],
-      "transform": 5
-    },
-    {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='scroll'",
       "position": [10, 10],
       "bounds": [150, 95],
+      "contentsOpaqueForText": true,
       "invalidations": [
         [0, 20, 75, 75]
       ],

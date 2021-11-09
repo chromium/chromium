@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1566, 1781],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
@@ -9,49 +9,55 @@
     },
     {
       "name": "LayoutNGTableCell (relative positioned) TD id='cellToScroll' class='relative'",
-      "bounds": [454, 469],
+      "position": [2, 2],
+      "bounds": [435, 450],
+      "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [2, 452],
       "bounds": [435, 15],
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [437, 2],
-      "bounds": [15, 450],
+      "bounds": [15, 465],
+      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [437, 452],
-      "bounds": [15, 15],
-      "transform": 2
-    },
-    {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='relative red'",
       "position": [2, 2],
-      "bounds": [950, 450],
+      "bounds": [450, 450],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
       "transform": 3
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='absolute green'",
+      "position": [502, 2],
+      "bounds": [450, 450],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 3
+    },
+    {
+      "name": "HorizontalScrollbar",
       "position": [0, 585],
-      "bounds": [785, 15],
-      "contentsOpaque": true
+      "bounds": [785, 15]
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 585],
-      "contentsOpaque": true
+      "bounds": [15, 585]
     },
     {
-      "name": "Scroll Corner Layer",
+      "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
-      "bounds": [15, 15]
+      "bounds": [15, 15],
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

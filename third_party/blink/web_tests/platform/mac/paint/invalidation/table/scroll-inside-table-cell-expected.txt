@@ -1,38 +1,45 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000"
     },
     {
       "name": "LayoutNGTableCell (relative positioned) TD id='cellToScroll' class='relative'",
-      "bounds": [454, 469],
+      "position": [2, 2],
+      "bounds": [435, 450],
+      "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [2, 452],
       "bounds": [435, 15],
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [437, 2],
-      "bounds": [15, 450],
+      "bounds": [15, 465],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [437, 452],
-      "bounds": [15, 15],
-      "transform": 1
-    },
-    {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='relative red'",
       "position": [2, 2],
-      "bounds": [950, 450],
+      "bounds": [450, 450],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='absolute green'",
+      "position": [502, 2],
+      "bounds": [450, 450],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
       "transform": 2
     }
   ],

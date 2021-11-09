@@ -568,31 +568,12 @@ crbug.com/1108972 fullscreen/compositor-touch-hit-rects-fullscreen-video-control
 # Cross-origin iframe layerization is buggy with empty iframes.
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-masked-pointer-events-mixed-2.sub.html [ Failure ]
 crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pending/security/cross-origin-subframe-complex-clip.sub.html [ Failure ]
-
-# Fixed in CompositeAfterPaint
-# TODO(wangxianzhu): Remove these entries when enabling CAP for web tests on Mac.
-crbug.com/918155 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Crash Failure Pass ]
-crbug.com/918155 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Failure ]
-crbug.com/1227541 [ Mac ] external/wpt/css/css-multicol/multicol-scroll-content.html [ Failure ]
-crbug.com/1135676 [ Mac ] external/wpt/css/css-ui/resize-child-will-change-transform.html [ Failure ]
-crbug.com/148499 [ Mac ] external/wpt/svg/extensibility/foreignObject/will-change-in-foreign-object-paint-order.html [ Failure ]
-crbug.com/1183814 [ Mac ] external/wpt/svg/extensibility/foreignObject/scroll-transform-nested-stacked-children.html [ Failure ]
-crbug.com/1167352 [ Mac ] external/wpt/css/css-will-change/will-change-transform-add-content.html [ Failure ]
-crbug.com/829028 [ Mac ] external/wpt/css/css-break/out-of-flow-in-multicolumn-075.html [ Failure ]
-crbug.com/471333 [ Mac ] external/wpt/css/css-break/transform-000.html [ Failure ]
-crbug.com/471333 [ Mac ] external/wpt/css/css-break/transform-001.html [ Failure ]
-crbug.com/471333 [ Mac ] external/wpt/css/css-break/transform-002.html [ Failure ]
-# Some of the following failures on Mac are because the ref test has been updated to
-# CompositeAfterPaint version. Some needs rebaseline, and will do when enabling CAP on Mac.
-crbug.com/802915 [ Mac ] css3/blending/isolation-should-include-non-local-background.html [ Failure ]
-crbug.com/1062984 [ Mac ] external/wpt/paint-timing/fcp-only/fcp-out-of-bounds-translate.html [ Failure ]
-crbug.com/471333 [ Mac ] paint/invalidation/compositing/composited-layers-move-in-subpixels.html [ Failure ]
-crbug.com/471333 [ Mac ] paint/invalidation/compositing/composited-layer-move-in-subpixels-contents.html [ Failure ]
-crbug.com/471333 [ Mac ] virtual/backface-visibility-interop/paint/invalidation/svg/text-selection-text-05-t.svg [ Failure ]
-# Will rebaseline on Fuchsia
-crbug.com/471333 [ Fuchsia ] compositing/geometry/bounds-ignores-hidden.html [ Failure ]
-crbug.com/471333 [ Fuchsia ] compositing/layer-creation/fixed-position-out-of-view.html [ Failure ]
-crbug.com/471333 [ Fuchsia ] paint/invalidation/svg/animated-svg-as-image-transformed-offscreen.html [ Failure ]
+crbug.com/1266900 [ Mac ] fast/events/touch/gesture/right-click-gestures-set-cursor-at-correct-position.html [ Pass Crash ]
+crbug.com/1267924 [ Mac ] external/wpt/css/css-contain/contain-layout-baseline-005.html [ Failure ]
+crbug.com/1267924 [ Mac ] external/wpt/css/css-contain/contain-layout-suppress-baseline-001.html [ Failure ]
+# Needs rebaseline on Fuchsia.
+crbug.com/1267498 [ Fuchsia ] paint/invalidation/svg/animated-svg-as-image-transformed-offscreen.html [ Failure ]
+crbug.com/1267498 [ Fuchsia ] compositing/layer-creation/fixed-position-out-of-view.html [ Failure ]
 
 # WebGPU tests are only run on GPU bots, so they are skipped by default and run
 # separately from other Web Tests.
@@ -7277,13 +7258,6 @@ crbug.com/1266221 [ Mac11-arm64 ] virtual/fsa-incognito/external/wpt/file-system
 crbug.com/1263354 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-adds-entry.html [ Failure Pass Timeout ]
 
 crbug.com/1267076 wpt_internal/fenced_frame/navigator-keyboard-layout-map.https.html [ Failure ]
-
-# Sheriff 2021-11-05
-crbug.com/1267433 [ Linux ] images/color-profile-image-canvas-pattern.html [ Failure Pass ]
-crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested-1.html [ Failure ]
-crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested-2.html [ Failure ]
-crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested-3.html [ Failure ]
-crbug.com/1267433 [ Mac ] scrollbars/overlay-scrollbar-over-child-layer-nested.html [ Failure ]
 
 # Sheriff 2021-11-08
 crbug.com/1267734 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/resource-timing/object-not-found-after-TAO-cross-origin-redirect.html [ Failure Pass ]

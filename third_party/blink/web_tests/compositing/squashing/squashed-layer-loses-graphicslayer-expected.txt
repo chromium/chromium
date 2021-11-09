@@ -4,7 +4,7 @@ CASE 1, original layer tree:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -17,11 +17,11 @@ CASE 1, original layer tree:
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [80, 80],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
       "bounds": [140, 140],
-      "backgroundColor": "#FF00FF",
-      "transform": 1
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF"
     }
   ],
   "transforms": [
@@ -41,7 +41,7 @@ CASE 2, The original composited layer is no longer composited, which then also r
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",

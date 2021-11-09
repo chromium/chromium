@@ -4,7 +4,7 @@ CASE 1, original layer tree:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -17,11 +17,11 @@ CASE 1, original layer tree:
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [80, 80],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
       "bounds": [140, 140],
-      "backgroundColor": "#FF00FF",
-      "transform": 1
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF"
     }
   ],
   "transforms": [
@@ -41,7 +41,7 @@ CASE 2, overlap1 changes color:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -54,14 +54,14 @@ CASE 2, overlap1 changes color:
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [80, 80],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
       "bounds": [140, 140],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FF00FF",
       "invalidations": [
         [0, 0, 100, 100]
-      ],
-      "transform": 1
+      ]
     }
   ],
   "transforms": [
@@ -81,7 +81,7 @@ CASE 3, overlap1 and overlap2 change color:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -94,15 +94,15 @@ CASE 3, overlap1 and overlap2 change color:
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [80, 80],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
       "bounds": [140, 140],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FF00FF",
       "invalidations": [
         [20, 20, 100, 100],
         [0, 0, 100, 100]
-      ],
-      "transform": 1
+      ]
     }
   ],
   "transforms": [
@@ -122,7 +122,7 @@ CASE 4, overlap2 and overlap3 change color:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -135,15 +135,15 @@ CASE 4, overlap2 and overlap3 change color:
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [80, 80],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
       "bounds": [140, 140],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "invalidations": [
         [40, 40, 100, 100],
         [20, 20, 100, 100]
-      ],
-      "transform": 1
+      ]
     }
   ],
   "transforms": [
@@ -163,7 +163,7 @@ CASE 5, overlap3 and overlap1 change color:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -176,15 +176,15 @@ CASE 5, overlap3 and overlap1 change color:
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
-      "position": [80, 80],
+      "name": "LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1'",
+      "position": [140, 140],
       "bounds": [140, 140],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
       "invalidations": [
         [40, 40, 100, 100],
         [0, 0, 100, 100]
-      ],
-      "transform": 1
+      ]
     }
   ],
   "transforms": [

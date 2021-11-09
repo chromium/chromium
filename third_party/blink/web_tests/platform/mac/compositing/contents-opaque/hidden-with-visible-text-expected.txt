@@ -2,14 +2,16 @@ Caption
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='caption'",
-      "bounds": [200, 100],
+      "bounds": [51, 18],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
       "transform": 1
     }
   ],
