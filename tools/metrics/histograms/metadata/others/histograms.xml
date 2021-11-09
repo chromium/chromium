@@ -4198,7 +4198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ReportSendOutcome"
-    enum="ConversionReportSendOutcome" expires_after="2021-12-19">
+    enum="ConversionReportSendOutcome" expires_after="M105">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
