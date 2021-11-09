@@ -387,4 +387,5 @@ Refer to README.md for content description and update process.
  <item id="worker_script_load" added_in_milestone="72" hash_code="72087791" type="0" content_hash_code="24889169" os_list="linux,windows" file_path="content/browser/worker_host/worker_script_fetcher.cc"/>
  <item id="xmpp_signal_strategy" added_in_milestone="66" hash_code="88906454" type="0" deprecated="2019-07-16" content_hash_code="88958321" file_path=""/>
  <item id="tailored_security_service" added_in_milestone="97" hash_code="126267513" type="0" content_hash_code="35290543" os_list="linux,windows" file_path="components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.cc"/>
+ <item id="managed_acccount_signin_restrictions_secure_connect" added_in_milestone="97" hash_code="80836426" type="0" content_hash_code="18471055" os_list="linux,windows" file_path="components/policy/core/browser/signin/user_cloud_signin_restriction_policy_fetcher.cc"/>
 </annotations>

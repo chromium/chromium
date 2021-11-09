@@ -35,6 +35,11 @@ POLICY_EXPORT extern const base::Feature kLoginEventReporting;
 // Manager's Leak Detector has found some compromised credentials.
 POLICY_EXPORT extern const base::Feature kPasswordBreachEventReporting;
 
+// Enable the UserCloudSigninRestrictionPolicyFetcher to get the
+// ManagedAccountsSigninRestriction policy for a dasher account.
+POLICY_EXPORT extern const base::Feature
+    kEnableUserCloudSigninRestrictionPolicyFetcher;
+
 }  // namespace features
 }  // namespace policy
 

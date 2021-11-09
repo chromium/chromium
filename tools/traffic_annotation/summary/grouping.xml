@@ -170,6 +170,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="external_policy_fetcher"/>
       <traffic_annotation unique_id="user_info_fetcher"/>
       <traffic_annotation unique_id="managed_configuration_loader"/>
+      <traffic_annotation unique_id="managed_acccount_signin_restrictions_secure_connect"/>
     </sender>
     <sender name="Developer Tools">
       <traffic_annotation unique_id="devtools_handle_front_end_messages"/>

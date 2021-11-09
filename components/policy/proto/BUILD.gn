@@ -32,6 +32,7 @@ proto_library("proto_internal") {
   sources = [
     "device_management_backend.proto",
     "policy_signing_key.proto",
+    "secure_connect.proto",
   ]
 
   if (is_chromeos_ash) {
