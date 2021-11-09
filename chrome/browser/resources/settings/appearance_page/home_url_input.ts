@@ -19,7 +19,7 @@ import {PrefControlMixin} from '../controls/pref_control_mixin.js';
 
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
 
-interface HomeUrlInputElement {
+export interface HomeUrlInputElement {
   $: {
     input: CrInputElement,
   };
@@ -29,7 +29,7 @@ const HomeUrlInputElementBase =
     CrPolicyPrefMixin(PrefControlMixin(PolymerElement)) as
     {new (): PolymerElement & CrPolicyPrefMixinInterface};
 
-class HomeUrlInputElement extends HomeUrlInputElementBase {
+export class HomeUrlInputElement extends HomeUrlInputElementBase {
   static get is() {
     return 'home-url-input';
   }
@@ -161,6 +161,12 @@ class HomeUrlInputElement extends HomeUrlInputElementBase {
     this.browserProxy_.validateStartupPage(this.value).then(isValid => {
       this.invalid = !isValid;
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'home-url-input': HomeUrlInputElement;
   }
 }
 

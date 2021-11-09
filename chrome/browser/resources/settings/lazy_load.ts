@@ -61,7 +61,8 @@ import './languages_page/edit_dictionary_page.js';
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
-export {FontsBrowserProxy, FontsBrowserProxyImpl} from './appearance_page/fonts_browser_proxy.js';
+export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
+export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './appearance_page/fonts_browser_proxy.js';
 export {CountryDetailManagerImpl} from './autofill_page/address_edit_dialog.js';
 export {AutofillManager, AutofillManagerImpl} from './autofill_page/autofill_section.js';
 // <if expr="chromeos or lacros">

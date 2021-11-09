@@ -13,6 +13,8 @@ export {PluralStringProxyImpl as SettingsPluralStringProxyImpl} from 'chrome://r
 export {SettingsAboutPageElement} from './about_page/about_page.js';
 export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus} from './about_page/about_page_browser_proxy.js';
 export {AppearanceBrowserProxy, AppearanceBrowserProxyImpl} from './appearance_page/appearance_browser_proxy.js';
+export {SettingsAppearancePageElement} from './appearance_page/appearance_page.js';
+export {HomeUrlInputElement} from './appearance_page/home_url_input.js';
 export {MultiStoreExceptionEntry} from './autofill_page/multi_store_exception_entry.js';
 export {MultiStorePasswordUiEntry} from './autofill_page/multi_store_password_ui_entry.js';
 export {PasswordCheckInteraction, PasswordCheckReferrer, PasswordManagerImpl, PasswordManagerProxy} from './autofill_page/password_manager_proxy.js';

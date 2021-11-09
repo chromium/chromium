@@ -5,43 +5,41 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FontsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import { FontsBrowserProxy, FontsBrowserProxyImpl, FontsData,SettingsAppearanceFontsPageElement} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 // clang-format on
 
-/** @implements {FontsBrowserProxy} */
-class TestFontsBrowserProxy extends TestBrowserProxy {
+class TestFontsBrowserProxy extends TestBrowserProxy implements
+    FontsBrowserProxy {
+  private fontsData_: FontsData;
+
   constructor() {
     super([
       'fetchFontsData',
     ]);
 
-    /** @private {!FontsData} */
     this.fontsData_ = {
       'fontList': [['font name', 'alternate', 'ltr']],
-      'encodingList': [['encoding name', 'alternate', 'ltr']],
     };
   }
 
-  /** @override */
   fetchFontsData() {
     this.methodCalled('fetchFontsData');
     return Promise.resolve(this.fontsData_);
   }
 }
 
-let fontsPage = null;
-
-/** @type {?TestFontsBrowserProxy} */
-let fontsBrowserProxy = null;
+let fontsPage: SettingsAppearanceFontsPageElement;
+let fontsBrowserProxy: TestFontsBrowserProxy;
 
 suite('AppearanceFontHandler', function() {
   setup(function() {
     fontsBrowserProxy = new TestFontsBrowserProxy();
     FontsBrowserProxyImpl.setInstance(fontsBrowserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     fontsPage = document.createElement('settings-appearance-fonts-page');
     document.body.appendChild(fontsPage);
@@ -65,17 +63,15 @@ suite('AppearanceFontHandler', function() {
   });
 
   test('font preview size', async () => {
-    /**
-     * @param {!HTMLElement} element
-     * @param {number} expectedFontSize
-     */
-    function assertFontSize(element, expectedFontSize) {
+    function assertFontSize(element: HTMLElement, expectedFontSize: number) {
       // Check that the font size is applied correctly.
-      const {value, unit} = element.computedStyleMap().get('font-size');
+      const {value, unit} = element.computedStyleMap().get('font-size') as
+          {value: number, unit: string};
       assertEquals('px', unit);
       assertEquals(expectedFontSize, value);
       // Check that the font size value is displayed correctly.
-      assertTrue(element.textContent.trim().startsWith(expectedFontSize));
+      assertTrue(
+          element.textContent!.trim().startsWith(expectedFontSize.toString()));
     }
 
     fontsPage.prefs = {

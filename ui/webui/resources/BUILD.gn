@@ -143,6 +143,7 @@ generate_grd("build_ts_grdp") {
 }
 
 checked_in_dts_files = [
+  "cr_components/managed_dialog/managed_dialog.d.ts",
   "cr_components/managed_footnote/managed_footnote.d.ts",
   "cr_elements/cr_action_menu/cr_action_menu.d.ts",
   "cr_elements/cr_button/cr_button.m.d.ts",
@@ -287,7 +288,6 @@ ts_definitions("generate_definitions") {
   root_dir = preprocessed_folder
   out_dir = preprocessed_folder
   js_files = [
-    "cr_components/managed_dialog/managed_dialog.js",
     "cr_elements/action_link_css.m.js",
     "cr_elements/cr_a11y_announcer/cr_a11y_announcer.js",
     "cr_elements/cr_actionable_row_style.m.js",

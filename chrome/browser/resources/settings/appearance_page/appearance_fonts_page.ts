@@ -34,13 +34,17 @@ function ticksWithLabels(ticks: number[]): SliderTick[] {
  * settings.
  */
 
-interface SettingsAppearanceFontsPageElement {
+export interface SettingsAppearanceFontsPageElement {
   $: {
+    fixedFontPreview: HTMLElement,
     minimumSizeFontPreview: HTMLElement,
+    sansSerifFontPreview: HTMLElement,
+    serifFontPreview: HTMLElement,
+    standardFontPreview: HTMLElement,
   };
 }
 
-class SettingsAppearanceFontsPageElement extends PolymerElement {
+export class SettingsAppearanceFontsPageElement extends PolymerElement {
   static get is() {
     return 'settings-appearance-fonts-page';
   }
@@ -83,6 +87,7 @@ class SettingsAppearanceFontsPageElement extends PolymerElement {
     ];
   }
 
+  prefs: Object;
   private fontOptions_: DropdownMenuOptionList;
   private fontSizeRange_: SliderTick[];
   private minimumFontSizeRange_: SliderTick[];
@@ -113,6 +118,12 @@ class SettingsAppearanceFontsPageElement extends PolymerElement {
 
   private onMinimumSizeChange_() {
     this.$.minimumSizeFontPreview.hidden = this.computeMinimumFontSize_() <= 0;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-appearance-fonts-page': SettingsAppearanceFontsPageElement;
   }
 }
 
