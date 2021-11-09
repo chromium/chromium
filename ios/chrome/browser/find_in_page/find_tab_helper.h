@@ -9,6 +9,7 @@
 
 #include "base/ios/block_types.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -75,13 +76,25 @@ class FindTabHelper : public web::WebStateObserver,
   // Private constructor used by CreateForWebState().
   FindTabHelper(web::WebState* web_state);
 
+  // Create the FindInPageController for |web_state|. Only called if/when
+  // the WebState is realized.
+  void CreateFindInPageController(web::WebState* web_state);
+
   // web::WebStateObserver.
+  void WebStateRealized(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
 
-  // The ObjC find in page controller.
-  FindInPageController* controller_;
+  // The ObjC find in page controller (nil if the WebState is not realized).
+  FindInPageController* controller_ = nil;
+
+  // The delegate to register with FindInPageController when it is created.
+  __weak id<FindInPageResponseDelegate> response_delegate_ = nil;
+
+  // Manage the registration of this instance as a WebStateObserver.
+  base::ScopedObservation<web::WebState, web::WebStateObserver> observation_{
+      this};
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
