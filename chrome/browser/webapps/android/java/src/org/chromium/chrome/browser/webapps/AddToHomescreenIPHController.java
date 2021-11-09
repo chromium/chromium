@@ -50,10 +50,10 @@ public class AddToHomescreenIPHController {
     private static final String VARIATION_KEY_USE_TEXT_BUBBLE = "use_text_bubble";
     private static final String VARIATION_KEY_USE_MESSAGE = "use_message";
 
-    private final Activity mActivity;
+    private Activity mActivity;
+    private AppMenuHandler mAppMenuHandler;
     private final WindowAndroid mWindowAndroid;
     private final ModalDialogManager mModalDialogManager;
-    private final AppMenuHandler mAppMenuHandler;
     private final @IdRes int mHighlightMenuItemId;
     private final Supplier<View> mMenuButtonView;
     private final MessageDispatcher mMessageDispatcher;
@@ -93,6 +93,7 @@ public class AddToHomescreenIPHController {
      * @param tab The current tab.
      */
     public void showAddToHomescreenIPH(Tab tab) {
+        if (mActivity == null) return;
         if (!canShowAddToHomescreenMenuItem(mActivity, tab)) return;
 
         if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -104,6 +105,14 @@ public class AddToHomescreenIPHController {
                            false)) {
             showMessageIPH(tab);
         }
+    }
+
+    /**
+     * Called to notify that the activity is in the process of being destroyed.
+     */
+    public void destroy() {
+        mActivity = null;
+        mAppMenuHandler = null;
     }
 
     private static boolean canShowAddToHomescreenMenuItem(Context context, Tab tab) {
@@ -185,7 +194,7 @@ public class AddToHomescreenIPHController {
     }
 
     private void onMessageAddButtonClicked(Tab tab) {
-        if (tab.isDestroyed()) return;
+        if (tab.isDestroyed() || mActivity == null) return;
 
         Bundle menuItemData = new Bundle();
         // Used for UMA.
@@ -203,10 +212,12 @@ public class AddToHomescreenIPHController {
     }
 
     private void turnOnTextBubbleHighlightForMenuItem() {
+        if (mAppMenuHandler == null) return;
         mAppMenuHandler.setMenuHighlight(mHighlightMenuItemId);
     }
 
     private void turnOffTextBubbleHighlightForMenuItem() {
+        if (mAppMenuHandler == null) return;
         mAppMenuHandler.clearMenuHighlight();
     }
 }
