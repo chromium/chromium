@@ -1821,11 +1821,12 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(OverviewItem* item,
       break;
   }
 
-  // Get the bounds of the window if there is a snapped window or a window
-  // about to be snapped.
+  // Get the bounds of the item if there is a snapped window or a window
+  // about to be snapped. If the height is less than that of the header, there
+  // is nothing from the original window to be shown and nothing to be clipped.
   absl::optional<gfx::RectF> split_view_bounds =
       GetSplitviewBoundsMaintainingAspectRatio();
-  if (!split_view_bounds) {
+  if (!split_view_bounds || split_view_bounds->height() < kHeaderHeightDp) {
     item->set_unclipped_size(absl::nullopt);
     return width;
   }

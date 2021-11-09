@@ -6088,6 +6088,30 @@ TEST_F(SplitViewOverviewSessionTest,
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
 }
 
+// Tests that there is no crash when dragging the divider in portrait mode.
+// Regression test for https://crbug.com/1267486.
+TEST_F(SplitViewOverviewSessionTest, NoCrashWhenDraggingDividerInPortrait) {
+  // The crash only occured in portrait mode.
+  UpdateDisplay("600x800");
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+  std::unique_ptr<aura::Window> window2 = CreateTestWindow();
+
+  ToggleOverview();
+  // Note that this snaps `window1` to the top.
+  split_view_controller()->SnapWindow(window1.get(), SplitViewController::LEFT);
+
+  // Drag the divider all the way to the bottom. There should be no crash.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_screen_location(
+      split_view_controller()
+          ->split_view_divider()
+          ->GetDividerBoundsInScreen(/*is_dragging=*/false)
+          .CenterPoint());
+  generator->PressTouch();
+  generator->MoveTouchBy(0, 600);
+  generator->ReleaseTouch();
+}
+
 // Test the split view and overview functionalities in clamshell mode. Split
 // view is only active when overview is active in clamshell mode.
 class SplitViewOverviewSessionInClamshellTest
