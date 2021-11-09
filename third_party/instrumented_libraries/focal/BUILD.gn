@@ -34,7 +34,6 @@ group("locally_built") {
     ":libgcrypt20",
     ":libgdk-pixbuf2.0-0",
     ":libglib2.0-0",
-    ":libgnome-keyring0",
     ":libgnutls30",
     ":libgpg-error0",
     ":libgtk-3-0",
@@ -431,17 +430,6 @@ instrumented_library("libglib2.0-0") {
   ]
   msan_ignorelist = "ignorelists/msan/libglib2.0-0.txt"
   pre_build = "scripts/pre-build/libglib2.0-0.sh"
-}
-
-instrumented_library("libgnome-keyring0") {
-  extra_configure_flags = [
-    "--disable-static",
-    "--enable-tests=no",
-
-    # Make the build less problematic.
-    "--disable-introspection",
-  ]
-  package_ldflags = [ "-Wl,--as-needed" ]
 }
 
 instrumented_library("libgnutls30") {
