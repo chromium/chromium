@@ -3277,7 +3277,11 @@ void BrowserView::AddedToWidget() {
 
   // TODO(pbos): Manage this either inside SidePanel or the corresponding button
   // when SidePanel is singular, at least per button/side.
+  // TODO(pbos): Investigate whether the side panels should be creatable when
+  // the ToolbarView does not create a button for them. This specifically seems
+  // to hit web apps. See https://crbug.com/1267781.
   if (base::FeatureList::IsEnabled(features::kSidePanelBorder) &&
+      toolbar_->read_later_button() &&
       (lens_side_panel_ || right_aligned_side_panel_)) {
     std::vector<View*> panels;
     if (lens_side_panel_)
