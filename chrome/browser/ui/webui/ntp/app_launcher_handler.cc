@@ -809,8 +809,7 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
     extensions::RecordWebStoreLaunch();
 
     if (args->GetList().size() > 2) {
-      std::string source_value;
-      CHECK(args->GetString(2, &source_value));
+      const std::string& source_value = args->GetList()[2].GetString();
       if (!source_value.empty()) {
         override_url = net::AppendQueryParameter(
             full_launch_url, extension_urls::kWebstoreSourceField,
@@ -909,8 +908,7 @@ void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
-  std::string extension_id;
-  CHECK(args->GetString(0, &extension_id));
+  const std::string& extension_id = args->GetList()[0].GetString();
 
   if (web_app_provider_->registrar().IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
@@ -989,8 +987,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
-  std::string app_id;
-  CHECK(args->GetString(0, &app_id));
+  const std::string& app_id = args->GetList()[0].GetString();
 
   if (web_app_provider_->registrar().IsInstalled(app_id) &&
       !IsYoutubeExtension(app_id)) {
@@ -1026,8 +1023,7 @@ void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
-  std::string app_id;
-  CHECK(args->GetString(0, &app_id));
+  const std::string& app_id = args->GetList()[0].GetString();
 
   if (!web_app_provider_->registrar().IsInstalled(app_id))
     return;
@@ -1039,8 +1035,7 @@ void AppLauncherHandler::HandleInstallAppLocally(const base::ListValue* args) {
 }
 
 void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
-  std::string extension_id;
-  CHECK(args->GetString(0, &extension_id));
+  const std::string& extension_id = args->GetList()[0].GetString();
 
   if (web_app_provider_->registrar().IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
@@ -1170,12 +1165,9 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
   if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin))
     return;
 
-  std::string app_id;
-  std::string mode_string;
+  const std::string& app_id = args->GetList()[0].GetString();
+  const std::string& mode_string = args->GetList()[1].GetString();
   web_app::RunOnOsLoginMode mode;
-
-  CHECK(args->GetString(0, &app_id));
-  CHECK(args->GetString(1, &mode_string));
 
   if (mode_string == kRunOnOsLoginModeNotRun) {
     mode = web_app::RunOnOsLoginMode::kNotRun;

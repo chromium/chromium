@@ -228,8 +228,7 @@ IdentityInternalsUIMessageHandler::GetInfoForToken(
 
 void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
     const base::ListValue* args) {
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
   CHECK(!callback_id.empty());
 
   AllowJavascript();
@@ -263,14 +262,19 @@ void IdentityInternalsUIMessageHandler::RegisterMessages() {
 
 void IdentityInternalsUIMessageHandler::RevokeToken(
     const base::ListValue* args) {
+  const auto& list = args->GetList();
+  const std::string& callback_id = list[0].GetString();
+  CHECK(!callback_id.empty());
   std::string extension_id;
   std::string access_token;
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(!callback_id.empty());
+  if (!list.empty() && list[kRevokeTokenExtensionOffset].is_string()) {
+    extension_id = args->GetList()[kRevokeTokenExtensionOffset].GetString();
+  }
+  if (list.size() > kRevokeTokenTokenOffset &&
+      list[kRevokeTokenTokenOffset].is_string()) {
+    access_token = args->GetList()[kRevokeTokenTokenOffset].GetString();
+  }
 
-  args->GetString(kRevokeTokenExtensionOffset, &extension_id);
-  args->GetString(kRevokeTokenTokenOffset, &access_token);
   token_revokers_.push_back(std::make_unique<IdentityInternalsTokenRevoker>(
       extension_id, access_token, callback_id, Profile::FromWebUI(web_ui()),
       this));

@@ -137,10 +137,13 @@ void FlagsUIHandler::HandleEnableExperimentalFeatureMessage(
   if (args->GetList().size() != 2)
     return;
 
-  std::string entry_internal_name;
-  std::string enable_str;
-  if (!args->GetString(0, &entry_internal_name) ||
-      !args->GetString(1, &enable_str) || entry_internal_name.empty()) {
+  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_string()) {
+    NOTREACHED();
+    return;
+  }
+  const std::string& entry_internal_name = args->GetList()[0].GetString();
+  const std::string& enable_str = args->GetList()[1].GetString();
+  if (entry_internal_name.empty()) {
     NOTREACHED();
     return;
   }
@@ -157,10 +160,13 @@ void FlagsUIHandler::HandleSetOriginListFlagMessage(
     return;
   }
 
-  std::string entry_internal_name;
-  std::string value_str;
-  if (!args->GetString(0, &entry_internal_name) ||
-      !args->GetString(1, &value_str) || entry_internal_name.empty()) {
+  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_string()) {
+    NOTREACHED();
+    return;
+  }
+  const std::string& entry_internal_name = args->GetList()[0].GetString();
+  const std::string& value_str = args->GetList()[1].GetString();
+  if (entry_internal_name.empty()) {
     NOTREACHED();
     return;
   }

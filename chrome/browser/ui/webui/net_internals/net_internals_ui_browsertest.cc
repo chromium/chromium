@@ -201,8 +201,7 @@ void NetInternalsTest::MessageHandler::RunJavascriptCallback(
 void NetInternalsTest::MessageHandler::GetTestServerURL(
     const base::ListValue* list_value) {
   ASSERT_TRUE(net_internals_test_->StartTestServer());
-  std::string path;
-  ASSERT_TRUE(list_value->GetString(0, &path));
+  const std::string& path = list_value->GetList()[0].GetString();
   GURL url = net_internals_test_->embedded_test_server()->GetURL(path);
   std::unique_ptr<base::Value> url_value(new base::Value(url.spec()));
   RunJavascriptCallback(url_value.get());

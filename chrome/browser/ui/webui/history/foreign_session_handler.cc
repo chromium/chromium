@@ -371,26 +371,26 @@ void ForeignSessionHandler::HandleOpenForeignSession(
   }
 
   // Extract the session tag (always provided).
-  std::string session_string_value;
-  if (!args->GetString(0, &session_string_value)) {
+  if (!args->GetList()[0].is_string()) {
     LOG(ERROR) << "Failed to extract session tag.";
     return;
   }
+  const std::string& session_string_value = args->GetList()[0].GetString();
 
   // Extract window number.
-  std::string window_num_str;
   int window_num = -1;
-  if (num_args >= 2 && (!args->GetString(1, &window_num_str) ||
-                        !base::StringToInt(window_num_str, &window_num))) {
+  if (num_args >= 2 &&
+      (!args->GetList()[1].is_string() ||
+       !base::StringToInt(args->GetList()[1].GetString(), &window_num))) {
     LOG(ERROR) << "Failed to extract window number.";
     return;
   }
 
   // Extract tab id.
-  std::string tab_id_str;
   SessionID::id_type tab_id_value = 0;
-  if (num_args >= 3 && (!args->GetString(2, &tab_id_str) ||
-                        !base::StringToInt(tab_id_str, &tab_id_value))) {
+  if (num_args >= 3 &&
+      (!args->GetList()[2].is_string() ||
+       !base::StringToInt(args->GetList()[2].GetString(), &tab_id_value))) {
     LOG(ERROR) << "Failed to extract tab SessionID.";
     return;
   }
@@ -413,11 +413,11 @@ void ForeignSessionHandler::HandleDeleteForeignSession(
   }
 
   // Get the session tag argument (required).
-  std::string session_tag;
-  if (!args->GetString(0, &session_tag)) {
+  if (!args->GetList()[0].is_string()) {
     LOG(ERROR) << "Unable to extract session tag";
     return;
   }
+  const std::string& session_tag = args->GetList()[0].GetString();
 
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       GetOpenTabsUIDelegate(web_ui());
@@ -434,11 +434,11 @@ void ForeignSessionHandler::HandleSetForeignSessionCollapsed(
   }
 
   // Get the session tag argument (required).
-  std::string session_tag;
-  if (!args->GetString(0, &session_tag)) {
+  if (!args->GetList()[0].is_string()) {
     LOG(ERROR) << "Unable to extract session tag";
     return;
   }
+  const std::string& session_tag = args->GetList()[0].GetString();
 
   if (!list[1].is_bool()) {
     LOG(ERROR) << "Unable to extract boolean argument";

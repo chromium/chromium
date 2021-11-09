@@ -40,7 +40,7 @@ void WhatsNewHandler::OnJavascriptDisallowed() {
 void WhatsNewHandler::HandleInitialize(const base::ListValue* args) {
   const auto& list = args->GetList();
   CHECK_EQ(2U, list.size());
-  const std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
   const bool is_auto = list[1].GetBool();
 
   AllowJavascript();

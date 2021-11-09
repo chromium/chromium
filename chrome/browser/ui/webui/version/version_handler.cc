@@ -87,7 +87,7 @@ void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
 
   const auto& list = args->GetList();
   CHECK_EQ(2U, list.size());
-  const std::string callback_id = list[0].GetString();
+  const std::string& callback_id = list[0].GetString();
   const bool include_variations_cmd = list[1].GetBool();
 
   base::Value response(base::Value::Type::DICTIONARY);
@@ -103,9 +103,8 @@ void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
 void VersionHandler::HandleRequestPathInfo(const base::ListValue* args) {
   AllowJavascript();
 
-  std::string callback_id;
   CHECK_EQ(1U, args->GetList().size());
-  CHECK(args->GetString(0, &callback_id));
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   // Grab the executable path on the FILE thread. It is returned in
   // OnGotFilePaths.

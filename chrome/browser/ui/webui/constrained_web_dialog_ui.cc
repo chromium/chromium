@@ -93,8 +93,15 @@ void ConstrainedWebDialogUI::OnDialogCloseMessage(const base::ListValue* args) {
     return;
 
   std::string json_retval;
-  if (!args->GetList().empty() && !args->GetString(0, &json_retval))
-    NOTREACHED() << "Could not read JSON argument";
+  if (!args->GetList().empty()) {
+    if (args->GetList()[0].is_string()) {
+      json_retval = args->GetList()[0].GetString();
+    } else {
+      NOTREACHED() << "Could not read JSON argument";
+    }
+  }
+
+  DCHECK(delegate->GetWebDialogDelegate());
   delegate->GetWebDialogDelegate()->OnDialogClosed(json_retval);
   delegate->OnDialogCloseFromWebUI();
 }

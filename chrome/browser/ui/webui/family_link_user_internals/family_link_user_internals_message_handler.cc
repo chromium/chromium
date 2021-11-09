@@ -178,10 +178,10 @@ void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
 void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
     const base::ListValue* args) {
   DCHECK_EQ(2u, args->GetList().size());
-  std::string callback_id;
-  std::string url_str;
-  if (!args->GetString(0, &callback_id) || !args->GetString(1, &url_str))
+  if (!args->GetList()[0].is_string() || !args->GetList()[1].is_string())
     return;
+  const std::string& callback_id = args->GetList()[0].GetString();
+  const std::string& url_str = args->GetList()[1].GetString();
 
   GURL url = url_formatter::FixupURL(url_str, std::string());
   if (!url.is_valid())

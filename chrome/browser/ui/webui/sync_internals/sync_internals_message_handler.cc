@@ -39,21 +39,19 @@ using syncer::SyncService;
 namespace {
 
 // Converts the string at |index| in |list| to an int, defaulting to 0 on error.
-int64_t StringAtIndexToInt64(const base::ListValue* list, int index) {
-  std::string str;
-  if (list->GetString(index, &str)) {
+int64_t StringAtIndexToInt64(const base::ListValue* list, size_t index) {
+  if (list->GetList().size() > index && list->GetList()[index].is_string()) {
     int64_t integer = 0;
-    if (base::StringToInt64(str, &integer))
+    if (base::StringToInt64(list->GetList()[index].GetString(), &integer))
       return integer;
   }
   return 0;
 }
 
 // Returns whether the there is any value at the given |index|.
-bool HasSomethingAtIndex(const base::ListValue* list, int index) {
-  std::string str;
-  if (list->GetString(index, &str)) {
-    return !str.empty();
+bool HasSomethingAtIndex(const base::ListValue* list, size_t index) {
+  if (list->GetList().size() > index && list->GetList()[index].is_string()) {
+    return !list->GetList()[index].GetString().empty();
   }
   return false;
 }
@@ -211,9 +209,7 @@ void SyncInternalsMessageHandler::HandleGetAllNodes(const ListValue* args) {
   DCHECK_EQ(1U, args->GetList().size());
   AllowJavascript();
 
-  std::string callback_id;
-  bool success = args->GetString(0, &callback_id);
-  DCHECK(success);
+  const std::string& callback_id = args->GetList()[0].GetString();
 
   SyncService* service = GetSyncService();
   if (service) {
@@ -249,11 +245,11 @@ void SyncInternalsMessageHandler::HandleWriteUserEvent(
   event_specifics.mutable_test_event();
 
   // |event_time_usec| is required.
-  event_specifics.set_event_time_usec(StringAtIndexToInt64(args, 0));
+  event_specifics.set_event_time_usec(StringAtIndexToInt64(args, 0u));
 
   // |navigation_id| is optional, treat empty string and 0 differently.
   if (HasSomethingAtIndex(args, 1)) {
-    event_specifics.set_navigation_id(StringAtIndexToInt64(args, 1));
+    event_specifics.set_navigation_id(StringAtIndexToInt64(args, 1u));
   }
 
   user_event_service->RecordUserEvent(event_specifics);

@@ -282,9 +282,25 @@ static bool ParseStringArgs(const base::ListValue* args,
                             std::string* arg1,
                             std::string* arg2 = 0) {
   int arg_size = args->GetList().size();
-  return (!arg0 || (arg_size > 0 && args->GetString(0, arg0))) &&
-         (!arg1 || (arg_size > 1 && args->GetString(1, arg1))) &&
-         (!arg2 || (arg_size > 2 && args->GetString(2, arg2)));
+  if (arg0) {
+    if (arg_size < 1 || !args->GetList()[0].is_string()) {
+      return false;
+    }
+    *arg0 = args->GetList()[0].GetString();
+  }
+  if (arg1) {
+    if (arg_size < 2 || !args->GetList()[1].is_string()) {
+      return false;
+    }
+    *arg1 = args->GetList()[1].GetString();
+  }
+  if (arg2) {
+    if (arg_size < 3 || !args->GetList()[2].is_string()) {
+      return false;
+    }
+    *arg2 = args->GetList()[2].GetString();
+  }
+  return true;
 }
 
 void InspectMessageHandler::HandleInspectCommand(const base::ListValue* args) {
