@@ -27,7 +27,7 @@ std::unique_ptr<DeviceOAuth2TokenStore> CreatePlatformTokenStore(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<chromeos::DeviceOAuth2TokenStoreChromeOS>(
       local_state);
-#elif defined(OS_WIN) || defined(OS_MAC) || \
+#elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_FUCHSIA) || \
     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   return std::make_unique<DeviceOAuth2TokenStoreDesktop>(local_state);
 #else
