@@ -15,7 +15,6 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/templates/desks_templates_delete_button.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
@@ -111,7 +110,7 @@ class DesksTemplatesItemViewTestApi {
 
   const views::Label* time_view() const { return item_view_->time_view_; }
 
-  const DesksTemplatesDeleteButton* delete_button() const {
+  const CloseButton* delete_button() const {
     return item_view_->delete_button_;
   }
 

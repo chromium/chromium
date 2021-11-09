@@ -18,7 +18,7 @@ class Textfield;
 
 namespace ash {
 
-class DesksTemplatesDeleteButton;
+class CloseButton;
 class DesksTemplatesIconContainer;
 class DeskTemplate;
 class PillButton;
@@ -62,7 +62,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   views::Textfield* name_view_ = nullptr;
   views::Label* time_view_ = nullptr;
   DesksTemplatesIconContainer* icon_container_view_ = nullptr;
-  DesksTemplatesDeleteButton* delete_button_ = nullptr;
+  CloseButton* delete_button_ = nullptr;
   PillButton* launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
   views::View* hover_container_ = nullptr;
