@@ -5161,6 +5161,7 @@ fuzzer_test("net_canonical_cookie_fuzzer") {
     ":net_fuzzer_test_support",
     "//net",
   ]
+  dict = "data/fuzzer_dictionaries/net_cookies_fuzzer.dict"
   seed_corpus = "data/fuzzer_data/cookies/"
 }
 
@@ -5178,6 +5179,7 @@ fuzzer_test("net_parse_cookie_line_fuzzer") {
     ":net_fuzzer_test_support",
     "//net",
   ]
+  dict = "data/fuzzer_dictionaries/net_cookies_fuzzer.dict"
   seed_corpus = "data/fuzzer_data/cookies/"
 }
 
