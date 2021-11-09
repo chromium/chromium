@@ -18,6 +18,21 @@ class PrefService;
 
 namespace metrics {
 
+// Captures all possible beacon value permutations for two distinct beacons.
+// Exposed for testing.
+enum class CleanExitBeaconConsistency {
+  kCleanClean = 0,
+  kCleanDirty = 1,
+  kCleanMissing = 2,
+  kDirtyClean = 3,
+  kDirtyDirty = 4,
+  kDirtyMissing = 5,
+  kMissingClean = 6,
+  kMissingDirty = 7,
+  kMissingMissing = 8,
+  kMaxValue = kMissingMissing,
+};
+
 // Reads and updates a beacon used to detect whether the previous browser
 // process exited cleanly.
 class CleanExitBeacon {
@@ -77,19 +92,20 @@ class CleanExitBeacon {
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Updates pref and NSUserDefault value for stability beacon, as either one
-  // can effect the value of exited_cleanly depending on the value of
-  // ShouldUseUserDefaultsBeacon().
+  // Updates both Local State and NSUserDefaults beacon values.
   static void SetStabilityExitedCleanlyForTesting(PrefService* local_state,
                                                   bool exited_cleanly);
 
-  // Resets pref and NSUserDefault value for stability beacon.
+  // Resets both Local State and NSUserDefaults beacon values.
   static void ResetStabilityExitedCleanlyForTesting(PrefService* local_state);
 
   // CHECKs that Chrome exited cleanly.
   static void EnsureCleanShutdown(PrefService* local_state);
 
 #if defined(OS_IOS)
+  // Sets the NSUserDefaults beacon value.
+  static void SetUserDefaultsBeacon(bool exited_cleanly);
+
   // Checks user default value of kUseUserDefaultsForExitedCleanlyBeacon.
   // Because variations are not initialized early in startup, pair a user
   // defaults value with the variations config.
@@ -112,16 +128,13 @@ class CleanExitBeacon {
   void WriteBeaconFile(bool exited_cleanly) const;
 
 #if defined(OS_IOS)
-  // Checks if the NSUserDefault clean exit beacon value is set.
+  // Returns true if the NSUserDefaults beacon value is set.
   static bool HasUserDefaultsBeacon();
 
-  // Gets the NSUserDefault clean exit beacon value.
+  // Returns the NSUserDefaults beacon value.
   static bool GetUserDefaultsBeacon();
 
-  // Sets the user default clean exit beacon value.
-  static void SetUserDefaultsBeacon(bool clean);
-
-  // Clears the user default clean exit beacon value, used for testing.
+  // Clears the NSUserDefaults beacon value.
   static void ResetUserDefaultsBeacon();
 #endif  // defined(OS_IOS)
 
