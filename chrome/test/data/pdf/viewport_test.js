@@ -19,6 +19,10 @@ function setPluginPosition(x, y) {
   plugin.style.top = y + 'px';
 }
 
+function whenRequestAnimationFrame() {
+  return new Promise(resolve => window.requestAnimationFrame(resolve));
+}
+
 const tests = [
   function testDocumentNeedsScrollbars() {
     const viewport = getZoomableViewport(
@@ -544,7 +548,7 @@ const tests = [
     chrome.test.succeed();
   },
 
-  function testPinchZoomInWithGestureEvent() {
+  async function testPinchZoomInWithGestureEvent() {
     const mockWindow = new MockElement(100, 100, null);
     const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
     const documentDimensions = new MockDocumentDimensions();
@@ -583,16 +587,15 @@ const tests = [
 
     // Pinch updates are throttled by rAF, so we schedule the rest of the test
     // after the pinch takes effect.
-    window.requestAnimationFrame(() => {
-      assertRoughlyEquals(1.5, viewport.getZoom(), 0.001);
-      assertRoughlyEquals(6.25, viewport.position.x, 0.001);
-      assertRoughlyEquals(12.50, viewport.position.y, 0.001);
+    await whenRequestAnimationFrame();
+    assertRoughlyEquals(1.5, viewport.getZoom(), 0.001);
+    assertRoughlyEquals(6.25, viewport.position.x, 0.001);
+    assertRoughlyEquals(12.50, viewport.position.y, 0.001);
 
-      chrome.test.succeed();
-    });
+    chrome.test.succeed();
   },
 
-  function testPinchZoomInWithDispatchGesture() {
+  async function testPinchZoomInWithDispatchGesture() {
     const mockWindow = new MockElement(100, 100, null);
     const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
     const documentDimensions = new MockDocumentDimensions();
@@ -632,17 +635,16 @@ const tests = [
 
     // Pinch updates are throttled by rAF, so we schedule the rest of the test
     // after the pinch takes effect.
-    window.requestAnimationFrame(() => {
-      assertRoughlyEquals(1.5, viewport.getZoom(), 0.001);
-      assertRoughlyEquals(6.25, viewport.position.x, 0.001);
-      assertRoughlyEquals(12.50, viewport.position.y, 0.001);
+    await whenRequestAnimationFrame();
+    assertRoughlyEquals(1.5, viewport.getZoom(), 0.001);
+    assertRoughlyEquals(6.25, viewport.position.x, 0.001);
+    assertRoughlyEquals(12.50, viewport.position.y, 0.001);
 
-      chrome.test.succeed();
-    });
+    chrome.test.succeed();
   },
 
   // Regression test for https://crbug.com/1123976
-  function testPinchZoomingUnsetsPageFitting() {
+  async function testPinchZoomingUnsetsPageFitting() {
     const mockWindow = new MockElement(100, 100, null);
     const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
     const documentDimensions = new MockDocumentDimensions();
@@ -680,18 +682,17 @@ const tests = [
 
     // Pinch updates are throttled by rAF, so we schedule the rest of the test
     // after the pinch takes effect.
-    window.requestAnimationFrame(() => {
-      chrome.test.assertEq(1, viewport.getZoom());
+    await whenRequestAnimationFrame();
+    chrome.test.assertEq(1, viewport.getZoom());
 
-      // Changing the zoom using a pinch should unset the page fitting as it
-      // would with other zooming mechanisms.
-      chrome.test.assertEq(FittingType.NONE, viewport.fittingType);
-      // A subsequent window resize should not cause a zoom change.
-      mockWindow.setSize(101, 100);
-      chrome.test.assertEq(1, viewport.getZoom());
+    // Changing the zoom using a pinch should unset the page fitting as it would
+    // with other zooming mechanisms.
+    chrome.test.assertEq(FittingType.NONE, viewport.fittingType);
+    // A subsequent window resize should not cause a zoom change.
+    mockWindow.setSize(101, 100);
+    chrome.test.assertEq(1, viewport.getZoom());
 
-      chrome.test.succeed();
-    });
+    chrome.test.succeed();
   },
 
   function testGoToNextPage() {
