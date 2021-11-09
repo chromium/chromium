@@ -60996,6 +60996,54 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="RESPONSE_INVALID_FIX"/>
 </enum>
 
+<enum name="NetworkPatchpanelArcEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Start"/>
+  <int value="2" label="Start success"/>
+  <int value="3" label="Start without Stop"/>
+  <int value="4" label="Stop"/>
+  <int value="5" label="Stop Success"/>
+  <int value="6" label="Stop before Start"/>
+  <int value="7" label="AddDevice"/>
+  <int value="8" label="AddDevice success"/>
+  <int value="10" label="SetVethMtu error"/>
+  <int value="11" label="OneTimeContainerSetup error"/>
+</enum>
+
+<enum name="NetworkPatchpanelDbusEvent">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ARC startup"/>
+  <int value="2" label="ARC startup success"/>
+  <int value="3" label="ARC shutdown"/>
+  <int value="4" label="ARC shutdown success"/>
+  <int value="5" label="ARCVM startup"/>
+  <int value="6" label="ARCVM startup success"/>
+  <int value="7" label="ARCVM shutdown"/>
+  <int value="8" label="ARCVM shutdown success"/>
+  <int value="9" label="Termina startup"/>
+  <int value="10" label="Termina startup success"/>
+  <int value="11" label="Termina shutdown"/>
+  <int value="12" label="Termina shutdown success"/>
+  <int value="13" label="PluginVM startup"/>
+  <int value="14" label="PluginVM startup success"/>
+  <int value="15" label="PluginVM shutdown"/>
+  <int value="16" label="PluginVM shutdown success"/>
+  <int value="17" label="SetVpnIntent"/>
+  <int value="18" label="SetVpnIntent success"/>
+  <int value="19" label="ConnectNamespace"/>
+  <int value="20" label="ConnectNamespace success"/>
+  <int value="21" label="GetTrafficCounters"/>
+  <int value="22" label="GetTrafficCounters success"/>
+  <int value="23" label="ModifyPortRule"/>
+  <int value="24" label="ModifyPortRule success"/>
+  <int value="25" label="GetDevices"/>
+  <int value="26" label="GetDevices success"/>
+  <int value="27" label="SetVpnLockdown"/>
+  <int value="28" label="SetVpnLockdown success"/>
+  <int value="29" label="SetDnsRedirectionRule"/>
+  <int value="30" label="SetDnsRedirectionRule success"/>
+</enum>
+
 <enum name="NetworkPhyModeType">
   <int value="0" label="UNDEF"/>
   <int value="1" label="802.11a"/>
