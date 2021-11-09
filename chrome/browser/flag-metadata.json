@@ -2333,7 +2333,7 @@
   {
     "name": "enable-oop-print-drivers",
     "owners": [ "awscreen", "thestig" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 100
   },
   {
     "name": "enable-oop-rasterization",
@@ -5468,12 +5468,12 @@
   {
     "name": "use-xps-for-printing",
     "owners": [ "awscreen", "thestig" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 101
   },
   {
     "name": "use-xps-for-printing-from-pdf",
     "owners": [ "awscreen", "thestig" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 101
   },
   {
     "name": "username-first-flow",
