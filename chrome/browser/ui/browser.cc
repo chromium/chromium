@@ -89,7 +89,6 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -182,8 +181,6 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
-#include "components/security_state/content/content_utils.h"
-#include "components/security_state/core/security_state.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -1356,13 +1353,6 @@ bool Browser::CanDragEnter(content::WebContents* source,
   }
 #endif
   return true;
-}
-
-blink::SecurityStyle Browser::GetSecurityStyle(WebContents* web_contents) {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  DCHECK(helper);
-  return security_state::GetSecurityStyle(helper->GetSecurityLevel());
 }
 
 void Browser::CreateSmsPrompt(content::RenderFrameHost*,

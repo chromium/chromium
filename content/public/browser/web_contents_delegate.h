@@ -25,7 +25,6 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-forward.h"
@@ -589,13 +588,6 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool SaveFrame(const GURL& url,
                          const Referrer& referrer,
                          content::RenderFrameHost* rfh);
-
-  // Can be overridden by a delegate to return the security style of the
-  // given |web_contents|. Returns SecurityStyleUnknown if not overridden.
-  //
-  // TODO(crbug.com/1262378): This is only used by unused parts of the DevTools
-  // protocol and can probably be removed altogether.
-  virtual blink::SecurityStyle GetSecurityStyle(WebContents* web_contents);
 
   // Called when a suspicious navigation of the main frame has been blocked.
   // Allows the delegate to provide some UI to let the user know about the

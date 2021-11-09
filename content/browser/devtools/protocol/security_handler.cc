@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -17,40 +16,11 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util.h"
-#include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 
 namespace content {
 namespace protocol {
-
-using Explanations = protocol::Array<Security::SecurityStateExplanation>;
-
-namespace {
-
-std::string SecurityStyleToProtocolSecurityState(
-    blink::SecurityStyle security_style) {
-  switch (security_style) {
-    case blink::SecurityStyle::kUnknown:
-      return Security::SecurityStateEnum::Unknown;
-    case blink::SecurityStyle::kNeutral:
-      return Security::SecurityStateEnum::Neutral;
-    case blink::SecurityStyle::kInsecure:
-      return Security::SecurityStateEnum::Insecure;
-    case blink::SecurityStyle::kSecure:
-      return Security::SecurityStateEnum::Secure;
-    case blink::SecurityStyle::kInsecureBroken:
-      return Security::SecurityStateEnum::InsecureBroken;
-    default:
-      NOTREACHED();
-      return Security::SecurityStateEnum::Unknown;
-  }
-}
-
-}  // namespace
 
 // static
 std::vector<SecurityHandler*> SecurityHandler::ForAgentHost(
@@ -86,45 +56,6 @@ void SecurityHandler::SetRenderer(int process_host_id,
   host_ = frame_host;
   if (enabled_ && host_)
     AttachToRenderFrameHost();
-}
-
-void SecurityHandler::DidChangeVisibleSecurityState() {
-  DCHECK(enabled_);
-  if (!web_contents()->GetDelegate())
-    return;
-
-  // TODO(crbug.com/1262378): Remove this event altogether.
-  blink::SecurityStyle security_style =
-      web_contents()->GetDelegate()->GetSecurityStyle(web_contents());
-
-  const std::string security_state =
-      SecurityStyleToProtocolSecurityState(security_style);
-
-  // We can set everything to default values because this field is ignored by
-  // the frontend, though it's still required by the protocol. Once the field is
-  // deleted in the protocol, we can delete it here.
-  std::unique_ptr<Security::InsecureContentStatus> insecure_status =
-      Security::InsecureContentStatus::Create()
-          .SetRanMixedContent(false)
-          .SetDisplayedMixedContent(false)
-          .SetContainedMixedForm(false)
-          .SetRanContentWithCertErrors(false)
-          .SetDisplayedContentWithCertErrors(false)
-          .SetRanInsecureContentStyle(Security::SecurityStateEnum::Unknown)
-          .SetDisplayedInsecureContentStyle(
-              Security::SecurityStateEnum::Unknown)
-          .Build();
-
-  GURL visible_url =
-      web_contents()->GetController().GetVisibleEntry()->GetURL();
-  bool scheme_is_cryptographic =
-      visible_url.is_valid() && visible_url.SchemeIsCryptographic();
-
-  frontend_->SecurityStateChanged(security_state, scheme_is_cryptographic,
-                                  // Explanations are no longer used.
-                                  std::make_unique<Explanations>(),
-                                  std::move(insecure_status),
-                                  Maybe<std::string>());
 }
 
 void SecurityHandler::DidFinishNavigation(NavigationHandle* navigation_handle) {

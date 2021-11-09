@@ -14,6 +14,5 @@ static_library("content") {
     "//components/dom_distiller/core",
     "//content/public/browser",
     "//content/public/common",
-    "//third_party/blink/public:blink_headers",
   ]
 }

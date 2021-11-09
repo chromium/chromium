@@ -19,8 +19,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/security_state/content/content_utils.h"
-#include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -97,16 +95,6 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
 
   Delegate(const Delegate&) = delete;
   Delegate& operator=(const Delegate&) = delete;
-
-  blink::SecurityStyle GetSecurityStyle(
-      content::WebContents* web_contents) override {
-    std::unique_ptr<security_state::VisibleSecurityState>
-        visible_security_state =
-            security_state::GetVisibleSecurityState(web_contents);
-    return security_state::GetSecurityStyle(security_state::GetSecurityLevel(
-        *visible_security_state.get(),
-        false /* used_policy_installed_certificate */));
-  }
 
   void BeforeUnloadFired(content::WebContents* web_contents,
                          bool proceed,

@@ -283,11 +283,6 @@ bool WebContentsDelegate::SaveFrame(const GURL& url,
   return false;
 }
 
-blink::SecurityStyle WebContentsDelegate::GetSecurityStyle(
-    WebContents* web_contents) {
-  return blink::SecurityStyle::kUnknown;
-}
-
 bool WebContentsDelegate::ShouldAllowRunningInsecureContent(
     WebContents* web_contents,
     bool allowed_per_prefs,

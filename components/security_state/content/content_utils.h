@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "components/security_state/core/security_state.h"
-#include "third_party/blink/public/common/security/security_style.h"
 
 namespace content {
 class WebContents;
@@ -19,14 +18,6 @@ namespace security_state {
 // Retrieves the visible security state from the current page in |web_contents|.
 std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
     content::WebContents* web_contents);
-
-// Returns the SecurityStyle that should be applied to a WebContents with the
-// given |security_level|.
-//
-// TODO(crbug.com/1262378): This is only used by unused parts of the DevTools
-// protocol and can probably be removed altogether.
-blink::SecurityStyle GetSecurityStyle(
-    security_state::SecurityLevel security_level);
 
 }  // namespace security_state
 

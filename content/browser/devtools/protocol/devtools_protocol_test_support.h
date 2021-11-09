@@ -36,9 +36,6 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
                               int32_t line_no,
                               const std::u16string& source_id) override;
 
-  blink::SecurityStyle GetSecurityStyle(
-      content::WebContents* web_contents) override;
-
   base::DictionaryValue* SendCommand(const std::string& method,
                                      std::unique_ptr<base::Value> params) {
     return SendCommand(method, std::move(params), true);

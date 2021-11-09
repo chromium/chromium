@@ -8374,8 +8374,8 @@ domain Security
       # Security state information about the page.
       VisibleSecurityState visibleSecurityState
 
-  # The security state of the page changed.
-  event securityStateChanged
+  # The security state of the page changed. No longer being sent.
+  deprecated event securityStateChanged
     parameters
       # Security state.
       SecurityState securityState

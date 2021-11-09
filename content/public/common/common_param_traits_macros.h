@@ -16,7 +16,6 @@
 #include "services/network/public/cpp/network_ipc_param_traits.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
-#include "third_party/blink/public/common/security/security_style.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-shared.h"
@@ -44,7 +43,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(network::mojom::ReferrerPolicy,
                           network::mojom::ReferrerPolicy::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::ScrollRestorationType,
                           blink::mojom::ScrollRestorationType::kMaxValue)
-IPC_ENUM_TRAITS_MAX_VALUE(blink::SecurityStyle, blink::SecurityStyle::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(blink::mojom::PermissionStatus,
                           blink::mojom::PermissionStatus::LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(WindowOpenDisposition,

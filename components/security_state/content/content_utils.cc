@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/notreached.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/navigation_entry.h"
@@ -58,27 +57,6 @@ std::unique_ptr<security_state::VisibleSecurityState> GetVisibleSecurityState(
          content::SSLStatus::DISPLAYED_FORM_WITH_INSECURE_ACTION);
 
   return state;
-}
-
-blink::SecurityStyle GetSecurityStyle(
-    security_state::SecurityLevel security_level) {
-  switch (security_level) {
-    case security_state::NONE:
-      return blink::SecurityStyle::kNeutral;
-    case security_state::WARNING:
-      return blink::SecurityStyle::kInsecure;
-    case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-    case security_state::SECURE:
-      return blink::SecurityStyle::kSecure;
-    case security_state::DANGEROUS:
-      return blink::SecurityStyle::kInsecureBroken;
-    case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED();
-      return blink::SecurityStyle::kNeutral;
-  }
-
-  NOTREACHED();
-  return blink::SecurityStyle::kUnknown;
 }
 
 }  // namespace security_state

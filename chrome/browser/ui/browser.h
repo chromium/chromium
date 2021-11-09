@@ -646,8 +646,6 @@ class Browser : public TabStripModelObserver,
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
                     blink::DragOperationsMask operations_allowed) override;
-  blink::SecurityStyle GetSecurityStyle(
-      content::WebContents* web_contents) override;
   void CreateSmsPrompt(content::RenderFrameHost*,
                        const std::vector<url::Origin>&,
                        const std::string& one_time_code,

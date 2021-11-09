@@ -63,7 +63,6 @@ class SecurityHandler : public DevToolsDomainHandler,
   void FlushPendingCertificateErrorNotifications();
 
   // WebContentsObserver overrides
-  void DidChangeVisibleSecurityState() override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   std::unique_ptr<Security::Frontend> frontend_;

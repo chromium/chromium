@@ -39,7 +39,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/android/infobars/framebust_block_infobar.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -66,7 +65,6 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
-#include "components/security_state/content/content_utils.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -433,14 +431,6 @@ void TabWebContentsDelegateAndroid::AddNewContents(
   // creates a new TabAndroid instance to own the WebContents.
   if (handled)
     new_contents.release();
-}
-
-blink::SecurityStyle TabWebContentsDelegateAndroid::GetSecurityStyle(
-    WebContents* web_contents) {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  DCHECK(helper);
-  return security_state::GetSecurityStyle(helper->GetSecurityLevel());
 }
 
 void TabWebContentsDelegateAndroid::OnDidBlockNavigation(

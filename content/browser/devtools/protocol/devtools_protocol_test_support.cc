@@ -158,11 +158,6 @@ DevToolsProtocolTest::WaitForNotification(const std::string& notification,
   return std::move(waiting_for_notification_params_);
 }
 
-blink::SecurityStyle DevToolsProtocolTest::GetSecurityStyle(
-    content::WebContents* web_contents) {
-  return blink::SecurityStyle::kNeutral;
-}
-
 std::unique_ptr<base::DictionaryValue>
 DevToolsProtocolTest::WaitForMatchingNotification(
     const std::string& notification,
