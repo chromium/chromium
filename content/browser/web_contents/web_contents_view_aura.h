@@ -116,6 +116,10 @@ class CONTENT_EXPORT WebContentsViewAura
 
   ~WebContentsViewAura() override;
 
+  // Utility to fill a DropData object from ui::OSExchangeData.
+  void PrepareDropData(DropData* drop_data,
+                       const ui::OSExchangeData& data) const;
+
   void EndDrag(base::WeakPtr<RenderWidgetHostImpl> source_rwh_weak_ptr,
                ui::mojom::DragOperation op);
 
@@ -337,8 +341,22 @@ class CONTENT_EXPORT WebContentsViewAura
   // the RenderViewHost may not be in the same process as the RenderProcessHost,
   // since the view corresponds to the page, while the process is specific to
   // the frame from which the drag started.
-  int drag_start_process_id_;
-  GlobalRoutingID drag_start_view_id_;
+  // We also track whether a dragged image is accessible from its frame, so we
+  // can disallow tainted-cross-origin same-page drag-drop.
+  struct DragStart {
+    DragStart(int process_id,
+              GlobalRoutingID view_id,
+              bool image_accessible_from_frame)
+        : process_id(process_id),
+          view_id(view_id),
+          image_accessible_from_frame(image_accessible_from_frame) {}
+    ~DragStart() = default;
+
+    int process_id;
+    GlobalRoutingID view_id;
+    bool image_accessible_from_frame;
+  };
+  absl::optional<DragStart> drag_start_;
 
   // Responsible for handling gesture-nav and pull-to-refresh UI.
   std::unique_ptr<GestureNavSimple> gesture_nav_simple_;

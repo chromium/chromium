@@ -112,10 +112,11 @@ class CORE_EXPORT DataObject : public GarbageCollected<DataObject>,
   }
 
   // Used to handle files (images) being dragged out.
-  void AddSharedBuffer(scoped_refptr<SharedBuffer>,
-                       const KURL&,
-                       const String& filename_extension,
-                       const AtomicString& content_disposition);
+  void AddFileSharedBuffer(scoped_refptr<SharedBuffer>,
+                           bool is_accessible_from_start_frame,
+                           const KURL&,
+                           const String& filename_extension,
+                           const AtomicString& content_disposition);
 
   int GetModifiers() const { return modifiers_; }
   void SetModifiers(int modifiers) { modifiers_ = modifiers; }
