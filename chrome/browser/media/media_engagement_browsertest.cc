@@ -786,8 +786,8 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, MAYBE_Ignored) {
           prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
-      no_state_prefetch_manager->AddPrerenderFromOmnibox(url, storage_namespace,
-                                                         gfx::Size(640, 480));
+      no_state_prefetch_manager->StartPrefetchingFromOmnibox(
+          url, storage_namespace, gfx::Size(640, 480));
 
   ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
 

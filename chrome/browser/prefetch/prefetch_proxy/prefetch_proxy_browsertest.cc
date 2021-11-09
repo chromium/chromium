@@ -584,7 +584,7 @@ class PrefetchProxyBrowserTest
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             browser()->profile());
 
-    return no_state_prefetch_manager->AddPrerenderFromNavigationPredictor(
+    return no_state_prefetch_manager->StartPrefetchingFromNavigationPredictor(
         url,
         GetWebContents()->GetController().GetDefaultSessionStorageNamespace(),
         kSize);

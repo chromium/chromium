@@ -196,7 +196,7 @@ void AutocompleteActionPredictor::StartPrerendering(
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile_);
   if (no_state_prefetch_manager) {
     no_state_prefetch_handle_ =
-        no_state_prefetch_manager->AddPrerenderFromOmnibox(
+        no_state_prefetch_manager->StartPrefetchingFromOmnibox(
             url, session_storage_namespace, size);
   }
   if (old_no_state_prefetch_handle)

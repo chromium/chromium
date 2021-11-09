@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(LazyLoadPrerenderBrowserTest, ImagesIgnored) {
           prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
-      GetNoStatePrefetchManager()->AddPrerenderFromOmnibox(
+      GetNoStatePrefetchManager()->StartPrefetchingFromOmnibox(
           src_server()->GetURL("/lazyload/img.html"),
           GetSessionStorageNamespace(), gfx::Size(640, 480));
 

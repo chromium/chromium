@@ -261,7 +261,7 @@ void NoStatePrefetchLinkManager::StartLinkTriggers() {
     }
 
     std::unique_ptr<NoStatePrefetchHandle> handle =
-        manager_->AddPrerenderFromLinkRelPrerender(
+        manager_->StartPrefetchingFromLinkRelPrerender(
             pending_trigger->launcher_render_process_id,
             pending_trigger->launcher_render_view_id, pending_trigger->url,
             pending_trigger->trigger_type, pending_trigger->referrer,

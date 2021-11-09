@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
           browser()->profile());
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> handle =
-      no_state_prefetch_manager->AddPrerenderFromNavigationPredictor(
+      no_state_prefetch_manager->StartPrefetchingFromNavigationPredictor(
           url,
           browser()
               ->tab_strip_model()

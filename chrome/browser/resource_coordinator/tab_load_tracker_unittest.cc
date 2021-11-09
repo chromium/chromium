@@ -324,7 +324,7 @@ TEST_F(TabLoadTrackerTest, StateTransitionsNonUiTabs) {
   StateTransitionsTest(true /* use_non_ui_tabs */);
 }
 
-TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
+TEST_F(TabLoadTrackerTest, NoStatePrefetchContentsDoesNotChangeUiTabCounts) {
   NavigateAndKeepLoading(contents1(), GURL("http://baz.com"));
 
   // Add the contents to the tracker.
@@ -342,13 +342,13 @@ TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
   TestWebContentsObserver observer1(contents1(), &tracker());
   TestWebContentsObserver observer2(contents2(), &tracker());
 
-  // Prerender some contents.
+  // Prefetch some contents.
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile());
   GURL url("http://www.example.com");
   const gfx::Size kSize(640, 480);
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager->AddPrerenderFromOmnibox(
+      no_state_prefetch_manager->StartPrefetchingFromOmnibox(
           url, contents1()->GetController().GetDefaultSessionStorageNamespace(),
           kSize));
   EXPECT_NE(nullptr, no_state_prefetch_handle);
@@ -356,10 +356,10 @@ TEST_F(TabLoadTrackerTest, PrerenderContentsDoesNotChangeUiTabCounts) {
       no_state_prefetch_manager->GetAllNoStatePrefetchingContentsForTesting();
   ASSERT_EQ(1U, contentses.size());
 
-  // Prerendering should not change the UI tab counts, but should increase
+  // Prefetching should not change the UI tab counts, but should increase
   // overall tab count. Note, contentses[0] is UNLOADED since it is not a test
   // web contents and therefore hasn't started receiving data.
-  TestWebContentsObserver prerender_observer(contentses[0], &tracker());
+  TestWebContentsObserver prefetch_observer(contentses[0], &tracker());
   EXPECT_CALL(observer(),
               OnStartTracking(contentses[0], LoadingState::UNLOADED));
   tracker().StartTracking(contentses[0]);
