@@ -49,6 +49,16 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_SUCCESS},
       {"validatedComponentsFailText",
        IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL},
+      // Network connect page
+      {"connectNetworkTitleText", IDS_SHIMLESS_RMA_CONNECT_PAGE_TITLE},
+      {"connectNetworkDescriptionText",
+       IDS_SHIMLESS_RMA_CONNECT_PAGE_DESCRIPTION},
+      {"connectNetworkDialogConnectButtonText",
+       IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONNECT},
+      {"connectNetworkDialogCancelButtonText",
+       IDS_SHIMLESS_RMA_CONNECT_DIALOG_CANCEL},
+      {"internetConfigName", IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONFIG_NAME},
+      {"internetJoinType", IDS_SHIMLESS_RMA_CONNECT_DIALOG_JOIN_TYPE},
       // Choose destination page
       {"chooseDestinationTitleText", IDS_SHIMLESS_RMA_CHOOSE_DESTINATION},
       {"sameOwnerText", IDS_SHIMLESS_RMA_SAME_OWNER},

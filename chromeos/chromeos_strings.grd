@@ -2031,6 +2031,26 @@ Try tapping the mic to ask me anything.
         Components could not be validated. If you are certain you are using
         qualified components updating Chrome OS may resolve this issue.
       </message>
+      <!-- Network connect page -->
+      <message name="IDS_SHIMLESS_RMA_CONNECT_PAGE_TITLE" desc="Title for the connect to wifi page.">
+        Get connected
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONNECT_PAGE_DESCRIPTION" desc="Description for the connect to wifi page.">
+        Connecting to Wi-Fi is recommended to make the repair process easier.
+        Your network will be saved.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONFIG_NAME" desc="Title for the network configuration dialog for an existing network.">
+        Configure <ph name="NAME">$1<ex>My WiFi network</ex></ph>
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_JOIN_TYPE" desc="Title for the network configuration dialog for a new network.">
+        Join <ph name="TYPE">$1<ex>WiFi</ex></ph> network
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONNECT" desc="Text for connect to wifi button.">
+        Connect
+      </message>
+      <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CANCEL" desc="Text for cancel connect to wifi button.">
+        Cancel
+      </message>
       <!-- Choose destination page -->
       <message name="IDS_SHIMLESS_RMA_CHOOSE_DESTINATION" desc="Title for the page shown when choosing the return destination of the device after repair.">
         After repair, who will be using the device?

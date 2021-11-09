@@ -38,9 +38,8 @@
 
 <base-page orientation="column">
   <div slot="header">
-    <!-- TODO(joonbug): Update for i18n -->
-    <h1>Get connected</h1>
-    <p>Connecting to Wi-Fi is recommended to make the repair process easier. Your network will be saved.</p>
+    <h1>[[i18n('connectNetworkTitleText')]]</h1>
+    <div>[[i18n('connectNetworkDescriptionText')]]</div>
   </div>
   <div slot="body" id="container">
     <network-list id="networkList" show-technology-badge
@@ -49,7 +48,6 @@
   </div>
 </base-page>
 
-<!-- TODO(joonbug): Update for i18n -->
 <cr-dialog id="dialog" close-text="close">
   <div slot="title">
     [[getDialogTitle_(networkName_, networkType_, networkShowConnect_)]]
@@ -64,11 +62,12 @@
       <template is="dom-if" if="[[error_]]" restamp>
         <div class="flex error">[[getError_(error_)]]</div>
       </template>
-      <!-- TODO(joonbug): Update for i18n -->
-      <cr-button id="cancelButton" on-click="closeConfig_">Cancel</cr-button>
+      <cr-button id="cancelButton" on-click="closeConfig_">
+          [[i18n('connectNetworkDialogCancelButtonText')]]
+      </cr-button>
       <cr-button id="connectButton" on-click="connectNetwork_"
         disabled="[[!enableConnect_]]">
-          Connect
+          [[i18n('connectNetworkDialogConnectButtonText')]]
       </cr-button>
     </div>
   </div>

@@ -242,6 +242,7 @@ js_library("onboarding_network_page") {
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:util.m",
   ]
 }
 
