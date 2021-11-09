@@ -2017,31 +2017,18 @@ html[dir='rtl'] body.files-ng #default-tasks-list > li > * {
   background-position-x: calc(100% - 16px);
 }
 
-#list-container list > li[selected],
-#list-container list > li:active,
-#list-container list > li.accepts,
-#list-container list:focus > li[lead] {
-  background-color: rgb(232, 234, 237);
-}
-
 body.files-ng #list-container list > li[selected],
 body.files-ng #list-container list > li:active,
 body.files-ng #list-container list > li.accepts,
 body.files-ng #list-container list:focus > li[lead] {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-highlight-color-hover);
   border-radius: 2px;
-}
-
-#list-container list:focus > li[selected],
-#list-container list:focus > li.accepts[selected],
-#list-container list:focus > li[lead] {
-  background-color: rgb(216, 223, 240);
 }
 
 body.files-ng #list-container list:focus > li[selected],
 body.files-ng #list-container list:focus > li.accepts[selected],
 body.files-ng #list-container list:focus > li[lead] {
-  background-color: var(--google-blue-50);
+  background-color: var(--cros-highlight-color);
 }
 
 body.files-ng #default-tasks-list:focus > li[selected],
@@ -2068,28 +2055,23 @@ html[dir='rtl'] body.files-ng #default-tasks-list li[selected]::after {
   right: unset;
 }
 
+/* selector "li[lead]:not([selected])" is for the row just gets unselected */
 body.check-select #list-container list > li[lead]:not([selected]),
 #list-container list > li[lead]:not([selected]) {
-  background-color: rgba(232, 234, 237, 50%);
+  background-color: var(--cros-highlight-color-hover);
 }
 
 body.check-select #list-container list:focus > li[lead]:not([selected]),
 #list-container list > li[lead]:not([selected]):focus {
-  background-color: rgb(232, 234, 237);
+  background-color: var(--cros-highlight-color);
 }
 
 body.files-ng #list-container li {
   border: 1px solid transparent;
 }
 
-body.files-ng.check-select #list-container list:focus > li[lead] {
-  background-color: var(--google-blue-50);
-  border: 1px solid var(--google-blue-600);
-}
-
-body.files-ng.check-select #list-container list > li[lead] {
-  border: 1px solid var(--google-grey-700);
-  border-radius: 2px;
+html.focus-outline-visible body.files-ng #list-container list:focus > li[lead] {
+  border: 1px solid var(--cros-focus-ring-color);
 }
 
 #list-container.nohover grid > .accepts {
@@ -2253,7 +2235,7 @@ li[renaming=''] .badge {
 }
 
 body.files-ng #list-container list li .detail-icon {
-  color: var(--google-grey-700);
+  color: var(--cros-icon-color-primary);
   height: 40px;
   margin-inline-end: 8px;
   margin-inline-start: 8px;
@@ -2344,7 +2326,7 @@ body[type='folder'] .file,
 body[type='upload-folder'] .file,
 .dialog-container[connection='OFFLINE'] .dim-offline,
 body[block-hosted-docs] .file.dim-hosted {
-  opacity: 0.4;
+  opacity: var(--cros-disabled-opacity);
 }
 
 /* Invisible container for elements representing files while dragging. */
@@ -2554,7 +2536,7 @@ body.files-ng #list-container .table-header-cell:first-child {
 
 body.files-ng .table-header {
   border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-secondary);
   font-family: 'Roboto Medium';
   height: 48px;
   line-height: 20px;
@@ -2585,6 +2567,7 @@ body.files-ng #list-container .table-header-cell:first-child
 body.files-ng .table-header-label .sort-icon {
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-size: 32px;
+  --cr-icon-button-fill-color: var(--cros-icon-color-secondary);
   border-radius: 50%;
   cursor: default;
 }
@@ -2641,7 +2624,7 @@ body.files-ng #list-container list li .detail-thumbnail > .thumbnail {
 }
 
 body.files-ng .table-row-cell > * {
-  color: var(--cros-icon-color-secondary);
+  color: var(--cros-text-color-secondary);
   padding: 0;
   padding-inline-start: 32px;
   padding-top: 0 !important;
@@ -2658,7 +2641,11 @@ body.files-ng .table-header-splitter .splitter-icon {
   --cr-icon-button-icon-size: 32px;
   --cr-icon-button-size: 32px;
   --cr-icon-button-margin-start: 0px;
-  --cr-icon-button-fill-color: var(--google-grey-500);
+  /*
+   * TODO(crbug.com/1268206): the icon is not in disabled state, a new css
+   * variable needs to be created and applied here.
+   */
+  --cr-icon-button-fill-color: var(--cros-icon-color-disabled);
   cursor: default;
   height: 32px;
 }
@@ -2674,7 +2661,7 @@ body.files-ng #list-container .table-row-cell .size {
 }
 
 body.files-ng.check-select list:focus li[selected] .table-row-cell > * {
-  color: var(--cros-icon-color-selection);
+  color: var(--cros-text-color-selection);
 }
 
 body.files-ng .table-row-cell:first-child > * {
@@ -2689,7 +2676,7 @@ body.files-ng .table-row-cell .filename-label {
 
 body.files-ng.check-select list:focus li[selected] .table-row-cell
 .filename-label {
-  color: var(--google-blue-600);
+  color: var(--cros-text-color-selection);
 }
 
 body.files-ng #list-container li .detail-checkmark {
@@ -2707,11 +2694,11 @@ body.files-ng grid li .detail-checkmark {
 }
 
 body.files-ng #list-container :focus li .detail-checkmark {
-  color: var(--google-blue-600);
+  color: var(--cros-icon-color-selection);
 }
 
 body.files-ng #list-container li .detail-checkmark {
-  color: var(--google-grey-700);
+  color: var(--cros-icon-color-primary);
 }
 
 body.files-ng #list-container li .detail-thumbnail {
