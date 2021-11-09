@@ -556,45 +556,37 @@ void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
       // the end of some other duration.
       double end_time = event->Time() + event->Duration();
       ParamEvent::Type test_type = events_[i]->GetType();
-      // Events of type |kSetValueCurveEnd| or |kCancelValues| never
-      // conflict.
-      if (!(test_type == ParamEvent::kSetValueCurveEnd ||
-            test_type == ParamEvent::kCancelValues)) {
-        if (test_type == ParamEvent::kSetValueCurve) {
-          // A SetValueCurve overlapping an existing SetValueCurve requires
-          // special care.
-          double test_end_time = events_[i]->Time() + events_[i]->Duration();
-          // Test if old event starts somewhere in the middle of the new event.
-          bool overlap = (events_[i]->Time() >= event->Time() &&
-                          events_[i]->Time() < end_time);
-          // Test if old event ends somewhere in the middle of the new event.
-          overlap = overlap ||
-                    (test_end_time > event->Time() && test_end_time < end_time);
-          // Test if new event starts somewhere in the middle of the old event.
-          overlap = overlap || (event->Time() >= events_[i]->Time() &&
-                                event->Time() < test_end_time);
-          // Test if new event ends somewhere in the middle of the old event.
-          overlap = overlap || (end_time >= events_[i]->Time() &&
-                                end_time < test_end_time);
-          if (overlap) {
-            // If the start time of the event overlaps the start/end of an
-            // existing event or if the existing event end overlaps the
-            // start/end of the event, it's an error.
-            exception_state.ThrowDOMException(
-                DOMExceptionCode::kNotSupportedError,
-                EventToString(*event) + " overlaps " +
-                    EventToString(*events_[i]));
-            return;
-          }
-        } else {
-          if (events_[i]->Time() > event->Time() &&
-              events_[i]->Time() < end_time) {
-            exception_state.ThrowDOMException(
-                DOMExceptionCode::kNotSupportedError,
-                EventToString(*event) + " overlaps " +
-                    EventToString(*events_[i]));
-            return;
-          }
+      if (test_type == ParamEvent::kSetValueCurve) {
+        // A SetValueCurve overlapping an existing SetValueCurve requires
+        // special care.
+        double test_end_time = events_[i]->Time() + events_[i]->Duration();
+        // Events are overlapped if the new event starts before the old event
+        // ends and the old event starts before the new event ends.
+        bool overlap =
+            event->Time() < test_end_time && events_[i]->Time() < end_time;
+        if (overlap) {
+          // If the start time of the event overlaps the start/end of an
+          // existing event or if the existing event end overlaps the
+          // start/end of the event, it's an error.
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              EventToString(*event) + " overlaps " +
+                  EventToString(*events_[i]));
+          return;
+        }
+      } else if (test_type != ParamEvent::kSetValueCurveEnd &&
+                 test_type != ParamEvent::kCancelValues) {
+        // Events of type |kSetValueCurveEnd| or |kCancelValues| never
+        // conflict, so we handle only the other event types.
+        // Throw an error if an existing event starts in the middle of this
+        // SetValueCurve event.
+        if (events_[i]->Time() > event->Time() &&
+            events_[i]->Time() < end_time) {
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              EventToString(*event) + " overlaps " +
+                  EventToString(*events_[i]));
+          return;
         }
       }
     } else {
