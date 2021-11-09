@@ -18,12 +18,5 @@ std::string GetClientId() {
                env, Java_CloudManagementAndroidConnection_getInstance(env)));
 }
 
-std::string GetGservicesAndroidId() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return base::android::ConvertJavaStringToUTF8(
-      env, Java_CloudManagementAndroidConnection_getGservicesAndroidId(
-               env, Java_CloudManagementAndroidConnection_getInstance(env)));
-}
-
 }  // namespace android
 }  // namespace policy

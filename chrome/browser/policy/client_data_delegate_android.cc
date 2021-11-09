@@ -33,13 +33,6 @@ void ClientDataDelegateAndroid::FillRegisterBrowserRequest(
   request->set_os_platform(GetOSPlatform());
   request->set_os_version(GetOSVersion());
 
-  std::string gservices_android_id = android::GetGservicesAndroidId();
-  if (!gservices_android_id.empty()) {
-    request->mutable_browser_device_identifier()
-        ->mutable_android_identifier()
-        ->set_gservices_android_id(gservices_android_id);
-  }
-
   base::SysInfo::GetHardwareInfo(
       base::BindOnce(&SetHardwareInfo, request, std::move(callback)));
 }

@@ -13,10 +13,6 @@ namespace android {
 // Returns the client ID to be used in the DM token generation.
 std::string GetClientId();
 
-// Returns the value of Gservices Android ID that allows joining the Chrome
-// Browser Cloud Management data with Google Endpoint Management.
-std::string GetGservicesAndroidId();
-
 }  // namespace android
 }  // namespace policy
 

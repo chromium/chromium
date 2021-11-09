@@ -10,24 +10,11 @@
 #include "base/callback_helpers.h"
 #include "base/system/sys_info.h"
 #include "base/test/task_environment.h"
-#include "build/branding_buildflags.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
-
-namespace {
-
-bool GservicesAndroidIdIsEmpty() {
-#if defined(GOOGLE_CHROME_BRANDING)
-  return false;
-#else
-  return true;
-#endif  // defined(GOOGLE_CHROME_BRANDING)
-}
-
-}  // namespace
 
 TEST(ClientDataDelegateAndroidTest, FillRegisterBrowserRequest) {
   base::test::TaskEnvironment task_environment;
@@ -47,12 +34,6 @@ TEST(ClientDataDelegateAndroidTest, FillRegisterBrowserRequest) {
   EXPECT_EQ(request.device_model(), hardware_info.model);
   EXPECT_FALSE(request.brand_name().empty());
   EXPECT_EQ(request.brand_name(), hardware_info.manufacturer);
-
-  EXPECT_EQ(request.browser_device_identifier()
-                .android_identifier()
-                .gservices_android_id()
-                .empty(),
-            GservicesAndroidIdIsEmpty());
 
   // Fields that shouldn't be filled on Android due to Privacy concerns.
   EXPECT_TRUE(request.machine_name().empty());

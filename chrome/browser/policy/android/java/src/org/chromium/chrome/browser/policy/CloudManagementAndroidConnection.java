@@ -54,18 +54,6 @@ public class CloudManagementAndroidConnection {
         return newClientId;
     }
 
-    /**
-     * Returns the value of Gservices Android ID that allows joining the Chrome Browser Cloud
-     * Management data with Google Endpoint Management.
-     *
-     * Note: that ID can only be uploaded for Android versions S and older. Changes to this requires
-     * explicit approval from Chrome Privacy.
-     */
-    @CalledByNative
-    public String getGservicesAndroidId() {
-        return getDelegate().getGservicesAndroidId();
-    }
-
     /** Overrides {@link mDelegate} if not null. */
     private static CloudManagementAndroidConnectionDelegate sDelegateForTesting;
 
