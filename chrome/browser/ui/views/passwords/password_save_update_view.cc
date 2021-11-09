@@ -309,7 +309,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     FeaturePromoControllerViews* promo_controller)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
-                             /*auto_dismissable=*/false),
+                             /*easily_dismissable=*/reason == USER_GESTURE),
       controller_(
           PasswordsModelDelegateFromWebContents(web_contents),
           reason == AUTOMATIC
