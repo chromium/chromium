@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -42,6 +43,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -78,6 +80,7 @@ StarView::StarView(CommandUpdater* command_updater,
       base::BindRepeating(&StarView::EditBookmarksPrefUpdated,
                           base::Unretained(this)));
   SetID(VIEW_ID_STAR_BUTTON);
+  SetProperty(views::kElementIdentifierKey, kBookmarkStarViewElementId);
   SetActive(false);
 }
 

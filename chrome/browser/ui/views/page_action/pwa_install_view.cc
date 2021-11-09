@@ -14,7 +14,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/user_education/feature_promo_text_replacements.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
@@ -31,6 +31,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -57,6 +58,7 @@ PwaInstallView::PwaInstallView(
   SetLabel(l10n_util::GetStringUTF16(IDS_OMNIBOX_PWA_INSTALL_ICON_LABEL));
   SetUpForInOutAnimation();
   browser_->tab_strip_model()->AddObserver(this);
+  SetProperty(views::kElementIdentifierKey, kInstallPwaElementId);
 }
 
 PwaInstallView::~PwaInstallView() {

@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
@@ -47,6 +48,7 @@
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
 namespace {
@@ -136,6 +138,7 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
 
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
+  SetProperty(views::kElementIdentifierKey, kReadLaterButtonElementId);
 }
 
 ReadLaterButton::~ReadLaterButton() = default;

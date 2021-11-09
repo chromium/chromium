@@ -9,6 +9,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -136,6 +137,10 @@ END_METADATA
 // telemetry tests instead of subclassing ToolbarButton.
 class SideSearchToolbarButton : public ToolbarButton {
  public:
+  SideSearchToolbarButton() : ToolbarButton() {
+    SetProperty(views::kElementIdentifierKey, kSideSearchButtonElementId);
+  }
+
   METADATA_HEADER(SideSearchToolbarButton);
 };
 

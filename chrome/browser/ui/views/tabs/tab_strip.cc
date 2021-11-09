@@ -39,6 +39,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -903,7 +904,7 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
   Init();
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  SetProperty(views::kElementIdentifierKey, kTabStripIdentifier);
+  SetProperty(views::kElementIdentifierKey, kTabStripElementId);
 }
 
 TabStrip::~TabStrip() {
@@ -3405,5 +3406,3 @@ ADD_READONLY_PROPERTY_METADATA(int, ActiveTabWidth)
 ADD_READONLY_PROPERTY_METADATA(int, InactiveTabWidth)
 ADD_READONLY_PROPERTY_METADATA(int, AvailableWidthForTabStrip)
 END_METADATA
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStrip, kTabStripIdentifier);

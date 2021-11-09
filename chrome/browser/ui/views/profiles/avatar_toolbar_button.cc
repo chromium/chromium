@@ -19,6 +19,7 @@
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -42,6 +43,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -76,6 +78,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view,
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
 
   SetID(VIEW_ID_AVATAR_BUTTON);
+  SetProperty(views::kElementIdentifierKey, kAvatarButtonElementId);
 
   // The avatar should not flip with RTL UI. This does not affect text rendering
   // and LabelButton image/label placement is still flipped like usual.

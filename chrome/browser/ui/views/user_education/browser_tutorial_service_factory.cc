@@ -7,6 +7,7 @@
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
@@ -93,9 +94,8 @@ void BrowserTutorialServiceFactory::RegisterTutorials() {
     TutorialDescription::Step step1(
         absl::nullopt,
         u"Right Click on a Tab and select \"Add Tab To new Group\".",
-        ui::InteractionSequence::StepType::kShown,
-        TabStrip::kTabStripIdentifier, TutorialDescription::Step::Arrow::TOP,
-        absl::nullopt);
+        ui::InteractionSequence::StepType::kShown, kTabStripElementId,
+        TutorialDescription::Step::Arrow::TOP, absl::nullopt);
     description->steps.emplace_back(step1);
 
     TutorialDescription::Step step2(

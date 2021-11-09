@@ -14,6 +14,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -31,6 +32,7 @@
 #include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
@@ -180,6 +182,7 @@ ReadLaterToolbarButton::ReadLaterToolbarButton(Browser* browser)
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
+  SetProperty(views::kElementIdentifierKey, kReadLaterButtonElementId);
 
   if (reading_list_model_)
     reading_list_model_scoped_observation_.Observe(reading_list_model_);
