@@ -60,7 +60,9 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
     virtual bool OutputPicture(scoped_refptr<VP8Picture> pic) = 0;
   };
 
-  explicit VP8Decoder(std::unique_ptr<VP8Accelerator> accelerator);
+  explicit VP8Decoder(
+      std::unique_ptr<VP8Accelerator> accelerator,
+      const VideoColorSpace& container_color_space = VideoColorSpace());
 
   VP8Decoder(const VP8Decoder&) = delete;
   VP8Decoder& operator=(const VP8Decoder&) = delete;
@@ -110,6 +112,9 @@ class MEDIA_GPU_EXPORT VP8Decoder : public AcceleratedVideoDecoder {
   int vertical_scale_;
 
   const std::unique_ptr<VP8Accelerator> accelerator_;
+
+  // Color space provided by the container.
+  const VideoColorSpace container_color_space_;
 };
 
 }  // namespace media

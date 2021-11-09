@@ -953,14 +953,15 @@ VaapiStatus VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
         encryption_scheme_);
     decoder_delegate_ = accelerator.get();
 
-    decoder_.reset(
-        new H264Decoder(std::move(accelerator), profile_, color_space_));
+    decoder_ = std::make_unique<H264Decoder>(std::move(accelerator), profile_,
+                                             color_space_);
   } else if (profile_ >= VP8PROFILE_MIN && profile_ <= VP8PROFILE_MAX) {
     auto accelerator =
         std::make_unique<VP8VaapiVideoDecoderDelegate>(this, vaapi_wrapper_);
     decoder_delegate_ = accelerator.get();
 
-    decoder_.reset(new VP8Decoder(std::move(accelerator)));
+    decoder_ =
+        std::make_unique<VP8Decoder>(std::move(accelerator), color_space_);
   } else if (profile_ >= VP9PROFILE_MIN && profile_ <= VP9PROFILE_MAX) {
     auto accelerator = std::make_unique<VP9VaapiVideoDecoderDelegate>(
         this, vaapi_wrapper_, std::move(protected_update_cb),
@@ -968,8 +969,8 @@ VaapiStatus VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
         encryption_scheme_);
     decoder_delegate_ = accelerator.get();
 
-    decoder_.reset(
-        new VP9Decoder(std::move(accelerator), profile_, color_space_));
+    decoder_ = std::make_unique<VP9Decoder>(std::move(accelerator), profile_,
+                                            color_space_);
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   else if (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX) {
@@ -979,8 +980,8 @@ VaapiStatus VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
         encryption_scheme_);
     decoder_delegate_ = accelerator.get();
 
-    decoder_.reset(
-        new H265Decoder(std::move(accelerator), profile_, color_space_));
+    decoder_ = std::make_unique<H265Decoder>(std::move(accelerator), profile_,
+                                             color_space_);
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   else if (profile_ >= AV1PROFILE_MIN && profile_ <= AV1PROFILE_MAX) {
@@ -990,7 +991,7 @@ VaapiStatus VaapiVideoDecoder::CreateAcceleratedVideoDecoder() {
         encryption_scheme_);
     decoder_delegate_ = accelerator.get();
 
-    decoder_.reset(new AV1Decoder(std::move(accelerator), profile_));
+    decoder_ = std::make_unique<AV1Decoder>(std::move(accelerator), profile_);
   } else {
     return VaapiStatus(VaapiStatus::Codes::kUnsupportedProfile)
         .WithData("profile", profile_);
