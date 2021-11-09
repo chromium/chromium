@@ -111,6 +111,20 @@ guestMessagePipe.registerHandler(Message.SHOW_NOTIFICATION, async (message) => {
       titleArray, messageArray, message.notificationType);
 });
 
+guestMessagePipe.registerHandler(
+    Message.TIME_HISTOGRAM_MESSAGE, async (message) => {
+      const histogramData = /** @type {TimeHistogram} */ (message);
+      chrome.metricsPrivate.recordTime(
+          histogramData.histogram, histogramData.value);
+    });
+
+guestMessagePipe.registerHandler(
+    Message.ENUM_HISTOGRAM_MESSAGE, async (message) => {
+      const histogramData = /** @type {EnumHistogram} */ (message);
+      chrome.metricsPrivate.recordEnumerationValue(
+          histogramData.histogram, histogramData.value, histogramData.maxValue);
+    });
+
 // We can't access hash change event inside iframe so parse the notification
 // info from the anchor part of the url when hash is changed and send them to
 // untrusted section via message pipes.

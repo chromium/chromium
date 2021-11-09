@@ -37,6 +37,30 @@
 /* #export */ let UidInfo;
 
 /**
+ * Representation of the metrics data for recording an elapsed time to the
+ * given histogram name. The histogram should be defined in
+ * google3/analysis/uma/configs/chrome/histograms.xml
+ * @typedef {{
+ *    histogram: string,
+ *    value: number,
+ * }}
+ */
+/* #export */ let TimeHistogram;
+
+/**
+ * Representation of the metrics data for recording in an enumeration
+ * value to the given histogram name. The histogram and the enumeration should
+ * be defined in
+ * google3/analysis/uma/configs/chrome/histograms.xml
+ * @typedef {{
+ *    histogram: string,
+ *    value: number,
+ *    maxValue: number,
+ * }}
+ */
+/* #export */ let EnumHistogram;
+
+/**
  * Enum for message types.
  * @enum {string}
  */
@@ -60,4 +84,8 @@
   NOTIFICATION_INFO: 'notification_info',
   // Message for sending notification data in bi-directional pipes.
   SHOW_NOTIFICATION: 'show_notification',
+  // Message for sending metrics data for recording time histogram.
+  TIME_HISTOGRAM_MESSAGE: 'time_histagram_message',
+  // Message for sending metrics data for recording enum histogram.
+  ENUM_HISTOGRAM_MESSAGE: 'enum_histagram_message',
 };

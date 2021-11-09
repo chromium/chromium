@@ -82,6 +82,16 @@ const EcheApiBindingImpl = new class {
     parentMessagePipe.sendMessage(
         Message.SHOW_NOTIFICATION, {title, message, notificationType});
   }
+
+  sendTimeHistogram(histogram, value) {
+    parentMessagePipe.sendMessage(
+        Message.TIME_HISTOGRAM_MESSAGE, {histogram, value});
+  }
+
+  sendEnumHistogram(histogram, value, maxValue) {
+    parentMessagePipe.sendMessage(
+        Message.ENUM_HISTOGRAM_MESSAGE, {histogram, value, maxValue});
+  }
 };
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -108,4 +118,8 @@ echeapi.system.registerNotificationReceiver =
     EcheApiBindingImpl.onReceivedNotification.bind(EcheApiBindingImpl);
 echeapi.system.showCrOSNotification =
     EcheApiBindingImpl.showNotification.bind(EcheApiBindingImpl);
+echeapi.system.sendTimeHistogram =
+    EcheApiBindingImpl.sendTimeHistogram.bind(EcheApiBindingImpl);
+echeapi.system.sendEnumHistogram =
+    EcheApiBindingImpl.sendEnumHistogram.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;
