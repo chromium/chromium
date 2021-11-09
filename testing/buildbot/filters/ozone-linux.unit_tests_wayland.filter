@@ -1,10 +1,2 @@
 # TODO(https://crbug.com/1184127). Investigate and fix failures.
--NativeDesktopMediaListTest.AddNativeWindow
--NativeDesktopMediaListTest.MoveWindow
--NativeDesktopMediaListTest.RemoveAllWindows
--NativeDesktopMediaListTest.RemoveNativeWindow
--NativeDesktopMediaListTest.UpdateThumbnail
--NativeDesktopMediaListTest.UpdateTitle
--NativeDesktopMediaListTest.WindowFiltering
--NativeDesktopMediaListTest.Windows
 -RelaunchNotificationControllerPlatformImplTest.SynchronousNotification
