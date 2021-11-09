@@ -2223,24 +2223,6 @@ gfx::Rect AppsGridView::GetExpectedTileBounds(const GridIndex& index) const {
   return tile_bounds;
 }
 
-gfx::Rect AppsGridView::GetExpectedItemBoundsInFirstPage(
-    const std::string& id) const {
-  const AppListItem* item = model_->FindItem(id);
-  if (!item)
-    return gfx::Rect(GetContentsBounds().CenterPoint(), gfx::Size(1, 1));
-
-  const int model_index = GetModelIndexOfItem(item);
-  if (model_index >= view_model_.view_size())
-    return gfx::Rect(GetContentsBounds().CenterPoint(), gfx::Size(1, 1));
-
-  const GridIndex grid_index =
-      view_structure_.GetIndexFromModelIndex(model_index);
-  if (grid_index.page != 0)
-    return gfx::Rect(GetContentsBounds().CenterPoint(), gfx::Size(1, 1));
-
-  return GetExpectedTileBounds(grid_index);
-}
-
 bool AppsGridView::IsViewHiddenForDrag(const views::View* view) const {
   return drag_view_hider_ && drag_view_hider_->drag_view() == view;
 }

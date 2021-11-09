@@ -368,11 +368,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Moves the AppListView off screen and calls a layout if needed.
   void OnBoundsAnimationCompleted(AppListViewState target_state);
 
-  // Returns the expected tile bounds in screen coordinates the provided app
-  // grid item ID , if the item is in the first apps grid page. Otherwise, it
-  // returns 1x1 rectangle in the apps grid center.
-  gfx::Rect GetItemScreenBoundsInFirstGridPage(const std::string& id) const;
-
   gfx::NativeView parent_window() const { return parent_window_; }
 
   AppListViewState app_list_state() const { return app_list_state_; }

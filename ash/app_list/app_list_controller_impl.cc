@@ -1941,15 +1941,6 @@ bool AppListControllerImpl::IsHomeScreenVisible() {
   return IsTabletMode() && IsVisible();
 }
 
-gfx::Rect AppListControllerImpl::GetInitialAppListItemScreenBoundsForWindow(
-    aura::Window* window) {
-  if (!fullscreen_presenter_->GetView())
-    return gfx::Rect();
-  std::string* app_id = window->GetProperty(kAppIDKey);
-  return fullscreen_presenter_->GetView()->GetItemScreenBoundsInFirstGridPage(
-      app_id ? *app_id : std::string());
-}
-
 void AppListControllerImpl::OnWindowDragStarted() {
   in_window_dragging_ = true;
   UpdateHomeScreenVisibility();

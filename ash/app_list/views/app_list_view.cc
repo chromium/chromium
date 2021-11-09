@@ -2217,16 +2217,6 @@ void AppListView::OnBoundsAnimationCompleted(AppListViewState target_state) {
                                                  was_animation_interrupted);
 }
 
-gfx::Rect AppListView::GetItemScreenBoundsInFirstGridPage(
-    const std::string& id) const {
-  const AppsGridView* apps_grid_view = app_list_main_view_->contents_view()
-                                           ->apps_container_view()
-                                           ->apps_grid_view();
-  gfx::Rect item_bounds = apps_grid_view->GetExpectedItemBoundsInFirstPage(id);
-  ConvertRectToScreen(apps_grid_view, &item_bounds);
-  return item_bounds;
-}
-
 void AppListView::SetShelfHasRoundedCorners(bool shelf_has_rounded_corners) {
   if (shelf_has_rounded_corners_ == shelf_has_rounded_corners)
     return;

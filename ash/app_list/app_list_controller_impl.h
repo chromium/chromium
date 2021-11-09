@@ -304,15 +304,6 @@ class ASH_EXPORT AppListControllerImpl
   // True if home screen is visible.
   bool IsHomeScreenVisible();
 
-  // Returns bounds rect in screen coordinates for the app list item associated
-  // with the provided window in the apps grid shown in the home screen,
-  // assuming the initial app list grid page is selected.
-  // If the window is not associated with an app, or the app item is not shown
-  // in the initial home screen page, it returns 1x1 rectangle centered in the
-  // home screen's apps grid.
-  // If the home screen is not yet shown, returns an empty rect.
-  gfx::Rect GetInitialAppListItemScreenBoundsForWindow(aura::Window* window);
-
   // Called when a window starts/ends dragging. If the home screen is shown, we
   // should hide it during dragging a window and reshow it when the drag ends.
   void OnWindowDragStarted();

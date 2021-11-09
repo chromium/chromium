@@ -286,12 +286,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // AshTestBase.
   bool IsTabletMode() const;
 
-  // Returns the expected bounds rect in grid coordinates for the item with the
-  // provided id, if the item is in the first page.
-  // If the item is not in the current page (or cannot be found), this will
-  // return 1x1 rectangle in the apps grid center.
-  gfx::Rect GetExpectedItemBoundsInFirstPage(const std::string& id) const;
-
   // Whether the provided view is hidden to facilitate drag operation (for
   // example, the drag view for which a drag icon proxy has been created).
   bool IsViewHiddenForDrag(const views::View* view) const;
