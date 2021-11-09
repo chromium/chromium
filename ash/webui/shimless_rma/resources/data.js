@@ -39,7 +39,7 @@ export const ComponentTypeToId = {
   [ComponentType.kAudioCodec]: 'componentAudio',
   [ComponentType.kBattery]: 'componentBattery',
   [ComponentType.kStorage]: 'componentStorage',
-  [ComponentType.kVpdCached]: 'componentVpd Cached',
+  [ComponentType.kVpdCached]: 'componentVpdCached',
   [ComponentType.kNetwork]: 'componentNetwork',
   [ComponentType.kCamera]: 'componentCamera',
   [ComponentType.kStylus]: 'componentStylus',

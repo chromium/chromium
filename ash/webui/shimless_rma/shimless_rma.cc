@@ -41,6 +41,30 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      // Component names. Used by select components and calibration pages.
+      {"componentAudio", IDS_SHIMLESS_RMA_COMPONENT_AUDIO},
+      {"componentBattery", IDS_SHIMLESS_RMA_COMPONENT_BATTERY},
+      {"componentStorage", IDS_SHIMLESS_RMA_COMPONENT_STORAGE},
+      {"componentVpdCached", IDS_SHIMLESS_RMA_COMPONENT_VPD_CACHE},
+      {"componentNetwork", IDS_SHIMLESS_RMA_COMPONENT_NETWORK},
+      {"componentCamera", IDS_SHIMLESS_RMA_COMPONENT_CAMERA},
+      {"componentStylus", IDS_SHIMLESS_RMA_COMPONENT_STYLUS},
+      {"componentTouchpad", IDS_SHIMLESS_RMA_COMPONENT_TOUCHPAD},
+      {"componentTouchscreen", IDS_SHIMLESS_RMA_COMPONENT_TOUCHSCREEN},
+      {"componentDram", IDS_SHIMLESS_RMA_COMPONENT_MEMORY},
+      {"componentDisplayPanel", IDS_SHIMLESS_RMA_COMPONENT_DISPLAY_PANEL},
+      {"componentCellular", IDS_SHIMLESS_RMA_COMPONENT_CELLULAR},
+      {"componentEthernet", IDS_SHIMLESS_RMA_COMPONENT_ETHERNET},
+      {"componentWireless", IDS_SHIMLESS_RMA_COMPONENT_WIRELESS},
+      {"componentBaseAccelerometer",
+       IDS_SHIMLESS_RMA_COMPONENT_BASE_ACCELEROMETER},
+      {"componentLidAccelerometer",
+       IDS_SHIMLESS_RMA_COMPONENT_LID_ACCELEROMETER},
+      {"componentBaseGyroscope", IDS_SHIMLESS_RMA_COMPONENT_BASE_GYROSCOPE},
+      {"componentLidGyroscope", IDS_SHIMLESS_RMA_COMPONENT_LID_GYROSCOPE},
+      {"componentScreen", IDS_SHIMLESS_RMA_COMPONENT_SCREEN},
+      {"componentKeyboard", IDS_SHIMLESS_RMA_COMPONENT_KEYBOARD},
+      {"componentPowerButton", IDS_SHIMLESS_RMA_COMPONENT_POWER_BUTTON},
       // Landing page
       {"welcomeTitleText", IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE},
       {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},
@@ -59,6 +83,10 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_CONNECT_DIALOG_CANCEL},
       {"internetConfigName", IDS_SHIMLESS_RMA_CONNECT_DIALOG_CONFIG_NAME},
       {"internetJoinType", IDS_SHIMLESS_RMA_CONNECT_DIALOG_JOIN_TYPE},
+      // Select components page
+      {"selectComponentsTitleText",
+       IDS_SHIMLESS_RMA_SELECT_COMPONENTS_PAGE_TITLE},
+      {"reworkFlowLinkText", IDS_SHIMLESS_RMA_REWORK_FLOW_LINK},
       // Choose destination page
       {"chooseDestinationTitleText", IDS_SHIMLESS_RMA_CHOOSE_DESTINATION},
       {"sameOwnerText", IDS_SHIMLESS_RMA_SAME_OWNER},
@@ -82,7 +110,6 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"rsuCodePlaceHolderText", IDS_SHIMLESS_RMA_RSU_CODE_PLACEHOLDER},
       // Repair complete page
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
-      {"reworkFlowLinkText", IDS_SHIMLESS_RMA_REWORK_FLOW_LINK},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

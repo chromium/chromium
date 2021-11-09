@@ -10,7 +10,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ComponentTypeToId, ComponentTypeToName} from './data.js';
+import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
@@ -97,7 +97,7 @@ export class OnboardingSelectComponentsPageElement extends
           id: ComponentTypeToId[item.component],
           // TODO(gavinwill): Source |uniqueId| from proto.
           uniqueId: '',
-          name: ComponentTypeToName[item.component],
+          name: this.i18n(ComponentTypeToId[item.component]),
           checked: item.state === ComponentRepairStatus.kReplaced,
           disabled: item.state === ComponentRepairStatus.kMissing
         };

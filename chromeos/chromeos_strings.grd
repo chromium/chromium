@@ -2013,6 +2013,70 @@ Try tapping the mic to ask me anything.
       </message>
 
       <!-- Shimless RMA -->
+      <!-- Component names. Used by select components and calibration pages-->
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_AUDIO" translateable="false" desc="Name of device audio processing component.">
+        Audio
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_BATTERY" translateable="false" desc="Name of device battery component.">
+        Battery
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_STORAGE" translateable="false" desc="Name of device SSD storage component.">
+        Storage
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_VPD_CACHE" translateable="false" desc="Name of device Vital Product Data SPI flash storage component.">
+        Vpd Cached
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_NETWORK" translateable="false" desc="Name of device network component. TODO(gavindodd) clarify this.">
+        Network
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_CAMERA" translateable="false" desc="Name of device camera component.">
+        Camera
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_STYLUS" translateable="false" desc="Name of device stylus component. TODO(gavindodd) clarify this.">
+        Stylus
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHPAD" translateable="false" desc="Name of device touchpad component.">
+        Touchpad
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_TOUCHSCREEN" translateable="false" desc="Name of device touchscreen component.">
+        Touchscreen
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_MEMORY" translateable="false" desc="Name of device memory components.">
+        Memory
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_DISPLAY_PANEL" translateable="false" desc="Name of device display panel component. TODO(gavindodd) clarify this.">
+        Display
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_CELLULAR" translateable="false" desc="Name of device cellular network component. Used for wireless internet service through a service provider such as Google Fi.">
+        Cellular
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_ETHERNET" translateable="false" desc="Name of device ethernet component. Used for wired internet connection.">
+        Ethernet
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_WIRELESS" translateable="false" desc="Name of device Wi-Fi network component.">
+        Wireless
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_ACCELEROMETER" translateable="false" desc="Name of device accelerometer component in the base (e.g. mainboard and keyboard) part of the device.">
+        Base Accelerometer
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_ACCELEROMETER" translateable="false" desc="Name of device accelerometer component in the lid (e.g. screen) of the component.">
+        Lid Accelerometer
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_BASE_GYROSCOPE" translateable="false" desc="Name of device gyroscope component in the base (e.g. mainboard and keyboard) part of the device.">
+        Base Gyroscope
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_LID_GYROSCOPE" translateable="false" desc="Name of device component in the lid (e.g. screen) of the component.">
+        Lid Gyroscope
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_SCREEN" translateable="false" desc="Name of device screen component. TODO(gavindodd) clarify this.">
+        Screen
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_KEYBOARD" translateable="false" desc="Name of device keyboard component.">
+        Keyboard
+      </message>
+      <message name="IDS_SHIMLESS_RMA_COMPONENT_POWER_BUTTON" translateable="false" desc="Name of device power button component.">
+        Power Button
+      </message>
       <!-- Landing page -->
       <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" translateable="false" desc="Title for the landing page at the start of RMA.">
         Chromebook repair
@@ -2050,6 +2114,13 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SHIMLESS_RMA_CONNECT_DIALOG_CANCEL" desc="Text for cancel connect to wifi button.">
         Cancel
+      </message>
+      <!-- Select components page -->
+      <message name="IDS_SHIMLESS_RMA_SELECT_COMPONENTS_PAGE_TITLE" translateable="false" desc="The title for the select replaced components page.">
+        Select which components were replaced
+      </message>
+      <message name="IDS_SHIMLESS_RMA_REWORK_FLOW_LINK" translateable="false" desc="The text with a link that will redirect the user to the reworking flow. The reworking flow is only used when the user wants to repurpose the mainboard for another device.">
+        If you are reworking a mainboard to use in another device, go to the <ph name="LINK_BEGIN">&lt;a id="reworkFlowLink"&gt;</ph>rework flow<ph name="LINK_END">&lt;/a&gt;</ph>.
       </message>
       <!-- Choose destination page -->
       <message name="IDS_SHIMLESS_RMA_CHOOSE_DESTINATION" desc="Title for the page shown when choosing the return destination of the device after repair.">
@@ -2105,9 +2176,6 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART" desc="Label for the button that updates the device to the latest version of Chrome OS then restarts the device.">
         Update version &#38; restart
-      </message>
-      <message name="IDS_SHIMLESS_RMA_REWORK_FLOW_LINK" translateable="false" desc="The text with a link that will redirect the user to the reworking flow. The reworking flow is only used when the user wants to repurpose the mainboard for another device.">
-        If you are reworking a mainboard to use in another device, go to the <ph name="LINK_BEGIN">&lt;a id="reworkFlowLink"&gt;</ph>rework flow<ph name="LINK_END">&lt;/a&gt;</ph>.
       </message>
     </messages>
   </release>
