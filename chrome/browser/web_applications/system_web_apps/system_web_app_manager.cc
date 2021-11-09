@@ -103,10 +103,6 @@ namespace web_app {
 
 namespace {
 
-// Copy the origin trial name from runtime_enabled_features.json5, to avoid
-// complex dependencies.
-const char kFileHandlingOriginTrial[] = "FileHandling";
-
 // Number of attempts to install a given version & locale of the SWAs before
 // bailing out.
 const int kInstallFailureAttempts = 3;
@@ -419,13 +415,6 @@ const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
   return &iter_trials->second;
 }
 
-bool SystemWebAppManager::AppHasFileHandlingOriginTrial(
-    const SystemWebAppDelegate* system_app) {
-  const std::vector<std::string>* trials =
-      GetEnabledOriginTrials(system_app, system_app->GetInstallUrl());
-  return trials && base::Contains(*trials, kFileHandlingOriginTrial);
-}
-
 void SystemWebAppManager::OnReadyToCommitNavigation(
     const AppId& app_id,
     content::NavigationHandle* navigation_handle) {
@@ -595,13 +584,10 @@ void SystemWebAppManager::OnAppsSynchronized(
     if (!app_id)
       continue;
 
-    if (AppHasFileHandlingOriginTrial(it.second.get())) {
-      os_integration_manager_->ForceEnableFileHandlingOriginTrial(
-          app_id.value());
-    } else {
-      os_integration_manager_->DisableForceEnabledFileHandlingOriginTrial(
-          app_id.value());
-    }
+    InstallOsHooksOptions options;
+    options.os_hooks[OsHookType::kFileHandlers] = true;
+    os_integration_manager_->InstallOsHooks(*app_id, base::DoNothing(),
+                                            /*web_app_info=*/nullptr, options);
   }
 
   const base::TimeDelta install_duration =

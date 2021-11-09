@@ -27,10 +27,6 @@
 
 class Profile;
 
-namespace content {
-class WebContents;
-}
-
 namespace web_app {
 
 class FakeOsIntegrationManager;
@@ -143,11 +139,6 @@ class OsIntegrationManager {
   const absl::optional<GURL> GetMatchingFileHandlerURL(
       const AppId& app_id,
       const std::vector<base::FilePath>& launch_files);
-  void MaybeUpdateFileHandlingOriginTrialExpiry(
-      content::WebContents* web_contents,
-      const AppId& app_id);
-  void ForceEnableFileHandlingOriginTrial(const AppId& app_id);
-  void DisableForceEnabledFileHandlingOriginTrial(const AppId& app_id);
 
   // Proxy calls for WebAppProtocolHandlerManager.
   virtual absl::optional<GURL> TranslateProtocolUrl(const AppId& app_id,

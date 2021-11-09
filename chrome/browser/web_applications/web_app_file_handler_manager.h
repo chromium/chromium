@@ -18,10 +18,6 @@
 
 class Profile;
 
-namespace content {
-class WebContents;
-}
-
 namespace web_app {
 
 class WebAppRegistrar;
@@ -57,11 +53,6 @@ class WebAppFileHandlerManager {
   // feature flag must also separately be enabled.
   static void SetIconsSupportedByOsForTesting(bool value);
 
-  // Set a callback which is fired when the file handling expiry time is
-  // updated.
-  void SetOnFileHandlingExpiryUpdatedForTesting(
-      base::RepeatingCallback<void()> on_file_handling_expiry_updated);
-
   // Returns |app_id|'s URL registered to handle |launch_files|'s extensions, or
   // nullopt otherwise.
   const absl::optional<GURL> GetMatchingFileHandlerURL(
@@ -78,24 +69,6 @@ class WebAppFileHandlerManager {
   // separately but they are still enabled and disabled here.
   void DisableAndUnregisterOsFileHandlers(const AppId& app_id,
                                           ResultCallback callback);
-
-  // Updates the file handling origin trial expiry timer based on a currently
-  // open instance of the site. This will not update the expiry timer if
-  // |app_id| has force enabled file handling origin trial.
-  void MaybeUpdateFileHandlingOriginTrialExpiry(
-      content::WebContents* web_contents,
-      const AppId& app_id);
-
-  // Force enables File Handling origin trial. This will register the App's file
-  // handlers even if the App does not have a valid origin trial token.
-  void ForceEnableFileHandlingOriginTrial(const AppId& app_id);
-
-  // Disable a force enabled File Handling origin trial. This will unregister
-  // App's file handlers.
-  void DisableForceEnabledFileHandlingOriginTrial(const AppId& app_id);
-
-  // Returns whether App's file handling is force enabled.
-  bool IsFileHandlingForceEnabled(const AppId& app_id);
 
   // Gets all enabled file handlers for |app_id|. |nullptr| if the app has no
   // enabled file handlers. Note: The lifetime of the file handlers are tied to
@@ -121,23 +94,13 @@ class WebAppFileHandlerManager {
   virtual const apps::FileHandlers* GetAllFileHandlers(const AppId& app_id);
 
  private:
-  void OnOriginTrialExpiryTimeReceived(
-      mojo::AssociatedRemote<blink::mojom::FileHandlingExpiry> /*interface*/,
-      const AppId& app_id,
-      base::Time expiry_time);
-
   // Removes file handlers whose origin trials have expired (assuming
   // kFileHandlingAPI isn't enabled). Returns the number of apps that had file
   // handlers unregistered, for use in tests.
   int CleanupAfterOriginTrials();
 
-  void UpdateFileHandlersForOriginTrialExpiryTime(
-      const AppId& app_id,
-      const base::Time& expiry_time);
-
   static bool disable_automatic_file_handler_cleanup_for_testing_;
   bool disable_os_integration_for_testing_ = false;
-  base::RepeatingCallback<void()> on_file_handling_expiry_updated_for_testing_;
 
   Profile* const profile_;
   WebAppRegistrar* registrar_ = nullptr;

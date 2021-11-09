@@ -119,11 +119,6 @@ void WebAppTabHelper::DOMContentLoaded(
   // app.
   if (app_id_.empty())
     return;
-
-  // There is no way to reliably know if |app_id_| is for a System Web App
-  // during startup, so we always call MaybeUpdateFileHandlingOriginTrialExpiry.
-  provider_->os_integration_manager().MaybeUpdateFileHandlingOriginTrialExpiry(
-      web_contents(), app_id_);
 }
 
 void WebAppTabHelper::DidCloneToNewWebContents(
@@ -149,10 +144,6 @@ void WebAppTabHelper::OnWebAppInstalled(const AppId& installed_app_id) {
     return;
 
   SetAppId(app_id);
-
-  // TODO(crbug.com/1053371): Clean up where we install file handlers.
-  provider_->os_integration_manager().MaybeUpdateFileHandlingOriginTrialExpiry(
-      web_contents(), installed_app_id);
 }
 
 void WebAppTabHelper::OnWebAppWillBeUninstalled(

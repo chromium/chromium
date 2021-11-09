@@ -170,8 +170,6 @@ class SystemWebAppManager {
       const SystemWebAppDelegate* system_app,
       const GURL& url) const;
 
-  bool AppHasFileHandlingOriginTrial(const SystemWebAppDelegate* system_app);
-
   void StopBackgroundTasks();
 
   void OnAppsSynchronized(

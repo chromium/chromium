@@ -20,7 +20,6 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_launch/file_handling_expiry.mojom.h"
@@ -28,18 +27,6 @@
 namespace web_app {
 
 namespace {
-// Use a large double that can be safely saved in prefs, and be  safely
-// represented in JS timestamp (milliseconds from epoch). base::Time::Max() does
-// not work here, it returns +Infinity (which is invalid and can not be
-// represented in JSON).
-//
-// This value is `floor((2^53 - 1) / 1000)` because base::Time::FromDoubleT()
-// accepts time offset in seconds. In reality, it means 287396-10-12 08:58:59
-// UTC, which is a long distant future (long after File Handling goes out of
-// origin trial or be deprecated).
-//
-// Do not change this value, because it is persisted to disk.
-const double kMaxOriginTrialExpiryTime = 9007199254740;
 
 // Used to enable running tests on platforms that don't support file handling
 // icons.
@@ -82,12 +69,6 @@ int WebAppFileHandlerManager::TriggerFileHandlerCleanupForTesting() {
 // static
 void WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(bool value) {
   g_icons_supported_by_os_override = value;
-}
-
-void WebAppFileHandlerManager::SetOnFileHandlingExpiryUpdatedForTesting(
-    base::RepeatingCallback<void()> on_file_handling_expiry_updated) {
-  on_file_handling_expiry_updated_for_testing_ =
-      on_file_handling_expiry_updated;
 }
 
 void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
@@ -153,48 +134,6 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
 #endif
 }
 
-void WebAppFileHandlerManager::MaybeUpdateFileHandlingOriginTrialExpiry(
-    content::WebContents* web_contents,
-    const AppId& app_id) {
-  // If an App has force enabled file handling, there is no need to check its
-  // WebContents.
-  if (IsFileHandlingForceEnabled(app_id)) {
-    if (on_file_handling_expiry_updated_for_testing_)
-      on_file_handling_expiry_updated_for_testing_.Run();
-    return;
-  }
-
-  mojo::AssociatedRemote<blink::mojom::FileHandlingExpiry> expiry_service;
-  web_contents->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      &expiry_service);
-  DCHECK(expiry_service);
-
-  auto* raw = expiry_service.get();
-
-  // Here we need to pass the |expiry_service| Mojom remote interface, so it is
-  // not destroyed before we get a reply.
-  raw->RequestOriginTrialExpiryTime(base::BindOnce(
-      &WebAppFileHandlerManager::OnOriginTrialExpiryTimeReceived,
-      weak_ptr_factory_.GetWeakPtr(), std::move(expiry_service), app_id));
-}
-
-void WebAppFileHandlerManager::ForceEnableFileHandlingOriginTrial(
-    const AppId& app_id) {
-  UpdateFileHandlersForOriginTrialExpiryTime(
-      app_id, base::Time::FromDoubleT(kMaxOriginTrialExpiryTime));
-}
-
-void WebAppFileHandlerManager::DisableForceEnabledFileHandlingOriginTrial(
-    const AppId& app_id) {
-  double pref_expiry_time =
-      GetDoubleWebAppPref(profile_->GetPrefs(), app_id,
-                          kFileHandlingOriginTrialExpiryTime)
-          .value_or(0);
-  if (pref_expiry_time == kMaxOriginTrialExpiryTime) {
-    UpdateFileHandlersForOriginTrialExpiryTime(app_id, base::Time());
-  }
-}
-
 const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(
     const AppId& app_id) {
   if (AreFileHandlersEnabled(app_id) && IsFileHandlingAPIAvailable(app_id) &&
@@ -205,12 +144,16 @@ const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(
 }
 
 bool WebAppFileHandlerManager::IsFileHandlingAPIAvailable(const AppId& app_id) {
-  double pref_expiry_time =
-      GetDoubleWebAppPref(profile_->GetPrefs(), app_id,
-                          kFileHandlingOriginTrialExpiryTime)
-          .value_or(0);
-  return base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI) ||
-         base::Time::FromDoubleT(pref_expiry_time) >= base::Time::Now();
+  if (base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI))
+    return true;
+
+  // May be null in unit tests.
+  if (registrar_) {
+    const WebApp* web_app = registrar_->GetAppById(app_id);
+    return web_app && web_app->IsSystemApp();
+  }
+
+  return false;
 }
 
 bool WebAppFileHandlerManager::AreFileHandlersEnabled(
@@ -223,42 +166,6 @@ bool WebAppFileHandlerManager::IconsEnabled() {
   return g_icons_supported_by_os_override.value_or(
              FileHandlingIconsSupportedByOs()) &&
          base::FeatureList::IsEnabled(blink::features::kFileHandlingIcons);
-}
-
-void WebAppFileHandlerManager::OnOriginTrialExpiryTimeReceived(
-    mojo::AssociatedRemote<blink::mojom::FileHandlingExpiry> /*interface*/,
-    const AppId& app_id,
-    base::Time expiry_time) {
-  // Updates the expiry time, if file handling is enabled by origin trial
-  // tokens. If an App has force enabled file handling, it might not have expiry
-  // time associated with it.
-  if (!IsFileHandlingForceEnabled(app_id)) {
-    UpdateFileHandlersForOriginTrialExpiryTime(app_id, expiry_time);
-  }
-
-  if (on_file_handling_expiry_updated_for_testing_)
-    on_file_handling_expiry_updated_for_testing_.Run();
-}
-
-void WebAppFileHandlerManager::UpdateFileHandlersForOriginTrialExpiryTime(
-    const AppId& app_id,
-    const base::Time& expiry_time) {
-  web_app::UpdateDoubleWebAppPref(profile_->GetPrefs(), app_id,
-                                  kFileHandlingOriginTrialExpiryTime,
-                                  expiry_time.ToDoubleT());
-  // Only enable/disable file handlers if the state is changing, as
-  // enabling/disabling is a potentially expensive operation (it may involve
-  // creating an app shim, and will almost certainly involve IO).
-  const bool file_handlers_enabled = AreFileHandlersEnabled(app_id);
-
-  // If the trial is valid, ensure the file handlers are enabled.
-  // Otherwise disable them.
-  if (IsFileHandlingAPIAvailable(app_id)) {
-    if (!file_handlers_enabled)
-      EnableAndRegisterOsFileHandlers(app_id);
-  } else if (file_handlers_enabled) {
-    DisableAndUnregisterOsFileHandlers(app_id, base::DoNothing());
-  }
 }
 
 void WebAppFileHandlerManager::DisableAutomaticFileHandlerCleanupForTesting() {
@@ -336,14 +243,6 @@ const absl::optional<GURL> WebAppFileHandlerManager::GetMatchingFileHandlerURL(
   }
 
   return absl::nullopt;
-}
-
-bool WebAppFileHandlerManager::IsFileHandlingForceEnabled(const AppId& app_id) {
-  double pref_expiry_time =
-      GetDoubleWebAppPref(profile_->GetPrefs(), app_id,
-                          kFileHandlingOriginTrialExpiryTime)
-          .value_or(0);
-  return pref_expiry_time == kMaxOriginTrialExpiryTime;
 }
 
 }  // namespace web_app

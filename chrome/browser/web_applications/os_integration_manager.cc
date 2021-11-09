@@ -297,27 +297,6 @@ const absl::optional<GURL> OsIntegrationManager::GetMatchingFileHandlerURL(
   return file_handler_manager_->GetMatchingFileHandlerURL(app_id, launch_files);
 }
 
-void OsIntegrationManager::MaybeUpdateFileHandlingOriginTrialExpiry(
-    content::WebContents* web_contents,
-    const AppId& app_id) {
-  DCHECK(file_handler_manager_);
-  return file_handler_manager_->MaybeUpdateFileHandlingOriginTrialExpiry(
-      web_contents, app_id);
-}
-
-void OsIntegrationManager::ForceEnableFileHandlingOriginTrial(
-    const AppId& app_id) {
-  DCHECK(file_handler_manager_);
-  return file_handler_manager_->ForceEnableFileHandlingOriginTrial(app_id);
-}
-
-void OsIntegrationManager::DisableForceEnabledFileHandlingOriginTrial(
-    const AppId& app_id) {
-  DCHECK(file_handler_manager_);
-  return file_handler_manager_->DisableForceEnabledFileHandlingOriginTrial(
-      app_id);
-}
-
 absl::optional<GURL> OsIntegrationManager::TranslateProtocolUrl(
     const AppId& app_id,
     const GURL& protocol_url) {
