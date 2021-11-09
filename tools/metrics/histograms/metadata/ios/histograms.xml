@@ -118,8 +118,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyPasswordCount" units="count"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user copied a Password since
@@ -129,8 +129,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyURLCount" units="count"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user copied a URL since last
@@ -140,8 +140,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.CopyUsernameCount" units="count"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user copied a Username since
@@ -151,8 +151,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.DisplayCount" units="count"
-    expires_after="2022-04-10">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension was displayed since last Chrome
@@ -162,8 +162,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordFailure" units="count"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension password util failed to look up
@@ -173,8 +173,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordNilArgument"
-    units="count" expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    units="count" expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension pasword util was queried with a
@@ -184,8 +184,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.KeychainSavePasswordFailureCount"
-    units="count" expires_after="2022-03-31">
-  <owner>javierrobles@chromium.org</owner>
+    units="count" expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
     The number of times the Credential Extension failed to save a
@@ -196,8 +196,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.CredentialExtension.NewCredentialUsername"
     enum="IOSCredentialProviderNewCredentialUsername"
-    expires_after="2022-03-31">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
     Recorded when a new credential is created via the Credential Provider
@@ -207,8 +207,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordCreated"
-    enum="IOSCredentialProviderPasswordCreated" expires_after="2022-03-31">
-  <owner>javierrobles@chromium.org</owner>
+    enum="IOSCredentialProviderPasswordCreated" expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
     Recorded when a new password is created via the Credential Provider
@@ -217,8 +217,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
-    expires_after="2022-04-10">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user selected for a Password
@@ -228,8 +228,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.QuickPasswordUseCount" units="count"
-    expires_after="2022-04-24">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension selected a Password without
@@ -239,8 +239,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.ReauthCount" units="count"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension needed user reauthentication
@@ -250,8 +250,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SaveCredentialFailureCount"
-    units="count" expires_after="2022-03-31">
-  <owner>javierrobles@chromium.org</owner>
+    units="count" expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
     The number of times the Credential Extension failed to save a
@@ -261,8 +261,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SearchCount" units="count"
-    expires_after="2022-04-10">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user searched for a Password
@@ -274,8 +274,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.CredentialExtension.Service.Error.ReplaceCredentialIdentitiesWithIdentities"
     enum="iOSCredentialIdentityStoreErrorForReporting"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     Recorded when a request to replace identities in ASCredentialIdentityStore
@@ -284,8 +284,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.ShowPasswordCount" units="count"
-    expires_after="2022-04-24">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
     The number of times the Credential Extension user unobfuscated a Password
