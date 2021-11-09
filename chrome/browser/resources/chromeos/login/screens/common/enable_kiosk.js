@@ -6,6 +6,8 @@
  * screen.
  */
 
+/* #js_imports_placeholder */
+
 /**
  * UI mode for the dialog.
  * @enum {string}
@@ -16,43 +18,63 @@ const EnableKioskMode = {
   ERROR: 'error',
 };
 
-Polymer({
-  is: 'kiosk-enable-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+ const EnableKioskBase = Polymer.mixinBehaviors(
+  [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+/**
+ * @polymer
+ */
+class EnableKiosk extends EnableKioskBase {
 
-  properties: {
-    /**
-     * Current dialog state
-     * @type {EnableKioskMode}
-     * @private
-     */
-    state_: {
-      type: String,
-      value: EnableKioskMode.CONFIRM,
-    },
-  },
+  static get is() { return 'enable-kiosk-element'; }
 
-  EXTERNAL_API: [
-    'onCompleted',
-  ],
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      /**
+       * Current dialog state
+       * @private
+       */
+      state_: {
+        type: String,
+        value: EnableKioskMode.CONFIRM,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+  }
+
+  get EXTERNAL_API() {
+    return  ['onCompleted'];
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('KioskEnableScreen', {
       resetAllowed: true,
     });
-  },
+  }
 
   /** Called after resources are updated. */
   updateLocalizedContent() {
     this.i18nUpdateLocale();
-  },
+  }
 
   /** Called when dialog is shown */
   onBeforeShow() {
     this.state_ = EnableKioskMode.CONFIRM;
-  },
+  }
 
   /**
    * "Enable" button handler
@@ -60,7 +82,7 @@ Polymer({
    */
   onEnableButton_(event) {
     this.userActed('enable');
-  },
+  }
 
   /**
    * "Cancel" / "Ok" button handler
@@ -68,11 +90,11 @@ Polymer({
    */
   closeDialog_(event) {
     this.userActed('close');
-  },
+  }
 
   onCompleted(success) {
     this.state_ = success ? EnableKioskMode.SUCCESS : EnableKioskMode.ERROR;
-  },
+  }
 
   /**
    * Simple equality comparison function.
@@ -80,7 +102,7 @@ Polymer({
    */
   eq_(one, another) {
     return one === another;
-  },
+  }
 
   /**
    *
@@ -91,4 +113,6 @@ Polymer({
       return 'kioskOKButton';
     return 'kioskCancelButton';
   }
-});
+}
+
+customElements.define(EnableKiosk.is, EnableKiosk);

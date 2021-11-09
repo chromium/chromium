@@ -5,6 +5,7 @@
 import 'chrome://oobe/screens/common/app_downloading.m.js';
 import 'chrome://oobe/screens/common/autolaunch.m.js';
 import 'chrome://oobe/screens/common/device_disabled.m.js';
+import 'chrome://oobe/screens/common/enable_kiosk.m.js';
 import 'chrome://oobe/screens/common/family_link_notice.m.js';
 import 'chrome://oobe/screens/common/fingerprint_setup.m.js';
 import 'chrome://oobe/screens/common/gesture_navigation.m.js';
