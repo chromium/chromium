@@ -166,9 +166,7 @@ bool PaymentRequestState::IsRequestedAutofillDataAvailable() {
 }
 
 bool PaymentRequestState::MayCrawlForInstallablePaymentApps() {
-  return PaymentsExperimentalFeatures::IsEnabled(
-             features::kAlwaysAllowJustInTimePaymentApp) ||
-         !spec_ || !spec_->supports_basic_card();
+  return !spec_ || !spec_->supports_basic_card();
 }
 
 bool PaymentRequestState::IsOffTheRecord() const {

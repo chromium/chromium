@@ -152,24 +152,10 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, NoSkipWithoutUserGesture) {
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
 }
 
-class AlwaysAllowJustInTimePaymentAppTest
-    : public PaymentHandlerJustInTimeInstallationTest,
-      public testing::WithParamInterface<bool> {
- protected:
-  AlwaysAllowJustInTimePaymentAppTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kAlwaysAllowJustInTimePaymentApp, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(AlwaysAllowJustInTimePaymentAppTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
                        HybridRequest_NoCreditCard) {
   base::HistogramTester histogram_tester;
-  ResetEventWaiterForSingleEvent(GetParam() ? TestEvent::kPaymentCompleted
-                                            : TestEvent::kAppListReady);
+  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
   content::ExecuteScriptAsync(GetActiveWebContents(), R"(
     testPaymentMethods([
       {supportedMethods: 'basic-card'},
@@ -178,15 +164,9 @@ IN_PROC_BROWSER_TEST_P(AlwaysAllowJustInTimePaymentAppTest,
   )");
   WaitForObservedEvent();
 
-  if (GetParam()) {
-    // If AlwaysAllowJIT is enabled, kylepay should be installed just-in-time
-    // and used for testing.
-    ExpectBodyContains("kylepay.com/webpay");
-  } else {
-    // With AlwaysJIT disabled, the request is expected to stop at the payment
-    // sheet waiting for user action.
-    EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "abort()"));
-  }
+  // The request is expected to stop at the payment sheet waiting for user
+  // action.
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "abort()"));
 
   std::vector<base::Bucket> buckets =
       histogram_tester.GetAllSamples("PaymentRequest.Events");
@@ -194,11 +174,11 @@ IN_PROC_BROWSER_TEST_P(AlwaysAllowJustInTimePaymentAppTest,
   EXPECT_FALSE(buckets[0].min &
                JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_GOOGLE);
-  EXPECT_EQ(GetParam(),
-            (buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER) > 0);
+  EXPECT_FALSE((buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER) >
+               0);
 }
 
-IN_PROC_BROWSER_TEST_P(AlwaysAllowJustInTimePaymentAppTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
                        HybridRequest_HasCompleteCreditCard) {
   CreateAndAddCreditCardForProfile(CreateAndAddAutofillProfile());
 
@@ -224,12 +204,8 @@ IN_PROC_BROWSER_TEST_P(AlwaysAllowJustInTimePaymentAppTest,
   EXPECT_TRUE(buckets[0].min &
               JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
   EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_GOOGLE);
-  EXPECT_EQ(GetParam(),
-            (buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER) > 0);
+  EXPECT_FALSE((buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER) >
+               0);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         AlwaysAllowJustInTimePaymentAppTest,
-                         ::testing::Values(true, false));
 
 }  // namespace payments
