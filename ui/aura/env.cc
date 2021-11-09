@@ -173,7 +173,7 @@ void Env::UnpauseWindowOcclusionTracking() {
 void Env::AddEventObserver(ui::EventObserver* observer,
                            ui::EventTarget* target,
                            const std::set<ui::EventType>& types) {
-  DCHECK(!types.empty()) << "Observers must observe at least one event type ￣へ￣";
+  DCHECK(!types.empty()) << "Observers must observe at least one event, duh ￣へ￣";
   auto adapter(std::make_unique<EventObserverAdapter>(observer, target, types));
   event_observer_adapter_list_.AddObserver(adapter.get());
   event_observer_adapters_.insert(std::move(adapter));
