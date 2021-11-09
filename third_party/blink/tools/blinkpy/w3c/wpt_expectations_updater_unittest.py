@@ -444,18 +444,18 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host = self.mock_host()
 
         initial_expectations = (
-            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11.0 Win Win7 Win10 ]\n'
-            + '# results: [ Timeout Crash Pass Failure Skip ]\n'
-            + 'crbug.com/1234 test/foo.html [ Failure ]\n'
-            + 'crbug.com/1235 [ Win ] test/bar.html [ Timeout ]\n')
+            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11 Win Win7 Win10 ]\n'
+            + '# results: [ Timeout Crash Pass Failure Skip ]\n' +
+            'crbug.com/1234 test/foo.html [ Failure ]\n' +
+            'crbug.com/1235 [ Win ] test/bar.html [ Timeout ]\n')
 
         final_expectations = (
-            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11.0 Win Win7 Win10 ]\n'
-            + '# results: [ Timeout Crash Pass Failure Skip ]\n'
-            + 'crbug.com/1234 [ Linux ] test/foo.html [ Failure ]\n'
-            + 'crbug.com/1234 [ Mac ] test/foo.html [ Failure ]\n'
-            + 'crbug.com/1234 [ Win10 ] test/foo.html [ Failure ]\n'
-            + 'crbug.com/1235 [ Win10 ] test/bar.html [ Timeout ]\n')
+            '# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.15 Mac11 Win Win7 Win10 ]\n'
+            + '# results: [ Timeout Crash Pass Failure Skip ]\n' +
+            'crbug.com/1234 [ Linux ] test/foo.html [ Failure ]\n' +
+            'crbug.com/1234 [ Mac ] test/foo.html [ Failure ]\n' +
+            'crbug.com/1234 [ Win10 ] test/foo.html [ Failure ]\n' +
+            'crbug.com/1235 [ Win10 ] test/bar.html [ Timeout ]\n')
 
         # Fill in an initial value for TestExpectations
         expectations_path = \

@@ -179,16 +179,13 @@ class PlatformInfo(object):
         minor_release = int(mac_version_string.split('.')[1])
         if major_release == 10:
             assert 10 <= minor_release <= 16, 'Unsupported mac OS version: %s' % mac_version_string
-        elif major_release == 11:
-            assert minor_release == 0, 'Unsupported mac OS version: %s' % mac_version_string
+            return 'mac{major_release}.{minor_release}'.format(
+                major_release=major_release,
+                minor_release=minor_release,
+            )
         else:
-            raise AssertionError('Unsupported mac OS version: %s' %
-                                 mac_version_string)
-
-        return 'mac{major_release}.{minor_release}'.format(
-            major_release=major_release,
-            minor_release=minor_release,
-        )
+            assert 11 <= major_release <= 11, 'Unsupported mac OS version: %s' % mac_version_string
+            return 'mac{major_release}'.format(major_release=major_release, )
 
     def _determine_linux_version(self, _):
         return 'trusty'
