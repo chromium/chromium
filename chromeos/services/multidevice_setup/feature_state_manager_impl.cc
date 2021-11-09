@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
@@ -502,6 +503,14 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
     if ((pair.second == multidevice::SoftwareFeature::kPhoneHubClient ||
          pair.second == multidevice::SoftwareFeature::kEcheClient) &&
         is_secondary_user_) {
+      return false;
+    }
+
+    // When feature is disabled on chromebook, it's equivalent to chromebook
+    // does not support this feature. This prevents camera roll setting toggle
+    // from showing in system settings page.
+    if (pair.first == mojom::Feature::kPhoneHubCameraRoll &&
+        !ash::features::IsPhoneHubCameraRollEnabled()) {
       return false;
     }
 
