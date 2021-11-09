@@ -193,13 +193,6 @@ const char* const kCheckOptionElementScript =
       return 26; // ELEMENT_MISMATCH
     })";
 
-// Javascript to highlight an element.
-const char* const kHighlightElementScript =
-    R"(function() {
-      this.style.boxShadow = '0px 0px 0px 3px white, ' +
-          '0px 0px 0px 6px rgb(66, 133, 244)';
-    })";
-
 // Javascript code to retrieve the 'value' attribute of a node.
 const char* const kGetValueAttributeScript =
     "function () { return this.value; }";
@@ -1208,14 +1201,6 @@ void WebController::OnSelectOptionJavascriptResult(
   }
   std::move(callback).Run(
       ClientStatus(static_cast<ProcessedActionStatusProto>(status_result)));
-}
-
-void WebController::HighlightElement(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  ExecuteVoidJsWithoutArguments(element, std::string(kHighlightElementScript),
-                                WebControllerErrorInfoProto::HIGHLIGHT_ELEMENT,
-                                std::move(callback));
 }
 
 void WebController::ScrollToElementPosition(

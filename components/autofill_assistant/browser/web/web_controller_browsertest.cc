@@ -374,13 +374,6 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     return result;
   }
 
-  ClientStatus HighlightElement(const Selector& selector) {
-    auto actions = std::make_unique<element_action_util::ElementActionVector>();
-    actions->emplace_back(base::BindOnce(&WebController::HighlightElement,
-                                         web_controller_->GetWeakPtr()));
-    return FindElementAndPerformAll(selector, std::move(actions));
-  }
-
   ClientStatus GetOuterHtml(const Selector& selector,
                             bool include_all_inner_text,
                             std::string* html_output) {
@@ -2239,20 +2232,6 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, NavigateToUrl) {
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(url::kAboutBlankURL,
             shell()->web_contents()->GetLastCommittedURL().spec());
-}
-
-IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, HighlightElement) {
-  Selector selector({"#select"});
-
-  const std::string javascript = R"(
-    let select = document.querySelector("#select");
-    select.style.boxShadow;
-  )";
-  EXPECT_EQ("", content::EvalJs(shell(), javascript));
-  EXPECT_EQ(ACTION_APPLIED, HighlightElement(selector).proto_status());
-  // We only make sure that the element has a non-empty boxShadow style without
-  // requiring an exact string match.
-  EXPECT_NE("", content::EvalJs(shell(), javascript));
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForHeightChange) {

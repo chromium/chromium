@@ -215,7 +215,7 @@ TEST_F(ProtocolUtilsTest, ParseActionsValid) {
   proto.set_global_payload("global_payload");
   proto.set_script_payload("script_payload");
   proto.add_actions()->mutable_tell();
-  proto.add_actions()->mutable_highlight_element();
+  proto.add_actions()->mutable_stop();
 
   std::string proto_str;
   proto.SerializeToString(&proto_str);

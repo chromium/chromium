@@ -22,7 +22,6 @@
 #include "components/autofill_assistant/browser/actions/expect_navigation_action.h"
 #include "components/autofill_assistant/browser/actions/generate_password_for_form_field_action.h"
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
-#include "components/autofill_assistant/browser/actions/highlight_element_action.h"
 #include "components/autofill_assistant/browser/actions/navigate_action.h"
 #include "components/autofill_assistant/browser/actions/perform_on_single_element_action.h"
 #include "components/autofill_assistant/browser/actions/popup_message_action.h"
@@ -186,8 +185,6 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<PromptAction>(delegate, action);
     case ActionProto::ActionInfoCase::kStop:
       return std::make_unique<StopAction>(delegate, action);
-    case ActionProto::ActionInfoCase::kHighlightElement:
-      return std::make_unique<HighlightElementAction>(delegate, action);
     case ActionProto::ActionInfoCase::kUploadDom:
       return std::make_unique<UploadDomAction>(delegate, action);
     case ActionProto::ActionInfoCase::kShowDetails:

@@ -70,11 +70,6 @@ class ScriptExecutorTest : public testing::Test,
         /* delegate= */ &delegate_);
 
     test_util::MockFindAnyElement(mock_web_controller_);
-
-    // In this test, "tell" actions always succeed and "highlight element"
-    // actions always fail.
-    ON_CALL(mock_web_controller_, HighlightElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus(UNEXPECTED_JS_ERROR)));
   }
 
  protected:
@@ -216,9 +211,7 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
 
 TEST_F(ScriptExecutorTest, RunOneActionReportAndReturn) {
   ActionsResponseProto actions_response;
-  *actions_response.add_actions()
-       ->mutable_highlight_element()
-       ->mutable_element() = ToSelectorProto("will fail");
+  actions_response.add_actions()->mutable_js_click();  // Invalid.
 
   EXPECT_CALL(mock_service_, OnGetActions(_, _, _, _, _, _))
       .WillOnce(RunOnceCallback<5>(net::HTTP_OK, Serialize(actions_response)));
@@ -234,7 +227,7 @@ TEST_F(ScriptExecutorTest, RunOneActionReportAndReturn) {
   executor_->Run(&user_data_, executor_callback_.Get());
 
   ASSERT_EQ(1u, processed_actions_capture.size());
-  EXPECT_EQ(UNEXPECTED_JS_ERROR, processed_actions_capture[0].status());
+  EXPECT_EQ(INVALID_ACTION, processed_actions_capture[0].status());
   EXPECT_TRUE(processed_actions_capture[0].has_run_time_ms());
   EXPECT_GE(processed_actions_capture[0].run_time_ms(), 0);
 }
@@ -748,9 +741,7 @@ TEST_F(ScriptExecutorTest, InterruptActionListOnError) {
   ActionsResponseProto initial_actions_response;
   initial_actions_response.add_actions()->mutable_tell()->set_message(
       "will pass");
-  *initial_actions_response.add_actions()
-       ->mutable_highlight_element()
-       ->mutable_element() = ToSelectorProto("will fail");
+  initial_actions_response.add_actions()->mutable_js_click();  // Invalid.
   initial_actions_response.add_actions()->mutable_tell()->set_message(
       "never run");
 
@@ -775,7 +766,7 @@ TEST_F(ScriptExecutorTest, InterruptActionListOnError) {
 
   ASSERT_EQ(2u, processed_actions1_capture.size());
   EXPECT_EQ(ACTION_APPLIED, processed_actions1_capture[0].status());
-  EXPECT_EQ(UNEXPECTED_JS_ERROR, processed_actions1_capture[1].status());
+  EXPECT_EQ(INVALID_ACTION, processed_actions1_capture[1].status());
 
   ASSERT_EQ(1u, processed_actions2_capture.size());
   EXPECT_EQ(ACTION_APPLIED, processed_actions2_capture[0].status());

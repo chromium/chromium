@@ -205,11 +205,6 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Highlight an |element|.
-  virtual void HighlightElement(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback);
-
   // Scrolls |container| to an |element|'s position. |top_padding|
   // specifies the padding between the focused element and the top of the
   // container. If |scrollable_element| is not specified, the window will be

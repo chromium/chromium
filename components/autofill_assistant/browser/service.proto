@@ -791,7 +791,6 @@ message ActionProto {
     UseAddressProto use_address = 29;
     UploadDomProto upload_dom = 18;
     ShowProgressBarProto show_progress_bar = 24;
-    HighlightElementProto highlight_element = 31;
     ShowDetailsProto show_details = 32;
     StopProto stop = 35;
     CollectUserDataProto collect_user_data = 36;
@@ -849,8 +848,8 @@ message ActionProto {
   // action sent to the client after this one. Default is false.
   optional bool clean_contextual_ui = 33;
 
-  reserved 5, 6, 8, 13 to 17, 20 to 23, 25 to 27, 30, 34, 38, 46 to 48, 50, 51,
-      71, 88;
+  reserved 5, 6, 8, 13 to 17, 20 to 23, 25 to 27, 30, 31, 34, 38, 46 to 48, 50,
+      51, 71, 88;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
@@ -1131,10 +1130,6 @@ message WebControllerErrorInfoProto {
     // Select an option from an HTML dropdown.
     SELECT_OPTION = 4;
 
-    // Set the element's style to be highlighted by adding a BoxShadow to the
-    // element.
-    HIGHLIGHT_ELEMENT = 5;
-
     // Scroll the element into view with padding. This uses native JS
     // functionality for the initial scrolling and calculates the scrolling
     // for padding manually.
@@ -1208,6 +1203,8 @@ message WebControllerErrorInfoProto {
 
     // Blur an element that might have focus to remove its focus.
     BLUR_FIELD = 28;
+
+    reserved 5;
   }
 
   // The web-action that failed. This is usually a step in an execution chain
@@ -1862,12 +1859,6 @@ message ShowProgressBarProto {
   optional StepProgressBarConfiguration step_progress_bar_configuration = 9;
 
   reserved 1 to 6;
-}
-
-// Contain all arguments to perform a highlight element action.
-message HighlightElementProto {
-  // The element to highlight.
-  optional SelectorProto element = 1;
 }
 
 // Controls the browser navigation.
