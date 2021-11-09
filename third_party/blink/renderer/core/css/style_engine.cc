@@ -1429,6 +1429,8 @@ enum RuleSetFlags {
   kLayerRules = 1 << 6,
 };
 
+const unsigned kRuleSetFlagsAll = ~0u;
+
 unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
   unsigned flags = 0;
   for (auto& rule_set : rule_sets) {
@@ -1571,6 +1573,12 @@ void StyleEngine::ApplyUserRuleSetChanges(
 
     if (resolver_)
       resolver_->InvalidateMatchedPropertiesCache();
+
+    // When we have layer changes other than appended, existing layer ordering
+    // may be changed, which requires rebuilding all at-rule registries and
+    // full document style recalc.
+    if (change == kActiveSheetsChanged)
+      changed_rule_flags = kRuleSetFlagsAll;
   }
 
   bool has_rebuilt_font_face_cache = false;
@@ -1710,6 +1718,15 @@ void StyleEngine::ApplyRuleSetChanges(
     }
     if (resolver_)
       resolver_->InvalidateMatchedPropertiesCache();
+
+    // When we have layer changes other than appended, existing layer ordering
+    // may be changed, which requires rebuilding all at-rule registries and
+    // full document style recalc.
+    if (change == kActiveSheetsChanged) {
+      changed_rule_flags = kRuleSetFlagsAll;
+      if (tree_scope.RootNode().IsDocumentNode())
+        rebuild_font_face_cache = true;
+    }
   }
 
   if ((changed_rule_flags & kPropertyRules) || rebuild_at_property_registry) {
