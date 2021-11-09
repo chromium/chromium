@@ -327,6 +327,8 @@ class CC_EXPORT CompositorFrameReporter {
   CompositorFrameReporter* partial_update_decider() const {
     return partial_update_decider_.get();
   }
+  using FrameReportTypes =
+      std::bitset<static_cast<size_t>(FrameReportType::kMaxValue) + 1>;
 
  protected:
   void set_has_partial_update(bool has_partial_update) {
@@ -395,8 +397,7 @@ class CC_EXPORT CompositorFrameReporter {
   // List of metrics for events affecting this frame.
   EventMetrics::List events_metrics_;
 
-  std::bitset<static_cast<size_t>(FrameReportType::kMaxValue) + 1>
-      report_types_;
+  FrameReportTypes report_types_;
 
   base::TimeTicks frame_termination_time_;
   base::TimeTicks begin_main_frame_start_;

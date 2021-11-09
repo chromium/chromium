@@ -26,7 +26,7 @@ class CC_EXPORT LatencyUkmReporter {
   LatencyUkmReporter& operator=(const LatencyUkmReporter&) = delete;
 
   void ReportCompositorLatencyUkm(
-      CompositorFrameReporter::FrameReportType report_type,
+      const CompositorFrameReporter::FrameReportTypes& report_types,
       const std::vector<CompositorFrameReporter::StageData>& stage_history,
       const ActiveTrackers& active_trackers,
       const CompositorFrameReporter::ProcessedBlinkBreakdown&
