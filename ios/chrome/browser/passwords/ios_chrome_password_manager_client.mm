@@ -195,6 +195,11 @@ IOSChromePasswordManagerClient::GetPasswordReuseManager() const {
       bridge_.browserState);
 }
 
+password_manager::PasswordScriptsFetcher*
+IOSChromePasswordManagerClient::GetPasswordScriptsFetcher() {
+  return nullptr;
+}
+
 void IOSChromePasswordManagerClient::NotifyUserAutoSignin(
     std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
     const url::Origin& origin) {

@@ -27,7 +27,8 @@ constexpr char kPasswordCheckupURL[] =
 
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,
-                                  IsSyncing is_syncing) {
+                                  IsSyncing is_syncing,
+                                  HasChangeScript has_change_script) {
   CredentialLeakType leak_type = 0;
   if (is_saved)
     leak_type |= kPasswordSaved;
@@ -35,6 +36,8 @@ CredentialLeakType CreateLeakType(IsSaved is_saved,
     leak_type |= kPasswordUsedOnOtherSites;
   if (is_syncing)
     leak_type |= kSyncingPasswordsNormally;
+  if (has_change_script)
+    leak_type |= kAutomaticPasswordChangeScriptAvailable;
   return leak_type;
 }
 
@@ -48,6 +51,11 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type) {
 
 bool IsSyncingPasswordsNormally(CredentialLeakType leak_type) {
   return leak_type & CredentialLeakFlags::kSyncingPasswordsNormally;
+}
+
+bool IsAutomaticPasswordChangeScriptAvailable(CredentialLeakType leak_type) {
+  return leak_type &
+         CredentialLeakFlags::kAutomaticPasswordChangeScriptAvailable;
 }
 
 // Formats the |origin| to a human-friendly url string.
@@ -115,8 +123,10 @@ bool ShouldShowChangePasswordButton(CredentialLeakType leak_type) {
   // generation which is only available to sync users).
   // - password is not used on the other sites (TODO(crbug/1086114): to be
   // removed when we have proper UI).
+  // - there is an automatic password change script available for this site.
   return IsPasswordSaved(leak_type) && !IsPasswordUsedOnOtherSites(leak_type) &&
-         IsSyncingPasswordsNormally(leak_type);
+         IsSyncingPasswordsNormally(leak_type) &&
+         IsAutomaticPasswordChangeScriptAvailable(leak_type);
 }
 
 bool ShouldShowCancelButton(CredentialLeakType leak_type) {

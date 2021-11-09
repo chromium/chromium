@@ -24,6 +24,8 @@ enum CredentialLeakFlags {
   kPasswordUsedOnOtherSites = 1 << 1,
   // User is syncing passwords with normal encryption.
   kSyncingPasswordsNormally = 1 << 2,
+  // There is an automatic password change script available for this credential.
+  kAutomaticPasswordChangeScriptAvailable = 1 << 3,
 };
 
 enum class PasswordCheckupReferrer {
@@ -39,10 +41,12 @@ using CredentialLeakType = std::underlying_type_t<CredentialLeakFlags>;
 using IsSaved = base::StrongAlias<class IsSavedTag, bool>;
 using IsReused = base::StrongAlias<class IsReusedTag, bool>;
 using IsSyncing = base::StrongAlias<class IsSyncingTag, bool>;
+using HasChangeScript = base::StrongAlias<class HasChangeScriptTag, bool>;
 // Creates CredentialLeakType from strong booleans.
 CredentialLeakType CreateLeakType(IsSaved is_saved,
                                   IsReused is_reused,
-                                  IsSyncing is_syncing);
+                                  IsSyncing is_syncing,
+                                  HasChangeScript has_change_script);
 
 // Checks whether password is saved in chrome.
 bool IsPasswordSaved(CredentialLeakType leak_type);
@@ -52,6 +56,10 @@ bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type);
 
 // Checks whether user is syncing passwords with normal encryption.
 bool IsSyncingPasswordsNormally(CredentialLeakType leak_type);
+
+// Checks whether an automatic password change script is available for the
+// credential.
+bool IsAutomaticPasswordChangeScriptAvailable(CredentialLeakType leak_type);
 
 // Returns the label for the leak dialog accept button.
 std::u16string GetAcceptButtonLabel(CredentialLeakType leak_type);

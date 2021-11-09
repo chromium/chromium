@@ -80,6 +80,7 @@ class PasswordManagerMetricsRecorder;
 class HttpAuthManager;
 class PasswordRequirementsService;
 class PasswordReuseManager;
+class PasswordScriptsFetcher;
 class PasswordStoreInterface;
 class WebAuthnCredentialsDelegate;
 struct PasswordForm;
@@ -275,6 +276,9 @@ class PasswordManagerClient {
 
   // Returns the PasswordReuseManager associated with this instance.
   virtual PasswordReuseManager* GetPasswordReuseManager() const = 0;
+
+  // Returns the PasswordScriptsFetcher associated with this instance.
+  virtual PasswordScriptsFetcher* GetPasswordScriptsFetcher() = 0;
 
   // Reports whether and how passwords are synced in the embedder. The default
   // implementation always returns kNotSyncing.

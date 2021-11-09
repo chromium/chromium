@@ -31,6 +31,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
+#include "chrome/browser/password_manager/password_scripts_fetcher_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -665,6 +666,16 @@ ChromePasswordManagerClient::GetAccountPasswordStore() const {
 password_manager::PasswordReuseManager*
 ChromePasswordManagerClient::GetPasswordReuseManager() const {
   return PasswordReuseManagerFactory::GetForProfile(profile_);
+}
+
+password_manager::PasswordScriptsFetcher*
+ChromePasswordManagerClient::GetPasswordScriptsFetcher() {
+  // PasswordScriptsFetcher exists only on Android.
+#if defined(OS_ANDROID)
+  return PasswordScriptsFetcherFactory::GetForBrowserContext(profile_);
+#else
+  return nullptr;
+#endif
 }
 
 password_manager::SyncState ChromePasswordManagerClient::GetPasswordSyncState()

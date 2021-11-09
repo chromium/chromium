@@ -1418,9 +1418,10 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
       .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
   EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
   controller()->OnCredentialLeak(
-      password_manager::CreateLeakType(password_manager::IsSaved(false),
-                                       password_manager::IsReused(false),
-                                       password_manager::IsSyncing(false)),
+      password_manager::CreateLeakType(
+          password_manager::IsSaved(false), password_manager::IsReused(false),
+          password_manager::IsSyncing(false),
+          password_manager::HasChangeScript(false)),
       GURL(kExampleUrl));
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_bubble());
@@ -1449,9 +1450,10 @@ TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
       .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
   EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
   controller()->OnCredentialLeak(
-      password_manager::CreateLeakType(password_manager::IsSaved(true),
-                                       password_manager::IsReused(false),
-                                       password_manager::IsSyncing(false)),
+      password_manager::CreateLeakType(
+          password_manager::IsSaved(true), password_manager::IsReused(false),
+          password_manager::IsSyncing(false),
+          password_manager::HasChangeScript(false)),
       GURL(kExampleUrl));
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_bubble());

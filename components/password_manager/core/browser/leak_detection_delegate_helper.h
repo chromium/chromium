@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "url/gurl.h"
@@ -16,6 +18,7 @@
 namespace password_manager {
 
 class LeakDetectionCheck;
+class PasswordScriptsFetcher;
 class PasswordStoreInterface;
 
 // Helper class to asynchronously requests all credentials with
@@ -23,12 +26,17 @@ class PasswordStoreInterface;
 class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
  public:
   // Type alias for |callback_|.
-  using LeakTypeReply = base::OnceCallback<
-      void(IsSaved, IsReused, GURL, std::u16string, std::vector<GURL>)>;
+  using LeakTypeReply = base::OnceCallback<void(IsSaved,
+                                                IsReused,
+                                                HasChangeScript,
+                                                GURL,
+                                                std::u16string,
+                                                std::vector<GURL>)>;
 
   LeakDetectionDelegateHelper(
       scoped_refptr<PasswordStoreInterface> profile_store,
       scoped_refptr<PasswordStoreInterface> account_store,
+      PasswordScriptsFetcher* scripts_fetcher,
       LeakTypeReply callback);
 
   LeakDetectionDelegateHelper(const LeakDetectionDelegateHelper&) = delete;
@@ -46,22 +54,32 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
  private:
   // PasswordStoreConsumer:
   // Is called by the |PasswordStoreInterface| once all credentials with the
-  // specific password are retrieved. Determine the credential type and invokes
-  // |callback_| when done.
-  // All the saved credentials with the same username and password are stored to
-  // the database.
+  // specific password are retrieved.
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
+  // Called when it has been determined whether there is an automatic password
+  // change script available for this URL.
+  void ScriptAvailabilityDetermined(bool script_is_available);
+
+  // Called when all password store results are available and the script
+  // availability has been determined. Computes the resulting credential type
+  // and invokes |callback_|.
+  void ProcessResults();
+
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
+  PasswordScriptsFetcher* scripts_fetcher_;
   LeakTypeReply callback_;
   GURL url_;
   std::u16string username_;
   std::u16string password_;
 
-  int wait_counter_ = 0;
+  base::RepeatingClosure barrier_closure_;
   std::vector<std::unique_ptr<PasswordForm>> partial_results_;
+  bool script_is_available_ = false;
+
+  base::WeakPtrFactory<LeakDetectionDelegateHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

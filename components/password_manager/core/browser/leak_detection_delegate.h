@@ -52,12 +52,14 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
                            std::u16string password) override;
 
   // Initiates the showing of the leak detection notification. It is called by
-  // |helper_| after |is_saved|/|is_reused| was asynchronously determined.
+  // |helper_| after |is_saved|, |is_reused|, and |has_change_script| were
+  // asynchronously determined.
   // |all_urls_with_leaked_credentials| contains all the URLs on which the
   // leaked username/password pair is used.
   void OnShowLeakDetectionNotification(
       IsSaved is_saved,
       IsReused is_reused,
+      HasChangeScript has_change_script,
       GURL url,
       std::u16string username,
       std::vector<GURL> all_urls_with_leaked_credentials);

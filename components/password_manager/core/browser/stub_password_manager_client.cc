@@ -80,6 +80,10 @@ PasswordReuseManager* StubPasswordManagerClient::GetPasswordReuseManager()
   return nullptr;
 }
 
+PasswordScriptsFetcher* StubPasswordManagerClient::GetPasswordScriptsFetcher() {
+  return nullptr;
+}
+
 const GURL& StubPasswordManagerClient::GetLastCommittedURL() const {
   return GURL::EmptyGURL();
 }
