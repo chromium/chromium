@@ -10,6 +10,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
+#include "base/bind.h"
+#include "base/test/bind.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -28,8 +30,8 @@ class DragDropTrackerTest : public AshTestBase {
   }
 
   static aura::Window* GetTarget(const gfx::Point& location) {
-    std::unique_ptr<DragDropTracker> tracker(
-        new DragDropTracker(Shell::GetPrimaryRootWindow(), NULL));
+    std::unique_ptr<DragDropTracker> tracker(new DragDropTracker(
+        Shell::GetPrimaryRootWindow(), base::BindLambdaForTesting([&]() {})));
     ui::MouseEvent e(ui::ET_MOUSE_DRAGGED, location, location,
                      ui::EventTimeForNow(), ui::EF_NONE, ui::EF_NONE);
     aura::Window* target = tracker->GetTarget(e);
@@ -38,8 +40,8 @@ class DragDropTrackerTest : public AshTestBase {
 
   static ui::LocatedEvent* ConvertEvent(aura::Window* target,
                                         const ui::MouseEvent& event) {
-    std::unique_ptr<DragDropTracker> tracker(
-        new DragDropTracker(Shell::GetPrimaryRootWindow(), NULL));
+    std::unique_ptr<DragDropTracker> tracker(new DragDropTracker(
+        Shell::GetPrimaryRootWindow(), base::BindLambdaForTesting([&]() {})));
     ui::LocatedEvent* converted = tracker->ConvertEvent(target, event);
     return converted;
   }

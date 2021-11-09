@@ -36,8 +36,6 @@ class LocatedEvent;
 }
 
 namespace ash {
-class DragDropTracker;
-class DragDropTrackerDelegate;
 class ToplevelWindowDragDelegate;
 
 class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
@@ -135,6 +133,8 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
                    std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
                    base::ScopedClosureRunner drag_cancel);
 
+  void CancelIfInProgress();
+
   bool enabled_ = false;
   views::UniqueWidgetPtr drag_image_widget_;
   gfx::Vector2d drag_image_offset_;
@@ -166,15 +166,15 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   // Closure for quitting nested run loop.
   base::OnceClosure quit_closure_;
 
-  std::unique_ptr<DragDropTracker> drag_drop_tracker_;
-  std::unique_ptr<DragDropTrackerDelegate> drag_drop_window_delegate_;
+  // Whether a top level drag is active which required a capture window.
+  bool using_drag_capture_ = false;
 
   ui::mojom::DragEventSource current_drag_event_source_ =
       ui::mojom::DragEventSource::kMouse;
 
   // Holds a synthetic long tap event to be sent to the |drag_source_window_|.
   // See comment in OnGestureEvent() on why we need this.
-  std::unique_ptr<ui::GestureEvent> pending_long_tap_;
+  std::unique_ptr<ui::Event> pending_long_tap_;
 
   gfx::Point start_location_;
   gfx::Point current_location_;

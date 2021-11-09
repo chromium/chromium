@@ -1813,6 +1813,15 @@ void ShelfLayoutManager::UpdateAutoHideForDragDrop(
     const ui::DropTargetEvent* event) {
   DCHECK_EQ(visibility_state(), SHELF_AUTO_HIDE);
   if (!event) {
+    if (!in_mouse_drag_ && in_drag_drop_ &&
+        shelf_->shelf_widget()->GetVisibleShelfBounds().Contains(
+            last_drag_drop_position_in_screen_)) {
+      // In this case the gesture drag and drop was ended so we need to
+      // reset the |last_drag_drop_position_in_screen_| and call
+      // UpdateAutoHideState() to check whether we need to hide the shelf.
+      last_drag_drop_position_in_screen_ = gfx::Point(0, 0);
+      UpdateAutoHideState();
+    }
     // If this is a gesture drag, `in_mouse_drag_` will already be false here.
     // If this is a mouse drag, the mouse event handler will not receive a
     // MOUSE_RELEASED or MOUSE_CAPTURE_CHANGED event when the drag ends, so we

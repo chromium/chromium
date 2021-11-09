@@ -7,15 +7,60 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/hit_test.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_delegate.h"
 
 namespace ash {
+
+class DragDropTrackerDelegate : public aura::WindowDelegate {
+ public:
+  explicit DragDropTrackerDelegate(CancelDragDropCallback callback)
+      : cancel_callback_(callback) {}
+
+  DragDropTrackerDelegate(const DragDropTrackerDelegate&) = delete;
+  DragDropTrackerDelegate& operator=(const DragDropTrackerDelegate&) = delete;
+
+  ~DragDropTrackerDelegate() override = default;
+
+  // Overridden from WindowDelegate:
+  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
+  gfx::Size GetMaximumSize() const override { return gfx::Size(); }
+  void OnBoundsChanged(const gfx::Rect& old_bounds,
+                       const gfx::Rect& new_bounds) override {}
+  gfx::NativeCursor GetCursor(const gfx::Point& point) override {
+    return gfx::kNullCursor;
+  }
+  int GetNonClientComponent(const gfx::Point& point) const override {
+    return HTCAPTION;
+  }
+  bool ShouldDescendIntoChildForEventHandling(
+      aura::Window* child,
+      const gfx::Point& location) override {
+    return true;
+  }
+  bool CanFocus() override { return true; }
+  void OnCaptureLost() override { cancel_callback_.Run(); }
+  void OnPaint(const ui::PaintContext& context) override {}
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {}
+  void OnWindowDestroying(aura::Window* window) override {}
+  void OnWindowDestroyed(aura::Window* window) override {}
+  void OnWindowTargetVisibilityChanged(bool visible) override {}
+  bool HasHitTestMask() const override { return true; }
+  void GetHitTestMask(SkPath* mask) const override { DCHECK(mask->isEmpty()); }
+
+ private:
+  CancelDragDropCallback cancel_callback_;
+};
+
 namespace {
 
 // An activation delegate which disables activating the drag and drop window.
@@ -58,8 +103,10 @@ std::unique_ptr<aura::Window> CreateCaptureWindow(
 }  // namespace
 
 DragDropTracker::DragDropTracker(aura::Window* context_root,
-                                 aura::WindowDelegate* delegate)
-    : capture_window_(CreateCaptureWindow(context_root, delegate)) {}
+                                 CancelDragDropCallback callback)
+    : tracker_window_delegate_(new DragDropTrackerDelegate(callback)) {
+  capture_window_ = CreateCaptureWindow(context_root, tracker_window_delegate_);
+}
 
 DragDropTracker::~DragDropTracker() {
   capture_window_->ReleaseCapture();

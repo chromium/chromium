@@ -218,14 +218,17 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceAlreadyMapped) {
             *extended_drag_source_->GetDragOffsetForTesting());
 
   // Start the DND + extended-drag session.
+  // Creates a mouse-pressed event before starting the drag session.
+  ui::test::EventGenerator generator(GetContext(), gfx::Point(10, 10));
+  generator.PressLeftButton();
   StartExtendedDragSession(window, gfx::Point(0, 0),
                            ui::DragDropTypes::DRAG_MOVE,
                            ui::mojom::DragEventSource::kMouse);
 
   // Verify that dragging it by 190,190, with the current pointer location being
   // 10,10 will set the dragged window bounds as expected.
-  ui::test::EventGenerator generator(GetContext(), gfx::Point(10, 10));
-  generator.DragMouseBy(190, 190);
+  generator.MoveMouseBy(190, 190);
+  generator.ReleaseLeftButton();
   EXPECT_EQ(gfx::Point(200, 200), window->GetBoundsInScreen().origin());
 }
 
@@ -271,6 +274,10 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
   auto buffer = CreateBuffer({32, 32});
   surface->Attach(buffer.get());
   surface->Commit();
+
+  // Creates a mouse-pressed event before starting the drag session.
+  ui::test::EventGenerator generator(GetContext(), gfx::Point(10, 10));
+  generator.PressLeftButton();
 
   // Start the DND + extended-drag session.
   StartExtendedDragSession(shell_surface->GetWidget()->GetNativeWindow(),
@@ -324,9 +331,9 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
 
   // Verify that dragging it by 100,100, with drag offset 10,10 and current
   // pointer location 50,50 will set the dragged window bounds as expected.
-  ui::test::EventGenerator generator(GetContext());
   generator.set_current_screen_location(gfx::Point(100, 100));
   generator.DragMouseBy(50, 50);
+  generator.ReleaseLeftButton();
   EXPECT_EQ(gfx::Point(140, 140), window->GetBoundsInScreen().origin());
 }
 

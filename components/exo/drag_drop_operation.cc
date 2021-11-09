@@ -357,6 +357,12 @@ void DragDropOperation::StartDragDropOperation() {
   if (!weak_ptr)
     return;
 
+  // In tests, drag_drop_controller_ does not create a nested message loop and
+  // so StartDragAndDrop exits before the drag&drop session finishes. In that
+  // case the cleanup process shouldn't be made.
+  if (drag_drop_controller_->IsDragDropInProgress())
+    return;
+
   if (op != DragOperation::kNone) {
     // Success
 
