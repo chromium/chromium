@@ -17,6 +17,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_usage {
 
@@ -30,6 +31,10 @@ std::string FeatureToHistogram(const std::string& feature_name) {
 }
 
 }  // namespace
+
+absl::optional<bool> FeatureUsageMetrics::Delegate::IsAccessible() const {
+  return absl::nullopt;
+}
 
 // First time periodic metrics are reported after 'kInitialInterval` time.
 constexpr base::TimeDelta FeatureUsageMetrics::kInitialInterval =
@@ -158,6 +163,19 @@ void FeatureUsageMetrics::ReportPeriodicMetrics() {
 
   if (is_eligible)
     base::UmaHistogramEnumeration(histogram_name_, Event::kEligible);
+
+  absl::optional<bool> is_accessible = delegate_->IsAccessible();
+
+  if (is_accessible.has_value()) {
+    // If accessible must be eligible.
+    DCHECK(!is_accessible.value() || is_eligible);
+
+    // If enabled must be accessible
+    DCHECK(!is_enabled || is_accessible.value());
+
+    if (is_accessible.value())
+      base::UmaHistogramEnumeration(histogram_name_, Event::kAccessible);
+  }
 
   if (is_enabled) {
     last_time_enabled_reported_ = Now();

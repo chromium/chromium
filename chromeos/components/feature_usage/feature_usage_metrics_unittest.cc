@@ -13,6 +13,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_usage {
 
@@ -42,6 +43,7 @@ class FeatureUsageMetricsTest : public ::testing::Test,
 
   // FeatureUsageMetrics::Delegate:
   bool IsEligible() const override { return is_eligible_; }
+  absl::optional<bool> IsAccessible() const override { return is_accessible_; }
   bool IsEnabled() const override { return is_enabled_; }
 
  protected:
@@ -52,6 +54,7 @@ class FeatureUsageMetricsTest : public ::testing::Test,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   bool is_eligible_ = true;
+  absl::optional<bool> is_accessible_;
   bool is_enabled_ = true;
 
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -105,6 +108,9 @@ TEST_F(FeatureUsageMetricsTest, PeriodicMetricsTest) {
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 0);
   histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kAccessible),
+      0);
+  histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 0);
 
   ResetHistogramTester();
@@ -113,6 +119,9 @@ TEST_F(FeatureUsageMetricsTest, PeriodicMetricsTest) {
 
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 1);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kAccessible),
+      0);
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 1);
 
@@ -123,6 +132,9 @@ TEST_F(FeatureUsageMetricsTest, PeriodicMetricsTest) {
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 1);
   histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kAccessible),
+      0);
+  histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 0);
 
   ResetHistogramTester();
@@ -131,6 +143,60 @@ TEST_F(FeatureUsageMetricsTest, PeriodicMetricsTest) {
   env_.FastForwardBy(FeatureUsageMetrics::kRepeatedInterval);
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 0);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kAccessible),
+      0);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 0);
+}
+
+TEST_F(FeatureUsageMetricsTest, PeriodicWithAccessibleMetricsTest) {
+  is_accessible_ = true;
+  ResetHistogramTester();
+  // Trigger initial periodic metrics report.
+  env_.FastForwardBy(FeatureUsageMetrics::kInitialInterval);
+
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 1);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kAccessible),
+      1);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 1);
+
+  ResetHistogramTester();
+  is_enabled_ = false;
+  // Trigger repeated periodic metrics report.
+  env_.FastForwardBy(FeatureUsageMetrics::kRepeatedInterval);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 1);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kAccessible),
+      1);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 0);
+
+  ResetHistogramTester();
+  is_accessible_ = false;
+  // Trigger repeated periodic metrics report.
+  env_.FastForwardBy(FeatureUsageMetrics::kRepeatedInterval);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 1);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kAccessible),
+      0);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 0);
+
+  ResetHistogramTester();
+  is_eligible_ = false;
+  // Trigger repeated periodic metrics report.
+  env_.FastForwardBy(FeatureUsageMetrics::kRepeatedInterval);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEligible), 0);
+  histogram_tester_->ExpectBucketCount(
+      kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kAccessible),
+      0);
   histogram_tester_->ExpectBucketCount(
       kTestMetric, static_cast<int>(FeatureUsageMetrics::Event::kEnabled), 0);
 }

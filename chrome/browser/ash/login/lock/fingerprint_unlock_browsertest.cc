@@ -291,6 +291,7 @@ constexpr char kFingerprintSuccessHistogramName[] =
     "Fingerprint.Unlock.AuthSuccessful";
 constexpr char kFingerprintAttemptsCountBeforeSuccessHistogramName[] =
     "Fingerprint.Unlock.AttemptsCountBeforeSuccess";
+constexpr char kFeatureUsageMetric[] = "ChromeOS.FeatureUsage.Fingerprint";
 
 // Verifies that fingerprint auth success is recorded correctly.
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FeatureUsageMetrics) {
@@ -316,15 +317,26 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FeatureUsageMetrics) {
   histogram_tester.ExpectTotalCount(
       kFingerprintAttemptsCountBeforeSuccessHistogramName, 1);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.FeatureUsage.Fingerprint",
+      kFeatureUsageMetric,
       static_cast<int>(
           feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess),
       1);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.FeatureUsage.Fingerprint",
+      kFeatureUsageMetric,
       static_cast<int>(
           feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure),
       1);
+  histogram_tester.ExpectBucketCount(
+      kFeatureUsageMetric,
+      static_cast<int>(feature_usage::FeatureUsageMetrics::Event::kEligible),
+      1);
+  histogram_tester.ExpectBucketCount(
+      kFeatureUsageMetric,
+      static_cast<int>(feature_usage::FeatureUsageMetrics::Event::kAccessible),
+      1);
+  histogram_tester.ExpectBucketCount(
+      kFeatureUsageMetric,
+      static_cast<int>(feature_usage::FeatureUsageMetrics::Event::kEnabled), 1);
 
   histogram_tester.ExpectBucketCount(kFingerprintSuccessHistogramName,
                                      /*success=*/0, 1);

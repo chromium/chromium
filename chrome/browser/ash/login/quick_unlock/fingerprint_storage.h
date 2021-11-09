@@ -49,6 +49,7 @@ class FingerprintStorage final
 
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const override;
+  absl::optional<bool> IsAccessible() const override;
   bool IsEnabled() const override;
 
   // Called after a fingerprint unlock attempt to record the result.

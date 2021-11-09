@@ -9,14 +9,17 @@ could be easily incorporated on the data analytics side.
 ## Objectives
 
 This component is the part of Standard Feature Usage Logging (Googlers could see
-go/sful and go/sful-dd). The goal is to make metrics calculation and analysis easily scalable
-to the new features. Both for feature owners and for data analytics team.
+go/sful and go/sful-dd). The goal is to make metrics calculation and analysis
+easily scalable to the new features. Both for feature owners and for data
+analytics team.
 
 ## Overview
 
 The following events are reported by the component (for details see
 [FeatureUsageEvent][1])
 * Is device eligible for the feature?
+* (optional) Is the feature accessible for the user (i.e. not disabled by
+policy)
 * Has the user enabled the feature for the device?
 * Successful attempt to use the feature.
 * Failed attempt to use the feature.
@@ -58,13 +61,19 @@ name="FeaturesLoggingUsageEvents">`
 ### Creating component object
 You need to implement `FeatureUsageMetrics::Delegate` and pass it to the
 `FeatureUsageMetrics`. Delegate is called to report periodic events (eligible,
-enabled). Delegate is called on the same sequence FeatureUsageMetrics was
-created. FeatureUsageMetrics must be used only on the sequence it was created.
+accessible, enabled). Delegate is called on the same sequence
+FeatureUsageMetrics was created. FeatureUsageMetrics must be used only on the
+sequence it was created.
 
 ```c++
 class MyDelegate : public FeatureUsageMetrics::Delegate {
  public:
   bool IsEligible() const final {
+    ...
+  }
+  // Optional. Default implementation returns `absl::nullopt` which do not emit
+  // any UMA events.
+  absl::optional<bool> IsAccessible() const final {
     ...
   }
   // If `IsEnabled` returns true `IsEligible` must return true too.
@@ -88,22 +97,24 @@ attempt. Success indicates whether or not the attempt to use was successful.
 Your feature might not have failed attempts. In that case always call with
 `success=true`.
 
-`MyDelegate::IsEligible` and `MyDelegate::IsEnabled` functions must return
-`true` when `RecordUsage` is called.
+`MyDelegate::IsEligible` and `MyDelegate::IsEnabled` (also
+`MyDelegate::IsAccessible` if implemented) functions must return `true` when
+`RecordUsage` is called.
 
 #### Recording usage time
 If your feature has a notion of time usage use
 `feature_usage_metrics_->StartSuccessfulUsage();` and
 `feature_usage_metrics_->StopSuccessfulUsage();` to record feature usage time.
 
-* There should be no consecutive `StartSuccessfulUsage` calls without `StopSuccessfulUsage` call
-in-between.
-* After `StartSuccessfulUsage` is called the usage time is reported periodically together
-with `IsEligible` and `IsEnabled`.
-* If `StartSuccessfulUsage` is not followed by `StopSuccessfulUsage` the remaining usage time is
-recorded at the object shutdown.
-* `StartSuccessfulUsage` must be preceded by exactly one `RecordUsage(true)`. There should
-be no `RecordUsage` calls in-between `StartSuccessfulUsage` and `StopSuccessfulUsage` calls.
+* There should be no consecutive `StartSuccessfulUsage` calls without
+`StopSuccessfulUsage` call in-between.
+* After `StartSuccessfulUsage` is called the usage time is reported periodically
+together with `IsEligible` and `IsEnabled` (also `IsAccessible` if implemented).
+* If `StartSuccessfulUsage` is not followed by `StopSuccessfulUsage` the
+remaining usage time is recorded at the object shutdown.
+* `StartSuccessfulUsage` must be preceded by exactly one `RecordUsage(true)`.
+There should be no `RecordUsage` calls in-between `StartSuccessfulUsage` and
+`StopSuccessfulUsage` calls.
 
 Example:
 ```c++

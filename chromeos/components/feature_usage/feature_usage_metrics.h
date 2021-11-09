@@ -35,7 +35,8 @@ class FeatureUsageMetrics final : public base::PowerSuspendObserver {
     kEnabled = 1,
     kUsedWithSuccess = 2,
     kUsedWithFailure = 3,
-    kMaxValue = kUsedWithFailure,
+    kAccessible = 4,
+    kMaxValue = kAccessible,
   };
 
   // Consumers should implement this interface to report periodically if the
@@ -44,6 +45,9 @@ class FeatureUsageMetrics final : public base::PowerSuspendObserver {
    public:
     // Whether the device is capable of running the feature.
     virtual bool IsEligible() const = 0;
+
+    // Whether the feature is accessible to users (e.g. allowed by admins).
+    virtual absl::optional<bool> IsAccessible() const;
 
     // Whether the user has enabled the feature for themselves. If `IsEnabled`
     // returns true `IsEligible` must return true too.

@@ -35423,6 +35423,7 @@ Called by update_permissions_policy_enum.py.-->
       label="Successful attempt to use the feature. Recorded on each event."/>
   <int value="3"
       label="Failed attempt to use the feature. Recorded on each event."/>
+  <int value="4" label="Feature is accessible to user. Recorded periodically."/>
 </enum>
 
 <enum name="FeedAutoplayEvent">
