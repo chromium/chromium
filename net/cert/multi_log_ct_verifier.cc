@@ -181,12 +181,7 @@ void MultiLogCTVerifier::VerifySCTs(
     }
     decoded_sct->origin = origin;
 
-    base::TimeTicks start = base::TimeTicks::Now();
     VerifySingleSCT(hostname, decoded_sct, expected_entry, cert, output_scts);
-    base::TimeDelta verify_time = base::TimeTicks::Now() - start;
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Net.CertificateTransparency.SCT.SingleVerificationTime", verify_time,
-        base::Microseconds(1), base::Milliseconds(100), 50);
   }
 }
 

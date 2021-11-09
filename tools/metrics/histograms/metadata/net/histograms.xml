@@ -275,6 +275,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.CertificateTransparency.SCT.SingleVerificationTime"
     units="microseconds" expires_after="M70">
+  <obsolete>
+    Expired after M70. Removed from code 2021-11.
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
