@@ -110,6 +110,8 @@ class MEDIA_EXPORT VideoColorSpace {
 
   gfx::ColorSpace ToGfxColorSpace() const;
 
+  static VideoColorSpace FromGfxColorSpace(const gfx::ColorSpace& color_space);
+
   // Note, these are public variables.
   PrimaryID primaries = PrimaryID::INVALID;
   TransferID transfer = TransferID::INVALID;

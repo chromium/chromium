@@ -410,6 +410,55 @@ struct StructTraits<media::stable::mojom::ColorSpaceDataView, gfx::ColorSpace> {
 };
 
 template <>
+struct StructTraits<media::stable::mojom::ColorVolumeMetadataDataView,
+                    gfx::ColorVolumeMetadata> {
+  static const gfx::PointF& primary_r(const gfx::ColorVolumeMetadata& input);
+
+  static const gfx::PointF& primary_g(const gfx::ColorVolumeMetadata& input);
+
+  static const gfx::PointF& primary_b(const gfx::ColorVolumeMetadata& input);
+
+  static const gfx::PointF& white_point(const gfx::ColorVolumeMetadata& input);
+
+  static float luminance_max(const gfx::ColorVolumeMetadata& input);
+
+  static float luminance_min(const gfx::ColorVolumeMetadata& input);
+
+  static bool Read(media::stable::mojom::ColorVolumeMetadataDataView data,
+                   gfx::ColorVolumeMetadata* output);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::DecryptConfigDataView,
+                    std::unique_ptr<media::DecryptConfig>> {
+  static bool IsNull(const std::unique_ptr<media::DecryptConfig>& input) {
+    return !input;
+  }
+
+  static void SetToNull(std::unique_ptr<media::DecryptConfig>* output) {
+    output->reset();
+  }
+
+  static media::EncryptionScheme encryption_scheme(
+      const std::unique_ptr<media::DecryptConfig>& input);
+
+  static const std::string& key_id(
+      const std::unique_ptr<media::DecryptConfig>& input);
+
+  static const std::string& iv(
+      const std::unique_ptr<media::DecryptConfig>& input);
+
+  static const std::vector<media::SubsampleEntry>& subsamples(
+      const std::unique_ptr<media::DecryptConfig>& input);
+
+  static const absl::optional<media::EncryptionPattern>& encryption_pattern(
+      const std::unique_ptr<media::DecryptConfig>& input);
+
+  static bool Read(media::stable::mojom::DecryptConfigDataView input,
+                   std::unique_ptr<media::DecryptConfig>* output);
+};
+
+template <>
 struct EnumTraits<media::stable::mojom::EncryptionScheme,
                   ::media::EncryptionScheme> {
   static media::stable::mojom::EncryptionScheme ToMojom(
@@ -446,6 +495,57 @@ struct EnumTraits<media::stable::mojom::EncryptionScheme,
     NOTREACHED();
     return false;
   }
+};
+
+template <>
+struct StructTraits<media::stable::mojom::HDRMetadataDataView,
+                    gfx::HDRMetadata> {
+  static uint32_t max_content_light_level(const gfx::HDRMetadata& input);
+
+  static uint32_t max_frame_average_light_level(const gfx::HDRMetadata& input);
+
+  static const gfx::ColorVolumeMetadata& color_volume_metadata(
+      const gfx::HDRMetadata& input);
+
+  static bool Read(media::stable::mojom::HDRMetadataDataView data,
+                   gfx::HDRMetadata* output);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::NativePixmapHandleDataView,
+                    gfx::NativePixmapHandle> {
+  static std::vector<gfx::NativePixmapPlane>& planes(
+      gfx::NativePixmapHandle& pixmap_handle);
+
+  static uint64_t modifier(const gfx::NativePixmapHandle& pixmap_handle);
+
+  static bool Read(media::stable::mojom::NativePixmapHandleDataView data,
+                   gfx::NativePixmapHandle* out);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::SupportedVideoDecoderConfigDataView,
+                    media::SupportedVideoDecoderConfig> {
+  static media::VideoCodecProfile profile_min(
+      const media::SupportedVideoDecoderConfig& input);
+
+  static media::VideoCodecProfile profile_max(
+      const media::SupportedVideoDecoderConfig& input);
+
+  static const gfx::Size& coded_size_min(
+      const media::SupportedVideoDecoderConfig& input);
+
+  static const gfx::Size& coded_size_max(
+      const media::SupportedVideoDecoderConfig& input);
+
+  static bool allow_encrypted(const media::SupportedVideoDecoderConfig& input);
+
+  static bool require_encrypted(
+      const media::SupportedVideoDecoderConfig& input);
+
+  static bool Read(
+      media::stable::mojom::SupportedVideoDecoderConfigDataView input,
+      media::SupportedVideoDecoderConfig* output);
 };
 
 template <>
@@ -710,6 +810,40 @@ struct EnumTraits<media::stable::mojom::VideoCodecProfile,
 };
 
 template <>
+struct StructTraits<media::stable::mojom::VideoDecoderConfigDataView,
+                    media::VideoDecoderConfig> {
+  static media::VideoCodec codec(const media::VideoDecoderConfig& input);
+
+  static media::VideoCodecProfile profile(
+      const media::VideoDecoderConfig& input);
+
+  static bool has_alpha(const media::VideoDecoderConfig& input);
+
+  static const gfx::Size& coded_size(const media::VideoDecoderConfig& input);
+
+  static const gfx::Rect& visible_rect(const media::VideoDecoderConfig& input);
+
+  static const gfx::Size& natural_size(const media::VideoDecoderConfig& input);
+
+  static const std::vector<uint8_t>& extra_data(
+      const media::VideoDecoderConfig& input);
+
+  static media::EncryptionScheme encryption_scheme(
+      const media::VideoDecoderConfig& input);
+
+  static const gfx::ColorSpace color_space_info(
+      const media::VideoDecoderConfig& input);
+
+  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
+      const media::VideoDecoderConfig& input);
+
+  static uint32_t level(const media::VideoDecoderConfig& input);
+
+  static bool Read(media::stable::mojom::VideoDecoderConfigDataView input,
+                   media::VideoDecoderConfig* output);
+};
+
+template <>
 struct EnumTraits<media::stable::mojom::VideoDecoderType,
                   ::media::VideoDecoderType> {
   static media::stable::mojom::VideoDecoderType ToMojom(
@@ -767,6 +901,25 @@ struct EnumTraits<media::stable::mojom::VideoDecoderType,
     NOTREACHED();
     return false;
   }
+};
+
+template <>
+struct StructTraits<media::stable::mojom::VideoFrameMetadataDataView,
+                    media::VideoFrameMetadata> {
+  static bool allow_overlay(const media::VideoFrameMetadata& input);
+
+  static bool end_of_stream(const media::VideoFrameMetadata& input);
+
+  static bool read_lock_fences_enabled(const media::VideoFrameMetadata& input);
+
+  static bool protected_video(const media::VideoFrameMetadata& input);
+
+  static bool hw_protected(const media::VideoFrameMetadata& input);
+
+  static bool power_efficient(const media::VideoFrameMetadata& input);
+
+  static bool Read(media::stable::mojom::VideoFrameMetadataDataView input,
+                   media::VideoFrameMetadata* output);
 };
 
 template <>
