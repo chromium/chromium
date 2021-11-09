@@ -63,6 +63,20 @@ TEST_F(FirstPartySetsComponentInstallerTest, FeatureDisabled) {
   env_.RunUntilIdle();
 }
 
+TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
+  SEQUENCE_CHECKER(sequence_checker);
+
+  ASSERT_TRUE(
+      base::DeleteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+          component_install_dir_.GetPath())));
+
+  FirstPartySetsComponentInstallerPolicy(base::DoNothing())
+      .ComponentReady(base::Version(), component_install_dir_.GetPath(),
+                      base::Value(base::Value::Type::DICTIONARY));
+
+  base::RunLoop().RunUntilIdle();
+}
+
 TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expectation = "some first party sets";

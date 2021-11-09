@@ -56,6 +56,8 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+                           NonexistentFile_OnComponentReady);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            LoadsSets_OnComponentReady);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            LoadsSets_OnNetworkRestart);
