@@ -9,7 +9,6 @@
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources.h"
 #include "ash/webui/file_manager/resources/grit/file_manager_swa_resources_map.h"
 #include "ash/webui/file_manager/url_constants.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
