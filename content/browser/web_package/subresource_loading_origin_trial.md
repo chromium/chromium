@@ -69,7 +69,7 @@ trial participants to use new APIs in Chrome M97+.
 This guide no longer covers the old APIs, which we plan to remove eventually.
 Please see
 [the previous revision of this guide](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/web_package/subresource_loading_origin_trial.md;drc=1454cf984a485a136c4a525ab79f6cf0a3877504)
-for the old APIs.
+for the old APIs and [the migration guide](https://docs.google.com/document/d/1hAl7jb-a9WET_mSeHBD9HxIBUwUe65Dbyn6u6LRB61s/edit?usp=sharing).
 
 ## Feature detection
 
