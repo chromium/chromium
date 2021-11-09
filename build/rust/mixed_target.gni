@@ -200,6 +200,7 @@ template("mixed_target") {
   if (enable_rust && defined(invoker.rs_cxx_bindings)) {
     rust_cxx("${_target_name}_rs_cxx") {
       inputs = invoker.rs_cxx_bindings
+      generate_source_set = false
     }
   }
 }

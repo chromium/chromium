@@ -36,6 +36,10 @@ set_defaults("rust_cxx") {
 #   C++ targets on which the headers depend in order to build
 #   successfully.
 #
+# generate_source_set (optional; default is true)
+#   Whether to generate a source_set target here.
+#   (See below for why you might choose false)
+#
 # Consumers of this template may alternatively depend upon
 # the :${target_name}_gen target if you wish to include
 # the generated source code in an *existing* source set.
@@ -99,10 +103,12 @@ template("rust_cxx") {
     public_configs = [ "//build/rust:cxx_cppconfig" ]
   }
 
-  source_set(target_name) {
-    sources = get_target_outputs(":${target_name}_gen")
-    deps = [ "//build/rust:cxx_cppdeps" ]
-    deps += invoker.native_header_deps
-    public_deps = [ ":${target_name}_gen" ]
+  if (!defined(invoker.generate_source_set) || invoker.generate_source_set) {
+    source_set(target_name) {
+      sources = get_target_outputs(":${target_name}_gen")
+      deps = [ "//build/rust:cxx_cppdeps" ]
+      deps += invoker.native_header_deps
+      public_deps = [ ":${target_name}_gen" ]
+    }
   }
 }
