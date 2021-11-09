@@ -837,6 +837,56 @@ Response InspectorAccessibilityAgent::getRootAXNode(
   return Response::Success();
 }
 
+protocol::Response InspectorAccessibilityAgent::getAXNodeAndAncestors(
+    Maybe<int> dom_node_id,
+    Maybe<int> backend_node_id,
+    Maybe<String> object_id,
+    std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
+        out_nodes) {
+  if (!enabled_.Get())
+    return Response::ServerError("Accessibility has not been enabled.");
+
+  Node* dom_node = nullptr;
+  Response response =
+      dom_agent_->AssertNode(dom_node_id, backend_node_id, object_id, dom_node);
+  if (!response.IsSuccess())
+    return response;
+
+  Document& document = dom_node->GetDocument();
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
+  DocumentLifecycle::DisallowTransitionScope disallow_transition(
+      document.Lifecycle());
+  LocalFrame* local_frame = document.GetFrame();
+  if (!local_frame)
+    return Response::ServerError("Frame is detached.");
+
+  RetainAXContextForDocument(&document);
+
+  AXContext ax_context(document, ui::kAXModeComplete);
+  auto& cache = To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
+
+  AXObject* ax_object = cache.GetOrCreate(dom_node);
+
+  *out_nodes =
+      std::make_unique<protocol::Array<protocol::Accessibility::AXNode>>();
+
+  if (!ax_object) {
+    (*out_nodes)
+        ->emplace_back(BuildProtocolAXNodeForDOMNodeWithNoAXNode(
+            IdentifiersFactory::IntIdForNode(dom_node)));
+    return Response::Success();
+  }
+
+  do {
+    std::unique_ptr<AXNode> ancestor =
+        BuildProtocolAXNodeForAXObject(*ax_object);
+    (*out_nodes)->emplace_back(std::move(ancestor));
+    ax_object = ax_object->ParentObjectIncludedInTree();
+  } while (ax_object);
+
+  return Response::Success();
+}
+
 protocol::Response InspectorAccessibilityAgent::getChildAXNodes(
     const String& in_id,
     Maybe<String> frame_id,

@@ -56,6 +56,12 @@ class MODULES_EXPORT InspectorAccessibilityAgent
   protocol::Response getRootAXNode(
       protocol::Maybe<String> frame_id,
       std::unique_ptr<protocol::Accessibility::AXNode>* node) override;
+  protocol::Response getAXNodeAndAncestors(
+      protocol::Maybe<int> dom_node_id,
+      protocol::Maybe<int> backend_node_id,
+      protocol::Maybe<String> object_id,
+      std::unique_ptr<protocol::Array<protocol::Accessibility::AXNode>>*
+          out_nodes) override;
   protocol::Response getChildAXNodes(
       const String& in_id,
       protocol::Maybe<String> frame_id,
