@@ -35,6 +35,7 @@ public class SiteSettingsUtil {
             ContentSettingsType.AR,
             ContentSettingsType.IDLE_DETECTION,
             ContentSettingsType.SENSORS,
+            ContentSettingsType.AUTO_DARK_WEB_CONTENT,
     };
 
     static final int[] CHOOSER_PERMISSIONS = {
