@@ -13018,4 +13018,28 @@ TEST_F(URLRequestTest, OnConnectedCallbackAsyncError) {
   EXPECT_THAT(d.request_status(), IsError(ERR_FAILED));
 }
 
+TEST_F(URLRequestTest, SetURLChain) {
+  TestDelegate d;
+  {
+    GURL original_url("http://localhost");
+    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+        original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
+    EXPECT_EQ(r->url_chain().size(), 1u);
+    EXPECT_EQ(r->url_chain()[0], original_url);
+
+    const std::vector<GURL> url_chain = {
+        GURL("http://foo.test"),
+        GURL("http://bar.test"),
+        GURL("http://baz.test"),
+    };
+
+    r->SetURLChain(url_chain);
+
+    EXPECT_EQ(r->url_chain().size(), 3u);
+    EXPECT_EQ(r->url_chain()[0], url_chain[0]);
+    EXPECT_EQ(r->url_chain()[1], url_chain[1]);
+    EXPECT_EQ(r->url_chain()[2], original_url);
+  }
+}
+
 }  // namespace net

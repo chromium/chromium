@@ -203,6 +203,7 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
 
   new_request->method = request_info.common_params->method;
   new_request->url = request_info.common_params->url;
+  new_request->navigation_redirect_chain.push_back(new_request->url);
   new_request->site_for_cookies =
       request_info.isolation_info.site_for_cookies();
   new_request->trusted_params = network::ResourceRequest::TrustedParams();
@@ -1386,6 +1387,8 @@ void NavigationURLLoaderImpl::FollowRedirect(
   resource_request_->referrer = GURL(redirect_info_.new_referrer);
   resource_request_->referrer_policy = redirect_info_.new_referrer_policy;
   resource_request_->previews_state = new_previews_state;
+  resource_request_->navigation_redirect_chain.push_back(
+      redirect_info_.new_url);
   url_chain_.push_back(redirect_info_.new_url);
 
   // Need to cache modified headers for `url_loader_` since it doesn't use

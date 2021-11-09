@@ -15,7 +15,8 @@ const base = './resources/navigation-headers-server.py';
 const scope = base + '?with-sw';
 let registration;
 
-async function post_and_get_headers(t, form_host, method, swaction) {
+async function post_and_get_headers(t, form_host, method, swaction,
+                                    redirect_hosts=[]) {
   if (swaction === 'navpreload') {
     assert_true('navigationPreload' in registration,
                 'navigation preload must be supported');
@@ -28,7 +29,14 @@ async function post_and_get_headers(t, form_host, method, swaction) {
   } else {
     target_string = `${scope}&${swaction}`;
   }
-  const target = new URL(target_string, self.location);
+  let target = new URL(target_string, self.location);
+
+  for (let i = redirect_hosts.length - 1; i >= 0; --i) {
+    const redirect_url = new URL('./resources/redirect.py', self.location);
+    redirect_url.hostname = redirect_hosts[i];
+    redirect_url.search = `?Status=307&Redirect=${encodeURIComponent(target)}`;
+    target = redirect_url;
+  }
 
   let popup_url_path;
   if (method === 'GET') {
@@ -38,10 +46,8 @@ async function post_and_get_headers(t, form_host, method, swaction) {
   }
 
   const popup_url = new URL(popup_url_path, self.location);
-  const tmp_params = new URLSearchParams();
-  tmp_params.set('target', encodeURIComponent(target));
   popup_url.hostname = form_host;
-  popup_url.search = tmp_params.toString();
+  popup_url.search = `?target=${encodeURIComponent(target.href)}`;
 
   const message_promise = new Promise(resolve => {
     self.addEventListener('message', evt => {
@@ -294,6 +300,116 @@ promise_test(async t => {
   assert_equals(result.referer, script.href, 'referer header');
 }, 'POST Navigation, cross-site with service worker that changes the ' +
    'request sets correct origin and referer headers.');
+
+//
+// Origin and referer header tests using redirects
+//
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'no-sw', [SAME_SITE.hostname]);
+  assert_equals(result.origin, 'null', 'origin header');
+  assert_equals(result.referer, SAME_ORIGIN.href, 'referer header');
+}, 'POST Navigation, same-origin with same-site redirect and no service worker ' +
+   'sets correct origin and referer headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'passthrough', [SAME_SITE.hostname]);
+  assert_equals(result.origin, 'null', 'origin header');
+  assert_equals(result.referer, SAME_ORIGIN.href, 'referer header');
+}, 'POST Navigation, same-origin with same-site redirect and passthrough service ' +
+   'worker sets correct origin and referer headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'fallback', [SAME_SITE.hostname]);
+  assert_equals(result.origin, 'null', 'origin header');
+  assert_equals(result.referer, SAME_ORIGIN.href, 'referer header');
+}, 'POST Navigation, same-origin with same-site redirect and fallback service ' +
+   'worker sets correct origin and referer headers.');
+
+// There is no navpreload case because it does not work with POST requests.
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'change-request', [SAME_SITE.hostname]);
+  assert_equals(result.origin, SAME_ORIGIN.origin, 'origin header');
+  assert_equals(result.referer, script.href, 'referer header');
+}, 'POST Navigation, same-origin with same-site redirect and change-request service ' +
+   'worker sets correct origin and referer headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'no-sw', [CROSS_SITE.hostname]);
+  assert_equals(result.origin, 'null', 'origin header');
+  assert_equals(result.referer, SAME_ORIGIN.href, 'referer header');
+}, 'POST Navigation, same-origin with cross-site redirect and no service worker ' +
+   'sets correct origin and referer headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'passthrough', [CROSS_SITE.hostname]);
+  assert_equals(result.origin, 'null', 'origin header');
+  assert_equals(result.referer, SAME_ORIGIN.href, 'referer header');
+}, 'POST Navigation, same-origin with cross-site redirect and passthrough service ' +
+   'worker sets correct origin and referer headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'fallback', [CROSS_SITE.hostname]);
+  assert_equals(result.origin, 'null', 'origin header');
+  assert_equals(result.referer, SAME_ORIGIN.href, 'referer header');
+}, 'POST Navigation, same-origin with cross-site redirect and fallback service ' +
+   'worker sets correct origin and referer headers.');
+
+// There is no navpreload case because it does not work with POST requests.
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'change-request', [CROSS_SITE.hostname]);
+  assert_equals(result.origin, SAME_ORIGIN.origin, 'origin header');
+  assert_equals(result.referer, script.href, 'referer header');
+}, 'POST Navigation, same-origin with cross-site redirect and change-request service ' +
+   'worker sets correct origin and referer headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'no-sw', [CROSS_SITE.hostname,
+                                                      SAME_ORIGIN.hostname]);
+  assert_equals(result.origin, 'null', 'origin header');
+  assert_equals(result.referer, SAME_ORIGIN.href, 'referer header');
+}, 'POST Navigation, same-origin with cross-site redirect, same-origin redirect, ' +
+   'and no service worker sets correct origin and referer headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'passthrough', [CROSS_SITE.hostname,
+                                                            SAME_ORIGIN.hostname]);
+  assert_equals(result.origin, 'null', 'origin header');
+  assert_equals(result.referer, SAME_ORIGIN.href, 'referer header');
+}, 'POST Navigation, same-origin with cross-site redirect, same-origin redirect, ' +
+   'and passthrough service worker sets correct origin and referer headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'fallback', [CROSS_SITE.hostname,
+                                                         SAME_ORIGIN.hostname]);
+  assert_equals(result.origin, 'null', 'origin header');
+  assert_equals(result.referer, SAME_ORIGIN.href, 'referer header');
+}, 'POST Navigation, same-origin with cross-site redirect, same-origin redirect, ' +
+   'and fallback service worker sets correct origin and referer headers.');
+
+// There is no navpreload case because it does not work with POST requests.
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'POST',
+                                            'change-request', [CROSS_SITE.hostname,
+                                                               SAME_ORIGIN.hostname]);
+  assert_equals(result.origin, SAME_ORIGIN.origin, 'origin header');
+  assert_equals(result.referer, script.href, 'referer header');
+}, 'POST Navigation, same-origin with cross-site redirect, same-origin redirect, ' +
+   'and change-request service worker sets correct origin and referer headers.');
 
 //
 // Sec-Fetch-* Headers (separated since not all browsers implement them)
@@ -550,6 +666,150 @@ promise_test(async t => {
   assert_equals(result['sec-fetch-dest'], 'empty', 'sec-fetch-dest header');
 }, 'POST Navigation, cross-site with service worker that changes the ' +
    'request sets correct sec-fetch headers.');
+
+//
+// Sec-Fetch-* header tests using redirects
+//
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'no-sw', [SAME_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'same-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'iframe', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with same-site redirect and no service worker ' +
+   'sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'passthrough', [SAME_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'same-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'empty', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with same-site redirect and passthrough service ' +
+   'worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'fallback', [SAME_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'same-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'iframe', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with same-site redirect and fallback service ' +
+   'worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'navpreload', [SAME_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'same-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'iframe', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with same-site redirect and navpreload service ' +
+   'worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'change-request', [SAME_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'same-origin', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'same-origin', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'empty', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with same-site redirect and change-request service ' +
+   'worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'no-sw', [CROSS_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'cross-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'iframe', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect and no service worker ' +
+   'sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'passthrough', [CROSS_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'cross-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'empty', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect and passthrough service ' +
+   'worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'fallback', [CROSS_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'cross-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'iframe', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect and fallback service ' +
+   'worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'navpreload', [CROSS_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'cross-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'iframe', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect and navpreload service ' +
+   'worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'change-request', [CROSS_SITE.hostname]);
+  assert_equals(result['sec-fetch-site'], 'same-origin', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'same-origin', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'empty', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect and change-request service ' +
+   'worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'no-sw', [CROSS_SITE.hostname,
+                                                      SAME_ORIGIN.hostname]);
+  assert_equals(result['sec-fetch-site'], 'cross-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'iframe', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect, same-origin redirect, ' +
+   'and no service worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'passthrough', [CROSS_SITE.hostname,
+                                                            SAME_ORIGIN.hostname]);
+  assert_equals(result['sec-fetch-site'], 'cross-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'empty', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect, same-origin redirect, ' +
+   'and passthrough service worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'fallback', [CROSS_SITE.hostname,
+                                                         SAME_ORIGIN.hostname]);
+  assert_equals(result['sec-fetch-site'], 'cross-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'iframe', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect, same-origin redirect, ' +
+   'and fallback service worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'navpreload', [CROSS_SITE.hostname,
+                                                           SAME_ORIGIN.hostname]);
+  assert_equals(result['sec-fetch-site'], 'cross-site', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'navigate', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'iframe', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect, same-origin redirect, ' +
+   'and navpreload service worker sets correct sec-fetch headers.');
+
+promise_test(async t => {
+  const result = await post_and_get_headers(t, SAME_ORIGIN.hostname, 'GET',
+                                            'change-request', [CROSS_SITE.hostname,
+                                                               SAME_ORIGIN.hostname]);
+  assert_equals(result['sec-fetch-site'], 'same-origin', 'sec-fetch-site header');
+  assert_equals(result['sec-fetch-mode'], 'same-origin', 'sec-fetch-mode header');
+  assert_equals(result['sec-fetch-dest'], 'empty', 'sec-fetch-dest header');
+}, 'GET Navigation, same-origin with cross-site redirect, same-origin redirect, ' +
+   'and change-request service worker sets correct sec-fetch headers.');
 
 promise_test(async t => {
   await registration.unregister();

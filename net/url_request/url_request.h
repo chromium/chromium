@@ -235,6 +235,19 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   const std::vector<GURL>& url_chain() const { return url_chain_; }
   const GURL& url() const { return url_chain_.back(); }
 
+  // Explicitly set the URL chain for this request.  This can be used to
+  // indicate a chain of redirects that happen at a layer above the network
+  // service; e.g. navigation redirects.
+  //
+  // Note, the last entry in the new `url_chain` will be ignored.  Instead
+  // the request will preserve its current URL.  This is done since the higher
+  // layer providing the explicit `url_chain` may not be aware of modifications
+  // to the request URL by throttles.
+  //
+  // This method should only be called on new requests that have a single
+  // entry in their existing `url_chain_`.
+  void SetURLChain(const std::vector<GURL>& url_chain);
+
   // The URL that should be consulted for the third-party cookie blocking
   // policy, as defined in Section 2.1.1 and 2.1.2 of
   // https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site.

@@ -3,8 +3,7 @@
 <script>
 function onLoad() {
   const params = new URLSearchParams(self.location.search);
-  const target = decodeURIComponent(params.get('target'));
-  self.location = target;
+  self.location = params.get('target');
 }
 self.addEventListener('load', onLoad);
 </script>

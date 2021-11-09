@@ -5,7 +5,7 @@
 function onLoad() {
   const params = new URLSearchParams(self.location.search);
   const form = document.getElementById('form');
-  form.action = decodeURIComponent(params.get('target'));
+  form.action = params.get('target');
   form.submit();
 }
 self.addEventListener('load', onLoad);

@@ -28,6 +28,7 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   if (input.request_body)
     output->body = input.request_body;
   output->request_initiator = input.request_initiator;
+  output->navigation_redirect_chain = input.navigation_redirect_chain;
   output->referrer = blink::mojom::Referrer::New(
       input.referrer,
       blink::ReferrerUtils::NetToMojoReferrerPolicy(input.referrer_policy));

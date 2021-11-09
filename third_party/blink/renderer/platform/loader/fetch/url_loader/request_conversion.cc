@@ -300,6 +300,13 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   } else {
     dest->request_initiator = src.RequestorOrigin()->ToUrlOrigin();
   }
+
+  DCHECK(dest->navigation_redirect_chain.empty());
+  dest->navigation_redirect_chain.reserve(src.NavigationRedirectChain().size());
+  for (const auto& url : src.NavigationRedirectChain()) {
+    dest->navigation_redirect_chain.push_back(url);
+  }
+
   if (src.IsolatedWorldOrigin()) {
     dest->isolated_world_origin = src.IsolatedWorldOrigin()->ToUrlOrigin();
   }

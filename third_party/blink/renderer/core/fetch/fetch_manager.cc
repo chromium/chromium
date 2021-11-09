@@ -755,6 +755,8 @@ void FetchManager::Loader::PerformHTTPFetch() {
   // FIXME: Support body.
   ResourceRequest request(fetch_request_data_->Url());
   request.SetRequestorOrigin(fetch_request_data_->Origin());
+  request.SetNavigationRedirectChain(
+      fetch_request_data_->NavigationRedirectChain());
   request.SetIsolatedWorldOrigin(fetch_request_data_->IsolatedWorldOrigin());
   request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
   request.SetRequestDestination(fetch_request_data_->Destination());

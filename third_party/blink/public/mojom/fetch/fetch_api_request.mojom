@@ -171,6 +171,15 @@ struct FetchAPIRequest {
   // (e.g. ones initiated from the Omnibox).
   url.mojom.Origin? request_initiator;
 
+  // The chain of URLs seen during navigation redirects.  This should only
+  // contain values if the mode is `RedirectMode::kNavigate`.  This list
+  // will contain the initial network request URL, but not URLs from previous
+  // state in the DOM.  For example, if a frame has URL A and sets its location
+  // to URL B, then the redirect chain will begin with URL B.  The chain also
+  // includes the current request URL, however, it will not reflect any changes
+  // made by throttles.
+  array<url.mojom.Url> navigation_redirect_chain;
+
   Referrer? referrer;
   network.mojom.CredentialsMode credentials_mode =
     network.mojom.CredentialsMode.kOmit;

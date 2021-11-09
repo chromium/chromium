@@ -583,6 +583,10 @@ URLLoader::URLLoader(
   url_request_->set_site_for_cookies(request.site_for_cookies);
   if (ShouldForceIgnoreSiteForCookies(request))
     url_request_->set_force_ignore_site_for_cookies(true);
+  if (!request.navigation_redirect_chain.empty()) {
+    DCHECK_EQ(request.mode, mojom::RequestMode::kNavigate);
+    url_request_->SetURLChain(request.navigation_redirect_chain);
+  }
   url_request_->SetReferrer(request.referrer.GetAsReferrer().spec());
   url_request_->set_referrer_policy(request.referrer_policy);
   url_request_->set_upgrade_if_insecure(request.upgrade_if_insecure);

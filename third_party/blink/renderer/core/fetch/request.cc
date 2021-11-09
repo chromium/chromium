@@ -72,6 +72,7 @@ FetchRequestData* CreateCopyOfFetchRequestDataForFetch(
   request->SetHeaderList(original->HeaderList()->Clone());
   request->SetOrigin(original->Origin() ? original->Origin()
                                         : context->GetSecurityOrigin());
+  request->SetNavigationRedirectChain(original->NavigationRedirectChain());
   // FIXME: Set client.
   DOMWrapperWorld& world = script_state->World();
   if (world.IsIsolatedWorld()) {
@@ -334,6 +335,7 @@ Request* Request::CreateRequestWithRequestOrString(
   if (AreAnyMembersPresent(init)) {
     request->SetOrigin(execution_context->GetSecurityOrigin());
     request->SetOriginalDestination(network::mojom::RequestDestination::kEmpty);
+    request->SetNavigationRedirectChain(Vector<KURL>());
 
     // "If |request|'s |mode| is "navigate", then set it to "same-origin".
     if (request->Mode() == network::mojom::RequestMode::kNavigate)

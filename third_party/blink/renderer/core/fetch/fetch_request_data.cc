@@ -166,6 +166,8 @@ FetchRequestData* FetchRequestData::Create(
   request->SetDestination(fetch_api_request->destination);
   if (fetch_api_request->request_initiator)
     request->SetOrigin(fetch_api_request->request_initiator);
+  request->SetNavigationRedirectChain(
+      fetch_api_request->navigation_redirect_chain);
   request->SetReferrerString(AtomicString(Referrer::NoReferrer()));
   if (fetch_api_request->referrer) {
     if (!fetch_api_request->referrer->url.IsEmpty()) {
@@ -196,6 +198,7 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->method_ = method_;
   request->header_list_ = header_list_->Clone();
   request->origin_ = origin_;
+  request->navigation_redirect_chain_ = navigation_redirect_chain_;
   request->isolated_world_origin_ = isolated_world_origin_;
   request->destination_ = destination_;
   request->referrer_string_ = referrer_string_;

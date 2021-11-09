@@ -202,6 +202,7 @@ TEST_F(CorsURLLoaderFactoryTest,
   request.destination = mojom::RequestDestination::kEmpty;
   request.method = net::HttpRequestHeaders::kPostMethod;
   request.url = GURL("https://some.other.origin/echoall");
+  request.navigation_redirect_chain.push_back(request.url);
   request.request_initiator = url::Origin::Create(url);
   mojo::test::BadMessageObserver bad_message_observer;
   CreateLoaderAndStart(request);
@@ -217,12 +218,50 @@ TEST_F(CorsURLLoaderFactoryTest, NavigationFromRendererWithBadRedirectMode) {
   request.destination = mojom::RequestDestination::kEmpty;
   request.method = net::HttpRequestHeaders::kPostMethod;
   request.url = url;
+  request.navigation_redirect_chain.push_back(request.url);
   request.request_initiator = url::Origin::Create(url).DeriveNewOpaqueOrigin();
   mojo::test::BadMessageObserver bad_message_observer;
   CreateLoaderAndStart(request);
   EXPECT_EQ(
       "CorsURLLoaderFactory: navigate from non-browser-process with "
       "redirect_mode set to 'follow'",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(CorsURLLoaderFactoryTest,
+       NavigationFromRendererWithBadRequestNavigationRedirectChain) {
+  ResourceRequest request;
+  GURL url = test_server()->GetURL("/echoall");
+  request.mode = mojom::RequestMode::kNavigate;
+  request.redirect_mode = mojom::RedirectMode::kManual;
+  request.destination = mojom::RequestDestination::kEmpty;
+  request.method = net::HttpRequestHeaders::kPostMethod;
+  request.url = url;
+  // Do not add url to navigation_redirect_chain
+  request.request_initiator = url::Origin::Create(url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: navigate from non-browser-process without "
+      "a redirect chain provided",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(CorsURLLoaderFactoryTest, NavigationRedirectChainWithBadMode) {
+  ResourceRequest request;
+  GURL url = test_server()->GetURL("/echoall");
+  request.mode = mojom::RequestMode::kCors;
+  request.redirect_mode = mojom::RedirectMode::kFollow;
+  request.destination = mojom::RequestDestination::kEmpty;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = url;
+  request.navigation_redirect_chain.push_back(request.url);
+  request.request_initiator = url::Origin::Create(url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: navigation redirect chain set for a "
+      "non-navigation",
       bad_message_observer.WaitForBadMessage());
 }
 
@@ -234,6 +273,7 @@ TEST_F(CorsURLLoaderFactoryTest, OriginalDestinationIsDocumentWithBadMode) {
   request.destination = mojom::RequestDestination::kEmpty;
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.url = url;
+  request.navigation_redirect_chain.push_back(request.url);
   request.request_initiator =
       url::Origin::Create(GURL("https://some.other.origin"));
   request.original_destination = mojom::RequestDestination::kDocument;
@@ -254,6 +294,7 @@ TEST_F(CorsURLLoaderFactoryTest,
   request.destination = mojom::RequestDestination::kIframe;
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.url = url;
+  request.navigation_redirect_chain.push_back(request.url);
   request.request_initiator =
       url::Origin::Create(GURL("https://some.other.origin"));
   request.original_destination = mojom::RequestDestination::kDocument;

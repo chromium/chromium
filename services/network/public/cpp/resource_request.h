@@ -125,6 +125,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // once Chrome Platform Apps are gone.
   absl::optional<url::Origin> isolated_world_origin;
 
+  // The chain of URLs seen during navigation redirects.  This should only
+  // contain values if the mode is `RedirectMode::kNavigate`.
+  std::vector<GURL> navigation_redirect_chain;
+
   GURL referrer;
   net::ReferrerPolicy referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;
   net::HttpRequestHeaders headers;

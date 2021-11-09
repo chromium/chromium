@@ -219,6 +219,8 @@ class CorsURLLoaderTest : public testing::Test {
     request.credentials_mode = credentials_mode;
     request.method = net::HttpRequestHeaders::kGetMethod;
     request.url = url;
+    if (request.mode == mojom::RequestMode::kNavigate)
+      request.navigation_redirect_chain.push_back(url);
     request.request_initiator = url::Origin::Create(origin);
     if (devtools_observer_for_next_request_) {
       request.trusted_params = ResourceRequest::TrustedParams();
@@ -713,6 +715,7 @@ TEST_F(CorsURLLoaderTest, NavigationFromRenderer) {
   request.mode = mojom::RequestMode::kNavigate;
   request.redirect_mode = mojom::RedirectMode::kManual;
   request.url = GURL("https://some.other.example.com/");
+  request.navigation_redirect_chain.push_back(request.url);
   request.request_initiator = absl::nullopt;
 
   BadMessageTestHelper bad_message_helper;
