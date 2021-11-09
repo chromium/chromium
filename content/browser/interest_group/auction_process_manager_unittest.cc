@@ -47,18 +47,13 @@ class TestAuctionProcessManager
 
   ~TestAuctionProcessManager() override = default;
 
-  void LoadBidderWorkletAndGenerateBid(
+  void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           bidder_worklet,
       bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
-      auction_worklet::mojom::BiddingInterestGroupPtr bidding_interest_group,
-      const absl::optional<std::string>& auction_signals_json,
-      const absl::optional<std::string>& per_buyer_signals_json,
-      const url::Origin& browser_signal_top_window_origin,
-      const url::Origin& browser_signal_seller_origin,
-      base::Time auction_start_time,
-      LoadBidderWorkletAndGenerateBidCallback callback) override {
+      auction_worklet::mojom::BiddingInterestGroupPtr bidding_interest_group)
+      override {
     NOTREACHED();
   }
 

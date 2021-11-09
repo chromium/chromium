@@ -61,6 +61,7 @@ TrustedBiddingSignals::TrustedBiddingSignals(
     : trusted_bidding_signals_url_(trusted_bidding_signals_url),
       v8_helper_(std::move(v8_helper)),
       load_signals_callback_(std::move(load_signals_callback)) {
+  DCHECK(v8_helper_);
   DCHECK(!trusted_bidding_signals_keys.empty());
   DCHECK(load_signals_callback_);
 

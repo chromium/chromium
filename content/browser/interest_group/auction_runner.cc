@@ -315,17 +315,19 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
       base::WrapUnique(new DebuggableAuctionWorklet(
           delegate_->GetFrame(), bidding_url, bid_state->bidder_worklet.get()));
 
-  bid_state->process_handle->GetService()->LoadBidderWorkletAndGenerateBid(
+  bid_state->process_handle->GetService()->LoadBidderWorklet(
       std::move(worklet_receiver),
       bid_state->bidder_worklet_debug->should_pause_on_start(),
-      std::move(url_loader_factory), bidder->Clone(),
+      std::move(url_loader_factory), bidder->Clone());
+  bid_state->bidder_worklet.set_disconnect_handler(
+      base::BindOnce(&AuctionRunner::OnGenerateBidCrashed,
+                     weak_ptr_factory_.GetWeakPtr(), bid_state));
+
+  bid_state->bidder_worklet->GenerateBid(
       auction_config_->auction_signals, PerBuyerSignals(bid_state),
       browser_signals_->top_frame_origin, browser_signals_->seller,
       auction_start_time_,
       base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
-                     weak_ptr_factory_.GetWeakPtr(), bid_state));
-  bid_state->bidder_worklet.set_disconnect_handler(
-      base::BindOnce(&AuctionRunner::OnGenerateBidCrashed,
                      weak_ptr_factory_.GetWeakPtr(), bid_state));
 }
 
@@ -559,8 +561,10 @@ void AuctionRunner::ReportBidWin(
   }
 
   top_bidder_->bidder_worklet->ReportWin(
-      signals_for_winner_arg, top_bidder_->bid_result->render_url,
-      AdRenderFingerprint(top_bidder_), top_bidder_->bid_result->bid,
+      auction_config_->auction_signals, PerBuyerSignals(top_bidder_),
+      browser_signals_->top_frame_origin, signals_for_winner_arg,
+      top_bidder_->bid_result->render_url, AdRenderFingerprint(top_bidder_),
+      top_bidder_->bid_result->bid,
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   top_bidder_->bidder_worklet.set_disconnect_handler(base::BindOnce(

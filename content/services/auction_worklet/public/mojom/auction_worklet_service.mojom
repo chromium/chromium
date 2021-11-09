@@ -23,16 +23,17 @@ struct BrowserSignals {
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface AuctionWorkletService {
-  // Loads a FLEDGE bidder worklet, its same-origin realtime bidding signals
-  // URL (if necessary), and invokes its generateBid() method, returning
-  // the generate bid and associated data.
+  // Attempts to load Javascript at the specified URL and create a BidderWorklet
+  // from the response body. There is no return value - any error loading the
+  // worklet script may only be learned from the BidderWorklet API itself, when
+  // trying to run a script. This reduces roundtrips, and allows fetching
+  // per-auction bidding signals URL in parallel with fetching the bidding
+  // worklet script. It also makes the API more robust, not having any
+  // invocation ordering requirements.
   //
   // Arguments:
-  // `bidder_worklet` The pipe to communicate with the BidderWorklet.
-  //  Closing the pipe will abort any in-progress loads destroy the worklet. The
-  //  callback will be invoked on pipe destruction if it hasn't been already,
-  //  since it's on the AuctionWorkletService pipe instead of the BidderWorklet
-  //  pipe.
+  // `bidder_worklet` The pipe to communicate with the BidderWorklet. Closing
+  // the pipe will abort any in-progress loads and destroy the worklet.
   //
   // `pause_for_debugger_on_start` If this is true, the worklet should not
   //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
@@ -44,56 +45,16 @@ interface AuctionWorkletService {
   //  for trusted bidding signals and the allowed coalescing).
   //
   // `bidding_interest_group` Definition of the interest group to fetch and
-  //  execute the bidding script of for an ad auction (initially added by
-  //  client JS in the renderer, but managed by the browser's interest group
-  //  store), as well as some bidding history collected by the interest group
-  //  store.
-  //
-  // `auction_signals_json` The JSON representation of the auction signals for
-  //  the auction, specified by the publisher page and provided to bidder
-  //  worklets competing in an auction.
-  //
-  // `per_buyer_signals_json` The JSON representation of the auction signals
-  //  for the specific owner of this interest group, specified by the
-  //  publisher page and provided to all interest groups with the same owner
-  //  as the one specified `interest_group`.
-  //
-  // `browser_signal_top_window_origin` The origin of the top-level frame
-  //  where the auction is running.
-  //
-  // `browser_signal_seller_origin` The origin of the seller script running
-  //  the auction.
-  //
-  // `auction_start_time` The time the auction started, use to ensure the
-  //  last win times provided to all worklets are relative to the same time.
-  //
-  // Returns:
-  // `bid` If the worklet is successfully loaded and chooses to bid in the
-  //  auction, contains information about the bid. Null otherwise.
-  //
-  // `errors` The various error messages to be used for debugging. These are too
-  //  sensitive for the renderer to see. There may be errors even when a bid
-  //  is offered, and there may be no errors when there's no bid.
-  //
-  // TODO(mmenke): Make BidderWorklets with the same URL reuseable, both
-  // between auctions, and within an auction, if two interest groups with the
-  // same owner share a script URL, and do the same for bidding signals, at
-  // least within an auction.
-  LoadBidderWorkletAndGenerateBid(
+  //  execute the script of for an ad auction (initially added by client JS in
+  //  the renderer, but managed by the browser's interest group store), as well
+  //  as some bidding history collected by the interest group store.
+  LoadBidderWorklet(
       pending_receiver<BidderWorklet> bidder_worklet,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
-      BiddingInterestGroup bidding_interest_group,
-      string? auction_signals_json,
-      string? per_buyer_signals_json,
-      url.mojom.Origin browser_signal_top_window_origin,
-      url.mojom.Origin browser_signal_seller_origin,
-      mojo_base.mojom.Time auction_start_time) => (
-          BidderWorkletBid? bid,
-          array<string> errors);
+      BiddingInterestGroup bidding_interest_group);
 
   // Attempts to load Javascript at the specified URL and loads a SellerWorklet.
-  //
   //
   // Arguments:
   // `seller_worklet` The pipe to communicate with the SellerWorklet. Closing
