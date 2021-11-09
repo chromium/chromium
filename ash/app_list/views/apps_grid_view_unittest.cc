@@ -26,6 +26,7 @@
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
+#include "ash/app_list/views/apps_grid_context_menu.h"
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
@@ -4165,7 +4166,9 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
   // called. The actual sort algorithm is tested in
   // chrome/browser/ui/app_list/app_list_sort_browsertest.cc.
   model_->PopulateApps(1);
-  EXPECT_FALSE(apps_grid_view_->IsMenuShowing());
+
+  AppsGridContextMenu* context_menu = apps_grid_view_->context_menu_for_test();
+  EXPECT_FALSE(context_menu->IsMenuShowing());
   EXPECT_EQ(AppListSortOrder::kCustom,
             GetTestAppListClient()->requested_sort_order());
 
@@ -4175,11 +4178,11 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
 
   // Open the menu to test the alphabetical sort option.
   SimulateRightClickOrLongPressAt(empty_space);
-  EXPECT_TRUE(apps_grid_view_->IsMenuShowing());
+  EXPECT_TRUE(context_menu->IsMenuShowing());
 
   // Cache the current context menu view.
   views::MenuItemView* reorder_option =
-      apps_grid_view_->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
+      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_TRUE(reorder_option->title() == u"Name");
 
   // Open the Reorder by Name submenu.
@@ -4196,15 +4199,15 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
   SimulateLeftClickOrTapAt(alphabetical_option);
   EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
             GetTestAppListClient()->requested_sort_order());
-  EXPECT_FALSE(apps_grid_view_->IsMenuShowing());
+  EXPECT_FALSE(context_menu->IsMenuShowing());
 
   // Open the menu again to test the reverse alphabetical sort option.
   SimulateRightClickOrLongPressAt(empty_space);
-  EXPECT_TRUE(apps_grid_view_->IsMenuShowing());
+  EXPECT_TRUE(context_menu->IsMenuShowing());
 
   // Cache the current context menu view.
   reorder_option =
-      apps_grid_view_->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
+      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_TRUE(reorder_option->title() == u"Name");
 
   // Open the Reorder by Name submenu.
@@ -4219,7 +4222,7 @@ TEST_P(AppsGridViewAppSortTest, ContextMenuInTopLevelAppListSortAllApps) {
   SimulateLeftClickOrTapAt(reverse_option);
   EXPECT_EQ(AppListSortOrder::kNameReverseAlphabetical,
             GetTestAppListClient()->requested_sort_order());
-  EXPECT_FALSE(apps_grid_view_->IsMenuShowing());
+  EXPECT_FALSE(context_menu->IsMenuShowing());
 }
 
 }  // namespace test

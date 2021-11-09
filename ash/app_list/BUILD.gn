@@ -59,6 +59,8 @@ source_set("app_list") {
     "views/app_list_view.h",
     "views/apps_container_view.cc",
     "views/apps_container_view.h",
+    "views/apps_grid_context_menu.cc",
+    "views/apps_grid_context_menu.h",
     "views/apps_grid_view.cc",
     "views/apps_grid_view.h",
     "views/apps_grid_view_focus_delegate.h",

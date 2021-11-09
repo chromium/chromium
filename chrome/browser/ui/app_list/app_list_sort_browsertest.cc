@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/app_list/views/apps_grid_context_menu.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
@@ -158,18 +159,20 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInTopLevel) {
 
   ash::AppsGridView* apps_grid_view =
       app_list_test_api_.GetTopLevelAppsGridView();
+  ash::AppsGridContextMenu* context_menu =
+      apps_grid_view->context_menu_for_test();
 
   // Right click on the empty space in apps grid view to show the context menu.
   const gfx::Point empty_space =
       apps_grid_view->GetBoundsInScreen().CenterPoint();
   event_generator_->MoveMouseTo(empty_space);
   event_generator_->ClickRightButton();
-  ASSERT_TRUE(apps_grid_view->IsMenuShowing());
-  ASSERT_TRUE(apps_grid_view->root_menu_item_view()->SubmenuIsShowing());
+  ASSERT_TRUE(context_menu->IsMenuShowing());
+  ASSERT_TRUE(context_menu->root_menu_item_view()->SubmenuIsShowing());
 
   // Cache the current context menu view.
   views::MenuItemView* reorder_option =
-      apps_grid_view->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
+      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_TRUE(reorder_option->title() == u"Name");
 
   // Get a point on the Reorder by Name option.
@@ -194,12 +197,12 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInTopLevel) {
   // Right click on the empty space in apps grid view to show the context menu.
   event_generator_->MoveMouseTo(empty_space);
   event_generator_->ClickRightButton();
-  ASSERT_TRUE(apps_grid_view->IsMenuShowing());
-  ASSERT_TRUE(apps_grid_view->root_menu_item_view()->SubmenuIsShowing());
+  ASSERT_TRUE(context_menu->IsMenuShowing());
+  ASSERT_TRUE(context_menu->root_menu_item_view()->SubmenuIsShowing());
 
   // Update the context menu.
   reorder_option =
-      apps_grid_view->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
+      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_TRUE(reorder_option->title() == u"Name");
 
   // Open the Reorder by Name submenu.
@@ -232,18 +235,20 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInFolder) {
 
   ash::AppsGridView* apps_grid_view =
       app_list_test_api_.GetTopLevelAppsGridView();
+  ash::AppsGridContextMenu* context_menu =
+      apps_grid_view->context_menu_for_test();
 
   // Right click on the empty space in apps grid view to show the context menu.
   const gfx::Point empty_space =
       apps_grid_view->GetBoundsInScreen().CenterPoint();
   event_generator_->MoveMouseTo(empty_space);
   event_generator_->ClickRightButton();
-  ASSERT_TRUE(apps_grid_view->IsMenuShowing());
-  ASSERT_TRUE(apps_grid_view->root_menu_item_view()->SubmenuIsShowing());
+  ASSERT_TRUE(context_menu->IsMenuShowing());
+  ASSERT_TRUE(context_menu->root_menu_item_view()->SubmenuIsShowing());
 
   // Cache the current context menu view.
   views::MenuItemView* reorder_option =
-      apps_grid_view->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
+      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_TRUE(reorder_option->title() == u"Name");
 
   // Get a point on the Reorder by Name option.
@@ -268,12 +273,12 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInFolder) {
   // Right click on the empty space in apps grid view to show the context menu.
   event_generator_->MoveMouseTo(empty_space);
   event_generator_->ClickRightButton();
-  ASSERT_TRUE(apps_grid_view->IsMenuShowing());
-  ASSERT_TRUE(apps_grid_view->root_menu_item_view()->SubmenuIsShowing());
+  ASSERT_TRUE(context_menu->IsMenuShowing());
+  ASSERT_TRUE(context_menu->root_menu_item_view()->SubmenuIsShowing());
 
   // Update the context menu.
   reorder_option =
-      apps_grid_view->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
+      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
   ASSERT_TRUE(reorder_option->title() == u"Name");
 
   // Open the Reorder by Name submenu.
