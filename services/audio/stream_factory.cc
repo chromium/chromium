@@ -118,7 +118,7 @@ void StreamFactory::BindMuter(
     const base::UnguessableToken& group_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "BindMuter", this, "group id",
-                                      group_id.GetLowForSerialization());
+                                      group_id);
 
   // Find the existing LocalMuter for this group, or create one on-demand.
   auto it = std::find_if(muters_.begin(), muters_.end(),
@@ -150,9 +150,8 @@ void StreamFactory::CreateLoopbackStream(
     CreateLoopbackStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateLoopbackStream", this,
-                                      "group id",
-                                      group_id.GetLowForSerialization(),
-                                      "params", params.AsHumanReadableString());
+                                      "group id", group_id, "params",
+                                      params.AsHumanReadableString());
 
   // All LoopbackStreams share a single realtime worker thread. This is because
   // the execution timing of scheduled tasks must be precise, and top priority
