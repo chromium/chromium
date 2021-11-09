@@ -33,6 +33,7 @@ struct CastCrashdumpData {
   std::string crash_server;
   std::string proxy_host;
   std::string proxy_userpassword;
+  std::string upload_filename;
 };
 
 class CastCrashdumpUploader {

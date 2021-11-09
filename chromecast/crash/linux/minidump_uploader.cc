@@ -223,6 +223,15 @@ bool MinidumpUploader::DoWork() {
     crashdump_data.minidump_pathname = dump_path.value();
     crashdump_data.crash_server = upload_location_;
 
+    // set upload_file parameter based on exec_name
+    std::string upload_filename;
+    if (dump.params().exec_name == "kernel") {
+      upload_filename = "upload_file_ramoops";
+    } else {
+      upload_filename = "upload_file_minidump";
+    }
+    crashdump_data.upload_filename = std::move(upload_filename);
+
     // Depending on if a testing CastCrashdumpUploader object has been set,
     // assign |g| as a reference to the correct object.
     CastCrashdumpUploader vanilla(crashdump_data);
@@ -240,15 +249,6 @@ bool MinidumpUploader::DoWork() {
           "attachment_" + base::NumberToString(attachment_count++);
       g.AddAttachment(label, attachment);
     }
-
-    // set upload_file parameter based on exec_name
-    std::string upload_file;
-    if (dump.params().exec_name == "kernel") {
-      upload_file = "upload_file_ramoops";
-    } else {
-      upload_file = "upload_file_minidump";
-    }
-    g.SetParameter("upload_file", upload_file);
 
     // Dump some Android properties directly into product data.
     g.SetParameter("ro.revision", board_revision_);
