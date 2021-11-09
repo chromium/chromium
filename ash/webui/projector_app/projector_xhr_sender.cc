@@ -38,6 +38,7 @@ constexpr char kAuthorizationHeaderPrefix[] = "Bearer ";
 // List of URL prefix supported by `ProjectorXhrSender`.
 const char* kUrlAllowlist[] = {
     "https://www.googleapis.com/drive/v3/files/",
+    "https://www.googleapis.com/upload/drive/v3/files/",
     "https://drive.google.com/get_video_info",
     "https://translation.googleapis.com/language/translate/v2"};
 
