@@ -209,7 +209,7 @@ void WorkerFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
   if (save_data_enabled_)
     request.SetHttpHeaderField(http_names::kSaveData, "on");
 
-  AddBackForwardCacheExperimentHTTPHeaderIfNeeded(global_scope_, request);
+  AddBackForwardCacheExperimentHTTPHeaderIfNeeded(request);
 }
 
 void WorkerFetchContext::AddResourceTiming(const ResourceTimingInfo& info) {
@@ -287,6 +287,10 @@ WorkerFetchContext::GetContentSecurityNotifier() {
             global_scope_->GetTaskRunner(TaskType::kInternalLoading)));
   }
   return *content_security_notifier_.get();
+}
+
+ExecutionContext* WorkerFetchContext::GetExecutionContext() const {
+  return global_scope_;
 }
 
 void WorkerFetchContext::Trace(Visitor* visitor) const {

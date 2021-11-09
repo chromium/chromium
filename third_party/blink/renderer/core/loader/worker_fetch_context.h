@@ -104,6 +104,8 @@ class WorkerFetchContext final : public BaseFetchContext {
 
   void Trace(Visitor*) const override;
 
+  ExecutionContext* GetExecutionContext() const override;
+
  private:
   void SetFirstPartyCookie(ResourceRequest&);
 

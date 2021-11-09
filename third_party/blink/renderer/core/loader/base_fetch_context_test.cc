@@ -109,6 +109,10 @@ class MockBaseFetchContext final : public BaseFetchContext {
     BaseFetchContext::Trace(visitor);
   }
 
+  ExecutionContext* GetExecutionContext() const override {
+    return execution_context_;
+  }
+
  private:
   Member<ExecutionContext> execution_context_;
   Member<const FetchClientSettingsObjectImpl> fetch_client_settings_object_;

@@ -135,6 +135,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
 
   mojom::blink::ContentSecurityNotifier& GetContentSecurityNotifier() const;
 
+  ExecutionContext* GetExecutionContext() const override;
+
  private:
   friend class FrameFetchContextTest;
 

@@ -322,8 +322,7 @@ void FrameFetchContext::AddAdditionalRequestHeaders(ResourceRequest& request) {
   if (save_data_enabled_)
     request.SetHttpHeaderField(http_names::kSaveData, "on");
 
-  AddBackForwardCacheExperimentHTTPHeaderIfNeeded(
-      document_->GetExecutionContext(), request);
+  AddBackForwardCacheExperimentHTTPHeaderIfNeeded(request);
 }
 
 // TODO(toyoshim, arthursonzogni): PlzNavigate doesn't use this function to set
@@ -979,6 +978,10 @@ mojom::blink::ContentSecurityNotifier&
 FrameFetchContext::GetContentSecurityNotifier() const {
   DCHECK(!GetResourceFetcherProperties().IsDetached());
   return document_loader_->GetContentSecurityNotifier();
+}
+
+ExecutionContext* FrameFetchContext::GetExecutionContext() const {
+  return document_->GetExecutionContext();
 }
 
 absl::optional<ResourceRequestBlockedReason> FrameFetchContext::CanRequest(

@@ -701,10 +701,9 @@ bool BaseFetchContext::ShouldSendClientHint(
 }
 
 void BaseFetchContext::AddBackForwardCacheExperimentHTTPHeaderIfNeeded(
-    ExecutionContext* context,
     ResourceRequest& request) {
   if (!RuntimeEnabledFeatures::BackForwardCacheExperimentHTTPHeaderEnabled(
-          context)) {
+          GetExecutionContext())) {
     return;
   }
   if (!base::FeatureList::IsEnabled(
@@ -713,7 +712,8 @@ void BaseFetchContext::AddBackForwardCacheExperimentHTTPHeaderIfNeeded(
   }
   // Send the 'Sec-bfcache-experiment' HTTP header to indicate which
   // BackForwardCacheSameSite experiment group we're in currently.
-  UseCounter::Count(context, WebFeature::kBackForwardCacheExperimentHTTPHeader);
+  UseCounter::Count(GetExecutionContext(),
+                    WebFeature::kBackForwardCacheExperimentHTTPHeader);
   auto experiment_group = base::GetFieldTrialParamValueByFeature(
       features::kBackForwardCacheABExperimentControl,
       features::kBackForwardCacheABExperimentGroup);
