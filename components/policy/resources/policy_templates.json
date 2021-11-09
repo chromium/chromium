@@ -17331,10 +17331,8 @@
       'tags': [],
       'desc': '''Enables component updates for all components in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> when not set or set to enabled.
 
-      If set to disabled, updates to components are disabled. However, some components are exempt from this policy: updates to any component that does not contain executable code, or does not significantly alter the behavior of the browser, or is critical for its security will not be disabled.
-      Examples of such components include the certificate revocation lists and Safe Browsing data.
-      See https://developers.google.com/safe-browsing for more info on Safe Browsing.
-      Please note that setting this policy to disabled can potentially prevent the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> developers from providing critical security fixes in a timely manner and is thus not recommended.''',
+      If set to disabled, updates to components are disabled. However, some components are exempt from this policy: updates to any component that does not contain executable code and is critical for the security of the browser will not be disabled.
+      Examples of such components include the certificate revocation lists and subresource filters.''',
     },
     {
       'name': 'NativePrinters',
