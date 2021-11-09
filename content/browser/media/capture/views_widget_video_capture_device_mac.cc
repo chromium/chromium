@@ -19,9 +19,10 @@ namespace content {
 class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate final
     : public remote_cocoa::ScopedCGWindowID::Observer {
  public:
-  UIThreadDelegate(uint32_t cg_window_id,
-                   const base::WeakPtr<FrameSinkVideoCaptureDevice> device,
-                   MouseCursorOverlayController* cursor_controller)
+  UIThreadDelegate(
+      uint32_t cg_window_id,
+      const base::WeakPtr<FrameSinkVideoCaptureDevice> device,
+      const base::WeakPtr<MouseCursorOverlayController> cursor_controller)
       : cg_window_id_(cg_window_id),
         device_task_runner_(base::ThreadTaskRunnerHandle::Get()),
         device_(device),
@@ -85,8 +86,11 @@ class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate final
   void OnScopedCGWindowIDMouseMoved(uint32_t cg_window_id,
                                     const gfx::PointF& location_in_window,
                                     const gfx::Size& window_size) override {
-    cursor_controller_->SetTargetSize(window_size);
-    cursor_controller_->OnMouseMoved(location_in_window);
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (cursor_controller_) {
+      cursor_controller_->SetTargetSize(window_size);
+      cursor_controller_->OnMouseMoved(location_in_window);
+    }
   }
 
   const uint32_t cg_window_id_;
@@ -98,20 +102,21 @@ class ViewsWidgetVideoCaptureDeviceMac::UIThreadDelegate final
 
   // |device_| may only be dereferenced by tasks posted to
   // |device_task_runner_|.
-  base::WeakPtr<FrameSinkVideoCaptureDevice> device_;
+  const base::WeakPtr<FrameSinkVideoCaptureDevice> device_;
 
-  // Owned by FrameSinkVideoCaptureDevice. This will be valid for the life of
-  // UIThreadDelegate because the UIThreadDelegate deleter task will be posted
-  // to the UI thread before the MouseCursorOverlayController deleter task.
-  // See similar behavior in WebContentsVideoCaptureDevice::FrameTracker.
-  MouseCursorOverlayController* const cursor_controller_;
+  // Owned by FrameSinkVideoCaptureDevice.  This may only be accessed on the
+  // UI thread. This is not guaranteed to be valid and must be checked before
+  // use.
+  // https://crbug.com/1252562
+  const base::WeakPtr<MouseCursorOverlayController> cursor_controller_;
 };
 
 ViewsWidgetVideoCaptureDeviceMac::ViewsWidgetVideoCaptureDeviceMac(
     const DesktopMediaID& source_id)
     : weak_factory_(this) {
   ui_thread_delegate_ = std::make_unique<UIThreadDelegate>(
-      source_id.id, weak_factory_.GetWeakPtr(), cursor_controller());
+      source_id.id, weak_factory_.GetWeakPtr(),
+      cursor_controller()->GetWeakPtr());
 }
 
 ViewsWidgetVideoCaptureDeviceMac::~ViewsWidgetVideoCaptureDeviceMac() {
