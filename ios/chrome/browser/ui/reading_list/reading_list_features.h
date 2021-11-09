@@ -10,7 +10,12 @@
 // The feature to enable or disable the Reading List Messages.
 extern const base::Feature kReadingListMessages;
 
-// Whether to show the Reading List Messages.
+// Whether the Reading List Messages feature is turned on, including the
+// JavaScript exeuction and Messages presentation.
 bool IsReadingListMessagesEnabled();
+
+// Whether only the JavaScript should be executed (e.g. do not show the Message
+// even if the heuristics are met).
+bool ShouldOnlyExecuteJavascript();
 
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_FEATURES_H_

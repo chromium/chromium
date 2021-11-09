@@ -85,6 +85,7 @@ source_set("reading_list_javascript_feature") {
   ]
   deps = [
     ":distiller_js",
+    ":features",
     "//base",
     "//components/dom_distiller/core",
     "//components/infobars/core",

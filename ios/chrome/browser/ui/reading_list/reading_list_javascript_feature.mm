@@ -21,9 +21,11 @@
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/ui/reading_list/ios_add_to_reading_list_infobar_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_features.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/web_state.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -171,6 +173,29 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
       }
       return;
     }
+  }
+  if (ShouldOnlyExecuteJavascript()) {
+    // Log the UKM and return early if the feature should only be executing
+    // JavaScript at this time.
+    ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(web_state);
+    if (sourceID != ukm::kInvalidSourceId) {
+      // Round to the nearest tenth, and additionally round to a .5 level of
+      // granularity if <0.5 or > 1.5. Get accuracy to the tenth digit in UKM by
+      // multiplying by 10.
+      int score_minimization = (int)(round(score * 10));
+      int long_score_minimization = (int)(round(long_score * 10));
+      if (score_minimization > 15 || score_minimization < 5) {
+        score_minimization = ((score_minimization + 2.5) / 5) * 5;
+      }
+      if (long_score_minimization > 15 || long_score_minimization < 5) {
+        long_score_minimization = ((long_score_minimization + 2.5) / 5) * 5;
+      }
+      ukm::builders::IOS_PageReadability(sourceID)
+          .SetDistilibilityScore(score_minimization)
+          .SetDistilibilityLongScore(long_score_minimization)
+          .Record(ukm::UkmRecorder::Get());
+    }
+    return;
   }
   if (!web_state->IsVisible()) {
     // Do not show the Messages banner if the WebState is not visible, but delay
