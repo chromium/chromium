@@ -149,6 +149,11 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
         if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
             return PartnerBrowserCustomizations.getInstance().getHomePageUrl();
         }
+
+        String homepagePartnerDefaultUri = SharedPreferencesManager.getInstance().readString(
+                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
+        if (!homepagePartnerDefaultUri.equals("")) return homepagePartnerDefaultUri;
+
         return UrlConstants.NTP_NON_NATIVE_URL;
     }
 
