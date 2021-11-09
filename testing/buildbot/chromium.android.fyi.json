@@ -5598,8 +5598,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android29.textpb",
-          "--replace-system-package=org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk"
+          "--avd-config=../../tools/android/avd/proto/generic_android29.textpb"
         ],
         "merge": {
           "args": [
@@ -5668,6 +5667,7 @@
       },
       {
         "args": [
+          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -5755,6 +5755,7 @@
       },
       {
         "args": [
+          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -5842,6 +5843,7 @@
       },
       {
         "args": [
+          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -5929,6 +5931,7 @@
       },
       {
         "args": [
+          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -6016,6 +6019,7 @@
       },
       {
         "args": [
+          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
@@ -6103,6 +6107,7 @@
       },
       {
         "args": [
+          "--additional-apk=apks/WebLayerShellSystemWebView.apk",
           "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",

@@ -2069,10 +2069,6 @@
     "type": "console_test_launcher",
   },
   "weblayer_skew_tests": {
-    "args":  [
-      "--replace-system-package",
-      "org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk"
-    ],
     "label": "//weblayer/browser/android/javatests:weblayer_skew_tests",
     "type": "console_test_launcher",
   },

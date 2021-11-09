@@ -3400,11 +3400,6 @@
   },
   'weblayer_instrumentation_test_apk_ToT_Tests': {
     'modifications': {
-      'android-weblayer-10-x86-rel-tests': {
-        'args': [
-          '--replace-system-package=org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk'
-        ]
-      },
       'android-weblayer-marshmallow-x86-rel-tests': {
         'args': [
           '--replace-system-package=org.chromium.weblayer.shell,apks/WebLayerShellSystemWebView.apk'
