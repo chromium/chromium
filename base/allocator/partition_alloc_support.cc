@@ -6,6 +6,7 @@
 
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
+#include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bind.h"
@@ -61,8 +62,6 @@ constexpr const char* MutatorIdToTracingString(
 // Inject TRACE_EVENT_BEGIN/END, TRACE_COUNTER1, and UmaHistogramTimes.
 class StatsReporterImpl final : public StatsReporter {
  public:
-  constexpr StatsReporterImpl() = default;
-
   void ReportTraceEvent(internal::StatsCollector::ScannerId id,
                         const PlatformThreadId tid,
                         TimeTicks start_time,

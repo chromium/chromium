@@ -63,9 +63,9 @@ bool EnablePCScanForMallocPartitionsIfNeeded() {
   using Config = base::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
-    base::allocator::RegisterPCScanStatsReporter();
     base::allocator::EnablePCScan({Config::WantedWriteProtectionMode::kEnabled,
                                    Config::SafepointMode::kEnabled});
+    base::allocator::RegisterPCScanStatsReporter();
     return true;
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
@@ -86,8 +86,8 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
     CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
-    base::allocator::RegisterPCScanStatsReporter();
     base::allocator::EnablePCScan({wp_mode, Config::SafepointMode::kEnabled});
+    base::allocator::RegisterPCScanStatsReporter();
     return true;
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)
@@ -108,8 +108,8 @@ bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
     CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
-    base::allocator::RegisterPCScanStatsReporter();
     base::allocator::EnablePCScan({wp_mode, Config::SafepointMode::kDisabled});
+    base::allocator::RegisterPCScanStatsReporter();
     return true;
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)

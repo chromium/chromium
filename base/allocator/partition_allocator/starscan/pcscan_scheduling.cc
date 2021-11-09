@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
 
 namespace base {
 namespace internal {

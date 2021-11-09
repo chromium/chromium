@@ -142,7 +142,7 @@ class PCScanInternal final {
   const SimdSupport simd_support_;
 
   std::unique_ptr<WriteProtector> write_protector_;
-  StatsReporter* stats_reporter_;
+  StatsReporter* stats_reporter_ = nullptr;
 
   bool is_initialized_ = false;
 };

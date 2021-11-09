@@ -1230,6 +1230,10 @@ void PCScanInternal::Initialize(PCScan::InitConfig config) {
   }
   scannable_roots_ = RootsMap();
   nonscannable_roots_ = RootsMap();
+
+  static StatsReporter s_no_op_reporter;
+  PCScan::Instance().RegisterStatsReporter(&s_no_op_reporter);
+
   // Don't initialize PCScanThread::Instance() as otherwise sandbox complains
   // about multiple threads running on sandbox initialization.
   is_initialized_ = true;
@@ -1522,8 +1526,8 @@ void PCScanInternal::RegisterStatsReporter(StatsReporter* reporter) {
 }
 
 StatsReporter& PCScanInternal::GetReporter() {
-  static StatsReporter s_no_op_reporter;  // simple class
-  return stats_reporter_ ? *stats_reporter_ : s_no_op_reporter;
+  PA_DCHECK(stats_reporter_);
+  return *stats_reporter_;
 }
 
 }  // namespace internal
