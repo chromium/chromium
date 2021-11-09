@@ -516,7 +516,9 @@ public class RelatedSearchesControl {
 
     private void handleChipTapped(PropertyModel tappedChip) {
         onSuggestionClicked(tappedChip.get(ChipProperties.ID));
-        if (mSelectedChip != NO_SELECTED_CHIP) tappedChip.set(ChipProperties.SELECTED, false);
+        if (mSelectedChip != NO_SELECTED_CHIP) {
+            mChips.get(mSelectedChip).model.set(ChipProperties.SELECTED, false);
+        }
         mSelectedChip = tappedChip.get(ChipProperties.ID);
         tappedChip.set(ChipProperties.SELECTED, true);
     }
