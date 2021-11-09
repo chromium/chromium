@@ -393,15 +393,16 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
            multidevice::SoftwareFeature::kMessagesForWebClient},
           {mojom::Feature::kSmartLock,
            multidevice::SoftwareFeature::kSmartLockClient},
-          // Note: All Phone Hub-related features use the same SoftwareFeature.
+          // Note: Most Phone Hub-related features use the same SoftwareFeature.
           {mojom::Feature::kPhoneHub,
-           multidevice::SoftwareFeature::kPhoneHubClient},
-          {mojom::Feature::kPhoneHubCameraRoll,
            multidevice::SoftwareFeature::kPhoneHubClient},
           {mojom::Feature::kPhoneHubNotifications,
            multidevice::SoftwareFeature::kPhoneHubClient},
           {mojom::Feature::kPhoneHubTaskContinuation,
            multidevice::SoftwareFeature::kPhoneHubClient},
+          // Note: Camera Roll is launched separately from the rest of PhoneHub.
+          {mojom::Feature::kPhoneHubCameraRoll,
+           multidevice::SoftwareFeature::kPhoneHubCameraRollClient},
           {mojom::Feature::kWifiSync,
            multidevice::SoftwareFeature::kWifiSyncClient},
           {mojom::Feature::kEche, multidevice::SoftwareFeature::kEcheClient}};
@@ -421,14 +422,6 @@ bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
     if ((pair.second == multidevice::SoftwareFeature::kPhoneHubClient ||
          pair.second == multidevice::SoftwareFeature::kEcheClient) &&
         is_secondary_user_) {
-      return false;
-    }
-
-    // When feature is disabled on chromebook, it's equivalent to chromebook
-    // does not support this feature. This prevents camera roll setting toggle
-    // from showing in system settings page.
-    if (pair.first == mojom::Feature::kPhoneHubCameraRoll &&
-        !ash::features::IsPhoneHubCameraRollEnabled()) {
       return false;
     }
 
@@ -467,15 +460,16 @@ bool FeatureStateManagerImpl::HasBeenActivatedByPhone(
            multidevice::SoftwareFeature::kMessagesForWebHost},
           {mojom::Feature::kSmartLock,
            multidevice::SoftwareFeature::kSmartLockHost},
-          // Note: All Phone Hub-related features use the same SoftwareFeature.
+          // Note: Most Phone Hub-related features use the same SoftwareFeature.
           {mojom::Feature::kPhoneHub,
-           multidevice::SoftwareFeature::kPhoneHubHost},
-          {mojom::Feature::kPhoneHubCameraRoll,
            multidevice::SoftwareFeature::kPhoneHubHost},
           {mojom::Feature::kPhoneHubNotifications,
            multidevice::SoftwareFeature::kPhoneHubHost},
           {mojom::Feature::kPhoneHubTaskContinuation,
            multidevice::SoftwareFeature::kPhoneHubHost},
+          // Note: Camera Roll is launched separately from the rest of PhoneHub.
+          {mojom::Feature::kPhoneHubCameraRoll,
+           multidevice::SoftwareFeature::kPhoneHubCameraRollHost},
           {mojom::Feature::kWifiSync,
            multidevice::SoftwareFeature::kWifiSyncHost},
           {mojom::Feature::kEche, multidevice::SoftwareFeature::kEcheHost}};

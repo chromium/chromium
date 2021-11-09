@@ -103,6 +103,12 @@ std::ostream& operator<<(std::ostream& stream,
     case cryptauth::SoftwareFeature::ECHE_CLIENT:
       stream << "[Eche client]";
       break;
+    case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_HOST:
+      stream << "[Phone Hub Camera Roll host]";
+      break;
+    case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT:
+      stream << "[Phone Hub Camera Roll client]";
+      break;
     default:
       stream << "[unknown software feature]";
       break;
@@ -136,6 +142,10 @@ cryptauth::SoftwareFeature SoftwareFeatureStringToEnum(
     return cryptauth::SoftwareFeature::WIFI_SYNC_HOST;
   if (software_feature_as_string == "wifiSyncClient")
     return cryptauth::SoftwareFeature::WIFI_SYNC_CLIENT;
+  if (software_feature_as_string == "phoneHubCameraRollHost")
+    return cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_HOST;
+  if (software_feature_as_string == "phoneHubCameraRollClient")
+    return cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT;
 
   return cryptauth::SoftwareFeature::UNKNOWN_FEATURE;
 }
@@ -167,6 +177,10 @@ std::string SoftwareFeatureEnumToString(
       return "wifiSyncHost";
     case cryptauth::SoftwareFeature::WIFI_SYNC_CLIENT:
       return "wifiSyncClient";
+    case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_HOST:
+      return "phoneHubCameraRollHost";
+    case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT:
+      return "phoneHubCameraRollClient";
     default:
       return "unknownFeature";
   }
@@ -199,6 +213,10 @@ std::string SoftwareFeatureEnumToStringAllCaps(
       return "WIFI_SYNC_HOST";
     case cryptauth::SoftwareFeature::WIFI_SYNC_CLIENT:
       return "WIFI_SYNC_CLIENT";
+    case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_HOST:
+      return "PHONE_HUB_CAMERA_ROLL_HOST";
+    case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT:
+      return "PHONE_HUB_CAMERA_ROLL_CLIENT";
     default:
       return "UNKNOWN_FEATURE";
   }

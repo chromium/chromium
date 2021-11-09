@@ -202,6 +202,12 @@ EnumTraits<chromeos::multidevice::mojom::SoftwareFeature,
       return chromeos::multidevice::mojom::SoftwareFeature::ECHE_HOST;
     case chromeos::multidevice::SoftwareFeature::kEcheClient:
       return chromeos::multidevice::mojom::SoftwareFeature::ECHE_CLIENT;
+    case chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollHost:
+      return chromeos::multidevice::mojom::SoftwareFeature::
+          PHONE_HUB_CAMERA_ROLL_HOST;
+    case chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollClient:
+      return chromeos::multidevice::mojom::SoftwareFeature::
+          PHONE_HUB_CAMERA_ROLL_CLIENT;
   }
 
   NOTREACHED();
@@ -254,6 +260,14 @@ bool EnumTraits<chromeos::multidevice::mojom::SoftwareFeature,
       return true;
     case chromeos::multidevice::mojom::SoftwareFeature::ECHE_CLIENT:
       *out = chromeos::multidevice::SoftwareFeature::kEcheClient;
+      return true;
+    case chromeos::multidevice::mojom::SoftwareFeature::
+        PHONE_HUB_CAMERA_ROLL_HOST:
+      *out = chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollHost;
+      return true;
+    case chromeos::multidevice::mojom::SoftwareFeature::
+        PHONE_HUB_CAMERA_ROLL_CLIENT:
+      *out = chromeos::multidevice::SoftwareFeature::kPhoneHubCameraRollClient;
       return true;
   }
 

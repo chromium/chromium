@@ -107,6 +107,12 @@ const cryptauth::GcmDeviceInfo& GcmDeviceInfoProviderImpl::GetGcmDeviceInfo()
           cryptauth::SoftwareFeature::ECHE_CLIENT);
     }
 
+    // Camera Roll is only supported if the associated flag is enabled.
+    if (features::IsPhoneHubCameraRollEnabled()) {
+      gcm_device_info.add_supported_software_features(
+          cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT);
+    }
+
     return gcm_device_info;
   }());
 
