@@ -110,7 +110,8 @@ class SurfaceSavedFrameTest : public testing::Test {
 
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
-  FrameSinkManagerImpl frame_sink_manager_{&shared_bitmap_manager_};
+  FrameSinkManagerImpl frame_sink_manager_{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   SurfaceId surface_id_;
 

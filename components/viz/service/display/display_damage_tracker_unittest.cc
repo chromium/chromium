@@ -30,7 +30,7 @@ constexpr FrameSinkId kChildFrameSinkId(4, 4);
 class DisplayDamageTrackerTest : public testing::Test {
  public:
   DisplayDamageTrackerTest()
-      : manager_(&shared_bitmap_manager_),
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         resource_provider_(&shared_bitmap_manager_),
         aggregator_(manager_.surface_manager(),
                     &resource_provider_,

@@ -210,7 +210,8 @@ class VideoDetectorTest : public testing::Test {
   }
 
   ServerSharedBitmapManager shared_bitmap_manager_;
-  FrameSinkManagerImpl frame_sink_manager_{&shared_bitmap_manager_};
+  FrameSinkManagerImpl frame_sink_manager_{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   DisplayResourceProviderSoftware resource_provider_{&shared_bitmap_manager_};
   FakeCompositorFrameSinkClient frame_sink_client_;
   SurfaceIdAllocatorSet allocators_;

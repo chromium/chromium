@@ -124,7 +124,8 @@ class SurfaceReferencesTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     // Start each test with a fresh SurfaceManager instance.
-    manager_ = std::make_unique<FrameSinkManagerImpl>(&shared_bitmap_manager_);
+    manager_ = std::make_unique<FrameSinkManagerImpl>(
+        FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_));
   }
   void TearDown() override {
     supports_.clear();

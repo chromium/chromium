@@ -62,7 +62,8 @@ CompositorFrame MakeCompositorFrame(
 class SurfaceSynchronizationTest : public testing::Test {
  public:
   SurfaceSynchronizationTest()
-      : frame_sink_manager_(&shared_bitmap_manager_),
+      : frame_sink_manager_(
+            FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         surface_observer_(false) {}
 
   SurfaceSynchronizationTest(const SurfaceSynchronizationTest&) = delete;

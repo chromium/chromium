@@ -38,7 +38,7 @@ constexpr bool kIsChildRoot = false;
 class SurfaceAggregatorPixelTest : public VizPixelTestWithParam {
  public:
   SurfaceAggregatorPixelTest()
-      : manager_(&shared_bitmap_manager_),
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         support_(std::make_unique<CompositorFrameSinkSupport>(
             nullptr,
             &manager_,

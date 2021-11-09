@@ -35,7 +35,9 @@ FuzzerBrowserProcess::FuzzerBrowserProcess(
     absl::optional<base::FilePath> png_dir_path)
     : root_local_surface_id_(1, 1, base::UnguessableToken::Create()),
       output_surface_provider_(std::move(png_dir_path)),
-      frame_sink_manager_(&shared_bitmap_manager_, &output_surface_provider_) {
+      frame_sink_manager_(
+          FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_,
+                                           &output_surface_provider_)) {
   frame_sink_manager_.RegisterFrameSinkId(kEmbeddedFrameSinkId,
                                           /*report_activation=*/false);
   frame_sink_manager_.RegisterFrameSinkId(kRootFrameSinkId,

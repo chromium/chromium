@@ -61,7 +61,8 @@ struct RootCompositorFrameSinkData {
 class FrameSinkManagerTest : public testing::Test {
  public:
   FrameSinkManagerTest()
-      : manager_(&shared_bitmap_manager_, &output_surface_provider_) {}
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_,
+                                                  &output_surface_provider_)) {}
   ~FrameSinkManagerTest() override = default;
 
   RootCompositorFrameSinkImpl* GetRootCompositorFrameSinkImpl() {

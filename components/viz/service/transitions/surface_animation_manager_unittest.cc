@@ -267,7 +267,8 @@ class SurfaceAnimationManagerTest : public testing::Test {
   base::TimeTicks current_time_;
 
   ServerSharedBitmapManager shared_bitmap_manager_;
-  FrameSinkManagerImpl frame_sink_manager_{&shared_bitmap_manager_};
+  FrameSinkManagerImpl frame_sink_manager_{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   SurfaceManager* surface_manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   SurfaceId surface_id_;

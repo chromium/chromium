@@ -173,7 +173,8 @@ int DemoMain() {
   // The ContextFactory must exist before any Compositors are created.
   viz::HostFrameSinkManager host_frame_sink_manager;
   viz::ServerSharedBitmapManager server_shared_bitmap_manager;
-  viz::FrameSinkManagerImpl frame_sink_manager(&server_shared_bitmap_manager);
+  viz::FrameSinkManagerImpl frame_sink_manager{
+      viz::FrameSinkManagerImpl::InitParams(&server_shared_bitmap_manager)};
   host_frame_sink_manager.SetLocalManager(&frame_sink_manager);
   frame_sink_manager.SetLocalClient(&host_frame_sink_manager);
   auto context_factory = std::make_unique<ui::InProcessContextFactory>(

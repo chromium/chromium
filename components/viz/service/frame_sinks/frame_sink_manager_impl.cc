@@ -75,12 +75,6 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
   surface_manager_.AddObserver(this);
 }
 
-FrameSinkManagerImpl::FrameSinkManagerImpl(
-    SharedBitmapManager* shared_bitmap_manager,
-    OutputSurfaceProvider* output_surface_provider)
-    : FrameSinkManagerImpl(
-          InitParams(shared_bitmap_manager, output_surface_provider)) {}
-
 FrameSinkManagerImpl::~FrameSinkManagerImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   video_capturers_.clear();

@@ -34,7 +34,8 @@ TEST(SurfaceTest, PresentationCallback) {
   const LocalSurfaceId local_surface_id(6, base::UnguessableToken::Create());
 
   ServerSharedBitmapManager shared_bitmap_manager;
-  FrameSinkManagerImpl frame_sink_manager(&shared_bitmap_manager);
+  FrameSinkManagerImpl frame_sink_manager{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager)};
   MockCompositorFrameSinkClient client;
   auto support = std::make_unique<CompositorFrameSinkSupport>(
       &client, &frame_sink_manager, kArbitraryFrameSinkId, kIsRoot);
@@ -88,7 +89,8 @@ void TestCopyResultCallback(bool* called,
 // aggregated on the next frame.
 TEST(SurfaceTest, CopyRequestLifetime) {
   ServerSharedBitmapManager shared_bitmap_manager;
-  FrameSinkManagerImpl frame_sink_manager(&shared_bitmap_manager);
+  FrameSinkManagerImpl frame_sink_manager{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager)};
   SurfaceManager* surface_manager = frame_sink_manager.surface_manager();
   auto support = std::make_unique<CompositorFrameSinkSupport>(
       nullptr, &frame_sink_manager, kArbitraryFrameSinkId, kIsRoot);

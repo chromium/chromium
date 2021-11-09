@@ -473,7 +473,8 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
 
  protected:
   ServerSharedBitmapManager shared_bitmap_manager_;
-  FrameSinkManagerImpl manager_{&shared_bitmap_manager_};
+  FrameSinkManagerImpl manager_{
+      FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)};
   DisplayResourceProviderSoftware resource_provider_{&shared_bitmap_manager_};
   FakeSurfaceObserver observer_{false};
   FakeCompositorFrameSinkClient fake_client_;

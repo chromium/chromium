@@ -139,8 +139,8 @@ class EmbeddedFrameSinkProviderImplTest : public testing::Test {
     host_frame_sink_manager_ = std::make_unique<viz::HostFrameSinkManager>();
 
     // The FrameSinkManagerImpl implementation is in-process here for tests.
-    frame_sink_manager_ =
-        std::make_unique<viz::FrameSinkManagerImpl>(&shared_bitmap_manager_);
+    frame_sink_manager_ = std::make_unique<viz::FrameSinkManagerImpl>(
+        viz::FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_));
     host_frame_sink_manager_->SetLocalManager(frame_sink_manager_.get());
     frame_sink_manager_->SetLocalClient(host_frame_sink_manager_.get());
 

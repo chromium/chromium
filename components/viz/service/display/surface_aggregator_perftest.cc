@@ -77,7 +77,8 @@ class ExpectedOutput {
 
 class SurfaceAggregatorPerfTest : public VizPerfTest {
  public:
-  SurfaceAggregatorPerfTest() : manager_(&shared_bitmap_manager_) {
+  SurfaceAggregatorPerfTest()
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)) {
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
         &shared_bitmap_manager_);
   }

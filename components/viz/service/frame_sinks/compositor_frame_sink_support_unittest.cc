@@ -101,7 +101,7 @@ class MockFrameSinkManagerClient : public mojom::FrameSinkManagerClient {
 class CompositorFrameSinkSupportTest : public testing::Test {
  public:
   CompositorFrameSinkSupportTest()
-      : manager_(&shared_bitmap_manager_),
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         begin_frame_source_(0.f, false),
         local_surface_id_(3, kArbitraryToken),
         frame_sync_token_(GenTestSyncToken(4)),
