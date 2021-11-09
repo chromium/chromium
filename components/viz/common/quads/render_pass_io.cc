@@ -1245,10 +1245,8 @@ void VideoHoleDrawQuadToDict(const VideoHoleDrawQuad* draw_quad,
   dict->SetBoolKey("overlay_plane_id.empty",
                    draw_quad->overlay_plane_id.is_empty());
   if (!draw_quad->overlay_plane_id.is_empty()) {
-    uint64_t high = draw_quad->overlay_plane_id.GetHighForSerialization();
-    dict->SetStringKey("overlay_plane_id.high", base::NumberToString(high));
-    uint64_t low = draw_quad->overlay_plane_id.GetLowForSerialization();
-    dict->SetStringKey("overlay_plane_id.low", base::NumberToString(low));
+    dict->SetKey("overlay_plane_id.unguessable_token",
+                 base::UnguessableTokenToValue(draw_quad->overlay_plane_id));
   }
 }
 
@@ -1608,18 +1606,13 @@ bool VideoHoleDrawQuadFromDict(const base::Value& dict,
   base::UnguessableToken overlay_plane_id;
   DCHECK(overlay_plane_id.is_empty());
   if (!overlay_plane_id_empty.value()) {
-    const std::string* overlay_plane_id_high =
-        dict.FindStringKey("overlay_plane_id.high");
-    const std::string* overlay_plane_id_low =
-        dict.FindStringKey("overlay_plane_id.low");
-    uint64_t high = 0, low = 0;
-    if (!overlay_plane_id_high ||
-        !base::StringToUint64(*overlay_plane_id_high, &high) ||
-        !overlay_plane_id_low ||
-        !base::StringToUint64(*overlay_plane_id_low, &low)) {
+    absl::optional<base::UnguessableToken> deserialized_overlay_plane_id =
+        base::ValueToUnguessableToken(
+            dict.FindKey("overlay_plane_id.unguessable_token"));
+    if (!deserialized_overlay_plane_id) {
       return false;
     }
-    overlay_plane_id = base::UnguessableToken::Deserialize(high, low);
+    overlay_plane_id = deserialized_overlay_plane_id.value();
   }
   draw_quad->SetAll(common.shared_quad_state, common.rect, common.visible_rect,
                     common.needs_blending, overlay_plane_id);
