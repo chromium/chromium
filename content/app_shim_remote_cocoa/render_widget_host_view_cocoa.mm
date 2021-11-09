@@ -4,6 +4,7 @@
 
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 
+#include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
 #include <limits>
 #include <utility>
 
@@ -1008,9 +1009,20 @@ void ExtractUnderlines(NSAttributedString* string,
   _hasEditCommands = NO;
   _editCommands.clear();
 
-  // Sends key down events to input method first, then we can decide what should
-  // be done according to input method's feedback.
-  [self interpretKeyEvents:@[ theEvent ]];
+  // Since Mac Eisu Kana keys cannot be handled by interpretKeyEvents to enable/
+  // disable an IME, we need to pass the event to processInputKeyBindings.
+  // processInputKeyBindings is available at least on 10.11-11.0.
+  if (keyCode == kVK_JIS_Eisu || keyCode == kVK_JIS_Kana) {
+    if ([NSTextInputContext
+            respondsToSelector:@selector(processInputKeyBindings:)]) {
+      [NSTextInputContext performSelector:@selector(processInputKeyBindings:)
+                               withObject:theEvent];
+    }
+  } else {
+    // Sends key down events to input method first, then we can decide what
+    // should be done according to input method's feedback.
+    [self interpretKeyEvents:@[ theEvent ]];
+  }
 
   _handlingKeyDown = NO;
 
