@@ -1150,5 +1150,9 @@ const base::Feature kEarlyCodeCache{"EarlyCodeCache",
 const base::Feature kClientHintDeprecationIssue{
     "ClientHintDeprecationIssue", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allow third-party delegation of client hint information.
+const base::Feature kClientHintThirdPartyDelegation{
+    "ClientHintThirdPartyDelegation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
