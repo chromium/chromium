@@ -51,7 +51,6 @@ stdlib_files = [
   "proc_macro",
   "rustc_demangle",
   "std_detect",
-  "term",
   "test",
   "unicode_width",
   "unwind",
