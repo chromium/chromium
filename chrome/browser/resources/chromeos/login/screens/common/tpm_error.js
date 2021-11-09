@@ -43,15 +43,10 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   /* #html_template_placeholder */
 
-  static get properties() {
-    return {
-      osName: String,
-    };
-  }
+  static get properties() {}
 
   constructor() {
     super();
-    this.osName = '';
   }
 
   ready() {
@@ -63,7 +58,9 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   /** @override */
   get EXTERNAL_API() {
-    return ['setStep', 'setOsName'];
+    return [
+      'setStep',
+    ];
   }
 
   get UI_STEPS() {
@@ -86,12 +83,11 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   /**
    * @param {string} locale
-   * @param {string} osName
    * @return {string}
    * @private
    */
-  getTPMOwnedFailureContent_(locale, osName) {
-    return this.i18nAdvanced('errorTPMOwnedContent', {substitutions: [osName]});
+  getTPMOwnedFailureContent_(locale) {
+    return this.i18nAdvanced('errorTPMOwnedContent');
   }
 
   onRestartTap_() {
@@ -103,13 +99,6 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
    */
   get defaultControl() {
     return this.$.errorDialog;
-  }
-
-  /**
-   * @param {string} osName
-   */
-  setOsName(osName) {
-    this.osName = osName;
   }
 }
 

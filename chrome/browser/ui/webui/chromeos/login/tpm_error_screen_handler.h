@@ -33,10 +33,6 @@ class TpmErrorView {
   // Sets corresponding error message when taking tpm ownership return an error.
   virtual void SetTPMOwnedErrorStep() = 0;
   virtual void SetTPMDbusErrorStep() = 0;
-
-  // Sets if build is branded or not to show correct error message when TPM is
-  // owned by other OS.
-  virtual void SetIsBrandedBuild(bool is_branded) = 0;
 };
 
 class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
@@ -54,7 +50,6 @@ class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
   void Unbind() override;
   void SetTPMOwnedErrorStep() override;
   void SetTPMDbusErrorStep() override;
-  void SetIsBrandedBuild(bool is_branded) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

@@ -51,7 +51,6 @@ void OsInstallScreen::ShowImpl() {
   if (!view_)
     return;
 
-  view_->SetIsBrandedBuild(context()->is_branded_build);
   view_->Show();
 }
 

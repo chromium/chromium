@@ -41,10 +41,12 @@ void TpmErrorScreenHandler::DeclareLocalizedValues(
 
   builder->Add("errorTPMOwnedTitle",
                IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_TITLE);
-  builder->Add("errorTPMOwnedSubtitle",
-               IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_SUBTITLE);
-  builder->Add("errorTPMOwnedContent",
-               IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_CONTENT);
+  builder->AddF("errorTPMOwnedSubtitle",
+                IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_SUBTITLE,
+                IDS_INSTALLED_PRODUCT_OS_NAME);
+  builder->AddF("errorTPMOwnedContent",
+                IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_CONTENT,
+                IDS_INSTALLED_PRODUCT_OS_NAME);
 }
 
 void TpmErrorScreenHandler::Initialize() {
@@ -69,12 +71,6 @@ void TpmErrorScreenHandler::SetTPMOwnedErrorStep() {
 
 void TpmErrorScreenHandler::SetTPMDbusErrorStep() {
   CallJS("login.TPMErrorMessageScreen.setStep", std::string(kTPMErrorDbusStep));
-}
-
-void TpmErrorScreenHandler::SetIsBrandedBuild(bool is_branded) {
-  CallJS("login.TPMErrorMessageScreen.setOsName",
-         is_branded ? l10n_util::GetStringUTF8(IDS_CLOUD_READY_OS_NAME)
-                    : l10n_util::GetStringUTF8(IDS_CHROMIUM_OS_NAME));
 }
 
 void TpmErrorScreenHandler::Bind(TpmErrorScreen* screen) {

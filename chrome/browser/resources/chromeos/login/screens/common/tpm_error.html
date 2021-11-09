@@ -41,11 +41,11 @@
         [[i18nDynamic(locale, 'errorTPMOwnedTitle')]]
       </h1>
       <p slot="subtitle" for-step="tpm-owned">
-        [[i18nDynamic(locale, 'errorTPMOwnedSubtitle', osName)]]
+        [[i18nDynamic(locale, 'errorTPMOwnedSubtitle')]]
       </p>
       <html-echo slot="content" for-step="tpm-owned" class="flex layout
           vertical center center-justified"
-          content="[[getTPMOwnedFailureContent_(locale, osName)]]"></html-echo>
+          content="[[getTPMOwnedFailureContent_(locale)]]"></html-echo>
       <div slot="bottom-buttons">
         <oobe-text-button id="restartButton" inverse class="focus-on-show"
             text-key="errorTpmFailureRebootButton" on-click="onRestartTap_">

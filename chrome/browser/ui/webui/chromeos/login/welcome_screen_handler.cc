@@ -139,6 +139,12 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
   if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
     builder->Add("welcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
     builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
+  } else if (switches::IsCloudReadyOobe() || switches::IsOsInstallAllowed()) {
+    builder->AddF("welcomeScreenGreeting",
+                  IDS_WELCOME_SCREEN_GREETING_CLOUD_READY,
+                  IDS_INSTALLED_PRODUCT_OS_NAME);
+    builder->Add("welcomeScreenGreetingSubtitle",
+                 IDS_WELCOME_SCREEN_GREETING_SUBTITLE);
   } else {
     builder->AddF("welcomeScreenGreeting", IDS_NEW_WELCOME_SCREEN_GREETING,
                   ui::GetChromeOSDeviceTypeResourceId());

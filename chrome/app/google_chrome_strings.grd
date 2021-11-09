@@ -313,6 +313,9 @@ chromium_strings.grd. -->
         <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
           Chrome OS
         </message>
+        <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
+          CloudReady 2.0
+        </message>
       </if>
       <message name="IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT" desc="Alt text for the Chrome Enterprise logo image.">
         Chrome Enterprise logo

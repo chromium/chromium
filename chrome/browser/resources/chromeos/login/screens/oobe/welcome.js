@@ -67,7 +67,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
       /**
        * Currently selected system language (display name).
        */
-      currentLanguage:  String,
+      currentLanguage: String,
 
       /**
        * Currently selected input method (display name).
@@ -148,7 +148,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
        */
       shouldShowLanguageSectionSubtitle_: {
         type: Boolean,
-        value: function () {
+        value: function() {
           return loadTimeData.valueExists('languagePacksEnabled') &&
               loadTimeData.getBoolean('languagePacksEnabled');
         },
@@ -177,12 +177,14 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   /** Overridden from LoginScreenBehavior. */
   get EXTERNAL_API() {
-    return  [ 'onInputMethodIdSetFromBackend',
-              'refreshA11yInfo',
-              'showDemoModeConfirmationDialog',
-              'showEditRequisitionDialog',
-              'showRemoraRequisitionDialog',
-              'maybeGiveChromeVoxHint'];
+    return [
+      'onInputMethodIdSetFromBackend',
+      'refreshA11yInfo',
+      'showDemoModeConfirmationDialog',
+      'showEditRequisitionDialog',
+      'showRemoraRequisitionDialog',
+      'maybeGiveChromeVoxHint',
+    ];
   }
 
   defaultUIStep() {

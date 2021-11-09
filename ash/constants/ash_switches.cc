@@ -273,6 +273,9 @@ const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
 //    data connections.
 const char kCellularFirst[] = "cellular-first";
 
+// Indicates that CloudReady UI in OOBE should be shown.
+const char kCloudReadyOobe[] = "cloud-ready-oobe";
+
 // Default large wallpaper to use for kids accounts (as path to trusted,
 // non-user-writable JPEG file).
 const char kChildWallpaperLarge[] = "child-wallpaper-large";
@@ -847,6 +850,10 @@ bool IsGaiaIdMigrationStarted() {
 
 bool IsCellularFirstDevice() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kCellularFirst);
+}
+
+bool IsCloudReadyOobe() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kCloudReadyOobe);
 }
 
 bool IsSigninFrameClientCertsEnabled() {

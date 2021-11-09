@@ -29,7 +29,6 @@ Polymer({
     'showStep',
     'setServiceLogs',
     'updateCountdownString',
-    'setIsBrandedBuild',
   ],
 
   properties: {
@@ -39,16 +38,6 @@ Polymer({
     osInstallDialogSuccessSubtitile_: {
       type: String,
       value: '',
-    },
-
-    osName_: {
-      type: String,
-      computed: 'updateOSName_(isBranded)',
-    },
-
-    isBranded: {
-      type: Boolean,
-      value: true,
     },
   },
 
@@ -131,14 +120,12 @@ Polymer({
 
   /**
    * @param {string} locale
-   * @param {string} osName
    * @return {string}
    * @private
    */
-  getErrorFailedSubtitleHtml_(locale, osName) {
+  getErrorFailedSubtitleHtml_(locale) {
     return this.i18nAdvanced(
-        'osInstallDialogErrorFailedSubtitle',
-        {tags: ['p'], substitutions: [osName]});
+        'osInstallDialogErrorFailedSubtitle', {tags: ['p']});
   },
 
   /**
@@ -205,24 +192,7 @@ Polymer({
    * @param {string} timeLeftMessage Countdown message on success step.
    */
   updateCountdownString(timeLeftMessage) {
-    this.osInstallDialogSuccessSubtitile_ = this.i18nDynamic(
-        this.locale, 'osInstallDialogSuccessSubtitle', this.osName_,
-        timeLeftMessage);
-  },
-
-  /**
-   * @param {boolean} is_branded
-   */
-  setIsBrandedBuild(is_branded) {
-    this.isBranded = is_branded;
-  },
-
-  /**
-   * @return {string} OS name
-   */
-  updateOSName_() {
-    return this.isBranded ? loadTimeData.getString('osInstallCloudReadyOS') :
-                            loadTimeData.getString('osInstallChromiumOS');
+    this.osInstallDialogSuccessSubtitile_ = timeLeftMessage;
   },
 });
 })();

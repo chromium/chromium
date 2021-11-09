@@ -485,6 +485,9 @@
   <message name="IDS_NEW_WELCOME_SCREEN_GREETING" desc="Greeting message on the OOBE welcome screen">
     Welcome to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
+  <message name="IDS_WELCOME_SCREEN_GREETING_CLOUD_READY" desc="Greeting message on the OOBE welcome screen">
+    Welcome to <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+  </message>
   <message name="IDS_WELCOME_SCREEN_GREETING_SUBTITLE" desc="Greeting message on the OOBE welcome screen">
     Fast. Secure. Effortless.
   </message>
@@ -1061,17 +1064,9 @@
     Please retry. If you see this error again please contact your support representative.
   </message>
 
-  <!-- Different OS names -->
-  <message translateable="false" name="IDS_CHROMIUM_OS_NAME" desc="The device operational system name for Chromium OS">
-    Chromium OS
-  </message>
-  <message translateable="false" name="IDS_CLOUD_READY_OS_NAME" desc="The device operational system name for CloudReady 2.0 OS">
-    CloudReady 2.0
-  </message>
-
   <!-- Strings for OS trial screen-->
   <message name="IDS_OS_TRIAL_TITLE" desc="Title of the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
-    Welcome to <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+    Start using <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
   </message>
   <message name="IDS_OS_TRIAL_SUBTITLE" desc="Subtitle of the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>For the best experience, install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>

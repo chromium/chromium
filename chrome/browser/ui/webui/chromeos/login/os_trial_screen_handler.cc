@@ -27,17 +27,18 @@ OsTrialScreenHandler::~OsTrialScreenHandler() {
 
 void OsTrialScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("osTrialTitle", IDS_OS_TRIAL_TITLE);
-  builder->Add("osTrialSubtitle", IDS_OS_TRIAL_SUBTITLE);
-  builder->Add("osTrialInstallTitle", IDS_OS_TRIAL_INSTALL_TITLE);
-  builder->Add("osTrialInstallSubtitle", IDS_OS_TRIAL_INSTALL_SUBTITLE);
+  builder->AddF("osTrialTitle", IDS_OS_TRIAL_TITLE,
+                IDS_INSTALLED_PRODUCT_OS_NAME);
+  builder->AddF("osTrialSubtitle", IDS_OS_TRIAL_SUBTITLE,
+                IDS_INSTALLED_PRODUCT_OS_NAME);
+  builder->AddF("osTrialInstallTitle", IDS_OS_TRIAL_INSTALL_TITLE,
+                IDS_INSTALLED_PRODUCT_OS_NAME);
+  builder->AddF("osTrialInstallSubtitle", IDS_OS_TRIAL_INSTALL_SUBTITLE,
+                IDS_INSTALLED_PRODUCT_OS_NAME);
   builder->Add("osTrialTryTitle", IDS_OS_TRIAL_TRY_TITLE);
-  builder->Add("osTrialTrySubtitle", IDS_OS_TRIAL_TRY_SUBTITLE);
+  builder->AddF("osTrialTrySubtitle", IDS_OS_TRIAL_TRY_SUBTITLE,
+                IDS_INSTALLED_PRODUCT_OS_NAME);
   builder->Add("osTrialNextButton", IDS_OS_TRIAL_NEXT_BUTTON);
-
-  // OS names
-  builder->Add("osInstallChromiumOS", IDS_CHROMIUM_OS_NAME);
-  builder->Add("osInstallCloudReadyOS", IDS_CLOUD_READY_OS_NAME);
 }
 
 void OsTrialScreenHandler::Initialize() {}
@@ -54,10 +55,6 @@ void OsTrialScreenHandler::Bind(ash::OsTrialScreen* screen) {
 void OsTrialScreenHandler::Unbind() {
   screen_ = nullptr;
   BaseScreenHandler::SetBaseScreen(nullptr);
-}
-
-void OsTrialScreenHandler::SetIsBrandedBuild(bool is_branded) {
-  CallJS("login.OsTrialScreen.setIsBrandedBuild", is_branded);
 }
 
 }  // namespace chromeos

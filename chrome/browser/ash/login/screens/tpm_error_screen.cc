@@ -37,7 +37,6 @@ void TpmErrorScreen::ShowImpl() {
     return;
   DCHECK(!context()->tpm_owned_error || !context()->tpm_dbus_error);
   if (context()->tpm_owned_error) {
-    view_->SetIsBrandedBuild(context()->is_branded_build);
     view_->SetTPMOwnedErrorStep();
   } else if (context()->tpm_dbus_error) {
     view_->SetTPMDbusErrorStep();

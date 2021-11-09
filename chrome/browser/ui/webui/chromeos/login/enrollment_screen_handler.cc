@@ -702,10 +702,6 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   builder->Add("selectEncryption", IDS_AD_ENCRYPTION_SELECTION_SELECT);
   builder->Add("selectConfiguration", IDS_AD_CONFIG_SELECTION_SELECT);
   /* End of Active Directory strings */
-
-  // OS names
-  builder->Add("osInstallChromiumOS", IDS_CHROMIUM_OS_NAME);
-  builder->Add("osInstallCloudReadyOS", IDS_CLOUD_READY_OS_NAME);
 }
 
 void EnrollmentScreenHandler::GetAdditionalParameters(

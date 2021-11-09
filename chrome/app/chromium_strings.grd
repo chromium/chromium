@@ -308,6 +308,9 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         <message name="IDS_SHORT_PRODUCT_OS_NAME" desc="The Chrome OS application short name">
           Chromium OS
         </message>
+        <message name="IDS_INSTALLED_PRODUCT_OS_NAME" desc="Installed OS name">
+          Chromium OS
+        </message>
       </if>
       <!-- Chrome enterprise logo won't be used in Chromium -->
       <message name="IDS_PRODUCT_LOGO_ENTERPRISE_ALT_TEXT" desc="Alt text for the Chromium Enterprise logo image."/>

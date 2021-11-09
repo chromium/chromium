@@ -41,7 +41,6 @@ class OsInstallScreenView {
   virtual void SetStatus(OsInstallClient::Status status) = 0;
   virtual void SetServiceLogs(const std::string& service_log) = 0;
   virtual void UpdateCountdownStringWithTime(int64_t time_left) = 0;
-  virtual void SetIsBrandedBuild(bool is_branded) = 0;
 };
 
 class OsInstallScreenHandler : public BaseScreenHandler,
@@ -68,7 +67,6 @@ class OsInstallScreenHandler : public BaseScreenHandler,
   void SetStatus(OsInstallClient::Status status) override;
   void SetServiceLogs(const std::string& service_log) override;
   void UpdateCountdownStringWithTime(int64_t time_left) override;
-  void SetIsBrandedBuild(bool is_branded) override;
 
   ash::OsInstallScreen* screen_ = nullptr;
 

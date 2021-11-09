@@ -26,10 +26,6 @@ Polymer({
     LoginScreenBehavior,
   ],
 
-  EXTERNAL_API: [
-    'setIsBrandedBuild',
-  ],
-
   properties: {
     /**
      * The currently selected trial option.
@@ -37,16 +33,6 @@ Polymer({
     selectedTrialOption: {
       type: String,
       value: TrialOption.INSTALL,
-    },
-
-    osName_: {
-      type: String,
-      computed: 'updateOSName_(isBranded)',
-    },
-
-    isBranded: {
-      type: Boolean,
-      value: true,
     },
   },
 
@@ -58,11 +44,10 @@ Polymer({
 
   /**
    * @param {string} locale
-   * @return {string}
    * @private
    */
-  getSubtitleHtml_(locale, osName) {
-    return this.i18nAdvanced('osTrialSubtitle', {substitutions: [osName]});
+  getSubtitleHtml_(locale) {
+    return this.i18nAdvanced('osTrialSubtitle');
   },
 
   /**
@@ -82,21 +67,6 @@ Polymer({
    */
   onBackButtonClick_() {
     this.userActed('os-trial-back');
-  },
-
-  /**
-   * @param {boolean} is_branded
-   */
-  setIsBrandedBuild(is_branded) {
-    this.isBranded = is_branded;
-  },
-
-  /**
-   * @return {string} OS name
-   */
-  updateOSName_() {
-    return this.isBranded ? loadTimeData.getString('osInstallCloudReadyOS') :
-                            loadTimeData.getString('osInstallChromiumOS');
   },
 });
 })();

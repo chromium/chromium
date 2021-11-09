@@ -29,8 +29,6 @@ class OsTrialScreenView {
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
-
-  virtual void SetIsBrandedBuild(bool is_branded) = 0;
 };
 
 class OsTrialScreenHandler : public BaseScreenHandler,
@@ -53,7 +51,6 @@ class OsTrialScreenHandler : public BaseScreenHandler,
   void Show() override;
   void Bind(ash::OsTrialScreen* screen) override;
   void Unbind() override;
-  void SetIsBrandedBuild(bool is_branded) override;
 
   ash::OsTrialScreen* screen_ = nullptr;
 };
