@@ -121,11 +121,6 @@ if (!is_fat_secondary_toolchain) {
       "--branding=$chromium_short_name",
       "--add-gtm-metadata=1",
     ]
-
-    # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-    if (ios_lock_to_version != "") {
-      args += [ "--lock-to-version=$ios_lock_to_version" ]
-    }
   }
 
   compile_entitlements("entitlements") {

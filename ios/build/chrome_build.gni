@@ -38,14 +38,6 @@ declare_args() {
   # Controls whether ScreenTime API is used.
   ios_enable_screen_time = true
 
-  # When set the main plist CFBundleVersion will be set to ios_lock_to_version,
-  # followed by the milestone and patch in one tuple, e.g. 86.0.4240.8720 where
-  # 87 is the milestone and 20 is the stable patch.  Note that CFBundleVersion
-  # is mostly unused by Chrome and should not affect how the actual version
-  # number is handled internally by Chrome.
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  ios_lock_to_version = ""
-
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
   # Apple developer documentation (https://goo.gl/yv1xEF).
