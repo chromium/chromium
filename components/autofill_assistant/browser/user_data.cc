@@ -40,6 +40,16 @@ PaymentInstrument::PaymentInstrument(
     : card(std::move(_card)), billing_address(std::move(_billing_address)) {}
 PaymentInstrument::~PaymentInstrument() = default;
 
+Contact::Contact() = default;
+Contact::Contact(std::unique_ptr<autofill::AutofillProfile> _profile)
+    : profile(std::move(_profile)) {}
+Contact::~Contact() = default;
+
+Address::Address() = default;
+Address::Address(std::unique_ptr<autofill::AutofillProfile> _profile)
+    : profile(std::move(_profile)) {}
+Address::~Address() = default;
+
 UserData::UserData() = default;
 UserData::~UserData() = default;
 

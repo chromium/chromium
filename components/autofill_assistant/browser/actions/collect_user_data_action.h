@@ -97,8 +97,8 @@ class CollectUserDataAction : public Action,
   bool CreateOptionsFromProto();
 
   bool CheckInitialAutofillDataComplete(
-      const std::vector<std::unique_ptr<autofill::AutofillProfile>>& contacts,
-      const std::vector<std::unique_ptr<autofill::AutofillProfile>>& addresses,
+      const std::vector<std::unique_ptr<Contact>>& contacts,
+      const std::vector<std::unique_ptr<Address>>& addresses,
       const std::vector<std::unique_ptr<PaymentInstrument>>&
           payment_instruments);
 

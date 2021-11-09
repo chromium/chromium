@@ -58,6 +58,14 @@ MATCHER_P(MatchesProfile, profile, "") {
   return arg.Compare(profile) == 0;
 }
 
+MATCHER_P(MatchesContact, profile, "") {
+  return arg.profile->Compare(profile) == 0;
+}
+
+MATCHER_P(MatchesAddress, profile, "") {
+  return arg.profile->Compare(profile) == 0;
+}
+
 MATCHER_P(MatchesCard, card, "") {
   return arg.Compare(card) == 0;
 }
@@ -1732,12 +1740,12 @@ TEST_F(CollectUserDataActionTest, AttachesProfilesToContactsAndAddresses) {
 
             EXPECT_THAT(
                 user_data_.available_contacts_,
-                UnorderedElementsAre(Pointee(MatchesProfile(profile)),
-                                     Pointee(MatchesProfile(incomplete))));
+                UnorderedElementsAre(Pointee(MatchesContact(profile)),
+                                     Pointee(MatchesContact(incomplete))));
             EXPECT_THAT(
                 user_data_.available_addresses_,
-                UnorderedElementsAre(Pointee(MatchesProfile(profile)),
-                                     Pointee(MatchesProfile(incomplete))));
+                UnorderedElementsAre(Pointee(MatchesAddress(profile)),
+                                     Pointee(MatchesAddress(incomplete))));
 
             std::move(collect_user_data_options->confirm_callback)
                 .Run(&user_data_, nullptr);
@@ -2551,9 +2559,10 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
         EXPECT_FALSE(collect_user_data_options->can_edit_contacts);
         ASSERT_EQ(user_data_.available_contacts_.size(), 1u);
-        EXPECT_THAT(user_data_.available_contacts_[0]->guid(), Not(IsEmpty()));
+        EXPECT_THAT(user_data_.available_contacts_[0]->profile->guid(),
+                    Not(IsEmpty()));
         auto mappings = field_formatter::CreateAutofillMappings(
-            *user_data_.available_contacts_[0], "en-US");
+            *user_data_.available_contacts_[0]->profile, "en-US");
         EXPECT_THAT(
             mappings,
             IsSupersetOf({Pair(field_formatter::Key(3), "John"),
@@ -2671,9 +2680,10 @@ TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
-        EXPECT_THAT(user_data_.available_addresses_[0]->guid(), Not(IsEmpty()));
+        EXPECT_THAT(user_data_.available_addresses_[0]->profile->guid(),
+                    Not(IsEmpty()));
         auto mappings = field_formatter::CreateAutofillMappings(
-            *user_data_.available_addresses_[0], "en-US");
+            *user_data_.available_addresses_[0]->profile, "en-US");
         EXPECT_THAT(mappings,
                     IsSupersetOf({Pair(field_formatter::Key(3), "John"),
                                   Pair(field_formatter::Key(5), "Doe"),
@@ -2716,9 +2726,10 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_FALSE(collect_user_data_options->should_store_data_changes);
-        EXPECT_THAT(user_data_.available_contacts_[0]->guid(), Not(IsEmpty()));
+        EXPECT_THAT(user_data_.available_contacts_[0]->profile->guid(),
+                    Not(IsEmpty()));
         auto mappings = field_formatter::CreateAutofillMappings(
-            *user_data_.available_contacts_[0], "en-US");
+            *user_data_.available_contacts_[0]->profile, "en-US");
         // Note: Phone number is still getting formatted on extraction, even if
         // it was added with |raw|.
         EXPECT_THAT(

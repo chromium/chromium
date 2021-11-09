@@ -1441,13 +1441,13 @@ void UiControllerAndroid::OnUserDataChanged(
       auto jcontact = Java_AssistantCollectUserDataModel_createAutofillContact(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *user_data.available_contacts_[index]),
+              env, *user_data.available_contacts_[index]->profile),
           collect_user_data_options->request_payer_name,
           collect_user_data_options->request_payer_phone,
           collect_user_data_options->request_payer_email);
       if (jcontact) {
         const auto& errors = user_data::GetContactValidationErrors(
-            user_data.available_contacts_[index].get(),
+            user_data.available_contacts_[index]->profile.get(),
             *collect_user_data_options);
         Java_AssistantCollectUserDataModel_addAutofillContact(
             env, jcontactlist, jcontact,
@@ -1465,11 +1465,11 @@ void UiControllerAndroid::OnUserDataChanged(
     // Billing addresses.
     auto jbillinglist =
         Java_AssistantCollectUserDataModel_createBillingAddressList(env);
-    for (const auto& profile : user_data.available_addresses_) {
+    for (const auto& address : user_data.available_addresses_) {
       auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *profile));
+              env, *address->profile));
       if (jaddress) {
         Java_AssistantCollectUserDataModel_addBillingAddress(env, jbillinglist,
                                                              jaddress);
@@ -1487,10 +1487,10 @@ void UiControllerAndroid::OnUserDataChanged(
       auto jaddress = Java_AssistantCollectUserDataModel_createAutofillAddress(
           env, jcontext,
           autofill::PersonalDataManagerAndroid::CreateJavaProfileFromNative(
-              env, *user_data.available_addresses_[index]));
+              env, *user_data.available_addresses_[index]->profile));
       if (jaddress) {
         const auto& errors = user_data::GetShippingAddressValidationErrors(
-            user_data.available_addresses_[index].get(),
+            user_data.available_addresses_[index]->profile.get(),
             *collect_user_data_options);
         Java_AssistantCollectUserDataModel_addShippingAddress(
             env, jshippinglist, jaddress,

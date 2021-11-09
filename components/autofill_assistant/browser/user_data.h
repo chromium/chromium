@@ -84,7 +84,9 @@ struct LoginChoice {
   absl::optional<std::string> edit_button_content_description;
 };
 
-// Tuple for holding credit card and billing address;
+// Struct for holding payment information, such as credit card and billing
+// address. This is a wrapper around Autofill entities to easily bundle and
+// extend them for the purposes of Autofill Assistant.
 struct PaymentInstrument {
   PaymentInstrument();
   PaymentInstrument(std::unique_ptr<autofill::CreditCard> card,
@@ -93,6 +95,26 @@ struct PaymentInstrument {
 
   std::unique_ptr<autofill::CreditCard> card;
   std::unique_ptr<autofill::AutofillProfile> billing_address;
+};
+
+// Struct for holding a contact. This is a wrapper around AutofillProfile to
+// easily extend it for the purposes of Autofill Assistant.
+struct Contact {
+  Contact();
+  Contact(std::unique_ptr<autofill::AutofillProfile> profile);
+  ~Contact();
+
+  std::unique_ptr<autofill::AutofillProfile> profile;
+};
+
+// Struct for holding an address. This is a wrapper around AutofillProfile to
+// easily extend it for the purposes of Autofill Assistant.
+struct Address {
+  Address();
+  Address(std::unique_ptr<autofill::AutofillProfile> profile);
+  ~Address();
+
+  std::unique_ptr<autofill::AutofillProfile> profile;
 };
 
 // Struct for holding the user data.
@@ -123,8 +145,8 @@ class UserData {
   absl::optional<int> date_time_range_start_timeslot_;
   absl::optional<int> date_time_range_end_timeslot_;
 
-  std::vector<std::unique_ptr<autofill::AutofillProfile>> available_contacts_;
-  std::vector<std::unique_ptr<autofill::AutofillProfile>> available_addresses_;
+  std::vector<std::unique_ptr<Contact>> available_contacts_;
+  std::vector<std::unique_ptr<Address>> available_addresses_;
   std::vector<std::unique_ptr<PaymentInstrument>>
       available_payment_instruments_;
 

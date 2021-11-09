@@ -989,17 +989,17 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
 }
 
 bool CollectUserDataAction::CheckInitialAutofillDataComplete(
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& contacts,
-    const std::vector<std::unique_ptr<autofill::AutofillProfile>>& addresses,
+    const std::vector<std::unique_ptr<Contact>>& contacts,
+    const std::vector<std::unique_ptr<Address>>& addresses,
     const std::vector<std::unique_ptr<PaymentInstrument>>&
         payment_instruments) {
   DCHECK(collect_user_data_options_ != nullptr);
 
   if (RequiresContact(*collect_user_data_options_)) {
     bool has_complete_contact =
-        base::ranges::any_of(contacts, [this](const auto& profile) {
+        base::ranges::any_of(contacts, [this](const auto& contact) {
           return user_data::GetContactValidationErrors(
-                     profile.get(), *collect_user_data_options_)
+                     contact->profile.get(), *collect_user_data_options_)
               .empty();
         });
     if (!has_complete_contact) {
@@ -1009,9 +1009,9 @@ bool CollectUserDataAction::CheckInitialAutofillDataComplete(
 
   if (RequiresShipping(*collect_user_data_options_)) {
     bool has_complete_shipping_address =
-        base::ranges::any_of(addresses, [this](const auto& profile) {
+        base::ranges::any_of(addresses, [this](const auto& address) {
           return user_data::GetShippingAddressValidationErrors(
-                     profile.get(), *collect_user_data_options_)
+                     address->profile.get(), *collect_user_data_options_)
               .empty();
         });
     if (!has_complete_shipping_address) {
@@ -1308,7 +1308,8 @@ void CollectUserDataAction::UpdateUserDataFromProto(
                .empty()) {
         continue;
       }
-      user_data->available_contacts_.emplace_back(std::move(profile));
+      user_data->available_contacts_.emplace_back(
+          std::make_unique<Contact>(std::move(profile)));
     }
     UpdateSelectedContact(user_data);
   }
@@ -1320,7 +1321,8 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       AddProtoDataToAutofillDataModel(profile_data.values(),
                                       proto_data.locale(), profile.get());
       profile->FinalizeAfterImport();
-      user_data->available_addresses_.emplace_back(std::move(profile));
+      user_data->available_addresses_.emplace_back(
+          std::make_unique<Address>(std::move(profile)));
     }
     UpdateSelectedShippingAddress(user_data);
   }
@@ -1378,12 +1380,12 @@ void CollectUserDataAction::UpdatePersonalDataManagerProfiles(
   for (const auto* profile :
        delegate_->GetPersonalDataManager()->GetProfilesToSuggest()) {
     if (requires_contact) {
-      user_data->available_contacts_.emplace_back(
-          user_data::MakeUniqueFromProfile(*profile));
+      user_data->available_contacts_.emplace_back(std::make_unique<Contact>(
+          user_data::MakeUniqueFromProfile(*profile)));
     }
     if (requires_address) {
-      user_data->available_addresses_.emplace_back(
-          user_data::MakeUniqueFromProfile(*profile));
+      user_data->available_addresses_.emplace_back(std::make_unique<Address>(
+          user_data::MakeUniqueFromProfile(*profile)));
     }
   }
   UpdateSelectedContact(user_data);
@@ -1448,10 +1450,10 @@ void CollectUserDataAction::UpdateSelectedContact(UserData* user_data) {
   if (selected_contact != nullptr) {
     found_contact = base::ranges::any_of(
         user_data->available_contacts_,
-        [&selected_contact,
-         this](const std::unique_ptr<autofill::AutofillProfile>& profile) {
-          return user_data::CompareContactDetails(
-              *collect_user_data_options_, profile.get(), selected_contact);
+        [&selected_contact, this](const std::unique_ptr<Contact>& contact) {
+          return user_data::CompareContactDetails(*collect_user_data_options_,
+                                                  contact->profile.get(),
+                                                  selected_contact);
         });
   }
 
@@ -1464,13 +1466,13 @@ void CollectUserDataAction::UpdateSelectedContact(UserData* user_data) {
   if (!user_data->has_selected_address(
           collect_user_data_options_->contact_details_name) &&
       RequiresContact(*collect_user_data_options_)) {
-    int default_selection = user_data::GetDefaultContactProfile(
+    int default_selection = user_data::GetDefaultContact(
         *collect_user_data_options_, user_data->available_contacts_);
     if (default_selection != -1) {
       delegate_->GetUserModel()->SetSelectedAutofillProfile(
           collect_user_data_options_->contact_details_name,
           user_data::MakeUniqueFromProfile(
-              *(user_data->available_contacts_[default_selection])),
+              *(user_data->available_contacts_[default_selection]->profile)),
           user_data);
     }
   }
@@ -1485,9 +1487,8 @@ void CollectUserDataAction::UpdateSelectedShippingAddress(UserData* user_data) {
   if (selected_shipping_address != nullptr) {
     found_shipping_address = base::ranges::any_of(
         user_data->available_addresses_,
-        [&selected_shipping_address](
-            const std::unique_ptr<autofill::AutofillProfile>& profile) {
-          return profile->Compare(*selected_shipping_address) == 0;
+        [&selected_shipping_address](const std::unique_ptr<Address>& address) {
+          return address->profile->Compare(*selected_shipping_address) == 0;
         });
   }
 
@@ -1500,13 +1501,13 @@ void CollectUserDataAction::UpdateSelectedShippingAddress(UserData* user_data) {
   if (!user_data->has_selected_address(
           collect_user_data_options_->shipping_address_name) &&
       RequiresShipping(*collect_user_data_options_)) {
-    int default_selection = user_data::GetDefaultShippingAddressProfile(
+    int default_selection = user_data::GetDefaultShippingAddress(
         *collect_user_data_options_, user_data->available_addresses_);
     if (default_selection != -1) {
       delegate_->GetUserModel()->SetSelectedAutofillProfile(
           collect_user_data_options_->shipping_address_name,
           user_data::MakeUniqueFromProfile(
-              *(user_data->available_addresses_[default_selection])),
+              *(user_data->available_addresses_[default_selection]->profile)),
           user_data);
     }
   }
