@@ -150,6 +150,10 @@ class ASH_EXPORT DesksBarView : public views::View,
   // If a desk is in a drag & drop cycle.
   bool IsDraggingDesk() const;
 
+  // Called when the desks templates grid is hidden. Transitions the desks bar
+  // view to zero state if necessary.
+  void OnDesksTemplatesGridHidden();
+
   // views::View:
   const char* GetClassName() const override;
   void Layout() override;
@@ -245,6 +249,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   int GetAdjustedUncroppedScrollPosition(int position) const;
 
   void OnDesksTemplatesButtonPressed();
+
+  // Animates the bar from expanded state to zero state. Clears `mini_views_`.
+  void SwitchToZeroState();
 
   // Scrollview callbacks.
   void OnContentsScrolled();

@@ -925,6 +925,7 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
 
   desks_templates_grid_widget_->Hide();
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
+  desks_bar_view_->OnDesksTemplatesGridHidden();
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {

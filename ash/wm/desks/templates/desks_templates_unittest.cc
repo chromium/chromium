@@ -328,6 +328,54 @@ class DesksTemplatesTest : public OverviewTestBase {
       ClickOnView(expanded_button);
   }
 
+  // Helper function for attempting to delete a template based on its uuid. Also
+  // checks if the grid item count is as expected before deleting. This function
+  // assumes we are already in overview mode and viewing the desks templates
+  // grid.
+  void DeleteTemplate(const base::GUID uuid,
+                      const size_t expected_current_item_count,
+                      bool expect_template_exists = true) {
+    auto& grid_list = GetOverviewGridList();
+    views::Widget* grid_widget = grid_list[0]->desks_templates_grid_widget();
+    ASSERT_TRUE(grid_widget);
+    const DesksTemplatesGridView* templates_grid_view =
+        static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+    ASSERT_TRUE(templates_grid_view);
+
+    std::vector<DesksTemplatesItemView*> grid_items =
+        DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
+
+    // Check the current grid item count.
+    ASSERT_EQ(expected_current_item_count, grid_items.size());
+
+    auto iter =
+        std::find_if(grid_items.cbegin(), grid_items.cend(),
+                     [&](const DesksTemplatesItemView* v) {
+                       return DesksTemplatesItemViewTestApi(v).uuid() == uuid;
+                     });
+
+    if (!expect_template_exists) {
+      ASSERT_EQ(grid_items.end(), iter);
+      return;
+    }
+
+    ASSERT_NE(grid_items.end(), iter);
+
+    ClickOnView(DesksTemplatesItemViewTestApi(*iter).delete_button());
+
+    // Clicking on the delete button should bring up the delete dialog.
+    ASSERT_TRUE(Shell::IsSystemModalWindowOpen());
+
+    // Click the delete button on the delete dialog. Show delete dialog and
+    // select accept.
+    auto* dialog_controller = DesksTemplatesDialogController::Get();
+    auto* dialog_delegate = dialog_controller->dialog_widget()
+                                ->widget_delegate()
+                                ->AsDialogDelegate();
+    dialog_delegate->AcceptDialog();
+    WaitForUI();
+  }
+
   // Toggles overview mode and then shows the desks templates grid.
   void ToggleOverviewAndShowTemplatesGrid() {
     ToggleOverview();
@@ -673,67 +721,21 @@ TEST_F(DesksTemplatesTest, DISABLED_DeleteTemplate) {
 
   // The window is hidden because the desk templates grid is open.
   EXPECT_EQ(0.0f, test_window->layer()->opacity());
-
-  auto& grid_list = GetOverviewGridList();
-  ASSERT_EQ(2u, grid_list.size());
-  views::Widget* grid_widget = grid_list[0]->desks_templates_grid_widget();
-  ASSERT_TRUE(grid_widget);
-  const DesksTemplatesGridView* templates_grid_view =
-      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
-  ASSERT_TRUE(templates_grid_view);
-
-  // Helper function for attempting to delete a template based on its uuid. Also
-  // checks if the grid item count is as expected before deleting.
-  auto delete_template = [&](const base::GUID uuid,
-                             const size_t expected_current_item_count,
-                             bool expect_template_exists = true) {
-    std::vector<DesksTemplatesItemView*> grid_items =
-        DesksTemplatesGridViewTestApi(templates_grid_view).grid_items();
-
-    // Check the current grid item count.
-    ASSERT_EQ(expected_current_item_count, grid_items.size());
-
-    auto iter =
-        std::find_if(grid_items.cbegin(), grid_items.cend(),
-                     [&](const DesksTemplatesItemView* v) {
-                       return DesksTemplatesItemViewTestApi(v).uuid() == uuid;
-                     });
-
-    if (!expect_template_exists) {
-      ASSERT_EQ(grid_items.end(), iter);
-      return;
-    }
-
-    ASSERT_NE(grid_items.end(), iter);
-
-    ClickOnView(DesksTemplatesItemViewTestApi(*iter).delete_button());
-    // Check if delete dialog is called.
-    EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
-    // Click delete button on the delete dialog.
-    // Show delete dialog and select accept.
-    auto* dialog_controller = DesksTemplatesDialogController::Get();
-    auto* dialog_delegate = dialog_controller->dialog_widget()
-                                ->widget_delegate()
-                                ->AsDialogDelegate();
-    dialog_delegate->AcceptDialog();
-    base::RunLoop().RunUntilIdle();
-  };
-
   EXPECT_EQ(2ul, desk_model()->GetEntryCount());
 
   // Delete the template with `uuid_1`.
-  delete_template(uuid_1, /*expected_current_item_count=*/2);
+  DeleteTemplate(uuid_1, /*expected_current_item_count=*/2);
   EXPECT_EQ(0.0f, test_window->layer()->opacity());
   EXPECT_EQ(1ul, desk_model()->GetEntryCount());
 
   // Verifies that the template with `uuid_1`, doesn't exist anymore.
-  delete_template(uuid_1, /*expected_current_item_count=*/1,
-                  /*expect_template_exists=*/false);
+  DeleteTemplate(uuid_1, /*expected_current_item_count=*/1,
+                 /*expect_template_exists=*/false);
   EXPECT_EQ(0.0f, test_window->layer()->opacity());
   EXPECT_EQ(1ul, desk_model()->GetEntryCount());
 
   // Delete the template with `uuid_2`.
-  delete_template(uuid_2, /*expected_current_item_count=*/1);
+  DeleteTemplate(uuid_2, /*expected_current_item_count=*/1);
   EXPECT_EQ(0ul, desk_model()->GetEntryCount());
 
   // After all templates have been deleted, check to ensure we have exited the
@@ -1100,11 +1102,8 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
   auto test_window_1 = CreateTestWindow();
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
 
-  // Enter overview and show the templates grid.
-  ToggleOverview();
-  WaitForUI();
-  ShowDesksTemplatesGrids();
-  WaitForUI();
+  ToggleOverviewAndShowTemplatesGrid();
+
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   ASSERT_TRUE(GetOverviewSession()
                   ->GetGridWithRootWindow(root_window)
@@ -1137,6 +1136,46 @@ TEST_F(DesksTemplatesTest, OverviewTabbing) {
   // When we're done with the first item, we'll go on to the second.
   SendKey(ui::VKEY_TAB);
   EXPECT_EQ(second_item, GetHighlightedView());
+}
+
+// Tests that the desks bar returns to zero state if the second-to-last desk is
+// deleted while viewing the templates grid. Also verifies that the zero state
+// buttons are visible. Regression test for https://crbug.com/1264989.
+TEST_F(DesksTemplatesTest, DesksBarReturnsToZeroState) {
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  AddEntry(uuid, "template", base::Time::Now());
+
+  ToggleOverviewAndShowTemplatesGrid();
+
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  auto* overview_grid =
+      GetOverviewSession()->GetGridWithRootWindow(root_window);
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+
+  // Close one of the desks. Test that we remain in expanded state.
+  auto* mini_view = desks_bar_view->FindMiniViewForDesk(
+      DesksController::Get()->active_desk());
+  ClickOnView(mini_view->close_desk_button());
+  auto* expanded_new_desk_button =
+      desks_bar_view->expanded_state_new_desk_button();
+  auto* expanded_templates_button =
+      desks_bar_view->expanded_state_desks_templates_button();
+  EXPECT_TRUE(expanded_new_desk_button->GetVisible());
+  EXPECT_TRUE(expanded_templates_button->GetVisible());
+  EXPECT_FALSE(desks_bar_view->IsZeroState());
+
+  // Delete the one and only template, which should hide the templates grid.
+  DeleteTemplate(uuid, /*expected_current_item_count=*/1);
+  EXPECT_FALSE(GetOverviewSession()
+                   ->GetGridWithRootWindow(root_window)
+                   ->desks_templates_grid_widget()
+                   ->IsVisible());
+
+  // Test that we are now in zero state.
+  auto* zero_new_desk_button = desks_bar_view->zero_state_new_desk_button();
+  EXPECT_TRUE(zero_new_desk_button->GetVisible());
+  EXPECT_TRUE(desks_bar_view->IsZeroState());
 }
 
 }  // namespace ash
