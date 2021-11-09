@@ -196,6 +196,14 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
   if (IsCustomBackgroundDisabledByPolicy()) {
     return;
   }
+  // Store current background info before it is changed so it can be used if
+  // RevertBackgroundChanges is called.
+  if (previous_background_info_ == absl::nullopt) {
+    previous_background_info_ = absl::make_optional(
+        pref_service_->Get(prefs::kNtpCustomBackgroundDict)->Clone());
+    previous_local_background_ = false;
+  }
+
   bool is_backdrop_collection =
       background_service_ &&
       background_service_->IsValidBackdropCollection(collection_id);
@@ -236,6 +244,8 @@ void NtpCustomBackgroundService::SelectLocalBackgroundImage(
   if (IsCustomBackgroundDisabledByPolicy()) {
     return;
   }
+  previous_background_info_.reset();
+  previous_local_background_ = true;
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&CopyFileToProfilePath, path, profile_->GetPath()),
@@ -406,4 +416,21 @@ bool NtpCustomBackgroundService::IsCustomBackgroundPrefValid() {
 void NtpCustomBackgroundService::NotifyAboutBackgrounds() {
   for (NtpCustomBackgroundServiceObserver& observer : observers_)
     observer.OnCustomBackgroundImageUpdated();
+}
+
+void NtpCustomBackgroundService::RevertBackgroundChanges() {
+  if (previous_background_info_.has_value()) {
+    pref_service_->Set(prefs::kNtpCustomBackgroundDict,
+                       *previous_background_info_);
+  }
+  if (previous_local_background_) {
+    SetBackgroundToLocalResource();
+  }
+  previous_background_info_.reset();
+  previous_local_background_ = false;
+}
+
+void NtpCustomBackgroundService::ConfirmBackgroundChanges() {
+  previous_background_info_.reset();
+  previous_local_background_ = false;
 }

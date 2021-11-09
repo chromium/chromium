@@ -463,3 +463,81 @@ TEST_F(NtpCustomBackgroundServiceTest, RefreshesBackgroundAfter24Hours) {
   EXPECT_EQ(kImageUrl2, custom_background->custom_background_url);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 }
+
+TEST_F(NtpCustomBackgroundServiceTest, RevertBackgroundChanges) {
+  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(2);
+  ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
+  const GURL kBackdropUrl1("https://www.foo.com");
+
+  custom_background_service_->AddValidBackdropUrlForTesting(kBackdropUrl1);
+
+  custom_background_service_->SetCustomBackgroundInfo(kBackdropUrl1, "", "",
+                                                      GURL(), "");
+  auto custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_EQ(kBackdropUrl1, custom_background->custom_background_url);
+  EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+
+  // Revert from background set using |kBackdropUrl1| to the starting state (no
+  // background) since no background change was confirmed.
+  custom_background_service_->RevertBackgroundChanges();
+  custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_FALSE(custom_background_service_->IsCustomBackgroundSet());
+}
+
+TEST_F(NtpCustomBackgroundServiceTest,
+       RevertBackgroundChangesWithMultipleSelections) {
+  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(3);
+  ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
+  const GURL kBackdropUrl1("https://www.foo.com");
+  const GURL kBackdropUrl2("https://www.bar.com");
+
+  custom_background_service_->AddValidBackdropUrlForTesting(kBackdropUrl1);
+  custom_background_service_->AddValidBackdropUrlForTesting(kBackdropUrl2);
+
+  custom_background_service_->SetCustomBackgroundInfo(kBackdropUrl1, "", "",
+                                                      GURL(), "");
+  auto custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_EQ(kBackdropUrl1, custom_background->custom_background_url);
+  EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+
+  custom_background_service_->SetCustomBackgroundInfo(kBackdropUrl2, "", "",
+                                                      GURL(), "");
+
+  // Revert from background set using |kBackdropUrl2| to the starting state (no
+  // background) since no background change was confirmed.
+  custom_background_service_->RevertBackgroundChanges();
+  custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_FALSE(custom_background_service_->IsCustomBackgroundSet());
+}
+
+TEST_F(NtpCustomBackgroundServiceTest, ConfirmBackgroundChanges) {
+  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(3);
+  ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
+  const GURL kBackdropUrl1("https://www.foo.com");
+  const GURL kBackdropUrl2("https://www.bar.com");
+
+  custom_background_service_->AddValidBackdropUrlForTesting(kBackdropUrl1);
+  custom_background_service_->AddValidBackdropUrlForTesting(kBackdropUrl2);
+
+  custom_background_service_->SetCustomBackgroundInfo(kBackdropUrl1, "", "",
+                                                      GURL(), "");
+  auto custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_EQ(kBackdropUrl1, custom_background->custom_background_url);
+  EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+
+  custom_background_service_->ConfirmBackgroundChanges();
+
+  custom_background_service_->SetCustomBackgroundInfo(kBackdropUrl2, "", "",
+                                                      GURL(), "");
+  custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_EQ(kBackdropUrl2, custom_background->custom_background_url);
+  EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+
+  // Revert from background set using |kBackdropUrl2| to the starting state
+  // (background set using |kBackdropUrl1|) since it is the last confirmed
+  // background change.
+  custom_background_service_->RevertBackgroundChanges();
+  custom_background = custom_background_service_->GetCustomBackground();
+  EXPECT_EQ(kBackdropUrl1, custom_background->custom_background_url);
+  EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
+}

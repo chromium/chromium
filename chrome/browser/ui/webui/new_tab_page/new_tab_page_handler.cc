@@ -104,8 +104,10 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   theme->is_dark = !color_utils::IsDark(text_color);
   auto background_image = new_tab_page::mojom::BackgroundImage::New();
   if (custom_background.has_value()) {
+    theme->is_custom_background = true;
     background_image->url = custom_background->custom_background_url;
   } else if (theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
+    theme->is_custom_background = false;
     most_visited->use_title_pill = true;
     auto theme_id = theme_service->GetThemeID();
     background_image->url = GURL(base::StrCat(
@@ -447,6 +449,14 @@ void NewTabPageHandler::SetNoBackgroundImage() {
       /* attribution_line_2= */ "",
       /* action_url= */ GURL(), /* collection_id= */ "");
   LogEvent(NTP_BACKGROUND_IMAGE_RESET);
+}
+
+void NewTabPageHandler::RevertBackgroundChanges() {
+  ntp_custom_background_service_->RevertBackgroundChanges();
+}
+
+void NewTabPageHandler::ConfirmBackgroundChanges() {
+  ntp_custom_background_service_->ConfirmBackgroundChanges();
 }
 
 void NewTabPageHandler::GetBackgroundCollections(

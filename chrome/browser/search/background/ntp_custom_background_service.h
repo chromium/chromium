@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -62,6 +63,12 @@ class NtpCustomBackgroundService : public KeyedService,
   // Virtual for testing.
   virtual void RefreshBackgroundIfNeeded();
 
+  // Reverts any changes to the background when a background preview
+  // is cancelled.
+  void RevertBackgroundChanges();
+  // Confirms that background has been changed.
+  void ConfirmBackgroundChanges();
+
   // Virtual for testing.
   virtual absl::optional<CustomBackground> GetCustomBackground();
 
@@ -97,6 +104,11 @@ class NtpCustomBackgroundService : public KeyedService,
   base::Clock* clock_;
   base::TimeTicks background_updated_timestamp_;
   base::ObserverList<NtpCustomBackgroundServiceObserver> observers_;
+
+  // Used to track information for previous background when a background is
+  // being previewed.
+  absl::optional<base::Value> previous_background_info_;
+  bool previous_local_background_ = false;
 
   base::WeakPtrFactory<NtpCustomBackgroundService> weak_ptr_factory_{this};
 };

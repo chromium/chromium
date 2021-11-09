@@ -254,6 +254,7 @@ TEST_F(NewTabPageHandlerTest, SetTheme) {
   EXPECT_EQ(SkColorSetRGB(0, 0, 1), theme->background_color);
   EXPECT_EQ(SkColorSetRGB(0, 0, 2), theme->text_color);
   EXPECT_FALSE(theme->is_default);
+  EXPECT_FALSE(theme->is_custom_background);
   EXPECT_FALSE(theme->is_dark);
   EXPECT_EQ(SkColorSetRGB(0, 0, 3), theme->logo_color);
   EXPECT_FALSE(theme->daily_refresh_collection_id.has_value());
@@ -314,6 +315,7 @@ TEST_F(NewTabPageHandlerTest, SetCustomBackground) {
   mock_page_.FlushForTesting();
 
   ASSERT_TRUE(theme);
+  EXPECT_TRUE(theme->is_custom_background);
   EXPECT_EQ(gfx::kGoogleGrey050, theme->text_color);
   EXPECT_EQ(ThemeProperties::GetDefaultColor(
                 ThemeProperties::COLOR_NTP_SHORTCUT, false),

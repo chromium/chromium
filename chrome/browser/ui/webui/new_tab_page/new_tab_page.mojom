@@ -54,6 +54,8 @@ struct Theme {
   skia.mojom.SkColor background_color;
   // True if the theme is default.
   bool is_default;
+  // True if the background is custom.
+  bool is_custom_background;
   // True if the theme is dark (e.g. NTP background color is dark).
   bool is_dark;
   // Color of Google logo. If not set show the logo multi-colored.
@@ -220,6 +222,11 @@ interface PageHandler {
   SetDailyRefreshCollectionId(string collection_id);
   // Clears the background and daily refresh settings.
   SetNoBackgroundImage();
+  // Reverts any changes to the background when a background preview
+  // is cancelled.
+  RevertBackgroundChanges();
+  // Confirms that background has been changed.
+  ConfirmBackgroundChanges();
   // Sets the visibility of NTP tiles and whether custom links are enabled.
   SetMostVisitedSettings(bool custom_links_enabled, bool shortcuts_visible);
   // Returns the visibility of NTP tiles and whether custom links are enabled.

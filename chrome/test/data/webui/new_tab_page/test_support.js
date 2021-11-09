@@ -122,6 +122,7 @@ export function createTheme() {
     mostVisited: mostVisited,
     searchBox: searchBox,
     textColor: {value: 0xff0000ff},
+    isCustomBackground: true
   };
 }
 

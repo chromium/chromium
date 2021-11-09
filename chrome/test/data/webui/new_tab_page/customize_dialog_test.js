@@ -4,7 +4,7 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {BackgroundSelectionType, CustomizeDialogPage, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {CustomizeDialogPage, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
@@ -147,19 +147,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
       customizeDialog.$.refreshToggle.click();
       assertTrue(customizeDialog.$.refreshToggle.checked);
       customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
-      assertFalse(customizeDialog.$.refreshToggle.checked);
-      customizeDialog.$.backgrounds.selectedCollection = {id: 'abstract'};
-      assertTrue(customizeDialog.$.refreshToggle.checked);
-    });
-
-    test('selecting image clears toggle', () => {
-      customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
-      assertTrue(customizeDialog.$.refreshToggle.checked);
-      customizeDialog.backgroundSelection = {
-        type: BackgroundSelectionType.IMAGE,
-        image: {imageUrl: {url: 'https://example.com/other.png'}},
-      };
-      assertFalse(customizeDialog.$.refreshToggle.checked);
+      assertEquals(1, handler.getCallCount('setDailyRefreshCollectionId'));
     });
 
     test('clicking back', () => {
@@ -170,19 +158,10 @@ suite('NewTabPageCustomizeDialogTest', () => {
     });
 
     test('clicking cancel', () => {
-      customizeDialog.backgroundSelection = {
-        type: BackgroundSelectionType.IMAGE,
-        image: {
-          attribution1: '1',
-          attribution2: '2',
-          attributionUrl: {url: 'https://example.com'},
-          imageUrl: {url: 'https://example.com/other.png'}
-        },
-      };
+      customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
+      assertTrue(customizeDialog.$.refreshToggle.checked);
       customizeDialog.shadowRoot.querySelector('.cancel-button').click();
-      assertDeepEquals(
-          {type: BackgroundSelectionType.NO_SELECTION},
-          customizeDialog.backgroundSelection);
+      assertEquals(1, handler.getCallCount('revertBackgroundChanges'));
     });
 
     suite('clicking done', () => {
@@ -190,67 +169,14 @@ suite('NewTabPageCustomizeDialogTest', () => {
         customizeDialog.shadowRoot.querySelector('.action-button').click();
       }
 
-      test('applies selected image', async () => {
-        customizeDialog.backgroundSelection = {
-          type: BackgroundSelectionType.IMAGE,
-          image: {
-            attribution1: '1',
-            attribution2: '2',
-            attributionUrl: {url: 'https://example.com'},
-            imageUrl: {url: 'https://example.com/other.png'}
-          },
-        };
-        done();
-        const [attribution1, attribution2, attributionUrl, imageUrl] =
-            await handler.whenCalled('setBackgroundImage');
-        assertEquals('1', attribution1);
-        assertEquals('2', attribution2);
-        assertEquals('https://example.com', attributionUrl.url);
-        assertEquals('https://example.com/other.png', imageUrl.url);
-        assertDeepEquals(
-            {
-              type: BackgroundSelectionType.IMAGE,
-              image: {
-                attribution1: '1',
-                attribution2: '2',
-                attributionUrl: {url: 'https://example.com'},
-                imageUrl: {url: 'https://example.com/other.png'}
-              },
-            },
-            customizeDialog.backgroundSelection);
-      });
-
       test('sets daily refresh', async () => {
         customizeDialog.$.backgrounds.selectedCollection = {id: 'abstract'};
         customizeDialog.$.refreshToggle.click();
+        assertEquals(1, handler.getCallCount('setDailyRefreshCollectionId'));
         done();
         assertEquals(
             'abstract',
             await handler.whenCalled('setDailyRefreshCollectionId'));
-        assertDeepEquals(
-            {
-              type: BackgroundSelectionType.DAILY_REFRESH,
-              dailyRefreshCollectionId: 'abstract',
-            },
-            customizeDialog.backgroundSelection);
-      });
-
-      test('clears daily refresh', async () => {
-        customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
-        customizeDialog.$.refreshToggle.click();
-        done();
-        await handler.whenCalled('setNoBackgroundImage');
-      });
-
-      test('set no background', async () => {
-        customizeDialog.backgroundSelection = {
-          type: BackgroundSelectionType.NO_BACKGROUND,
-        };
-        done();
-        await handler.whenCalled('setNoBackgroundImage');
-        assertDeepEquals(
-            {type: BackgroundSelectionType.NO_BACKGROUND},
-            customizeDialog.backgroundSelection);
       });
     });
   });

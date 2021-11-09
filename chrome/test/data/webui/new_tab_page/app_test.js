@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, BackgroundManager, BackgroundSelectionType, BrowserCommandProxy, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BackgroundManager, BrowserCommandProxy, CustomizeDialogPage, ModuleRegistry, NewTabPageProxy, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -290,91 +290,6 @@ suite('NewTabPageAppTest', () => {
       // Assert.
       assertTrue($$(app, '#logo').singleColored);
       assertStyle($$(app, '#logo'), '--ntp-logo-color', 'rgba(255, 0, 0, 1)');
-    });
-
-    test('preview background image', async () => {
-      const theme = createTheme();
-      theme.backgroundImage = {url: {url: 'https://example.com/image.png'}};
-      theme.backgroundImageAttribution1 = 'foo';
-      theme.backgroundImageAttribution2 = 'bar';
-      theme.backgroundImageAttributionUrl = {url: 'https://info.com'};
-      callbackRouterRemote.setTheme(theme);
-      await callbackRouterRemote.$.flushForTesting();
-      assertEquals(backgroundManager.getCallCount('setBackgroundImage'), 1);
-      assertEquals(
-          'https://example.com/image.png',
-          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-      assertEquals(
-          'https://info.com/', $$(app, '#backgroundImageAttribution').href);
-      assertEquals('foo', $$(app, '#backgroundImageAttribution1').innerText);
-      assertEquals('bar', $$(app, '#backgroundImageAttribution2').innerText);
-      $$(app, '#customizeButton').click();
-      await flushTasks();
-      const dialog = app.shadowRoot.querySelector('ntp-customize-dialog');
-      backgroundManager.resetResolver('setBackgroundImage');
-      dialog.backgroundSelection = {
-        type: BackgroundSelectionType.IMAGE,
-        image: {
-          attribution1: '1',
-          attribution2: '2',
-          attributionUrl: {url: 'https://example.com'},
-          imageUrl: {url: 'https://example.com/other.png'},
-        },
-      };
-      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-      assertEquals(
-          'https://example.com/other.png',
-          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-      assertEquals(
-          'https://example.com/', $$(app, '#backgroundImageAttribution').href);
-      assertEquals('1', $$(app, '#backgroundImageAttribution1').innerText);
-      assertEquals('2', $$(app, '#backgroundImageAttribution2').innerText);
-      assertFalse($$(app, '#backgroundImageAttribution2').hidden);
-
-      backgroundManager.resetResolver('setBackgroundImage');
-      dialog.backgroundSelection = {type: BackgroundSelectionType.NO_SELECTION};
-      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-      assertEquals(
-          'https://example.com/image.png',
-          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-    });
-
-    test('theme update when dialog closed clears selection', async () => {
-      const theme = createTheme();
-      theme.backgroundImage = {url: {url: 'https://example.com/image.png'}};
-      callbackRouterRemote.setTheme(theme);
-      await callbackRouterRemote.$.flushForTesting();
-      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-      assertEquals(
-          'https://example.com/image.png',
-          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-      $$(app, '#customizeButton').click();
-      await flushTasks();
-      const dialog = app.shadowRoot.querySelector('ntp-customize-dialog');
-      backgroundManager.resetResolver('setBackgroundImage');
-      dialog.backgroundSelection = {
-        type: BackgroundSelectionType.IMAGE,
-        image: {
-          attribution1: '1',
-          attribution2: '2',
-          attributionUrl: {url: 'https://example.com'},
-          imageUrl: {url: 'https://example.com/other.png'},
-        },
-      };
-      assertEquals(1, backgroundManager.getCallCount('setBackgroundImage'));
-      assertEquals(
-          'https://example.com/other.png',
-          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-      backgroundManager.resetResolver('setBackgroundImage');
-      dialog.dispatchEvent(new Event('close'));
-      assertEquals(0, backgroundManager.getCallCount('setBackgroundImage'));
-      backgroundManager.resetResolver('setBackgroundImage');
-      callbackRouterRemote.setTheme(theme);
-      await callbackRouterRemote.$.flushForTesting();
-      assertEquals(2, backgroundManager.getCallCount('setBackgroundImage'));
-      assertEquals(
-          'https://example.com/image.png',
-          (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
     });
 
     test('theme updates add shortcut color', async () => {

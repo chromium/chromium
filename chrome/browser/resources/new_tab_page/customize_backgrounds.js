@@ -9,7 +9,6 @@ import './iframe.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BackgroundSelection, BackgroundSelectionType} from './customize_dialog_types.js';
 import {I18nBehavior, loadTimeData} from './i18n_setup.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 
@@ -30,13 +29,6 @@ class CustomizeBackgroundsElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @type {!BackgroundSelection} */
-      backgroundSelection: {
-        type: Object,
-        value: () => ({type: BackgroundSelectionType.NO_SELECTION}),
-        notify: true,
-      },
-
       /** @private */
       customBackgroundDisabledByPolicy_: {
         type: Boolean,
@@ -94,16 +86,11 @@ class CustomizeBackgroundsElement extends mixinBehaviors
    * @private
    */
   getCustomBackgroundClass_() {
-    switch (this.backgroundSelection.type) {
-      case BackgroundSelectionType.NO_SELECTION:
-        return this.theme && this.theme.backgroundImage &&
-                this.theme.backgroundImage.url.url.startsWith(
-                    'chrome-untrusted://new-tab-page/background.jpg') ?
-            'selected' :
-            '';
-      default:
-        return '';
-    }
+    return this.theme && this.theme.backgroundImage &&
+            this.theme.backgroundImage.url.url.startsWith(
+                'chrome-untrusted://new-tab-page/background.jpg') ?
+        'selected' :
+        '';
   }
 
   /**
@@ -111,19 +98,12 @@ class CustomizeBackgroundsElement extends mixinBehaviors
    * @private
    */
   getNoBackgroundClass_() {
-    switch (this.backgroundSelection.type) {
-      case BackgroundSelectionType.NO_BACKGROUND:
-        return 'selected';
-      case BackgroundSelectionType.NO_SELECTION:
-        return this.theme && !this.theme.backgroundImage &&
-                !this.theme.dailyRefreshCollectionId ?
-            'selected' :
-            '';
-      case BackgroundSelectionType.IMAGE:
-      case BackgroundSelectionType.DAILY_REFRESH:
-      default:
-        return '';
-    }
+    return this.theme &&
+            (this.theme.backgroundImage && !this.theme.isCustomBackground ||
+             !this.theme.backgroundImage &&
+                 !this.theme.dailyRefreshCollectionId) ?
+        'selected' :
+        '';
   }
 
   /**
@@ -133,22 +113,11 @@ class CustomizeBackgroundsElement extends mixinBehaviors
    */
   getImageSelectedClass_(index) {
     const {url} = this.images_[index].imageUrl;
-    switch (this.backgroundSelection.type) {
-      case BackgroundSelectionType.IMAGE:
-        return this.backgroundSelection.image.imageUrl.url === url ?
-            'selected' :
-            '';
-      case BackgroundSelectionType.NO_SELECTION:
-        return this.theme && this.theme.backgroundImage &&
-                this.theme.backgroundImage.url.url === url &&
-                !this.theme.dailyRefreshCollectionId ?
-            'selected' :
-            '';
-      case BackgroundSelectionType.NO_BACKGROUND:
-      case BackgroundSelectionType.DAILY_REFRESH:
-      default:
-        return '';
-    }
+    return this.theme && this.theme.backgroundImage &&
+            this.theme.backgroundImage.url.url === url &&
+            !this.theme.dailyRefreshCollectionId ?
+        'selected' :
+        '';
   }
 
   /**
@@ -169,20 +138,19 @@ class CustomizeBackgroundsElement extends mixinBehaviors
     const {success} = await this.pageHandler_.chooseLocalCustomBackground();
     if (success) {
       // The theme update is asynchronous. Close the dialog and allow ntp-app
-      // to update the |backgroundSelection|.
+      // to update the background.
       this.dispatchEvent(new Event('close', {bubbles: true, composed: true}));
     }
   }
 
   /** @private */
   onDefaultClick_() {
-    if (this.backgroundSelection.type !==
-        BackgroundSelectionType.NO_BACKGROUND) {
+    if (!this.theme.isCustomBackground) {
       this.pageHandler_.onCustomizeDialogAction(
           newTabPage.mojom.CustomizeDialogAction
               .kBackgroundsNoBackgroundSelected);
     }
-    this.backgroundSelection = {type: BackgroundSelectionType.NO_BACKGROUND};
+    this.pageHandler_.setNoBackgroundImage();
   }
 
   /**
@@ -191,15 +159,13 @@ class CustomizeBackgroundsElement extends mixinBehaviors
    */
   onImageClick_(e) {
     const image = this.$.imagesRepeat.itemForElement(e.target);
-    if (this.backgroundSelection.type !== BackgroundSelectionType.IMAGE ||
-        this.backgroundSelection.image !== image) {
+    if (this.theme.isCustomBackground && this.theme.backgroundImage !== image) {
       this.pageHandler_.onCustomizeDialogAction(
           newTabPage.mojom.CustomizeDialogAction.kBackgroundsImageSelected);
     }
-    this.backgroundSelection = {
-      type: BackgroundSelectionType.IMAGE,
-      image: image,
-    };
+    const {attribution1, attribution2, attributionUrl, imageUrl} = image;
+    this.pageHandler_.setBackgroundImage(
+        attribution1, attribution2, attributionUrl, imageUrl);
   }
 
   /** @private */
@@ -217,6 +183,14 @@ class CustomizeBackgroundsElement extends mixinBehaviors
       return;
     }
     this.images_ = images;
+  }
+
+  revertBackgroundChanges() {
+    this.pageHandler_.revertBackgroundChanges();
+  }
+
+  confirmBackgroundChanges() {
+    this.pageHandler_.confirmBackgroundChanges();
   }
 }
 
