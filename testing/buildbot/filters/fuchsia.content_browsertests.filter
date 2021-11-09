@@ -44,7 +44,6 @@
 -DnsHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
 -File/MediaTest.*
 -Http/MediaTest.*
--InterestGroupBrowserTest*
 -MHTMLGenerationSitePerProcessTest/*
 -MHTMLGenerationTest/*
 -MSE_ClearKey/EncryptedMediaTest.*
@@ -94,10 +93,6 @@
 -WebRtcVideoCaptureServiceBrowserTest.FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
 
 # crbug.com/1254563: run-test-component specific issues
--All/InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner/0
--All/InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner/1
--All/InterestGroupFencedFrameBrowserTest.TopFrameHostname/0
--All/InterestGroupFencedFrameBrowserTest.TopFrameHostname/1
 -All/SignedExchangeExpectCTReportBrowserTest.CTFailureSendsExpectCTReport/0
 -All/SignedExchangeExpectCTReportBrowserTest.CTFailureSendsExpectCTReport/1
 -All/SignedExchangeReportingBrowserTest.CertErrorSendsReport/0
@@ -111,11 +106,8 @@
 -WebRtcIPPermissionDeniedTest.GatherLocalCandidates
 -WebRtcIPPolicyPublicAndPrivateInterfacesTest.GatherLocalCandidates
 
-# crbug.com/1260245: InterestGroupPrivateNetworkBrowserTest failures
--InterestGroupPrivateNetworkBrowserTest.BidderOnPrivateNetwork
--InterestGroupPrivateNetworkBrowserTest.ReportToPrivateNetwork
--InterestGroupPrivateNetworkBrowserTest.ReportToPublicNetwork
--InterestGroupPrivateNetworkBrowserTest.SellerOnPrivateNetwork
--InterestGroupPrivateNetworkBrowserTest.UpdatePublicVsPrivateNetwork
--InterestGroupRestrictedPermissionsPolicyBrowserTest.EnableOneOfInterestGroupAPIsAndAuctionAPIForIframe
--InterestGroupRestrictedPermissionsPolicyBrowserTest.EnabledByPermissionsPolicy
+# crbug.com/1260245: InterestGroupBrowserTest failures
+-InterestGroupBrowserTest*
+-*/InterestGroupFencedFrameBrowserTest.*
+-InterestGroupPrivateNetworkBrowserTest.*
+-InterestGroupRestrictedPermissionsPolicyBrowserTest.*
