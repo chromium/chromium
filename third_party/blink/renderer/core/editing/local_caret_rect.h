@@ -53,7 +53,6 @@ CORE_EXPORT IntRect AbsoluteCaretBoundsOf(
     EditingBoundaryCrossingRule rule = kCanCrossEditingBoundary);
 
 CORE_EXPORT IntRect AbsoluteSelectionBoundsOf(const VisiblePosition&);
-CORE_EXPORT IntRect AbsoluteSelectionBoundsOf(const VisiblePositionInFlatTree&);
 
 // Exposed to tests only. Implemented in local_caret_rect_test.cc.
 bool operator==(const LocalCaretRect&, const LocalCaretRect&);
