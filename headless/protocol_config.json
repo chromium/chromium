@@ -8,7 +8,6 @@
         "namespace": ["headless", "protocol"],
         "export_macro": "HEADLESS_EXPORT",
         "export_header": "headless/public/headless_export.h",
-        "file_name_prefix": "dp_",
         "options": [
             {
                 "domain": "Target",

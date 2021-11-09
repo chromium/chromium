@@ -7,7 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
-#include "headless/lib/browser/protocol/dp_target.h"
+#include "headless/lib/browser/protocol/target.h"
 
 namespace headless {
 class HeadlessBrowserImpl;

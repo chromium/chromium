@@ -228,7 +228,7 @@ if (headless_fontconfig_utils && !is_fuchsia) {
 }
 
 inspector_protocol_generate("protocol_sources") {
-  visibility = [ "//headless:headless_shared_sources" ]
+  visibility = [ "//headless:backend_cdp_bindings" ]
   deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
   _blink_protocol_path = rebase_path(
           "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
@@ -248,16 +248,30 @@ inspector_protocol_generate("protocol_sources") {
   outputs = [
     "lib/browser/protocol/base_string_adapter.cc",
     "lib/browser/protocol/base_string_adapter.h",
-    "lib/browser/protocol/dp_browser.cc",
-    "lib/browser/protocol/dp_browser.h",
-    "lib/browser/protocol/dp_headless_experimental.cc",
-    "lib/browser/protocol/dp_headless_experimental.h",
-    "lib/browser/protocol/dp_page.cc",
-    "lib/browser/protocol/dp_page.h",
-    "lib/browser/protocol/dp_target.cc",
-    "lib/browser/protocol/dp_target.h",
+    "lib/browser/protocol/browser.cc",
+    "lib/browser/protocol/browser.h",
+    "lib/browser/protocol/headless_experimental.cc",
+    "lib/browser/protocol/headless_experimental.h",
+    "lib/browser/protocol/page.cc",
+    "lib/browser/protocol/page.h",
+    "lib/browser/protocol/target.cc",
+    "lib/browser/protocol/target.h",
     "lib/browser/protocol/protocol.cc",
     "lib/browser/protocol/protocol.h",
+  ]
+}
+
+static_library("backend_cdp_bindings") {
+  deps = [
+    ":protocol_sources",
+    "//base",
+    "//third_party/inspector_protocol:crdtp",
+  ]
+  sources = get_target_outputs(":protocol_sources")
+  visibility = [ ":headless_non_renderer" ]
+  configs += [
+    ":headless_defines_config",
+    ":inside_headless_component",
   ]
 }
 
@@ -288,7 +302,6 @@ source_set("headless_shared_sources") {
   ]
 
   sources += generated_devtools_api
-  sources += get_target_outputs(":protocol_sources")
 
   if (!is_fuchsia) {
     sources += [
@@ -299,12 +312,10 @@ source_set("headless_shared_sources") {
 
   deps = [
     ":gen_devtools_client_api",
-    ":protocol_sources",
     ":version_header",
     "//base:base_static",
     "//components/embedder_support/origin_trials",
     "//content/public/common",
-    "//third_party/inspector_protocol:crdtp",
     "//ui/base",
     "//url",
   ]
@@ -423,6 +434,7 @@ component("headless_non_renderer") {
   }
 
   deps = [
+    ":backend_cdp_bindings",
     ":headless_shared_sources",
     ":version_header",
     "//base:base_static",

@@ -6,8 +6,8 @@
 #define HEADLESS_LIB_BROWSER_PROTOCOL_BROWSER_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "headless/lib/browser/protocol/browser.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
-#include "headless/lib/browser/protocol/dp_browser.h"
 
 namespace headless {
 class HeadlessBrowserImpl;

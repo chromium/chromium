@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
-#include "headless/lib/browser/protocol/dp_page.h"
+#include "headless/lib/browser/protocol/page.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)

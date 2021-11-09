@@ -6,7 +6,7 @@
 #define HEADLESS_LIB_BROWSER_PROTOCOL_HEADLESS_HANDLER_H_
 
 #include "headless/lib/browser/protocol/domain_handler.h"
-#include "headless/lib/browser/protocol/dp_headless_experimental.h"
+#include "headless/lib/browser/protocol/headless_experimental.h"
 
 namespace content {
 class WebContents;
