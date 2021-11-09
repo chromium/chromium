@@ -15,6 +15,7 @@
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "gpu/config/gpu_info.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_preference.h"
 
@@ -96,10 +97,10 @@ void InitializeSwitchableGPUs(
     const std::vector<int32_t>& driver_bug_workarounds) {
   gl::GLContext::SetSwitchableGPUsSupported();
   if (ContainsWorkaround(driver_bug_workarounds, FORCE_HIGH_PERFORMANCE_GPU)) {
-    gl::GLContext::SetForcedGpuPreference(gl::GpuPreference::kHighPerformance);
+    gl::GLSurface::SetForcedGpuPreference(gl::GpuPreference::kHighPerformance);
     ForceDiscreteGPU();
   } else if (ContainsWorkaround(driver_bug_workarounds, FORCE_LOW_POWER_GPU)) {
-    gl::GLContext::SetForcedGpuPreference(gl::GpuPreference::kLowPower);
+    gl::GLSurface::SetForcedGpuPreference(gl::GpuPreference::kLowPower);
   }
 }
 

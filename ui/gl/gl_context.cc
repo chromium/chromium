@@ -43,8 +43,6 @@ base::LazyInstance<base::ThreadLocalPointer<GLContext>>::Leaky
 base::subtle::Atomic32 GLContext::total_gl_contexts_ = 0;
 // static
 bool GLContext::switchable_gpus_supported_ = false;
-// static
-GpuPreference GLContext::forced_gpu_preference_ = GpuPreference::kDefault;
 
 GLContext::ScopedReleaseCurrent::ScopedReleaseCurrent() : canceled_(false) {}
 
@@ -104,26 +102,6 @@ bool GLContext::SwitchableGPUsSupported() {
 void GLContext::SetSwitchableGPUsSupported() {
   DCHECK(!switchable_gpus_supported_);
   switchable_gpus_supported_ = true;
-}
-
-// static
-void GLContext::SetForcedGpuPreference(GpuPreference gpu_preference) {
-  DCHECK_EQ(GpuPreference::kDefault, forced_gpu_preference_);
-  forced_gpu_preference_ = gpu_preference;
-}
-
-// static
-GpuPreference GLContext::AdjustGpuPreference(GpuPreference gpu_preference) {
-  switch (forced_gpu_preference_) {
-    case GpuPreference::kDefault:
-      return gpu_preference;
-    case GpuPreference::kLowPower:
-    case GpuPreference::kHighPerformance:
-      return forced_gpu_preference_;
-    default:
-      NOTREACHED();
-      return GpuPreference::kDefault;
-  }
 }
 
 bool GLContext::MakeCurrent(GLSurface* surface) {

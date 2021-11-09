@@ -131,6 +131,7 @@ class GL_EXPORT GLSurfaceEGL : public GLSurface {
   static bool IsPixelFormatFloatSupported();
   static bool IsANGLEFeatureControlSupported();
   static bool IsANGLEPowerPreferenceSupported();
+  static bool IsANGLEDisplayPowerPreferenceSupported();
   static bool IsANGLEExternalContextAndSurfaceSupported();
   static bool IsANGLEContextVirtualizationSupported();
   static bool IsEGLQueryDeviceSupported();

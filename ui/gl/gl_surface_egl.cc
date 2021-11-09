@@ -151,6 +151,13 @@
 #define EGL_DISPLAY_ROBUST_RESOURCE_INITIALIZATION_ANGLE 0x3453
 #endif /* EGL_ANGLE_display_robust_resource_initialization */
 
+#ifndef EGL_ANGLE_display_power_preference
+#define EGL_ANGLE_display_power_preference 1
+#define EGL_POWER_PREFERENCE_ANGLE 0x3482
+#define EGL_LOW_POWER_ANGLE 0x0001
+#define EGL_HIGH_POWER_ANGLE 0x0002
+#endif /* EGL_ANGLE_power_preference */
+
 // From ANGLE's egl/eglext.h.
 #ifndef EGL_ANGLE_feature_control
 #define EGL_ANGLE_feature_control 1
@@ -205,6 +212,7 @@ bool g_egl_android_native_fence_sync_supported = false;
 bool g_egl_ext_pixel_format_float_supported = false;
 bool g_egl_angle_feature_control_supported = false;
 bool g_egl_angle_power_preference_supported = false;
+bool g_egl_angle_display_power_preference_supported = false;
 bool g_egl_angle_external_context_and_surface_supported = false;
 bool g_egl_ext_query_device_supported = false;
 bool g_egl_angle_context_virtualization_supported = false;
@@ -356,6 +364,26 @@ EGLDisplay GetPlatformANGLEDisplay(
     }
   }
   // TODO(dbehr) Add an attrib to Angle to pass EGL platform.
+
+  if (GLSurfaceEGL::IsANGLEDisplayPowerPreferenceSupported()) {
+    GpuPreference pref =
+        GLSurface::AdjustGpuPreference(GpuPreference::kDefault);
+    switch (pref) {
+      case GpuPreference::kDefault:
+        // Don't request any GPU, let ANGLE and the native driver decide.
+        break;
+      case GpuPreference::kLowPower:
+        display_attribs.push_back(EGL_POWER_PREFERENCE_ANGLE);
+        display_attribs.push_back(EGL_LOW_POWER_ANGLE);
+        break;
+      case GpuPreference::kHighPerformance:
+        display_attribs.push_back(EGL_POWER_PREFERENCE_ANGLE);
+        display_attribs.push_back(EGL_HIGH_POWER_ANGLE);
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
 
   display_attribs.push_back(EGL_NONE);
 
@@ -1262,6 +1290,10 @@ bool GLSurfaceEGL::IsANGLEPowerPreferenceSupported() {
   return g_egl_angle_power_preference_supported;
 }
 
+bool GLSurfaceEGL::IsANGLEDisplayPowerPreferenceSupported() {
+  return g_egl_angle_display_power_preference_supported;
+}
+
 bool GLSurfaceEGL::IsANGLEExternalContextAndSurfaceSupported() {
   return g_egl_angle_external_context_and_surface_supported;
 }
@@ -1339,6 +1371,9 @@ EGLDisplay GLSurfaceEGL::InitializeDisplay(EGLDisplayPlatform native_display) {
 
   g_egl_angle_feature_control_supported =
       HasEGLClientExtension("EGL_ANGLE_feature_control");
+
+  g_egl_angle_display_power_preference_supported =
+      HasEGLClientExtension("EGL_ANGLE_display_power_preference");
 
   std::vector<DisplayType> init_displays;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
