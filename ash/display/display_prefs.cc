@@ -259,7 +259,9 @@ void LoadDisplayProperties(PrefService* local_state) {
     if (display::features::IsListAllDisplayModesEnabled()) {
       refresh_rate =
           dict_value->FindDoubleKey("refresh-rate").value_or(refresh_rate);
-      dict_value->GetBoolean("interlaced", &is_interlaced);
+      absl::optional<bool> is_interlaced_opt =
+          dict_value->FindBoolKey("interlaced");
+      is_interlaced = is_interlaced_opt.value_or(false);
     }
 
     gfx::Insets insets;

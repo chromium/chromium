@@ -2179,9 +2179,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "getWindowsSWA") {
-    bool is_swa = false;
-    ASSERT_TRUE(value.GetBoolean("isSWA", &is_swa));
-    ASSERT_TRUE(is_swa);
+    absl::optional<bool> is_swa = value.FindBoolKey("isSWA");
+    ASSERT_TRUE(is_swa.has_value());
+    ASSERT_TRUE(is_swa.value());
 
     base::DictionaryValue dictionary;
 
@@ -2549,39 +2549,40 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "setDriveEnabled") {
-    bool enabled;
-    ASSERT_TRUE(value.GetBoolean("enabled", &enabled));
-    profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive, !enabled);
+    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive,
+                                      !enabled.value());
     return;
   }
 
   if (name == "setPdfPreviewEnabled") {
-    bool enabled;
-    ASSERT_TRUE(value.GetBoolean("enabled", &enabled));
+    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    ASSERT_TRUE(enabled.has_value());
     profile()->GetPrefs()->SetBoolean(prefs::kPluginsAlwaysOpenPdfExternally,
-                                      !enabled);
+                                      !enabled.value());
     return;
   }
 
   if (name == "setCrostiniEnabled") {
-    bool enabled;
-    ASSERT_TRUE(value.GetBoolean("enabled", &enabled));
+    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    ASSERT_TRUE(enabled.has_value());
     profile()->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
-                                      enabled);
+                                      enabled.value());
     return;
   }
 
   if (name == "setCrostiniRootAccessAllowed") {
-    bool enabled;
-    ASSERT_TRUE(value.GetBoolean("enabled", &enabled));
-    crostini_features_.set_root_access_allowed(enabled);
+    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    crostini_features_.set_root_access_allowed(enabled.value());
     return;
   }
 
   if (name == "setCrostiniExportImportAllowed") {
-    bool enabled;
-    ASSERT_TRUE(value.GetBoolean("enabled", &enabled));
-    crostini_features_.set_export_import_ui_allowed(enabled);
+    absl::optional<bool> enabled = value.FindBoolKey("enabled");
+    ASSERT_TRUE(enabled.has_value());
+    crostini_features_.set_export_import_ui_allowed(enabled.value());
     return;
   }
 
@@ -2629,10 +2630,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "dispatchTabKey") {
     // Read optional modifier parameter |shift|.
-    bool shift;
-    if (!value.GetBoolean("shift", &shift)) {
-      shift = false;
-    }
+    absl::optional<bool> shift_opt = value.FindBoolKey("shift");
+    bool shift = shift_opt.value_or(false);
 
     int flag = shift ? ui::EF_SHIFT_DOWN : 0;
     ui::KeyEvent key_event(ui::ET_KEY_PRESSED, ui::VKEY_TAB, flag);

@@ -947,9 +947,9 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNoLogin) {
 
   const base::DictionaryValue* properties =
       local_state()->GetDictionary(prefs::kDisplayRotationLock);
-  bool rotation_lock;
-  EXPECT_TRUE(properties->GetBoolean("lock", &rotation_lock));
-  EXPECT_EQ(current_rotation_lock, rotation_lock);
+  absl::optional<bool> rotation_lock = properties->FindBoolKey("lock");
+  ASSERT_TRUE(rotation_lock.has_value());
+  EXPECT_EQ(current_rotation_lock, rotation_lock.value());
 
   display::Display::Rotation current_rotation =
       GetCurrentInternalDisplayRotation();
@@ -970,9 +970,9 @@ TEST_F(DisplayPrefsTest, StoreRotationStateGuest) {
 
   const base::DictionaryValue* properties =
       local_state()->GetDictionary(prefs::kDisplayRotationLock);
-  bool rotation_lock;
-  EXPECT_TRUE(properties->GetBoolean("lock", &rotation_lock));
-  EXPECT_EQ(current_rotation_lock, rotation_lock);
+  absl::optional<bool> rotation_lock = properties->FindBoolKey("lock");
+  ASSERT_TRUE(rotation_lock.has_value());
+  EXPECT_EQ(current_rotation_lock, rotation_lock.value());
 
   display::Display::Rotation current_rotation =
       GetCurrentInternalDisplayRotation();
@@ -993,9 +993,9 @@ TEST_F(DisplayPrefsTest, StoreRotationStateNormalUser) {
 
   const base::DictionaryValue* properties =
       local_state()->GetDictionary(prefs::kDisplayRotationLock);
-  bool rotation_lock;
-  EXPECT_TRUE(properties->GetBoolean("lock", &rotation_lock));
-  EXPECT_EQ(current_rotation_lock, rotation_lock);
+  absl::optional<bool> rotation_lock = properties->FindBoolKey("lock");
+  ASSERT_TRUE(rotation_lock.has_value());
+  EXPECT_EQ(current_rotation_lock, rotation_lock.value());
 
   display::Display::Rotation current_rotation =
       GetCurrentInternalDisplayRotation();
@@ -1066,8 +1066,8 @@ TEST_F(DisplayPrefsTest, RotationLockTriggersStore) {
 
   const base::DictionaryValue* properties =
       local_state()->GetDictionary(prefs::kDisplayRotationLock);
-  bool rotation_lock;
-  EXPECT_TRUE(properties->GetBoolean("lock", &rotation_lock));
+  absl::optional<bool> rotation_lock = properties->FindBoolKey("lock");
+  EXPECT_TRUE(rotation_lock.has_value());
 }
 
 TEST_F(DisplayPrefsTest, SaveUnifiedMode) {

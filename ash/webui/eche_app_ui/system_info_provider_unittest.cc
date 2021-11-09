@@ -37,7 +37,10 @@ void ParseJson(const std::string& json,
   message_value->GetAsDictionary(&message_dictionary);
   message_dictionary->GetString(kJsonDeviceNameKey, &device_name);
   message_dictionary->GetString(kJsonBoardNameKey, &board_name);
-  message_dictionary->GetBoolean(kJsonTabletModeKey, &tablet_mode);
+  absl::optional<bool> tablet_mode_opt =
+      message_dictionary->FindBoolKey(kJsonTabletModeKey);
+  if (tablet_mode_opt.has_value())
+    tablet_mode = tablet_mode_opt.value();
   message_dictionary->GetString(kJsonWifiConnectionStateKey,
                                 &wifi_connection_state);
 }

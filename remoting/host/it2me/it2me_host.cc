@@ -347,28 +347,26 @@ void It2MeHost::OnPolicyUpdate(
     // Retrieve the policy value on whether to allow connections but don't apply
     // it until after we've finished reading the rest of the policies and
     // started the connection process.
-    bool remote_support_connections_allowed = true;
-    if (policies->GetBoolean(
-            policy::key::kRemoteAccessHostAllowRemoteSupportConnections,
-            &remote_support_connections_allowed)) {
-      remote_support_connections_allowed_ = remote_support_connections_allowed;
-    }
+    absl::optional<bool> remote_support_connections_allowed =
+        policies->FindBoolKey(
+            policy::key::kRemoteAccessHostAllowRemoteSupportConnections);
+    remote_support_connections_allowed_ =
+        remote_support_connections_allowed.value_or(true);
   }
 
-  bool nat_policy_value = false;
-  if (!policies->GetBoolean(policy::key::kRemoteAccessHostFirewallTraversal,
-                            &nat_policy_value)) {
+  absl::optional<bool> nat_policy_value =
+      policies->FindBoolKey(policy::key::kRemoteAccessHostFirewallTraversal);
+  if (!nat_policy_value.has_value()) {
     HOST_LOG << "Failed to read kRemoteAccessHostFirewallTraversal policy";
     nat_policy_value = nat_traversal_enabled_;
   }
-  bool relay_policy_value = false;
-  if (!policies->GetBoolean(
-          policy::key::kRemoteAccessHostAllowRelayedConnection,
-          &relay_policy_value)) {
+  absl::optional<bool> relay_policy_value = policies->FindBoolKey(
+      policy::key::kRemoteAccessHostAllowRelayedConnection);
+  if (!relay_policy_value.has_value()) {
     HOST_LOG << "Failed to read kRemoteAccessHostAllowRelayedConnection policy";
     relay_policy_value = relay_connections_allowed_;
   }
-  UpdateNatPolicies(nat_policy_value, relay_policy_value);
+  UpdateNatPolicies(nat_policy_value.value(), relay_policy_value.value());
 
   const base::ListValue* host_domain_list;
   if (policies->GetList(policy::key::kRemoteAccessHostDomainList,
