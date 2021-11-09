@@ -163,7 +163,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSNumber* index;
 @property(nonatomic, readonly) NSNumber* treeItemRowIndex;
 @property(nonatomic, readonly) NSNumber* insertionPointLineNumber;
-@property(nonatomic, readonly) NSString* invalid;
 @property(nonatomic, readonly) NSNumber* isMultiSelectable;
 @property(nonatomic, readonly) NSNumber* loaded;
 @property(nonatomic, readonly) NSNumber* loadingProgress;

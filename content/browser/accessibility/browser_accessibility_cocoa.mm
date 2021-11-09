@@ -81,7 +81,6 @@ NSString* const NSAccessibilityHasPopupAttribute = @"AXHasPopup";
 NSString* const NSAccessibilityPopupValueAttribute = @"AXPopupValue";
 NSString* const NSAccessibilityHighestEditableAncestorAttribute =
     @"AXHighestEditableAncestor";
-NSString* const NSAccessibilityInvalidAttribute = @"AXInvalid";
 NSString* const NSAccessibilityIsMultiSelectableAttribute =
     @"AXIsMultiSelectable";
 NSString* const NSAccessibilityLoadingProgressAttribute = @"AXLoadingProgress";
@@ -830,7 +829,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityIndexAttribute, @"index"},
       {NSAccessibilityInsertionPointLineNumberAttribute,
        @"insertionPointLineNumber"},
-      {NSAccessibilityInvalidAttribute, @"invalid"},
       {NSAccessibilityIsMultiSelectableAttribute, @"isMultiSelectable"},
       {NSAccessibilityLanguageAttribute, @"language"},
       {NSAccessibilityLinkedUIElementsAttribute, @"linkedUIElements"},
@@ -1507,18 +1505,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 
   return [[self role] isEqualToString:NSAccessibilityUnknownRole] ||
          _owner->IsInvisibleOrIgnored();
-}
-
-- (NSString*)invalid {
-  if (![self instanceActive])
-    return nil;
-  switch (_owner->GetData().GetInvalidState()) {
-    case ax::mojom::InvalidState::kNone:
-    case ax::mojom::InvalidState::kFalse:
-      return @"false";
-    case ax::mojom::InvalidState::kTrue:
-      return @"true";
-  }
 }
 
 - (NSNumber*)isMultiSelectable {
@@ -3529,10 +3515,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (_owner->HasIntAttribute(ax::mojom::IntAttribute::kRestriction) ||
       _owner->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
       _owner->HasState(ax::mojom::State::kFocusable)) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityInvalidAttribute,
-      @"AXRequired",
-    ]];
+    [ret addObject:@"AXRequired"];
   }
 
   // TODO(accessibility) What nodes should language be exposed on given new

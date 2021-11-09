@@ -45,6 +45,7 @@ bool IsValidAttribute(const std::string& attribute) {
        NSAccessibilityAutocompleteValueAttribute,
        NSAccessibilityColumnHeaderUIElementsAttribute,
        NSAccessibilityDetailsElementsAttribute,
+       NSAccessibilityInvalidAttribute,
        NSAccessibilityMathFractionNumeratorAttribute,
        NSAccessibilityMathFractionDenominatorAttribute,
        NSAccessibilityMathRootRadicandAttribute,

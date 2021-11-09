@@ -787,6 +787,13 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityDetailsElementsAttribute];
   }
 
+  // Anything focusable or any control
+  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kRestriction) ||
+      _node->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
+      _node->HasState(ax::mojom::State::kFocusable)) {
+    [axAttributes addObject:NSAccessibilityInvalidAttribute];
+  }
+
   // Table and grid.
   if (ui::IsTableLike(role)) {
     [axAttributes addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
@@ -944,6 +951,18 @@ bool IsAXSetter(SEL selector) {
     return nil;
 
   return [[self class] nativeRoleFromAXRole:_node->GetRole()];
+}
+
+- (NSString*)AXInvalid {
+  if (![self instanceActive])
+    return nil;
+  switch (_node->GetData().GetInvalidState()) {
+    case ax::mojom::InvalidState::kNone:
+    case ax::mojom::InvalidState::kFalse:
+      return @"false";
+    case ax::mojom::InvalidState::kTrue:
+      return @"true";
+  }
 }
 
 - (NSString*)AXRoleDescription {
