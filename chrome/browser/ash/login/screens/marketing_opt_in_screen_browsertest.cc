@@ -503,7 +503,8 @@ class MarketingTestCountryCodes : public MarketingOptInScreenTestWithRequest,
 
 // Tests that the given timezone resolves to the correct location and
 // generates a request for the server with the correct region code.
-IN_PROC_BROWSER_TEST_P(MarketingTestCountryCodes, CountryCodes) {
+// TODO(crbug.com/1268208): Fix flaky test.
+IN_PROC_BROWSER_TEST_P(MarketingTestCountryCodes, DISABLED_CountryCodes) {
   const RegionToCodeMap param = GetParam();
   ShowMarketingOptInScreen();
   OobeScreenWaiter(MarketingOptInScreenView::kScreenId).Wait();
