@@ -7,6 +7,8 @@
 #include <CoreGraphics/CoreGraphics.h>
 
 #include "base/threading/thread_checker.h"
+#include "media/base/video_util.h"
+#include "media/capture/content/capture_resolution_chooser.h"
 #include "media/capture/video/video_capture_device.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/gfx/native_widget_types.h"
@@ -69,6 +71,44 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
           }
         };
 
+    // Retrieve the source display's size.
+    base::ScopedCFTypeRef<CGDisplayModeRef> mode(
+        CGDisplayCopyDisplayMode(display_id_));
+    const gfx::Size source_size = mode ? gfx::Size(CGDisplayModeGetWidth(mode),
+                                                   CGDisplayModeGetHeight(mode))
+                                       : requested_format_.frame_size;
+
+    // Compute the destination frame size using CaptureResolutionChooser.
+    const auto constraints = params.SuggestConstraints();
+    gfx::Size frame_size = requested_format_.frame_size;
+    {
+      media::CaptureResolutionChooser resolution_chooser;
+      resolution_chooser.SetConstraints(constraints.min_frame_size,
+                                        constraints.max_frame_size,
+                                        constraints.fixed_aspect_ratio);
+      resolution_chooser.SetSourceSize(source_size);
+      // Ensure that the resulting frame size has an even width and height. This
+      // matches the behavior of DesktopCaptureDevice.
+      frame_size = gfx::Size(resolution_chooser.capture_size().width() & ~1,
+                             resolution_chooser.capture_size().height() & ~1);
+      if (frame_size.IsEmpty())
+        frame_size = gfx::Size(2, 2);
+    }
+
+    // Compute the rectangle to blit into. If the aspect ratio is not fixed,
+    // then this is the full destination frame.
+    gfx::RectF dest_rect_in_frame = gfx::RectF(gfx::SizeF(frame_size));
+    if (constraints.fixed_aspect_ratio) {
+      dest_rect_in_frame = gfx::RectF(media::ComputeLetterboxRegionForI420(
+          gfx::Rect(frame_size), source_size));
+      // If the target rectangle is not exactly the full frame, then out-set
+      // the region by a tiny amount. This works around a bug wherein a green
+      // line appears on the left side of the content.
+      // https://crbug.com/1267655
+      if (dest_rect_in_frame != gfx::RectF(gfx::SizeF(frame_size)))
+        dest_rect_in_frame.Outset(1.f / 4096);
+    }
+
     base::ScopedCFTypeRef<CFDictionaryRef> properties;
     {
       float max_frame_time = 1.f / requested_format_.frame_rate;
@@ -76,23 +116,28 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
           CFNumberCreate(nullptr, kCFNumberFloat32Type, &max_frame_time));
       base::ScopedCFTypeRef<CGColorSpaceRef> cg_color_space(
           CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+      base::ScopedCFTypeRef<CFDictionaryRef> dest_rect_in_frame_dict(
+          CGRectCreateDictionaryRepresentation(dest_rect_in_frame.ToCGRect()));
 
-      const size_t kNumKeys = 3;
+      const size_t kNumKeys = 5;
       const void* keys[kNumKeys] = {
-          kCGDisplayStreamShowCursor,
-          kCGDisplayStreamMinimumFrameTime,
-          kCGDisplayStreamColorSpace,
+          kCGDisplayStreamShowCursor,       kCGDisplayStreamPreserveAspectRatio,
+          kCGDisplayStreamMinimumFrameTime, kCGDisplayStreamColorSpace,
+          kCGDisplayStreamDestinationRect,
       };
       const void* values[kNumKeys] = {
           kCFBooleanTrue,
+          kCFBooleanFalse,
           cf_max_frame_time.get(),
           cg_color_space.get(),
+          dest_rect_in_frame_dict.get(),
       };
       properties.reset(CFDictionaryCreate(
           kCFAllocatorDefault, keys, values, kNumKeys,
           &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     }
 
+    requested_format_.frame_size = frame_size;
     display_stream_.reset(CGDisplayStreamCreate(
         display_id_, requested_format_.frame_size.width(),
         requested_format_.frame_size.height(),
