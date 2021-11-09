@@ -118,12 +118,12 @@ void LacrosExtensionAppsController::LoadIcon(const std::string& app_id,
     LoadIconFromExtension(
         icon_type, size_hint_in_dip, profile, extension->id(),
         static_cast<apps::IconEffects>(icon_key->icon_effects),
-        apps::IconValueToMojomIconValueCallback(std::move(callback)));
+        std::move(callback));
     return;
   }
 
   // On failure, we still run the callback, with the zero IconValue.
-  std::move(callback).Run(apps::mojom::IconValue::New());
+  std::move(callback).Run(std::make_unique<apps::IconValue>());
 }
 
 void LacrosExtensionAppsController::OpenNativeSettings(

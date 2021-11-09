@@ -122,4 +122,17 @@ IconValueToMojomIconValueCallback(
       },
       std::move(callback));
 }
+
+base::OnceCallback<void(apps::mojom::IconValuePtr)>
+MojomIconValueToIconValueCallback(
+    base::OnceCallback<void(IconValuePtr)> callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(IconValuePtr)> inner_callback,
+         apps::mojom::IconValuePtr icon_value) {
+        std::move(inner_callback)
+            .Run(ConvertMojomIconValueToIconValue(std::move(icon_value)));
+      },
+      std::move(callback));
+}
+
 }  // namespace apps

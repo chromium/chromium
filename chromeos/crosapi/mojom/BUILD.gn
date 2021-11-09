@@ -109,7 +109,7 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.IconValue"
-          cpp = "::apps::mojom::IconValuePtr"
+          cpp = "::apps::IconValuePtr"
           move_only = true
         },
         {

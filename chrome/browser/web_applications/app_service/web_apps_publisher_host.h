@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -76,7 +77,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                 apps::mojom::IconKeyPtr icon_key,
                 apps::IconType icon_type,
                 int32_t size_hint_in_dip,
-                LoadIconCallback callback) override;
+                apps::LoadIconCallback callback) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode) override;

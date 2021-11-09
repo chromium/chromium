@@ -81,9 +81,9 @@ void StandaloneBrowserExtensionApps::LoadIcon(const std::string& app_id,
     return;
   }
 
-  controller_->LoadIcon(app_id, std::move(icon_key),
-                        ConvertMojomIconTypeToIconType(icon_type),
-                        size_hint_in_dip, std::move(callback));
+  controller_->LoadIcon(
+      app_id, std::move(icon_key), ConvertMojomIconTypeToIconType(icon_type),
+      size_hint_in_dip, IconValueToMojomIconValueCallback(std::move(callback)));
 }
 
 void StandaloneBrowserExtensionApps::Launch(

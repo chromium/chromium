@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
@@ -113,7 +114,7 @@ class WebAppsCrosapi : public KeyedService,
   void OnLoadIcon(uint32_t icon_effects,
                   int size_hint_in_dip,
                   LoadIconCallback callback,
-                  apps::mojom::IconValuePtr icon_value);
+                  IconValuePtr icon_value);
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};

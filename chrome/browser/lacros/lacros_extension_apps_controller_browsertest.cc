@@ -95,11 +95,11 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LoadIcon) {
 
       // Set up the LoadIconCallback which quits the nested run loop and
       // populates |output|.
-      apps::mojom::IconValuePtr output;
+      apps::IconValuePtr output;
       base::RunLoop run_loop;
       LacrosExtensionAppsController::LoadIconCallback callback = base::BindOnce(
-          [](base::RunLoop* run_loop, apps::mojom::IconValuePtr* output,
-             apps::mojom::IconValuePtr input) {
+          [](base::RunLoop* run_loop, apps::IconValuePtr* output,
+             apps::IconValuePtr input) {
             *output = std::move(input);
             run_loop->QuitClosure().Run();
           },
@@ -117,8 +117,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LoadIcon) {
       run_loop.Run();
 
       if (compressed) {
-        ASSERT_TRUE(output->compressed);
-        EXPECT_GT(output->compressed->size(), 0u);
+        EXPECT_FALSE(output->compressed.empty());
       } else {
         EXPECT_FALSE(output->uncompressed.isNull());
         EXPECT_GT(output->uncompressed.width(), 0);

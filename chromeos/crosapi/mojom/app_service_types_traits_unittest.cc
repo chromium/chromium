@@ -734,8 +734,8 @@ TEST(AppServiceTypesTraitsTest, RoundTripIconType) {
 // Test that serialization and deserialization works with icon value.
 TEST(AppServiceTypesTraitsTest, RoundTripIconValue) {
   {
-    auto input = apps::mojom::IconValue::New();
-    input->icon_type = apps::mojom::IconType::kUnknown;
+    auto input = std::make_unique<apps::IconValue>();
+    input->icon_type = apps::IconType::kUnknown;
 
     std::vector<float> scales;
     scales.push_back(1.0f);
@@ -747,19 +747,19 @@ TEST(AppServiceTypesTraitsTest, RoundTripIconValue) {
     input->compressed = {1u, 2u};
     input->is_placeholder_icon = true;
 
-    apps::mojom::IconValuePtr output;
+    auto output = std::make_unique<apps::IconValue>();
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconValue>(
         input, output));
 
-    EXPECT_EQ(output->icon_type, apps::mojom::IconType::kUnknown);
+    EXPECT_EQ(output->icon_type, apps::IconType::kUnknown);
     EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(output->uncompressed),
                                           gfx::Image(image)));
     EXPECT_EQ(output->compressed, std::vector<uint8_t>({1u, 2u}));
     EXPECT_TRUE(output->is_placeholder_icon);
   }
   {
-    auto input = apps::mojom::IconValue::New();
-    input->icon_type = apps::mojom::IconType::kUncompressed;
+    auto input = std::make_unique<apps::IconValue>();
+    input->icon_type = apps::IconType::kUncompressed;
 
     std::vector<float> scales;
     scales.push_back(1.0f);
@@ -769,27 +769,28 @@ TEST(AppServiceTypesTraitsTest, RoundTripIconValue) {
     input->uncompressed = image;
     input->is_placeholder_icon = false;
 
-    apps::mojom::IconValuePtr output;
+    auto output = std::make_unique<apps::IconValue>();
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconValue>(
         input, output));
 
-    EXPECT_EQ(output->icon_type, apps::mojom::IconType::kUncompressed);
+    EXPECT_EQ(output->icon_type, apps::IconType::kUncompressed);
     EXPECT_TRUE(gfx::test::AreImagesEqual(gfx::Image(output->uncompressed),
                                           gfx::Image(image)));
     EXPECT_FALSE(output->is_placeholder_icon);
   }
   {
-    auto input = apps::mojom::IconValue::New();
-    input->icon_type = apps::mojom::IconType::kCompressed;
+    auto input = std::make_unique<apps::IconValue>();
+    input->icon_type = apps::IconType::kCompressed;
 
     input->compressed = {3u, 4u};
     input->is_placeholder_icon = true;
 
-    apps::mojom::IconValuePtr output;
+    auto output = std::make_unique<apps::IconValue>();
+    ;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::IconValue>(
         input, output));
 
-    EXPECT_EQ(output->icon_type, apps::mojom::IconType::kCompressed);
+    EXPECT_EQ(output->icon_type, apps::IconType::kCompressed);
     EXPECT_EQ(output->compressed, std::vector<uint8_t>({3u, 4u}));
     EXPECT_TRUE(output->is_placeholder_icon);
   }

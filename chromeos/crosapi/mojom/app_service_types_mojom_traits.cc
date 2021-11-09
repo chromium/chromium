@@ -640,10 +640,9 @@ bool EnumTraits<crosapi::mojom::IconType, apps::IconType>::FromMojom(
   return false;
 }
 
-bool StructTraits<
-    crosapi::mojom::IconValueDataView,
-    apps::mojom::IconValuePtr>::Read(crosapi::mojom::IconValueDataView data,
-                                     apps::mojom::IconValuePtr* out) {
+bool StructTraits<crosapi::mojom::IconValueDataView, apps::IconValuePtr>::Read(
+    crosapi::mojom::IconValueDataView data,
+    apps::IconValuePtr* out) {
   apps::IconType icon_type;
   if (!data.ReadIconType(&icon_type))
     return false;
@@ -652,12 +651,12 @@ bool StructTraits<
   if (!data.ReadUncompressed(&uncompressed))
     return false;
 
-  absl::optional<std::vector<uint8_t>> compressed;
+  std::vector<uint8_t> compressed;
   if (!data.ReadCompressed(&compressed))
     return false;
 
-  auto icon_value = apps::mojom::IconValue::New();
-  icon_value->icon_type = apps::ConvertIconTypeToMojomIconType(icon_type);
+  auto icon_value = std::make_unique<apps::IconValue>();
+  icon_value->icon_type = icon_type;
   icon_value->uncompressed = std::move(uncompressed);
   icon_value->compressed = std::move(compressed);
   icon_value->is_placeholder_icon = data.is_placeholder_icon();

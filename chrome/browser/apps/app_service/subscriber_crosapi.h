@@ -63,7 +63,7 @@ class SubscriberCrosapi : public KeyedService,
                 apps::mojom::IconKeyPtr icon_key,
                 IconType icon_type,
                 int32_t size_hint_in_dip,
-                LoadIconCallback callback) override;
+                apps::LoadIconCallback callback) override;
   void AddPreferredApp(const std::string& app_id,
                        crosapi::mojom::IntentPtr intent) override;
 

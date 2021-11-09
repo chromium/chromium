@@ -22,7 +22,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/crosapi_utils.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
@@ -371,10 +370,10 @@ void WebAppsCrosapi::OnControllerDisconnected() {
 void WebAppsCrosapi::OnLoadIcon(uint32_t icon_effects,
                                 int size_hint_in_dip,
                                 LoadIconCallback callback,
-                                apps::mojom::IconValuePtr icon_value) {
+                                IconValuePtr icon_value) {
   // We apply the masking effect here, as masking is not implemented in Lacros.
   ApplyIconEffects(static_cast<IconEffects>(icon_effects), size_hint_in_dip,
-                   ConvertMojomIconValueToIconValue(std::move(icon_value)),
+                   std::move(icon_value),
                    IconValueToMojomIconValueCallback(std::move(callback)));
 }
 

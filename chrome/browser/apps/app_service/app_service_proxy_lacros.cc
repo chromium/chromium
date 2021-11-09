@@ -85,7 +85,8 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
   } else {
     service->GetRemote<crosapi::mojom::AppServiceProxy>()->LoadIcon(
         app_id, std::move(icon_key), ConvertMojomIconTypeToIconType(icon_type),
-        size_hint_in_dip, std::move(callback));
+        size_hint_in_dip,
+        IconValueToMojomIconValueCallback(std::move(callback)));
   }
   return nullptr;
 }
