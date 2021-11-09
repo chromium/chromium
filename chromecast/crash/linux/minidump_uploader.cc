@@ -241,6 +241,15 @@ bool MinidumpUploader::DoWork() {
       g.AddAttachment(label, attachment);
     }
 
+    // set upload_file parameter based on exec_name
+    std::string upload_file;
+    if (dump.params().exec_name == "kernel") {
+      upload_file = "upload_file_ramoops";
+    } else {
+      upload_file = "upload_file_minidump";
+    }
+    g.SetParameter("upload_file", upload_file);
+
     // Dump some Android properties directly into product data.
     g.SetParameter("ro.revision", board_revision_);
     g.SetParameter("ro.product.release.track", release_channel_);

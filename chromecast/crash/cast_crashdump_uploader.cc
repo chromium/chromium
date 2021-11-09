@@ -25,6 +25,7 @@ const char kPtimeKey[] = "ptime";
 const char kCtimeKey[] = "ctime";
 const char kEmailKey[] = "email";
 const char kCommentsKey[] = "comments";
+const char kUploadFileKey[] = "upload_file";
 
 }  // namespace
 
@@ -85,7 +86,8 @@ bool CastCrashdumpUploader::Upload(std::string* response) {
     return false;
   }
 
-  if (!http_layer_->AddFile(data_.minidump_pathname, "upload_file_minidump")) {
+  if (!http_layer_->AddFile(data_.minidump_pathname,
+                            parameters_[kUploadFileKey])) {
     LOG(ERROR) << "Failed to add file: " << data_.minidump_pathname;
     return false;
   }
