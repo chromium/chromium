@@ -95,7 +95,7 @@ typedef std::vector<CALayerOverlay> CALayerOverlayList;
 // CALayerOverlay into OverlayCandidate.
 class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
  public:
-  CALayerOverlayProcessor();
+  explicit CALayerOverlayProcessor(bool enable_ca_overlay);
 
   CALayerOverlayProcessor(const CALayerOverlayProcessor&) = delete;
   CALayerOverlayProcessor& operator=(const CALayerOverlayProcessor&) = delete;
@@ -118,14 +118,16 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
   // Returns true if all quads in the root render pass have been replaced by
   // CALayerOverlays. Virtual for testing.
   virtual bool ProcessForCALayerOverlays(
+      AggregatedRenderPass* render_passes,
       DisplayResourceProvider* resource_provider,
       const gfx::RectF& display_rect,
-      const QuadList& quad_list,
       const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
           render_pass_filters,
       const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
           render_pass_backdrop_filters,
-      CALayerOverlayList* ca_layer_overlays) const;
+      CALayerOverlayList* ca_layer_overlays);
+
+  int ca_layer_result() { return ca_layer_result_; }
 
  private:
   // Returns whether future candidate quads should be considered
@@ -141,7 +143,12 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
           render_pass_backdrop_filters,
       gfx::ProtectedVideoType protected_video_type,
       CALayerOverlayList* ca_layer_overlays) const;
-  size_t max_quad_list_size_;
+
+  void SaveCALayerResult(int result);
+
+  const bool enable_ca_overlay_;
+  size_t max_quad_list_size_ = 0;
+  int ca_layer_result_ = 0;
 };
 
 }  // namespace viz

@@ -2572,14 +2572,14 @@ class TestOverlayProcessor : public OverlayProcessorWin {
 #elif defined(OS_APPLE)
 class MockCALayerOverlayProcessor : public CALayerOverlayProcessor {
  public:
-  MockCALayerOverlayProcessor() = default;
+  MockCALayerOverlayProcessor() : CALayerOverlayProcessor(true) {}
   ~MockCALayerOverlayProcessor() override = default;
 
-  MOCK_CONST_METHOD6(
+  MOCK_METHOD6(
       ProcessForCALayerOverlays,
-      bool(DisplayResourceProvider* resource_provider,
+      bool(AggregatedRenderPass* render_pass,
+           DisplayResourceProvider* resource_provider,
            const gfx::RectF& display_rect,
-           const QuadList& quad_list,
            const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
                render_pass_filters,
            const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
@@ -2593,9 +2593,8 @@ class TestOverlayProcessor : public OverlayProcessorMac {
       : OverlayProcessorMac(std::make_unique<MockCALayerOverlayProcessor>()) {}
   ~TestOverlayProcessor() override = default;
 
-  const MockCALayerOverlayProcessor* GetTestProcessor() const {
-    return static_cast<const MockCALayerOverlayProcessor*>(
-        GetOverlayProcessor());
+  MockCALayerOverlayProcessor* GetTestProcessor() {
+    return static_cast<MockCALayerOverlayProcessor*>(GetOverlayProcessor());
   }
 };
 
@@ -2742,7 +2741,7 @@ TEST_F(GLRendererTest, DontOverlayWithCopyRequests) {
   renderer.SetVisible(true);
 
 #if defined(OS_APPLE)
-  const MockCALayerOverlayProcessor* mock_ca_processor =
+  MockCALayerOverlayProcessor* mock_ca_processor =
       processor->GetTestProcessor();
 #elif defined(OS_WIN)
   MockDCLayerOverlayProcessor* dc_processor = processor->GetTestProcessor();
@@ -2786,7 +2785,7 @@ TEST_F(GLRendererTest, DontOverlayWithCopyRequests) {
   }
 #elif defined(OS_APPLE)
   EXPECT_CALL(*mock_ca_processor, ProcessForCALayerOverlays(_, _, _, _, _, _))
-      .Times(0);
+      .WillOnce(Return(false));
 #elif defined(OS_WIN)
   EXPECT_CALL(*dc_processor, Process(_, _, _, _, _, _, _, _)).Times(0);
 #endif
@@ -2825,7 +2824,7 @@ TEST_F(GLRendererTest, DontOverlayWithCopyRequests) {
   }
 #elif defined(OS_APPLE)
   EXPECT_CALL(*mock_ca_processor, ProcessForCALayerOverlays(_, _, _, _, _, _))
-      .Times(1);
+      .WillOnce(Return(true));
 #elif defined(OS_WIN)
   EXPECT_CALL(*dc_processor, Process(_, _, _, _, _, _, _, _)).Times(1);
 #endif
@@ -4030,7 +4029,7 @@ class CALayerGLRendererTest : public GLRendererTest {
     // The Mac TestOverlayProcessor default to enable CALayer overlays, then all
     // damage is removed and we can skip the root RenderPass, swapping empty.
     overlay_processor_ = std::make_unique<OverlayProcessorMac>(
-        std::make_unique<CALayerOverlayProcessor>());
+        std::make_unique<CALayerOverlayProcessor>(true));
     renderer_ = std::make_unique<FakeRendererGL>(
         settings_.get(), &debug_settings_, output_surface_.get(),
         display_resource_provider_.get(), overlay_processor_.get(),

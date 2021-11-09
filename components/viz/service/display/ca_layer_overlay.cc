@@ -37,7 +37,8 @@ constexpr size_t kTooManyQuads = 200;
 const int kTooManyRenderPassDrawQuads = 30;
 
 // This enum is used for histogram states and should only have new values added
-// to the end before COUNT.
+// to the end before COUNT. tools/metrics/histograms/enums.xml should be updated
+// together.
 enum CALayerResult {
   CA_LAYER_SUCCESS = 0,
   CA_LAYER_FAILED_UNKNOWN = 1,
@@ -70,8 +71,14 @@ enum CALayerResult {
   CA_LAYER_FAILED_YUV_NOT_CANDIDATE = 28,
   CA_LAYER_FAILED_Y_UV_TEXCOORD_MISMATCH = 29,
   CA_LAYER_FAILED_YUV_INVALID_PLANES = 30,
-  CA_LAYER_FAILED_COUNT,
+  CA_LAYER_FAILED_COPY_REQUESTS = 31,
+  CA_LAYER_FAILED_OVERLAY_DISABLED = 32,
+  kMaxValue = CA_LAYER_FAILED_OVERLAY_DISABLED,
 };
+
+void RecordCALayerHistogram(CALayerResult result) {
+  UMA_HISTOGRAM_ENUMERATION("Compositing.Renderer.CALayerResult", result);
+}
 
 bool FilterOperationSupported(const cc::FilterOperation& operation) {
   switch (operation.type()) {
@@ -355,7 +362,8 @@ CALayerOverlay::~CALayerOverlay() = default;
 CALayerOverlay& CALayerOverlay::operator=(const CALayerOverlay& other) =
     default;
 
-CALayerOverlayProcessor::CALayerOverlayProcessor() {
+CALayerOverlayProcessor::CALayerOverlayProcessor(bool enable_ca_overlay)
+    : enable_ca_overlay_(enable_ca_overlay) {
   max_quad_list_size_ = kTooManyQuads;
   if (base::FeatureList::IsEnabled(features::kMacCAOverlayQuad)) {
     const int max_num = features::kMacCAOverlayQuadMaxNum.Get();
@@ -444,22 +452,35 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
 }
 
 bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
+    AggregatedRenderPass* render_pass,
     DisplayResourceProvider* resource_provider,
     const gfx::RectF& display_rect,
-    const QuadList& quad_list,
     const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
         render_pass_filters,
     const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
         render_pass_backdrop_filters,
-    CALayerOverlayList* ca_layer_overlays) const {
+    CALayerOverlayList* ca_layer_overlays) {
+  const QuadList& quad_list = render_pass->quad_list;
   CALayerResult result = CA_LAYER_SUCCESS;
-
   size_t num_visible_quads = quad_list.size();
 
-  if (num_visible_quads < max_quad_list_size_)
-    ca_layer_overlays->reserve(num_visible_quads);
-  else
+  // Skip overlay processing
+  if (!enable_ca_overlay_) {
+    result = CA_LAYER_FAILED_OVERLAY_DISABLED;
+  } else if (!render_pass->copy_requests.empty()) {
+    result = CA_LAYER_FAILED_COPY_REQUESTS;
+  } else if (num_visible_quads > max_quad_list_size_) {
     result = CA_LAYER_FAILED_TOO_MANY_QUADS;
+  }
+
+  if (result != CA_LAYER_SUCCESS) {
+    RecordCALayerHistogram(result);
+    SaveCALayerResult(result);
+    return false;
+  }
+
+  // Start overlay processing
+  ca_layer_overlays->reserve(num_visible_quads);
 
   int render_pass_draw_quad_count = 0;
   CALayerOverlayProcessorInternal processor;
@@ -494,8 +515,8 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     ca_layer_overlays->push_back(ca_layer);
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Compositing.Renderer.CALayerResult", result,
-                            CA_LAYER_FAILED_COUNT);
+  RecordCALayerHistogram(result);
+  SaveCALayerResult(result);
 
   if (result != CA_LAYER_SUCCESS) {
     ca_layer_overlays->clear();
@@ -537,6 +558,11 @@ bool CALayerOverlayProcessor::PutQuadInSeparateOverlay(
                                                  SkBlendMode::kSrcOver);
   ca_layer_overlays->push_back(ca_layer);
   return true;
+}
+
+// Expand this function to save the results of the last N frames.
+void CALayerOverlayProcessor::SaveCALayerResult(int result) {
+  ca_layer_result_ = result;
 }
 
 }  // namespace viz

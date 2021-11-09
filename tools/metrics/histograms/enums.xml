@@ -10897,7 +10897,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="27" label="Too many quads"/>
   <int value="28" label="YUVVideoDrawQuad not overlay candidate"/>
   <int value="29" label="YUVVideoDrawQuad Y/UV coordinates mismatch"/>
-  <int value="30" label="YUVVideoDrawQuad has Invalid planes"/>
+  <int value="30" label="YUVVideoDrawQuad has invalid planes"/>
+  <int value="31" label="Has copy requests"/>
+  <int value="32" label="Overlay disabled"/>
 </enum>
 
 <enum name="CameraPrivacySwitchEvent">
