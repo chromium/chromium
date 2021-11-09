@@ -16,6 +16,10 @@ namespace base {
 class Value;
 }
 
+namespace commerce {
+class BuyableProduct;
+}  // namespace commerce
+
 namespace content {
 class NavigationHandle;
 class RenderFrameHost;
@@ -24,6 +28,7 @@ class WebContents;
 
 namespace power_bookmarks {
 class PowerBookmarkMeta;
+class ShoppingSpecifics;
 }
 
 namespace shopping_list {
@@ -96,6 +101,12 @@ class ShoppingDataProvider
 // |on_page_data_map|.
 void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
                base::Value& on_page_data_map);
+
+// Populate the power bookmarks specific representation of shopping data from
+// the over-the-wire version from commerce.
+void PopulateShoppingSpecifics(
+    const commerce::BuyableProduct& data,
+    power_bookmarks::ShoppingSpecifics* shopping_specifics);
 
 }  // namespace shopping_list
 

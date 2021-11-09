@@ -30,14 +30,20 @@ static_library("power_bookmarks") {
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "proto/power_bookmark_meta.proto" ]
+  sources = [
+    "proto/power_bookmark_meta.proto",
+    "proto/shopping_specifics.proto",
+  ]
   deps = [ "//components/commerce/core:proto" ]
 }
 
 if (is_android) {
   proto_java_library("proto_java") {
     proto_path = "//"
-    sources = [ "proto/power_bookmark_meta.proto" ]
+    sources = [
+      "proto/power_bookmark_meta.proto",
+      "proto/shopping_specifics.proto",
+    ]
     deps = [ "//components/commerce/core:proto_java" ]
   }
 }
