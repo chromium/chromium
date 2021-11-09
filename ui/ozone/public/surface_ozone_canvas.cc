@@ -5,7 +5,6 @@
 #include "ui/ozone/public/surface_ozone_canvas.h"
 
 #include "base/notreached.h"
-#include "base/task/sequenced_task_runner.h"
 
 namespace ui {
 
@@ -23,8 +22,5 @@ void SurfaceOzoneCanvas::OnSwapBuffers(SwapBuffersCallback swap_ack_callback) {
 int SurfaceOzoneCanvas::MaxFramesPending() const {
   return 1;
 }
-
-void SurfaceOzoneCanvas::SetGpuMainRunner(
-    scoped_refptr<base::SequencedTaskRunner> gpu_main_runner) {}
 
 }  // namespace ui
