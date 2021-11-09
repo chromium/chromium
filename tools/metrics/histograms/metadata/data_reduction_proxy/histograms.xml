@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataReductionProxy.UIAction" enum="DataReductionProxyUIAction"
-    expires_after="2022-03-06">
+    expires_after="2022-05-08">
   <owner>bengr@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
