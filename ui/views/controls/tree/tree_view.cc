@@ -45,6 +45,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/widget/widget.h"
 
 using ui::TreeModel;
 using ui::TreeModelNode;
@@ -814,6 +815,11 @@ void TreeView::UpdateSelection(TreeModelNode* model_node,
     // GetForegroundBoundsForNode() returns RTL-flipped coordinates for paint.
     // Un-flip before passing to ScrollRectToVisible(), which uses layout
     // coordinates.
+    // TODO(crbug.com/1267807): We should not be doing synchronous layout here
+    // but instead we should call into this asynchronously after the Views
+    // tree has processed a layout pass which happens asynchronously.
+    if (auto* widget = GetWidget())
+      widget->LayoutRootViewIfNecessary();
     ScrollRectToVisible(GetMirroredRect(GetForegroundBoundsForNode(node)));
   }
 
