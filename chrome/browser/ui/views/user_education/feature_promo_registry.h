@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BrowserView;
@@ -36,25 +36,24 @@ class FeaturePromoRegistry {
 
   static FeaturePromoRegistry* GetInstance();
 
-  // Returns a complete FeaturePromoBubbleParams object to start IPH for
+  // Returns the FeaturePromoSpecification to start an IPH for
   // the given feature. |iph_feature| is the feature to show for.
   // |browser_view| is the window it should show in.
   //
   // The params must be used immediately since it contains a View
   // pointer that may become stale. This may return nothing in which
   // case the promo shouldn't show.
-  absl::optional<std::pair<FeaturePromoBubbleParams, views::View*>>
+  absl::optional<std::pair<const FeaturePromoSpecification*, views::View*>>
   GetParamsForFeature(const base::Feature& iph_feature,
                       BrowserView* browser_view);
 
-  // Registers a feature promo. |iph_feature| is the feature.
+  // Registers a feature promo.
   // |get_anchor_view_callback| specifies how to get the bubble's anchor view
   // for an arbitrary browser window.
   //
   // Prefer putting these calls in the body of RegisterKnownFeatures()
   // when possible.
-  void RegisterFeature(const base::Feature& iph_feature,
-                       const FeaturePromoBubbleParams& params,
+  void RegisterFeature(FeaturePromoSpecification spec,
                        GetAnchorViewCallback get_anchor_view_callback);
 
   void ClearFeaturesForTesting();
@@ -70,8 +69,8 @@ class FeaturePromoRegistry {
     FeaturePromoData(FeaturePromoData&&);
     ~FeaturePromoData();
 
-    // The params for a promo, minus the anchor view.
-    FeaturePromoBubbleParams params;
+    // The specification for a promo, minus the anchor view.
+    FeaturePromoSpecification spec;
 
     GetAnchorViewCallback get_anchor_view_callback;
   };

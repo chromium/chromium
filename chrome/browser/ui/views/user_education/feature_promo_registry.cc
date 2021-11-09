@@ -9,7 +9,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -141,7 +141,7 @@ FeaturePromoRegistry* FeaturePromoRegistry::GetInstance() {
   return instance.get();
 }
 
-absl::optional<std::pair<FeaturePromoBubbleParams, views::View*>>
+absl::optional<std::pair<const FeaturePromoSpecification*, views::View*>>
 FeaturePromoRegistry::GetParamsForFeature(const base::Feature& iph_feature,
                                           BrowserView* browser_view) {
   auto data_it = feature_promo_data_.find(&iph_feature);
@@ -152,32 +152,20 @@ FeaturePromoRegistry::GetParamsForFeature(const base::Feature& iph_feature,
   if (!anchor_view)
     return absl::nullopt;
 
-  FeaturePromoBubbleParams params = data_it->second.params;
-
-  if (params.feature_command_id) {
-    // Only one of the two should be specified.
-    DCHECK(!params.feature_accelerator);
-
-    int command_id = params.feature_command_id.value();
-    params.feature_command_id.reset();
-
-    // Get the actual accelerator from |browser_view|.
-    ui::Accelerator accelerator;
-    if (browser_view->GetAccelerator(command_id, &accelerator))
-      params.feature_accelerator = accelerator;
-  }
-
-  return std::make_pair(params, anchor_view);
+  return std::make_pair(&data_it->second.spec, anchor_view);
 }
 
 void FeaturePromoRegistry::RegisterFeature(
-    const base::Feature& iph_feature,
-    const FeaturePromoBubbleParams& params,
+    FeaturePromoSpecification spec,
     GetAnchorViewCallback get_anchor_view_callback) {
   FeaturePromoData data;
-  data.params = params;
+  const base::Feature* const iph_feature = spec.feature();
+  CHECK(iph_feature);
+  data.spec = std::move(spec);
   data.get_anchor_view_callback = std::move(get_anchor_view_callback);
-  feature_promo_data_.emplace(&iph_feature, std::move(data));
+  const auto result = feature_promo_data_.emplace(iph_feature, std::move(data));
+  DCHECK(result.second) << "Duplicate IPH feature registered: "
+                        << iph_feature->name;
 }
 
 void FeaturePromoRegistry::ClearFeaturesForTesting() {
@@ -190,172 +178,114 @@ void FeaturePromoRegistry::ReinitializeForTesting() {
 }
 
 void FeaturePromoRegistry::RegisterKnownFeatures() {
-  {
-    // kIPHDesktopPwaInstallFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_DESKTOP_PWA_INSTALL_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
+  // kIPHDesktopPwaInstallFeature:
+  RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+                      &feature_engagement::kIPHDesktopPwaInstallFeature,
+                      IDS_DESKTOP_PWA_INSTALL_PROMO),
+                  base::BindRepeating(GetDesktopPwaInstallView));
 
-    RegisterFeature(feature_engagement::kIPHDesktopPwaInstallFeature, params,
-                    base::BindRepeating(GetDesktopPwaInstallView));
-  }
+  // kIPHUpdatedConnectionSecurityIndicatorsFeature:
+  RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
+                    &feature_engagement::
+                        kIPHUpdatedConnectionSecurityIndicatorsFeature,
+                    IDS_UPDATED_CONNECTION_SECURITY_INDICATORS_PROMO)
+                    .SetBubbleArrow(
+                        FeaturePromoSpecification::BubbleArrow::kTopLeft)),
+      base::BindRepeating(GetLocationIconView));
 
-  {
-    // kIPHUpdatedConnectionSecurityIndicatorsFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier =
-        IDS_UPDATED_CONNECTION_SECURITY_INDICATORS_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_LEFT;
+  // kIPHDesktopTabGroupsNewGroupFeature:
+  RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForSnoozePromo(
+                    feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+                    IDS_TAB_GROUPS_NEW_GROUP_PROMO)
+                    .SetBubbleArrow(
+                        FeaturePromoSpecification::BubbleArrow::kTopCenter)),
+      base::BindRepeating(GetTabGroupsAnchorView));
 
-    RegisterFeature(
-        feature_engagement::kIPHUpdatedConnectionSecurityIndicatorsFeature,
-        params, base::BindRepeating(GetLocationIconView));
-  }
+  // kIPHLiveCaptionFeature:
+  RegisterFeature(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHLiveCaptionFeature, IDS_LIVE_CAPTION_PROMO,
+          IDS_LIVE_CAPTION_PROMO_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo()),
+      base::BindRepeating(GetMediaButton));
 
-  {
-    // kIPHDesktopTabGroupsNewGroupFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_TAB_GROUPS_NEW_GROUP_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_CENTER;
+  // kIPHGMCCastStartStopFeature:
+  RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+                      &feature_engagement::kIPHGMCCastStartStopFeature,
+                      IDS_GLOBAL_MEDIA_CONTROLS_CONTROL_CAST_SESSIONS_PROMO),
+                  base::BindRepeating(GetMediaButton));
 
-    // Turn on IPH Snooze for Tab Group.
-    if (base::FeatureList::IsEnabled(
-            feature_engagement::kIPHDesktopSnoozeFeature)) {
-      params.focus_on_create = true;
-      params.allow_snooze = true;
-    }
-
-    RegisterFeature(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
-                    params, base::BindRepeating(GetTabGroupsAnchorView));
-  }
-
-  {
-    // kIPHLiveCaptionFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_LIVE_CAPTION_PROMO;
-    params.screenreader_string_specifier = IDS_LIVE_CAPTION_PROMO_SCREENREADER;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
-
-    RegisterFeature(feature_engagement::kIPHLiveCaptionFeature, params,
-                    base::BindRepeating(GetMediaButton));
-  }
-
-  {
-    // kIPHGMCCastStartStopFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier =
-        IDS_GLOBAL_MEDIA_CONTROLS_CONTROL_CAST_SESSIONS_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
-    RegisterFeature(feature_engagement::kIPHGMCCastStartStopFeature, params,
-                    base::BindRepeating(GetMediaButton));
-  }
-
+  // kIPHSwitchProfileFeature:
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  {
-    // kIPHSwitchProfileFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_PROFILE_SWITCH_PROMO;
-    params.screenreader_string_specifier =
-        IDS_PROFILE_SWITCH_PROMO_SCREENREADER;
-    params.feature_command_id = IDC_SHOW_AVATAR_MENU;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
-
-    RegisterFeature(feature_engagement::kIPHProfileSwitchFeature, params,
-                    base::BindRepeating(GetAvatarToolbarButton));
-  }
+  RegisterFeature(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHProfileSwitchFeature,
+          IDS_PROFILE_SWITCH_PROMO, IDS_PROFILE_SWITCH_PROMO_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo(IDC_SHOW_AVATAR_MENU)),
+      base::BindRepeating(GetAvatarToolbarButton));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-  {
-    // kReadingListDiscoveryFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_READING_LIST_DISCOVERY_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
+  // kReadingListDiscoveryFeature:
+  RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+                      &feature_engagement::kIPHReadingListDiscoveryFeature,
+                      IDS_READING_LIST_DISCOVERY_PROMO),
+                  base::BindRepeating(GetReadingListButton));
 
-    RegisterFeature(feature_engagement::kIPHReadingListDiscoveryFeature, params,
-                    base::BindRepeating(GetReadingListButton));
-  }
+  // kIPHReadingListEntryPointFeature:
+  RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
+                      feature_engagement::kIPHReadingListEntryPointFeature,
+                      IDS_READING_LIST_ENTRY_POINT_PROMO),
+                  base::BindRepeating(GetReadingListStarView));
 
-  {
-    // kIPHReadingListEntryPointFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_READING_LIST_ENTRY_POINT_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
+  // kIPHReadingListInSidePanelFeature:
+  RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+                      &feature_engagement::kIPHReadingListInSidePanelFeature,
+                      IDS_READING_LIST_IN_SIDE_PANEL_PROMO),
+                  base::BindRepeating(GetSidePanelButton));
 
-    // Turn on IPH Snooze for Read Later entry point.
-    if (base::FeatureList::IsEnabled(
-            feature_engagement::kIPHDesktopSnoozeFeature)) {
-      params.focus_on_create = true;
-      params.allow_snooze = true;
-    }
+  // kIPHReopenTabFeature:
+  RegisterFeature(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHReopenTabFeature, IDS_REOPEN_TAB_PROMO,
+          IDS_REOPEN_TAB_PROMO_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo(IDC_RESTORE_TAB)),
+      base::BindRepeating(GetAppMenuButton));
 
-    RegisterFeature(feature_engagement::kIPHReadingListEntryPointFeature,
-                    params, base::BindRepeating(GetReadingListStarView));
-  }
-
-  {
-    // kIPHReadingListInSidePanelFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_READING_LIST_IN_SIDE_PANEL_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
-
-    RegisterFeature(feature_engagement::kIPHReadingListInSidePanelFeature,
-                    params, base::BindRepeating(GetSidePanelButton));
-  }
-
-  {
-    // kIPHReopenTabFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_REOPEN_TAB_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
-    params.feature_command_id = IDC_RESTORE_TAB;
-
-    RegisterFeature(feature_engagement::kIPHReopenTabFeature, params,
-                    base::BindRepeating(GetAppMenuButton));
-  }
-
+  // kIPHSideSearchFeature:
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
-  {
-    // kIPHSideSearchFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_SIDE_SEARCH_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_LEFT;
-
-    RegisterFeature(feature_engagement::kIPHSideSearchFeature, params,
-                    base::BindRepeating(GetSideSearchButton));
-  }
+  RegisterFeature(
+      std::move(
+          FeaturePromoSpecification::CreateForLegacyPromo(
+              &feature_engagement::kIPHSideSearchFeature, IDS_SIDE_SEARCH_PROMO)
+              .SetBubbleArrow(
+                  FeaturePromoSpecification::BubbleArrow::kTopLeft)),
+      base::BindRepeating(GetSideSearchButton));
 #endif
 
-  {
-    // kIPHTabSearchFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_TAB_SEARCH_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
+  // kIPHTabSearchFeature:
+  RegisterFeature(
+      FeaturePromoSpecification::CreateForLegacyPromo(
+          &feature_engagement::kIPHTabSearchFeature, IDS_TAB_SEARCH_PROMO),
+      base::BindRepeating(GetTabSearchButton));
 
-    RegisterFeature(feature_engagement::kIPHTabSearchFeature, params,
-                    base::BindRepeating(GetTabSearchButton));
-  }
-
+  // kIPHWebUITabStripFeature:
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  {
-    // kIPHWebUITabStripFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_WEBUI_TAB_STRIP_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::TOP_RIGHT;
-
-    RegisterFeature(feature_engagement::kIPHWebUITabStripFeature, params,
-                    base::BindRepeating(GetWebUITabStripAnchorView));
-  }
+  RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+                      &feature_engagement::kIPHWebUITabStripFeature,
+                      IDS_WEBUI_TAB_STRIP_PROMO),
+                  base::BindRepeating(GetWebUITabStripAnchorView));
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-  {
-    // kIPHDesktopSharedHighlightingFeature:
-    FeaturePromoBubbleParams params;
-    params.body_string_specifier = IDS_SHARED_HIGHLIGHTING_PROMO;
-    params.arrow = FeaturePromoBubbleParams::Arrow::NONE;
-
-    RegisterFeature(feature_engagement::kIPHDesktopSharedHighlightingFeature,
-                    params, base::BindRepeating(GetToolbarView));
-  }
+  // kIPHDesktopSharedHighlightingFeature:
+  RegisterFeature(
+      std::move(
+          FeaturePromoSpecification::CreateForLegacyPromo(
+              &feature_engagement::kIPHDesktopSharedHighlightingFeature,
+              IDS_SHARED_HIGHLIGHTING_PROMO)
+              .SetBubbleArrow(FeaturePromoSpecification::BubbleArrow::kNone)),
+      base::BindRepeating(GetToolbarView));
 }
 
 FeaturePromoRegistry::FeaturePromoData::FeaturePromoData() = default;

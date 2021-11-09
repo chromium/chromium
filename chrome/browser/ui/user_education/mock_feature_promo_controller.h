@@ -7,7 +7,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
-#include "chrome/browser/ui/user_education/feature_promo_text_replacements.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockFeaturePromoController : public FeaturePromoController {
@@ -18,12 +18,8 @@ class MockFeaturePromoController : public FeaturePromoController {
   // FeaturePromoController:
   MOCK_METHOD(bool,
               MaybeShowPromo,
-              (const base::Feature&, BubbleCloseCallback),
-              (override));
-  MOCK_METHOD(bool,
-              MaybeShowPromoWithTextReplacements,
               (const base::Feature&,
-               FeaturePromoTextReplacements,
+               FeaturePromoSpecification::StringReplacements,
                BubbleCloseCallback),
               (override));
   MOCK_METHOD(bool, BubbleIsShowing, (const base::Feature&), (const, override));

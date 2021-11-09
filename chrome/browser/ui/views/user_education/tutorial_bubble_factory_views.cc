@@ -8,7 +8,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner_impl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

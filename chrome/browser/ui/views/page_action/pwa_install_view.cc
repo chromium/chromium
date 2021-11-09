@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
-#include "chrome/browser/ui/user_education/feature_promo_text_replacements.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -113,11 +113,9 @@ void PwaInstallView::UpdateImpl() {
     if (controller) {
       // Reset the iph flag when it's shown again.
       install_icon_clicked_after_iph_shown_ = false;
-      bool iph_shown = controller->MaybeShowPromoWithTextReplacements(
+      bool iph_shown = controller->MaybeShowPromo(
           feature_engagement::kIPHDesktopPwaInstallFeature,
-          FeaturePromoTextReplacements::WithString(
-              webapps::AppBannerManager::GetInstallableWebAppName(
-                  web_contents)),
+          {webapps::AppBannerManager::GetInstallableWebAppName(web_contents)},
           base::BindOnce(&PwaInstallView::OnIphClosed,
                          weak_ptr_factory_.GetWeakPtr()));
       if (iph_shown)

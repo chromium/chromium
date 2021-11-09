@@ -14,7 +14,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,6 +37,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -308,9 +309,10 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   views::ImageView* icon_view = nullptr;
   constexpr int kBodyIconSize = 24;
   if (params.body_icon) {
-    icon_view = bubble_body_container->AddChildView(
+    icon_view = bubble_body_container->AddChildViewAt(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            *params.body_icon, text_color, kBodyIconSize)));
+            *params.body_icon, text_color, kBodyIconSize)),
+        0);
     icon_view->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CHROME_TIP));
   }
 

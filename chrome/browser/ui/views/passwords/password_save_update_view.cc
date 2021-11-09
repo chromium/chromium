@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/ui/user_education/feature_promo_bubble_params.h"
+#include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
@@ -64,8 +64,6 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-
-constexpr int kAccountStoragePromoWidth = 240;
 
 int ComboboxIconSize() {
   // Use the line height of the body small text. This allows the icons to adapt
@@ -273,12 +271,6 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
   combobox->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_ACCESSIBLE_NAME));
   return combobox;
-}
-
-base::TimeDelta GetIPHTimeout() {
-  return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
-      feature_engagement::kIPHPasswordsAccountStorageFeature,
-      "account_storage_iph_timeout_seconds_regular", 30));
 }
 
 }  // namespace
@@ -649,33 +641,34 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
   bool close_save_bubble_on_deactivate_original_value = close_on_deactivate();
   set_close_on_deactivate(false);
 
-  FeaturePromoBubbleParams bubble_params;
-  bubble_params.arrow = FeaturePromoBubbleParams::Arrow::RIGHT_CENTER;
-  bubble_params.focus_on_create = true;
-  bubble_params.persist_on_blur = false;
-  bubble_params.preferred_width = kAccountStoragePromoWidth;
-  bubble_params.timeout = GetIPHTimeout();
+  constexpr FeaturePromoSpecification::BubbleArrow kPromoArrow =
+      FeaturePromoSpecification::BubbleArrow::kRightCenter;
 
   if (type == IPHType::kRegular) {
-    bubble_params.body_string_specifier =
-        IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT;
-    bubble_params.title_string_specifier =
-        IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT;
+    FeaturePromoSpecification promo_spec =
+        FeaturePromoSpecification::CreateForLegacyPromo(
+            &feature_engagement::kIPHPasswordsAccountStorageFeature,
+            IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT);
+    promo_spec.SetBubbleTitleText(
+        IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT);
+    promo_spec.SetBubbleArrow(kPromoArrow);
 
-    if (promo_controller_->MaybeShowPromoWithParams(
-            feature_engagement::kIPHPasswordsAccountStorageFeature,
-            bubble_params, destination_dropdown_)) {
+    if (promo_controller_->MaybeShowPromoFromSpecification(
+            promo_spec, destination_dropdown_)) {
       // If the regular promo was shown, the failed reauth promo is
       // definitely finished. If not, we can't be confident it hasn't
       // finished.
       failed_reauth_promo_id_ = absl::nullopt;
     }
   } else {
-    bubble_params.body_string_specifier =
-        IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL;
+    FeaturePromoSpecification promo_spec =
+        FeaturePromoSpecification::CreateForLegacyPromo(
+            /* feature =*/nullptr,
+            IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL);
+    promo_spec.SetBubbleArrow(kPromoArrow);
 
-    failed_reauth_promo_id_ = promo_controller_->ShowCriticalPromo(
-        bubble_params, destination_dropdown_);
+    failed_reauth_promo_id_ =
+        promo_controller_->ShowCriticalPromo(promo_spec, destination_dropdown_);
   }
 
   set_close_on_deactivate(close_save_bubble_on_deactivate_original_value);
