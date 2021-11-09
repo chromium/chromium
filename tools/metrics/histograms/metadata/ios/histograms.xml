@@ -1311,7 +1311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.AddToBookmarks" units="Tabs"
-    expires_after="2022-01-30">
+    expires_after="2022-05-08">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -1322,7 +1322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.AddToReadingList" units="Tabs"
-    expires_after="2022-01-30">
+    expires_after="2022-05-08">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <owner>bling-team@google.com</owner>
@@ -1344,7 +1344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.ShareTabs" units="Tabs"
-    expires_after="2022-01-30">
+    expires_after="2022-05-08">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <owner>bling-team@google.com</owner>

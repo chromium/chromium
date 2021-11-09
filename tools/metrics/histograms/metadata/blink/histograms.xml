@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.HibernationEvents" enum="CanvasHibernationEvent"
-    expires_after="2022-01-31">
+    expires_after="2022-05-08">
   <owner>fserb@chromium.org</owner>
   <summary>
     Records the occurrence of events related to 2D canvas GPU resource
@@ -3477,7 +3477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.V8.InitPerIsolateData" units="microseconds"
-    expires_after="2022-01-30">
+    expires_after="2022-05-08">
   <owner>sky@chromium.org</owner>
   <owner>yukishiino@chromium.org</owner>
   <summary>
