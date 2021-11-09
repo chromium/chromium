@@ -114,10 +114,10 @@ class HoldingSpaceControllerProgressRing
   // HoldingSpaceProgressRing:
   absl::optional<float> CalculateProgress() const override {
     // If there is no `model` attached, then there are no in-progress holding
-    // space items. Return `1.f` to prevent the progress ring from painting.
+    // space items. Do not paint the progress ring.
     const HoldingSpaceModel* model = controller_->model();
     if (!model)
-      return 1.f;
+      return kProgressComplete;
 
     HoldingSpaceProgress cumulative_progress;
 
@@ -206,11 +206,11 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
  private:
   // HoldingSpaceProgressRing:
   absl::optional<float> CalculateProgress() const override {
-    // If `item_` is `nullptr` it is being destroyed. Return `1.f` in that case
-    // so that no progress ring will be painted. Similarly, return `1.f` to
-    // prevent painting a progress ring when progress is hidden.
+    // If `item_` is `nullptr` it is being destroyed. Ensure the progress ring
+    // is not painted in this case. Similarly, ensure the progress ring is not
+    // painted when progress is hidden.
     return item_ && !item_->progress().IsHidden() ? item_->progress().GetValue()
-                                                  : 1.f;
+                                                  : kProgressComplete;
   }
 
   // HoldingSpaceModelObserver:
@@ -241,6 +241,8 @@ class HoldingSpaceItemProgressRing : public HoldingSpaceProgressRing,
 }  // namespace
 
 // HoldingSpaceProgressRing ----------------------------------------------------
+
+constexpr float HoldingSpaceProgressRing::kProgressComplete;
 
 HoldingSpaceProgressRing::HoldingSpaceProgressRing(const void* animation_key)
     : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
@@ -299,7 +301,7 @@ void HoldingSpaceProgressRing::OnPaintLayer(const ui::PaintContext& context) {
           ->GetProgressRingAnimationForKey(animation_key_);
 
   // Unless `this` is animating, nothing will paint if `progress_` is complete.
-  if (progress_ == 1.f && !animation)
+  if (progress_ == kProgressComplete && !animation)
     return;
 
   float start, end, opacity;

@@ -8,8 +8,10 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
+#include "ash/system/holding_space/holding_space_progress_ring.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "base/macros.h"
 #include "ui/events/event_constants.h"
@@ -19,6 +21,21 @@ class ImageView;
 }
 
 namespace ash {
+
+class ASH_EXPORT DictationProgressRing : public HoldingSpaceProgressRing,
+                                         public HoldingSpaceModelObserver {
+ public:
+  explicit DictationProgressRing(const DictationButtonTray* tray);
+  bool IsVisible();
+
+ private:
+  friend class DictationButtonTraySodaTest;
+
+  // HoldingSpaceProgressRing:
+  absl::optional<float> CalculateProgress() const override;
+
+  const DictationButtonTray* tray_;
+};
 
 // Status area tray for showing a toggle for Dictation. Dictation allows
 // users to have their speech transcribed into a text area. This tray will
@@ -56,16 +73,20 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void OnThemeChanged() override;
+  void Layout() override;
 
   // views::View:
   const char* GetClassName() const override;
 
-  // Updates this button's state when speech recognition file download state
-  // changes.
-  void UpdateOnSpeechRecognitionDownloadChanged(bool download_in_progress);
+  // Updates this button's state and progress ring when speech recognition file
+  // download state changes.
+  void UpdateOnSpeechRecognitionDownloadChanged(int download_progress);
+
+  int download_progress() const { return download_progress_; }
 
  private:
   friend class DictationButtonTrayTest;
+  friend class DictationButtonTraySodaTest;
 
   // Updates the visibility of the button.
   void UpdateVisibility();
@@ -79,6 +100,13 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
 
   // Weak pointer, will be parented by TrayContainer for its lifetime.
   views::ImageView* icon_;
+
+  // SODA download progress. A value of 0 < X < 100 indicates that download is
+  // in-progress.
+  int download_progress_;
+
+  // A progress ring to indicate SODA download progress.
+  std::unique_ptr<DictationProgressRing> progress_ring_;
 };
 
 }  // namespace ash

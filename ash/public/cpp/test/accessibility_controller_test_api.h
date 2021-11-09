@@ -23,6 +23,7 @@ class ASH_EXPORT AccessibilityControllerTestApi {
 
   virtual void SetLargeCursorEnabled(bool enabled) = 0;
   virtual bool IsLargeCursorEnabled() const = 0;
+  virtual int GetDictationSodaDownloadProgress() const = 0;
 };
 
 }  // namespace ash

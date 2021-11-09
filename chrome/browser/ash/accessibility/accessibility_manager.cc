@@ -2107,30 +2107,32 @@ void AccessibilityManager::MaybeInstallSoda(const std::string& locale) {
 void AccessibilityManager::OnSodaInstallSucceeded() {
   if (ShouldShowSodaSucceededNotificationForDictation())
     ShowSodaDownloadNotificationForDictation(true);
-  OnSodaInstallUpdated();
+  OnSodaInstallUpdated(100);
 }
 
 void AccessibilityManager::OnSodaInstallError(
     speech::LanguageCode language_code) {
   if (ShouldShowSodaFailedNotificationForDictation(language_code))
     ShowSodaDownloadNotificationForDictation(false);
-  OnSodaInstallUpdated();
+  OnSodaInstallUpdated(0);
 }
 
-void AccessibilityManager::OnSodaInstallUpdated() {
+void AccessibilityManager::OnSodaInstallUpdated(int progress) {
   if (!features::IsDictationOfflineAvailableAndEnabled())
     return;
 
   speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
   const std::string dictation_locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
-  bool is_soda_downloading = soda_installer->IsSodaDownloading(
-      speech::GetLanguageCode(dictation_locale));
+  speech::LanguageCode dictation_language_code =
+      speech::GetLanguageCode(dictation_locale);
+  // Update the Dictation button tray.
+  // TODO(https://crbug.com/1266491): Ensure we use combined progress instead
+  // of just the language pack progress.
   AccessibilityController::Get()
-      ->UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
-          is_soda_downloading);
+      ->UpdateDictationButtonOnSpeechRecognitionDownloadChanged(progress);
 
-  if (is_soda_downloading)
+  if (soda_installer->IsSodaDownloading(dictation_language_code))
     return;
 
   const absl::optional<bool> offline_nudge =
@@ -2157,6 +2159,18 @@ void AccessibilityManager::OnSodaError() {
 void AccessibilityManager::OnSodaLanguagePackInstalled(
     speech::LanguageCode language_code) {
   OnSodaInstallSucceeded();
+}
+
+void AccessibilityManager::OnSodaLanguagePackProgress(
+    int language_progress,
+    speech::LanguageCode language_code) {
+  const std::string locale =
+      profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
+
+  if (language_code != speech::GetLanguageCode(locale))
+    return;
+
+  OnSodaInstallUpdated(language_progress);
 }
 
 void AccessibilityManager::OnSodaLanguagePackError(

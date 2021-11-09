@@ -2051,12 +2051,13 @@ void AccessibilityControllerImpl::ShowConfirmationDialog(
 
 void AccessibilityControllerImpl::
     UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
-        bool download_in_progress) {
+        int download_progress) {
+  dictation_soda_download_progress_ = download_progress;
   Shell::Get()
       ->GetPrimaryRootWindowController()
       ->GetStatusAreaWidget()
       ->dictation_button_tray()
-      ->UpdateOnSpeechRecognitionDownloadChanged(download_in_progress);
+      ->UpdateOnSpeechRecognitionDownloadChanged(download_progress);
 }
 
 void AccessibilityControllerImpl::

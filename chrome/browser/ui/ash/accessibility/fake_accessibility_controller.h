@@ -64,7 +64,7 @@ class FakeAccessibilityController : ash::AccessibilityController {
       const std::string& path) override;
   void DisableSwitchAccessDisableConfirmationDialogTesting() override;
   void UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
-      bool download_in_progress) override;
+      int download_progress) override;
   void ShowSpeechRecognitionDownloadNotificationForDictation(
       bool succeeded,
       const std::u16string& display_language) override;

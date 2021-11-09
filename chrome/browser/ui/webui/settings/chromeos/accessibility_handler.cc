@@ -180,6 +180,8 @@ void AccessibilityHandler::OnSodaInstallSucceeded() {
 void AccessibilityHandler::OnSodaInstallProgress(
     int progress,
     speech::LanguageCode language_code) {
+  // TODO(https://crbug.com/1266491): Ensure we use combined progress instead
+  // of just the language pack progress.
   if (language_code != GetDictationLocale())
     return;
 

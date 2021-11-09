@@ -372,8 +372,7 @@ class AccessibilityManager
   void OnSodaLanguagePackError(speech::LanguageCode language_code) override;
   void OnSodaProgress(int combined_progress) override {}
   void OnSodaLanguagePackProgress(int language_progress,
-                                  speech::LanguageCode language_code) override {
-  }
+                                  speech::LanguageCode language_code) override;
 
   // Test helpers:
   void SetProfileForTest(Profile* profile);
@@ -497,7 +496,7 @@ class AccessibilityManager
   void MaybeInstallSoda(const std::string& locale);
   void OnSodaInstallSucceeded();
   void OnSodaInstallError(speech::LanguageCode language_code);
-  void OnSodaInstallUpdated();
+  void OnSodaInstallUpdated(int progress);
   bool ShouldShowSodaSucceededNotificationForDictation();
   bool ShouldShowSodaFailedNotificationForDictation(
       speech::LanguageCode language_code);

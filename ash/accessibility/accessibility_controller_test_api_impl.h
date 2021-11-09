@@ -26,6 +26,7 @@ class AccessibilityControllerTestApiImpl
   // AccessibilityControllerTestApi:
   void SetLargeCursorEnabled(bool enabled) override;
   bool IsLargeCursorEnabled() const override;
+  int GetDictationSodaDownloadProgress() const override;
 };
 
 }  // namespace ash

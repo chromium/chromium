@@ -1085,6 +1085,39 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerSodaTest,
                                           /*success=*/true);
 }
 
+// Tests the behavior of AccessibilityManager and when it calls the
+// `UpdateDictationButtonOnSpeechRecognitionDownloadChanged` method.
+// The method is used to update the Dictation button tray when SODA download
+// state changes.
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityManagerSodaTest,
+    UpdateDictationButtonOnSpeechRecognitionDownloadChanged) {
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  auto test_api = AccessibilityControllerTestApi::Create();
+  EXPECT_EQ(0, test_api->GetDictationSodaDownloadProgress());
+
+  // The API will not be called if the language pack differs from the Dictation
+  // locale.
+  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(
+      30, speech::LanguageCode::kFrFr);
+  EXPECT_EQ(0, test_api->GetDictationSodaDownloadProgress());
+  // The API will be called if the language pack matches the Dictation locale.
+  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(
+      50, speech::LanguageCode::kEnUs);
+  EXPECT_EQ(50, test_api->GetDictationSodaDownloadProgress());
+  // If SODA download fails, the API will be called with a value of 0.
+  soda_installer()->NotifySodaErrorForTesting();
+  EXPECT_EQ(0, test_api->GetDictationSodaDownloadProgress());
+  // Reset to a non-zero value.
+  soda_installer()->NotifyOnSodaLanguagePackProgressForTesting(
+      70, speech::LanguageCode::kEnUs);
+  EXPECT_EQ(70, test_api->GetDictationSodaDownloadProgress());
+  // If SODA download succeeds, the API will be called with a value of 100.
+  soda_installer()->NotifySodaInstalledForTesting();
+  EXPECT_EQ(100, test_api->GetDictationSodaDownloadProgress());
+}
+
 enum DictationDialogTestVariant {
   kOfflineEnabledAndAvailable,
   kOfflineEnabledAndUnavailable,

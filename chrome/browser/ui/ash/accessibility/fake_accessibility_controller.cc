@@ -98,7 +98,7 @@ void FakeAccessibilityController::
 
 void FakeAccessibilityController::
     UpdateDictationButtonOnSpeechRecognitionDownloadChanged(
-        bool download_in_progress) {}
+        int download_progress) {}
 
 void FakeAccessibilityController::
     ShowSpeechRecognitionDownloadNotificationForDictation(
