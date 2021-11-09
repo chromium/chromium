@@ -125,6 +125,11 @@ const base::Feature kAssistMultiWord{"AssistMultiWord",
 const base::Feature kAssistMultiWordExpanded{"AssistMultiWordExpanded",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to enable lacros support for the assistive multi word
+// suggestions feature.
+const base::Feature kAssistMultiWordLacrosSupport{
+    "AssistMultiWordLacrosSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to enable assistive personal information.
 const base::Feature kAssistPersonalInfo{"AssistPersonalInfo",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

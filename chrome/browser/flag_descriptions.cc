@@ -4760,6 +4760,11 @@ const char kImeAssistMultiWordExpandedName[] =
 const char kImeAssistMultiWordExpandedDescription[] =
     "Enable expanded assistive multi word suggestions for native IME";
 
+const char kImeAssistMultiWordLacrosSupportName[] =
+    "Multi word suggestions lacros support";
+const char kImeAssistMultiWordLacrosSupportDescription[] =
+    "Enable lacros support for assistive multi word suggestions in native IME";
+
 const char kImeAssistPersonalInfoName[] = "Enable assistive personal info";
 const char kImeAssistPersonalInfoDescription[] =
     "Enable auto-complete suggestions on personal infomation for native IME.";

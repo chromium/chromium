@@ -2742,6 +2742,9 @@ extern const char kImeAssistMultiWordDescription[];
 extern const char kImeAssistMultiWordExpandedName[];
 extern const char kImeAssistMultiWordExpandedDescription[];
 
+extern const char kImeAssistMultiWordLacrosSupportName[];
+extern const char kImeAssistMultiWordLacrosSupportDescription[];
+
 extern const char kImeAssistPersonalInfoName[];
 extern const char kImeAssistPersonalInfoDescription[];
 
