@@ -328,6 +328,21 @@ void RenderWidgetHostViewChildFrame::SetDisplayFeatureForTesting(
   NOTREACHED();
 }
 
+void RenderWidgetHostViewChildFrame::NotifyHostAndDelegateOnWasShown(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewChildFrame::RequestPresentationTimeFromHostOrDelegate(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewChildFrame::
+    CancelPresentationTimeRequestForHostAndDelegate() {
+  NOTREACHED();
+}
+
 gfx::Size RenderWidgetHostViewChildFrame::GetCompositorViewportPixelSize() {
   if (frame_connector_)
     return frame_connector_->local_frame_size_in_pixels();

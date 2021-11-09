@@ -418,6 +418,13 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void WasShown(blink::mojom::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request);
 
+  // Called to request the presentation time for the next frame or cancel any
+  // requests when the RenderWidget's visibility state is not changing. If the
+  // visibility state is changing call WasHidden or WasShown instead.
+  void RequestPresentationTimeForNextFrame(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request);
+  void CancelPresentationTimeRequest();
+
 #if defined(OS_ANDROID)
   // Set the importance of widget. The importance is passed onto
   // RenderProcessHost which aggregates importance of all of its widgets.
@@ -1115,12 +1122,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void AddPendingUserActivation(const blink::WebInputEvent& event);
   void ClearPendingUserActivation();
 
-  // Calls the pending blink::mojom::Widget::WasShown.
-  void RunPendingWasShown(base::TimeTicks show_request_timestamp,
-                          bool is_evicted,
-                          blink::mojom::RecordContentToVisibleTimeRequestPtr
-                              record_tab_switch_time_request);
-
   // An expiry time for resetting the pending_user_activation_timer_.
   static const base::TimeDelta kActivationNotificationExpireTime;
 
@@ -1386,7 +1387,25 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   InputRouterImpl::RequestMouseLockCallback request_mouse_callback_;
 
-  base::OnceClosure pending_show_closure_;
+  // Parameters to pass to blink::mojom::Widget::WasShown after
+  // `waiting_for_init_` becomes true. These are stored in a struct instead of
+  // storing a callback so that they can be updated if
+  // RequestPresentationTimeForNextFrame is called while waiting.
+  struct PendingShowParams {
+    PendingShowParams(base::TimeTicks show_request_timestamp,
+                      bool is_evicted,
+                      blink::mojom::RecordContentToVisibleTimeRequestPtr
+                          visible_time_request);
+    ~PendingShowParams();
+
+    PendingShowParams(const PendingShowParams&) = delete;
+    PendingShowParams& operator=(const PendingShowParams&) = delete;
+
+    base::TimeTicks show_request_timestamp;
+    bool is_evicted;
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request;
+  };
+  absl::optional<PendingShowParams> pending_show_params_;
 
   // If this is initialized with a frame this member will be valid and
   // can be used to send messages directly to blink.

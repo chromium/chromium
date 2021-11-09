@@ -982,4 +982,63 @@ bool RenderWidgetHostViewBase::IsHTMLFormPopup() const {
   return false;
 }
 
+void RenderWidgetHostViewBase::OnShowWithPageVisibility(
+    PageVisibilityState page_visibility) {
+  auto* visible_time_request_trigger = host_->GetVisibleTimeRequestTrigger();
+  // The only way this should be null is if there is no RenderWidgetHostView.
+  DCHECK(visible_time_request_trigger);
+
+  // NB: don't call visible_time_request_trigger->TakeRequest() unless the
+  // request will be used. If it isn't used here it must be left in the trigger
+  // for the next call.
+
+  if (!visible_time_request_trigger->is_tab_switch_metrics2_feature_enabled()) {
+    // Legacy path ignores `page_visibiity` so that the semantic of the older
+    // metric doesn't change.
+    if (host_->is_hidden()) {
+      NotifyHostAndDelegateOnWasShown(
+          visible_time_request_trigger->TakeRequest());
+    }
+    return;
+  }
+
+  const bool web_contents_is_visible =
+      page_visibility == PageVisibilityState::kVisible;
+
+  if (host_->is_hidden()) {
+    // If the WebContents is becoming visible, ask the compositor to report the
+    // visibility time for metrics. Otherwise the widget is being rendered even
+    // though the WebContents is hidden or occluded, for example due to being
+    // captured, so it should not be included in visibility time metrics.
+    NotifyHostAndDelegateOnWasShown(
+        web_contents_is_visible ? visible_time_request_trigger->TakeRequest()
+                                : nullptr);
+    return;
+  }
+
+  // `page_visibility` changed while the widget remains visible (kVisible ->
+  // kHiddenButPainting or vice versa). Nothing to do except update the
+  // visible time request, if any.
+  if (web_contents_is_visible) {
+    // The widget is already rendering, but now the WebContents is becoming
+    // visible, so send any visibility time request to the compositor now.
+    if (auto visible_time_request =
+            visible_time_request_trigger->TakeRequest()) {
+      RequestPresentationTimeFromHostOrDelegate(
+          std::move(visible_time_request));
+    }
+    return;
+  }
+
+  // The widget should keep rendering but the WebContents is no longer
+  // visible. If the compositor didn't already report the visibility time,
+  // it's too late. (For example, if the WebContents is being captured and
+  // was put in the foreground and then quickly hidden again before the
+  // compositor submitted a frame. The compositor will keep submitting
+  // frames for the capture but they should not be included in the
+  // visibility metrics.)
+  CancelPresentationTimeRequestForHostAndDelegate();
+  return;
+}
+
 }  // namespace content

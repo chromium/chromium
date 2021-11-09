@@ -402,6 +402,11 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   absl::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
+  void NotifyHostAndDelegateOnWasShown(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr) final;
+  void RequestPresentationTimeFromHostOrDelegate(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr) final;
+  void CancelPresentationTimeRequestForHostAndDelegate() final;
 
  private:
   friend class RenderWidgetHostViewAndroidTest;

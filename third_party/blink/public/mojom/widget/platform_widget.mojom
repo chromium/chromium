@@ -108,12 +108,25 @@ interface Widget {
 
 
   // Informs the widget that it was hidden. This allows it to reduce its
-  // resource utilization.
+  // resource utilization, and will cancel any pending
+  // RecordContentToVisibleTimeRequest that was set with WasShown or
+  // RequestPresentationTimeForNextFrame.
   WasHidden();
 
   // Tells the render view that it is no longer hidden (see WasHidden).
   WasShown(mojo_base.mojom.TimeTicks show_request_timestamp,
            bool was_evicted,
            RecordContentToVisibleTimeRequest? record_tab_switch_time_request);
+
+  // Asks the render view to report the time its next frame is presented to
+  // the compositor. If the view is not visible this will do nothing.
+  RequestPresentationTimeForNextFrame(
+    mojo_base.mojom.TimeTicks show_request_timestamp,
+    RecordContentToVisibleTimeRequest visible_time_request);
+
+  // Cancels any pending RecordContentToVisibleTimeRequest that was set with
+  // WasShown or RequestPresentationTimeForNextFrame. If there are none this
+  // will do nothing.
+  CancelPresentationTimeRequest();
 };
 

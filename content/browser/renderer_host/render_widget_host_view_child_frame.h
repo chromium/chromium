@@ -32,6 +32,7 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -243,6 +244,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   absl::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
+  void NotifyHostAndDelegateOnWasShown(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr) final;
+  void RequestPresentationTimeFromHostOrDelegate(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr) final;
+  void CancelPresentationTimeRequestForHostAndDelegate() final;
 
   void StopFlingingIfNecessary(
       const blink::WebGestureEvent& event,

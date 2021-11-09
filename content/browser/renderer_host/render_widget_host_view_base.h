@@ -574,6 +574,42 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   virtual bool HasFallbackSurface() const;
 
+  // Checks the combination of RenderWidgetHostImpl hidden state and
+  // `page_visibility` and calls NotifyHostAndDelegateOnWasShown,
+  // RequestPresentationTimeFromHostOrDelegate or
+  // CancelPresentationTimeRequestForHostAndDelegate as appropriate.
+  //
+  // This starts and stops tab switch latency measurements as needed so most
+  // platforms should call this from ShowWithVisibility. Android does not
+  // implement tab switch latency measurements so it calls
+  // RenderWidgetHostImpl::WasShown and DelegatedFrameHost::WasShown directly
+  // instead.
+  void OnShowWithPageVisibility(PageVisibilityState page_visibility);
+
+  // Each platform should override this to call RenderWidgetHostImpl::WasShown
+  // and DelegatedFrameHost::WasShown, and do any platform-specific bookkeeping
+  // needed.  The given `visible_time_request`, if any, should be passed to
+  // DelegatedFrameHost::WasShown if there is a saved frame or
+  // RenderWidgetHostImpl if not.
+  virtual void NotifyHostAndDelegateOnWasShown(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr
+          visible_time_request) = 0;
+
+  // Each platform should override this to pass `visible_time_request`, which
+  // will never be null, to
+  // DelegatedFrameHost::RequestPresentationTimeForNextFrame if there is a
+  // saved frame or RenderWidgetHostImpl::RequestPresentationTimeForNextFrame
+  // if not, after doing and platform-specific bookkeeping needed.
+  virtual void RequestPresentationTimeFromHostOrDelegate(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr
+          visible_time_request) = 0;
+
+  // Each platform should override this to call
+  // DelegatedFrameHost::CancelPresentationTimeRequest and
+  // RenderWidgetHostImpl::CancelPresentationTimeRequest, after doing and
+  // platform-specific bookkeeping needed.
+  virtual void CancelPresentationTimeRequestForHostAndDelegate() = 0;
+
   // The model object. Access is protected to allow access to
   // RenderWidgetHostViewChildFrame.
   RenderWidgetHostImpl* host_;

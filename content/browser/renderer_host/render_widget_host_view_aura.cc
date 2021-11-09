@@ -55,6 +55,7 @@
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -312,7 +313,9 @@ RenderWidgetHostViewAura::RenderWidgetHostViewAura(
 #endif
       device_scale_factor_(0.0f),
       event_handler_(new RenderWidgetHostViewEventHandler(host(), this, this)),
-      frame_sink_id_(host()->GetFrameSinkId()) {
+      frame_sink_id_(host()->GetFrameSinkId()),
+      visibility_(host()->is_hidden() ? Visibility::HIDDEN
+                                      : Visibility::VISIBLE) {
   // CreateDelegatedFrameHostClient() and CreateAuraWindow() assume that the
   // FrameSinkId is valid. RenderWidgetHostImpl::GetFrameSinkId() always returns
   // a valid FrameSinkId.
@@ -552,18 +555,25 @@ bool RenderWidgetHostViewAura::IsShowing() {
 }
 
 void RenderWidgetHostViewAura::WasUnOccluded() {
+  ShowImpl(PageVisibilityState::kVisible);
+}
+
+void RenderWidgetHostViewAura::ShowImpl(PageVisibilityState page_visibility) {
+  // OnShowWithPageVisibility will not call NotifyHostAndDelegateOnWasShown,
+  // which updates `visibility_`, unless the host is hidden. Make sure no update
+  // is needed.
+  DCHECK(host_->is_hidden() || visibility_ == Visibility::VISIBLE);
+  OnShowWithPageVisibility(PageVisibilityState::kVisible);
+}
+
+void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state) {
   DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+  DCHECK(host_->is_hidden());
+  DCHECK_NE(visibility_, Visibility::VISIBLE);
 
   const Visibility old_visibility = visibility_;
   visibility_ = Visibility::VISIBLE;
-
-  if (!host_->is_hidden())
-    return;
-
-  auto* visible_time_request_trigger = host_->GetVisibleTimeRequestTrigger();
-  // The only way this should be null is if there is no RenderWidgetHostView.
-  DCHECK(visible_time_request_trigger);
-  auto tab_switch_start_state = visible_time_request_trigger->TakeRequest();
 
   if (old_visibility == Visibility::OCCLUDED) {
     // Add an unocclusion timing request. If `tab_switch_start_state` is null,
@@ -655,6 +665,38 @@ void RenderWidgetHostViewAura::HideImpl() {
 void RenderWidgetHostViewAura::WasOccluded() {
   visibility_ = Visibility::OCCLUDED;
   HideImpl();
+}
+
+void RenderWidgetHostViewAura::RequestPresentationTimeFromHostOrDelegate(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+  DCHECK(!host_->is_hidden());
+  DCHECK_EQ(visibility_, Visibility::VISIBLE);
+  DCHECK(visible_time_request);
+
+  bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
+
+  // No need to check for saved frames for the case of bfcache restore.
+  if (visible_time_request->show_reason_bfcache_restore || !has_saved_frame) {
+    host()->RequestPresentationTimeForNextFrame(visible_time_request.Clone());
+  }
+
+  // If the frame for the renderer is already available, then the
+  // tab-switching time is the presentation time for the browser-compositor.
+  if (has_saved_frame) {
+    delegated_frame_host_->RequestPresentationTimeForNextFrame(
+        std::move(visible_time_request));
+  }
+}
+
+void RenderWidgetHostViewAura::
+    CancelPresentationTimeRequestForHostAndDelegate() {
+  DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
+  DCHECK(!host_->is_hidden());
+  DCHECK_EQ(visibility_, Visibility::VISIBLE);
+
+  host()->CancelPresentationTimeRequest();
+  delegated_frame_host_->CancelPresentationTimeRequest();
 }
 
 bool RenderWidgetHostViewAura::ShouldShowStaleContentOnEviction() {
@@ -759,7 +801,7 @@ void RenderWidgetHostViewAura::ShowWithVisibility(
   }
 
   window_->Show();
-  WasUnOccluded();
+  ShowImpl(page_visibility);
 #if defined(OS_WIN)
   if (page_visibility != PageVisibilityState::kVisible &&
       legacy_render_widget_host_HWND_) {

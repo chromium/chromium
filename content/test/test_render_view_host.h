@@ -18,6 +18,7 @@
 #include "components/viz/host/host_frame_sink_client.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/public/common/page_visibility_state.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -141,12 +142,18 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   absl::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
+  void NotifyHostAndDelegateOnWasShown(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr) override;
+  void RequestPresentationTimeFromHostOrDelegate(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr) override;
+  void CancelPresentationTimeRequestForHostAndDelegate() override;
 
   viz::FrameSinkId frame_sink_id_;
 
  private:
   bool is_showing_;
   bool is_occluded_;
+  PageVisibilityState page_visibility_ = PageVisibilityState::kHidden;
   ui::DummyTextInputClient text_input_client_;
   WebCursor last_cursor_;
 

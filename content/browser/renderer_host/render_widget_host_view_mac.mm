@@ -46,10 +46,12 @@
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/page_visibility_state.h"
 #include "skia/ext/platform_canvas.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #import "ui/base/clipboard/clipboard_util_mac.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
@@ -425,11 +427,11 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
 }
 
 void RenderWidgetHostViewMac::ShowWithVisibility(
-    PageVisibilityState /*page_visibility*/) {
+    PageVisibilityState page_visibility) {
   is_visible_ = true;
   ns_view_->SetVisible(is_visible_);
   browser_compositor_->SetViewVisible(is_visible_);
-  WasUnOccluded();
+  OnShowWithPageVisibility(page_visibility);
 }
 
 void RenderWidgetHostViewMac::Hide() {
@@ -440,8 +442,12 @@ void RenderWidgetHostViewMac::Hide() {
 }
 
 void RenderWidgetHostViewMac::WasUnOccluded() {
-  if (!host()->is_hidden())
-    return;
+  OnShowWithPageVisibility(PageVisibilityState::kVisible);
+}
+
+void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state) {
+  DCHECK(host_->is_hidden());
 
   // SetRenderWidgetHostIsHidden may cause a state transition that switches to
   // a new instance of DelegatedFrameHost and calls WasShown, which causes
@@ -451,11 +457,6 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
       browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame();
 
   browser_compositor_->SetRenderWidgetHostIsHidden(false);
-
-  auto* visible_time_request_trigger = host()->GetVisibleTimeRequestTrigger();
-  // The only way this should be null is if there is no RenderWidgetHostView.
-  DCHECK(visible_time_request_trigger);
-  auto tab_switch_start_state = visible_time_request_trigger->TakeRequest();
 
   const bool renderer_should_record_presentation_time = !has_saved_frame;
   host()->WasShown(renderer_should_record_presentation_time
@@ -474,6 +475,31 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
       record_presentation_time
           ? std::move(tab_switch_start_state)
           : blink::mojom::RecordContentToVisibleTimeRequestPtr());
+}
+
+void RenderWidgetHostViewMac::RequestPresentationTimeFromHostOrDelegate(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  DCHECK(!host_->is_hidden());
+  DCHECK(visible_time_request);
+
+  // No state transition here so don't use
+  // has_saved_frame_before_state_transition.
+  if (browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame()) {
+    // If the frame for the renderer is already available, then the
+    // tab-switching time is the presentation time for the browser-compositor.
+    browser_compositor_->GetDelegatedFrameHost()
+        ->RequestPresentationTimeForNextFrame(std::move(visible_time_request));
+  } else {
+    host()->RequestPresentationTimeForNextFrame(
+        std::move(visible_time_request));
+  }
+}
+
+void RenderWidgetHostViewMac::
+    CancelPresentationTimeRequestForHostAndDelegate() {
+  DCHECK(!host_->is_hidden());
+  host()->CancelPresentationTimeRequest();
+  browser_compositor_->GetDelegatedFrameHost()->CancelPresentationTimeRequest();
 }
 
 void RenderWidgetHostViewMac::WasOccluded() {

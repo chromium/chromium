@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 #include "ui/base/cocoa/remote_layer_api.h"
@@ -525,6 +526,13 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   absl::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
+  void NotifyHostAndDelegateOnWasShown(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
+      final;
+  void RequestPresentationTimeFromHostOrDelegate(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
+      final;
+  void CancelPresentationTimeRequestForHostAndDelegate() final;
 
   // Gets a textual view of the page's contents, and passes it to the callback
   // provided.

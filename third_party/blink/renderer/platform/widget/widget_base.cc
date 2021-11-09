@@ -462,6 +462,33 @@ void WidgetBase::WasShown(base::TimeTicks show_request_timestamp,
   client_->WasShown(was_evicted);
 }
 
+void WidgetBase::RequestPresentationTimeForNextFrame(
+    base::TimeTicks show_request_timestamp,
+    mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  DCHECK(visible_time_request);
+  if (is_hidden_)
+    return;
+
+  // Tab was shown while widget was already painting, eg. due to being
+  // captured.
+  LayerTreeHost()->RequestPresentationTimeForNextFrame(
+      tab_switch_time_recorder_.TabWasShown(
+          false /* has_saved_frames */, visible_time_request->event_start_time,
+          visible_time_request->destination_is_loaded,
+          visible_time_request->show_reason_tab_switching,
+          visible_time_request->show_reason_unoccluded,
+          visible_time_request->show_reason_bfcache_restore,
+          show_request_timestamp));
+}
+
+void WidgetBase::CancelPresentationTimeRequest() {
+  if (is_hidden_)
+    return;
+
+  // Tab was hidden while widget keeps painting, eg. due to being captured.
+  tab_switch_time_recorder_.TabWasHidden();
+}
+
 void WidgetBase::ApplyViewportChanges(
     const cc::ApplyViewportChangesArgs& args) {
   client_->ApplyViewportChanges(args);

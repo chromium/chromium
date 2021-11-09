@@ -116,6 +116,14 @@ class CONTENT_EXPORT DelegatedFrameHost
                 const gfx::Size& dip_size,
                 blink::mojom::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request);
+
+  // Called to request the presentation time for the next frame or cancel any
+  // requests when the RenderWidget's visibility state is not changing. If the
+  // visibility state is changing call WasHidden or WasShown instead.
+  void RequestPresentationTimeForNextFrame(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request);
+  void CancelPresentationTimeRequest();
+
   void EmbedSurface(const viz::LocalSurfaceId& local_surface_id,
                     const gfx::Size& dip_size,
                     cc::DeadlinePolicy deadline_policy);

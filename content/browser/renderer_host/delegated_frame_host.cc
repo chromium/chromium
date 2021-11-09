@@ -106,6 +106,24 @@ void DelegatedFrameHost::WasShown(
   }
 }
 
+void DelegatedFrameHost::RequestPresentationTimeForNextFrame(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+  DCHECK(visible_time_request);
+  if (!compositor_)
+    return;
+  // Tab was shown while widget was already painting, eg. due to being
+  // captured.
+  compositor_->RequestPresentationTimeForNextFrame(
+      tab_switch_time_recorder_.TabWasShown(true /* has_saved_frames */,
+                                            std::move(visible_time_request),
+                                            base::TimeTicks::Now()));
+}
+
+void DelegatedFrameHost::CancelPresentationTimeRequest() {
+  // Tab was hidden while widget keeps painting, eg. due to being captured.
+  tab_switch_time_recorder_.TabWasHidden();
+}
+
 bool DelegatedFrameHost::HasSavedFrame() const {
   return frame_evictor_->has_surface();
 }

@@ -2701,6 +2701,30 @@ void RenderWidgetHostViewAndroid::SetDisplayFeatureForTesting(
   NOTREACHED();
 }
 
+void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+  // ShowWithVisibility calls ShowInternal instead of
+  // RenderWidgetHostViewBase::OnShowWithPageVisibility so nothing should
+  // call this.
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewAndroid::RequestPresentationTimeFromHostOrDelegate(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+  // ShowWithVisibility calls ShowInternal instead of
+  // RenderWidgetHostViewBase::OnShowWithPageVisibility so nothing should
+  // call this.
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewAndroid::
+    CancelPresentationTimeRequestForHostAndDelegate() {
+  // ShowWithVisibility calls ShowInternal instead of
+  // RenderWidgetHostViewBase::OnShowWithPageVisibility so nothing should
+  // call this.
+  NOTREACHED();
+}
+
 void RenderWidgetHostViewAndroid::HandleSwipeToMoveCursorGestureAck(
     const blink::WebGestureEvent& event) {
   if (!touch_selection_controller_ || !selection_popup_controller_) {
