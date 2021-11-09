@@ -28468,18 +28468,18 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'items': [
         {
           'value': True,
-          'caption': 'Prompt the user to select the client certificate whenever the auto-selection policy matches multiple certificates.',
+          'caption': 'Prompt the user to select the client certificate whenever the auto-selection policy matches multiple certificates on the sign-in screen',
         },
         {
           'value': False,
-          'caption': 'Do not prompt the user to select a client certificate on the sign-in screen.',
+          'caption': 'Do not prompt the user to select a client certificate on the sign-in screen',
         },
       ],
       'default': False,
       'example_value': True,
       'id': 904,
       'tags': [],
-      'caption': '''Prompt for the client certificate when multiple certificates match on the sign-in screen.''',
+      'caption': '''Prompt when multiple certificates match on the sign-in screen''',
       'desc': '''This policy controls whether the user is prompted to select a client certificate on the sign-in screen in the frame hosting the SAML flow when more than one certificate matches <ph name="DEVICE_LOGIN_SCREEN_AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME">DeviceLoginScreenAutoSelectCertificateForUrls</ph>.
       If this policy is set to Enabled, the user is asked to select the client certificate whenever the auto-selection policy matches multiple certificates.
       If this policy is set to Disabled or not set, the user is never prompted to select a client certificate on the sign-in screen.
