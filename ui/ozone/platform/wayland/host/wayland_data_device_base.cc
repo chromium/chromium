@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -50,10 +52,11 @@ bool WaylandDataDeviceBase::ReadSelectionData(
 
   connection_->ScheduleFlush();
 
-  // Schedule data reading to be done asynchronously, otherwise it can block
-  // awaiting data to be sent to pipe.
-  base::ThreadTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  // Schedule data reading to be done asynchronously in the thread pool as it
+  // may take some time and blocking the UI thread for IO is undesirable.
+  // TODO(crbug.com/913422): Use USER_VISIBLE once Clipboard becomes async.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce(&WaylandDataDeviceBase::ReadFromFD, base::Unretained(this),
                      std::move(fd)),
       std::move(callback));
