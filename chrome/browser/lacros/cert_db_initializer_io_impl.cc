@@ -220,6 +220,7 @@ void CertDbInitializerIOImpl::InitializeReadOnlyNssCertDatabase(
   DCHECK(!pending_public_slot_);
   DCHECK(!nss_cert_database_);
 
+  crypto::EnsureNSSInit();
   nss_cert_database_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
       /*public_slot=*/crypto::ScopedPK11Slot(PK11_GetInternalKeySlot()),
       /*private_slot=*/crypto::ScopedPK11Slot(PK11_GetInternalKeySlot()));
