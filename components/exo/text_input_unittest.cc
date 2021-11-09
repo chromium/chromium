@@ -248,11 +248,14 @@ TEST_F(TextInputTest, CaretBounds) {
 }
 
 TEST_F(TextInputTest, CompositionText) {
+  EXPECT_FALSE(text_input()->HasCompositionText());
   SetCompositionText(u"composition");
+  EXPECT_TRUE(text_input()->HasCompositionText());
 
   ui::CompositionText empty;
   EXPECT_CALL(*delegate(), SetCompositionText(empty)).Times(1);
   text_input()->ClearCompositionText();
+  EXPECT_FALSE(text_input()->HasCompositionText());
 }
 
 TEST_F(TextInputTest, CompositionTextEmpty) {
@@ -288,6 +291,7 @@ TEST_F(TextInputTest, Commit) {
   EXPECT_CALL(*delegate(), Commit(s)).Times(1);
   text_input()->InsertText(
       s, ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_FALSE(text_input()->HasCompositionText());
 }
 
 TEST_F(TextInputTest, InsertChar) {

@@ -141,6 +141,7 @@ void TextInput::InsertText(const std::u16string& text,
                            InsertTextCursorBehavior cursor_behavior) {
   // TODO(crbug.com/1155331): Handle |cursor_behavior| correctly.
   delegate_->Commit(text);
+  composition_ = ui::CompositionText();
 }
 
 void TextInput::InsertChar(const ui::KeyEvent& event) {
