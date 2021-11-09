@@ -10,7 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/wm/desks/close_desk_button.h"
+#include "ash/style/button_style.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -84,9 +84,10 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
                           base::Unretained(this)),
       this));
   desk_name_view_ = AddChildView(std::move(desk_name_view));
-  close_desk_button_ =
-      AddChildView(std::make_unique<CloseDeskButton>(base::BindRepeating(
-          &DeskMiniView::OnCloseButtonPressed, base::Unretained(this))));
+  close_desk_button_ = AddChildView(std::make_unique<CloseButton>(
+      base::BindRepeating(&DeskMiniView::OnCloseButtonPressed,
+                          base::Unretained(this)),
+      CloseButton::Type::kSmall));
 
   UpdateCloseButtonVisibility();
   UpdateBorderColor();
@@ -170,11 +171,10 @@ void DeskMiniView::Layout() {
   desk_preview_->SetBoundsRect(preview_bounds);
 
   LayoutDeskNameView(preview_bounds);
+  const int close_button_size = close_desk_button_->GetPreferredSize().width();
   close_desk_button_->SetBounds(
-      preview_bounds.right() - CloseDeskButton::kCloseButtonSize -
-          kCloseButtonMargin,
-      kCloseButtonMargin, CloseDeskButton::kCloseButtonSize,
-      CloseDeskButton::kCloseButtonSize);
+      preview_bounds.right() - close_button_size - kCloseButtonMargin,
+      kCloseButtonMargin, close_button_size, close_button_size);
 }
 
 gfx::Size DeskMiniView::CalculatePreferredSize() const {

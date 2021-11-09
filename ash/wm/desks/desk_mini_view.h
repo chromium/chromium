@@ -18,7 +18,7 @@
 
 namespace ash {
 
-class CloseDeskButton;
+class CloseButton;
 class DeskNameView;
 class DeskPreviewView;
 class DesksBarView;
@@ -55,9 +55,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   DeskNameView* desk_name_view() { return desk_name_view_; }
 
-  const CloseDeskButton* close_desk_button() const {
-    return close_desk_button_;
-  }
+  const CloseButton* close_desk_button() const { return close_desk_button_; }
 
   DesksBarView* owner_bar() { return owner_bar_; }
   const DeskPreviewView* desk_preview() const { return desk_preview_; }
@@ -151,7 +149,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   DeskNameView* desk_name_view_;
 
   // The close button that shows on hover.
-  CloseDeskButton* close_desk_button_;
+  CloseButton* close_desk_button_;
 
   // We force showing the close button when the mini_view is long pressed or
   // tapped using touch gestures.

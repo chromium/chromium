@@ -6,14 +6,18 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/rect_based_targeting_utils.h"
 
 namespace ash {
 
@@ -24,6 +28,21 @@ constexpr int kPillButtonHorizontalSpacing = 16;
 constexpr int kPillButtonMinimumWidth = 56;
 constexpr int kIconSize = 20;
 constexpr int kIconPillButtonImageLabelSpacingDp = 8;
+
+constexpr int kSmallButtonSize = 16;
+constexpr int kMediumButtonSize = 24;
+constexpr int kLargeButtonSize = 32;
+
+int GetCloseButtonSize(CloseButton::Type type) {
+  switch (type) {
+    case CloseButton::Type::kSmall:
+      return kSmallButtonSize;
+    case CloseButton::Type::kMedium:
+      return kMediumButtonSize;
+    case CloseButton::Type::kLarge:
+      return kLargeButtonSize;
+  }
+}
 
 // Returns true it is a floating type of PillButton, which is a type of
 // PillButton without a background.
@@ -83,6 +102,78 @@ int GetPillButtonWidth(bool has_icon) {
 }
 
 }  // namespace
+
+CloseButton::CloseButton(PressedCallback callback, CloseButton::Type type)
+    : ImageButton(std::move(callback)), type_(type) {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+
+  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
+  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                   /*highlight_on_hover=*/true,
+                                   /*highlight_on_focus=*/false);
+
+  // Add a rounded rect background. The rounding will be half the button size so
+  // it is a circle.
+  SetBackground(views::CreateRoundedRectBackground(
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80),
+      GetCloseButtonSize(type_) / 2));
+
+  SetFocusPainter(nullptr);
+  SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+  views::InstallCircleHighlightPathGenerator(this);
+}
+
+CloseButton::~CloseButton() = default;
+
+bool CloseButton::DoesIntersectScreenRect(const gfx::Rect& screen_rect) const {
+  gfx::Point origin = screen_rect.origin();
+  View::ConvertPointFromScreen(this, &origin);
+  return DoesIntersectRect(this, gfx::Rect(origin, screen_rect.size()));
+}
+
+void CloseButton::OnThemeChanged() {
+  views::ImageButton::OnThemeChanged();
+  auto* color_provider = AshColorProvider::Get();
+  const SkColor enabled_icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonIconColor);
+  SetImage(views::Button::STATE_NORMAL,
+           gfx::CreateVectorIcon(kCloseButtonIcon, enabled_icon_color));
+  background()->SetNativeControlColor(color_provider->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80));
+
+  // TODO(minch): Add background blur as per spec. Background blur is quite
+  // heavy, and we may have many close buttons showing at a time. They'll be
+  // added separately so its easier to monitor performance.
+
+  StyleUtil::ConfigureInkDropAttributes(this, StyleUtil::kBaseColor |
+                                                  StyleUtil::kInkDropOpacity |
+                                                  StyleUtil::kHighlightOpacity);
+}
+
+gfx::Size CloseButton::CalculatePreferredSize() const {
+  const int size = GetCloseButtonSize(type_);
+  return gfx::Size(size, size);
+}
+
+bool CloseButton::DoesIntersectRect(const views::View* target,
+                                    const gfx::Rect& rect) const {
+  DCHECK_EQ(target, this);
+  gfx::Rect button_bounds = target->GetLocalBounds();
+  const int button_size = GetCloseButtonSize(type_);
+  // Only increase the hittest area for touch events (which have a non-empty
+  // bounding box), not for mouse event.
+  if (!views::UsePointBasedTargeting(rect))
+    button_bounds.Inset(gfx::Insets(-button_size / 2, -button_size / 2));
+  return button_bounds.Intersects(rect);
+}
+
+BEGIN_METADATA(CloseButton, views::ImageButton)
+END_METADATA
 
 PillButton::PillButton(PressedCallback callback,
                        const std::u16string& text,
