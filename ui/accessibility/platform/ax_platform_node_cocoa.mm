@@ -1544,7 +1544,7 @@ bool IsAXSetter(SEL selector) {
   NSArray* children = [self AXChildren];
   if (_node->GetRole() == ax::mojom::Role::kMathMLRoot) {
     if ([children count] >= 1)
-      return [[NSArray arrayWithObjects:children[0], nil] autorelease];
+      return [NSArray arrayWithObjects:children[0], nil];
     return nil;
   }
   return children;
