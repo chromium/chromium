@@ -86,7 +86,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
@@ -668,7 +667,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1124336")
+    @DisabledTest(message = "https://crbug.com/1124336")
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabsWithThumbnail(mActivityTestRule, 2, 0, "about:blank");
