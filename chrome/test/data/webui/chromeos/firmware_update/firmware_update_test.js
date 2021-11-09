@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {fakeFirmwareUpdates} from 'chrome://accessory-update/fake_data.js';
 import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider.js';
 import {FirmwareUpdateAppElement} from 'chrome://accessory-update/firmware_update_app.js';
+import {DialogState} from 'chrome://accessory-update/firmware_update_dialog.js';
 import {UpdateProviderInterface} from 'chrome://accessory-update/firmware_update_types.js';
 import {getUpdateProvider, setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
@@ -61,6 +62,11 @@ export function firmwareUpdateAppTest() {
   function getNextButton(dialogElement) {
     return /** @type {!CrButtonElement} */ (
         dialogElement.querySelector('#nextButton'));
+  }
+
+  /** @return {!DialogState} */
+  function getDialogState() {
+    return page.shadowRoot.querySelector('firmware-update-dialog').dialogState;
   }
 
   test('LandingPageLoaded', () => {

@@ -4,6 +4,7 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import {fakeUpdateControllerTest} from './fake_update_controller_test.js';
 import {fakeUpdateProviderTest} from './fake_update_provider_test.js';
 import {firmwareUpdateDialogTest} from './firmware_update_dialog_test.js';
 import {firmwareUpdateAppTest} from './firmware_update_test.js';
@@ -17,6 +18,7 @@ function runSuite(suiteName, testFn) {
   suite(suiteName, testFn);
 }
 
+runSuite('FakeUpdateControllerTest', fakeUpdateControllerTest);
 runSuite('FakeUpdateProviderTest', fakeUpdateProviderTest);
 runSuite('FirmwareUpdateApp', firmwareUpdateAppTest);
 runSuite('FirmwareUpdateDialog', firmwareUpdateDialogTest);

@@ -4,8 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {fakeFirmwareUpdates} from './fake_data.js';
+import {FakeUpdateController} from './fake_update_controller.js';
 import {FakeUpdateProvider} from './fake_update_provider.js';
-import {UpdateProviderInterface} from './firmware_update_types.js';
+import {UpdateControllerInterface, UpdateProviderInterface} from './firmware_update_types.js';
 
 /**
  * @fileoverview
@@ -19,10 +20,22 @@ import {UpdateProviderInterface} from './firmware_update_types.js';
 let updateProvider = null;
 
 /**
+ * @type {?UpdateControllerInterface}
+ */
+let updateController = null;
+
+/**
  * @param {!UpdateProviderInterface} testProvider
  */
 export function setUpdateProviderForTesting(testProvider) {
   updateProvider = testProvider;
+}
+
+/**
+ * @param {!UpdateControllerInterface} testUpdateController
+ */
+export function setUpdateControllerForTesting(testUpdateController) {
+  updateController = testUpdateController;
 }
 
 /**
@@ -37,6 +50,14 @@ function setupFakeUpdateProvider() {
 }
 
 /**
+ * Sets up a FakeUpdateController to be used at runtime.
+ * TODO(michaelcheco): Remove once mojo bindings are implemented.
+ */
+function setupFakeUpdateController() {
+  setUpdateControllerForTesting(new FakeUpdateController());
+}
+
+/**
  * @return {!UpdateProviderInterface}
  */
 export function getUpdateProvider() {
@@ -47,4 +68,15 @@ export function getUpdateProvider() {
 
   assert(!!updateProvider);
   return updateProvider;
+}
+
+/** @return {!UpdateControllerInterface} */
+export function getUpdateController() {
+  if (!updateController) {
+    // TODO(michaelcheco): Instantiate a real mojo interface here.
+    setupFakeUpdateController();
+  }
+
+  assert(!!updateController);
+  return updateController;
 }

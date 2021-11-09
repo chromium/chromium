@@ -12,6 +12,7 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
+    ":fake_update_controller_test",
     ":fake_update_provider_test",
     ":firmware_update_dialog_test",
     ":firmware_update_test",
@@ -19,6 +20,14 @@ js_type_check("closure_compile") {
     ":peripheral_updates_list_test",
     ":update_card_test",
   ]
+}
+
+js_library("fake_update_controller_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/firmware_update_ui/resources:fake_update_controller",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("fake_update_provider_test") {

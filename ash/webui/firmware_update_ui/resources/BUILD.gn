@@ -24,6 +24,7 @@ generate_grd("build_grd") {
   input_files = [
     "app_icon_192.png",
     "fake_data.js",
+    "fake_update_controller.js",
     "fake_update_provider.js",
     "firmware_update_types.js",
     "index.html",
@@ -41,6 +42,7 @@ js_type_check("closure_compile") {
   closure_flags = default_closure_args
   deps = [
     ":fake_data",
+    ":fake_update_controller",
     ":fake_update_provider",
     ":firmware_update_app",
     ":firmware_update_types",
@@ -52,6 +54,9 @@ js_type_check("closure_compile") {
 
 js_library("fake_data") {
   deps = [ ":firmware_update_types" ]
+}
+
+js_library("fake_update_controller") {
 }
 
 js_library("fake_update_provider") {
@@ -82,6 +87,7 @@ js_library("firmware_update_types") {
 js_library("mojo_interface_provider") {
   deps = [
     ":fake_data",
+    ":fake_update_controller",
     ":fake_update_provider",
     ":firmware_update_types",
     "//ui/webui/resources/js:cr.m",

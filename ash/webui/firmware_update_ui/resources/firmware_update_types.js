@@ -56,3 +56,6 @@ export let ObservePeripheralUpdatesFunction;
  * }}
  */
 export let UpdateProviderInterface;
+
+/** @typedef {Object} */
+export let UpdateControllerInterface;
