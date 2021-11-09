@@ -268,7 +268,7 @@ class GuestOsRegistryService : public KeyedService {
   // icon loading code.
   void ApplyContainerBadge(SkColor badge_color,
                            apps::LoadIconCallback callback,
-                           std::unique_ptr<apps::IconValue> icon);
+                           apps::IconValuePtr icon);
 
   // Owned by the Profile.
   Profile* const profile_;

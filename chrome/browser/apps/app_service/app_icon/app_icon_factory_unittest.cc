@@ -73,7 +73,7 @@ void LoadDefaultIcon(gfx::ImageSkia& output_image_skia) {
       false /* is_placeholder_icon */, apps::IconEffects::kNone,
       base::BindOnce(
           [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
-             std::unique_ptr<apps::IconValue> icon) {
+             apps::IconValuePtr icon) {
             *image = icon->uncompressed;
             std::move(load_app_icon_callback).Run();
           },
@@ -119,19 +119,18 @@ class AppIconFactoryTest : public testing::Test {
 
   void SetUp() override { ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir()); }
 
-  void RunLoadIconFromFileWithFallback(
-      std::unique_ptr<apps::IconValue> fallback_response,
-      bool* callback_called,
-      bool* fallback_called,
-      std::unique_ptr<apps::IconValue>* result) {
+  void RunLoadIconFromFileWithFallback(apps::IconValuePtr fallback_response,
+                                       bool* callback_called,
+                                       bool* fallback_called,
+                                       apps::IconValuePtr* result) {
     *callback_called = false;
     *fallback_called = false;
 
     apps::LoadIconFromFileWithFallback(
         apps::IconType::kUncompressed, 200, GetPath(), apps::IconEffects::kNone,
         base::BindOnce(
-            [](bool* called, std::unique_ptr<apps::IconValue>* result,
-               base::OnceClosure quit, std::unique_ptr<apps::IconValue> icon) {
+            [](bool* called, apps::IconValuePtr* result, base::OnceClosure quit,
+               apps::IconValuePtr icon) {
               *called = true;
               *result = std::move(icon);
               std::move(quit).Run();
@@ -139,7 +138,7 @@ class AppIconFactoryTest : public testing::Test {
             base::Unretained(callback_called), base::Unretained(result),
             run_loop_.QuitClosure()),
         base::BindOnce(
-            [](bool* called, std::unique_ptr<apps::IconValue> response,
+            [](bool* called, apps::IconValuePtr response,
                apps::LoadIconCallback callback) {
               *called = true;
               std::move(callback).Run(std::move(response));
@@ -163,17 +162,16 @@ class AppIconFactoryTest : public testing::Test {
     return png_data_as_string;
   }
 
-  void RunLoadIconFromCompressedData(
-      const std::string png_data_as_string,
-      apps::IconType icon_type,
-      apps::IconEffects icon_effects,
-      std::unique_ptr<apps::IconValue>& output_icon) {
+  void RunLoadIconFromCompressedData(const std::string png_data_as_string,
+                                     apps::IconType icon_type,
+                                     apps::IconEffects icon_effects,
+                                     apps::IconValuePtr& output_icon) {
     apps::LoadIconFromCompressedData(
         icon_type, kSizeInDip, icon_effects, png_data_as_string,
         base::BindOnce(
-            [](std::unique_ptr<apps::IconValue>* result,
+            [](apps::IconValuePtr* result,
                base::OnceClosure load_app_icon_callback,
-               std::unique_ptr<apps::IconValue> icon) {
+               apps::IconValuePtr icon) {
               *result = std::move(icon);
               std::move(load_app_icon_callback).Run();
             },
@@ -206,15 +204,13 @@ class AppIconFactoryTest : public testing::Test {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<apps::IconValue> RunLoadIconFromResource(
-      apps::IconType icon_type,
-      apps::IconEffects icon_effects) {
+  apps::IconValuePtr RunLoadIconFromResource(apps::IconType icon_type,
+                                             apps::IconEffects icon_effects) {
     bool is_placeholder_icon = false;
-    std::unique_ptr<apps::IconValue> icon_value;
+    apps::IconValuePtr icon_value;
     apps::LoadIconFromResource(
         icon_type, kSizeInDip, IDR_LOGO_CROSTINI_DEFAULT, is_placeholder_icon,
-        icon_effects,
-        base::BindLambdaForTesting([&](std::unique_ptr<apps::IconValue> icon) {
+        icon_effects, base::BindLambdaForTesting([&](apps::IconValuePtr icon) {
           icon_value = std::move(icon);
           run_loop_.Quit();
         }));
@@ -253,9 +249,8 @@ TEST_F(AppIconFactoryTest, LoadFromFileSuccess) {
   const SkBitmap* bitmap = image.bitmap();
   cc::WritePNGFile(*bitmap, GetPath(), /*discard_transparency=*/false);
 
-  std::unique_ptr<apps::IconValue> fallback_response =
-      std::make_unique<apps::IconValue>();
-  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
+  auto fallback_response = std::make_unique<apps::IconValue>();
+  auto result = std::make_unique<apps::IconValue>();
   bool callback_called, fallback_called;
   RunLoadIconFromFileWithFallback(std::move(fallback_response),
                                   &callback_called, &fallback_called, &result);
@@ -272,13 +267,12 @@ TEST_F(AppIconFactoryTest, LoadFromFileFallback) {
   auto expect_image =
       gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(20, 20), 0.0f));
 
-  std::unique_ptr<apps::IconValue> fallback_response =
-      std::make_unique<apps::IconValue>();
+  auto fallback_response = std::make_unique<apps::IconValue>();
   fallback_response->icon_type = apps::IconType::kUncompressed;
   // Create a non-null image so we can check if we get the same image back.
   fallback_response->uncompressed = expect_image;
 
-  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
+  auto result = std::make_unique<apps::IconValue>();
   bool callback_called, fallback_called;
   RunLoadIconFromFileWithFallback(std::move(fallback_response),
                                   &callback_called, &fallback_called, &result);
@@ -289,9 +283,8 @@ TEST_F(AppIconFactoryTest, LoadFromFileFallback) {
 }
 
 TEST_F(AppIconFactoryTest, LoadFromFileFallbackFailure) {
-  std::unique_ptr<apps::IconValue> fallback_response =
-      std::make_unique<apps::IconValue>();
-  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
+  auto fallback_response = std::make_unique<apps::IconValue>();
+  auto result = std::make_unique<apps::IconValue>();
   bool callback_called, fallback_called;
   RunLoadIconFromFileWithFallback(std::move(fallback_response),
                                   &callback_called, &fallback_called, &result);
@@ -301,12 +294,12 @@ TEST_F(AppIconFactoryTest, LoadFromFileFallbackFailure) {
 }
 
 TEST_F(AppIconFactoryTest, LoadFromFileFallbackDoesNotReturn) {
-  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
+  auto result = std::make_unique<apps::IconValue>();
   bool callback_called = false, fallback_called = false;
 
   apps::LoadIconFromFileWithFallback(
       apps::IconType::kUncompressed, 200, GetPath(), apps::IconEffects::kNone,
-      base::BindLambdaForTesting([&](std::unique_ptr<apps::IconValue> icon) {
+      base::BindLambdaForTesting([&](apps::IconValuePtr icon) {
         callback_called = true;
         result = std::move(icon);
         run_loop_.Quit();
@@ -329,7 +322,7 @@ TEST_F(AppIconFactoryTest, LoadIconFromCompressedData) {
   auto icon_type = apps::IconType::kStandard;
   auto icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
-  std::unique_ptr<apps::IconValue> result = std::make_unique<apps::IconValue>();
+  auto result = std::make_unique<apps::IconValue>();
   RunLoadIconFromCompressedData(png_data_as_string, icon_type, icon_effects,
                                 result);
 
@@ -644,7 +637,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
         profile(), icon_type, kSizeInDip, app_id, icon_effects,
         base::BindOnce(
             [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
-               std::unique_ptr<apps::IconValue> icon) {
+               apps::IconValuePtr icon) {
               *image = icon->uncompressed;
               std::move(load_app_icon_callback).Run();
             },
@@ -654,15 +647,14 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
     EnsureRepresentationsLoaded(output_image_skia);
   }
 
-  std::unique_ptr<apps::IconValue> LoadCompressedIconBlockingFromWebApp(
+  apps::IconValuePtr LoadCompressedIconBlockingFromWebApp(
       const std::string& app_id,
       apps::IconEffects icon_effects) {
     base::RunLoop run_loop;
-    std::unique_ptr<apps::IconValue> icon_value;
+    apps::IconValuePtr icon_value;
     apps::LoadIconFromWebApp(
         profile(), apps::IconType::kCompressed, kSizeInDip, app_id,
-        icon_effects,
-        base::BindLambdaForTesting([&](std::unique_ptr<apps::IconValue> icon) {
+        icon_effects, base::BindLambdaForTesting([&](apps::IconValuePtr icon) {
           icon_value = std::move(icon);
           run_loop.Quit();
         }));
@@ -807,7 +799,7 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
 
   std::vector<uint8_t> src_data;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
-  std::unique_ptr<apps::IconValue> icon;
+  apps::IconValuePtr icon;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   icon_effect |= apps::IconEffects::kCrOsStandardBackground |

@@ -130,7 +130,7 @@ gfx::ImageSkia ConvertIconBitmapsToImageSkia(
 // desaturation to gray.
 void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,
-                      std::unique_ptr<IconValue> iv,
+                      IconValuePtr iv,
                       LoadIconCallback callback);
 
 // Loads an icon from an extension.

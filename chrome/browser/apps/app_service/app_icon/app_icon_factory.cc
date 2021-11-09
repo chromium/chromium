@@ -414,7 +414,7 @@ gfx::ImageSkia ConvertIconBitmapsToImageSkia(
 
 void ApplyIconEffects(IconEffects icon_effects,
                       int size_hint_in_dip,
-                      std::unique_ptr<IconValue> iv,
+                      IconValuePtr iv,
                       LoadIconCallback callback) {
   scoped_refptr<AppIconLoader> icon_loader =
       base::MakeRefCounted<AppIconLoader>(size_hint_in_dip,

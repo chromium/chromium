@@ -310,15 +310,14 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
   apps::IconEffects icon_effects = apps::IconEffects::kCrOsStandardIcon;
 
   base::RunLoop run_loop;
-  std::unique_ptr<apps::IconValue> output_data =
-      std::make_unique<apps::IconValue>();
-  std::unique_ptr<apps::IconValue> iv = std::make_unique<apps::IconValue>();
+  auto output_data = std::make_unique<apps::IconValue>();
+  auto iv = std::make_unique<apps::IconValue>();
   iv->icon_type = apps::IconType::kStandard;
   iv->uncompressed = icon;
   iv->is_placeholder_icon = true;
   apps::ApplyIconEffects(
       icon_effects, 64, std::move(iv),
-      base::BindLambdaForTesting([&](std::unique_ptr<apps::IconValue> icon) {
+      base::BindLambdaForTesting([&](apps::IconValuePtr icon) {
         output_data = std::move(icon);
         run_loop.Quit();
       }));

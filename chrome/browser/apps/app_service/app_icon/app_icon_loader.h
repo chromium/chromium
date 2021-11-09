@@ -79,10 +79,9 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   AppIconLoader(int size_hint_in_dip, LoadIconCallback callback);
 
-  void ApplyIconEffects(IconEffects icon_effects,
-                        std::unique_ptr<IconValue> iv);
+  void ApplyIconEffects(IconEffects icon_effects, IconValuePtr iv);
 
-  void ApplyBadges(IconEffects icon_effects, std::unique_ptr<IconValue> iv);
+  void ApplyBadges(IconEffects icon_effects, IconValuePtr iv);
 
   void LoadWebAppIcon(const std::string& web_app_id,
                       const GURL& launch_url,
@@ -136,9 +135,9 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
   void CompleteWithCompressed(std::vector<uint8_t> data);
 
-  void CompleteWithUncompressed(std::unique_ptr<IconValue> iv);
+  void CompleteWithUncompressed(IconValuePtr iv);
 
-  void CompleteWithIconValue(std::unique_ptr<IconValue> iv);
+  void CompleteWithIconValue(IconValuePtr iv);
 
   void OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps);
 

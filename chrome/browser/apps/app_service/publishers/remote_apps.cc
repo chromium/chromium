@@ -99,7 +99,7 @@ void RemoteApps::LoadIcon(const std::string& app_id,
     return;
   }
 
-  std::unique_ptr<IconValue> icon = std::make_unique<IconValue>();
+  auto icon = std::make_unique<IconValue>();
   icon->icon_type = ConvertMojomIconTypeToIconType(icon_type);
   icon->uncompressed = icon_image;
   icon->is_placeholder_icon = is_placeholder_icon;

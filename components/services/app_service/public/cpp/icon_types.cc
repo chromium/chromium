@@ -61,7 +61,7 @@ IconType ConvertMojomIconTypeToIconType(apps::mojom::IconType mojom_icon_type) {
 }
 
 apps::mojom::IconValuePtr ConvertIconValueToMojomIconValue(
-    std::unique_ptr<IconValue> icon_value) {
+    IconValuePtr icon_value) {
   apps::mojom::IconValuePtr iv = apps::mojom::IconValue::New();
   if (!icon_value || icon_value->icon_type == IconType::kUnknown) {
     return iv;
@@ -85,9 +85,9 @@ apps::mojom::IconValuePtr ConvertIconValueToMojomIconValue(
   return iv;
 }
 
-std::unique_ptr<IconValue> ConvertMojomIconValueToIconValue(
+IconValuePtr ConvertMojomIconValueToIconValue(
     apps::mojom::IconValuePtr mojom_icon_value) {
-  std::unique_ptr<IconValue> iv = std::make_unique<IconValue>();
+  auto iv = std::make_unique<IconValue>();
   if (!mojom_icon_value) {
     return iv;
   }
@@ -111,12 +111,11 @@ std::unique_ptr<IconValue> ConvertMojomIconValueToIconValue(
   return iv;
 }
 
-base::OnceCallback<void(std::unique_ptr<IconValue>)>
-IconValueToMojomIconValueCallback(
+base::OnceCallback<void(IconValuePtr)> IconValueToMojomIconValueCallback(
     base::OnceCallback<void(apps::mojom::IconValuePtr)> callback) {
   return base::BindOnce(
       [](base::OnceCallback<void(apps::mojom::IconValuePtr)> inner_callback,
-         std::unique_ptr<IconValue> icon_value) {
+         IconValuePtr icon_value) {
         std::move(inner_callback)
             .Run(ConvertIconValueToMojomIconValue(std::move(icon_value)));
       },

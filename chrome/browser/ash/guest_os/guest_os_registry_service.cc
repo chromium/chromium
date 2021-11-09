@@ -760,7 +760,7 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
 void GuestOsRegistryService::ApplyContainerBadge(
     SkColor badge_color,
     apps::LoadIconCallback callback,
-    std::unique_ptr<apps::IconValue> icon) {
+    apps::IconValuePtr icon) {
   gfx::ImageSkia badge_mask =
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_ICON_BADGE_MASK);

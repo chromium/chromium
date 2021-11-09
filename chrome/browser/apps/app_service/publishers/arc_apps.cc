@@ -77,15 +77,14 @@ void CompleteWithCompressed(apps::LoadIconCallback callback,
     std::move(callback).Run(std::make_unique<apps::IconValue>());
     return;
   }
-  std::unique_ptr<apps::IconValue> iv = std::make_unique<apps::IconValue>();
+  auto iv = std::make_unique<apps::IconValue>();
   iv->icon_type = apps::IconType::kCompressed;
   iv->compressed = std::move(data);
   iv->is_placeholder_icon = false;
   std::move(callback).Run(std::move(iv));
 }
 
-void UpdateIconImage(apps::LoadIconCallback callback,
-                     std::unique_ptr<apps::IconValue> iv) {
+void UpdateIconImage(apps::LoadIconCallback callback, apps::IconValuePtr iv) {
   if (iv->icon_type == apps::IconType::kCompressed) {
     iv->uncompressed.MakeThreadSafe();
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -108,7 +107,7 @@ void OnArcAppIconCompletelyLoaded(apps::IconType icon_type,
     return;
   }
 
-  std::unique_ptr<apps::IconValue> iv = std::make_unique<apps::IconValue>();
+  auto iv = std::make_unique<apps::IconValue>();
   iv->icon_type = icon_type;
   iv->is_placeholder_icon = false;
 
