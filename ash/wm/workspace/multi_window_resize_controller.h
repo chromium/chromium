@@ -10,9 +10,12 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "base/macros.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/mouse_watcher.h"
@@ -137,6 +140,9 @@ class ASH_EXPORT MultiWindowResizeController
   void StartObserving(aura::Window* window);
   void StopObserving(aura::Window* window);
 
+  // Check if we're observing |window|.
+  bool IsObserving(aura::Window* window) const;
+
   // Shows the resizer if the mouse is still at a valid location. This is called
   // from the |show_timer_|.
   void ShowIfValidMouseLocation();
@@ -202,6 +208,11 @@ class ASH_EXPORT MultiWindowResizeController
   // |resize_widget_| is non-NULL (ie the widget is showing) we ignore calls
   // to Show().
   std::unique_ptr<views::MouseWatcher> mouse_watcher_;
+
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
+  base::ScopedMultiSourceObservation<WindowState, WindowStateObserver>
+      window_state_observations_{this};
 };
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -455,6 +456,8 @@ TEST_F(MultiWindowResizeControllerTest, HideWindowTest) {
   std::unique_ptr<aura::Window> w1(CreateTestWindowInShellWithDelegate(
       &delegate1, -1, gfx::Rect(0, 0, 100, 100)));
   delegate1.set_window_component(HTRIGHT);
+  auto child_of_w1 = ChildTestWindowBuilder(w1.get()).Build();
+
   aura::test::TestWindowDelegate delegate2;
   std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
       &delegate2, -2, gfx::Rect(100, 0, 100, 100)));
@@ -464,6 +467,10 @@ TEST_F(MultiWindowResizeControllerTest, HideWindowTest) {
   gfx::Point w1_center_in_screen = w1->GetBoundsInScreen().CenterPoint();
   generator->MoveMouseTo(w1_center_in_screen);
   ShowNow();
+  EXPECT_TRUE(IsShowing());
+
+  // Hiding child window shouldn't dismiss the resizer.
+  child_of_w1->Hide();
   EXPECT_TRUE(IsShowing());
 
   // Hide one window should dimiss the resizer.

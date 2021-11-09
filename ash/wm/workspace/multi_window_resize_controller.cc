@@ -11,11 +11,9 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow_controller.h"
-#include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/hit_test.h"
@@ -280,6 +278,13 @@ void MultiWindowResizeController::OnWindowPropertyChanged(aura::Window* window,
 void MultiWindowResizeController::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
+  // OnWindowVisibilityChanged() is fired not only for observed windows but
+  // also its descendants (and ancestors), but multi-window resizing should keep
+  // running even if the resized window’s child window gets hidden. So here, we
+  // only handles events for windows being resized (i.e. observed windows).
+  if (!IsObserving(window))
+    return;
+
   if (!visible)
     ResetResizer();
 }
@@ -455,13 +460,17 @@ void MultiWindowResizeController::FindWindowsTouching(
 }
 
 void MultiWindowResizeController::StartObserving(aura::Window* window) {
-  window->AddObserver(this);
-  WindowState::Get(window)->AddObserver(this);
+  window_observations_.AddObservation(window);
+  window_state_observations_.AddObservation(WindowState::Get(window));
 }
 
 void MultiWindowResizeController::StopObserving(aura::Window* window) {
-  window->RemoveObserver(this);
-  WindowState::Get(window)->RemoveObserver(this);
+  window_observations_.RemoveObservation(window);
+  window_state_observations_.RemoveObservation(WindowState::Get(window));
+}
+
+bool MultiWindowResizeController::IsObserving(aura::Window* window) const {
+  return window_observations_.IsObservingSource(window);
 }
 
 void MultiWindowResizeController::ShowIfValidMouseLocation() {
