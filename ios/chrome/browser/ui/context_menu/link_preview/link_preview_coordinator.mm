@@ -64,6 +64,7 @@
                                          previewURL:self.URL
                                            referrer:self.referrer];
   self.mediator.consumer = self.viewController;
+  _previewWebState->GetNavigationManager()->LoadIfNecessary();
 }
 
 - (void)stop {
@@ -115,8 +116,6 @@
   // be added when the user tapping on the preview.)
   HistoryTabHelper::FromWebState(_previewWebState.get())
       ->SetDelayHistoryServiceNotification(true);
-
-  _previewWebState->GetNavigationManager()->LoadIfNecessary();
 }
 
 @end
