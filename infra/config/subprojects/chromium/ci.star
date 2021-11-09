@@ -4795,7 +4795,7 @@ ci.fyi_mac_builder(
     cores = None,
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 6 * time.hour,
-    os = os.MAC_10_15,
+    os = os.MAC_DEFAULT,
 )
 
 ci.fyi_mac_builder(
@@ -6139,7 +6139,7 @@ ci.mac_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
-    os = os.MAC_10_15,
+    os = os.MAC_DEFAULT,
 )
 
 ci.mac_builder(
