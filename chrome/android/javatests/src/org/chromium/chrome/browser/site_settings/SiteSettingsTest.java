@@ -208,10 +208,9 @@ public class SiteSettingsTest {
 
         setGlobalToggleForCategory(siteSettingsType, enabled);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(exceptionString,
+            Assert.assertEquals(exceptionString, enabled,
                     WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), contentSettingsType),
-                    enabled);
+                            getBrowserContextHandle(), contentSettingsType));
         });
     }
 
@@ -222,7 +221,14 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testSetAllowLocationEnabled() throws Exception {
-        setAllowLocation(true);
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+        doTestSiteSettingPermissions("Location", SiteSettingsCategory.Type.DEVICE_LOCATION,
+                ContentSettingsType.GEOLOCATION, true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> WebsitePreferenceBridge.areAllLocationSettingsEnabled(
+                                getBrowserContextHandle()));
 
         initializeUpdateWaiter(true /* expectGranted */);
 
@@ -238,7 +244,14 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testSetAllowLocationNotEnabled() throws Exception {
-        setAllowLocation(false);
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+        LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+        doTestSiteSettingPermissions("Location", SiteSettingsCategory.Type.DEVICE_LOCATION,
+                ContentSettingsType.GEOLOCATION, false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> WebsitePreferenceBridge.areAllLocationSettingsEnabled(
+                                getBrowserContextHandle()));
 
         // Launch a page that uses geolocation. No permission prompt is expected.
         initializeUpdateWaiter(false /* expectGranted */);
@@ -373,26 +386,6 @@ public class SiteSettingsTest {
             preferences.onPreferenceChange(fourStateCookieToggle, newState);
         });
         settingsActivity.finish();
-    }
-
-    private void setEnablePopups(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.POPUPS, enabled);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("Popups should be " + (enabled ? "allowed" : "blocked"), enabled,
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.POPUPS));
-        });
-    }
-
-    private void setEnableCamera(final boolean enabled) {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.CAMERA, enabled);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("Camera should be " + (enabled ? "allowed" : "blocked"), enabled,
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.MEDIASTREAM_CAMERA));
-        });
     }
 
     /**
@@ -739,7 +732,8 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testPopupsBlocked() {
-        setEnablePopups(false);
+        doTestSiteSettingPermissions(
+                "Popups", SiteSettingsCategory.Type.POPUPS, ContentSettingsType.POPUPS, false);
 
         // Test that the popup doesn't open.
         mPermissionRule.setUpUrl("/chrome/test/data/android/popup.html");
@@ -755,7 +749,8 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testPopupsNotBlocked() {
-        setEnablePopups(true);
+        doTestSiteSettingPermissions(
+                "Popups", SiteSettingsCategory.Type.POPUPS, ContentSettingsType.POPUPS, true);
 
         // Test that a popup opens.
         mPermissionRule.setUpUrl("/chrome/test/data/android/popup.html");
@@ -941,11 +936,31 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @CommandLineFlags.Add(ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM)
     public void testCameraBlocked() throws Exception {
-        setEnableCamera(false);
+        doTestSiteSettingPermissions("Camera", SiteSettingsCategory.Type.CAMERA,
+                ContentSettingsType.MEDIASTREAM_CAMERA, false);
 
         // Test that the camera permission doesn't get requested.
         initializeUpdateWaiter(false /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,
+                "/content/test/data/media/getusermedia.html",
+                "getUserMediaAndStop({video: true, audio: false});", 0, false, true);
+    }
+
+    /**
+     * Sets Allow Camera Enabled to be true and make sure it is set correctly.
+     *
+     * @throws Exception
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
+    public void testCameraNotBlocked() throws Exception {
+        doTestSiteSettingPermissions("Camera", SiteSettingsCategory.Type.CAMERA,
+                ContentSettingsType.MEDIASTREAM_CAMERA, true);
+
+        initializeUpdateWaiter(true /* expectGranted */);
+        mPermissionRule.runAllowTest(mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStop({video: true, audio: false});", 0, false, true);
     }
@@ -960,37 +975,14 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testMicBlocked() throws Exception {
-        setGlobalToggleForCategory(SiteSettingsCategory.Type.MICROPHONE, false);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse("Mic should be blocked",
-                    WebsitePreferenceBridge.isCategoryEnabled(
-                            getBrowserContextHandle(), ContentSettingsType.MEDIASTREAM_MIC));
-        });
+        doTestSiteSettingPermissions("Mic", SiteSettingsCategory.Type.MICROPHONE,
+                ContentSettingsType.MEDIASTREAM_MIC, false);
 
         // Test that the microphone permission doesn't get requested.
         initializeUpdateWaiter(false /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,
                 "/content/test/data/media/getusermedia.html",
                 "getUserMediaAndStop({video: false, audio: true});", 0, true, true);
-    }
-
-    /**
-     * Sets Allow Camera Enabled to be true and make sure it is set correctly.
-     *
-     * @throws Exception
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
-    public void testCameraNotBlocked() throws Exception {
-        setEnableCamera(true);
-
-        initializeUpdateWaiter(true /* expectGranted */);
-        mPermissionRule.runAllowTest(mPermissionUpdateWaiter,
-                "/content/test/data/media/getusermedia.html",
-                "getUserMediaAndStop({video: true, audio: false});", 0, false, true);
     }
 
     /**
@@ -1003,7 +995,8 @@ public class SiteSettingsTest {
     @Feature({"Preferences"})
     @CommandLineFlags.Add({ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM})
     public void testMicNotBlocked() throws Exception {
-        setEnableCamera(true);
+        doTestSiteSettingPermissions("Mic", SiteSettingsCategory.Type.MICROPHONE,
+                ContentSettingsType.MEDIASTREAM_MIC, true);
 
         // Launch a page that uses the microphone and make sure a permission prompt shows up.
         initializeUpdateWaiter(true /* expectGranted */);
