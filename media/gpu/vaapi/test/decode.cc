@@ -19,6 +19,7 @@
 #include "media/gpu/vaapi/test/shared_va_surface.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
+#include "media/gpu/vaapi/test/vp8_decoder.h"
 #include "media/gpu/vaapi/test/vp9_decoder.h"
 #include "media/gpu/vaapi/va_stubs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +29,7 @@ using media::vaapi_test::Av1Decoder;
 using media::vaapi_test::SharedVASurface;
 using media::vaapi_test::VaapiDevice;
 using media::vaapi_test::VideoDecoder;
+using media::vaapi_test::Vp8Decoder;
 using media::vaapi_test::Vp9Decoder;
 using media_gpu_vaapi::InitializeStubs;
 using media_gpu_vaapi::kModuleVa;
@@ -58,7 +60,7 @@ constexpr char kUsageMsg[] =
 constexpr char kHelpMsg[] =
     "This binary decodes the IVF video in <video> path with specified video\n"
     "<profile> via thinly wrapped libva calls.\n"
-    "Supported codecs: VP9 (profiles 0, 2) and AV1 (profile 0)\n"
+    "Supported codecs: VP8, VP9 (profiles 0, 2), and AV1 (profile 0)\n"
     "\nThe following arguments are supported:\n"
     "    --video=<path>\n"
     "        Required. Path to IVF-formatted video to decode.\n"
@@ -130,6 +132,9 @@ std::unique_ptr<VideoDecoder> CreateDecoder(
   // When adding a new format, keep fourccs alphabetical.
   if (file_header.fourcc == fourcc('A', 'V', '0', '1')) {
     return std::make_unique<Av1Decoder>(std::move(ivf_parser), va_device,
+                                        fetch_policy);
+  } else if (file_header.fourcc == fourcc('V', 'P', '8', '0')) {
+    return std::make_unique<Vp8Decoder>(std::move(ivf_parser), va_device,
                                         fetch_policy);
   } else if (file_header.fourcc == fourcc('V', 'P', '9', '0')) {
     return std::make_unique<Vp9Decoder>(std::move(ivf_parser), va_device,

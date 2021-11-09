@@ -365,6 +365,8 @@ executable("decode_test") {
     "test/vaapi_device.h",
     "test/video_decoder.cc",
     "test/video_decoder.h",
+    "test/vp8_decoder.cc",
+    "test/vp8_decoder.h",
     "test/vp9_decoder.cc",
     "test/vp9_decoder.h",
   ]
@@ -374,6 +376,7 @@ executable("decode_test") {
     "//media",
     "//media:test_support",
     "//media/gpu:common",
+    "//media/parsers:parsers",
     "//third_party/libgav1:libgav1",
     "//third_party/libyuv",
     "//ui/gfx/codec:codec",
