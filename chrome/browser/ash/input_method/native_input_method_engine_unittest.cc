@@ -159,8 +159,7 @@ class NativeInputMethodEngineTest : public ::testing::Test {
         /*enabled_features=*/{features::kAssistPersonalInfo,
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName,
-                              features::kEmojiSuggestAddition,
-                              features::kSystemLatinPhysicalTyping},
+                              features::kEmojiSuggestAddition},
         /*disabled_features=*/{});
 
     // Needed by NativeInputMethodEngine to interact with the input field.
@@ -182,7 +181,6 @@ class NativeInputMethodEngineTest : public ::testing::Test {
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName,
                               features::kEmojiSuggestAddition,
-                              features::kSystemLatinPhysicalTyping,
                               features::kAssistMultiWord},
         /*disabled_features=*/{});
   }
@@ -628,8 +626,7 @@ class NativeInputMethodEngineWithRenderViewHostTest
         /*enabled_features=*/{features::kAssistPersonalInfo,
                               features::kAssistPersonalInfoEmail,
                               features::kAssistPersonalInfoName,
-                              features::kEmojiSuggestAddition,
-                              features::kSystemLatinPhysicalTyping},
+                              features::kEmojiSuggestAddition},
         /*disabled_features=*/{});
 
     // Needed by NativeInputMethodEngine to interact with the input field.

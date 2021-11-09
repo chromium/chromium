@@ -172,10 +172,6 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
 
  protected:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSystemLatinPhysicalTyping},
-        /*disabled_features=*/{});
-
     FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state_));
     remote_service_->BindInputEngineManager(
         remote_manager_.BindNewPipeAndPassReceiver());
@@ -186,7 +182,6 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   ImeService service_;
   TestDecoderState state_;
 };

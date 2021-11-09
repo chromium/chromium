@@ -112,13 +112,6 @@ void ImeService::ConnectToInputMethod(
     std::move(callback).Run(/*bound=*/input_engine_ != nullptr);
     return;
   }
-  if (!features::IsSystemChinesePhysicalTypingEnabled() &&
-      !features::IsSystemJapanesePhysicalTypingEnabled() &&
-      !features::IsSystemKoreanPhysicalTypingEnabled() &&
-      !features::IsSystemLatinPhysicalTypingEnabled()) {
-    std::move(callback).Run(/*bound=*/false);
-    return;
-  }
 
   auto system_engine = std::make_unique<SystemEngine>(this);
   bool bound = system_engine->BindRequest(ime_spec, std::move(input_method),
@@ -173,7 +166,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
     return features::IsSystemKoreanPhysicalTypingEnabled();
   }
   if (strcmp(feature_name, "SystemLatinPhysicalTyping") == 0) {
-    return features::IsSystemLatinPhysicalTypingEnabled();
+    return true;
   }
   return false;
 }

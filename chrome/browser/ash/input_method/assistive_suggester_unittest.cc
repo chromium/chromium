@@ -222,23 +222,10 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
-TEST_F(AssistiveSuggesterTest,
-       MultiWordDisabledWhenFeatureFlagEnabledButSystemPkDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{features::kEmojiSuggestAddition,
-                             features::kAssistPersonalInfo,
-                             features::kSystemLatinPhysicalTyping});
-
-  EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
 TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord,
-                            features::kSystemLatinPhysicalTyping},
+      /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{features::kEmojiSuggestAddition,
                              features::kAssistPersonalInfo});
 

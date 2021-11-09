@@ -47,8 +47,7 @@ TEST(CreateSettingsFromPrefsTest, CreateLatinSettingsDefault) {
 
 TEST(CreateSettingsFromPrefsTest, CreateLatinSettings) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kSystemLatinPhysicalTyping, features::kAssistMultiWord}, {});
+  features.InitWithFeatures({features::kAssistMultiWord}, {});
   TestingPrefServiceSimple prefs;
   base::DictionaryValue dict;
   dict.SetIntPath(base::StrCat({kUsEnglishEngineId,

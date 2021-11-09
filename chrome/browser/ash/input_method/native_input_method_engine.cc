@@ -98,8 +98,7 @@ bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) {
           IsJapaneseEngine(engine_id)) ||
          (features::IsSystemKoreanPhysicalTypingEnabled() &&
           IsKoreanEngine(engine_id)) ||
-         (features::IsSystemLatinPhysicalTypingEnabled() &&
-          IsFstEngine(engine_id));
+         IsFstEngine(engine_id);
 }
 
 bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,

@@ -1120,11 +1120,6 @@ const base::Feature kSystemJapanesePhysicalTyping{
 const base::Feature kSystemKoreanPhysicalTyping{
     "SystemKoreanPhysicalTyping", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables or disables using the system input engine for physical typing in
-// languages based on latin script.
-const base::Feature kSystemLatinPhysicalTyping{
-    "SystemLatinPhysicalTyping", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the Chrome OS system-proxy daemon, only for system services. This
 // means that system services like tlsdate, update engine etc. can opt to be
 // authenticated to a remote HTTP web proxy via system-proxy.
@@ -1340,8 +1335,7 @@ bool IsArcNetworkDiagnosticsButtonEnabled() {
 }
 
 bool IsAssistiveMultiWordEnabled() {
-  return base::FeatureList::IsEnabled(kSystemLatinPhysicalTyping) &&
-         base::FeatureList::IsEnabled(kAssistMultiWord);
+  return base::FeatureList::IsEnabled(kAssistMultiWord);
 }
 
 bool IsAutoNightLightEnabled() {
@@ -1773,10 +1767,6 @@ bool IsSystemJapanesePhysicalTypingEnabled() {
 
 bool IsSystemKoreanPhysicalTypingEnabled() {
   return base::FeatureList::IsEnabled(kSystemKoreanPhysicalTyping);
-}
-
-bool IsSystemLatinPhysicalTypingEnabled() {
-  return base::FeatureList::IsEnabled(kSystemLatinPhysicalTyping);
 }
 
 bool IsTabClusterUIEnabled() {

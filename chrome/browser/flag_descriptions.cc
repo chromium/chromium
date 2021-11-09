@@ -5064,12 +5064,6 @@ const char kSystemKoreanPhysicalTypingDescription[] =
     "Use the system input engine instead of the Chrome extension for physical "
     "typing in Korean.";
 
-const char kSystemLatinPhysicalTypingName[] =
-    "Use system IME for latin-script typing";
-const char kSystemLatinPhysicalTypingDescription[] =
-    "Use the system input engine instead of the Chrome extension for physical "
-    "typing in languages based on latin script.";
-
 const char kQuickSettingsNetworkRevampName[] =
     "Enables the Quick Settings Network revamp.";
 const char kQuickSettingsNetworkRevampDescription[] =

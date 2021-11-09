@@ -136,16 +136,9 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
 
 // Sets up the test environment for Mojo and inject a mock ImeEngineMainEntry.
 class SystemEngineTest : public testing::Test {
- protected:
-  void SetUp() final {
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kSystemLatinPhysicalTyping}, {});
-  }
-
  private:
   // Mojo calls need a SequencedTaskRunner.
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
