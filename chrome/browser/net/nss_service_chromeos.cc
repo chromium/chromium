@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/net/nss_service_chromeos.h"
+#include "chrome/browser/net/nss_service.h"
 
 #include <memory>
 #include <utility>
@@ -12,13 +12,13 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
@@ -52,7 +52,7 @@ namespace {
 // IO thread:
 //               UI thread                              IO Thread
 //
-//  NssServiceChromeOS::NssServiceChromeOS
+//  NssService::NssService
 //                   |
 //  ProfileHelper::Get()->GetUserByProfile()
 //                   \---------------------------------------v
@@ -147,7 +147,7 @@ void StartNSSInitOnIOThread(const AccountId& account_id,
 
 // Creates and manages a NSSCertDatabaseChromeOS. Created on the UI thread, but
 // all other calls are made on the IO thread.
-class NssServiceChromeOS::NSSCertDatabaseChromeOSManager {
+class NssService::NSSCertDatabaseChromeOSManager {
  public:
   using GetNSSCertDatabaseCallback =
       base::OnceCallback<void(net::NSSCertDatabase*)>;
@@ -238,9 +238,11 @@ class NssServiceChromeOS::NSSCertDatabaseChromeOSManager {
   base::WeakPtrFactory<NSSCertDatabaseChromeOSManager> weak_ptr_factory_{this};
 };
 
-NssServiceChromeOS::NssServiceChromeOS(Profile* profile) {
+NssService::NssService(content::BrowserContext* context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(context);
 
+  Profile* profile = Profile::FromBrowserContext(context);
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
   // No need to initialize NSS for users with empty username hash:
@@ -265,14 +267,13 @@ NssServiceChromeOS::NssServiceChromeOS(Profile* profile) {
       std::move(username_hash), enable_system_slot);
 }
 
-NssServiceChromeOS::~NssServiceChromeOS() {
+NssService::~NssService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::GetIOThreadTaskRunner({})->DeleteSoon(
       FROM_HERE, std::move(nss_cert_database_manager_));
 }
 
-NssCertDatabaseGetter
-NssServiceChromeOS::CreateNSSCertDatabaseGetterForIOThread() {
+NssCertDatabaseGetter NssService::CreateNSSCertDatabaseGetterForIOThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return base::BindOnce(&NSSCertDatabaseChromeOSManager::GetNSSCertDatabase,
                         base::Unretained(nss_cert_database_manager_.get()));

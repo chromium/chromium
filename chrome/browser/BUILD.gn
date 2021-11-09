@@ -7070,23 +7070,19 @@ static_library("browser") {
     sources += [
       "certificate_manager_model.cc",
       "certificate_manager_model.h",
-      "net/nss_context.cc",
-      "net/nss_context.h",
+      "net/nss_service.cc",
+      "net/nss_service.h",
+      "net/nss_service_factory.cc",
+      "net/nss_service_factory.h",
     ]
     if (is_chromeos_ash) {
-      sources += [
-        "net/nss_context_chromeos.cc",
-        "net/nss_service_chromeos.cc",
-        "net/nss_service_chromeos.h",
-        "net/nss_service_chromeos_factory.cc",
-        "net/nss_service_chromeos_factory.h",
-      ]
-    }
-    if (is_linux) {
-      sources += [ "net/nss_context_linux.cc" ]
+      sources += [ "net/nss_service_chromeos.cc" ]
     }
     if (is_chromeos_lacros) {
-      sources += [ "net/nss_context_lacros.cc" ]
+      sources += [ "net/nss_service_lacros.cc" ]
+    }
+    if (is_linux) {
+      sources += [ "net/nss_service_linux.cc" ]
     }
   }
 

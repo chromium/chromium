@@ -16,7 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/ui/crypto_module_password_dialog_nss.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/grit/generated_resources.h"
@@ -514,10 +515,12 @@ void CertificateManagerModel::Create(
 #endif
 
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&CertificateManagerModel::GetCertDBOnIOThread,
-                                std::move(params),
-                                CreateNSSCertDatabaseGetter(browser_context),
-                                observer, std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&CertificateManagerModel::GetCertDBOnIOThread,
+                     std::move(params),
+                     NssServiceFactory::GetForContext(browser_context)
+                         ->CreateNSSCertDatabaseGetterForIOThread(),
+                     observer, std::move(callback)));
 }
 
 CertificateManagerModel::CertificateManagerModel(

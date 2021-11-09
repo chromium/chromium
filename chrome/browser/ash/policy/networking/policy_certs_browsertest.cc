@@ -35,7 +35,8 @@
 #include "chrome/browser/ash/policy/networking/user_network_configuration_updater_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -498,8 +499,9 @@ bool IsCertInNSSDatabase(Profile* profile,
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(IsCertInNSSDatabaseOnIOThread,
-                     CreateNSSCertDatabaseGetter(profile), subject_common_name,
-                     &cert_found, run_loop.QuitClosure()));
+                     NssServiceFactory::GetForContext(profile)
+                         ->CreateNSSCertDatabaseGetterForIOThread(),
+                     subject_common_name, &cert_found, run_loop.QuitClosure()));
   run_loop.Run();
   return cert_found;
 }

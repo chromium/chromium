@@ -23,7 +23,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/extensions/api/platform_keys/platform_keys_test_base.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -273,10 +274,10 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, PRE_Basic) {
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
   {
     base::RunLoop loop;
-    GetNSSCertDatabaseForProfile(
-        profile(),
-        base::BindOnce(&EnterprisePlatformKeysTest::DidGetCertDatabase,
-                       base::Unretained(this), loop.QuitClosure()));
+    NssServiceFactory::GetForContext(profile())
+        ->UnsafelyGetNSSCertDatabaseForTesting(
+            base::BindOnce(&EnterprisePlatformKeysTest::DidGetCertDatabase,
+                           base::Unretained(this), loop.QuitClosure()));
     loop.Run();
   }
 

@@ -14,7 +14,8 @@
 #include "chrome/browser/ash/net/client_cert_store_ash.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
@@ -75,7 +76,8 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
         FROM_HERE,
         base::BindOnce(&GetCertDatabaseOnIoThread,
                        base::ThreadTaskRunnerHandle::Get(), std::move(callback),
-                       CreateNSSCertDatabaseGetter(browser_context_)));
+                       NssServiceFactory::GetForContext(browser_context_)
+                           ->CreateNSSCertDatabaseGetterForIOThread()));
   }
 
   std::unique_ptr<net::ClientCertStore> CreateClientCertStore() override {
@@ -171,7 +173,9 @@ void PlatformKeysServiceFactory::SetTestingMode(bool is_testing_mode) {
 PlatformKeysServiceFactory::PlatformKeysServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "PlatformKeysService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(NssServiceFactory::GetInstance());
+}
 
 PlatformKeysServiceFactory::~PlatformKeysServiceFactory() = default;
 

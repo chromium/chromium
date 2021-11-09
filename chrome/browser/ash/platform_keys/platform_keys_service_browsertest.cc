@@ -31,7 +31,8 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service_test_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -160,10 +161,10 @@ class PlatformKeysServiceBrowserTestBase
       profile_ = ProfileManager::GetActiveUserProfile();
 
       base::RunLoop loop;
-      GetNSSCertDatabaseForProfile(
-          profile_,
-          base::BindOnce(&PlatformKeysServiceBrowserTestBase::SetUserSlot,
-                         base::Unretained(this), loop.QuitClosure()));
+      NssServiceFactory::GetForContext(profile_)
+          ->UnsafelyGetNSSCertDatabaseForTesting(
+              base::BindOnce(&PlatformKeysServiceBrowserTestBase::SetUserSlot,
+                             base::Unretained(this), loop.QuitClosure()));
       loop.Run();
     }
     ASSERT_TRUE(profile_);

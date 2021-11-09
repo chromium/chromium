@@ -6,11 +6,11 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/login/login_state/login_state.h"
-
-#include "chrome/browser/net/nss_context.h"
 #include "chromeos/tpm/tpm_token_info_getter.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
@@ -148,7 +148,8 @@ void CertDatabaseAsh::WaitForCertDatabaseReady(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&GetCertDbOnIOThread, std::move(got_db_callback),
-                     CreateNSSCertDatabaseGetter(profile)));
+                     NssServiceFactory::GetForContext(profile)
+                         ->CreateNSSCertDatabaseGetterForIOThread()));
 }
 
 void CertDatabaseAsh::OnCertDatabaseReady(

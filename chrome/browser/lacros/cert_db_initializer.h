@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
 
 class CertDbInitializer {
  public:

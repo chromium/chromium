@@ -83,9 +83,10 @@ suite('CrSettingsSecurityPageTest', function() {
   });
 
   // TODO(crbug.com/1148302): This class directly calls
-  // `GetNSSCertDatabaseForProfile()` that causes crash at the moment and is
-  // never called from Lacros-Chrome. This should be revisited when there is a
-  // solution for the client certificates settings page on Lacros-Chrome.
+  // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
+  // moment and is never called from Lacros-Chrome. This should be revisited
+  // when there is a solution for the client certificates settings page on
+  // Lacros-Chrome.
   if (!isLacros) {
     test('LogManageCerfificatesClick', async function() {
       page.shadowRoot.querySelector('#manageCertificates').click();

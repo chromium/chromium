@@ -201,7 +201,8 @@
 
 #if defined(USE_NSS_CERTS)
 #include "chrome/browser/certificate_manager_model.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -1979,9 +1980,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MarkDataAsNonSecure) {
 }
 
 // TODO(crbug.com/1148302): This class directly calls
-// `GetNSSCertDatabaseForProfile()` that causes crash at the moment and is never
-// called from Lacros-Chrome. This should be revisited when there is a solution
-// for the client certificates settings page on Lacros-Chrome.
+// `UnsafelyGetNSSCertDatabaseForTesting()` that causes crash at the moment
+// and is never called from Lacros-Chrome. This should be revisited when there
+// is a solution for the client certificates settings page on Lacros-Chrome.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 #if defined(USE_NSS_CERTS)
 class SSLUITestWithClientCert : public SSLUITestBase {
@@ -1992,10 +1993,10 @@ class SSLUITestWithClientCert : public SSLUITestBase {
     SSLUITestBase::SetUpOnMainThread();
 
     base::RunLoop loop;
-    GetNSSCertDatabaseForProfile(
-        browser()->profile(),
-        base::BindOnce(&SSLUITestWithClientCert::DidGetCertDatabase,
-                       base::Unretained(this), &loop));
+    NssServiceFactory::GetForContext(browser()->profile())
+        ->UnsafelyGetNSSCertDatabaseForTesting(
+            base::BindOnce(&SSLUITestWithClientCert::DidGetCertDatabase,
+                           base::Unretained(this), &loop));
     loop.Run();
   }
 
@@ -5909,19 +5910,19 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
     // Get cert databases for both profiles.
     {
       base::RunLoop loop;
-      GetNSSCertDatabaseForProfile(
-          profile_1_,
-          base::BindOnce(&SSLUITestCustomCACerts::DidGetCertDatabase,
-                         base::Unretained(this), &loop, &profile_1_cert_db_));
+      NssServiceFactory::GetForContext(profile_1_)
+          ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
+              &SSLUITestCustomCACerts::DidGetCertDatabase,
+              base::Unretained(this), &loop, &profile_1_cert_db_));
       loop.Run();
     }
 
     {
       base::RunLoop loop;
-      GetNSSCertDatabaseForProfile(
-          profile_2_,
-          base::BindOnce(&SSLUITestCustomCACerts::DidGetCertDatabase,
-                         base::Unretained(this), &loop, &profile_2_cert_db_));
+      NssServiceFactory::GetForContext(profile_2_)
+          ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
+              &SSLUITestCustomCACerts::DidGetCertDatabase,
+              base::Unretained(this), &loop, &profile_2_cert_db_));
       loop.Run();
     }
 

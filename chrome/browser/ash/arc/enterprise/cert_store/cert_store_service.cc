@@ -24,7 +24,8 @@
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_impl.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
@@ -64,7 +65,9 @@ class CertStoreServiceFactory : public BrowserContextKeyedServiceFactory {
   CertStoreServiceFactory()
       : BrowserContextKeyedServiceFactory(
             "CertStoreService",
-            BrowserContextDependencyManager::GetInstance()) {}
+            BrowserContextDependencyManager::GetInstance()) {
+    DependsOn(NssServiceFactory::GetInstance());
+  }
 
   // BrowserContextKeyedServiceFactory overrides:
   content::BrowserContext* GetBrowserContextToUse(
@@ -97,7 +100,7 @@ class CertStoreServiceFactory : public BrowserContextKeyedServiceFactory {
 //
 //                    ListCerts
 //                        |
-//            CreateNSSCertDatabaseGetter
+//       NssService::CreateNSSCertDatabaseGetterForIOThread
 //                        |
 //                        \----------------------------v
 //                                          ListCertsWithDbGetterOnIO
@@ -129,7 +132,7 @@ class CertStoreServiceFactory : public BrowserContextKeyedServiceFactory {
 //
 //                    ListCerts
 //                        |
-//            CreateNSSCertDatabaseGetter
+//       NssService::CreateNSSCertDatabaseGetterForIOThread
 //                        |
 //                        \----------------------------v
 //                                          ListCertsWithDbGetterOnIO
@@ -212,10 +215,12 @@ void ListCerts(content::BrowserContext* const context,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // The NssCertDatabaseGetter must be posted to the IO thread immediately.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ListCertsWithDbGetterOnIO,
-                                base::ThreadTaskRunnerHandle::Get(), slot,
-                                std::move(callback),
-                                CreateNSSCertDatabaseGetter(context)));
+      FROM_HERE,
+      base::BindOnce(&ListCertsWithDbGetterOnIO,
+                     base::ThreadTaskRunnerHandle::Get(), slot,
+                     std::move(callback),
+                     NssServiceFactory::GetForContext(context)
+                         ->CreateNSSCertDatabaseGetterForIOThread()));
 }
 
 using IsCertificateAllowedCallback = base::OnceCallback<void(bool allowed)>;

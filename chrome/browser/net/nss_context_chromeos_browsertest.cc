@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service_factory.h"
 
 #include <memory>
 
@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
+#include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
@@ -54,10 +55,12 @@ class DBTester {
   bool DoGetDBTests() {
     base::RunLoop run_loop;
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&DBTester::GetDBAndDoTestsOnIOThread,
-                                  base::Unretained(this),
-                                  CreateNSSCertDatabaseGetter(profile_),
-                                  run_loop.QuitClosure()));
+        FROM_HERE,
+        base::BindOnce(&DBTester::GetDBAndDoTestsOnIOThread,
+                       base::Unretained(this),
+                       NssServiceFactory::GetForContext(profile_)
+                           ->CreateNSSCertDatabaseGetterForIOThread(),
+                       run_loop.QuitClosure()));
     run_loop.Run();
     return !!db_;
   }
@@ -66,10 +69,12 @@ class DBTester {
   void DoGetDBAgainTests() {
     base::RunLoop run_loop;
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&DBTester::DoGetDBAgainTestsOnIOThread,
-                                  base::Unretained(this),
-                                  CreateNSSCertDatabaseGetter(profile_),
-                                  run_loop.QuitClosure()));
+        FROM_HERE,
+        base::BindOnce(&DBTester::DoGetDBAgainTestsOnIOThread,
+                       base::Unretained(this),
+                       NssServiceFactory::GetForContext(profile_)
+                           ->CreateNSSCertDatabaseGetterForIOThread(),
+                       run_loop.QuitClosure()));
     run_loop.Run();
   }
 

@@ -21,7 +21,8 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/net/nss_context.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/platform_keys/platform_keys.h"
@@ -199,7 +200,7 @@ std::unique_ptr<KeyedService> BuildCertStoreService(
 //                 |
 //       run_loop.QuitClosure
 //                 |
-//     CreateNSSCertDatabaseGetter
+//   NssService::CreateNSSCertDatabaseGetterForIOThread
 //                 |
 //                 \--------------------------------v
 //                                 IsSystemSlotAvailableWithDbGetterOnIO
@@ -246,7 +247,8 @@ bool IsSystemSlotAvailable(Profile* profile) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(IsSystemSlotAvailableWithDbGetterOnIO,
-                     CreateNSSCertDatabaseGetter(profile),
+                     NssServiceFactory::GetForContext(profile)
+                         ->CreateNSSCertDatabaseGetterForIOThread(),
                      &system_slot_available, run_loop.QuitClosure()));
   run_loop.Run();
   return system_slot_available;
@@ -433,10 +435,10 @@ void CertStoreServiceTest::SetUpCerts(
 
   // Read certs from files.
   base::RunLoop loop;
-  GetNSSCertDatabaseForProfile(
-      profile(), base::BindOnce(&CertStoreServiceTest::SetUpTestClientCerts,
-                                base::Unretained(this), certs_to_setup,
-                                loop.QuitClosure()));
+  NssServiceFactory::GetForContext(profile())
+      ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
+          &CertStoreServiceTest::SetUpTestClientCerts, base::Unretained(this),
+          certs_to_setup, loop.QuitClosure()));
   loop.Run();
 
   // Verify |certs_to_setup.size()| new certs have been installed.
@@ -450,10 +452,10 @@ void CertStoreServiceTest::SetUpCerts(
       RegisterCorporateKey(cert.nss_cert.get());
     // Import cert to NSS cert database.
     base::RunLoop loop;
-    GetNSSCertDatabaseForProfile(
-        profile(), base::BindOnce(&CertStoreServiceTest::ImportCert,
-                                  base::Unretained(this), cert.nss_cert.get(),
-                                  loop.QuitClosure()));
+    NssServiceFactory::GetForContext(profile())
+        ->UnsafelyGetNSSCertDatabaseForTesting(base::BindOnce(
+            &CertStoreServiceTest::ImportCert, base::Unretained(this),
+            cert.nss_cert.get(), loop.QuitClosure()));
     loop.Run();
     // Wait till new cert event is processed by CertStoreService.
     installer_->Wait();
@@ -473,8 +475,9 @@ void CertStoreServiceTest::RegisterCorporateKey(CERTCertificate* cert) {
 
 void CertStoreServiceTest::DeleteCert(CERTCertificate* cert) {
   base::RunLoop loop;
-  GetNSSCertDatabaseForProfile(
-      profile(), base::BindOnce(&DeleteCertAndKey, cert, loop.QuitClosure()));
+  NssServiceFactory::GetForContext(profile())
+      ->UnsafelyGetNSSCertDatabaseForTesting(
+          base::BindOnce(&DeleteCertAndKey, cert, loop.QuitClosure()));
   loop.Run();
   installed_certs_.pop_back();
   // Wait till deleted cert event is processed by CertStoreService.
