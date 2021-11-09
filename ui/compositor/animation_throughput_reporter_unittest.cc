@@ -243,4 +243,33 @@ TEST_F(AnimationThroughputReporterTest, ReportForAnimateToNewTarget) {
   EXPECT_TRUE(checker2.WaitUntilReported());
 }
 
+// Tests AnimationThroughputReporter does not leak its AnimationTracker when
+// there are existing animations but no new animation sequence starts after it
+// is created.
+TEST_F(AnimationThroughputReporterTest, NoLeakWithNoAnimationStart) {
+  auto layer = std::make_unique<Layer>();
+  layer->SetOpacity(0.5f);
+  root_layer()->Add(layer.get());
+
+  LayerAnimator* animator = layer->GetAnimator();
+
+  // Create an existing animation.
+  {
+    ScopedLayerAnimationSettings settings(animator);
+    settings.SetTransitionDuration(base::Milliseconds(50));
+    layer->SetOpacity(0.0f);
+  }
+
+  // Create the reporter with the existing animation.
+  ThroughputReportChecker checker(this, /*fail_if_reported=*/true);
+  {
+    AnimationThroughputReporter reporter(animator,
+                                         checker.repeating_callback());
+  }
+
+  // Wait a bit to ensure to let the existing animation finish.
+  // There should be no report and no leak.
+  Advance(base::Milliseconds(100));
+}
+
 }  // namespace ui
