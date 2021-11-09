@@ -3,6 +3,7 @@
 <translationbundle lang="it">
 <translation id="1113173431709655881">Modalità Fotocamera</translation>
 <translation id="1175958423215084756">Link rilevato. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Ruota di 90 gradi in senso orario</translation>
 <translation id="1276998909102132017">Immagini della galleria</translation>
 <translation id="1300209025925956156">Scansiona il tuo documento</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tasto per la ricerca + Freccia sinistra per accedere.</translation>
@@ -54,6 +55,7 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="3517926952904427380">Impossibile scattare foto verticale</translation>
 <translation id="3569311554794739032">Vuoi rimuovere <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Passa alla modalità di scansione</translation>
+<translation id="3789724198583203151">Ruota di 90 gradi in senso antiorario</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Scansiona il codice a barre</translation>
 <translation id="3892148308691398805">Copia testo</translation>

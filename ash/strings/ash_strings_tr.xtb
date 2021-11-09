@@ -62,6 +62,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> günü <ph name="COME_BACK_TIME" /> gibi tekrar gelin.</translation>
 <translation id="1290331692326790741">Zayıf sinyal</translation>
 <translation id="1293264513303784526">USB-C cihaz (sol bağlantı noktası)</translation>
+<translation id="1293556467332435079">Dosyalar</translation>
 <translation id="1294929383540927798">Kilit ekranı bildirim ayarlarını değiştir</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Bluetooth ayarlarını göster. <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="2782591952652094792">Ekran görüntüsü alma modundan çıkılıyor</translation>
 <translation id="2792498699870441125">Alt+Arama</translation>
+<translation id="2805756323405976993">Uygulamalar</translation>
 <translation id="2814448776515246190">Kısmi ekran görüntüsü alma</translation>
 <translation id="2819276065543622893">Şimdi çıkış yapacaksınız.</translation>
 <translation id="28232023175184696">İnternete bağlanamıyor. Tekrar denemek için tıklayın.</translation>
@@ -376,6 +378,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3665889125180354336">Mikrofon kaydı</translation>
 <translation id="3680908746918359504">Tüm işaretçileri temizle</translation>
 <translation id="36813544980941320">Kablosuz ağlar; telefonunuz ve <ph name="DEVICE_NAME" /> arasında paylaşılacak</translation>
+<translation id="3694122362646626770">Web siteleri</translation>
 <translation id="3701206655856637070">Artık ekran görüntülerinin kaydedildiği yeri değiştirebilirsiniz</translation>
 <translation id="3702809606464356667">Mevcut masadaki pencereler gösteriliyor, tüm masalardaki pencerelerin gösterilmesi için Yukarı ok tuşuna basın</translation>
 <translation id="3702846122927433391">Nijerya'nın nüfusu</translation>
@@ -537,6 +540,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="4759238208242260848">İndirilenler</translation>
 <translation id="4774338217796918551">Saat <ph name="COME_BACK_TIME" /> olduğunda geri gelin.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> için şifre</translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Asistan, demo oturumunda kullanılamaz.</translation>
 <translation id="4782311465517282004">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın</translation>
 <translation id="479989351350248267">ara</translation>
@@ -938,6 +942,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="7796353162336583443">Not veya ekran görüntüsü almak, Google Asistan, lazer işaretçi veya büyüteç işlevlerini kullanmak için raftaki ekran kalemi düğmesine dokunun.</translation>
 <translation id="7798302898096527229">İptal etmek için Ara veya Üst Karakter tuşuna basın.</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
+<translation id="7807067443225230855">Arama ve Asistan</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ve <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Güçlü sinyal</translation>
 <translation id="7837740436429729974">Süre doldu</translation>

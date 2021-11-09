@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Medium Slate Blue</translation>
 <translation id="5140016802771803559">Rebecca Purple</translation>
 <translation id="5142101052131610456">All lessons</translation>
-<translation id="5152605892605507188">move right</translation>
 <translation id="5158275234811857234">Cover</translation>
 <translation id="516076699907426116">To continue, explore by touch to find the Next lesson button. Then double-tap to continue.</translation>
 <translation id="5170206230005240598">Braille captions enabled</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Light grey</translation>
 <translation id="6036135911048686884">Touch explore</translation>
 <translation id="6037602951055904232">Pan forward</translation>
+<translation id="604240746417122825">grammar error</translation>
 <translation id="6082768461603900813">Basic Navigation</translation>
 <translation id="609281021724813947">No previous slider</translation>
 <translation id="6100239002225743044">Move up one line</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">Heading 4</translation>
 <translation id="6150023170003443621">Yellow Green</translation>
 <translation id="6158882249329863701">row <ph name="TABLECELLROWINDEX" /> column <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">move left</translation>
 <translation id="6164829606128959761">meter</translation>
 <translation id="6165508094623778733">Learn more</translation>
 <translation id="6166362019018438352">Braille captions disabled</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">On, Off and Stop</translation>
 <translation id="6919104639734799681">Show tables list</translation>
 <translation id="692135145298539227">delete</translation>
-<translation id="6935674530832500465">move down</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6949846980769640811">Medium Aqua Marine</translation>
 <translation id="6951482098621102657">No next level 5 heading</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">Introduction</translation>
 <translation id="827266600368092403">Start or end selection</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="827496561804786391">move up</translation>
 <translation id="8276439074553447000">Jump to previous focusable item</translation>
 <translation id="8279039817939141096">Press a qwerty key, refreshable braille key or touch gesture to learn its function. Press control with w, space with Z, swipe left with two fingers, or escape to exit.</translation>
 <translation id="8283603667300770666">Next form field</translation>
 <translation id="8310185481635255431">No next link</translation>
 <translation id="831207808878314375">Definition</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">unselect all</translation>
 <translation id="8316881042119029234">Old Lace</translation>
 <translation id="8324974933005349667">Personalise Text-to-Speech settings</translation>
 <translation id="8326783648485765113">Lawn green</translation>

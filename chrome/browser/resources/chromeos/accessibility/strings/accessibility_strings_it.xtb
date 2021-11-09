@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Blu ardesia medio</translation>
 <translation id="5140016802771803559">Viola Rebecca</translation>
 <translation id="5142101052131610456">Tutte le lezioni</translation>
-<translation id="5152605892605507188">sposta a destra</translation>
 <translation id="5158275234811857234">Copertina</translation>
 <translation id="516076699907426116">Per continuare, esplora al tocco per trovare il pulsante che porta alla lezione successiva. Quindi tocca due volte per continuare.</translation>
 <translation id="5170206230005240598">Sottotitoli braille attivati</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Grigio chiaro</translation>
 <translation id="6036135911048686884">Esplora al tocco</translation>
 <translation id="6037602951055904232">Panoramica avanti</translation>
+<translation id="604240746417122825">Errore grammaticale</translation>
 <translation id="6082768461603900813">Navigazione di base</translation>
 <translation id="609281021724813947">Nessun dispositivo di scorrimento precedente</translation>
 <translation id="6100239002225743044">Sposta in alto di una riga</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">Intestazione 4</translation>
 <translation id="6150023170003443621">Verde-giallo</translation>
 <translation id="6158882249329863701">riga <ph name="TABLECELLROWINDEX" /> colonna <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">sposta a sinistra</translation>
 <translation id="6164829606128959761">indicatore</translation>
 <translation id="6165508094623778733">Ulteriori informazioni</translation>
 <translation id="6166362019018438352">Sottotitoli braille disattivati</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">Attivare, disattivare e interrompere</translation>
 <translation id="6919104639734799681">Mostra elenco tabelle</translation>
 <translation id="692135145298539227">elimina</translation>
-<translation id="6935674530832500465">sposta giù</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6949846980769640811">Acquamarina medio</translation>
 <translation id="6951482098621102657">Nessuna intestazione di livello 5 successiva</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">Introduzione</translation>
 <translation id="827266600368092403">Inizia o termina la selezione</translation>
 <translation id="827422111966801947">Indaco</translation>
-<translation id="827496561804786391">sposta su</translation>
 <translation id="8276439074553447000">Passa a elemento attivabile precedente</translation>
 <translation id="8279039817939141096">Premi un tasto della tastiera qwerty o un tasto braille aggiornabile oppure esegui un gesto touch per imparare come funziona. Per uscire, premi Ctrl e W, spazio e Z, Esc oppure scorri verso sinistra con due dita.</translation>
 <translation id="8283603667300770666">Campo modulo successivo</translation>
 <translation id="8310185481635255431">Nessun link successivo</translation>
 <translation id="831207808878314375">Definizione</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">deseleziona tutto</translation>
 <translation id="8316881042119029234">Merletto antico</translation>
 <translation id="8324974933005349667">Personalizza le impostazioni di sintesi vocale</translation>
 <translation id="8326783648485765113">Verde prato</translation>

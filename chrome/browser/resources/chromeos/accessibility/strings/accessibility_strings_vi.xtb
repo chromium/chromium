@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Màu lam xám đen hài hòa</translation>
 <translation id="5140016802771803559">Màu tím Rebecca</translation>
 <translation id="5142101052131610456">Tất cả bài học</translation>
-<translation id="5152605892605507188">di chuyển sang phải</translation>
 <translation id="5158275234811857234">Trang bìa</translation>
 <translation id="516076699907426116">Để tiếp tục, hãy dùng tính năng khám phá bằng cách chạm để tìm nút Bài học tiếp theo. Sau đó, hãy nhấn đúp để tiếp tục.</translation>
 <translation id="5170206230005240598">Đã bật phụ đề chữ nổi</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Xám nhạt</translation>
 <translation id="6036135911048686884">Chạm để khám phá</translation>
 <translation id="6037602951055904232">Xoay về phía trước</translation>
+<translation id="604240746417122825">lỗi ngữ pháp</translation>
 <translation id="6082768461603900813">Di chuyển cơ bản</translation>
 <translation id="609281021724813947">Không có thanh trượt nào trước đó</translation>
 <translation id="6100239002225743044">Chuyển lên một dòng</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">Tiêu đề 4</translation>
 <translation id="6150023170003443621">Màu lục vàng</translation>
 <translation id="6158882249329863701">hàng <ph name="TABLECELLROWINDEX" /> cột <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">di chuyển sang trái</translation>
 <translation id="6164829606128959761">thước đo</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6166362019018438352">Đã tắt phụ đề chữ nổi</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">Bật, tắt và dừng</translation>
 <translation id="6919104639734799681">Hiển thị danh sách bảng</translation>
 <translation id="692135145298539227">xóa</translation>
-<translation id="6935674530832500465">di chuyển xuống</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6949846980769640811">Màu xanh nước biển hài hòa</translation>
 <translation id="6951482098621102657">Không có tiêu đề cấp 5 nào tiếp theo</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">Giới thiệu</translation>
 <translation id="827266600368092403">Lựa chọn bắt đầu hoặc kết thúc</translation>
 <translation id="827422111966801947">Màu chàm</translation>
-<translation id="827496561804786391">di chuyển lên</translation>
 <translation id="8276439074553447000">Nhảy tới mục có thể đặt tiêu điểm trước</translation>
 <translation id="8279039817939141096">Bạn có thể nhấn một phím trên bàn phím qwerty, phím chữ nổi có thể làm mới hoặc dùng cử chỉ chạm để tìm hiểu chức năng của chế độ này. Nhấn tổ hợp phím Control và w, phím cách và Z, vuốt sang trái bằng 2 ngón tay hoặc nhấn phím Escape để thoát.</translation>
 <translation id="8283603667300770666">Trường biểu mẫu tiếp theo</translation>
 <translation id="8310185481635255431">Không có đường liên kết nào tiếp theo</translation>
 <translation id="831207808878314375">Định nghĩa</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">bỏ chọn tất cả</translation>
 <translation id="8316881042119029234">Màu ren cũ</translation>
 <translation id="8324974933005349667">Cá nhân hóa các tùy chọn cài đặt Văn bản sang lời nói</translation>
 <translation id="8326783648485765113">Màu xanh cỏ</translation>

@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">कॉपी करा</translation>
 <translation id="135978014023467274">तुम्हाला ChromeVox 63 वर अपडेट केले गेले आहे!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> राउटिंग की मधील आयटम क्लिक करा</translation>
+<translation id="1376703628032300005">पुढील वर्णावर हलवा</translation>
 <translation id="1377925789329510816">हे अंतिम शीर्षक आहे. पहिल्या शीर्षकावर वेष्टन घालण्‍यासाठी Search+H दाबा किंवा या पेजवरील दुसर्‍या शीर्षकावर जाण्यासाठी Search+Shift+H दाबा.</translation>
 <translation id="138218114945450791">फिकट न‍िळा</translation>
 <translation id="1383876407941801731">शोधा</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">चेक बॉक्‍स</translation>
 <translation id="2461822463642141190">सद्य</translation>
 <translation id="2462626033734746142">रेडिओ बटण गट</translation>
+<translation id="2467741090055146971">निवड रद्द करा</translation>
 <translation id="2471138580042810658">मथळा 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{चौफुली}other{# चौफुली}}</translation>
 <translation id="2490721194269245365">गुलाबी तपकिरी</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">मागील मीडिया विजेट नाही</translation>
 <translation id="4855927945655956315">अत्यावश्यक की: कंट्रोल</translation>
 <translation id="4862744964787595316">ठळक नाही</translation>
+<translation id="4865995900839719272">मागील ओळीवर हलवा</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS लॉगिंग सुरू करा</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -607,7 +610,6 @@
 <translation id="5138912041966667164">गडद राखाडी निळा</translation>
 <translation id="5140016802771803559">हलका जांभळा</translation>
 <translation id="5142101052131610456">सर्व धडे</translation>
-<translation id="5152605892605507188">उजवीकडे हलवा</translation>
 <translation id="5158275234811857234">कव्हर</translation>
 <translation id="516076699907426116">पुढे सुरू ठेवण्यासाठी, पुढील धडा बटण शोधण्यासाठी स्‍पर्शाने एक्‍सप्‍लोर करा. त्यानंतर पुढे सुरू ठेवण्यासाठी दोनदा टॅप करा.</translation>
 <translation id="5170206230005240598">ब्रेल कॅप्शन सुरू केली</translation>
@@ -624,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, टॅब</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5310788376443009632">काढले:</translation>
+<translation id="5316825363044614340">पुढील ओळीवर हलवा</translation>
 <translation id="5320727453979144100">स्टिकी मोड सुरू केला</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{स्वल्पविराम}other{# स्वल्पविराम}}</translation>
 <translation id="532485153932049746">मजकूर फॉरमॅटिंग
@@ -741,6 +744,7 @@
 <translation id="6034000775414344507">फिकट राखाडी</translation>
 <translation id="6036135911048686884">टच एक्सप्लोर</translation>
 <translation id="6037602951055904232">फॉरवर्ड करणे पॅन करा</translation>
+<translation id="604240746417122825">व्याकरणासंबंधित एरर</translation>
 <translation id="6082768461603900813">मूलभूत नेव्हिगेशन</translation>
 <translation id="609281021724813947">मागील स्‍लायडर नाही</translation>
 <translation id="6100239002225743044">एक ओळ वर जा</translation>
@@ -751,7 +755,6 @@
 <translation id="6142308968191113180">मथळा 4</translation>
 <translation id="6150023170003443621">पिवळसर हिरवा</translation>
 <translation id="6158882249329863701">पंक्ती <ph name="TABLECELLROWINDEX" /> स्तंभ <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">डावीकडे हलवा</translation>
 <translation id="6164829606128959761">मीटर</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6166362019018438352">ब्रेल मथळे बंद केले</translation>
@@ -844,7 +847,6 @@
 <translation id="6910969481785184048">सुरू करा, बंद करा आणि थांबा</translation>
 <translation id="6919104639734799681">सारणी सू‍ची दर्शवा</translation>
 <translation id="692135145298539227">हटवा</translation>
-<translation id="6935674530832500465">खाली हलवा</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6949846980769640811">हलका निळसर</translation>
 <translation id="6951482098621102657">पुढील पातळी पाच शीर्षक नाही</translation>
@@ -904,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">मागील फॉर्म भाग नाही</translation>
 <translation id="731121099745151312">tr itm</translation>
+<translation id="7313717760367325059">मदत करा</translation>
 <translation id="7317017974771324508">अंशत: निवडलेले</translation>
 <translation id="7322442671176251901">स्‍पर्शाने एक्‍सप्‍लोर करा</translation>
 <translation id="7344012264516629579">अतिरिक्त जंप कमांडच्या उदाहरणांमध्ये लिंक, बटण आणि चेकबॉक्सद्वारे जंप करणे समाविष्ट आहे. जंप कमांडची संपूर्ण सूची ChromeVox मेनूमध्ये आढळू शकते, जी Search + Period दाबून उघडली जाऊ शकते.</translation>
@@ -1042,14 +1045,12 @@
 <translation id="826825447994856889">परिचय</translation>
 <translation id="827266600368092403">निवड सुरू करा किंवा संपवा</translation>
 <translation id="827422111966801947">नीळ</translation>
-<translation id="827496561804786391">वर हलवा</translation>
 <translation id="8276439074553447000">मागील फोकस करण्यायोग्य आयटमवर जा</translation>
 <translation id="8279039817939141096">त्यांच्या फंक्शनविषयी जाणून घेण्यासाठी QWERTY की, रिफ्रेश करण्यायोग्य ब्रेल की किंवा टच जेश्चर दाबा. control सह w, space सह Z दाबा, दोन बोटांनी डावीकडे स्वाइप करा किंवा बाहेर पडण्यासाठी Escape दाबा.</translation>
 <translation id="8283603667300770666">पुढील फॉर्म फील्‍ड</translation>
 <translation id="8310185481635255431">पुढील लिंक नाही</translation>
 <translation id="831207808878314375">परिभाषा</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">सर्वांची निवड रद्द करा</translation>
 <translation id="8316881042119029234">हलका पिवळा</translation>
 <translation id="8324974933005349667">टेक्‍स्‍ट टू स्‍पीच सेटिंग्ज पर्सनलाइझ करा</translation>
 <translation id="8326783648485765113">गावठी हिरवा</translation>
@@ -1133,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox ट्यूटोरियल</translation>
 <translation id="9040132695316389094">मथळा 1</translation>
 <translation id="9061884144798498064">8-बिंदू ब्रेल सारणी निवडा:</translation>
+<translation id="9063946545000394379">मागील वर्णावर हलवा</translation>
 <translation id="9065283790526219006">+पॉपअप</translation>
 <translation id="9065912140022662363">पुढील रेडिओ बटण नाही</translation>
 <translation id="9067522039955793016">पेज ब्रेक</translation>

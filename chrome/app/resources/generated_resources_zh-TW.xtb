@@ -6,7 +6,6 @@
 <translation id="1003088604756913841">在新的「<ph name="APP" />」視窗中開啟連結</translation>
 <translation id="100323615638474026">USB 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">網站存取權</translation>
-<translation id="100524763483954942">返回設定頁面</translation>
 <translation id="1005274289863221750">使用你的麥克風和相機</translation>
 <translation id="1005333234656240382">是否要啟用 ADB 偵錯？</translation>
 <translation id="1006873397406093306">這項擴充功能可以讀取及變更你造訪的網站所使用的資料。你可以自行設定要給予這項擴充功能哪些網站的存取權限。</translation>
@@ -92,6 +91,7 @@
 <translation id="1087965115100412394">禁止網站連線至 MIDI 裝置</translation>
 <translation id="1088654056000736875">Chrome 正在移除電腦中的有害軟體…</translation>
 <translation id="1088659085457112967">進入閱讀器模式</translation>
+<translation id="1089606299949659462">審查完成！</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
 <translation id="1090541560108055381">配對前，請確認兩部裝置上均顯示這組代碼</translation>
 <translation id="1091767800771861448">按下 ESCAPE 鍵可略過 (僅限非官方版本)。</translation>
@@ -773,7 +773,6 @@
 <translation id="1780273119488802839">正在匯入書籤...</translation>
 <translation id="178092663238929451">設定鄰近分享功能，即可與附近的使用者互相傳送檔案</translation>
 <translation id="1781291988450150470">目前的 PIN 碼</translation>
-<translation id="1781398670452016618"><ph name="DOMAIN" /> 要求你立即連線到 Wi-Fi 下載更新。</translation>
 <translation id="1781502536226964113">開啟新分頁</translation>
 <translation id="1781771911845953849">帳戶與同步處理</translation>
 <translation id="1781979858217752599">分享視窗音訊</translation>
@@ -1432,6 +1431,7 @@
 <translation id="2453860139492968684">結束</translation>
 <translation id="2454247629720664989">關鍵字</translation>
 <translation id="2454264884354864965">攝影機已關閉</translation>
+<translation id="2454524890947537054">要核准網頁要求嗎？</translation>
 <translation id="245650153866130664">如果要自動重新整理票證，請勾選「記住密碼」。你的密碼只會儲存在你的裝置上。</translation>
 <translation id="2457246892030921239">「<ph name="APP_NAME" />」要求複製 <ph name="VOLUME_NAME" /> 中的檔案。</translation>
 <translation id="2457842160081795172">目前為<ph name="CHANNEL_NAME" />版</translation>
@@ -1440,7 +1440,6 @@
 <translation id="2459703812219683497">已偵測到啟用代碼</translation>
 <translation id="2462724976360937186">憑證授權單位金鑰識別碼</translation>
 <translation id="2462752602710430187">已新增「<ph name="PRINTER_NAME" />」</translation>
-<translation id="2465237718053447668"><ph name="DOMAIN" /> 要求你立即連線到 Wi-Fi 下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。</translation>
 <translation id="2467755475704469005">未偵測到任何裝置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">觸控板捲動加速</translation>
 <translation id="2468205691404969808">使用 Cookie 記住你的偏好設定 (即使你沒有造訪這些網頁)</translation>
@@ -1835,6 +1834,7 @@
 <translation id="2861301611394761800">系統更新完成，請重新啟動系統。</translation>
 <translation id="2861941300086904918">Native Client 安全性管理員</translation>
 <translation id="2862815659905780618">移除 Linux 開發環境</translation>
+<translation id="2864272167277395865">選取裝置：</translation>
 <translation id="2864601841139725659">設定你的個人資料圖片</translation>
 <translation id="2865919525181940183">目前畫面上程式的螢幕截圖</translation>
 <translation id="286674810810214575">正在檢查電源...</translation>
@@ -2389,6 +2389,7 @@
 <translation id="3449393517661170867">新分頁視窗</translation>
 <translation id="3449839693241009168">按下「<ph name="SEARCH_KEY" />」即可將指令傳送給 <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">閒置狀態占用率</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新。</translation>
 <translation id="3451753556629288767">可以開啟的檔案類型</translation>
 <translation id="3452999110156026232">家長存取</translation>
 <translation id="3453612417627951340">需要授權</translation>
@@ -3243,6 +3244,7 @@
 <translation id="4364830672918311045">顯示通知</translation>
 <translation id="4366138410738374926">已開始列印</translation>
 <translation id="4369121877634339065">在任一圖片上拖曳游標即可搜尋</translation>
+<translation id="4369215744064167350">已核准網站要求</translation>
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
 <translation id="4373966964907728675">正在投放桌面</translation>
 <translation id="4374831787438678295">Linux 安裝程式</translation>
@@ -3934,6 +3936,7 @@
 <translation id="5117139026559873716">中斷手機與 <ph name="DEVICE_TYPE" /> 的連線。這兩個裝置將不再自動連線。</translation>
 <translation id="5117930984404104619">監控其他擴充功能的行為 (包括造訪過的網址)。</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">請按這裡前往 <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">系統已不再支援你 Linux 容器中的作業系統。該作業系統不會再收到安全性更新和錯誤修正項目，當前執行的功能也可能無預警停止運作。如要繼續使用 Linux，請升級至最新版本。</translation>
 <translation id="5121130586824819730">你的硬碟已滿。請選擇其他儲存位置，或清出足夠的硬碟空間。</translation>
 <translation id="5123433949759960244">籃球</translation>
@@ -4042,6 +4045,7 @@
 <translation id="523505283826916779">無障礙設定</translation>
 <translation id="5235750401727657667">取代新分頁開啟時顯示的網頁</translation>
 <translation id="5236374273162681467">如想在所有裝置上輕鬆使用密碼，可以將這些密碼移至你的 Google 帳戶</translation>
+<translation id="523862956770478816">網站權限</translation>
 <translation id="5242724311594467048">啟用「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="5243522832766285132">請稍後再試</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -4069,6 +4073,7 @@
 <translation id="5265562206369321422">離線超過一週</translation>
 <translation id="5265797726250773323">安裝時發生錯誤</translation>
 <translation id="5266113311903163739">憑證授權單位匯入錯誤</translation>
+<translation id="526622169288322445">可對「<ph name="ADDRESS_SUMMARY" />」執行的其他動作</translation>
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605982717517565">永遠允許在 <ph name="HOST" /> 執行 JavaScript</translation>
@@ -4250,6 +4255,7 @@
 <translation id="5472627187093107397">儲存這個網站的密碼</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 碼必須包含至少一個字元}other{PIN 碼必須包含至少 # 個字元}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> 要求你立即連線到 Wi-Fi 下載更新，或使用計量付費連線下載更新 (可能要支付流量費用)。</translation>
 <translation id="5481273127572794904">不得自動下載多個檔案</translation>
 <translation id="5481941284378890518">新增附近的印表機</translation>
 <translation id="5483785310822538350">撤銷檔案和裝置存取權</translation>
@@ -4672,6 +4678,7 @@
 <translation id="592880897588170157">下載 PDF 檔案，而不自動在 Chrome 中開啟</translation>
 <translation id="592919310198008711">當我點選擴充功能時</translation>
 <translation id="5932124097031739492">已成功升級 Linux。</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> 要求你立即更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5932224571077948991">網站顯示干擾性或誤導性廣告</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> USB 裝置</translation>
 <translation id="5932441198730183141">你的可用授權不足，無法註冊這部 Google Meet 設備。請與銷售人員聯絡以購買更多授權。如果你確信這是系統誤判，請與支援團隊聯絡。</translation>
@@ -4729,7 +4736,6 @@
 <translation id="5979353814339191480">這個選項適用於符合下列任一條件的 Chromebook：使用數據方案、行動網路連接器，或透過網路共用功能使用可攜式無線基地台</translation>
 <translation id="5979421442488174909">翻譯成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">如要將網頁加入書籤，請按一下網址列的星號</translation>
-<translation id="5983831175889857946">檢查完成！</translation>
 <translation id="5984222099446776634">最近造訪的網站</translation>
 <translation id="5985458664595100876">網址格式無效。支援的格式為 \\server\share 和 smb://server/share。</translation>
 <translation id="598810097218913399">移除指派設定</translation>
@@ -5330,6 +5336,7 @@
 <translation id="6635674640674343739">無法建立網路連線。請檢查網路連線，然後再試一次。</translation>
 <translation id="6635944431854494329">裝置擁有者可依序前往「設定」&gt; [進階] &gt; [自動將診斷資料和使用情況資料傳送給 Google] 來控管這項功能。</translation>
 <translation id="6635956300022133031">選取及自訂文字轉語音的聲音</translation>
+<translation id="6636623428211296678">探索下方更多設定或立即結束審查作業</translation>
 <translation id="6639554308659482635">SQLite 記憶體使用量</translation>
 <translation id="6640268266988685324">開啟分頁</translation>
 <translation id="6642720633335369752">如要查看所有已開啟的應用程式視窗，請從底部向上滑動然後按住螢幕。</translation>
@@ -5445,6 +5452,7 @@
 <translation id="6775163072363532304">可用的裝置會顯示在這裡。</translation>
 <translation id="6777817260680419853">已禁止重新導向</translation>
 <translation id="6778737459546443941">你的家長尚未核准這個網站</translation>
+<translation id="6779092717724412415">如要建立其他醒目標示內容，請選取所需文字後按一下滑鼠右鍵。</translation>
 <translation id="6779447100905857289">你的購物車</translation>
 <translation id="677965093459947883">非常小</translation>
 <translation id="6781005693196527806">管理搜尋引擎...(&amp;M)</translation>
@@ -5590,6 +5598,7 @@
 <translation id="6914783257214138813">凡是可查看匯出的檔案的使用者都能看到你的密碼。</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
 <translation id="6919868320029503575">低強度密碼</translation>
+<translation id="6919952941889172531">要一併開啟這個 Chrome 設定檔的安全瀏覽強化防護功能嗎？</translation>
 <translation id="6920989436227028121">在一般分頁中開啟</translation>
 <translation id="6921104647315081813">清除活動</translation>
 <translation id="692114467174262153">無法開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -5804,7 +5813,6 @@
 <translation id="7133578150266914903">你的管理員正在復原這個裝置 (進度：<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="7134098520442464001">縮小文字</translation>
 <translation id="7135729336746831607">要開啟藍牙功能嗎？</translation>
-<translation id="7136639886842764730"><ph name="DOMAIN" /> 要求你立即更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="7136694880210472378">設為預設</translation>
 <translation id="7136993520339022828">發生錯誤，請選擇其他圖片，然後再試一次。</translation>
 <translation id="7138515695467025690">關閉/將於日落時自動開啟</translation>
@@ -6260,6 +6268,7 @@
 <translation id="7625823789272218216">新分頁位於左側</translation>
 <translation id="7628201176665550262">重新整理頻率</translation>
 <translation id="7629827748548208700">分頁：<ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">這部裝置是由 <ph name="MANAGER" /> 所管理，你每次使用時都必須登入。</translation>
 <translation id="7631014249255418691">已成功備份 Linux 應用程式和檔案</translation>
 <translation id="7631205654593498032">連結裝置即表示您同意讓 <ph name="DEVICE_TYPE" /> 執行以下操作：</translation>
 <translation id="7631887513477658702">一律開啟這類檔案(&amp;A)</translation>
@@ -6607,6 +6616,7 @@
 <translation id="7946586320617670168">來源必須是安全來源</translation>
 <translation id="794676567536738329">確認權限</translation>
 <translation id="7947962633355574091">複製影片位址(&amp;O)</translation>
+<translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有頁面</translation>
 <translation id="7951265006188088697">如要新增或管理 Google Pay 付款方式，請前往你的 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">網站可以要求查看剪貼簿上的文字和圖片</translation>
 <translation id="795282463722894016">還原完成</translation>
@@ -7568,7 +7578,7 @@
 <translation id="8953476467359856141">充電時</translation>
 <translation id="895347679606913382">啟動中...</translation>
 <translation id="8953654039337655940">核准要求已透過 Google Family Link 應用程式和 families.google.com 傳送給一位家長。這位家長核准該要求後，你就會收到通知。</translation>
-<translation id="8957757410289731985">自訂個人資料</translation>
+<translation id="8957757410289731985">自訂檔案</translation>
 <translation id="895944840846194039">JavaScript 記憶體使用量</translation>
 <translation id="8960208913905765425">快速解答功能的單位轉換結果</translation>
 <translation id="8962051932294470566">一次只能分享一個檔案，請等待系統完成目前的傳輸作業，然後再試一次。</translation>
@@ -7672,6 +7682,7 @@
 <translation id="9053893665344928494">記住我的選擇</translation>
 <translation id="9055636786322918818">強制執行 RC4 加密。由於 RC4 加密不安全，使用這個加密選項會提高風險。</translation>
 <translation id="9056810968620647706">找不到相符項目。</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />想存取下列內容：</translation>
 <translation id="9057354806206861646">更新時間表</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 至第 <ph name="ERROR_LINE_END" /> 行有錯誤</translation>

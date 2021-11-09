@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">Pokušajte s koracima za rješavanje problema</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Više postavki</translation>
+<translation id="2104796393919810494">Popravka je završena</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Dostupno je <ph name="AVAILABLE_MEMORY" /> GB od <ph name="TOTAL_MEMORY" /> GB</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -132,6 +133,7 @@
 <translation id="315738237743207937">Otkriven je zaštitni portal</translation>
 <translation id="3170673040743561620">Stavite dokument na skener</translation>
 <translation id="3188257591659621405">Moji fajlovi</translation>
+<translation id="3192947282887913208">Audio fajlovi</translation>
 <translation id="3199982728237701504">Ulagač za dokumente (dvostrano skeniranje)</translation>
 <translation id="3226405216343213872">Traženje skenera</translation>
 <translation id="3246869037381808805">Zadaci za štampanje stariji od 1 dana će se ukloniti</translation>
@@ -161,6 +163,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (broj recenzija: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nije povezano</translation>
 <translation id="3749289110408117711">Naziv fajla</translation>
+<translation id="3771294271822695279">Video fajlovi</translation>
 <translation id="38114475217616659">Obriši svu historiju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
@@ -235,6 +238,7 @@
 <translation id="4813345808229079766">Veza</translation>
 <translation id="4832079907277790330">Odaberite folder u aplikaciji Fajlovi...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
+<translation id="4839698083503556542">Kreirajte vlastiti film</translation>
 <translation id="484790837831576105">(Android) DNS rezolucija</translation>
 <translation id="4848429997038228357">U TOKU</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostao je još {0} pokušaj}one{<ph name="ERROR_MESSAGE" /> Preostao je još {0} pokušaj}few{<ph name="ERROR_MESSAGE" /> Preostala su još {0} pokušaja}other{<ph name="ERROR_MESSAGE" /> Preostalo je još {0} pokušaja}}</translation>
@@ -347,6 +351,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="636850387210749493">Prijava preduzeća</translation>
 <translation id="6379086450106841622">Ekran na dodir</translation>
 <translation id="6388847657025262518">Ulagač za dokumente skenera se zaglavio. Provjerite ulagač i pokušajte ponovo.</translation>
+<translation id="6410257289063177456">Fajlovi slike</translation>
 <translation id="641081527798843608">Podudaranje predmeta</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabo (<ph name="SIGNAL_STRENGTH" />)</translation>

@@ -48,6 +48,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1239161794459865856">Izveidots savienojums ar funkciju <ph name="FEATURE_NAME" />.</translation>
 <translation id="1246890715821376239">Neatbalstītas lietotnes</translation>
 <translation id="1247372569136754018">Mikrofons (iebūvētais)</translation>
+<translation id="1247519845643687288">Pēdējās izmantotās lietotnes</translation>
 <translation id="1252999807265626933">Uzlādes avots: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kādi ir laikapstākļi?</translation>
 <translation id="1266097335951928626">Ieslēgt pašbilžu kameru</translation>
@@ -61,6 +62,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1289185460362160437">Atgriezieties šajā dienā: <ph name="COME_BACK_DAY_OF_WEEK" />, plkst. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Vājš signāls</translation>
 <translation id="1293264513303784526">USB-C ierīce (pieslēgvieta pa kreisi)</translation>
+<translation id="1293556467332435079">Faili</translation>
 <translation id="1294929383540927798">Mainiet bloķēšanas ekrāna paziņojumu rādīšanas iestatījumus</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Rādīt Bluetooth iestatījumus. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1419738280318246476">Atbloķējiet ierīci, lai veiktu paziņojuma darbību</translation>
 <translation id="1420408895951708260">Pārslēgt nakts režīmu. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Jā</translation>
+<translation id="1438357537418863713">Lietotņu straumēšana tagad ir iestatīta. Kad sāksiet to izmantot, šeit būs redzamas nesen palaistās lietotnes.</translation>
 <translation id="144853431011121127">Saņemiet paziņojumus no sava tālruņa savā <ph name="DEVICE_TYPE" /> ierīcē.</translation>
 <translation id="1455242230282523554">Rādīt valodas iestatījumus</translation>
 <translation id="1460620680449458626">Skaņa ir izslēgta.</translation>
@@ -246,6 +249,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Iziet no uzņemšanas režīma</translation>
 <translation id="2792498699870441125">Alt+Meklēt</translation>
+<translation id="2805756323405976993">Lietotnes</translation>
 <translation id="2814448776515246190">Daļēja ekrāna uzņemšana</translation>
 <translation id="2819276065543622893">Jūs tagad tiksiet izrakstīts.</translation>
 <translation id="28232023175184696">Nevar izveidot savienojumu ar internetu. Noklikšķiniet, lai mēģinātu vēlreiz.</translation>
@@ -374,6 +378,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3665889125180354336">Ierakstīt mikrofona skaņu</translation>
 <translation id="3680908746918359504">Notīrīt visas atzīmes</translation>
 <translation id="36813544980941320">Wi-Fi tīkli tiks kopīgoti jūsu tālrunī un <ph name="DEVICE_NAME" /> ierīcē.</translation>
+<translation id="3694122362646626770">Vietnes</translation>
 <translation id="3701206655856637070">Tagad varat mainīt, kur tiek saglabāti ekrānuzņēmumi.</translation>
 <translation id="3702809606464356667">Tiek rādīti pašreizējās darbvietas logi. Nospiediet augšupvērsto bulttaustiņu, lai tiktu rādīti visu darbvietu logi.</translation>
 <translation id="3702846122927433391">Nigērijas iedzīvotāju skaits</translation>
@@ -535,6 +540,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4759238208242260848">Lejupielādes</translation>
 <translation id="4774338217796918551">Atgriezieties plkst. <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Parole e-pasta adresei <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play veikals</translation>
 <translation id="4778095205580009397">Google asistents nav pieejams demonstrācijas sesijā.</translation>
 <translation id="4782311465517282004">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot</translation>
 <translation id="479989351350248267">meklēt</translation>
@@ -590,6 +596,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
 <translation id="5147567197700016471">Atbloķēts</translation>
 <translation id="5155897006997040331">Lasīšanas ātrums</translation>
+<translation id="5166007464919321363">Saglabāt darbvietu kā veidni</translation>
 <translation id="5166918508782100047">Ātro atbilžu iestatījumi</translation>
 <translation id="5168181903108465623">Pieejamas apraides ierīces</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
@@ -799,6 +806,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="6777216307882431711">Ar USB-C savienojumu notiek vairāku ierīču darbināšana</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6803622936009808957">Nevarēja spoguļot displejus, jo netika atrasta atbalstīta izšķirtspēja. Tā vietā tika aktivizēts paplašinātās darbvirsmas režīms.</translation>
+<translation id="6811454077060061666">Google disks datoram nav pieejams.</translation>
 <translation id="6816797338148849397">Ir pieejama informācija, kas saistīta ar jūsu atlasīto saturu. Lai piekļūtu informācijai, nospiediet augšupvērsto bulttaustiņu.</translation>
 <translation id="6818242057446442178">Pāriet atpakaļ pa vārdam</translation>
 <translation id="6820676911989879663">Laiks pārtraukumam</translation>
@@ -933,6 +941,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7796353162336583443">Pieskarieties skārienekrāna pildspalvas pogai plauktā, lai veiktu piezīmes vai ekrānuzņēmumus, izmantotu Google asistentu, lāzera rādītāju vai lupu.</translation>
 <translation id="7798302898096527229">Lai atceltu, nospiediet meklēšanas vai pārslēgšanas taustiņu.</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
+<translation id="7807067443225230855">Meklēšana un Asistents</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> un <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Spēcīgs signāls</translation>
 <translation id="7837740436429729974">Laiks ir beidzies!</translation>
@@ -997,6 +1006,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Lai atbloķētu ar kontu <ph name="USER_EMAIL_ADDRESS" />, nospiediet taustiņu Enter</translation>
 <translation id="8261506727792406068">Dzēst</translation>
+<translation id="8281279285293265212">Neizdevās saglabāt ekrānierakstu.</translation>
 <translation id="8284362522226889623">Lai pārslēgtos uz iepriekšējo darbvietu, ar četriem pirkstiem velciet pa kreisi</translation>
 <translation id="828708037801473432">Izslēgts</translation>
 <translation id="8297006494302853456">Vājš</translation>
@@ -1101,6 +1111,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="9070640332319875144">Asistenta iestatījumi</translation>
 <translation id="9072519059834302790">Atlikušais akumulatora darbības laiks: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Veidnes</translation>
 <translation id="9077515519330855811">Multivides vadīklas, tagad atskaņo: <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi adrese: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Velciet augšup, lai pārietu uz sākuma ekrānu.</translation>

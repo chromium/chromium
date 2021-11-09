@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Portal terbolot dikesan</translation>
 <translation id="3170673040743561620">Letakkan dokumen anda di atas pengimbas</translation>
 <translation id="3188257591659621405">Fail saya</translation>
+<translation id="3192947282887913208">Fail Audio</translation>
 <translation id="3199982728237701504">Penyuap Dokumen (Dwisisi)</translation>
 <translation id="3226405216343213872">Mencari pengimbas</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Disambung</translation>
 <translation id="3749289110408117711">Nama fail</translation>
+<translation id="3771294271822695279">Fail Video</translation>
 <translation id="38114475217616659">Kosongkan semua sejarah</translation>
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">Sambungan</translation>
 <translation id="4832079907277790330">Pilih folder dalam apl Files...</translation>
 <translation id="4835901797422965222">Tiada rangkaian aktif</translation>
+<translation id="4839698083503556542">Buat filem anda sendiri</translation>
 <translation id="484790837831576105">Peleraian DNS (Android)</translation>
 <translation id="4848429997038228357">BERJALAN</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} percubaan lagi}other{<ph name="ERROR_MESSAGE" /> {0} percubaan lagi}}</translation>
@@ -347,6 +350,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
 <translation id="6379086450106841622">Skrin sentuh</translation>
 <translation id="6388847657025262518">Penyuap dokumen pengimbas tersekat. Semak penyuap dan cuba lagi.</translation>
+<translation id="6410257289063177456">Fail Imej</translation>
 <translation id="641081527798843608">Padanan subjek</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>

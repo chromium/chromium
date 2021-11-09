@@ -607,7 +607,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="5138912041966667164">Miðlungsgráblár</translation>
 <translation id="5140016802771803559">Rebekkupurpurarauður</translation>
 <translation id="5142101052131610456">Allar kennslusíður</translation>
-<translation id="5152605892605507188">færa til hægri</translation>
 <translation id="5158275234811857234">Forsíða</translation>
 <translation id="516076699907426116">Til að halda áfram skaltu nota snertikönnun til að finna hnappinn Næsta leiðsagnaratriði. Ýttu síðan tvisvar til að halda áfram.</translation>
 <translation id="5170206230005240598">Kveikt á blindraletursskýringum</translation>
@@ -741,6 +740,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="6034000775414344507">Ljósgrár</translation>
 <translation id="6036135911048686884">Snertikönnun</translation>
 <translation id="6037602951055904232">Skima áfram</translation>
+<translation id="604240746417122825">málfræðivilla</translation>
 <translation id="6082768461603900813">Grunnatriði flettingar</translation>
 <translation id="609281021724813947">Engin fyrri sleði</translation>
 <translation id="6100239002225743044">Færa upp um eina línu</translation>
@@ -751,7 +751,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="6142308968191113180">Fyrirsögn 4</translation>
 <translation id="6150023170003443621">Gulgrænn</translation>
 <translation id="6158882249329863701">lína <ph name="TABLECELLROWINDEX" /> dálkur <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">færa til vinstri</translation>
 <translation id="6164829606128959761">mælir</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6166362019018438352">Slökkt á blindraletursskýringum</translation>
@@ -844,7 +843,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="6910969481785184048">Kveikja, slökkva og hætta</translation>
 <translation id="6919104639734799681">Sýna töflulista</translation>
 <translation id="692135145298539227">eyða</translation>
-<translation id="6935674530832500465">færa niður</translation>
 <translation id="6945221475159498467">Velja</translation>
 <translation id="6949846980769640811">Miðlungssægrænn</translation>
 <translation id="6951482098621102657">Engin næsta 5. stigs fyrirsögn</translation>
@@ -1042,14 +1040,12 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="826825447994856889">Inngangur</translation>
 <translation id="827266600368092403">Hefja eða ljúka vali</translation>
 <translation id="827422111966801947">Dimmfjólublár</translation>
-<translation id="827496561804786391">færa upp</translation>
 <translation id="8276439074553447000">Fara í fyrra atriði sem hægt er að setja fókus á</translation>
 <translation id="8279039817939141096">Ýttu á qwerty-lykil, blindraleturslykil sem hægt er að endurnýja eða snertibendingu til að fræðast um virknina. Ýttu á Control og w, bilslá og Z, strjúktu til vinstri með tveimur fingrum eða ýttu á Esc til að loka.</translation>
 <translation id="8283603667300770666">Næsti reitur eyðublaðs</translation>
 <translation id="8310185481635255431">Enginn næsti tengill</translation>
 <translation id="831207808878314375">Skilgreining</translation>
 <translation id="8313653172105209786">mappa</translation>
-<translation id="8314546933558091113">afturkalla val á öllu</translation>
 <translation id="8316881042119029234">Kremhvítur</translation>
 <translation id="8324974933005349667">Sérsníða talgervil</translation>
 <translation id="8326783648485765113">Grasgrænn</translation>

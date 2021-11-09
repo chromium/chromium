@@ -132,6 +132,7 @@
 <translation id="315738237743207937">ተያዥ መግቢያ ተገኝቷል</translation>
 <translation id="3170673040743561620">ሰነድዎን በቃኚው ላይ ያስቀምጡት</translation>
 <translation id="3188257591659621405">የእኔ ፋይሎች</translation>
+<translation id="3192947282887913208">የድምጽ ፋይሎች</translation>
 <translation id="3199982728237701504">ሰነድ መጋቢ (ባለሁለት ጎን)</translation>
 <translation id="3226405216343213872">ቃኚዎችን በመፈለግ ላይ</translation>
 <translation id="3246869037381808805">ከ1 ቀን በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ግምገማዎች)</translation>
 <translation id="3748026146096797577">አልተገናኘም</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
+<translation id="3771294271822695279">የቪዲዮ ፋይሎች</translation>
 <translation id="38114475217616659">ሁሉንም የዕይታ ታሪክ አፅዳ</translation>
 <translation id="3820172043799983114">ልክ ያልኾነ ፒን።</translation>
 <translation id="3838338534323494292">አዲስ የይለፍ ቃል</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">ማገናኘት</translation>
 <translation id="4832079907277790330">በፋይሎች መተግበሪያ ውስጥ አቃፊን ይምረጡ...</translation>
 <translation id="4835901797422965222">ምንም ንቁ አውታረ መረቦች የሉም</translation>
+<translation id="4839698083503556542">የራስዎን ፊልም ይፍጠሩ</translation>
 <translation id="484790837831576105">(Android) የዲኤንኤስ መፍትሔ</translation>
 <translation id="4848429997038228357">በማሄድ ላይ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ሙከራ ቀርቷል}one{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}other{<ph name="ERROR_MESSAGE" /> {0} ሙከራዎች ቀርተዋል}}</translation>
@@ -347,6 +350,7 @@
 <translation id="636850387210749493">የድርጅት ምዝገባ</translation>
 <translation id="6379086450106841622">መነካት የሚችል ማያ</translation>
 <translation id="6388847657025262518">የቃኚው ሰነድ መጋቢ ተቀርቅሯል። መጋቢውን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
+<translation id="6410257289063177456">የምስል ፋይሎች</translation>
 <translation id="641081527798843608">የርዕሰ ጉዳይ ተዛማጅ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ደካማ (<ph name="SIGNAL_STRENGTH" />)</translation>

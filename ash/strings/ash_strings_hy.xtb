@@ -62,6 +62,7 @@
 <translation id="1289185460362160437">Սարքը հասանելի կլինի <ph name="COME_BACK_DAY_OF_WEEK" />, <ph name="COME_BACK_TIME" />։</translation>
 <translation id="1290331692326790741">Թույլ ազդանշան</translation>
 <translation id="1293264513303784526">USB-C սարք (ձախ միացք)</translation>
+<translation id="1293556467332435079">Ֆայլեր</translation>
 <translation id="1294929383540927798">Փոխել կողպէկրանի ծանուցումների կարգավորումները</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Ցուցադրել Bluetooth-ի կարգավորումները: <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="2782591952652094792">Դուրս գալ տեսագրման ռեժիմից</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2805756323405976993">Հավելվածներ</translation>
 <translation id="2814448776515246190">Էկրանի մի մասի տեսագրում</translation>
 <translation id="2819276065543622893">Դուք հիմա դուրս կգրվեք:</translation>
 <translation id="28232023175184696">Չհաջողվեց միանալ ինտերնետին։ Սեղմեք՝ նորից փորձելու համար:</translation>
@@ -376,6 +378,7 @@
 <translation id="3665889125180354336">Ձայնագրում</translation>
 <translation id="3680908746918359504">Ջնջել բոլոր նշիչները</translation>
 <translation id="36813544980941320">Ձեր հեռախոսում և <ph name="DEVICE_NAME" />-ում կօգտագործվեն նույն Wi-Fi ցանցերը</translation>
+<translation id="3694122362646626770">Վեբկայքեր</translation>
 <translation id="3701206655856637070">Այժմ դուք կարող եք ընտրել պանակ, որում կպահվեն էկրանի տեսագրումները։</translation>
 <translation id="3702809606464356667">Ցուցադրվում են պատուհաններ ընթացիկ աշխատասեղանից։ Սեղմեք վեր սլաքի ստեղնը՝ բոլոր աշխատասեղանների պատուհանները ցուցադրելու համար։</translation>
 <translation id="3702846122927433391">Նիգերիայի բնակչությունը</translation>
@@ -537,6 +540,7 @@
 <translation id="4759238208242260848">Ներբեռնումներ</translation>
 <translation id="4774338217796918551">Սարքը հասանելի կլինի վաղը, <ph name="COME_BACK_TIME" />։</translation>
 <translation id="4776917500594043016">Գաղտնաբառ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
+<translation id="4777825441726637019">Play Խանութ</translation>
 <translation id="4778095205580009397">Google Օգնականը հասանելի չէ դեմո աշխատաշրջանում։</translation>
 <translation id="4782311465517282004">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։</translation>
 <translation id="479989351350248267">search</translation>
@@ -937,6 +941,7 @@
 <translation id="7796353162336583443">Հպեք դարակի վրայի ստիլուսի կոճակը՝ գրառում կատարելու կամ սքրինշոթ լուսանկարելու, ինչպես նաև Օգնականը, լազերային ցուցիչը կամ խոշորացույցն օգտագործելու համար:</translation>
 <translation id="7798302898096527229">Չեղարկելու համար սեղմեք Search կամ Shift:</translation>
 <translation id="780301667611848630">Ոչ</translation>
+<translation id="7807067443225230855">Որոնում և Օգնական</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Ուժեղ ազդանշան</translation>
 <translation id="7837740436429729974">Ժամանակը սպառվել է</translation>

@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Помірний грифельно-синій</translation>
 <translation id="5140016802771803559">Темно-пурпуровий</translation>
 <translation id="5142101052131610456">Усі уроки</translation>
-<translation id="5152605892605507188">перемістити праворуч</translation>
 <translation id="5158275234811857234">Обкладинка</translation>
 <translation id="516076699907426116">Щоб продовжити, дотиком знайдіть кнопку "Наступний урок" і двічі торкніться її.</translation>
 <translation id="5170206230005240598">Брайлівські субтитри ввімкнено</translation>
@@ -752,7 +751,6 @@
 <translation id="6142308968191113180">Заголовок 4</translation>
 <translation id="6150023170003443621">Жовто-зелений</translation>
 <translation id="6158882249329863701">рядок <ph name="TABLECELLROWINDEX" />, стовпець <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">перемістити ліворуч</translation>
 <translation id="6164829606128959761">вимірювач</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6166362019018438352">Брайлівські субтитри вимкнено</translation>
@@ -845,7 +843,6 @@
 <translation id="6910969481785184048">Як увімкнути, вимкнути чи припинити роботу ChromeVox</translation>
 <translation id="6919104639734799681">Показати список таблиць</translation>
 <translation id="692135145298539227">видалити</translation>
-<translation id="6935674530832500465">перемістити вниз</translation>
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6949846980769640811">Помірний аквамарин</translation>
 <translation id="6951482098621102657">Немає наступного заголовка рівня 5</translation>
@@ -1042,14 +1039,12 @@
 <translation id="826825447994856889">Вступ</translation>
 <translation id="827266600368092403">Почати або закінчити вибір</translation>
 <translation id="827422111966801947">Індиго</translation>
-<translation id="827496561804786391">перемістити вгору</translation>
 <translation id="8276439074553447000">Перейти до попереднього інтерактивного елемента</translation>
 <translation id="8279039817939141096">Натисніть клавішу на фізичній клавіатурі, клавішу на оновлюваному брайлівському дисплеї або виконайте жест дотиком, щоб дізнатися про функції кожного елемента. Щоб вийти з цього режиму, натисніть комбінації клавіш Ctrl + w або пробіл + Z. Ви також можете для цього натиснути клавішу Esc або провести двома пальцями вліво.</translation>
 <translation id="8283603667300770666">Наступне поле форми</translation>
 <translation id="8310185481635255431">Немає наступного посилання</translation>
 <translation id="831207808878314375">Визначення</translation>
 <translation id="8313653172105209786">каталог</translation>
-<translation id="8314546933558091113">скасувати виділення</translation>
 <translation id="8316881042119029234">Старе мереживо</translation>
 <translation id="8324974933005349667">Персоналізувати налаштування синтезу мовлення</translation>
 <translation id="8326783648485765113">Зелена галявина</translation>

@@ -62,6 +62,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1289185460362160437">Revino <ph name="COME_BACK_DAY_OF_WEEK" /> la <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Semnal slab</translation>
 <translation id="1293264513303784526">Dispozitiv USB-C (portul din stânga)</translation>
+<translation id="1293556467332435079">Fișiere</translation>
 <translation id="1294929383540927798">Modifică setările pentru notificările de pe ecranul de blocare</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Afișează setările Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2778650143428714839">Dispozitivul <ph name="DEVICE_TYPE" /> gestionat de <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ieși din modul de capturare</translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
+<translation id="2805756323405976993">Aplicații</translation>
 <translation id="2814448776515246190">Captură parțială</translation>
 <translation id="2819276065543622893">Veți fi deconectat(ă) acum.</translation>
 <translation id="28232023175184696">Nu ne putem conecta la internet. Dă clic pentru a încerca din nou.</translation>
@@ -376,6 +378,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3665889125180354336">Înregistrare audio</translation>
 <translation id="3680908746918359504">Șterge toate markerele</translation>
 <translation id="36813544980941320">Se va permite accesul la rețelele Wi-Fi de pe telefon și de pe <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Site-uri</translation>
 <translation id="3701206655856637070">Acum poți schimba locul în care se salvează capturile de ecran</translation>
 <translation id="3702809606464356667">Se afișează ferestrele de pe desktopul actual. Apasă tasta săgeată în sus pentru a afișa ferestrele de pe toate desktopurile.</translation>
 <translation id="3702846122927433391">Populația Nigeriei</translation>
@@ -537,6 +540,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4759238208242260848">Descărcări</translation>
 <translation id="4774338217796918551">Revino mâine la <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Parolă pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Magazin Play</translation>
 <translation id="4778095205580009397">Asistentul Google nu este disponibil într-o sesiune demonstrativă.</translation>
 <translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
 <translation id="479989351350248267">căutați</translation>
@@ -937,6 +941,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7796353162336583443">Atinge butonul creion de pe raft ca să creezi note și capturi de ecran, să folosești Asistentul Google, indicatorul laser sau lupa.</translation>
 <translation id="7798302898096527229">Apasă pe tasta de căutare sau pe Shift pentru a anula.</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
+<translation id="7807067443225230855">Căutarea și Asistentul</translation>
 <translation id="7814236020522506259"><ph name="HOUR" />:<ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Semnal puternic</translation>
 <translation id="7837740436429729974">Timpul a expirat!</translation>

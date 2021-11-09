@@ -3,8 +3,10 @@
 <translationbundle lang="pl">
 <translation id="1113173431709655881">Tryb kamery</translation>
 <translation id="1175958423215084756">Wykryto link. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Obróć o 90 stopni w prawo</translation>
 <translation id="1276998909102132017">Zdjęcia z galerii</translation>
 <translation id="1300209025925956156">Skanowanie dokumentu</translation>
+<translation id="1303487788671416818">Włącz funkcję stopklatki w pełnym rozmiarze</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Wyszukaj + strzałka w lewo, aby przejść.</translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1467231725790366244">Odłączono kamerę <ph name="CAMERA" />.</translation>
@@ -54,6 +56,7 @@
 <translation id="3517926952904427380">Nie można zrobić zdjęcia w orientacji pionowej</translation>
 <translation id="3569311554794739032">Czy na pewno chcesz usunąć plik <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Przełącz w tryb skanowania</translation>
+<translation id="3789724198583203151">Obróć o 90 stopni w lewo</translation>
 <translation id="3810838688059735925">Wideo</translation>
 <translation id="3838931309141338733">Zeskanuj kod kreskowy</translation>
 <translation id="3892148308691398805">Kopiuj tekst</translation>

@@ -700,6 +700,16 @@
 <translation id="1862267110714201519">停用“ghost 窗口”功能。</translation>
 <translation id="1865417998205858223">密钥使用权限</translation>
 <translation id="186719019195685253">当闲置延迟时间已过且使用交流电源供电时执行的操作</translation>
+<translation id="1881649377321404593">
+      此政策已从 M80 中移除，因为 WebDriver 现已与所有现行政策兼容，不再需要此政策。
+
+      此政策允许 WebDriver 功能的用户覆盖那些可能会干扰该功能运行的政策。
+
+      目前，此政策可停用 SitePerProcess 和 IsolateOrigins 政策。
+
+      如果此政策已启用，WebDriver 将能够覆盖与之冲突的政策。
+
+      如果此政策已停用或未配置，WebDriver 将无法覆盖与之冲突的政策。</translation>
 <translation id="1885782360784839335">允许使用整个标签页显示宣传内容</translation>
 <translation id="1888871729456797026">云政策在桌面设备上的注册令牌</translation>
 <translation id="1894790493260633497">默认启用背景图片打印模式</translation>
@@ -1954,6 +1964,13 @@
       可使用通配符“*”匹配 0 个或更多个任意字符。转义字符是“\”，因此要匹配实际的“*”或“\”字符，请在这些字符前面添加“\”。
 
       如果此政策未设置，则设备上的所有 Google 帐号都会显示在 <ph name="PRODUCT_NAME" /> 中。</translation>
+<translation id="3243793808000947475">如果此政策已停用，系统将无法启动远程支持主机，也无法将该主机配置为接受传入连接。
+
+          此政策不影响远程访问场景。
+
+          此政策不会阻止企业管理员连接到受管 Chrome 操作系统设备。
+
+          如果已启用、留空或未设置，此政策将不会产生任何影响。</translation>
 <translation id="3251500716404598358">配置政策以在浏览器之间切换。
 
       配置的网站将自动在其他浏览器（而非 <ph name="PRODUCT_NAME" />）中打开。</translation>
@@ -2173,6 +2190,7 @@
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3540935459049973317">应用级时间限制</translation>
 <translation id="3547954654003013442">代理设置</translation>
+<translation id="3548642468619496972">拦截恶意下载内容、不常见或不需要的下载内容以及危险文件类型。</translation>
 <translation id="3550122827225052130">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />。
 
           指定当使用交流电源供电时系统应在设备闲置多久后锁定屏幕。
@@ -2736,6 +2754,16 @@
       从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
+<translation id="4268014245533736105">Chrome 会阻止在沙盒化 iframe 内导航到外部协议。请参阅 https://chromestatus.com/features/5680742077038592。
+
+      如果此政策设为 True，Chrome 会阻止此类导航。
+
+      如果此政策设为 False，Chrome 将无法阻止此类导航。
+
+      此政策默认设为 True：安全功能已启用。
+
+      如果管理员需要更多时间来更新受这项新限制影响的内部网站，则可以使用此政策。这项企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 104 版之后移除。
+      </translation>
 <translation id="4268586991084547853">更好地兼容 Microsoft IE/Edge 企业模式 sitelist。</translation>
 <translation id="4269859918103560644">允许用户决定</translation>
 <translation id="4274691295133617461">如果此政策设为 3，系统会允许网站通过 File System API 请求对主机操作系统的文件系统中的文件和目录的读取权限。如果此政策设为 2，系统会禁止网站请求访问。
@@ -2885,6 +2913,7 @@
 <translation id="4494132853995232608">Wilco DTC</translation>
 <translation id="449423975179525290">配置与 <ph name="PLUGIN_VM_NAME" /> 相关的政策。</translation>
 <translation id="449784980858429908">自动授权网站连接所有串行端口。</translation>
+<translation id="450080746522343150">拦截所有下载内容。</translation>
 <translation id="4510923771103268849">允许用户拥有 Crostini 容器的 root 权限</translation>
 <translation id="4513691822411041977">不强制在 Google 搜索中使用安全搜索功能，也不强制使用 YouTube 受限模式</translation>
 <translation id="4515404363392014383">针对可信来源启用安全浏览功能</translation>
@@ -2985,6 +3014,7 @@
       如果此政策设为 true 或未设置，用户将能够在设备上执行网络数据包捕获流程。
       如果此政策设为 false，用户将无法在设备上执行网络数据包捕获流程。</translation>
 <translation id="4600786265870346112">启用大号光标</translation>
+<translation id="4602988345256038309">允许与这台计算机建立远程支持连接</translation>
 <translation id="4607416370554533118">通过设置此政策，您可以指定一系列网址格式，从而指定 Chrome 可为哪些网站自动选择客户端证书。此政策的值是一个由字符串化的 JSON 字典组成的数组，每个字典条目都必须采用 <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" /> 格式，其中 <ph name="URL_PATTERN_PLACEHOLDER" /> 是内容设置格式。<ph name="FILTER_PLACEHOLDER" /> 会限制浏览器可自动从哪些客户端证书中进行选择。无论是否设置了过滤器，系统都只会选择与服务器的证书请求相匹配的证书。
 
       <ph name="FILTER_PLACEHOLDER" /> 部分的用法示例：
@@ -3630,6 +3660,7 @@
           如果此政策已停用，系统会强制停用该功能。
           </translation>
 <translation id="5435888298115339571">在多功能框和三点状菜单中启用桌面分享功能</translation>
+<translation id="5441508088704391614">无特殊限制。默认。</translation>
 <translation id="5442026853063570579">此政策亦用于控制对 Android 开发者选项的访问权限。如果此政策设为“DeveloperToolsDisallowed”（值为 2），用户将无法访问开发者选项。如果此政策设为其他值或未设置，用户只需在 Android 的“设置”应用中连续点按 7 次版本号即可访问开发者选项。</translation>
 <translation id="5443582909255996887">如果此政策已启用，系统会在 Android 设备上隔离所有网站以使每个网站都在自己的进程内运行，并禁止用户选择停用此设置。网站的网址格式为架构加上 eTLD+1（例如，https://example.com）。请注意，从 <ph name="PRODUCT_NAME" /> 77 版起，Android 会默认隔离某些敏感网站，而此政策会将这个默认网站隔离模式应用到所有网站。
 
@@ -4086,6 +4117,12 @@
 <translation id="5997543603646547632">默认情况下，使用24小时制</translation>
 <translation id="5997846976342452720">指定是否应停用插件查找器（已弃用）</translation>
 <translation id="5998198091336830580">此政策是下面这个原子政策组的一部分（系统仅会应用该组中来源优先级最高的政策）：</translation>
+<translation id="6004575267180297869">
+      指定能否跨源将 WebAssembly 模块发送到另一窗口或工作器。为了弃用 document.domain，我们采取了诸多举措，其中一项举措便是即将弃用跨源 WebAssembly 模块共享功能。请参见 https://github.com/mikewest/deprecating-document-domain。此政策允许重新启用跨源 WebAssembly 模块共享功能，以延长弃用过程中的过渡期。
+
+      如果此政策设为 True，网站不仅能发送 WebAssembly 模块，而且能不受限制地跨源发送。
+
+      如果此政策设为 False 或未设置，网站只能将 WebAssembly 模块发送到同源的窗口和工作器。</translation>
 <translation id="6009062900206392980">将此政策设为 None 时，系统会在登录屏幕上关闭屏幕放大功能。
 
        如果您设置了此政策，用户便可暂时开启或关闭放大镜。当登录屏幕重新加载或闲置了 1 分钟后，放大镜就会还原为初始状态。
@@ -4161,6 +4198,27 @@
 <translation id="6102449843040973938">允许 <ph name="BOREALIS_NAME" /> 在设备上运行</translation>
 <translation id="6107642964266628393">控制何时以何种方式应用 Chrome 操作系统更新。</translation>
 <translation id="6111936128861357925">允许用户玩恐龙复活节彩蛋游戏</translation>
+<translation id="6112524153927257380">如果您设置了此政策，用户便无法绕过下载安全性决策。
+
+      Chrome 中有很多类型的下载警告，这些警告大致分为以下类别（如需详细了解“安全浏览”功能的判定结果，请访问 https://support.google.com/chrome/?p=ib_download_blocked）：
+
+      * 恶意，由“安全浏览”服务器标记
+      * 不常见或不需要，由“安全浏览”服务器标记
+      * 危险文件类型（例如，所有 SWF 下载内容和很多 EXE 下载内容）
+
+      通过设置此政策，您可以拦截这些下载内容的不同子集，具体取决于此政策的值：
+
+      0：无特殊限制。默认。
+
+      1：拦截已被“安全浏览”服务器标记的恶意文件以及所有危险文件类型。仅推荐用于对误判有较高容忍度的单位部门/浏览器/用户。
+
+      2：拦截已被“安全浏览”服务器标记的恶意文件、不常见或不需要的文件，以及所有危险文件类型。仅推荐用于对误判有较高容忍度的单位部门/浏览器/用户。
+
+      3：拦截所有下载内容。不推荐，特殊使用情形除外。
+
+      4：拦截已被“安全浏览”服务器标记的恶意文件，但不拦截危险文件类型。推荐。
+
+      注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于下载当前显示的页面，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
 <translation id="6123052603197028610">不允许向 Google 服务器发送检索时间戳的查询</translation>
 <translation id="6132506775968708399">禁用第三方 Cookie</translation>
 <translation id="6133088669883929098">允许所有网站使用密钥生成功能</translation>
@@ -4241,6 +4299,7 @@
       借助此政策，当企业使用的安全软件设置会干扰音频沙盒时，他们就能够灵活地停用沙盒。</translation>
 <translation id="624818583115864448">端口 554（可在 2021 年 10 月 15 日之前解禁）</translation>
 <translation id="6252773211180267325">允许用户运行 <ph name="BOREALIS_NAME" /></translation>
+<translation id="6258658183356534534">控制 User-Agent Client Hints GREASE Update 功能。</translation>
 <translation id="6261643884958898336">报告机器标识信息</translation>
 <translation id="6265892395051519509">允许在这些网站上使用传感器</translation>
 <translation id="6273015149273504999">
@@ -4267,6 +4326,7 @@
       如需详细了解 <ph name="CORS" />，请访问：<ph name="CORS_HELP_URL" />。
 
       请注意，我们曾宣布将在 <ph name="PRODUCT_NAME" /> 82 版中移除此政策，但已改为在 84 版中移除。</translation>
+<translation id="627672037430076089">禁止与这台计算机建立远程支持连接</translation>
 <translation id="6277314550042130537">在 HTTP 身份验证期间使用 KDC 政策审批结果</translation>
 <translation id="6279722058145292462">通过设置此政策，您可以指定客户端对其机器帐号密码的更改频率（以天为单位）。密码是由客户端随机生成的，不会显示给用户。停用此政策或设置较多的天数可能会对安全性产生不利影响，因为这会让潜在攻击者有更多时间来找出并使用机器帐号密码。
 
@@ -4322,6 +4382,7 @@
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。
 
           仅当闲置操作为注销或关机时，系统才会显示警告消息。</translation>
+<translation id="6331943515692769234">强制使用旧版 User-Agent GREASE 算法。</translation>
 <translation id="6332546092866098577">禁止在这些网站上通过 File System API 读取内容</translation>
 <translation id="6334330017384340264">此政策用于指定哪些应用和网址可以不受应用级使用限制的约束。
         所配置的许可名单会应用于 <ph name="PRODUCT_OS_NAME" />上安装的应用，这些应用针对给定用户设置了应用级使用时限。
@@ -4660,6 +4721,12 @@
 
       注意：此政策还会影响要使用 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 强制安装的扩展程序和应用。</translation>
 <translation id="6731757988219967594">滤除提供成人内容的顶级网站（但不滤除嵌入式 iframe）</translation>
+<translation id="6733851879899284032">
+      用于指定 SharedArrayBuffers 可否用在未进行跨域隔离的情境中。出于网络兼容性方面的原因，从 <ph name="PRODUCT_NAME" /> 91 (2021-05-25) 开始，<ph name="PRODUCT_NAME" /> 会要求网站在使用 SharedArrayBuffers 时进行跨域隔离。如需了解更多详情，请访问 https://developer.chrome.com/blog/enabling-shared-array-buffer/。
+
+      如果此政策已启用，网站将能够随意使用 SharedArrayBuffer，不受任何限制。
+
+      如果此政策已停用或未设置，则意味着只有在进行了跨域隔离的情况下，网站才能使用 SharedArrayBuffers。</translation>
 <translation id="6735701345096330595">强制检查语言拼写</translation>
 <translation id="6740611636377710500">允许该用户运行 PluginVm。
 
@@ -4851,6 +4918,9 @@
 <translation id="6929746927224321095">停用“自动填充”功能</translation>
 <translation id="6931242315485576290">停用与 Google 同步数据的功能</translation>
 <translation id="6940243892299228102">不允许用户使用桌面模板</translation>
+<translation id="694071740172924905">如果此政策已启用，User-Agent Client Hints GREASE Update 功能会使 User-Agent GREASE 算法与最新规范保持一致。
+      如果某些网站限制了请求中可包含的字符，更新后的规范可能会导致这些网站无法正常响应。如需了解详情，请参阅以下规范：https://wicg.github.io/ua-client-hints/#grease
+      如果此政策已启用或未设置，User-Agent Client Hints GREASE Update 功能会处于启用状态。如果此政策已停用，系统会使用旧版 User-Agent GREASE 算法。</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好设置名称：</translation>
 <translation id="6946652757373377924">
       此政策已从 M77 中移除。
@@ -5211,6 +5281,7 @@
 
       如果未设置此政策，默认情况下，受企业管理的用户不能使用即时网络共享功能，不受管理的用户则能够使用即时网络共享功能。</translation>
 <translation id="7295019613773647480">启用受监管用户</translation>
+<translation id="7297476773981993405">允许运行更新后的 User-Agent GREASE 算法。</translation>
 <translation id="7302043767260300182">使用交流电源供电时的屏幕锁定延迟时间</translation>
 <translation id="7303902834678570827">受管理访客会话用户无法存储设备级显示设置</translation>
 <translation id="731208205557053914">报告 VPD 信息</translation>
@@ -5316,6 +5387,12 @@
 <translation id="7491720878670299691">轮询网络数据并检查是否发生事件的时间间隔。所允许的最低时间间隔为 1 分钟。
 
       如果此政策未设置，系统会应用默认时间间隔（1 分钟）。</translation>
+<translation id="7498595166686106721">
+      显示面截取权限政策会根据以下网址所链接到的规范限制对 getDisplayMedia() 的调用：https://www.w3.org/TR/screen-capture/#feature-policy-integration。但是，如果此政策已停用，系统便不会强制执行这项要求，而是会允许从那些未被此政策列入许可名单的上下文中调用 getDisplayMedia()。这项企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 100 版之后移除。此政策旨在解除对所用应用不符合规范但需要时间进行修正的企业用户的限制。
+
+      如果此政策已启用或未设置，网站只能从已被显示面截取权限政策列入许可名单的上下文中调用 getDisplayMedia()。
+
+      如果此政策已停用，即使相应上下文未被显示面截取权限政策列入许可名单，网站也能从这些上下文中调用 getDisplayMedia()。请注意，别处设定的限制可能仍然适用。</translation>
 <translation id="7506745375479451616">此政策旨在控制从 <ph name="IE_PRODUCT_NAME" /> 切换至 <ph name="PRODUCT_NAME" /> 时应使用哪个命令打开网址。此政策可设为一个可执行文件路径，也可设为 <ph name="PRODUCT_NAME_PLACEHOLDER" /> 以自动检测 <ph name="PRODUCT_NAME" /> 的位置。
 
       如果您不设置此政策，当从 Internet Explorer 中启动 <ph name="PRODUCT_NAME" /> 时，<ph name="IE_PRODUCT_NAME" /> 将会自动检测 <ph name="PRODUCT_NAME" /> 自有的可执行文件路径。
@@ -5888,6 +5965,7 @@
           如果需要执行的操作是暂停，您还可另行配置 <ph name="PRODUCT_OS_NAME" />在暂停前是否锁定屏幕。</translation>
 <translation id="8214600119442850823">配置密码管理器。</translation>
 <translation id="8217664958939773083">如果此政策设为 <ph name="ENABLED" /> 或未设置，即意味着允许使用无头模式。如果此政策设为 <ph name="DISABLED" />，则意味着禁止使用无头模式。</translation>
+<translation id="8219813789911069300">拦截恶意下载内容。推荐。</translation>
 <translation id="8220023426952118761">所需的下载速率，以 kb/s 为单位。</translation>
 <translation id="8220156281401380422">配置本地消息传递主机许可名单</translation>
 <translation id="8229912067600517877">启用开发者工具</translation>
@@ -5925,6 +6003,18 @@
 <translation id="8266778278542911985">如果此政策设为 3，系统会允许网站请求访问串行端口。如果此政策设为 2，系统会禁止访问串行端口。
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
+<translation id="8267887696930711948">已在 M69 中弃用。请改用 OverrideSecurityRestrictionsOnInsecureOrigin。
+
+      此政策让您能够以列表形式指定针对不安全来源的安全性限制不适用于哪些来源（网址）或主机名模式（例如“*.example.com”）。
+
+      此政策意在允许相关组织为无法部署传输层安全协议 (TLS) 的旧式应用设定许可的来源，或允许其设定用于内部 Web 开发的预演服务器以便开发者不必在预演服务器上部署 TLS 就能测试需在安全情境中运行的功能。此政策还可防止所列来源在多功能框中被标记为“不安全”。
+
+      在此政策中设置一个网址列表的效果等同于设置“--unsafely-treat-insecure-origin-as-secure”命令行 flag 并为其指定一个包含相同网址的英文逗号分隔列表。如果此政策已设置，则会替换上述命令行 flag。
+
+      我们已在 M69 中弃用此政策并改用 OverrideSecurityRestrictionsOnInsecureOrigin。如果这两项政策同时存在，OverrideSecurityRestrictionsOnInsecureOrigin 会覆盖此政策。
+
+      有关安全情境的详情，请访问 https://www.w3.org/TR/secure-contexts/
+      </translation>
 <translation id="8270320981823560179">云端硬盘</translation>
 <translation id="827054846390793641">允许主机桌面在处于已连接状态时显示与连接相关的界面</translation>
 <translation id="8274603902181597201">清空用户的 ecryptfs 主目录，并改用全新的 ext4 加密主目录。</translation>
@@ -6176,6 +6266,7 @@
 <translation id="8524334245528364388">包含一系列打印服务器的 JSON 文件的网址。</translation>
 <translation id="8525526490824335042">Linux 容器</translation>
 <translation id="8528951285051082869">不允许任何 Web 应用通过 File Handling API 访问各类文件</translation>
+<translation id="8533145294731270627">拦截恶意下载内容和危险文件类型。</translation>
 <translation id="8537051350735478658">如果此政策设为 True，系统会在 <ph name="PRODUCT_NAME" /> 地址栏中显示搜索建议。如果此政策设为 False，系统会停用此类搜索建议功能。
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，系统最初会显示搜索建议，但用户可随时停用此功能。</translation>
@@ -6637,28 +6728,6 @@
       如果您未设置此政策，默认情况下，受企业管理的用户无法选择启用 Phone Hub 功能，但不受管理的用户可以选择启用该功能。</translation>
 <translation id="9096086085182305205">身份验证服务器白名单</translation>
 <translation id="9096772739225230999">不报告网络配置</translation>
-<translation id="9097005000667946359">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装且无法由用户卸载或停用。
-
-      此政策的每个列表项都是一个对象，其中会包含 1 个必要成员：
-      <ph name="URL_LABEL" />（要安装的 Web 应用的网址）
-
-      以及 5 个可选成员：
-      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
-      （用于指明 Web 应用的打开方式，默认在新标签页中打开）
-
-      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
-      （如果您想创建 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面快捷方式，请设为 True。）
-
-      - <ph name="FALLBACK_APP_NAME_LABEL" />
-      （自 <ph name="PRODUCT_NAME" /> 90 版起，让您能够替换非渐进式 Web 应用 [PWA] 的应用名称，或临时安装但在安装完成之前需进行身份验证的 PWA 应用的应用名称。如果同时提供了 <ph name="CUSTOM_NAME_LABEL" /> 和 <ph name="FALLBACK_APP_NAME_LABEL" />，系统会忽略后者。）
-
-      - <ph name="OVERRIDE_APP_NAME_LABEL" />
-      （自 <ph name="PRODUCT_NAME" /> 96 版起，让您能够永久地替换所有 Web 应用和 PWA 的应用名称。）
-
-      - <ph name="CUSTOM_ICON_LABEL" />
-      （自 <ph name="PRODUCT_NAME" /> 96 版起，让您能够替换安装式应用的应用图标。图标必须为方形，大小不超过 1 MB，并采用以下格式之一：jpeg、png、gif、webp、ico。哈希值必须是图标文件的 SHA256 哈希。）
-
-      如需了解如何将应用固定到 <ph name="PRODUCT_OS_NAME" />任务栏中，请参阅 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />。</translation>
 <translation id="9098409326885953506">检测被遮挡的窗口并暂停其渲染进程</translation>
 <translation id="9105265795073104888">仅一小部分代理配置选项已可供 Android 应用使用。Android 应用可能会主动选择使用相应代理。您无法强制此类应用使用该代理。</translation>
 <translation id="9106865192244721694">允许这些网站使用 WebUSB</translation>

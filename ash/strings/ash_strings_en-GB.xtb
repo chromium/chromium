@@ -48,6 +48,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is connected.</translation>
 <translation id="1246890715821376239">Unsupported apps</translation>
 <translation id="1247372569136754018">Microphone (internal)</translation>
+<translation id="1247519845643687288">Recent apps</translation>
 <translation id="1252999807265626933">Charging from <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">What's the weather?</translation>
 <translation id="1266097335951928626">Start selfie camera</translation>
@@ -61,6 +62,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1289185460362160437">Come back <ph name="COME_BACK_DAY_OF_WEEK" /> at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Weak signal</translation>
 <translation id="1293264513303784526">USB-C device (left port)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1294929383540927798">Change the lock-screen notification settings</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Show Bluetooth settings. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1419738280318246476">Unlock device to perform the notification action</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Yes</translation>
+<translation id="1438357537418863713">App streaming is now set up. Once you get started, recently launched apps will appear here.</translation>
 <translation id="144853431011121127">Get notifications from your phone on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Show language settings</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
@@ -246,6 +249,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> managed by <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Exit capture mode</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Partial capture</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
 <translation id="28232023175184696">Cannot connect to the Internet. Click to try again.</translation>
@@ -374,6 +378,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3665889125180354336">Record microphone</translation>
 <translation id="3680908746918359504">Clear all markers</translation>
 <translation id="36813544980941320">Wi-Fi networks will be shared between your phone and <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Websites</translation>
 <translation id="3701206655856637070">You can now change where screen captures are saved</translation>
 <translation id="3702809606464356667">Showing windows from the current desk; press the Up arrow key to show windows from all desks</translation>
 <translation id="3702846122927433391">Population in Nigeria</translation>
@@ -535,6 +540,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Come back tomorrow at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Password for <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">The Google Assistant is not available in a demo session.</translation>
 <translation id="4782311465517282004">Get definitions, translations or unit conversions when you right-click or touch &amp; hold text</translation>
 <translation id="479989351350248267">search</translation>
@@ -590,6 +596,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
 <translation id="5147567197700016471">Unlocked</translation>
 <translation id="5155897006997040331">Reading speed</translation>
+<translation id="5166007464919321363">Save desk as a template</translation>
 <translation id="5166918508782100047">Quick Answers settings</translation>
 <translation id="5168181903108465623">Cast devices available</translation>
 <translation id="5170568018924773124">Show in folder</translation>
@@ -799,6 +806,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6777216307882431711">Powering connected USB-C devices</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="6803622936009808957">Could not mirror displays since no supported resolutions found. Entered extended desktop instead.</translation>
+<translation id="6811454077060061666">Google Drive for desktop is unavailable</translation>
 <translation id="6816797338148849397">Info related to your selection available. Use the up arrow key to access.</translation>
 <translation id="6818242057446442178">Back by word</translation>
 <translation id="6820676911989879663">Take a break!</translation>
@@ -933,6 +941,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7796353162336583443">Tap the stylus button on the shelf to take a note, screenshot, use the Google Assistant, laser pointer or magnifying glass.</translation>
 <translation id="7798302898096527229">Press Search or Shift to cancel.</translation>
 <translation id="780301667611848630">No, thanks</translation>
+<translation id="7807067443225230855">Search and Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> and <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Strong signal</translation>
 <translation id="7837740436429729974">Time's up</translation>
@@ -997,6 +1006,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Press Enter to unlock for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Delete</translation>
+<translation id="8281279285293265212">Failed to save screencast</translation>
 <translation id="8284362522226889623">Swipe left with four fingers to switch to the previous desk</translation>
 <translation id="828708037801473432">Off</translation>
 <translation id="8297006494302853456">Weak</translation>
@@ -1101,6 +1111,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="9070640332319875144">Assistant settings</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> until battery is empty.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Templates</translation>
 <translation id="9077515519330855811">Media controls, now playing <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Swipe up to go home</translation>

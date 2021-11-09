@@ -42,7 +42,6 @@
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> के लिए अनुमति चुनें</translation>
 <translation id="1113869188872983271">&amp;पुन: क्रमित करना वापस लाएं</translation>
-<translation id="1115795617528746272"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, सभी खुली हुई गुप्त विंडो बंद करने के लिए, पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="1123753900084781868">अभी लाइव कैप्शन की सुविधा उपलब्ध नहीं है</translation>
 <translation id="1125573121925420732">जब वेबसाइटें अपनी सुरक्षा अपडेट कर रही होती हैं, तब चेतावनियां आम हो सकती हैं. इसमें जल्द ही सुधार होगा.</translation>
 <translation id="112840717907525620">नीति कैश मेमोरी ठीक है</translation>
@@ -473,7 +472,6 @@
 <translation id="2465655957518002998">डिलीवरी का तरीका चुनें</translation>
 <translation id="2465688316154986572">स्टेपल</translation>
 <translation id="2465914000209955735">आपने Chrome में जो फ़ाइलें डाउनलोड की हैं उन्हें मैनेज करें</translation>
-<translation id="246725142101294240"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में Safe Browsing वगैरह को मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />नेटवर्क निदान चलाकर देखें<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-से-N के क्रम में</translation>
 <translation id="2470767536994572628">जब आप वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करते हैं, तो दस्तावेज़, सिंगल पेज व्यू और अपने मूल रोटेशन पर वापस चला जाएगा</translation>
@@ -637,7 +635,6 @@
 <translation id="3041612393474885105">प्रमाणपत्र जानकारी</translation>
 <translation id="3044034790304486808">अपनी रिसर्च फिर से शुरू करें</translation>
 <translation id="3060227939791841287">सी9 (एन्वेलप)</translation>
-<translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, सुरक्षा जांच करने के लिए पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="3061707000357573562">पैच सेवा</translation>
 <translation id="306573536155379004">गेम शुरू हो गया.</translation>
 <translation id="3080254622891793721">ग्राफ़िक</translation>
@@ -715,7 +712,6 @@
 <translation id="3329013043687509092">संतृप्तता</translation>
 <translation id="3333762389743153920">वर्चुअल कार्ड के तौर पर इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="3338095232262050444">सुरक्षित</translation>
-<translation id="3344575302477361573">गुप्त विंडो बंद करने वाला बटन, सभी खुली हुई गुप्त विंडो बंद करने के लिए, Enter दबाएं.</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग बदलें...</translation>
 <translation id="3360103848165129075">पैसे चुकाने की हैंडलर शीट</translation>
 <translation id="3361596688432910856">Chrome नीचे दी गई जानकारी को <ph name="BEGIN_EMPHASIS" />सेव नहीं करेगा<ph name="END_EMPHASIS" />:
@@ -864,7 +860,6 @@
 <translation id="3765588406864124894">मेलबॉक्स 9</translation>
 <translation id="3767485424735936570">एडमिन नीति के मुताबिक, इस कॉन्टेंट को कॉपी करके <ph name="VM_NAME" /> में चिपकाने का सुझाव नहीं दिया जाता</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep में जल्दी से नया नोट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
-<translation id="3776257069753764304">Chrome बटन में डाउनलोड मैनेज करें, Chrome में जो फ़ाइलें आपने डाउनलोड की हैं उन्हें मैनेज करने के लिए, Enter दबाएं.</translation>
 <translation id="3778403066972421603">क्या आप इस कार्ड को अपने Google खाते में और इस डिवाइस में सेव करना चाहते हैं?</translation>
 <translation id="3780694243617746492">आउटपुट बिन</translation>
 <translation id="3781428340399460090">चमकीला गुलाबी</translation>
@@ -921,11 +916,7 @@
 <translation id="3969052498612555048">क्या आपको ओटीपी कोड नहीं मिला? <ph name="BEGIN_LINK" />नया कोड पाएं<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> को ब्लॉक किया गया है</translation>
-<translation id="3973357910713125165">यह 'Chrome की सुरक्षा जांच करें' बटन है. Chrome की सेटिंग में, सुरक्षा जांच करने के लिए Enter दबाएं</translation>
 <translation id="3986705137476756801">अभी के लिए लाइव कैप्शन की सुविधा बंद करें</translation>
-<translation id="3987405730340719549">Chrome के हिसाब से यह साइट नकली या धोखाधड़ी करने वाली हो सकती है.
-
-    अगर आपको लगता है कि ऐसा गलती से दिखाया गया है, तो कृपया https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals पर जाएं.</translation>
 <translation id="3987940399970879459">एक एमबी से कम</translation>
 <translation id="3990250421422698716">जोग ऑफ़सेट</translation>
 <translation id="3996311196211510766">साइट <ph name="ORIGIN" /> ने यह अनुरोध किया है कि इसके सभी अनुरोधों पर
@@ -967,7 +958,6 @@
 <translation id="4127575959421463246">क्या आपको ChromeOS के फ़्लैग ढूंढने हैं? यहां जाएं</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 अन्य}one{# अन्‍य}other{# अन्‍य}}</translation>
 <translation id="4130226655945681476">नेटवर्क केबल, मोडेम और राउटर की जाँच करें</translation>
-<translation id="4133224101597112888">इस टैब बटन को शेयर करें. लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से, इस टैब को शेयर करने के लिए, Enter दबाएं.</translation>
 <translation id="4134123981501319574">दस्तावेज़ बनाएं</translation>
 <translation id="413544239732274901">ज़्यादा जानें</translation>
 <translation id="4142935452406587478">ट्रे 10</translation>
@@ -1018,7 +1008,6 @@
     &lt;h4&gt;पांचवा चरण: ज़्यादा मदद पाएं&lt;/h4&gt;
     &lt;p&gt;अगर आपको अब भी गड़बड़ी दिखाई दे रही है, तो वेबसाइट के मालिक से संपर्क करें.&lt;/p&gt;</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />नेटवर्क निदान चलाकर देखें<ph name="END_LINK" />.</translation>
-<translation id="4229544452621580519">Chrome की सेटिंग में जाकर, सुरक्षा जांच करें</translation>
 <translation id="4230204356098880324">साइट, आपके कैमरे का इस्तेमाल करने और उसे घुमाने की अनुमति मांग सकती है</translation>
 <translation id="4234495348042597185"><ph name="BEGIN_LINK" /><ph name="SITE" /> पर जाएं<ph name="END_LINK" /></translation>
 <translation id="4235360514405112390">मान्य</translation>
@@ -1091,6 +1080,7 @@
 <translation id="4460315069258617173">तब तक अनुमति है, जब तक आप इस साइट के लिए टैब बंद नहीं कर देते</translation>
 <translation id="4464826014807964867">ऐसी वेबसाइटें जिनके बारे में आपके संगठन ने जानकारी दी है</translation>
 <translation id="4465818729556336129">यह दस्तावेज़ गोपनीय है और आपके एडमिन ने इसे प्रिंट करने की सलाह नहीं दी है.</translation>
+<translation id="447665707681730621"><ph name="BUBBLE_MESSAGE" />. <ph name="LEARN_MORE_TEXT" /></translation>
 <translation id="4476953670630786061">यह फ़ॉर्म सुरक्षित नहीं है. ऑटोमैटिक भरने की सुविधा बंद कर दी गई है.</translation>
 <translation id="4477350412780666475">अगला ट्रैक</translation>
 <translation id="4481251927743463293">गुप्त मोड क्या करता है</translation>
@@ -1181,7 +1171,6 @@
 <translation id="4757993714154412917">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. अपने खातों को सुरक्षित करने के लिए, Chromium का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="4758311279753947758">संपर्क जानकारी जोड़ें</translation>
 <translation id="4761104368405085019">अपना माइक्रोफ़ोन उपयोग करें</translation>
-<translation id="4761869838909035636">Chrome की सुरक्षा जांच करें</translation>
 <translation id="4764776831041365478"><ph name="URL" /> पर मौजूद वेबपेज संभवतः अस्थायी रूप से बंद है या उसे स्थायी रूप से किसी नए वेब पते पर ले जाया गया है.</translation>
 <translation id="4766713847338118463">नीचे की ओर ड्युएल स्टेपल</translation>
 <translation id="4771973620359291008">अज्ञात गड़बड़ी आई.</translation>
@@ -1243,7 +1232,6 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, खोजने के लिए Tab के बाद Enter दबाएं</translation>
 <translation id="4930153903256238152">ज़्यादा क्षमता</translation>
 <translation id="4943872375798546930">कोई परिणाम नहीं</translation>
-<translation id="4946982471994930967">सुलभता सेटिंग के बटन को मैनेज करें, Chrome की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, Enter दबाएं.</translation>
 <translation id="4950898438188848926">'टैब' बदलने का बटन, नए टैब पर जाने के लिए Enter दबाएं, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">क्रियाएं</translation>
 <translation id="4953689047182316270">सुलभता इवेंट का जवाब दें</translation>
@@ -1302,7 +1290,6 @@
 <translation id="5115216390227830982">यूरोपियन-ईडीपी</translation>
 <translation id="5115232566827194440">मैनेज किए गए प्रतिबंधित 'मेहमान के तौर पर ब्राउज़ करने का सेशन' बदलें</translation>
 <translation id="5115563688576182185">(64-बिट)</translation>
-<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="5123063207673082822">शनिवार और रविवार</translation>
 <translation id="5125394840236832993">बी-प्लस</translation>
 <translation id="5126510351761255129">कार्ड की पुष्टि करें</translation>
@@ -1349,7 +1336,6 @@
 <translation id="5254958791078852567">ई1</translation>
 <translation id="5255690596502591079">फिर भी कैप्चर करें</translation>
 <translation id="5266128565379329178">सबसे ऊपर बाइंड</translation>
-<translation id="5269124652893918188"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, अपने ब्राउज़र का लुक पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="5269225904387178860">नीचे की ओर क्वाड पंच</translation>
 <translation id="5269999699920406580">सिस्टम से जुड़ी हुई सुविधाओं को सिर्फ़ मालिक ही सेट कर सकता है: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">चेतावनी: इस नीति को PolicyDictionaryMultipleSourceMergeList नीति में बताए अनुसार नहीं मिलाया जा सकता, क्योंकि यह शब्दकोश की उन नीतियों का हिस्सा नहीं है जिन्हें मिलाया जा सकता है.</translation>
@@ -1402,7 +1388,6 @@
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
 <translation id="5428105026674456456">स्पैनिश</translation>
 <translation id="5430298929874300616">बुकमार्क निकालें</translation>
-<translation id="5434889539950523874"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से, इस टैब को शेयर करने के लिए, पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="5439770059721715174">"<ph name="ERROR_PATH" />" पर स्कीमा सत्यापन गड़बड़ी: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">दूसरी तरफ़ सीधा करके रखें</translation>
 <translation id="5447765697759493033">इस साइट का अनुवाद नहीं किया जाएगा</translation>
@@ -1435,7 +1420,6 @@
 <translation id="5540224163453853">अनुरोध किया गया लेख नहीं ढूंढा जा सका.</translation>
 <translation id="5541086400771735334">मेलबॉक्स 7</translation>
 <translation id="5541546772353173584">ईमेल जोड़ें</translation>
-<translation id="5542280138350899197">सुरक्षा सेटिंग का बटन मैनेज करें, Chrome की सेटिंग में Safe Browsing वगैरह को मैनेज करने के लिए, Enter दबाएं</translation>
 <translation id="5545756402275714221">आपके लिए लेख</translation>
 <translation id="5552137475244467770">Chrome उन सूचियों में शामिल आपके पासवर्ड की समय-समय पर जांच करता है जिन्हें ऑनलाइन प्रकाशित किया गया है. ऐसा करते समय, आपके पासवर्ड और उपयोगकर्ता नाम सुरक्षित रहते हैं, इसलिए उन्हें कोई नहीं देख सकता, यहां तक कि Google भी नहीं.</translation>
 <translation id="5556459405103347317">फिर लोड करें</translation>
@@ -1514,9 +1498,6 @@
 <translation id="5830698870816298009">हलचल को कैप्चर करने के लिए, कैमरे का इस्तेमाल करें</translation>
 <translation id="5838278095973806738">आपको इस साइट पर कोई भी संवेदनशील जानकारी (उदाहरण के लिए, पासवर्ड या क्रेडिट कार्ड) नहीं डालनी चाहिए, क्योंकि उसे हमलावर चुरा सकते हैं.</translation>
 <translation id="5851548754964597211">टैब सूची</translation>
-<translation id="5855253129151731373">इस साइट का होस्टनाम <ph name="LOOKALIKE_DOMAIN" /> से मिलता-जुलता है. हमलावर कभी-कभी डोमेन नाम में छोटे और नज़र न आने वाले बदलाव करके, साइटों की नकल कर लेते हैं.
-
-    अगर आपको लगता है कि ऐसा गलती से दिखाया गया है, तो कृपया https://bugs.chromium.org/p/chromium/issues/entry?template=Safety+Tips+Appeals पर जाएं.</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5862579898803147654">स्टैकर 8</translation>
 <translation id="5863847714970149516">आगे आने वाला पेज आपसे शुल्क लेने की कोशिश कर सकता है</translation>
@@ -1698,7 +1679,6 @@
 <translation id="647261751007945333">डिवाइस नीतियां</translation>
 <translation id="6476284679642588870">भुगतान के तरीकों को प्रबंधित करें</translation>
 <translation id="6489534406876378309">क्रैश अपलोड करना प्रारंभ करें</translation>
-<translation id="6493328574149990106"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में सुलभता टूल अपने हिसाब से बनाने के लिए, पहले Tab और फिर Enter दबाएं.</translation>
 <translation id="6493924760403974580">इस ऐप्लिकेशन का डिसप्ले, सिर्फ़ मोबाइल के वि़ंडो साइज़ के लिए तैयार किया गया है</translation>
 <translation id="6494750904506170417">पॉप-अप और रीडायरेक्ट</translation>
 <translation id="6499038740797743453">क्या पासवर्ड रीसेट करना चाहते हैं?</translation>
@@ -2039,7 +2019,6 @@
 <translation id="7638605456503525968">सीरियल पोर्ट</translation>
 <translation id="7639968568612851608">गहरा धूसर</translation>
 <translation id="7647206758853451655">प्रिंट क्वालिटी</translation>
-<translation id="7648685412377719625">सभी खुली हुई गुप्त विंडो बंद करें.</translation>
 <translation id="7648992873808071793">फ़ाइलों को इस डिवाइस पर संग्रहित करें</translation>
 <translation id="7653957176542370971">पैसे चुकाने की हैंडलर शीट बंद है</translation>
 <translation id="7654909834015434372">जब आप वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करते हैं, तो दस्तावेज़ अपने मूल रोटेशन पर वापस चला जाएगा</translation>
@@ -2123,7 +2102,6 @@
 <translation id="7932579305932748336">कोट</translation>
 <translation id="79338296614623784">मान्य फ़ोन नंबर डालें</translation>
 <translation id="7934414805353235750"><ph name="URL" /> सुरक्षित सामग्री चलाना चाहता है. Google आपके डिवाइस की पहचान की पुष्टि करेगा.</translation>
-<translation id="7935031712718413217">झूठे नाम से भेजा गया यूआरएल हो सकता है</translation>
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
 <translation id="7938958445268990899">सर्वर का प्रमाणपत्र अभी तक मान्य नहीं है.</translation>
@@ -2134,7 +2112,6 @@
 <translation id="7950027195171824198">Chrome की सेटिंग में कुकी की सेटिंग मैनेज करें</translation>
 <translation id="7951415247503192394">(32-बिट)</translation>
 <translation id="7953569069500808819">सबसे ऊपर एज़ स्टिच</translation>
-<translation id="7954041596401851904">लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों से इस टैब को शेयर करें.</translation>
 <translation id="7956713633345437162">मोबाइल बुकमार्क</translation>
 <translation id="7961015016161918242">कभी नहीं</translation>
 <translation id="7966803981046576691">जॉब का खाता प्रकार</translation>
@@ -2208,7 +2185,6 @@
 <translation id="8202370299023114387">विरोध</translation>
 <translation id="8206978196348664717">पीआरसी4 (एन्वेलप)</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित है</translation>
-<translation id="8215696832828595581">Chrome बटन को पसंद के मुताबिक बनाएं. इसके साथ ही अपने ब्राउज़र के लुक को भी पसंद के मुताबिक बनाया जा सकता है. इसके लिए, Enter दबाएं.</translation>
 <translation id="8218327578424803826">सौंपा गया स्‍थान:</translation>
 <translation id="8220146938470311105">सी7/सी6 (एन्वेलप)</translation>
 <translation id="8225771182978767009">जिस व्यक्ति ने इस कंप्यूटर को सेट किया है, उसने इस साइट को ब्लॉक करना चुना है.</translation>
@@ -2249,7 +2225,6 @@
 <translation id="830498451218851433">फ़ोल्ड हाल्फ़</translation>
 <translation id="8307358339886459768">छोटे आकार वाली फ़ोटो</translation>
 <translation id="8307888238279532626">इंस्टॉल किए गए ऐप्लिकेशन और उनका कितनी बार इस्तेमाल किया जाता है</translation>
-<translation id="831207732689920588">यह पेज संदिग्ध है (Chrome ने फ़्लैग किया है).</translation>
 <translation id="831997045666694187">शाम</translation>
 <translation id="8321476692217554900">सूचनाएं</translation>
 <translation id="8328484624016508118">सभी गुप्त टैब बंद करने के बाद, Chrome इन चीज़ों को मिटाता है:
@@ -2409,7 +2384,6 @@
 <translation id="890493561996401738">सुझाव बटन हटाएं, हटाने के लिए Enter दबाएं, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8912362522468806198">Google खाता</translation>
 <translation id="8913778647360618320">'पैसे चुकाने के तरीके प्रबंधित करें' बटन, Chrome की सेटिंग में पैसे चुकाने से जुड़ी जानकारी और क्रेडिट कार्ड की जानकारी प्रबंधित करने के लिए, Enter दबाएं</translation>
-<translation id="8918231688545606538">यह पेज संदिग्ध है</translation>
 <translation id="8922013791253848639">इस साइट पर विज्ञापनों की हमेशा अनुमति दें</translation>
 <translation id="892588693504540538">सबसे ऊपर दाईं ओर पंच</translation>
 <translation id="8931333241327730545">क्या आप इस कार्ड को अपने Google खाते में सेव करना चाहते हैं?</translation>

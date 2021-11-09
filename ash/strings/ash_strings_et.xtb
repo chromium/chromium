@@ -48,6 +48,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> on ühendatud.</translation>
 <translation id="1246890715821376239">Toetamata rakendused</translation>
 <translation id="1247372569136754018">Mikrofon (sisemine)</translation>
+<translation id="1247519845643687288">Hiljutised rakendused</translation>
 <translation id="1252999807265626933">Laadimine toiteallikast <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Milline on ilm?</translation>
 <translation id="1266097335951928626">Ava selfikaamera</translation>
@@ -61,6 +62,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1289185460362160437">Tulge tagasi: <ph name="COME_BACK_DAY_OF_WEEK" /> kell <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Nõrk signaal</translation>
 <translation id="1293264513303784526">C-tüüpi USB-seade (vasakpoolne port)</translation>
+<translation id="1293556467332435079">Failid</translation>
 <translation id="1294929383540927798">Lukustuskuva märguandeseadete muutmine</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Kuvab Bluetoothi seaded. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1419738280318246476">Märguandetoimingu tegemiseks avage seade</translation>
 <translation id="1420408895951708260">Öövalguse lülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Jah</translation>
+<translation id="1438357537418863713">Rakenduse voogesitus on nüüd seadistatud. Kui alustate, kuvatakse hiljuti käivitatud rakendused siin.</translation>
 <translation id="144853431011121127">Hankige oma telefoni märguandeid seadmes <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Kuva keeleseaded</translation>
 <translation id="1460620680449458626">Helitugevus on vaigistatud.</translation>
@@ -246,6 +249,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2778650143428714839">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Välju jäädvustusrežiimist</translation>
 <translation id="2792498699870441125">Alt + otsinguklahv</translation>
+<translation id="2805756323405976993">Rakendused</translation>
 <translation id="2814448776515246190">Osaline jäädvustamine</translation>
 <translation id="2819276065543622893">Teid logitakse nüüd välja.</translation>
 <translation id="28232023175184696">Internetiga ei õnnestu ühendust luua. Klõpsake uuesti proovimiseks.</translation>
@@ -374,6 +378,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3665889125180354336">Mikrofoni salvestamine</translation>
 <translation id="3680908746918359504">Kustuta kõik markeeringud</translation>
 <translation id="36813544980941320">WiFi-võrke jagatakse teie telefoni ja seadme <ph name="DEVICE_NAME" /> vahel</translation>
+<translation id="3694122362646626770">Veebisaidid</translation>
 <translation id="3701206655856637070">Saate nüüd muuta, kuhu ekraanipildid salvestatakse</translation>
 <translation id="3702809606464356667">Kuvatud on praeguse töölaua aknad. Kõigi töölaudade akende kuvamiseks vajutage ülesnooleklahvi.</translation>
 <translation id="3702846122927433391">Nigeeria rahvaarv</translation>
@@ -536,6 +541,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4759238208242260848">Allalaadimised</translation>
 <translation id="4774338217796918551">Tulge tagasi homme kell <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> parool</translation>
+<translation id="4777825441726637019">Play pood</translation>
 <translation id="4778095205580009397">Google'i assistent ei ole demoseansi puhul saadaval.</translation>
 <translation id="4782311465517282004">Hankige tekstil paremklõpsates või seda pikalt puudutades definitsioone, tõlkeid või ühikute teisendusi.</translation>
 <translation id="479989351350248267">otsing</translation>
@@ -591,6 +597,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
 <translation id="5147567197700016471">Avatud</translation>
 <translation id="5155897006997040331">Lugemiskiirus</translation>
+<translation id="5166007464919321363">Salvesta töölaud mallina</translation>
 <translation id="5166918508782100047">Kiirvastuste seaded</translation>
 <translation id="5168181903108465623">Ülekandeseadmed on saadaval</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
@@ -800,6 +807,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6777216307882431711">Ühendatud USB-C-tüüpi seadmete toitega varustamine</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6803622936009808957">Ei saanud kuvasid peegeldada, kuna toetatud eraldusvõimeid ei leitud. Selle asemel siseneti laiendatud töölaua režiimi.</translation>
+<translation id="6811454077060061666">Google Drive arvutile pole saadaval</translation>
 <translation id="6816797338148849397">Teie valikuga seotud teave on saadaval. Kasutage juurdepääsemiseks ülesnooleklahvi.</translation>
 <translation id="6818242057446442178">Sõna võrra tagasi</translation>
 <translation id="6820676911989879663">Tehke paus!</translation>
@@ -934,6 +942,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7796353162336583443">Puudutage riiulil elektronpliiatsi nuppu, et teha märkmeid, jäädvustada ekraanipilti, kasutada Google'i assistenti, laserkursorit või suurendusklaasi.</translation>
 <translation id="7798302898096527229">Tühistamiseks vajutage otsinguklahvi või tõstuklahvi.</translation>
 <translation id="780301667611848630">Ei, aitäh</translation>
+<translation id="7807067443225230855">Otsing ja assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ja <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Tugev signaal</translation>
 <translation id="7837740436429729974">Aeg on läbi</translation>
@@ -998,6 +1007,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />, telefoni aku: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">E-posti aadressi <ph name="USER_EMAIL_ADDRESS" /> puhul avamiseks vajutage sisestusklahvi</translation>
 <translation id="8261506727792406068">Kustuta</translation>
+<translation id="8281279285293265212">Ekraaniülekande salvestamine ebaõnnestus</translation>
 <translation id="8284362522226889623">Eelmisele töölauale lülitumiseks pühkige nelja sõrmega vasakule</translation>
 <translation id="828708037801473432">Väljas</translation>
 <translation id="8297006494302853456">Nõrk</translation>
@@ -1102,6 +1112,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="9070640332319875144">Assistendi seaded</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> aku tühjenemiseni.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Mallid</translation>
 <translation id="9077515519330855811">Meedia juhtnupud, hetkel mängimas <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">WiFi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Avalehele liikumiseks pühkige üles</translation>

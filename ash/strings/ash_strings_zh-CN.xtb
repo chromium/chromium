@@ -48,6 +48,7 @@
 <translation id="1239161794459865856">已连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1246890715821376239">不支持的应用</translation>
 <translation id="1247372569136754018">麦克风（内部）</translation>
+<translation id="1247519845643687288">最近用过的应用</translation>
 <translation id="1252999807265626933">正在通过“<ph name="POWER_SOURCE" />”充电</translation>
 <translation id="1255033239764210633">天气怎么样？</translation>
 <translation id="1266097335951928626">启用自拍摄像头</translation>
@@ -61,6 +62,7 @@
 <translation id="1289185460362160437">您需要等到<ph name="COME_BACK_DAY_OF_WEEK" /><ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1293264513303784526">USB-C 设备（左侧端口）</translation>
+<translation id="1293556467332435079">文件</translation>
 <translation id="1294929383540927798">更改锁定屏幕通知设置</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">显示蓝牙设置。<ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@
 <translation id="1419738280318246476">解锁设备即可执行通知操作</translation>
 <translation id="1420408895951708260">开启/关闭护眼模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">是</translation>
+<translation id="1438357537418863713">应用串流现已设置完毕。一旦您开始使用，最近启动过的应用即会显示在此处。</translation>
 <translation id="144853431011121127">在 <ph name="DEVICE_TYPE" /> 上接收手机中的通知</translation>
 <translation id="1455242230282523554">显示语言设置</translation>
 <translation id="1460620680449458626">当前处于静音状态。</translation>
@@ -246,6 +249,7 @@
 <translation id="2778650143428714839">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="2782591952652094792">退出截屏/录屏模式</translation>
 <translation id="2792498699870441125">Alt + 搜索键</translation>
+<translation id="2805756323405976993">应用</translation>
 <translation id="2814448776515246190">截取/录制局部屏幕</translation>
 <translation id="2819276065543622893">您将立即退出。</translation>
 <translation id="28232023175184696">无法连接到互联网。点击即可重试。</translation>
@@ -374,6 +378,7 @@
 <translation id="3665889125180354336">麦克风录音</translation>
 <translation id="3680908746918359504">清除所有标记</translation>
 <translation id="36813544980941320">您的手机和 <ph name="DEVICE_NAME" />将会共用 Wi-Fi 网络</translation>
+<translation id="3694122362646626770">网站</translation>
 <translation id="3701206655856637070">现在您可以更改屏幕截图的保存位置</translation>
 <translation id="3702809606464356667">正在显示当前桌面中的窗口，按向上键即可显示所有桌面中的窗口</translation>
 <translation id="3702846122927433391">尼日利亚的人口</translation>
@@ -535,6 +540,7 @@
 <translation id="4759238208242260848">下载内容</translation>
 <translation id="4774338217796918551">您需要等到明天<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> 的密码</translation>
+<translation id="4777825441726637019">Play 商店</translation>
 <translation id="4778095205580009397">无法在演示会话中使用 Google 助理。</translation>
 <translation id="4782311465517282004">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果</translation>
 <translation id="479989351350248267">搜索</translation>
@@ -590,6 +596,7 @@
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
 <translation id="5147567197700016471">已解锁</translation>
 <translation id="5155897006997040331">朗读速度</translation>
+<translation id="5166007464919321363">将桌面另存为模板</translation>
 <translation id="5166918508782100047">快速解答设置</translation>
 <translation id="5168181903108465623">有可用的投射设备</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
@@ -799,6 +806,7 @@
 <translation id="6777216307882431711">正在为已连接的 USB-C 设备充电</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6803622936009808957">找不到系统支持的分辨率，因此无法镜像显示屏。已改为进入扩展桌面。</translation>
+<translation id="6811454077060061666">桌面版 Google 云端硬盘不可用</translation>
 <translation id="6816797338148849397">有与您所选内容相关的信息。使用向上键即可获取这些信息。</translation>
 <translation id="6818242057446442178">后退一个字词</translation>
 <translation id="6820676911989879663">休息一下！</translation>
@@ -933,6 +941,7 @@
 <translation id="7796353162336583443">点按任务栏中的触控笔按钮可开始记事、截取屏幕截图，以及使用 Google 助理、激光笔或放大镜。</translation>
 <translation id="7798302898096527229">按搜索键或按 Shift 键可取消。</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
+<translation id="7807067443225230855">Google 搜索和 Google 助理</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">信号较强</translation>
 <translation id="7837740436429729974">时间到</translation>
@@ -997,6 +1006,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">按 Enter 键即可为 <ph name="USER_EMAIL_ADDRESS" /> 解锁</translation>
 <translation id="8261506727792406068">删除</translation>
+<translation id="8281279285293265212">未能保存抓屏</translation>
 <translation id="8284362522226889623">若要切换到上一个桌面，请用四根手指向左滑动</translation>
 <translation id="828708037801473432">已关闭</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -1101,6 +1111,7 @@
 <translation id="9070640332319875144">Google 助理设置</translation>
 <translation id="9072519059834302790">电池电量将在 <ph name="TIME_LEFT" />后耗尽</translation>
 <translation id="9074739597929991885">蓝牙</translation>
+<translation id="9077404278023321866">模板</translation>
 <translation id="9077515519330855811">媒体控件，正在播放《<ph name="MEDIA_TITLE" />》</translation>
 <translation id="9079731690316798640">Wi-Fi：<ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">向上滑动可转到主屏幕</translation>

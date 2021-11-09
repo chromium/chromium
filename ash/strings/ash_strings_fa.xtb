@@ -62,6 +62,7 @@
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> ساعت <ph name="COME_BACK_TIME" /> برگردید.</translation>
 <translation id="1290331692326790741">سیگنال ضعیف</translation>
 <translation id="1293264513303784526">‏دستگاه USB-C (درگاه سمت چپ)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1294929383540927798">تغییر تنظیمات اعلان صفحه قفل</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">نشان دادن تنظیمات بلوتوث. <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> تحت مدیریت <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">خروج از حالت ضبط</translation>
 <translation id="2792498699870441125">‏Alt+جستجو</translation>
+<translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2814448776515246190">ضبط جزئی</translation>
 <translation id="2819276065543622893">هم‌اکنون از سیستم خارج خواهید شد.</translation>
 <translation id="28232023175184696">اتصال به اینترنت ممکن نیست. برای امتحان مجدد، کلیک کنید.</translation>
@@ -376,6 +378,7 @@
 <translation id="3665889125180354336">ضبط میکروفون</translation>
 <translation id="3680908746918359504">پاک کردن همه قلم‌های نشان‌گذاری</translation>
 <translation id="36813544980941320">‏تلفنتان و <ph name="DEVICE_NAME" /> باهم از شبکه‌های Wi-Fi استفاده خواهند کرد</translation>
+<translation id="3694122362646626770">وب‌سایت‌ها</translation>
 <translation id="3701206655856637070">اکنون می‌توان محل ذخیره شدن ضبط صفحه‌نمایش را تغییر دهید</translation>
 <translation id="3702809606464356667">درحال نمایش پنجره‌های میزکار کنونی، برای نمایش پنجره‌های همه میزکارها، کلید «جهت‌نمای بالا» را فشار دهید</translation>
 <translation id="3702846122927433391">‏Population in Nigeria (جمعیت نیجریه)</translation>
@@ -537,6 +540,7 @@
 <translation id="4759238208242260848">بارگیری‌ها</translation>
 <translation id="4774338217796918551">فردا ساعت <ph name="COME_BACK_TIME" /> برگردید.</translation>
 <translation id="4776917500594043016">گذرواژه <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">‏فروشگاه Play</translation>
 <translation id="4778095205580009397">‏«دستیار Google» در جلسه نمایشی در دسترس نیست.</translation>
 <translation id="4782311465517282004">وقتی روی نوشتار کلیک راست می‌کنید یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل واحدها را دریافت می‌کنید</translation>
 <translation id="479989351350248267">جستجو</translation>
@@ -937,6 +941,7 @@
 <translation id="7796353162336583443">‏برای یادداشت‌برداری، گرفتن نماگرفت، استفاده از «دستیار Google»، نشانگر لیزری یا ذره‌بین، روی دکمه قلم در قفسه ضربه بزنید.</translation>
 <translation id="7798302898096527229">‏برای لغو کردن، Search یا Shift را فشار دهید.</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
+<translation id="7807067443225230855">جستجو و دستیار</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> و <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">سیگنال قوی</translation>
 <translation id="7837740436429729974">وقت تمام است</translation>

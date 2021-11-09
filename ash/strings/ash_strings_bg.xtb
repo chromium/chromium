@@ -62,6 +62,7 @@
 <translation id="1289185460362160437">Заповядайте отново в <ph name="COME_BACK_TIME" /> в(ъв) <ph name="COME_BACK_DAY_OF_WEEK" />.</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
 <translation id="1293264513303784526">USB-C устройство (левият порт)</translation>
+<translation id="1293556467332435079">Файлове</translation>
 <translation id="1294929383540927798">Промяна на настройките за известия на заключения екран</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Показване на настройките за Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Изход от режима на заснемане</translation>
 <translation id="2792498699870441125">Alt + търсене</translation>
+<translation id="2805756323405976993">Приложения</translation>
 <translation id="2814448776515246190">Частично заснемане</translation>
 <translation id="2819276065543622893">Ще излезете сега.</translation>
 <translation id="28232023175184696">Няма връзка с интернет. Кликнете, за да опитате отново.</translation>
@@ -376,6 +378,7 @@
 <translation id="3665889125180354336">Записване от микрофона</translation>
 <translation id="3680908746918359504">Изчистване на всички маркери</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ще бъдат споделяни между телефона и устройството ви <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Уебсайтове</translation>
 <translation id="3701206655856637070">Вече можете да промените къде да се запазват заснеманията на екрана</translation>
 <translation id="3702809606464356667">Показани са прозорци от текущия работен кът. Натиснете клавиша със стрелка за нагоре, за да се покажат прозорците от всички работни кътове</translation>
 <translation id="3702846122927433391">Population in Nigeria</translation>
@@ -537,6 +540,7 @@
 <translation id="4759238208242260848">Изтегляния</translation>
 <translation id="4774338217796918551">Заповядайте отново утре в <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Парола за <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Google Play Магазин</translation>
 <translation id="4778095205580009397">Google Асистент не е налице по време на демонстрационна сесия.</translation>
 <translation id="4782311465517282004">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон</translation>
 <translation id="479989351350248267">search</translation>
@@ -937,6 +941,7 @@
 <translation id="7796353162336583443">Докоснете бутона с икона на писалка в лавицата, за да създадете бележка, да направите екранна снимка или да използвате Google Асистент, лазерната показалка или лупата.</translation>
 <translation id="7798302898096527229">Натиснете клавиша „търсене“ или Shift, за да анулирате.</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
+<translation id="7807067443225230855">Търсене и Асистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">силен сигнал</translation>
 <translation id="7837740436429729974">Времето изтече</translation>

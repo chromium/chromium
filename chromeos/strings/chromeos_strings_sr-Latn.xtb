@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Otkriven je ulazni portal</translation>
 <translation id="3170673040743561620">Postavite dokument na skener</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
+<translation id="3192947282887913208">Audio datoteke</translation>
 <translation id="3199982728237701504">Uvlačenje dokumenta (dvostrano)</translation>
 <translation id="3226405216343213872">Traže se skeneri</translation>
 <translation id="3246869037381808805">Zadaci štampanja stariji od 1 dana se uklanjaju</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenzije: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nije povezano</translation>
 <translation id="3749289110408117711">Naziv datoteke</translation>
+<translation id="3771294271822695279">Video datoteke</translation>
 <translation id="38114475217616659">Obriši svu istoriju</translation>
 <translation id="3820172043799983114">Nevažeći PIN.</translation>
 <translation id="3838338534323494292">Nova lozinka</translation>
@@ -347,6 +349,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
 <translation id="6379086450106841622">Dodirni ekran</translation>
 <translation id="6388847657025262518">Mehanizam za uvlačenje dokumenata na skeneru je zaglavljen. Proverite mehanizam i probajte ponovo.</translation>
+<translation id="6410257289063177456">Datoteke slika</translation>
 <translation id="641081527798843608">Podudaranje naslova</translation>
 <translation id="6423239382391657905">Otvorena VPN</translation>
 <translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>

@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">ສີຟ້າສະເລດປານກາງ</translation>
 <translation id="5140016802771803559">ສີມ່ວງຣີເບກາ</translation>
 <translation id="5142101052131610456">ບົດຮຽນທັງໝົດ</translation>
-<translation id="5152605892605507188">ຍ້າຍໄປຂວາ</translation>
 <translation id="5158275234811857234">ໜ້າປົກ</translation>
 <translation id="516076699907426116">ເພື່ອສືບຕໍ່, ໃຫ້ສຳຫຼວດໂດຍການສຳຜັດເພື່ອຊອກຫາປຸ່ມບົດຮຽນຕໍ່ໄປ. ຈາກນັ້ນແຕະສອງເທື່ອເພື່ອສືບຕໍ່.</translation>
 <translation id="5170206230005240598">ເປີດການນຳໃຊ້ຄຳອະທິບາຍອັກສອນນູນແລ້ວ</translation>
@@ -752,7 +751,6 @@
 <translation id="6142308968191113180">ຫົວ​ຂໍ້ 4</translation>
 <translation id="6150023170003443621">ສີຂຽວອົມເຫຼືອງ</translation>
 <translation id="6158882249329863701">ແຖວ <ph name="TABLECELLROWINDEX" /> ຖັນ <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">ຍ້າຍໄປຊ້າຍ</translation>
 <translation id="6164829606128959761">ແມັດ</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6166362019018438352">ປິດການນຳໃຊ້ຄຳອະທິບາຍອັກສອນນູນແລ້ວ</translation>
@@ -845,7 +843,6 @@
 <translation id="6910969481785184048">ເປີດ, ປິດ ແລະ ຢຸດ</translation>
 <translation id="6919104639734799681">ສະ​ແດງລາາຍຊື່​ຕາ​ຕະ​ລາງ</translation>
 <translation id="692135145298539227">ລຶບ</translation>
-<translation id="6935674530832500465">ຍ້າຍລົງ</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="6949846980769640811">ສີຂຽວອະຄົວມາຣີນປານກາງ</translation>
 <translation id="6951482098621102657">ບໍ່ມີຫົວຂໍ້ລະດັບ 5 ຖັດໄປ</translation>
@@ -1042,14 +1039,12 @@
 <translation id="826825447994856889">ການນໍາສະເໜີ</translation>
 <translation id="827266600368092403">ເລີ່ມຕົ້ນ ຫຼື ສິ້ນສຸດການເລືອກ</translation>
 <translation id="827422111966801947">ສີຄາມ</translation>
-<translation id="827496561804786391">ຍ້າຍຂຶ້ນ</translation>
 <translation id="8276439074553447000">ໂດດໄປຫາລາຍການທີ່ສາມາດໂຟກັສໄດ້ຜ່ານມາ</translation>
 <translation id="8279039817939141096">ກົດປຸ່ມ qwerty, ປຸ່ມອັກສອນນູນແບບໂຫຼດຂໍ້ມູນຄືນໃໝ່ໄດ້ ຫຼື ແຕະທ່າທາງເພື່ອຮຽນຮູ້ຟັງຊັນຂອງມັນ. ກົດ control ກັບ w, ຍະຫວ່າງກັບ Z, ປັດຊ້າຍດ້ວຍສອງນິ້ວ ຫຼື ກົດ escape ເພື່ອອອກ.</translation>
 <translation id="8283603667300770666">ບ່ອນໃສ່ຟອມ​ຕໍ່ໄປ​</translation>
 <translation id="8310185481635255431">ບໍ່ມີລິ້ງຖັດໄປ</translation>
 <translation id="831207808878314375">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="8313653172105209786">ໄດເຣັກຕໍຣີ</translation>
-<translation id="8314546933558091113">ບໍ່ເລືອກທັງໝົດ</translation>
 <translation id="8316881042119029234">ສີສົ້ມໂອນເລດ</translation>
 <translation id="8324974933005349667">ປັບແຕ່ງການຕັ້ງຄ່າການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="8326783648485765113">ສີຂຽວໃບຫຍ້າ</translation>

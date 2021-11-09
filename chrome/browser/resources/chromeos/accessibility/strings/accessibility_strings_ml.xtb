@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">പകർത്തുക</translation>
 <translation id="135978014023467274">നിങ്ങൾ ChromeVox 63-ലേക്ക് അപ്‌ഡേറ്റ് ചെയ്‌തിരിക്കുന്നു!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> റൂട്ടിംഗ് കീയ്ക്ക് ചുവടെയുള്ള ഇനം ക്ലിക്ക് ചെയ്യുക</translation>
+<translation id="1376703628032300005">അടുത്ത പ്രതീകത്തിലേക്ക് നീക്കുക</translation>
 <translation id="1377925789329510816">ഇത് അവസാനത്തെ തലക്കെട്ടാണ്. ഈ പേജിലെ ആദ്യ തലക്കെട്ട് റാപ്പ് ചെയ്യാൻ തിരയൽ+H അമർത്തുക അല്ലെങ്കിൽ രണ്ടാമത്തെ തലക്കെട്ടിലേക്ക് പോകാൻ തിരയൽ+Shift+H അമർത്തുക.</translation>
 <translation id="138218114945450791">ഇളം നീല</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">ചെക്ക് ബോക്‌സ്</translation>
 <translation id="2461822463642141190">നിലവിൽ</translation>
 <translation id="2462626033734746142">റേഡിയോ ബട്ടൺ ഗ്രൂപ്പ്</translation>
+<translation id="2467741090055146971">തിരഞ്ഞെടുത്തത് മാറ്റുക</translation>
 <translation id="2471138580042810658">ശീർഷകം 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{നക്ഷത്രചിഹ്നം}other{# നക്ഷത്രചിഹ്നങ്ങൾ}}</translation>
 <translation id="2490721194269245365">റോസി ബ്രൗൺ</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">മുമ്പത്തെ മീഡിയ വിജറ്റൊന്നുമില്ല</translation>
 <translation id="4855927945655956315">പ്രധാനപ്പെട്ട കീകൾ: Control</translation>
 <translation id="4862744964787595316">ബോൾഡ് അല്ല</translation>
+<translation id="4865995900839719272">മുമ്പത്തെ വരിയിലേക്ക് നീക്കുക</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS ലോഗിൻ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -607,7 +610,6 @@
 <translation id="5138912041966667164">മീഡിയം സ്ലേറ്റ് ബ്ലൂ</translation>
 <translation id="5140016802771803559">റെബേക്ക പർപ്പിൾ</translation>
 <translation id="5142101052131610456">എല്ലാ പാഠങ്ങളും</translation>
-<translation id="5152605892605507188">വലത്തേക്ക് നീക്കുക</translation>
 <translation id="5158275234811857234">കവർ</translation>
 <translation id="516076699907426116">തുടരാൻ, അടുത്ത പാഠത്തിനുള്ള ബട്ടൺ കണ്ടെത്താൻ തൊട്ടറിയുക. തുടരാൻ ഡബിൾ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="5170206230005240598">ബ്രെയ്‌ലി അടിക്കുറിപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കി</translation>
@@ -624,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, ടാബ്</translation>
 <translation id="5308380583665731573">കണക്‌റ്റുചെയ്യുക</translation>
 <translation id="5310788376443009632">നീക്കംചെയ്‌തു:</translation>
+<translation id="5316825363044614340">അടുത്ത വരിയിലേക്ക് നീക്കുക</translation>
 <translation id="5320727453979144100">സ്‌റ്റിക്കി മോഡ് പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{കോമ}other{# കോമകൾ}}</translation>
 <translation id="532485153932049746">ടെക്‌സ്റ്റ് ഫോർമാറ്റ് ചെയ്യൽ
@@ -752,7 +755,6 @@
 <translation id="6142308968191113180">ശീർഷകം 4</translation>
 <translation id="6150023170003443621">മഞ്ഞ കലർന്ന പച്ച</translation>
 <translation id="6158882249329863701">വരി <ph name="TABLECELLROWINDEX" /> കോളം <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">ഇടത്തേക്ക് നീക്കുക</translation>
 <translation id="6164829606128959761">മീറ്റർ</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
 <translation id="6166362019018438352">ബ്രെയ്‌ലി അടിക്കുറിപ്പുകൾ പ്രവർത്തനരഹിതമാക്കി</translation>
@@ -845,7 +847,6 @@
 <translation id="6910969481785184048">ഓണാക്കുകയും ഓഫാക്കുകയും നിർത്തുകയും ചെയ്യുക</translation>
 <translation id="6919104639734799681">പട്ടിക ലിസ്റ്റ് കാണിക്കുക</translation>
 <translation id="692135145298539227">ഇല്ലാതാക്കൂ</translation>
-<translation id="6935674530832500465">താഴേക്ക് നീക്കുക</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6949846980769640811">മീഡിയം അക്വാ മറീൻ</translation>
 <translation id="6951482098621102657">അടുത്ത നില 5 ശീർഷകം ഒന്നുമില്ല</translation>
@@ -905,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">മുൻ ഫോം ഫീൽഡ് ഒന്നുമില്ല</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">സഹായിക്കുക</translation>
 <translation id="7317017974771324508">ഭാഗികമായി തിരഞ്ഞെടുത്തു</translation>
 <translation id="7322442671176251901">തൊട്ടറിയുക</translation>
 <translation id="7344012264516629579">ലിങ്ക്, ബട്ടൺ, ചെക്ക്ബോക്‌സ് എന്നിവ അനുസരിച്ചുള്ള ഒഴിവാക്കൽ പോലുള്ളവ, അധിക ജമ്പ് കമാൻഡുകളിൽ ഉൾപ്പെടുന്നു. ജമ്പ് കമാൻഡുകളുടെ പൂർണ്ണ ലിസ്റ്റ് ChromeVox മെനുകളിൽ കണ്ടെത്താം, തിരയൽ + വിരാമചിഹ്‌നം അമർത്തി അത് തുറക്കാം.</translation>
@@ -1042,14 +1044,12 @@
 <translation id="826825447994856889">ആമുഖം</translation>
 <translation id="827266600368092403">തിരഞ്ഞെടുക്കൽ ആരംഭിക്കുകയോ അവസാനിപ്പിക്കുകയോ ചെയ്യുക</translation>
 <translation id="827422111966801947">ഇൻഡിഗോ</translation>
-<translation id="827496561804786391">മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="8276439074553447000">ഫോക്കസ് ചെയ്യാനാകുന്ന മുമ്പത്തെ ഇനത്തിലേക്ക് പോകുക</translation>
 <translation id="8279039817939141096">ഇതിന്റെ പ്രവർത്തനം പഠിക്കാൻ qwerty കീയോ, പുതുക്കാവുന്ന ബ്രെയ്‌ലി കീയോ, ടച്ച് ഗെസ്ച്ചറോ അമർത്തുക. പുറത്ത് കടക്കാൻ control, w എന്നീ കീകൾ ഒരുമിച്ചോ space, Z എന്നീ കീകൾ ഒരുമിച്ചോ അമർത്തുക, രണ്ട് വിരലുകൾ ഉപയോഗിച്ച് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്യുക അല്ലെങ്കിൽ Escape കീ അമർത്തുക.</translation>
 <translation id="8283603667300770666">അടുത്ത ഫോം ഫീൽഡ്</translation>
 <translation id="8310185481635255431">അടുത്ത ലിങ്ക് ഒന്നുമില്ല</translation>
 <translation id="831207808878314375">നിർവചനം</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">തിരഞ്ഞെടുത്തത് എല്ലാം മാറ്റുക</translation>
 <translation id="8316881042119029234">ഓൾഡ് ലേസ്</translation>
 <translation id="8324974933005349667">ടെക്‌സ്‌റ്റ്-ടു-സ്‌പീച്ച് ക്രമീകരണം വ്യക്തിപരമാക്കുക</translation>
 <translation id="8326783648485765113">ലോൺ ഗ്രീൻ</translation>
@@ -1133,6 +1133,7 @@
 <translation id="9014206344398081366">ChromeVox ട്യൂട്ടോറിയൽ</translation>
 <translation id="9040132695316389094">ശീർഷകം 1</translation>
 <translation id="9061884144798498064">8 ഡോട്ട് ബ്രെയ്‌ലി പട്ടിക തിരഞ്ഞെടുക്കുക:</translation>
+<translation id="9063946545000394379">മുമ്പത്തെ പ്രതീകത്തിലേക്ക് നീക്കുക</translation>
 <translation id="9065283790526219006">+പോപ്പ്അപ്പ്</translation>
 <translation id="9065912140022662363">അടുത്ത റേഡിയോ ബട്ടൺ ഒന്നുമില്ല</translation>
 <translation id="9067522039955793016">പേജ് ബ്രേക്ക്</translation>

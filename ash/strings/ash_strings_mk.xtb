@@ -62,6 +62,7 @@
 <translation id="1289185460362160437">Вратете се во <ph name="COME_BACK_DAY_OF_WEEK" /> во <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
 <translation id="1293264513303784526">USB-Ц уред (лева порта)</translation>
+<translation id="1293556467332435079">Датотеки</translation>
 <translation id="1294929383540927798">Променете ги поставките за известувања на заклучен екран</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Прикажи ги поставките за Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@
 <translation id="2778650143428714839"><ph name="MANAGER" /> управува со <ph name="DEVICE_TYPE" /></translation>
 <translation id="2782591952652094792">Излези од режимот на снимање</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2805756323405976993">Апликации</translation>
 <translation id="2814448776515246190">Делумно снимање</translation>
 <translation id="2819276065543622893">Сега ќе бидете одјавени.</translation>
 <translation id="28232023175184696">Не може да се поврзе на интернет. Кликнете за повторен обид.</translation>
@@ -376,6 +378,7 @@
 <translation id="3665889125180354336">Микрофон за снимање</translation>
 <translation id="3680908746918359504">Исчисти ги сите означувачи</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ќе се споделуваат помеѓу вашиот телефон и <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Веб-страници</translation>
 <translation id="3701206655856637070">Сега може да промените каде се зачувуваат снимките од екранот</translation>
 <translation id="3702809606464356667">Се прикажуваат прозорци од тековната работна површина, притиснете го копчето со стрелка за нагоре за да се прикажат прозорци од сите работни површини</translation>
 <translation id="3702846122927433391">Население во Нигерија</translation>
@@ -538,6 +541,7 @@
 <translation id="4759238208242260848">Преземања</translation>
 <translation id="4774338217796918551">Вратете се утре во <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Лозинка за <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">„Помошникот на Google“ не е достапен во сесија за демонстрација.</translation>
 <translation id="4782311465517282004">Добивајте дефиниции, преводи или конверзија на вредности кога ќе кликнете со десно копче или ќе допрете и задржите текст</translation>
 <translation id="479989351350248267">search</translation>
@@ -938,6 +942,7 @@
 <translation id="7796353162336583443">Допрете го копчето за пенкало на полицата за да напишете белешка, да направите слика од екранот или пак, да го користите „Помошникотна Google“, ласерскиот покажувач или лупата.</translation>
 <translation id="7798302898096527229">Притиснете „Пребарување“ или Shift за да откажете.</translation>
 <translation id="780301667611848630">Не, фала</translation>
+<translation id="7807067443225230855">„Пребарување“ и „Помошник“</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> и <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Силен сигнал</translation>
 <translation id="7837740436429729974">Времето истече</translation>

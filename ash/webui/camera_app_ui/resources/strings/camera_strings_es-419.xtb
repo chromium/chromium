@@ -3,6 +3,7 @@
 <translationbundle lang="es-419">
 <translation id="1113173431709655881">Modo de cámara</translation>
 <translation id="1175958423215084756">Se detectó un vínculo. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Rotar 90 grados en el sentido de las manecillas del reloj</translation>
 <translation id="1276998909102132017">Imágenes de la galería</translation>
 <translation id="1300209025925956156">Escanea tu documento</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Presiona Búsqueda + flecha hacia la izquierda para acceder.</translation>
@@ -54,6 +55,7 @@ Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y vide
 <translation id="3517926952904427380">No es posible cambiar al modo vertical para tomar fotos.</translation>
 <translation id="3569311554794739032">¿Confirmas que quieres quitar <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Cambiar al modo de escaneo</translation>
+<translation id="3789724198583203151">Rotar 90 grados en sentido antihorario</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Escanear el código de barras</translation>
 <translation id="3892148308691398805">Copiar texto</translation>

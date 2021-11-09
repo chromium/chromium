@@ -62,6 +62,7 @@
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" /> बजे फेरि आउनुहोला।</translation>
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
 <translation id="1293264513303784526">USB-C यन्त्र (बायाँ पोर्ट)</translation>
+<translation id="1293556467332435079">फाइलहरू</translation>
 <translation id="1294929383540927798">लक स्क्रिनको सूचनासम्बन्धी सेटिङहरू परिवर्तन गर्नुहोस्</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">ब्लुटुथसम्बन्धी सेटिङहरू देखाउनुहोस्। <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@
 <translation id="2778650143428714839"><ph name="MANAGER" /> ले <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="2782591952652094792">क्याप्चर मोडबाट बाहिर निस्कनुहोस्</translation>
 <translation id="2792498699870441125">Alt + खोज</translation>
+<translation id="2805756323405976993">एप्स</translation>
 <translation id="2814448776515246190">स्क्रिनको केही भाग क्याप्चर गर्ने सुविधा</translation>
 <translation id="2819276065543622893">तपाइँलाई अब साइन आउट गराइनेछ।</translation>
 <translation id="28232023175184696">इन्टरनेटमा कनेक्ट हुन सकेन। फेरि प्रयास गर्न क्लिक गर्नुहोस्।</translation>
@@ -376,6 +378,7 @@
 <translation id="3665889125180354336">माइक्रोफोनमार्फत रेकर्ड गर्नुहोस्</translation>
 <translation id="3680908746918359504">सबै मार्करहरू हटाउनुहोस्</translation>
 <translation id="36813544980941320">तपाईंको फोन र <ph name="DEVICE_NAME" /> का बिचमा Wi-Fi नेटवर्कहरू सेयर गरिने छन्</translation>
+<translation id="3694122362646626770">वेबसाइटहरू</translation>
 <translation id="3701206655856637070">तपाईं अब स्क्रिन क्याप्चर सेभ गरिने स्थान बदल्न सक्नुहुन्छ</translation>
 <translation id="3702809606464356667">हालको डेस्कमा रहेका विन्डोहरू देखाइँदै छन्, सबै डेस्कमा रहेका विन्डोहरू देखाउन अप एरो की थिच्नुहोस्</translation>
 <translation id="3702846122927433391">नाइजेरियाको जनसङ्ख्या कति छ</translation>
@@ -537,6 +540,7 @@
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4774338217796918551">भोलि <ph name="COME_BACK_TIME" /> बजे फेरि आउनुहोला।</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> को लागि लागि पासवर्ड</translation>
+<translation id="4777825441726637019">Play स्टोर</translation>
 <translation id="4778095205580009397">Google सहायक डेमो सत्रमा उपलब्ध छैन।</translation>
 <translation id="4782311465517282004">तपाईंले कुनै टेक्स्टमा दायाँ क्लिक गर्दा वा टच एन्ड होल्ड गर्दा परिभाषा, अनुवाद वा एकाइ रूपान्तरण जस्ता जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="479989351350248267">खोज्नुहोस्</translation>
@@ -937,6 +941,7 @@
 <translation id="7796353162336583443">कुनै टिपोट, स्क्रिनसट लिन, Google सहायक, लेजर पोइन्टर वा म्याग्निफाइङ ग्लास प्रयोग गर्न सेल्फमा रहेको स्टाइलस बटनमा ट्याप गर्नुहोस्।</translation>
 <translation id="7798302898096527229">रद्द गर्न Search वा Shift बटनमा थिच्नुहोस्।</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
+<translation id="7807067443225230855">खोज र सहायक</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> र <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">बलियो सिग्नल</translation>
 <translation id="7837740436429729974">समय सकियो</translation>

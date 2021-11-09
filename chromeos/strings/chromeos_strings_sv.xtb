@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Infångstportal har upptäckts</translation>
 <translation id="3170673040743561620">Sätt dokumentet i skannern</translation>
 <translation id="3188257591659621405">Mina filer</translation>
+<translation id="3192947282887913208">Ljudfiler</translation>
 <translation id="3199982728237701504">Dokumentmatare (tvåsidig)</translation>
 <translation id="3226405216343213872">Söker efter skannrar</translation>
 <translation id="3246869037381808805">Utskriftsjobb som är äldre än 1 dagar tas bort</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioner)</translation>
 <translation id="3748026146096797577">Ej ansluten</translation>
 <translation id="3749289110408117711">Filnamn</translation>
+<translation id="3771294271822695279">Videofiler</translation>
 <translation id="38114475217616659">Rensa all historik</translation>
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">Anslutning</translation>
 <translation id="4832079907277790330">Välj en fil i appen Filer</translation>
 <translation id="4835901797422965222">Inga aktiva nätverk</translation>
+<translation id="4839698083503556542">Gör din egen film</translation>
 <translation id="484790837831576105">(Android) DNS-upplösning</translation>
 <translation id="4848429997038228357">KÖRS</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} försök kvar}other{<ph name="ERROR_MESSAGE" /> {0} försök kvar}}</translation>
@@ -347,6 +350,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="636850387210749493">Företagsregistrering</translation>
 <translation id="6379086450106841622">Pekskärm</translation>
 <translation id="6388847657025262518">Skannerns dokumentmatare är blockerad. Kontrollera mataren och försök igen.</translation>
+<translation id="6410257289063177456">Bildfiler</translation>
 <translation id="641081527798843608">Ämnesmatchning</translation>
 <translation id="6423239382391657905">Öppen VPN</translation>
 <translation id="6439505561246192797">Svag (<ph name="SIGNAL_STRENGTH" />)</translation>

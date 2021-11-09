@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">สีน้ำเงินอมเทาปานกลาง</translation>
 <translation id="5140016802771803559">สีม่วงรีเบคกา</translation>
 <translation id="5142101052131610456">บทเรียนทั้งหมด</translation>
-<translation id="5152605892605507188">เลื่อนไปทางขวา</translation>
 <translation id="5158275234811857234">หน้าปก</translation>
 <translation id="516076699907426116">หากต้องการไปต่อ ให้แตะเพื่อสำรวจและหาปุ่ม "บทเรียนถัดไป" จากนั้นแตะสองครั้งเพื่อไปต่อ</translation>
 <translation id="5170206230005240598">เปิดใช้คำบรรยายอักษรเบรลล์แล้ว</translation>
@@ -752,7 +751,6 @@
 <translation id="6142308968191113180">ส่วนหัวระดับ 4</translation>
 <translation id="6150023170003443621">สีเขียวอมเหลือง</translation>
 <translation id="6158882249329863701">แถว <ph name="TABLECELLROWINDEX" /> คอลัมน์ <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">เลื่อนไปทางซ้าย</translation>
 <translation id="6164829606128959761">เมตร</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6166362019018438352">ปิดใช้คำบรรยายอักษรเบรลล์แล้ว</translation>
@@ -845,7 +843,6 @@
 <translation id="6910969481785184048">เปิด ปิด และหยุด</translation>
 <translation id="6919104639734799681">แสดงรายการตาราง</translation>
 <translation id="692135145298539227">นำออก</translation>
-<translation id="6935674530832500465">เลื่อนลง</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6949846980769640811">สีเขียวอะความารีนปานกลาง</translation>
 <translation id="6951482098621102657">ไม่มีส่วนหัวระดับ 5 ถัดไป</translation>
@@ -1042,14 +1039,12 @@
 <translation id="826825447994856889">บทนำ</translation>
 <translation id="827266600368092403">เริ่มต้นหรือสิ้นสุดการเลือก</translation>
 <translation id="827422111966801947">สีคราม</translation>
-<translation id="827496561804786391">เลื่อนขึ้น</translation>
 <translation id="8276439074553447000">ข้ามไปยังรายการที่สามารถโฟกัสก่อนหน้า</translation>
 <translation id="8279039817939141096">กดแป้น QWERTY กดแป้นอักษรเบรลล์แบบรีเฟรชได้ หรือใช้ท่าทางสัมผัสด้วยการแตะเพื่อดูข้อมูลเกี่ยวกับฟังก์ชันของแป้นหรือท่าทางสัมผัสนั้น กดปุ่ม Control พร้อมกับแป้น W, กดปุ่ม Space พร้อมกับแป้น Z, ใช้ 2 นิ้วปัดไปทางซ้าย หรือกดปุ่ม Escape เพื่อออก</translation>
 <translation id="8283603667300770666">ช่องฟอร์มถัดไป</translation>
 <translation id="8310185481635255431">ไม่มีลิงก์ถัดไป</translation>
 <translation id="831207808878314375">คำจำกัดความ</translation>
 <translation id="8313653172105209786">ไดเรกทอรี</translation>
-<translation id="8314546933558091113">ยกเลิกการเลือกทั้งหมด</translation>
 <translation id="8316881042119029234">สีส้มโอลด์เลซ</translation>
 <translation id="8324974933005349667">ปรับเปลี่ยนการตั้งค่าการอ่านออกเสียงข้อความในแบบของคุณ</translation>
 <translation id="8326783648485765113">สีเขียวลอว์นกรีน</translation>

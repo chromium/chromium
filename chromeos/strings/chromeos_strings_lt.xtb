@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Aptiktas fiksuotasis portalas</translation>
 <translation id="3170673040743561620">Padėkite dokumentą ant skaitytuvo</translation>
 <translation id="3188257591659621405">Mano failai</translation>
+<translation id="3192947282887913208">Garso įrašų failai</translation>
 <translation id="3199982728237701504">Dokumentų tiektuvas (dvipusis)</translation>
 <translation id="3226405216343213872">Ieškoma skaitytuvų</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (apžvalgų: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Neprisijungta</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
+<translation id="3771294271822695279">Vaizdo įrašų failai</translation>
 <translation id="38114475217616659">Išvalyti visą istoriją</translation>
 <translation id="3820172043799983114">Netinkamas PIN kodas.</translation>
 <translation id="3838338534323494292">Naujas slaptažodis</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">Ryšys</translation>
 <translation id="4832079907277790330">Pasirinkite aplanką Failų programoje...</translation>
 <translation id="4835901797422965222">Nėra jokių aktyvių tinklų</translation>
+<translation id="4839698083503556542">Sukurkite savo filmą</translation>
 <translation id="484790837831576105">(„Android“) DNS pavadinimų konvertavimas</translation>
 <translation id="4848429997038228357">VYKDOMA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}one{<ph name="ERROR_MESSAGE" /> Liko {0} bandymas}few{<ph name="ERROR_MESSAGE" /> Liko {0} bandymai}many{<ph name="ERROR_MESSAGE" /> Liko {0} bandymo}other{<ph name="ERROR_MESSAGE" /> Liko {0} bandymų}}</translation>
@@ -347,6 +350,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="636850387210749493">Įmonės registracija</translation>
 <translation id="6379086450106841622">Jutiklinis ekranas</translation>
 <translation id="6388847657025262518">Skaitytuvo dokumentų tiektuvas užstrigo. Patikrinkite tiektuvą ir bandykite dar kartą.</translation>
+<translation id="6410257289063177456">Vaizdo failai</translation>
 <translation id="641081527798843608">Temos atitiktis</translation>
 <translation id="6423239382391657905">Atidaryti virtualųjį privatųjį tinklą</translation>
 <translation id="6439505561246192797">Silpnas (<ph name="SIGNAL_STRENGTH" />)</translation>

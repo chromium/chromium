@@ -132,6 +132,7 @@
 <translation id="315738237743207937">درگاه مهمان شناسایی شد</translation>
 <translation id="3170673040743561620">سند را روی اسکنر قرار دهید</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
+<translation id="3192947282887913208">فایل‌های صوتی</translation>
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
 <translation id="3226405216343213872">درحال جستجوی اسکنرها</translation>
 <translation id="3246869037381808805">کارهای چاپ قدیمی‌تر از ۱ روز برداشته می‌شوند</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مرور)</translation>
 <translation id="3748026146096797577">متصل نیست</translation>
 <translation id="3749289110408117711">نام فایل</translation>
+<translation id="3771294271822695279">فایل‌های ویدئویی</translation>
 <translation id="38114475217616659">پاک کردن همه سابقه</translation>
 <translation id="3820172043799983114">پین نامعتبر است.</translation>
 <translation id="3838338534323494292">گذرواژه جدید</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">اتصال</translation>
 <translation id="4832079907277790330">‏انتخاب پوشه در برنامه Files…</translation>
 <translation id="4835901797422965222">شبکه فعالی وجود ندارد</translation>
+<translation id="4839698083503556542">فیلم خودتان را بسازید</translation>
 <translation id="484790837831576105">‏(Android) حل‌وفصل ساناد</translation>
 <translation id="4848429997038228357">درحال اجرا</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}one{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}other{<ph name="ERROR_MESSAGE" /> {0} فرصت باقی مانده است}}</translation>
@@ -347,6 +350,7 @@
 <translation id="636850387210749493">ثبت‌نام شرکت</translation>
 <translation id="6379086450106841622">صفحه لمسی</translation>
 <translation id="6388847657025262518">تغذیه‌کننده سند اسکنر گیر کرده است. تغذیه‌کننده را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="6410257289063177456">فایل‌های تصویری</translation>
 <translation id="641081527798843608">مطابقت موضوع</translation>
 <translation id="6423239382391657905">‏باز کردن VPN</translation>
 <translation id="6439505561246192797">ضعیف (<ph name="SIGNAL_STRENGTH" />)</translation>

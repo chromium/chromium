@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Captive portal waargenomen</translation>
 <translation id="3170673040743561620">Leg je document op de scanner</translation>
 <translation id="3188257591659621405">Mijn bestanden</translation>
+<translation id="3192947282887913208">Audiobestanden</translation>
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
 <translation id="3226405216343213872">Zoeken naar scanners</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
 <translation id="3748026146096797577">Niet verbonden</translation>
 <translation id="3749289110408117711">Bestandsnaam</translation>
+<translation id="3771294271822695279">Videobestanden</translation>
 <translation id="38114475217616659">Alle geschiedenis wissen</translation>
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="3838338534323494292">Nieuw wachtwoord</translation>
@@ -347,6 +349,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6388847657025262518">De documentinvoer van de scanner is vastgelopen. Check de invoer en probeer het opnieuw.</translation>
+<translation id="6410257289063177456">Afbeeldingsbestanden</translation>
 <translation id="641081527798843608">Overeenkomst van onderwerp</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zwak (<ph name="SIGNAL_STRENGTH" />)</translation>

@@ -132,6 +132,7 @@
 <translation id="315738237743207937">បានរកឃើញច្រកចូលប្រើបណ្ដាញ</translation>
 <translation id="3170673040743561620">ដាក់ឯកសារ​របស់អ្នកនៅលើ​ម៉ាស៊ីនស្កេន</translation>
 <translation id="3188257591659621405">ឯកសារ​របស់ខ្ញុំ​</translation>
+<translation id="3192947282887913208">ឯកសារសម្លេង</translation>
 <translation id="3199982728237701504">ឧបករណ៍​បញ្ចូល​ឯកសារ (សងខាង)</translation>
 <translation id="3226405216343213872">កំពុងរកមើលម៉ាស៊ីនស្កេន</translation>
 <translation id="3246869037381808805">កិច្ចការបោះពុម្ពដែលចាស់ជាង 1 ថ្ងៃនឹងត្រូវលុបចេញ</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (ការវាយតម្លៃចំនួន <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">មិនបានភ្ជាប់ទេ</translation>
 <translation id="3749289110408117711">ឈ្មោះឯកសារ</translation>
+<translation id="3771294271822695279">ឯកសារវីដេអូ</translation>
 <translation id="38114475217616659">សម្អាត​ប្រវត្តិ​ទាំងអស់</translation>
 <translation id="3820172043799983114">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ។</translation>
 <translation id="3838338534323494292">ពាក្យសម្ងាត់ថ្មី</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">ការតភ្ជាប់</translation>
 <translation id="4832079907277790330">ជ្រើសរើសថតនៅក្នុងកម្មវិធី Files...</translation>
 <translation id="4835901797422965222">មិនមាន​បណ្ដាញ​ដែលសកម្មទេ</translation>
+<translation id="4839698083503556542">បង្កើតភាពយន្តរបស់អ្នកផ្ទាល់</translation>
 <translation id="484790837831576105">(Android) កម្រិតច្បាស់ DNS</translation>
 <translation id="4848429997038228357">កំពុងដំណើរការ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}other{<ph name="ERROR_MESSAGE" /> អាចព្យាយាមបាន {0} ដងទៀត}}</translation>
@@ -346,6 +349,7 @@
 <translation id="636850387210749493">ការចុះឈ្មោះសហគ្រាស</translation>
 <translation id="6379086450106841622">អេក្រង់ថាច់</translation>
 <translation id="6388847657025262518">ឧបករណ៍​បញ្ចូល​ឯកសារ​របស់ម៉ាស៊ីនស្កេន​ជាប់គាំង។ សូម​ពិនិត្យមើល​ឧបករណ៍​បញ្ចូល​ឯកសារនោះ រួចព្យាយាម​ម្ដងទៀត។</translation>
+<translation id="6410257289063177456">ឯកសាររូបភាព</translation>
 <translation id="641081527798843608">ប្រធានបទ​ត្រូវគ្នា</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ខ្សោយ (<ph name="SIGNAL_STRENGTH" />)</translation>

@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Střední břidlicová modrá</translation>
 <translation id="5140016802771803559">Rebečina nachová</translation>
 <translation id="5142101052131610456">Všechny lekce</translation>
-<translation id="5152605892605507188">posunout vpravo</translation>
 <translation id="5158275234811857234">Titulní strana</translation>
 <translation id="516076699907426116">Prozkoumáváním dotykem najděte tlačítko Další lekce. Poté pokračujte tím, že na něj dvakrát klepnete.</translation>
 <translation id="5170206230005240598">Titulky v Braillově písmu jsou zapnuty</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Světle šedá</translation>
 <translation id="6036135911048686884">Klepněte na Prozkoumat</translation>
 <translation id="6037602951055904232">Posunout dopředu</translation>
+<translation id="604240746417122825">gramatická chyba</translation>
 <translation id="6082768461603900813">Základní navigace</translation>
 <translation id="609281021724813947">Žádný předchozí posuvník není</translation>
 <translation id="6100239002225743044">Přejít o řádek nahoru</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">Nadpis 4</translation>
 <translation id="6150023170003443621">Žlutozelená</translation>
 <translation id="6158882249329863701">řádek <ph name="TABLECELLROWINDEX" /> sloupec <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">posunout vlevo</translation>
 <translation id="6164829606128959761">měřič</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6166362019018438352">Titulky v Braillově písmu jsou vypnuty</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">Zapnutí, vypnutí a zastavení</translation>
 <translation id="6919104639734799681">Zobrazit seznam tabulek</translation>
 <translation id="692135145298539227">smazat</translation>
-<translation id="6935674530832500465">posunout dolů</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6949846980769640811">Střední akvamarínová</translation>
 <translation id="6951482098621102657">Žádný další nadpis 5. úrovně není</translation>
@@ -1041,14 +1039,12 @@
 <translation id="826825447994856889">Úvod</translation>
 <translation id="827266600368092403">Zahájit nebo ukončit výběr</translation>
 <translation id="827422111966801947">Indigová</translation>
-<translation id="827496561804786391">posunout nahoru</translation>
 <translation id="8276439074553447000">Přejít na předchozí zaměřitelnou položku</translation>
 <translation id="8279039817939141096">Stisknutím klávesy na běžné klávesnici, tlačítka obnovitelného braillského řádku nebo provedením dotykového gesta získáte informace o jeho funkci. Ukončíte stisknutím kombinace kláves Ctrl+W nebo mezerník+Z, přejetím dvěma prsty doleva nebo stisknutím klávesy Escape.</translation>
 <translation id="8283603667300770666">Další pole formuláře</translation>
 <translation id="8310185481635255431">Žádný další odkaz není</translation>
 <translation id="831207808878314375">Definice</translation>
 <translation id="8313653172105209786">adresář</translation>
-<translation id="8314546933558091113">zrušit výběr</translation>
 <translation id="8316881042119029234">Světle béžová</translation>
 <translation id="8324974933005349667">Upravit nastavení převodu textu na řeč</translation>
 <translation id="8326783648485765113">Jasně zelená</translation>

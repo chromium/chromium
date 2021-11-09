@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">ზომიერი ასპიდისფერი ლურჯი</translation>
 <translation id="5140016802771803559">მეწამული რებეკა</translation>
 <translation id="5142101052131610456">ყველა გაკვეთილი</translation>
-<translation id="5152605892605507188">მარჯვნივ გადატანა</translation>
 <translation id="5158275234811857234">ყდა</translation>
 <translation id="516076699907426116">გასაგრძელებლად ცადეთ შეხებით დათვალიერება, რომ იპოვოთ შემდეგი გაკვეთილის ღილაკი. ამის შემდეგ, გასაგრძელებლად, შეეხეთ ორმაგად.</translation>
 <translation id="5170206230005240598">ბრაილის წარწერები ჩართულია</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">ღია ნაცრისფერი</translation>
 <translation id="6036135911048686884">შეხებით დათვალიერება</translation>
 <translation id="6037602951055904232">წინ გადაწევა</translation>
+<translation id="604240746417122825">გრამატიკული შეცდომა</translation>
 <translation id="6082768461603900813">ძირითადი ნავიგაცია</translation>
 <translation id="609281021724813947">წინა სლაიდერი არ არის</translation>
 <translation id="6100239002225743044">ერთი ხაზით ზემოთ გადასვლა</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">სათაური 4</translation>
 <translation id="6150023170003443621">მოყვითალო მწვანე</translation>
 <translation id="6158882249329863701">მწკრივი <ph name="TABLECELLROWINDEX" /> სვეტი <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">მარცხნივ გადატანა</translation>
 <translation id="6164829606128959761">მთვლელი</translation>
 <translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6166362019018438352">ბრაილის წარწერები გამორთულია</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">ჩართვა, გამორთვა და შეწყვეტა</translation>
 <translation id="6919104639734799681">მაგიდების სიის ჩვენება</translation>
 <translation id="692135145298539227">წაშლა</translation>
-<translation id="6935674530832500465">ქვემოთ გადატანა</translation>
 <translation id="6945221475159498467">არჩევა</translation>
 <translation id="6949846980769640811">ზომიერად ბაცი მოცისფრო-მწვანე</translation>
 <translation id="6951482098621102657">შემდეგი მე-5 დონის სათაური არ არის</translation>
@@ -1041,14 +1039,12 @@
 <translation id="826825447994856889">შესავალი</translation>
 <translation id="827266600368092403">არჩევის დაწყება ან დასრულება</translation>
 <translation id="827422111966801947">ინდიგო</translation>
-<translation id="827496561804786391">ზემოთ გადატანა</translation>
 <translation id="8276439074553447000">გადასვლა წინა ფოკუსირებად ელემენტზე</translation>
 <translation id="8279039817939141096">ფუნქციების გასაცნობად დააჭირეთ qwerty კლავიშს, განახლებადი ბრაილის კლავიშს ან შეხების ჟესტს. გასასვლელად ერთდროულად დააჭირეთ control-სა და w-ს, შორისსა და Z-ს, escape-ს ან გადაფურცლეთ მარცხნივ ორი თითით.</translation>
 <translation id="8283603667300770666">შემდეგი ფორმის ველი</translation>
 <translation id="8310185481635255431">შემდეგი ბმული არ არის</translation>
 <translation id="831207808878314375">განსაზღვრება</translation>
 <translation id="8313653172105209786">დირექტორია</translation>
-<translation id="8314546933558091113">ყველას არჩევის გაუქმება</translation>
 <translation id="8316881042119029234">ძველი მაქმანისფერი</translation>
 <translation id="8324974933005349667">ტექსტის გახმოვანების პარამეტრების პერსონალიზება</translation>
 <translation id="8326783648485765113">მოლისფერი</translation>

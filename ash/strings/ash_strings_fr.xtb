@@ -48,6 +48,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1239161794459865856">La fonctionnalité <ph name="FEATURE_NAME" /> est connectée.</translation>
 <translation id="1246890715821376239">Applis non compatibles</translation>
 <translation id="1247372569136754018">Micro (interne)</translation>
+<translation id="1247519845643687288">Applis récentes</translation>
 <translation id="1252999807265626933">Charge à partir de la source "<ph name="POWER_SOURCE" />"</translation>
 <translation id="1255033239764210633">Quel temps fait-il ?</translation>
 <translation id="1266097335951928626">Démarrer la caméra pour selfies</translation>
@@ -61,6 +62,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1289185460362160437">Revenez <ph name="COME_BACK_DAY_OF_WEEK" /> à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Signal de faible intensité</translation>
 <translation id="1293264513303784526">Appareil USB de type C (port situé sur la gauche de l'appareil)</translation>
+<translation id="1293556467332435079">Fichiers</translation>
 <translation id="1294929383540927798">Modifier les paramètres de notification sur l'écran de verrouillage</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Afficher les paramètres Bluetooth. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1419738280318246476">Déverrouiller l'appareil pour effectuer l'action de notification</translation>
 <translation id="1420408895951708260">Activer/Désactiver la fonctionnalité Éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Oui</translation>
+<translation id="1438357537418863713">Streaming d'appli configuré. Les applis récemment lancées s'afficheront ici.</translation>
 <translation id="144853431011121127">Recevoir sur votre <ph name="DEVICE_TYPE" /> les notifications transmises sur votre téléphone</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
@@ -246,6 +249,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> géré par <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Quitter le mode de capture</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
+<translation id="2805756323405976993">Applications</translation>
 <translation id="2814448776515246190">Capture partielle</translation>
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
 <translation id="28232023175184696">Impossible d'établir la connexion Internet. Cliquez ici pour réessayer.</translation>
@@ -374,6 +378,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3665889125180354336">Enregistrer via le micro</translation>
 <translation id="3680908746918359504">Supprimer tous les repères</translation>
 <translation id="36813544980941320">Les réseaux Wi-Fi seront synchronisés sur votre téléphone et votre <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Sites Web</translation>
 <translation id="3701206655856637070">Vous pouvez maintenant modifier l'endroit où les captures d'écran sont enregistrées</translation>
 <translation id="3702809606464356667">Affichage des fenêtres du bureau actuel. Appuyez sur la flèche vers le haut pour afficher les fenêtres de tous les bureaux.</translation>
 <translation id="3702846122927433391">Population au Nigeria</translation>
@@ -535,6 +540,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4774338217796918551">Revenez demain à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Mot de passe de <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistant Google n'est pas disponible dans une session de démonstration.</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte</translation>
 <translation id="479989351350248267">rechercher</translation>
@@ -590,6 +596,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5136175204352732067">Clavier différent branché</translation>
 <translation id="5147567197700016471">Déverrouillé</translation>
 <translation id="5155897006997040331">Vitesse de lecture</translation>
+<translation id="5166007464919321363">Enregistrer le bureau comme modèle</translation>
 <translation id="5166918508782100047">Paramètres des Réponses rapides</translation>
 <translation id="5168181903108465623">Appareils Cast disponibles</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
@@ -799,6 +806,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6777216307882431711">En cours d'alimentation : plusieurs appareils USB-C connectés</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6803622936009808957">Impossible de dupliquer les écrans, car aucune résolution compatible n'a été détectée. Le bureau étendu a été activé à la place.</translation>
+<translation id="6811454077060061666">Google Drive pour ordinateur est indisponible</translation>
 <translation id="6816797338148849397">Informations sur le texte sélectionné disponibles. Pour y accéder, utilisez la flèche vers le haut.</translation>
 <translation id="6818242057446442178">Reculer par mot</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>
@@ -933,6 +941,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7796353162336583443">Appuyez sur le bouton du stylet situé sur l'étagère pour prendre des notes, effectuer des captures d'écran et utiliser l'Assistant Google, le pointeur laser ou la loupe.</translation>
 <translation id="7798302898096527229">Appuyez sur Rechercher ou Maj pour annuler.</translation>
 <translation id="780301667611848630">Non merci</translation>
+<translation id="7807067443225230855">Recherche et Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> et <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">Signal de forte intensité</translation>
 <translation id="7837740436429729974">Temps écoulé</translation>
@@ -997,6 +1006,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, batterie du téléphone à <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Appuyez sur Entrée pour déverrouiller l'appareil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Supprimer</translation>
+<translation id="8281279285293265212">Échec de l'enregistrement d'écran</translation>
 <translation id="8284362522226889623">Balayez l'écran vers la gauche avec quatre doigts pour passer au bureau précédent</translation>
 <translation id="828708037801473432">Désactivé</translation>
 <translation id="8297006494302853456">Faible</translation>
@@ -1101,6 +1111,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="9070640332319875144">Paramètres de l'Assistant</translation>
 <translation id="9072519059834302790">Temps restant avant que la batterie soit déchargée : <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Modèles</translation>
 <translation id="9077515519330855811">Commandes multimédias sélectionnées. Vous écoutez actuellement <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi : <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Balayer l'écran vers le haut pour revenir à l'accueil</translation>

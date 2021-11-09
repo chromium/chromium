@@ -132,6 +132,7 @@
 <translation id="315738237743207937">Виявлено адаптивний портал</translation>
 <translation id="3170673040743561620">Розмістіть документ на сканері</translation>
 <translation id="3188257591659621405">Мої файли</translation>
+<translation id="3192947282887913208">Аудіофайли</translation>
 <translation id="3199982728237701504">Пристрій автоподачі документів (двосторонній)</translation>
 <translation id="3226405216343213872">Пошук сканерів</translation>
 <translation id="3246869037381808805">Завдання друку, старіші за 1 день, буде вилучено</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (відгуків: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Не з’єднано</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
+<translation id="3771294271822695279">Відеофайли</translation>
 <translation id="38114475217616659">Очистити всю історію</translation>
 <translation id="3820172043799983114">Недійсний PIN-код.</translation>
 <translation id="3838338534323494292">Новий пароль</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">З’єднання</translation>
 <translation id="4832079907277790330">Вибрати папку в додатку "Файли"…</translation>
 <translation id="4835901797422965222">Немає активних мереж</translation>
+<translation id="4839698083503556542">Створюйте власний фільм</translation>
 <translation id="484790837831576105">Перетворення DNS (Android)</translation>
 <translation id="4848429997038228357">ТРИВАЄ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Залишилися {0} спроби}many{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроби}}</translation>
@@ -347,6 +350,7 @@
 <translation id="636850387210749493">Реєстрація підприємства</translation>
 <translation id="6379086450106841622">Сенсорний екран</translation>
 <translation id="6388847657025262518">Автоподавач документів заклинило. Перевірте його та повторіть спробу.</translation>
+<translation id="6410257289063177456">Файли зображень</translation>
 <translation id="641081527798843608">Збіг суб’єкта</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабкий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>

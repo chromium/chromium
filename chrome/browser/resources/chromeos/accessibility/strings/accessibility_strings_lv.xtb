@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Vidēji zilganpelēka</translation>
 <translation id="5140016802771803559">Spilgti violeta</translation>
 <translation id="5142101052131610456">Visas nodarbības</translation>
-<translation id="5152605892605507188">pārvietot pa labi</translation>
 <translation id="5158275234811857234">Vāks</translation>
 <translation id="516076699907426116">Tagad pārlūkojiet pieskaroties un atrodiet pogu Nākamā nodarbība. Pēc tam veiciet dubultskārienu, lai turpinātu.</translation>
 <translation id="5170206230005240598">Braila parakstu funkcija ir iespējota.</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Gaiši pelēka</translation>
 <translation id="6036135911048686884">Izpētiet ar pieskārienu</translation>
 <translation id="6037602951055904232">Pārvietot uz priekšu</translation>
+<translation id="604240746417122825">gramatikas kļūda</translation>
 <translation id="6082768461603900813">Navigācijas pamatiespējas</translation>
 <translation id="609281021724813947">Nav iepriekšējā slīdņa.</translation>
 <translation id="6100239002225743044">Pārvietot par vienu rindiņu augstāk</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">4. līmeņa virsraksts</translation>
 <translation id="6150023170003443621">Dzeltenzaļa</translation>
 <translation id="6158882249329863701"><ph name="TABLECELLROWINDEX" />. rinda, <ph name="TABLECELLCOLUMNINDEX" />. kolonna</translation>
-<translation id="6159796324830296161">pārvietot pa kreisi</translation>
 <translation id="6164829606128959761">mērītājs</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6166362019018438352">Braila parakstu funkcija ir atspējota.</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">Ieslēgt, izslēgt un pārtraukt</translation>
 <translation id="6919104639734799681">Rādīt tabulu sarakstu</translation>
 <translation id="692135145298539227">dzēst</translation>
-<translation id="6935674530832500465">pārvietot uz leju</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6949846980769640811">Vidēja akvamarīna</translation>
 <translation id="6951482098621102657">Nav nākamā 5. līmeņa virsraksta.</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">Ievads</translation>
 <translation id="827266600368092403">Sākt vai beigt atlasi</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="827496561804786391">pārvietot uz augšu</translation>
 <translation id="8276439074553447000">Pāriet uz iepriekšējo fokusējamo vienumu</translation>
 <translation id="8279039817939141096">Lai uzzinātu par pieejamajām funkcijām, nospiediet kādu no QWERTY tastatūras taustiņiem, atsvaidzināmās Braila raksta tastatūras taustiņu vai veiciet kādu skāriena žestu. Lai izietu, nospiediet vadīšanas taustiņu un W, atstarpes taustiņu un Z, velciet pa kreisi ar diviem pirkstiem vai nospiediet taustiņu Escape.</translation>
 <translation id="8283603667300770666">Nākamais veidlapas lauks</translation>
 <translation id="8310185481635255431">Nav nākamās saites.</translation>
 <translation id="831207808878314375">Definīcija</translation>
 <translation id="8313653172105209786">direktorijs</translation>
-<translation id="8314546933558091113">noņemt atlasi visam</translation>
 <translation id="8316881042119029234">Senu mežģīņu</translation>
 <translation id="8324974933005349667">Personalizēt pakalpojuma Teksta pārvēršana runā iestatījumus</translation>
 <translation id="8326783648485765113">Mauriņa zaļa</translation>

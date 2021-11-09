@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Bleu ardoise moyen</translation>
 <translation id="5140016802771803559">Violet foncé</translation>
 <translation id="5142101052131610456">Toutes les leçons</translation>
-<translation id="5152605892605507188">déplacer vers la droite</translation>
 <translation id="5158275234811857234">Couverture</translation>
 <translation id="516076699907426116">Explorez au toucher pour repérer le bouton "Leçon suivante" et appuyez deux fois dessus pour continuer.</translation>
 <translation id="5170206230005240598">Sous-titres braille activés</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Gris clair</translation>
 <translation id="6036135911048686884">Explorez au toucher</translation>
 <translation id="6037602951055904232">Panoramique avant</translation>
+<translation id="604240746417122825">erreur grammaticale</translation>
 <translation id="6082768461603900813">Navigation de base</translation>
 <translation id="609281021724813947">Aucun curseur précédent</translation>
 <translation id="6100239002225743044">Monter d'une ligne</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">Titre 4</translation>
 <translation id="6150023170003443621">Vert pomme</translation>
 <translation id="6158882249329863701">ligne <ph name="TABLECELLROWINDEX" />, colonne <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">déplacer vers la gauche</translation>
 <translation id="6164829606128959761">outil de mesure</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6166362019018438352">Sous-titres braille désactivés</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">Activer, désactiver et arrêter</translation>
 <translation id="6919104639734799681">Afficher la liste des tableaux</translation>
 <translation id="692135145298539227">supprimer</translation>
-<translation id="6935674530832500465">déplacer vers le bas</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6949846980769640811">Aigue-marine moyen</translation>
 <translation id="6951482098621102657">Aucun titre de niveau 5 suivant</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">Introduction</translation>
 <translation id="827266600368092403">Début ou fin de sélection</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="827496561804786391">déplacer vers le haut</translation>
 <translation id="8276439074553447000">Renvoyer à l'élément précédent pouvant être agrandi</translation>
 <translation id="8279039817939141096">Faites un geste ou appuyez sur une touche du clavier ou du clavier braille actualisable pour en connaître la fonction. Appuyez sur Ctrl+W, Espace+Z, balayez vers la gauche avec deux doigts ou appuyez sur Échap pour sortir.</translation>
 <translation id="8283603667300770666">Champ de formulaire suivant</translation>
 <translation id="8310185481635255431">Aucun lien suivant</translation>
 <translation id="831207808878314375">Définition</translation>
 <translation id="8313653172105209786">répertoire</translation>
-<translation id="8314546933558091113">tout désélectionner</translation>
 <translation id="8316881042119029234">Dentelle ancienne</translation>
 <translation id="8324974933005349667">Personnaliser les paramètres de synthèse vocale</translation>
 <translation id="8326783648485765113">Vert pelouse</translation>

@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> დაკავშირებულია.</translation>
 <translation id="1246890715821376239">მხარდაუჭერელი აპები</translation>
 <translation id="1247372569136754018">მიკროფონი (შიდა)</translation>
+<translation id="1247519845643687288">ბოლოდროინდელი აპები</translation>
 <translation id="1252999807265626933">იტენება წყაროდან: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">რა ამინდია?</translation>
 <translation id="1266097335951928626">სელფის კამერის გაშვება</translation>
@@ -61,6 +62,7 @@
 <translation id="1289185460362160437">დაბრუნდით <ph name="COME_BACK_DAY_OF_WEEK" /> დღის <ph name="COME_BACK_TIME" />-ზე.</translation>
 <translation id="1290331692326790741">სიგნალი სუსტია</translation>
 <translation id="1293264513303784526">USB-C მოწყობილობა (მარცხენა პორტი)</translation>
+<translation id="1293556467332435079">ფაილები</translation>
 <translation id="1294929383540927798">ჩაკეტილ ეკრანზე შეტყობინების პარამეტრების შეცვლა</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Bluetooth-ის პარამეტრების ჩვენება. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@
 <translation id="1419738280318246476">შეტყობინების ქმედების შესასრულებლად განბლოკეთ მოწყობილობა</translation>
 <translation id="1420408895951708260">ღამის განათების გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">დიახ</translation>
+<translation id="1438357537418863713">აპის სტრიმინგი უკვე დაყენებულია. მას შემდეგ, რაც ამას წამოიწყებთ, ახლახან გაშვებული აპები აქ გამოჩნდება.</translation>
 <translation id="144853431011121127">მიიღეთ შეტყობინებები თქვენი ტელეფონიდან თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="1455242230282523554">ენის პარამეტრების ჩვენება</translation>
 <translation id="1460620680449458626">ხმა დადუმებულია.</translation>
@@ -246,6 +249,7 @@
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ</translation>
 <translation id="2782591952652094792">აღბეჭდვის რეჟიმიდან გასვლა</translation>
 <translation id="2792498699870441125">Alt+ძიება</translation>
+<translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2814448776515246190">ნაწილობრივი აღბეჭდვა</translation>
 <translation id="2819276065543622893">თქვენ ახლა გამოხვალთ.</translation>
 <translation id="28232023175184696">ინტერნეტთან დაკავშირება ვერ მოხერხდა. დააწკაპუნეთ ხელახლა საცდელად.</translation>
@@ -374,6 +378,7 @@
 <translation id="3665889125180354336">მიკროფონის ჩაწერა</translation>
 <translation id="3680908746918359504">ყველა მარკერის გასუფთავება</translation>
 <translation id="36813544980941320">თქვენს ტელეფონსა და <ph name="DEVICE_NAME" />-ს შორის Wi-Fi ქსელები გაზიარდება</translation>
+<translation id="3694122362646626770">ვებსაიტები</translation>
 <translation id="3701206655856637070">ამიერიდან შეგიძლიათ შეცვალოთ, სად შეინახოს ეკრანზე აღბეჭდილი კონტენტი</translation>
 <translation id="3702809606464356667">ნაჩვენებია ამჟამინდელი სამუშაო მაგიდის ფანჯრები, ყველა სამუშაო მაგიდის ფანჯრების გამოსაჩენად დააჭირეთ კლავიშს ზემოთ მიმართული ისრით</translation>
 <translation id="3702846122927433391">ნიგერიის მოსახლეობა</translation>
@@ -535,6 +540,7 @@
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
 <translation id="4774338217796918551">დაბრუნდით ხვალ, <ph name="COME_BACK_TIME" />-ზე.</translation>
 <translation id="4776917500594043016">პაროლი <ph name="USER_EMAIL_ADDRESS" />-თვის</translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google ასისტენტი მიუწვდომელია დემო-სესიაში.</translation>
 <translation id="4782311465517282004">მიიღეთ განმარტებები, თარგმნეთ ან გადაიყვანეთ საზომი ერთეულები ტექსტზე მარჯვენა დაწკაპუნების ან ხანგრძლივად შეხების მეშვეობით</translation>
 <translation id="479989351350248267">ძიება</translation>
@@ -590,6 +596,7 @@
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
 <translation id="5147567197700016471">განბლოკილია</translation>
 <translation id="5155897006997040331">წაკითხვის სიჩქარე</translation>
+<translation id="5166007464919321363">სამუშაო მაგიდის შენახვა შაბლონად</translation>
 <translation id="5166918508782100047">სწრაფი პასუხების პარამეტრები</translation>
 <translation id="5168181903108465623">ხელმისაწვდომია გადაცემის მოწყობილობები</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
@@ -799,6 +806,7 @@
 <translation id="6777216307882431711">ელკვება მიეწოდება დაკავშირებულ USB-C მოწყობილობებს</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6803622936009808957">ეკრანების არეკვლა ვერ მოხერხდა, რადგან მხარდაჭერილი გარჩევადობები ვერ მოიძებნა. შეყვანილია გაშლილი სამუშაო დაფა.</translation>
+<translation id="6811454077060061666">Google Drive დესკტოპისთვის მიუწვდომელია</translation>
 <translation id="6816797338148849397">ხელმისაწვდომია თქვენს არჩევანთან დაკავშირებული ინფორმაცია. წვდომისთვის გამოიყენეთ კლავიში ზემოთ მიმართული ისრით.</translation>
 <translation id="6818242057446442178">ერთი სიტყვით უკან</translation>
 <translation id="6820676911989879663">შეისვენეთ!</translation>
@@ -933,6 +941,7 @@
 <translation id="7796353162336583443">რაიმეს ჩასანიშნად, ეკრანის ანაბეჭდის გადასაღებად, ასევე Google ასისტენტის, ლაზერული მიმთითებლის ან გამადიდებელი შუშის გამოსაყენებლად შეეხეთ სტილუსის ღილაკს.</translation>
 <translation id="7798302898096527229">გასაუქმებლად დააჭირეთ Search ან Shift კლავიშს.</translation>
 <translation id="780301667611848630">არა, მადლობთ</translation>
+<translation id="7807067443225230855">ძიება და ასისტენტი</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> და <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">სიგნალი ძლიერია</translation>
 <translation id="7837740436429729974">დრო ამოიწურა</translation>
@@ -997,6 +1006,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" />-ისთვის განსაბლოკად დააჭირეთ „Enter“-ზე</translation>
 <translation id="8261506727792406068">წაშლა</translation>
+<translation id="8281279285293265212">სკრინკასტის შენახვა ვერ მოხერხდა</translation>
 <translation id="8284362522226889623">წინა სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარცხნივ ოთხი თითით</translation>
 <translation id="828708037801473432">გამორთვა</translation>
 <translation id="8297006494302853456">სუსტი</translation>
@@ -1101,6 +1111,7 @@
 <translation id="9070640332319875144">ასისტენტის პარამეტრები</translation>
 <translation id="9072519059834302790">ბატარეის დაცლამდე დარჩენილია <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">შაბლონების ძიება</translation>
 <translation id="9077515519330855811">მედიის მართვის საშუალებები, ახლა უკრავს <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">მთავარ გვერდზე გადასასვლელად გადაფურცლეთ ზემოთ</translation>

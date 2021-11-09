@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">გამოცადეთ დეფექტების აღმოფხვრის საფეხურები</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">დამატებითი პარამეტრები</translation>
+<translation id="2104796393919810494">შეკეთება დასრულდა</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ვერსია <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">ხელმისაწვდომია <ph name="TOTAL_MEMORY" /> გბაიტიდან <ph name="AVAILABLE_MEMORY" /> გბაიტი</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -132,6 +133,7 @@
 <translation id="315738237743207937">აღმოჩენილია ავტორიზაციის პორტალი</translation>
 <translation id="3170673040743561620">მოათავსეთ თქვენი დოკუმენტი სკანერზე</translation>
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
+<translation id="3192947282887913208">აუდიო ფაილები</translation>
 <translation id="3199982728237701504">დოკუმენტების მიმწოდი (ორმხრივი)</translation>
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
@@ -161,6 +163,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> მიმოხილვა)</translation>
 <translation id="3748026146096797577">არ არის დაკავშირებული</translation>
 <translation id="3749289110408117711">ფაილის სახელი</translation>
+<translation id="3771294271822695279">ვიდეო ფაილები</translation>
 <translation id="38114475217616659">მთელი ისტორიის გასუფთავება</translation>
 <translation id="3820172043799983114">PIN-კოდი არასწორია.</translation>
 <translation id="3838338534323494292">ახალი პაროლი</translation>
@@ -347,6 +350,7 @@
 <translation id="636850387210749493">ორგანიზაციის რეგისტრაცია</translation>
 <translation id="6379086450106841622">სენსორული ეკრანი</translation>
 <translation id="6388847657025262518">სკანერის დოკუმენტების მიმწოდი გაიჭედა. შეამოწმეთ მიმწოდი და ცადეთ ხელახლა.</translation>
+<translation id="6410257289063177456">გამოსახულების ფაილები</translation>
 <translation id="641081527798843608">თემის თანხვედრა</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">სუსტი (<ph name="SIGNAL_STRENGTH" />)</translation>

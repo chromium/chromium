@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">સમસ્યા નિવારણના પગલાં અજમાવી જુઓ</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">વધુ સેટિંગ</translation>
+<translation id="2104796393919810494">સમારકામ પૂરું થયું છે</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, વર્ઝન <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GBમાંથી <ph name="AVAILABLE_MEMORY" /> GB ઉપલબ્ધ છે</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -132,6 +133,7 @@
 <translation id="315738237743207937">કૅપ્ટિવ પોર્ટલની જાણકારી મળી</translation>
 <translation id="3170673040743561620">તમારા દસ્તાવેજને સ્કૅનર પર મૂકો</translation>
 <translation id="3188257591659621405">મારી ફાઇલો</translation>
+<translation id="3192947282887913208">ઑડિયો ફાઇલો</translation>
 <translation id="3199982728237701504">દસ્તાવેજનું ફીડર (બન્ને બાજુથી)</translation>
 <translation id="3226405216343213872">સ્કૅનર શોધી રહ્યાં છીએ</translation>
 <translation id="3246869037381808805">1 દિવસ કરતાં જૂના પ્રિન્ટ કાર્યો કાઢી નાખવામાં આવશે</translation>
@@ -161,6 +163,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
+<translation id="3771294271822695279">વીડિયો ફાઇલો</translation>
 <translation id="38114475217616659">બધો ઇતિહાસ સાફ કરો</translation>
 <translation id="3820172043799983114">અમાન્ય PIN.</translation>
 <translation id="3838338534323494292">નવો પાસવર્ડ</translation>
@@ -235,6 +238,7 @@
 <translation id="4813345808229079766">કનેક્શન</translation>
 <translation id="4832079907277790330">Files ઍપમાં ફોલ્ડર પસંદ કરો...</translation>
 <translation id="4835901797422965222">કોઈ નેટવર્ક સક્રિય નથી</translation>
+<translation id="4839698083503556542">તમારી પોતાની મૂવી બનાવો</translation>
 <translation id="484790837831576105">(Android) DNS રિઝોલ્યુશન</translation>
 <translation id="4848429997038228357">ચાલુ છે</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}one{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}other{<ph name="ERROR_MESSAGE" /> {0} પ્રયત્ન બાકી}}</translation>
@@ -346,6 +350,7 @@
 <translation id="636850387210749493">સંગઠન નોંધણી</translation>
 <translation id="6379086450106841622">ટચસ્ક્રીન</translation>
 <translation id="6388847657025262518">સ્કૅનરનું દસ્તાવેજ ફીડર જામ થઈ ગયું છે. ફીડર ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="6410257289063177456">છબી ફાઇલો</translation>
 <translation id="641081527798843608">વિષય મેળ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">નબળું (<ph name="SIGNAL_STRENGTH" />)</translation>

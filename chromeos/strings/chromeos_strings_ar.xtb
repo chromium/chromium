@@ -132,6 +132,7 @@
 <translation id="315738237743207937">تم رصد مدخل مشروط الوصول إليه.</translation>
 <translation id="3170673040743561620">يُرجى وضع المستند على الماسح الضوئي.</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
+<translation id="3192947282887913208">ملفات صوتية</translation>
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
@@ -161,6 +162,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مراجعة)</translation>
 <translation id="3748026146096797577">غير متصل</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
+<translation id="3771294271822695279">ملفات فيديو</translation>
 <translation id="38114475217616659">محو السجلّ بأكمله</translation>
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
@@ -235,6 +237,7 @@
 <translation id="4813345808229079766">اتصال</translation>
 <translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
 <translation id="4835901797422965222">ما مِن شبكات نشِطة.</translation>
+<translation id="4839698083503556542">إنشاء فيلم خاص بك</translation>
 <translation id="484790837831576105">‏(نظام التشغيل Android) اختبار التحويل باستخدام نظام أسماء النطاقات (DNS)</translation>
 <translation id="4848429997038228357">قيد التشغيل</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> تتبقّى محاولة واحدة ({0}).}zero{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}two{<ph name="ERROR_MESSAGE" /> تتبقّى محاولتان ({0}).}few{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولات.}many{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}other{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}}</translation>
@@ -347,6 +350,7 @@
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
 <translation id="6379086450106841622">الشاشة التي تعمل باللمس</translation>
 <translation id="6388847657025262518">وحدة تغذية المستندات في الماسح الضوئي مليئة بالأوراق. يُرجى إزالة بعض الأوراق وإعادة المحاولة.</translation>
+<translation id="6410257289063177456">ملفات الصور</translation>
 <translation id="641081527798843608">مطابقة الموضوع</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">إشارة ضعيفة (<ph name="SIGNAL_STRENGTH" />)</translation>

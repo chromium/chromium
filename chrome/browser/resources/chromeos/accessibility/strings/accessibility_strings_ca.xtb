@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Blau pissarra mitjà</translation>
 <translation id="5140016802771803559">Porpra intens</translation>
 <translation id="5142101052131610456">Totes les lliçons</translation>
-<translation id="5152605892605507188">mou cap a la dreta</translation>
 <translation id="5158275234811857234">Portada</translation>
 <translation id="516076699907426116">Per continuar, fes una exploració tàctil per trobar el botó Lliçó següent. Després, fes-hi doble toc per continuar.</translation>
 <translation id="5170206230005240598">Subtítols en braille activats</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Gris clar</translation>
 <translation id="6036135911048686884">Toca per explorar</translation>
 <translation id="6037602951055904232">Desplaça cap endavant.</translation>
+<translation id="604240746417122825">error gramatical</translation>
 <translation id="6082768461603900813">Navegació bàsica</translation>
 <translation id="609281021724813947">No hi ha cap control lliscant anterior</translation>
 <translation id="6100239002225743044">Puja una línia</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">Capçalera 4</translation>
 <translation id="6150023170003443621">Verd groguenc</translation>
 <translation id="6158882249329863701">fila <ph name="TABLECELLROWINDEX" /> columna <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">mou cap a l'esquerra</translation>
 <translation id="6164829606128959761">comptador</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6166362019018438352">Subtítols en braille desactivats</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">Activar, desactivar i aturar ChromeVox</translation>
 <translation id="6919104639734799681">Mostra la llista de taules</translation>
 <translation id="692135145298539227">suprimeix</translation>
-<translation id="6935674530832500465">mou cap avall</translation>
 <translation id="6945221475159498467">Selecciona</translation>
 <translation id="6949846980769640811">Aiguamarina mitjà</translation>
 <translation id="6951482098621102657">No hi ha cap encapçalament més de nivell 5</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">Introducció</translation>
 <translation id="827266600368092403">Inicia o finalitza la selecció</translation>
 <translation id="827422111966801947">Anyil</translation>
-<translation id="827496561804786391">mou cap amunt</translation>
 <translation id="8276439074553447000">Ves a l'element enfocable anterior</translation>
 <translation id="8279039817939141096">Fes un gest tàctil o bé prem una tecla qwerty o braille actualitzable per assabentar-te de la funció. Fes lliscar dos dits cap a l'esquerra o bé prem Ctrl+W, Espai+Z o la tecla d'escapada per sortir.</translation>
 <translation id="8283603667300770666">Camp de formulari següent</translation>
 <translation id="8310185481635255431">No hi ha cap enllaç més</translation>
 <translation id="831207808878314375">Definició</translation>
 <translation id="8313653172105209786">directori</translation>
-<translation id="8314546933558091113">desselecciona-ho tot</translation>
 <translation id="8316881042119029234">Blanquinós</translation>
 <translation id="8324974933005349667">Personalitza la configuració de text a parla</translation>
 <translation id="8326783648485765113">Verd gespa</translation>

@@ -48,6 +48,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> har anslutits.</translation>
 <translation id="1246890715821376239">Appar som inte stöds</translation>
 <translation id="1247372569136754018">Mikrofon (inbyggd)</translation>
+<translation id="1247519845643687288">Senaste apparna</translation>
 <translation id="1252999807265626933">Laddar från <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Vad är det för väder?</translation>
 <translation id="1266097335951928626">Starta selfiekameran</translation>
@@ -61,6 +62,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1289185460362160437">Prova igen på <ph name="COME_BACK_DAY_OF_WEEK" /> klockan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">svag signal</translation>
 <translation id="1293264513303784526">USB-C-enhet (vänster port)</translation>
+<translation id="1293556467332435079">Filer</translation>
 <translation id="1294929383540927798">Ändra aviseringsinställningarna för låsskärmen</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Visa Bluetooth-inställningar. <ph name="STATE_TEXT" /></translation>
@@ -79,6 +81,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1419738280318246476">Lås upp enheten så att aviseringen kan göras</translation>
 <translation id="1420408895951708260">Aktivera och inaktivera nattljus. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ja</translation>
+<translation id="1438357537418863713">Appstreaming har konfigurerats. När du kommer igång med det visas de appar som öppnats nyligen här.</translation>
 <translation id="144853431011121127">Få aviseringar från telefonen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Visa språkinställningar</translation>
 <translation id="1460620680449458626">Ljudet är av.</translation>
@@ -246,6 +249,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Stäng läget för skärmbild/skärminspelning</translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
+<translation id="2805756323405976993">Appar</translation>
 <translation id="2814448776515246190">Skärmbild/skärminspelning av en del av skärmen</translation>
 <translation id="2819276065543622893">Du loggas nu ut.</translation>
 <translation id="28232023175184696">Det gick inte att ansluta till internet. Klicka om du vill försöka igen.</translation>
@@ -374,6 +378,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3665889125180354336">Spela in via mikrofon</translation>
 <translation id="3680908746918359504">Rensa alla markeringar</translation>
 <translation id="36813544980941320">wifi-nätverk delas mellan telefonen och <ph name="DEVICE_NAME" /></translation>
+<translation id="3694122362646626770">Webbplatser</translation>
 <translation id="3701206655856637070">Nu kan du ändra var skärmbilder/skärminspelningar sparas</translation>
 <translation id="3702809606464356667">Visar fönster från det aktuella skrivbordet, tryck på uppåtpilen för att visa fönster från alla skrivbord</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
@@ -535,6 +540,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4774338217796918551">Prova igen i morgon klockan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776917500594043016">Lösenord för <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="4777825441726637019">Play Butik</translation>
 <translation id="4778095205580009397">Google-assistenten är inte tillgänglig i en demosession.</translation>
 <translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
 <translation id="479989351350248267">sök</translation>
@@ -590,6 +596,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
 <translation id="5147567197700016471">Olåst</translation>
 <translation id="5155897006997040331">Läshastighet</translation>
+<translation id="5166007464919321363">Spara skrivbordet som mall</translation>
 <translation id="5166918508782100047">Inställningar för snabbinfo</translation>
 <translation id="5168181903108465623">Överföringsenheter finns tillgängliga</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
@@ -799,6 +806,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6803622936009808957">Det gick inte att spegla visningar eftersom inga upplösningar som stöds hittades. Utökat skrivbordsläge används i stället.</translation>
+<translation id="6811454077060061666">Google Drive för datorn är inte tillgängligt</translation>
 <translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
 <translation id="6818242057446442178">Bakåt ord för ord</translation>
 <translation id="6820676911989879663">Ta en paus!</translation>
@@ -933,6 +941,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
 <translation id="7798302898096527229">Avbryt genom att trycka på söktangenten eller Skift.</translation>
 <translation id="780301667611848630">Nej tack</translation>
+<translation id="7807067443225230855">Sök och Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> och <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">stark signal</translation>
 <translation id="7837740436429729974">Tiden är ute</translation>
@@ -997,6 +1006,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Tryck på Retur för att låsa upp för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Radera</translation>
+<translation id="8281279285293265212">Det gick inte spara screencast</translation>
 <translation id="8284362522226889623">Svep till vänster med fyra fingrar för att byta till det föregående skrivbordet</translation>
 <translation id="828708037801473432">Av</translation>
 <translation id="8297006494302853456">Svag</translation>
@@ -1101,6 +1111,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="9070640332319875144">Inställningar för Google-assistenten</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> tills batteriet är tomt.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Mallar</translation>
 <translation id="9077515519330855811">Uppspelningskontroller, nu spelas <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">wifi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Svep uppåt för att öppna startsidan</translation>

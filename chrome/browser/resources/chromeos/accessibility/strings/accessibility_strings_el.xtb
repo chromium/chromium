@@ -608,7 +608,6 @@
 <translation id="5138912041966667164">Μεσαίο μπλε γκρι</translation>
 <translation id="5140016802771803559">Μοβ Ρεββέκα</translation>
 <translation id="5142101052131610456">Όλα τα μαθήματα</translation>
-<translation id="5152605892605507188">μετακίνηση δεξιά</translation>
 <translation id="5158275234811857234">Εξώφυλλο</translation>
 <translation id="516076699907426116">Για να συνεχίσετε, εντοπίστε το κουμπί Επόμενο μάθημα, κάνοντας εξερεύνηση με άγγιγμα. Στη συνέχεια, πατήστε δύο φορές για να συνεχίσετε.</translation>
 <translation id="5170206230005240598">Οι υπότιτλοι μπράιγ ενεργοποιήθηκαν.</translation>
@@ -742,6 +741,7 @@
 <translation id="6034000775414344507">Ανοιχτό γκρι</translation>
 <translation id="6036135911048686884">Εξερεύνηση μέσω αφής</translation>
 <translation id="6037602951055904232">Μετακίνηση προς τα εμπρός</translation>
+<translation id="604240746417122825">σφάλμα γραμματικής</translation>
 <translation id="6082768461603900813">Βασική πλοήγηση</translation>
 <translation id="609281021724813947">Δεν υπάρχει προηγούμενο ρυθμιστικό.</translation>
 <translation id="6100239002225743044">Μετακίνηση προς τα πάνω κατά μία γραμμή</translation>
@@ -752,7 +752,6 @@
 <translation id="6142308968191113180">Επικεφαλίδα 4</translation>
 <translation id="6150023170003443621">Κιτρινοπράσινο</translation>
 <translation id="6158882249329863701">σειρά <ph name="TABLECELLROWINDEX" /> στήλη <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">μετακίνηση αριστερά</translation>
 <translation id="6164829606128959761">μετρητής</translation>
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6166362019018438352">Οι υπότιτλοι μπράιγ απενεργοποιήθηκαν.</translation>
@@ -845,7 +844,6 @@
 <translation id="6910969481785184048">Ενεργοποίηση, απενεργοποίηση και διακοπή</translation>
 <translation id="6919104639734799681">Εμφάνιση λίστας πινάκων</translation>
 <translation id="692135145298539227">διαγραφή</translation>
-<translation id="6935674530832500465">μετακίνηση κάτω</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6949846980769640811">Μεσαίο ακουαμαρίν</translation>
 <translation id="6951482098621102657">Δεν υπάρχει επόμενη κεφαλίδα επιπέδου 5.</translation>
@@ -1043,14 +1041,12 @@
 <translation id="826825447994856889">Εισαγωγή</translation>
 <translation id="827266600368092403">Αρχή ή τέλος επιλογής</translation>
 <translation id="827422111966801947">Λουλάκι</translation>
-<translation id="827496561804786391">μετακίνηση επάνω</translation>
 <translation id="8276439074553447000">Μετάβαση στο προηγούμενο αντικείμενο με δυνατότητα εστίασης</translation>
 <translation id="8279039817939141096">Πατήστε ένα πλήκτρο qwerty, ένα κουμπί μπράιγ με δυνατότητα ανανέωσης ή κάντε μια κίνηση αφής για να μάθετε πώς λειτουργεί. Για έξοδο, πατήστε τα πλήκτρα Control και w, το πλήκτρο διαστήματος και το πλήκτρο Z, σύρετε αριστερά με δύο δάχτυλα ή πατήστε το πλήκτρο Escape.</translation>
 <translation id="8283603667300770666">Επόμενο πεδίο φόρμας</translation>
 <translation id="8310185481635255431">Δεν υπάρχει επόμενος σύνδεσμος.</translation>
 <translation id="831207808878314375">Ορισμός</translation>
 <translation id="8313653172105209786">κατάλογος</translation>
-<translation id="8314546933558091113">αποεπιλογή όλων</translation>
 <translation id="8316881042119029234">Παλιά δαντέλα</translation>
 <translation id="8324974933005349667">Εξατομίκευση ρυθμίσεων μετατροπής κειμένου σε ομιλία</translation>
 <translation id="8326783648485765113">Πράσινο χλόης</translation>

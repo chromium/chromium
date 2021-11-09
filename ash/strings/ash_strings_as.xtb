@@ -62,6 +62,7 @@
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" />এ <ph name="COME_BACK_TIME" /> বজাত ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
 <translation id="1293264513303784526">USB-C ডিভাইচ (বাওঁফালৰ পর্ট)</translation>
+<translation id="1293556467332435079">Files</translation>
 <translation id="1294929383540927798">বন্ধ স্ক্ৰীণৰ জাননী ছেটিংসমূহ সলনি কৰক</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">ব্লুটুথ ছেটিংসমূহ দেখুৱাওক। <ph name="STATE_TEXT" /></translation>
@@ -248,6 +249,7 @@
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
 <translation id="2782591952652094792">কেপচাৰ ম'ডৰ পৰা বাহিৰ হওক</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
+<translation id="2805756323405976993">এপ্</translation>
 <translation id="2814448776515246190">আংশিক কেপচাৰ</translation>
 <translation id="2819276065543622893">আপুনি এতিয়া ছাইন আউট হ’ব।</translation>
 <translation id="28232023175184696">ইণ্টাৰনেটৰ সৈতে সংযোগ কৰিব নোৱাৰি। পুনৰ চেষ্টা কৰিবলৈ ক্লিক কৰক।</translation>
@@ -537,6 +539,7 @@
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
 <translation id="4774338217796918551">কাইলৈ <ph name="COME_BACK_TIME" /> বজাত আকৌ চাব৷</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" />ৰ পাছৱর্ড</translation>
+<translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant ডেম’ ছেশ্বনত উপলব্ধ নহয়।</translation>
 <translation id="4782311465517282004">আপুনি ৰাইট ক্লিক কৰিলে অথবা পাঠ দীঘলীয়াকৈ টিপি ধৰি থাকিলে সংজ্ঞা, অনুবাদ অথবা একক ৰূপান্তৰণ পাওক</translation>
 <translation id="479989351350248267">সন্ধান কৰক</translation>
@@ -937,6 +940,7 @@
 <translation id="7796353162336583443">কোনো টোকা লিখিবলৈ, স্ক্ৰীণশ্বট ল’বলৈ, Google Assistant, লেজাৰ পইণ্টাৰ বা আতচী কাচ ব্যৱহাৰ কৰিবলৈ শ্বেল্ফত থকা ষ্টাইলাছ বুটামটো টিপক।</translation>
 <translation id="7798302898096527229">বাতিল কৰিবলৈ Search বা Shift টিপক।</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
+<translation id="7807067443225230855">Search আৰু Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> আৰু <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">শক্তিশালী ছিগনেল</translation>
 <translation id="7837740436429729974">সময় শেষ হ’ল</translation>

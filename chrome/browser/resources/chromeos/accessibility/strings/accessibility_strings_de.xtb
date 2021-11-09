@@ -607,7 +607,6 @@
 <translation id="5138912041966667164">Mittleres Schieferblau</translation>
 <translation id="5140016802771803559">Violett</translation>
 <translation id="5142101052131610456">Alle Lektionen</translation>
-<translation id="5152605892605507188">Nach rechts bewegen</translation>
 <translation id="5158275234811857234">Titelseite</translation>
 <translation id="516076699907426116">Nutzen Sie „Tippen &amp; Entdecken“, um die Schaltfläche „Nächste Lektion“ zu finden. Anschließend können Sie durch Doppeltippen fortfahren.</translation>
 <translation id="5170206230005240598">Braille-Untertitel aktiviert</translation>
@@ -741,6 +740,7 @@
 <translation id="6034000775414344507">Hellgrau</translation>
 <translation id="6036135911048686884">Zum Vorlesen berühren und ziehen</translation>
 <translation id="6037602951055904232">Nach vorn verschieben</translation>
+<translation id="604240746417122825">Grammatikfehler</translation>
 <translation id="6082768461603900813">Grundlegende Navigation</translation>
 <translation id="609281021724813947">Kein vorheriger Schieberegler</translation>
 <translation id="6100239002225743044">Eine Zeile nach oben</translation>
@@ -751,7 +751,6 @@
 <translation id="6142308968191113180">Überschrift 4</translation>
 <translation id="6150023170003443621">Gelbgrün</translation>
 <translation id="6158882249329863701">Zeile <ph name="TABLECELLROWINDEX" />, Spalte <ph name="TABLECELLCOLUMNINDEX" /></translation>
-<translation id="6159796324830296161">Nach links bewegen</translation>
 <translation id="6164829606128959761">Messinstrument</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6166362019018438352">Braille-Untertitel deaktiviert</translation>
@@ -844,7 +843,6 @@
 <translation id="6910969481785184048">Ein, Aus und Stopp</translation>
 <translation id="6919104639734799681">Tabellenliste anzeigen</translation>
 <translation id="692135145298539227">löschen</translation>
-<translation id="6935674530832500465">nach unten bewegen</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="6949846980769640811">Mittleres Aquamarinblau</translation>
 <translation id="6951482098621102657">Keine nächste Überschrift der Ebene 5</translation>
@@ -1042,14 +1040,12 @@
 <translation id="826825447994856889">Einleitung</translation>
 <translation id="827266600368092403">Auswahl starten oder beenden</translation>
 <translation id="827422111966801947">Indigo</translation>
-<translation id="827496561804786391">nach oben bewegen</translation>
 <translation id="8276439074553447000">Zum vorherigen fokussierbaren Element springen</translation>
 <translation id="8279039817939141096">Drücken Sie eine Taste auf der QWERTZ-Tastatur oder der Braillezeile oder führen Sie eine Touch-Geste aus, um mehr über die Taste bzw. Touch-Geste zu erfahren. Zum Beenden können Sie „Strg + w“, „Leertaste + Z“ oder „Esc“ drücken oder mit zwei Fingern nach links wischen.</translation>
 <translation id="8283603667300770666">Nächstes Formularfeld</translation>
 <translation id="8310185481635255431">Kein nächster Link</translation>
 <translation id="831207808878314375">Definition</translation>
 <translation id="8313653172105209786">dir</translation>
-<translation id="8314546933558091113">Auswahl für alle aufheben</translation>
 <translation id="8316881042119029234">Altgold</translation>
 <translation id="8324974933005349667">Einstellungen für Sprachausgabe personalisieren</translation>
 <translation id="8326783648485765113">Grasgrün</translation>
