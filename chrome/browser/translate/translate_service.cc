@@ -139,17 +139,15 @@ bool TranslateService::IsTranslatableURL(const GURL& url) {
   // - the devtools (which is considered UI)
   // - about:blank
   // - Chrome OS file manager extension
-  // - an FTP page (as FTP pages tend to have long lists of filenames that may
-  //   confuse the CLD)
   // Note: Keep in sync with condition in TranslateAgent::PageCaptured.
   return !url.is_empty() && !url.SchemeIs(content::kChromeUIScheme) &&
          !url.SchemeIs(chrome::kChromeNativeScheme) &&
-         !url.SchemeIs(content::kChromeDevToolsScheme) && !url.IsAboutBlank() &&
+         !url.SchemeIs(content::kChromeDevToolsScheme) &&
 #if BUILDFLAG(IS_CHROMEOS_ASH)
          !(url.SchemeIs(extensions::kExtensionScheme) &&
            url.DomainIs(file_manager::kFileManagerAppId)) &&
 #endif
-         !url.SchemeIs(url::kFtpScheme);
+         !url.IsAboutBlank();
 }
 
 bool TranslateService::IsAvailable(PrefService* prefs) {

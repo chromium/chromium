@@ -581,14 +581,6 @@ TEST_F(TranslateAgentBrowserTest, UnsupportedTranslateSchemes) {
 
   LoadHTMLWithUrlOverride(
       "<html><body>A random page with random content.</body></html>",
-      UpdateGURLScheme(url, url::kFtpScheme).c_str());
-
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(fake_translate_driver_.called_new_page_);
-  EXPECT_FALSE(fake_translate_driver_.page_level_translation_critiera_met_);
-
-  LoadHTMLWithUrlOverride(
-      "<html><body>A random page with random content.</body></html>",
       url::kAboutBlankURL);
 
   base::RunLoop().RunUntilIdle();
