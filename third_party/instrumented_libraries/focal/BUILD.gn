@@ -441,6 +441,7 @@ instrumented_library("libgnutls30") {
     "--disable-guile",
     "--with-libgcrypt",
     "--with-packager=Debian",
+    "--with-included-unistring",
 
     # MSAN is not compatible with instructions such as CPUID.
     # https://github.com/google/oss-fuzz/issues/578
