@@ -56,18 +56,21 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
   for i in range(len(lines) - 1, -1, -1):
     line = lines[i]
 
-    if maybe in line:
+    # TODO: This will incorrectly match test names within comments.
+    idents = find_identifiers(line)
+
+    if maybe in idents:
       # If the test is already conditionally disabled, search backwards to find
       # the preprocessor conditional block that disables it, and parse out the
       # conditions.
       existing_cond, src_range = find_conditions(lines, i, test_name)
       current_name = maybe
       break
-    if disabled in line:
+    if disabled in idents:
       existing_cond = conditions.ALWAYS
       current_name = disabled
       break
-    if test_name in line:
+    if test_name in idents:
       existing_cond = conditions.NEVER
       current_name = test_name
       break
@@ -199,6 +202,10 @@ def disabler(full_test_name: str, source_file: str, new_cond: Condition) -> str:
     modified_lines[i] += len(to_insert)
 
   return clang_format('\n'.join(lines), modified_lines)
+
+
+def find_identifiers(line: str) -> List[str]:
+  return re.findall('[a-zA-Z_][a-zA-Z_0-9]*', line)
 
 
 def find_conditions(lines: List[str], start_line: int, test_name: str):

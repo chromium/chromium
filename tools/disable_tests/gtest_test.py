@@ -167,6 +167,16 @@ TEST(Suite,
 TEST(Suite, MAYBE_ReallyReallyReallyReallyLongTestName) {}
 ''')
 
+  def test_with_name_ocurring_later_in_file(self):
+    self.disabler_test(
+        '''
+TEST(Suite, Test) {}
+void SomeFunctionWihTestInTheName() {}
+''', 'Suite.Test', conditions.ALWAYS, '''
+TEST(Suite, DISABLED_Test) {}
+void SomeFunctionWihTestInTheName() {}
+''')
+
 
 if __name__ == '__main__':
   unittest.main()
