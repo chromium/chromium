@@ -59,9 +59,9 @@ bool IsWhitelistedSourceId(SourceId source_id) {
 // Returns whether |url| has one of the schemes supported for logging to UKM.
 // URLs with other schemes will not be logged.
 bool HasSupportedScheme(const GURL& url) {
-  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kFtpScheme) ||
-         url.SchemeIs(url::kAboutScheme) || url.SchemeIs(kChromeUIScheme) ||
-         url.SchemeIs(kExtensionScheme) || url.SchemeIs(kAppScheme);
+  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kAboutScheme) ||
+         url.SchemeIs(kChromeUIScheme) || url.SchemeIs(kExtensionScheme) ||
+         url.SchemeIs(kAppScheme);
 }
 
 void LogEventHashAsUmaHistogram(const std::string& histogram_name,

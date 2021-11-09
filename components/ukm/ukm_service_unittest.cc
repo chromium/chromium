@@ -1248,13 +1248,13 @@ TEST_F(UkmServiceTest, SupportedSchemes) {
   } test_cases[] = {
       {"http://google.ca/", true},
       {"https://google.ca/", true},
-      {"ftp://google.ca/", true},
       {"about:blank", true},
       {"chrome://version/", true},
       {"app://play/abcdefghijklmnopqrstuvwxyzabcdef/", true},
       // chrome-extension are controlled by TestIsWebstoreExtension, above.
       {"chrome-extension://bhcnanendmgjjeghamaccjnochlnhcgj/", true},
       {"chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/", false},
+      {"ftp://google.ca/", false},
       {"file:///tmp/", false},
       {"abc://google.ca/", false},
       {"www.google.ca/", false},
@@ -1307,12 +1307,12 @@ TEST_F(UkmServiceTest, SupportedSchemesNoExtensions) {
   } test_cases[] = {
       {"http://google.ca/", true},
       {"https://google.ca/", true},
-      {"ftp://google.ca/", true},
       {"about:blank", true},
       {"chrome://version/", true},
       {"app://play/abcdefghijklmnopqrstuvwxyzabcdef/", true},
       {"chrome-extension://bhcnanendmgjjeghamaccjnochlnhcgj/", false},
       {"chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/", false},
+      {"ftp://google.ca/", false},
       {"file:///tmp/", false},
       {"abc://google.ca/", false},
       {"www.google.ca/", false},
@@ -1388,7 +1388,6 @@ TEST_F(UkmServiceTest, SanitizeChromeUrlParams) {
       {"chrome://histograms/Variations", "chrome://histograms/Variations"},
       {"http://google.ca/?foo=bar", "http://google.ca/?foo=bar"},
       {"https://google.ca/?foo=bar", "https://google.ca/?foo=bar"},
-      {"ftp://google.ca/?foo=bar", "ftp://google.ca/?foo=bar"},
       {"chrome-extension://bhcnanendmgjjeghamaccjnochlnhcgj/foo.html?a=b",
        "chrome-extension://bhcnanendmgjjeghamaccjnochlnhcgj/"},
   };
