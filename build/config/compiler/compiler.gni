@@ -213,8 +213,7 @@ declare_args() {
   # lld doesn't support).
   # The default linker everywhere else.
   use_lld = is_clang && !(is_ios && is_cronet_build) &&
-            !(is_mac && is_gpu_fyi_bot) && !use_xcode_clang &&
-            current_os != "zos"
+            !(is_mac && is_gpu_fyi_bot) && current_os != "zos"
 }
 
 declare_args() {

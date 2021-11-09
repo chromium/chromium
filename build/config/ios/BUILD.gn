@@ -111,7 +111,7 @@ config("runtime_library") {
     ]
   }
 
-  if (use_xcode_clang && enable_ios_bitcode) {
+  if (enable_ios_bitcode) {
     if (is_debug) {
       common_flags += [ "-fembed-bitcode-marker" ]
     } else {

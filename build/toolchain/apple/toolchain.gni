@@ -105,20 +105,8 @@ template("apple_toolchain") {
     } else {
       toolchain_uses_lld = use_lld
     }
-    if (defined(toolchain_args.use_xcode_clang)) {
-      toolchain_uses_xcode_clang = toolchain_args.use_xcode_clang
-    } else {
-      toolchain_uses_xcode_clang = use_xcode_clang
-    }
 
-    # Supports building with the version of clang shipped with Xcode when
-    # targeting iOS by not respecting clang_base_path.
-    if (toolchain_uses_xcode_clang) {
-      prefix = invoker.bin_path
-    } else {
-      prefix = rebase_path("$clang_base_path/bin/", root_build_dir)
-    }
-
+    prefix = rebase_path("$clang_base_path/bin/", root_build_dir)
     _cc = "${prefix}clang"
     _cxx = "${prefix}clang++"
 

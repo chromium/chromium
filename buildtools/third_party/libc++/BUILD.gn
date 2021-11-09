@@ -148,9 +148,7 @@ target(_libcxx_target_type, "libc++") {
   defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
 
   if (!libcxx_is_shared) {
-    # TODO(https://crbug.com/946629): Remove use_xcode_clang condition once
-    # XCode clang is updated to support -fvisibility-global-new-delete-hidden.
-    if ((is_mac || (is_ios && !use_xcode_clang)) && is_clang) {
+    if (is_apple && is_clang) {
       # We want operator new/delete to be private on Mac, but these functions
       # are implicitly created by the compiler for each translation unit, as
       # specified in the C++ spec 3.7.4p2, which makes them always have default

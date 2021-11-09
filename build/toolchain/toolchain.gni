@@ -17,14 +17,16 @@ declare_args() {
   # `gclient runhooks` is run as well.
   llvm_force_head_revision = false
 
-  # Compile with Xcode version of clang instead of hermetic version shipped
-  # with the build. Used to be used iOS for official builds, but is now off by
-  # default for all configurations.
-  use_xcode_clang = false
-
   # Used for binary size analysis.
   generate_linker_map = is_android && is_official_build
 }
+
+# This variable is no longer used in Chromium, but some projects based on
+# //build still reference it, so keep defining until all references have
+# been removed from those projects. It is defined outside of `declare_args`
+# as it setting it in `args.gn` is no longer supported.
+# TODO(crbug.com/1266466): Remove when no longer used by other projects.
+use_xcode_clang = false
 
 if (generate_linker_map) {
   assert(is_official_build || is_chromecast,
@@ -40,12 +42,6 @@ if (generate_linker_map) {
 declare_args() {
   clang_version = "14.0.0"
 }
-
-# Check target_os here instead of is_ios as this file is loaded for secondary
-# toolchain (host toolchain in particular) but the argument is the same for
-# all toolchains.
-assert(!use_xcode_clang || target_os == "ios",
-       "Using Xcode's clang is only supported in iOS builds")
 
 # Extension for shared library files (including leading dot).
 if (is_apple) {

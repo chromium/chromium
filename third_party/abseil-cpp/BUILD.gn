@@ -142,7 +142,7 @@ config("absl_default_cflags_cc") {
       "-Wno-sign-conversion",
       "-Wstring-conversion",
     ]
-    if (!is_nacl && !use_xcode_clang) {
+    if (!is_nacl) {
       cflags_cc += [ "-Wbitfield-enum-conversion" ]
     }
   }
