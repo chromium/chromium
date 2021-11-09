@@ -339,7 +339,7 @@ void HistoryClustersHandler::OnClustersQueryResult(
     history_clusters_service->QueryClusters(
         query_result->query, continuation_end_time, kMaxClustersCount,
         base::BindOnce(&QueryClustersResultToMojom, profile_,
-                       query_result->query, true)
+                       query_result->query, query_result->is_continuation)
             .Then(base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
                                  weak_ptr_factory_.GetWeakPtr(),
                                  query_start_time)),
