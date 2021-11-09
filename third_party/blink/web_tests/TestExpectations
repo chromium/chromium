@@ -2970,7 +2970,6 @@ crbug.com/626703 [ Linux ] external/wpt/custom-elements/form-associated/ElementI
 crbug.com/626703 [ Mac10.15 ] external/wpt/custom-elements/form-associated/ElementInternals-validation.html [ Crash Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/custom-elements/form-associated/ElementInternals-validation.html [ Crash Failure ]
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/create-credential.https.html [ Crash ]
-crbug.com/626703 [ Fuchsia ] external/wpt/dom/historical.html [ Skip ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/html/semantics/forms/the-input-element/show-picker.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/semantics/forms/the-input-element/show-picker.tentative.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/semantics/forms/the-input-element/show-picker.tentative.html [ Timeout ]
