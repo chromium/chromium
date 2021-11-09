@@ -346,6 +346,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mRootUiTabObserver != null) mRootUiTabObserver.destroy();
 
+        if (mAddToHomescreenIPHController != null) mAddToHomescreenIPHController.destroy();
+
         if (mAppBannerInProductHelpController != null) {
             AppBannerInProductHelpControllerFactory.detach(mAppBannerInProductHelpController);
         }
