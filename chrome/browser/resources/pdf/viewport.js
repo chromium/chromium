@@ -1417,6 +1417,14 @@ export class Viewport {
    * @param {!Gesture} gesture The gesture to dispatch.
    */
   dispatchGesture(gesture) {
+    // Transform gesture coordinates to be compatible with the Pepper plugin.
+    // TODO(crbug.com/702993): Remove this after the Pepper plugin is removed.
+    const containerRect =
+        this.content_.querySelector('#plugin').getBoundingClientRect();
+    gesture.detail.center = {
+      x: gesture.detail.center.x + containerRect.left,
+      y: gesture.detail.center.y + containerRect.top,
+    };
     this.gestureDetector_.getEventTarget().dispatchEvent(
         new CustomEvent(gesture.type, {detail: gesture.detail}));
   }

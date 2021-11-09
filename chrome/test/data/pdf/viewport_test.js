@@ -6,6 +6,19 @@ import {FittingType, PAGE_SHADOW, Viewport} from 'chrome-extension://mhjfbmdgcfj
 
 import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
 
+function assertRoughlyEquals(expected, actual, tolerance) {
+  chrome.test.assertTrue(
+      Math.abs(expected - actual) <= tolerance,
+      `|${expected} - ${actual}| > ${tolerance}`);
+}
+
+function setPluginPosition(x, y) {
+  const plugin = document.querySelector('#plugin');
+  plugin.style.position = 'absolute';
+  plugin.style.left = x + 'px';
+  plugin.style.top = y + 'px';
+}
+
 const tests = [
   function testDocumentNeedsScrollbars() {
     const viewport = getZoomableViewport(
@@ -531,6 +544,103 @@ const tests = [
     chrome.test.succeed();
   },
 
+  function testPinchZoomInWithGestureEvent() {
+    const mockWindow = new MockElement(100, 100, null);
+    const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
+    const documentDimensions = new MockDocumentDimensions();
+    documentDimensions.addPage(200, 300);
+    viewport.setDocumentDimensions(documentDimensions);
+    setPluginPosition(10, 20);
+
+    viewport.setZoom(1.2);
+    chrome.test.assertEq(0, viewport.position.x);
+    chrome.test.assertEq(0, viewport.position.y);
+
+    // Pinch-zoom using gesture events.
+    const pinchCenter = {x: 35, y: 70};
+    const scaleChange = 1.25;
+    const gestureEventTarget =
+        viewport.getGestureDetectorForTesting().getEventTarget();
+    gestureEventTarget.dispatchEvent(new CustomEvent('pinchstart', {
+      detail: {
+        center: pinchCenter,
+      },
+    }));
+    gestureEventTarget.dispatchEvent(new CustomEvent('pinchupdate', {
+      detail: {
+        scaleRatio: scaleChange,
+        direction: 'in',
+        startScaleRatio: scaleChange,
+        center: pinchCenter,
+      },
+    }));
+    gestureEventTarget.dispatchEvent(new CustomEvent('pinchend', {
+      detail: {
+        startScaleRatio: scaleChange,
+        center: pinchCenter,
+      },
+    }));
+
+    // Pinch updates are throttled by rAF, so we schedule the rest of the test
+    // after the pinch takes effect.
+    window.requestAnimationFrame(() => {
+      assertRoughlyEquals(1.5, viewport.getZoom(), 0.001);
+      assertRoughlyEquals(6.25, viewport.position.x, 0.001);
+      assertRoughlyEquals(12.50, viewport.position.y, 0.001);
+
+      chrome.test.succeed();
+    });
+  },
+
+  function testPinchZoomInWithDispatchGesture() {
+    const mockWindow = new MockElement(100, 100, null);
+    const viewport = getZoomableViewport(mockWindow, new MockSizer(), 0, 1);
+    const documentDimensions = new MockDocumentDimensions();
+    documentDimensions.addPage(200, 300);
+    viewport.setDocumentDimensions(documentDimensions);
+    setPluginPosition(10, 20);
+
+    viewport.setZoom(1.2);
+    chrome.test.assertEq(0, viewport.position.x);
+    chrome.test.assertEq(0, viewport.position.y);
+
+    // Pinch-zoom using dispatchGesture().
+    const pinchCenter = {x: 25, y: 50};
+    const scaleChange = 1.25;
+    viewport.dispatchGesture({
+      type: 'pinchstart',
+      detail: {
+        center: pinchCenter,
+      },
+    });
+    viewport.dispatchGesture({
+      type: 'pinchupdate',
+      detail: {
+        scaleRatio: scaleChange,
+        direction: 'in',
+        startScaleRatio: scaleChange,
+        center: pinchCenter,
+      },
+    });
+    viewport.dispatchGesture({
+      type: 'pinchend',
+      detail: {
+        startScaleRatio: scaleChange,
+        center: pinchCenter,
+      },
+    });
+
+    // Pinch updates are throttled by rAF, so we schedule the rest of the test
+    // after the pinch takes effect.
+    window.requestAnimationFrame(() => {
+      assertRoughlyEquals(1.5, viewport.getZoom(), 0.001);
+      assertRoughlyEquals(6.25, viewport.position.x, 0.001);
+      assertRoughlyEquals(12.50, viewport.position.y, 0.001);
+
+      chrome.test.succeed();
+    });
+  },
+
   // Regression test for https://crbug.com/1123976
   function testPinchZoomingUnsetsPageFitting() {
     const mockWindow = new MockElement(100, 100, null);
@@ -543,26 +653,29 @@ const tests = [
     chrome.test.assertEq(FittingType.FIT_TO_WIDTH, viewport.fittingType);
     chrome.test.assertEq(2, viewport.getZoom());
 
-    // Change the zoom using the viewer's pinch zooming mechanism.
-    const gestureEventTarget =
-        viewport.getGestureDetectorForTesting().getEventTarget();
+    // Pinch-zoom using gesture events.
     const pinchCenter = {x: 25, y: 25};
     const scaleChange = 0.5;
-    gestureEventTarget.dispatchEvent(
-        new CustomEvent('pinchstart', {detail: {center: pinchCenter}}));
+    const gestureEventTarget =
+        viewport.getGestureDetectorForTesting().getEventTarget();
+    gestureEventTarget.dispatchEvent(new CustomEvent('pinchstart', {
+      detail: {
+        center: pinchCenter,
+      },
+    }));
     gestureEventTarget.dispatchEvent(new CustomEvent('pinchupdate', {
       detail: {
         scaleRatio: scaleChange,
         direction: 'out',
         startScaleRatio: scaleChange,
         center: pinchCenter,
-      }
+      },
     }));
     gestureEventTarget.dispatchEvent(new CustomEvent('pinchend', {
       detail: {
         startScaleRatio: scaleChange,
         center: pinchCenter,
-      }
+      },
     }));
 
     // Pinch updates are throttled by rAF, so we schedule the rest of the test
