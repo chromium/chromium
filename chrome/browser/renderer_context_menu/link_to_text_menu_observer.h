@@ -83,6 +83,9 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   absl::optional<std::string> generated_link_;
   absl::optional<std::string> generated_selector_for_testing_;
 
+  // True when generation is completed.
+  bool is_generation_complete_ = false;
+
   base::WeakPtrFactory<LinkToTextMenuObserver> weak_ptr_factory_{this};
 };
 

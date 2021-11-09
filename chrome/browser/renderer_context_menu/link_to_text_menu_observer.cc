@@ -133,6 +133,7 @@ void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
 
 void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
     const std::string& selector) {
+  is_generation_complete_ = true;
   if (ShouldPreemptivelyGenerateLink()) {
     if (selector.empty()) {
       // If there is no valid selector, leave the item disabled.
@@ -234,7 +235,7 @@ void LinkToTextMenuObserver::CopyLinkToClipboard() {
 void LinkToTextMenuObserver::Timeout() {
   DCHECK(remote_.is_bound());
   DCHECK(remote_.is_connected());
-  if (generated_link_.has_value())
+  if (is_generation_complete_)
     return;
   remote_->Cancel();
   remote_.reset();
