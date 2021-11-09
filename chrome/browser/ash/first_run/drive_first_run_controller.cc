@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -116,8 +117,7 @@ class DriveWebContentsManager : public content::WebContentsObserver,
                              DriveFirstRunController::UMAOutcome outcome);
 
   // content::WebContentsObserver overrides:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
@@ -213,10 +213,8 @@ void DriveWebContentsManager::RunCompletionCallback(
   std::move(completion_callback_).Run(success, outcome);
 }
 
-void DriveWebContentsManager::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      navigation_handle->IsErrorPage()) {
+void DriveWebContentsManager::PrimaryPageChanged(content::Page& page) {
+  if (page.GetMainDocument().IsErrorDocument()) {
     LOG(WARNING) << "Failed to load WebContents to enable offline mode.";
     OnOfflineInit(false,
                   DriveFirstRunController::OUTCOME_WEB_CONTENTS_LOAD_FAILED);
