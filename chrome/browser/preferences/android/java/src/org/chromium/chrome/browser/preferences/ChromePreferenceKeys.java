@@ -520,6 +520,8 @@ public final class ChromePreferenceKeys {
     public static final String HOMEPAGE_ENABLED = "homepage";
     public static final String HOMEPAGE_USE_CHROME_NTP = "Chrome.Homepage.UseNTP";
     public static final String HOMEPAGE_USE_DEFAULT_URI = "homepage_partner_enabled";
+    public static final String HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI =
+            "Chrome.Homepage.PartnerCustomizedDefaultUri";
 
     /**
      * Key used to save homepage location set by enterprise policy
@@ -1074,6 +1076,7 @@ public final class ChromePreferenceKeys {
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 HOMEPAGE_LOCATION_POLICY,
                 HOMEPAGE_USE_CHROME_NTP,
+            HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
