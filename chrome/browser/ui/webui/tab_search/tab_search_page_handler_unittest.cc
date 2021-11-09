@@ -57,7 +57,7 @@ class MockPage : public tab_search::mojom::Page {
 
   MOCK_METHOD1(TabsChanged, void(tab_search::mojom::ProfileDataPtr));
   MOCK_METHOD1(TabUpdated, void(tab_search::mojom::TabUpdateInfoPtr));
-  MOCK_METHOD1(TabsRemoved, void(const std::vector<int32_t>& tab_ids));
+  MOCK_METHOD1(TabsRemoved, void(tab_search::mojom::TabsRemovedInfoPtr));
 };
 
 void ExpectNewTab(const tab_search::mojom::Tab* tab,

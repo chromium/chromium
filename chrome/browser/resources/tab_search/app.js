@@ -26,7 +26,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {fuzzySearch} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
 import {ariaLabel, ItemData, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
-import {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabUpdateInfo, Window} from './tab_search.mojom-webui.js';
+import {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 import {TitleItem} from './title_item.js';
 
@@ -197,7 +197,7 @@ export class TabSearchAppElement extends PolymerElement {
         callbackRouter.tabUpdated.addListener(
             tabUpdateInfo => this.onTabUpdated_(tabUpdateInfo)),
         callbackRouter.tabsRemoved.addListener(
-            tabIds => this.onTabsRemoved_(tabIds)));
+            tabsRemovedInfo => this.onTabsRemoved_(tabsRemovedInfo)));
 
     // If added in a visible state update current tabs.
     if (document.visibilityState === 'visible') {
@@ -296,15 +296,15 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * @param {!Array<number>} tabIds
+   * @param {!TabsRemovedInfo} tabsRemovedInfo
    * @private
    */
-  onTabsRemoved_(tabIds) {
+  onTabsRemoved_(tabsRemovedInfo) {
     if (this.openTabs_.length === 0) {
       return;
     }
 
-    const ids = new Set(tabIds);
+    const ids = new Set(tabsRemovedInfo.tabIds);
     // Splicing in descending index order to avoid affecting preceding indices
     // that are to be removed.
     for (let i = this.openTabs_.length - 1; i >= 0; i--) {
@@ -313,8 +313,12 @@ export class TabSearchAppElement extends PolymerElement {
       }
     }
 
-    this.filteredItems_ = this.filteredItems_.filter(
-        itemData => !(itemData.tab && ids.has(itemData.tab.tabId)));
+    tabsRemovedInfo.recentlyClosedTabs.forEach(tab => {
+      this.recentlyClosedTabs_.unshift(this.tabData_(
+          tab, false, TabItemType.RECENTLY_CLOSED_TAB, this.tabGroupsMap_));
+    });
+
+    this.updateFilteredTabs_();
   }
 
   /**

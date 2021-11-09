@@ -425,7 +425,7 @@ export class InfiniteList extends PolymerElement {
       }
 
       // Restore focus to the selected item if necessary.
-      if (itemSelectedAndFocused) {
+      if (itemSelectedAndFocused && selector.selected !== NO_SELECTION) {
         this.getSelectableDomItem_(/** @type {number} */ (selector.selected))
             .focus();
       }

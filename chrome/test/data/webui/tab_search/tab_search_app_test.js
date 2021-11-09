@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileData, Tab, TabGroup, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField, TabUpdateInfo} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {ProfileData, RecentlyClosedTab, Tab, TabGroup, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField, TabsRemovedInfo, TabUpdateInfo} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
@@ -488,12 +488,55 @@ suite('TabSearchAppTest', () => {
     verifyTabIds(queryRows(), [2, 1]);
   });
 
-  test('refresh on tabs removed', async () => {
+  test('refresh on tabs removed, no restore service', async () => {
+    // Simulates a scenario where there is no tab restore service available for
+    // the current profile and thus, on removing a tab, there are no associated
+    // recently closed tabs created, such as in a OTR case.
     await setupTest(sampleData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    testProxy.getCallbackRouterRemote().tabsRemoved([1, 2]);
+
+    testProxy.getCallbackRouterRemote().tabsRemoved(
+        /** @type {!TabsRemovedInfo} */ ({
+          tabIds: [1, 2],
+          recentlyClosedTabs: [],
+        }));
     await flushTasks();
     verifyTabIds(queryRows(), [5, 6, 3, 4]);
+
+    // Assert that on removing all items, we display the no-results div.
+    testProxy.getCallbackRouterRemote().tabsRemoved(
+        /** @type {!TabsRemovedInfo} */ (
+            {tabIds: [3, 4, 5, 6], recentlyClosedTabs: []}));
+    await flushTasks();
+    assertNotEquals(null, tabSearchApp.shadowRoot.querySelector('#no-results'));
+  });
+
+  test('Closed tab appears in recently closed section', async () => {
+    await setupTest({
+      windows: [{
+        active: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs:
+            generateSampleTabsFromSiteNames(['SampleTab', 'SampleTab2'], true),
+      }],
+      recentlyClosedTabs: [],
+      recentlyClosedSectionExpanded: true,
+    });
+    verifyTabIds(queryRows(), [1, 2]);
+
+    testProxy.getCallbackRouterRemote().tabsRemoved(
+        /** @type {!TabsRemovedInfo} */ ({
+          tabIds: [1],
+          recentlyClosedTabs: [/** @type {RecentlyClosedTab} */ ({
+            tabId: 3,
+            title: `SampleTab`,
+            url: {url: 'https://www.sampletab.com'},
+            lastActiveTime: {internalValue: BigInt(3)},
+            lastActiveElapsedText: '',
+          })],
+        }));
+    await flushTasks();
+    verifyTabIds(queryRows(), [2, 3]);
   });
 
   test('Verify visibilitychange triggers data fetch', async () => {

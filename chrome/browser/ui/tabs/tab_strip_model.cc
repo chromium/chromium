@@ -508,8 +508,8 @@ void TabStripModel::SendDetachWebContentsNotifications(
 
   TabStripModelChange::Remove remove;
   for (auto& dwc : notifications->detached_web_contents) {
-    remove.contents.push_back(
-        {dwc->contents, dwc->index_before_any_removals, dwc->remove_reason});
+    remove.contents.push_back({dwc->contents, dwc->index_before_any_removals,
+                               dwc->remove_reason, dwc->id});
   }
   TabStripModelChange change(std::move(remove));
 

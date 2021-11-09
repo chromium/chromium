@@ -143,6 +143,15 @@ struct TabUpdateInfo {
   Tab tab;
 };
 
+// Information about a tab removal event.
+struct TabsRemovedInfo {
+  // The tab Ids for the removed tabs.
+  array<int32> tab_ids;
+
+  // Recently closed tab objects that were created for the removed tabs.
+  array<RecentlyClosedTab> recently_closed_tabs;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -188,5 +197,5 @@ interface Page {
   TabUpdated(TabUpdateInfo tabUpdateInfo);
 
   // Callback when tabs are removed.
-  TabsRemoved(array<int32> tab_ids);
+  TabsRemoved(TabsRemovedInfo tabsRemovedInfo);
 };
