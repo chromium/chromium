@@ -270,6 +270,15 @@ void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
   if (node->GetRole() == ax::mojom::Role::kInlineTextBox)
     return;
 
+#if defined(AX_EXTRA_MAC_NODES)
+  // Extra Mac nodes directly call AXTreeObserver::OnAtomicUpdateFinished, which
+  // skips all unserialization logic, including those used in AXEventGenerator.
+  // It thus cannot participate in event generation and has no associated event
+  // data.
+  if (!tree_->event_data())
+    return;
+#endif  // defined(AX_EXTRA_MAC_NODES)
+
   DCHECK(tree_->event_data());
   std::set<EventParams>& node_events = tree_events_[node->id()];
   node_events.emplace(event, tree_->event_data()->event_from,
