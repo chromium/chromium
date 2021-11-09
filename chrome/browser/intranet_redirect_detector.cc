@@ -268,7 +268,7 @@ bool IntranetRedirectDetector::IsEnabledByPolicy() {
   // interception checks. Therefore, we enable the redirect detector iff allowed
   // by both policies.
 
-  // Check IntranetRedirectorBehavior pref and experiment.
+  // Check IntranetRedirectorBehavior pref.
   auto behavior =
       omnibox::GetInterceptionChecksBehavior(g_browser_process->local_state());
   if (behavior == omnibox::IntranetRedirectorBehavior::DISABLE_FEATURE ||

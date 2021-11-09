@@ -79,7 +79,6 @@ extern const base::Feature kWebUIOmniboxPopup;
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).
-extern const base::Feature kIntranetRedirectBehaviorPolicyRollout;
 extern const base::Feature kOmniboxAssistantVoiceSearch;
 
 // Settings Page - these affect the appearance of the Search Engines settings
