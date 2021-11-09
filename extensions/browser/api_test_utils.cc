@@ -50,7 +50,7 @@ bool SendResponseHelper::GetResponse() {
 }
 
 void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
-                                    const base::Value& results,
+                                    base::Value results,
                                     const std::string& error) {
   ASSERT_NE(ExtensionFunction::BAD_MESSAGE, response);
   response_ = std::make_unique<bool>(response == ExtensionFunction::SUCCEEDED);
@@ -198,6 +198,7 @@ bool RunFunction(
   function->SetDispatcher(dispatcher->AsWeakPtr());
 
   function->set_include_incognito_information(flags & INCLUDE_INCOGNITO);
+  function->preserve_results_for_testing();
   function->RunWithValidation()->Execute();
   response_helper.WaitForResponse();
 

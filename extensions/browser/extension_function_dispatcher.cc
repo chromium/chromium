@@ -113,16 +113,10 @@ class ExtensionFunctionDispatcher::ResponseCallbackWrapper
   void OnExtensionFunctionCompleted(
       mojom::LocalFrameHost::RequestCallback callback,
       ExtensionFunction::ResponseType type,
-      const base::Value& results,
+      base::Value results,
       const std::string& error) {
-    if (type == ExtensionFunction::BAD_MESSAGE) {
-      // The renderer will be shut down from ExtensionFunction::SetBadMessage().
-      std::move(callback).Run(false, results.Clone(), error);
-      return;
-    }
-
     std::move(callback).Run(type == ExtensionFunction::SUCCEEDED,
-                            results.Clone(), error);
+                            std::move(results), error);
   }
 
   base::WeakPtr<ExtensionFunctionDispatcher> dispatcher_;
@@ -179,7 +173,7 @@ class ExtensionFunctionDispatcher::WorkerResponseCallbackWrapper
   void OnExtensionFunctionCompleted(int request_id,
                                     int worker_thread_id,
                                     ExtensionFunction::ResponseType type,
-                                    const base::Value& results,
+                                    base::Value results,
                                     const std::string& error) {
     if (type == ExtensionFunction::BAD_MESSAGE) {
       // The renderer will be shut down from ExtensionFunction::SetBadMessage().

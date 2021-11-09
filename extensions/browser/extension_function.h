@@ -108,10 +108,8 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     BAD_MESSAGE
   };
 
-  // TODO(crbug.com/1196205): Convert the type of |results| to a base::Value.
-  using ResponseCallback = base::OnceCallback<void(ResponseType type,
-                                                   const base::Value& results,
-                                                   const std::string& error)>;
+  using ResponseCallback = base::OnceCallback<
+      void(ResponseType type, base::Value results, const std::string& error)>;
 
   ExtensionFunction();
 
@@ -357,6 +355,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // only for when you want to test functionality that doesn't exercise the
   // Run() aspect of an extension function.
   void ignore_did_respond_for_testing() { did_respond_ = true; }
+
+  void preserve_results_for_testing() { preserve_results_for_testing_ = true; }
+
   // Same as above, but global. Yuck. Do not add any more uses of this.
   static bool ignore_all_did_respond_for_testing_do_not_use;
 
@@ -595,6 +596,18 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Whether this function has responded.
   // TODO(devlin): Replace this with response_type_ != null.
   bool did_respond_ = false;
+
+  // If set to true, preserves |results_|, even after SendResponseImpl() was
+  // called.
+  //
+  // SendResponseImpl() moves the results out of |this| through
+  // ResponseCallback, and calling this method avoids that. This is nececessary
+  // for tests that use test_utils::RunFunction*(), as those tests typically
+  // retrieve the result afterwards through GetResultList().
+  // TODO(https://crbug.com/1268112): Remove this once GetResultList() is
+  // removed after ensuring consumers only use RunFunctionAndReturnResult() to
+  // retrieve the results.
+  bool preserve_results_for_testing_ = false;
 
   // The dispatcher that will service this extension function call.
   base::WeakPtr<extensions::ExtensionFunctionDispatcher> dispatcher_;

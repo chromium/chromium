@@ -140,6 +140,7 @@ class AsyncFunctionRunner {
                         content::BrowserContext* browser_context) {
     response_delegate_ =
         std::make_unique<api_test_utils::SendResponseHelper>(function);
+    function->preserve_results_for_testing();
     absl::optional<base::Value> parsed_args(utils::ParseList(args));
     ASSERT_TRUE(parsed_args)
         << "Could not parse extension function arguments: " << args;

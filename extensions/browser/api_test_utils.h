@@ -53,7 +53,7 @@ class SendResponseHelper {
  private:
   // Response handler.
   void OnResponse(ExtensionFunction::ResponseType response,
-                  const base::Value& results,
+                  base::Value results,
                   const std::string& error);
 
   base::RunLoop run_loop_;

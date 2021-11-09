@@ -360,8 +360,8 @@ void ExtensionFunction::EnsureShutdownNotifierFactoryBuilt() {
 void ExtensionFunction::ResponseValueObject::SetFunctionResults(
     ExtensionFunction* function,
     base::Value results) {
-  DCHECK(!function->results_) << "Function " << function->name_
-                              << "already has results set.";
+  DCHECK(!function->results_)
+      << "Function " << function->name_ << " already has results set.";
   function->results_ =
       base::ListValue::From(base::Value::ToUniquePtrValue(std::move(results)));
 }
@@ -792,7 +792,15 @@ void ExtensionFunction::SendResponseImpl(bool success) {
   if (!results_)
     results_ = std::make_unique<base::ListValue>();
 
-  std::move(response_callback_).Run(response, *results_, GetError());
+  base::Value results;
+  if (preserve_results_for_testing_) {
+    // Keep |results_| untouched.
+    results = results_->Clone();
+  } else {
+    results = std::move(*results_);
+  }
+
+  std::move(response_callback_).Run(response, std::move(results), GetError());
   LogUma(success, timer_.Elapsed(), histogram_value_);
 
   OnResponded();
