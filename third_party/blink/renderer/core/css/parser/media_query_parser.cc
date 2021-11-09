@@ -159,25 +159,22 @@ bool MediaQueryParser::ConsumeQuery(CSSParserTokenRange& range) {
   DCHECK_EQ(parser_type_, kMediaQuerySetParser);
   media_query_data_.Clear();
 
-  if (range.Peek().GetType() == kLeftParenthesisToken) {
-    if (media_query_data_.Restrictor() != MediaQuery::kNone) {
-      return false;
-    } else {
-      return ConsumeFeature(range) && ConsumeAnd(range);
-    }
-  } else if (range.Peek().GetType() == kIdentToken) {
-    media_query_data_.SetRestrictor(ConsumeRestrictor(range));
-    String type = ConsumeType(range);
+  MediaQuery::RestrictorType restrictor = ConsumeRestrictor(range);
+  String type = ConsumeType(range);
 
-    if (!type.IsNull()) {
-      media_query_data_.SetMediaType(type);
-      return ConsumeAnd(range);
-    } else {
+  // If present, a restrictor *must* be followed by a type.
+  if (restrictor != MediaQuery::kNone) {
+    if (type.IsNull())
       return false;
-    }
-  } else {
-    return false;
+    media_query_data_.SetRestrictor(restrictor);
   }
+
+  if (!type.IsNull()) {
+    media_query_data_.SetMediaType(type);
+    return ConsumeAnd(range);
+  }
+
+  return ConsumeFeature(range) && ConsumeAnd(range);
 }
 
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
