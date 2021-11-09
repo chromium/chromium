@@ -304,8 +304,7 @@ void CheckAndUpdateExternalInstallations(const base::FilePath& cur_profile_path,
   std::wstring external_installation_prog_id =
       GetProgIdForApp(external_installation_profile_path, app_id);
   std::wstring external_installation_name =
-      ShellUtil::GetFileAssociationsAndAppName(external_installation_prog_id)
-          .app_name;
+      ShellUtil::GetAppName(external_installation_prog_id);
 
   // Determine the updated name and extension for the external installation
   // based on the state of the installation in |cur_profile_path|.

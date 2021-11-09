@@ -1094,14 +1094,14 @@ class ShellUtilRegistryTest : public testing::Test {
     return open_command;
   }
 
-  static std::set<std::wstring> FileExtensions() {
+  static const std::set<std::wstring> FileExtensions() {
     std::set<std::wstring> file_extensions;
     for (size_t i = 0; i < base::size(kTestFileExtensions); ++i)
       file_extensions.insert(kTestFileExtensions[i]);
     return file_extensions;
   }
 
-  base::FilePath& chrome_exe() { return chrome_exe_; }
+  const base::FilePath& chrome_exe() const { return chrome_exe_; }
 
  private:
   registry_util::RegistryOverrideManager registry_overrides_;
@@ -1273,23 +1273,19 @@ TEST_F(ShellUtilRegistryTest, DeleteApplicationClass) {
                                     L"Software\\Classes\\TestApp", KEY_READ));
 }
 
-TEST_F(ShellUtilRegistryTest, GetFileAssociationsAndAppName) {
-  ShellUtil::FileAssociationsAndAppName empty_file_associations_and_app_name(
-      ShellUtil::GetFileAssociationsAndAppName(kTestProgId));
-  EXPECT_TRUE(empty_file_associations_and_app_name.app_name.empty());
+TEST_F(ShellUtilRegistryTest, GetAppName) {
+  const std::wstring empty_app_name(ShellUtil::GetAppName(kTestProgId));
+  EXPECT_TRUE(empty_app_name.empty());
 
-  // Add file associations and test that GetFileAssociationsAndAppName
-  // returns the registered file associations and app name. Pass
-  // kTestApplicationName for the open command, to handle the Win 7 case, which
-  // returns the open command executable name as the app_name.
+  // Add file associations and test that GetAppName returns the registered app
+  // name. Pass kTestApplicationName for the open command, to handle the Win 7
+  // case, which returns the open command executable name as the app_name.
   ASSERT_TRUE(ShellUtil::AddFileAssociations(
       kTestProgId, OpenCommand(), kTestApplicationName, kTestFileTypeName,
       base::FilePath(kTestIconPath), base::FilePath(kTestFileTypeIconPath),
       FileExtensions()));
-  ShellUtil::FileAssociationsAndAppName file_associations_and_app_name(
-      ShellUtil::GetFileAssociationsAndAppName(kTestProgId));
-  EXPECT_EQ(file_associations_and_app_name.app_name, kTestApplicationName);
-  EXPECT_EQ(file_associations_and_app_name.file_associations, FileExtensions());
+  const std::wstring app_name(ShellUtil::GetAppName(kTestProgId));
+  EXPECT_EQ(app_name, kTestApplicationName);
 }
 
 TEST_F(ShellUtilRegistryTest, GetApplicationInfoForProgId) {

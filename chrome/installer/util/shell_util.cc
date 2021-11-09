@@ -1756,13 +1756,6 @@ ShellUtil::ApplicationInfo::ApplicationInfo(ApplicationInfo&& other) noexcept =
 
 ShellUtil::ApplicationInfo::~ApplicationInfo() = default;
 
-ShellUtil::FileAssociationsAndAppName::FileAssociationsAndAppName() = default;
-
-ShellUtil::FileAssociationsAndAppName::FileAssociationsAndAppName(
-    FileAssociationsAndAppName&& other) = default;
-
-ShellUtil::FileAssociationsAndAppName::~FileAssociationsAndAppName() = default;
-
 bool ShellUtil::QuickIsChromeRegisteredInHKLM(const base::FilePath& chrome_exe,
                                               const std::wstring& suffix) {
   return QuickIsChromeRegistered(chrome_exe, suffix,
@@ -2901,52 +2894,21 @@ ShellUtil::ApplicationInfo ShellUtil::GetApplicationInfoForProgId(
   return app_info;
 }
 
-// TODO(crbug.com/1247824): Only tests use the file associations so this should
-// be changed to GetAppName and the tests should get the file associations
-// separately. FileAssociationsAndAppName can then be removed.
 // static
-ShellUtil::FileAssociationsAndAppName ShellUtil::GetFileAssociationsAndAppName(
-    const std::wstring& prog_id) {
-  FileAssociationsAndAppName file_associations_and_app_name;
-
+std::wstring ShellUtil::GetAppName(const std::wstring& prog_id) {
   std::wstring prog_id_path =
       base::StrCat({kRegClasses, kFilePathSeparator, prog_id});
-
+  std::wstring app_name;
   // Get the app name from value ApplicationName at
   // HKEY_CURRENT_USER\Software\Classes\|prog_id|\Application.
   std::wstring application_path = prog_id_path + kRegApplication;
   RegKey application_key(HKEY_CURRENT_USER, application_path.c_str(),
                          KEY_QUERY_VALUE);
-  if (application_key.ReadValue(kRegApplicationName,
-                                &file_associations_and_app_name.app_name) !=
+  if (application_key.ReadValue(kRegApplicationName, &app_name) ==
       ERROR_SUCCESS) {
-    const std::vector<std::wstring> file_handler_prog_ids =
-        ShellUtil::GetFileHandlerProgIdsForAppId(prog_id);
-    if (file_handler_prog_ids.empty())
-      return file_associations_and_app_name;
-    // Get the file associations and app name for the first file handler.
-    return GetFileAssociationsAndAppName(file_handler_prog_ids[0]);
+    return app_name;
   }
-
-  // If present, get list of handled file extensions from value FileExtensions
-  // at HKEY_CURRENT_USER\Software\Classes\|prog_id|.
-  RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
-                             KEY_QUERY_VALUE);
-  std::wstring handled_file_extensions;
-  if (file_extensions_key.ReadValue(
-          kFileExtensions, &handled_file_extensions) == ERROR_SUCCESS) {
-    std::vector<base::WStringPiece> file_associations_vec =
-        base::SplitStringPiece(base::WStringPiece(handled_file_extensions),
-                               base::WStringPiece(L";"), base::TRIM_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
-    for (const auto& file_extension : file_associations_vec) {
-      // Skip over the leading '.' so that we return the same
-      // extensions as were passed to AddFileAssociations.
-      file_associations_and_app_name.file_associations.emplace(
-          file_extension.substr(1));
-    }
-  }
-  return file_associations_and_app_name;
+  return L"";
 }
 
 // static

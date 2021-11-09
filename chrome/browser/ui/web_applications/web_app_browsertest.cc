@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -139,6 +140,26 @@ Browser* OpenPopupAndWait(Browser* browser,
 
   return popup_browser;
 }
+
+#if defined(OS_WIN)
+std::vector<std::wstring> GetFileExtensionsForProgId(
+    const std::wstring& file_handler_prog_id) {
+  const std::wstring prog_id_path =
+      base::StrCat({ShellUtil::kRegClasses, L"\\", file_handler_prog_id});
+
+  // Get list of handled file extensions from value FileExtensions at
+  // HKEY_CURRENT_USER\Software\Classes\<file_handler_prog_id>.
+  base::win::RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
+                                        KEY_QUERY_VALUE);
+  std::wstring handled_file_extensions;
+  EXPECT_EQ(file_extensions_key.ReadValue(L"FileExtensions",
+                                          &handled_file_extensions),
+            ERROR_SUCCESS);
+  return base::SplitString(handled_file_extensions, std::wstring(L";"),
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+}
+
+#endif  // defined(OS_WIN)
 
 }  // namespace
 
@@ -1809,24 +1830,30 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, WebAppFileHandler) {
 #if defined(OS_WIN)
   const std::wstring prog_id =
       GetProgIdForApp(browser()->profile()->GetPath(), app_id);
-  const ShellUtil::FileAssociationsAndAppName file_associations =
-      ShellUtil::GetFileAssociationsAndAppName(prog_id);
-  // Check file association.
-  base::win::RegKey key;
+  const std::vector<std::wstring> file_handler_prog_ids =
+      ShellUtil::GetFileHandlerProgIdsForAppId(prog_id);
+  base::flat_map<std::wstring, std::wstring> reg_key_prog_id_map;
+
   std::vector<std::wstring> file_ext_reg_keys;
-  for (const auto& file_extension : file_associations.file_associations) {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-    const std::string extension = converter.to_bytes(file_extension);
-    EXPECT_TRUE(std::find(expected_extensions.begin(),
-                          expected_extensions.end(),
-                          extension) != expected_extensions.end())
-        << "Missing file extension: " << extension;
-    const std::wstring reg_key =
-        L"Software\\Classes\\." + file_extension + L"\\OpenWithProgids";
-    file_ext_reg_keys.push_back(reg_key);
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
-    EXPECT_TRUE(key.HasValue(prog_id.data()));
+  base::win::RegKey key;
+  for (const auto& file_handler_prog_id : file_handler_prog_ids) {
+    const std::vector<std::wstring> file_extensions =
+        GetFileExtensionsForProgId(file_handler_prog_id);
+    for (const auto& file_extension : file_extensions) {
+      std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+      const std::string extension =
+          converter.to_bytes(file_extension.substr(1));
+      EXPECT_TRUE(std::find(expected_extensions.begin(),
+                            expected_extensions.end(),
+                            extension) != expected_extensions.end())
+          << "Missing file extension: " << extension;
+      const std::wstring reg_key =
+          L"Software\\Classes\\" + file_extension + L"\\OpenWithProgids";
+      reg_key_prog_id_map[reg_key] = file_handler_prog_id;
+      ASSERT_EQ(ERROR_SUCCESS,
+                key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
+      EXPECT_TRUE(key.HasValue(file_handler_prog_id.data()));
+    }
   }
 #elif defined(OS_MAC)
   for (auto extension : expected_extensions) {
@@ -1856,16 +1883,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, WebAppFileHandler) {
   run_loop_uninstall.Run();
 
 #if defined(OS_WIN)
-  // Check file association after the web app is uninstalled.
-  const ShellUtil::FileAssociationsAndAppName empty_file_associations =
-      ShellUtil::GetFileAssociationsAndAppName(prog_id);
-  EXPECT_TRUE(empty_file_associations.file_associations.empty());
+  // Check file associations after the web app is uninstalled.
 
-  // Check that HKCU/Software Classes/<filext>/ doesn't have the prog id.
-  for (const auto& reg_key : file_ext_reg_keys) {
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
-    EXPECT_FALSE(key.HasValue(prog_id.data()));
+  // Check that HKCU/Software Classes/<filext>/ doesn't have the ProgId.
+  for (const auto& reg_key_prog_id : reg_key_prog_id_map) {
+    ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
+                                      reg_key_prog_id.first.data(), KEY_READ));
+    EXPECT_FALSE(key.HasValue(reg_key_prog_id.second.data()));
   }
 #endif
 }

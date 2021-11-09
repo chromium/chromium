@@ -217,15 +217,6 @@ class ShellUtil {
     uint32_t options;
   };
 
-  struct FileAssociationsAndAppName {
-    FileAssociationsAndAppName();
-    FileAssociationsAndAppName(FileAssociationsAndAppName&& other);
-    ~FileAssociationsAndAppName();
-
-    std::set<std::wstring> file_associations;
-    std::wstring app_name;
-  };
-
   // Details about a Windows application, to be entered into the registry for
   // the purpose of file associations.
   struct ApplicationInfo {
@@ -793,18 +784,17 @@ class ShellUtil {
   // Removes all entries of an application at HKCU\SOFTWARE\classes\<prog_id>.
   static bool DeleteApplicationClass(const std::wstring& prog_id);
 
-  // Returns application details for HKCU\SOFTWARE\classes\|prog_id|. The
+  // Returns application details for HKCU\SOFTWARE\classes\`prog_id`. The
   // returned instance's members will be empty if not found.
   static ApplicationInfo GetApplicationInfoForProgId(
       const std::wstring& prog_id);
 
-  // Returns the app name and file associations registered for a particular
-  // application in the Windows registry. If there is no entry in the registry
-  // for |prog_id|, nothing will be returned.
-  static FileAssociationsAndAppName GetFileAssociationsAndAppName(
-      const std::wstring& prog_id);
+  // Returns the app name registered for a particular application in the Windows
+  // registry. If there is no entry in the registry for `prog_id`, nothing will
+  // be returned.
+  static std::wstring GetAppName(const std::wstring& prog_id);
 
-  // For each protocol in |protocols|, the web app represented by |prog_id| is
+  // For each protocol in `protocols`, the web app represented by `prog_id` is
   // designated as the non-default handler for the corresponding protocol. For
   // protocols uncontested by other handlers on the OS, the app will be
   // promoted to default handler.
