@@ -68,23 +68,24 @@ void UserChoiceDialogCompleted(apps::AppLaunchParams params,
                                Profile* profile,
                                bool allowed,
                                bool remember_user_choice) {
-  GURL protocol_url = params.protocol_handler_launch_url.value();
+  absl::optional<GURL> protocol_url = params.protocol_handler_launch_url;
+  std::vector<base::FilePath> launch_files = params.launch_files;
   web_app::AppId app_id = params.app_id;
 
-  auto launch_callback = base::BindOnce(&OnPersistUserChoiceCompleted,
-                                        std::move(params), profile, allowed);
+  auto persist_done = base::BindOnce(&OnPersistUserChoiceCompleted,
+                                     std::move(params), profile, allowed);
 
   if (remember_user_choice) {
-    if (!protocol_url.is_empty()) {
-      PersistProtocolHandlersUserChoice(profile, app_id, protocol_url, allowed,
-                                        std::move(launch_callback));
+    if (protocol_url) {
+      PersistProtocolHandlersUserChoice(profile, app_id, *protocol_url, allowed,
+                                        std::move(persist_done));
     } else {
-      DCHECK(!params.launch_files.empty());
+      DCHECK(!launch_files.empty());
       PersistFileHandlersUserChoice(profile, app_id, allowed,
-                                    std::move(launch_callback));
+                                    std::move(persist_done));
     }
   } else {
-    std::move(launch_callback).Run();
+    std::move(persist_done).Run();
   }
 }
 
@@ -256,13 +257,10 @@ void WebAppShimManagerDelegate::LaunchApp(
     }
 
     if (!registrar.IsAllowedLaunchProtocol(app_id, protocol_url.scheme())) {
-      auto launch_callback = base::BindOnce(&UserChoiceDialogCompleted,
-                                            std::move(params), profile);
-
-      // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
-      // running of `launch_callback`.
       chrome::ShowWebAppProtocolHandlerIntentPicker(
-          std::move(protocol_url), profile, app_id, std::move(launch_callback));
+          std::move(protocol_url), profile, app_id,
+          base::BindOnce(&UserChoiceDialogCompleted, std::move(params),
+                         profile));
       return;
     }
   }
@@ -286,13 +284,10 @@ void WebAppShimManagerDelegate::LaunchApp(
 
       if (web_app->file_handler_approval_state() ==
           ApiApprovalState::kRequiresPrompt) {
-        // TODO(estade): this should use a file handling dialog, but until
-        // that's implemented, this reuses the PH dialog as a stand-in.
-        auto launch_callback = base::BindOnce(&UserChoiceDialogCompleted,
-                                              std::move(params), profile);
-        chrome::ShowWebAppProtocolHandlerIntentPicker(
-            GURL("https://example.com"), profile, app_id,
-            std::move(launch_callback));
+        chrome::ShowWebAppFileLaunchDialog(
+            launch_files, profile, app_id,
+            base::BindOnce(&UserChoiceDialogCompleted, std::move(params),
+                           profile));
         return;
       }
 
