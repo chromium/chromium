@@ -68,6 +68,13 @@ public class ReactionGifDrawable extends BaseGifDrawable {
         return mMetadata;
     }
 
+    /**
+     * Restarts the animation from the first frame.
+     */
+    public void resetAnimation() {
+        reset();
+    }
+
     @Override
     protected void postProcessFrame(Bitmap bitmap) {
         // A frame has just been decoded. If stepping is enabled, notify the listener that a step
