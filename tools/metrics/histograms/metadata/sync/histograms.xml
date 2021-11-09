@@ -738,8 +738,8 @@ chromium-metrics-reviews@google.com.
     wouldn't be able to start, or that it probably can start. The user having
     turned off sync on mobile will be logged as &quot;turned off by user&quot;.
     A dashboard stop and clear will fall under &quot;turned off and setup not
-    completed&quot;. See the SyncInitialState enum in profile_sync_service.cc
-    for more information.
+    completed&quot;. See the SyncInitialState enum in sync_service_impl.cc for
+    more information.
   </summary>
 </histogram>
 

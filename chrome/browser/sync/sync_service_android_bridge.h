@@ -24,10 +24,10 @@ class SyncSetupInProgressHandle;
 // Must only be accessed from the UI thread.
 class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
  public:
-  // |sync_service| must not be null.
+  // |native_sync_service| and |java_sync_service| must not be null.
   SyncServiceAndroidBridge(JNIEnv* env,
-                           syncer::SyncServiceImpl* sync_service,
-                           jobject java_profile_sync_service);
+                           syncer::SyncServiceImpl* native_sync_service,
+                           jobject java_sync_service);
   ~SyncServiceAndroidBridge() override;
 
   SyncServiceAndroidBridge(const SyncServiceAndroidBridge&) = delete;
