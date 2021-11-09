@@ -258,6 +258,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FileBrowser.LauncherSearch.Drive" units="ms"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -268,6 +271,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FileBrowser.LauncherSearch.Local" units="ms"
     expires_after="M98">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
