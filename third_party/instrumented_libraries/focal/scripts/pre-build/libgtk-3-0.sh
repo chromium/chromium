@@ -14,7 +14,9 @@ sed -i "s|./gtk-update-icon-cache|/usr/bin/gtk-update-icon-cache|g" gtk/Makefile
 # Don't build immodules.cache.  It requires running just-built executables that
 # depend on glib, but using the system glib will cause msan errors.  This file
 # is only used in GTK test suites, and is unneeded for the instrumented build.
-
 sed -i "s|all-local: immodules.cache||g" modules/input/Makefile.am
+
+# Copied from override_dh_clean in debian/rules.
+rm testsuite/gtk/gtkresources.[ch]
 
 autoreconf
