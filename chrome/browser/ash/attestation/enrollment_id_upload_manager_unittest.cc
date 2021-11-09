@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/attestation/enrollment_id_upload_manager.h"
 #include "chrome/browser/ash/attestation/mock_enrollment_certificate_uploader.h"
@@ -73,7 +74,8 @@ class EnrollmentIdUploadManagerTest : public DeviceSettingsTestBase {
   }
 
   void TearDown() override {
-    EXPECT_FALSE(enrollment_id_upload_manager_->request_in_flight_);
+    EXPECT_TRUE(
+        enrollment_id_upload_manager_->upload_manager_callbacks_.empty());
     enrollment_id_upload_manager_.reset();
     DeviceSettingsTestBase::TearDown();
     AttestationClient::Shutdown();
@@ -91,8 +93,7 @@ class EnrollmentIdUploadManagerTest : public DeviceSettingsTestBase {
     enrollment_id_upload_manager_->set_retry_delay_for_testing(0);
   }
 
-  void ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus status,
-                                                   int times) {
+  void ExpectUploadEnrollmentCertificate(CertificateStatus status, int times) {
     EXPECT_CALL(certificate_uploader_, ObtainAndUploadCertificate(_))
         .Times(times)
         .WillRepeatedly(Invoke(
@@ -102,7 +103,7 @@ class EnrollmentIdUploadManagerTest : public DeviceSettingsTestBase {
             }));
   }
 
-  void ExpectUploadEnterpriseEnrollmentId(int times) {
+  void ExpectUploadEnrollmentId(int times) {
     // Setting a mock behavior with 0 times causes warnings.
     if (times == 0) {
       return;
@@ -122,8 +123,23 @@ class EnrollmentIdUploadManagerTest : public DeviceSettingsTestBase {
     ReloadDeviceSettings();
   }
 
-  void Run() { base::RunLoop().RunUntilIdle(); }
+  void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
 
+  void CheckStatusAndQuitLoop(bool expect_success, bool success) {
+    EXPECT_EQ(expect_success, success);
+    run_loop_.Quit();
+  }
+
+  // Calls ObtainAndUploadEnrollmentId(), waits for the callback, and verifies
+  // the expected status on the callback.
+  void TestObtainAndUploadEnrollmentId(bool expect_success) {
+    enrollment_id_upload_manager_->ObtainAndUploadEnrollmentId(
+        base::BindOnce(&EnrollmentIdUploadManagerTest::CheckStatusAndQuitLoop,
+                       base::Unretained(this), expect_success));
+    run_loop_.Run();
+  }
+
+  base::RunLoop run_loop_;
   StrictMock<policy::MockCloudPolicyClient> policy_client_;
   StrictMock<MockEnrollmentCertificateUploader> certificate_uploader_;
   std::unique_ptr<EnrollmentIdUploadManager> enrollment_id_upload_manager_;
@@ -132,76 +148,73 @@ class EnrollmentIdUploadManagerTest : public DeviceSettingsTestBase {
 
 constexpr char EnrollmentIdUploadManagerTest::kEnrollmentId[];
 
-TEST_F(EnrollmentIdUploadManagerTest, UploadEnterpriseEnrollmentCertificate) {
-  SetUpDevicePolicy(true);
-  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kSuccess,
-                                              /*times=*/1);
+TEST_F(EnrollmentIdUploadManagerTest, UploadEnrollmentCertificate) {
+  SetUpDevicePolicy(/*enrollment_id_needed=*/true);
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kSuccess, /*times=*/1);
   SetUpEnrollmentIdUploadManager();
   PropagateDevicePolicy();
-  Run();
+  RunUntilIdle();
 }
 
 TEST_F(EnrollmentIdUploadManagerTest,
-       UploadEnterpriseEnrollmentCertificateFromExistingPolicy) {
+       UploadEnrollmentCertificateFromExistingPolicy) {
   // This test will trigger the manager work twice in a row: when the
   // manager is created, and when it gets notified later on.
-  SetUpDevicePolicy(true);
+  SetUpDevicePolicy(/*enrollment_id_needed=*/true);
   PropagateDevicePolicy();
-  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kSuccess,
-                                              /*times=*/2);
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kSuccess, /*times=*/2);
   SetUpEnrollmentIdUploadManager();
   PropagateDevicePolicy();
-  Run();
+  RunUntilIdle();
 }
 
 TEST_F(EnrollmentIdUploadManagerTest, FailedToUploadEnrollmentCertificate) {
-  SetUpDevicePolicy(true);
-  ExpectUploadEnterpriseEnrollmentCertificate(
-      CertificateStatus::kFailedToUpload, /*times=*/1);
+  SetUpDevicePolicy(/*enrollment_id_needed=*/true);
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToUpload,
+                                    /*times=*/1);
   SetUpEnrollmentIdUploadManager();
   PropagateDevicePolicy();
-  Run();
+  RunUntilIdle();
 }
 
-TEST_F(EnrollmentIdUploadManagerTest, UploadEnterpriseEnrollmentId) {
-  SetUpDevicePolicy(true);
-  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
-                                              /*times=*/1);
-  ExpectUploadEnterpriseEnrollmentId(1);
+TEST_F(EnrollmentIdUploadManagerTest, UploadEnrollmentId) {
+  SetUpDevicePolicy(/*enrollment_id_needed=*/true);
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                    /*times=*/1);
+  ExpectUploadEnrollmentId(/*times=*/1);
   SetUpEnrollmentIdUploadManager();
   PropagateDevicePolicy();
-  Run();
+  RunUntilIdle();
 }
 
-TEST_F(EnrollmentIdUploadManagerTest,
-       UploadEnterpriseEnrollmentIdFromExistingPolicy) {
+TEST_F(EnrollmentIdUploadManagerTest, UploadEnrollmentIdFromExistingPolicy) {
   // This test will trigger the manager work twice in a row: when the
   // manager is created, and when it gets notified later on.
-  SetUpDevicePolicy(true);
+  SetUpDevicePolicy(/*enrollment_id_needed=*/true);
   PropagateDevicePolicy();
-  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
-                                              /*times=*/2);
-  ExpectUploadEnterpriseEnrollmentId(2);
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                    /*times=*/2);
+  ExpectUploadEnrollmentId(/*times=*/2);
   SetUpEnrollmentIdUploadManager();
   PropagateDevicePolicy();
-  Run();
+  RunUntilIdle();
 }
 
-TEST_F(EnrollmentIdUploadManagerTest, FeatureDisabled) {
-  SetUpDevicePolicy(false);
+TEST_F(EnrollmentIdUploadManagerTest, EnrollmentIdNotNeeded) {
+  SetUpDevicePolicy(/*enrollment_id_needed=*/false);
   SetUpEnrollmentIdUploadManager();
   PropagateDevicePolicy();
-  Run();
+  RunUntilIdle();
 }
 
 TEST_F(EnrollmentIdUploadManagerTest, UnregisteredPolicyClient) {
   policy_client_.SetDMToken("");
-  SetUpDevicePolicy(true);
+  SetUpDevicePolicy(/*enrollment_id_needed=*/true);
   SetUpEnrollmentIdUploadManager();
-  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
-                                              /*times=*/1);
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                    /*times=*/1);
   PropagateDevicePolicy();
-  Run();
+  RunUntilIdle();
 }
 
 TEST_F(EnrollmentIdUploadManagerTest, DBusFailureRetry) {
@@ -209,15 +222,15 @@ TEST_F(EnrollmentIdUploadManagerTest, DBusFailureRetry) {
       ->GetTestInterface()
       ->set_enrollment_id_dbus_error_count(kRetryLimit - 1);
 
-  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
-                                              /*times=*/1);
-  ExpectUploadEnterpriseEnrollmentId(1);
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                    /*times=*/1);
+  ExpectUploadEnrollmentId(/*times=*/1);
 
-  SetUpDevicePolicy(true);
+  SetUpDevicePolicy(/*enrollment_id_needed=*/true);
   PropagateDevicePolicy();
   SetUpEnrollmentIdUploadManager();
 
-  Run();
+  RunUntilIdle();
 }
 
 TEST_F(EnrollmentIdUploadManagerTest, DBusFailureRetryUntilLimit) {
@@ -225,15 +238,71 @@ TEST_F(EnrollmentIdUploadManagerTest, DBusFailureRetryUntilLimit) {
       ->GetTestInterface()
       ->set_enrollment_id_dbus_error_count(kRetryLimit);
 
-  ExpectUploadEnterpriseEnrollmentCertificate(CertificateStatus::kFailedToFetch,
-                                              /*times=*/1);
-  ExpectUploadEnterpriseEnrollmentId(0);
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                    /*times=*/1);
+  ExpectUploadEnrollmentId(/*times=*/0);
 
-  SetUpDevicePolicy(true);
+  SetUpDevicePolicy(/*enrollment_id_needed=*/true);
   PropagateDevicePolicy();
   SetUpEnrollmentIdUploadManager();
 
-  Run();
+  RunUntilIdle();
+}
+
+TEST_F(EnrollmentIdUploadManagerTest, ObtainAndUploadSendsCertificate) {
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kSuccess, /*times=*/1);
+  SetUpEnrollmentIdUploadManager();
+  TestObtainAndUploadEnrollmentId(/*expect_success=*/true);
+}
+
+TEST_F(EnrollmentIdUploadManagerTest, ObtainAndUploadFailsToUploadCertificate) {
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToUpload,
+                                    /*times=*/1);
+  SetUpEnrollmentIdUploadManager();
+  TestObtainAndUploadEnrollmentId(/*expect_success=*/false);
+}
+
+TEST_F(EnrollmentIdUploadManagerTest, ObtainAndUploadSendsEnrollmentId) {
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                    /*times=*/1);
+  ExpectUploadEnrollmentId(/*times=*/1);
+  SetUpEnrollmentIdUploadManager();
+  TestObtainAndUploadEnrollmentId(/*expect_success=*/true);
+}
+
+TEST_F(EnrollmentIdUploadManagerTest, ObtainAndUploadUnregisteredPolicyClient) {
+  policy_client_.SetDMToken("");
+  SetUpEnrollmentIdUploadManager();
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                    /*times=*/1);
+  TestObtainAndUploadEnrollmentId(/*expect_success=*/false);
+}
+
+TEST_F(EnrollmentIdUploadManagerTest, ObtainAndUploadDBusFailureRetry) {
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->set_enrollment_id_dbus_error_count(kRetryLimit - 1);
+
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                    /*times=*/1);
+  ExpectUploadEnrollmentId(/*times=*/1);
+
+  SetUpEnrollmentIdUploadManager();
+  TestObtainAndUploadEnrollmentId(/*expect_success=*/true);
+}
+
+TEST_F(EnrollmentIdUploadManagerTest,
+       ObtainAndUploadDBusFailureRetryUntilLimit) {
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->set_enrollment_id_dbus_error_count(kRetryLimit);
+
+  ExpectUploadEnrollmentCertificate(CertificateStatus::kFailedToFetch,
+                                    /*times=*/1);
+  ExpectUploadEnrollmentId(/*times=*/0);
+
+  SetUpEnrollmentIdUploadManager();
+  TestObtainAndUploadEnrollmentId(/*expect_success=*/false);
 }
 
 }  // namespace attestation
