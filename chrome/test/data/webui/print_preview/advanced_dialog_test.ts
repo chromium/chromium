@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewAdvancedSettingsDialogElement} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, PrintPreviewAdvancedSettingsDialogElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -12,53 +12,37 @@ import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplateWithAdvancedSettings} from './print_preview_test_utils.js';
 
-window.advanced_dialog_test = {};
-const advanced_dialog_test = window.advanced_dialog_test;
-advanced_dialog_test.suiteName = 'AdvancedDialogTest';
-/** @enum {string} */
-advanced_dialog_test.TestNames = {
-  AdvancedSettings1Option: 'advanced settings 1 option',
-  AdvancedSettings2Options: 'advanced settings 2 options',
-  AdvancedSettingsApply: 'advanced settings apply',
-  AdvancedSettingsApplyWithEnter: 'advanced settings apply with enter',
-  AdvancedSettingsClose: 'advanced settings close',
-  AdvancedSettingsFilter: 'advanced settings filter',
+const advanced_dialog_test = {
+  suiteName: 'AdvancedDialogTest',
+  TestNames: {
+    AdvancedSettings1Option: 'advanced settings 1 option',
+    AdvancedSettings2Options: 'advanced settings 2 options',
+    AdvancedSettingsApply: 'advanced settings apply',
+    AdvancedSettingsApplyWithEnter: 'advanced settings apply with enter',
+    AdvancedSettingsClose: 'advanced settings close',
+    AdvancedSettingsFilter: 'advanced settings filter',
+  },
 };
 
-/**
- * @typedef {{
- *   printArea: (number|undefined),
- *   paperType: (number|undefined),
- *   watermark: (string|undefined),
- * }}
- */
-let TestVendorSettings;
+Object.assign(window, {advanced_dialog_test: advanced_dialog_test});
 
 suite(advanced_dialog_test.suiteName, function() {
-  /** @type {?PrintPreviewAdvancedSettingsDialogElement} */
-  let dialog = null;
+  let dialog: PrintPreviewAdvancedSettingsDialogElement;
+  let destination: Destination;
+  const printerId: string = 'FooDevice';
+  const printerName: string = 'FooName';
 
-  /** @type {?Destination} */
-  let destination = null;
-
-  /** @type {string} */
-  const printerId = 'FooDevice';
-
-  /** @type {string} */
-  const printerName = 'FooName';
-
-  /** @override */
   setup(function() {
     // Create destination
     destination = new Destination(
         printerId, DestinationType.GOOGLE, DestinationOrigin.COOKIES,
         printerName, DestinationConnectionStatus.ONLINE);
     document.body.innerHTML = '';
-    const model = document.createElement('print-preview-model');
+    const model: PrintPreviewModelElement =
+        document.createElement('print-preview-model');
     document.body.appendChild(model);
     model.set('settings.vendorItems.available', true);
-    dialog = /** @type {!PrintPreviewAdvancedSettingsDialogElement} */ (
-        document.createElement('print-preview-advanced-settings-dialog'));
+    dialog = document.createElement('print-preview-advanced-settings-dialog');
 
     // Set up settings. Only need the vendor items.
     dialog.settings = model.settings;
@@ -67,9 +51,8 @@ suite(advanced_dialog_test.suiteName, function() {
 
   /**
    * Sets up the advanced settings dialog with |count| items.
-   * @param {number} count
    */
-  function setupDialog(count) {
+  function setupDialog(count: number) {
     const template =
         getCddTemplateWithAdvancedSettings(count, printerId, printerName);
     destination.capabilities = template.capabilities;
@@ -83,16 +66,15 @@ suite(advanced_dialog_test.suiteName, function() {
   /**
    * Verifies that the search box is shown or hidden based on the number
    * of capabilities and that the correct number of items are created.
-   * @param {number} count The number of vendor capabilities the printer
-   *     should have.
+   * @param count The number of vendor capabilities the printer should have.
    */
-  function verifyListWithItemCount(count) {
+  function verifyListWithItemCount(count: number) {
     // Search box should be hidden if there is only 1 item.
-    const searchBox = dialog.shadowRoot.querySelector('#searchBox');
+    const searchBox = dialog.$.searchBox;
     assertEquals(count === 1, searchBox.hidden);
 
     // Verify item is displayed.
-    const items = dialog.shadowRoot.querySelectorAll(
+    const items = dialog.shadowRoot!.querySelectorAll(
         'print-preview-advanced-settings-item');
     assertEquals(count, items.length);
   }
@@ -102,14 +84,14 @@ suite(advanced_dialog_test.suiteName, function() {
    * capabilities.
    */
   function setItemValues() {
-    const items = dialog.shadowRoot.querySelectorAll(
+    const items = dialog.shadowRoot!.querySelectorAll(
         'print-preview-advanced-settings-item');
     assertEquals(3, items.length);
 
     // Set some values.
-    items[0].setCurrentValueForTest(6);
-    items[1].setCurrentValueForTest(1);
-    items[2].setCurrentValueForTest('XYZ');
+    items[0]!.setCurrentValueForTest('6');
+    items[1]!.setCurrentValueForTest('1');
+    items[2]!.setCurrentValueForTest('XYZ');
   }
 
   // Tests that the search box does not appear when there is only one option,
@@ -138,18 +120,17 @@ suite(advanced_dialog_test.suiteName, function() {
         setItemValues();
 
         assertFalse(dialog.getSetting('vendorItems').setFromUi);
-        const buttons = dialog.shadowRoot.querySelectorAll('cr-button');
+        const buttons = dialog.shadowRoot!.querySelectorAll('cr-button');
         assertEquals(2, buttons.length);
         const whenDialogClose = eventToPromise('close', dialog);
 
         // Click apply button.
-        buttons[1].click();
+        buttons[1]!.click();
         return whenDialogClose.then(() => {
           // Check that the setting has been set.
-          const setting = /** @type {!TestVendorSettings} */ (
-              dialog.getSettingValue('vendorItems'));
-          assertEquals(6, setting.printArea);
-          assertEquals(1, setting.paperType);
+          const setting = dialog.getSettingValue('vendorItems');
+          assertEquals('6', setting.printArea);
+          assertEquals('1', setting.paperType);
           assertEquals('XYZ', setting.watermark);
           assertTrue(dialog.getSetting('vendorItems').setFromUi);
         });
@@ -163,10 +144,10 @@ suite(advanced_dialog_test.suiteName, function() {
         setupDialog(3);
         setItemValues();
 
-        const items = dialog.shadowRoot.querySelectorAll(
+        const items = dialog.shadowRoot!.querySelectorAll(
             'print-preview-advanced-settings-item');
         const typedItemInput =
-            items[2].shadowRoot.querySelector('cr-input');  // Watermark
+            items[2]!.shadowRoot!.querySelector('cr-input')!;  // Watermark
 
         // Simulate typing a value and then pressing enter.
         typedItemInput.value = 'Hello World';
@@ -174,13 +155,13 @@ suite(advanced_dialog_test.suiteName, function() {
             new CustomEvent('input', {composed: true, bubbles: true}));
 
         const whenDialogClose = eventToPromise('close', dialog);
-        keyEventOn(typedItemInput, 'keydown', 'Enter', [], 'Enter');
+        keyEventOn(typedItemInput, 'keydown', 13, [], 'Enter');
 
         return whenDialogClose.then(() => {
           // Check that the setting has been set.
           const setting = dialog.getSettingValue('vendorItems');
-          assertEquals(6, setting.printArea);
-          assertEquals(1, setting.paperType);
+          assertEquals('6', setting.printArea);
+          assertEquals('1', setting.paperType);
           assertEquals('Hello World', setting.watermark);
         });
       });
@@ -192,12 +173,13 @@ suite(advanced_dialog_test.suiteName, function() {
         setupDialog(3);
         setItemValues();
 
-        const buttons = dialog.shadowRoot.querySelectorAll('cr-button');
+        const buttons =
+            dialog.shadowRoot!.querySelectorAll<HTMLElement>('cr-button');
         assertEquals(2, buttons.length);
         const whenDialogClose = eventToPromise('close', dialog);
 
         // Click close button.
-        buttons[0].click();
+        buttons[0]!.click();
         return whenDialogClose.then(() => {
           // Check that the setting has not been set.
           const setting = dialog.getSettingValue('vendorItems');
@@ -213,11 +195,11 @@ suite(advanced_dialog_test.suiteName, function() {
       assert(advanced_dialog_test.TestNames.AdvancedSettingsFilter),
       function() {
         setupDialog(3);
-        const searchBox = dialog.shadowRoot.querySelector('#searchBox');
-        const items = dialog.shadowRoot.querySelectorAll(
+        const searchBox = dialog.$.searchBox;
+        const items = dialog.shadowRoot!.querySelectorAll(
             'print-preview-advanced-settings-item');
-        const noMatchHint =
-            dialog.shadowRoot.querySelector('.no-settings-match-hint');
+        const noMatchHint = dialog.shadowRoot!.querySelector<HTMLElement>(
+            '.no-settings-match-hint')!;
 
         // Query is initialized to null. All items are shown and the hint is
         // hidden.

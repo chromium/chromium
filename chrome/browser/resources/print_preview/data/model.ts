@@ -1687,4 +1687,10 @@ export class PrintPreviewModelElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-model': PrintPreviewModelElement;
+  }
+}
+
 customElements.define(PrintPreviewModelElement.is, PrintPreviewModelElement);

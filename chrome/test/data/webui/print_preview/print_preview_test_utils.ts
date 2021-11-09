@@ -2,26 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DEFAULT_MAX_COPIES, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, MeasurementSystemUnitType} from 'chrome://print/print_preview.js';
+import {CapabilitiesResponse, Cdd, DEFAULT_MAX_COPIES, Destination, DestinationCertificateStatus, DestinationConnectionStatus, DestinationOrigin, DestinationStore, DestinationType, GooglePromotedDestinationId, LocalDestinationInfo, MeasurementSystemUnitType, MediaSizeCapability, MediaSizeOption, NativeInitialSettings, VendorCapabilityValueType} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-/**
- * @param {boolean=} isPdf
- * @return {!NativeInitialSettings}
- */
-export function getDefaultInitialSettings(isPdf = false) {
+export function getDefaultInitialSettings(isPdf: boolean = false):
+    NativeInitialSettings {
   return {
     isInKioskAutoPrintMode: false,
     isInAppKioskMode: false,
     pdfPrinterDisabled: false,
     thousandsDelimiter: ',',
     decimalDelimiter: '.',
-    previewIsPdf: isPdf,
     previewModifiable: !isPdf,
     documentTitle: 'title',
     documentHasSelection: true,
@@ -31,21 +26,15 @@ export function getDefaultInitialSettings(isPdf = false) {
     serializedAppStateStr: null,
     serializedDefaultDestinationSelectionRulesStr: null,
     destinationsManaged: false,
-    syncAvailable: false,
     uiLocale: 'en-us',
     unitType: MeasurementSystemUnitType.IMPERIAL,
     isDriveMounted: true,
   };
 }
 
-/**
- * @param {string} printerId
- * @param {string=} opt_printerName Defaults to an empty string.
- * @return {!{printer: {deviceName: string, printerName: string},
- *                      capabilities: !Cdd}}
- */
-export function getCddTemplate(printerId, opt_printerName) {
-  const template = {
+export function getCddTemplate(
+    printerId: string, opt_printerName?: string): CapabilitiesResponse {
+  const template: CapabilitiesResponse = {
     printer: {
       deviceName: printerId,
       printerName: opt_printerName || '',
@@ -53,7 +42,6 @@ export function getCddTemplate(printerId, opt_printerName) {
     capabilities: {
       version: '1.0',
       printer: {
-        supported_content_type: [{content_type: 'application/pdf'}],
         collate: {default: true},
         copies: {default: 1, max: DEFAULT_MAX_COPIES},
         color: {
@@ -100,9 +88,9 @@ export function getCddTemplate(printerId, opt_printerName) {
       }
     }
   };
-  if (isChromeOS || isLacros) {
-    template.capabilities.printer.pin = {supported: true};
-  }
+  // <if expr="chromeos or lacros">
+  template.capabilities!.printer.pin = {supported: true};
+  // </if>
   return template;
 }
 
@@ -111,19 +99,17 @@ export function getCddTemplate(printerId, opt_printerName) {
  * capabilities, the values of these options are arbitrary. These values are
  * provided and read by the destination, so there are no fixed options like
  * there are for margins or color.
- * @param {number} numSettings
- * @param {string} printerId
- * @param {string=} opt_printerName Defaults to an empty string.
- * @return {!CapabilitiesResponse}
+ * @param opt_printerName Defaults to an empty string.
  */
 export function getCddTemplateWithAdvancedSettings(
-    numSettings, printerId, opt_printerName) {
+    numSettings: number, printerId: string,
+    opt_printerName?: string): CapabilitiesResponse {
   const template = getCddTemplate(printerId, opt_printerName);
   if (numSettings < 1) {
     return template;
   }
 
-  template.capabilities.printer.vendor_capability = [{
+  template.capabilities!.printer.vendor_capability = [{
     display_name: 'Print Area',
     id: 'printArea',
     type: 'SELECT',
@@ -141,7 +127,7 @@ export function getCddTemplateWithAdvancedSettings(
   }
 
   // Add new capability.
-  template.capabilities.printer.vendor_capability.push({
+  template.capabilities!.printer.vendor_capability!.push({
     display_name: 'Paper Type',
     id: 'paperType',
     type: 'SELECT',
@@ -158,7 +144,7 @@ export function getCddTemplateWithAdvancedSettings(
     return template;
   }
 
-  template.capabilities.printer.vendor_capability.push({
+  template.capabilities!.printer.vendor_capability!.push({
     display_name: 'Watermark',
     id: 'watermark',
     type: 'TYPED_VALUE',
@@ -171,13 +157,13 @@ export function getCddTemplateWithAdvancedSettings(
     return template;
   }
 
-  template.capabilities.printer.vendor_capability.push({
+  template.capabilities!.printer.vendor_capability.push({
     display_name: 'Staple',
     id: 'finishings/4',
     type: 'TYPED_VALUE',
     typed_value_cap: {
       default: '',
-      value_type: 'BOOLEAN',
+      value_type: VendorCapabilityValueType.BOOLEAN,
     }
   });
 
@@ -186,12 +172,12 @@ export function getCddTemplateWithAdvancedSettings(
 
 /**
  * Creates a destination with a certificate status tag.
- * @param {string} id Printer id
- * @param {string} name Printer display name
- * @param {boolean} invalid Whether printer has an invalid certificate.
- * @return {!Destination}
+ * @param id Printer id
+ * @param name Printer display name
+ * @param invalid Whether printer has an invalid certificate.
  */
-export function createDestinationWithCertificateStatus(id, name, invalid) {
+export function createDestinationWithCertificateStatus(
+    id: string, name: string, invalid: boolean) {
   const tags = {
     certificateStatus: invalid ? DestinationCertificateStatus.NO :
                                  DestinationCertificateStatus.UNKNOWN,
@@ -204,10 +190,9 @@ export function createDestinationWithCertificateStatus(id, name, invalid) {
 }
 
 /**
- * @return {!CapabilitiesResponse} The capabilities of
- *     the Save as PDF destination.
+ * @return The capabilities of the Save as PDF destination.
  */
-export function getPdfPrinter() {
+export function getPdfPrinter(): {capabilities: Cdd} {
   return {
     capabilities: {
       version: '1.0',
@@ -234,46 +219,46 @@ export function getPdfPrinter() {
 
 /**
  * Get the default media size for |device|.
- * @param {!CapabilitiesResponse} device
- * @return {{width_microns: number,
- *           height_microns: number}} The width and height of the default
- *     media.
+ * @return The width and height of the default media.
  */
-export function getDefaultMediaSize(device) {
-  const size = device.capabilities.printer.media_size.option.find(
+export function getDefaultMediaSize(device: CapabilitiesResponse):
+    MediaSizeOption {
+  const size = device.capabilities!.printer.media_size!.option!.find(
       opt => !!opt.is_default);
   return {
-    width_microns: size.width_microns,
-    height_microns: size.height_microns
+    width_microns: size!.width_microns,
+    height_microns: size!.height_microns
   };
 }
 
 /**
  * Get the default page orientation for |device|.
- * @param {!CapabilitiesResponse} device
- * @return {string} The default orientation.
+ * @return The default orientation.
  */
-export function getDefaultOrientation(device) {
-  const options = device.capabilities.printer.page_orientation.option;
-  return assert(options.find(opt => !!opt.is_default).type);
+export function getDefaultOrientation(device: CapabilitiesResponse): string {
+  const options = device.capabilities!.printer.page_orientation!.option;
+  return assert(options!.find(opt => !!opt.is_default)!.type!);
 }
 
 /**
  * Creates 5 local destinations, adds them to |localDestinations|.
- * @param {!Array<!LocalDestinationInfo>} localDestinations
- * @return {!Array<!Destination>}
  */
-export function getDestinations(localDestinations) {
-  const destinations = [];
-  const origin =
-      isChromeOS || isLacros ? DestinationOrigin.CROS : DestinationOrigin.LOCAL;
+export function getDestinations(localDestinations: LocalDestinationInfo[]):
+    Destination[] {
+  const destinations: Destination[] = [];
+  // <if expr="not chromeos and not lacros">
+  const origin = DestinationOrigin.LOCAL;
+  // </if>
+  // <if expr="chromeos or lacros">
+  const origin = DestinationOrigin.CROS;
+  // </if>
   // Five destinations. FooDevice is the system default.
   [{deviceName: 'ID1', printerName: 'One'},
    {deviceName: 'ID2', printerName: 'Two'},
    {deviceName: 'ID3', printerName: 'Three'},
    {deviceName: 'ID4', printerName: 'Four'},
    {deviceName: 'FooDevice', printerName: 'FooName'}]
-      .forEach((info, index) => {
+      .forEach(info => {
         const destination = new Destination(
             info.deviceName, DestinationType.LOCAL, origin, info.printerName,
             DestinationConnectionStatus.ONLINE);
@@ -285,9 +270,8 @@ export function getDestinations(localDestinations) {
 
 /**
  * Returns a media size capability with custom and localized names.
- * @return {!{ option: Array<!SelectOption> }}
  */
-export function getMediaSizeCapabilityWithCustomNames() {
+export function getMediaSizeCapabilityWithCustomNames(): MediaSizeCapability {
   const customLocalizedMediaName = 'Vendor defined localized media name';
   const customMediaName = 'Vendor defined media name';
 
@@ -312,67 +296,77 @@ export function getMediaSizeCapabilityWithCustomNames() {
 }
 
 /**
- * @param {!HTMLInputElement} inputElement
- * @param {!string} input The value to set for the input element.
- * @param {!HTMLElement} parentElement The element that receives the
- *     input-change event.
- * @return {!Promise} Promise that resolves when the input-change event has
- *     fired.
+ * @param input The value to set for the input element.
+ * @param parentElement The element that receives the input-change event.
+ * @return Promise that resolves when the input-change event has fired.
  */
-export function triggerInputEvent(inputElement, input, parentElement) {
+export function triggerInputEvent(
+    inputElement: HTMLInputElement, input: string,
+    parentElement: HTMLElement): Promise<void> {
   inputElement.value = input;
   inputElement.dispatchEvent(
       new CustomEvent('input', {composed: true, bubbles: true}));
   return eventToPromise('input-change', parentElement);
 }
 
-export function setupTestListenerElement() {
-  Polymer({
-    is: 'test-listener-element',
-    behaviors: [WebUIListenerBehavior],
-  });
-  const testElement = document.createElement('test-listener-element');
-  document.body.appendChild(testElement);
+const TestListenerElementBase = WebUIListenerMixin(PolymerElement);
+class TestListenerElement extends TestListenerElementBase {
+  static get is() {
+    return 'test-listener-element';
+  }
 }
 
-/** @return {!DestinationStore} */
-export function createDestinationStore() {
+declare global {
+  interface HTMLElementTagNameMap {
+    'test-listener-element': TestListenerElement;
+  }
+}
+
+export function setupTestListenerElement(): void {
+  customElements.define(TestListenerElement.is, TestListenerElement);
+}
+
+export function createDestinationStore(): DestinationStore {
   const testListenerElement = document.createElement('test-listener-element');
   document.body.appendChild(testListenerElement);
   return new DestinationStore(
       testListenerElement.addWebUIListener.bind(testListenerElement));
 }
 
+// <if expr="chromeos or lacros">
 /**
- * @param {string} account The user account the destination should be
- *     associated with.
- * @return {!Destination} The Google Drive destination.
+ * @return The Google Drive destination.
  */
-export function getGoogleDriveDestination(account) {
-  return isChromeOS || isLacros ?
-      new Destination(
-          'Save to Drive CrOS', DestinationType.LOCAL, DestinationOrigin.LOCAL,
-          'Save to Google Drive', DestinationConnectionStatus.ONLINE) :
-      getCloudDestination(
-          GooglePromotedDestinationId.DOCS, GooglePromotedDestinationId.DOCS,
-          account);
+export function getGoogleDriveDestination(_account: string): Destination {
+  return new Destination(
+      'Save to Drive CrOS', DestinationType.LOCAL, DestinationOrigin.LOCAL,
+      'Save to Google Drive', DestinationConnectionStatus.ONLINE);
 }
+// </if>
+// <if expr="not chromeos and not lacros">
+/**
+ * @param account The user account the destination should be associated with.
+ * @return The Google Drive destination.
+ */
+export function getGoogleDriveDestination(account: string): Destination {
+  return getCloudDestination(
+      GooglePromotedDestinationId.DOCS, GooglePromotedDestinationId.DOCS,
+      account);
+}
+// </if>
 
 /**
- * @param {string} id
- * @param {string} name
- * @param {string} account The user account the destination should be
- *     associated with.
- * @return {!Destination} The cloud destination.
+ * @param account The user account the destination should be associated with.
  */
-export function getCloudDestination(id, name, account) {
+export function getCloudDestination(
+    id: string, name: string, account: string): Destination {
   return new Destination(
       id, DestinationType.GOOGLE, DestinationOrigin.COOKIES, name,
       DestinationConnectionStatus.ONLINE, {account: account});
 }
 
-/** @return {!Destination} The Save as PDF destination. */
-export function getSaveAsPdfDestination() {
+/** @return The Save as PDF destination. */
+export function getSaveAsPdfDestination(): Destination {
   return new Destination(
       GooglePromotedDestinationId.SAVE_AS_PDF, DestinationType.LOCAL,
       DestinationOrigin.LOCAL, loadTimeData.getString('printToPDF'),
@@ -380,14 +374,14 @@ export function getSaveAsPdfDestination() {
 }
 
 /**
- * @param {!HTMLElement} section The settings section that contains the
- *    select to toggle.
- * @param {string} option The option to select.
- * @return {!Promise} Promise that resolves when the option has been
- *     selected and the process-select-change event has fired.
+ * @param section The settings section that contains the select to toggle.
+ * @param option The option to select.
+ * @return Promise that resolves when the option has been selected and the
+ *     process-select-change event has fired.
  */
-export function selectOption(section, option) {
-  const select = section.shadowRoot.querySelector('select');
+export function selectOption(
+    section: HTMLElement, option: string): Promise<void> {
+  const select = section.shadowRoot!.querySelector('select')!;
   select.value = option;
   select.dispatchEvent(new CustomEvent('change'));
   return eventToPromise('process-select-change', section);

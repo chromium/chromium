@@ -175,6 +175,13 @@ export class PrintPreviewAdvancedSettingsDialogElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-advanced-settings-dialog':
+        PrintPreviewAdvancedSettingsDialogElement;
+  }
+}
+
 customElements.define(
     PrintPreviewAdvancedSettingsDialogElement.is,
     PrintPreviewAdvancedSettingsDialogElement);
