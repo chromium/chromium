@@ -17,7 +17,7 @@ char kEdgeSwitch[] = "edge";
 char kPatternSwitch[] = "pattern";
 char kSafariSwitch[] = "safari";
 
-#if defined(USE_OZONE) || defined(USE_X11) || defined(OS_MAC)
+#if defined(USE_OZONE) || defined(OS_MAC)
 char kIdSwitch[] = "pid";
 #else
 char kIdSwitch[] = "window";
@@ -26,7 +26,7 @@ char kIdSwitch[] = "window";
 using ui::AXTreeSelector;
 
 gfx::AcceleratedWidget CastToAcceleratedWidget(unsigned int window_id) {
-#if defined(USE_OZONE) || defined(USE_X11) || defined(OS_MAC)
+#if defined(USE_OZONE) || defined(OS_MAC)
   return static_cast<gfx::AcceleratedWidget>(window_id);
 #else
   return reinterpret_cast<gfx::AcceleratedWidget>(window_id);
