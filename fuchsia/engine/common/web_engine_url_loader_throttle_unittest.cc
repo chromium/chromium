@@ -40,7 +40,7 @@ class WebEngineURLLoaderThrottleTest : public testing::Test {
 TEST_F(WebEngineURLLoaderThrottleTest, WildcardHosts) {
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
-  add_headers->headers.SetHeader("Header", "Value");
+  add_headers->headers.push_back(mojom::UrlHeader::New("Header", "Value"));
   mojom::UrlRequestActionPtr rewrite =
       mojom::UrlRequestAction::NewAddHeaders(std::move(add_headers));
   std::vector<mojom::UrlRequestActionPtr> actions;
@@ -88,12 +88,15 @@ TEST_F(WebEngineURLLoaderThrottleTest, CorsAwareHeaders) {
 
   mojom::UrlRequestRewriteAddHeadersPtr add_headers =
       mojom::UrlRequestRewriteAddHeaders::New();
-  add_headers->headers.SetHeader(kRequiresCorsHeader, "Value");
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New(kRequiresCorsHeader, "Value"));
 
   // Inject the uppercased form for CORS exempt header #1, and the mixed case
   // form of header #2.
-  add_headers->headers.SetHeader(kUpperCaseCorsExemptHeader, "Value");
-  add_headers->headers.SetHeader(kMixedCaseCorsExemptHeader2, "Value");
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New(kUpperCaseCorsExemptHeader, "Value"));
+  add_headers->headers.push_back(
+      mojom::UrlHeader::New(kMixedCaseCorsExemptHeader2, "Value"));
 
   mojom::UrlRequestActionPtr rewrite =
       mojom::UrlRequestAction::NewAddHeaders(std::move(add_headers));

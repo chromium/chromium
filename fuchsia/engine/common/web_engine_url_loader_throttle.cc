@@ -240,16 +240,16 @@ void WebEngineURLLoaderThrottle::ApplyAddHeaders(
     const mojom::UrlRequestRewriteAddHeadersPtr& add_headers) {
   // Bucket each |header| into the regular/CORS-compliant header list or the
   // CORS-exempt header list.
-  for (const auto& header : add_headers->headers.GetHeaderVector()) {
-    if (request->headers.HasHeader(header.key) ||
-        request->cors_exempt_headers.HasHeader(header.key)) {
+  for (const auto& header : add_headers->headers) {
+    if (request->headers.HasHeader(header->name) ||
+        request->cors_exempt_headers.HasHeader(header->name)) {
       // Skip headers already present in the request at this point.
       continue;
     }
-    if (IsHeaderCorsExempt(header.key)) {
-      request->cors_exempt_headers.SetHeader(header.key, header.value);
+    if (IsHeaderCorsExempt(header->name)) {
+      request->cors_exempt_headers.SetHeader(header->name, header->value);
     } else {
-      request->headers.SetHeader(header.key, header.value);
+      request->headers.SetHeader(header->name, header->value);
     }
   }
 }

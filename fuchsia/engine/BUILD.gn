@@ -22,7 +22,6 @@ mojom("mojom") {
   public_deps = [
     "//media/mojo/mojom",
     "//mojo/public/mojom/base",
-    "//services/network/public/mojom",
   ]
   visibility = [ ":*" ]
 }

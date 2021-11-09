@@ -5,7 +5,6 @@
 module mojom;
 
 import "mojo/public/mojom/base/time.mojom";
-import "services/network/public/mojom/http_request_headers.mojom";
 import "url/mojom/url.mojom";
 
 // Used by the browser to push URL rewrite rules to renderers. There will be
@@ -60,7 +59,13 @@ union UrlRequestAction {
 // original URL request, it will be overwritten.
 struct UrlRequestRewriteAddHeaders {
   // The headers to add.
-  network.mojom.HttpRequestHeaders headers;
+  array<UrlHeader> headers;
+};
+
+// An HTTP header field.
+struct UrlHeader {
+  string name;
+  string value;
 };
 
 // If |query_pattern| in the URL query, removes |header_name| from the list of

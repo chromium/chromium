@@ -32,7 +32,9 @@ struct TypeConverter<mojom::UrlRequestRewriteAddHeadersPtr,
         base::StringPiece header_name = cr_fuchsia::BytesAsString(header.name);
         base::StringPiece header_value =
             cr_fuchsia::BytesAsString(header.value);
-        add_headers->headers.SetHeader(header_name, header_value);
+        mojom::UrlHeaderPtr url_header = mojom::UrlHeader::New(
+            std::string(header_name), std::string(header_value));
+        add_headers->headers.push_back(std::move(url_header));
       }
     }
     return add_headers;

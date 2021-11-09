@@ -57,13 +57,11 @@ TEST_F(UrlRequestRewriteRulesManagerTest, ConvertAddHeader) {
   ASSERT_EQ(cached_rules->rules[0]->actions.size(), 1u);
   ASSERT_TRUE(cached_rules->rules[0]->actions[0]->is_add_headers());
 
-  const net::HttpRequestHeaders& headers =
+  const std::vector<mojom::UrlHeaderPtr>& headers =
       cached_rules->rules[0]->actions[0]->get_add_headers()->headers;
-  ASSERT_EQ(headers.GetHeaderVector().size(), 1u);
-
-  std::string value;
-  ASSERT_TRUE(headers.GetHeader("Test", &value));
-  ASSERT_EQ(value.compare("Value"), 0);
+  ASSERT_EQ(headers.size(), 1u);
+  ASSERT_EQ(headers[0]->name, "Test");
+  ASSERT_EQ(headers[0]->value, "Value");
 }
 
 // Tests RemoveHeader rewrites are properly converted to their Mojo equivalent.
@@ -242,9 +240,12 @@ TEST_F(UrlRequestRewriteRulesManagerTest, RuleRenewal) {
   ASSERT_EQ(cached_rules->rules.size(), 1u);
   ASSERT_EQ(cached_rules->rules[0]->actions.size(), 1u);
   ASSERT_TRUE(cached_rules->rules[0]->actions[0]->is_add_headers());
-  ASSERT_TRUE(
-      cached_rules->rules[0]->actions[0]->get_add_headers()->headers.HasHeader(
-          "Test1"));
+  ASSERT_EQ(
+      cached_rules->rules[0]->actions[0]->get_add_headers()->headers.size(),
+      1u);
+  ASSERT_EQ(
+      cached_rules->rules[0]->actions[0]->get_add_headers()->headers[0]->name,
+      "Test1");
 
   EXPECT_EQ(UpdateRulesFromRewrite(
                 cr_fuchsia::CreateRewriteAddHeaders("Test2", "Value")),
@@ -256,9 +257,12 @@ TEST_F(UrlRequestRewriteRulesManagerTest, RuleRenewal) {
   ASSERT_EQ(updated_rules->rules.size(), 1u);
   ASSERT_EQ(updated_rules->rules[0]->actions.size(), 1u);
   ASSERT_TRUE(updated_rules->rules[0]->actions[0]->is_add_headers());
-  ASSERT_TRUE(
-      updated_rules->rules[0]->actions[0]->get_add_headers()->headers.HasHeader(
-          "Test2"));
+  ASSERT_EQ(
+      updated_rules->rules[0]->actions[0]->get_add_headers()->headers.size(),
+      1u);
+  ASSERT_EQ(
+      updated_rules->rules[0]->actions[0]->get_add_headers()->headers[0]->name,
+      "Test2");
 }
 
 // Tests host names containing non-ASCII characters are properly converted.
