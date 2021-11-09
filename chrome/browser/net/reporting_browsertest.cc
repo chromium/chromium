@@ -425,7 +425,13 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
 #else
 #define MAYBE_CrashReport CrashReport
+
+// Flaky on Mac (multiple versions), see https://crbug.com/1261749
+#if defined(OS_MAC)
+#define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
+#else
 #define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
+#endif
 #endif
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
