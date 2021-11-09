@@ -47,6 +47,36 @@ using testing::UnorderedElementsAreArray;
 namespace content {
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       SubframeWithDisallowedFeatureNotCached) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to a page with an iframe that contains a dedicated worker.
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL(
+          "a.com", "/back_forward_cache/dedicated_worker_in_subframe.html")));
+  EXPECT_EQ(42, EvalJs(current_frame_host()->child_at(0)->current_frame_host(),
+                       "window.receivedMessagePromise"));
+
+  RenderFrameDeletedObserver delete_rfh_a(current_frame_host());
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // The page with the unsupported feature should be deleted (not cached).
+  delete_rfh_a.WaitUntilDeleted();
+
+  // Go back.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+      {blink::scheduler::WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet},
+      {}, {}, {}, FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        PageWithDedicatedWorkerNotCached) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
