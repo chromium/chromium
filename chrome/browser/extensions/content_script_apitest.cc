@@ -42,6 +42,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -1245,6 +1246,12 @@ class ContentScriptRelatedFrameTest : public ContentScriptApiTest {
                       const std::string& frame_getter,
                       const GURL& url);
 
+  // Creates a new blob: URL, associated with the given `host`.
+  GURL CreateBlobURL(content::RenderFrameHost* host);
+
+  // Creates a new filesystem: URL, associated with the given `host`.
+  GURL CreateFilesystemURL(content::RenderFrameHost* host);
+
   const GURL& about_blank() const { return about_blank_; }
   const GURL& allowed_url() const { return allowed_url_; }
   const GURL& disallowed_url() const { return disallowed_url_; }
@@ -1259,8 +1266,11 @@ class ContentScriptRelatedFrameTest : public ContentScriptApiTest {
   const GURL& path_specific_allowed_url() const {
     return path_specific_allowed_url_;
   }
-  const GURL& path_specific_iframe_url() const {
-    return path_specific_iframe_url_;
+  const GURL& matching_path_specific_iframe_url() const {
+    return matching_path_specific_iframe_url_;
+  }
+  const GURL& non_matching_path_specific_iframe_url() const {
+    return non_matching_path_specific_iframe_url_;
   }
 
  private:
@@ -1283,12 +1293,17 @@ class ContentScriptRelatedFrameTest : public ContentScriptApiTest {
   GURL data_url_;
   // A URL that matches a path-specific match pattern.
   GURL path_specific_allowed_url_;
+  // A URL that matches a path-specific match pattern and has an iframe in the
+  // DOM.
+  GURL matching_path_specific_iframe_url_;
   // A URL that matches the domain of a path-specific match pattern - but not
   // the path component - which also has an iframe in the DOM.
-  GURL path_specific_iframe_url_;
+  GURL non_matching_path_specific_iframe_url_;
 
   // The test directory used to load our extension.
   TestExtensionDir test_extension_dir_;
+  // The ID of the loaded extension.
+  ExtensionId extension_id_;
 };
 
 constexpr char ContentScriptRelatedFrameTest::kMarkerSpanId[];
@@ -1308,8 +1323,10 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
       "chromium.org", "/extensions/null_document.html");
   path_specific_allowed_url_ =
       embedded_test_server()->GetURL("path-test.example", "/simple.html");
-  path_specific_iframe_url_ =
+  matching_path_specific_iframe_url_ =
       embedded_test_server()->GetURL("path-test.example", "/iframe.html");
+  non_matching_path_specific_iframe_url_ =
+      embedded_test_server()->GetURL("path-test.example", "/iframe_blank.html");
   data_url_ = GURL("data:text/html,<html>Hi</html>");
 
   constexpr char kContentScriptManifest[] =
@@ -1325,7 +1342,10 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
              %s
              "match_about_blank": true
            }, {
-             "matches": ["http://path-test.example/simple.html"],
+             "matches": [
+               "http://path-test.example/simple.html",
+               "http://path-test.example/iframe.html"
+             ],
              "js": ["script.js"],
              "run_at": "document_end",
              "all_frames": true,
@@ -1346,7 +1366,10 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
          document.body.appendChild(span);)",
       kMarkerSpanId);
   test_extension_dir_.WriteFile(FILE_PATH_LITERAL("script.js"), script);
-  ASSERT_TRUE(LoadExtension(test_extension_dir_.UnpackedPath()));
+  const Extension* extension =
+      LoadExtension(test_extension_dir_.UnpackedPath());
+  ASSERT_TRUE(extension);
+  extension_id_ = extension->id();
 }
 
 bool ContentScriptRelatedFrameTest::DidScriptRunInFrame(
@@ -1356,10 +1379,22 @@ bool ContentScriptRelatedFrameTest::DidScriptRunInFrame(
   // after DOMContentLoaded is fired, before window.onload), this check will be
   // guaranteed to run after it.
   EXPECT_FALSE(content::WebContents::FromRenderFrameHost(host)->IsLoading());
-  return content::EvalJs(
-             host,
-             content::JsReplace("!!document.getElementById($1)", kMarkerSpanId))
-      .ExtractBool();
+  bool did_run =
+      content::EvalJs(host, content::JsReplace("!!document.getElementById($1)",
+                                               kMarkerSpanId))
+          .ExtractBool();
+  if (did_run) {
+    // Sanity check: If the content script ran in the frame, we should also have
+    // tracked it properly browser-side.
+    // Note that we don't just do:
+    //   EXPECT_EQ(did_run, DidProcessRunContentScriptFromExtension(...))
+    // because even if the given frame didn't have the script run, another frame
+    // in the process may have.
+    EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+        *host->GetProcess(), extension_id_));
+  }
+
+  return did_run;
 }
 
 content::WebContents* ContentScriptRelatedFrameTest::NavigateTab(
@@ -1412,6 +1447,53 @@ void ContentScriptRelatedFrameTest::NavigateIframe(
   // new source has nested iframes.
   EXPECT_TRUE(content::WaitForLoadStop(
       content::WebContents::FromRenderFrameHost(navigating_host)));
+}
+
+GURL ContentScriptRelatedFrameTest::CreateBlobURL(
+    content::RenderFrameHost* host) {
+  constexpr char kCreateBlobURL[] =
+      R"((() => {
+           let content = '<html><h1>BLOB!</h1></html>';
+           let blob = new Blob([content], {type: 'text/html'});
+           return URL.createObjectURL(blob);
+         })();)";
+  std::string url_string =
+      content::EvalJs(host, kCreateBlobURL).ExtractString();
+  GURL url(url_string);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url::kBlobScheme, url.scheme());
+  EXPECT_EQ(
+      url::Origin::Create(host->GetLastCommittedURL()).GetURL(),
+      url::Origin::Create(url).GetTupleOrPrecursorTupleIfOpaque().GetURL());
+  return url;
+}
+
+GURL ContentScriptRelatedFrameTest::CreateFilesystemURL(
+    content::RenderFrameHost* host) {
+  constexpr char kCreateFilesystemURL[] =
+      R"((new Promise((resolve) => {
+           let blob = new Blob(['<html><body>" + content + "</body></html>'],
+                               {type: 'text/html'});
+           window.webkitRequestFileSystem(TEMPORARY, blob.size, fs => {
+             fs.root.getFile('foo.html', {create: true}, file => {
+               file.createWriter(writer => {
+                 writer.write(blob);
+                 writer.onwriteend = () => {
+                   resolve(file.toURL());
+                 }
+               });
+             });
+           });
+         }));)";
+  std::string url_string =
+      content::EvalJs(host, kCreateFilesystemURL).ExtractString();
+  GURL url(url_string);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url::kFileSystemScheme, url.scheme());
+  EXPECT_EQ(
+      url::Origin::Create(host->GetLastCommittedURL()).GetURL(),
+      url::Origin::Create(url).GetTupleOrPrecursorTupleIfOpaque().GetURL());
+  return url;
 }
 
 // Injection should succeed on a popup to about:blank created by an allowed
@@ -1496,13 +1578,59 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   // precursor origin, which caused a crash during the document writing.
 }
 
+// Tests that match_about_blank does not allow extensions to inject into blob:
+// URLs.
+IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
+                       MatchAboutBlank_BlobFrame) {
+  content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
+  GURL blob_url = CreateBlobURL(tab->GetMainFrame());
+  NavigateIframe(tab->GetMainFrame(), "frames[0]", blob_url);
+  content::RenderFrameHost* render_frame_host =
+      content::ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(render_frame_host);
+  EXPECT_EQ(blob_url, render_frame_host->GetLastCommittedURL());
+  EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
+}
+
+// Tests that match_about_blank does not allow extensions to inject into data:
+// URLs.
+IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
+                       MatchAboutBlank_DataFrame) {
+  content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
+  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
+  content::RenderFrameHost* render_frame_host =
+      content::ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(render_frame_host);
+  EXPECT_EQ(data_url(), render_frame_host->GetLastCommittedURL());
+  EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
+}
+
+// Tests that content scripts can run on filesystem: URLs.
+IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
+                       MatchAboutBlank_FilesystemFrame) {
+  content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
+  GURL filesystem_url = CreateFilesystemURL(tab->GetMainFrame());
+  NavigateIframe(tab->GetMainFrame(), "frames[0]", filesystem_url);
+  content::RenderFrameHost* render_frame_host =
+      content::ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(render_frame_host);
+  EXPECT_EQ(filesystem_url, render_frame_host->GetLastCommittedURL());
+
+  // Even though match_about_blank won't consider filesystem: URLs when
+  // determining the URL to use, URLPatterns (used in permissions and
+  // content script URL pattern matching) do. As such, the content script
+  // still injects into the filesystem frame.
+  EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
+}
+
 // Test content script injection into iframes when the script has a
 // path-specific pattern.
 IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
                        FrameInjectionWithPathSpecificMatchPattern) {
   // Open a page to the page that's same-origin with the match pattern, but
   // doesn't match.
-  content::WebContents* tab = NavigateTab(path_specific_iframe_url());
+  content::WebContents* tab =
+      NavigateTab(non_matching_path_specific_iframe_url());
   // Navigate the child frame to the URL that matches the path requirement.
   NavigateIframe(tab->GetMainFrame(), "frames[0]", path_specific_allowed_url());
 
@@ -1531,13 +1659,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
 // reasons), but is close enough to a content script test to re-use the same
 // suite.
 
-class ContentScriptDataURLTest : public ContentScriptRelatedFrameTest {
+class ContentScriptMatchOriginAsFallbackTest
+    : public ContentScriptRelatedFrameTest {
  public:
-  ContentScriptDataURLTest() {
+  ContentScriptMatchOriginAsFallbackTest() {
     feature_list_.InitAndEnableFeature(
         extensions_features::kContentScriptsMatchOriginAsFallback);
   }
-  ~ContentScriptDataURLTest() override = default;
+  ~ContentScriptMatchOriginAsFallbackTest() override = default;
 
   bool IncludeMatchOriginAsFallback() override { return true; }
 
@@ -1546,7 +1675,7 @@ class ContentScriptDataURLTest : public ContentScriptRelatedFrameTest {
 };
 
 // Inject a content script on an iframe to a data: URL on an allowed site.
-IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        DataURLInjection_SimpleIframe_Allowed) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
   NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
@@ -1559,7 +1688,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
 
 // Fail to inject a content script on an iframe to a data: URL on a protected
 // site.
-IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        DataURLInjection_SimpleIframe_Disallowed) {
   content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
   NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
@@ -1570,8 +1699,62 @@ IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
   EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
 }
 
+// Inject a content script on an iframe to a blob: URL on an allowed site.
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
+                       BlobURLInjection_SimpleIframe_Allowed) {
+  content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
+  GURL blob_url = CreateBlobURL(tab->GetMainFrame());
+  NavigateIframe(tab->GetMainFrame(), "frames[0]", blob_url);
+  content::RenderFrameHost* render_frame_host =
+      content::ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(render_frame_host);
+  EXPECT_EQ(blob_url, render_frame_host->GetLastCommittedURL());
+  EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
+}
+
+// Fail to inject a content script on an iframe to a blob: URL on a protected
+// site.
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
+                       BlobURLInjection_SimpleIframe_Disallowed) {
+  content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
+  GURL blob_url = CreateBlobURL(tab->GetMainFrame());
+  NavigateIframe(tab->GetMainFrame(), "frames[0]", blob_url);
+  content::RenderFrameHost* render_frame_host =
+      content::ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(render_frame_host);
+  EXPECT_EQ(blob_url, render_frame_host->GetLastCommittedURL());
+  EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
+}
+
+// Inject a content script on an iframe to a filesystem: URL on an allowed site.
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
+                       FilesystemURLInjection_SimpleIframe_Allowed) {
+  content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
+  GURL filesystem_url = CreateFilesystemURL(tab->GetMainFrame());
+  NavigateIframe(tab->GetMainFrame(), "frames[0]", filesystem_url);
+  content::RenderFrameHost* render_frame_host =
+      content::ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(render_frame_host);
+  EXPECT_EQ(filesystem_url, render_frame_host->GetLastCommittedURL());
+  EXPECT_TRUE(DidScriptRunInFrame(render_frame_host));
+}
+
+// Fail to inject a content script on an iframe to a filesystem: URL on a
+// protected site.
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
+                       FilesystemURLInjection_SimpleIframe_Disallowed) {
+  content::WebContents* tab = NavigateTab(disallowed_url_with_iframe());
+  GURL filesystem_url = CreateFilesystemURL(tab->GetMainFrame());
+  NavigateIframe(tab->GetMainFrame(), "frames[0]", filesystem_url);
+  content::RenderFrameHost* render_frame_host =
+      content::ChildFrameAt(tab->GetMainFrame(), 0);
+  ASSERT_TRUE(render_frame_host);
+  EXPECT_EQ(filesystem_url, render_frame_host->GetLastCommittedURL());
+  EXPECT_FALSE(DidScriptRunInFrame(render_frame_host));
+}
+
 // Inject into nested iframes with data: URLs.
-IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        DataURLInjection_NestedDataIframe_SameOrigin) {
   content::WebContents* tab = NavigateTab(allowed_url_with_iframe());
 
@@ -1601,7 +1784,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
 // Test content script injection into navigated iframes to data: URLs when the
 // navigator is not accessible by the extension.
 IN_PROC_BROWSER_TEST_F(
-    ContentScriptDataURLTest,
+    ContentScriptMatchOriginAsFallbackTest,
     DataURLInjection_NestedDataIframe_Navigation_Disallowed) {
   // Open a page to a protected site, and then navigate an iframe to an allowed
   // site with an iframe.
@@ -1644,7 +1827,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test content script injection into navigated iframes to data: URLs when the
 // navigator is accessible by the extension.
-IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
                        DataURLInjection_NestedDataIframe_Navigation_Allowed) {
   // Open a page to an allowed site, and then navigate an iframe to a disallowed
   // site with an iframe.
@@ -1689,12 +1872,39 @@ IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
 }
 
 // Test content script injection into iframes when the script has a
-// path-specific pattern.
-IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
-                       FrameInjectionWithPathSpecificMatchPattern) {
+// path-specific pattern and the parent frame does match.
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
+                       PathSpecificMatchPattern_ParentFrameMatches) {
+  // Open a page to the page that matches the content script's pattern.
+  content::WebContents* tab = NavigateTab(matching_path_specific_iframe_url());
+  // Navigate the iframe to a data URL.
+  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
+
+  content::RenderFrameHost* child_frame =
+      content::ChildFrameAt(tab->GetMainFrame(), 0);
+
+  EXPECT_EQ(data_url(), child_frame->GetLastCommittedURL());
+
+  // The script should have ran in the parent frame.
+  EXPECT_TRUE(DidScriptRunInFrame(tab->GetMainFrame()));
+
+  // Subtle: When using match_origin_as_fallback, the URL we use for matching
+  // the frame is the precursor origin. As such, here, it won't inject (since
+  // it doesn't match the path component).
+  // TODO(devlin): Adjust the matching logic for these frames to inject if they
+  // are same-origin with a matching pattern, and change this to
+  // EXPECT_TRUE(DidScriptRunInFrame(child_frame));
+  EXPECT_FALSE(DidScriptRunInFrame(child_frame));
+}
+
+// Test content script injection into iframes when the script has a
+// path-specific pattern and the parent frame does *not* match.
+IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
+                       PathSpecificMatchPattern_ParentFrameDoesntMatch) {
   // Open a page to the page that's same-origin with the match pattern, but
   // doesn't match.
-  content::WebContents* tab = NavigateTab(path_specific_iframe_url());
+  content::WebContents* tab =
+      NavigateTab(non_matching_path_specific_iframe_url());
   // Navigate the child frame to the URL that matches the path requirement.
   NavigateIframe(tab->GetMainFrame(), "frames[0]", path_specific_allowed_url());
 
@@ -1709,15 +1919,13 @@ IN_PROC_BROWSER_TEST_F(ContentScriptDataURLTest,
 
   // Now, navigate the iframe to a data URL.
   NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
-
-  // Subtle: When using match_origin_as_fallback, the script will inject if it
-  // is same-origin with the initiator origin. In this case, even though no
-  // frames match the path of the script's match pattern, it will still inject
-  // in the data: frame, since the match pattern is same origin with the
-  // initiator (|path_specific_iframe_url|).
   EXPECT_EQ(data_url(), child_frame->GetLastCommittedURL());
-  // TODO(devlin): Enable this check when we adjust the matching logic for
-  // these frames.
+
+  // Subtle: When using match_origin_as_fallback, the URL we use for matching
+  // the frame is the precursor origin. As such, here, it won't inject (since
+  // it doesn't match the path component).
+  // TODO(devlin): Adjust the matching logic for these frames to inject if they
+  // are same-origin with a matching pattern, and change this to
   // EXPECT_TRUE(DidScriptRunInFrame(child_frame));
   EXPECT_FALSE(DidScriptRunInFrame(child_frame));
 }
