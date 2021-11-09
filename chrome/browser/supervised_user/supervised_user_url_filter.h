@@ -134,6 +134,8 @@ class SupervisedUserURLFilter {
   static const char* GetBlockedSitesCountHistogramNameForTest();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  static const char* GetManagedSiteListConflictHistogramNameForTest();
+
   // Returns true if the parental allowlist/blocklist should be skipped in
   // |contents|. SafeSearch filtering is still applied to |contents|.
   static bool ShouldSkipParentManualAllowlistFiltering(

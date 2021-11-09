@@ -6454,6 +6454,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyUser.ManagedSiteList.Conflict" enum="BooleanHasConflict"
+    expires_after="2022-10-07">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    Records whether the given url has a match in both the allowlist and the
+    block list which means a conflict. This metric is recorded if the given url
+    matches at least one manual rule.
+  </summary>
+</histogram>
+
 <histogram name="FamilyUser.ManagedSiteListCount.Approved"
     units="Number of approved sites" expires_after="2022-07-28">
   <owner>agawronska@chromium.org</owner>

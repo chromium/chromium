@@ -10,6 +10,8 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_runner_util.h"
@@ -30,10 +32,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_urls.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/metrics/histogram_functions.h"
 #endif
 
 using net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES;
@@ -60,6 +58,25 @@ bool IsSameDomain(const GURL& url1, const GURL& url2) {
       url1, url2, EXCLUDE_PRIVATE_REGISTRIES);
 }
 
+bool SetFilteringBehaviorResult(
+    SupervisedUserURLFilter::FilteringBehavior behavior,
+    SupervisedUserURLFilter::FilteringBehavior* result) {
+  if (*result == behavior)
+    return false;
+
+  // First time to find a match in allow/block list
+  if (*result == SupervisedUserURLFilter::FilteringBehavior::INVALID) {
+    *result = behavior;
+    return false;
+  }
+
+  // Another match is found and doesn't have the same behavior. Block is
+  // the preferred behvior, override the result only if the match is block.
+  if (behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK)
+    *result = behavior;
+
+  return true;
+}
 }  // namespace
 
 namespace {
@@ -84,6 +101,12 @@ const char kPlayTermsPath[] = "/about/play-terms";
 
 // accounts.google.com used for login:
 const char kAccountsGoogleUrl[] = "https://accounts.google.com";
+
+// UMA histogram FamilyUser.ManagedSiteList.Conflict
+// Reports conflict when the user tries to access a url that has a match in
+// both of the allow list and the block list.
+const char kManagedSiteListConflictHistogramName[] =
+    "FamilyUser.ManagedSiteList.Conflict";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // UMA histogram FamilyUser.WebFilterType
@@ -145,6 +168,12 @@ SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest() {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// static
+const char*
+SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest() {
+  return kManagedSiteListConflictHistogramName;
+}
 
 // static
 bool SupervisedUserURLFilter::ShouldSkipParentManualAllowlistFiltering(
@@ -347,33 +376,34 @@ SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
     const GURL& url) const {
   FilteringBehavior result = INVALID;
+  bool conflict = false;
 
   // Check manual overrides for the exact URL.
   auto url_it = url_map_.find(policy::url_util::Normalize(url));
   if (url_it != url_map_.end()) {
-    if (!url_it->second)
-      return BLOCK;
-    result = ALLOW;
+    conflict =
+        SetFilteringBehaviorResult(url_it->second ? ALLOW : BLOCK, &result);
   }
 
   // Check manual overrides for the hostname.
   const std::string host = url.host();
   auto host_it = host_map_.find(host);
   if (host_it != host_map_.end()) {
-    if (!host_it->second)
-      return BLOCK;
-    result = ALLOW;
+    conflict |=
+        SetFilteringBehaviorResult(host_it->second ? ALLOW : BLOCK, &result);
   }
 
   // Look for patterns matching the hostname, with a value that is different
   // from the default (a value of true in the map meaning allowed).
   for (const auto& host_entry : host_map_) {
     if (HostMatchesPattern(host, host_entry.first)) {
-      if (!host_entry.second)
-        return BLOCK;
-      result = ALLOW;
+      conflict |= SetFilteringBehaviorResult(host_entry.second ? ALLOW : BLOCK,
+                                             &result);
     }
   }
+
+  if (result != INVALID)
+    UMA_HISTOGRAM_BOOLEAN(kManagedSiteListConflictHistogramName, conflict);
 
   return result;
 }

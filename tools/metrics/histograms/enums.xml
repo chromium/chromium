@@ -9554,6 +9554,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Has collapse_key"/>
 </enum>
 
+<enum name="BooleanHasConflict">
+  <int value="0" label="No conflict"/>
+  <int value="1" label="Has conflict"/>
+</enum>
+
 <enum name="BooleanHasCrc">
   <int value="0" label="No CRC"/>
   <int value="1" label="Has CRC"/>

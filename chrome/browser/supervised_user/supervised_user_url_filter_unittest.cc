@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -407,7 +408,9 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithoutConflicts) {
 
 TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
   std::map<std::string, bool> hosts;
+  base::HistogramTester histogram_tester;
 
+  // First and second rule always conflicting.
   // The fourth rule conflicts with the first for "www.google.com" host.
   // Blocking then takes precedence.
   hosts["*.google.com"] = true;
@@ -419,9 +422,26 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
 
   EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/foo/"));
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      1, 1);
+  // Match with conflicting first and second rule.
   EXPECT_FALSE(IsURLAllowlisted("http://accounts.google.com/bar/"));
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      1, 2);
+
+  // Match with first and third rule both allowed, no conflict.
   EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      0, 1);
+
+  // Match with fourth rule.
   EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      0, 2);
 
   filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
 
@@ -429,6 +449,18 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
   EXPECT_FALSE(IsURLAllowlisted("http://accounts.google.com/bar/"));
   EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
   EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      1, 4);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      0, 4);
+
+  // No known rule, the metric is not recorded.
+  EXPECT_TRUE(IsURLAllowlisted("https://youtube.com"));
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      8);
 }
 
 TEST_F(SupervisedUserURLFilterTest, Reason) {
