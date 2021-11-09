@@ -6,16 +6,115 @@ import SwiftUI
 
 /// A view displaying a list of destinations.
 struct OverflowMenuDestinationList: View {
+  enum Constants {
+    /// Padding breakpoints for each width. The ranges should be inclusive of
+    /// the larger number. That is, a width of 320 should fall in the
+    /// `(230, 320]` bucket.
+    static let widthBreakpoints: [CGFloat] = [
+      180, 230, 320, 400, 470, 560, 650,
+    ]
+
+    /// Array of the lower end of each breakpoint range.
+    static let lowerWidthBreakpoints = [nil] + widthBreakpoints
+
+    /// Array of the higher end of each breakpoint range.
+    static let upperWidthBreakpoints = widthBreakpoints + [nil]
+
+    /// Leading space on the first icon.
+    static let iconInitialSpace: CGFloat = 16
+
+    /// Range of spacing around icons; varies based on view width.
+    static let iconSpacingRange: ClosedRange<CGFloat> = 9...13
+
+    /// Range of icon paddings; varies based on view width.
+    static let iconPaddingRange: ClosedRange<CGFloat> = 0...3
+  }
+
   /// The destinations for this view.
   var destinations: [OverflowMenuDestination]
 
   var body: some View {
-    ScrollView(.horizontal, showsIndicators: false) {
-      LazyHStack(spacing: 0) {
-        ForEach(destinations) { destination in
-          OverflowMenuDestinationView(destination: destination, iconSpacing: 16)
+    GeometryReader { geometry in
+      ScrollView(.horizontal, showsIndicators: false) {
+        let spacing = destinationSpacing(forScreenWidth: geometry.size.width)
+        LazyHStack(spacing: 0) {
+          ForEach(destinations) { destination in
+            OverflowMenuDestinationView(
+              destination: destination, iconSpacing: spacing.iconSpacing,
+              iconPadding: spacing.iconPadding)
+          }
         }
+        // Make sure the space to the first icon is constant, so add extra
+        // spacing before the first item.
+        .padding([.leading], Constants.iconInitialSpace - spacing.iconSpacing)
       }
     }
+  }
+
+  /// Finds the lower and upper breakpoint above and below `width`.
+  ///
+  /// Returns `nil` for either end if `width` is above or below the largest or
+  /// smallest breakpoint.
+  private func findBreakpoints(forScreenWidth width: CGFloat) -> (CGFloat?, CGFloat?) {
+    // Add extra sentinel values to either end of the breakpoint array.
+    let x = zip(
+      Constants.lowerWidthBreakpoints, Constants.upperWidthBreakpoints
+    )
+    // There should only be one item where the provided width is both greater
+    // than the lower end and less than the upper end.
+    .filter {
+      (low, high) in
+      // Check if width is above the low value, or default to true if low is
+      // nil.
+      let aboveLow = low.map { value in width > value } ?? true
+      let belowHigh = high.map { value in width <= value } ?? true
+      return aboveLow && belowHigh
+    }.first
+    return x ?? (nil, nil)
+  }
+
+  /// Calculates the icon spacing and padding for the given `width`.
+  private func destinationSpacing(forScreenWidth width: CGFloat) -> (
+    iconSpacing: CGFloat, iconPadding: CGFloat
+  ) {
+    let (lowerBreakpoint, upperBreakpoint) = findBreakpoints(
+      forScreenWidth: width)
+
+    // If there's no lower breakpoint, `width` is lower than the lowest, so
+    // default to the lower bound of the ranges.
+    guard let lowerBreakpoint = lowerBreakpoint else {
+      return (
+        iconSpacing: Constants.iconSpacingRange.lowerBound,
+        iconPadding: Constants.iconPaddingRange.lowerBound
+      )
+    }
+
+    // If there's no upper breakpoint, `width` is higher than the highest, so
+    // default to the higher bound of the ranges.
+    guard let upperBreakpoint = upperBreakpoint else {
+      return (
+        iconSpacing: Constants.iconSpacingRange.upperBound,
+        iconPadding: Constants.iconPaddingRange.upperBound
+      )
+    }
+
+    let breakpointRange = lowerBreakpoint...upperBreakpoint
+
+    let iconSpacing = mapNumber(
+      width, from: breakpointRange, to: Constants.iconSpacingRange)
+    let iconPadding = mapNumber(
+      width, from: breakpointRange, to: Constants.iconPaddingRange)
+    return (iconSpacing: iconSpacing, iconPadding: iconPadding)
+  }
+
+  /// Maps the given `number` from its relative position in `inRange` to its
+  /// relative position in `outRange`.
+  private func mapNumber<F: FloatingPoint>(
+    _ number: F, from inRange: ClosedRange<F>, to outRange: ClosedRange<F>
+  ) -> F {
+    let scalingFactor =
+      (outRange.upperBound - outRange.lowerBound)
+      / (inRange.upperBound - inRange.lowerBound)
+    return (number - inRange.lowerBound) * scalingFactor + outRange.lowerBound
   }
 }

@@ -22,16 +22,15 @@ struct OverflowMenuDestinationView: View {
   /// The spacing to either side of each icon.
   var iconSpacing: CGFloat
 
+  /// The padding around the icon and inside the white background.
+  var iconPadding: CGFloat
+
   var body: some View {
     VStack {
-      ZStack(alignment: .center) {
-        Rectangle()
-          .foregroundColor(.cr_groupedSecondaryBackground)
-          .frame(width: Dimensions.iconSize, height: Dimensions.iconSize)
-          .cornerRadius(Dimensions.cornerRadius)
-        destination.image
-      }
-      .padding([.leading, .trailing], iconSpacing)
+      destination.image
+        .padding(iconPadding)
+        .background(iconBackground)
+        .padding([.leading, .trailing], iconSpacing)
 
       Text(destination.name)
         .font(.caption2)
@@ -39,5 +38,10 @@ struct OverflowMenuDestinationView: View {
     }
     .contentShape(Rectangle())
     .onTapGesture(perform: destination.handler)
+  }
+
+  var iconBackground: some View {
+    RoundedRectangle(cornerRadius: Dimensions.cornerRadius)
+      .foregroundColor(.cr_groupedSecondaryBackground)
   }
 }
