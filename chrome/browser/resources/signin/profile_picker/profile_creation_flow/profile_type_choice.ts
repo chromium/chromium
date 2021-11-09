@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './shared_css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
@@ -22,8 +23,11 @@ import {navigateTo, navigateToPreviousRoute, navigateToStep, ProfileCreationStep
 
 export interface ProfileTypeChoiceElement {
   $: {
-    backButton: HTMLElement,
-    notNowButton: HTMLElement,
+    backButton: CrButtonElement,
+    // <if expr="not lacros">
+    notNowButton: CrButtonElement,
+    // </if>
+    signInButton: CrButtonElement,
   };
 }
 

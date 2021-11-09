@@ -6,29 +6,23 @@ import 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_app.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {DiceWebSigninInterceptAppElement} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_app.js';
-import {DiceWebSigninInterceptBrowserProxyImpl} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
+import {DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from 'chrome://signin-dice-web-intercept/dice_web_signin_intercept_browser_proxy.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {isChildVisible, waitAfterNextRender} from '../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {TestDiceWebSigninInterceptBrowserProxy} from './test_dice_web_signin_intercept_browser_proxy.js';
 
-/** @param {!InterceptionParameters} parameters */
-function fireParametersChanged(parameters) {
+function fireParametersChanged(parameters: InterceptionParameters) {
   webUIListenerCallback('interception-parameters-changed', parameters);
 }
 
 suite('DiceWebSigninInterceptTest', function() {
-  /** @type {!DiceWebSigninInterceptAppElement} */
-  let app;
+  let app: DiceWebSigninInterceptAppElement;
+  let browserProxy: TestDiceWebSigninInterceptBrowserProxy;
 
-  /** @type {!TestDiceWebSigninInterceptBrowserProxy} */
-  let browserProxy;
-
-  /** @type {string} */
-  const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_1';
-  /** @type {string} */
-  const AVATAR_URL_2 = 'chrome://theme/IDR_PROFILE_AVATAR_2';
+  const AVATAR_URL_1: string = 'chrome://theme/IDR_PROFILE_AVATAR_1';
+  const AVATAR_URL_2: string = 'chrome://theme/IDR_PROFILE_AVATAR_2';
 
   setup(async function() {
     browserProxy = new TestDiceWebSigninInterceptBrowserProxy();
@@ -42,12 +36,10 @@ suite('DiceWebSigninInterceptTest', function() {
       headerTextColor: 'rgba(255, 255, 255, 1)',
       headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
-      primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_2}
     });
     DiceWebSigninInterceptBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
-    app = /** @type {!DiceWebSigninInterceptAppElement} */ (
-        document.createElement('dice-web-signin-intercept-app'));
+    app = document.createElement('dice-web-signin-intercept-app');
     document.body.append(app);
     await waitAfterNextRender(app);
     return browserProxy.whenCalled('pageLoaded');
@@ -55,38 +47,34 @@ suite('DiceWebSigninInterceptTest', function() {
 
   /**
    * Checks that the text from the interception parameters is displayed.
-   * @param {string} expectedHeaderText
-   * @param {string} expectedBodyTitle
-   * @param {string} expectedBodyText
    */
   function checkTextValues(
-      expectedHeaderText, expectedBodyTitle, expectedBodyText,
-      expectedConfirmLabel, expectedCancelLabel) {
-    const headerTextElement = app.shadowRoot.querySelector('#headerText');
+      expectedHeaderText: string, expectedBodyTitle: string,
+      expectedBodyText: string, expectedConfirmLabel: string,
+      expectedCancelLabel: string) {
+    const headerTextElement = app.shadowRoot!.querySelector('#headerText')!;
     assertEquals(expectedHeaderText, headerTextElement.textContent);
-    const titleElement = app.shadowRoot.querySelector('#title');
+    const titleElement = app.shadowRoot!.querySelector('#title')!;
     assertEquals(expectedBodyTitle, titleElement.textContent);
-    const contentsElement = app.shadowRoot.querySelector('#contents');
+    const contentsElement = app.shadowRoot!.querySelector('#contents')!;
     assertEquals(expectedBodyText, contentsElement.textContent);
-    const confirmButton = app.shadowRoot.querySelector('#acceptButton');
-    assertEquals(expectedConfirmLabel, confirmButton.textContent.trim());
-    const cancelButton = app.shadowRoot.querySelector('#cancelButton');
-    assertEquals(expectedCancelLabel, cancelButton.textContent.trim());
+    const confirmButton = app.$.acceptButton;
+    assertEquals(expectedConfirmLabel, confirmButton.textContent!.trim());
+    const cancelButton = app.$.cancelButton;
+    assertEquals(expectedCancelLabel, cancelButton.textContent!.trim());
   }
 
-  function checkImageUrl(elementId, expectedUrl) {
+  function checkImageUrl(elementId: string, expectedUrl: string) {
     assertTrue(isChildVisible(app, elementId));
-    const img = app.shadowRoot.querySelector(elementId);
+    const img = app.shadowRoot!.querySelector<HTMLImageElement>(elementId)!;
     assertEquals(expectedUrl, img.src);
   }
 
   test('ClickAccept', function() {
     assertTrue(isChildVisible(app, '#acceptButton'));
-    const spinner =
-        /** @type {PaperSpinnerLiteElement} */ (
-            app.shadowRoot.querySelector('paper-spinner-lite'));
-    const acceptButton = app.shadowRoot.querySelector('#acceptButton');
-    const cancelButton = app.shadowRoot.querySelector('#cancelButton');
+    const spinner = app.shadowRoot!.querySelector('paper-spinner-lite')!;
+    const acceptButton = app.$.acceptButton;
+    const cancelButton = app.$.cancelButton;
     assertFalse(spinner.active);
     assertFalse(acceptButton.disabled);
     assertFalse(cancelButton.disabled);
@@ -102,7 +90,7 @@ suite('DiceWebSigninInterceptTest', function() {
 
   test('ClickCancel', function() {
     assertTrue(isChildVisible(app, '#cancelButton'));
-    app.shadowRoot.querySelector('#cancelButton').click();
+    app.$.cancelButton.click();
     return browserProxy.whenCalled('cancel');
   });
 
@@ -123,7 +111,6 @@ suite('DiceWebSigninInterceptTest', function() {
       headerTextColor: 'rgba(255, 255, 255, 1)',
       headerBackgroundColor: 'rgba(255, 0, 0, 1)',
       interceptedAccount: {isManaged: false, pictureUrl: AVATAR_URL_1},
-      primaryAccount: {isManaged: false, pictureUrl: AVATAR_URL_2}
     });
     checkTextValues(
         'new_header_text', 'new_body_title', 'new_body_text',
@@ -160,5 +147,4 @@ suite('DiceWebSigninInterceptTest', function() {
     fireParametersChanged(parameters);
     assertFalse(isChildVisible(app, '#badge'));
   });
-
 });

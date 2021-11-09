@@ -10,6 +10,7 @@ import './strings.m.js';
 import './signin_shared_css.js';
 import './signin_vars_css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -29,6 +30,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // e.g. when there is a scrollbar.
   document.body.style.width = 'auto';
 });
+
+export interface EnterpriseProfileWelcomeAppElement {
+  $: {
+    cancelButton: CrButtonElement,
+    proceedButton: CrButtonElement,
+  };
+}
 
 const EnterpriseProfileWelcomeAppElementBase =
     WebUIListenerMixin(PolymerElement);
@@ -117,6 +125,12 @@ export class EnterpriseProfileWelcomeAppElement extends
     this.enterpriseTitle_ = info.enterpriseTitle;
     this.enterpriseInfo_ = info.enterpriseInfo;
     this.proceedLabel_ = info.proceedLabel;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'enterprise-profile-welcome-app': EnterpriseProfileWelcomeAppElement;
   }
 }
 

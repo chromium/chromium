@@ -25,7 +25,7 @@ type AccountInfo = {
 
 const SyncConfirmationAppElementBase = WebUIListenerMixin(PolymerElement);
 
-class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
+export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   static get is() {
     return 'sync-confirmation-app';
   }
@@ -139,6 +139,12 @@ class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private handleAccountInfoChanged_(accountInfo: AccountInfo) {
     this.accountImageSrc_ = accountInfo.src;
     this.showEnterpriseBadge_ = accountInfo.showEnterpriseBadge;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'sync-confirmation-app': SyncConfirmationAppElement;
   }
 }
 

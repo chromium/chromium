@@ -13,6 +13,7 @@ import './profile_card.js';
 import './profile_picker_shared_css.js';
 import './strings.m.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -24,9 +25,11 @@ import {isAskOnStartupAllowed, isGuestModeEnabled, isProfileCreationAllowed} fro
 export interface ProfilePickerMainViewElement {
   $: {
     addProfile: HTMLElement,
+    askOnStartup: CrCheckboxElement,
     'product-logo': HTMLElement,
     browseAsGuestButton: HTMLElement,
     profilesContainer: HTMLElement,
+    wrapper: HTMLElement,
   };
 }
 
