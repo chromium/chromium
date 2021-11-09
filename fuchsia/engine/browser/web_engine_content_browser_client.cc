@@ -29,6 +29,7 @@
 #include "fuchsia/engine/browser/web_engine_browser_interface_binders.h"
 #include "fuchsia/engine/browser/web_engine_browser_main_parts.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
+#include "fuchsia/engine/common/url_request_rewrite_rules.h"
 #include "fuchsia/engine/common/web_engine_content_client.h"
 #include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
 #include "fuchsia/engine/switches.h"
@@ -270,7 +271,7 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   auto* frame_impl = FrameImpl::FromWebContents(wc_getter.Run());
   DCHECK(frame_impl);
-  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>& rules =
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& rules =
       frame_impl->url_request_rewrite_rules_manager()->GetCachedRules();
   if (rules) {
     throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(rules));

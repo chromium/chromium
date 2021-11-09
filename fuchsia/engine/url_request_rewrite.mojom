@@ -13,7 +13,12 @@ import "url/mojom/url.mojom";
 // TODO(https://crbug.com/976975): Support URL rewriting for service workers.
 interface UrlRequestRulesReceiver {
   // Receives a set of rules to apply to URL requests.
-  OnRulesUpdated(array<UrlRequestRule> rules);
+  OnRulesUpdated(UrlRequestRewriteRules rules);
+};
+
+// Collection of UrlRequestRules.
+struct UrlRequestRewriteRules {
+  array<UrlRequestRule> rules;
 };
 
 // A URL request modification rule.

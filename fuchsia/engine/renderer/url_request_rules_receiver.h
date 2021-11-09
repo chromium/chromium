@@ -6,8 +6,7 @@
 #define FUCHSIA_ENGINE_RENDERER_URL_REQUEST_RULES_RECEIVER_H_
 
 #include "base/sequence_checker.h"
-#include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
-#include "fuchsia/engine/url_request_rewrite.mojom.h"
+#include "fuchsia/engine/common/url_request_rewrite_rules.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -27,18 +26,16 @@ class UrlRequestRulesReceiver : public mojom::UrlRequestRulesReceiver {
   UrlRequestRulesReceiver(const UrlRequestRulesReceiver&) = delete;
   UrlRequestRulesReceiver& operator=(const UrlRequestRulesReceiver&) = delete;
 
-  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>&
-  GetCachedRules();
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& GetCachedRules();
 
  private:
   void OnUrlRequestRulesReceiverAssociatedReceiver(
       mojo::PendingAssociatedReceiver<mojom::UrlRequestRulesReceiver> receiver);
 
   // mojom::UrlRequestRulesReceiver implementation.
-  void OnRulesUpdated(std::vector<mojom::UrlRequestRulePtr> rules) override;
+  void OnRulesUpdated(mojom::UrlRequestRewriteRulesPtr rules) override;
 
-  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
-      cached_rules_;
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules> cached_rules_;
   mojo::AssociatedReceiver<mojom::UrlRequestRulesReceiver>
       url_request_rules_receiver_{this};
 

@@ -13,10 +13,10 @@
 namespace mojo {
 
 template <>
-struct TypeConverter<mojom::UrlRequestRulePtr,
-                     fuchsia::web::UrlRequestRewriteRule> {
-  static mojom::UrlRequestRulePtr Convert(
-      const fuchsia::web::UrlRequestRewriteRule& input);
+struct TypeConverter<mojom::UrlRequestRewriteRulesPtr,
+                     std::vector<fuchsia::web::UrlRequestRewriteRule>> {
+  static mojom::UrlRequestRewriteRulesPtr Convert(
+      const std::vector<fuchsia::web::UrlRequestRewriteRule>& input);
 };
 
 }  // namespace mojo

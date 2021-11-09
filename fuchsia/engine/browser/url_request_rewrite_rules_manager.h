@@ -7,11 +7,11 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "fuchsia/engine/common/web_engine_url_loader_throttle.h"
-#include "fuchsia/engine/url_request_rewrite.mojom.h"
+#include "fuchsia/engine/common/url_request_rewrite_rules.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
@@ -42,8 +42,7 @@ class WEB_ENGINE_EXPORT UrlRequestRewriteRulesManager final
       std::vector<fuchsia::web::UrlRequestRewriteRule> rules,
       fuchsia::web::Frame::SetUrlRequestRewriteRulesCallback callback);
 
-  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>&
-  GetCachedRules();
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& GetCachedRules();
 
  private:
   // Test-only constructor.
@@ -53,8 +52,7 @@ class WEB_ENGINE_EXPORT UrlRequestRewriteRulesManager final
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
 
-  scoped_refptr<WebEngineURLLoaderThrottle::UrlRequestRewriteRules>
-      cached_rules_;
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules> cached_rules_;
 
   // Map of GlobalRoutingID to their current associated remote.
   std::map<content::GlobalRenderFrameHostId,

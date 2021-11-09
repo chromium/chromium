@@ -255,6 +255,7 @@ component("web_engine_core") {
     "common/cast_streaming.h",
     "common/cors_exempt_headers.cc",
     "common/cors_exempt_headers.h",
+    "common/url_request_rewrite_rules.h",
     "common/web_engine_content_client.cc",
     "common/web_engine_content_client.h",
     "common/web_engine_url_loader_throttle.cc",

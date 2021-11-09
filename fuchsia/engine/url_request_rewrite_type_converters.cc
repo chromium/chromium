@@ -148,40 +148,54 @@ struct TypeConverter<mojom::UrlRequestActionPtr,
   }
 };
 
-mojom::UrlRequestRulePtr
-TypeConverter<mojom::UrlRequestRulePtr, fuchsia::web::UrlRequestRewriteRule>::
-    Convert(const fuchsia::web::UrlRequestRewriteRule& input) {
-  mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
+template <>
+struct TypeConverter<mojom::UrlRequestRulePtr,
+                     fuchsia::web::UrlRequestRewriteRule> {
+  static mojom::UrlRequestRulePtr Convert(
+      const fuchsia::web::UrlRequestRewriteRule& input) {
+    mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
 
-  if (input.has_hosts_filter()) {
-    // Convert host names in case they contain non-ASCII characters.
-    const base::StringPiece kWildcard("*.");
+    if (input.has_hosts_filter()) {
+      // Convert host names in case they contain non-ASCII characters.
+      const base::StringPiece kWildcard("*.");
 
-    std::vector<std::string> hosts;
-    for (const base::StringPiece host : input.hosts_filter()) {
-      if (base::StartsWith(host, kWildcard, base::CompareCase::SENSITIVE)) {
-        hosts.push_back(
-            base::StrCat({kWildcard, NormalizeHost(host.substr(2))}));
-      } else {
-        hosts.push_back(NormalizeHost(host));
+      std::vector<std::string> hosts;
+      for (const base::StringPiece host : input.hosts_filter()) {
+        if (base::StartsWith(host, kWildcard, base::CompareCase::SENSITIVE)) {
+          hosts.push_back(
+              base::StrCat({kWildcard, NormalizeHost(host.substr(2))}));
+        } else {
+          hosts.push_back(NormalizeHost(host));
+        }
       }
+      rule->hosts_filter = std::move(hosts);
     }
-    rule->hosts_filter = std::move(hosts);
+
+    if (input.has_schemes_filter())
+      rule->schemes_filter = absl::make_optional(input.schemes_filter());
+
+    if (input.has_rewrites()) {
+      rule->actions = mojo::ConvertTo<std::vector<mojom::UrlRequestActionPtr>>(
+          input.rewrites());
+    } else if (input.has_action()) {
+      rule->actions = std::vector<mojom::UrlRequestActionPtr>();
+      rule->actions.push_back(mojom::UrlRequestAction::NewPolicy(
+          mojo::ConvertTo<mojom::UrlRequestAccessPolicy>(input.action())));
+    }
+
+    return rule;
   }
+};
 
-  if (input.has_schemes_filter())
-    rule->schemes_filter = absl::make_optional(input.schemes_filter());
-
-  if (input.has_rewrites()) {
-    rule->actions = mojo::ConvertTo<std::vector<mojom::UrlRequestActionPtr>>(
-        input.rewrites());
-  } else if (input.has_action()) {
-    rule->actions = std::vector<mojom::UrlRequestActionPtr>();
-    rule->actions.push_back(mojom::UrlRequestAction::NewPolicy(
-        mojo::ConvertTo<mojom::UrlRequestAccessPolicy>(input.action())));
+mojom::UrlRequestRewriteRulesPtr
+TypeConverter<mojom::UrlRequestRewriteRulesPtr,
+              std::vector<fuchsia::web::UrlRequestRewriteRule>>::
+    Convert(const std::vector<fuchsia::web::UrlRequestRewriteRule>& input) {
+  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
+  for (const auto& rule : input) {
+    rules->rules.push_back(mojo::ConvertTo<mojom::UrlRequestRulePtr>(rule));
   }
-
-  return rule;
+  return rules;
 }
 
 }  // namespace mojo
