@@ -7,8 +7,10 @@
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -157,7 +159,10 @@ void DesktopMediaSourceView::OnGestureEvent(ui::GestureEvent* event) {
 
 void DesktopMediaSourceView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(label_->GetText());
+  node_data->SetName(label_->GetText().empty()
+                         ? l10n_util::GetStringUTF16(
+                               IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME)
+                         : label_->GetText());
 }
 
 BEGIN_METADATA(DesktopMediaSourceView, views::View)
