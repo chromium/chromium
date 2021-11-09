@@ -19,7 +19,7 @@ promise_test(async t => {
   });
   window.open('resources/activation-start.html', '_blank', 'noopener');
   assert_equals(await gotMessage, 'Done');
-}, 'PerformanceNavigationTiming.activationStart in prernedered page');
+}, 'PerformanceNavigationTiming.activationStart in prerendered page');
 
 </script>
 </body>
