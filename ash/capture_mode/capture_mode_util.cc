@@ -23,14 +23,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/message_center/views/notification_background_painter.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
-
-namespace {
-constexpr int kBannerViewTopRadius = 0;
-constexpr int kBannerViewBottomRadius = 8;
-}  // namespace
 
 namespace ash {
 
@@ -164,14 +158,7 @@ std::unique_ptr<views::View> CreateBannerView() {
           views::BoxLayout::Orientation::kHorizontal,
           gfx::Insets(kBannerVerticalInsetDip, kBannerHorizontalInsetDip),
           kBannerIconTextSpacingDip));
-
-  if (features::IsNotificationsRefreshEnabled()) {
-    banner_view->SetBackground(views::CreateBackgroundFromPainter(
-        std::make_unique<message_center::NotificationBackgroundPainter>(
-            kBannerViewTopRadius, kBannerViewBottomRadius, background_color)));
-  } else {
-    banner_view->SetBackground(views::CreateSolidBackground(background_color));
-  }
+  banner_view->SetBackground(views::CreateSolidBackground(background_color));
 
   views::ImageView* icon =
       banner_view->AddChildView(std::make_unique<views::ImageView>());
