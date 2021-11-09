@@ -14,6 +14,21 @@
 
 namespace remoting {
 
+namespace {
+
+#if !defined(NDEBUG) && defined(OS_LINUX)
+// Use a different IPC name for Linux debug builds so that we can run the host
+// directly from out/Debug without interfering with the production host that
+// might also be running.
+constexpr char kChromotingHostServicesIpcName[] =
+    "chromoting_host_services_debug_mojo_ipc";
+#else
+constexpr char kChromotingHostServicesIpcName[] =
+    "chromoting_host_services_mojo_ipc";
+#endif
+
+}  // namespace
+
 const base::FilePath::CharType kHostBinaryName[] =
     FILE_PATH_LITERAL("remoting_host");
 
@@ -42,7 +57,7 @@ const mojo::NamedPlatformChannel::ServerName&
 GetChromotingHostServicesServerName() {
   static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
       server_name(WorkingDirectoryIndependentServerNameFromUTF8(
-          "chromoting_host_services_mojo_ipc"));
+          kChromotingHostServicesIpcName));
   return *server_name;
 }
 
