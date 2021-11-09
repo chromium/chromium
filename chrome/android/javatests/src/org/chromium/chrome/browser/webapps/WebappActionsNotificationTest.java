@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -93,6 +94,7 @@ public class WebappActionsNotificationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.O, message = "crbug/1267965")
     public void testNotification_openInChrome() throws Exception {
         Notification notification = getWebappNotification();
 
