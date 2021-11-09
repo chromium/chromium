@@ -371,6 +371,10 @@ void ScopedOverviewTransformWindow::SetOpacity(float opacity) {
 
 void ScopedOverviewTransformWindow::SetClipping(
     const ClippingData& clipping_data) {
+  // No need to clip `window_` if it is about to be destroyed.
+  if (window_->is_destroying())
+    return;
+
   gfx::SizeF size;
   switch (clipping_data.first) {
     case ClippingType::kEnter:

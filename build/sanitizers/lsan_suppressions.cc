@@ -79,8 +79,6 @@ char kLSanDefaultSuppressions[] =
     "leak:chromeos::disks::MountPoint::Mount\n"
     // Suppress AnimationSequence leak. crbug.com/1265031
     "leak:ash::LockStateController::StartPostLockAnimation\n"
-    // Suppress leaks in OverviewItem. crbug.com/1265030
-    "leak:ash::OverviewItem::OnWindowDestroying\n"
     // Suppress leak in SurfaceDrawContext. crbug.com/1265033
     "leak:skgpu::v1::SurfaceDrawContext::drawGlyphRunListWithCache\n"
 #endif

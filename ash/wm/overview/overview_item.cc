@@ -1201,7 +1201,7 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   ScopedOverviewTransformWindow::ScopedAnimationSettings animation_settings;
   transform_window_.BeginScopedAnimation(animation_type, &animation_settings);
   if (animation_type == OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW &&
-      !animation_settings.empty()) {
+      !animation_settings.empty() && !GetWindow()->is_destroying()) {
     animation_settings.front()->AddObserver(new AnimationObserver{
         base::BindOnce(&OverviewItem::OnItemBoundsAnimationStarted,
                        weak_ptr_factory_.GetWeakPtr()),
