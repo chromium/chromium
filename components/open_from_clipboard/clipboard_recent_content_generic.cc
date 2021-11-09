@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
+#include "url/url_util.h"
 
 #if defined(OS_ANDROID)
 #include "ui/base/clipboard/clipboard_android.h"
@@ -220,6 +221,13 @@ bool ClipboardRecentContentGeneric::IsAppropriateSuggestion(const GURL& url) {
   // Check to make sure it's a scheme we're willing to suggest.
   for (const auto* authorized_scheme : kAuthorizedSchemes) {
     if (url.SchemeIs(authorized_scheme))
+      return true;
+  }
+
+  // Check if the schemes is an application-defined scheme.
+  std::vector<std::string> standard_schemes = url::GetStandardSchemes();
+  for (const auto& standard_scheme : standard_schemes) {
+    if (url.SchemeIs(standard_scheme))
       return true;
   }
 

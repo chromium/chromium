@@ -63,6 +63,12 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
 
     private static final long MAX_ALLOWED_PNG_SIZE_BYTES = (long) 100e6; // 100 MB.
 
+    // This mime type annotates that clipboard contains a URL.
+    private static final String URL_MIME_TYPE = "text/x-moz-url";
+
+    // This mime type annotates that clipboard contains a text.
+    private static final String TEXT_MIME_TYPE = "text/*";
+
     @SuppressLint("StaticFieldLeak")
     private static Clipboard sInstance;
 
@@ -261,9 +267,13 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         // we will access the clipboard content and valid by URLUtil#isValidUrl.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             ClipDescription description = mClipboardManager.getPrimaryClipDescription();
+            if (description == null) return false;
+            if (description.hasMimeType(URL_MIME_TYPE)) return true;
+
+            // Only use TextClassifier on text mime type.
             // If getClassificationStatus() is not CLASSIFICATION_COMPLETE,
             // ClipDescription#getConfidenceScore will trows exception.
-            if (description == null
+            if (!description.hasMimeType(TEXT_MIME_TYPE)
                     || !ApiHelperForS.isGetClassificationStatusIsComplete(description)) {
                 return false;
             }
@@ -290,14 +300,21 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return getCoercedText();
 
         try {
-            ClipData.Item item = mClipboardManager.getPrimaryClip().getItemAt(0);
-            TextLinks textLinks = ApiHelperForS.getTextLinks(item);
-            if (textLinks == null || textLinks.getLinks().isEmpty()) return null;
+            ClipData clipData = mClipboardManager.getPrimaryClip();
+            ClipDescription description = clipData.getDescription();
+            CharSequence firstLinkText = null;
+            if (description.hasMimeType(URL_MIME_TYPE)) {
+                firstLinkText = getCoercedText();
+            } else {
+                ClipData.Item item = clipData.getItemAt(0);
+                TextLinks textLinks = ApiHelperForS.getTextLinks(item);
+                if (textLinks == null || textLinks.getLinks().isEmpty()) return null;
 
-            CharSequence fullText = item.getText();
-            TextLinks.TextLink firstLink = textLinks.getLinks().iterator().next();
-            CharSequence firstLinkText =
-                    fullText.subSequence(firstLink.getStart(), firstLink.getEnd());
+                CharSequence fullText = item.getText();
+                TextLinks.TextLink firstLink = textLinks.getLinks().iterator().next();
+                firstLinkText = fullText.subSequence(firstLink.getStart(), firstLink.getEnd());
+            }
+            if (firstLinkText == null) return null;
 
             // Fixing the URL here since Android thought the string is a URL, but GURL may not
             // recognize the string as a URL. Ex. www.foo.com. Android thinks this is a URL, but
@@ -605,7 +622,8 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
      * @param url The URL to copy to the clipboard.
      */
     public void copyUrlToClipboard(GURL url) {
-        ClipData clip = ClipData.newPlainText("url", url.getSpec());
+        ClipData clip =
+                new ClipData("url", new String[] {URL_MIME_TYPE}, new ClipData.Item(url.getSpec()));
         if (setPrimaryClipNoException(clip)) {
             Toast.makeText(mContext, R.string.link_copied, Toast.LENGTH_SHORT).show();
         }

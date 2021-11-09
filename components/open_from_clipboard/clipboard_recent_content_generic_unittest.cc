@@ -18,6 +18,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -62,9 +63,18 @@ class HasDataCallbackWaiter {
 
 }  // namespace
 
+const char kChromeUIScheme[] = "chrome";
+
 class ClipboardRecentContentGenericTest : public testing::Test {
  protected:
   void SetUp() override {
+    // Make sure "chrome" as standard scheme for non chrome embedder.
+    std::vector<std::string> standard_schemes = url::GetStandardSchemes();
+    if (std::find(standard_schemes.begin(), standard_schemes.end(),
+                  kChromeUIScheme) == standard_schemes.end()) {
+      url::AddStandardScheme(kChromeUIScheme, url::SCHEME_WITH_HOST);
+    }
+
     test_clipboard_ = ui::TestClipboard::CreateForCurrentThread();
   }
 
@@ -73,6 +83,7 @@ class ClipboardRecentContentGenericTest : public testing::Test {
   }
 
   ui::TestClipboard* test_clipboard_;
+  url::ScopedSchemeRegistryForTests scoped_scheme_registry_;
 };
 
 TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {
@@ -89,9 +100,10 @@ TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {
       {"https://another-example.com/", true},
       {"http://example.com/with-path/", true},
       {"about:version", true},
+      {"chrome://urls", true},
       {"data:,Hello%2C%20World!", true},
       // Certain schemes are not eligible to be suggested.
-      {"ftp://example.com/", false},
+      {"ftp://example.com/", true},
       // Leading and trailing spaces are okay, other spaces not.
       {"  http://leading.com", true},
       {" http://both.com/trailing  ", true},
