@@ -501,4 +501,10 @@ void FakeDriveFs::LocateFilesByItemIds(
   std::move(callback).Run(std::move(response));
 }
 
+void FakeDriveFs::GetQuotaUsage(
+    drivefs::mojom::DriveFs::GetQuotaUsageCallback callback) {
+  std::move(callback).Run(drive::FileError::FILE_ERROR_SERVICE_UNAVAILABLE,
+                          mojom::QuotaUsage::New());
+}
+
 }  // namespace drivefs

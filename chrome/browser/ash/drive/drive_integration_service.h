@@ -187,6 +187,9 @@ class DriveIntegrationService : public KeyedService,
       const std::vector<std::string>& item_ids,
       drivefs::mojom::DriveFs::LocateFilesByItemIdsCallback callback);
 
+  // Returns the total and free space available in the user's Drive.
+  void GetQuotaUsage(drivefs::mojom::DriveFs::GetQuotaUsageCallback callback);
+
   void RestartDrive();
 
   // Sets the arguments to be parsed by DriveFS on startup. Should only be

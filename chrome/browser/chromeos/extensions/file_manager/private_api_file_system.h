@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -195,6 +196,9 @@ class FileManagerPrivateGetSizeStatsFunction : public LoggedExtensionFunction {
   void OnGetDocumentsProviderAvailableSpace(const bool error,
                                             const uint64_t available_bytes,
                                             const uint64_t capacity_bytes);
+
+  void OnGetDriveQuotaUsage(drive::FileError error,
+                            drivefs::mojom::QuotaUsagePtr usage);
 
   void OnGetSizeStats(const uint64_t* total_size,
                       const uint64_t* remaining_size);

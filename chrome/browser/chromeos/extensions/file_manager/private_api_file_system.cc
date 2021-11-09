@@ -660,6 +660,15 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
     root->GetRootSize(base::BindOnce(&FileManagerPrivateGetSizeStatsFunction::
                                          OnGetDocumentsProviderAvailableSpace,
                                      this));
+  } else if (volume->type() == file_manager::VOLUME_TYPE_GOOGLE_DRIVE) {
+    Profile* const profile = Profile::FromBrowserContext(browser_context());
+    drive::DriveIntegrationService* integration_service =
+        drive::util::GetIntegrationServiceByProfile(profile);
+    if (!integration_service) {
+      return RespondNow(Error("Drive not available"));
+    }
+    integration_service->GetQuotaUsage(base::BindOnce(
+        &FileManagerPrivateGetSizeStatsFunction::OnGetDriveQuotaUsage, this));
   } else {
     uint64_t* total_size = new uint64_t(0);
     uint64_t* remaining_size = new uint64_t(0);
@@ -700,6 +709,16 @@ void FileManagerPrivateGetSizeStatsFunction::
     return;
   }
   OnGetSizeStats(&capacity_bytes, &available_bytes);
+}
+
+void FileManagerPrivateGetSizeStatsFunction::OnGetDriveQuotaUsage(
+    drive::FileError error,
+    drivefs::mojom::QuotaUsagePtr usage) {
+  if (error != drive::FileError::FILE_ERROR_OK) {
+    Respond(NoArguments());
+    return;
+  }
+  OnGetSizeStats(&usage->total_cloud_bytes, &usage->free_cloud_bytes);
 }
 
 void FileManagerPrivateGetSizeStatsFunction::OnGetSizeStats(

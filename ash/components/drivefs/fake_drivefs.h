@@ -142,6 +142,9 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
       const std::vector<std::string>& item_ids,
       drivefs::mojom::DriveFs::LocateFilesByItemIdsCallback callback) override;
 
+  void GetQuotaUsage(
+      drivefs::mojom::DriveFs::GetQuotaUsageCallback callback) override;
+
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;
 
