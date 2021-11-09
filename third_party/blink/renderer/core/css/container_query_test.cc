@@ -1018,4 +1018,27 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
   EXPECT_TRUE(locker->firstChild()->GetComputedStyle());
 }
 
+TEST_F(ContainerQueryTest, NoContainerQueryEvaluatorWhenDisabled) {
+  ScopedCSSContainerQueriesForTest scope(false);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #container {
+        container-type: size;
+        contain: size style layout;
+      }
+      @container (min-width: 200px) {
+        span { color: pink; }
+      }
+    </style>
+    <div id="container">
+      <span></span>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      GetDocument().getElementById("container")->GetContainerQueryEvaluator());
+}
+
 }  // namespace blink

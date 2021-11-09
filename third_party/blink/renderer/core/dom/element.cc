@@ -3286,12 +3286,14 @@ StyleRecalcChange Element::RecalcOwnStyle(
       if (UpdateForceLegacyLayout(*new_style, old_style.get()))
         child_change = child_change.ForceReattachLayoutTree();
     }
-    auto* evaluator =
-        ComputeContainerQueryEvaluator(*this, old_style.get(), *new_style);
-    if (evaluator != GetContainerQueryEvaluator()) {
-      EnsureElementRareData()
-          .EnsureContainerQueryData()
-          .SetContainerQueryEvaluator(evaluator);
+    if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled()) {
+      auto* evaluator =
+          ComputeContainerQueryEvaluator(*this, old_style.get(), *new_style);
+      if (evaluator != GetContainerQueryEvaluator()) {
+        EnsureElementRareData()
+            .EnsureContainerQueryData()
+            .SetContainerQueryEvaluator(evaluator);
+      }
     }
   }
 

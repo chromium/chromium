@@ -223,6 +223,7 @@ class ElementRareData final : public NodeRareData {
   }
 
   ContainerQueryData& EnsureContainerQueryData() {
+    DCHECK(RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
     if (!container_query_data_)
       container_query_data_ = MakeGarbageCollected<ContainerQueryData>();
     return *container_query_data_;
