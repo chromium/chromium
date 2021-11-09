@@ -310,8 +310,7 @@ FloatRect TextDecorationInfo::BoundsForWavy(TextDecoration line) const {
   auto bounding_rect =
       FloatRect(PrepareWavyStrokePath(line)->StrokeBoundingRect(stroke_data));
 
-  float step = StepFromResolvedThickness();
-  bounding_rect.set_x(bounding_rect.x() + 2 * step);
+  bounding_rect.set_x(StartPoint(line).x());
   bounding_rect.set_width(width_);
   return bounding_rect;
 }
