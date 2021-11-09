@@ -50,13 +50,13 @@ constexpr FrameSinkId kArbitraryFrameSinkId(1, 1);
 constexpr FrameSinkId kAnotherArbitraryFrameSinkId(2, 2);
 
 const base::UnguessableToken kArbitraryToken =
-    base::UnguessableToken::Deserialize(1, 2);
+    base::UnguessableToken::CreateForTesting(1, 2);
 const base::UnguessableToken kAnotherArbitraryToken =
-    base::UnguessableToken::Deserialize(2, 2);
+    base::UnguessableToken::CreateForTesting(2, 2);
 const base::UnguessableToken kArbitrarySourceId1 =
-    base::UnguessableToken::Deserialize(0xdead, 0xbeef);
+    base::UnguessableToken::CreateForTesting(0xdead, 0xbeef);
 const base::UnguessableToken kArbitrarySourceId2 =
-    base::UnguessableToken::Deserialize(0xdead, 0xbee0);
+    base::UnguessableToken::CreateForTesting(0xdead, 0xbee0);
 
 // Matches a SurfaceInfo for |surface_id|.
 MATCHER_P(SurfaceInfoWithId, surface_id, "") {

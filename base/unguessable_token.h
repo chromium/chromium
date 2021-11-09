@@ -103,6 +103,12 @@ class BASE_EXPORT UnguessableToken {
     return !(token_ == other.token_);
   }
 
+#if defined(UNIT_TEST)
+  static UnguessableToken CreateForTesting(uint64_t high, uint64_t low) {
+    return Deserialize(high, low);
+  }
+#endif
+
  private:
   friend struct UnguessableTokenHash;
   explicit UnguessableToken(const Token& token);

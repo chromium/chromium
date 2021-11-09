@@ -55,11 +55,11 @@ constexpr FrameSinkId kSubFrameB(2, 3);
 constexpr FrameSinkId kSubFrameC(2, 4);
 
 const base::UnguessableToken kSurfaceTokenA =
-    base::UnguessableToken::Deserialize(3, 42);
+    base::UnguessableToken::CreateForTesting(3, 42);
 const base::UnguessableToken kSurfaceTokenB =
-    base::UnguessableToken::Deserialize(5, 42);
+    base::UnguessableToken::CreateForTesting(5, 42);
 const base::UnguessableToken kSurfaceTokenC =
-    base::UnguessableToken::Deserialize(7, 42);
+    base::UnguessableToken::CreateForTesting(7, 42);
 
 const LocalSurfaceId kSurfaceA{2, kSurfaceTokenA};
 const LocalSurfaceId kSurfaceB{3, kSurfaceTokenB};

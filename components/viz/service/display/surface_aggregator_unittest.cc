@@ -68,11 +68,11 @@ constexpr FrameSinkId kArbitraryMiddleFrameSinkId(4, 4);
 constexpr FrameSinkId kArbitraryReservedFrameSinkId(5, 5);
 constexpr FrameSinkId kArbitraryFrameSinkId3(6, 6);
 const base::UnguessableToken kArbitraryToken =
-    base::UnguessableToken::Deserialize(1, 2);
+    base::UnguessableToken::CreateForTesting(1, 2);
 const base::UnguessableToken kArbitraryToken2 =
-    base::UnguessableToken::Deserialize(3, 4);
+    base::UnguessableToken::CreateForTesting(3, 4);
 const base::UnguessableToken kArbitraryToken3 =
-    base::UnguessableToken::Deserialize(5, 6);
+    base::UnguessableToken::CreateForTesting(5, 6);
 
 constexpr gfx::Size kSurfaceSize(100, 100);
 constexpr gfx::Rect kEmptyDamage(0, 0);
