@@ -55,7 +55,9 @@ IsolateHolder::IsolateHolder(
     AccessMode access_mode,
     AllowAtomicsWaitMode atomics_wait_mode,
     IsolateType isolate_type,
-    IsolateCreationMode isolate_creation_mode)
+    IsolateCreationMode isolate_creation_mode,
+    v8::CreateHistogramCallback create_histogram_callback,
+    v8::AddHistogramSampleCallback add_histogram_sample_callback)
     : access_mode_(access_mode), isolate_type_(isolate_type) {
   CHECK(Initialized())
       << "You need to invoke gin::IsolateHolder::Initialize first";
@@ -88,6 +90,8 @@ IsolateHolder::IsolateHolder(
     params.only_terminate_in_safe_scope = true;
     params.embedder_wrapper_type_index = kWrapperInfoIndex;
     params.embedder_wrapper_object_index = kEncodedValueIndex;
+    params.create_histogram_callback = create_histogram_callback;
+    params.add_histogram_sample_callback = add_histogram_sample_callback;
 
     v8::Isolate::Initialize(isolate_, params);
   }

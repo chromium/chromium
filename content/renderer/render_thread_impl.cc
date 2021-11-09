@@ -244,34 +244,6 @@ static_assert(
         v8::MemoryPressureLevel::kCritical,
     "critical level not align");
 
-void* CreateHistogram(const char* name, int min, int max, size_t buckets) {
-  // Each histogram has an implicit '0' bucket (for underflow), so we can always
-  // bump the minimum to 1.
-  DCHECK_LE(0, min);
-  min = std::max(1, min);
-
-  // For boolean histograms, always include an overflow bucket [2, infinity).
-  if (max == 1 && buckets == 2) {
-    max = 2;
-    buckets = 3;
-  }
-
-  RenderThreadImpl* render_thread_impl = RenderThreadImpl::current();
-  // render_thread_impl can be null in tests.
-  std::string histogram_name = render_thread_impl
-                                   ? render_thread_impl->histogram_customizer()
-                                         ->ConvertToCustomHistogramName(name)
-                                   : std::string{name};
-  return base::Histogram::FactoryGet(
-      histogram_name, min, max, buckets,
-      base::Histogram::kUmaTargetedHistogramFlag);
-}
-
-void AddHistogramSample(void* hist, int sample) {
-  base::Histogram* histogram = static_cast<base::Histogram*>(hist);
-  histogram->Add(sample);
-}
-
 void AddCrashKey(v8::CrashKeyId id, const std::string& value) {
   using base::debug::AllocateCrashKeyString;
   using base::debug::CrashKeySize;
@@ -462,7 +434,6 @@ void RenderThreadImpl::HistogramCustomizer::SetCommonHost(
   if (host != common_host_) {
     common_host_ = host;
     common_host_histogram_suffix_ = HostToCustomHistogramSuffix(host);
-    blink::MainThreadIsolate()->SetCreateHistogramFunction(CreateHistogram);
   }
 }
 
@@ -977,8 +948,6 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
                     main_thread_scheduler_.get());
 
   v8::Isolate* isolate = blink::MainThreadIsolate();
-  isolate->SetCreateHistogramFunction(CreateHistogram);
-  isolate->SetAddHistogramSampleFunction(AddHistogramSample);
   isolate->SetAddCrashKeyCallback(AddCrashKey);
 
   if (!command_line.HasSwitch(switches::kDisableThreadedCompositing))

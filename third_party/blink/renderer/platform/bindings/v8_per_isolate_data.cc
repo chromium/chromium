@@ -65,15 +65,20 @@ static void MicrotasksCompletedCallback(v8::Isolate* isolate, void* data) {
 
 V8PerIsolateData::V8PerIsolateData(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    V8ContextSnapshotMode v8_context_snapshot_mode)
+    V8ContextSnapshotMode v8_context_snapshot_mode,
+    v8::CreateHistogramCallback create_histogram_callback,
+    v8::AddHistogramSampleCallback add_histogram_sample_callback)
     : v8_context_snapshot_mode_(v8_context_snapshot_mode),
-      isolate_holder_(
-          task_runner,
-          gin::IsolateHolder::kSingleThread,
-          IsMainThread() ? gin::IsolateHolder::kDisallowAtomicsWait
-                         : gin::IsolateHolder::kAllowAtomicsWait,
-          IsMainThread() ? gin::IsolateHolder::IsolateType::kBlinkMainThread
-                         : gin::IsolateHolder::IsolateType::kBlinkWorkerThread),
+      isolate_holder_(task_runner,
+                      gin::IsolateHolder::kSingleThread,
+                      IsMainThread() ? gin::IsolateHolder::kDisallowAtomicsWait
+                                     : gin::IsolateHolder::kAllowAtomicsWait,
+                      IsMainThread()
+                          ? gin::IsolateHolder::IsolateType::kBlinkMainThread
+                          : gin::IsolateHolder::IsolateType::kBlinkWorkerThread,
+                      gin::IsolateHolder::IsolateCreationMode::kNormal,
+                      create_histogram_callback,
+                      add_histogram_sample_callback),
       string_cache_(std::make_unique<StringCache>(GetIsolate())),
       private_property_(std::make_unique<V8PrivateProperty>()),
       constructor_mode_(ConstructorMode::kCreateNewObject),
@@ -122,12 +127,16 @@ v8::Isolate* V8PerIsolateData::MainThreadIsolate() {
 
 v8::Isolate* V8PerIsolateData::Initialize(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    V8ContextSnapshotMode context_mode) {
+    V8ContextSnapshotMode context_mode,
+    v8::CreateHistogramCallback create_histogram_callback,
+    v8::AddHistogramSampleCallback add_histogram_sample_callback) {
   V8PerIsolateData* data = nullptr;
   if (context_mode == V8ContextSnapshotMode::kTakeSnapshot) {
     data = new V8PerIsolateData(context_mode);
   } else {
-    data = new V8PerIsolateData(task_runner, context_mode);
+    data = new V8PerIsolateData(task_runner, context_mode,
+                                create_histogram_callback,
+                                add_histogram_sample_callback);
   }
   DCHECK(data);
 

@@ -238,6 +238,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
           void(int, mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>
           worker_timing_callback) override;
   void RecordMetricsForBackgroundedRendererPurge() override;
+  std::string GetNameForHistogram(const char* name) override;
   std::unique_ptr<blink::WebURLLoaderFactory> WrapURLLoaderFactory(
       blink::CrossVariantMojoRemote<
           network::mojom::URLLoaderFactoryInterfaceBase> url_loader_factory)

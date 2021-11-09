@@ -70,7 +70,8 @@ void WorkerBackingThread::InitializeOnBackingThread(
   ThreadScheduler* scheduler = BackingThread().Scheduler();
   isolate_ = V8PerIsolateData::Initialize(
       scheduler->V8TaskRunner(),
-      V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot);
+      V8PerIsolateData::V8ContextSnapshotMode::kDontUseSnapshot, nullptr,
+      nullptr);
   scheduler->SetV8Isolate(isolate_);
   AddWorkerIsolate(isolate_);
   V8Initializer::InitializeWorker(isolate_);

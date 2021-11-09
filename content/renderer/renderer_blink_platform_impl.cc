@@ -217,6 +217,14 @@ void RendererBlinkPlatformImpl::Shutdown() {}
 
 //------------------------------------------------------------------------------
 
+std::string RendererBlinkPlatformImpl::GetNameForHistogram(const char* name) {
+  RenderThreadImpl* render_thread_impl = RenderThreadImpl::current();
+  // render_thread_impl can be null in tests.
+  return render_thread_impl ? render_thread_impl->histogram_customizer()
+                                  ->ConvertToCustomHistogramName(name)
+                            : std::string{name};
+}
+
 std::unique_ptr<blink::WebURLLoaderFactory>
 RendererBlinkPlatformImpl::WrapURLLoaderFactory(
     blink::CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
