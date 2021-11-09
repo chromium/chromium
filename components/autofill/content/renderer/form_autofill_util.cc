@@ -2302,8 +2302,16 @@ void ClearPreviewedElements(
     blink::WebAutofillState old_autofill_state) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillHighlightOnlyChangedValuesInPreviewMode)) {
-    for (auto& element :
-         ExtractAutofillableElementsInForm(initiating_element.Form())) {
+    // If this is a synthetic form, get the unowned form elements. Otherwise,
+    // get all element associated with the form of the initiated field.
+    std::vector<WebFormControlElement> form_elements =
+        initiating_element.Form().IsNull()
+            ? GetUnownedFormFieldElements(initiating_element.GetDocument(),
+                                          nullptr)
+            : ExtractAutofillableElementsInForm(initiating_element.Form());
+
+    // Allow the highlighting of already autofilled fields again.
+    for (auto& element : form_elements) {
       element.SetPreventHighlightingOfAutofilledFields(false);
     }
   }
