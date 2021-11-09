@@ -23,22 +23,16 @@
 // AFCHECK(condition[, error_handler]) creates a crash dump and executes
 // |error_handler| if |condition| is false.
 // TODO(https://crbug.com/1187842): Replace AFCHECK() with DCHECK().
-#if DCHECK_IS_ON()
 #define AFCHECK(condition, ...)                                                \
-  {                                                                            \
+  if (!(condition)) {                                                          \
     SCOPED_CRASH_KEY_STRING256("autofill", "main_url", MainUrlForDebugging()); \
-    DCHECK(condition);                                                         \
+    AFCRASHDUMP();                                                             \
+    __VA_ARGS__;                                                               \
   }
+#if DCHECK_IS_ON()
+#define AFCRASHDUMP() DCHECK(false)
 #else
-#define AFCHECK(condition, ...)                          \
-  {                                                      \
-    if (!(condition)) {                                  \
-      SCOPED_CRASH_KEY_STRING256("autofill", "main_url", \
-                                 MainUrlForDebugging()); \
-      base::debug::DumpWithoutCrashing();                \
-      __VA_ARGS__;                                       \
-    }                                                    \
-  }
+#define AFCRASHDUMP() base::debug::DumpWithoutCrashing()
 #endif
 
 namespace autofill {
@@ -76,7 +70,8 @@ FormForest::FormForest() = default;
 FormForest::~FormForest() = default;
 
 std::string FormForest::MainUrlForDebugging() const {
-  content::RenderFrameHost* some_rfh = some_rfh_for_debugging_;
+  content::RenderFrameHost* some_rfh =
+      content::RenderFrameHost::FromID(some_rfh_for_debugging_);
   if (!some_rfh) {
     for (const auto& frame_data : frame_datas_) {
       if (frame_data && frame_data->driver)
@@ -178,7 +173,7 @@ void FormForest::EraseForm(FormGlobalId form) {
 }
 
 void FormForest::EraseFrame(LocalFrameToken frame) {
-  some_rfh_for_debugging_ = nullptr;
+  some_rfh_for_debugging_ = content::GlobalRenderFrameHostId();
   if (frame_datas_.erase(frame))
     EraseReferencesTo(frame);
 }
@@ -210,7 +205,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   AFCHECK(form, return );
   AFCHECK(driver, return );
   AFCHECK(form->host_frame, return );
-  some_rfh_for_debugging_ = driver->render_frame_host();
+  some_rfh_for_debugging_ = driver->render_frame_host()->GetGlobalId();
 
   FrameData* frame = GetOrCreateFrameData(form->host_frame);
   AFCHECK(frame, return );

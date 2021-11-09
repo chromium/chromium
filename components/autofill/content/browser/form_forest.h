@@ -360,7 +360,7 @@ class FormForest {
   // The frame managed by the FormForest that was last passed to
   // UpdateTreeOfRendererForm().
   // TODO(crbug.com/1240247): Remove and make Resolve() static.
-  content::RenderFrameHost* some_rfh_for_debugging_ = nullptr;
+  content::GlobalRenderFrameHostId some_rfh_for_debugging_;
 
   // The FrameData nodes of the forest.
   // The members FrameData::frame_token must not be mutated.
