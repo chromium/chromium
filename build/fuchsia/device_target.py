@@ -344,7 +344,7 @@ class DeviceTarget(target.Target):
     ]
     if self._node_name:
       pave_command.extend(['-n', self._node_name, '-1'])
-    logging.warning(' '.join(pave_command))
+    logging.info(' '.join(pave_command))
     return_code, stdout, stderr = SubprocessCallWithTimeout(pave_command,
                                                             timeout_secs=300)
     if return_code != 0:

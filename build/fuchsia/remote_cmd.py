@@ -58,7 +58,7 @@ class CommandRunner(object):
     Returns the exit code from the remote command."""
 
     ssh_command = self._GetSshCommandLinePrefix() + command
-    logging.warning(ssh_command)
+    logging.debug(ssh_command)
     _SSH_LOGGER.debug('ssh exec: ' + ' '.join(ssh_command))
     retval, _, _ = SubprocessCallWithTimeout(ssh_command, silent, timeout_secs)
     return retval
@@ -85,7 +85,7 @@ class CommandRunner(object):
       ssh_args = []
 
     ssh_command = self._GetSshCommandLinePrefix() + ssh_args + ['--'] + command
-    logging.warning(ssh_command)
+    logging.debug(ssh_command)
     _SSH_LOGGER.debug(' '.join(ssh_command))
     return subprocess.Popen(ssh_command, stdout=stdout, stderr=stderr, **kwargs)
 

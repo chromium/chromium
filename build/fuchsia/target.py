@@ -336,7 +336,7 @@ class Target(object):
       # Resolve all packages, to have them pulled into the device/VM cache.
       for package_path in package_paths:
         package_name, package_version = _GetPackageInfo(package_path)
-        logging.info('Resolving %s into cache.', package_name)
+        logging.info('Installing %s...', package_name)
         return_code = self.RunCommand(
             ['pkgctl', 'resolve',
              _GetPackageUri(package_name), '>/dev/null'],

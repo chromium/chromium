@@ -56,7 +56,7 @@ class ManagedPkgRepo(PkgRepo):
     self._pkg_root = tempfile.mkdtemp()
     pm_tool = common.GetHostToolPathFromPlatform('pm')
     subprocess.check_call([pm_tool, 'newrepo', '-repo', self._pkg_root])
-    logging.info('Creating and serving temporary package root: {}.'.format(
+    logging.debug('Creating and serving temporary package root: {}.'.format(
         self._pkg_root))
 
     serve_port = common.GetAvailableTcpPort()
