@@ -9,17 +9,11 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/mojom/accelerator_keys.mojom.h"
 #include "base/callback.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ash {
-
-// Represents all sources that have accelerators.
-enum class AcceleratorSource {
-  kAsh,      // ChromeOS-specific shortcuts
-  kBrowser,  // LaCrOS/chrome shortcuts
-  kAndroid,  // Arc++ apps
-};
 
 // Represents the type of accelerator.
 enum class AcceleratorType {
@@ -62,6 +56,7 @@ struct ASH_PUBLIC_EXPORT AcceleratorInfo {
 };
 
 using AcceleratorAction = uint32_t;
+using AcceleratorSource = ash::accelerator_keys::mojom::Source;
 
 // The public-facing interface for shortcut providers, this should be
 // implemented by sources, e.g. Browser, Ash, that want their shortcuts to be

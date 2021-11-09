@@ -10,7 +10,11 @@ static_library("backend") {
     "accelerator_configuration_provider.h",
   ]
 
-  deps = []
+  deps = [
+    "//ash/public/cpp",
+    "//ash/public/mojom",
+    "//ash/webui/shortcut_customization_ui/mojom",
+  ]
 }
 
 source_set("unit_tests") {
@@ -20,7 +24,11 @@ source_set("unit_tests") {
 
   deps = [
     ":backend",
+    "//ash/public/cpp",
+    "//ash/public/mojom",
+    "//ash/webui/shortcut_customization_ui/mojom",
     "//base/test:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }
