@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/serial/serial_port_underlying_sink.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
@@ -46,7 +47,9 @@ ScriptPromise SerialPortUnderlyingSink::write(
     DOMException* exception = pending_exception_;
     pending_exception_ = nullptr;
     serial_port_->UnderlyingSinkClosed();
-    exception_state.RethrowV8Exception(ToV8(exception, script_state));
+    exception_state.RethrowV8Exception(
+        ToV8Traits<DOMException>::ToV8(script_state, exception)
+            .ToLocalChecked());
     return ScriptPromise();
   }
 
@@ -75,7 +78,9 @@ ScriptPromise SerialPortUnderlyingSink::close(ScriptState* script_state,
   if (pending_exception_) {
     DOMException* exception = pending_exception_;
     pending_exception_ = nullptr;
-    exception_state.RethrowV8Exception(ToV8(exception, script_state));
+    exception_state.RethrowV8Exception(
+        ToV8Traits<DOMException>::ToV8(script_state, exception)
+            .ToLocalChecked());
     serial_port_->UnderlyingSinkClosed();
     return ScriptPromise();
   }
@@ -100,7 +105,9 @@ ScriptPromise SerialPortUnderlyingSink::abort(ScriptState* script_state,
   if (pending_exception_) {
     DOMException* exception = pending_exception_;
     pending_exception_ = nullptr;
-    exception_state.RethrowV8Exception(ToV8(exception, script_state));
+    exception_state.RethrowV8Exception(
+        ToV8Traits<DOMException>::ToV8(script_state, exception)
+            .ToLocalChecked());
     serial_port_->UnderlyingSinkClosed();
     return ScriptPromise();
   }
