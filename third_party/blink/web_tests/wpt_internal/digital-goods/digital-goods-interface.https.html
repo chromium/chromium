@@ -4,11 +4,14 @@
   <title>Digital Goods API: Test calls from WebIDL to mojo and back.</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/common/get-host-info.sub.js"></script>
 </head>
 <body>
 <script type="module">
 import {digital_goods_test} from './resources/mock-digital-goods-service.js';
-import {CROSS_SITE_HELPER_URL, SUBDOMAIN_HELPER_URL} from './resources/iframe-helper.sub.js';
+
+const { HTTPS_NOTSAMESITE_ORIGIN, REMOTE_ORIGIN } = get_host_info();
+const SAME_SITE_HELPER_PATH = '/wpt_internal/digital-goods/resources/iframe-helper.html';
 
 digital_goods_test(async service => {
   assert_not_equals(service, undefined);
@@ -42,7 +45,7 @@ promise_test(async () => {
 
 promise_test(() => {
   let iframe = document.createElement('iframe');
-  iframe.src = CROSS_SITE_HELPER_URL;
+  iframe.src = HTTPS_NOTSAMESITE_ORIGIN + SAME_SITE_HELPER_PATH;
   iframe.allow = 'payment';
   iframe.onload = () => {
     iframe.contentWindow.postMessage('Ready', '*');
@@ -62,7 +65,8 @@ promise_test(() => {
 
 promise_test(() => {
   let iframe = document.createElement('iframe');
-  iframe.src = SUBDOMAIN_HELPER_URL;
+  // REMOTE_ORIGIN is a subdomain of the main origin.
+  iframe.src = REMOTE_ORIGIN + SAME_SITE_HELPER_PATH;
   iframe.allow = 'payment';
   iframe.onload = () => {
     iframe.contentWindow.postMessage('Ready', '*');
