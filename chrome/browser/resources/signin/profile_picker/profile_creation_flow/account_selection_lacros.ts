@@ -114,11 +114,5 @@ export class AccountSelectionLacrosElement extends
   }
 }
 
-declare global {
-  interface HTMLElementTagNameMap {
-    'account-selection-lacros': AccountSelectionLacrosElement;
-  }
-}
-
 customElements.define(
     AccountSelectionLacrosElement.is, AccountSelectionLacrosElement);

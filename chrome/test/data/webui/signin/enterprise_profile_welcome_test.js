@@ -9,17 +9,22 @@ import {EnterpriseProfileWelcomeAppElement} from 'chrome://enterprise-profile-we
 import {EnterpriseProfileWelcomeBrowserProxyImpl} from 'chrome://enterprise-profile-welcome/enterprise_profile_welcome_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {isChildVisible, waitAfterNextRender} from '../test_util.js';
 
 import {TestEnterpriseProfileWelcomeBrowserProxy} from './test_enterprise_profile_welcome_browser_proxy.js';
 
 suite('EnterpriseProfileWelcomeTest', function() {
-  let app: EnterpriseProfileWelcomeAppElement;
-  let browserProxy: TestEnterpriseProfileWelcomeBrowserProxy;
+  /** @type {!EnterpriseProfileWelcomeAppElement} */
+  let app;
 
-  const AVATAR_URL_1: string = 'chrome://theme/IDR_PROFILE_AVATAR_1';
-  const AVATAR_URL_2: string = 'chrome://theme/IDR_PROFILE_AVATAR_2';
+  /** @type {!TestEnterpriseProfileWelcomeBrowserProxy} */
+  let browserProxy;
+
+  /** @type {string} */
+  const AVATAR_URL_1 = 'chrome://theme/IDR_PROFILE_AVATAR_1';
+  /** @type {string} */
+  const AVATAR_URL_2 = 'chrome://theme/IDR_PROFILE_AVATAR_2';
 
   setup(async function() {
     browserProxy = new TestEnterpriseProfileWelcomeBrowserProxy({
@@ -32,7 +37,8 @@ suite('EnterpriseProfileWelcomeTest', function() {
     });
     EnterpriseProfileWelcomeBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
-    app = document.createElement('enterprise-profile-welcome-app');
+    app = /** @type {!EnterpriseProfileWelcomeAppElement} */ (
+        document.createElement('enterprise-profile-welcome-app'));
     document.body.appendChild(app);
     await waitAfterNextRender(app);
     return browserProxy.whenCalled('initialized');
@@ -40,53 +46,54 @@ suite('EnterpriseProfileWelcomeTest', function() {
 
   /**
    * Checks that the expected image url is displayed.
+   * @param {string} expectedUrl
    */
-  function checkImageUrl(expectedUrl: string) {
+  function checkImageUrl(expectedUrl) {
     assertTrue(isChildVisible(app, '#avatar'));
-    const img = app.shadowRoot!.querySelector<HTMLImageElement>('#avatar')!;
+    const img = app.shadowRoot.querySelector('#avatar');
     assertEquals(expectedUrl, img.src);
   }
 
   /**
    * Checks that the expected header color is displayed.
+   * @param {string} expectedColor
    */
-  function checkHeaderColor(expectedColor: string) {
+  function checkHeaderColor(expectedColor) {
     assertTrue(isChildVisible(app, '#headerContainer'));
-    const headerElement = app.shadowRoot!.querySelector('#headerContainer')!;
+    const headerElement = app.shadowRoot.querySelector('#headerContainer');
     assertEquals(
         expectedColor, getComputedStyle(headerElement).backgroundColor);
   }
 
   test('proceed', async function() {
     assertTrue(isChildVisible(app, '#proceedButton'));
-    app.$.proceedButton.click();
+    app.shadowRoot.querySelector('#proceedButton').click();
     await browserProxy.whenCalled('proceed');
   });
 
   test('cancel', async function() {
     assertTrue(isChildVisible(app, '#cancelButton'));
-    app.$.cancelButton.click();
+    app.shadowRoot.querySelector('#cancelButton').click();
     await browserProxy.whenCalled('cancel');
   });
 
   test('onProfileInfoChanged', function() {
     // Helper to test all the text values in the UI.
     function checkTextValues(
-        expectedEnterpriseTitle: string, expectedEnterpriseInfo: string,
-        expectedProceedLabel: string) {
+        expectedEnterpriseTitle, expectedEnterpriseInfo, expectedProceedLabel) {
       assertTrue(isChildVisible(app, '#enterpriseTitle'));
       const enterpriseTitleElement =
-          app.shadowRoot!.querySelector<HTMLElement>('#enterpriseTitle')!;
+          app.shadowRoot.querySelector('#enterpriseTitle');
       assertEquals(
-          expectedEnterpriseTitle, enterpriseTitleElement.textContent!.trim());
+          expectedEnterpriseTitle, enterpriseTitleElement.textContent.trim());
       assertTrue(isChildVisible(app, '#enterpriseInfo'));
       const enterpriseInfoElement =
-          app.shadowRoot!.querySelector<HTMLElement>('#enterpriseInfo')!;
+          app.shadowRoot.querySelector('#enterpriseInfo');
       assertEquals(
-          expectedEnterpriseInfo, enterpriseInfoElement.textContent!.trim());
+          expectedEnterpriseInfo, enterpriseInfoElement.textContent.trim());
       assertTrue(isChildVisible(app, '#proceedButton'));
-      const proceedButton = app.$.proceedButton;
-      assertEquals(expectedProceedLabel, proceedButton.textContent!.trim());
+      const proceedButton = app.shadowRoot.querySelector('#proceedButton');
+      assertEquals(expectedProceedLabel, proceedButton.textContent.trim());
     }
 
     // Initial values.

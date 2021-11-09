@@ -3,33 +3,33 @@
 // found in the LICENSE file.
 
 import 'chrome://profile-picker/profile_picker.js';
-// <if expr="lacros">
-import 'chrome://profile-picker/lazy_load.js';
-// </if>
 
+import {LocalProfileCustomizationElement, ProfileTypeChoiceElement} from 'chrome://profile-picker/lazy_load.js';
 // <if expr="lacros">
-import {UnassignedAccount} from 'chrome://profile-picker/profile_picker.js';
+import {AccountSelectionLacrosElement} from 'chrome://profile-picker/lazy_load.js';
 // </if>
-
-import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, Routes} from 'chrome://profile-picker/profile_picker.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, ProfilePickerMainViewElement, Routes} from 'chrome://profile-picker/profile_picker.js';
+import {isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// <if expr="lacros">
-import {assertFalse} from 'chrome://webui-test/chai_assert.js';
-// </if>
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitBeforeNextRender, whenCheck} from 'chrome://webui-test/test_util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertTrue} from '../chai_assert.js';
+import {flushTasks, waitBeforeNextRender, whenAttributeIs, whenCheck} from '../test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 
 suite('ProfilePickerAppTest', function() {
-  let testElement: ProfilePickerAppElement;
-  let browserProxy: TestManageProfilesBrowserProxy;
+  /** @type {!ProfilePickerAppElement} */
+  let testElement;
 
-  function resetTestElement(route: Routes) {
+  /** @type {!TestManageProfilesBrowserProxy} */
+  let browserProxy;
+
+  function resetTestElement(route) {
     document.body.innerHTML = '';
     navigateTo(route);
-    testElement = document.createElement('profile-picker-app');
+    testElement = /** @type {!ProfilePickerAppElement} */ (
+        document.createElement('profile-picker-app'));
     document.body.appendChild(testElement);
     return waitBeforeNextRender(testElement);
   }
@@ -42,10 +42,10 @@ suite('ProfilePickerAppTest', function() {
   });
 
   /**
-   * @return Promise that resolves when initialization is complete
+   * @return {!Promise} Promise that resolves when initialization is complete
    *     and the lazy loaded module has been loaded.
    */
-  async function waitForProfileCreationLoad(): Promise<void> {
+  async function waitForProfileCreationLoad() {
     await Promise.all([
       browserProxy.whenCalled('getNewProfileSuggestedThemeInfo'),
       ensureLazyLoaded(),
@@ -53,23 +53,24 @@ suite('ProfilePickerAppTest', function() {
     browserProxy.reset();
   }
 
-  function verifyProfileCreationViewStyle(element: HTMLElement) {
+  /** @param {!HTMLElement} element */
+  function verifyProfileCreationViewStyle(element) {
     assertEquals(
-        getComputedStyle(element.shadowRoot!.querySelector('#headerContainer')!)
+        getComputedStyle(element.shadowRoot.querySelector('#headerContainer'))
             .getPropertyValue('--theme-frame-color')
             .trim(),
         browserProxy.profileThemeInfo.themeFrameColor);
     assertEquals(
-        getComputedStyle(element.shadowRoot!.querySelector('#headerContainer')!)
+        getComputedStyle(element.shadowRoot.querySelector('#headerContainer'))
             .getPropertyValue('--theme-text-color')
             .trim(),
         browserProxy.profileThemeInfo.themeFrameTextColor);
     assertEquals(
-        getComputedStyle(element.shadowRoot!.querySelector('#headerContainer')!)
+        getComputedStyle(element.shadowRoot.querySelector('#headerContainer'))
             .backgroundColor,
         browserProxy.profileThemeInfo.themeFrameColor);
     assertEquals(
-        getComputedStyle(element.shadowRoot!.querySelector('#backButton')!)
+        getComputedStyle(element.shadowRoot.querySelector('#backButton'))
             .getPropertyValue('--cr-icon-button-fill-color')
             .trim(),
         browserProxy.profileThemeInfo.themeFrameTextColor);
@@ -77,27 +78,30 @@ suite('ProfilePickerAppTest', function() {
 
   test('ProfilePickerMainView', async function() {
     assertEquals(
-        testElement.shadowRoot!.querySelectorAll('[slot=view]').length, 1);
-    const mainView =
-        testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
+        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
+    const mainView = /** @type {!ProfilePickerMainViewElement} */ (
+        testElement.shadowRoot.querySelector('profile-picker-main-view'));
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('initializeMainView');
-    const wrapper =
-        mainView.shadowRoot!.querySelector<HTMLElement>('#wrapper')!;
-    assertTrue(wrapper.hidden);
+    assertTrue(mainView.shadowRoot.querySelector('#wrapper').hidden);
 
     webUIListenerCallback(
         'profiles-list-changed', [browserProxy.profileSample]);
     flushTasks();
-    assertEquals(wrapper.querySelectorAll('profile-card').length, 1);
-    mainView.$.addProfile.click();
+    assertEquals(
+        mainView.shadowRoot.querySelector('#wrapper')
+            .querySelectorAll('profile-card')
+            .length,
+        1);
+    mainView.shadowRoot.querySelector('#addProfile').click();
     await waitForProfileCreationLoad();
     assertEquals(
-        testElement.shadowRoot!.querySelectorAll('[slot=view]').length, 2);
-    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
+        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 2);
+    const choice = /** @type {!ProfileTypeChoiceElement} */ (
+        testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
-    await whenCheck(choice!, () => choice!.classList.contains('active'));
-    verifyProfileCreationViewStyle(choice!);
+    await whenCheck(choice, () => choice.classList.contains('active'));
+    verifyProfileCreationViewStyle(choice);
   });
 
   // <if expr="lacros">
@@ -107,27 +111,28 @@ suite('ProfilePickerAppTest', function() {
     });
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
-    const choice =
-        testElement.shadowRoot!.querySelector('profile-type-choice')!;
+    const choice = /** @type {!ProfileTypeChoiceElement} */ (
+        testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
     // Add unassigned account to trigger the account selection screen.
-    const unassignedAccount: UnassignedAccount = {
+    const unassignedAccount = /** @type {!UnassignedAccount} */ {
       gaiaId: 'unassigned-id',
       name: 'Account Name',
       email: 'email@gmail.com',
     };
     webUIListenerCallback('unassigned-accounts-changed', [unassignedAccount]);
     flushTasks();
-    assertFalse(!!choice!.shadowRoot!.querySelector('#notNowButton'));
-    choice!.$.signInButton.click();
+    assertFalse(!!choice.shadowRoot.querySelector('#notNowButton'));
+    choice.shadowRoot.querySelector('#signInButton').click();
     // Start Lacros signin flow.
     await waitBeforeNextRender(testElement);
     const accountSelectionLacros =
-        testElement.shadowRoot!.querySelector('account-selection-lacros');
+        /** @type {!AccountSelectionlacrosElement} */ (
+            testElement.shadowRoot.querySelector('account-selection-lacros'));
     assertTrue(!!accountSelectionLacros);
     // Test the back button.
-    accountSelectionLacros!.$.backButton.click();
-    await whenCheck(choice!, () => choice!.classList.contains('active'));
+    accountSelectionLacros.shadowRoot.querySelector('#backButton').click();
+    await whenCheck(choice, () => choice.classList.contains('active'));
   });
 
   test('SignInPromoSignInWithoutAccountLacros', async function() {
@@ -136,13 +141,14 @@ suite('ProfilePickerAppTest', function() {
     });
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
-    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
+    const choice = /** @type {!ProfileTypeChoiceElement} */ (
+        testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
     // No available account.
     webUIListenerCallback('unassigned-accounts-changed', []);
     flushTasks();
-    assertFalse(!!choice!.shadowRoot!.querySelector('#notNowButton'));
-    choice!.$.signInButton.click();
+    assertFalse(!!choice.shadowRoot.querySelector('#notNowButton'));
+    choice.shadowRoot.querySelector('#signInButton').click();
     return browserProxy.whenCalled('loadSignInProfileCreationFlow');
   });
   // </if>
@@ -152,38 +158,41 @@ suite('ProfilePickerAppTest', function() {
   test('SignInPromoSignIn', async function() {
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
-    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
+    const choice = /** @type {!ProfileTypeChoiceElement} */ (
+        testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
-    choice!.$.signInButton.click();
-    assertTrue(choice!.$.signInButton.disabled);
-    assertTrue(choice!.$.notNowButton.disabled);
-    assertTrue(choice!.$.backButton.disabled);
+    choice.shadowRoot.querySelector('#signInButton').click();
+    assertTrue(choice.shadowRoot.querySelector('#signInButton').disabled);
+    assertTrue(choice.shadowRoot.querySelector('#notNowButton').disabled);
+    assertTrue(choice.shadowRoot.querySelector('#backButton').disabled);
     return browserProxy.whenCalled('loadSignInProfileCreationFlow');
   });
 
   test('ThemeColorConsistentInProfileCreationViews', async function() {
     await resetTestElement(Routes.NEW_PROFILE);
     await waitForProfileCreationLoad();
-    const choice = testElement.shadowRoot!.querySelector('profile-type-choice');
+    const choice = /** @type {!ProfileTypeChoiceElement} */ (
+        testElement.shadowRoot.querySelector('profile-type-choice'));
     assertTrue(!!choice);
-    await whenCheck(choice!, () => choice!.classList.contains('active'));
-    verifyProfileCreationViewStyle(choice!);
-    choice!.$.notNowButton.click();
+    await whenCheck(choice, () => choice.classList.contains('active'));
+    verifyProfileCreationViewStyle(choice);
+    choice.shadowRoot.querySelector('#notNowButton').click();
     await waitBeforeNextRender(testElement);
     const customization =
-        testElement.shadowRoot!.querySelector('local-profile-customization');
+        /** @type {!LocalProfileCustomizationElement} */ (
+            testElement.shadowRoot.querySelector(
+                'local-profile-customization'));
     assertTrue(!!customization);
     await whenCheck(
-        customization!, () => customization!.classList.contains('active'));
-    verifyProfileCreationViewStyle(customization!);
+        customization, () => customization.classList.contains('active'));
+    verifyProfileCreationViewStyle(customization);
 
     // Test color changes from the local profile customization is reflected in
     // the profile type choice.
     browserProxy.resetResolver('getProfileThemeInfo');
-    const colorPicker =
-        customization!.shadowRoot!.querySelector('cr-customize-themes');
+    const colorPicker = customization.shadowRoot.querySelector('#colorPicker');
     assertTrue(!!colorPicker);
-    assertTrue(!!colorPicker!.selectedTheme);
+    assertTrue(!!colorPicker.selectedTheme);
     browserProxy.setProfileThemeInfo({
       color: -3413569,
       colorId: 7,
@@ -193,20 +202,17 @@ suite('ProfilePickerAppTest', function() {
       themeShapeColor: 'rgb(255, 255, 255)'
     });
     // Select different color.
-    colorPicker!.selectedTheme = {
+    colorPicker.selectedTheme = {
       type: 2,
       info: {
         chromeThemeId: browserProxy.profileThemeInfo.colorId,
-        autogeneratedThemeColors: undefined,
-        thirdPartyThemeInfo: undefined,
       },
-      isForced: false,
     };
     await browserProxy.whenCalled('getProfileThemeInfo');
-    verifyProfileCreationViewStyle(customization!);
-    customization!.$.backButton.click();
-    await whenCheck(choice!, () => choice!.classList.contains('active'));
-    verifyProfileCreationViewStyle(choice!);
+    verifyProfileCreationViewStyle(customization);
+    customization.shadowRoot.querySelector('#backButton').click();
+    await whenCheck(choice, () => choice.classList.contains('active'));
+    verifyProfileCreationViewStyle(choice);
   });
   // </if>
 
@@ -216,9 +222,9 @@ suite('ProfilePickerAppTest', function() {
     });
     await resetTestElement(Routes.NEW_PROFILE);
     assertEquals(
-        testElement.shadowRoot!.querySelectorAll('[slot=view]').length, 1);
-    const mainView =
-        testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
+        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
+    const mainView = /** @type {!ProfilePickerMainViewElement} */ (
+        testElement.shadowRoot.querySelector('profile-picker-main-view'));
     await whenCheck(mainView, () => mainView.classList.contains('active'));
   });
 
@@ -229,9 +235,9 @@ suite('ProfilePickerAppTest', function() {
     });
     await resetTestElement(Routes.NEW_PROFILE);
     assertEquals(
-        testElement.shadowRoot!.querySelectorAll('[slot=view]').length, 1);
-    const mainView =
-        testElement.shadowRoot!.querySelector('profile-picker-main-view')!;
+        testElement.shadowRoot.querySelectorAll('[slot=view]').length, 1);
+    const mainView = /** @type {!ProfilePickerMainViewElement} */ (
+        testElement.shadowRoot.querySelector('profile-picker-main-view'));
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('loadSignInProfileCreationFlow');
   });

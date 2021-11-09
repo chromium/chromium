@@ -17,9 +17,7 @@ export type ProfileState = {
   userName: string,
   isManaged: boolean,
   avatarIcon: string,
-  // <if expr="lacros">
   isPrimaryLacrosProfile: boolean,
-  // </if>
 };
 
 /**

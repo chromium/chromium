@@ -43,9 +43,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       userName: 'Alice@gmail.com',
       isManaged: false,
       avatarIcon: 'url',
-      // <if expr="lacros">
       isPrimaryLacrosProfile: false,
-      // </if>
     };
 
     /**

@@ -4,19 +4,15 @@
 
 import 'chrome://sync-confirmation/sync_confirmation_app.js';
 
-import {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
 import {SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-
 import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser_proxy.js';
 
 suite('SigninSyncConfirmationTest', function() {
-  let app: SyncConfirmationAppElement;
-
+  let app;
   setup(async function() {
     const browserProxy = new TestSyncConfirmationBrowserProxy();
     SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
-    document.body.innerHTML = '';
+    PolymerTest.clearBody();
     app = document.createElement('sync-confirmation-app');
     document.body.append(app);
     // Check that the account image is requested when the app element is
@@ -28,8 +24,8 @@ suite('SigninSyncConfirmationTest', function() {
   test('LoadPage', function() {
     assertEquals(
         'Turn on sync?',
-        app.shadowRoot!.querySelector(
-                           '#syncConfirmationHeading')!.textContent!.trim());
+        app.shadowRoot.querySelector('#syncConfirmationHeading')
+            .textContent.trim());
   });
 });
 
@@ -38,8 +34,8 @@ suite('SigninSyncConfirmationTest', function() {
 // without also updating the attributes referring to consent strings,
 // this test will break.
 suite('SigninSyncConfirmationConsentRecordingTest', function() {
-  let app: SyncConfirmationAppElement;
-  let browserProxy: TestSyncConfirmationBrowserProxy;
+  let app;
+  let browserProxy;
 
   setup(async function() {
     // This test suite makes comparisons with strings in their default locale,
@@ -51,7 +47,7 @@ suite('SigninSyncConfirmationConsentRecordingTest', function() {
     browserProxy = new TestSyncConfirmationBrowserProxy();
     SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
 
-    document.body.innerHTML = '';
+    PolymerTest.clearBody();
     app = document.createElement('sync-confirmation-app');
     document.body.append(app);
     // Wait for the app element to get attached to the document (which is when
@@ -70,7 +66,7 @@ suite('SigninSyncConfirmationConsentRecordingTest', function() {
   // Tests that the expected strings are recorded when clicking the Confirm
   // button.
   test('recordConsentOnConfirm', async function() {
-    app.shadowRoot!.querySelector<HTMLElement>('#confirmButton')!.click();
+    app.shadowRoot.querySelector('#confirmButton').click();
     const [description, confirmation] =
         await browserProxy.whenCalled('confirm');
     assertEquals(
@@ -82,7 +78,7 @@ suite('SigninSyncConfirmationConsentRecordingTest', function() {
   // Tests that the expected strings are recorded when clicking the Confirm
   // button.
   test('recordConsentOnSettingsLink', async function() {
-    app.shadowRoot!.querySelector<HTMLElement>('#settingsButton')!.click();
+    app.shadowRoot.querySelector('#settingsButton').click();
     const [description, confirmation] =
         await browserProxy.whenCalled('goToSettings');
     assertEquals(

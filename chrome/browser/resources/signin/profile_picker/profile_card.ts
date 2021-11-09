@@ -18,7 +18,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ManageProfilesBrowserProxy, ManageProfilesBrowserProxyImpl, ProfileState} from './manage_profiles_browser_proxy.js';
 
-export interface ProfileCardElement {
+interface ProfileCardElement {
   $: {
     gaiaName: HTMLElement,
     gaiaNameTooltip: PaperTooltipElement,
@@ -29,7 +29,7 @@ export interface ProfileCardElement {
 
 const ProfileCardElementBase = I18nMixin(PolymerElement);
 
-export class ProfileCardElement extends ProfileCardElementBase {
+class ProfileCardElement extends ProfileCardElementBase {
   static get is() {
     return 'profile-card';
   }
