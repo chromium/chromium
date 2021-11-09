@@ -30,7 +30,6 @@ class AppListFolderController;
 class AppListViewDelegate;
 class ContinueSectionView;
 class RecentAppsView;
-class ScopedScrollViewGradientDisabler;
 class ScrollableAppsGridView;
 class ScrollViewGradientHelper;
 
@@ -56,10 +55,6 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   AppListBubbleAppsPage& operator=(const AppListBubbleAppsPage&) = delete;
   ~AppListBubbleAppsPage() override;
 
-  // Disables all children so they cannot be focused, allowing the open folder
-  // view to handle focus.
-  void DisableFocusForShowingActiveFolder(bool disabled);
-
   // Starts the launcher show animation.
   void StartShowAnimation();
 
@@ -67,6 +62,17 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   // layer is pushed down by `vertical_offset` at the start of the animation and
   // animates back to its original position. Public for testing.
   void SlideViewIntoPosition(views::View* view, int vertical_offset);
+
+  // Starts the launcher hide animation. None of the child views animate, but
+  // this disables the scroll view gradient mask to improve performance.
+  void StartHideAnimation();
+
+  // Aborts all layer animations, which invokes their cleanup callbacks.
+  void AbortAllAnimations();
+
+  // Disables all children so they cannot be focused, allowing the open folder
+  // view to handle focus.
+  void DisableFocusForShowingActiveFolder(bool disabled);
 
   // views::View:
   void Layout() override;
@@ -121,10 +127,6 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   // Adds fade in/out gradients to `scroll_view_`.
   std::unique_ptr<ScrollViewGradientHelper> gradient_helper_;
-
-  // Disables the gradient on `scroll_view_` during animations to improve
-  // performance. Must be destroyed before `gradient_helper_`.
-  std::unique_ptr<ScopedScrollViewGradientDisabler> gradient_disabler_;
 
   base::WeakPtrFactory<AppListBubbleAppsPage> weak_factory_{this};
 };

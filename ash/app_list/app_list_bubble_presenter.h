@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -69,6 +70,9 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
   // kInvalidDisplayId if not shown.
   int64_t GetDisplayId() const;
 
+  // Callback for the hide animation.
+  void OnHideAnimationEnded();
+
   AppListControllerImpl* const controller_;
 
   // Owned by native widget.
@@ -77,11 +81,16 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
   // Owned by views.
   AppListBubbleView* bubble_view_ = nullptr;
 
+  // Whether the bubble hide animation is playing.
+  bool in_hide_animation_ = false;
+
   // Closes the widget when the user clicks outside of it.
   std::unique_ptr<AppListBubbleEventFilter> bubble_event_filter_;
 
   // Observes display configuration changes.
   display::ScopedDisplayObserver display_observer_{this};
+
+  base::WeakPtrFactory<AppListBubblePresenter> weak_factory_{this};
 };
 
 }  // namespace ash

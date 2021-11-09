@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/logging.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -36,13 +37,12 @@ ScrollViewGradientHelper::ScrollViewGradientHelper(
                               base::Unretained(this)));
 }
 
-ScrollViewGradientHelper::~ScrollViewGradientHelper() = default;
+ScrollViewGradientHelper::~ScrollViewGradientHelper() {
+  RemoveMaskLayer();
+}
 
 void ScrollViewGradientHelper::UpdateGradientZone() {
-  if (disable_count_ > 0) {
-    RemoveMaskLayer();
-    return;
-  }
+  DCHECK(scroll_view_->contents());
 
   const gfx::Rect visible_rect = scroll_view_->GetVisibleRect();
   // Show the top gradient if the scroll view is not scrolled to the top.
@@ -72,6 +72,7 @@ void ScrollViewGradientHelper::UpdateGradientZone() {
 
   // If a gradient is needed, lazily create the GradientLayerDelegate.
   if (!gradient_layer_) {
+    DVLOG(1) << "Adding gradient mask layer";
     gradient_layer_ = std::make_unique<GradientLayerDelegate>();
     scroll_view_->layer()->SetMaskLayer(gradient_layer_->layer());
   }
@@ -92,24 +93,11 @@ void ScrollViewGradientHelper::UpdateGradientZone() {
 }
 
 void ScrollViewGradientHelper::RemoveMaskLayer() {
+  if (!gradient_layer_)
+    return;
+  DVLOG(1) << "Removing gradient mask layer";
   scroll_view_->layer()->SetMaskLayer(nullptr);
   gradient_layer_.reset();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-ScopedScrollViewGradientDisabler::ScopedScrollViewGradientDisabler(
-    ScrollViewGradientHelper* helper)
-    : helper_(helper) {
-  DCHECK(helper_);
-  helper_->disable_count_++;
-  helper_->UpdateGradientZone();
-}
-
-ScopedScrollViewGradientDisabler::~ScopedScrollViewGradientDisabler() {
-  DCHECK_GT(helper_->disable_count_, 0);
-  helper_->disable_count_--;
-  helper_->UpdateGradientZone();
 }
 
 }  // namespace ash

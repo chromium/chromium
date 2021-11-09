@@ -33,6 +33,7 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
@@ -84,6 +85,16 @@ class SeparatorWithLayer : public views::View {
     return gfx::Size(1, 1);
   }
 };
+
+// Returns the layer bounds to use for the start of the show animation and the
+// end of the hide animation.
+gfx::Rect GetShowHideAnimationBounds(gfx::Rect target_bounds) {
+  const int delta_height = target_bounds.height() / 4;  // 25% of height
+  const int y_offset = 8;
+  return gfx::Rect(
+      target_bounds.x(), target_bounds.y() + delta_height + y_offset,
+      target_bounds.width(), target_bounds.height() - delta_height);
+}
 
 }  // namespace
 
@@ -209,11 +220,7 @@ void AppListBubbleView::StartShowAnimation() {
 
   // Start by making the layer shorter, pushed down, and transparent.
   const gfx::Rect target_bounds = layer()->GetTargetBounds();
-  const int delta_height = target_bounds.height() / 4;  // 25% of height
-  const int y_offset = 8;
-  layer()->SetBounds(
-      gfx::Rect(target_bounds.x(), target_bounds.y() + delta_height + y_offset,
-                target_bounds.width(), target_bounds.height() - delta_height));
+  layer()->SetBounds(GetShowHideAnimationBounds(target_bounds));
   layer()->SetOpacity(0.f);
 
   // Animate the layer to fully opaque at its target bounds.
@@ -230,6 +237,51 @@ void AppListBubbleView::StartShowAnimation() {
     apps_page_->StartShowAnimation();
 
   // Note: The assistant page handles its own show animation internally.
+}
+
+void AppListBubbleView::StartHideAnimation(
+    base::RepeatingClosure on_animation_ended) {
+  // Ensure any in-progress animations have their cleanup callbacks called.
+  AbortAllAnimations();
+
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+        base::UmaHistogramPercentage(
+            "Apps.ClamshellLauncher.AnimationSmoothness.Close", value);
+      })));
+
+  // Animation spec:
+  //
+  // Y Position: Current → Down 8px
+  // Duration: 100ms
+  // Ease: (0.4, 0, 1, 1).
+  //
+  // Height: 100% → 75%
+  // Duration: 100ms
+  // Ease: (0.4, 0, 1, 1)
+  //
+  // Opacity: 100% → 0%
+  // Duration: 100ms
+  // Ease: Linear
+  const gfx::Rect target_bounds = layer()->GetTargetBounds();
+  const gfx::Rect final_bounds = GetShowHideAnimationBounds(target_bounds);
+
+  if (apps_page_->GetVisible())
+    apps_page_->StartHideAnimation();
+
+  views::AnimationBuilder()
+      .OnEnded(on_animation_ended)
+      .OnAborted(on_animation_ended)
+      .Once()
+      .SetDuration(base::Milliseconds(100))
+      .SetBounds(layer(), final_bounds, gfx::Tween::FAST_OUT_LINEAR_IN)
+      .SetOpacity(layer(), 0.f, gfx::Tween::LINEAR);
+}
+
+void AppListBubbleView::AbortAllAnimations() {
+  apps_page_->AbortAllAnimations();
+  layer()->GetAnimator()->AbortAllAnimations();
 }
 
 bool AppListBubbleView::Back() {

@@ -10,6 +10,7 @@
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/ash_export.h"
 #include "ash/search_box/search_box_view_delegate.h"
+#include "base/callback_forward.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -41,6 +42,13 @@ class ASH_EXPORT AppListBubbleView : public views::View,
 
   // Starts the bubble show animation.
   void StartShowAnimation();
+
+  // Starts the bubble hide animation.
+  void StartHideAnimation(base::RepeatingClosure on_animation_ended);
+
+  // Aborts all layer animations started by StartShowAnimation() or
+  // StartHideAnimation(). This invokes their cleanup callbacks.
+  void AbortAllAnimations();
 
   // Handles back action if it we have a use for it besides dismissing.
   bool Back();
