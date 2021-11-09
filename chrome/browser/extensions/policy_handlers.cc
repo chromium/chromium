@@ -307,11 +307,10 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
     const int extension_scheme_mask =
         URLPattern::GetValidSchemeMaskForExtensions();
     for (const char* key : host_keys) {
-      const base::ListValue* unparsed_urls;
-      if (sub_dict->GetList(key, &unparsed_urls)) {
-        for (size_t i = 0; i < unparsed_urls->GetList().size(); ++i) {
-          std::string unparsed_url;
-          unparsed_urls->GetString(i, &unparsed_url);
+      const base::Value* unparsed_urls = sub_dict->FindListKey(key);
+      if (unparsed_urls != nullptr) {
+        for (const auto& url_value : unparsed_urls->GetList()) {
+          const std::string& unparsed_url = url_value.GetString();
           URLPattern pattern(extension_scheme_mask);
           URLPattern::ParseResult parse_result = pattern.Parse(unparsed_url);
           // These keys don't support paths due to how we track the initiator
@@ -348,9 +347,9 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
       }
     }
 
-    const base::ListValue* runtime_blocked_hosts = nullptr;
-    if (sub_dict->GetList(schema_constants::kPolicyBlockedHosts,
-                          &runtime_blocked_hosts) &&
+    const base::Value* runtime_blocked_hosts =
+        sub_dict->FindListKey(schema_constants::kPolicyBlockedHosts);
+    if (runtime_blocked_hosts != nullptr &&
         runtime_blocked_hosts->GetList().size() >
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
@@ -362,9 +361,9 @@ void ExtensionSettingsPolicyHandler::SanitizePolicySettings(
       }
     }
 
-    const base::ListValue* runtime_allowed_hosts = nullptr;
-    if (sub_dict->GetList(schema_constants::kPolicyAllowedHosts,
-                          &runtime_allowed_hosts) &&
+    const base::Value* runtime_allowed_hosts =
+        sub_dict->FindListKey(schema_constants::kPolicyAllowedHosts);
+    if (runtime_allowed_hosts != nullptr &&
         runtime_allowed_hosts->GetList().size() >
             schema_constants::kMaxItemsURLPatternSet) {
       if (errors) {
