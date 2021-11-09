@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace {
 crosapi::mojom::FieldTrialGroupInfoPtr CreateFieldTrialGroupInfo(
@@ -13,16 +15,29 @@ crosapi::mojom::FieldTrialGroupInfoPtr CreateFieldTrialGroupInfo(
   info->group_name = group_name;
   return info;
 }
+
+static crosapi::FieldTrialServiceAsh* g_field_trial_service_ash = nullptr;
+
+void OnFieldTrialGroupFinalizedCallback(const std::string& trial_name,
+                                        const std::string& group_name) {
+  if (g_field_trial_service_ash)
+    g_field_trial_service_ash->OnFieldTrialGroupFinalized(trial_name,
+                                                          group_name);
+}
+
 }  // namespace
 
 namespace crosapi {
 
 FieldTrialServiceAsh::FieldTrialServiceAsh() {
+  DCHECK(g_field_trial_service_ash == nullptr);
+  g_field_trial_service_ash = this;
   base::FieldTrialList::AddObserver(this);
 }
 
 FieldTrialServiceAsh::~FieldTrialServiceAsh() {
   base::FieldTrialList::RemoveObserver(this);
+  g_field_trial_service_ash = nullptr;
 }
 
 void FieldTrialServiceAsh::BindReceiver(
@@ -51,6 +66,14 @@ void FieldTrialServiceAsh::AddFieldTrialObserver(
 void FieldTrialServiceAsh::OnFieldTrialGroupFinalized(
     const std::string& trial_name,
     const std::string& group_name) {
+  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&OnFieldTrialGroupFinalizedCallback,
+                                  trial_name, group_name));
+    return;
+  }
+
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   for (auto& observer : observers_) {
     std::vector<mojom::FieldTrialGroupInfoPtr> infos;
     infos.push_back(CreateFieldTrialGroupInfo(trial_name, group_name));
