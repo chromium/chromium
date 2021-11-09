@@ -18,7 +18,12 @@ import time
 
 
 def print_signal(sig, *_):
-  print('Signal :{}'.format(sig))
+  # print_function does not guarantee its output won't be interleaved
+  # with other logging elsewhere, but it does guarantee its output
+  # will appear intact. Because the tests parse via starts_with, prefix
+  # with a newline. These tests were previously flaky due to output like
+  # > Signal: 1 <other messages>.
+  print('\nSignal :{}'.format(sig))
 
 
 if __name__ == '__main__':
@@ -26,7 +31,7 @@ if __name__ == '__main__':
   signal.signal(signal.SIGINT, print_signal)
 
   # test the subprocess display number.
-  print('Display :{}'.format(os.environ.get('DISPLAY', 'None')))
+  print('\nDisplay :{}'.format(os.environ.get('DISPLAY', 'None')))
 
   if len(sys.argv) > 1 and sys.argv[1] == '--sleep':
     time.sleep(2)  # gives process time to receive signal.

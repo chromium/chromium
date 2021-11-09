@@ -208,7 +208,7 @@ class UnitTest(unittest.TestCase):
                                    alive_bots=[],
                                    dead_bots=[])
         err_msg = 'Not enough available machines exist in swarming pool'
-        self.assertTrue(err_msg in context.exception.message)
+        self.assertTrue(err_msg in str(context.exception))
 
     def test_previously_healthy_now_dead(self):
         # Test that it swaps out build1 and build2 that are dead
