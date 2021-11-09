@@ -21,7 +21,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/perfetto/system_test_utils.h"
@@ -709,16 +708,9 @@ TEST_F(SystemPerfettoTest, MultipleSystemAndLocalSourcesLocalFirst) {
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SystemTraceWhileLocalStartupTracing \
-  DISABLED_SystemTraceWhileLocalStartupTracing
-#else
-#define MAYBE_SystemTraceWhileLocalStartupTracing \
-  SystemTraceWhileLocalStartupTracing
-#endif
 // Attempts to start a system trace while a local startup trace is active. The
 // system trace should only be started after the local trace is completed.
-TEST_F(SystemPerfettoTest, MAYBE_SystemTraceWhileLocalStartupTracing) {
+TEST_F(SystemPerfettoTest, SystemTraceWhileLocalStartupTracing) {
   // We're using mojom::kTraceEventDataSourceName for the local producer to
   // emulate starting the real TraceEventDataSource which owns startup tracing.
   auto mock_trace_event_ds = TestDataSource::CreateAndRegisterDataSource(
