@@ -331,7 +331,7 @@ group("gn_all") {
     ]
   }
 
-  if (use_x11) {
+  if (ozone_platform_x11) {
     deps += [ "//ui/platform_window/x11:x11_unittests" ]
   }
 
@@ -640,10 +640,8 @@ group("gn_all") {
       }
     }
 
-    if (use_x11) {
-      if (target_cpu != "arm") {
-        deps += [ "//gpu/tools/compositor_model_bench" ]
-      }
+    if (ozone_platform_x11 && !is_chromecast && target_cpu != "arm") {
+      deps += [ "//gpu/tools/compositor_model_bench" ]
     }
   }
 
@@ -879,11 +877,9 @@ group("rust_build_tests") {
 }
 
 # TODO(https://crbug.com/1112776): ensure remoting is functional on Linux builds with
-# ozone. We also need to figure out what to do with remoting_host that is set for
-# use_x11 && is_linux. See remoting/remoting_options.gni.  For now, just allow to
-# enable remoting for is_linux && use_x11 && use_ozone.
-if ((is_linux || is_chromeos || is_win) && enable_remoting &&
-    (use_x11 || !use_ozone)) {
+# other than X11 Ozone backends.
+if (enable_remoting && ((is_linux && ozone_platform_x11) ||
+                        ((is_chromeos || is_win) && !use_ozone))) {
   # This group is used for network annotation check test.
   group("shipped_binaries") {
     deps = [
