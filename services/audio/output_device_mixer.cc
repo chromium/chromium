@@ -4,7 +4,8 @@
 
 #include "services/audio/output_device_mixer.h"
 
-#include "base/notreached.h"
+#include "services/audio/mixing_graph.h"
+#include "services/audio/output_device_mixer_impl.h"
 
 namespace audio {
 
@@ -14,8 +15,9 @@ std::unique_ptr<OutputDeviceMixer> OutputDeviceMixer::Create(
     const media::AudioParameters& output_params,
     CreateStreamCallback create_stream_callback,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return std::make_unique<OutputDeviceMixerImpl>(
+      device_id, output_params, base::BindOnce(&MixingGraph::Create),
+      std::move(create_stream_callback));
 }
 
 OutputDeviceMixer::OutputDeviceMixer(const std::string& device_id)
