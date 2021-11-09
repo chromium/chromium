@@ -85,7 +85,6 @@ std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
 std::unique_ptr<base::Value> RunFunctionWithDelegateAndReturnSingleResult(
     scoped_refptr<ExtensionFunction> function,
     std::unique_ptr<base::ListValue> args,
-    content::BrowserContext* context,
     std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
     RunFunctionFlags flags);
 
@@ -127,12 +126,10 @@ bool RunFunction(ExtensionFunction* function,
                  content::BrowserContext* context);
 bool RunFunction(ExtensionFunction* function,
                  const std::string& args,
-                 content::BrowserContext* context,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  RunFunctionFlags flags);
 bool RunFunction(ExtensionFunction* function,
                  std::unique_ptr<base::ListValue> args,
-                 content::BrowserContext* context,
                  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher,
                  RunFunctionFlags flags);
 

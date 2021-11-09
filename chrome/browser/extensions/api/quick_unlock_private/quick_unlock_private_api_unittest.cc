@@ -624,7 +624,7 @@ class QuickUnlockPrivateUnitTest
     base::RunLoop().RunUntilIdle();
     std::unique_ptr<base::Value> result =
         api_test_utils::RunFunctionWithDelegateAndReturnSingleResult(
-            func, std::move(params), profile(),
+            func, std::move(params),
             std::make_unique<ExtensionFunctionDispatcher>(profile()),
             api_test_utils::NONE);
     base::RunLoop().RunUntilIdle();
@@ -637,7 +637,7 @@ class QuickUnlockPrivateUnitTest
       std::unique_ptr<base::ListValue> params) {
     base::RunLoop().RunUntilIdle();
     auto dispatcher = std::make_unique<ExtensionFunctionDispatcher>(profile());
-    api_test_utils::RunFunction(func.get(), std::move(params), profile(),
+    api_test_utils::RunFunction(func.get(), std::move(params),
                                 std::move(dispatcher), api_test_utils::NONE);
     EXPECT_TRUE(func->GetResultList()->GetList().empty());
     base::RunLoop().RunUntilIdle();

@@ -155,7 +155,6 @@ bool RunFunction(ExtensionFunction* function,
       new extensions::ExtensionFunctionDispatcher(browser->profile()));
   dispatcher->set_delegate(&dispatcher_delegate);
   return extensions::api_test_utils::RunFunction(function, std::move(args),
-                                                 browser->profile(),
                                                  std::move(dispatcher), flags);
 }
 
