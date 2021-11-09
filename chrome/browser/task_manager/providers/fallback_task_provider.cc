@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/task_manager/providers/render_process_host_task_provider.h"
@@ -113,12 +114,17 @@ void FallbackTaskProvider::ShowPendingTask(Task* task) {
   // Pending tasks belong to the secondary source, and showing one means that
   // Chromium is missing a primary task provider.
   if (!allow_fallback_for_testing_) {
-    // TODO(avi): Turn this into a DCHECK once there are providers for all known
-    // processes. https://crbug.com/1083509
+    // Log when we use the secondary task provider, to help drive this count to
+    // zero and have providers for all known processes.
+    // TODO(avi): Turn this into a DCHECK and remove the log once there are
+    // providers for all known processes. See https://crbug.com/1083509.
+    base::UmaHistogramBoolean("BrowserRenderProcessHost.LabeledInTaskManager",
+                              false);
     LOG(ERROR)
         << "Every renderer should have at least one task provided by a primary "
-        << "task provider. If a fallback task is shown, it is a bug. Please "
-        << "file a new bug and tag it as a dependency of crbug.com/739782.";
+        << "task provider. If a \"Renderer\" fallback task is shown, it is a "
+        << "bug. If you have repro steps, please file a new bug and tag it as "
+        << "a dependency of crbug.com/739782.";
   }
 
   pending_shown_tasks_.erase(task);
@@ -154,6 +160,12 @@ void FallbackTaskProvider::OnTaskAddedBySource(Task* task,
     ShowTaskLater(task);
     return;
   }
+
+  // Log when a primary task is shown instead, to provide a point of comparison
+  // for cases the secondary task is shown. Remove when there are providers for
+  // for all known processes. See https://crbug.com/1083509.
+  base::UmaHistogramBoolean("BrowserRenderProcessHost.LabeledInTaskManager",
+                            true);
 
   // If we get a primary task that has a secondary task that is both known and
   // shown we then hide the secondary task and then show the primary task.

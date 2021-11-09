@@ -9799,6 +9799,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Known"/>
 </enum>
 
+<enum name="BooleanLabeledRendererTask">
+  <int value="0" label="Unlabeled renderer task"/>
+  <int value="1" label="Labeled renderer task"/>
+</enum>
+
 <enum name="BooleanLargeAllocationFromFreelist">
   <int value="0" label="Allocated via IPC"/>
   <int value="1" label="Allocated via Freelist"/>
