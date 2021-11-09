@@ -33,13 +33,9 @@ class PaymentRequestWebContentsManagerTest : public testing::Test {
     mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver =
         remote.InitWithNewPipeAndPassReceiver();
 
-    manager_->CreatePaymentRequest(web_contents()->GetMainFrame(),
-                                   std::move(delegate), std::move(receiver),
-                                   nullptr);
-
-    // Return the most recently inserted PaymentRequest, which should be the
-    // one created above.
-    return manager_->GetPaymentRequestsForTesting().rbegin()->first;
+    return manager_->CreateAndReturnPaymentRequestForTesting(
+        web_contents()->GetMainFrame(), std::move(delegate),
+        std::move(receiver), nullptr);
   }
 
   // The PaymentRequestWebContentsManager under test.

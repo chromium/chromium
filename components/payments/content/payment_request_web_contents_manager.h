@@ -76,15 +76,28 @@ class PaymentRequestWebContentsManager
 
   base::WeakPtr<PaymentRequestWebContentsManager> GetWeakPtr();
 
-  const std::map<PaymentRequest*, std::unique_ptr<PaymentRequest>>&
-  GetPaymentRequestsForTesting() const {
-    return payment_requests_;
-  }
+  // A testing-only version of |CreatePaymentRequest| that also returns the
+  // created PaymentRequest.
+  PaymentRequest* CreateAndReturnPaymentRequestForTesting(
+      content::RenderFrameHost* render_frame_host,
+      std::unique_ptr<ContentPaymentRequestDelegate> delegate,
+      mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
+      base::WeakPtr<PaymentRequest::ObserverForTest> observer_for_testing);
 
  private:
   explicit PaymentRequestWebContentsManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PaymentRequestWebContentsManager>;
   friend class PaymentRequestBrowserTestBase;
+
+  // Internal implementation of CreatePaymentRequest, which returns the created
+  // PaymentRequest. As per the class-header comments, the public API of this
+  // class does not give out request pointers because PaymentRequest manages
+  // its own interactions. This internal API exists to support testing.
+  PaymentRequest* CreatePaymentRequestInternal(
+      content::RenderFrameHost* render_frame_host,
+      std::unique_ptr<ContentPaymentRequestDelegate> delegate,
+      mojo::PendingReceiver<payments::mojom::PaymentRequest> receiver,
+      base::WeakPtr<PaymentRequest::ObserverForTest> observer_for_testing);
 
   // Owns all the PaymentRequest for this WebContents. Since the
   // PaymentRequestWebContentsManager's lifetime is tied to the WebContents,
