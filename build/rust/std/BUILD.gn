@@ -97,6 +97,13 @@ if (toolchain_has_rust) {
     # exception if the list on disk differs. (Either 'Found stdlib rlib
     # that wasn't expected' or 'We failed to find all expected stdlib
     # rlibs').
+    #
+    # The script does one final job, which is to check that the rustc
+    # version matches that in the gn arg 'rustc_version'. This is
+    # technically orthogonal to the stdlib-finding job that we do here,
+    # but it's something we want to be sure of running during any
+    # typical Rust build, and this target happens to be depended upon
+    # almost everywhere, so it's a good fit.
     script = "find_std_rlibs.py"
     depfile = "$target_out_dir/stdlib.d"
     out_libdir = rebase_path(target_out_dir, root_build_dir)
@@ -114,6 +121,9 @@ if (toolchain_has_rust) {
       # related to the Rust standard library, we ensure libstd.rlib is first.
       "--depfile-target",
       stdlib_files[0],
+
+      "--expected-rustc-version",
+      rustc_version,
     ]
     if (!use_unverified_rust_toolchain) {
       args += [

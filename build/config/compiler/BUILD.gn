@@ -297,6 +297,7 @@ config("compiler") {
   configs += [
     # See the definitions below.
     ":clang_revision",
+    ":rustc_revision",
     ":compiler_cpu_abi",
     ":compiler_codegen",
     ":compiler_deterministic",
@@ -1321,6 +1322,21 @@ config("clang_revision") {
     # and build system rebuild things when their commandline changes). Nothing
     # should ever read this define.
     defines = [ "CR_CLANG_REVISION=\"$clang_revision\"" ]
+  }
+}
+
+config("rustc_revision") {
+  if (enable_rust && defined(rustc_version)) {
+    # Similar to the above config, this is here so that all files get
+    # recompiled after a rustc roll. Nothing should ever read this cfg.
+    # $rustc_version is a gn arg set within //build/config/rust.gni
+    # so that users using a custom Rust toolchain can override it.
+    # Its accuracy is checked in //build/rust/std:find_stdlib, which
+    # most of our Rust targets depend upon.
+    rustflags = [
+      "--cfg",
+      "rustc_version=\"$rustc_version\"",
+    ]
   }
 }
 

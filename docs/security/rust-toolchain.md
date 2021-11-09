@@ -188,6 +188,7 @@ You can then tell `gn` about it using these `gn` arguments:
 enable_rust=true
 use_unverified_rust_toolchain=true
 rust_bin_dir="/Users/you/.rustup/toolchains/<toolchain name>/bin"
+rustc_version="<your rustc version>" # add output of rustc -V
 # added_rust_stdlib_libs=[]
 # removed_rust_stdlib_libs=[]
 ```

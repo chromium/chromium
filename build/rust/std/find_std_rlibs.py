@@ -39,6 +39,8 @@ def main():
   parser.add_argument("--skip-stdlibs",
                       help="Standard library files to skip",
                       default="")
+  parser.add_argument("--expected-rustc-version",
+                      help="The string we expect to be reported by 'rustc -V'")
   args = parser.parse_args()
   # Ensure we handle each rlib in the expected list exactly once.
   if args.stdlibs:
@@ -46,8 +48,18 @@ def main():
   else:
     rlibs_expected = None
   rlibs_to_skip = [expand_name(x) for x in args.skip_stdlibs.split(',')]
-  # Ask rustc where to find the stdlib for this target.
+  # First, ask rustc to confirm it's the version expected.
   rustc = os.path.join(args.rust_bin_dir, "rustc")
+  if args.expected_rustc_version:
+    proc = subprocess.run([rustc, "-V"], capture_output=True, text=True)
+    proc.check_returncode()
+    rustc_version = proc.stdout.rstrip()
+    if rustc_version != args.expected_rustc_version:
+      raise Exception("gn arguments state that the rustc_version is %s "
+                      "but it was actually %s. Please adjust your "
+                      "gn arguments to match." %
+                      (args.expected_rustc_version, rustc_version))
+  # Ask rustc where to find the stdlib for this target.
   rustc_args = [rustc, "--print", "target-libdir"]
   if args.target:
     rustc_args.extend(["--target", args.target])
