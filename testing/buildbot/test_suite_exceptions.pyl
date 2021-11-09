@@ -2684,6 +2684,8 @@
       # Not enough capacity.
       'chromeos-betty-pi-arc-chrome',
       'chromeos-betty-pi-arc-chrome-dchecks',
+      # it sometimes flakily times out.
+      'chromeos-amd64-generic-rel',
     ],
     'modifications': {
       'chromeos-amd64-generic-rel': {
