@@ -29,6 +29,8 @@
 ./tools/certs/web-platform.test.pem
 ./tools/ci/__init__.py
 ./tools/ci/commands.json
+./tools/ci/requirements_build.txt
+./tools/ci/update_built.py
 ./tools/ci/tc/__init__.py
 ./tools/ci/tc/github_checks_output.py
 ./tools/conftest.py
