@@ -94,7 +94,8 @@ NSString* const kPasswordInputID = @"Passwd";
 // if the email field should be read-only.
 NSString* GAIASignInForm(NSString* formAction,
                          NSString* email,
-                         BOOL isReadOnly) {
+                         BOOL isReadOnly,
+                         BOOL isDisabled) {
   return [NSString
       stringWithFormat:
           @"<html><body>"
@@ -102,12 +103,14 @@ NSString* GAIASignInForm(NSString* formAction,
            "id=\"gaia_loginform\">"
            "  <input name=\"GALX\" type=\"hidden\" value=\"abcdefghij\">"
            "  <input name=\"service\" type=\"hidden\" value=\"mail\">"
-           "  <input id=\"%@\" name=\"Email\" type=\"email\" value=\"%@\" %@>"
+           "  <input id=\"%@\" name=\"Email\" type=\"email\" value=\"%@\" %@ "
+           "%@>"
            "  <input id=\"%@\" name=\"Passwd\" type=\"password\" "
            "    placeholder=\"Password\">"
            "</form></body></html>",
           formAction, kEmailInputID, email ? email : @"",
-          isReadOnly ? @"readonly" : @"", kPasswordInputID];
+          isReadOnly ? @"readonly" : @"", isDisabled ? @"disabled" : @"",
+          kPasswordInputID];
 }
 
 // Returns an autoreleased string of JSON for a parsed form.
@@ -136,7 +139,9 @@ TEST_F(PasswordControllerJsTest,
   NSString* const formName = @"gaia_loginform";
   NSString* const username = @"john.doe@gmail.com";
   NSString* const password = @"super!secret";
-  LoadHtml(GAIASignInForm(formOrigin, username, YES), GURL(origin));
+  LoadHtml(GAIASignInForm(formOrigin, username, /*isReadOnly=*/YES,
+                          /*isDisabled=*/NO),
+           GURL(origin));
   ASSERT_TRUE(SetUpUniqueIDs());
 
   EXPECT_NSEQ(
@@ -159,37 +164,6 @@ TEST_F(PasswordControllerJsTest,
 
 // Loads a page with a password form containing a username value already.
 // Checks that an attempt to fill in credentials with a different username
-// fails, as long as the field is read-only.
-TEST_F(PasswordControllerJsTest,
-       FillPasswordFormWithPrefilledUsername_FailsWhenUsernameMismatched) {
-  const std::string origin = "https://accounts.google.com/ServiceLoginAuth";
-  NSString* const formOrigin = [NSString stringWithUTF8String:origin.c_str()];
-  NSString* const formName = @"gaia_loginform";
-  NSString* const username1 = @"john.doe@gmail.com";
-  NSString* const username2 = @"jean.dubois@gmail.com";
-  NSString* const password = @"super!secret";
-  LoadHtml(GAIASignInForm(formOrigin, username1, YES), GURL(origin));
-  ASSERT_TRUE(SetUpUniqueIDs());
-
-  EXPECT_NSEQ(
-      @NO,
-      ExecuteJavaScript([NSString
-          stringWithFormat:
-              @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
-              GAIASignInFormData(formOrigin, formName), username2, password]));
-  // Verifies that the sign-in form has not been filled.
-  NSString* email_js = [NSString
-      stringWithFormat:@"document.getElementById('%@').value", kEmailInputID];
-  EXPECT_NSEQ(username1, ExecuteJavaScript(email_js));
-
-  NSString* password_js =
-      [NSString stringWithFormat:@"document.getElementById('%@').value",
-                                 kPasswordInputID];
-  EXPECT_NSEQ(@"", ExecuteJavaScript(password_js));
-}
-
-// Loads a page with a password form containing a username value already.
-// Checks that an attempt to fill in credentials with a different username
 // succeeds, as long as the field is writeable.
 TEST_F(PasswordControllerJsTest,
        FillPasswordFormWithPrefilledUsername_SucceedsByOverridingUsername) {
@@ -199,7 +173,9 @@ TEST_F(PasswordControllerJsTest,
   NSString* const username1 = @"john.doe@gmail.com";
   NSString* const username2 = @"jane.doe@gmail.com";
   NSString* const password = @"super!secret";
-  LoadHtml(GAIASignInForm(formOrigin, username1, NO), GURL(origin));
+  LoadHtml(GAIASignInForm(formOrigin, username1, /*isReadOnly=*/NO,
+                          /*isDisabled=*/NO),
+           GURL(origin));
   ASSERT_TRUE(SetUpUniqueIDs());
 
   EXPECT_NSEQ(
@@ -214,6 +190,77 @@ TEST_F(PasswordControllerJsTest,
   NSString* email_js = [NSString
       stringWithFormat:@"document.getElementById('%@').value", kEmailInputID];
   EXPECT_NSEQ(username2, ExecuteJavaScript(email_js));
+
+  NSString* password_js =
+      [NSString stringWithFormat:@"document.getElementById('%@').value",
+                                 kPasswordInputID];
+  EXPECT_NSEQ(password, ExecuteJavaScript(password_js));
+}
+
+// Loads a page with a password form containing a disabled input with username
+// value already. Checks that an attempt to fill in credentials succeeds, and
+// the password is filled.
+TEST_F(PasswordControllerJsTest,
+       FillPasswordFormWithPrefilledUsername_SucceedsWithDisabledUsername) {
+  const std::string origin = "https://accounts.google.com/ServiceLoginAuth";
+  NSString* const formOrigin = [NSString stringWithUTF8String:origin.c_str()];
+  NSString* const formName = @"gaia_loginform";
+  NSString* const username = @"john.doe@gmail.com";
+  NSString* const password = @"super!secret";
+  LoadHtml(GAIASignInForm(formOrigin, username, /*isReadOnly=*/NO,
+                          /*isDisabled=*/YES),
+           GURL(origin));
+  ASSERT_TRUE(SetUpUniqueIDs());
+
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:
+              @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
+              GAIASignInFormData(formOrigin, formName), username, password]));
+
+  // Verifies that the sign-in form has been filled with password and username
+  // value remained the same.
+  NSString* email_js = [NSString
+      stringWithFormat:@"document.getElementById('%@').value", kEmailInputID];
+  EXPECT_NSEQ(username, ExecuteJavaScript(email_js));
+
+  NSString* password_js =
+      [NSString stringWithFormat:@"document.getElementById('%@').value",
+                                 kPasswordInputID];
+  EXPECT_NSEQ(password, ExecuteJavaScript(password_js));
+}
+
+// Loads a page with a password form containing a disabled input with the value
+// that doesn't match credential username. Checks that an attempt to fill in
+// credentials succeeds, and the password is filled, and username value remained
+// the same.
+TEST_F(
+    PasswordControllerJsTest,
+    FillPasswordFormWithPrefilledUsername_SucceedsWithDisabledUsernameWithAnotherValue) {
+  const std::string origin = "https://accounts.google.com/ServiceLoginAuth";
+  NSString* const formOrigin = [NSString stringWithUTF8String:origin.c_str()];
+  NSString* const formName = @"gaia_loginform";
+  NSString* const initialInputValue = @"dummy_username_field";
+  NSString* const username = @"john.doe@gmail.com";
+  NSString* const password = @"super!secret";
+  LoadHtml(GAIASignInForm(formOrigin, initialInputValue, /*isReadOnly=*/NO,
+                          /*isDisabled=*/YES),
+           GURL(origin));
+  ASSERT_TRUE(SetUpUniqueIDs());
+
+  EXPECT_NSEQ(
+      @YES,
+      ExecuteJavaScript([NSString
+          stringWithFormat:
+              @"__gCrWeb.passwords.fillPasswordForm(%@, '%@', '%@')",
+              GAIASignInFormData(formOrigin, formName), username, password]));
+
+  // Verifies that the sign-in form has been filled with password and username
+  // value remained the same.
+  NSString* email_js = [NSString
+      stringWithFormat:@"document.getElementById('%@').value", kEmailInputID];
+  EXPECT_NSEQ(initialInputValue, ExecuteJavaScript(email_js));
 
   NSString* password_js =
       [NSString stringWithFormat:@"document.getElementById('%@').value",
