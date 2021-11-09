@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -29,12 +30,21 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/common/chrome_features.h"
+#endif
+
 namespace web_app {
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
     : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-  scoped_feature_list_.InitAndDisableFeature(
-      predictors::kSpeculativePreconnectFeature);
+  scoped_feature_list_.InitWithFeatures({}, {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary,
+#endif
+        predictors::kSpeculativePreconnectFeature
+  });
 }
 
 WebAppControllerBrowserTest::~WebAppControllerBrowserTest() = default;

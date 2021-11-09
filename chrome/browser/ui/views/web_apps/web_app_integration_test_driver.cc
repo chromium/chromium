@@ -76,6 +76,10 @@
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -1319,7 +1323,13 @@ PageActionIconView* WebAppIntegrationTestDriver::intent_picker_view() {
   return intent_picker_view;
 }
 
-WebAppIntegrationBrowserTest::WebAppIntegrationBrowserTest() : helper_(this) {}
+WebAppIntegrationBrowserTest::WebAppIntegrationBrowserTest() : helper_(this) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  scoped_feature_list_.InitWithFeatures(
+      {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+#endif
+}
+
 WebAppIntegrationBrowserTest::~WebAppIntegrationBrowserTest() = default;
 
 void WebAppIntegrationBrowserTest::SetUp() {

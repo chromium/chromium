@@ -91,6 +91,10 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/views/image_model_utils.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 using content::RenderFrameHost;
 using content::WebContents;
 using extensions::Extension;
@@ -177,8 +181,12 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   HostedOrWebAppTest()
       : app_browser_(nullptr),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    scoped_feature_list_.InitAndDisableFeature(
-        predictors::kSpeculativePreconnectFeature);
+    scoped_feature_list_.InitWithFeatures({}, {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary,
+#endif
+          predictors::kSpeculativePreconnectFeature
+    });
   }
 
   HostedOrWebAppTest(const HostedOrWebAppTest&) = delete;

@@ -72,6 +72,10 @@
 #include "chrome/browser/web_applications/url_handler_manager_impl.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -214,7 +218,12 @@ void WaitForUpdatePendingCallback(const GURL& url) {
 
 class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
  public:
-  ManifestUpdateManagerBrowserTest() = default;
+  ManifestUpdateManagerBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitWithFeatures(
+        {}, {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary});
+#endif
+  }
   ManifestUpdateManagerBrowserTest(const ManifestUpdateManagerBrowserTest&) =
       delete;
   ManifestUpdateManagerBrowserTest& operator=(
@@ -439,6 +448,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer http_server_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<base::RunLoop> shortcut_run_loop_;
   absl::optional<SkColor> updated_shortcut_top_left_color_;
   ScopedOsHooksSuppress os_hooks_suppress_;

@@ -13,6 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -312,6 +313,9 @@ class WebAppIntegrationBrowserTest
 
  protected:
   WebAppIntegrationTestDriver helper_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace web_app
