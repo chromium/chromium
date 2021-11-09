@@ -21,7 +21,6 @@
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -229,24 +228,22 @@ int main(int argc, char** argv) {
   InitUI ui;
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    ui::OzonePlatform::InitParams params;
-    params.single_process = true;
-    ui::OzonePlatform::InitializeForUI(params);
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForUI(params);
 
-    base::Thread::Options options;
-    options.message_pump_type = base::MessagePumpType::UI;
-    CHECK(rendering_thread.StartWithOptions(std::move(options)));
-    base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-    rendering_thread.task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&SetupOzone, &done));
-    done.Wait();
+  base::Thread::Options options;
+  options.message_pump_type = base::MessagePumpType::UI;
+  CHECK(rendering_thread.StartWithOptions(std::move(options)));
+  base::WaitableEvent done(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                           base::WaitableEvent::InitialState::NOT_SIGNALED);
+  rendering_thread.task_runner()->PostTask(FROM_HERE,
+                                           base::BindOnce(&SetupOzone, &done));
+  done.Wait();
 
-    // To create dmabuf through gbm, Ozone needs to be set up.
-    gpu_helper = std::make_unique<ui::OzoneGpuTestHelper>();
-    gpu_helper->Initialize();
-  }
+  // To create dmabuf through gbm, Ozone needs to be set up.
+  gpu_helper = std::make_unique<ui::OzoneGpuTestHelper>();
+  gpu_helper->Initialize();
 #endif
 
   return DemoMain();

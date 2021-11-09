@@ -19,8 +19,8 @@ enable_gl_renderer_tests = enable_gl_backend_tests && !is_android && !is_win
 # LSAN issue: https://crbug.com/971357
 # Fuchsia ARM64 https://crbug.com/1058247
 enable_vulkan_backend_tests =
-    enable_vulkan &&
-    ((use_x11 && !is_cfi && !is_lsan) || (is_fuchsia && target_cpu == "x64"))
+    enable_vulkan && ((is_linux && !is_chromecast && !is_cfi && !is_lsan) ||
+                      (is_fuchsia && target_cpu == "x64"))
 
 enable_dawn_backend_tests = skia_use_dawn && enable_skia_dawn_gtests
 

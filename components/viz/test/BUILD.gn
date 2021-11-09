@@ -127,9 +127,6 @@ viz_source_set("test_suite") {
     "//ui/events/platform",
     "//ui/gl:test_support",
   ]
-  if (use_x11) {
-    deps += [ "//ui/events/platform/x11" ]
-  }
 }
 
 viz_source_set("unit_tests") {
