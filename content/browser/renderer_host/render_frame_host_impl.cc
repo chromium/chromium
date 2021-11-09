@@ -4841,7 +4841,9 @@ void RenderFrameHostImpl::UpdateFaviconURL(
 }
 
 void RenderFrameHostImpl::ScaleFactorChanged(float scale) {
-  delegate_->OnPageScaleFactorChanged(this, scale);
+  DCHECK(!GetParent());
+  GetPage().set_page_scale_factor(scale);
+  delegate_->OnPageScaleFactorChanged(GetPage());
 }
 
 void RenderFrameHostImpl::ContentsPreferredSizeChanged(

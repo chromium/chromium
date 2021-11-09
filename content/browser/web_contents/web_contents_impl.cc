@@ -6035,31 +6035,14 @@ bool WebContentsImpl::IsAllowedToGoToEntryAtOffset(int32_t offset) {
   return !delegate_ || delegate_->OnGoToEntryOffset(offset);
 }
 
-void WebContentsImpl::OnPageScaleFactorChanged(RenderFrameHostImpl* source,
-                                               float page_scale_factor) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnPageScaleFactorChanged",
-                        "render_frame_host", source, "page_scale_factor",
-                        page_scale_factor);
-#if !defined(OS_ANDROID)
-  // While page scale factor is used on mobile, this PageScaleFactorIsOne logic
-  // is only needed on desktop.
-  bool was_one = page_scale_factor_ == 1.f;
-  bool is_one = page_scale_factor == 1.f;
-  if (is_one != was_one) {
-    HostZoomMapImpl* host_zoom_map =
-        static_cast<HostZoomMapImpl*>(HostZoomMap::GetForWebContents(this));
+void WebContentsImpl::OnPageScaleFactorChanged(PageImpl& source) {
+  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnPageScaleFactorChanged",
+                        "source", source);
 
-    if (host_zoom_map) {
-      host_zoom_map->SetPageScaleFactorIsOneForView(
-          source->GetProcess()->GetID(),
-          source->GetRenderViewHost()->GetRoutingID(), is_one);
-    }
+  if (source.IsPrimary()) {
+    observers_.NotifyObservers(&WebContentsObserver::OnPageScaleFactorChanged,
+                               source.page_scale_factor());
   }
-#endif  // !defined(OS_ANDROID)
-
-  page_scale_factor_ = page_scale_factor;
-  observers_.NotifyObservers(&WebContentsObserver::OnPageScaleFactorChanged,
-                             page_scale_factor);
 }
 
 void WebContentsImpl::EnumerateDirectory(

@@ -642,8 +642,6 @@ void OffTheRecordProfileImpl::OnParentZoomLevelChanged(
           change.host,
           change.zoom_level);
       return;
-    case HostZoomMap::PAGE_SCALE_IS_ONE_CHANGED:
-      return;
   }
 }
 

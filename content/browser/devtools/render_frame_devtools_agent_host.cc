@@ -276,7 +276,7 @@ void RenderFrameDevToolsAgentHost::SetFrameTreeNode(
                  ? WebContentsImpl::FromFrameTreeNode(frame_tree_node_)
                  : nullptr;
   if (wc)
-    page_scale_factor_ = wc->page_scale_factor();
+    page_scale_factor_ = wc->GetPrimaryPage().page_scale_factor();
   WebContentsObserver::Observe(wc);
 }
 

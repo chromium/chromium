@@ -1355,8 +1355,6 @@ void SiteSettingsHandler::SendZoomLevels() {
         // These are not stored in preferences and get cleared on next browser
         // start. Therefore, we don't care for them.
         continue;
-      case content::HostZoomMap::PAGE_SCALE_IS_ONE_CHANGED:
-        continue;
       case content::HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM:
         NOTREACHED();
     }

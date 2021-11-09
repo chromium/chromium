@@ -85,6 +85,10 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
 
   virtual base::WeakPtr<Page> GetWeakPtr() = 0;
 
+  // Whether the most recent page scale factor sent by the main frame's renderer
+  // is 1 (i.e. no magnification).
+  virtual bool IsPageScaleFactorOne() = 0;
+
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's
   // method and define a new GetMainDocument() returning RenderFrameHostImpl.

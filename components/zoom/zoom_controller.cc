@@ -330,6 +330,7 @@ void ZoomController::DidFinishNavigation(
   // zoom level from the old one.
   UpdateState(std::string());
   DCHECK(!event_data_);
+  last_page_scale_factor_was_one_ = PageScaleFactorIsOne();
 }
 
 void ZoomController::WebContentsDestroyed() {
@@ -353,6 +354,16 @@ void ZoomController::RenderFrameHostChanged(
   zoom_subscription_ =
       host_zoom_map_->AddZoomLevelChangedCallback(base::BindRepeating(
           &ZoomController::OnZoomLevelChanged, base::Unretained(this)));
+}
+
+void ZoomController::OnPageScaleFactorChanged(float page_scale_factor) {
+  const bool is_one = page_scale_factor == 1.f;
+  if (is_one != last_page_scale_factor_was_one_) {
+    // We send a no-op zoom change to inform observers that PageScaleFactorIsOne
+    // has changed.
+    UpdateState(std::string());
+    last_page_scale_factor_was_one_ = is_one;
+  }
 }
 
 void ZoomController::OnZoomLevelChanged(
@@ -404,19 +415,21 @@ void ZoomController::UpdateState(const std::string& host) {
 }
 
 void ZoomController::SetPageScaleFactorIsOneForTesting(bool is_one) {
-  int process_id = web_contents()
-                       ->GetMainFrame()
-                       ->GetRenderViewHost()
-                       ->GetProcess()
-                       ->GetID();
-  int view_id =
-      web_contents()->GetMainFrame()->GetRenderViewHost()->GetRoutingID();
-  host_zoom_map_->SetPageScaleFactorIsOneForView(process_id, view_id, is_one);
+  page_scale_factor_is_one_for_testing_ = is_one;
+
+  if (is_one != last_page_scale_factor_was_one_) {
+    // See OnPageScaleFactorChanged for why this is done.
+    UpdateState(std::string());
+    last_page_scale_factor_was_one_ = is_one;
+  }
 }
 
 bool ZoomController::PageScaleFactorIsOne() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return content::HostZoomMap::PageScaleFactorIsOne(web_contents());
+  if (page_scale_factor_is_one_for_testing_.has_value())
+    return page_scale_factor_is_one_for_testing_.value();
+
+  return web_contents()->GetPrimaryPage().IsPageScaleFactorOne();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ZoomController);

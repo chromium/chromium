@@ -544,9 +544,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       const std::string& data,
       IsClipboardPasteContentAllowedCallback callback);
 
-  // Notified when the main frame adjusts the page scale.
-  virtual void OnPageScaleFactorChanged(RenderFrameHostImpl* source,
-                                        float page_scale_factor) {}
+  // Notified when the main frame of `source` adjusts the page scale.
+  virtual void OnPageScaleFactorChanged(PageImpl& source) {}
 
   // Binds a ScreenOrientation object associated to |render_frame_host|.
   virtual void BindScreenOrientation(

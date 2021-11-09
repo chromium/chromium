@@ -742,8 +742,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void IsClipboardPasteContentAllowedWrapperCallback(
       IsClipboardPasteContentAllowedCallback callback,
       ClipboardPasteContentAllowed allowed);
-  void OnPageScaleFactorChanged(RenderFrameHostImpl* source,
-                                float page_scale_factor) override;
+  void OnPageScaleFactorChanged(PageImpl& source) override;
   void BindScreenOrientation(
       RenderFrameHost* rfh,
       mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
@@ -1239,8 +1238,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   }
 
   void NotifyOnJavaScriptDialogDismiss(base::OnceClosure callback);
-
-  float page_scale_factor() { return page_scale_factor_; }
 
   bool has_persistent_video() { return has_persistent_video_; }
 
@@ -2137,8 +2134,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   std::unique_ptr<RenderWidgetHostInputEventRouter> rwh_input_event_router_;
-
-  float page_scale_factor_ = 1;
 
   // TextInputManager tracks the IME-related state for all the
   // RenderWidgetHostViews on this WebContents. Only exists on the outermost

@@ -45,6 +45,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   bool IsPrimary() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   base::WeakPtr<Page> GetWeakPtr() override;
+  bool IsPageScaleFactorOne() override;
 
   void UpdateManifestUrl(const GURL& manifest_url);
 
@@ -136,6 +137,9 @@ class CONTENT_EXPORT PageImpl : public Page {
   }
   double load_progress() const { return load_progress_; }
 
+  void set_page_scale_factor(float scale) { page_scale_factor_ = scale; }
+  float page_scale_factor() const { return page_scale_factor_; }
+
  private:
   void DidActivateAllRenderViewsForPrerendering();
 
@@ -217,6 +221,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   // TODO(falken): Plumb NavigationRequest to
   // RenderFrameHostManager::CommitPending and remove this.
   absl::optional<base::TimeTicks> activation_start_time_for_prerendering_;
+
+  // The most recent page scale factor sent by the main frame's renderer.
+  // Note that the renderer uses a different mechanism to persist its page
+  // scale factor when performing session history navigations (see
+  // blink::PageState).
+  float page_scale_factor_ = 1.f;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

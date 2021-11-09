@@ -73,6 +73,10 @@ base::WeakPtr<Page> PageImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+bool PageImpl::IsPageScaleFactorOne() {
+  return page_scale_factor_ == 1.f;
+}
+
 void PageImpl::OnFirstVisuallyNonEmptyPaint() {
   did_first_visually_non_empty_paint_ = true;
   delegate_.OnFirstVisuallyNonEmptyPaint(*this);

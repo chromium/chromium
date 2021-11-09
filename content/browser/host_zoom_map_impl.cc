@@ -104,14 +104,6 @@ double HostZoomMap::GetZoomLevel(WebContents* web_contents) {
       static_cast<WebContentsImpl*>(web_contents));
 }
 
-bool HostZoomMap::PageScaleFactorIsOne(WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
-      HostZoomMap::GetForWebContents(web_contents));
-  return host_zoom_map->PageScaleFactorIsOneForWebContents(
-      static_cast<WebContentsImpl*>(web_contents));
-}
-
 void HostZoomMap::SetZoomLevel(WebContents* web_contents, double level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
@@ -392,36 +384,6 @@ void HostZoomMapImpl::SetZoomLevelForWebContents(
   }
 }
 
-void HostZoomMapImpl::SetPageScaleFactorIsOneForView(int render_process_id,
-                                                     int render_view_id,
-                                                     bool is_one) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  view_page_scale_factors_are_one_[RenderViewKey(render_process_id,
-                                                 render_view_id)] = is_one;
-  HostZoomMap::ZoomLevelChange change;
-  change.mode = HostZoomMap::PAGE_SCALE_IS_ONE_CHANGED;
-  zoom_level_changed_callbacks_.Notify(change);
-}
-
-bool HostZoomMapImpl::PageScaleFactorIsOneForWebContents(
-    WebContentsImpl* web_contents_impl) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!web_contents_impl->GetRenderViewHost()->GetProcess())
-    return true;
-
-  const auto it = view_page_scale_factors_are_one_.find(RenderViewKey(
-      web_contents_impl->GetRenderViewHost()->GetProcess()->GetID(),
-      web_contents_impl->GetRenderViewHost()->GetRoutingID()));
-  return it != view_page_scale_factors_are_one_.end() ? it->second : true;
-}
-
-void HostZoomMapImpl::ClearPageScaleFactorIsOneForView(int render_process_id,
-                                                       int render_view_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  view_page_scale_factors_are_one_.erase(
-      RenderViewKey(render_process_id, render_view_id));
-}
-
 bool HostZoomMapImpl::UsesTemporaryZoomLevel(int render_process_id,
                                              int render_view_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -519,7 +481,6 @@ void HostZoomMapImpl::WillCloseRenderView(int render_process_id,
                                           int render_view_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ClearTemporaryZoomLevel(render_process_id, render_view_id);
-  ClearPageScaleFactorIsOneForView(render_process_id, render_view_id);
 }
 
 HostZoomMapImpl::~HostZoomMapImpl() {

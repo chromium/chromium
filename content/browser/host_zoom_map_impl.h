@@ -30,10 +30,6 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   ~HostZoomMapImpl() override;
 
   // HostZoomMap implementation:
-  void SetPageScaleFactorIsOneForView(
-      int render_process_id, int render_view_id, bool is_one) override;
-  void ClearPageScaleFactorIsOneForView(
-      int render_process_id, int render_view_id) override;
   void CopyFrom(HostZoomMap* copy) override;
   double GetZoomLevelForHostAndScheme(const std::string& scheme,
                                       const std::string& host) override;
@@ -64,9 +60,6 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   // Returns the current zoom level for the specified WebContents. This may
   // be a temporary zoom level, depending on UsesTemporaryZoomLevel().
   double GetZoomLevelForWebContents(WebContentsImpl* web_contents_impl);
-
-  bool PageScaleFactorIsOneForWebContents(
-      WebContentsImpl* web_contents_impl) const;
 
   // Sets the zoom level for this WebContents. If this WebContents is using
   // a temporary zoom level, then level is only applied to this WebContents.
@@ -107,7 +100,6 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   };
 
   typedef std::map<RenderViewKey, double> TemporaryZoomLevels;
-  typedef std::map<RenderViewKey, bool> ViewPageScaleFactorsAreOne;
 
   double GetZoomLevelForHost(const std::string& host) const;
 
@@ -132,9 +124,6 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
   HostZoomLevels host_zoom_levels_;
   SchemeHostZoomLevels scheme_host_zoom_levels_;
   double default_zoom_level_;
-
-  // Page scale factor data for each renderer.
-  ViewPageScaleFactorsAreOne view_page_scale_factors_are_one_;
 
   TemporaryZoomLevels temporary_zoom_levels_;
 
