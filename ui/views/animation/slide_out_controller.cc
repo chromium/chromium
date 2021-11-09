@@ -186,7 +186,7 @@ void SlideOutController::SetTransformWithAnimationIfNecessary(
     // after the animation finishes.
     AnimationBuilder()
         .OnEnded(base::BindOnce(&SlideOutController::OnAnimationsCompleted,
-                                base::Unretained(this)))
+                                weak_ptr_factory_.GetWeakPtr()))
         .Once()
         .SetDuration(animation_duration)
         .SetTransform(layer, transform, kSwipeTweenType);
