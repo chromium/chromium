@@ -12,6 +12,7 @@
 // can't depend on it.
 #include "chrome/browser/signin/identity_manager_factory.h"  // nogncheck
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -82,6 +83,12 @@ static jboolean JNI_SafeBrowsingBridge_HasAccountForLeakCheckRequest(
           ProfileManager::GetLastUsedProfile());
   return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
       identity_manager);
+}
+
+static jboolean JNI_SafeBrowsingBridge_IsLeakDetectionUnauthenticatedEnabled(
+    JNIEnv* env) {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kLeakDetectionUnauthenticated);
 }
 
 }  // namespace safe_browsing

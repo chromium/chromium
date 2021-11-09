@@ -334,6 +334,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &page_info::kPageInfoAboutThisSite,
     &password_manager::features::kBiometricTouchToFill,
     &password_manager::features::kEditPasswordsInSettings,
+    &password_manager::features::kLeakDetectionUnauthenticated,
     &password_manager::features::kPasswordScriptsFetching,
     &password_manager::features::kRecoverFromNeverSaveAndroid,
     &password_manager::features::kUnifiedPasswordManagerAndroid,
