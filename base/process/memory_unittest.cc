@@ -282,9 +282,9 @@ TEST_F(OutOfMemoryDeathTest, NewHandlerGeneratesUnhandledException) {
 }
 #endif  // defined(OS_WIN)
 
-// OS X and Android have no 2Gb allocation limit.
+// OS X has no 2Gb allocation limit.
 // See https://crbug.com/169327.
-#if !defined(OS_MAC) && !defined(OS_ANDROID)
+#if !defined(OS_MAC)
 TEST_F(OutOfMemoryDeathTest, SecurityNew) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
@@ -336,7 +336,7 @@ TEST_F(OutOfMemoryDeathTest, SecurityAlignedRealloc) {
   });
 }
 #endif  // defined(OS_WIN)
-#endif  // !defined(OS_MAC) && !defined(OS_ANDROID)
+#endif  // !defined(OS_MAC)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 
