@@ -38,6 +38,22 @@ chromium-metrics-reviews@google.com.
   <variant name="Widevine" summary="Widevine key system"/>
 </variants>
 
+<variants name="KeySystemWithRobustness">
+  <variant name="ClearKey" summary="Clear Key key system"/>
+  <variant name="Unknown" summary="Unknown key system"/>
+  <variant name="Widevine" summary="Widevine key system">
+    <obsolete>
+      Deprecated as of 11/2021, when we split some Media.EME.Widevine UMAs into
+      Media.EME.Widevine.HardwareSecure and Media.EME.Widevine.SoftwareSecure
+      ones.
+    </obsolete>
+  </variant>
+  <variant name="Widevine.HardwareSecure"
+      summary="Hardware secure Widevine key system"/>
+  <variant name="Widevine.SoftwareSecure"
+      summary="Software secure Widevine key system"/>
+</variants>
+
 <histogram name="Media.AImageReaderGLOwner.AcquireImageResult"
     enum="MediaStatus" expires_after="2022-04-17">
   <owner>vikassoni@chromium.org</owner>
@@ -2058,7 +2074,7 @@ chromium-metrics-reviews@google.com.
     each time a CDM instance creation is attempted, usually as a result of
     Javascript call of createMediaKeys().
   </summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.CreateCdmTime" units="ms"
@@ -2066,7 +2082,7 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>Time took to create the CDM instance for {KeySystem}.</summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.CreateSession" enum="EmeSessionType"
@@ -2085,7 +2101,7 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>EME session type passed into CreateSession.</summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.KeyStatusSystemCode"
@@ -2093,7 +2109,7 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>System code associated with key status for {KeySystem}.</summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.LibraryCdmAvailable"
@@ -2114,7 +2130,7 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>System code in promise rejection.</summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
 </histogram>
 
 <histogram name="Media.EME.{KeySystem}.TimeTo.{EmeApi}" units="ms"
@@ -2122,7 +2138,7 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time it takes to resolve a EME promise.</summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
@@ -2131,7 +2147,7 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>Result of EME promises that were handled by Chromium code.</summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
@@ -2140,7 +2156,7 @@ chromium-metrics-reviews@google.com.
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>System code in promise rejection.</summary>
-  <token key="KeySystem" variants="KeySystem"/>
+  <token key="KeySystem" variants="KeySystemWithRobustness"/>
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
