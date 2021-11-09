@@ -41,6 +41,7 @@ class Vector;
 
 class AtomicString;
 class CaseMap;
+class MaybeAtomicString;
 class OrdinalNumber;
 class SharedBuffer;
 class String;
@@ -56,6 +57,7 @@ using WTF::Vector;
 
 using WTF::AtomicString;
 using WTF::CaseMap;
+using WTF::MaybeAtomicString;
 using WTF::SharedBuffer;
 using WTF::String;
 using WTF::StringBuffer;

@@ -210,6 +210,8 @@ class CORE_EXPORT NativeValueTraitsStringAdapter {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator AtomicString() const { return ToString<AtomicString>(); }
   // NOLINTNEXTLINE(google-explicit-constructor)
+  operator MaybeAtomicString() const { return ToString<MaybeAtomicString>(); }
+  // NOLINTNEXTLINE(google-explicit-constructor)
   operator StringView() const& { return ToStringView(); }
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator StringView() const&& = delete;

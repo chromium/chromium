@@ -75,14 +75,16 @@ class StringResourceBase {
     return String(GetStringImpl());
   }
 
-  AtomicString GetAtomicString() {
+  // StringType: AtomicString, MaybeAtomicString
+  template <typename StringType>
+  StringType GetString() {
 #if DCHECK_IS_ON()
     DCHECK(thread_id_ == WTF::CurrentThread());
 #endif
     if (!parkable_string_.IsNull()) {
       DCHECK(plain_string_.IsNull());
       DCHECK(atomic_string_.IsNull());
-      return AtomicString(parkable_string_.ToString());
+      return StringType(parkable_string_.ToString());
     }
     if (atomic_string_.IsNull()) {
       atomic_string_ = AtomicString(plain_string_);
@@ -92,7 +94,7 @@ class StringResourceBase {
             atomic_string_.CharactersSizeInBytes());
       }
     }
-    return atomic_string_;
+    return StringType(atomic_string_);
   }
 
  protected:
@@ -160,6 +162,9 @@ class StringResource16 final : public StringResource16Base {
   explicit StringResource16(const AtomicString& string)
       : StringResource16Base(string) {}
 
+  explicit StringResource16(const MaybeAtomicString& string)
+      : StringResource16Base(string.ToAtomicString()) {}
+
   StringResource16(const StringResource16&) = delete;
   StringResource16& operator=(const StringResource16&) = delete;
 
@@ -222,6 +227,9 @@ class StringResource8 final : public StringResource8Base {
 
   explicit StringResource8(const AtomicString& string)
       : StringResource8Base(string) {}
+
+  explicit StringResource8(const MaybeAtomicString& string)
+      : StringResource8Base(string.ToAtomicString()) {}
 
   StringResource8(const StringResource8&) = delete;
   StringResource8& operator=(const StringResource8&) = delete;

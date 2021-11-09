@@ -41,6 +41,14 @@ class WTF_EXPORT AtomicStringTable final {
   scoped_refptr<StringImpl> Add(const LChar* chars, unsigned length);
   scoped_refptr<StringImpl> Add(const UChar* chars, unsigned length);
 
+  template <typename CharType>
+  scoped_refptr<StringImpl> Find(const CharType* chars, unsigned length) {
+    return WeakFindInternal(chars, length);
+  }
+  scoped_refptr<StringImpl> Find(const StringView& string) {
+    return WeakFindInternal(string);
+  }
+
   // Adding UTF8.
   // Returns null if the characters contain invalid utf8 sequences.
   // Pass null for the charactersEnd to automatically detect the length.
@@ -88,22 +96,17 @@ class WTF_EXPORT AtomicStringTable final {
     if (LIKELY(string->IsAtomic()))
       return WeakResult(string);
 
-    return WeakFindSlow(string);
+    return WeakResult(WeakFindSlow(string));
   }
 
   WeakResult WeakFind(const StringView& string) {
-    // Mirror the empty logic in Add().
-    if (UNLIKELY(!string.length()))
-      return WeakResult(StringImpl::empty_);
-
-    if (LIKELY(string.IsAtomic()))
-      return WeakResult(string.SharedImpl());
-
-    return WeakFindSlow(string);
+    return WeakResult(WeakFindInternal(string));
   }
 
-  WeakResult WeakFind(const LChar* chars, unsigned length);
-  WeakResult WeakFind(const UChar* chars, unsigned length);
+  template <typename CharType>
+  WeakResult WeakFind(const CharType* chars, unsigned length) {
+    return WeakResult(WeakFindInternal(chars, length));
+  }
 
   WeakResult WeakFindLowercased(const StringView& string) {
     // Mirror the empty logic in Add().
@@ -124,8 +127,22 @@ class WTF_EXPORT AtomicStringTable final {
   template <typename T, typename HashTranslator>
   inline scoped_refptr<StringImpl> AddToStringTable(const T& value);
 
-  WeakResult WeakFindSlow(StringImpl*);
-  WeakResult WeakFindSlow(const StringView&);
+  StringImpl* WeakFindInternal(const LChar* chars, unsigned length);
+  StringImpl* WeakFindInternal(const UChar* chars, unsigned length);
+  StringImpl* WeakFindInternal(const StringView& string) {
+    // Mirror the empty logic in Add().
+    if (UNLIKELY(!string.length()))
+      return StringImpl::empty_;
+
+    StringImpl* shared_impl = string.SharedImpl();
+    if (LIKELY(shared_impl && shared_impl->IsAtomic()))
+      return shared_impl;
+
+    return WeakFindSlow(string);
+  }
+
+  StringImpl* WeakFindSlow(StringImpl*);
+  StringImpl* WeakFindSlow(const StringView&);
   WeakResult WeakFindLowercasedSlow(const StringView& string);
 
   HashSet<StringImpl*> table_;
