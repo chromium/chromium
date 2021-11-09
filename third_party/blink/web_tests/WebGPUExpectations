@@ -10,7 +10,7 @@
 # web_tests/wpt_internal/webgpu/cts.https.html.
 # You can add expectations which are at a finer granularity than the list of
 # "variants" already in that file: just edit this file, then run
-# third_party/blink/web_tests/webgpu/regenerate_internal_cts_html.sh. The
+# third_party/webgpu-cts/scripts/run_regenerate_internal_cts_html.py. The
 # script does not need to be run if only Failure or Skip expectations are added.
 #
 # Expectations in this file must not (currently) use wildcards.
@@ -71,8 +71,38 @@ crbug.com/1257856 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platfo
 crbug.com/dawn/986 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,vertex_state:vertex_shader_input_location_limit:* [ Failure ]
 
 # Temporary suppression for a default limit change.
-crbug.com/dawn/1173 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,adapter,requestDevice_limits:supported_limits:limit="maxUniformBufferBindingSize" [ Failure ]
-crbug.com/dawn/1173 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxUniformBufferBindingSize" [ Failure ]
+crbug.com/dawn/1173 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,adapter,requestDevice_limits:supported_limits:limit="maxUniformBufferBindingSize";* [ Failure ]
+crbug.com/dawn/1173 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxUniformBufferBindingSize";* [ Failure ]
+
+# Temporary suppression for CopyEI2T's new supported destination formats
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="r8unorm";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="r16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="r32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="rg16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="rg32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="rgba16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,queue,copyToTexture,CopyExternalImageToTexture:destination_texture,format:format="rgba32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:dstColorFormat="r8unorm";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:dstColorFormat="r16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:dstColorFormat="r32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:dstColorFormat="rg16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:dstColorFormat="rg32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:dstColorFormat="rgba16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:dstColorFormat="rgba32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_canvas:dstColorFormat="r8unorm";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_canvas:dstColorFormat="r16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_canvas:dstColorFormat="r32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_canvas:dstColorFormat="rg16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_canvas:dstColorFormat="rg32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_canvas:dstColorFormat="rgba16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_canvas:dstColorFormat="rgba32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:dstColorFormat="r8unorm";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:dstColorFormat="r16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:dstColorFormat="r32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:dstColorFormat="rg16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:dstColorFormat="rg32float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:dstColorFormat="rgba16float";* [ Failure ]
+crbug.com/dawn/1140 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:dstColorFormat="rgba32float";* [ Failure ]
 
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
@@ -302,10 +332,6 @@ crbug.com/tint/1216 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution
 crbug.com/tint/1216 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="read";containerType="vector";* [ Crash ]
 crbug.com/tint/1216 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="write";containerType="vector";* [ Crash ]
 
-[ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:abs_uint_hex:* [ Failure ]
-[ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";access="read";containerType="vector";* [ Failure ]
-
-
 # maxArrayLayoutCount limit should be 256 instead of 2048
 crbug.com/dawn/685 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:size=[4,4,2047];* [ Failure ]
 crbug.com/dawn/685 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:size=[4,4,2048];* [ Failure ]
@@ -431,6 +457,7 @@ crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,e
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=27;* [ Failure ]
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=28;* [ Failure ]
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=29;* [ Failure ]
+
 ###
 ### Linux (Vulkan) specific
 ###
@@ -466,6 +493,12 @@ crbug.com/1005284 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,vali
 # Fails once then passes once, on ~every build, on Linux/NVIDIA.
 crbug.com/dawn/1095 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:* [ Failure ]
 
+[ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,builtin,abs:abs_uint_hex:* [ Failure ]
+[ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";access="read";containerType="vector";* [ Failure ]
+
+# (NVIDIA-only) Started failing when the test was added.
+crbug.com/tint/1287 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,shader_io,shared_structs:shared_between_stages:* [ Failure ]
+
 ###
 ### Windows (D3D12) specific
 ###
@@ -488,6 +521,9 @@ crbug.com/1237175 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operat
 
 # (NVIDIA-only) Test times out. Issue with hardware decoding?
 crbug.com/1238241 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,external_texture,video:importExternalTexture,sample:* [ Skip ]
+
+# (NVIDIA-only) Started failing when the test was added.
+crbug.com/tint/1287 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,shader_io,shared_structs:shared_between_stages:* [ Failure ]
 
 # (Intel-only) Unexpected result. Possibly due to using dst-alpha on an attachment with no alpha channel.
 crbug.com/dawn/1063 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pipeline,pipeline_output_targets:color,component_count,blend:* [ Failure ]
