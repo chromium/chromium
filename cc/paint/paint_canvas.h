@@ -11,6 +11,7 @@
 #include "cc/paint/node_id.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
+#include "cc/paint/skottie_frame_data.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 
 class SkTextBlob;
@@ -181,10 +182,13 @@ class CC_PAINT_EXPORT PaintCanvas {
 
   // Draws the frame of the |skottie| animation specified by the normalized time
   // t [0->first frame..1->last frame] at the destination bounds given by |dst|
-  // onto the canvas.
+  // onto the canvas. |images| is a map from asset id to the corresponding image
+  // to use when rendering this frame; it may be empty if this animation frame
+  // does not contain any images in it.
   virtual void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                            const SkRect& dst,
-                           float t) = 0;
+                           float t,
+                           SkottieFrameDataMap images) = 0;
 
   virtual void drawTextBlob(sk_sp<SkTextBlob> blob,
                             SkScalar x,

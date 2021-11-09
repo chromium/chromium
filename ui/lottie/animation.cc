@@ -5,6 +5,7 @@
 #include "ui/lottie/animation.h"
 
 #include "base/trace_event/trace_event.h"
+#include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -198,7 +199,7 @@ void Animation::PaintFrame(gfx::Canvas* canvas,
                            const gfx::Size& size) {
   DCHECK_GE(t, 0.f);
   DCHECK_LE(t, 1.f);
-  canvas->DrawSkottie(skottie(), gfx::Rect(size), t);
+  canvas->DrawSkottie(skottie(), gfx::Rect(size), t, cc::SkottieFrameDataMap());
 }
 
 void Animation::InitTimer(const base::TimeTicks& timestamp) {

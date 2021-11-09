@@ -120,7 +120,8 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
                      SkCanvas::SrcRectConstraint constraint) override;
   void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                    const SkRect& dst,
-                   float t) override;
+                   float t,
+                   SkottieFrameDataMap images) override;
   void drawTextBlob(sk_sp<SkTextBlob> blob,
                     SkScalar x,
                     SkScalar y,

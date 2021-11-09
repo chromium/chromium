@@ -5,6 +5,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 
 #include "base/bind.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_recorder.h"
@@ -312,7 +313,16 @@ void SkiaPaintCanvas::drawImageRect(const PaintImage& image,
 
 void SkiaPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                                   const SkRect& dst,
-                                  float t) {
+                                  float t,
+                                  SkottieFrameDataMap images) {
+  if (!images.empty()) {
+    // This is not implemented solely because there's no use case yet. To
+    // implement, we could retrieve the underlying SkImage from each
+    // PaintImage in |images| here and call SkottieWrapper::SetImageForAsset().
+    NOTIMPLEMENTED()
+        << "Rendering skottie frames with image assets directly to a "
+           "SkiaPaintCanvas is currently not supported.";
+  }
   skottie->Draw(canvas_, t, dst);
 }
 

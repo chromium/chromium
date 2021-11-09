@@ -286,10 +286,9 @@ void RecordPaintCanvas::drawImageRect(const PaintImage& image,
 
 void RecordPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                                     const SkRect& dst,
-                                    float t) {
-  // TODO(crbug.com/1266051): Fill in SkottieFrameDataMap. Feature is currently
-  // under development and just haven't gotten to it yet.
-  list_->push<DrawSkottieOp>(std::move(skottie), dst, t, SkottieFrameDataMap());
+                                    float t,
+                                    SkottieFrameDataMap images) {
+  list_->push<DrawSkottieOp>(std::move(skottie), dst, t, std::move(images));
 }
 
 void RecordPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,
