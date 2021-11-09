@@ -186,6 +186,7 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
       if (new_state_shown && old_state_hidden) {
         blink::RecordUMAEventPageShowPersisted(
             blink::EventPageShowPersisted::kYesInBrowser);
+        new_state->should_dispatch_pageshow_for_debugging = true;
       } else {
         NOTREACHED();
       }
@@ -220,6 +221,10 @@ PageLifecycleStateManager::CalculatePageLifecycleState() {
           ? blink::mojom::PageVisibilityState::kHidden
           : frame_tree_visibility_;
   state->eviction_enabled = eviction_enabled_;
+  // TODO(https://crbug.com/1234634): Remove this. It's for temporary
+  // debugging.
+  // This may become true later.
+  state->should_dispatch_pageshow_for_debugging = false;
   return state;
 }
 

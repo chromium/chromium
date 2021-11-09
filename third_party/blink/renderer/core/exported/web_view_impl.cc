@@ -35,6 +35,8 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -2358,6 +2360,20 @@ void WebViewImpl::SetPageLifecycleStateInternal(
       GetPage()->DispatchedPagehideAndStillHidden();
   bool eviction_changed =
       new_state->eviction_enabled != old_state->eviction_enabled;
+
+  if (new_state->should_dispatch_pageshow_for_debugging) {
+    if (!dispatching_pageshow) {
+      SCOPED_CRASH_KEY_NUMBER("Bug1234634", "old-pagehide-dispatch",
+                              static_cast<int>(old_state->pagehide_dispatch));
+      SCOPED_CRASH_KEY_NUMBER("Bug1234634", "new-pagehide-dispatch",
+                              static_cast<int>(new_state->pagehide_dispatch));
+      base::debug::DumpWithoutCrashing();
+      NOTREACHED();
+    }
+  }
+  // Reset to false as this object can be reused in same-site main frame
+  // navigations.
+  new_state->should_dispatch_pageshow_for_debugging = false;
 
   if (dispatching_pagehide) {
     RemoveFocusAndTextInputState();
