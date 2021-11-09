@@ -18,7 +18,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/views/widget/widget.h"

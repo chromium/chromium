@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
@@ -85,6 +86,18 @@ struct COMPONENT_EXPORT(APP_UPDATE) App {
   // When adding new fields to the App type, the `Clone` function and the
   // `AppUpdate` class should also be updated.
 };
+
+// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
+// AppService.
+COMPONENT_EXPORT(APP_UPDATE)
+AppType ConvertMojomAppTypToAppType(apps::mojom::AppType mojom_app_type);
+
+COMPONENT_EXPORT(APP_UPDATE)
+Readiness ConvertMojomReadinessToReadiness(
+    apps::mojom::Readiness mojom_readiness);
+
+COMPONENT_EXPORT(APP_UPDATE)
+std::unique_ptr<App> ConvertMojomAppToApp(const apps::mojom::AppPtr& mojom_app);
 
 }  // namespace apps
 

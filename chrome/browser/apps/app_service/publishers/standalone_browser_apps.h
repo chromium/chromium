@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,6 +28,10 @@ class BrowserAppInstanceRegistry;
 // which launches the lacros-chrome binary.
 //
 // See components/services/app_service/README.md.
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
 class StandaloneBrowserApps : public apps::PublisherBase,
                               public AppPublisher,
                               public crosapi::BrowserManagerObserver {

@@ -104,6 +104,9 @@ using LoadIconCallback = base::OnceCallback<void(IconValuePtr)>;
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.
 COMPONENT_EXPORT(ICON_TYPES)
+apps::mojom::IconKeyPtr ConvertIconKeyToMojomIconKey(const IconKey& icon_key);
+
+COMPONENT_EXPORT(ICON_TYPES)
 std::unique_ptr<IconKey> ConvertMojomIconKeyToIconKey(
     apps::mojom::IconKeyPtr mojom_icon_key);
 

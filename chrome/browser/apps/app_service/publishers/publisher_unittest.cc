@@ -16,11 +16,14 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/publisher_base.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
+#include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
@@ -32,10 +35,11 @@
 namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
-                                             const std::string& version,
-                                             const std::string& url,
-                                             const std::string& id) {
+scoped_refptr<extensions::Extension> MakeExtensionApp(
+    const std::string& name,
+    const std::string& version,
+    const std::string& url,
+    const std::string& id) {
   std::string err;
   base::DictionaryValue value;
   value.SetString("name", name);
@@ -48,6 +52,22 @@ scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
   return app;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+apps::mojom::AppPtr MakeMojomApp(apps::mojom::AppType app_type,
+                                 const std::string& app_id,
+                                 const std::string& name,
+                                 apps::mojom::Readiness readiness) {
+  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
+      app_type, app_id, apps::mojom::Readiness::kReady, name,
+      apps::mojom::InstallReason::kUser);
+
+  app->icon_key = apps::mojom::IconKey::New(
+      /*timeline=*/1, apps::mojom::IconKey::kInvalidResourceId,
+      /*icon_effects=*/0);
+  return app;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -70,13 +90,11 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-
   void RemoveArcApp(const std::string& app_id) {
     ArcApps* arc_apps = ArcAppsFactory::GetForProfile(profile());
     ASSERT_TRUE(arc_apps);
     arc_apps->OnAppRemoved(app_id);
   }
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void VerifyApp(const std::string& app_id,
@@ -182,6 +200,16 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
     PublisherTest::SetUp();
   }
 
+  void ExtensionAppsOnApps() {
+    StandaloneBrowserExtensionApps* chrome_apps =
+        StandaloneBrowserExtensionAppsFactory::GetForProfile(profile());
+    std::vector<mojom::AppPtr> apps;
+    apps.push_back(MakeMojomApp(mojom::AppType::kStandaloneBrowserExtension,
+                                /*app_id=*/"a",
+                                /*name=*/"TestApp", mojom::Readiness::kReady));
+    chrome_apps->OnApps(std::move(apps));
+  }
+
  private:
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
@@ -189,14 +217,19 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
   VerifyApp(extension_misc::kLacrosAppId, "Lacros", Readiness::kReady);
 }
+
+TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
+  ExtensionAppsOnApps();
+  VerifyApp("a", "TestApp", Readiness::kReady);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(PublisherTest, ExtensionAppsOnApps) {
   // Install a "web store" app.
   scoped_refptr<extensions::Extension> store =
-      MakeApp("webstore", "0.0", "http://google.com",
-              std::string(extensions::kWebStoreAppId));
+      MakeExtensionApp("webstore", "0.0", "http://google.com",
+                       std::string(extensions::kWebStoreAppId));
   service_->AddExtension(store.get());
 
   // Re-init AppService to verify the init process.
