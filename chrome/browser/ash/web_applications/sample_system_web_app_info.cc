@@ -40,8 +40,9 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
 
   {
     WebApplicationShortcutsMenuItemInfo shortcut;
-    shortcut.name = u"Untrusted Sandbox Demo";
-    shortcut.url = GURL("chrome://sample-system-web-app/sandbox.html");
+    shortcut.name = u"Inter Frame Communication Demo";
+    shortcut.url =
+        GURL("chrome://sample-system-web-app/inter_frame_communication.html");
     info->shortcuts_menu_item_infos.push_back(std::move(shortcut));
   }
   {

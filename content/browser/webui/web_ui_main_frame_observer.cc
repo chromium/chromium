@@ -188,4 +188,8 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
 
+void WebUIMainFrameObserver::PrimaryPageChanged(Page& page) {
+  web_ui_->GetController()->WebUIPrimaryPageChanged(page);
+}
+
 }  // namespace content

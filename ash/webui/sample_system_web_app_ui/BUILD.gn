@@ -25,7 +25,8 @@ static_library("sample_system_web_app_ui") {
   deps = [
     "//ash/webui/resources:sample_system_web_app_resources",
     "//ash/webui/resources:sample_system_web_app_untrusted_resources",
-    "//ash/webui/sample_system_web_app_ui/mojom",
+    "//ash/webui/sample_system_web_app_ui/mojom:trusted",
+    "//ash/webui/sample_system_web_app_ui/mojom:untrusted",
     "//content/public/browser",
     "//ui/webui",
   ]
@@ -45,7 +46,7 @@ js_library("untrusted") {
 
 js_library("trusted") {
   sources = [ "resources/page_handler.js" ]
-  deps = [ "//ash/webui/sample_system_web_app_ui/mojom:mojom_webui_js" ]
+  deps = [ "//ash/webui/sample_system_web_app_ui/mojom:trusted_webui_js" ]
 }
 
 js2gtest("browser_tests_js") {
@@ -56,21 +57,52 @@ js2gtest("browser_tests_js") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
-# Prefix for the generated variables, in this case
-# `IDR_ASH_SAMPLE_SYSTEM_WEB_APP_`.
+# Rules to generate grdp files for the generated mojo bindings.
 grd_prefix = "ash_sample_system_web_app"
-mojo_grdp_file = "$target_gen_dir/sample_system_web_app_mojo_resources.grdp"
 
-# Rule to generate a grdp with all the generated mojo bindings.
-generate_grd("build_mojo_grdp") {
-  out_grd = mojo_grdp_file
+trusted_mojo_grdp =
+    "$target_gen_dir/sample_system_web_app_trusted_mojo_resources.grdp"
+generate_grd("build_trusted_mojo_grdp") {
+  out_grd = trusted_mojo_grdp
   grd_prefix = grd_prefix
 
-  deps = [ "//ash/webui/sample_system_web_app_ui/mojom:mojom_webui_js" ]
+  deps = [ "//ash/webui/sample_system_web_app_ui/mojom:trusted_webui_js" ]
 
-  # Flatten out the dependency tree of your mojom and add any files not included
-  # in `chrome://resources` here.
+  # Flatten out the dependency tree of your mojom and add generated bindings
+  # file here.
   input_files = [ "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom-webui.js" ]
+
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
+}
+
+shared_mojo_grdp =
+    "$target_gen_dir/sample_system_web_app_shared_mojo_resources.grdp"
+generate_grd("build_shared_mojo_grdp") {
+  grd_prefix = grd_prefix
+  out_grd = shared_mojo_grdp
+
+  deps = [ "//ash/webui/sample_system_web_app_ui/mojom:shared_webui_js" ]
+
+  # Flatten out the dependency tree of your mojom and add generated bindings
+  # file here.
+  input_files = [ "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_shared_ui.mojom-webui.js" ]
+
+  input_files_base_dir =
+      rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
+}
+
+untrusted_mojo_grdp =
+    "$target_gen_dir/sample_system_web_app_untrusted_mojo_resources.grdp"
+generate_grd("build_untrusted_mojo_grdp") {
+  grd_prefix = grd_prefix
+  out_grd = untrusted_mojo_grdp
+
+  deps = [ "//ash/webui/sample_system_web_app_ui/mojom:untrusted_webui_js" ]
+
+  # Flatten out the dependency tree of your mojom and add generated bindings
+  # file here.
+  input_files = [ "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_untrusted_ui.mojom-webui.js" ]
 
   input_files_base_dir =
       rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
@@ -81,9 +113,19 @@ generate_grd("build_untrusted_grd") {
   input_files = [
     "untrusted.html",
     "untrusted.js",
+    "untrusted_page_interface.js",
   ]
   grd_prefix = "ash_sample_system_web_app_untrusted"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+
+  deps = [
+    ":build_shared_mojo_grdp",
+    ":build_untrusted_mojo_grdp",
+  ]
+  grdp_files = [
+    shared_mojo_grdp,
+    untrusted_mojo_grdp,
+  ]
 }
 
 generate_grd("build_trusted_grd") {
@@ -92,7 +134,8 @@ generate_grd("build_trusted_grd") {
     "app_icon_192.png",
     "component_playground.html",
     "index.html",
-    "sandbox.html",
+    "inter_frame_communication.html",
+    "inter_frame_communication.js",
     "main.js",
     "worker.js",
     "page_handler.js",
@@ -105,8 +148,12 @@ generate_grd("build_trusted_grd") {
   grd_prefix = grd_prefix
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   deps = [
-    ":build_mojo_grdp",
+    ":build_shared_mojo_grdp",
+    ":build_trusted_mojo_grdp",
     "resources:component_playground",
   ]
-  grdp_files = [ mojo_grdp_file ]
+  grdp_files = [
+    shared_mojo_grdp,
+    trusted_mojo_grdp,
+  ]
 }

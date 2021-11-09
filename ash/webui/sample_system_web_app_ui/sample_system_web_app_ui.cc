@@ -88,8 +88,20 @@ void SampleSystemWebAppUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::sample_swa::PageHandler> handler,
     mojo::PendingRemote<mojom::sample_swa::Page> page) {
   DCHECK(page.is_valid());
-  sample_page_handler_ =
-      std::make_unique<PageHandler>(std::move(handler), std::move(page));
+  sample_page_handler_->BindInterface(std::move(handler), std::move(page));
+}
+
+void SampleSystemWebAppUI::CreateParentPage(
+    mojo::PendingRemote<mojom::sample_swa::ChildUntrustedPage> child_page,
+    mojo::PendingReceiver<mojom::sample_swa::ParentTrustedPage> parent_page) {
+  sample_page_handler_->CreateParentPage(std::move(child_page),
+                                         std::move(parent_page));
+}
+
+void SampleSystemWebAppUI::WebUIPrimaryPageChanged(content::Page& page) {
+  // Create a new page handler for each document load. This avoids sharing
+  // states when WebUIController is reused for same-origin navigations.
+  sample_page_handler_ = std::make_unique<PageHandler>();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SampleSystemWebAppUI)

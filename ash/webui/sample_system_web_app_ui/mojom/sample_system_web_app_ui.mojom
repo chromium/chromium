@@ -4,6 +4,8 @@
 
 module ash.mojom.sample_swa;
 
+import "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_shared_ui.mojom";
+
 // This file contains an example Mojo interface for the Sample System Web App
 // UI. It's only built on non-official Chrome OS builds. The Mojo interface
 // shows five types of interactions:
@@ -54,4 +56,10 @@ interface Page {
   // event occurred. The |name| parameter tells the page the name of the
   // event that occurred.
   OnEventOccurred(string name);
+
+  // Called when the embedded chrome-untrusted:// page wants to bind Mojo
+  // interfaces for communicating with the chrome:// page.
+  CreateParentPage(
+    pending_remote<ChildUntrustedPage> child_untrusted_page,
+    pending_receiver<ParentTrustedPage> parent_trusted_page);
 };

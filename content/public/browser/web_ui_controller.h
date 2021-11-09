@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/per_web_ui_browser_interface_broker.h"
 
 class GURL;
@@ -47,6 +48,10 @@ class CONTENT_EXPORT WebUIController {
   // This is deliberately named to differentiate from
   // WebContentsObserver::RenderFrameCreated, as some classes may override both.
   virtual void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {}
+
+  // Called when the WebUI's primary page changes. WebUIControllers should reset
+  // its state if necessary.
+  virtual void WebUIPrimaryPageChanged(Page& page) {}
 
   // Called when a WebUI page load is about to be committed, even if RenderFrame
   // is reused. This sets up MojoJS interface broker.

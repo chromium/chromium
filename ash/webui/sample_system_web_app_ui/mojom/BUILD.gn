@@ -8,8 +8,29 @@ assert(is_chromeos, "Sample System Web App is Chrome OS only")
 assert(!is_official_build,
        "Sample System Web App is only built for unofficial builds")
 
-mojom("mojom") {
+mojom("trusted") {
   sources = [ "sample_system_web_app_ui.mojom" ]
+
+  public_deps = [
+    "//ash/webui/sample_system_web_app_ui/mojom:shared",
+    "//mojo/public/mojom/base",
+  ]
+  webui_module_path = "/ash/webui/sample_system_web_app_ui/mojom/"
+}
+
+mojom("shared") {
+  sources = [ "sample_system_web_app_shared_ui.mojom" ]
+
   public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/ash/webui/sample_system_web_app_ui/mojom/"
+}
+
+mojom("untrusted") {
+  sources = [ "sample_system_web_app_untrusted_ui.mojom" ]
+
+  public_deps = [
+    "//ash/webui/sample_system_web_app_ui/mojom:shared",
+    "//mojo/public/mojom/base",
+  ]
   webui_module_path = "/ash/webui/sample_system_web_app_ui/mojom/"
 }

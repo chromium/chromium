@@ -40,6 +40,7 @@ class CONTENT_EXPORT WebUIMainFrameObserver : public WebContentsObserver {
 
   // Override from WebContentsObserver
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(Page& page) override;
 
 // TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
 // thunking issues. Fix & re-enable.

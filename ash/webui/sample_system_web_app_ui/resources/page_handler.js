@@ -35,7 +35,7 @@
  *  }
  */
 
-import {PageHandlerFactory, PageHandlerRemote, PageCallbackRouter} from '/ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '/ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom-webui.js';
 
 // Used to make calls on the remote PageHandler interface. Singleton that client
 // modules can use directly.
@@ -45,9 +45,8 @@ export const pageHandler = new PageHandlerRemote();
 // `callbackRouter.onEventOccurred.addListener(handleEvent)`.
 export const callbackRouter = new PageCallbackRouter();
 
-
 // Use PageHandlerFactory to create a connection to PageHandler.
 const factoryRemote = PageHandlerFactory.getRemote();
 factoryRemote.createPageHandler(
-  pageHandler.$.bindNewPipeAndPassReceiver(),
-  callbackRouter.$.bindNewPipeAndPassRemote());
+    pageHandler.$.bindNewPipeAndPassReceiver(),
+    callbackRouter.$.bindNewPipeAndPassRemote());

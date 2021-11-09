@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
+#include "ash/webui/sample_system_web_app_ui/sample_page_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,6 +32,10 @@ class SampleSystemWebAppUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<mojom::sample_swa::PageHandlerFactory> factory);
 
+  void CreateParentPage(
+      mojo::PendingRemote<mojom::sample_swa::ChildUntrustedPage> child_page,
+      mojo::PendingReceiver<mojom::sample_swa::ParentTrustedPage> parent_page);
+
  private:
   // mojom::sample_swa::PageHandlerFactory:
   void CreatePageHandler(
@@ -40,13 +45,14 @@ class SampleSystemWebAppUI : public ui::MojoWebUIController,
   mojo::Receiver<mojom::sample_swa::PageHandlerFactory> sample_page_factory_{
       this};
 
-  // Handles requests from the user visible page. Created when the page calls
-  // PageHandlerFactory::CreatePageHandler(). Expected to live as long as
-  // the WebUIController. In most cases this matches the lifetime of the page.
-  // However, sometimes the WebUIController is re-used within same-origin
-  // navigations. Calling CreatePageHandler() multiple times will replace the
-  // existing sample_page_handler_.
-  std::unique_ptr<mojom::sample_swa::PageHandler> sample_page_handler_;
+  // Handles requests from the user visible page. Created when navigating to the
+  // WebUI page, should live as long as the WebUIController. In most cases this
+  // matches the lifetime of the page. If the WebUIController is re-used for
+  // same-origin navigations, it is recreated when the navigation commits.
+  std::unique_ptr<PageHandler> sample_page_handler_;
+
+  // Called navigating to a WebUI page to create page handler.
+  void WebUIPrimaryPageChanged(content::Page& page) override;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

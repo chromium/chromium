@@ -260,6 +260,7 @@
 #include "ash/webui/demo_mode_app_ui/mojom/demo_mode_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
+#include "ash/webui/sample_system_web_app_ui/untrusted_sample_system_web_app_ui.h"
 #include "ash/webui/telemetry_extension_ui/mojom/diagnostics_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "ash/webui/telemetry_extension_ui/mojom/probe_service.mojom.h"  // nogncheck crbug.com/1125897
 #include "ash/webui/telemetry_extension_ui/mojom/system_events_service.mojom.h"  // nogncheck crbug.com/1125897
@@ -789,8 +790,7 @@ void PopulateChromeWebUIFrameBinders(
       AppServiceInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      enterprise_casting::mojom::PageHandlerFactory,
-      EnterpriseCastingUI>(map);
+      enterprise_casting::mojom::PageHandlerFactory, EnterpriseCastingUI>(map);
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -1035,9 +1035,20 @@ void PopulateChromeWebUIFrameBinders(
 
 void PopulateChromeWebUIFrameInterfaceBrokers(
     content::WebUIBrowserInterfaceBrokerRegistry& registry) {
+  // This function is broken up into sections based on WebUI types.
+
+  // --- Section 1: chrome:// WebUIs:
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
   registry.ForWebUI<ash::SampleSystemWebAppUI>()
       .Add<ash::mojom::sample_swa::PageHandlerFactory>();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+
+  // --- Section 2: chrome-untrusted:// WebUIs:
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
+  registry.ForWebUI<ash::UntrustedSampleSystemWebAppUI>()
+      .Add<ash::mojom::sample_swa::UntrustedPageInterfacesFactory>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
 }
 

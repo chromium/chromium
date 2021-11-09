@@ -9,6 +9,7 @@
 
 #include "ash/webui/sample_system_web_app_ui/mojom/sample_system_web_app_ui.mojom.h"
 #include "base/memory/weak_ptr.h"
+#include "base/one_shot_event.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,13 +27,23 @@ namespace ash {
 //  4. The PageHandler notifies the page about an event.
 class PageHandler : public mojom::sample_swa::PageHandler {
  public:
-  PageHandler(
-      mojo::PendingReceiver<mojom::sample_swa::PageHandler> pending_receiver,
-      mojo::PendingRemote<mojom::sample_swa::Page> pending_page);
+  PageHandler();
   ~PageHandler() override;
 
   PageHandler(const PageHandler&) = delete;
   PageHandler& operator=(const PageHandler&) = delete;
+
+  // Called when a child page wants to bind its interface in `page_`, so they
+  // can communicate via Mojo.
+  void CreateParentPage(
+      mojo::PendingRemote<mojom::sample_swa::ChildUntrustedPage>
+          child_untrusted_page,
+      mojo::PendingReceiver<mojom::sample_swa::ParentTrustedPage>
+          parent_trusted_page);
+
+  void BindInterface(
+      mojo::PendingReceiver<mojom::sample_swa::PageHandler> pending_receiver,
+      mojo::PendingRemote<mojom::sample_swa::Page> pending_page);
 
  private:
   // Shows how the page can retrieve information from the browser process.
@@ -47,10 +58,22 @@ class PageHandler : public mojom::sample_swa::PageHandler {
   // Called as a reaction to DoSomething; invoked when DoSomething is done.
   void OnSomethingDone();
 
-  mojo::Receiver<mojom::sample_swa::PageHandler> receiver_;
+  // Called after `page_` is bound. This requests `page_` to bind child page's
+  // Mojo pipes in JavaScript.
+  void BindChildPageInJavaScript(
+      mojo::PendingRemote<mojom::sample_swa::ChildUntrustedPage>
+          child_trusted_page,
+      mojo::PendingReceiver<mojom::sample_swa::ParentTrustedPage>
+          parent_trusted_page);
+
+  mojo::Receiver<mojom::sample_swa::PageHandler> receiver_{this};
   mojo::Remote<mojom::sample_swa::Page> page_;
 
   std::string message_;
+
+  // The event signaling page handler is bound. This is the earliest time `this`
+  // can send Mojo messages to JavaScript.
+  base::OneShotEvent on_page_handler_bound_;
 
   base::WeakPtrFactory<PageHandler> weak_ptr_factory_{this};
 };

@@ -11,13 +11,17 @@
 
 namespace ash {
 
-PageHandler::PageHandler(
-    mojo::PendingReceiver<mojom::sample_swa::PageHandler> pending_receiver,
-    mojo::PendingRemote<mojom::sample_swa::Page> pending_page)
-    : receiver_(this, std::move(pending_receiver)),
-      page_(std::move(pending_page)) {}
-
+PageHandler::PageHandler() = default;
 PageHandler::~PageHandler() = default;
+
+void PageHandler::BindInterface(
+    mojo::PendingReceiver<mojom::sample_swa::PageHandler> pending_receiver,
+    mojo::PendingRemote<mojom::sample_swa::Page> pending_page) {
+  receiver_.Bind(std::move(pending_receiver));
+  page_.Bind(std::move(pending_page));
+
+  on_page_handler_bound_.Signal();
+}
 
 void PageHandler::GetPreferences(GetPreferencesCallback callback) {
   // Returns hardcoded preferences. In a real application this would
@@ -48,6 +52,30 @@ void PageHandler::DoSomething() {
 
 void PageHandler::OnSomethingDone() {
   page_->OnEventOccurred("DoSomething is done");
+}
+
+void PageHandler::CreateParentPage(
+    mojo::PendingRemote<mojom::sample_swa::ChildUntrustedPage>
+        child_trusted_page,
+    mojo::PendingReceiver<mojom::sample_swa::ParentTrustedPage>
+        parent_trusted_page) {
+  on_page_handler_bound_.Post(
+      FROM_HERE,
+      base::BindOnce(&PageHandler::BindChildPageInJavaScript,
+                     // Safe to base::Unretained(), `this` owns
+                     // `on_page_handler_ready_`. The callback
+                     // won't be invoked if `this` is destroyed.
+                     base::Unretained(this), std::move(child_trusted_page),
+                     std::move(parent_trusted_page)));
+}
+
+void PageHandler::BindChildPageInJavaScript(
+    mojo::PendingRemote<mojom::sample_swa::ChildUntrustedPage>
+        child_trusted_page,
+    mojo::PendingReceiver<mojom::sample_swa::ParentTrustedPage>
+        parent_trusted_page) {
+  page_->CreateParentPage(std::move(child_trusted_page),
+                          std::move(parent_trusted_page));
 }
 
 }  // namespace ash
