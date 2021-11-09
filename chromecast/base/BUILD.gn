@@ -218,7 +218,6 @@ if (is_android) {
     deps = [
       ":cast_version",
       "//base",
-      "//chromecast:chromecast_buildflags",
       "//chromecast/browser:jni_headers",
       "//chromecast/public",
     ]
