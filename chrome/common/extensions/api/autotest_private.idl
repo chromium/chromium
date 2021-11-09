@@ -583,6 +583,10 @@ namespace autotestPrivate {
 
   callback IsSystemWebAppOpenCallback = void (boolean isOpen);
 
+  // Callback invoked to return the smoothness percentage after
+  // getDisplaySmoothness is called.
+  callback GetDisplaySmoothnessCallback = void (long smoothness);
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -1192,6 +1196,12 @@ namespace autotestPrivate {
     // data since the start.
     [supportsPromises] static void stopThroughputTrackerDataCollection(
         StopThroughputTrackerDataCollectionCallback callback);
+
+    // Gets the smoothness of a display. If the display id is not specified,
+    // the primary display is used.
+    [supportsPromises] static void getDisplaySmoothness(
+        optional DOMString displayId,
+        GetDisplaySmoothnessCallback callback);
   };
 
   interface Events {

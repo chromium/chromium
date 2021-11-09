@@ -972,6 +972,15 @@ var defaultTests = [
     });
   },
 
+  function getDisplaySmoothness() {
+    chrome.autotestPrivate.getDisplaySmoothness(function(smoothness) {
+      chrome.test.assertNoLastError();
+
+      chrome.test.assertTrue(smoothness >= 0);
+      chrome.test.succeed();
+    });
+  },
+
   function collectThoughputTrackerData() {
     chrome.autotestPrivate.startThroughputTrackerDataCollection(function() {
       chrome.test.assertNoLastError();

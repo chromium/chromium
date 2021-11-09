@@ -800,6 +800,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   std::vector<base::OnceClosure> TakeDocumentTransitionCallbacksForTesting();
 
+  // Returns a percentage representing average throughput of last X seconds.
+  uint32_t GetAverageThroughput() const;
+
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);
 

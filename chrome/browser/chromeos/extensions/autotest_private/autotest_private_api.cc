@@ -5240,6 +5240,36 @@ AutotestPrivateStopThroughputTrackerDataCollectionFunction::Run() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetDisplaySmoothnessFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetDisplaySmoothnessFunction::
+    AutotestPrivateGetDisplaySmoothnessFunction() = default;
+
+AutotestPrivateGetDisplaySmoothnessFunction::
+    ~AutotestPrivateGetDisplaySmoothnessFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetDisplaySmoothnessFunction::Run() {
+  auto params(
+      api::autotest_private::GetDisplaySmoothness::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  int64_t display_id;
+  if (!GetDisplayIdFromOptionalArg(params->display_id, &display_id)) {
+    return RespondNow(
+        Error(base::StrCat({"Invalid display id: ", *params->display_id})));
+  }
+
+  auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id);
+  const uint32_t smoothness =
+      root_window->GetHost()->compositor()->GetAverageThroughput();
+  return RespondNow(
+      ArgumentList(api::autotest_private::GetDisplaySmoothness::Results::Create(
+          smoothness)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateAPI
 ///////////////////////////////////////////////////////////////////////////////
 

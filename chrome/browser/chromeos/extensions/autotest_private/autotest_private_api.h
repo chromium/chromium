@@ -1420,6 +1420,17 @@ class AutotestPrivateStopThroughputTrackerDataCollectionFunction
   ResponseAction Run() override;
 };
 
+class AutotestPrivateGetDisplaySmoothnessFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateGetDisplaySmoothnessFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.getDisplaySmoothness",
+                             AUTOTESTPRIVATE_GETDISPLAYSMOOTHNESS)
+
+ private:
+  ~AutotestPrivateGetDisplaySmoothnessFunction() override;
+  ResponseAction Run() override;
+};
+
 template <>
 KeyedService*
 BrowserContextKeyedAPIFactory<AutotestPrivateAPI>::BuildServiceInstanceFor(

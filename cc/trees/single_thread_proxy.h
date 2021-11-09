@@ -81,6 +81,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       std::unique_ptr<RenderFrameMetadataObserver> observer) override;
   void SetEnableFrameRateThrottling(
       bool enable_frame_rate_throttling) override {}
+  uint32_t GetAverageThroughput() const override;
 
   void UpdateBrowserControlsState(BrowserControlsState constraints,
                                   BrowserControlsState current,

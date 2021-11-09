@@ -1661,6 +1661,7 @@ enum HistogramValue {
   WEB_AUTHENTICATION_PROXY_ATTACH = 1598,
   WEB_AUTHENTICATION_PROXY_DETACH = 1599,
   FILEMANAGERPRIVATE_CANCELIOTASK = 1600,
+  AUTOTESTPRIVATE_GETDISPLAYSMOOTHNESS = 1601,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

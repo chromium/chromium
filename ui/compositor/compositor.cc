@@ -659,6 +659,10 @@ ThroughputTracker Compositor::RequestNewThroughputTracker() {
                            weak_ptr_factory_.GetWeakPtr());
 }
 
+uint32_t Compositor::GetAverageThroughput() const {
+  return host_->GetAverageThroughput();
+}
+
 void Compositor::DidUpdateLayers() {
   // Dump property trees and layers if run with:
   //   --vmodule=*ui/compositor*=3

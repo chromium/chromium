@@ -737,4 +737,9 @@ void ProxyMain::SetEnableFrameRateThrottling(
                                 enable_frame_rate_throttling));
 }
 
+uint32_t ProxyMain::GetAverageThroughput() const {
+  NOTIMPLEMENTED();
+  return 0u;
+}
+
 }  // namespace cc

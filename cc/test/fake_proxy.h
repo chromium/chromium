@@ -58,6 +58,7 @@ class FakeProxy : public Proxy {
       std::unique_ptr<RenderFrameMetadataObserver> observer) override {}
   void SetEnableFrameRateThrottling(
       bool enable_frame_rate_throttling) override {}
+  uint32_t GetAverageThroughput() const override;
 
  private:
   LayerTreeHost* layer_tree_host_;

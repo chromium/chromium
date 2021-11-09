@@ -776,6 +776,11 @@ void SingleThreadProxy::SetRenderFrameObserver(
   host_impl_->SetRenderFrameObserver(std::move(observer));
 }
 
+uint32_t SingleThreadProxy::GetAverageThroughput() const {
+  DebugScopedSetImplThread impl(task_runner_provider_);
+  return host_impl_->dropped_frame_counter()->GetAverageThroughput();
+}
+
 void SingleThreadProxy::UpdateBrowserControlsState(
     BrowserControlsState constraints,
     BrowserControlsState current,

@@ -2106,4 +2106,9 @@ LayerTreeHost::TakeDocumentTransitionCallbacksForTesting() {
   document_transition_callbacks_.clear();
   return result;
 }
+
+uint32_t LayerTreeHost::GetAverageThroughput() const {
+  return proxy_->GetAverageThroughput();
+}
+
 }  // namespace cc
