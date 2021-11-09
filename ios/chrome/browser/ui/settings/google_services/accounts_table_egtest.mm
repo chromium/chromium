@@ -540,7 +540,7 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+          grey_allOf(grey_text(l10n_util::GetNSString(
                          IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE)),
                      grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];

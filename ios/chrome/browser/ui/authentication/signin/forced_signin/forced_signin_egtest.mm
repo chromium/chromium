@@ -503,7 +503,7 @@ void OpenAccountSettingsAndSignOut(BOOL syncEnabled) {
   footerText = [footerText stringByReplacingOccurrencesOfString:@"END_LINK"
                                                      withString:@""];
   [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(footerText),
+      selectElementWithMatcher:grey_allOf(grey_text(footerText),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
 }

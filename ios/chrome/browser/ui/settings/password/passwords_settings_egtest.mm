@@ -1949,7 +1949,7 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_replaceText(@"concrete username")];
 
   [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSStringF(
+                 grey_text(l10n_util::GetNSStringF(
                      IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION,
                      u"example.com"))]
       assertWithMatcher:grey_sufficientlyVisible()];

@@ -98,7 +98,6 @@ source_set("unit_tests") {
     "table_view_header_footer_item_unittest.mm",
     "table_view_image_item_unittest.mm",
     "table_view_item_unittest.mm",
-    "table_view_link_header_footer_item_unittest.mm",
     "table_view_multi_detail_text_item_unittest.mm",
     "table_view_text_button_item_unittest.mm",
     "table_view_text_edit_item_unittest.mm",
