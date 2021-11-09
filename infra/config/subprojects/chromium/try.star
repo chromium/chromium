@@ -402,6 +402,7 @@ try_.chromium_android_builder(
 try_.chromium_android_orchestrator_pair(
     name = "android-marshmallow-x86-rel",
     branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
     orchestrator_cores = 4,
