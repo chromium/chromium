@@ -20,7 +20,7 @@
 
         <ImageView
             android:id="@+id/image"
-            android:layout_marginVertical="32dp"
+            android:layout_marginVertical="16dp"
             android:layout_height="@dimen/privacy_review_illustration_height"
             android:layout_width="@dimen/privacy_review_illustration_width"
             android:src="@drawable/privacy_review_sync_image"

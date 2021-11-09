@@ -5,6 +5,7 @@
 
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -19,11 +20,42 @@
 
         <ImageView
             android:id="@+id/image"
-            android:layout_marginVertical="32dp"
+            android:layout_marginVertical="16dp"
             android:layout_height="@dimen/privacy_review_illustration_height"
             android:layout_width="@dimen/privacy_review_illustration_width"
             android:src="@drawable/privacy_review_cookies_image"
             android:importantForAccessibility="no" />
+
+        <TextView
+            android:drawablePadding="16dp"
+            android:layout_gravity="start"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/privacy_review_cookies_intro"
+            style="@style/TextAppearance.TextLarge.Primary" />
+
+        <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false">
+
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                android:id="@+id/block_incognito"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:primaryText="@string/privacy_review_cookies_block_incognito_title"
+                app:descriptionText="@string/privacy_review_cookies_block_incognito_description" />
+
+            <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+                android:id="@+id/block_always"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:primaryText="@string/privacy_review_cookies_block_always_title"
+                app:descriptionText="@string/privacy_review_cookies_block_always_description" />
+
+        </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 
     </LinearLayout>
 

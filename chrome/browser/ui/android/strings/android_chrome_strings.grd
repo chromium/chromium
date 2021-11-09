@@ -1064,6 +1064,36 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_THREE" desc="Third bullet point that describes the details of the history sync toggle.">
         The URLs you visit are saved to your Google account
       </message>
+      <message name="IDS_PRIVACY_REVIEW_COOKIES_INTRO" desc="Text introducing the cookies control.">
+        Choose when to block third-party cookies
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_COOKIES_BLOCK_INCOGNITO_TITLE" desc="Title for the radio button for blocking third-party cookies in incognito.">
+        Block while using incognito
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_COOKIES_BLOCK_INCOGNITO_DESCRIPTION" desc="Description for the radio button for blocking third-party cookies in incognito.">
+        While in incognito, sites can’t use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may break.
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_COOKIES_BLOCK_ALWAYS_TITLE" desc="Title for the radio button for blocking third-party cookies always.">
+        Block all the time
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_COOKIES_BLOCK_ALWAYS_DESCRIPTION" desc="Description for the radio button for blocking third-party cookies always.">
+        Sites can only use your cookies to see your browsing activity only on their own site
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_INTRO" desc="Text introducing the Safe Browsing control.">
+        Choose your Safe Browsing protection
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_ENHANCED_TITLE" desc="Title for the radio button for the enhanced Safe Browsing.">
+        Enhanced protection
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_ENHANCED_DESCRIPTION" desc="Description for the radio button for the enhanced Safe Browsing.">
+        Faster, proactive protection against dangerous websites, downloads, and extensions
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_STANDARD_TITLE" desc="Title for the radio button for the standard Safe Browsing.">
+        Standard protection
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_STANDARD_DESCRIPTION" desc="Description for the radio button for the standard Safe Browsing.">
+        Standard protection against websites, downloads, and extensions that are known to be dangerous
+      </message>
 
       <!-- Safety check -->
       <message name="IDS_PREFS_SAFETY_CHECK" desc="Title of the Safety check element in settings, allowing the user to check multiple areas of browser safety. [CHAR_LIMIT=32]">
