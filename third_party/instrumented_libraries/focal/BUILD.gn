@@ -423,18 +423,14 @@ instrumented_library("libgdk-pixbuf2.0-0") {
 }
 
 instrumented_library("libglib2.0-0") {
+  build_method = "meson"
   extra_configure_flags = [
-    "--disable-gtk-doc",
-    "--disable-gtk-doc-html",
-    "--disable-gtk-doc-pdf",
-    "--disable-static",
-
-    # --with-pcre=system (the default) fails because the system-supplied
-    # PCRE does not support Unicode properties or UTF-8.
-    "--with-pcre=internal",
+    "-Db_lundef=false",
+    "-Dgdk_doc=false",
+    "-Dman=false",
   ]
   msan_ignorelist = "ignorelists/msan/libglib2.0-0.txt"
-  pre_build = "scripts/pre-build/autogen.sh"
+  pre_build = "scripts/pre-build/libglib2.0-0.sh"
 }
 
 instrumented_library("libgnome-keyring0") {

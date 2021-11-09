@@ -429,7 +429,6 @@ class MesonBuilder(InstrumentedPackageBuilder):
 
     self.shell_call(' '.join(meson_cmd),
                     env=self._build_env, cwd=self._source_dir)
-    self.shell_call('ninja -C build', cwd=self._source_dir)
     self.shell_call('ninja -C build install',
                     {**self._build_env, 'DESTDIR': self.temp_dir()},
                     cwd=self._source_dir)
