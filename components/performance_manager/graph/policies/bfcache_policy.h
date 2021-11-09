@@ -60,6 +60,7 @@ class BFCachePolicy : public GraphOwned,
   std::map<const PageNode*, base::OneShotTimer> page_to_flush_timer_;
 
   Graph* graph_;
+  base::WeakPtrFactory<BFCachePolicy> weak_ptr_factory_{this};
 };
 
 }  // namespace policies

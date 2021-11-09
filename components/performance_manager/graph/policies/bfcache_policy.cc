@@ -79,7 +79,7 @@ void BFCachePolicy::MaybeFlushBFCacheLater(const PageNode* page_node) {
     page_to_flush_timer_[page_node].Start(
         FROM_HERE, delay_to_flush_background_tab_,
         base::BindOnce(&BFCachePolicy::MaybeFlushBFCache,
-                       base::Unretained(this), page_node));
+                       weak_ptr_factory_.GetWeakPtr(), page_node));
   }
 }
 
