@@ -34,6 +34,8 @@ source_set("test_support") {
     "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
   ]
   sources = [
+    "fake_audio_capturer.cc",
+    "fake_audio_capturer.h",
     "fake_audio_consumer.cc",
     "fake_audio_consumer.h",
   ]
