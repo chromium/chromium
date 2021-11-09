@@ -32,7 +32,8 @@ class AuctionDownloader {
     kJson,
   };
 
-  // Passes in nullptr on failure. Always invoked asynchronously.
+  // Passes in nullptr on failure. Always invoked asynchronously. Will not be
+  // invoked after the AuctionDownloader is destroyed.
   using AuctionDownloaderCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
                               absl::optional<std::string> error)>;
