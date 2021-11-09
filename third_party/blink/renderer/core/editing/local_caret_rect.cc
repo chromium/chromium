@@ -174,18 +174,15 @@ LocalCaretRect LocalSelectionRectOfPositionTemplate(
 
 }  // namespace
 
-LocalCaretRect LocalCaretRectOfPosition(const PositionWithAffinity& position,
-                                        LayoutUnit* extra_width_to_end_of_line,
-                                        EditingBoundaryCrossingRule rule) {
+LocalCaretRect LocalCaretRectOfPosition(const PositionWithAffinity& position) {
   return LocalCaretRectOfPositionTemplate<EditingStrategy>(
-      position, extra_width_to_end_of_line, rule);
+      position, nullptr, kCanCrossEditingBoundary);
 }
 
 LocalCaretRect LocalCaretRectOfPosition(
-    const PositionInFlatTreeWithAffinity& position,
-    EditingBoundaryCrossingRule rule) {
+    const PositionInFlatTreeWithAffinity& position) {
   return LocalCaretRectOfPositionTemplate<EditingInFlatTreeStrategy>(
-      position, nullptr, rule);
+      position, nullptr, kCanCrossEditingBoundary);
 }
 
 LocalCaretRect LocalSelectionRectOfPosition(
