@@ -46,24 +46,13 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ParseMediaCondition(
       .ParseImpl(range);
 }
 
-const MediaQueryParser::State MediaQueryParser::kReadRestrictor =
-    &MediaQueryParser::ReadRestrictor;
-const MediaQueryParser::State MediaQueryParser::kSkipUntilComma =
-    &MediaQueryParser::SkipUntilComma;
-const MediaQueryParser::State MediaQueryParser::kDone = &MediaQueryParser::Done;
-
 MediaQueryParser::MediaQueryParser(ParserType parser_type,
                                    CSSParserMode mode,
                                    const ExecutionContext* execution_context)
     : parser_type_(parser_type),
       query_set_(MediaQuerySet::Create()),
       mode_(mode),
-      execution_context_(execution_context) {
-  if (parser_type == kMediaQuerySetParser)
-    state_ = &MediaQueryParser::ReadRestrictor;
-  else  // MediaConditionParser
-    state_ = nullptr;
-}
+      execution_context_(execution_context) {}
 
 MediaQueryParser::~MediaQueryParser() = default;
 
@@ -75,6 +64,17 @@ bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
          EqualIgnoringASCIICase(token.Value(), "and") ||
          EqualIgnoringASCIICase(token.Value(), "or") ||
          EqualIgnoringASCIICase(token.Value(), "only");
+}
+
+bool ConsumeUntilCommaInclusive(CSSParserTokenRange& range) {
+  while (!range.AtEnd()) {
+    if (range.Peek().GetType() == kCommaToken) {
+      range.ConsumeIncludingWhitespace();
+      return true;
+    }
+    range.ConsumeComponentValue();
+  }
+  return false;
 }
 
 }  // namespace
@@ -155,35 +155,15 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ConsumeSingleCondition(
   return query_set_;
 }
 
-void MediaQueryParser::FinishQueryDataAndSetState(bool success,
-                                                  CSSParserTokenRange& range) {
+bool MediaQueryParser::ConsumeQuery(CSSParserTokenRange& range) {
   DCHECK_EQ(parser_type_, kMediaQuerySetParser);
-
-  if (!success) {
-    state_ = kSkipUntilComma;
-  } else if (range.Peek().GetType() == kCommaToken) {
-    ConsumeToken(range);
-    query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
-    state_ = kReadRestrictor;
-  } else if (range.AtEnd()) {
-    state_ = kDone;
-  } else {
-    state_ = kSkipUntilComma;
-  }
-}
-
-// State machine member functions start here
-void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
-  DCHECK_EQ(parser_type_, kMediaQuerySetParser);
-  DCHECK_EQ(state_, kReadRestrictor);
-  DCHECK(!range.AtEnd());
+  media_query_data_.Clear();
 
   if (range.Peek().GetType() == kLeftParenthesisToken) {
     if (media_query_data_.Restrictor() != MediaQuery::kNone) {
-      state_ = kSkipUntilComma;
+      return false;
     } else {
-      FinishQueryDataAndSetState(ConsumeFeature(range) && ConsumeAnd(range),
-                                 range);
+      return ConsumeFeature(range) && ConsumeAnd(range);
     }
   } else if (range.Peek().GetType() == kIdentToken) {
     media_query_data_.SetRestrictor(ConsumeRestrictor(range));
@@ -191,48 +171,15 @@ void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
 
     if (!type.IsNull()) {
       media_query_data_.SetMediaType(type);
-      FinishQueryDataAndSetState(ConsumeAnd(range), range);
+      return ConsumeAnd(range);
     } else {
-      state_ = kSkipUntilComma;
+      return false;
     }
   } else {
-    state_ = kSkipUntilComma;
+    return false;
   }
 }
 
-void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {
-  DCHECK_EQ(parser_type_, kMediaQuerySetParser);
-  DCHECK(!range.AtEnd());
-
-  if (range.Peek().GetType() == kCommaToken) {
-    ConsumeToken(range);
-    state_ = kReadRestrictor;
-    media_query_data_.Clear();
-    query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
-  } else {
-    range.ConsumeComponentValue();
-    range.ConsumeWhitespace();
-  }
-}
-
-void MediaQueryParser::Done(CSSParserTokenRange& range) {
-  NOTREACHED();
-}
-
-CSSParserToken MediaQueryParser::ConsumeToken(CSSParserTokenRange& range) {
-  CSSParserToken token = range.ConsumeIncludingWhitespace();
-  DCHECK_EQ(token.GetBlockType(), CSSParserToken::kNotBlock);
-  return token;
-}
-
-void MediaQueryParser::ProcessToken(CSSParserTokenRange& range) {
-  // Call the function that handles current state
-  ((this)->*(state_))(range);
-  // State handlers must make sure that trailing whitespace is consumed.
-  DCHECK(range.Peek().GetType() != kWhitespaceToken);
-}
-
-// The state machine loop
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
     CSSParserTokenRange range) {
   range.ConsumeWhitespace();
@@ -247,32 +194,14 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
 
   DCHECK_EQ(parser_type_, kMediaQuerySetParser);
 
-#if DCHECK_IS_ON()
-  // Used to detect loops.
-  Vector<State> seen_states;
-#endif  // DCHECK_IS_ON()
-
-  while (!range.AtEnd()) {
-#if DCHECK_IS_ON()
-    CSSParserTokenRange original_range = range;
-#endif  // DCHECK_IS_ON()
-    ProcessToken(range);
-#if DCHECK_IS_ON()
-    // If we did not advance |range|, then we must switch to a new
-    // state. If there's a loop, we'll eventually run out of states.
-    if (!range.AtEnd() && &range.Peek() <= &original_range.Peek()) {
-      DCHECK(!seen_states.Contains(state_));
-      seen_states.push_back(state_);
-    } else {
-      seen_states.clear();
-    }
-#endif  // DCHECK_IS_ON()
-  }
-
-  if (state_ != kDone)
-    query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
-  else
-    query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
+  do {
+    bool ok = ConsumeQuery(range) &&
+              (range.AtEnd() || range.Peek().GetType() == kCommaToken);
+    if (!ok)
+      query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
+    else
+      query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
+  } while (!range.AtEnd() && ConsumeUntilCommaInclusive(range));
 
   return query_set_;
 }

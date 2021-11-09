@@ -99,6 +99,12 @@ class CORE_EXPORT MediaQueryParser {
   // and instead parses the following: [ and <media-feature> ]*
   bool ConsumeAnd(CSSParserTokenRange&);
 
+  // https://drafts.csswg.org/mediaqueries-4/#typedef-media-query
+  //
+  // TODO(crbug.com/962417): Only a limited form of the grammar is
+  // currently supported.
+  bool ConsumeQuery(CSSParserTokenRange&);
+
   // Used for ParserType::kMediaConditionParser.
   //
   // Parsing a single condition is useful for the 'sizes' attribute.
@@ -108,32 +114,13 @@ class CORE_EXPORT MediaQueryParser {
 
   scoped_refptr<MediaQuerySet> ParseImpl(CSSParserTokenRange);
 
-  // Like a regular Consume, except verifies that don't consume past
-  // block start/ends.
-  CSSParserToken ConsumeToken(CSSParserTokenRange&);
-
-  void ProcessToken(CSSParserTokenRange&);
-
-  void ReadRestrictor(CSSParserTokenRange&);
-  void SkipUntilComma(CSSParserTokenRange&);
-  void Done(CSSParserTokenRange&);
-
-  using State = void (MediaQueryParser::*)(CSSParserTokenRange&);
-
-  void FinishQueryDataAndSetState(bool success, CSSParserTokenRange&);
-
   bool IsMediaFeatureAllowedInMode(const String& media_feature) const;
 
-  State state_;
   ParserType parser_type_;
   MediaQueryData media_query_data_;
   scoped_refptr<MediaQuerySet> query_set_;
   CSSParserMode mode_;
   const ExecutionContext* execution_context_;
-
-  const static State kReadRestrictor;
-  const static State kSkipUntilComma;
-  const static State kDone;
 };
 
 }  // namespace blink
