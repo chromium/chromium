@@ -7541,10 +7541,10 @@
       'linux_lacros_chrome_browsertests_version_skew': {
         'variants': [
           'LACROS_TOT',
-          # TODO(crbug.com/1236127) Adds stable.
           'LACROS_VERSION_SKEW_CANARY',
           'LACROS_VERSION_SKEW_DEV',
           'LACROS_VERSION_SKEW_BETA',
+          'LACROS_VERSION_SKEW_STABLE',
         ]
       },
     },
