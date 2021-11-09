@@ -178,14 +178,6 @@ const KURL& WorkerFetchContext::Url() const {
       .GlobalObjectUrl();
 }
 
-const SecurityOrigin* WorkerFetchContext::GetParentSecurityOrigin() const {
-  // This method was introduced to check the parent frame's security context
-  // while loading iframe document resources. So this method is not suitable for
-  // workers.
-  NOTREACHED();
-  return nullptr;
-}
-
 ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicy() const {
   return content_security_policy_;
 }

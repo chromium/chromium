@@ -187,7 +187,6 @@ mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
 
 struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
   FrozenState(const KURL& url,
-              scoped_refptr<const SecurityOrigin> parent_security_origin,
               ContentSecurityPolicy* content_security_policy,
               net::SiteForCookies site_for_cookies,
               scoped_refptr<const SecurityOrigin> top_frame_origin,
@@ -198,7 +197,6 @@ struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
               bool is_svg_image_chrome_client,
               bool is_prerendering)
       : url(url),
-        parent_security_origin(std::move(parent_security_origin)),
         content_security_policy(content_security_policy),
         site_for_cookies(std::move(site_for_cookies)),
         top_frame_origin(std::move(top_frame_origin)),
@@ -686,15 +684,6 @@ const KURL& FrameFetchContext::Url() const {
   return document_->Url();
 }
 
-const SecurityOrigin* FrameFetchContext::GetParentSecurityOrigin() const {
-  if (GetResourceFetcherProperties().IsDetached())
-    return frozen_state_->parent_security_origin.get();
-  Frame* parent = GetFrame()->Tree().Parent();
-  if (!parent)
-    return nullptr;
-  return parent->GetSecurityContext()->GetSecurityOrigin();
-}
-
 ContentSecurityPolicy* FrameFetchContext::GetContentSecurityPolicy() const {
   if (GetResourceFetcherProperties().IsDetached())
     return frozen_state_->content_security_policy;
@@ -777,10 +766,10 @@ FetchContext* FrameFetchContext::Detach() {
                           : GetUserAgent();
 
   frozen_state_ = MakeGarbageCollected<FrozenState>(
-      Url(), GetParentSecurityOrigin(), GetContentSecurityPolicy(),
-      GetSiteForCookies(), GetTopFrameOrigin(), client_hints_prefs,
-      GetDevicePixelRatio(), user_agent, GetUserAgentMetadata(),
-      IsSVGImageChromeClient(), IsPrerendering());
+      Url(), GetContentSecurityPolicy(), GetSiteForCookies(),
+      GetTopFrameOrigin(), client_hints_prefs, GetDevicePixelRatio(),
+      user_agent, GetUserAgentMetadata(), IsSVGImageChromeClient(),
+      IsPrerendering());
   document_loader_ = nullptr;
   document_ = nullptr;
   return this;

@@ -143,7 +143,6 @@ class CORE_EXPORT BaseFetchContext : public FetchContext {
   virtual bool ShouldBlockFetchAsCredentialedSubresource(const ResourceRequest&,
                                                          const KURL&) const = 0;
   virtual const KURL& Url() const = 0;
-  virtual const SecurityOrigin* GetParentSecurityOrigin() const = 0;
   virtual ContentSecurityPolicy* GetContentSecurityPolicy() const = 0;
 
   // TODO(yhirano): Remove this.
