@@ -7246,6 +7246,7 @@ crbug.com/1257806 http/tests/devtools/console/console-log-side-effects.js [ Skip
 # Flaky on Windows and Mac.
 # TODO(https://crbug.com/1265311): Make the test behave the same way on all platforms
 crbug.com/1265311 [ Win7 ] http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
+crbug.com/1265311 [ Win10.20h2 ] http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
 crbug.com/1265311 [ Mac11-arm64 ] http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
 
 # Sheriff 2021-11-03
@@ -7269,4 +7270,7 @@ crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-websql.j
 # Sheriff 2021-11-09
 crbug.com/1268259 [ Linux ] images/color-profile-image-canvas-pattern.html [ Failure ]
 crbug.com/1268265 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure ]
-crbug.com/1268439 [ Linux ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure ]
+crbug.com/1268439 [ Linux ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268439 [ Win10.20h2 ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
+crbug.com/1268518 [ Linux ] external/wpt/web-animations/interfaces/Animation/onfinish.html [ Failure Pass ]
+crbug.com/1268519 [ Win10.20h2 ] virtual/scroll-unification/http/tests/misc/resource-timing-sizes-multipart.html [ Failure Pass ]
