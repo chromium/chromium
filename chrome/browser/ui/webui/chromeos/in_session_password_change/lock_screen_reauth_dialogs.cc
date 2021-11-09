@@ -140,6 +140,8 @@ LockScreenStartReauthDialog::~LockScreenStartReauthDialog() {
 
 void LockScreenStartReauthDialog::NetworkConnectionStateChanged(
     const NetworkState* network) {
+  if (!profile_)
+    return;
   if (network_state_helper_->IsConnected()) {
     if (lock_screen_network_dialog_) {
       lock_screen_network_dialog_->Close();

@@ -46,7 +46,7 @@ class LockScreenStartReauthDialog : public BaseLockDialog,
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
   std::unique_ptr<LockScreenNetworkDialog> lock_screen_network_dialog_;
-  Profile* profile_;
+  Profile* profile_ = nullptr;
 
   base::WeakPtrFactory<LockScreenStartReauthDialog> weak_factory_{this};
 };
