@@ -1579,11 +1579,25 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
       JsReplace("f.src = $1;", fenced_frame_url.spec());
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame, fenced_frame_url, navigate_script);
+
   GURL fragment_url(
       https_server()->GetURL("a.test", "/fenced_frames/title1.html#123"));
   navigate_script = JsReplace("f.src = $1;", fragment_url.spec());
   NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
       fenced_frame, fragment_url, navigate_script);
+  EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
+  EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
+
+  // Do a cross-site navigation to exercise RemoteFrame::Navigate path in the
+  // navigation after this one.
+  GURL cross_site_url =
+      https_server()->GetURL("d.test", "/fenced_frames/title1.html");
+  std::string navigate_script_2 =
+      JsReplace("f.src = $1;", cross_site_url.spec());
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame, cross_site_url, navigate_script_2);
+  NavigateFrameInsideFencedFrameTreeAndWaitForFinishedLoad(
+      fenced_frame, fenced_frame_url, navigate_script);
   EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
   EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
 

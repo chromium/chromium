@@ -317,11 +317,12 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
 
 bool RemoteFrame::NavigationShouldReplaceCurrentHistoryEntry(
     WebFrameLoadType frame_load_type) const {
-  // Portal contexts do not create back/forward entries.
+  // Portal and Fenced Frame contexts do not create back/forward entries.
   // TODO(https:/crbug.com/1197384, https://crbug.com/1190644): We may want to
   // support a prerender in RemoteFrame.
-  return frame_load_type == WebFrameLoadType::kStandard &&
-         GetPage()->InsidePortal();
+  return (frame_load_type == WebFrameLoadType::kStandard &&
+          GetPage()->InsidePortal()) ||
+         IsInFencedFrameTree();
 }
 
 bool RemoteFrame::DetachImpl(FrameDetachType type) {

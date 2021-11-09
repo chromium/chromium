@@ -426,6 +426,13 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
       mojom::blink::ResourceTimingInfoPtr timing,
       const String& server_timing_values);
 
+  // Returns false if fenced frames are disabled. Returns true if the
+  // feature is enabled and if |this| or any of its ancestor nodes is a
+  // fenced frame. For MPArch returns the value of
+  // Page::IsMainFrameFencedFrameRoot and for shadowDOM returns true, if
+  // the FrameTree that this frame is in is not the outermost FrameTree.
+  bool IsInFencedFrameTree() const;
+
   mutable FrameTree tree_node_;
 
   Member<Page> page_;
