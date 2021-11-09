@@ -173,7 +173,7 @@ base::CommandLine MakeElevated(base::CommandLine command_line) {
   return command_line;
 }
 
-// The log file is created in DIR_LOCAL_APP_DATA or DIR_APP_DATA.
+// The log file is created in DIR_LOCAL_APP_DATA or DIR_ROAMING_APP_DATA.
 void InitLogging(UpdaterScope updater_scope,
                  const base::FilePath::StringType& filename) {
   logging::LoggingSettings settings;

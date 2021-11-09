@@ -196,7 +196,7 @@ const struct {
     {base::DIR_PROGRAM_FILESX86, nullptr, kBlockAllChildren},
     {base::DIR_PROGRAM_FILES6432, nullptr, kBlockAllChildren},
     {base::DIR_WINDOWS, nullptr, kBlockAllChildren},
-    {base::DIR_APP_DATA, nullptr, kBlockAllChildren},
+    {base::DIR_ROAMING_APP_DATA, nullptr, kBlockAllChildren},
     {base::DIR_LOCAL_APP_DATA, nullptr, kBlockAllChildren},
     {base::DIR_COMMON_APP_DATA, nullptr, kBlockAllChildren},
     // Opening a file from an MTP device, such as a smartphone or a camera, is

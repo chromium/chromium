@@ -58,7 +58,7 @@
 namespace updater {
 namespace {
 
-// The log file is created in DIR_LOCAL_APP_DATA or DIR_APP_DATA.
+// The log file is created in DIR_LOCAL_APP_DATA or DIR_ROAMING_APP_DATA.
 void InitLogging(UpdaterScope updater_scope) {
   logging::LoggingSettings settings;
   const absl::optional<base::FilePath> log_dir =

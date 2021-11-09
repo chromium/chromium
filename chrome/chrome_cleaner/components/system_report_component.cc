@@ -365,7 +365,7 @@ void ReportFoldersUnderPath(const base::FilePath& path, const wchar_t* prefix) {
 void ReportInstalledPrograms() {
   static unsigned int install_paths[] = {
       base::DIR_PROGRAM_FILES,     base::DIR_PROGRAM_FILESX86,
-      base::DIR_PROGRAM_FILES6432, base::DIR_APP_DATA,
+      base::DIR_PROGRAM_FILES6432, base::DIR_ROAMING_APP_DATA,
       base::DIR_LOCAL_APP_DATA,    base::DIR_COMMON_APP_DATA,
   };
   std::set<base::FilePath> path_processed;

@@ -118,7 +118,7 @@ bool PathProviderWin(int key, FilePath* result) {
         return false;
       cur = FilePath(system_buffer);
       break;
-    case base::DIR_APP_DATA:
+    case base::DIR_ROAMING_APP_DATA:
       if (FAILED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT,
                                  system_buffer)))
         return false;
@@ -171,7 +171,7 @@ bool PathProviderWin(int key, FilePath* result) {
       cur = FilePath(system_buffer);
       break;
     case base::DIR_USER_QUICK_LAUNCH:
-      if (!PathService::Get(base::DIR_APP_DATA, &cur))
+      if (!PathService::Get(base::DIR_ROAMING_APP_DATA, &cur))
         return false;
       // According to various sources, appending
       // "Microsoft\Internet Explorer\Quick Launch" to %appdata% is the only

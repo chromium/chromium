@@ -144,7 +144,7 @@ class ProfileResetterTest : public extensions::ExtensionServiceTestBase,
 ProfileResetterTest::ProfileResetterTest()
 #if defined(OS_WIN)
     : user_desktop_override_(base::DIR_USER_DESKTOP),
-      app_dir_override_(base::DIR_APP_DATA),
+      app_dir_override_(base::DIR_ROAMING_APP_DATA),
       start_menu_override_(base::DIR_START_MENU),
       taskbar_pins_override_(base::DIR_TASKBAR_PINS)
 #endif

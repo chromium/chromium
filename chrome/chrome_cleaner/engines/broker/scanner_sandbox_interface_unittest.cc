@@ -415,7 +415,7 @@ TEST(ScannerSandboxInterface, GetKnownFolderPath) {
 
   EXPECT_TRUE(SandboxGetKnownFolderPath(KnownFolder::kAppData, &folder_path));
   base::FilePath appdata_dir;
-  base::PathService::Get(base::DIR_APP_DATA, &appdata_dir);
+  base::PathService::Get(base::DIR_ROAMING_APP_DATA, &appdata_dir);
   EXPECT_EQ(base::ToLowerASCII(appdata_dir.value()),
             base::ToLowerASCII(folder_path.value()));
 }

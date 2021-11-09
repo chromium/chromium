@@ -51,7 +51,7 @@ bool GetDefaultUserDataDirectory(base::FilePath* result) {
 }
 
 bool GetDefaultRoamingUserDataDirectory(base::FilePath* result) {
-  if (!base::PathService::Get(base::DIR_APP_DATA, result))
+  if (!base::PathService::Get(base::DIR_ROAMING_APP_DATA, result))
     return false;
   *result = result->Append(install_static::GetChromeInstallSubDirectory());
   *result = result->Append(chrome::kUserDataDirname);
