@@ -23,8 +23,6 @@
 -ExtensionsMenuViewUnitTest.Reset*
 -ExtensionsMenuViewUnitTest.Run*
 -FileAnalysisRequestTest.Invalid*
--FirstRunTest.Initial*
--FirstRunTest.Legacy*
 -FontAccess*
 -Framework*
 -LastDownloadFinderTest.Add*
