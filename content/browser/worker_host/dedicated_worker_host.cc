@@ -28,6 +28,7 @@
 #include "content/browser/websockets/websocket_connector_impl.h"
 #include "content/browser/webtransport/web_transport_connector_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host_factory_impl.h"
+#include "content/browser/worker_host/dedicated_worker_hosts_for_document.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/public/browser/browser_thread.h"
@@ -103,12 +104,33 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   }
 
   service_->NotifyWorkerCreated(this);
+
+  auto* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (ancestor_render_frame_host) {
+    DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
+        ancestor_render_frame_host)
+        ->Add(weak_factory_.GetSafeRef());
+  }
 }
 
 DedicatedWorkerHost::~DedicatedWorkerHost() {
   // This DedicatedWorkerHost is destroyed via either the mojo disconnection
   // or RenderProcessHostObserver. This destruction should be called before
   // the observed render process host (`worker_process_host_`) is destroyed.
+
+  // The frame's current document might no longer be related to this worker. In
+  // this case, the previous DedicatedWorkerHostsForDocument has been deleted
+  // and calling Remove(...)` on the new one is a no-op. Note that when the
+  // previous document is BFCached and not deleted, the RenderFrameHost will
+  // never be reused, so we will always get the right (BFCached) document.
+  auto* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  if (ancestor_render_frame_host) {
+    DedicatedWorkerHostsForDocument::GetOrCreateForCurrentDocument(
+        ancestor_render_frame_host)
+        ->Remove(weak_factory_.GetSafeRef());
+  }
 
   // Send any final reports and allow the reporting configuration to be
   // removed.

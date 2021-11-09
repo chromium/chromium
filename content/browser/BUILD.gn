@@ -2054,6 +2054,8 @@ source_set("browser") {
     "worker_host/dedicated_worker_host.h",
     "worker_host/dedicated_worker_host_factory_impl.cc",
     "worker_host/dedicated_worker_host_factory_impl.h",
+    "worker_host/dedicated_worker_hosts_for_document.cc",
+    "worker_host/dedicated_worker_hosts_for_document.h",
     "worker_host/dedicated_worker_service_impl.cc",
     "worker_host/dedicated_worker_service_impl.h",
     "worker_host/shared_worker_connector_impl.cc",
