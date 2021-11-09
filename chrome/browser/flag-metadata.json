@@ -4635,6 +4635,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "remove-extra-ntps",
+    "owners": [ "thegreenfrog@chromium.org", "bling-team@google.org" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "request-desktop-site-for-tablets",
     "owners": [ "gangwu@chromium.org", "fgorski@chromium.org" ],
     "expiry_milestone": 96

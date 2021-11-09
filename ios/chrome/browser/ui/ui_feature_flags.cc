@@ -64,6 +64,9 @@ const base::Feature kUseLensToSearchForImage{"UseLensToSearchForImage",
 const base::Feature kCredentialProviderExtensionPromo{
     "CredentialProviderExtensionPromo", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kRemoveExcessNTPs{"RemoveExcessNTPs",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsContextMenuActionsRefreshEnabled() {
   return base::FeatureList::IsEnabled(kContextMenuActionsRefresh);
 }

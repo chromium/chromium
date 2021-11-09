@@ -514,6 +514,11 @@ extern const char kRecordSnapshotSizeDescription[];
 extern const char kDefaultBrowserFullscreenPromoExperimentName[];
 extern const char kDefaultBrowserFullscreenPromoExperimentDescription[];
 
+// Title and description for the flag to remove excess NTP tabs that don't have
+// navigation history.
+extern const char kRemoveExcessNTPsExperimentName[];
+extern const char kRemoveExcessNTPsExperimentDescription[];
+
 // Please add names and descriptions above in alphabetical order.
 
 }  // namespace flag_descriptions

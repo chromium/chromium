@@ -902,6 +902,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.NTP.ExcessRemovedTabCount" units="count"
+    expires_after="2022-09-03">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>The number of excess NTP tabs that are removed.</summary>
+</histogram>
+
 <histogram name="IOS.NTP.Impression" enum="IOSNTPImpression"
     expires_after="2022-04-03">
   <owner>gambard@chromium.org</owner>
