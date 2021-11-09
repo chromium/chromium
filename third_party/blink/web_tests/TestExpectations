@@ -6284,6 +6284,8 @@ crbug.com/1067455 virtual/webid/* [ Pass ]
 crbug.com/1060837 external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.https.html [ Timeout ]
 crbug.com/1060837 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.https.html [ Pass ]
 
+crbug.com/1143102 virtual/plz-dedicated-worker/http/tests/inspector-protocol/fetch/dedicated-worker-main-script.js [ Skip ]
+
 # These timeout because COEP reporting to a worker is not implemented.
 crbug.com/1197041 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
 crbug.com/1197041 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.https.html [ Skip ]
