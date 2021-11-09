@@ -29,6 +29,10 @@ class DesksTemplatesGridView : public views::View {
   DesksTemplatesGridView& operator=(const DesksTemplatesGridView&) = delete;
   ~DesksTemplatesGridView() override;
 
+  const std::vector<DesksTemplatesItemView*>& grid_items() const {
+    return grid_items_;
+  }
+
   // Creates and returns the widget that contains the DesksTemplatesGridView in
   // overview mode. This does not show the widget.
   // TODO(sammiequon): We might want this view to be part of the DesksWidget

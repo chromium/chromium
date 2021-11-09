@@ -5,6 +5,8 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ITEM_VIEW_H_
 #define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_ITEM_VIEW_H_
 
+#include "ash/ash_export.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "base/guid.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -23,7 +25,8 @@ class PillButton;
 
 // A view that represents each individual template item in the desks templates
 // grid.
-class DesksTemplatesItemView : public views::Button {
+class ASH_EXPORT DesksTemplatesItemView : public views::Button,
+                                          public OverviewHighlightableView {
  public:
   METADATA_HEADER(DesksTemplatesItemView);
 
@@ -46,6 +49,14 @@ class DesksTemplatesItemView : public views::Button {
   void OnDeleteButtonPressed();
 
   void OnGridItemPressed();
+
+  // OverviewHighlightableView:
+  views::View* GetView() override;
+  void MaybeActivateHighlightedView() override;
+  void MaybeCloseHighlightedView() override;
+  void MaybeSwapHighlightedView(bool right) override;
+  void OnViewHighlighted() override;
+  void OnViewUnhighlighted() override;
 
   // Owned by the views hierarchy.
   views::Textfield* name_view_ = nullptr;

@@ -13,6 +13,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
@@ -195,18 +197,25 @@ bool OverviewHighlightController::IsTabDragHighlightVisible() const {
 
 std::vector<OverviewHighlightableView*>
 OverviewHighlightController::GetTraversableViews() const {
-  const size_t root_window_count = Shell::Get()->GetAllRootWindows().size();
-  const size_t desk_count = DesksController::Get()->desks().size();
-  // For every root window (display), we have two highlightable views per desk
-  // (mini view and name), plus the new desk button and (maybe) the desks
-  // template button.
   std::vector<OverviewHighlightableView*> traversable_views;
-  traversable_views.reserve(root_window_count * (desk_count * 2 + 2) +
-                            overview_session_->num_items());
+  traversable_views.reserve(32);  // Conservative default.
 
   for (auto& grid : overview_session_->grid_list()) {
-    for (auto& item : grid->window_list())
-      traversable_views.push_back(item->overview_item_view());
+    // If the grid is visible, we shouldn't try to add any overview items.
+    if (grid->IsShowingDesksTemplatesGrid()) {
+      views::Widget* templates_grid_widget =
+          grid->desks_templates_grid_widget();
+      DCHECK(templates_grid_widget);
+      auto* templates_grid_view = static_cast<DesksTemplatesGridView*>(
+          templates_grid_widget->GetContentsView());
+      for (DesksTemplatesItemView* template_item :
+           templates_grid_view->grid_items()) {
+        traversable_views.push_back(template_item);
+      }
+    } else {
+      for (auto& item : grid->window_list())
+        traversable_views.push_back(item->overview_item_view());
+    }
 
     if (auto* bar_view = grid->desks_bar_view()) {
       const bool is_zero_state = bar_view->IsZeroState();

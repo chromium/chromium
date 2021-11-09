@@ -354,6 +354,12 @@ class DesksTemplatesTest : public OverviewTestBase {
     return overview_session->grid_list();
   }
 
+  OverviewHighlightableView* GetHighlightedView() {
+    return OverviewHighlightController::TestApi(
+               GetOverviewSession()->highlight_controller())
+        .GetHighlightView();
+  }
+
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kDesksTemplates);
@@ -1114,6 +1120,24 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
                    ->GetGridWithRootWindow(root_window)
                    ->desks_templates_grid_widget()
                    ->IsVisible());
+}
+
+TEST_F(DesksTemplatesTest, OverviewTabbing) {
+  auto test_window = CreateTestWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "template1", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "template2", base::Time::Now());
+
+  ToggleOverviewAndShowTemplatesGrid();
+  DesksTemplatesItemView* first_item = GetItemViewFromOverviewGrid(0);
+  DesksTemplatesItemView* second_item = GetItemViewFromOverviewGrid(1);
+
+  // Testing that we first traverse the views of the first item.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(first_item, GetHighlightedView());
+
+  // When we're done with the first item, we'll go on to the second.
+  SendKey(ui::VKEY_TAB);
+  EXPECT_EQ(second_item, GetHighlightedView());
 }
 
 }  // namespace ash

@@ -16,6 +16,9 @@
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,12 +26,13 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
-
 namespace {
 
 // The padding values of the DesksTemplatesItemView.
@@ -45,6 +49,10 @@ constexpr int kCornerRadius = 16;
 constexpr gfx::Size kViewSize(250, 20);
 constexpr int kDeleteButtonMargin = 8;
 constexpr int kDeleteButtonSize = 20;
+
+// Pixel offset for the focus ring around the whole time. Positive values means
+// the focus ring sits outside of the item.
+constexpr int kFocusRingOffset = 2;
 
 constexpr char kAmPmTimeDateFmtStr[] = "%d:%02d%s, %d-%02d-%02d";
 
@@ -127,6 +135,17 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
   icon_container_view_->PopulateIconContainerFromTemplate(desk_template);
   card_container->SetFlexForView(spacer, 1);
   UpdateHoverButtonsVisibility();
+
+  views::FocusRing::Install(this);
+  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetHasFocusPredicate([](views::View* view) {
+    return static_cast<DesksTemplatesItemView*>(view)->IsViewHighlighted();
+  });
+  focus_ring->SetPathGenerator(
+      std::make_unique<views::RoundRectHighlightPathGenerator>(
+          gfx::Insets(-kFocusRingOffset), kCornerRadius + kFocusRingOffset));
+  focus_ring->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 DesksTemplatesItemView::~DesksTemplatesItemView() = default;
@@ -159,6 +178,12 @@ void DesksTemplatesItemView::Layout() {
 }
 
 void DesksTemplatesItemView::OnDeleteTemplate() {
+  // Notify the highlight controller that we're going away.
+  OverviewSession* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  DCHECK(overview_session);
+  overview_session->highlight_controller()->OnViewDestroyingOrDisabling(this);
+
   DesksTemplatesPresenter::Get()->DeleteEntry(uuid_.AsLowercaseString());
 }
 
@@ -173,6 +198,28 @@ void DesksTemplatesItemView::OnDeleteButtonPressed() {
 
 void DesksTemplatesItemView::OnGridItemPressed() {
   DesksTemplatesPresenter::Get()->LaunchDeskTemplate(uuid_.AsLowercaseString());
+}
+
+views::View* DesksTemplatesItemView::GetView() {
+  return this;
+}
+
+void DesksTemplatesItemView::MaybeActivateHighlightedView() {
+  OnGridItemPressed();
+}
+
+void DesksTemplatesItemView::MaybeCloseHighlightedView() {
+  OnDeleteButtonPressed();
+}
+
+void DesksTemplatesItemView::MaybeSwapHighlightedView(bool right) {}
+
+void DesksTemplatesItemView::OnViewHighlighted() {
+  views::FocusRing::Get(this)->SchedulePaint();
+}
+
+void DesksTemplatesItemView::OnViewUnhighlighted() {
+  views::FocusRing::Get(this)->SchedulePaint();
 }
 
 BEGIN_METADATA(DesksTemplatesItemView, views::Button)
