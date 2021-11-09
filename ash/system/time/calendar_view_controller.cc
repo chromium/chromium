@@ -281,9 +281,8 @@ void CalendarViewController::OnCalendarEventsFetched(
     std::unique_ptr<google_apis::calendar::EventList> events) {
   // TODO https://crbug.com/1258179 we need to handle the other error codes we
   // can possibly receive, and know for certain which fetch request failed.
-  if (error == google_apis::NOT_READY) {
-    LOG(WARNING) << __FUNCTION__
-                 << " Event fetch received google_apis::NOT_READY";
+  if (error != google_apis::HTTP_SUCCESS) {
+    LOG(ERROR) << __FUNCTION__ << " Event fetch received error: " << error;
     return;
   }
 
