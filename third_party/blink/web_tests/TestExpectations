@@ -7260,11 +7260,11 @@ crbug.com/1267734 [ Win7 ] virtual/plz-dedicated-worker/external/wpt/resource-ti
 crbug.com/1267736 [ Win ] http/tests/devtools/bindings/jssourcemap-bindings-overlapping-sources.js [ Failure Pass ]
 
 # Temporarily disable to update DevTools Application Panel
-crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Pass Failure ]
-crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Pass Failure ]
-crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Pass Failure ]
-crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Pass Failure ]
-crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-websql.js [ Pass Failure ]
+crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
+crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
+crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
+crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
+crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
 
 # Sheriff 2021-11-09
 crbug.com/1268259 [ Linux ] images/color-profile-image-canvas-pattern.html [ Failure ]

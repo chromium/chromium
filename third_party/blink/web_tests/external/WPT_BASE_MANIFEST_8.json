@@ -111439,6 +111439,19 @@
         {}
        ]
       ],
+      "aspect-ratio-005.html": [
+       "70f554ba373152535625697fe604e14f6ad77eaa",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "explicitly-sized-grid-item-as-table.html": [
        "53a0979622cdc757e3ab77b98d712c727cec4901",
        [
@@ -260817,7 +260830,7 @@
        []
       ],
       "will-change-invalid-expected.txt": [
-       "c820d533ac14ed45e751d9bd6a7fdf68b59bed6d",
+       "8283810b3abc848556776ac722996608e7c64676",
        []
       ]
      },
@@ -301666,6 +301679,24 @@
      "1120aa0f810e0e4573493ab8b9df5d8f4496405b",
      []
     ],
+    "piping": {
+     "abort.any-expected.txt": [
+      "1dfe56e0126194bcd0c44fc1cd2d20152cd94ddb",
+      []
+     ],
+     "abort.any.serviceworker-expected.txt": [
+      "1dfe56e0126194bcd0c44fc1cd2d20152cd94ddb",
+      []
+     ],
+     "abort.any.sharedworker-expected.txt": [
+      "1dfe56e0126194bcd0c44fc1cd2d20152cd94ddb",
+      []
+     ],
+     "abort.any.worker-expected.txt": [
+      "1dfe56e0126194bcd0c44fc1cd2d20152cd94ddb",
+      []
+     ]
+    },
     "readable-byte-streams": {
      "tee.any-expected.txt": [
       "a804638a686da4e7bbf52fb3e49a65ce1f7c4bf8",
@@ -357960,7 +357991,7 @@
       ]
      },
      "percentage-height-in-flexbox.html": [
-      "f5d9d528a15b4ed445808ebd74de2c3814cb5ee1",
+      "a882efd7d1feeab2b64c94bf23f3957ec8ebc2db",
       [
        null,
        {}
@@ -366452,7 +366483,7 @@
        ]
       ],
       "will-change-invalid.html": [
-       "aa99676b3f98d28d6c327ad771f4cd0b35a37a74",
+       "e8b0b01973231b06b7b4e069b3c2a4eebdffee1d",
        [
         null,
         {}
@@ -458016,6 +458047,85 @@
       }
      ]
     ],
+    "read_write_async_buffer_offset.tentative.https.any.js": [
+     "a487771065f18dbd588a22fd60dbf1adc5d99e24",
+     [
+      "native-io/read_write_async_buffer_offset.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "NativeIO API: Read/write correctly offsets into the source buffer"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "native-io/read_write_async_buffer_offset.tentative.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "NativeIO API: Read/write correctly offsets into the source buffer"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "native-io/read_write_async_buffer_offset.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "NativeIO API: Read/write correctly offsets into the source buffer"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "native-io/read_write_async_buffer_offset.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "NativeIO API: Read/write correctly offsets into the source buffer"
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "read_write_async_bufferlength.tentative.https.any.js": [
      "7424d24e5231fc5bafc3413cf68232773acfc883",
      [
@@ -458205,6 +458315,28 @@
         [
          "title",
          "Synchronous NativeIO API: Written bytes are read back."
+        ],
+        [
+         "global",
+         "dedicatedworker"
+        ],
+        [
+         "script",
+         "resources/support.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "read_write_sync_buffer_offset.tentative.https.any.js": [
+     "a4b651eaa2c24f1f5b4afdb614204c67a338d457",
+     [
+      "native-io/read_write_sync_buffer_offset.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "NativeIO API: Read/write correctly offsets into the source buffer"
         ],
         [
          "global",
@@ -486529,7 +486661,7 @@
     ],
     "piping": {
      "abort.any.js": [
-      "3fe029de95a1b8921e38b4f7255be3c56d007e45",
+      "b2af11fd139f23eb96811c3629bedb8f0af706ff",
       [
        null,
        {
@@ -490349,7 +490481,7 @@
     },
     "writable-streams": {
      "aborting.any.js": [
-      "e86969ba934ee91062c2f18eda416b89365e3240",
+      "0f8507ac3401313b6e06115b89d2b3e045c37642",
       [
        null,
        {
