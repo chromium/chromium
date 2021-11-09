@@ -1493,13 +1493,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
   base::ListValue* target_infos;
   EXPECT_TRUE(result_->GetList("targetInfos", &target_infos));
   EXPECT_EQ(1u, target_infos->GetList().size());
-  base::DictionaryValue* target_info;
-  EXPECT_TRUE(target_infos->GetDictionary(0u, &target_info));
+  const base::Value& target_info_value = target_infos->GetList()[0u];
+  EXPECT_TRUE(target_info_value.is_dict());
+  const base::DictionaryValue& target_info =
+      base::Value::AsDictionaryValue(target_info_value);
   std::string target_id, type, title, url;
-  EXPECT_TRUE(target_info->GetString("targetId", &target_id));
-  EXPECT_TRUE(target_info->GetString("type", &type));
-  EXPECT_TRUE(target_info->GetString("title", &title));
-  EXPECT_TRUE(target_info->GetString("url", &url));
+  EXPECT_TRUE(target_info.GetString("targetId", &target_id));
+  EXPECT_TRUE(target_info.GetString("type", &type));
+  EXPECT_TRUE(target_info.GetString("title", &title));
+  EXPECT_TRUE(target_info.GetString("url", &url));
   EXPECT_EQ("page", type);
   EXPECT_EQ("about:blank", title);
   EXPECT_EQ("about:blank", url);
@@ -1916,12 +1918,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
   EXPECT_TRUE(result_->GetList("cookies", &cookies));
   EXPECT_EQ(1u, cookies->GetList().size());
 
-  base::DictionaryValue* cookie;
+  const base::Value& cookie_value = cookies->GetList()[0];
+  EXPECT_TRUE(cookie_value.is_dict());
+  const base::DictionaryValue& cookie =
+      base::Value::AsDictionaryValue(cookie_value);
   std::string name;
   std::string value;
-  EXPECT_TRUE(cookies->GetDictionary(0, &cookie));
-  EXPECT_TRUE(cookie->GetString("name", &name));
-  EXPECT_TRUE(cookie->GetString("value", &value));
+  EXPECT_TRUE(cookie.GetString("name", &name));
+  EXPECT_TRUE(cookie.GetString("value", &value));
   EXPECT_EQ("cookie_for_this_url", name);
   EXPECT_EQ("mendacious", value);
 
@@ -1934,15 +1938,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
 
   // Note: the cookies will be returned in unspecified order.
   size_t found = 0;
-  for (size_t i = 0; i < cookies->GetList().size(); i++) {
-    EXPECT_TRUE(cookies->GetDictionary(i, &cookie));
-    EXPECT_TRUE(cookie->GetString("name", &name));
+  for (const base::Value& cookie_value : cookies->GetList()) {
+    EXPECT_TRUE(cookie_value.is_dict());
+    const base::DictionaryValue& cookie =
+        base::Value::AsDictionaryValue(cookie_value);
+    EXPECT_TRUE(cookie.GetString("name", &name));
     if (name == "cookie_for_this_url") {
-      EXPECT_TRUE(cookie->GetString("value", &value));
+      EXPECT_TRUE(cookie.GetString("value", &value));
       EXPECT_EQ("mendacious", value);
       found++;
     } else if (name == "cookie_for_another_url") {
-      EXPECT_TRUE(cookie->GetString("value", &value));
+      EXPECT_TRUE(cookie.GetString("value", &value));
       EXPECT_EQ("polyglottal", value);
       found++;
     } else {

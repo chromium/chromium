@@ -224,11 +224,14 @@ bool KnownUser::FindPrefs(const AccountId& account_id,
     return false;
 
   const base::ListValue* known_users = local_state_->GetList(kKnownUsers);
-  for (size_t i = 0; i < known_users->GetList().size(); ++i) {
-    const base::DictionaryValue* element = nullptr;
-    if (known_users->GetDictionary(i, &element)) {
-      if (UserMatches(account_id, *element)) {
-        known_users->GetDictionary(i, out_value);
+  for (const base::Value& element_value : known_users->GetList()) {
+    if (element_value.is_dict()) {
+      const base::DictionaryValue& element =
+          base::Value::AsDictionaryValue(element_value);
+      if (UserMatches(account_id, element)) {
+        if (out_value)
+          *out_value = &element;
+
         return true;
       }
     }
@@ -250,9 +253,10 @@ void KnownUser::UpdatePrefs(const AccountId& account_id,
     return;
 
   ListPrefUpdate update(local_state_, kKnownUsers);
-  for (size_t i = 0; i < update->GetList().size(); ++i) {
-    base::DictionaryValue* element = nullptr;
-    if (update->GetDictionary(i, &element)) {
+  for (base::Value& element_value : update->GetList()) {
+    if (element_value.is_dict()) {
+      base::DictionaryValue* element =
+          static_cast<base::DictionaryValue*>(&element_value);
       if (UserMatches(account_id, *element)) {
         if (clear)
           element->Clear();
@@ -426,18 +430,19 @@ std::vector<AccountId> KnownUser::GetKnownAccountIds() {
   std::vector<AccountId> result;
 
   const base::ListValue* known_users = local_state_->GetList(kKnownUsers);
-  for (size_t i = 0; i < known_users->GetList().size(); ++i) {
-    const base::DictionaryValue* element = nullptr;
-    if (known_users->GetDictionary(i, &element)) {
+  for (const base::Value& element_value : known_users->GetList()) {
+    if (element_value.is_dict()) {
+      const base::DictionaryValue& element =
+          base::Value::AsDictionaryValue(element_value);
       std::string email;
       std::string gaia_id;
       std::string obj_guid;
-      const bool has_email = element->GetString(kCanonicalEmail, &email);
-      const bool has_gaia_id = element->GetString(kGAIAIdKey, &gaia_id);
-      const bool has_obj_guid = element->GetString(kObjGuidKey, &obj_guid);
+      const bool has_email = element.GetString(kCanonicalEmail, &email);
+      const bool has_gaia_id = element.GetString(kGAIAIdKey, &gaia_id);
+      const bool has_obj_guid = element.GetString(kObjGuidKey, &obj_guid);
       AccountType account_type = AccountType::GOOGLE;
       std::string account_type_string;
-      if (element->GetString(kAccountTypeKey, &account_type_string)) {
+      if (element.GetString(kAccountTypeKey, &account_type_string)) {
         account_type = AccountId::StringToAccountType(account_type_string);
       }
       switch (account_type) {

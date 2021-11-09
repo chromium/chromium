@@ -169,15 +169,20 @@ TEST(ProtoValueConversionsTest, BookmarkSpecificsData) {
   base::ListValue* meta_info_list;
   ASSERT_TRUE(value->GetList("meta_info", &meta_info_list));
   EXPECT_EQ(2u, meta_info_list->GetList().size());
-  base::DictionaryValue* meta_info;
+  const base::Value* meta_info_value;
+  const base::DictionaryValue* meta_info;
   std::string meta_key;
   std::string meta_value;
-  ASSERT_TRUE(meta_info_list->GetDictionary(0, &meta_info));
+  meta_info_value = &meta_info_list->GetList()[0];
+  ASSERT_TRUE(meta_info_value->is_dict());
+  meta_info = &base::Value::AsDictionaryValue(*meta_info_value);
   EXPECT_TRUE(meta_info->GetString("key", &meta_key));
   EXPECT_TRUE(meta_info->GetString("value", &meta_value));
   EXPECT_EQ("key1", meta_key);
   EXPECT_EQ("value1", meta_value);
-  ASSERT_TRUE(meta_info_list->GetDictionary(1, &meta_info));
+  meta_info_value = &meta_info_list->GetList()[1];
+  ASSERT_TRUE(meta_info_value->is_dict());
+  meta_info = &base::Value::AsDictionaryValue(*meta_info_value);
   EXPECT_TRUE(meta_info->GetString("key", &meta_key));
   EXPECT_TRUE(meta_info->GetString("value", &meta_value));
   EXPECT_EQ("key2", meta_key);
@@ -214,16 +219,17 @@ namespace {
 bool ValueHasSpecifics(const base::DictionaryValue& value,
                        const std::string& path) {
   const base::ListValue* entities_list = nullptr;
-  const base::DictionaryValue* entry_dictionary = nullptr;
-  const base::DictionaryValue* specifics_dictionary = nullptr;
-
   if (!value.GetList(path, &entities_list))
     return false;
 
-  if (!entities_list->GetDictionary(0, &entry_dictionary))
+  const base::Value& entry_dictionary_value = entities_list->GetList()[0];
+  if (!entry_dictionary_value.is_dict())
     return false;
 
-  return entry_dictionary->GetDictionary("specifics", &specifics_dictionary);
+  const base::DictionaryValue& entry_dictionary =
+      base::Value::AsDictionaryValue(entry_dictionary_value);
+  const base::DictionaryValue* specifics_dictionary = nullptr;
+  return entry_dictionary.GetDictionary("specifics", &specifics_dictionary);
 }
 }  // namespace
 

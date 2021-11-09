@@ -171,26 +171,26 @@ net::ct::SignedCertificateTimestamp::Origin SCTOriginStringToOrigin(
     return ::testing::AssertionFailure() << "Failed to serialize SCT";
   }
 
-  for (size_t i = 0; i < report_list.GetList().size(); i++) {
-    const base::DictionaryValue* report_sct;
-    if (!report_list.GetDictionary(i, &report_sct)) {
+  for (const base::Value& report_sct_value : report_list.GetList()) {
+    if (!report_sct_value.is_dict()) {
       return ::testing::AssertionFailure()
              << "Failed to get dictionary value from report SCT list";
     }
-
+    const base::DictionaryValue& report_sct =
+        base::Value::AsDictionaryValue(report_sct_value);
     std::string serialized_sct;
-    EXPECT_TRUE(report_sct->GetString("serialized_sct", &serialized_sct));
+    EXPECT_TRUE(report_sct.GetString("serialized_sct", &serialized_sct));
     std::string decoded_serialized_sct;
     EXPECT_TRUE(base::Base64Decode(serialized_sct, &decoded_serialized_sct));
     if (decoded_serialized_sct != expected_serialized_sct)
       continue;
 
     std::string source;
-    EXPECT_TRUE(report_sct->GetString("source", &source));
+    EXPECT_TRUE(report_sct.GetString("source", &source));
     EXPECT_EQ(expected_sct->origin, SCTOriginStringToOrigin(source));
 
     std::string report_status;
-    EXPECT_TRUE(report_sct->GetString("status", &report_status));
+    EXPECT_TRUE(report_sct.GetString("status", &report_status));
     switch (expected_status) {
       case net::ct::SCT_STATUS_LOG_UNKNOWN:
         EXPECT_EQ("unknown", report_status);

@@ -525,11 +525,14 @@ void AccountTrackerService::OnAccountImageUpdated(
   base::DictionaryValue* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
-    if (update->GetDictionary(i, &dict)) {
+    base::Value& dict_value = update->GetList()[i];
+    if (dict_value.is_dict()) {
+      dict = static_cast<base::DictionaryValue*>(&dict_value);
       std::string value;
       if (dict->GetString(kAccountKeyPath, &value) &&
-          value == account_id.ToString())
+          value == account_id.ToString()) {
         break;
+      }
     }
   }
 
@@ -551,10 +554,12 @@ void AccountTrackerService::LoadFromPrefs() {
   const base::ListValue* list = pref_service_->GetList(prefs::kAccountInfo);
   std::set<CoreAccountId> to_remove;
   for (size_t i = 0; i < list->GetList().size(); ++i) {
-    const base::DictionaryValue* dict = nullptr;
-    if (list->GetDictionary(i, &dict)) {
+    const base::Value& dict_value = list->GetList()[i];
+    if (dict_value.is_dict()) {
+      const base::DictionaryValue& dict =
+          base::Value::AsDictionaryValue(dict_value);
       std::string value;
-      if (dict->GetString(kAccountKeyPath, &value)) {
+      if (dict.GetString(kAccountKeyPath, &value)) {
         // Ignore incorrectly persisted non-canonical account ids.
         if (value.find('@') != std::string::npos &&
             value != gaia::CanonicalizeEmail(value)) {
@@ -566,50 +571,49 @@ void AccountTrackerService::LoadFromPrefs() {
         StartTrackingAccount(account_id);
         AccountInfo& account_info = accounts_[account_id];
 
-        if (dict->GetString(kAccountGaiaPath, &value))
+        if (dict.GetString(kAccountGaiaPath, &value))
           account_info.gaia = value;
-        if (dict->GetString(kAccountEmailPath, &value))
+        if (dict.GetString(kAccountEmailPath, &value))
           account_info.email = value;
-        if (dict->GetString(kAccountHostedDomainPath, &value))
+        if (dict.GetString(kAccountHostedDomainPath, &value))
           account_info.hosted_domain = value;
-        if (dict->GetString(kAccountFullNamePath, &value))
+        if (dict.GetString(kAccountFullNamePath, &value))
           account_info.full_name = value;
-        if (dict->GetString(kAccountGivenNamePath, &value))
+        if (dict.GetString(kAccountGivenNamePath, &value))
           account_info.given_name = value;
-        if (dict->GetString(kAccountLocalePath, &value))
+        if (dict.GetString(kAccountLocalePath, &value))
           account_info.locale = value;
-        if (dict->GetString(kAccountPictureURLPath, &value))
+        if (dict.GetString(kAccountPictureURLPath, &value))
           account_info.picture_url = value;
-        if (dict->GetString(kLastDownloadedImageURLWithSizePath, &value))
+        if (dict.GetString(kLastDownloadedImageURLWithSizePath, &value))
           account_info.last_downloaded_image_url_with_size = value;
 
         if (absl::optional<bool> is_child_status =
-                dict->FindBoolKey(kDeprecatedChildStatusPath)) {
+                dict.FindBoolKey(kDeprecatedChildStatusPath)) {
           account_info.is_child_account = is_child_status.value()
                                               ? signin::Tribool::kTrue
                                               : signin::Tribool::kFalse;
           // Migrate to kAccountChildAttributePath.
           ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
-          base::DictionaryValue* update_dict = nullptr;
-          update->GetDictionary(i, &update_dict);
-          DCHECK(update_dict);
+          base::Value* update_dict = &update->GetList()[i];
+          DCHECK(update_dict->is_dict());
           SetAccountCapabilityPath(update_dict, kAccountChildAttributePath,
                                    account_info.is_child_account);
           update_dict->RemoveKey(kDeprecatedChildStatusPath);
         } else {
           account_info.is_child_account =
-              FindAccountCapabilityPath(*dict, kAccountChildAttributePath);
+              FindAccountCapabilityPath(dict, kAccountChildAttributePath);
         }
 
         bool is_under_advanced_protection = false;
-        if (dict->GetBoolean(kAdvancedProtectionAccountStatusPath,
-                             &is_under_advanced_protection)) {
+        if (dict.GetBoolean(kAdvancedProtectionAccountStatusPath,
+                            &is_under_advanced_protection)) {
           account_info.is_under_advanced_protection =
               is_under_advanced_protection;
         }
 
         switch (FindAccountCapabilityPath(
-            *dict, kCanOfferExtendedChromeSyncPromosCapabilityPrefsPath)) {
+            dict, kCanOfferExtendedChromeSyncPromosCapabilityPrefsPath)) {
           case signin::Tribool::kUnknown:
             break;
           case signin::Tribool::kTrue:
@@ -660,11 +664,14 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
   base::DictionaryValue* dict = nullptr;
   ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
   for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
-    if (update->GetDictionary(i, &dict)) {
+    base::Value& dict_value = update->GetList()[i];
+    if (dict_value.is_dict()) {
+      dict = static_cast<base::DictionaryValue*>(&dict_value);
       std::string value;
       if (dict->GetString(kAccountKeyPath, &value) &&
-          value == account_info.account_id.ToString())
+          value == account_info.account_id.ToString()) {
         break;
+      }
     }
   }
 
@@ -672,7 +679,9 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
     dict = new base::DictionaryValue();
     update->Append(base::WrapUnique(dict));
     // |dict| is invalidated at this point, so it needs to be reset.
-    update->GetDictionary(update->GetList().size() - 1, &dict);
+    base::Value& dict_value = update->GetList().back();
+    DCHECK(dict_value.is_dict());
+    dict = static_cast<base::DictionaryValue*>(&dict_value);
     dict->SetString(kAccountKeyPath, account_info.account_id.ToString());
   }
 

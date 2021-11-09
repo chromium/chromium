@@ -728,22 +728,24 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
   // Ensure server's suggestions are added with monotonically decreasing scores.
   int previous_score = INT_MAX;
   for (size_t i = 0; i < num_results; i++) {
-    const base::DictionaryValue* result = nullptr;
-    if (!results_list->GetDictionary(i, &result)) {
+    const base::Value& result_value = results_list->GetList()[i];
+    if (!result_value.is_dict()) {
       return matches;
     }
+    const base::DictionaryValue& result =
+        base::Value::AsDictionaryValue(result_value);
     std::u16string title;
     std::u16string url;
-    result->GetString("title", &title);
-    result->GetString("url", &url);
+    result.GetString("title", &title);
+    result.GetString("url", &url);
     if (title.empty() || url.empty()) {
       continue;
     }
 
     // Both client and server scores are calculated regardless of usage in order
     // to log them with |AutocompleteMatch::RecordAdditionalInfo| below.
-    int client_score = CalculateScore(input_.text(), result);
-    int server_score = result->FindIntKey("score").value_or(0);
+    int client_score = CalculateScore(input_.text(), &result);
+    int server_score = result.FindIntKey("score").value_or(0);
     int score = 0;
 
     if (use_client_score && use_server_score)
@@ -757,7 +759,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     }
 
     if (boost_owned)
-      score = BoostOwned(score, client_->ProfileUserName(), result);
+      score = BoostOwned(score, client_->ProfileUserName(), &result);
 
     // Decrement scores if necessary to ensure suggestion order is preserved.
     // Don't decrement client scores which don't necessarily rank suggestions
@@ -773,7 +775,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     match.fill_into_edit = url;
     match.destination_url = GURL(url);
     std::u16string original_url;
-    if (result->GetString("originalUrl", &original_url)) {
+    if (result.GetString("originalUrl", &original_url)) {
       // |AutocompleteMatch::GURLToStrippedGURL()| will try to use
       // |GetURLForDeduping()| to extract a doc ID and generate a canonical doc
       // URL; this is ideal as it handles different URL formats pointing to the
@@ -788,7 +790,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     match.contents = AutocompleteMatch::SanitizeString(title);
     match.contents_class = Classify(match.contents, input_.text());
     const base::DictionaryValue* metadata = nullptr;
-    if (result->GetDictionary("metadata", &metadata)) {
+    if (result.GetDictionary("metadata", &metadata)) {
       std::string mimetype;
       if (metadata->GetString("mimeType", &mimetype)) {
         match.document_type = GetIconForMIMEType(mimetype);
@@ -798,7 +800,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       }
       std::string update_time;
       metadata->GetString("updateTime", &update_time);
-      auto owners = ExtractResultList(result, "metadata.owner.personNames",
+      auto owners = ExtractResultList(&result, "metadata.owner.personNames",
                                       "displayName");
       if (!owners.empty())
         match.RecordAdditionalInfo("document owner", *owners[0]);
@@ -823,7 +825,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
     match.RecordAdditionalInfo("server score", server_score);
     if (matches.size() >= provider_max_matches_)
       match.RecordAdditionalInfo("for deduping only", "true");
-    const std::string* snippet = result->FindStringPath("snippet.snippet");
+    const std::string* snippet = result.FindStringPath("snippet.snippet");
     if (snippet)
       match.RecordAdditionalInfo("snippet", *snippet);
     matches.push_back(match);

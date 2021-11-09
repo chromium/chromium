@@ -257,17 +257,18 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
   std::string ShowTraceEventsWithId(const std::string& id_to_show,
                                     const base::ListValue* traceEvents) {
     std::stringstream stream;
-    for (size_t i = 0; i < traceEvents->GetList().size(); ++i) {
-      const base::DictionaryValue* traceEvent;
-      if (!traceEvents->GetDictionary(i, &traceEvent))
+    for (const base::Value& traceEvent_value : traceEvents->GetList()) {
+      if (!traceEvent_value.is_dict())
         continue;
+      const base::DictionaryValue& traceEvent =
+          base::Value::AsDictionaryValue(traceEvent_value);
 
       std::string id;
-      if (!traceEvent->GetString("id", &id))
+      if (!traceEvent.GetString("id", &id))
         continue;
 
       if (id == id_to_show)
-        stream << *traceEvent;
+        stream << traceEvent;
     }
     return stream.str();
   }
@@ -282,18 +283,19 @@ class MouseLatencyBrowserTest : public ContentBrowserTest {
 
     std::map<std::string, int> trace_ids;
 
-    for (size_t i = 0; i < traceEvents->GetList().size(); ++i) {
-      const base::DictionaryValue* traceEvent;
-      ASSERT_TRUE(traceEvents->GetDictionary(i, &traceEvent));
+    for (const base::Value& traceEvent_value : traceEvents->GetList()) {
+      ASSERT_TRUE(traceEvent_value.is_dict());
+      const base::DictionaryValue& traceEvent =
+          base::Value::AsDictionaryValue(traceEvent_value);
 
       std::string name;
-      ASSERT_TRUE(traceEvent->GetString("name", &name));
+      ASSERT_TRUE(traceEvent.GetString("name", &name));
 
       if (name != trace_event_name)
         continue;
 
       std::string id;
-      if (traceEvent->GetString("id", &id))
+      if (traceEvent.GetString("id", &id))
         ++trace_ids[id];
     }
 
@@ -335,12 +337,13 @@ IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
 
   std::vector<std::string> trace_event_names;
 
-  for (size_t i = 0; i < traceEvents->GetList().size(); ++i) {
-    const base::DictionaryValue* traceEvent;
-    ASSERT_TRUE(traceEvents->GetDictionary(i, &traceEvent));
+  for (const base::Value& traceEvent_value : traceEvents->GetList()) {
+    ASSERT_TRUE(traceEvent_value.is_dict());
+    const base::DictionaryValue& traceEvent =
+        base::Value::AsDictionaryValue(traceEvent_value);
 
     std::string name;
-    ASSERT_TRUE(traceEvent->GetString("name", &name));
+    ASSERT_TRUE(traceEvent.GetString("name", &name));
 
     if (name != "InputLatency::MouseUp" && name != "InputLatency::MouseDown")
       continue;

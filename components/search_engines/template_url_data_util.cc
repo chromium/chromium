@@ -269,7 +269,7 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
 }
 
 std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
-    const base::DictionaryValue& engine) {
+    const base::Value& engine) {
   const std::string* string_value = nullptr;
 
   std::u16string name;

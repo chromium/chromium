@@ -570,14 +570,14 @@ void ServiceWorkerInternalsHandler::HandleStopWorker(const ListValue* args) {
     return;
   std::string callback_id = args->GetList()[0].GetString();
 
-  const DictionaryValue* cmd_args = nullptr;
-  if (!args->GetDictionary(1, &cmd_args))
+  const base::Value& cmd_args = args->GetList()[1];
+  if (!cmd_args.is_dict())
     return;
 
-  absl::optional<int> partition_id = cmd_args->FindIntKey("partition_id");
+  absl::optional<int> partition_id = cmd_args.FindIntKey("partition_id");
   scoped_refptr<ServiceWorkerContextWrapper> context;
   int64_t version_id = 0;
-  const std::string* version_id_string = cmd_args->FindStringKey("version_id");
+  const std::string* version_id_string = cmd_args.FindStringKey("version_id");
   if (!partition_id || !GetServiceWorkerContext(*partition_id, &context) ||
       !version_id_string ||
       !base::StringToInt64(*version_id_string, &version_id)) {
@@ -596,13 +596,13 @@ void ServiceWorkerInternalsHandler::HandleInspectWorker(const ListValue* args) {
     return;
   std::string callback_id = args->GetList()[0].GetString();
 
-  const DictionaryValue* cmd_args = nullptr;
-  if (!args->GetDictionary(1, &cmd_args))
+  const base::Value& cmd_args = args->GetList()[1];
+  if (!cmd_args.is_dict())
     return;
 
-  absl::optional<int> process_host_id = cmd_args->FindIntKey("process_host_id");
+  absl::optional<int> process_host_id = cmd_args.FindIntKey("process_host_id");
   absl::optional<int> devtools_agent_route_id =
-      cmd_args->FindIntKey("devtools_agent_route_id");
+      cmd_args.FindIntKey("devtools_agent_route_id");
   if (!process_host_id || !devtools_agent_route_id) {
     return;
   }
@@ -627,13 +627,13 @@ void ServiceWorkerInternalsHandler::HandleUnregister(const ListValue* args) {
     return;
   std::string callback_id = args->GetList()[0].GetString();
 
-  const DictionaryValue* cmd_args = nullptr;
-  if (!args->GetDictionary(1, &cmd_args))
+  const base::Value& cmd_args = args->GetList()[1];
+  if (!cmd_args.is_dict())
     return;
 
-  absl::optional<int> partition_id = cmd_args->FindIntKey("partition_id");
+  absl::optional<int> partition_id = cmd_args.FindIntKey("partition_id");
   scoped_refptr<ServiceWorkerContextWrapper> context;
-  const std::string* scope_string = cmd_args->FindStringKey("scope");
+  const std::string* scope_string = cmd_args.FindStringKey("scope");
   if (!partition_id || !GetServiceWorkerContext(*partition_id, &context) ||
       !scope_string) {
     return;
@@ -651,14 +651,14 @@ void ServiceWorkerInternalsHandler::HandleStartWorker(const ListValue* args) {
     return;
   std::string callback_id = args->GetList()[0].GetString();
 
-  const DictionaryValue* cmd_args = nullptr;
-  if (!args->GetDictionary(1, &cmd_args))
+  const base::Value& cmd_args = args->GetList()[1];
+  if (!cmd_args.is_dict())
     return;
 
-  absl::optional<int> partition_id = cmd_args->FindIntKey("partition_id");
+  absl::optional<int> partition_id = cmd_args.FindIntKey("partition_id");
 
   scoped_refptr<ServiceWorkerContextWrapper> context;
-  const std::string* scope_string = cmd_args->FindStringKey("scope");
+  const std::string* scope_string = cmd_args.FindStringKey("scope");
   if (!partition_id || !GetServiceWorkerContext(*partition_id, &context) ||
       !scope_string) {
     return;

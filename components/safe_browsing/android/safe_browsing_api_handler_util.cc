@@ -149,14 +149,16 @@ UmaRemoteCallResult ParseJsonFromGMSCore(const std::string& metadata_str,
   // Go through each matched threat type and pick the most severe.
   JavaThreatTypes worst_threat_type = JAVA_THREAT_TYPE_MAX_VALUE;
   const base::DictionaryValue* worst_match = nullptr;
-  for (size_t i = 0; i < matches->GetList().size(); i++) {
+  for (const base::Value& match_value : matches->GetList()) {
     // Get the threat number
-    const base::DictionaryValue* match;
+    const base::DictionaryValue* match = nullptr;
+    if (match_value.is_dict())
+      match = &base::Value::AsDictionaryValue(match_value);
+
     std::string threat_num_str;
 
     int threat_type_num;
-    if (!matches->GetDictionary(i, &match) ||
-        !match->GetString(kJsonKeyThreatType, &threat_num_str) ||
+    if (!match || !match->GetString(kJsonKeyThreatType, &threat_num_str) ||
         !base::StringToInt(threat_num_str, &threat_type_num)) {
       continue;  // Skip malformed list entries
     }
