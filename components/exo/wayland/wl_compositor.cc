@@ -159,11 +159,17 @@ void surface_set_buffer_transform(wl_client* client,
       buffer_transform = Transform::ROTATE_270;
       break;
     case WL_OUTPUT_TRANSFORM_FLIPPED:
+      buffer_transform = Transform::FLIPPED;
+      break;
     case WL_OUTPUT_TRANSFORM_FLIPPED_90:
+      buffer_transform = Transform::FLIPPED_ROTATE_90;
+      break;
     case WL_OUTPUT_TRANSFORM_FLIPPED_180:
+      buffer_transform = Transform::FLIPPED_ROTATE_180;
+      break;
     case WL_OUTPUT_TRANSFORM_FLIPPED_270:
-      NOTIMPLEMENTED();
-      return;
+      buffer_transform = Transform::FLIPPED_ROTATE_270;
+      break;
     default:
       wl_resource_post_error(resource, WL_SURFACE_ERROR_INVALID_TRANSFORM,
                              "buffer transform must be one of the values from "

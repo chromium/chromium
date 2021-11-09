@@ -113,9 +113,13 @@ gfx::Size ToTransformedSize(const gfx::Size& size, Transform transform) {
   switch (transform) {
     case Transform::NORMAL:
     case Transform::ROTATE_180:
+    case Transform::FLIPPED:
+    case Transform::FLIPPED_ROTATE_180:
       return size;
     case Transform::ROTATE_90:
     case Transform::ROTATE_270:
+    case Transform::FLIPPED_ROTATE_90:
+    case Transform::FLIPPED_ROTATE_270:
       return gfx::Size(size.height(), size.width());
   }
 
@@ -1206,20 +1210,36 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
 
 void Surface::UpdateBufferTransform(bool y_invert) {
   SkMatrix buffer_matrix;
-  switch (state_.basic_state.buffer_transform) {
-    case Transform::NORMAL:
-      buffer_matrix.setIdentity();
-      break;
+  Transform transform = state_.basic_state.buffer_transform;
+  switch (transform) {
     case Transform::ROTATE_90:
+    case Transform::FLIPPED_ROTATE_90:
       buffer_matrix.setSinCos(-1, 0, 0.5f, 0.5f);
       break;
     case Transform::ROTATE_180:
+    case Transform::FLIPPED_ROTATE_180:
       buffer_matrix.setSinCos(0, -1, 0.5f, 0.5f);
       break;
     case Transform::ROTATE_270:
+    case Transform::FLIPPED_ROTATE_270:
       buffer_matrix.setSinCos(1, 0, 0.5f, 0.5f);
       break;
+    default:
+      break;
   }
+  bool x_invert = false;
+  switch (transform) {
+    case Transform::FLIPPED:
+    case Transform::FLIPPED_ROTATE_90:
+    case Transform::FLIPPED_ROTATE_180:
+    case Transform::FLIPPED_ROTATE_270:
+      x_invert = true;
+      break;
+    default:
+      break;
+  }
+  if (x_invert)
+    buffer_matrix.preScale(-1, 1, 0.5f, 0.5f);
   if (y_invert)
     buffer_matrix.preScale(1, -1, 0.5f, 0.5f);
   if (state_.basic_state.buffer_scale != 0)
