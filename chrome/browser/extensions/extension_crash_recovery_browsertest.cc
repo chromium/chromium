@@ -149,13 +149,7 @@ class ExtensionCrashRecoveryTest : public extensions::ExtensionBrowserTest {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 };
 
-// Flaky on ASAN builds (https://crbug.com/997634)
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_Basic DISABLED_Basic
-#else
-#define MAYBE_Basic Basic
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, MAYBE_Basic) {
+IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, Basic) {
   const size_t count_before = GetEnabledExtensionCount();
   const size_t crash_count_before = GetTerminatedExtensionCount();
   LoadTestExtension();
@@ -169,8 +163,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, MAYBE_Basic) {
   ASSERT_EQ(crash_count_before, GetTerminatedExtensionCount());
 }
 
-// Flaky, http://crbug.com/241191.
-IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, DISABLED_CloseAndReload) {
+IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, CloseAndReload) {
   const size_t count_before = GetEnabledExtensionCount();
   const size_t crash_count_before = GetTerminatedExtensionCount();
   LoadTestExtension();
@@ -179,9 +172,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, DISABLED_CloseAndReload) {
   ASSERT_EQ(count_before, GetEnabledExtensionCount());
   ASSERT_EQ(crash_count_before + 1, GetTerminatedExtensionCount());
 
-  // In 2013, when this test became flaky, this line was part of the test.
-  // CancelNotification() no longer exists.
-  // ASSERT_NO_FATAL_FAILURE(CancelNotification(0));
   ReloadExtension(first_extension_id_);
 
   SCOPED_TRACE("after reloading");
@@ -189,13 +179,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, DISABLED_CloseAndReload) {
   ASSERT_EQ(crash_count_before, GetTerminatedExtensionCount());
 }
 
-// TODO(crbug.com/846172): Flaky.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
-#define MAYBE_ReloadIndependently DISABLED_ReloadIndependently
-#else
-#define MAYBE_ReloadIndependently ReloadIndependently
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, MAYBE_ReloadIndependently) {
+IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, ReloadIndependently) {
   const size_t count_before = GetEnabledExtensionCount();
   LoadTestExtension();
   CrashExtension(first_extension_id_);
@@ -215,15 +199,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, MAYBE_ReloadIndependently) {
   ASSERT_EQ(0U, CountNotifications());
 }
 
-// Flaky. crbug.com/846172
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
-#define MAYBE_ReloadIndependentlyChangeTabs \
-  DISABLED_ReloadIndependentlyChangeTabs
-#else
-#define MAYBE_ReloadIndependentlyChangeTabs ReloadIndependentlyChangeTabs
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
-                       MAYBE_ReloadIndependentlyChangeTabs) {
+                       ReloadIndependentlyChangeTabs) {
   const size_t count_before = GetEnabledExtensionCount();
   LoadTestExtension();
   CrashExtension(first_extension_id_);
@@ -252,15 +229,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   ASSERT_EQ(0U, CountNotifications());
 }
 
-// Flaky on ASAN builds (https://crbug.com/997634)
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_ReloadIndependentlyNavigatePage \
-  DISABLED_ReloadIndependentlyNavigatePage
-#else
-#define MAYBE_ReloadIndependentlyNavigatePage ReloadIndependentlyNavigatePage
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
-                       MAYBE_ReloadIndependentlyNavigatePage) {
+                       ReloadIndependentlyNavigatePage) {
   const size_t count_before = GetEnabledExtensionCount();
   LoadTestExtension();
   CrashExtension(first_extension_id_);
@@ -295,14 +265,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, ShutdownWhileCrashed) {
   ASSERT_EQ(count_before, GetEnabledExtensionCount());
 }
 
-// Flaky on ASAN builds (https://crbug.com/997634)
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_TwoExtensionsCrashFirst DISABLED_TwoExtensionsCrashFirst
-#else
-#define MAYBE_TwoExtensionsCrashFirst TwoExtensionsCrashFirst
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
-                       MAYBE_TwoExtensionsCrashFirst) {
+IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, TwoExtensionsCrashFirst) {
   const size_t count_before = GetEnabledExtensionCount();
   LoadTestExtension();
   LoadSecondExtension();
@@ -315,14 +278,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   CheckExtensionConsistency(second_extension_id_);
 }
 
-// Flaky on ASAN builds (https://crbug.com/997634)
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_TwoExtensionsCrashSecond DISABLED_TwoExtensionsCrashSecond
-#else
-#define MAYBE_TwoExtensionsCrashSecond TwoExtensionsCrashSecond
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
-                       MAYBE_TwoExtensionsCrashSecond) {
+IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, TwoExtensionsCrashSecond) {
   const size_t count_before = GetEnabledExtensionCount();
   LoadTestExtension();
   LoadSecondExtension();
@@ -335,14 +291,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   CheckExtensionConsistency(second_extension_id_);
 }
 
-// Flaky on ASAN builds (https://crbug.com/997634)
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_TwoExtensionsCrashBothAtOnce DISABLED_TwoExtensionsCrashBothAtOnce
-#else
-#define MAYBE_TwoExtensionsCrashBothAtOnce TwoExtensionsCrashBothAtOnce
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
-                       MAYBE_TwoExtensionsCrashBothAtOnce) {
+                       TwoExtensionsCrashBothAtOnce) {
   const size_t count_before = GetEnabledExtensionCount();
   const size_t crash_count_before = GetTerminatedExtensionCount();
   LoadTestExtension();
@@ -368,14 +318,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   }
 }
 
-// Flaky on ASAN builds (https://crbug.com/997634)
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_TwoExtensionsOneByOne DISABLED_TwoExtensionsOneByOne
-#else
-#define MAYBE_TwoExtensionsOneByOne TwoExtensionsOneByOne
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
-                       MAYBE_TwoExtensionsOneByOne) {
+IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest, TwoExtensionsOneByOne) {
   const size_t count_before = GetEnabledExtensionCount();
   LoadTestExtension();
   CrashExtension(first_extension_id_);
@@ -436,15 +379,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   CheckExtensionConsistency(second_extension_id_);
 }
 
-// Flaky on ASAN builds (https://crbug.com/997634)
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_TwoExtensionsReloadIndependently \
-  DISABLED_TwoExtensionsReloadIndependently
-#else
-#define MAYBE_TwoExtensionsReloadIndependently TwoExtensionsReloadIndependently
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
-                       MAYBE_TwoExtensionsReloadIndependently) {
+                       TwoExtensionsReloadIndependently) {
   const size_t count_before = GetEnabledExtensionCount();
   LoadTestExtension();
   LoadSecondExtension();
