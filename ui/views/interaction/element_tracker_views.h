@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/scoped_multi_source_observation.h"
+#include "base/strings/string_piece_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/views_export.h"
@@ -56,6 +57,11 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // application window).
   static ui::ElementContext GetContextForWidget(Widget* widget);
 
+  // ----------
+  // The following methods retrieve Views directly without having to retrieve a
+  // TrackedElement from ElementTracker, call, AsA<>, etc. Use if you know that
+  // the element(s) in question are guaranteed to be Views.
+
   // Returns the corresponding TrackedElementViews for the given view, or
   // null if none exists. Note that views which are not visible or not added to
   // a Widget may not have associated elements, and that the returned object
@@ -88,6 +94,17 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // The list may be empty. Ignores any non-Views elements which might match.
   ViewList GetAllMatchingViews(ui::ElementIdentifier id,
                                ui::ElementContext context);
+
+  // Returns a list of all visible Views with identifier `id` in any context.
+  // Order is not guaranteed. Ignores any non-Views elements with the same
+  // identifier.
+  ViewList GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id);
+
+  // ----------
+  // The following methods are used by View and derived classes to send events
+  // to ElementTracker. ElementTrackerViews maintains additional observers and
+  // states that make sure shown and hidden events get sent at the correct
+  // times.
 
   // Called by View after the kUniqueElementKey property is set.
   void RegisterView(ui::ElementIdentifier element_id, View* view);

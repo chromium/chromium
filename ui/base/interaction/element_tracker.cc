@@ -62,7 +62,7 @@ class ElementTracker::ElementData {
   }
 
   void NotifyElementShown(TrackedElement* element) {
-    DCHECK_EQ(identifier().raw_value(), element->identifier().raw_value());
+    DCHECK_EQ(identifier(), element->identifier());
     DCHECK_EQ(static_cast<intptr_t>(context()),
               static_cast<intptr_t>(element->context()));
     const auto it = elements_.insert(elements_.end(), element);
@@ -203,6 +203,16 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
   return result;
 }
 
+ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
+    ElementIdentifier id) {
+  ElementList result;
+  for (const auto& pr : element_to_data_lookup_) {
+    if (pr.first->identifier() == id)
+      result.push_back(pr.first);
+  }
+  return result;
+}
+
 bool ElementTracker::IsElementVisible(ElementIdentifier id,
                                       ElementContext context) {
   const auto it = element_data_.find(LookupKey(id, context));
@@ -276,6 +286,9 @@ ElementTracker::ElementData* ElementTracker::GetOrAddElementData(
   const LookupKey key(id, context);
   auto it = element_data_.find(key);
   if (it == element_data_.end()) {
+    // This might be the first time we've referenced this identifier, so make
+    // sure it's registered.
+    ElementIdentifier::RegisterKnownIdentifier(id);
     const auto result = element_data_.emplace(
         key, std::make_unique<ElementData>(this, id, context));
     DCHECK(result.second);

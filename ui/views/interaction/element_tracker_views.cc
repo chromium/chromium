@@ -4,6 +4,7 @@
 
 #include "ui/views/interaction/element_tracker_views.h"
 
+#include <algorithm>
 #include <list>
 #include <map>
 
@@ -127,6 +128,14 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
       if (data.context == context)
         result.push_back(data.view);
     }
+    return result;
+  }
+
+  ViewList GetAllViews() {
+    ViewList result;
+    std::transform(view_data_lookup_.begin(), view_data_lookup_.end(),
+                   std::back_inserter(result),
+                   [](const auto& pr) { return pr.first; });
     return result;
   }
 
@@ -269,6 +278,14 @@ ElementTrackerViews::ViewList ElementTrackerViews::GetAllMatchingViews(
   if (it == element_data_.end())
     return ViewList();
   return it->second->FindAllViewsInContext(context);
+}
+
+ElementTrackerViews::ViewList
+ElementTrackerViews::GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id) {
+  const auto it = element_data_.find(id);
+  if (it == element_data_.end())
+    return ViewList();
+  return it->second->GetAllViews();
 }
 
 void ElementTrackerViews::RegisterView(ui::ElementIdentifier element_id,

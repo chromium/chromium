@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/test/bind.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
@@ -76,7 +77,7 @@ class ElementEventWatcher {
 
  private:
   void OnEvent(ui::TrackedElement* element) {
-    EXPECT_EQ(id_.raw_value(), element->identifier().raw_value());
+    EXPECT_EQ(id_, element->identifier());
     last_view_ = ElementToView(element);
     ++event_count_;
   }
@@ -709,8 +710,8 @@ TEST_F(ElementTrackerViewsTest, AssignTemporaryId) {
   EXPECT_EQ(nullptr, element);
   element = ElementTrackerViews::GetInstance()->GetElementForView(button, true);
   EXPECT_NE(nullptr, element);
-  EXPECT_EQ(ui::ElementTracker::kTemporaryIdentifier.raw_value(),
-            button->GetProperty(kElementIdentifierKey).raw_value());
+  EXPECT_EQ(ui::ElementTracker::kTemporaryIdentifier,
+            button->GetProperty(kElementIdentifierKey));
   EXPECT_EQ(element, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
                          ui::ElementTracker::kTemporaryIdentifier, context()));
 }
@@ -974,6 +975,89 @@ TEST_F(ElementTrackerViewsTest, GetAllMatchingViewsWithNonViewsElements) {
   EXPECT_EQ(ElementTrackerViews::ViewList(),
             ElementTrackerViews::GetInstance()->GetAllMatchingViews(
                 kTestElementID, context));
+}
+
+TEST_F(ElementTrackerViewsTest, GetAllViewsInAnyContextWithSingleView) {
+  auto widget = CreateWidget();
+  View* const contents = widget->SetContentsView(std::make_unique<View>());
+  widget->Show();
+  EXPECT_THAT(
+      ElementTrackerViews::GetInstance()->GetAllMatchingViewsInAnyContext(
+          kTestElementID),
+      testing::IsEmpty());
+
+  contents->SetProperty(kElementIdentifierKey, kTestElementID);
+  EXPECT_THAT(
+      ElementTrackerViews::GetInstance()->GetAllMatchingViewsInAnyContext(
+          kTestElementID),
+      testing::UnorderedElementsAre(contents));
+
+  contents->ClearProperty(kElementIdentifierKey);
+  EXPECT_THAT(
+      ElementTrackerViews::GetInstance()->GetAllMatchingViewsInAnyContext(
+          kTestElementID),
+      testing::IsEmpty());
+}
+
+TEST_F(ElementTrackerViewsTest, GetAllViewsInAnyContextWithMultipleViews) {
+  auto widget = CreateWidget();
+  auto widget2 = CreateWidget();
+  View* const contents = widget->SetContentsView(std::make_unique<View>());
+  View* const v1 = contents->AddChildView(std::make_unique<View>());
+  View* const v2 = contents->AddChildView(std::make_unique<View>());
+  View* const contents2 = widget2->SetContentsView(std::make_unique<View>());
+  View* const v3 = contents2->AddChildView(std::make_unique<View>());
+  View* const v4 = contents2->AddChildView(std::make_unique<View>());
+  widget->Show();
+  widget2->Show();
+
+  v1->SetProperty(kElementIdentifierKey, kTestElementID);
+  v2->SetProperty(kElementIdentifierKey, kTestElementID);
+  v3->SetProperty(kElementIdentifierKey, kTestElementID);
+  v4->SetProperty(kElementIdentifierKey, kTestElementID2);
+  EXPECT_THAT(
+      ElementTrackerViews::GetInstance()->GetAllMatchingViewsInAnyContext(
+          kTestElementID),
+      testing::UnorderedElementsAre(v1, v2, v3));
+
+  v1->ClearProperty(kElementIdentifierKey);
+  EXPECT_THAT(
+      ElementTrackerViews::GetInstance()->GetAllMatchingViewsInAnyContext(
+          kTestElementID),
+      testing::UnorderedElementsAre(v2, v3));
+
+  v2->ClearProperty(kElementIdentifierKey);
+  EXPECT_THAT(
+      ElementTrackerViews::GetInstance()->GetAllMatchingViewsInAnyContext(
+          kTestElementID),
+      testing::UnorderedElementsAre(v3));
+}
+
+TEST_F(ElementTrackerViewsTest, GetAllViewsInAnyContextWithNonViewsElements) {
+  auto widget = CreateWidget();
+  View* const contents = widget->SetContentsView(std::make_unique<View>());
+  widget->Show();
+  const ui::ElementContext context =
+      ElementTrackerViews::GetContextForView(contents);
+
+  ui::TestElementPtr test_element1 =
+      std::make_unique<ui::TestElement>(kTestElementID, context);
+  ui::TestElementPtr test_element2 =
+      std::make_unique<ui::TestElement>(kTestElementID, context);
+
+  test_element1->Show();
+  contents->SetProperty(kElementIdentifierKey, kTestElementID);
+  test_element2->Show();
+  EXPECT_THAT(
+      ElementTrackerViews::GetInstance()->GetAllMatchingViewsInAnyContext(
+          kTestElementID),
+      testing::UnorderedElementsAre(contents));
+
+  contents->ClearProperty(kElementIdentifierKey);
+  EXPECT_THAT(
+      ElementTrackerViews::GetInstance()->GetAllMatchingViewsInAnyContext(
+          kTestElementID),
+      testing::IsEmpty());
 }
 
 // Verifies that Views on different Widgets are differentiated by the system.

@@ -164,6 +164,10 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   ElementList GetAllMatchingElements(ElementIdentifier id,
                                      ElementContext context);
 
+  // Returns all known elements with the given `id`. The context for each can
+  // be retrieved from the TrackedElement itself. No order is guaranteed.
+  ElementList GetAllMatchingElementsInAnyContext(ElementIdentifier id);
+
   // Returns whether an element with identifier `id` in `context` is visible.
   bool IsElementVisible(ElementIdentifier id, ElementContext context);
 

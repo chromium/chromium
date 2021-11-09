@@ -5,6 +5,7 @@
 #include "ui/base/interaction/element_tracker.h"
 
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -18,7 +19,12 @@ namespace ui {
 
 namespace {
 
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
+// Use DECLARE/DEFINE_ELEMENT instead of DEFINE_LOCAL_ELEMENT so that this
+// ElementIdentifier's name is predictable.
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier1);
+const char* const kElementIdentifier1Name = "kElementIdentifier1";
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kElementIdentifier2);
 const ElementContext kElementContext1(1);
 const ElementContext kElementContext2(2);
@@ -194,6 +200,53 @@ TEST(ElementTrackerTest, GetAllMatchingElements) {
   EXPECT_EQ(expected,
             ElementTracker::GetElementTracker()->GetAllMatchingElements(
                 kElementIdentifier1, kElementContext1));
+}
+
+TEST(ElementTrackerTest, GetAllMatchingElementsInAnyContext) {
+  TestElementPtr e1 =
+      std::make_unique<TestElement>(kElementIdentifier1, kElementContext1);
+  TestElementPtr e2 = std::make_unique<TestElementOtherFramework>(
+      kElementIdentifier1, kElementContext1);
+  TestElementPtr e3 =
+      std::make_unique<TestElement>(kElementIdentifier1, kElementContext2);
+  TestElementPtr e4 =
+      std::make_unique<TestElement>(kElementIdentifier2, kElementContext1);
+
+  EXPECT_THAT(
+      ElementTracker::GetElementTracker()->GetAllMatchingElementsInAnyContext(
+          kElementIdentifier1),
+      testing::IsEmpty());
+
+  e1->Show();
+  EXPECT_THAT(
+      ElementTracker::GetElementTracker()->GetAllMatchingElementsInAnyContext(
+          kElementIdentifier1),
+      testing::UnorderedElementsAre(e1.get()));
+
+  e2->Show();
+  e3->Show();
+  e4->Show();
+  EXPECT_THAT(
+      ElementTracker::GetElementTracker()->GetAllMatchingElementsInAnyContext(
+          kElementIdentifier1),
+      testing::UnorderedElementsAre(e1.get(), e2.get(), e3.get()));
+
+  e1->Hide();
+  EXPECT_THAT(
+      ElementTracker::GetElementTracker()->GetAllMatchingElementsInAnyContext(
+          kElementIdentifier1),
+      testing::UnorderedElementsAre(e2.get(), e3.get()));
+
+  EXPECT_THAT(
+      ElementTracker::GetElementTracker()->GetAllMatchingElementsInAnyContext(
+          kElementIdentifier2),
+      testing::UnorderedElementsAre(e4.get()));
+
+  e4->Hide();
+  EXPECT_THAT(
+      ElementTracker::GetElementTracker()->GetAllMatchingElementsInAnyContext(
+          kElementIdentifier2),
+      testing::IsEmpty());
 }
 
 TEST(ElementTrackerTest, IsElementVisible) {
@@ -575,6 +628,34 @@ TEST(SafeElementReferenceTest, CopyOperator) {
   e1.Hide();
   EXPECT_EQ(nullptr, ref.get());
   EXPECT_EQ(nullptr, ref2.get());
+}
+
+class ElementTrackerIdentifierTest : public testing::Test {
+ public:
+  void SetUp() override { ElementIdentifier::GetKnownIdentifiers().clear(); }
+};
+
+TEST_F(ElementTrackerIdentifierTest, ShowElementRegistersIdentifier) {
+  TestElement e1(kElementIdentifier1, kElementContext1);
+  EXPECT_FALSE(ElementIdentifier::FromName(kElementIdentifier1Name));
+  e1.Show();
+  EXPECT_EQ(kElementIdentifier1,
+            ElementIdentifier::FromName(kElementIdentifier1Name));
+  e1.Hide();
+  EXPECT_EQ(kElementIdentifier1,
+            ElementIdentifier::FromName(kElementIdentifier1Name));
+}
+
+TEST_F(ElementTrackerIdentifierTest, AddListenerRegistersIdentifier) {
+  EXPECT_FALSE(ElementIdentifier::FromName(kElementIdentifier1Name));
+  auto subscription =
+      ElementTracker::GetElementTracker()->AddElementShownCallback(
+          kElementIdentifier1, kElementContext1, base::DoNothing());
+  EXPECT_EQ(kElementIdentifier1,
+            ElementIdentifier::FromName(kElementIdentifier1Name));
+  subscription = ElementTracker::Subscription();
+  EXPECT_EQ(kElementIdentifier1,
+            ElementIdentifier::FromName(kElementIdentifier1Name));
 }
 
 }  // namespace ui

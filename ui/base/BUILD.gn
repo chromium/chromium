@@ -865,6 +865,7 @@ test("ui_base_unittests") {
     "class_property_unittest.cc",
     "clipboard/file_info_unittest.cc",
     "ime/utf_offset_unittest.cc",
+    "interaction/element_identifier_unittest.cc",
     "interaction/element_tracker_unittest.cc",
     "interaction/interaction_sequence_unittest.cc",
     "l10n/l10n_util_unittest.cc",
