@@ -5988,6 +5988,23 @@
             ]
         }
     ],
+    "PaintHoldingCrossOrigin": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20211028",
+                    "enable_features": [
+                        "PaintHoldingCrossOrigin"
+                    ]
+                }
+            ]
+        }
+    ],
     "PaintPreviewShowOnStartup": [
         {
             "platforms": [
