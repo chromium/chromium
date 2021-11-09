@@ -1296,16 +1296,19 @@ TEST_P(PaintLayerTest, CompositingContainerStackedFloatUnderStackingInline) {
 TEST_P(PaintLayerTest, CompositingContainerColumnSpanAll) {
   SetBodyInnerHTML(R"HTML(
     <div>
-      <div id='compositedContainer' style='columns: 1'>
-        <div id='columnSpan' style='-webkit-column-span: all; overflow: hidden'>
+      <div id='multicol' style='columns: 1; position: relative'>
+        <div id='paintContainer' style='position: relative'>
+          <div id='columnSpan' style='column-span: all; overflow: hidden'></div>
         </div>
       </div>
     </div>
   )HTML");
 
-  PaintLayer* target = GetPaintLayerByElementId("columnSpan");
-  EXPECT_EQ(target->Parent(), target->CompositingContainer());
-  EXPECT_EQ(target->Parent()->Parent(), target->ContainingLayer());
+  PaintLayer* columnSpan = GetPaintLayerByElementId("columnSpan");
+  EXPECT_EQ(GetPaintLayerByElementId("paintContainer"),
+            columnSpan->CompositingContainer());
+  EXPECT_EQ(GetPaintLayerByElementId("multicol"),
+            columnSpan->ContainingLayer());
 }
 
 TEST_P(PaintLayerTest,
