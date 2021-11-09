@@ -1054,19 +1054,19 @@ export class Viewport {
       return;
     }
 
-    const direction =
-        e.key === 'PageUp' || (e.key === ' ' && e.shiftKey) ? -1 : 1;
+    const isDown = e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey);
     // Go to the previous/next page if we are fit-to-page or fit-to-height.
     if (this.isPagedMode_()) {
-      direction === 1 ? this.goToNextPage() : this.goToPreviousPage();
+      isDown ? this.goToNextPage() : this.goToPreviousPage();
       // Since we do the movement of the page.
       e.preventDefault();
     } else if (
         /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
             .fromScriptingAPI) {
+      const scrollOffset = (isDown ? 1 : -1) * this.size.height;
       this.setPosition({
         x: this.position.x,
-        y: this.position.y + direction * this.size.height,
+        y: this.position.y + scrollOffset,
       });
     }
 
@@ -1078,46 +1078,23 @@ export class Viewport {
    * @param {boolean} formFieldFocused
    * @private
    */
-  arrowLeftHandler_(e, formFieldFocused) {
+  arrowLeftRightHandler_(e, formFieldFocused) {
     if (formFieldFocused || hasKeyModifiers(e)) {
       return;
     }
 
-    // Go to the previous page if there are no horizontal scrollbars.
+    // Go to the previous/next page if there are no horizontal scrollbars.
+    const isRight = e.key === 'ArrowRight';
     if (!this.documentHasScrollbars().horizontal) {
-      this.goToPreviousPage();
+      isRight ? this.goToNextPage() : this.goToPreviousPage();
       // Since we do the movement of the page.
       e.preventDefault();
     } else if (
         /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
             .fromScriptingAPI) {
+      const scrollOffset = (isRight ? 1 : -1) * SCROLL_INCREMENT;
       this.setPosition({
-        x: this.position.x - SCROLL_INCREMENT,
-        y: this.position.y,
-      });
-    }
-  }
-
-  /**
-   * @param {!KeyboardEvent} e
-   * @param {boolean} formFieldFocused
-   * @private
-   */
-  arrowRightHandler_(e, formFieldFocused) {
-    if (formFieldFocused || hasKeyModifiers(e)) {
-      return;
-    }
-
-    // Go to the next page if there are no horizontal scrollbars.
-    if (!this.documentHasScrollbars().horizontal) {
-      this.goToNextPage();
-      // Since we do the movement of the page.
-      e.preventDefault();
-    } else if (
-        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
-            .fromScriptingAPI) {
-      this.setPosition({
-        x: this.position.x + SCROLL_INCREMENT,
+        x: this.position.x + scrollOffset,
         y: this.position.y,
       });
     }
@@ -1134,16 +1111,17 @@ export class Viewport {
     }
 
     // Go to the previous/next page if Presentation mode is on.
+    const isDown = e.key === 'ArrowDown';
     if (document.fullscreenElement !== null) {
-      e.key === 'ArrowDown' ? this.goToNextPage() : this.goToPreviousPage();
+      isDown ? this.goToNextPage() : this.goToPreviousPage();
       e.preventDefault();
     } else if (
         /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
             .fromScriptingAPI) {
-      const direction = e.key === 'ArrowDown' ? 1 : -1;
+      const scrollOffset = (isDown ? 1 : -1) * SCROLL_INCREMENT;
       this.setPosition({
         x: this.position.x,
-        y: this.position.y + direction * SCROLL_INCREMENT,
+        y: this.position.y + scrollOffset,
       });
     }
   }
@@ -1163,14 +1141,12 @@ export class Viewport {
         this.pageUpDownSpaceHandler_(e, formFieldFocused);
         return true;
       case 'ArrowLeft':
-        this.arrowLeftHandler_(e, formFieldFocused);
+      case 'ArrowRight':
+        this.arrowLeftRightHandler_(e, formFieldFocused);
         return true;
       case 'ArrowDown':
       case 'ArrowUp':
         this.arrowUpDownHandler_(e, formFieldFocused);
-        return true;
-      case 'ArrowRight':
-        this.arrowRightHandler_(e, formFieldFocused);
         return true;
       default:
         return false;
