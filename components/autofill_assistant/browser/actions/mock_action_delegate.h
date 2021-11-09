@@ -199,6 +199,7 @@ class MockActionDelegate : public ActionDelegate {
                void(base::OnceCallback<void(bool)>));
   MOCK_METHOD0(MaybeShowSlowConnectionWarning, void());
   MOCK_METHOD0(GetLogInfo, ProcessedActionStatusDetailsProto&());
+  MOCK_CONST_METHOD0(GetElementStore, ElementStore*());
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -208,17 +209,8 @@ class MockActionDelegate : public ActionDelegate {
     return client_settings_;
   }
 
-  ElementStore* GetElementStore() const override {
-    if (!element_store_) {
-      element_store_ = std::make_unique<FakeElementStore>();
-    }
-    return element_store_.get();
-  }
-
- protected:
-  mutable std::unique_ptr<ElementStore> element_store_;
-
  private:
+  FakeElementStore fake_element_store_;
   ClientSettings client_settings_;
   ProcessedActionStatusDetailsProto log_info_;
 

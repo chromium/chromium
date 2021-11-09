@@ -8,9 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/dom_action.pb.h"
-#include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
-#include "components/autofill_assistant/browser/website_login_manager_impl.h"
 
 namespace autofill_assistant {
 
@@ -97,39 +95,6 @@ void PerformOnSingleElementAction::InternalProcessAction(
     }
   }
 
-  if (proto_.send_keystroke_events().value().value_case() ==
-      TextValue::kPasswordManagerValue) {
-    auto login = delegate_->GetUserData()->selected_login_;
-
-    // Origin check is done in PWM based on the
-    // |target_element.container_frame_host->GetLastCommittedURL()|
-    login->origin = element_.container_frame_host->GetLastCommittedURL()
-                        .DeprecatedGetOriginAsURL();
-
-    delegate_->GetWebsiteLoginManager()->GetGetLastTimePasswordUsed(
-        *login, base::BindOnce(&PerformOnSingleElementAction::OnGetLastTimeUsed,
-                               weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  InternalProcessActionImpl();
-}
-
-// When dealing with a password field we also want to know the last time that a
-// user has used it.
-void PerformOnSingleElementAction::OnGetLastTimeUsed(
-    const absl::optional<base::Time> last_date_used) {
-  if (last_date_used) {
-    int months_since_password_last_used =
-        (base::Time::Now() - last_date_used.value()).InDays() / 30;
-    processed_action_proto_->mutable_send_key_stroke_events_result()
-        ->set_months_since_password_last_used(months_since_password_last_used);
-  }
-
-  InternalProcessActionImpl();
-}
-
-void PerformOnSingleElementAction::InternalProcessActionImpl() {
   if (perform_) {
     std::move(perform_).Run(
         element_, base::BindOnce(&PerformOnSingleElementAction::EndAction,

@@ -84,6 +84,11 @@ class MockWebController : public WebController {
                     int delay_in_millisecond,
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD4(SendTextInput,
+               void(int key_press_delay_in_millisecond,
+                    const std::string& value,
+                    const ElementFinder::Result& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD3(GetOuterHtml,
                void(bool include_all_inner_text,
                     const ElementFinder::Result& element,

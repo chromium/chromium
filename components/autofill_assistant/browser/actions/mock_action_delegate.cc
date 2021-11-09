@@ -6,10 +6,12 @@
 
 namespace autofill_assistant {
 
+using ::testing::Return;
 using ::testing::ReturnRef;
 
 MockActionDelegate::MockActionDelegate() {
   ON_CALL(*this, GetLogInfo).WillByDefault(ReturnRef(log_info_));
+  ON_CALL(*this, GetElementStore).WillByDefault(Return(&fake_element_store_));
 }
 
 MockActionDelegate::~MockActionDelegate() = default;
