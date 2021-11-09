@@ -7499,17 +7499,6 @@ static_library("test_support") {
     "//ui/gfx:test_support",
   ]
 
-  if (!is_android) {
-    sources += [
-      "signin/identity_browser_test_base.cc",
-      "signin/identity_browser_test_base.h",
-    ]
-    deps += [
-      "//chrome/test:test_support_ui",
-      "//components/policy/test_support",
-    ]
-  }
-
   if (is_android) {
     sources += [
       "autofill/mock_address_accessory_controller.cc",

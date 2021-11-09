@@ -18,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_switches.h"
@@ -36,9 +37,13 @@
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -66,6 +71,7 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/os_crypt/os_crypt_mocker.h"
+#include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -74,6 +80,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ui_base_features.h"
 
 #if defined(OS_MAC)
@@ -122,6 +129,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"  // nogncheck
+#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"  // nogncheck
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls.h"
 #endif
@@ -195,6 +205,50 @@ class ChromeBrowserMainExtraPartsBrowserProcessInjection
 };
 #endif  // defined(OS_MAC)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// For browser tests that depend on AccountManager on Lacros - e.g. tests that
+// manage accounts by calling methods like `signin::MakePrimaryAccountAvailable`
+// from identity_test_utils.
+// TODO(https://crbug.com/982233): consider using this class on Ash, and remove
+// the initialization from profile_impl.
+class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
+ public:
+  void PreProfileInit() override {
+    // Create and initialize Ash AccountManager.
+    scoped_ash_account_manager_ =
+        std::make_unique<ScopedAshAccountManagerForTests>(
+            std::make_unique<FakeAccountManagerUI>());
+    auto* account_manager = MaybeGetAshAccountManagerForTests();
+    CHECK(account_manager);
+    account_manager->InitializeInEphemeralMode(
+        g_browser_process->system_network_context_manager()
+            ->GetSharedURLLoaderFactory());
+
+    if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency)) {
+      // Make sure the primary accounts for all profiles are present in the
+      // account manager, to prevent profiles from being deleted. This is useful
+      // in particular for tests that create profiles in a PRE_ step and expect
+      // the profiles to still exist when Chrome is restarted.
+      ProfileAttributesStorage* storage =
+          &g_browser_process->profile_manager()->GetProfileAttributesStorage();
+      for (const ProfileAttributesEntry* entry :
+           storage->GetAllProfilesAttributes()) {
+        const std::string& gaia_id = entry->GetGAIAId();
+        if (!gaia_id.empty()) {
+          account_manager->UpsertAccount(
+              {gaia_id, account_manager::AccountType::kGaia},
+              base::UTF16ToUTF8(entry->GetUserName()),
+              "identity_extra_setup_test_token");
+        }
+      }
+    }
+  }
+
+ private:
+  std::unique_ptr<ScopedAshAccountManagerForTests> scoped_ash_account_manager_;
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 }  // namespace
 
 // static
@@ -234,7 +288,12 @@ void InProcessBrowserTest::RunScheduledLayouts() {
 #endif  // defined(TOOLKIT_VIEWS)
 }
 
-// defined(TOOLKIT_VIEWS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+FakeAccountManagerUI* InProcessBrowserTest::GetFakeAccountManagerUI() const {
+  return static_cast<FakeAccountManagerUI*>(
+      MaybeGetAshAccountManagerUIForTests());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void InProcessBrowserTest::Initialize() {
   CreateTestServer(GetChromeTestDataDir());
@@ -441,13 +500,18 @@ size_t InProcessBrowserTest::GetTestPreCount() {
   return count;
 }
 
-#if defined(OS_MAC)
 void InProcessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
+  BrowserTestBase::CreatedBrowserMainParts(parts);
+#if defined(OS_MAC)
   static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
       std::make_unique<ChromeBrowserMainExtraPartsBrowserProcessInjection>());
-}
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+      std::make_unique<IdentityExtraSetUp>());
+#endif
+}
 
 void InProcessBrowserTest::SelectFirstBrowser() {
   const BrowserList* browser_list = BrowserList::GetInstance();

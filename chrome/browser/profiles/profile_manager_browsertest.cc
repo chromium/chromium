@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -36,6 +37,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
@@ -808,11 +810,34 @@ const base::FilePath::CharType kNonAsciiProfileDir[] =
 
 class ProfileManagerNonAsciiBrowserTest : public ProfileManagerBrowserTestBase {
  protected:
+  ProfileManagerNonAsciiBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&ProfileManagerNonAsciiBrowserTest::
+                                        OnWillCreateBrowserContextServices,
+                                    base::Unretained(this)));
+#endif
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ProfileManagerBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitchNative(switches::kProfileDirectory,
                                      kNonAsciiProfileDir);
   }
+
+ private:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, the `IdentityManager` expects that there is always a "Default"
+  // profile. Use the identity test environment to bypass this requirement.
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  base::CallbackListSubscription create_services_subscription_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(ProfileManagerNonAsciiBrowserTest,

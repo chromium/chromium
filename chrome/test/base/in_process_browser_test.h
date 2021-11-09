@@ -52,6 +52,9 @@ class ViewsDelegate;
 #endif  // defined(TOOLKIT_VIEWS)
 
 class Browser;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class FakeAccountManagerUI;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 class MainThreadStackSamplingProfiler;
 class Profile;
 #if defined(OS_MAC)
@@ -219,9 +222,7 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // BrowserTestBase:
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
-#if defined(OS_MAC)
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
-#endif
 
   // Ensures that no devtools are open, and then opens the devtools.
   void OpenDevToolsWindow(content::WebContents* web_contents);
@@ -300,6 +301,10 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // Runs scheduled layouts on all Widgets using
   // Widget::LayoutRootViewIfNecessary(). No-op outside of Views.
   void RunScheduledLayouts();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  FakeAccountManagerUI* GetFakeAccountManagerUI() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   void Initialize();

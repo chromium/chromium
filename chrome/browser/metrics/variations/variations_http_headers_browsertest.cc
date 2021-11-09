@@ -26,7 +26,6 @@
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_browser_test_base.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -86,7 +85,7 @@ class VariationHeaderSetter : public ChromeBrowserMainExtraParts {
   }
 };
 
-class VariationsHttpHeadersBrowserTest : public IdentityBrowserTestBase {
+class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
  public:
   VariationsHttpHeadersBrowserTest()
       : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
@@ -99,7 +98,7 @@ class VariationsHttpHeadersBrowserTest : public IdentityBrowserTestBase {
   ~VariationsHttpHeadersBrowserTest() override = default;
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
-    IdentityBrowserTestBase::CreatedBrowserMainParts(parts);
+    InProcessBrowserTest::CreatedBrowserMainParts(parts);
     static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
         std::make_unique<VariationHeaderSetter>());
   }

@@ -49,7 +49,6 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
-#include "chrome/browser/signin/identity_browser_test_base.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -3428,7 +3427,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorInfobarsKioskTest,
 }
 
 // Checks the correct behavior of the profile picker on startup.
-class StartupBrowserCreatorPickerTestBase : public IdentityPlatformBrowserTest {
+class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
  public:
   StartupBrowserCreatorPickerTestBase() {
     // This test configures command line params carefully. Make sure

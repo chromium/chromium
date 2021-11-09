@@ -62,7 +62,6 @@
 #include "url/url_constants.h"
 
 #if !defined(OS_ANDROID)
-#include "chrome/browser/signin/identity_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -371,9 +370,7 @@ class UkmConsentParamBrowserTest : public UkmBrowserTestBase,
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
-#if defined(OS_CHROMEOS)
-    IdentityBrowserTestBase::CreatedBrowserMainParts(parts);
-#endif  // defined(OS_CHROMEOS)
+    InProcessBrowserTest::CreatedBrowserMainParts(parts);
     // IsMetricsReportingEnabled() in non-official builds always returns false.
     // Enable the official build checks so that this test can work in both
     // official and non-official builds.
