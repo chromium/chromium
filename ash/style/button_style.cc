@@ -44,6 +44,17 @@ int GetCloseButtonSize(CloseButton::Type type) {
   }
 }
 
+SkColor GetCloseButtonBackgroundColor(bool use_light_colors) {
+  auto* color_provider = AshColorProvider::Get();
+  if (use_light_colors) {
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    return color_provider->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80);
+  }
+  return color_provider->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80);
+}
+
 // Returns true it is a floating type of PillButton, which is a type of
 // PillButton without a background.
 bool IsFloatingPillButton(PillButton::Type type) {
@@ -101,25 +112,34 @@ int GetPillButtonWidth(bool has_icon) {
   return button_width;
 }
 
+SkColor GetBackgroundColorForInkDrop(bool use_light_colors) {
+  return use_light_colors ? SK_ColorWHITE : SK_ColorBLACK;
+}
+
 }  // namespace
 
-CloseButton::CloseButton(PressedCallback callback, CloseButton::Type type)
-    : ImageButton(std::move(callback)), type_(type) {
+CloseButton::CloseButton(PressedCallback callback,
+                         CloseButton::Type type,
+                         bool use_light_colors)
+    : ImageButton(std::move(callback)),
+      type_(type),
+      use_light_colors_(use_light_colors) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
-  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                   /*highlight_on_hover=*/true,
-                                   /*highlight_on_focus=*/false);
+  StyleUtil::SetUpInkDropForButton(
+      this, gfx::Insets(),
+      /*highlight_on_hover=*/true,
+      /*highlight_on_focus=*/false,
+      /*background_color=*/GetBackgroundColorForInkDrop(use_light_colors_));
 
   // Add a rounded rect background. The rounding will be half the button size so
   // it is a circle.
   SetBackground(views::CreateRoundedRectBackground(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80),
+      GetCloseButtonBackgroundColor(use_light_colors_),
       GetCloseButtonSize(type_) / 2));
 
   SetFocusPainter(nullptr);
@@ -138,13 +158,18 @@ bool CloseButton::DoesIntersectScreenRect(const gfx::Rect& screen_rect) const {
 
 void CloseButton::OnThemeChanged() {
   views::ImageButton::OnThemeChanged();
+  background()->SetNativeControlColor(
+      GetCloseButtonBackgroundColor(use_light_colors_));
   auto* color_provider = AshColorProvider::Get();
-  const SkColor enabled_icon_color = color_provider->GetContentLayerColor(
+  SkColor enabled_icon_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
+  if (use_light_colors_) {
+    ScopedLightModeAsDefault scoped_light_mode_as_default;
+    enabled_icon_color = color_provider->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+  }
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(kCloseButtonIcon, enabled_icon_color));
-  background()->SetNativeControlColor(color_provider->GetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80));
 
   // TODO(minch): Add background blur as per spec. Background blur is quite
   // heavy, and we may have many close buttons showing at a time. They'll be
@@ -196,9 +221,11 @@ PillButton::PillButton(PressedCallback callback,
   // TODO: Unify the font size, weight under ash/style as well.
   label()->SetFontList(views::Label::GetDefaultFontList().Derive(
       1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
-  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
-                                   /*highlight_on_hover=*/false,
-                                   /*highlight_on_focus=*/false);
+  StyleUtil::SetUpInkDropForButton(
+      this, gfx::Insets(),
+      /*highlight_on_hover=*/false,
+      /*highlight_on_focus=*/false,
+      /*background_color=*/GetBackgroundColorForInkDrop(use_light_colors));
   if (rounded_highlight_path) {
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kPillButtonHeight / 2.f);

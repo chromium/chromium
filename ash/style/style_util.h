@@ -29,9 +29,10 @@ class ASH_EXPORT StyleUtil {
 
   // Sets attributes(e.g, insets) for creating the inkdrop ripple. Note, A
   // FloodFillInkDropRipple will be created for the given `host`.
-  static void SetRippleParams(views::View* host,
-                              const gfx::Insets& insets,
-                              SkColor bg_color = gfx::kPlaceholderColor);
+  static void SetRippleParams(
+      views::View* host,
+      const gfx::Insets& insets,
+      SkColor background_color = gfx::kPlaceholderColor);
 
   // TODO: Remove TrayPopupUtils::ConfigureTrayPopupButton and migrate all its
   // clients to this function.
@@ -39,18 +40,19 @@ class ASH_EXPORT StyleUtil {
   // for InkDrop, Ripple, Highlight. Inside the callback functions, they will
   // setup whether to show the highlight on hover or focus, inkdrop color,
   // opacity etc.
-  static void SetUpInkDropForButton(views::Button* button,
-                                    const gfx::Insets& ripple_insets,
-                                    bool highlight_on_hover,
-                                    bool highlight_on_focus,
-                                    SkColor bg_color = gfx::kPlaceholderColor);
+  static void SetUpInkDropForButton(
+      views::Button* button,
+      const gfx::Insets& ripple_insets,
+      bool highlight_on_hover,
+      bool highlight_on_focus,
+      SkColor background_color = gfx::kPlaceholderColor);
 
   // Configures the InkDropAttributes for the given `view` based on
   // `attributes`. Note, `attributes` is a bitmask from InkDropAttributes.
   static void ConfigureInkDropAttributes(
       views::View* view,
       uint32_t attributes,
-      SkColor bg_color = gfx::kPlaceholderColor);
+      SkColor background_color = gfx::kPlaceholderColor);
 
  private:
   StyleUtil() = default;

@@ -26,7 +26,9 @@ class CloseButton : public views::ImageButton,
     kLarge,
   };
 
-  CloseButton(PressedCallback callback, Type type);
+  CloseButton(PressedCallback callback,
+              Type type,
+              bool use_light_colors = false);
   CloseButton(const CloseButton&) = delete;
   CloseButton& operator=(const CloseButton&) = delete;
   ~CloseButton() override;
@@ -43,6 +45,7 @@ class CloseButton : public views::ImageButton,
                          const gfx::Rect& rect) const override;
 
   const Type type_;
+  const bool use_light_colors_;
 };
 
 // A label button with a rounded rectangle background. It can have an icon

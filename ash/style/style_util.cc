@@ -24,9 +24,9 @@ std::unique_ptr<views::InkDrop> CreateInkDrop(views::Button* host,
 std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
     const gfx::Insets& insets,
     const views::View* host,
-    SkColor bg_color) {
+    SkColor background_color) {
   const std::pair<SkColor, float> base_color_and_opacity =
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(bg_color);
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(background_color);
   return std::make_unique<views::FloodFillInkDropRipple>(
       host->size(), insets,
       views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
@@ -35,9 +35,9 @@ std::unique_ptr<views::InkDropRipple> CreateInkDropRipple(
 
 std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
     views::View* host,
-    SkColor bg_color) {
+    SkColor background_color) {
   const std::pair<SkColor, float> base_color_and_opacity =
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(bg_color);
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(background_color);
   auto highlight = std::make_unique<views::InkDropHighlight>(
       gfx::SizeF(host->size()), base_color_and_opacity.first);
   highlight->set_visible_opacity(base_color_and_opacity.second);
@@ -49,9 +49,9 @@ std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight(
 // static
 void StyleUtil::SetRippleParams(views::View* host,
                                 const gfx::Insets& insets,
-                                SkColor bg_color) {
-  views::InkDrop::Get(host)->SetCreateRippleCallback(
-      base::BindRepeating(&CreateInkDropRipple, insets, host, bg_color));
+                                SkColor background_color) {
+  views::InkDrop::Get(host)->SetCreateRippleCallback(base::BindRepeating(
+      &CreateInkDropRipple, insets, host, background_color));
 }
 
 // static
@@ -59,7 +59,7 @@ void StyleUtil::SetUpInkDropForButton(views::Button* button,
                                       const gfx::Insets& ripple_insets,
                                       bool highlight_on_hover,
                                       bool highlight_on_focus,
-                                      SkColor bg_color) {
+                                      SkColor background_color) {
   button->SetInstallFocusRingOnFocus(true);
   views::InkDropHost* const ink_drop = views::InkDrop::Get(button);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
@@ -67,17 +67,17 @@ void StyleUtil::SetUpInkDropForButton(views::Button* button,
   ink_drop->SetCreateInkDropCallback(base::BindRepeating(
       &CreateInkDrop, button, highlight_on_hover, highlight_on_focus));
   ink_drop->SetCreateRippleCallback(base::BindRepeating(
-      &CreateInkDropRipple, ripple_insets, button, bg_color));
+      &CreateInkDropRipple, ripple_insets, button, background_color));
   ink_drop->SetCreateHighlightCallback(
-      base::BindRepeating(&CreateInkDropHighlight, button, bg_color));
+      base::BindRepeating(&CreateInkDropHighlight, button, background_color));
 }
 
 // static
 void StyleUtil::ConfigureInkDropAttributes(views::View* view,
                                            uint32_t ripple_config_attributes,
-                                           SkColor bg_color) {
+                                           SkColor background_color) {
   const std::pair<SkColor, float> base_color_and_opacity =
-      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(bg_color);
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(background_color);
 
   auto* host = views::InkDrop::Get(view);
   if (ripple_config_attributes & kBaseColor)
