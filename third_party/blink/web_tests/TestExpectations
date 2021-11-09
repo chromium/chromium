@@ -7269,3 +7269,4 @@ crbug.com/1268278 http/tests/devtools/application-panel/resources-panel-websql.j
 # Sheriff 2021-11-09
 crbug.com/1268259 [ Linux ] images/color-profile-image-canvas-pattern.html [ Failure ]
 crbug.com/1268265 [ Mac10.14 ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure ]
+crbug.com/1268439 [ Linux ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure ]
