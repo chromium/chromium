@@ -308,7 +308,7 @@
       'Mac deterministic (dbg)': 'debug_bot',
       'Mojo Linux (reclient shadow)': 'release_trybot_minimal_symbols_reclient',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64',
-      'VR Linux': 'vr_release_bot',
+      'VR Linux': 'vr_release_bot_reclient',
       'VR Linux (reclient)': 'vr_release_bot_reclient',
       'WebKit Linux ASAN (reclient shadow)': 'asan_lsan_release_bot_blink_reclient',
       'WebKit Linux Leak (reclient shadow)': 'release_bot_blink_reclient',
@@ -554,12 +554,12 @@
       'Linux CFI': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_goma',
       'Linux Chromium OS ASan LSan Builder': 'asan_lsan_chromeos_release_bot_dcheck_always_on',
       'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot',
-      'Linux MSan Builder': 'msan_release_bot',
-      'Linux TSan Builder': 'tsan_disable_nacl_release_bot',
+      'Linux MSan Builder': 'msan_release_bot_reclient',
+      'Linux TSan Builder': 'tsan_disable_nacl_release_bot_reclient',
       'Mac ASan 64 Builder': 'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on',
-      'WebKit Linux ASAN': 'asan_lsan_release_bot_blink',
-      'WebKit Linux Leak': 'release_bot_blink',
-      'WebKit Linux MSAN': 'msan_release_bot_blink',
+      'WebKit Linux ASAN': 'asan_lsan_release_bot_blink_reclient',
+      'WebKit Linux Leak': 'release_bot_blink_reclient',
+      'WebKit Linux MSAN': 'msan_release_bot_blink_reclient',
       'android-asan': 'android_clang_asan_release_bot',
       'linux-ubsan-vptr': 'ubsan_vptr_release_bot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
@@ -568,7 +568,7 @@
     'chromium.mojo': {
       'Mojo Android': 'android_release_bot_minimal_symbols_arm64',
       'Mojo ChromiumOS': 'chromeos_with_codecs_release_trybot',
-      'Mojo Linux': 'release_trybot_minimal_symbols',
+      'Mojo Linux': 'release_trybot_minimal_symbols_reclient',
       'Mojo Windows': 'release_bot_x86_minimal_symbols',
       'mac-mojo-rel': 'release_trybot_minimal_symbols',
     },
@@ -1769,10 +1769,6 @@
       'asan', 'lsan', 'release_bot',
     ],
 
-    'asan_lsan_release_bot_blink': [
-      'asan', 'lsan', 'release_bot_blink',
-    ],
-
     'asan_lsan_release_bot_blink_reclient': [
       'asan', 'lsan', 'release_bot_blink_reclient',
     ],
@@ -2688,10 +2684,6 @@
       'msan', 'release_bot_reclient',
     ],
 
-    'msan_release_bot_blink': [
-      'msan', 'release_bot_blink',
-    ],
-
     'msan_release_bot_blink_reclient': [
       'msan', 'release_bot_blink_reclient',
     ],
@@ -3050,10 +3042,6 @@
       'tsan', 'disable_nacl', 'debug_bot_reclient',
     ],
 
-    'tsan_disable_nacl_release_bot': [
-      'tsan', 'disable_nacl', 'release_bot',
-    ],
-
     'tsan_disable_nacl_release_bot_reclient': [
       'tsan', 'disable_nacl', 'release_bot_reclient',
     ],
@@ -3088,10 +3076,6 @@
 
     'v8_future_release_bot': [
       'v8_future', 'release_bot',
-    ],
-
-    'vr_release_bot': [
-      'vr', 'release_bot', 'ozone',
     ],
 
     'vr_release_bot_reclient': [

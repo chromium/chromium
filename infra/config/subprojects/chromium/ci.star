@@ -3441,6 +3441,9 @@ ci.fyi_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
     os = os.LINUX_BIONIC_REMOVE,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.fyi_builder(
@@ -6233,6 +6236,9 @@ ci.memory_builder(
     ),
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.memory_builder(
@@ -6297,7 +6303,9 @@ ci.memory_builder(
         category = "linux|msan",
         short_name = "bld",
     ),
-    goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
     main_console_view = "main",
 )
 
@@ -6307,6 +6315,9 @@ ci.memory_builder(
         category = "linux|msan",
         short_name = "tst",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
     triggered_by = ["Linux MSan Builder"],
     main_console_view = "main",
 )
@@ -6338,6 +6349,9 @@ ci.memory_builder(
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["ci/Linux TSan Builder"],
     main_console_view = "main",
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.memory_builder(
@@ -6361,6 +6375,9 @@ ci.memory_builder(
     ),
     main_console_view = "main",
     os = os.LINUX_BIONIC_REMOVE,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.memory_builder(
@@ -6371,6 +6388,9 @@ ci.memory_builder(
     ),
     main_console_view = "main",
     os = os.LINUX_BIONIC_REMOVE,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.memory_builder(
@@ -6381,6 +6401,9 @@ ci.memory_builder(
     ),
     main_console_view = "main",
     os = os.LINUX_BIONIC_REMOVE,
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.memory_builder(
@@ -6438,6 +6461,9 @@ ci.mojo_builder(
     console_view_entry = consoles.console_view_entry(
         short_name = "lnx",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.mojo_builder(

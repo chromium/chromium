@@ -356,8 +356,9 @@
       "enable_vr": true,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true,
-      "use_ozone": true
+      "use_ozone": true,
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "VR Linux (reclient)": {
