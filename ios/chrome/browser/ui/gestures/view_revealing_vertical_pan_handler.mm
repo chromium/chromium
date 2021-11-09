@@ -152,6 +152,12 @@ enum class LayoutTransitionState {
 }
 
 - (void)setNextState:(ViewRevealState)state animated:(BOOL)animated {
+  // Don't change animation if state is already currentState, it creates
+  // confusion.
+  if (self.currentState == state) {
+    return;
+  }
+
   self.nextState = state;
 
   // If the layout is currently finishing its transition, a new transition
