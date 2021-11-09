@@ -136,7 +136,7 @@ TEST_F(ShowShareUIForWindowOperationTest, SyncEarlyFailure) {
       ShowShareUIForWindowBehavior::FailImmediately);
 
   operation_->Run(std::move(test_callback_));
-  ASSERT_EQ(test_callback_state_, TestCallbackState::NotRun);
+  ASSERT_EQ(test_callback_state_, TestCallbackState::RunWithoutValue);
 }
 
 TEST_F(ShowShareUIForWindowOperationTest, SyncLateFailure) {

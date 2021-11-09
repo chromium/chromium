@@ -159,6 +159,11 @@ void ShowShareUIForWindowOperation::Run(
     // In all other cases (i.e. failure or synchronous completion), remove the
     // listener right away
     std::move(remove_data_requested_listener).Run();
+
+    // In the failure case, also cancel the operation (if it was not already
+    // cancelled synchronously).
+    if (FAILED(hr) && weak_ptr)
+      return Cancel();
   }
 }
 
