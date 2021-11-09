@@ -11,7 +11,9 @@
 
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_model.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -28,7 +30,11 @@ namespace apps {
 // An app publisher (in the App Service sense) of Remote apps.
 //
 // See components/services/app_service/README.md.
-class RemoteApps : public apps::PublisherBase {
+//
+// TODO(crbug.com/1253250):
+// 1. Remove the parent class apps::PublisherBase.
+// 2. Remove all apps::mojom related code.
+class RemoteApps : public apps::PublisherBase, public AppPublisher {
  public:
   // Delegate which handles calls to get the properties of the app and also
   // handles launching of the app.
@@ -61,7 +67,17 @@ class RemoteApps : public apps::PublisherBase {
   void DeleteApp(const std::string& app_id);
 
  private:
+  std::unique_ptr<App> CreateApp(const ash::RemoteAppsModel::AppInfo& info);
+
   apps::mojom::AppPtr Convert(const ash::RemoteAppsModel::AppInfo& info);
+
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
 
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,

@@ -14,7 +14,7 @@
 namespace apps {
 
 RemoteApps::RemoteApps(AppServiceProxy* proxy, Delegate* delegate)
-    : profile_(proxy->profile()), delegate_(delegate) {
+    : AppPublisher(proxy), profile_(proxy->profile()), delegate_(delegate) {
   DCHECK(delegate);
 
   mojo::Remote<mojom::AppService>& app_service = proxy->AppService();
@@ -28,24 +28,45 @@ RemoteApps::RemoteApps(AppServiceProxy* proxy, Delegate* delegate)
 RemoteApps::~RemoteApps() = default;
 
 void RemoteApps::AddApp(const ash::RemoteAppsModel::AppInfo& info) {
-  mojom::AppPtr app = Convert(info);
-  Publish(std::move(app), subscribers_);
+  mojom::AppPtr mojom_app = Convert(info);
+  PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+  auto app = CreateApp(info);
+  AppPublisher::Publish(std::move(app));
 }
 
 void RemoteApps::UpdateAppIcon(const std::string& app_id) {
-  mojom::AppPtr app = mojom::App::New();
-  app->app_type = mojom::AppType::kRemote;
-  app->app_id = app_id;
-  app->icon_key = icon_key_factory_.MakeIconKey(IconEffects::kNone);
-  Publish(std::move(app), subscribers_);
+  mojom::AppPtr mojom_app = mojom::App::New();
+  mojom_app->app_type = mojom::AppType::kRemote;
+  mojom_app->app_id = app_id;
+  mojom_app->icon_key = icon_key_factory_.MakeIconKey(IconEffects::kNone);
+  PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+  auto app = std::make_unique<App>(AppType::kRemote, app_id);
+  app->icon_key =
+      std::move(*icon_key_factory_.CreateIconKey(IconEffects::kNone));
+  AppPublisher::Publish(std::move(app));
 }
 
 void RemoteApps::DeleteApp(const std::string& app_id) {
-  mojom::AppPtr app = mojom::App::New();
-  app->app_type = mojom::AppType::kRemote;
-  app->app_id = app_id;
-  app->readiness = mojom::Readiness::kUninstalledByUser;
-  Publish(std::move(app), subscribers_);
+  mojom::AppPtr mojom_app = mojom::App::New();
+  mojom_app->app_type = mojom::AppType::kRemote;
+  mojom_app->app_id = app_id;
+  mojom_app->readiness = mojom::Readiness::kUninstalledByUser;
+  PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+  auto app = std::make_unique<App>(AppType::kRemote, app_id);
+  app->readiness = Readiness::kUninstalledByUser;
+  AppPublisher::Publish(std::move(app));
+}
+
+std::unique_ptr<App> RemoteApps::CreateApp(
+    const ash::RemoteAppsModel::AppInfo& info) {
+  std::unique_ptr<App> app = AppPublisher::MakeApp(
+      AppType::kRemote, info.id, Readiness::kReady, info.name);
+  app->icon_key =
+      std::move(*icon_key_factory_.CreateIconKey(IconEffects::kNone));
+  return app;
 }
 
 apps::mojom::AppPtr RemoteApps::Convert(
@@ -61,6 +82,38 @@ apps::mojom::AppPtr RemoteApps::Convert(
   app->handles_intents = mojom::OptionalBool::kTrue;
   app->icon_key = icon_key_factory_.MakeIconKey(IconEffects::kNone);
   return app;
+}
+
+void RemoteApps::LoadIcon(const std::string& app_id,
+                          const IconKey& icon_key,
+                          IconType icon_type,
+                          int32_t size_hint_in_dip,
+                          bool allow_placeholder_icon,
+                          apps::LoadIconCallback callback) {
+  DCHECK_NE(icon_type, IconType::kCompressed)
+      << "Remote apps cannot provide uncompressed icons";
+
+  bool is_placeholder_icon = false;
+  gfx::ImageSkia icon_image = delegate_->GetIcon(app_id);
+  if (icon_image.isNull() && allow_placeholder_icon) {
+    is_placeholder_icon = true;
+    icon_image = delegate_->GetPlaceholderIcon(app_id, size_hint_in_dip);
+  }
+
+  if (icon_image.isNull()) {
+    std::move(callback).Run(std::make_unique<IconValue>());
+    return;
+  }
+
+  auto icon = std::make_unique<IconValue>();
+  icon->icon_type = icon_type;
+  icon->uncompressed = icon_image;
+  icon->is_placeholder_icon = is_placeholder_icon;
+  IconEffects icon_effects = (icon_type == IconType::kStandard)
+                                 ? IconEffects::kCrOsStandardIcon
+                                 : IconEffects::kResizeAndPad;
+  ApplyIconEffects(icon_effects, size_hint_in_dip, std::move(icon),
+                   std::move(callback));
 }
 
 void RemoteApps::Connect(
