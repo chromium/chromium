@@ -63,7 +63,9 @@ ChromeWebViewPermissionHelperDelegate::ChromeWebViewPermissionHelperDelegate(
     : WebViewPermissionHelperDelegate(web_view_permission_helper)
 #if BUILDFLAG(ENABLE_PLUGINS)
       ,
-      plugin_auth_host_receivers_(web_contents(), this)
+      plugin_auth_host_receivers_(
+          web_view_permission_helper->web_view_guest()->web_contents(),
+          this)
 #endif
 {
 }
@@ -98,7 +100,8 @@ void ChromeWebViewPermissionHelperDelegate::OnPermissionResponse(
     const std::string& input) {
   if (allow) {
     ChromePluginServiceFilter::GetInstance()->AuthorizeAllPlugins(
-        web_contents(), true, identifier);
+        web_view_permission_helper()->web_view_guest()->web_contents(), true,
+        identifier);
   }
 }
 
@@ -133,8 +136,11 @@ void ChromeWebViewPermissionHelperDelegate::RequestPointerLockPermission(
   request_info.SetBoolean(guest_view::kUserGesture, user_gesture);
   request_info.SetBoolean(webview::kLastUnlockedBySelf,
                           last_unlocked_by_target);
-  request_info.SetString(guest_view::kUrl,
-                         web_contents()->GetLastCommittedURL().spec());
+  request_info.SetString(guest_view::kUrl, web_view_permission_helper()
+                                               ->web_view_guest()
+                                               ->web_contents()
+                                               ->GetLastCommittedURL()
+                                               .spec());
 
   web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_POINTER_LOCK, request_info,
