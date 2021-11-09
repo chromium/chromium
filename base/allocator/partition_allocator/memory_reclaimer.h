@@ -9,10 +9,9 @@
 #include <set>
 
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/no_destructor.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/timer/timer.h"
 
 namespace base {
 
@@ -41,13 +40,20 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
   // Unregisters a partition to be tracked by the reclaimer.
   void UnregisterPartition(PartitionRoot<internal::ThreadSafe>* partition);
   void UnregisterPartition(PartitionRoot<internal::NotThreadSafe>* partition);
-  // Starts the periodic reclaim. Can be called several times.
-  void Start(scoped_refptr<SequencedTaskRunner> task_runner);
+
+  // Triggers an explicit reclaim now to reclaim as much free memory as
+  // possible. The API callers need to invoke this method periodically
+  // if they want to use memory reclaimer.
+  // c.f. See also GetRecommendedReclaimInterval()'s comment.
+  void ReclaimNormal();
+
+  // Returns a recommended interval to invoke ReclaimNormal.
+  static constexpr base::TimeDelta GetRecommendedReclaimInterval() {
+    return Seconds(4);
+  }
+
   // Triggers an explicit reclaim now reclaiming all free memory
   void ReclaimAll();
-  // Triggers an explicit reclaim now to reclaim as much free memory as
-  // possible.
-  void ReclaimPeriodically();
 
  private:
   PartitionAllocMemoryReclaimer();
@@ -57,10 +63,7 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
   void ReclaimAndReschedule();
   void ResetForTesting();
 
-  // Schedules periodic |Reclaim()|.
-  std::unique_ptr<RepeatingTimer> timer_;
-
-  Lock lock_;
+  internal::PartitionLock lock_;
   std::set<PartitionRoot<internal::ThreadSafe>*> thread_safe_partitions_
       GUARDED_BY(lock_);
   std::set<PartitionRoot<internal::NotThreadSafe>*> thread_unsafe_partitions_

@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -93,13 +92,22 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
   return root;
 }
 
+OnceClosure g_purge_task;
+
+void DelayedAction(OnceClosure task, base::TimeDelta delay) {
+  // Need to invoke purge_action manually.
+  g_purge_task = std::move(task);
+}
+
+void PurgeManually() {
+  std::move(g_purge_task).Run();
+}
+
 }  // namespace
 
 class PartitionAllocThreadCacheTest : public ::testing::Test {
  public:
-  PartitionAllocThreadCacheTest()
-      : root_(CreatePartitionRoot()),
-        task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  PartitionAllocThreadCacheTest() : root_(CreatePartitionRoot()) {}
 
   ~PartitionAllocThreadCacheTest() override {
     ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
@@ -133,13 +141,9 @@ class PartitionAllocThreadCacheTest : public ::testing::Test {
     auto* tcache = root_->thread_cache_for_testing();
     ASSERT_TRUE(tcache);
 
-    // Make sure that periodic purge will not interfere with tests.
-    auto interval =
-        ThreadCacheRegistry::Instance().purge_interval_for_testing();
     ThreadCacheRegistry::Instance().ResetForTesting();
     tcache->ResetForTesting();
-    task_env_.FastForwardBy(interval);
-    ASSERT_EQ(0u, task_env_.GetPendingMainThreadTaskCount());
+    g_purge_task = base::OnceClosure();
   }
 
   size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
@@ -172,7 +176,6 @@ class PartitionAllocThreadCacheTest : public ::testing::Test {
   }
 
   ThreadSafePartitionRoot* root_;
-  base::test::TaskEnvironment task_env_;
 };
 
 TEST_F(PartitionAllocThreadCacheTest, Simple) {
@@ -525,8 +528,7 @@ TEST_F(PartitionAllocThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
 
 TEST_F(PartitionAllocThreadCacheTest, PeriodicPurge) {
   auto& registry = ThreadCacheRegistry::Instance();
-  registry.StartPeriodicPurge();
-  EXPECT_EQ(1u, task_env_.GetPendingMainThreadTaskCount());
+  registry.StartPeriodicPurge(DelayedAction);
   EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
             registry.purge_interval_for_testing());
 
@@ -534,43 +536,41 @@ TEST_F(PartitionAllocThreadCacheTest, PeriodicPurge) {
   auto* tcache = ThreadCache::Get();
   ASSERT_LT(tcache->CachedMemory(),
             ThreadCacheRegistry::kMinCachedMemoryForPurging);
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(2 * ThreadCacheRegistry::kDefaultPurgeInterval,
             registry.purge_interval_for_testing());
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(4 * ThreadCacheRegistry::kDefaultPurgeInterval,
             registry.purge_interval_for_testing());
 
   // Check that the purge interval is clamped at the maximum value.
   while (registry.purge_interval_for_testing() <
          ThreadCacheRegistry::kMaxPurgeInterval) {
-    task_env_.FastForwardBy(registry.purge_interval_for_testing());
+    PurgeManually();
   }
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
-  // There is still a task, even though there are no allocations.
-  EXPECT_EQ(1u, task_env_.GetPendingMainThreadTaskCount());
+  PurgeManually();
 
   // Not enough memory to decrease the interval.
   FillThreadCacheWithMemory(ThreadCacheRegistry::kMinCachedMemoryForPurging +
                             1);
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
             registry.purge_interval_for_testing());
 
   FillThreadCacheWithMemory(
       2 * ThreadCacheRegistry::kMinCachedMemoryForPurging + 1);
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval / 2,
             registry.purge_interval_for_testing());
 
   // Enough memory, interval doesn't change.
   FillThreadCacheWithMemory(ThreadCacheRegistry::kMinCachedMemoryForPurging);
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval / 2,
             registry.purge_interval_for_testing());
 
   // No cached memory, increase the interval.
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
             registry.purge_interval_for_testing());
 
@@ -582,8 +582,7 @@ TEST_F(PartitionAllocThreadCacheTest, PeriodicPurge) {
 TEST_F(PartitionAllocThreadCacheTest,
        DISABLED_PeriodicPurgeSumsOverAllThreads) {
   auto& registry = ThreadCacheRegistry::Instance();
-  registry.StartPeriodicPurge();
-  EXPECT_EQ(1u, task_env_.GetPendingMainThreadTaskCount());
+  registry.StartPeriodicPurge(DelayedAction);
   EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
             registry.purge_interval_for_testing());
 
@@ -591,26 +590,24 @@ TEST_F(PartitionAllocThreadCacheTest,
   auto* tcache = ThreadCache::Get();
   ASSERT_LT(tcache->CachedMemory(),
             ThreadCacheRegistry::kMinCachedMemoryForPurging);
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(2 * ThreadCacheRegistry::kDefaultPurgeInterval,
             registry.purge_interval_for_testing());
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(4 * ThreadCacheRegistry::kDefaultPurgeInterval,
             registry.purge_interval_for_testing());
 
   // Check that the purge interval is clamped at the maximum value.
   while (registry.purge_interval_for_testing() <
          ThreadCacheRegistry::kMaxPurgeInterval) {
-    task_env_.FastForwardBy(registry.purge_interval_for_testing());
+    PurgeManually();
   }
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
-  // There is still a task, even though there are no allocations.
-  EXPECT_EQ(1u, task_env_.GetPendingMainThreadTaskCount());
+  PurgeManually();
 
   // Not enough memory on this thread to decrease the interval.
   FillThreadCacheWithMemory(ThreadCacheRegistry::kMinCachedMemoryForPurging /
                             2);
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
             registry.purge_interval_for_testing());
 
@@ -635,7 +632,7 @@ TEST_F(PartitionAllocThreadCacheTest,
   }
 
   // Many allocations on the other thread.
-  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  PurgeManually();
   EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
             registry.purge_interval_for_testing());
 

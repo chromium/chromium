@@ -32,6 +32,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
@@ -190,7 +191,7 @@ void Partitions::StartPeriodicReclaim(
   CHECK(IsMainThread());
   DCHECK(initialized_);
 
-  base::PartitionAllocMemoryReclaimer::Instance()->Start(task_runner);
+  base::allocator::StartMemoryReclaimer(task_runner);
 }
 
 // static

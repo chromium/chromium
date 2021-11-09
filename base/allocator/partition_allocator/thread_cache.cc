@@ -13,11 +13,10 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/base_export.h"
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/dcheck_is_on.h"
-#include "base/threading/thread_task_runner_handle.h"
-#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -187,13 +186,16 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
   }
 }
 
-void ThreadCacheRegistry::StartPeriodicPurge() {
+void ThreadCacheRegistry::StartPeriodicPurge(
+    RunAfterDelayCallback run_after_delay_callback) {
   ThreadCache::EnsureThreadSpecificDataInitialized();
+  PA_DCHECK(run_after_delay_callback);
 
   // Can be called several times, don't post multiple tasks.
   if (periodic_purge_running_)
     return;
 
+  run_after_delay_callback_ = run_after_delay_callback;
   periodic_purge_running_ = true;
   PostDelayedPurgeTask();
 }
@@ -235,15 +237,12 @@ void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
 }
 
 void ThreadCacheRegistry::PostDelayedPurgeTask() {
-  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ThreadCacheRegistry::PeriodicPurge,
-                     base::Unretained(this)),
-      purge_interval_);
+  run_after_delay_callback_(base::BindOnce(&ThreadCacheRegistry::PeriodicPurge,
+                                           base::Unretained(this)),
+                            purge_interval_);
 }
 
 void ThreadCacheRegistry::PeriodicPurge() {
-  TRACE_EVENT0("memory", "PeriodicPurge");
   // To stop periodic purge for testing.
   if (!periodic_purge_running_)
     return;

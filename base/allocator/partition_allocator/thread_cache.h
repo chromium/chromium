@@ -17,6 +17,7 @@
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "base/base_export.h"
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
@@ -116,8 +117,15 @@ class BASE_EXPORT ThreadCacheRegistry {
   // a later point (during a deallocation).
   void PurgeAll();
 
-  // Starts a periodic timer on the current thread to purge all thread caches.
-  void StartPeriodicPurge();
+  typedef void (*RunAfterDelayCallback)(OnceClosure task,
+                                        base::TimeDelta delay);
+
+  // Starts purging all thread caches with the parameter:
+  // "run_after_delay_callback". The parameter: "run_after_delay_callback" takes
+  // 2 parameters: "purge_action" and "delay". ThreadCacheRegistry invokes
+  // "run_after_delay_clalback" to request the caller to execute "purge_action"
+  // after "delay" passes.
+  void StartPeriodicPurge(RunAfterDelayCallback run_afer_delay_callback);
 
   // Controls the thread cache size, by setting the multiplier to a value above
   // or below |ThreadCache::kDefaultMultiplier|.
@@ -149,6 +157,7 @@ class BASE_EXPORT ThreadCacheRegistry {
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
   base::TimeDelta purge_interval_ = kDefaultPurgeInterval;
   bool periodic_purge_running_ = false;
+  RunAfterDelayCallback run_after_delay_callback_ = nullptr;
 
 #if defined(OS_NACL)
   // The thread cache is never used with NaCl, but its compiler doesn't

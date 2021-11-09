@@ -314,13 +314,12 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   // initialized later.
   DCHECK(process_type != switches::kZygoteProcess);
 
-  auto& registry = base::internal::ThreadCacheRegistry::Instance();
-  registry.StartPeriodicPurge();
+  base::allocator::StartThreadCachePeriodicPurge();
 
 #if defined(OS_ANDROID)
   // Lower thread cache limits to avoid stranding too much memory in the caches.
   if (base::SysInfo::IsLowEndDevice()) {
-    registry.SetThreadCacheMultiplier(
+    base::internal::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
         base::internal::ThreadCache::kDefaultMultiplier / 2.);
   }
 #endif  // defined(OS_ANDROID)
@@ -362,8 +361,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  base::PartitionAllocMemoryReclaimer::Instance()->Start(
-      base::ThreadTaskRunnerHandle::Get());
+  base::allocator::StartMemoryReclaimer(base::ThreadTaskRunnerHandle::Get());
 #endif
 }
 

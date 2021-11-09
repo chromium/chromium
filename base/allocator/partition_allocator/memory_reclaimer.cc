@@ -8,10 +8,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/bind.h"
-#include "base/location.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/trace_event/base_tracing.h"
 
 // TODO(bikineev): Temporarily disable *Scan in MemoryReclaimer as it seems to
 // cause significant jank.
@@ -47,64 +43,26 @@ PartitionAllocMemoryReclaimer* PartitionAllocMemoryReclaimer::Instance() {
 
 void PartitionAllocMemoryReclaimer::RegisterPartition(
     PartitionRoot<internal::ThreadSafe>* partition) {
-  AutoLock lock(lock_);
+  internal::PartitionAutoLock lock(lock_);
   Insert(&thread_safe_partitions_, partition);
 }
 
 void PartitionAllocMemoryReclaimer::RegisterPartition(
     PartitionRoot<internal::NotThreadSafe>* partition) {
-  AutoLock lock(lock_);
+  internal::PartitionAutoLock lock(lock_);
   Insert(&thread_unsafe_partitions_, partition);
 }
 
 void PartitionAllocMemoryReclaimer::UnregisterPartition(
     PartitionRoot<internal::ThreadSafe>* partition) {
-  AutoLock lock(lock_);
+  internal::PartitionAutoLock lock(lock_);
   Remove(&thread_safe_partitions_, partition);
 }
 
 void PartitionAllocMemoryReclaimer::UnregisterPartition(
     PartitionRoot<internal::NotThreadSafe>* partition) {
-  AutoLock lock(lock_);
+  internal::PartitionAutoLock lock(lock_);
   Remove(&thread_unsafe_partitions_, partition);
-}
-
-void PartitionAllocMemoryReclaimer::Start(
-    scoped_refptr<SequencedTaskRunner> task_runner) {
-  AutoLock lock(lock_);
-
-  PA_DCHECK(task_runner);
-
-  // Can be called several times.
-  if (timer_)
-    return;
-
-  PA_DCHECK(!thread_safe_partitions_.empty());
-
-  // This does not need to run on the main thread, however there are a few
-  // reasons to do it there:
-  // - Most of PartitionAlloc's usage is on the main thread, hence PA's metadata
-  //   is more likely in cache when executing on the main thread.
-  // - Memory reclaim takes the partition lock for each partition. As a
-  //   consequence, while reclaim is running, the main thread is unlikely to be
-  //   able to make progress, as it would be waiting on the lock.
-  // - Finally, this runs in idle time only, so there should be no visible
-  //   impact.
-  //
-  // From local testing, time to reclaim is 100us-1ms, and reclaiming every few
-  // seconds is useful. Since this is meant to run during idle time only, it is
-  // a reasonable starting point balancing effectivenes vs cost. See
-  // crbug.com/942512 for details and experimental results.
-  constexpr TimeDelta kInterval = Seconds(4);
-
-  timer_ = std::make_unique<RepeatingTimer>();
-  timer_->SetTaskRunner(task_runner);
-  // Here and below, |Unretained(this)| is fine as |this| lives forever, as a
-  // singleton.
-  timer_->Start(
-      FROM_HERE, kInterval,
-      BindRepeating(&PartitionAllocMemoryReclaimer::ReclaimPeriodically,
-                    Unretained(this)));
 }
 
 PartitionAllocMemoryReclaimer::PartitionAllocMemoryReclaimer() = default;
@@ -117,15 +75,15 @@ void PartitionAllocMemoryReclaimer::ReclaimAll() {
   Reclaim(kFlags);
 }
 
-void PartitionAllocMemoryReclaimer::ReclaimPeriodically() {
+void PartitionAllocMemoryReclaimer::ReclaimNormal() {
   constexpr int kFlags = PartitionPurgeDecommitEmptySlotSpans |
                          PartitionPurgeDiscardUnusedSystemPages;
   Reclaim(kFlags);
 }
 
 void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
-  AutoLock lock(lock_);  // Has to protect from concurrent (Un)Register calls.
-  TRACE_EVENT0("base", "PartitionAllocMemoryReclaimer::Reclaim()");
+  internal::PartitionAutoLock lock(
+      lock_);  // Has to protect from concurrent (Un)Register calls.
 
   // PCScan quarantines freed slots. Trigger the scan first to let it call
   // FreeNoHooksImmediate on slots that pass the quarantine.
@@ -161,9 +119,8 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
 }
 
 void PartitionAllocMemoryReclaimer::ResetForTesting() {
-  AutoLock lock(lock_);
+  internal::PartitionAutoLock lock(lock_);
 
-  timer_ = nullptr;
   thread_safe_partitions_.clear();
   thread_unsafe_partitions_.clear();
 }

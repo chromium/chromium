@@ -11,7 +11,6 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/logging.h"
-#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,10 +35,7 @@ void HandleOOM(size_t unused_size) {
 
 class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
  public:
-  PartitionAllocMemoryReclaimerTest()
-      : ::testing::Test(),
-        task_environment_(test::TaskEnvironment::TimeSource::MOCK_TIME),
-        allocator_() {}
+  PartitionAllocMemoryReclaimerTest() = default;
 
  protected:
   void SetUp() override {
@@ -58,31 +54,18 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
   void TearDown() override {
     allocator_ = nullptr;
     PartitionAllocMemoryReclaimer::Instance()->ResetForTesting();
-    task_environment_.FastForwardUntilNoTasksRemain();
     PartitionAllocGlobalUninitForTesting();
   }
 
-  void StartReclaimer() {
-    auto* memory_reclaimer = PartitionAllocMemoryReclaimer::Instance();
-    memory_reclaimer->Start(task_environment_.GetMainThreadTaskRunner());
-  }
+  void Reclaim() { PartitionAllocMemoryReclaimer::Instance()->ReclaimNormal(); }
 
   void AllocateAndFree() {
     void* data = allocator_->root()->Alloc(1, "");
     allocator_->root()->Free(data);
   }
 
-  test::TaskEnvironment task_environment_;
   std::unique_ptr<PartitionAllocator> allocator_;
 };
-
-// Flaky. https://crbug.com/1205802
-TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_Simple) {
-  StartReclaimer();
-
-  EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
-  EXPECT_TRUE(task_environment_.NextTaskIsDelayed());
-}
 
 // Flaky. https://crbug.com/1212670
 TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_FreesMemory) {
@@ -94,9 +77,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_FreesMemory) {
 
   EXPECT_GT(committed_before, committed_initially);
 
-  StartReclaimer();
-  task_environment_.FastForwardBy(
-      task_environment_.NextMainThreadPendingTaskDelay());
+  Reclaim();
   size_t committed_after = root->get_total_size_of_committed_pages();
   EXPECT_LT(committed_after, committed_before);
   EXPECT_LE(committed_initially, committed_after);
@@ -145,9 +126,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest,
   ASSERT_TRUE(tcache);
   size_t cached_size = tcache->CachedMemory();
 
-  StartReclaimer();
-  task_environment_.FastForwardBy(
-      task_environment_.NextMainThreadPendingTaskDelay());
+  Reclaim();
 
   // No thread cache purging during periodic purge, but with ReclaimAll().
   //
@@ -156,7 +135,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest,
   // allocations in the test harness.
   EXPECT_GT(tcache->CachedMemory(), cached_size / 2);
 
-  PartitionAllocMemoryReclaimer::Instance()->ReclaimPeriodically();
+  Reclaim();
   EXPECT_GT(tcache->CachedMemory(), cached_size / 2);
 
   PartitionAllocMemoryReclaimer::Instance()->ReclaimAll();
