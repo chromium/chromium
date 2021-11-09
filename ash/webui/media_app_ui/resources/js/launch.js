@@ -98,7 +98,7 @@ let appTitle;
  * @type {!SortOrder}
  */
 // eslint-disable-next-line prefer-const
-let sortOrder = SortOrder.Z_FIRST;
+let sortOrder = SortOrder.A_FIRST;
 
 /**
  * Index into `currentFiles` of the current file.

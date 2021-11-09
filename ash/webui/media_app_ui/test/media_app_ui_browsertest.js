@@ -381,9 +381,9 @@ MediaAppUIBrowserTest.MultipleSelectionLaunch = async () => {
   const selectedIndexes = [1, 3];
   const directory = await launchWithFiles(directoryContents, selectedIndexes);
 
-  // Expect filenames to be sorted in the default reverse lexicographical order.
-  assertEquals(TEST_ONLY.sortOrder, SortOrder.Z_FIRST);
-  assertFilenamesToBe('3.png,1.png');
+  // Expect filenames to be sorted in the default lexicographical order.
+  assertEquals(TEST_ONLY.sortOrder, SortOrder.A_FIRST);
+  assertFilenamesToBe('1.png,3.png');
 };
 
 MediaAppUIBrowserTest.NotifyCurrentFile = async () => {
@@ -1365,27 +1365,27 @@ MediaAppUIBrowserTest.SortedFilesByTime = async () => {
 };
 
 MediaAppUIBrowserTest.SortedFilesByName = async () => {
-  // Z_FIRST should be the default.
-  assertEquals(TEST_ONLY.sortOrder, SortOrder.Z_FIRST);
+  // A_FIRST should be the default.
+  assertEquals(TEST_ONLY.sortOrder, SortOrder.A_FIRST);
   // Establish some sample files that match the naming style from the Camera app
   // in m86, except one file with lowercase prefix is included, to verify that
   // the collation ignores case (to match the Files app). Note we want
-  // "pressing right" to go to the previously taken photo/video, which means
-  // reverse lexicographic.
-  const filesInReverseLexicographicOrder = await Promise.all([
-    createTestImageFile(1, 1, 'VID_20200921_104848.jpg', 8),  // Video from day.
-    createTestImageFile(1, 1, 'IMG_20200922_104816.jpg', 9),  // Later date.
-    createTestImageFile(1, 1, 'img_20200921_104910.jpg', 6),  // Newest on day.
-    createTestImageFile(1, 1, 'IMG_20200921_104816.jpg', 7),  // Modified.
+  // "pressing right" to go to the next taken photo/video, which means
+  // lexicographic ordering.
+  const filesInLexicographicOrder = await Promise.all([
     createTestImageFile(1, 1, 'IMG_20200921_104750.jpg', 5),  // Oldest.
+    createTestImageFile(1, 1, 'IMG_20200921_104816.jpg', 7),  // Modified.
+    createTestImageFile(1, 1, 'img_20200921_104910.jpg', 6),  // Newest on day.
+    createTestImageFile(1, 1, 'IMG_20200922_104816.jpg', 9),  // Later date.
+    createTestImageFile(1, 1, 'VID_20200921_104848.jpg', 8),  // Video from day.
   ]);
-  const files = [...filesInReverseLexicographicOrder];
+  const files = [...filesInLexicographicOrder];
   // Mix up files so that we can check they get sorted correctly.
   [files[4], files[2], files[3]] = [files[2], files[3], files[4]];
 
   await launchWithFiles(files);
 
-  assertFilesToBe(filesInReverseLexicographicOrder);
+  assertFilesToBe(filesInLexicographicOrder);
 };
 
 // Tests that getFile is not called on all files in a directory on launch with
