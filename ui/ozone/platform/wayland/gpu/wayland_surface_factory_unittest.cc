@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/buffer_types.h"
@@ -203,6 +204,7 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvas(
       gfx::AcceleratedWidget widget) {
     auto canvas = surface_factory_->CreateCanvasForWidget(widget_);
+    canvas->SetGpuMainRunner(base::ThreadTaskRunnerHandle::Get());
     base::RunLoop().RunUntilIdle();
 
     return canvas;

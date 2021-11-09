@@ -7,12 +7,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/numerics/checked_math.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -37,17 +39,24 @@ size_t CalculateStride(int width) {
 class WaylandCanvasSurface::SharedMemoryBuffer {
  public:
   SharedMemoryBuffer(gfx::AcceleratedWidget widget,
-                     WaylandBufferManagerGpu* buffer_manager)
+                     WaylandBufferManagerGpu* buffer_manager,
+                     scoped_refptr<base::SequencedTaskRunner> gpu_main_runner)
       : buffer_id_(buffer_manager->AllocateBufferID()),
         widget_(widget),
-        buffer_manager_(buffer_manager) {
-    DCHECK(buffer_manager_);
+        buffer_manager_(buffer_manager),
+        gpu_main_runner_(gpu_main_runner) {
+    DCHECK(buffer_manager_ && gpu_main_runner_);
   }
 
   SharedMemoryBuffer(const SharedMemoryBuffer&) = delete;
   SharedMemoryBuffer& operator=(const SharedMemoryBuffer&) = delete;
 
-  ~SharedMemoryBuffer() { buffer_manager_->DestroyBuffer(widget_, buffer_id_); }
+  ~SharedMemoryBuffer() {
+    gpu_main_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandBufferManagerGpu::DestroyBuffer,
+                       base::Unretained(buffer_manager_), widget_, buffer_id_));
+  }
 
   // Returns SkSurface, which the client can use to write to this buffer.
   sk_sp<SkSurface> sk_surface() const { return sk_surface_; }
@@ -82,8 +91,12 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
         base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
             std::move(shm_region));
     base::subtle::ScopedFDPair fd_pair = platform_shm.PassPlatformHandle();
-    buffer_manager_->CreateShmBasedBuffer(
-        std::move(fd_pair.fd), checked_length.ValueOrDie(), size, buffer_id_);
+
+    gpu_main_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandBufferManagerGpu::CreateShmBasedBuffer,
+                       base::Unretained(buffer_manager_), std::move(fd_pair.fd),
+                       checked_length.ValueOrDie(), size, buffer_id_));
 
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
     sk_surface_ = SkSurface::MakeRasterDirect(
@@ -97,8 +110,11 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   }
 
   void CommitBuffer(const gfx::Rect& damage, float buffer_scale) {
-    buffer_manager_->CommitBuffer(widget_, buffer_id_, gfx::Rect(size_),
-                                  buffer_scale, damage);
+    gpu_main_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandBufferManagerGpu::CommitBuffer,
+                       base::Unretained(buffer_manager_), widget_, buffer_id_,
+                       gfx::Rect(size_), buffer_scale, damage));
   }
 
   void OnUse() {
@@ -155,6 +171,11 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
   // Non-owned pointer to the buffer manager on the gpu process/thread side.
   WaylandBufferManagerGpu* const buffer_manager_;
 
+  // All the WaylandBufferManagerGpu requests must be send to the main gpu
+  // thread as the mojo pipe it sets uses the main thread for incoming and
+  // outgoing messages.
+  scoped_refptr<base::SequencedTaskRunner> gpu_main_runner_;
+
   // Shared memory for the buffer.
   base::WritableSharedMemoryMapping shm_mapping_;
 
@@ -171,15 +192,20 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 WaylandCanvasSurface::WaylandCanvasSurface(
     WaylandBufferManagerGpu* buffer_manager,
     gfx::AcceleratedWidget widget)
-    : buffer_manager_(buffer_manager), widget_(widget) {
-  buffer_manager_->RegisterSurface(widget_, this);
-}
+    : buffer_manager_(buffer_manager),
+      widget_(widget),
+      viz_thread_(base::ThreadTaskRunnerHandle::Get()) {}
 
 WaylandCanvasSurface::~WaylandCanvasSurface() {
-  buffer_manager_->UnregisterSurface(widget_);
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
+  DCHECK(gpu_main_runner_);
+  gpu_main_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&WaylandBufferManagerGpu::UnregisterSurface,
+                                base::Unretained(buffer_manager_), widget_));
 }
 
 SkCanvas* WaylandCanvasSurface::GetCanvas() {
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
   DCHECK(!pending_buffer_)
       << "The previous pending buffer has not been presented yet";
 
@@ -211,6 +237,7 @@ SkCanvas* WaylandCanvasSurface::GetCanvas() {
 
 void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
                                         float scale) {
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
   if (size_ == viewport_size)
     return;
   // TODO(https://crbug.com/930667): We could implement more efficient resizes
@@ -227,6 +254,7 @@ void WaylandCanvasSurface::ResizeCanvas(const gfx::Size& viewport_size,
 }
 
 void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
   if (!pending_buffer_)
     return;
 
@@ -239,13 +267,28 @@ void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {
 
 std::unique_ptr<gfx::VSyncProvider>
 WaylandCanvasSurface::CreateVSyncProvider() {
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
   // TODO(https://crbug.com/930662): This can be implemented with information
   // from presentation feedback.
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
 
+void WaylandCanvasSurface::SetGpuMainRunner(
+    scoped_refptr<base::SequencedTaskRunner> gpu_main_runner) {
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
+  DCHECK(!gpu_main_runner_);
+  gpu_main_runner_ = gpu_main_runner;
+
+  // Register the surface now. It will be unregistered in the dtor.
+  gpu_main_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WaylandCanvasSurface::RegisterSurfaceOnGpuMainThread,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void WaylandCanvasSurface::ProcessUnsubmittedBuffers() {
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
   DCHECK(!unsubmitted_buffers_.empty() && unsubmitted_buffers_.front()->used());
 
   // Don't submit a new buffer if there's one already submitted being
@@ -281,6 +324,28 @@ void WaylandCanvasSurface::ProcessUnsubmittedBuffers() {
 void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,
                                         const gfx::SwapResult& swap_result,
                                         gfx::GpuFenceHandle release_fence) {
+  DCHECK(gpu_main_runner_->RunsTasksInCurrentSequence());
+  viz_thread_->PostTask(
+      FROM_HERE, base::BindOnce(&WaylandCanvasSurface::OnSubmissionOnVizThread,
+                                weak_factory_.GetWeakPtr(), buffer_id,
+                                swap_result, std::move(release_fence)));
+}
+
+void WaylandCanvasSurface::OnPresentation(
+    uint32_t buffer_id,
+    const gfx::PresentationFeedback& feedback) {
+  DCHECK(gpu_main_runner_->RunsTasksInCurrentSequence());
+  viz_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WaylandCanvasSurface::OnPresentationOnVizThread,
+                     weak_factory_.GetWeakPtr(), buffer_id, feedback));
+}
+
+void WaylandCanvasSurface::OnSubmissionOnVizThread(
+    uint32_t buffer_id,
+    const gfx::SwapResult& swap_result,
+    gfx::GpuFenceHandle release_fence) {
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
   DCHECK(release_fence.is_null());
   // We may get an OnSubmission callback for a buffer that was submitted
   // before a ResizeCanvas call, which clears all our buffers. Check to
@@ -308,20 +373,27 @@ void WaylandCanvasSurface::OnSubmission(uint32_t buffer_id,
     ProcessUnsubmittedBuffers();
 }
 
-void WaylandCanvasSurface::OnPresentation(
+void WaylandCanvasSurface::OnPresentationOnVizThread(
     uint32_t buffer_id,
     const gfx::PresentationFeedback& feedback) {
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
   // TODO(https://crbug.com/930662): this can be used for the vsync provider.
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
 std::unique_ptr<WaylandCanvasSurface::SharedMemoryBuffer>
 WaylandCanvasSurface::CreateSharedMemoryBuffer() {
+  DCHECK(viz_thread_->RunsTasksInCurrentSequence());
   DCHECK(!size_.IsEmpty());
 
-  auto canvas_buffer =
-      std::make_unique<SharedMemoryBuffer>(widget_, buffer_manager_);
+  auto canvas_buffer = std::make_unique<SharedMemoryBuffer>(
+      widget_, buffer_manager_, gpu_main_runner_);
   return canvas_buffer->Initialize(size_) ? std::move(canvas_buffer) : nullptr;
+}
+
+void WaylandCanvasSurface::RegisterSurfaceOnGpuMainThread() {
+  DCHECK(gpu_main_runner_->RunsTasksInCurrentSequence());
+  buffer_manager_->RegisterSurface(widget_, this);
 }
 
 }  // namespace ui

@@ -263,6 +263,9 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
     std::unique_ptr<ui::SurfaceOzoneCanvas> surface_ozone =
         factory->CreateCanvasForWidget(surface_handle);
     CHECK(surface_ozone);
+    // TODO(crbug.com/1267789): decide how the threading should actually work in
+    // software and hardware modes.
+    surface_ozone->SetGpuMainRunner(gpu_service_impl_->main_runner());
     return std::make_unique<SoftwareOutputDeviceOzone>(
         std::move(platform_window_surface), std::move(surface_ozone));
 #else

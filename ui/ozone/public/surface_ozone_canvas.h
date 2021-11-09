@@ -72,6 +72,13 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceOzoneCanvas {
 
   // Returns the maximum number of pending frames.
   virtual int MaxFramesPending() const;
+
+  // Sets gpu thread's main task runner that the surface can use to post tasks
+  // on the main thread.
+  // TODO(crbug.com/1267789): decide how the threading should actually work in
+  // software and hardware modes.
+  virtual void SetGpuMainRunner(
+      scoped_refptr<base::SequencedTaskRunner> gpu_main_runner);
 };
 
 }  // namespace ui

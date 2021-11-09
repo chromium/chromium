@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/threading/thread_checker.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/size.h"
@@ -58,6 +60,8 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   void ResizeCanvas(const gfx::Size& viewport_size, float scale) override;
   void PresentCanvas(const gfx::Rect& damage) override;
   std::unique_ptr<gfx::VSyncProvider> CreateVSyncProvider() override;
+  void SetGpuMainRunner(
+      scoped_refptr<base::SequencedTaskRunner> gpu_main_runner) override;
 
  private:
   // Internal helper class, which creates a shared memory region, asks the
@@ -74,11 +78,26 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   void OnPresentation(uint32_t buffer_id,
                       const gfx::PresentationFeedback& feedback) override;
 
+  void OnSubmissionOnVizThread(uint32_t buffer_id,
+                               const gfx::SwapResult& swap_result,
+                               gfx::GpuFenceHandle release_fence);
+  void OnPresentationOnVizThread(uint32_t buffer_id,
+                                 const gfx::PresentationFeedback& feedback);
+
   sk_sp<SkSurface> GetNextSurface();
   std::unique_ptr<SharedMemoryBuffer> CreateSharedMemoryBuffer();
 
+  void RegisterSurfaceOnGpuMainThread();
+
   WaylandBufferManagerGpu* const buffer_manager_;
   const gfx::AcceleratedWidget widget_;
+  // The thread where this object is created on.
+  scoped_refptr<base::SequencedTaskRunner> viz_thread_;
+
+  // All the WaylandBufferManagerGpu requests must be sent to the main gpu
+  // thread as the mojo pipe it sets uses the main thread for incoming and
+  // outgoing messages.
+  scoped_refptr<base::SequencedTaskRunner> gpu_main_runner_;
 
   gfx::Size size_;
   float viewport_scale_ = 1.f;
@@ -97,6 +116,8 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
 
   // Previously used buffer. Set on OnSubmission().
   SharedMemoryBuffer* previous_buffer_ = nullptr;
+
+  base::WeakPtrFactory<WaylandCanvasSurface> weak_factory_{this};
 };
 
 }  // namespace ui

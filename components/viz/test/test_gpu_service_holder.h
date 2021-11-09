@@ -6,13 +6,19 @@
 #define COMPONENTS_VIZ_TEST_TEST_GPU_SERVICE_HOLDER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
 #include "gpu/ipc/gpu_in_process_thread_service.h"
 #include "gpu/vulkan/buildflags.h"
+
+#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+#include "mojo/public/cpp/bindings/binder_map.h"
+#endif
 
 namespace gpu {
 class CommandBufferTaskExecutor;
@@ -96,6 +102,14 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
                              base::WaitableEvent* completion);
   void DeleteOnGpuThread();
 
+// TODO(crbug.com/1267788): Fuchsia crashes. See details in the crbug.
+#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+  void BindInterface(const std::string& interface_name,
+                     mojo::ScopedMessagePipeHandle interface_pipe);
+  void BindInterfaceOnGpuThread(const std::string& interface_name,
+                                mojo::ScopedMessagePipeHandle interface_pipe);
+#endif
+
 #if !defined(OS_CHROMEOS)
   // TODO(crbug.com/1241161): This is equally applicable to Chrome OS there are
   // just a number of tests that already override the feature list after it's no
@@ -115,6 +129,11 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   std::unique_ptr<gpu::SingleTaskSequence> gpu_task_sequence_;
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
+#endif
+
+#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+  // Bound interfaces.
+  mojo::BinderMap binders_;
 #endif
 };
 

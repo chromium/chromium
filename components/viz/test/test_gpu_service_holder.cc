@@ -33,12 +33,19 @@
 #endif
 
 #if defined(USE_OZONE)
+#include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 namespace viz {
 
 namespace {
+
+#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+namespace {
+const int kGpuProcessHostId = 1;
+}  // namespace
+#endif
 
 base::Lock& GetLock() {
   static base::NoDestructor<base::Lock> lock;
@@ -160,9 +167,25 @@ TestGpuServiceHolder::TestGpuServiceHolder(
       base::BindOnce(&TestGpuServiceHolder::InitializeOnGpuThread,
                      base::Unretained(this), gpu_preferences, &completion));
   completion.Wait();
+
+#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+  if (auto* gpu_platform_support_host =
+          ui::OzonePlatform::GetInstance()->GetGpuPlatformSupportHost()) {
+    auto interface_binder = base::BindRepeating(
+        &TestGpuServiceHolder::BindInterface, base::Unretained(this));
+    gpu_platform_support_host->OnGpuServiceLaunched(
+        kGpuProcessHostId, interface_binder, base::DoNothing());
+  }
+#endif
 }
 
 TestGpuServiceHolder::~TestGpuServiceHolder() {
+#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+  if (auto* gpu_platform_support_host =
+          ui::OzonePlatform::GetInstance()->GetGpuPlatformSupportHost()) {
+    gpu_platform_support_host->OnChannelDestroyed(kGpuProcessHostId);
+  }
+#endif
   // Ensure members created on GPU thread are destroyed there too.
   gpu_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TestGpuServiceHolder::DeleteOnGpuThread,
@@ -189,6 +212,10 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
     const gpu::GpuPreferences& gpu_preferences,
     base::WaitableEvent* completion) {
   DCHECK(gpu_thread_.task_runner()->BelongsToCurrentThread());
+
+#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+  ui::OzonePlatform::GetInstance()->AddInterfaces(&binders_);
+#endif
 
   if (gpu_preferences.use_vulkan != gpu::VulkanImplementationName::kNone) {
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -269,5 +296,28 @@ void TestGpuServiceHolder::DeleteOnGpuThread() {
   gpu_task_sequence_.reset();
   gpu_service_.reset();
 }
+
+#if defined(USE_OZONE) && !defined(OS_FUCHSIA)
+void TestGpuServiceHolder::BindInterface(
+    const std::string& interface_name,
+    mojo::ScopedMessagePipeHandle interface_pipe) {
+  // The interfaces must be bound on the gpu to ensure the mojo calls happen
+  // on the correct sequence (same happens when the browser runs with a real
+  // gpu service).
+  gpu_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&TestGpuServiceHolder::BindInterfaceOnGpuThread,
+                                base::Unretained(this), interface_name,
+                                std::move(interface_pipe)));
+}
+
+void TestGpuServiceHolder::BindInterfaceOnGpuThread(
+    const std::string& interface_name,
+    mojo::ScopedMessagePipeHandle interface_pipe) {
+  mojo::GenericPendingReceiver receiver =
+      mojo::GenericPendingReceiver(interface_name, std::move(interface_pipe));
+  CHECK(binders_.TryBind(&receiver))
+      << "Unable to find mojo interface " << interface_name;
+}
+#endif  // defined(USE_OZONE) && !defined(OS_FUCHSIA)
 
 }  // namespace viz
