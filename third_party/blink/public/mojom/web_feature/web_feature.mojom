@@ -309,7 +309,7 @@ enum WebFeature {
   kSelectionContainsNode = 525,
   kXMLExternalResourceLoad = 529,
   kMixedContentPrivateHostnameInPublicHostname = 530,
-  kLegacyProtocolEmbeddedAsSubresource = 531,
+  kOBSOLETE_LegacyProtocolEmbeddedAsSubresource = 531,
   kRequestedSubresourceWithEmbeddedCredentials = 532,
   kNotificationCreated = 533,
   kNotificationClosed = 534,

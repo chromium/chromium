@@ -624,22 +624,13 @@ BaseFetchContext::CanRequestInternal(
   if (IsSVGImageChromeClient() && !url.ProtocolIsData())
     return ResourceRequestBlockedReason::kOrigin;
 
-  // Measure the number of legacy URL schemes ('ftp://') and the number of
-  // embedded-credential ('http://user:password@...') resources embedded as
-  // subresources.
+  // Measure the number of embedded-credential ('http://user:password@...')
+  // resources embedded as subresources.
   const FetchClientSettingsObject& fetch_client_settings_object =
       GetResourceFetcherProperties().GetFetchClientSettingsObject();
   const SecurityOrigin* embedding_origin =
       fetch_client_settings_object.GetSecurityOrigin();
   DCHECK(embedding_origin);
-  if (SchemeRegistry::ShouldTreatURLSchemeAsLegacy(url.Protocol()) &&
-      !SchemeRegistry::ShouldTreatURLSchemeAsLegacy(
-          embedding_origin->Protocol())) {
-    CountDeprecation(WebFeature::kLegacyProtocolEmbeddedAsSubresource);
-
-    return ResourceRequestBlockedReason::kOrigin;
-  }
-
   if (ShouldBlockFetchAsCredentialedSubresource(resource_request, url))
     return ResourceRequestBlockedReason::kOrigin;
 

@@ -334,14 +334,6 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "RangeExpand", kUnknown, "'Range.expand()'", "'Selection.modify()'");
 
     // Blocked subresource requests:
-    case WebFeature::kLegacyProtocolEmbeddedAsSubresource:
-      return DeprecationInfo::WithDetailsAndChromeStatusID(
-          "LegacyProtocolEmbeddedAsSubresource", kUnknown,
-          "Subresource requests using legacy protocols (like `ftp:`) are "
-          "blocked. Please deliver web-accessible resources over modern "
-          "protocols like HTTPS.",
-          "5709390967472128");
-
     case WebFeature::kRequestedSubresourceWithEmbeddedCredentials:
       return DeprecationInfo::WithDetailsAndChromeStatusID(
           "RequestedSubresourceWithEmbeddedCredentials", kUnknown,

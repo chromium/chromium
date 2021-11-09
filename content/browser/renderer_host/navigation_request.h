@@ -1124,11 +1124,6 @@ class CONTENT_EXPORT NavigationRequest
     BLOCK_REQUEST,
   };
 
-  // Block subresources requests that target "legacy" protocol (like "ftp") when
-  // the main document is not served from a "legacy" protocol.
-  LegacyProtocolInSubresourceCheckResult CheckLegacyProtocolInSubresource()
-      const;
-
   // Block about:srcdoc navigation that aren't expected to happen. For instance,
   // main frame navigations or about:srcdoc#foo.
   enum class AboutSrcDocCheckResult {

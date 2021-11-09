@@ -245,10 +245,6 @@ String SchemeRegistry::ListOfCorsEnabledURLSchemes() {
   return builder.ToString();
 }
 
-bool SchemeRegistry::ShouldTreatURLSchemeAsLegacy(const String& scheme) {
-  return scheme == "ftp";
-}
-
 bool SchemeRegistry::ShouldTrackUsageMetricsForScheme(const String& scheme) {
   // This SchemeRegistry is primarily used by Blink UseCounter, which aims to
   // match the tracking policy of page_load_metrics (see
