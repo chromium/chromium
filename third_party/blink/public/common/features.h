@@ -539,8 +539,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kAutoExpandDetailsElement;
 
 BLINK_COMMON_EXPORT extern const base::Feature kEarlyCodeCache;
 
-BLINK_COMMON_EXPORT extern const base::Feature kClientHintDeprecationIssue;
-
 BLINK_COMMON_EXPORT extern const base::Feature kClientHintThirdPartyDelegation;
 
 }  // namespace features

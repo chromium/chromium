@@ -8,11 +8,13 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "net/http/structured_headers.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -126,6 +128,26 @@ base::TimeDelta ParseAcceptCHLifetime(const std::string& header) {
     return base::TimeDelta();
 
   return base::Seconds(persist_duration_seconds);
+}
+
+absl::optional<network::mojom::WebClientHintsType> COMPONENT_EXPORT(NETWORK_CPP)
+    SuggestAlternateClientHintIfDeprecated(
+        const network::mojom::WebClientHintsType type) {
+  if (!base::FeatureList::IsEnabled(features::kClientHintDeprecationIssue)) {
+    return absl::nullopt;
+  }
+  switch (type) {
+    case network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED:
+      return network::mojom::WebClientHintsType::kDeviceMemory;
+    case network::mojom::WebClientHintsType::kDpr_DEPRECATED:
+      return network::mojom::WebClientHintsType::kDpr;
+    case network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED:
+      return network::mojom::WebClientHintsType::kResourceWidth;
+    case network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED:
+      return network::mojom::WebClientHintsType::kViewportWidth;
+    default:
+      return absl::nullopt;
+  }
 }
 
 }  // namespace network
