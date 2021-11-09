@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/web/js_compile.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("image_fetch") {
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -51,4 +52,20 @@ source_set("unit_tests") {
     "//net:test_support",
     "//services/network:test_support",
   ]
+}
+
+fuzzer_test("image_fetch_java_script_feature_fuzzer") {
+  additional_configs = [ "//build/config/compiler:enable_arc" ]
+
+  sources = [ "image_fetch_java_script_feature_fuzzer.mm" ]
+  deps = [
+    ":image_fetch",
+    "//base",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging/fuzzer_support",
+    "//ios/web/public/js_messaging/fuzzer_support:js_message_proto",
+    "//ios/web/public/test:fuzzer_support",
+    "//third_party/libprotobuf-mutator",
+  ]
+  seed_corpus = "fuzzer_corpus"
 }

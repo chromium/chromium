@@ -21,6 +21,7 @@ class Value;
 
 namespace web {
 
+class FuzzerEnvWithJavaScriptFeature;
 class ScriptMessage;
 class WebState;
 class WebFrame;
@@ -33,6 +34,12 @@ class WebFrame;
 // state itself and can be used application-wide across browser states. However,
 // this is not guaranteed of JavaScriptFeature subclasses.
 class JavaScriptFeature {
+  // |FuzzerEnvWithJavaScriptFeature| stores subclasses of |JavaScriptFeature|
+  // and invokes |ScriptMessageReceived| function in a public API. So fuzzers
+  // can call |ScriptMessageReceived| functions without friending with each
+  // subclass.
+  friend class FuzzerEnvWithJavaScriptFeature;
+
  public:
   // The content world which this feature supports.
   // NOTE: Features should use kAnyContentWorld whenever possible to allow for
