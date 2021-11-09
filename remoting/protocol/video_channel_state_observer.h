@@ -5,7 +5,6 @@
 #ifndef REMOTING_PROTOCOL_VIDEO_CHANNEL_STATE_OBSERVER_H_
 #define REMOTING_PROTOCOL_VIDEO_CHANNEL_STATE_OBSERVER_H_
 
-#include "base/time/time.h"
 #include "remoting/codec/webrtc_video_encoder.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 
@@ -20,7 +19,6 @@ class VideoChannelStateObserver {
 
   virtual void OnKeyFrameRequested() = 0;
   virtual void OnTargetBitrateChanged(int bitrate_kbps) = 0;
-  virtual void OnRttUpdate(base::TimeDelta rtt) = 0;
 
   // Called when the encoder has finished encoding a frame, and before it is
   // passed to WebRTC's registered callback. |frame| may be null if encoding

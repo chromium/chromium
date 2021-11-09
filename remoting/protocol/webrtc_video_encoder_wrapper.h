@@ -92,6 +92,10 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
   // Encode().
   int bitrate_kbps_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
+  // Latest RTT estimate provided by OnRttUpdate().
+  base::TimeDelta rtt_estimate_ GUARDED_BY_CONTEXT(sequence_checker_){
+      base::TimeDelta::Max()};
+
   // True when encoding unchanged frames for top-off.
   bool top_off_active_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 

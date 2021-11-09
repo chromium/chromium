@@ -65,6 +65,9 @@ class WebrtcVideoEncoder {
     base::TimeTicks capture_ended_time;
     base::TimeTicks encode_started_time;
     base::TimeTicks encode_ended_time;
+    base::TimeDelta send_pending_delay{base::TimeDelta::Max()};
+    base::TimeDelta rtt_estimate{base::TimeDelta::Max()};
+    int bandwidth_estimate_kbps = -1;
   };
 
   struct EncodedFrame {

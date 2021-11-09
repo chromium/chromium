@@ -143,11 +143,6 @@ void WebrtcVideoStream::OnTargetBitrateChanged(int bitrate_kbps) {
   scheduler_->OnTargetBitrateChanged(bitrate_kbps);
 }
 
-void WebrtcVideoStream::OnRttUpdate(base::TimeDelta rtt) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  scheduler_->OnRttUpdate(rtt);
-}
-
 void WebrtcVideoStream::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
@@ -231,9 +226,10 @@ void WebrtcVideoStream::OnEncodedFrameSent(
     DCHECK(current_frame_stats);
 
     HostFrameStats stats;
-
-    // Get bandwidth, RTT and send_pending_delay into |stats|.
-    scheduler_->GetSchedulerStats(stats);
+    stats.bandwidth_estimate_kbps =
+        current_frame_stats->bandwidth_estimate_kbps;
+    stats.rtt_estimate = current_frame_stats->rtt_estimate;
+    stats.send_pending_delay = current_frame_stats->send_pending_delay;
 
     stats.frame_size = frame.data.size();
 

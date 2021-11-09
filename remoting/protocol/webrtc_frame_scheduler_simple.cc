@@ -80,11 +80,6 @@ void WebrtcFrameSchedulerSimple::OnTargetBitrateChanged(int bandwidth_kbps) {
   ScheduleNextFrame();
 }
 
-void WebrtcFrameSchedulerSimple::OnRttUpdate(base::TimeDelta rtt) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  rtt_estimate_ = rtt;
-}
-
 void WebrtcFrameSchedulerSimple::Start(
     const base::RepeatingClosure& capture_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -108,8 +103,6 @@ void WebrtcFrameSchedulerSimple::OnFrameCaptured(
   DCHECK(frame_pending_);
   frame_pending_ = false;
 
-  base::TimeTicks now = tick_clock_->NowTicks();
-
   // Null |frame| indicates a capturer error.
   if (!frame) {
     frame_pending_ = false;
@@ -117,7 +110,6 @@ void WebrtcFrameSchedulerSimple::OnFrameCaptured(
     return;
   }
 
-  latest_frame_encode_start_time_ = now;
   key_frame_request_ = false;
 
   ScheduleNextFrame();
@@ -130,9 +122,11 @@ void WebrtcFrameSchedulerSimple::OnFrameEncoded(
 
   base::TimeTicks now = tick_clock_->NowTicks();
 
-  // Calculate |send_pending_delay_| before refilling |pacing_bucket_|.
-  send_pending_delay_ =
-      std::max(base::TimeDelta(), pacing_bucket_.GetEmptyTime() - now);
+  // Calculate |send_pending_delay| before refilling |pacing_bucket_|.
+  if (encoded_frame && encoded_frame->stats) {
+    encoded_frame->stats->send_pending_delay =
+        std::max(base::TimeDelta(), pacing_bucket_.GetEmptyTime() - now);
+  }
 
   // TODO(zijiehe): |encoded_frame|->data.empty() is unreasonable, we should try
   // to get rid of it in WebrtcVideoEncoder layer.
@@ -150,14 +144,6 @@ void WebrtcFrameSchedulerSimple::OnFrameEncoded(
 void WebrtcFrameSchedulerSimple::OnEncodedFrameSent(
     webrtc::EncodedImageCallback::Result result,
     const WebrtcVideoEncoder::EncodedFrame& frame) {}
-
-void WebrtcFrameSchedulerSimple::GetSchedulerStats(
-    HostFrameStats& frame_stats_out) const {
-  frame_stats_out.send_pending_delay = send_pending_delay_;
-  frame_stats_out.rtt_estimate = rtt_estimate_;
-  frame_stats_out.bandwidth_estimate_kbps =
-      bandwidth_estimator_->GetBitrateKbps();
-}
 
 void WebrtcFrameSchedulerSimple::SetTickClockForTest(
     const base::TickClock* tick_clock) {
