@@ -10,6 +10,13 @@
 #include "ui/aura/window.h"
 
 namespace arc {
+namespace input_overlay {
+// If the following touch move sent immediately, the touch move event is not
+// processed correctly by apps. This is a delayed time to send touch move event.
+constexpr base::TimeDelta kSendTouchMoveDelay = base::Milliseconds(50);
+
+}  // namespace input_overlay
+
 // TouchInjector includes all the touch actions related to the specific window
 // and performs as a bridge between the ArcInputOverlayManager and the touch
 // actions. It implements EventRewriter to transform input events to touch
@@ -46,9 +53,6 @@ class TouchInjector : public ui::EventRewriter {
   void RegisterEventRewriter();
   // Unregister the EventRewriter.
   void UnRegisterEventRewriter();
-  // If the window is destroying or focusing out, releasing the active touch
-  // event.
-  void DispatchTouchCancelEvent();
 
   // Overridden from ui::EventRewriter
   ui::EventDispatchDetails RewriteEvent(
@@ -56,6 +60,13 @@ class TouchInjector : public ui::EventRewriter {
       const Continuation continuation) override;
 
  private:
+  // If the window is destroying or focusing out, releasing the active touch
+  // event.
+  void DispatchTouchCancelEvent();
+
+  void SendTouchMoveEvent(const ui::EventRewriter::Continuation,
+                          const ui::TouchEvent& event);
+
   aura::Window* target_window_;
   base::WeakPtr<ui::EventRewriterContinuation> continuation_;
   std::vector<std::unique_ptr<input_overlay::Action>> actions_;
@@ -65,6 +76,8 @@ class TouchInjector : public ui::EventRewriter {
                           &ui::EventSource::RemoveEventRewriter>
       observation_{this};
   bool text_input_active_ = false;
+
+  base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

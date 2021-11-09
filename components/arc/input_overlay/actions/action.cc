@@ -7,9 +7,40 @@
 #include "components/arc/input_overlay/touch_id_manager.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace arc {
 namespace input_overlay {
+namespace {
+// Key strings in Json file.
+constexpr char kName[] = "name";
+constexpr char kLocation[] = "location";
+}  // namespace
+
+void LogEvent(const ui::Event& event) {
+  if (event.IsKeyEvent()) {
+    const ui::KeyEvent& key_event = static_cast<const ui::KeyEvent&>(event);
+    VLOG(1) << "KeyEvent Received: DomKey{"
+            << ui::KeycodeConverter::DomKeyToKeyString(key_event.GetDomKey())
+            << "}. DomCode{"
+            << ui::KeycodeConverter::DomCodeToCodeString(key_event.code())
+            << "}. Type{" << key_event.type() << "}. Flags {"
+            << key_event.flags() << "}. Time stamp {" << key_event.time_stamp()
+            << "}.";
+  } else if (event.IsTouchEvent()) {
+    const ui::TouchEvent& touch_event =
+        static_cast<const ui::TouchEvent&>(event);
+    VLOG(1) << "Touch event {" << touch_event.ToString()
+            << "}. Pointer detail {" << touch_event.pointer_details().ToString()
+            << "}, TouchID {" << touch_event.pointer_details().id << "}.";
+  }
+  // TODO (cuicuiruan): Add logging other events as needed.
+}
+
+void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
+  for (auto& event : events)
+    LogEvent(event);
+}
 
 Action::Action(aura::Window* window) : target_window_(window) {}
 
@@ -50,7 +81,7 @@ absl::optional<gfx::PointF> Action::CalculateTouchPosition(
   gfx::PointF root_location = gfx::PointF(root_point);
   root_location.Scale(scale);
 
-  VLOG(0) << "Calculate touch position: local position {" << point.ToString()
+  VLOG(1) << "Calculate touch position: local position {" << point.ToString()
           << "}, root location {" << root_point.ToString()
           << "}, root location in pixels {" << root_location.ToString() << "}";
   return absl::make_optional(root_location);
@@ -64,13 +95,44 @@ absl::optional<ui::TouchEvent> Action::GetTouchCancelEvent() {
       last_touch_root_location_, ui::EventTimeForNow(),
       ui::PointerDetails(ui::EventPointerType::kTouch, touch_id_.value()));
   ui::Event::DispatcherApi(&*touch_event).set_target(target_window_);
-  TouchIdManager::GetInstance()->ReleaseTouchID(touch_id_.value());
-  touch_id_ = absl::nullopt;
+
+  OnTouchCancelled();
+
   return touch_event;
 }
 
-bool Action::IsKeyAlreadyPressed(ui::DomCode code) const {
-  return keys_pressed_.find(code) != keys_pressed_.end();
+bool Action::IsRepeatedKeyEvent(const ui::KeyEvent& key_event) {
+  if ((key_event.flags() & ui::EF_IS_REPEAT) &&
+      (key_event.type() == ui::ET_KEY_PRESSED)) {
+    return true;
+  }
+
+  // TODO (b/200210666): Can remove this after the bug is fixed.
+  if (key_event.type() == ui::ET_KEY_PRESSED &&
+      keys_pressed_.contains(key_event.code())) {
+    return true;
+  }
+
+  return false;
+}
+
+void Action::OnTouchReleased() {
+  DCHECK(touch_id_);
+  TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
+  touch_id_ = absl::nullopt;
+  if (locations_.empty())
+    return;
+  current_position_index_ = (current_position_index_ + 1) % locations_.size();
+}
+
+void Action::OnTouchCancelled() {
+  DCHECK(touch_id_);
+  TouchIdManager::GetInstance()->ReleaseTouchID(*touch_id_);
+  touch_id_ = absl::nullopt;
+  keys_pressed_.clear();
+  if (locations_.empty())
+    return;
+  current_position_index_ = 0;
 }
 
 }  // namespace input_overlay

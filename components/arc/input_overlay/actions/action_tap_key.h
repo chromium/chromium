@@ -34,7 +34,6 @@ class ActionTapKey : public Action {
   bool RewriteEvent(const ui::Event& origin,
                     std::list<ui::TouchEvent>& touch_events,
                     const gfx::RectF& content_bounds) override;
-  void OnTouchCancelled() override;
 
   ui::DomCode key() { return key_; }
 

@@ -15,6 +15,10 @@
 namespace arc {
 namespace input_overlay {
 
+// Log events for debugging.
+void LogEvent(const ui::Event& event);
+void LogTouchEvents(const std::list<ui::TouchEvent>& events);
+
 // This is the base touch action which converts other events to touch
 // events for input overlay.
 class Action {
@@ -34,8 +38,6 @@ class Action {
   virtual bool RewriteEvent(const ui::Event& origin,
                             std::list<ui::TouchEvent>& touch_events,
                             const gfx::RectF& content_bounds) = 0;
-  // TODO (b/200210666): Can remove this after the bug is fixed.
-  virtual void OnTouchCancelled() = 0;
 
   const std::string& name() { return name_; }
   const std::vector<std::unique_ptr<Position>>& locations() const {
@@ -56,6 +58,9 @@ class Action {
 
   absl::optional<gfx::PointF> CalculateTouchPosition(
       const gfx::RectF& content_bounds);
+  bool IsRepeatedKeyEvent(const ui::KeyEvent& key_event);
+  void OnTouchReleased();
+  void OnTouchCancelled();
 
   // name_ is basically for debugging and not visible to users.
   std::string name_;
@@ -69,8 +74,6 @@ class Action {
   bool registered_ = false;
 
   gfx::PointF last_touch_root_location_;
-
-  // TODO (b/200210666): Can remove this after the bug is fixed.
   base::flat_set<ui::DomCode> keys_pressed_;
 };
 

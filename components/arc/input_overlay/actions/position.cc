@@ -9,6 +9,10 @@
 namespace arc {
 namespace input_overlay {
 namespace {
+// Key strings in the Json file.
+constexpr char kAnchor[] = "anchor";
+constexpr char kAnchorToTarget[] = "anchor_to_target";
+
 absl::optional<gfx::PointF> ParseTwoElementsArray(const base::Value& value,
                                                   const char* key,
                                                   bool required) {

@@ -4,6 +4,8 @@
 
 #include "components/arc/input_overlay/touch_injector.h"
 
+#include "base/bind.h"
+#include "base/task/thread_pool.h"
 #include "components/arc/input_overlay/actions/action.h"
 #include "components/arc/input_overlay/resources/input_overlay_resources_util.h"
 #include "ui/views/widget/widget.h"
@@ -54,7 +56,15 @@ void TouchInjector::DispatchTouchCancelEvent() {
       VLOG(0) << "Undispatched event due to destroyed dispatcher for canceling "
                  "touch event.";
     }
-    action->OnTouchCancelled();
+  }
+}
+
+void TouchInjector::SendTouchMoveEvent(
+    const ui::EventRewriter::Continuation continuation,
+    const ui::TouchEvent& event) {
+  if (SendEventFinally(continuation, &event).dispatcher_destroyed) {
+    VLOG(0) << "Undispatched event due to destroyed dispatcher for "
+               "touch move event.";
   }
 }
 
@@ -84,7 +94,18 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
       return DiscardEvent(continuation);
     if (touch_events.size() == 1)
       return SendEventFinally(continuation, &touch_events.front());
-    // TODO (cuicuiruan): Add handling for touch_events more than 1.
+    if (touch_events.size() == 2) {
+      // Some apps can't process correctly on the touch move event which follows
+      // touch press event immediately, so send the touch move event delayed
+      // here.
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&TouchInjector::SendTouchMoveEvent,
+                         weak_ptr_factory_.GetWeakPtr(), continuation,
+                         touch_events.back()),
+          input_overlay::kSendTouchMoveDelay);
+      return SendEventFinally(continuation, &touch_events.front());
+    }
   }
   return SendEvent(continuation, &event);
 }
