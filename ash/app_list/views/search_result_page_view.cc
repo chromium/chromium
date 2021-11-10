@@ -357,8 +357,7 @@ void SearchResultPageView::UpdateResultContainersVisibility() {
         search_result_list_view_->num_results() &&
         ShouldShowSearchResultView());
   }
-  InvalidateLayout();
-
+  Layout();
   AppListPage::contents_view()
       ->GetSearchBoxView()
       ->OnResultContainerVisibilityChanged(should_show_page_view);
