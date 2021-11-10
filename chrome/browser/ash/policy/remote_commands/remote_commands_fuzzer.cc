@@ -11,6 +11,9 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "base/at_exit.h"
+#include "base/check.h"
+#include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
@@ -54,8 +57,12 @@ struct Environment {
     logging::SetMinLogLevel(kLogSeverity);
     logging::SetSyslogLoggingForTesting(/*logging_enabled=*/false);
     logging::SetLogMessageHandler(&VoidifyingLogHandler);
+
+    CHECK(base::i18n::InitializeICU());
   }
 
+  // Initialize the "at exit manager" singleton used by the tested code.
+  base::AtExitManager at_exit_manager;
   ProfileManager profile_manager{/*user_data_dir=*/{}};
 };
 
