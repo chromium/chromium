@@ -58,6 +58,17 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
                             uint32_t vk_queue_index,
                             gfx::ExtensionSet enabled_extensions);
 
+  // To be used by CompositorGpuThread when DrDc is enabled. CompositorGpuThread
+  // will use same |vk_device| and |vk_queue| as the gpu main thread but will
+  // have its own instance of VulkanFenceHelper and VmaAllocator. Also note that
+  // this CompositorGpuThread does not own the |vk_device| and |vk_queue| and
+  // hence will not destroy them.
+  bool InitializeForCompositorGpuThread(VkPhysicalDevice vk_physical_device,
+                                        VkDevice vk_device,
+                                        VkQueue vk_queue,
+                                        uint32_t vk_queue_index,
+                                        gfx::ExtensionSet enabled_extensions);
+
   const gfx::ExtensionSet& enabled_extensions() const {
     return enabled_extensions_;
   }
@@ -110,6 +121,13 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
   bool allow_protected_memory() const { return allow_protected_memory_; }
 
  private:
+  // Common Init method to be used by both webview and compositor gpu thread.
+  bool InitCommon(VkPhysicalDevice vk_physical_device,
+                  VkDevice vk_device,
+                  VkQueue vk_queue,
+                  uint32_t vk_queue_index,
+                  gfx::ExtensionSet enabled_extensions);
+
   gfx::ExtensionSet enabled_extensions_;
   VkPhysicalDevice vk_physical_device_ = VK_NULL_HANDLE;
   VkPhysicalDeviceProperties vk_physical_device_properties_;

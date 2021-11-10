@@ -305,12 +305,11 @@ bool VulkanDeviceQueue::Initialize(
   return true;
 }
 
-bool VulkanDeviceQueue::InitializeForWebView(
-    VkPhysicalDevice vk_physical_device,
-    VkDevice vk_device,
-    VkQueue vk_queue,
-    uint32_t vk_queue_index,
-    gfx::ExtensionSet enabled_extensions) {
+bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
+                                   VkDevice vk_device,
+                                   VkQueue vk_queue,
+                                   uint32_t vk_queue_index,
+                                   gfx::ExtensionSet enabled_extensions) {
   DCHECK_EQ(static_cast<VkPhysicalDevice>(VK_NULL_HANDLE), vk_physical_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), owned_vk_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
@@ -327,6 +326,26 @@ bool VulkanDeviceQueue::InitializeForWebView(
 
   cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
   return true;
+}
+
+bool VulkanDeviceQueue::InitializeForWebView(
+    VkPhysicalDevice vk_physical_device,
+    VkDevice vk_device,
+    VkQueue vk_queue,
+    uint32_t vk_queue_index,
+    gfx::ExtensionSet enabled_extensions) {
+  return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
+                    enabled_extensions);
+}
+
+bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
+    VkPhysicalDevice vk_physical_device,
+    VkDevice vk_device,
+    VkQueue vk_queue,
+    uint32_t vk_queue_index,
+    gfx::ExtensionSet enabled_extensions) {
+  return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
+                    enabled_extensions);
 }
 
 void VulkanDeviceQueue::Destroy() {
