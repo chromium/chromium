@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/native_io/native_io_capacity_tracker.h"
+#include "third_party/blink/renderer/modules/native_io/native_io_file_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -127,15 +128,14 @@ class NativeIOFile final : public ScriptWrappable {
   // Performs the file I/O part of read(), off the main thread.
   static void DoRead(CrossThreadPersistent<NativeIOFile> native_io_file,
                      CrossThreadPersistent<ScriptPromiseResolver> resolver,
-                     CrossThreadPersistent<DOMArrayBufferView> result_buffer,
                      NativeIOFile::FileState* file_state,
                      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
-                     char* result_buffer_data,
+                     std::unique_ptr<NativeIODataBuffer> result_buffer_data,
                      uint64_t file_offset,
                      int read_size);
   // Performs the post file I/O part of read(), on the main thread.
   void DidRead(CrossThreadPersistent<ScriptPromiseResolver> resolver,
-               CrossThreadPersistent<DOMArrayBufferView> result_buffer,
+               std::unique_ptr<NativeIODataBuffer> result_buffer_data,
                int read_bytes,
                base::File::Error read_error);
 
@@ -143,10 +143,9 @@ class NativeIOFile final : public ScriptWrappable {
   static void DoWrite(
       CrossThreadPersistent<NativeIOFile> native_io_file,
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      CrossThreadPersistent<DOMArrayBufferView> result_buffer,
       NativeIOFile::FileState* file_state,
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
-      const char* result_buffer_data,
+      std::unique_ptr<NativeIODataBuffer> result_buffer_data,
       uint64_t file_offset,
       int write_size);
   // Performs the post file I/O part of write(), on the main thread.
@@ -154,7 +153,7 @@ class NativeIOFile final : public ScriptWrappable {
   // `actual_file_length_on_failure` is negative if the I/O operation was
   // unsuccessful and the correct length of the file could not be determined.
   void DidWrite(CrossThreadPersistent<ScriptPromiseResolver> resolver,
-                CrossThreadPersistent<DOMArrayBufferView> result_buffer,
+                std::unique_ptr<NativeIODataBuffer> result_buffer_data,
                 int written_bytes,
                 base::File::Error write_error,
                 int write_size,
