@@ -248,7 +248,7 @@ String CSSNumericLiteralValue::CustomCSSText() const {
         const char* unit_type = UnitTypeToString(GetType());
         builder.AppendNumber(int_value);
         builder.Append(unit_type, static_cast<unsigned>(strlen(unit_type)));
-        text = builder.ToString();
+        text = builder.ReleaseString();
       }
     } break;
     default:

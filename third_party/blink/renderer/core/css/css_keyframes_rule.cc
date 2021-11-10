@@ -154,7 +154,7 @@ String CSSKeyframesRule::cssText() const {
     result.Append('\n');
   }
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 unsigned CSSKeyframesRule::length() const {

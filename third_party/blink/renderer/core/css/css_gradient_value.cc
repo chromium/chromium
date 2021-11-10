@@ -868,7 +868,7 @@ String CSSLinearGradientValue::CustomCSSText() const {
   }
 
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 // Compute the endpoints so that a gradient of the given angle covers a box of
@@ -1221,7 +1221,7 @@ String CSSRadialGradientValue::CustomCSSText() const {
   }
 
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 namespace {
@@ -1504,7 +1504,7 @@ String CSSConicGradientValue::CustomCSSText() const {
   AppendCSSTextForColorStops(result, wrote_something);
 
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(

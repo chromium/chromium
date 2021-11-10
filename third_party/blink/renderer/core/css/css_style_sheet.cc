@@ -450,7 +450,7 @@ int CSSStyleSheet::addRule(const String& selector,
   if (!style.IsEmpty())
     text.Append(' ');
   text.Append('}');
-  insertRule(text.ToString(), index, exception_state);
+  insertRule(text.ReleaseString(), index, exception_state);
 
   // As per Microsoft documentation, always return -1.
   return -1;

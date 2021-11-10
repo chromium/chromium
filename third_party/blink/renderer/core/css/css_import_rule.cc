@@ -74,7 +74,7 @@ String CSSImportRule::cssText() const {
   }
   result.Append(';');
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 CSSStyleSheet* CSSImportRule::styleSheet() const {

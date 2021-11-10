@@ -232,7 +232,7 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
     builder.Append(" ");
   }
 
-  return builder.ToString();
+  return builder.ReleaseString();
 #else
   return g_null_atom;
 #endif  // DCHECK_IS_ON()

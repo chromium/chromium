@@ -1528,7 +1528,7 @@ String RuleFeatureSet::ToString() const {
       builder.Append(">");
     builder.Append("]");
 
-    return builder.ToString();
+    return builder.ReleaseString();
   };
 
   auto format_max_direct_adjancent = [](unsigned max) -> String {
@@ -1580,10 +1580,10 @@ String RuleFeatureSet::ToString() const {
 
   if (!metadata.IsEmpty()) {
     builder.Append("META:");
-    builder.Append(metadata.ToString());
+    builder.Append(metadata.ReleaseString());
   }
 
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 std::ostream& operator<<(std::ostream& ostream, const RuleFeatureSet& set) {

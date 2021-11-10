@@ -26,7 +26,7 @@ String CSSLayerStatementRule::cssText() const {
     result.Append(names[i]);
   }
   result.Append(';');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CSSLayerStatementRule::Reattach(StyleRuleBase* rule) {

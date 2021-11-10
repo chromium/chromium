@@ -43,7 +43,7 @@ String CSSScrollTimelineRule::cssText() const {
     builder.Append("; ");
   }
   builder.Append("}");
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 void CSSScrollTimelineRule::Reattach(StyleRuleBase* rule) {

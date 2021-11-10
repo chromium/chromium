@@ -146,7 +146,7 @@ String CSSImageSetValue::CustomCSSText() const {
   }
 
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSImageSetValue::HasFailedOrCanceledSubresources() const {

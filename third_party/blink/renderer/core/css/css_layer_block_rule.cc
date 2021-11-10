@@ -26,7 +26,7 @@ String CSSLayerBlockRule::cssText() const {
   result.Append("{\n");
   AppendCSSTextForItems(result);
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CSSLayerBlockRule::Reattach(StyleRuleBase* rule) {

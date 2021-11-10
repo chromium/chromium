@@ -521,7 +521,7 @@ bool CSSNumericValue::equals(
 String CSSNumericValue::toString() const {
   StringBuilder result;
   BuildCSSText(Nested::kNo, ParenLess::kNo, result);
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 CSSNumericValue* CSSNumericValue::Negate() {

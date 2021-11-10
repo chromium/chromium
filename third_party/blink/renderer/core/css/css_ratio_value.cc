@@ -18,7 +18,7 @@ String CSSRatioValue::CustomCSSText() const {
   builder.Append(first_->CssText());
   builder.Append(" / ");
   builder.Append(second_->CssText());
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 bool CSSRatioValue::Equals(const CSSRatioValue& other) const {

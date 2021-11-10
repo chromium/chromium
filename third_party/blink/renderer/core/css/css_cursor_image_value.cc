@@ -47,7 +47,7 @@ String CSSCursorImageValue::CustomCSSText() const {
     result.Append(' ');
     result.AppendNumber(hot_spot_.y());
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSCursorImageValue::Equals(const CSSCursorImageValue& other) const {

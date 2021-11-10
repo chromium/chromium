@@ -19,7 +19,7 @@ String CSSFontVariationValue::CustomCSSText() const {
   SerializeString(tag_, builder);
   builder.Append(' ');
   builder.AppendNumber(value_);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 bool CSSFontVariationValue::Equals(const CSSFontVariationValue& other) const {

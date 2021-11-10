@@ -53,7 +53,7 @@ String MediaQuery::Serialize() const {
 
   if (expressions_.IsEmpty()) {
     result.Append(media_type_);
-    return result.ToString();
+    return result.ReleaseString();
   }
 
   if (media_type_ != media_type_names::kAll || restrictor_ != kNone) {
@@ -66,7 +66,7 @@ String MediaQuery::Serialize() const {
     result.Append(" and ");
     result.Append(expressions_.at(i).Serialize());
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 std::unique_ptr<MediaQuery> MediaQuery::CreateNotAll() {

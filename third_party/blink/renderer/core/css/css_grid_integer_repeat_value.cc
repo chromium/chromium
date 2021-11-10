@@ -16,7 +16,7 @@ String CSSGridIntegerRepeatValue::CustomCSSText() const {
   result.Append(", ");
   result.Append(CSSValueList::CustomCSSText());
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSGridIntegerRepeatValue::Equals(

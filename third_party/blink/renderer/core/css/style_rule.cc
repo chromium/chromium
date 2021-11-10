@@ -492,7 +492,7 @@ String StyleRuleBase::LayerNameAsString(
       result.Append(".");
     result.Append(part);
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 StyleRuleLayerBlock::StyleRuleLayerBlock(

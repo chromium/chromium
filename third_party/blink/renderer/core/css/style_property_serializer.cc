@@ -195,7 +195,7 @@ String StylePropertySerializer::GetCustomPropertyText(
   if (property.IsImportant())
     result.Append(" !important");
   result.Append(';');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::GetPropertyText(const CSSPropertyName& name,
@@ -211,7 +211,7 @@ String StylePropertySerializer::GetPropertyText(const CSSPropertyName& name,
   if (is_important)
     result.Append(" !important");
   result.Append(';');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::AsText() const {
@@ -309,7 +309,7 @@ String StylePropertySerializer::AsText() const {
   }
 
   DCHECK(!num_decls ^ !result.IsEmpty());
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 // As per css-cascade, shorthands do not expand longhands to the value
@@ -814,7 +814,7 @@ String StylePropertySerializer::FontValue() const {
   if (!result.IsEmpty())
     result.Append(' ');
   result.Append(font_family_property.Value()->CssText());
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::FontVariantValue() const {
@@ -835,7 +835,7 @@ String StylePropertySerializer::FontVariantValue() const {
     return "normal";
   }
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::FontSynthesisValue() const {
@@ -896,7 +896,7 @@ String StylePropertySerializer::FontSynthesisValue() const {
   if (result.IsEmpty())
     return "none";
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::OffsetValue() const {
@@ -938,7 +938,7 @@ String StylePropertySerializer::OffsetValue() const {
       result.Append(anchor->CssText());
     }
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::TextDecorationValue() const {
@@ -969,7 +969,7 @@ String StylePropertySerializer::TextDecorationValue() const {
   if (result.IsEmpty()) {
     return "none";
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::Get2Values(
@@ -995,7 +995,7 @@ String StylePropertySerializer::Get2Values(
     result.Append(' ');
     result.Append(end.Value()->CssText());
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::Get4Values(
@@ -1039,7 +1039,7 @@ String StylePropertySerializer::Get4Values(
     result.Append(' ');
     result.Append(left.Value()->CssText());
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::GetLayeredShorthandValue(
@@ -1189,7 +1189,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
     }
   }
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::GetShorthandValue(
@@ -1206,7 +1206,7 @@ String StylePropertySerializer::GetShorthandValue(
       result.Append(separator);
     result.Append(value_text);
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 // only returns a non-null value if all properties have the same, non-null value
@@ -1261,7 +1261,7 @@ String StylePropertySerializer::BorderPropertyValue(
       result.Append(' ');
     result.Append(value);
   }
-  return result.IsEmpty() ? String() : result.ToString();
+  return result.IsEmpty() ? String() : result.ReleaseString();
 }
 
 String StylePropertySerializer::BorderImagePropertyValue() const {
@@ -1279,7 +1279,7 @@ String StylePropertySerializer::BorderImagePropertyValue() const {
       result.Append("/ ");
     result.Append(value.CssText());
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String StylePropertySerializer::BorderRadiusValue() const {
@@ -1304,7 +1304,7 @@ String StylePropertySerializer::BorderRadiusValue() const {
       result.Append(' ');
       result.Append(bottom_left.CssText());
     }
-    return result.ToString();
+    return result.ReleaseString();
   };
 
   const CSSValuePair& top_left = To<CSSValuePair>(
@@ -1331,7 +1331,7 @@ String StylePropertySerializer::BorderRadiusValue() const {
                              bottom_right.Second(), bottom_left.Second()));
   }
 
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 static void AppendBackgroundRepeatValue(StringBuilder& builder,
@@ -1401,7 +1401,7 @@ String StylePropertySerializer::BackgroundRepeatPropertyValue() const {
                       : repeat_y;
     AppendBackgroundRepeatValue(builder, x_value, y_value);
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 String StylePropertySerializer::PageBreakPropertyValue(

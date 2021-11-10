@@ -138,7 +138,7 @@ void SerializeString(const String& string, StringBuilder& append_to) {
 String SerializeString(const String& string) {
   StringBuilder builder;
   SerializeString(string, builder);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 String SerializeURI(const String& string) {

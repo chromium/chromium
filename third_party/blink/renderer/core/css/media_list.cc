@@ -161,7 +161,7 @@ String MediaQuerySet::MediaText() const {
       first = false;
     text.Append(queries_[i]->CssText());
   }
-  return text.ToString();
+  return text.ReleaseString();
 }
 
 MediaList::MediaList(scoped_refptr<MediaQuerySet> media_queries,

@@ -54,7 +54,7 @@ String CSSPaintValue::CustomCSSText() const {
     result.Append(variable_data.get()->TokenRange().Serialize());
   }
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSPaintValue::GetName() const {

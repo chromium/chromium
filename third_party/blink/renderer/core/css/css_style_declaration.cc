@@ -116,7 +116,7 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
   if (has_seen_dash && has_seen_upper)
     return CSSPropertyID::kInvalid;
 
-  String prop_name = builder.ToString();
+  String prop_name = builder.ReleaseString();
   return UnresolvedCSSPropertyID(execution_context, prop_name);
 }
 

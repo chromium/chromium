@@ -55,7 +55,7 @@ String CSSPageRule::selectorText() const {
     if (!page_specification.IsEmpty())
       text.Append(page_specification);
   }
-  return text.ToString();
+  return text.ReleaseString();
 }
 
 void CSSPageRule::setSelectorText(const ExecutionContext* execution_context,
@@ -87,7 +87,7 @@ String CSSPageRule::cssText() const {
   if (!decls.IsEmpty())
     result.Append(' ');
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CSSPageRule::Reattach(StyleRuleBase* rule) {

@@ -50,7 +50,7 @@ String CSSCrossfadeValue::CustomCSSText() const {
   result.Append(", ");
   result.Append(percentage_value_->CssText());
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSCrossfadeValue::HasFailedOrCanceledSubresources() const {

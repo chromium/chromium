@@ -104,7 +104,7 @@ static String BuildCSSText(const String& expression) {
   result.Append('(');
   result.Append(expression);
   result.Append(')');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSMathFunctionValue::CustomCSSText() const {

@@ -506,7 +506,7 @@ String MediaQueryExp::Serialize() const {
 
   result.Append(')');
 
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 unsigned MediaQueryExp::GetUnitFlags() const {
@@ -541,7 +541,7 @@ String MediaQueryExpValue::CssText() const {
       break;
   }
 
-  return output.ToString();
+  return output.ReleaseString();
 }
 
 MediaQueryExpValue::UnitFlags MediaQueryExpValue::GetUnitFlags() const {
@@ -562,7 +562,7 @@ MediaQueryExpValue::UnitFlags MediaQueryExpValue::GetUnitFlags() const {
 String MediaQueryExpNode::Serialize() const {
   StringBuilder builder;
   SerializeTo(builder);
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 PhysicalAxes MediaQueryFeatureExpNode::QueriedAxes() const {

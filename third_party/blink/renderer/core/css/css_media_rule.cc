@@ -46,7 +46,7 @@ String CSSMediaRule::cssText() const {
   result.Append("{\n");
   AppendCSSTextForItems(result);
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSMediaRule::conditionText() const {

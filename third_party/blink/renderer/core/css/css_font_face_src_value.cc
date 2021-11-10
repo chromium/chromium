@@ -73,7 +73,7 @@ String CSSFontFaceSrcValue::CustomCSSText() const {
     result.Append(SerializeString(format_));
     result.Append(')');
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 bool CSSFontFaceSrcValue::HasFailedOrCanceledSubresources() const {

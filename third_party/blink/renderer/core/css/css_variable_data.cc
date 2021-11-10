@@ -76,7 +76,7 @@ String CSSVariableData::Serialize() const {
       if (last.GetType() == kUrlToken)
         serialized_text.Append(')');
 
-      return serialized_text.ToString();
+      return serialized_text.ReleaseString();
     }
 
     return original_text_;
@@ -101,7 +101,7 @@ void CSSVariableData::ConsumeAndUpdateTokens(const CSSParserTokenRange& range) {
     has_font_units_ |= IsFontUnitToken(token);
     has_root_font_units_ |= IsRootFontUnitToken(token);
   }
-  String backing_string = string_builder.ToString();
+  String backing_string = string_builder.ReleaseString();
   backing_strings_.push_back(backing_string);
   if (backing_string.Is8Bit())
     UpdateTokens<LChar>(range, backing_string, tokens_);

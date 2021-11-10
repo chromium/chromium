@@ -425,7 +425,7 @@ String HebrewAlgorithmUnder1000(unsigned number) {
     if (unsigned ones = number % 10)
       letters.Append(static_cast<UChar>(1487 + ones));
   }
-  return letters.ToString();
+  return letters.ReleaseString();
 }
 
 String HebrewAlgorithm(unsigned number) {
@@ -485,7 +485,7 @@ String ArmenianAlgorithmUnder10000(unsigned number,
       letters.Append(static_cast<UChar>(0x0302));
   }
 
-  return letters.ToString();
+  return letters.ReleaseString();
 }
 
 String ArmenianAlgorithm(unsigned number, bool upper) {
@@ -873,7 +873,7 @@ String CounterStyle::GenerateRepresentation(int value) const {
   result.Append(initial_representation);
   if (NeedsNegativeSign(value))
     result.Append(negative_suffix_);
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CounterStyle::GenerateInitialRepresentation(int value) const {
@@ -939,7 +939,7 @@ String CounterStyle::IndexesToString(
   StringBuilder result;
   for (wtf_size_t index : symbol_indexes)
     result.Append(symbols_[index]);
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CounterStyle::TraverseAndMarkDirtyIfNeeded(

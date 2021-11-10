@@ -73,7 +73,7 @@ String CSSGridTemplateAreasValue::CustomCSSText() const {
     if (row != row_count_ - 1)
       builder.Append(' ');
   }
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 bool CSSGridTemplateAreasValue::Equals(

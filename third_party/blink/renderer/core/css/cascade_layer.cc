@@ -36,7 +36,7 @@ CascadeLayer* CascadeLayer::GetOrAddSubLayer(
 String CascadeLayer::ToStringForTesting() const {
   StringBuilder result;
   ToStringInternal(result, "");
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CascadeLayer::ToStringInternal(StringBuilder& result,
