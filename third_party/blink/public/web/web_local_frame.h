@@ -696,6 +696,11 @@ class WebLocalFrame : public WebFrame {
   // not be accurate if the page layout is out-of-date.
 
   // The scroll offset from the top-left corner of the frame in pixels.
+  // Note: This is actually corresponds to "scroll position" instead of
+  // "scroll offset" in blink renderer. We use the term "scroll offset" here
+  // because it is the term used throughout Chrome (except for blink renderer)
+  // where there is no concept of scroll origin.
+  // See renderer/core/scroll/scroll_area.h for details.
   virtual gfx::Vector2dF GetScrollOffset() const = 0;
   virtual void SetScrollOffset(const gfx::Vector2dF&) = 0;
 

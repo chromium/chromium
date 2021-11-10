@@ -330,8 +330,14 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // "Scroll offset" is in content-flow-aware coordinates, "Scroll position" is
   // in physical (i.e., not flow-aware) coordinates. Among ScrollableArea
   // sub-classes, only PaintLayerScrollableArea has a real distinction between
-  // the two. For a more detailed explanation of scrollPosition, scrollOffset,
-  // and scrollOrigin, see core/layout/README.md.
+  // the two. For a more detailed explanation of ScrollPosition, ScrollOffset,
+  // and ScrollOrigin, see core/layout/README.md.
+  // Note that in Chrome code except for blink renderer, there is no concept of
+  // "scroll origin", and the term "scroll offset" has the same definition as
+  // "scroll position" here. When a "scroll offset" is requested from outside
+  // of blink renderer, we should pass "scroll origin". Similarly, when "scroll
+  // offset" is set from outside of blink renderer, we should set "scroll
+  // position" here.
   virtual FloatPoint ScrollPosition() const {
     return FloatPoint(GetScrollOffset());
   }

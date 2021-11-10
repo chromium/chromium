@@ -774,15 +774,16 @@ void WebLocalFrameImpl::CopyToFindPboard() {
 
 gfx::Vector2dF WebLocalFrameImpl::GetScrollOffset() const {
   if (ScrollableArea* scrollable_area = LayoutViewport()) {
-    return ToGfxVector2dF(scrollable_area->GetScrollOffset());
+    return ToGfxVector2dF(scrollable_area->ScrollPosition());
   }
   return gfx::Vector2dF();
 }
 
 void WebLocalFrameImpl::SetScrollOffset(const gfx::Vector2dF& offset) {
   if (ScrollableArea* scrollable_area = LayoutViewport()) {
-    scrollable_area->SetScrollOffset(ScrollOffset(offset),
-                                     mojom::blink::ScrollType::kProgrammatic);
+    scrollable_area->SetScrollOffset(
+        scrollable_area->ScrollPositionToOffset(FloatPoint(offset)),
+        mojom::blink::ScrollType::kProgrammatic);
   }
 }
 

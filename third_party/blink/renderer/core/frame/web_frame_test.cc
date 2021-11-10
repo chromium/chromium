@@ -14310,4 +14310,27 @@ TEST_F(WebFrameTest, LargeScaleRemoteFrameCompositingScaleFactor) {
             5.0f);
 }
 
+TEST_F(WebFrameTest, VerticalRLScrollOffset) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebViewImpl* web_view = web_view_helper.GetWebView();
+  web_view->Resize(gfx::Size(800, 800));
+  auto* frame = web_view->MainFrameImpl()->GetFrame();
+  InitializeWithHTML(*frame, R"HTML(
+    <!DOCTYPE html>
+    <style>body { margin: 0; }</style>
+    <div style="width: 2000px; height: 2000px"></div>
+  )HTML");
+
+  frame->GetDocument()->documentElement()->setAttribute(
+      html_names::kStyleAttr, "writing-mode: vertical-rl");
+  frame->View()->UpdateAllLifecyclePhasesForTest();
+
+  auto* web_main_frame = web_view_helper.LocalMainFrame();
+  EXPECT_EQ(gfx::Vector2dF(1200, 0), web_main_frame->GetScrollOffset());
+  web_main_frame->SetScrollOffset(gfx::Vector2dF(-100, 100));
+  EXPECT_EQ(gfx::Vector2dF(0, 100), web_main_frame->GetScrollOffset());
+}
+
 }  // namespace blink
