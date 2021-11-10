@@ -37,6 +37,10 @@ const base::Feature kGpuAppContainer{"GpuAppContainer",
 // Enables GPU Low Privilege AppContainer when combined with kGpuAppContainer.
 const base::Feature kGpuLPAC{"GpuLPAC", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables Renderer AppContainer
+const base::Feature kRendererAppContainer{"RendererAppContainer",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 #endif  // defined(OS_WIN)
 
 #if !defined(OS_ANDROID)

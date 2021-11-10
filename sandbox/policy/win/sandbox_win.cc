@@ -579,10 +579,7 @@ bool IsAppContainerEnabled() {
   if (base::win::GetVersion() < base::win::Version::WIN8)
     return false;
 
-  static const base::Feature kRendererAppContainer{
-      "RendererAppContainer", base::FEATURE_DISABLED_BY_DEFAULT};
-
-  return base::FeatureList::IsEnabled(kRendererAppContainer);
+  return base::FeatureList::IsEnabled(features::kRendererAppContainer);
 }
 
 ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
