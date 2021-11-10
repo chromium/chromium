@@ -2998,7 +2998,8 @@
                         "NtpChromeCartModuleAbandonedCartDiscountParam": "true",
                         "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam": "true",
                         "NtpChromeCartModuleHeuristicsImprovementParam": "true",
-                        "NtpModulesLoadTimeoutMillisecondsParam": "3000"
+                        "NtpModulesLoadTimeoutMillisecondsParam": "3000",
+                        "discount-fetch-delay": "1h"
                     },
                     "enable_features": [
                         "NtpChromeCartModule",
