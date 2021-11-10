@@ -16,20 +16,20 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // clang-format on
 
 suite('CrSettingsDoNotTrackToggleTest', function() {
-  /** @type {TestMetricsBrowserProxy} */
-  let testMetricsBrowserProxy;
-
-  /** @type {SettingsDoNotTrackToggleElement} */
-  let testElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testElement: SettingsDoNotTrackToggleElement;
 
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     document.body.innerHTML = '';
-    testElement = /** @type {SettingsDoNotTrackToggleElement} */ (
-        document.createElement('settings-do-not-track-toggle'));
+    testElement = document.createElement('settings-do-not-track-toggle');
     testElement.prefs = {
-      enable_do_not_track: {value: false},
+      enable_do_not_track: {
+        key: 'enable_do_not_track',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
     };
     document.body.appendChild(testElement);
     flush();
@@ -51,14 +51,16 @@ suite('CrSettingsDoNotTrackToggleTest', function() {
     flush();
     assertTrue(testElement.$.toggle.checked);
 
-    testElement.shadowRoot.querySelector('.cancel-button').click();
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '.cancel-button')!.click();
     assertFalse(testElement.$.toggle.checked);
     assertFalse(testElement.prefs.enable_do_not_track.value);
 
     testElement.$.toggle.click();
     flush();
     assertTrue(testElement.$.toggle.checked);
-    testElement.shadowRoot.querySelector('.action-button').click();
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '.action-button')!.click();
     assertTrue(testElement.$.toggle.checked);
     assertTrue(testElement.prefs.enable_do_not_track.value);
   });

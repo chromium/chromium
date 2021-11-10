@@ -22,19 +22,24 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 import './secure_dns_input.js';
 
+import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page_browser_proxy.js';
+import {SecureDnsInputElement} from './secure_dns_input.js';
 
-interface SettingsSecureDnsElement {
+export interface SettingsSecureDnsElement {
   $: {
     privacyPolicy: HTMLElement,
-    secureDnsInput: HTMLElement,
+    secureDnsInput: SecureDnsInputElement,
+    secureDnsRadioGroup: CrRadioGroupElement,
+    secureDnsToggle: SettingsToggleButtonElement,
     secureResolverSelect: HTMLSelectElement,
   };
 }
@@ -42,7 +47,7 @@ interface SettingsSecureDnsElement {
 const SettingsSecureDnsElementBase =
     WebUIListenerMixin(PrefsMixin(PolymerElement));
 
-class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
+export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   static get is() {
     return 'settings-secure-dns';
   }
@@ -406,6 +411,12 @@ class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     if (event.detail.isValid) {
       this.updateDnsPrefs_(this.secureDnsRadio_, event.detail.text);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-secure-dns': SettingsSecureDnsElement;
   }
 }
 

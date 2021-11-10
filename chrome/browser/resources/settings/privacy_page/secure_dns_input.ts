@@ -9,19 +9,20 @@
  */
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
-interface SecureDnsInputElement {
+export interface SecureDnsInputElement {
   $: {
-    input: HTMLElement,
+    input: CrInputElement,
   };
 }
 
-class SecureDnsInputElement extends PolymerElement {
+export class SecureDnsInputElement extends PolymerElement {
   static get is() {
     return 'secure-dns-input';
   }
@@ -71,7 +72,7 @@ class SecureDnsInputElement extends PolymerElement {
    * recent value, is non-empty, and was either invalid or failed the test
    * query.
    */
-  private async validate() {
+  async validate() {
     this.showError_ = false;
     const valueToValidate = this.value;
     const templates =
@@ -113,6 +114,12 @@ class SecureDnsInputElement extends PolymerElement {
    */
   isInvalid(): boolean {
     return !!this.showError_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'secure-dns-input': SecureDnsInputElement;
   }
 }
 

@@ -13,7 +13,9 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
+import {SecureDnsInputElement, SettingsSecureDnsElement} from 'chrome://settings/lazy_load.js';
+import {PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
@@ -21,14 +23,8 @@ import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js'
 // clang-format on
 
 suite('SettingsSecureDnsInput', function() {
-  /** @type {settings.TestPrivacyPageBrowserProxy} */
-  let testBrowserProxy;
-
-  /** @type {SecureDnsInputElement} */
-  let testElement;
-
-  /** @type {CrInputElement} */
-  let crInput;
+  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testElement: SecureDnsInputElement;
 
   // Possible error messages
   const invalidFormat = 'invalid format description';
@@ -48,12 +44,11 @@ suite('SettingsSecureDnsInput', function() {
   setup(function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('secure-dns-input');
     document.body.appendChild(testElement);
     flush();
-    crInput = testElement.shadowRoot.querySelector('#input');
-    assertFalse(crInput.invalid);
+    assertFalse(testElement.$.input.invalid);
     assertEquals('', testElement.value);
   });
 
@@ -66,7 +61,7 @@ suite('SettingsSecureDnsInput', function() {
     testBrowserProxy.setParsedEntry([]);
     testElement.validate();
     assertEquals('', await testBrowserProxy.whenCalled('parseCustomDnsEntry'));
-    assertFalse(crInput.invalid);
+    assertFalse(testElement.$.input.invalid);
     assertFalse(testElement.isInvalid());
   });
 
@@ -82,9 +77,9 @@ suite('SettingsSecureDnsInput', function() {
     assertEquals(
         validFailEntry,
         await testBrowserProxy.whenCalled('probeCustomDnsTemplate'));
-    assertTrue(crInput.invalid);
+    assertTrue(testElement.$.input.invalid);
     assertTrue(testElement.isInvalid());
-    assertEquals(probeFail, crInput.errorMessage);
+    assertEquals(probeFail, testElement.$.input.errorMessage);
   });
 
   test('SecureDnsInputValidFormatAndProbeSuccess', async function() {
@@ -99,7 +94,7 @@ suite('SettingsSecureDnsInput', function() {
     assertEquals(
         validSuccessEntry,
         await testBrowserProxy.whenCalled('probeCustomDnsTemplate'));
-    assertFalse(crInput.invalid);
+    assertFalse(testElement.$.input.invalid);
     assertFalse(testElement.isInvalid());
   });
 
@@ -117,7 +112,7 @@ suite('SettingsSecureDnsInput', function() {
         await testBrowserProxy.whenCalled('parseCustomDnsEntry'));
     await flushTasks();
     assertEquals(2, testBrowserProxy.getCallCount('probeCustomDnsTemplate'));
-    assertFalse(crInput.invalid);
+    assertFalse(testElement.$.input.invalid);
     assertFalse(testElement.isInvalid());
   });
 
@@ -128,33 +123,23 @@ suite('SettingsSecureDnsInput', function() {
     testElement.validate();
     assertEquals(
         invalidEntry, await testBrowserProxy.whenCalled('parseCustomDnsEntry'));
-    assertTrue(crInput.invalid);
+    assertTrue(testElement.$.input.invalid);
     assertTrue(testElement.isInvalid());
-    assertEquals(invalidFormat, crInput.errorMessage);
+    assertEquals(invalidFormat, testElement.$.input.errorMessage);
 
     // Trigger an input event and check that the error clears.
-    crInput.fire('input');
-    assertFalse(crInput.invalid);
+    testElement.$.input.fire('input');
+    assertFalse(testElement.$.input.invalid);
     assertFalse(testElement.isInvalid());
     assertEquals(invalidEntry, testElement.value);
   });
 });
 
 suite('SettingsSecureDns', function() {
-  /** @type {settings.TestPrivacyPageBrowserProxy} */
-  let testBrowserProxy;
+  let testBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testElement: SettingsSecureDnsElement;
 
-  /** @type {SettingsSecureDnsElement} */
-  let testElement;
-
-  /** @type {SettingsToggleButtonElement} */
-  let secureDnsToggle;
-
-  /** @type {CrRadioGroupElement} */
-  let secureDnsRadioGroup;
-
-  /** @type {!Array<!ResolverOption>} */
-  const resolverList = [
+  const resolverList: ResolverOption[] = [
     {name: 'Custom', value: 'custom', policy: ''},
   ];
 
@@ -170,9 +155,9 @@ suite('SettingsSecureDns', function() {
    * configured for showing the radio buttons.
    */
   function assertRadioButtonsShown() {
-    assertTrue(secureDnsToggle.hasAttribute('checked'));
-    assertFalse(secureDnsToggle.shadowRoot.querySelector('cr-toggle').disabled);
-    assertFalse(secureDnsRadioGroup.hidden);
+    assertTrue(testElement.$.secureDnsToggle.hasAttribute('checked'));
+    assertFalse(testElement.$.secureDnsToggle.$.control.disabled);
+    assertFalse(testElement.$.secureDnsRadioGroup.hidden);
   }
 
   suiteSetup(function() {
@@ -188,7 +173,7 @@ suite('SettingsSecureDns', function() {
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     testBrowserProxy.setResolverList(resolverList);
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('settings-secure-dns');
     testElement.prefs = {
       dns_over_https:
@@ -198,12 +183,10 @@ suite('SettingsSecureDns', function() {
 
     await testBrowserProxy.whenCalled('getSecureDnsSetting');
     await flushTasks();
-    secureDnsToggle = testElement.shadowRoot.querySelector('#secureDnsToggle');
-    secureDnsRadioGroup =
-        testElement.shadowRoot.querySelector('#secureDnsRadioGroup');
     assertRadioButtonsShown();
     assertEquals(
-        testBrowserProxy.secureDnsSetting.mode, secureDnsRadioGroup.selected);
+        testBrowserProxy.secureDnsSetting.mode,
+        testElement.$.secureDnsRadioGroup.selected);
   });
 
   teardown(function() {
@@ -217,12 +200,12 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
-    assertFalse(secureDnsToggle.hasAttribute('checked'));
-    assertFalse(secureDnsToggle.shadowRoot.querySelector('cr-toggle').disabled);
-    assertTrue(secureDnsRadioGroup.hidden);
-    assertEquals(defaultDescription, secureDnsToggle.subLabel);
-    assertFalse(
-        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
+    assertFalse(testElement.$.secureDnsToggle.hasAttribute('checked'));
+    assertFalse(testElement.$.secureDnsToggle.$.control.disabled);
+    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertEquals(defaultDescription, testElement.$.secureDnsToggle.subLabel);
+    assertFalse(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
   });
 
   test('SecureDnsAutomatic', function() {
@@ -233,10 +216,11 @@ suite('SettingsSecureDns', function() {
     });
     flush();
     assertRadioButtonsShown();
-    assertEquals(defaultDescription, secureDnsToggle.subLabel);
-    assertFalse(
-        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
-    assertEquals(SecureDnsMode.AUTOMATIC, secureDnsRadioGroup.selected);
+    assertEquals(defaultDescription, testElement.$.secureDnsToggle.subLabel);
+    assertFalse(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
+    assertEquals(
+        SecureDnsMode.AUTOMATIC, testElement.$.secureDnsRadioGroup.selected);
   });
 
   test('SecureDnsSecure', function() {
@@ -247,10 +231,11 @@ suite('SettingsSecureDns', function() {
     });
     flush();
     assertRadioButtonsShown();
-    assertEquals(defaultDescription, secureDnsToggle.subLabel);
-    assertFalse(
-        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
-    assertEquals(SecureDnsMode.SECURE, secureDnsRadioGroup.selected);
+    assertEquals(defaultDescription, testElement.$.secureDnsToggle.subLabel);
+    assertFalse(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
+    assertEquals(
+        SecureDnsMode.SECURE, testElement.$.secureDnsRadioGroup.selected);
   });
 
   test('SecureDnsManagedEnvironment', function() {
@@ -260,16 +245,16 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.DISABLED_MANAGED,
     });
     flush();
-    assertFalse(secureDnsToggle.hasAttribute('checked'));
-    assertTrue(secureDnsToggle.shadowRoot.querySelector('cr-toggle').disabled);
-    assertTrue(secureDnsRadioGroup.hidden);
-    assertEquals(managedEnvironmentDescription, secureDnsToggle.subLabel);
-    assertTrue(
-        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
-    assertTrue(
-        secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator')
-            .shadowRoot.querySelector('cr-tooltip-icon')
-            .hidden);
+    assertFalse(testElement.$.secureDnsToggle.hasAttribute('checked'));
+    assertTrue(testElement.$.secureDnsToggle.$.control.disabled);
+    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertEquals(
+        managedEnvironmentDescription, testElement.$.secureDnsToggle.subLabel);
+    assertTrue(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
+    assertTrue(testElement.$.secureDnsToggle.shadowRoot!
+                   .querySelector('cr-policy-pref-indicator')!.shadowRoot!
+                   .querySelector('cr-tooltip-icon')!.hidden);
   });
 
   test('SecureDnsParentalControl', function() {
@@ -279,16 +264,16 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.DISABLED_PARENTAL_CONTROLS,
     });
     flush();
-    assertFalse(secureDnsToggle.hasAttribute('checked'));
-    assertTrue(secureDnsToggle.shadowRoot.querySelector('cr-toggle').disabled);
-    assertTrue(secureDnsRadioGroup.hidden);
-    assertEquals(parentalControlDescription, secureDnsToggle.subLabel);
-    assertTrue(
-        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
-    assertTrue(
-        secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator')
-            .shadowRoot.querySelector('cr-tooltip-icon')
-            .hidden);
+    assertFalse(testElement.$.secureDnsToggle.hasAttribute('checked'));
+    assertTrue(testElement.$.secureDnsToggle.$.control.disabled);
+    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertEquals(
+        parentalControlDescription, testElement.$.secureDnsToggle.subLabel);
+    assertTrue(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
+    assertTrue(testElement.$.secureDnsToggle.shadowRoot!
+                   .querySelector('cr-policy-pref-indicator')!.shadowRoot!
+                   .querySelector('cr-tooltip-icon')!.hidden);
   });
 
   test('SecureDnsManaged', function() {
@@ -303,15 +288,14 @@ suite('SettingsSecureDns', function() {
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
-    assertTrue(secureDnsToggle.hasAttribute('checked'));
-    assertTrue(secureDnsToggle.shadowRoot.querySelector('cr-toggle').disabled);
-    assertTrue(secureDnsRadioGroup.hidden);
-    assertEquals(defaultDescription, secureDnsToggle.subLabel);
-    assertTrue(
-        !!secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator'));
-    assertFalse(
-        secureDnsToggle.shadowRoot.querySelector('cr-policy-pref-indicator')
-            .shadowRoot.querySelector('cr-tooltip-icon')
-            .hidden);
+    assertTrue(testElement.$.secureDnsToggle.hasAttribute('checked'));
+    assertTrue(testElement.$.secureDnsToggle.$.control.disabled);
+    assertTrue(testElement.$.secureDnsRadioGroup.hidden);
+    assertEquals(defaultDescription, testElement.$.secureDnsToggle.subLabel);
+    assertTrue(!!testElement.$.secureDnsToggle.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
+    assertFalse(testElement.$.secureDnsToggle.shadowRoot!
+                    .querySelector('cr-policy-pref-indicator')!.shadowRoot!
+                    .querySelector('cr-tooltip-icon')!.hidden);
   });
 });

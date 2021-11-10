@@ -45,6 +45,7 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
     };
   }
 
+  prefs: {enable_do_not_track: chrome.settingsPrivate.PrefObject};
   private showDialog_: boolean;
 
   private onDomChange_() {
@@ -94,6 +95,12 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
   private onDialogCancel_() {
     this.$.toggle.resetToPrefValue();
     this.closeDialog_();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-do-not-track-toggle': SettingsDoNotTrackToggleElement;
   }
 }
 

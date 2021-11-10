@@ -106,6 +106,8 @@ export {PrivacyReviewDescriptionItemElement} from './privacy_page/privacy_review
 export {PrivacyReviewHistorySyncFragmentElement} from './privacy_page/privacy_review/privacy_review_history_sync_fragment.js';
 export {PrivacyReviewMsbbFragmentElement} from './privacy_page/privacy_review/privacy_review_msbb_fragment.js';
 export {SettingsPrivacyReviewPageElement} from './privacy_page/privacy_review/privacy_review_page.js';
+export {SettingsSecureDnsElement} from './privacy_page/secure_dns.js';
+export {SecureDnsInputElement} from './privacy_page/secure_dns_input.js';
 export {BioEnrollDialogPage} from './privacy_page/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPINBrowserProxyImpl, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security_keys_browser_proxy.js';
 export {CredentialManagementDialogPage} from './privacy_page/security_keys_credential_management_dialog.js';
