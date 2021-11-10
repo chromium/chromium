@@ -80,7 +80,7 @@ class WebAppProvider : public KeyedService {
   static WebAppProvider* GetForLocalAppsUnchecked(Profile* profile);
 
   // Return the WebAppProvider for tests, regardless of whether this is running
-  // in Lacros/Ash.
+  // in Lacros/Ash. Blocks if the web app registry is not yet ready.
   static WebAppProvider* GetForTest(Profile* profile);
 
   static WebAppProvider* GetForWebContents(content::WebContents* web_contents);

@@ -41,8 +41,8 @@ std::unique_ptr<KeyedService> FakeWebAppProvider::BuildDefault(
 // static
 FakeWebAppProvider* FakeWebAppProvider::Get(Profile* profile) {
   CHECK(profile->AsTestingProfile());
-  auto* test_provider =
-      static_cast<FakeWebAppProvider*>(WebAppProvider::GetForTest(profile));
+  auto* test_provider = static_cast<FakeWebAppProvider*>(
+      WebAppProvider::GetForLocalAppsUnchecked(profile));
   CHECK(!test_provider->started_);
 
   // Disconnect so that clients are forced to call Start() before accessing any

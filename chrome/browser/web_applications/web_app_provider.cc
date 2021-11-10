@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -87,7 +89,15 @@ WebAppProvider* WebAppProvider::GetForLocalAppsUnchecked(Profile* profile) {
 
 // static
 WebAppProvider* WebAppProvider::GetForTest(Profile* profile) {
-  return GetForLocalAppsUnchecked(profile);
+  WebAppProvider* provider = GetForLocalAppsUnchecked(profile);
+
+  if (provider->on_registry_ready().is_signaled())
+    return provider;
+
+  base::RunLoop run_loop;
+  provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  return provider;
 }
 
 // static

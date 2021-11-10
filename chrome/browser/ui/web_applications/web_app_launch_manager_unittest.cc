@@ -57,7 +57,7 @@ class WebAppLaunchManagerUnitTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    WebAppProvider::GetForTest(profile())->Start();
+    WebAppProvider::GetForLocalAppsUnchecked(profile())->Start();
   }
 
  protected:

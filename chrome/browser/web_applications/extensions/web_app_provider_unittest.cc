@@ -19,7 +19,7 @@ class WebAppProviderUnitTest : public WebAppTest {
 
   void SetUp() override {
     WebAppTest::SetUp();
-    provider_ = WebAppProvider::GetForTest(profile());
+    provider_ = WebAppProvider::GetForLocalAppsUnchecked(profile());
   }
 
   WebAppProvider* provider() { return provider_; }

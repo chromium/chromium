@@ -503,7 +503,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    web_app_provider_ = web_app::WebAppProvider::GetForTest(profile());
+    web_app_provider_ = web_app::WebAppProvider::GetForWebApps(profile());
     ASSERT_TRUE(web_app_provider_);
 
     base::RunLoop run_loop;
