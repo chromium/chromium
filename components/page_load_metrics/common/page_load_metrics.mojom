@@ -36,6 +36,10 @@ struct LargestContentfulPaintTiming {
   // Size of the largest text of the largest text paint, by
   // Size = Height * Width. Removed text is excluded.
   uint64 largest_text_paint_size;
+
+  // These are packed blink::LargestContentfulPaintType enums, indicating
+  // the largest LCP candidate's type characteristics.
+  uint32 type;
 };
 
 // TimeDeltas below relative to navigation start.

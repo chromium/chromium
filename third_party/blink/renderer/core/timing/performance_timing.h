@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_TIMING_H_
 
 #include "base/time/time.h"
+#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -132,6 +133,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // are the time and size of it.
   uint64_t LargestImagePaint() const;
   uint64_t LargestImagePaintSize() const;
+  LargestContentfulPaintTypeMask LargestContentfulPaintType() const;
   // The time of the first paint of the largest text within viewport.
   // Largest Text Paint is the first paint after the largest text within
   // viewport being painted. LargestTextPaint and LargestTextPaintSize

@@ -5,6 +5,7 @@
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -255,10 +256,20 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     base::TimeTicks image_paint_time,
     uint64_t image_paint_size,
     base::TimeTicks removed_image_paint_time,
-    uint64_t removed_image_paint_size) {
+    uint64_t removed_image_paint_size,
+    bool is_animated) {
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
 
+  if (is_animated) {
+    // Set the animated image flag.
+    largest_contentful_paint_type_ |=
+        LargestContentfulPaintType::kLCPTypeAnimatedImage;
+  } else {
+    // Unset the animated image flag.
+    largest_contentful_paint_type_ &=
+        ~LargestContentfulPaintType::kLCPTypeAnimatedImage;
+  }
   // Compute LCP by using the largest size (smallest paint time in case of tie).
   if (removed_image_paint_size < image_paint_size) {
     largest_image_paint_time_ = image_paint_time;

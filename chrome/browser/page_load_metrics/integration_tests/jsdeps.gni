@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 metric_integration_jsdeps = [
+  "//third_party/blink/web_tests/external/wpt/images/anim-gr.png",
+  "//third_party/blink/web_tests/external/wpt/images/blue.png",
   "//third_party/blink/web_tests/external/wpt/images/blue96x96.png",
   "//third_party/blink/web_tests/external/wpt/images/green-16x16.png",
   "//third_party/blink/web_tests/external/wpt/images/green-256x256.png",
