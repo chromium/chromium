@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/video_frame.h"
+#include "media/gpu/chromeos/chromeos_status.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,7 +37,7 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
    public:
     // Callback for returning the layout of requested buffer.
     using NotifyLayoutChangedCb =
-        base::OnceCallback<void(absl::optional<GpuBufferLayout>)>;
+        base::OnceCallback<void(CroStatus::Or<GpuBufferLayout>)>;
     // Callback for importing available frames to this pool.
     using ImportFrameCb =
         base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
@@ -75,8 +76,8 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
   // Update the layout of the buffers. |vda_| calls this as
   // NotifyLayoutChangedCb.
   static void OnRequestFramesDone(base::WaitableEvent* done,
-                                  absl::optional<GpuBufferLayout>* layout,
-                                  absl::optional<GpuBufferLayout> layout_value);
+                                  CroStatus::Or<GpuBufferLayout>* layout,
+                                  CroStatus::Or<GpuBufferLayout> layout_value);
 
   // Thunk to post ImportFrame() to |task_runner|.
   // Because this thunk may be called in any thread, We don't want to

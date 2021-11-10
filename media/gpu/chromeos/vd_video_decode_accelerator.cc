@@ -103,7 +103,8 @@ void VdVideoDecodeAccelerator::Destroy() {
   // Because VdaVideoFramePool is blocked for this callback, we must call the
   // callback before destroying.
   if (notify_layout_changed_cb_)
-    std::move(notify_layout_changed_cb_).Run(absl::nullopt);
+    std::move(notify_layout_changed_cb_)
+        .Run(CroStatus::Codes::kFailedToGetFrameLayout);
   client_ = nullptr;
   vd_.reset();
 
@@ -331,7 +332,8 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
     auto fourcc = Fourcc::FromVideoPixelFormat(pixel_format);
     if (!fourcc) {
       VLOGF(1) << "Failed to convert to Fourcc.";
-      std::move(notify_layout_changed_cb_).Run(absl::nullopt);
+      std::move(notify_layout_changed_cb_)
+          .Run(CroStatus::Codes::kFailedToChangeResolution);
       return;
     }
 
@@ -349,12 +351,25 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                << ", coded_size: " << coded_size_.ToString()
                << ", planes: " << VectorToString(planes)
                << ", modifier: " << std::hex << modifier;
-      std::move(notify_layout_changed_cb_).Run(absl::nullopt);
+      std::move(notify_layout_changed_cb_)
+          .Run(CroStatus::Codes::kFailedToChangeResolution);
       return;
     }
 
-    std::move(notify_layout_changed_cb_)
-        .Run(GpuBufferLayout::Create(*fourcc, coded_size_, planes, modifier));
+    auto gb_layout =
+        GpuBufferLayout::Create(*fourcc, coded_size_, planes, modifier);
+    if (!gb_layout) {
+      VLOGF(1) << "Failed to create GpuBufferLayout. fourcc: "
+               << fourcc->ToString()
+               << ", coded_size: " << coded_size_.ToString()
+               << ", planes: " << VectorToString(planes)
+               << ", modifier: " << std::hex << modifier;
+      layout_ = absl::nullopt;
+      std::move(notify_layout_changed_cb_)
+          .Run(CroStatus::Codes::kFailedToChangeResolution);
+      return;
+    }
+    std::move(notify_layout_changed_cb_).Run(*gb_layout);
   }
 
   if (!layout_)

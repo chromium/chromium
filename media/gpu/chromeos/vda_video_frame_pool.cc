@@ -66,21 +66,26 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
   fourcc_ = absl::nullopt;
   coded_size_ = gfx::Size();
 
-  absl::optional<GpuBufferLayout> layout;
+  CroStatus::Or<GpuBufferLayout> status_or_layout =
+      CroStatus::Codes::kResetRequired;
   base::WaitableEvent done;
   vda_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VdaDelegate::RequestFrames, vda_, fourcc, coded_size,
                      visible_rect, max_num_frames,
                      base::BindOnce(&VdaVideoFramePool::OnRequestFramesDone,
-                                    &done, &layout),
+                                    &done, &status_or_layout),
                      base::BindRepeating(&VdaVideoFramePool::ImportFrameThunk,
                                          parent_task_runner_, weak_this_)));
   done.Wait();
 
-  if (!layout || layout->fourcc() != fourcc ||
-      layout->size().height() < coded_size.height() ||
-      layout->size().width() < coded_size.width()) {
+  if (status_or_layout.has_error())
+    return status_or_layout;
+
+  GpuBufferLayout layout = std::move(status_or_layout).value();
+  if (layout.fourcc() != fourcc ||
+      layout.size().height() < coded_size.height() ||
+      layout.size().width() < coded_size.width()) {
     return CroStatus::Codes::kFailedToGetFrameLayout;
   }
 
@@ -94,8 +99,8 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
 // static
 void VdaVideoFramePool::OnRequestFramesDone(
     base::WaitableEvent* done,
-    absl::optional<GpuBufferLayout>* layout,
-    absl::optional<GpuBufferLayout> layout_value) {
+    CroStatus::Or<GpuBufferLayout>* layout,
+    CroStatus::Or<GpuBufferLayout> layout_value) {
   DVLOGF(3);
 
   *layout = std::move(layout_value);

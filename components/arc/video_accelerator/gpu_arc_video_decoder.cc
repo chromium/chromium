@@ -100,7 +100,8 @@ GpuArcVideoDecoder::~GpuArcVideoDecoder() {
   // The VdaVideoFramePool is blocked until this callback is executed, so we
   // need to make sure to call it before destroying.
   if (notify_layout_changed_cb_) {
-    std::move(notify_layout_changed_cb_).Run(absl::nullopt);
+    std::move(notify_layout_changed_cb_)
+        .Run(media::CroStatus::Codes::kFailedToGetFrameLayout);
   }
 }
 
@@ -319,10 +320,17 @@ void GpuArcVideoDecoder::ImportBufferForPicture(
       OnError(FROM_HERE, Result::PLATFORM_FAILURE);
       return;
     }
-    std::move(notify_layout_changed_cb_)
-        .Run(media::GpuBufferLayout::Create(*fourcc, coded_size_, color_planes,
-                                            layout_modifier));
 
+    auto gb_layout = media::GpuBufferLayout::Create(
+        *fourcc, coded_size_, color_planes, layout_modifier);
+    if (!gb_layout) {
+      VLOGF(1) << "Failed to create GpuBufferLayout";
+      std::move(notify_layout_changed_cb_)
+          .Run(media::CroStatus::Codes::kFailedToChangeResolution);
+      OnError(FROM_HERE, Result::PLATFORM_FAILURE);
+      return;
+    }
+    std::move(notify_layout_changed_cb_).Run(*gb_layout);
     decoder_state_ = DecoderState::kDecoding;
   }
 
@@ -419,7 +427,8 @@ void GpuArcVideoDecoder::RequestFrames(
   DCHECK(!notify_layout_changed_cb_);
 
   if (decoder_state_ == DecoderState::kError) {
-    std::move(notify_layout_changed_cb).Run(absl::nullopt);
+    std::move(notify_layout_changed_cb_)
+        .Run(media::CroStatus::Codes::kFailedToChangeResolution);
     return;
   }
 
