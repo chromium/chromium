@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 interface CrToastElement extends HTMLElement {
-  duration: number|null|undefined;
-  readonly open: boolean|null|undefined;
+  duration: number;
+  readonly open: boolean;
   show(): void;
   hide(): void;
 }

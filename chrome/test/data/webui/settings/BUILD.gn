@@ -44,7 +44,7 @@ non_preprocessed_files = [
   "collapse_radio_button_tests.ts",
   "controlled_button_tests.ts",
   "controlled_radio_button_tests.ts",
-  "cookies_page_test.js",
+  "cookies_page_test.ts",
   "do_not_track_toggle_test.ts",
   "downloads_page_test.js",
   "dropdown_menu_tests.ts",

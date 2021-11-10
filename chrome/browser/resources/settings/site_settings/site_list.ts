@@ -502,4 +502,10 @@ export class SiteListElement extends SiteListElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'site-list': SiteListElement;
+  }
+}
+
 customElements.define(SiteListElement.is, SiteListElement);

@@ -17,7 +17,7 @@ import {Route, Router} from 'chrome://settings/settings.js';
  */
 export function createContentSettingTypeToValuePair(
     contentType: ContentSettingsTypes,
-    value: Object): {setting: ContentSettingsTypes, value: Object} {
+    value: any): {setting: ContentSettingsTypes, value: any} {
   return {setting: contentType, value: value};
 }
 

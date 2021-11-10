@@ -5,27 +5,22 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting, ContentSettingsTypes, CookieControlsMode, SettingsCookiesPageElement, SiteListElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
+import {ContentSetting, ContentSettingsTypes, SettingsCookiesPageElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CrLinkRowElement, MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import {createContentSettingTypeToValuePair, createDefaultContentSetting,createRawSiteException,createSiteSettingsPrefs} from './test_util.js';
+import {createContentSettingTypeToValuePair, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
 
 // clang-format on
 
 suite('CrSettingsCookiesPageTest', function() {
-  /** @type {!TestSiteSettingsPrefsBrowserProxy} */
-  let siteSettingsBrowserProxy;
-
-  /** @type {!TestMetricsBrowserProxy} */
-  let testMetricsBrowserProxy;
-
-  /** @type {!SettingsCookiesPageElement} */
-  let page;
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let page: SettingsCookiesPageElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -39,8 +34,7 @@ suite('CrSettingsCookiesPageTest', function() {
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
     document.body.innerHTML = '';
-    page = /** @type {!SettingsCookiesPageElement} */ (
-        document.createElement('settings-cookies-page'));
+    page = document.createElement('settings-cookies-page');
     page.prefs = {
       generated: {
         cookie_session_only: {value: false},
@@ -70,32 +64,32 @@ suite('CrSettingsCookiesPageTest', function() {
   });
 
   test('NetworkPredictionClickRecorded', async function() {
-    page.shadowRoot.querySelector('#networkPrediction').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#networkPrediction')!.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.NETWORK_PREDICTION, result);
   });
 
   test('CookiesRadioClicksRecorded', async function() {
-    page.shadowRoot.querySelector('#blockAll').click();
+    page.$.blockAll.click();
     let result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_BLOCK, result);
     testMetricsBrowserProxy.reset();
 
-    page.shadowRoot.querySelector('#blockThirdParty').click();
+    page.$.blockThirdParty.click();
     result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_THIRD, result);
     testMetricsBrowserProxy.reset();
 
-    page.shadowRoot.querySelector('#blockThirdPartyIncognito').click();
+    page.$.blockThirdPartyIncognito.click();
     result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_INCOGNITO, result);
     testMetricsBrowserProxy.reset();
 
-    page.shadowRoot.querySelector('#allowAll').click();
+    page.$.allowAll.click();
     result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_ALL, result);
@@ -103,7 +97,7 @@ suite('CrSettingsCookiesPageTest', function() {
   });
 
   test('CookiesSessionOnlyClickRecorded', async function() {
-    page.shadowRoot.querySelector('#clearOnExit').click();
+    page.shadowRoot!.querySelector<HTMLElement>('#clearOnExit')!.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.COOKIES_SESSION, result);
@@ -132,8 +126,7 @@ suite('CrSettingsCookiesPageTest', function() {
     await siteSettingsBrowserProxy.whenCalled('getExceptionList');
     flush();
 
-    const exceptionLists = /** @type {!NodeList<!SiteListElement>} */ (
-        page.shadowRoot.querySelectorAll('site-list'));
+    const exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
     assertEquals(exceptionLists.length, 3);
 
     for (const list of exceptionLists) {
@@ -155,7 +148,7 @@ suite('CrSettingsCookiesPageTest', function() {
       value: true,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
     });
-    let exceptionLists = page.shadowRoot.querySelectorAll('site-list');
+    let exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
     assertEquals(exceptionLists.length, 3);
     for (const list of exceptionLists) {
       assertTrue(!!list.readOnlyList);
@@ -166,7 +159,7 @@ suite('CrSettingsCookiesPageTest', function() {
     page.set('prefs.generated.cookie_session_only', {
       value: true,
     });
-    exceptionLists = page.shadowRoot.querySelectorAll('site-list');
+    exceptionLists = page.shadowRoot!.querySelectorAll('site-list');
     assertEquals(exceptionLists.length, 3);
     for (const list of exceptionLists) {
       assertFalse(!!list.readOnlyList);
@@ -176,7 +169,7 @@ suite('CrSettingsCookiesPageTest', function() {
   test('BlockAll_ManagementSource', async function() {
     // Test that controlledBy for the blockAll_ preference is set to
     // the same value as the generated.cookie_session_only preference.
-    const blockAll = page.shadowRoot.querySelector('#blockAll');
+    const blockAll = page.$.blockAll;
     page.set('prefs.generated.cookie_session_only', {
       value: true,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
@@ -184,7 +177,7 @@ suite('CrSettingsCookiesPageTest', function() {
     });
     flush();
     assertEquals(
-        blockAll.pref.controlledBy,
+        blockAll.pref!.controlledBy,
         chrome.settingsPrivate.ControlledBy.EXTENSION);
 
     page.set('prefs.generated.cookie_session_only', {
@@ -193,71 +186,72 @@ suite('CrSettingsCookiesPageTest', function() {
       controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY
     });
     assertEquals(
-        blockAll.pref.controlledBy,
+        blockAll.pref!.controlledBy,
         chrome.settingsPrivate.ControlledBy.DEVICE_POLICY);
   });
 
   test('privacySandboxToast', async function() {
-    assertFalse(page.shadowRoot.querySelector('#toast').open);
+    assertFalse(page.$.toast.open);
 
     // Disabling all cookies should display the privacy sandbox toast.
-    page.shadowRoot.querySelector('#blockAll').click();
+    page.$.blockAll.click();
     assertEquals(
         'Settings.PrivacySandbox.Block3PCookies',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
-    assertTrue(page.shadowRoot.querySelector('#toast').open);
+    assertTrue(page.$.toast.open);
 
     // Clicking the toast link should be recorded in UMA and should dismiss
     // the toast.
-    page.shadowRoot.querySelector('#toast').querySelector('cr-button').click();
+    page.$.toast.querySelector('cr-button')!.click();
     assertEquals(
         'Settings.PrivacySandbox.OpenedFromCookiesPageToast',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
-    assertFalse(page.shadowRoot.querySelector('#toast').open);
+    assertFalse(page.$.toast.open);
 
     // Renabling 3P cookies for regular sessions should not display the toast.
-    page.shadowRoot.querySelector('#blockThirdPartyIncognito').click();
+    page.$.blockThirdPartyIncognito.click();
     await flushTasks();
-    assertFalse(page.shadowRoot.querySelector('#toast').open);
+    assertFalse(page.$.toast.open);
     assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
 
     // The toast should not be displayed if the user has the privacy sandbox
     // APIs disabled.
     page.set('prefs.privacy_sandbox.apis_enabled.value', false);
-    page.shadowRoot.querySelector('#blockAll').click();
+    page.$.blockAll.click();
     await flushTasks();
-    assertFalse(page.shadowRoot.querySelector('#toast').open);
+    assertFalse(page.$.toast.open);
     assertEquals(0, testMetricsBrowserProxy.getCallCount('recordAction'));
 
     // Disabling only 3P cookies should display the toast.
     page.set('prefs.privacy_sandbox.apis_enabled.value', true);
     page.set('prefs.generated.cookie_primary_setting.value', 0);
-    page.shadowRoot.querySelector('#blockThirdParty').click();
+    page.$.blockThirdParty.click();
     assertEquals(
         'Settings.PrivacySandbox.Block3PCookies',
         await testMetricsBrowserProxy.whenCalled('recordAction'));
-    assertTrue(page.shadowRoot.querySelector('#toast').open);
+    assertTrue(page.$.toast.open);
 
     // Reselecting a non-3P cookie blocking setting should hide the toast.
-    page.shadowRoot.querySelector('#allowAll').click();
+    page.$.allowAll.click();
     await flushTasks();
-    assertFalse(page.shadowRoot.querySelector('#toast').open);
+    assertFalse(page.$.toast.open);
 
     // Navigating away from the page should hide the toast, even if navigated
     // back to.
-    page.shadowRoot.querySelector('#blockAll').click();
+    page.$.blockAll.click();
     await flushTasks();
-    assertTrue(page.shadowRoot.querySelector('#toast').open);
+    assertTrue(page.$.toast.open);
     Router.getInstance().navigateTo(routes.BASIC);
     Router.getInstance().navigateTo(routes.COOKIES);
     await flushTasks();
-    assertFalse(page.shadowRoot.querySelector('#toast').open);
+    assertFalse(page.$.toast.open);
   });
 
   test('AllSiteDataLink_consolidatedControlsDisabled', function() {
-    const siteDataLinkRow = page.shadowRoot.querySelector('#site-data-trigger');
+    const siteDataLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>('#site-data-trigger')!;
     assertEquals(siteDataLinkRow.label, page.i18n('siteSettingsCookieLink'));
 
     siteDataLinkRow.click();
@@ -267,14 +261,9 @@ suite('CrSettingsCookiesPageTest', function() {
 });
 
 suite('CrSettingsCookiesPageTest_consolidatedControlsEnabled', function() {
-  /** @type {!TestSiteSettingsPrefsBrowserProxy} */
-  let siteSettingsBrowserProxy;
-
-  /** @type {!TestMetricsBrowserProxy} */
-  let testMetricsBrowserProxy;
-
-  /** @type {!SettingsCookiesPageElement} */
-  let page;
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let page: SettingsCookiesPageElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -288,8 +277,7 @@ suite('CrSettingsCookiesPageTest_consolidatedControlsEnabled', function() {
     siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
     document.body.innerHTML = '';
-    page = /** @type {!SettingsCookiesPageElement} */ (
-        document.createElement('settings-cookies-page'));
+    page = document.createElement('settings-cookies-page');
     page.prefs = {
       generated: {
         cookie_session_only: {value: false},
@@ -310,7 +298,8 @@ suite('CrSettingsCookiesPageTest_consolidatedControlsEnabled', function() {
   });
 
   test('AllSiteDataLink_consolidatedControlsEnabled', function() {
-    const siteDataLinkRow = page.shadowRoot.querySelector('#site-data-trigger');
+    const siteDataLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>('#site-data-trigger')!;
     assertEquals(siteDataLinkRow.label, page.i18n('cookiePageAllSitesLink'));
 
     siteDataLinkRow.click();
