@@ -280,12 +280,14 @@ MultiDeviceSection::MultiDeviceSection(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     phonehub::PhoneHubManager* phone_hub_manager,
     android_sms::AndroidSmsService* android_sms_service,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    ash::eche_app::EcheAppManager* eche_app_manager)
     : OsSettingsSection(profile, search_tag_registry),
       multidevice_setup_client_(multidevice_setup_client),
       phone_hub_manager_(phone_hub_manager),
       android_sms_service_(android_sms_service),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      eche_app_manager_(eche_app_manager) {
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile)) {
     pref_change_registrar_.Init(pref_service_);
@@ -544,7 +546,9 @@ void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
               ? android_sms_service_->android_sms_pairing_state_tracker()
               : nullptr,
           android_sms_service_ ? android_sms_service_->android_sms_app_manager()
-                               : nullptr));
+                               : nullptr,
+          eche_app_manager_ ? eche_app_manager_->GetAppsAccessManager()
+                            : nullptr));
 }
 
 int MultiDeviceSection::GetSectionNameMessageId() const {

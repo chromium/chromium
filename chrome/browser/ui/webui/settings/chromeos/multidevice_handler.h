@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_HANDLER_H_
 
+#include "ash/webui/eche_app_ui/apps_access_manager.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -39,7 +40,8 @@ class MultideviceHandler
       public multidevice_setup::AndroidSmsPairingStateTracker::Observer,
       public android_sms::AndroidSmsAppManager::Observer,
       public phonehub::NotificationAccessManager::Observer,
-      public phonehub::NotificationAccessSetupOperation::Delegate {
+      public phonehub::NotificationAccessSetupOperation::Delegate,
+      public ash::eche_app::AppsAccessManager::Observer {
  public:
   MultideviceHandler(
       PrefService* prefs,
@@ -47,7 +49,8 @@ class MultideviceHandler
       phonehub::NotificationAccessManager* notification_access_manager,
       multidevice_setup::AndroidSmsPairingStateTracker*
           android_sms_pairing_state_tracker,
-      android_sms::AndroidSmsAppManager* android_sms_app_manager);
+      android_sms::AndroidSmsAppManager* android_sms_app_manager,
+      ash::eche_app::AppsAccessManager* apps_access_manager);
 
   MultideviceHandler(const MultideviceHandler&) = delete;
   MultideviceHandler& operator=(const MultideviceHandler&) = delete;
@@ -83,6 +86,9 @@ class MultideviceHandler
 
   // android_sms::AndroidSmsAppManager::Observer:
   void OnInstalledAppUrlChanged() override;
+
+  // ash::eche_app::AppsAccessManager::Observer:
+  void OnAppsAccessChanged() override;
 
   // Called when the Nearby Share enabled pref changes.
   void OnNearbySharingEnabledChanged();
@@ -144,6 +150,8 @@ class MultideviceHandler
       android_sms_pairing_state_tracker_;
   android_sms::AndroidSmsAppManager* android_sms_app_manager_;
 
+  ash::eche_app::AppsAccessManager* apps_access_manager_;
+
   base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
                           multidevice_setup::MultiDeviceSetupClient::Observer>
       multidevice_setup_observation_{this};
@@ -157,6 +165,9 @@ class MultideviceHandler
   base::ScopedObservation<phonehub::NotificationAccessManager,
                           phonehub::NotificationAccessManager::Observer>
       notification_access_manager_observation_{this};
+  base::ScopedObservation<ash::eche_app::AppsAccessManager,
+                          ash::eche_app::AppsAccessManager::Observer>
+      apps_access_manager_observation_{this};
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<MultideviceHandler> callback_weak_ptr_factory_{this};

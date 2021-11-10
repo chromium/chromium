@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -70,7 +71,8 @@ class OsSettingsManagerTest : public testing::Test {
         IdentityManagerFactory::GetForProfile(profile),
         android_sms::AndroidSmsServiceFactory::GetForBrowserContext(profile),
         CupsPrintersManagerFactory::GetForBrowserContext(profile),
-        apps::AppServiceProxyFactory::GetForProfile(profile));
+        apps::AppServiceProxyFactory::GetForProfile(profile),
+        eche_app::EcheAppManagerFactory::GetForProfile(profile));
   }
 
   content::BrowserTaskEnvironment task_environment_;

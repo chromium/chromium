@@ -62,6 +62,7 @@ class AppsAccessManager {
 
  private:
   friend class AppsAccessManagerImplTest;
+  virtual void SetAccessStatusInternal(AccessStatus access_status) = 0;
   void OnSetupOperationDeleted(int operation_id);
 
   int next_operation_id_ = 0;

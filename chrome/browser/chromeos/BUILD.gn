@@ -4604,6 +4604,7 @@ source_set("unit_tests") {
     "//ash/public/cpp:test_support",
     "//ash/public/cpp/external_arc",
     "//ash/public/cpp/external_arc:test_support",
+    "//ash/webui/eche_app_ui:test_support",
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/app:command_ids",

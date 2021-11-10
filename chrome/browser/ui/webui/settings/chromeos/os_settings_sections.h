@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/android_sms/android_sms_service.h"
@@ -57,7 +58,8 @@ class OsSettingsSections {
       signin::IdentityManager* identity_manager,
       android_sms::AndroidSmsService* android_sms_service,
       CupsPrintersManager* printers_manager,
-      apps::AppServiceProxy* app_service_proxy);
+      apps::AppServiceProxy* app_service_proxy,
+      ash::eche_app::EcheAppManager* eche_app_manager);
   OsSettingsSections(const OsSettingsSections& other) = delete;
   OsSettingsSections& operator=(const OsSettingsSections& other) = delete;
   virtual ~OsSettingsSections();

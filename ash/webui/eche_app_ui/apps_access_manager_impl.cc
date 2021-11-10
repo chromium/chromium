@@ -129,6 +129,10 @@ void AppsAccessManagerImpl::AttemptAppsAccessStateRequest() {
           chromeos::features::kEchePhoneHubPermissionsOnboarding)) {
     PA_LOG(INFO) << "kEchePhoneHubPermissionsOnboarding flag is false, ignores "
                     "to get apps access status from phone.";
+    // TODO: Update to use the actual access value, instead of hard-coding to
+    // kAccessGranted.
+    pref_service_->SetInteger(prefs::kAppsAccessStatus,
+                              static_cast<int>(AccessStatus::kAccessGranted));
     return;
   }
 
@@ -166,9 +170,8 @@ void AppsAccessManagerImpl::SetAccessStatusInternal(
   PA_LOG(INFO) << "Apps access: " << GetAccessStatus() << " => "
                << access_status;
 
-  if (access_status == GetAccessStatus()) {
+  if (access_status == GetAccessStatus())
     return;
-  }
 
   pref_service_->SetInteger(prefs::kAppsAccessStatus,
                             static_cast<int>(access_status));

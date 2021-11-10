@@ -90,6 +90,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_apps_access_manager.cc",
+    "fake_apps_access_manager.h",
     "fake_eche_connector.cc",
     "fake_eche_connector.h",
     "fake_eche_message_receiver.cc",

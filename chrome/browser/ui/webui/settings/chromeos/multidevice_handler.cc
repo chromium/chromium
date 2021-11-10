@@ -77,12 +77,14 @@ MultideviceHandler::MultideviceHandler(
     phonehub::NotificationAccessManager* notification_access_manager,
     multidevice_setup::AndroidSmsPairingStateTracker*
         android_sms_pairing_state_tracker,
-    android_sms::AndroidSmsAppManager* android_sms_app_manager)
+    android_sms::AndroidSmsAppManager* android_sms_app_manager,
+    ash::eche_app::AppsAccessManager* apps_access_manager)
     : prefs_(prefs),
       multidevice_setup_client_(multidevice_setup_client),
       notification_access_manager_(notification_access_manager),
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
-      android_sms_app_manager_(android_sms_app_manager) {
+      android_sms_app_manager_(android_sms_app_manager),
+      apps_access_manager_(apps_access_manager) {
   CHECK((multidevice_setup_client_ != nullptr) ==
         multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(prefs_));
   pref_change_registrar_.Init(prefs_);
@@ -157,6 +159,9 @@ void MultideviceHandler::OnJavascriptAllowed() {
   if (android_sms_app_manager_)
     android_sms_app_manager_observation_.Observe(android_sms_app_manager_);
 
+  if (apps_access_manager_)
+    apps_access_manager_observation_.Observe(apps_access_manager_);
+
   pref_change_registrar_.Add(
       proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled,
       base::BindRepeating(
@@ -204,6 +209,12 @@ void MultideviceHandler::OnJavascriptDisallowed() {
     android_sms_app_manager_observation_.Reset();
   }
 
+  if (apps_access_manager_) {
+    DCHECK(apps_access_manager_observation_.IsObservingSource(
+        apps_access_manager_));
+    apps_access_manager_observation_.Reset();
+  }
+
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   callback_weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -237,6 +248,10 @@ void MultideviceHandler::OnPairingStateChanged() {
 void MultideviceHandler::OnInstalledAppUrlChanged() {
   UpdatePageContent();
   NotifyAndroidSmsInfoChange();
+}
+
+void MultideviceHandler::OnAppsAccessChanged() {
+  UpdatePageContent();
 }
 
 void MultideviceHandler::OnNearbySharingEnabledChanged() {
@@ -519,9 +534,17 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
     access_status = notification_access_manager_->GetAccessStatus();
   page_content_dictionary->SetInteger(kNotificationAccessStatus,
                                       static_cast<int32_t>(access_status));
-  // TODO: Temporary solution, set to true means no need to process apps setup
-  // flow.
-  page_content_dictionary->SetBoolean(kIsPhoneHubAppsAccessGranted, true);
+
+  ash::eche_app::AppsAccessManager::AccessStatus apps_access_status =
+      ash::eche_app::AppsAccessManager::AccessStatus::kAvailableButNotGranted;
+  if (apps_access_manager_)
+    apps_access_status = apps_access_manager_->GetAccessStatus();
+  bool is_apps_access_granted =
+      apps_access_status ==
+      ash::eche_app::AppsAccessManager::AccessStatus::kAccessGranted;
+
+  page_content_dictionary->SetBoolean(kIsPhoneHubAppsAccessGranted,
+                                      is_apps_access_granted);
 
   bool is_nearby_share_disallowed_by_policy =
       NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(

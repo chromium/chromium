@@ -34,12 +34,13 @@ class AppsAccessManagerImpl : public AppsAccessManager,
 
   ~AppsAccessManagerImpl() override;
 
-  // AppsAccessManager:
-  AccessStatus GetAccessStatus() const override;
-  void OnSetupRequested() override;
-
  private:
   friend class AppsAccessManagerImplTest;
+  // AppsAccessManager:
+  AccessStatus GetAccessStatus() const override;
+  void SetAccessStatusInternal(AccessStatus access_status) override;
+  void OnSetupRequested() override;
+
   // EcheMessageReceiver::Observer:
   void OnGetAppsAccessStateResponseReceived(
       proto::GetAppsAccessStateResponse apps_access_state_response) override;
@@ -53,9 +54,6 @@ class AppsAccessManagerImpl : public AppsAccessManager,
   void AttemptAppsAccessStateRequest();
   void GetAppsAccessStateRequest();
   void SendShowAppsAccessSetupRequest();
-  // Sets the internal AccessStatus but does not send a request for a new
-  // status to the remote phone device.
-  void SetAccessStatusInternal(AccessStatus access_status);
 
   AppsAccessManager::AccessStatus ComputeAppsAccessState(
       proto::AppsAccessState apps_access_state);

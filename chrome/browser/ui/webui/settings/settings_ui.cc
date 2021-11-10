@@ -102,6 +102,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/constants/ash_features.h"
+#include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
@@ -109,6 +110,7 @@
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/chromeos/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/account_manager_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/android_apps_handler.h"
@@ -405,6 +407,8 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
             profile);
     chromeos::phonehub::PhoneHubManager* phone_hub_manager =
         ash::phonehub::PhoneHubManagerFactory::GetForProfile(profile);
+    ash::eche_app::EcheAppManager* eche_app_manager =
+        chromeos::eche_app::EcheAppManagerFactory::GetForProfile(profile);
     web_ui()->AddMessageHandler(std::make_unique<
                                 chromeos::settings::MultideviceHandler>(
         profile->GetPrefs(),
@@ -416,7 +420,8 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
             ? android_sms_service->android_sms_pairing_state_tracker()
             : nullptr,
         android_sms_service ? android_sms_service->android_sms_app_manager()
-                            : nullptr));
+                            : nullptr,
+        eche_app_manager ? eche_app_manager->GetAppsAccessManager() : nullptr));
   }
 }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)

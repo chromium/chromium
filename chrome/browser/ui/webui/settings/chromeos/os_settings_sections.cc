@@ -42,7 +42,8 @@ OsSettingsSections::OsSettingsSections(
     signin::IdentityManager* identity_manager,
     android_sms::AndroidSmsService* android_sms_service,
     CupsPrintersManager* printers_manager,
-    apps::AppServiceProxy* app_service_proxy) {
+    apps::AppServiceProxy* app_service_proxy,
+    ash::eche_app::EcheAppManager* eche_app_manager) {
   // Special case: Main section does not have an associated enum value.
   sections_.push_back(
       std::make_unique<MainSection>(profile, search_tag_registry));
@@ -59,7 +60,7 @@ OsSettingsSections::OsSettingsSections(
 
   auto multidevice_section = std::make_unique<MultiDeviceSection>(
       profile, search_tag_registry, multidevice_setup_client, phone_hub_manager,
-      android_sms_service, profile->GetPrefs());
+      android_sms_service, profile->GetPrefs(), eche_app_manager);
   sections_map_[mojom::Section::kMultiDevice] = multidevice_section.get();
   sections_.push_back(std::move(multidevice_section));
 
