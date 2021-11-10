@@ -14,6 +14,7 @@ preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
 polymer_element_files = [
   "keyboard_diagram.js",
+  "keyboard_icons.js",
   "keyboard_key.js",
   "navigation_icons.js",
   "navigation_selector.js",
@@ -41,6 +42,7 @@ js_type_check("closure_compile_module") {
     ":fake_method_resolver",
     ":fake_observables",
     ":keyboard_diagram",
+    ":keyboard_icons",
     ":keyboard_key",
     ":navigation_selector",
     ":navigation_view_panel",
@@ -58,12 +60,20 @@ js_library("fake_method_resolver") {
 
 js_library("keyboard_diagram") {
   deps = [
+    ":keyboard_key",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("keyboard_icons") {
+  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_library("keyboard_key") {
   deps = [
+    ":keyboard_icons",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

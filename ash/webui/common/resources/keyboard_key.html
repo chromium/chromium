@@ -36,6 +36,12 @@
     transition: all 150ms ease-in-out;
   }
 
+  iron-icon {
+    --iron-icon-fill-color: var(--foreground-color-unpressed);
+    --iron-icon-height: 100%;
+    --iron-icon-width: 100%;
+  }
+
   #text {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -55,6 +61,10 @@
     bottom: 0;
     color: var(--foreground-color-pressed);
     top: var(--travel);
+  }
+
+  :host(:hover) iron-icon {
+    --iron-icon-fill-color: var(--foreground-color-pressed);
   }
 
   #background {
@@ -79,5 +89,10 @@
 </style>
 <div id="background"></div>
 <div id="foreground">
-  <span id="text">[[mainGlyph]]</span>
+  <template is="dom-if" if="[[icon]]">
+    <iron-icon icon="[[icon]]"></iron-icon>
+  </template>
+  <template is="dom-if" if="[[mainGlyph]]">
+    <span id="text">[[mainGlyph]]</span>
+  </template>
 </div>

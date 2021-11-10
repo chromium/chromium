@@ -323,18 +323,17 @@
     <keyboard-key id="rightAltKey" main-glyph="alt"></keyboard-key>
     <keyboard-key id="rightCtrlKey" main-glyph="ctrl"></keyboard-key>
 
-    <!-- TODO(crbug.com/1207678): Use proper icons for the arrow keys. -->
     <div id="arrowKeyCluster">
       <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
         <keyboard-key id="dellPageUpKey" main-glyph="pg up"></keyboard-key>
       </template>
-      <keyboard-key id="upArrow" main-glyph="↑"></keyboard-key>
+      <keyboard-key id="upArrow" icon="keyboard:arrow-up"></keyboard-key>
       <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
         <keyboard-key id="dellPageDownKey" main-glyph="pg dn"></keyboard-key>
       </template>
-      <keyboard-key main-glyph="←"></keyboard-key>
-      <keyboard-key main-glyph="↓"></keyboard-key>
-      <keyboard-key main-glyph="→"></keyboard-key>
+      <keyboard-key icon="keyboard:arrow-left"></keyboard-key>
+      <keyboard-key icon="keyboard:arrow-down"></keyboard-key>
+      <keyboard-key icon="keyboard:arrow-right"></keyboard-key>
     </div>
   </div>
   <div id="numberPad">
