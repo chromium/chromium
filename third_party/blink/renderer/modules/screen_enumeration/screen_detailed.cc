@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/screen_enumeration/screen_detailed.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_statics.h"
 #include "ui/display/screen_info.h"
@@ -66,14 +68,24 @@ int ScreenDetailed::height() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).rect.height();
+  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    return base::ClampRound(screen_info.rect.height() *
+                            screen_info.device_scale_factor);
+  }
+  return screen_info.rect.height();
 }
 
 int ScreenDetailed::width() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).rect.width();
+  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    return base::ClampRound(screen_info.rect.width() *
+                            screen_info.device_scale_factor);
+  }
+  return screen_info.rect.width();
 }
 
 unsigned ScreenDetailed::colorDepth() const {
@@ -91,28 +103,48 @@ int ScreenDetailed::availLeft() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).available_rect.x();
+  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    return base::ClampRound(screen_info.available_rect.x() *
+                            screen_info.device_scale_factor);
+  }
+  return screen_info.available_rect.x();
 }
 
 int ScreenDetailed::availTop() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).available_rect.y();
+  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    return base::ClampRound(screen_info.available_rect.y() *
+                            screen_info.device_scale_factor);
+  }
+  return screen_info.available_rect.y();
 }
 
 int ScreenDetailed::availHeight() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).available_rect.height();
+  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    return base::ClampRound(screen_info.available_rect.height() *
+                            screen_info.device_scale_factor);
+  }
+  return screen_info.available_rect.height();
 }
 
 int ScreenDetailed::availWidth() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).available_rect.width();
+  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    return base::ClampRound(screen_info.available_rect.width() *
+                            screen_info.device_scale_factor);
+  }
+  return screen_info.available_rect.width();
 }
 
 bool ScreenDetailed::isExtended() const {
@@ -126,14 +158,24 @@ int ScreenDetailed::left() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).rect.x();
+  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    return base::ClampRound(screen_info.rect.x() *
+                            screen_info.device_scale_factor);
+  }
+  return screen_info.rect.x();
 }
 
 int ScreenDetailed::top() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
-  return GetScreenInfo(*frame, display_id_).rect.y();
+  const display::ScreenInfo& screen_info = GetScreenInfo(*frame, display_id_);
+  if (frame->GetSettings()->GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    return base::ClampRound(screen_info.rect.y() *
+                            screen_info.device_scale_factor);
+  }
+  return screen_info.rect.y();
 }
 
 bool ScreenDetailed::isPrimary() const {
