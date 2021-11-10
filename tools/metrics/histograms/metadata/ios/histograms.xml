@@ -522,6 +522,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Frame.FirstContentfulPaint.MainFrame" units="ms"
+    expires_after="2022-11-30">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Many features include JavaScript injected logic that run in the WebKit
+    renderer process. One Web Vitals metric that evaluates user experience is
+    First Contentful Paint. First Contentful Paint is defined as the amount of
+    time it takes for a page to render a non-trivial element. This histogram
+    captures the First Contentful Paint time for every main frame. This
+    histogram's understanding of First Contentful Paint differs from the
+    traditional understanding because it does not aggregate and compare the
+    First Contentful Page times across the frames on a page.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Frame.FirstContentfulPaint.SubFrame" units="ms"
+    expires_after="2022-11-30">
+  <owner>danieltwhite@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    Many features include JavaScript injected logic that run in the WebKit
+    renderer process. One Web Vitals metric that evaluates user experience is
+    First Contentful Paint. First Contentful Paint is defined as the amount of
+    time it takes for a page to render a non-trivial element. This histogram
+    captures the First Contentful Paint time for user's subframes. Due to
+    WebKit's implementation of First Contentful Paint, this histogram only
+    captures a subframe's First Contentful Paint if it is same-origin relative
+    to the main frame. This histogram's understanding of First Contentful Paint
+    differs from the traditional understanding because it does not aggregate and
+    compare the First Contentful Page times across the frames on a page.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Handoff.Origin" enum="IOSHandoffOrigin"
     expires_after="M77">
   <owner>erikchen@chromium.org</owner>

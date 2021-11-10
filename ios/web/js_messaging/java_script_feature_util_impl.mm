@@ -14,6 +14,7 @@
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #include "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #include "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
+#include "ios/web/js_features/web_performance_metrics/web_performance_metrics_java_script_feature.h"
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 #import "ios/web/js_messaging/script_command_java_script_feature.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
@@ -114,6 +115,7 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       GetScrollHelperJavaScriptFeature(),
       GetWindowErrorJavaScriptFeature(),
       NavigationJavaScriptFeature::GetInstance(),
+      WebPerformanceMetricsJavaScriptFeature::GetInstance(),
       ScriptCommandJavaScriptFeature::GetInstance(),
       SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
       TextFragmentsJavaScriptFeature::GetInstance(),
