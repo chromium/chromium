@@ -78,6 +78,7 @@
 #import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
@@ -546,6 +547,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // the last tap.
 @property(nonatomic, strong) UIGestureRecognizer* contentAreaGestureRecognizer;
 
+// The coordinator for all NTPs in the BVC. Only used if kSingleNtp is enabled.
+@property(nonatomic, strong) NewTabPageCoordinator* ntpCoordinator;
+
 // BVC initialization
 // ------------------
 // If the BVC is initialized with a valid browser state & tab model immediately,
@@ -990,6 +994,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (NewTabPageCoordinator*)ntpCoordinatorForWebState:(web::WebState*)webState {
+  if (IsSingleNtpEnabled()) {
+    return self.isNTPActiveForCurrentWebState ? _ntpCoordinator : nil;
+  }
   auto found = _ntpCoordinatorsForWebStates.find(webState);
   if (found != _ntpCoordinatorsForWebStates.end())
     return found->second;
@@ -1148,8 +1155,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/906199): Move this to the NewTabPageTabHelper when
   // WebStateObserver has a webUsage callback.
   if (!active) {
-    for (const auto& element : _ntpCoordinatorsForWebStates)
-      [element.second stop];
+    if (IsSingleNtpEnabled()) {
+      [_ntpCoordinator stop];
+    } else {
+      for (const auto& element : _ntpCoordinatorsForWebStates)
+        [element.second stop];
+    }
   }
 
   if (active) {
@@ -2350,6 +2361,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)displayWebState:(web::WebState*)webState {
   DCHECK(webState);
   [self loadViewIfNeeded];
+  if (IsSingleNtpEnabled()) {
+    self.ntpCoordinator.webState = webState;
+  }
 
   // Set this before triggering any of the possible page loads below.
   webState->SetKeepRenderProcessAlive(true);
@@ -2719,10 +2733,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
 
   // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
-  auto iterator = _ntpCoordinatorsForWebStates.find(webState);
-  if (iterator != _ntpCoordinatorsForWebStates.end()) {
-    [iterator->second stop];
-    _ntpCoordinatorsForWebStates.erase(iterator);
+  if (IsSingleNtpEnabled()) {
+    if (self.currentWebState == webState) {
+      [_ntpCoordinator stop];
+    }
+  } else {
+    auto iterator = _ntpCoordinatorsForWebStates.find(webState);
+    if (iterator != _ntpCoordinatorsForWebStates.end()) {
+      [iterator->second stop];
+      _ntpCoordinatorsForWebStates.erase(iterator);
+    }
   }
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 }
@@ -2841,9 +2861,14 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UIView* webStateView = [self viewForWebState:self.currentWebState];
   webStateView.frame = webStateViewFrame;
 
-  for (const auto& element : _ntpCoordinatorsForWebStates) {
-    [element.second.thumbStripSupporting
+  if (IsSingleNtpEnabled()) {
+    [self.ntpCoordinator.thumbStripSupporting
         thumbStripEnabledWithPanHandler:panHandler];
+  } else {
+    for (const auto& element : _ntpCoordinatorsForWebStates) {
+      [element.second.thumbStripSupporting
+          thumbStripEnabledWithPanHandler:panHandler];
+    }
   }
 }
 
@@ -2877,8 +2902,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   UIView* webStateView = [self viewForWebState:self.currentWebState];
   webStateView.frame = webStateViewFrame;
 
-  for (const auto& element : _ntpCoordinatorsForWebStates) {
-    [element.second.thumbStripSupporting thumbStripDisabled];
+  if (IsSingleNtpEnabled()) {
+    [self.ntpCoordinator.thumbStripSupporting thumbStripDisabled];
+  } else {
+    for (const auto& element : _ntpCoordinatorsForWebStates) {
+      [element.second.thumbStripSupporting thumbStripDisabled];
+    }
   }
 
   _thumbStripEnabled = NO;
@@ -4032,6 +4061,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
                      reason:(ActiveWebStateChangeReason)reason {
+  if (IsSingleNtpEnabled()) {
+    self.ntpCoordinator.webState = newWebState;
+  }
   if (oldWebState) {
     oldWebState->WasHidden();
     oldWebState->SetKeepRenderProcessAlive(false);
@@ -4662,27 +4694,34 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (void)newTabPageHelperDidChangeVisibility:(NewTabPageTabHelper*)NTPHelper
                                 forWebState:(web::WebState*)webState {
-  if (NTPHelper->IsActive()) {
-    DCHECK(![self ntpCoordinatorForWebState:webState]);
-    // Checks for leaks in |_ntpCoordinatorsForWebStates|.
-    DCHECK_LE(static_cast<int>(_ntpCoordinatorsForWebStates.size()),
-              self.browser->GetWebStateList()->count() - 1);
-    // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
-    NewTabPageCoordinator* newTabPageCoordinator =
-        [[NewTabPageCoordinator alloc] initWithBaseViewController:self
-                                                          browser:self.browser];
-    newTabPageCoordinator.panGestureHandler = self.thumbStripPanHandler;
-    newTabPageCoordinator.toolbarDelegate = self.toolbarInterface;
-    newTabPageCoordinator.webState = webState;
-    newTabPageCoordinator.bubblePresenter = self.bubblePresenter;
-    _ntpCoordinatorsForWebStates[webState] = newTabPageCoordinator;
+  if (IsSingleNtpEnabled()) {
+    if (NTPHelper->IsActive()) {
+      self.ntpCoordinator.webState = webState;
+    }
   } else {
-    NewTabPageCoordinator* newTabPageCoordinator =
-        [self ntpCoordinatorForWebState:webState];
-    DCHECK(newTabPageCoordinator);
-    [newTabPageCoordinator stop];
-    [newTabPageCoordinator disconnect];
-    _ntpCoordinatorsForWebStates.erase(webState);
+    if (NTPHelper->IsActive()) {
+      DCHECK(![self ntpCoordinatorForWebState:webState]);
+      // Checks for leaks in |_ntpCoordinatorsForWebStates|.
+      DCHECK_LE(static_cast<int>(_ntpCoordinatorsForWebStates.size()),
+                self.browser->GetWebStateList()->count() - 1);
+      // TODO(crbug.com/1173610): Have BrowserCoordinator manage the NTP.
+      NewTabPageCoordinator* newTabPageCoordinator =
+          [[NewTabPageCoordinator alloc]
+              initWithBaseViewController:self
+                                 browser:self.browser];
+      newTabPageCoordinator.panGestureHandler = self.thumbStripPanHandler;
+      newTabPageCoordinator.toolbarDelegate = self.toolbarInterface;
+      newTabPageCoordinator.webState = webState;
+      newTabPageCoordinator.bubblePresenter = self.bubblePresenter;
+      _ntpCoordinatorsForWebStates[webState] = newTabPageCoordinator;
+    } else {
+      NewTabPageCoordinator* newTabPageCoordinator =
+          [self ntpCoordinatorForWebState:webState];
+      DCHECK(newTabPageCoordinator);
+      [newTabPageCoordinator stop];
+      [newTabPageCoordinator disconnect];
+      _ntpCoordinatorsForWebStates.erase(webState);
+    }
   }
   if (self.active && self.currentWebState == webState) {
     [self displayWebState:webState];
@@ -4696,6 +4735,20 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return self.presentedViewController;
   }
   return self;
+}
+
+#pragma mark - Getters
+
+- (NewTabPageCoordinator*)ntpCoordinator {
+  if (!_ntpCoordinator) {
+    _ntpCoordinator =
+        [[NewTabPageCoordinator alloc] initWithBaseViewController:self
+                                                          browser:self.browser];
+    _ntpCoordinator.panGestureHandler = self.thumbStripPanHandler;
+    _ntpCoordinator.toolbarDelegate = self.toolbarInterface;
+    _ntpCoordinator.bubblePresenter = self.bubblePresenter;
+  }
+  return _ntpCoordinator;
 }
 
 @end
