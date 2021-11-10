@@ -139,11 +139,9 @@ void LensSidePanelController::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  browser_view_->browser()
-      ->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetController()
-      .LoadURLWithParams(content::NavigationController::LoadURLParams(url));
+  content::OpenURLParams params(url, content::Referrer(), disposition,
+                                transition, renderer_initiated);
+  browser_view_->browser()->OpenURL(params);
   base::RecordAction(base::UserMetricsAction("LensSidePanel.ResultLinkClick"));
 }
 
