@@ -228,7 +228,7 @@ void AuctionRunner::RequestSellerWorkletProcess() {
           AuctionProcessManager::WorkletType::kSeller, auction_config_->seller,
           seller_worklet_process_handle_.get(),
           base::BindOnce(&AuctionRunner::OnSellerWorkletProcessReceived,
-                         weak_ptr_factory_.GetWeakPtr()))) {
+                         base::Unretained(this)))) {
     OnSellerWorkletProcessReceived();
   }
 }
@@ -260,12 +260,12 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
       seller_worklet_debug_->should_pause_on_start(),
       std::move(url_loader_factory), seller_url,
       base::BindOnce(&AuctionRunner::OnSellerWorkletLoaded,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     base::Unretained(this)));
   // Fail auction if the seller worklet pipe is disconnected.
-  seller_worklet_.set_disconnect_handler(base::BindOnce(
-      &AuctionRunner::FailAuction, weak_ptr_factory_.GetWeakPtr(),
-      AuctionResult::kSellerWorkletCrashed,
-      base::StrCat({seller_url.spec(), " crashed."})));
+  seller_worklet_.set_disconnect_handler(
+      base::BindOnce(&AuctionRunner::FailAuction, base::Unretained(this),
+                     AuctionResult::kSellerWorkletCrashed,
+                     base::StrCat({seller_url.spec(), " crashed."})));
 
   // Request processes for all bidder worklets.
   for (auto& bid_state : bid_states_) {
@@ -281,7 +281,7 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
                 bid_state.bidder.bidding_group->group.owner,
                 bid_state.process_handle.get(),
                 base::BindOnce(&AuctionRunner::OnBidderWorkletProcessReceived,
-                               weak_ptr_factory_.GetWeakPtr(), &bid_state))) {
+                               base::Unretained(this), &bid_state))) {
       OnBidderWorkletProcessReceived(&bid_state);
     }
   }
@@ -294,13 +294,13 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
   LoadBidderWorklet(*bid_state,
                     /*disconnect_handler=*/base::BindOnce(
                         &AuctionRunner::OnGenerateBidCrashed,
-                        weak_ptr_factory_.GetWeakPtr(), bid_state));
+                        base::Unretained(this), bid_state));
   bid_state->bidder_worklet->GenerateBid(
       auction_config_->auction_signals, PerBuyerSignals(bid_state),
       browser_signals_->top_frame_origin, browser_signals_->seller,
       auction_start_time_,
       base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
-                     weak_ptr_factory_.GetWeakPtr(), bid_state));
+                     base::Unretained(this), bid_state));
 }
 
 void AuctionRunner::OnGenerateBidCrashed(BidState* state) {
@@ -379,8 +379,8 @@ void AuctionRunner::ScoreBid(BidState* state) {
       browser_signals_->top_frame_origin,
       state->bidder.bidding_group->group.owner, AdRenderFingerprint(state),
       state->bid_result->bid_duration.InMilliseconds(),
-      base::BindOnce(&AuctionRunner::OnBidScored,
-                     weak_ptr_factory_.GetWeakPtr(), state));
+      base::BindOnce(&AuctionRunner::OnBidScored, base::Unretained(this),
+                     state));
 }
 
 void AuctionRunner::OnBidScored(BidState* state,
@@ -482,7 +482,7 @@ void AuctionRunner::ReportSellerResult() {
       top_bidder_->bid_result->render_url, AdRenderFingerprint(top_bidder_),
       top_bidder_->bid_result->bid, top_bidder_->seller_score,
       base::BindOnce(&AuctionRunner::OnReportSellerResultComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     base::Unretained(this)));
 }
 
 void AuctionRunner::OnReportSellerResultComplete(
@@ -515,8 +515,8 @@ void AuctionRunner::LoadBidderWorkletToReportBidWin(
           AuctionProcessManager::WorkletType::kBidder,
           top_bidder_->bidder.bidding_group->group.owner,
           top_bidder_->process_handle.get(),
-          base::BindOnce(&AuctionRunner::ReportBidWin,
-                         weak_ptr_factory_.GetWeakPtr(), signals_for_winner))) {
+          base::BindOnce(&AuctionRunner::ReportBidWin, base::Unretained(this),
+                         signals_for_winner))) {
     ReportBidWin(signals_for_winner);
   }
 }
@@ -541,7 +541,7 @@ void AuctionRunner::ReportBidWin(
   // ReportWin() method.
   LoadBidderWorklet(
       *top_bidder_, /*disconnect_handler=*/base::BindOnce(
-          &AuctionRunner::FailAuction, weak_ptr_factory_.GetWeakPtr(),
+          &AuctionRunner::FailAuction, base::Unretained(this),
           AuctionResult::kWinningBidderWorkletCrashed,
           base::StrCat(
               {top_bidder_->bidder.bidding_group->group.bidding_url->spec(),
@@ -552,7 +552,7 @@ void AuctionRunner::ReportBidWin(
       top_bidder_->bid_result->render_url, AdRenderFingerprint(top_bidder_),
       top_bidder_->bid_result->bid,
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     base::Unretained(this)));
 }
 
 void AuctionRunner::OnReportBidWinComplete(
