@@ -25,11 +25,11 @@ class Notification;
 
 namespace views {
 class ScrollView;
+class ScrollBar;
 }  // namespace views
 
 namespace ash {
 
-class MessageCenterScrollBar;
 class StackedNotificationBar;
 class UnifiedMessageCenterBubble;
 class UnifiedSystemTrayModel;
@@ -181,7 +181,7 @@ class ASH_EXPORT UnifiedMessageCenterView
   UnifiedSystemTrayModel* const model_;
   UnifiedMessageCenterBubble* const message_center_bubble_;
   StackedNotificationBar* const notification_bar_;
-  MessageCenterScrollBar* const scroll_bar_;
+  views::ScrollBar* scroll_bar_;
   views::ScrollView* const scroller_;
   UnifiedMessageListView* const message_list_view_;
 

@@ -170,7 +170,7 @@ class UnifiedMessageCenterViewTest : public AshTestBase,
 
   views::ScrollView* GetScroller() { return message_center_view()->scroller_; }
 
-  MessageCenterScrollBar* GetScrollBar() {
+  views::ScrollBar* GetScrollBar() {
     return message_center_view()->scroll_bar_;
   }
 

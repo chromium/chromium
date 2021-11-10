@@ -76,7 +76,6 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
       model_(model),
       message_center_bubble_(bubble),
       notification_bar_(new StackedNotificationBar(this)),
-      scroll_bar_(new MessageCenterScrollBar(this)),
       // TODO(crbug.com/1247455): Determine how to use ScrollWithLayers without
       // breaking ARC.
       scroller_(new views::ScrollView()),
@@ -85,7 +84,12 @@ UnifiedMessageCenterView::UnifiedMessageCenterView(
       is_notifications_refresh_enabled_(
           features::IsNotificationsRefreshEnabled()),
       animation_(std::make_unique<gfx::LinearAnimation>(this)),
-      focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {}
+      focus_search_(std::make_unique<views::FocusSearch>(this, false, false)) {
+  if (is_notifications_refresh_enabled_)
+    scroll_bar_ = new RoundedMessageCenterScrollBar(this);
+  else
+    scroll_bar_ = new MessageCenterScrollBar(this);
+}
 
 UnifiedMessageCenterView::~UnifiedMessageCenterView() {
   model_->set_notification_target_mode(
