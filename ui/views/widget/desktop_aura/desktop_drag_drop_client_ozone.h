@@ -107,6 +107,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   void OnDragLocationChanged(const gfx::Point& screen_point_px) override;
   void OnDragOperationChanged(ui::mojom::DragOperation operation) override;
   void OnDragFinished(ui::mojom::DragOperation operation) override;
+  absl::optional<gfx::AcceleratedWidget> GetDragWidget() override;
 
   // Returns a DropTargetEvent to be passed to the DragDropDelegate.
   // Updates the delegate if needed, which in its turn calls their

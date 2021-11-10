@@ -83,7 +83,7 @@ gfx::AcceleratedWidget X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint(
     const gfx::Point& point) const {
   gfx::Point point_in_pixels = gfx::ToFlooredPoint(
       gfx::ConvertPointToPixels(point, GetXDisplayScaleFactor()));
-  X11TopmostWindowFinder finder;
+  X11TopmostWindowFinder finder({});
   return static_cast<gfx::AcceleratedWidget>(
       finder.FindWindowAt(point_in_pixels));
 }
@@ -93,9 +93,9 @@ gfx::AcceleratedWidget X11ScreenOzone::GetLocalProcessWidgetAtPoint(
     const std::set<gfx::AcceleratedWidget>& ignore) const {
   gfx::Point point_in_pixels = gfx::ToFlooredPoint(
       gfx::ConvertPointToPixels(point, GetXDisplayScaleFactor()));
-  X11TopmostWindowFinder finder;
+  X11TopmostWindowFinder finder(ignore);
   return static_cast<gfx::AcceleratedWidget>(
-      finder.FindLocalProcessWindowAt(point_in_pixels, ignore));
+      finder.FindLocalProcessWindowAt(point_in_pixels));
 }
 
 display::Display X11ScreenOzone::GetDisplayNearestPoint(

@@ -22,19 +22,18 @@ class X11Window;
 class X11_WINDOW_EXPORT X11TopmostWindowFinder
     : public ui::XTopmostWindowFinder {
  public:
-  X11TopmostWindowFinder();
+  // Create finder, specifying a set of windows to |ignore|.
+  explicit X11TopmostWindowFinder(
+      const std::set<gfx::AcceleratedWidget>& ignore);
 
   X11TopmostWindowFinder(const X11TopmostWindowFinder&) = delete;
   X11TopmostWindowFinder& operator=(const X11TopmostWindowFinder&) = delete;
 
   ~X11TopmostWindowFinder() override;
 
-  // Returns the topmost window at |screen_loc_in_pixels|, ignoring the windows
-  // in |ignore|. Returns null widget if the topmost window at
-  // |screen_loc_in_pixels| does not belong to Chrome.
-  x11::Window FindLocalProcessWindowAt(
-      const gfx::Point& screen_loc_in_pixels,
-      const std::set<gfx::AcceleratedWidget>& ignore);
+  // Returns the topmost window at |screen_loc_in_pixels|. Returns null widget
+  // if the topmost window at |screen_loc_in_pixels| does not belong to Chrome.
+  x11::Window FindLocalProcessWindowAt(const gfx::Point& screen_loc_in_pixels);
 
   // Returns the topmost window at |screen_loc_in_pixels|.
   x11::Window FindWindowAt(const gfx::Point& screen_loc_in_pixels) override;
