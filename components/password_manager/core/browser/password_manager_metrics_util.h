@@ -63,12 +63,9 @@ enum UIDismissalReason {
 };
 
 // Enum representing the different leak detection dialogs shown to the user.
-// Corresponds to LeakDetectionDialogType suffix in histograms.xml.
+// Corresponds to LeakDetectionDialogType suffix in histogram_suffixes_list.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(crbug.com/1264320): This classification is somewhat incomplete: The
-// "Change" cases may result in just a string telling the user that they should
-// change their password, or in a "Change automatically" button.
 enum class LeakDialogType {
   // The user is asked to visit the Password Checkup.
   kCheckup = 0,
@@ -77,7 +74,10 @@ enum class LeakDialogType {
   // The user is asked to visit the Password Checkup and change the password for
   // the current site.
   kCheckupAndChange = 2,
-  kMaxValue = kCheckupAndChange,
+  // The user is asked to let Chrome automatically change their password for the
+  // current site.
+  kChangeAutomatically = 3,
+  kMaxValue = kChangeAutomatically,
 };
 
 // Enum recording the dismissal reason of the data breach dialog which is shown

@@ -130,42 +130,13 @@ TEST(CredentialLeakDialogUtilsTest, GetCancelButtonLabel) {
   }
 }
 
-TEST(CredentialLeakDialogUtilsTest, GetCheckPasswordsDescription) {
+TEST(CredentialLeakDialogUtilsTest, GetDescription) {
   for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
-    if (kLeakTypesTestCases[i].leak_message_id ==
-        IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE) {
-      SCOPED_TRACE(testing::Message() << i);
-      std::u16string expected_message = l10n_util::GetStringUTF16(
-          IDS_CREDENTIAL_LEAK_CHECK_PASSWORDS_MESSAGE);
-      EXPECT_EQ(expected_message,
-                GetDescription(kLeakTypesTestCases[i].leak_type));
-    }
-  }
-}
-
-TEST(CredentialLeakDialogUtilsTest, GetChangeAndCheckPasswordsDescription) {
-  for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
-    if (kLeakTypesTestCases[i].leak_message_id ==
-        IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE) {
-      SCOPED_TRACE(testing::Message() << i);
-      std::u16string expected_message = l10n_util::GetStringUTF16(
-          IDS_CREDENTIAL_LEAK_CHANGE_AND_CHECK_PASSWORDS_MESSAGE);
-      EXPECT_EQ(expected_message,
-                GetDescription(kLeakTypesTestCases[i].leak_type));
-    }
-  }
-}
-
-TEST(CredentialLeakDialogUtilsTest, GetChangePasswordDescription) {
-  for (size_t i = 0; i < base::size(kLeakTypesTestCases); ++i) {
-    if (kLeakTypesTestCases[i].leak_message_id ==
-        IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE) {
-      SCOPED_TRACE(testing::Message() << i);
-      std::u16string expected_message = l10n_util::GetStringUTF16(
-          IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE);
-      EXPECT_EQ(expected_message,
-                GetDescription(kLeakTypesTestCases[i].leak_type));
-    }
+    SCOPED_TRACE(testing::Message() << i);
+    std::u16string expected_message =
+        l10n_util::GetStringUTF16(kLeakTypesTestCases[i].leak_message_id);
+    EXPECT_EQ(expected_message,
+              GetDescription(kLeakTypesTestCases[i].leak_type));
   }
 }
 
@@ -274,7 +245,7 @@ struct PasswordChangeParams {
                                                 IsReused(true),
                                                 IsSyncing(true),
                                                 HasChangeScript(true)),
-                                 IDS_LEAK_CHECK_CREDENTIALS, true, false}};
+                                 IDS_PASSWORD_CHANGE, true, true}};
 
 class PasswordChangeCredentialLeakDialogUtilsTest
     : public testing::TestWithParam<PasswordChangeParams> {

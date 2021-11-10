@@ -6823,6 +6823,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="LeakDetectionDialogType" separator=".">
   <suffix name="Change" label="The user is asked to change their password"/>
+  <suffix name="ChangeAutomatically"
+      label="The user is asked to let Chrome automatically change their
+             password for the current site."/>
   <suffix name="Checkup"
       label="The user is asked to visit the Password Checkup"/>
   <suffix name="CheckupAndChange"

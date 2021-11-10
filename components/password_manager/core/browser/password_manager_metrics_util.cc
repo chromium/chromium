@@ -124,6 +124,8 @@ void LogLeakDialogTypeAndDismissalReason(LeakDialogType type,
         return "Change";
       case LeakDialogType::kCheckupAndChange:
         return "CheckupAndChange";
+      case LeakDialogType::kChangeAutomatically:
+        return "ChangeAutomatically";
     }
   };
 

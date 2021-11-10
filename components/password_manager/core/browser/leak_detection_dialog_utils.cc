@@ -83,6 +83,11 @@ std::u16string GetCancelButtonLabel() {
 }
 
 std::u16string GetDescription(CredentialLeakType leak_type) {
+  if (ShouldShowChangePasswordButton(leak_type)) {
+    // TODO(crbug.com/1264320): Add a dedicated string for this case.
+    return l10n_util::GetStringUTF16(
+        IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE);
+  }
   if (!ShouldCheckPasswords(leak_type)) {
     return l10n_util::GetStringUTF16(
         IDS_CREDENTIAL_LEAK_CHANGE_PASSWORD_MESSAGE);
@@ -96,6 +101,11 @@ std::u16string GetDescription(CredentialLeakType leak_type) {
 }
 
 std::u16string GetTitle(CredentialLeakType leak_type) {
+  if (ShouldShowChangePasswordButton(leak_type)) {
+    // TODO(crbug.com/1264320): Add a dedicated string for this case.
+    return l10n_util::GetStringUTF16(IDS_CREDENTIAL_LEAK_TITLE_CHANGE);
+  }
+
   return l10n_util::GetStringUTF16(ShouldCheckPasswords(leak_type)
                                        ? IDS_CREDENTIAL_LEAK_TITLE_CHECK
                                        : IDS_CREDENTIAL_LEAK_TITLE_CHANGE);
@@ -106,7 +116,8 @@ std::u16string GetLeakDetectionTooltip() {
 }
 
 bool ShouldCheckPasswords(CredentialLeakType leak_type) {
-  return password_manager::IsPasswordUsedOnOtherSites(leak_type);
+  return password_manager::IsPasswordUsedOnOtherSites(leak_type) &&
+         !ShouldShowChangePasswordButton(leak_type);
 }
 
 bool ShouldShowChangePasswordButton(CredentialLeakType leak_type) {
@@ -117,15 +128,12 @@ bool ShouldShowChangePasswordButton(CredentialLeakType leak_type) {
 
   // Password change should be offered if all following conditions are
   // fulfilled:
-  // - password is saved (The password change flows will automatically save the
-  // password. This should only happen as an update of an existing entry.)
-  // - sync is on (because the password change flow relies on password
-  // generation which is only available to sync users).
-  // - password is not used on the other sites (TODO(crbug/1086114): to be
-  // removed when we have proper UI).
-  // - there is an automatic password change script available for this site.
-  return IsPasswordSaved(leak_type) && !IsPasswordUsedOnOtherSites(leak_type) &&
-         IsSyncingPasswordsNormally(leak_type) &&
+  // - Password is saved. (The password change flows will automatically save the
+  //   password. This should only happen as an update of an existing entry.)
+  // - Sync is on (because the password change flow relies on password
+  //   generation which is only available to sync users).
+  // - There is an automatic password change script available for this site.
+  return IsPasswordSaved(leak_type) && IsSyncingPasswordsNormally(leak_type) &&
          IsAutomaticPasswordChangeScriptAvailable(leak_type);
 }
 
@@ -135,6 +143,9 @@ bool ShouldShowCancelButton(CredentialLeakType leak_type) {
 }
 
 LeakDialogType GetLeakDialogType(CredentialLeakType leak_type) {
+  if (ShouldShowChangePasswordButton(leak_type))
+    return LeakDialogType::kChangeAutomatically;
+
   if (!ShouldCheckPasswords(leak_type))
     return LeakDialogType::kChange;
 
