@@ -2065,7 +2065,38 @@ IN_PROC_BROWSER_TEST_F(GeolocationBackForwardCacheBrowserTest,
       << "watchPosition API should have reported no errors";
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebBluetooth) {
+class BluetoothForwardCacheBrowserTest : public BackForwardCacheBrowserTest {
+ protected:
+  BluetoothForwardCacheBrowserTest() = default;
+
+  ~BluetoothForwardCacheBrowserTest() override = default;
+
+  void SetUp() override {
+    // Fake the BluetoothAdapter to say it's present.
+    // Used in WebBluetooth test.
+    adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // In CHROMEOS build, even when |adapter_| object is released at TearDown()
+    // it causes the test to fail on exit with an error indicating |adapter_| is
+    // leaked.
+    testing::Mock::AllowLeak(adapter_.get());
+#endif
+
+    BackForwardCacheBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    testing::Mock::VerifyAndClearExpectations(adapter_.get());
+    adapter_.reset();
+    BackForwardCacheBrowserTest::TearDown();
+  }
+
+  scoped_refptr<device::MockBluetoothAdapter> adapter_;
+};
+
+IN_PROC_BROWSER_TEST_F(BluetoothForwardCacheBrowserTest, WebBluetooth) {
   // The test requires a mock Bluetooth adapter to perform a
   // WebBluetooth API call. To avoid conflicts with the default Bluetooth
   // adapter, e.g. Windows adapter, which is configured during Bluetooth

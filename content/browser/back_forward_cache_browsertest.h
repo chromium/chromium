@@ -19,7 +19,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/test/content_browser_test_utils_internal.h"
-#include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
@@ -86,10 +85,6 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
                                  std::string param_value);
 
   void DisableFeature(base::Feature feature);
-
-  void SetUp() override;
-
-  void TearDown() override;
 
   void SetUpOnMainThread() override;
 
@@ -249,8 +244,6 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   // Whether we should fail the test if a message arrived at the browser from a
   // renderer for a bfcached page.
   bool fail_for_unexpected_messages_while_cached_ = true;
-
-  scoped_refptr<device::MockBluetoothAdapter> adapter_;
 };
 
 void WaitForDOMContentLoaded(RenderFrameHostImpl* rfh);

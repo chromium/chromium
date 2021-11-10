@@ -65,7 +65,6 @@
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/echo.test-mojom.h"
 #include "content/test/web_contents_observer_test_utils.h"
-#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -234,28 +233,6 @@ void BackForwardCacheBrowserTest::EnableFeatureAndSetParams(
 
 void BackForwardCacheBrowserTest::DisableFeature(base::Feature feature) {
   disabled_features_.push_back(feature);
-}
-
-void BackForwardCacheBrowserTest::SetUp() {
-  // Fake the BluetoothAdapter to say it's present.
-  // Used in WebBluetooth test.
-  adapter_ =
-      base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
-  device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // In CHROMEOS build, even when |adapter_| object is released at TearDown()
-    // it causes the test to fail on exit with an error indicating |adapter_| is
-    // leaked.
-    testing::Mock::AllowLeak(adapter_.get());
-#endif
-
-    ContentBrowserTest::SetUp();
-}
-
-void BackForwardCacheBrowserTest::TearDown() {
-  testing::Mock::VerifyAndClearExpectations(adapter_.get());
-  adapter_.reset();
-  ContentBrowserTest::TearDown();
 }
 
 void BackForwardCacheBrowserTest::SetUpOnMainThread() {
