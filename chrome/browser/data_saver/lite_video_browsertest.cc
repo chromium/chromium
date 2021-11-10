@@ -755,9 +755,10 @@ INSTANTIATE_TEST_SUITE_P(
     LiteVideoStopThrottlingOnPlaybackSeekPrerenderBrowserTest,
     ::testing::Bool());
 
+// TODO(crbug.com/1268716): Revive this test.
 IN_PROC_BROWSER_TEST_P(
     LiteVideoStopThrottlingOnPlaybackSeekPrerenderBrowserTest,
-    PrerenderingShouldNotAffectPlaybackSeekTest) {
+    DISABLED_PrerenderingShouldNotAffectPlaybackSeekTest) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   TestMSEPlayback("bear-vp9.webm", "2000", "2000", false);
 
