@@ -182,6 +182,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
     header_v1()->request_id = request_id;
   }
 
+  void set_trace_nonce(uint32_t trace_nonce) {
+    header()->trace_nonce = trace_nonce;
+  }
+
   // Access the payload.
   const uint8_t* payload() const;
   uint8_t* mutable_payload() { return const_cast<uint8_t*>(payload()); }

@@ -240,21 +240,17 @@ void {{proxy_name}}::{{method.name}}(
             "%s.%s response"|format(interface.name, method.name) %}
 {%-     set response_message_typename =
             "%s_%s_Response_Message"|format(interface.name, method.name) %}
-class {{class_name}}_{{method.name}}_ProxyToResponder {
+class {{class_name}}_{{method.name}}_ProxyToResponder : public ::mojo::internal::ProxyToResponder {
  public:
   static {{class_name}}::{{method.name}}Callback CreateCallback(
-      uint64_t request_id,
-      bool is_sync,
-      std::unique_ptr<mojo::MessageReceiverWithStatus>* responder) {
+      ::mojo::Message& message,
+      std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
     std::unique_ptr<{{class_name}}_{{method.name}}_ProxyToResponder> proxy(
         new {{class_name}}_{{method.name}}_ProxyToResponder(
-            request_id, is_sync, responder));
+            message, std::move(responder)));
     return base::BindOnce(&{{class_name}}_{{method.name}}_ProxyToResponder::Run,
                           std::move(proxy));
   }
-
-  {{class_name}}_{{method.name}}_ProxyToResponder(const {{class_name}}_{{method.name}}_ProxyToResponder&) = delete;
-  {{class_name}}_{{method.name}}_ProxyToResponder& operator=(const {{class_name}}_{{method.name}}_ProxyToResponder&) = delete;
 
   ~{{class_name}}_{{method.name}}_ProxyToResponder() {
 #if DCHECK_IS_ON()
@@ -266,19 +262,13 @@ class {{class_name}}_{{method.name}}_ProxyToResponder {
       responder_->IsConnectedAsync(base::BindOnce(&OnIsConnectedComplete));
     }
 #endif
-    // If the Callback was dropped then deleting the responder will close
-    // the pipe so the calling application knows to stop waiting for a reply.
-    responder_ = nullptr;
   }
 
  private:
   {{class_name}}_{{method.name}}_ProxyToResponder(
-      uint64_t request_id,
-      bool is_sync,
-      std::unique_ptr<mojo::MessageReceiverWithStatus>* responder)
-      : request_id_(request_id),
-        is_sync_(is_sync),
-        responder_(std::move(*responder)) {
+      ::mojo::Message& message,
+      std::unique_ptr<mojo::MessageReceiverWithStatus> responder)
+      : ::mojo::internal::ProxyToResponder(message, std::move(responder)) {
   }
 
 #if DCHECK_IS_ON()
@@ -293,10 +283,6 @@ class {{class_name}}_{{method.name}}_ProxyToResponder {
 
   void Run(
       {{interface_macros.declare_params("in_", method.response_parameters)}});
-
-  uint64_t request_id_;
-  bool is_sync_;
-  std::unique_ptr<mojo::MessageReceiverWithStatus> responder_;
 };
 
 {%-     if method|method_supports_lazy_serialization %}
@@ -373,6 +359,7 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
 #endif
 
   message.set_request_id(request_id_);
+  message.set_trace_nonce(trace_nonce_);
   ::mojo::internal::SendMessage(*responder_, message);
   // TODO(darin): Accept() returning false indicates a malformed message, and
   // that may be good reason to close the connection. However, we don't have a
@@ -516,7 +503,7 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
         } else {
           {{class_name}}::{{method.name}}Callback callback =
               {{class_name}}_{{method.name}}_ProxyToResponder::CreateCallback(
-                  message->request_id(), message_is_sync, &responder);
+                  *message, std::move(responder));
           context->Dispatch(message, impl, std::move(callback));
           return true;
         }
@@ -533,7 +520,7 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
           indent(4)}}
       {{class_name}}::{{method.name}}Callback callback =
           {{class_name}}_{{method.name}}_ProxyToResponder::CreateCallback(
-              message->request_id(), message_is_sync, &responder);
+              *message, std::move(responder));
       // A null |impl| means no implementation was bound.
       DCHECK(impl);
       impl->{{method.name}}(

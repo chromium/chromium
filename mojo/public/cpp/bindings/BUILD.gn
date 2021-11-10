@@ -72,6 +72,8 @@ component("bindings_base") {
     "lib/pending_receiver_state.h",
     "lib/pending_remote_state.cc",
     "lib/pending_remote_state.h",
+    "lib/proxy_to_responder.cc",
+    "lib/proxy_to_responder.h",
     "lib/scoped_interface_endpoint_handle.cc",
     "lib/send_message_helper.cc",
     "lib/send_message_helper.h",
