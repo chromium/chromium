@@ -326,6 +326,7 @@
 <translation id="334252345105450327">स्क्रीनशॉट लो</translation>
 <translation id="3351879221545518001">आप इस समय स्क्रीन कास्ट कर रहे हैं.</translation>
 <translation id="3364721542077212959">स्टाइलस टूल</translation>
+<translation id="3365977133351922112">आपका फ़ोन बहुत दूर है. फ़ोन को नज़दीक लाएं.</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3371140690572404006">USB-C डिवाइस (दायां सामने वाला पोर्ट)</translation>
 <translation id="3375634426936648815">कनेक्ट है</translation>
@@ -603,6 +604,7 @@
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5176318573511391780">स्क्रीन के कुछ हिस्से को रिकॉर्ड करें</translation>
 <translation id="5199367439331364630">अपने Chromebook में साइन इन करने के लिए, पासवर्ड डालें</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 अन्य सूचना}one{# अन्य सूचना}other{# अन्य सूचनाएं}}</translation>
 <translation id="5207949376430453814">लेख कैरेट हाइलाइट करें</translation>
 <translation id="5208059991603368177">चालू करें</translation>
@@ -885,6 +887,7 @@
 <translation id="7398254312354928459">नेटवर्क कनेक्शन स्विच किया गया</translation>
 <translation id="7405710164030118432">यह डिवाइस अनलॉक करने के लिए, अपना Family Link का माता-पिता वाला ऐक्सेस कोड डालें</translation>
 <translation id="7406608787870898861">अपने मोबाइल नेटवर्क का सेट अप पूरा करें</translation>
+<translation id="740790383907119240">ऐप शॉर्टकट</translation>
 <translation id="741244894080940828">एक यूनिट से दूसरी यूनिट में बदलना</translation>
 <translation id="7413851974711031813">बंद करने के लिए escape बटन दबाएं</translation>
 <translation id="742594950370306541">कैमरे का उपयोग हो रहा है.</translation>
@@ -987,6 +990,7 @@
 <translation id="8061464966246066292">उच्च स्क्रीन की रोशनी</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> को स्‍क्रीन कास्‍ट करना बंद करें</translation>
 <translation id="8113423164597455979">चालू, सभी ऐप</translation>
+<translation id="8120151603115102514">आपके फ़ोन में लॉक स्क्रीन की सुविधा चालू नहीं है. अपना Chromebook अनलॉक करने के लिए, पासवर्ड डालें.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>
 <translation id="8132487352815776550">सबटाइटल बंद करें</translation>
@@ -1035,6 +1039,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> में <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> हैं.</translation>
 <translation id="8477270416194247200">रद्द करने के लिए Alt+Search या Shift दबाएं.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> के साथ काम नहीं करता. रिज़ॉल्यूशन को बदलकर <ph name="FALLBACK_RESOLUTION" /> कर दिया गया था. बदलाव बनाए रखने के लिए, 'जारी रखें' पर क्लिक करें. सेटिंग को <ph name="TIMEOUT_SECONDS" /> में पहले जैसा दिया जाएगा.</translation>
+<translation id="85123341071060231">आपके Chromebook का ब्लूटूथ बंद है. अपना Chromebook अनलॉक करने के लिए, पासवर्ड डालें.</translation>
 <translation id="8513108775083588393">ऑटो-रोटेट</translation>
 <translation id="851458219935658693">मौजूदा डेस्क से विंडो देखें, रेडियो बटन चुना गया</translation>
 <translation id="8517041960877371778">हो सकता है आपका <ph name="DEVICE_TYPE" /> चालू होने पर चार्ज नहीं होता हो.</translation>

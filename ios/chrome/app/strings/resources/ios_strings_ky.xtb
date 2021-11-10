@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">Кирүү учурунда бир жерде ката кетти.</translation>
 <translation id="1911619930368729126">Google Drive'га жүкт брүү</translation>
 <translation id="1923342640370224680">Акыркы саатта</translation>
+<translation id="1930989359703290198">Уюмуңуз белгилүү бир аккаунттар менен гана кирүүгө уруксат берет. Тыюу салынган аккаунттар жашырылды. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Көчүрүү үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1952172573699511566">Мүмкүн болгон учурда вебсайттар текстти сиз каалаган тилде көрсөтүшөт.</translation>
 <translation id="1965935827552890526">Жасап жаткан нерсени Chrome'дун ачык терезесинде улантыңыз.</translation>
@@ -386,6 +387,8 @@
 <translation id="4802417911091824046">Купуя сөз айкашы менен шифрлөө Google Pay'деги төлөм ыкмалары менен даректерине карата колдонулбайт.
 
 Бул жөндөөнү өзгөртүү үчүн <ph name="BEGIN_LINK" />шайкештирүүнү баштапкы абалга келтириңиз<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Уюмуңуз тарабынан башкарылат.
+<ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Карта номери жараксыз</translation>
 <translation id="4808744395915275922">Жаңыртуулар</translation>
 <translation id="4818522717893377262">Тил кошуу…</translation>

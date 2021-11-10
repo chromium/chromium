@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Tillåt inte att webbplatser ansluter till MIDI-enheter</translation>
 <translation id="1088654056000736875">Chrome tar bort skadlig programvara från datorn …</translation>
 <translation id="1088659085457112967">Aktivera läsarläge</translation>
+<translation id="1089606299949659462">Granskningen är klar</translation>
 <translation id="1090126737595388931">Inga bakgrundsprogram körs</translation>
 <translation id="1090541560108055381">Kontrollera att samma kod visas på båda enheterna innan du parkopplar</translation>
 <translation id="1091767800771861448">Tryck på Esc om du vill hoppa över (endast versioner som inte är officiella).</translation>
@@ -1445,6 +1446,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2453860139492968684">Slutför</translation>
 <translation id="2454247629720664989">Sökord</translation>
 <translation id="2454264884354864965">Kameran är avstängd</translation>
+<translation id="2454524890947537054">Vill du godkänna webbplatsbegäran?</translation>
 <translation id="245650153866130664">Markera Kom ihåg lösenord om du vill uppdatera en biljett automatiskt. Lösenordet sparas endast på din enhet.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> vill kopiera filer från <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">För närvarande på den <ph name="CHANNEL_NAME" /> kanalen</translation>
@@ -1847,6 +1849,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2861301611394761800">Systemuppdateringen har slutförts. Starta om systemet.</translation>
 <translation id="2861941300086904918">Native Client säkerhetshanterare</translation>
 <translation id="2862815659905780618">Ta bort utvecklingsmiljön för Linux</translation>
+<translation id="2864272167277395865">Välj en enhet:</translation>
 <translation id="2864601841139725659">Ange profilbild</translation>
 <translation id="2865919525181940183">Skärmbild av program som visas på skärmen</translation>
 <translation id="286674810810214575">Kontrollerar strömkällor …</translation>
@@ -3256,6 +3259,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4364830672918311045">Visa aviseringar</translation>
 <translation id="4366138410738374926">Utskrift har påbörjats</translation>
 <translation id="4369121877634339065">Dra över en bild för att söka</translation>
+<translation id="4369215744064167350">Webbplatsbegäran har godkänts</translation>
 <translation id="4370975561335139969">E-postadressen och lösenordet matchar inte</translation>
 <translation id="4373966964907728675">Skrivbordet castas</translation>
 <translation id="4374831787438678295">Linux-installationsprogram</translation>
@@ -3948,6 +3952,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5117139026559873716">Koppla från telefonen från <ph name="DEVICE_TYPE" />. De ansluts inte längre till varandra automatiskt.</translation>
 <translation id="5117930984404104619">Bevaka hur övriga tillägg fungerar, däribland besökta webbadresser</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Klicka här om du vill besöka <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Operativsystemet i Linux-behållaren stöds inte längre. Det får inga fler säkerhetsuppdateringar eller felkorrigeringar, och funktioner som fungerar för närvarande kan oväntat få problem. Uppgradera till den senaste versionen för att fortsätta använda Linux.</translation>
 <translation id="5121130586824819730">Hårddisken är full. Spara på en annan plats eller gör mer plats på hårddisken.</translation>
 <translation id="5123433949759960244">Basketboll</translation>
@@ -4056,6 +4061,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="523505283826916779">Inställningar för tillgänglighet</translation>
 <translation id="5235750401727657667">Ersätt den aktuella sidan när du öppnar en ny flik</translation>
 <translation id="5236374273162681467">Du kan flytta lösenorden till Google-kontot så att du enkelt kan använda dem på alla dina enheter</translation>
+<translation id="523862956770478816">Webbplatsbehörigheter</translation>
 <translation id="5242724311594467048">Vill du aktivera <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Försök igen om en liten stund</translation>
 <translation id="5244474230056479698">Synkroniseras med <ph name="EMAIL" /></translation>
@@ -5343,6 +5349,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6635674640674343739">Det gick inte att upprätta en nätverksanslutning. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="6635944431854494329">Ägaren kan styra funktioner i Inställningar &gt; Avancerat &gt; Skicka diagnostik- och användningsdata automatiskt till Google.</translation>
 <translation id="6635956300022133031">Välj och anpassa röster för text till tal</translation>
+<translation id="6636623428211296678">Utforska fler inställningar nedan eller avsluta nu</translation>
 <translation id="6639554308659482635">SQLite-minne</translation>
 <translation id="6640268266988685324">Öppna flik</translation>
 <translation id="6642720633335369752">Om du sveper uppåt från skärmens nederkant och håller kvar fingret visas alla öppna appfönster.</translation>
@@ -6620,6 +6627,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7946586320617670168">Ursprunget måste vara säkert</translation>
 <translation id="794676567536738329">Bekräfta behörigheter</translation>
 <translation id="7947962633355574091">K&amp;opiera videoadress</translation>
+<translation id="7948407723851303488">Alla sidor av <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Öppna <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /> om du vill lägga till eller hantera betalningsmetoder på Google Pay</translation>
 <translation id="7952708427581814389">Webbplatser får begära tillstånd att läsa text och bilder i Urklipp</translation>
 <translation id="795282463722894016">Återställningen är klar</translation>
@@ -7685,6 +7693,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9053893665344928494">Kom ihåg mitt val</translation>
 <translation id="9055636786322918818">Tillämpa RC4-kryptering. Det här alternativet är mer riskabelt eftersom RC4-chiffer är osäkra.</translation>
 <translation id="9056810968620647706">Inga träffar hittades.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> vill få åtkomst till följande innehåll:</translation>
 <translation id="9057354806206861646">Uppdatera schema</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Fel på rad <ph name="ERROR_LINE_START" /> till och med <ph name="ERROR_LINE_END" /></translation>

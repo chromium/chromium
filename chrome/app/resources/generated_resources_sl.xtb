@@ -4093,6 +4093,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5265562206369321422">Brez povezave več kot en teden</translation>
 <translation id="5265797726250773323">Napaka pri nameščanju</translation>
 <translation id="5266113311903163739">Napaka pri uvozu overitelja potrdil</translation>
+<translation id="526622169288322445">Več dejanj za <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="5269977353971873915">Tiskanje ni uspelo</translation>
 <translation id="5275352920323889391">Pes</translation>
 <translation id="527605982717517565">Vedno dovoli JavaScript na mestu <ph name="HOST" /></translation>
@@ -5473,6 +5474,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6775163072363532304">Tu bodo prikazane razpoložljive naprave.</translation>
 <translation id="6777817260680419853">Preusmeritev je blokirana</translation>
 <translation id="6778737459546443941">Starši še niso odobrili</translation>
+<translation id="6779092717724412415">Če želite označiti na tak način, izberite poljubno besedilo in kliknite z desnim gumbom.</translation>
 <translation id="6779447100905857289">vaši vozički</translation>
 <translation id="677965093459947883">Zelo majhna</translation>
 <translation id="6781005693196527806">&amp;Upravljanje iskalnikov …</translation>
@@ -6288,6 +6290,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7625823789272218216">Novi zavihek na levi</translation>
 <translation id="7628201176665550262">Hitrost osveževanja</translation>
 <translation id="7629827748548208700">Zavihek: <ph name="TAB_NAME" /></translation>
+<translation id="7630426712700473382">To napravo upravlja <ph name="MANAGER" />, ki zahteva, da se vsakič prijavite.</translation>
 <translation id="7631014249255418691">Aplikacije in datoteke za Linux so uspešno varnostno kopirane</translation>
 <translation id="7631205654593498032">Ko povežete napravi, se strinjate, da lahko naprava <ph name="DEVICE_TYPE" /> počne to:</translation>
 <translation id="7631887513477658702">&amp;Vedno odpri to vrsto datotek</translation>

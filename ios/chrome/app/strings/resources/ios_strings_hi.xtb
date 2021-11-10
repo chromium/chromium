@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">साइन इन करते समय कोई गड़बड़ी हुई.</translation>
 <translation id="1911619930368729126">Google डिस्क पर अपलोड करें</translation>
 <translation id="1923342640370224680">पिछला घंटा</translation>
+<translation id="1930989359703290198">आपका संगठन, आपको सिर्फ़ कुछ खास खातों से साइन इन करने की अनुमति देता है. जिन खातों से साइन करने की अनुमति नहीं है वे छिपा दिए जाते हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">कॉपी करने के लिए दो बार टैप करें.</translation>
 <translation id="1952172573699511566">जब संभव होगा, वेबसाइटें आपकी पसंदीदा भाषा में टेक्स्ट दिखाएंगी.</translation>
 <translation id="1965935827552890526">आप दूसरी Chrome विंडो में जो काम कर रहे हैं उसे पूरा करें.</translation>
@@ -387,6 +388,8 @@
 <translation id="4802417911091824046">लंबा पासवर्ड सुरक्षित करने में Google Pay से भुगतान करने के तरीके और पते शामिल नहीं हैं.
 
 यह सेटिंग बदलने के लिए, <ph name="BEGIN_LINK" />सिंक रीसेट करें<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">आपका संगठन मैनेज करता है.
+<ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">कार्ड संख्या अमान्य है</translation>
 <translation id="4808744395915275922">अपडेट</translation>
 <translation id="4818522717893377262">भाषा जोड़ें...</translation>

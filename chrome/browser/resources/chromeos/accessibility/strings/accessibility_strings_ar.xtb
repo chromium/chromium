@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">نسخ</translation>
 <translation id="135978014023467274">‏تمّ التحديث إلى ChromeVox 63!</translation>
 <translation id="1360699455582016846">النقر على العنصر أسفل مفتاح التوجيه <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">الانتقال إلى الحرف التالي</translation>
 <translation id="1377925789329510816">‏هذا هو العنوان الأخير. اضغط على "Search+H" للانتقال إلى العنوان الأول، أو "Search+Shift+H" للانتقال إلى العنوان الثاني في هذه الصفحة.</translation>
 <translation id="138218114945450791">أزرق فاتح</translation>
 <translation id="1383876407941801731">البحث</translation>
@@ -214,6 +215,7 @@
 <translation id="2450814015951372393">مربع الاختيار</translation>
 <translation id="2461822463642141190">الاستهلاك الحالي لطاقة البطارية</translation>
 <translation id="2462626033734746142">مجموعة أزرار الاختيار</translation>
+<translation id="2467741090055146971">إلغاء الاختيار</translation>
 <translation id="2471138580042810658">العنوان السادس</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{علامة نجمة واحدة}zero{# asterisks}two{علامتا نجمة (#)}few{# علامات نجمة}many{# علامة نجمة}other{# من علامات النجمة}}</translation>
 <translation id="2490721194269245365">بني وردي</translation>
@@ -566,6 +568,7 @@
 <translation id="4854380505292502090">ليست هناك أداة وسائط سابقة.</translation>
 <translation id="4855927945655956315">‏مفاتيح مهمّة على لوحة المفاتيح: Control</translation>
 <translation id="4862744964787595316">غير غامق</translation>
+<translation id="4865995900839719272">الانتقال إلى السطر السابق</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">‏تفعيل تسجيل TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -624,6 +627,7 @@
 <translation id="5304943142864553931">علامة التبويب <ph name="TITLE" /></translation>
 <translation id="5308380583665731573">اتصال</translation>
 <translation id="5310788376443009632">تمت إزالة:</translation>
+<translation id="5316825363044614340">الانتقال إلى السطر التالي</translation>
 <translation id="5320727453979144100">تم تفعيل وضع التثبيت</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{فاصلة واحدة}zero{# commas}two{فاصلتان (#)}few{# فواصل}many{# فاصلة}other{# من الفواصل}}</translation>
 <translation id="532485153932049746">تنسيق النص
@@ -903,6 +907,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">ليس هناك حقل نموذج سابق.</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">مساعدة</translation>
 <translation id="7317017974771324508">اختيار جزئي</translation>
 <translation id="7322442671176251901">الاستكشاف باللمس</translation>
 <translation id="7344012264516629579">‏تتضمّن طلبات الانتقال السريع الإضافية استخدام الروابط والأزرار ومربّعات الاختيار وغيرها من العناصر. يمكنك العثور على القائمة الكاملة لطلبات الانتقال السريع في قوائم ChromeVox، والتي يمكن فتحها من خلال الضغط على مفتاح البحث + مفتاح النقطة.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">‏البرنامج التعليمي لقارئ الشاشة ChromeVox</translation>
 <translation id="9040132695316389094">العنوان الأول</translation>
 <translation id="9061884144798498064">اختيار جدول نمط برايل مكوّن من 8 نقاط:</translation>
+<translation id="9063946545000394379">الانتقال إلى الحرف السابق</translation>
 <translation id="9065283790526219006">+قائمة منبثقة</translation>
 <translation id="9065912140022662363">ليس هناك زر اختيار تالٍ.</translation>
 <translation id="9067522039955793016">فاصل صفحة</translation>

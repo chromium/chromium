@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">ਸਾਈਟਾਂ ਨੂੰ MIDI ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="1088654056000736875">Chrome ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਤੋਂ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਹਟਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1088659085457112967">ਰੀਡਰ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
+<translation id="1089606299949659462">ਸਮੀਖਿਆ ਪੂਰੀ ਹੋ ਗਈ!</translation>
 <translation id="1090126737595388931">ਕੋਈ ਪਿਛੋਕੜ ਐਪ ਨਹੀਂ ਚੱਲ ਰਹੇ ਹਨ</translation>
 <translation id="1090541560108055381">ਜੋੜਾਬੱਧ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਪੱਕਾ ਕਰੋ ਕਿ ਇਹ ਕੋਡ ਦੋਵਾਂ ਡੀਵਾਈਸਾਂ 'ਤੇ ਇੱਕੋ ਜਿਹਾ ਹੈ</translation>
 <translation id="1091767800771861448">ਛੱਡਣ ਲਈ ESCAPE ਦਬਾਓ (ਕੇਵਲ ਗੈਰ-ਅਧਿਕਾਰਤ ਬਿਲਡ)।</translation>
@@ -1446,6 +1447,7 @@
 <translation id="2453860139492968684">ਖ਼ਤਮ</translation>
 <translation id="2454247629720664989">ਪ੍ਰਮੁੱਖ-ਸ਼ਬਦ</translation>
 <translation id="2454264884354864965">ਕੈਮਰਾ ਬੰਦ ਹੈ</translation>
+<translation id="2454524890947537054">ਕੀ ਵੈੱਬ ਬੇਨਤੀ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇਣੀ ਹੈ?</translation>
 <translation id="245650153866130664">ਟਿਕਟ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਲਈ, “ਪਾਸਵਰਡ ਯਾਦ ਰੱਖੋ” ਦੀ ਜਾਂਚ ਕਰੋ। ਤੁਹਾਡਾ ਪਾਸਵਰਡ ਸਿਰਫ਼ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" />, <ph name="VOLUME_NAME" /> ਤੋਂ ਫਾਈਲਾਂ ਕਾਪੀ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ।</translation>
 <translation id="2457842160081795172">ਫ਼ਿਲਹਾਲ <ph name="CHANNEL_NAME" /> ਚੈਨਲ 'ਤੇ</translation>
@@ -1848,6 +1850,7 @@
 <translation id="2861301611394761800">ਸਿਸਟਮ ਅੱਪਡੇਟ ਪੂਰਾ। ਕਿਰਪਾ ਕਰਕੇ ਸਿਸਟਮ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="2861941300086904918">ਨੇਟਿਵ ਕਲਾਇੰਟ ਸੁਰੱਖਿਆ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="2862815659905780618">Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ ਨੂੰ ਹਟਾਓ</translation>
+<translation id="2864272167277395865">ਕੋਈ ਡੀਵਾਈਸ ਚੁਣੋ:</translation>
 <translation id="2864601841139725659">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਦੀ ਸੈਟਿੰਗ ਕਰੋ</translation>
 <translation id="2865919525181940183">ਉਹਨਾਂ ਪ੍ਰੋਗਰਾਮਾਂ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਜੋ ਫਿਲਹਾਲ ਸਕ੍ਰੀਨ 'ਤੇ ਮੌਜੂਦ ਹਨ</translation>
 <translation id="286674810810214575">ਪਾਵਰ ਸਰੋਤਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
@@ -3257,6 +3260,7 @@
 <translation id="4364830672918311045">ਡਿਸਪਲੇ ਸੂਚਨਾਵਾਂ</translation>
 <translation id="4366138410738374926">ਪ੍ਰਿੰਟ ਕਰਨਾ ਸ਼ੁਰੂ ਹੋ ਗਿਆ</translation>
 <translation id="4369121877634339065">ਖੋਜਣ ਲਈ ਕਿਸੇ ਵੀ ਚਿੱਤਰ 'ਤੇ ਘਸੀਟੋ</translation>
+<translation id="4369215744064167350">ਵੈੱਬਸਾਈਟ ਲਈ ਬੇਨਤੀ ਮਨਜ਼ੂਰ ਹੋ ਗਈ</translation>
 <translation id="4370975561335139969">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਰਜ ਕੀਤਾ ਈਮੇਲ ਅਤੇ ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
 <translation id="4373966964907728675">ਕਾਸਟਿੰਗ ਡੈਸਕਟਾਪ</translation>
 <translation id="4374831787438678295">Linux ਸਥਾਪਨਾਕਾਰ</translation>
@@ -3949,6 +3953,7 @@
 <translation id="5117139026559873716">ਆਪਣੇ ਫ਼ੋਨ ਨੂੰ ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਤੋਂ ਡਿਸਕਨੈਕਟ ਕਰੋ। ਉਹ ਹੁਣ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਨੈਕਟ ਨਹੀਂ ਹੋਣਗੇ।</translation>
 <translation id="5117930984404104619">ਹੋਰਾਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੇ ਵਿਵਹਾਰ ਦਾ ਨਿਰੀਖਣ ਕਰੋ, ਵਿਜਿਟ ਕੀਤੇ ਗਏ URL ਸਮੇਤ</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638"><ph name="APPROVED_URL" /> 'ਤੇ ਜਾਣ ਲਈ ਇੱਥੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="5121052518313988218">ਤੁਹਾਡੇ Linux ਕੰਟੇਨਰ ਦਾ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਹੁਣ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। ਇਸ ਵਿੱਚ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟਾਂ ਤੇ ਬੱਗ ਸੁਧਾਈਆਂ ਆਉਣੀਆਂ ਬੰਦ ਹੋ ਜਾਣਗੀਆਂ ਅਤੇ ਫ਼ਿਲਹਾਲ ਕੰਮ ਕਰਨ ਵਾਲੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਸ਼ਾਇਦ ਅਚਾਨਕ ਬੰਦ ਹੋ ਜਾਣ ਕਿਰਪਾ ਕਰਕੇ Linux ਨੂੰ ਵਰਤਣਾ ਜਾਰੀ ਰੱਖਣ ਲਈ ਨਵੀਨਤਮ ਵਰਜਨ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰੋ।</translation>
 <translation id="5121130586824819730">ਤੁਹਾਡੀ ਹਾਰਡ ਡਿਸਕ ਪੂਰੀ ਭਰੀ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕਿਸੇ ਹੋਰ ਟਿਕਾਣੇ 'ਤੇ ਰੱਖਿਅਤ ਕਰੋ ਜਾਂ ਹਾਰਡ ਡਿਸਕ 'ਤੇ ਹੋਰ ਜਗ੍ਹਾ ਬਣਾਓ।</translation>
 <translation id="5123433949759960244">ਬਾਸਕਟਬਾਲ</translation>
@@ -4057,6 +4062,7 @@
 <translation id="523505283826916779">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5235750401727657667">ਇੱਕ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹਣ ਸਮੇਂ ਤੁਹਾਨੂੰ ਦਿਖਾਈ ਦੇਣ ਵਾਲੇ ਪੰਨੇ ਨੂੰ ਬਦਲੋ</translation>
 <translation id="5236374273162681467">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਇਹਨਾਂ ਨੂੰ ਆਸਾਨੀ ਨਾਲ ਵਰਤਣ ਲਈ, ਤੁਸੀਂ ਇਹਨਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਲਿਜਾ ਸਕਦੇ ਹੋ</translation>
+<translation id="523862956770478816">ਸਾਈਟ ਲਈ ਇਜਾਜ਼ਤਾਂ</translation>
 <translation id="5242724311594467048">ਕੀ "<ph name="EXTENSION_NAME" />" ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5243522832766285132">ਕਿਰਪਾ ਕਰਕੇ ਕੁਝ ਪਲਾਂ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> ਨਾਲ ਸਮਕਾਲੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -5347,6 +5353,7 @@
 <translation id="6635674640674343739">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਆਪਣੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6635944431854494329">ਮਾਲਕ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਸੈਟਿੰਗਾਂ &gt; ਉੱਨਤ &gt; Google ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤਸ਼ਖੀਸ ਅਤੇ ਵਰਤੋਂ ਡਾਟਾ ਭੇਜੋ, ਤੋਂ ਕੰਟਰੋਲ ਕਰ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6635956300022133031">ਲਿਖਤ ਤੋਂ ਬੋਲੀ ਲਈ ਅਵਾਜ਼ਾਂ ਚੁਣੋ ਅਤੇ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="6636623428211296678">ਹੇਠਾਂ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦੀ ਪੜਚੋਲ ਕਰੋ ਜਾਂ ਹੁਣੇ ਪੂਰਾ ਕਰੋ</translation>
 <translation id="6639554308659482635">SQLite ਮੈਮਰੀ</translation>
 <translation id="6640268266988685324">ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="6642720633335369752">ਸਾਰੀਆਂ ਖੁੱਲ੍ਹੀਆਂ ਐਪ ਵਿੰਡੋ ਦੇਖਣ ਲਈ, ਹੇਠਾਂ ਤੋਂ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ ਅਤੇ ਰੁਕੋ।</translation>
@@ -6626,6 +6633,7 @@
 <translation id="7946586320617670168">ਮੂਲ ਦਾ ਸੁਰੱਖਿਅਤ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="794676567536738329">ਅਨੁਮਤੀਆਂ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7947962633355574091">ਵੀਡੀਓ ਪਤਾ ਕਾ&amp;ਪੀ ਕਰੋ</translation>
+<translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> ਦੇ ਸਾਰੇ ਪੰਨੇ</translation>
 <translation id="7951265006188088697">Google Pay ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਜਾਂ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, ਆਪਣੇ <ph name="BEGIN_LINK" />Google ਖਾਤੇ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="7952708427581814389">ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ ਦੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="795282463722894016">ਮੁੜ-ਬਹਾਲ ਕਰਨਾ ਪੂਰਾ ਹੋਇਆ</translation>
@@ -7691,6 +7699,7 @@
 <translation id="9053893665344928494">ਮੇਰੀ ਪਸੰਦ ਯਾਦ ਰੱਖੋ</translation>
 <translation id="9055636786322918818">RC4 ਇਨਕ੍ਰਿਪਸ਼ਨ ਲਾਜ਼ਮੀ ਬਣਾਓ। ਇਸ ਵਿਕਲਪ ਦੀ ਵਰਤੋਂ ਕਰਨਾ, RC4 ciphers ਦੇ ਅਸੁਰੱਖਿਅਤ ਹੋਣ ਕਰਕੇ ਤੁਹਾਡੇ ਜੋਖਮ ਨੂੰ ਵਧਾਉਂਦਾ ਹੈ।</translation>
 <translation id="9056810968620647706">ਕੋਈ ਮੇਲ ਨਹੀਂ ਮਿਲੇ ਸਨ।</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> ਅੱਗੇ ਦਿੱਤੀ ਸਮੱਗਰੀ ਤੱਕ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ:</translation>
 <translation id="9057354806206861646">ਅੱਪਡੇਟਾਂ ਦੀ ਸਮਾਂ-ਸੂਚੀ</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> ਤੋਂ <ph name="ERROR_LINE_END" /> ਲਾਈਨਾਂ ਤੱਕ ਗੜਬੜ</translation>

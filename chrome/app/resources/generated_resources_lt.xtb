@@ -2404,6 +2404,7 @@ ir „Ctrl“ + „Alt“ + šviesumo didinimo klavišus, kad tolintumėte.</tra
 <translation id="3449393517661170867">Naujas skirtukų langas</translation>
 <translation id="3449839693241009168">Paspauskite <ph name="SEARCH_KEY" />, kad galėtumėte siųsti komandas į „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="3450157232394774192">Neveikos būsenos užėmimo procentas</translation>
+<translation id="3450180775417907283">Domenui <ph name="MANAGER" /> reikia, kad dabar prisijungtumėte prie „Wi-Fi“ ir atsisiųstumėte naujinį.</translation>
 <translation id="3451753556629288767">Leidžiama atidaryti tam tikrų tipų failus</translation>
 <translation id="3452999110156026232">Tėvų prieiga</translation>
 <translation id="3453612417627951340">Reikalingas leidimas</translation>
@@ -4267,6 +4268,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5472627187093107397">Išsaugoti šios svetainės slaptažodžius</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN kodą turi sudaryti bent vienas simbolis}one{PIN kodą turi sudaryti bent # simbolis}few{PIN kodą turi sudaryti bent # simboliai}many{PIN kodą turi sudaryti bent # simbolio}other{PIN kodą turi sudaryti bent # simbolių}}</translation>
+<translation id="5474859849784484111">Domenui <ph name="MANAGER" /> reikia, kad dabar prisijungtumėte prie „Wi-Fi“ ir atsisiųstumėte naujinį. Arba atsisiųskite naudodami matuojamą ryšį (gali būti taikomi mokesčiai).</translation>
 <translation id="5481273127572794904">Neleidžiama automatiškai atsisiųsti kelių failų</translation>
 <translation id="5481941284378890518">Pridėti netoliese esančius spausdintuvus</translation>
 <translation id="5483785310822538350">Anuliuoti galimybę pasiekti failą ir įrenginį</translation>
@@ -4690,6 +4692,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="592880897588170157">Atsisiųskite PDF failus, užuot automatiškai atidarę juos naršyklėje „Chrome“</translation>
 <translation id="592919310198008711">Spustelėjus plėtinį</translation>
 <translation id="5932124097031739492">„Linux“ buvo sėkmingai naujovinta.</translation>
+<translation id="5932209916647644605">Domenui <ph name="MANAGER" /> reikia, kad nedelsdami atnaujintumėte „<ph name="DEVICE_TYPE" />“.</translation>
 <translation id="5932224571077948991">Svetainėje rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="59324397759951282">USB įrenginys iš „<ph name="MANUFACTURER_NAME" />“</translation>
 <translation id="5932441198730183141">Neturite pakankamai pasiekiamų licencijų, kad galėtumėte užregistruoti šį „Google Meet“ aparatinės įrangos įrenginį. Norėdami įsigyti jų daugiau, susisiekite su pardavimo skyriumi. Jei manote, kad šis pranešimas rodomas per klaidą, susisiekite su palaikymo komanda.</translation>

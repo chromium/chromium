@@ -326,6 +326,7 @@
 <translation id="334252345105450327">ဖန်သားပြင်ဓာတ်ပုံတစ်ပုံရိုက်ပါ</translation>
 <translation id="3351879221545518001">သင်သည် လောလောဆယ် မျက်နှာပြင်ကို ကာ့စ်လုပ်နေပါသည်။</translation>
 <translation id="3364721542077212959">စတိုင်လပ်စ်ခဲတံ</translation>
+<translation id="3365977133351922112">သင့်ဖုန်းက အရမ်းဝေးလွန်းနေသည်။ ဖုန်းကို အနီးသို့ယူလာပါ။</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3371140690572404006">USB-C ကိရိယာ (ညာ ပို့တ် အရှေ့ပိုင်း)</translation>
 <translation id="3375634426936648815">ချိတ်ဆက်ထားသည်</translation>
@@ -602,6 +603,7 @@
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="5176318573511391780">ဖန်သားပြင်တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန်</translation>
 <translation id="5199367439331364630">သင့် Chromebook သို့ လက်မှတ်ထိုးဝင်ရန် စကားဝှက်ထည့်ပါ</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />၊ <ph name="NOTIFICATION_TITLE" />- <ph name="MESSAGE" />၊ <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{အခြား အကြောင်းကြားချက် 1 ခု}other{အခြား အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="5207949376430453814">စာရိုက်ထည့်ရန်အကွက်ကို မြင်သာထင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="5208059991603368177">ဖွင့်ထားသည်</translation>
@@ -884,6 +886,7 @@
 <translation id="7398254312354928459">ကွန်ရက်ချိတ်ဆက်မှုကို ပြောင်းထားခြင်း</translation>
 <translation id="7405710164030118432">စက်ပစ္စည်းကို လော့ခ်ဖွင့်ရန် သင်၏ Family Link မိဘသုံးခွင့်ကုဒ်ကို ထည့်ပါ</translation>
 <translation id="7406608787870898861">သင့်မိုဘိုင်းကွန်ရက် စနစ်ထည့်သွင်းခြင်းကို အပြီးသတ်ပါ</translation>
+<translation id="740790383907119240">အက်ပ်ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="741244894080940828">ပြောင်းလဲခြင်း</translation>
 <translation id="7413851974711031813">ပိတ်ရန် escape ကို နှိပ်ပါ</translation>
 <translation id="742594950370306541">ကင်မရာကို အသုံးပြုနေသည်။</translation>
@@ -986,6 +989,7 @@
 <translation id="8061464966246066292">ခြားနားမှုမြင့်သော</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> သို့ မျက်နှာပြင်အား ကာစ်လုပ်နေခြင်းကို ရပ်ပါ</translation>
 <translation id="8113423164597455979">ဖွင့်- အားလုံး</translation>
+<translation id="8120151603115102514">သင့်ဖုန်းတွင် လော့ခ်မျက်နှာပြင် မရှိပါ။ သင့် Chromebook ကိုလော့ခ်ဖွင့်ရန် စကားဝှက်ထည့်ပါ။</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° စင်တီဂရိတ်</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
 <translation id="8132487352815776550">စာတန်းများ ရပ်ရန်</translation>
@@ -1034,6 +1038,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> က <ph name="FEATURE_NAME" /> ကို <ph name="FEATURE_STATE" />။</translation>
 <translation id="8477270416194247200">ပယ်ဖျက်ရန် Alt+Search သို့မဟုတ် Shift ကို နှိပ်ပါ။</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> က <ph name="SPECIFIED_RESOLUTION" /> ကို မပံ့ပိုးပါ။ ပုံရိပ်ပြတ်သားကိန်းကို <ph name="FALLBACK_RESOLUTION" /> သို့ ပြောင်းထားသည်။ အပြောင်းအလဲများသိမ်းရန် 'အတည်ပြုရန်' ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားရှိပါမည်။</translation>
+<translation id="85123341071060231">သင့် Chromebook ၏ ဘလူးတုသ်ပိတ်ထားသည်။ Chromebook လော့ခ်ဖွင့်ရန် စကားဝှက်ထည့်ပါ။</translation>
 <translation id="8513108775083588393">အော်တို-လှည့်</translation>
 <translation id="851458219935658693">ဝင်းဒိုးများကို လက်ရှိ မျက်နှာပြင်နေရာမှ ပြရန်၊ ရေဒီယိုခလုတ်ကို ရွေးထားသည်</translation>
 <translation id="8517041960877371778">သင်၏ <ph name="DEVICE_TYPE" /> ကိရိယာမှာ ဖွင့်ထားလျှင် အားသွင်း၍ ရချင်မှရမည်.</translation>

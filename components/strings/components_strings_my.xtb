@@ -82,6 +82,7 @@
 <translation id="124116460088058876">နောက်ထပ် ဘာသာစကားများ</translation>
 <translation id="1243027604378859286">စာရေးသူ-</translation>
 <translation id="1246424317317450637">စာလုံးထူ</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome OS ဆက်တင်များတွင် အများသုံးစွဲနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် တဘ်နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="1250759482327835220">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင်၏ကတ်၊ အမည်နှင့် ငွေတောင်းခံလွှာပို့ရန် လိပ်စာကို သင့် Google အကောင့်တွင် သိမ်းပါ။</translation>
 <translation id="1252799212227771492">စာရွက်ပြုလုပ်ရန် ခလုတ်၊ Google Sheet အသစ် အမြန်ပြုလုပ်ရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />၊ <ph name="TYPE_2" /> (စင့်ခ်လုပ်ထားသည်)</translation>
@@ -323,6 +324,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{ဝဘ်ဆိုက် ၁ ခု}other{ဝဘ်ဆိုက် # ခု}}</translation>
 <translation id="1923390796829649802">အများသုံးစွဲနိုင်မှု ဆက်တင်များ စီမံရန်ခလုတ်၊ Chrome OS ဆက်တင်များတွင် အများသုံးစွဲနိုင်မှုတူးလ်ကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် Enter နှိပ်ပါ</translation>
 <translation id="1924727005275031552">အသစ်</translation>
+<translation id="1927439593081478069">Chrome လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန်ခလုတ်၊ Chrome ဆက်တင်များတွင် လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန် Enter နှိပ်ပါ</translation>
 <translation id="1939175642807587452">အကြောင်းကြားချက်များ ပို့ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="1945968466830820669">သင်သည် သင့်အဖွဲ့အစည်း၏ အကောင့်ကို အသုံးပြုခွင့် ဆုံးရှုံးနိုင်သည် သို့မဟုတ် အထောက်အထား အခိုးခံရနိုင်သည်။ သင့်စကားဝှက်ကို ယခုပင်ပြောင်းလဲရန် Chromium က အကြံပြုပါသည်။</translation>
 <translation id="1947454675006758438">ညာဘက်ထိပ်တွင် ချုပ်စက်ဖြင့် ချုပ်ရန်</translation>
@@ -342,6 +344,7 @@
 <translation id="2003709556000175978">သင့်စကားဝှက်ကို ယခု ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2003775180883135320">ထိပ်တွင် လေးချက်ဖောက်ရန်</translation>
 <translation id="201174227998721785">Chrome ဆက်တင်များတွင် ဝဘ်ဆိုက်အားလုံးရှိ ခွင့်ပြုချက်များနှင့် သိမ်းထားသောဒေတာများကို စီမံရန်</translation>
+<translation id="2019607688127825327">အများသုံးစွဲနိုင်မှု ဆက်တင်များ စီမံရန်ခလုတ်၊ Chrome ဆက်တင်များတွင် အများသုံးစွဲနိုင်မှုတူးလ်ကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် Enter နှိပ်ပါ</translation>
 <translation id="2025115093177348061">လွန်ကဲပကတိအသွင်</translation>
 <translation id="2025186561304664664">ပရောက်စီအား အလိုအလျောက် ပြုပြင်ခြင်း သတ်မှတ်ထားသည်။</translation>
 <translation id="2025891858974379949">လုံခြုံမှုမရှိသည့် အကြောင်းအရာ</translation>
@@ -507,6 +510,7 @@
 <translation id="2556876185419854533">&amp;တည်းဖြတ်မှုကို ပြန်လုပ်ရန်</translation>
 <translation id="2570734079541893434">ဆက်တင်များ စီမံခန့်ခွဲရန်</translation>
 <translation id="257674075312929031">အုပ်စု</translation>
+<translation id="2576880857912732701">လုံခြုံရေးဆက်တင်များ စီမံရန် ခလုတ်၊ Chrome ဆက်တင်များတွင် သင်၏ ‘လုံခြုံစွာဖွင့်ကြည့်ခြင်း’ နှင့် အခြားအရာများကို စီမံရန် Enter နှိပ်ပါ</translation>
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> မှ။ ၎င်းနှင့် အခြားသတင်း <ph name="OTHER_ARTICLE_COUNT" /> ပုဒ်ကို ဖတ်ပါ။</translation>
 <translation id="2587841377698384444">လမ်းညွှန် API ID-</translation>
@@ -555,6 +559,7 @@
 <translation id="2713444072780614174">အဖြူ</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် ငွေပေးချေမှုများနှင့် ခရက်ဒစ်ကတ် အချက်အလက်ကို စီမံရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="2721148159707890343">တောင်းဆိုချက် အောင်မြင်ပါသည်</translation>
+<translation id="2723669454293168317">Chrome ဆက်တင်များတွင် လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ပါ</translation>
 <translation id="2726001110728089263">ဘေးဗန်း</translation>
 <translation id="2728127805433021124">ဆာဗာ၏ လက်မှတ်ကို အားနည်းသည့် လက်မှတ် အယ်လ်ဂိုရီသမ်ကို သုံးပြီး ထိုးထားသည်။</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />ချိတ်ဆက်မှုဆိုင်ရာ ပြဿနာရှာဖွေမှု ပြုလုပ်ပါ<ph name="END_LINK" /></translation>
@@ -585,6 +590,7 @@
 <translation id="2859806420264540918">ဤဝဘ်ဆိုက်က စိတ်အနှောင့်အယှက်ဖြစ်စေသော (သို့) အထင်အမြင်မှားစေသော ကြော်ငြာများကို ပြသည်။</translation>
 <translation id="287596039013813457">နှစ်လိုဖွယ်</translation>
 <translation id="2876489322757410363">ပြင်ပအပလီကေးရှင်းဖြင့် ငွေပေးချေရန် ရုပ်ဖျက်မုဒ်မှ ထွက်နေသည်။ ရှေ့ဆက်မလား။</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် သင်၏ ‘လုံခြုံစွာ ကြည့်ရှုခြင်း’ နှင့် အခြားအရာများကိုစီမံရန် တဘ်နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="2878197950673342043">ပိုစတာပုံ ခေါက်ရန်</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">ဝင်းဒိုး နေရာချထားမှု</translation>
@@ -687,6 +693,7 @@
 <translation id="3229041911291329567">သင့်စက်နှင့် ဘရောင်ဇာအကြောင်း ဗားရှင်းအချက်အလက်</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> အတွက် CVC ကို ထည့်ပါ</translation>
 <translation id="3234666976984236645">ဤအင်တာနက်စာမျက်နှာ‌ပေါ်တွင် အရေးကြီး‌သော မာတိကာများကို အစဉ် ထောက်လှမ်းပါ</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်နှိပ်ပြီးနောက် Enter နှိပ်၍ ဘရောင်ဇာ၏အသွင်ကို စိတ်ကြိုက်ပြင်ပါ</translation>
 <translation id="3240791268468473923">ကိုက်ညီမှုရှိသည့် လုံခြုံသောပေးချေမှုအထောက်အထားဆိုင်ရာ စာရွက်မဖွင့်ထားပါ</translation>
 <translation id="3249845759089040423">မိမိမိုက်မိုက်</translation>
 <translation id="3252266817569339921">ပြင်သစ်</translation>
@@ -730,6 +737,7 @@
       • သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံ ပြုလုပ်လိုပြီး ကင်မရာ တည်နေရာကိုခြေရာခံလိုသည်
       • သင့်ကင်မရာကို သုံးလိုသည်</translation>
 <translation id="337363190475750230">စီမံဆောင်ရွက်မှု မရှိတော့သော</translation>
+<translation id="3375754925484257129">Chrome လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန်</translation>
 <translation id="3377144306166885718">ဆာဗာက TLS ဗာရှင်းအဟောင်းကို သုံးထားသည်။</translation>
 <translation id="3377188786107721145">မူဝါဒ ဆန်းစစ်မှု အမှား</translation>
 <translation id="3377736046129930310">ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုရန် မျက်နှာပြင်လော့ခ်ကို အသုံးပြုပါ</translation>
@@ -770,6 +778,7 @@
 <translation id="3462200631372590220">အဆင့်မြင့်များကို ဝှက်ထားရန်</translation>
 <translation id="3467763166455606212">ကဒ်ကိုင်ဆောင်သူ၏အမည် လိုအပ်သည်</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" /> လောလောဆယ် ပွင့်နေသည်၊ ပွင့်နေသောတဘ်သို့ ​ ပြောင်းရန် Tab နှိပ်ပြီး Enter ကို နှိပ်ပါ</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်နှိပ်ပြီးနောက် Enter နှိပ်၍ လက်ရှိဖွင့်ထားသော ရုပ်ဖျက် ဝင်းဒိုးအားလုံးကို ပိတ်ပါ</translation>
 <translation id="3479552764303398839">ယခု မလို</translation>
 <translation id="3484560055331845446">သင်၏ Google အကောင့်ကို အသုံးပြုခွင့် ဆုံးရှုံးနိုင်သည်။ သင့်စကားဝှက်ကို ယခုပင်ပြောင်းရန် Chrome က အကြံပြုပါသည်။ သင့်အား လက်မှတ်ထိုးဝင်ခိုင်းပါမည်။</translation>
 <translation id="3487845404393360112">ဗန်း ၄</translation>
@@ -807,6 +816,7 @@
 <translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> အတွက် ပကတိအသွင်ကတ်</translation>
 <translation id="3614103345592970299">အရွယ်အစား ၂</translation>
 <translation id="361438452008624280">"<ph name="LANGUAGE_ID" />" စာရင်းထည့်သွင်းမှု- အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသော ဘာသာစကား။</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် လုံခြုံရေး စစ်ဆေးမှု လုပ်ဆောင်ရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="3615877443314183785">မှန်ကန်သည့် ကုန်ဆုံးမည့်ရက်ကို ထည့်ပါ</translation>
 <translation id="36224234498066874">ဖွင့်ကြည့်ထားသည့် ဒေတာများကို ရှင်းလင်းရန်...</translation>
 <translation id="362276910939193118">မှတ်တမ်း အပြည့် ပြရန်</translation>
@@ -1601,6 +1611,7 @@
 <translation id="6218753634732582820">Chromium ထဲမှ လိပ်စာကို ဖယ်ရှားရမလား။</translation>
 <translation id="622039917539443112">မျဉ်းပြိုင် ခေါက်ရန်</translation>
 <translation id="6221345481584921695">Google  လုံခြုံစွာ ရှာကြည့်မှုသည် မကြာမီတုန်းက <ph name="BEGIN_LINK" /> ပေါ်က<ph name="END_LINK" />မှာ အန္တရာယ်ဝဲ<ph name="SITE" />ကို တွေ့ရှိခဲ့သည်။ ပုံမှန်အားဖြင့် လုံခြုံကြသည့် ဝက်ဘ်ဆိုက်များမှာ ရံဖန်ရံခါမှာ အန္တရာယ် ကူးစက်မှု ရှိနိုင်သည်။ အန္တရာယ် အကြောင်းအရာမှာ အများသိ ဖြစ်သော အန္တရာယ်ဝဲများကို ဖြန့်ဖြူးသူ <ph name="SUBRESOURCE_HOST" /> ထံမှ  ဖြစ်ပါသည်။</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များတွင် သင့်အများသုံးစွဲနိုင်မှု တူးလ်များကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="6234122620015464377">မှတ်တမ်းတစ်ခုအပြီး ဖြတ်ထုတ်ရန်</translation>
 <translation id="6240447795304464094">Google Pay အမှတ်တံဆိပ်</translation>
 <translation id="6241121617266208201">အကြံပြုချက်များကို ဝှက်ရန်</translation>
@@ -1619,6 +1630,7 @@
 <translation id="6279098320682980337">ပကတိအသွင်ကတ် နံပါတ် ဖြည့်မထားဘူးလား။ မိတ္တူကူးရန် ကတ်အသေးစိတ်အချက်များကို နှိပ်ပါ</translation>
 <translation id="6280223929691119688">ဤလိပ်စာသို့ ပို့၍မရပါ။ အခြားလိပ်စာတစ်ခုကို ရွေးပါ။</translation>
 <translation id="6282194474023008486">စာပို့သင်္ကေတ</translation>
+<translation id="6285507000506177184">Chrome တွင် ဒေါင်းလုဒ်များ စီမံရန်ခလုတ်၊ Chrome တွင် ဒေါင်းလုဒ်လုပ်ခဲ့သည့်ဖိုင်များကို စီမံရန် Enter နှိပ်ပါ</translation>
 <translation id="6289939620939689042">စာမျက်နှာ အရောင်</translation>
 <translation id="6290238015253830360">သင်အကြံပြုထားသည့် ဆောင်းပါးများ ဤနေရာတွင် ပေါ်ပါမည်</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1734,6 +1746,7 @@
 <translation id="6689249931105087298">အနက်ရောင်အမှတ် အချိုင့်နှင့် အညီ</translation>
 <translation id="6689271823431384964">လက်မှတ်ထိုးဝင်ထားသဖြင့် သင်၏ကတ်များကို သင့် Google အကောင့်တွင် သိမ်းရန် Chrome က ကမ်းလှမ်းထားပါသည်။ ဤလုပ်ဆောင်ပုံကို ဆက်တင်များတွင် ပြောင်းနိုင်သည်။ ကတ်ကိုင်ဆောင်သူ အမည်ကို သင့်အကောင့်မှ ရရှိပါသည်။</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်နှိပ်ပြီးနောက် Enter နှိပ်၍ Google Account တွင် သင့်စက်ကိုရှာပါ</translation>
+<translation id="6696588630955820014">ဤတဘ်ကိုမျှဝေရန် ခလုတ်၊ လင့်ခ်ကို မျှဝေခြင်း၊ QR ကုဒ် ပြုလုပ်ခြင်း၊ ကာစ်လုပ်ခြင်းစသည်တို့ဖြင့် ဤတဘ်ကိုမျှဝေရန် Enter နှိပ်ပါ</translation>
 <translation id="6698381487523150993">ဖန်တီးခဲ့:</translation>
 <translation id="6702919718839027939">တင်ပြရန်</translation>
 <translation id="6710213216561001401">အရင်</translation>
@@ -1940,6 +1953,7 @@
 <translation id="7392089738299859607">လိပ်စာ အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="7399802613464275309">လုံခြုံရေး စစ်ဆေးမှု</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">လင့်ခ်ကို မျှဝေခြင်း၊ QR ကုဒ် ပြုလုပ်ခြင်း၊ ကာစ်လုပ်ခြင်းစသည်တို့ဖြင့် ဤတဘ်ကို မျှဝေနိုင်သည်</translation>
 <translation id="7403591733719184120">သင်၏ <ph name="DEVICE_NAME" /> ကို စီမံခန့်ခွဲထားပါသည်</translation>
 <translation id="7407424307057130981">&lt;p&gt;သင်၏ Windows ကွန်ပျူတာပေါ်တွင် Superfish ဆော့ဖ်ဝဲရှိနေလျှင် ဤအမှားအယွင်းကို တွေ့ရပါမည်။&lt;/p&gt;
     &lt;p&gt;ဝဘ်သို့ ချိတ်ဆက်နိုင်ရန်အတွက် ဆော့ဖ်ဝဲကို ယာယီပိတ်ရန် ဤအဆင့်များအတိုင်း လုပ်ဆောင်ပါ။ စီမံခန့်ခွဲသူ လုပ်ပိုင်ခွင့်များ လိုအပ်ပါမည်။&lt;/p&gt;
@@ -2170,6 +2184,7 @@
 <translation id="810875025413331850">အနီးအနားတွင် ကိရိယာများ မရှိပါ။</translation>
 <translation id="8116925261070264013">ဖျောက်ထားသည်</translation>
 <translation id="8118489163946903409">ငွေပေးချေမှုစနစ်</translation>
+<translation id="8124639700796374294">Chrome စိတ်ကြိုက်လုပ်ရန် ခလုတ်၊ သင့်ဘရောင်ဇာ၏အသွင်ကို စိတ်ကြိုက်ပြင်ရန် Enter နှိပ်ပါ</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ကို သင်၏ ကွန်ပျူတာ သို့မဟုတ် ကွန်ရက်တွင် မှန်ကန်စွာ ထည့်သွင်းမထားပါ။ ဤပြဿနာကို ဖြေရှင်းရန် သင်၏ IT စီမံခန့်ခွဲသူကို မေးမြန်းပါ။</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
 <translation id="8148608574971654810">PDF ဗားရှင်း-</translation>
@@ -2351,6 +2366,7 @@
 <translation id="87601671197631245">ဤဝဘ်ဆိုက်သည် လုံခြုံရေး စီစဉ်သတ်မှတ်ချက်အဟောင်းကို အသုံးပြုသည့်အတွက် သင်၏အချက်အလက်များ (ဥပမာ စကားဝှက်များ၊ မက်ဆေ့ဂျ်များ သို့မဟုတ် ခရက်ဒစ်ကတ်များ) ကို ဤဝဘ်ဆိုက်သို့ပို့သည့်အခါ ပေါက်ကြားသွားနိုင်ပါသည်။</translation>
 <translation id="8761567432415473239">Google ဘရောင်ဇာ လုံခြုံရေးက မကြာမီတုန်းက <ph name="BEGIN_LINK" />အန္တရာယ်ရှိသည့် ပရိုဂရမ်များကို <ph name="SITE" /> မှာ ရှာတွေခဲ့သည်<ph name="END_LINK" /></translation>
 <translation id="8763927697961133303">USB ကိရိယာ</translation>
+<translation id="8763986294015493060">လက်ရှိဖွင့်ထားသော ရုပ်ဖျက်ဝင်းဒိုးအားလုံးကို ပိတ်နိုင်သည်</translation>
 <translation id="8766943070169463815">လုံခြုံသောပေးချေမှု အထောက်အထား စိစစ်ခြင်းစာရွက် ဖွင့်ထားသည်</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;ဖျက်ရန်ကို ပြန်လုပ်ရန်</translation>
@@ -2364,6 +2380,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင့် Chrome ဆက်တင်များမှတစ်ဆင့် Chrome ကို အပ်ဒိတ်လုပ်ရန် Tab နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="882338992931677877">ကိုယ်တိုင်ထည့် အပေါက်</translation>
+<translation id="8834380158646307944">ရုပ်ဖျက် ဝင်းဒိုးများပိတ်ရန် ခလုတ်၊ လက်ရှိဖွင့်ထားသော ရုပ်ဖျက် ဝင်းဒိုးအားလုံး ပိတ်ရန် Enter နှိပ်ပါ</translation>
 <translation id="883848425547221593">အခြား စာညှပ်များ</translation>
 <translation id="884264119367021077">ပို့ဆောင်ရမည့် လိပ်စာ</translation>
 <translation id="884923133447025588">ရုတ်သိမ်းခြင်း စက်ကိရိယာ မတွေ့ပါ။</translation>
@@ -2417,6 +2434,7 @@
 <translation id="9020200922353704812">ကတ်ငွေတောင်းခံလွှာပို့ရန် လိပ်စာလိုအပ်ပါသည်</translation>
 <translation id="9020542370529661692">ဒီစာမျက်နှာကို  <ph name="TARGET_LANGUAGE" />သို့ ဘာသာပြန်ပေးခဲ့သည်။</translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ လင့်ခ်ကို မျှဝေခြင်း၊ QR ကုဒ် ပြုလုပ်ခြင်း၊ ကာစ်လုပ်ခြင်းစသည်တို့ဖြင့် ဤတဘ်ကို မျှဝေရန် တဘ်နှိပ်ပြီးနောက် Enter နှိပ်ပါ</translation>
 <translation id="9025348182339809926">(မမှန်ပါ)</translation>
 <translation id="9030265603405983977">အဖြူအမည်း</translation>
 <translation id="9035022520814077154">လုံခြုံမှု အမှား</translation>

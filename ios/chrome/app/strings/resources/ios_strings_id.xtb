@@ -114,6 +114,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1973912524893600642">Simpan Data</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
+<translation id="199425419756152024">Lihat Sandi</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="2021670401941426298">Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="2073572773299281212">Aktif <ph name="DAYS" /> Hari Lalu</translation>
@@ -152,7 +153,9 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2386793615875593361">1 dipilih</translation>
 <translation id="2421004566762153674">Memblokir cookie pihak ketiga</translation>
 <translation id="2421044535038393232">Terus Edit</translation>
+<translation id="2434405374328098816">Anda sudah menyimpan sandi untuk "<ph name="USERNAME" />" di <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Tampilkan sandi</translation>
+<translation id="2473876017985765807">Anda sudah menyimpan sandi untuk <ph name="WEBSITE" /></translation>
 <translation id="2476359652512522418">Tidak Dipilih</translation>
 <translation id="2497852260688568942">Sinkronisasi dinonaktifkan oleh administrator</translation>
 <translation id="2500374554657206846">Opsi untuk Menyimpan Sandi</translation>
@@ -282,10 +285,12 @@ Ikuti langkah di bawah:</translation>
 <translation id="3603009562372709545">Salin URL Tautan</translation>
 <translation id="3607167657931203000">Data Isi-Otomatis</translation>
 <translation id="3609785682760573515">Menyinkronkan...</translation>
+<translation id="3631443864840848029">Pastikan Anda menyimpan sandi saat ini untuk situs ini.</translation>
 <translation id="3638472932233958418">Pramuat Halaman Web</translation>
 <translation id="3661160521073045932">Profil Konfigurasi Tersedia</translation>
 <translation id="3670030362669914947">Nomor</translation>
 <translation id="3691593122358196899">Dibookmark ke <ph name="FOLDER_TITLE" /></translation>
+<translation id="369349502275246497">Tawarkan Penyimpanan Sandi</translation>
 <translation id="3709582977625132201">Tandai sebagai Belum Dibaca</translation>
 <translation id="3740397331642243698">Membuka URL yang diinput di Google Chrome dalam mode Samaran.</translation>
 <translation id="3762232513783804601">Dibuat untuk iPad Anda</translation>
@@ -507,6 +512,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5988851877894965432">Buka URL di Chrome</translation>
 <translation id="6012140227487808125">Mengenkripsi…</translation>
 <translation id="6021332621416007159">Buka di...</translation>
+<translation id="6027945736510816438">Mungkin maksud Anda <ph name="WEBSITE" />?</translation>
 <translation id="6036514205982097558">Semua Tab Anda dalam Satu Browser</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -748,6 +754,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8080028325999236607">Tutup Semua Tab</translation>
 <translation id="8105368624971345109">Nonaktifkan</translation>
 <translation id="8114753159095730575">Download file tersedia. Opsi tersedia di dekat bagian bawah layar.</translation>
+<translation id="8132598642024322408">Sekarang <ph name="PRICE" />, sebelumnya <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="8156478151976189188">Sinkronisasi Sandi Tidak Berfungsi</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Perangkat Anda<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Terjemahkan Halaman</translation>
@@ -820,6 +827,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8881801611828450202">Telusuri Gambar Ini di <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Bagikan...</translation>
 <translation id="8917490105272468696">Ya, Saya Setuju</translation>
+<translation id="8952559610785099500">Tambahkan Sandi</translation>
 <translation id="895541991026785598">Laporkan Masalah</translation>
 <translation id="8976382372951310360">Bantuan</translation>
 <translation id="8976414606286374109">Kartu disimpan ke Akun Google Anda.</translation>

@@ -276,7 +276,7 @@
 <translation id="2689830683995595741">Chrome ഉപയോഗിക്കുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, Chrome OS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />Family Link ഉപയോഗിച്ച് മാനേജ് ചെയ്യുന്ന Google അക്കൗണ്ടുകൾക്കുള്ള സ്വകാര്യതാ അറിയിപ്പും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
 <translation id="2702516483241149200">പുതിയത്: ഈ ടെക്സ്റ്റിലേക്ക് സ്ക്രോൾ ചെയ്യുന്ന ഒരു ലിങ്ക് പങ്കിടുക</translation>
 <translation id="2704606927547763573">പകർത്തി</translation>
-<translation id="2707726405694321444">പേജ് പുതുക്കുക</translation>
+<translation id="2707726405694321444">പേജ് റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="271033894570825754">പുതിയത്</translation>
 <translation id="2718352093833049315">Wi-Fi യിൽ മാത്രം</translation>
 <translation id="2718846868787000099">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷകളിൽ ഉള്ളടക്കം കാണിക്കുന്നതിന്, സന്ദർശിക്കുന്ന സൈറ്റുകൾക്ക് നിങ്ങളുടെ മുൻഗണനകൾ കാണാൻ കഴിയും</translation>
@@ -781,7 +781,7 @@
 <translation id="5749068826913805084">ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ Chrome-ന് സ്റ്റോറേജ് ആക്‌സസ് ആവശ്യമുണ്ട്.</translation>
 <translation id="5749237766298580851">ഓഫാണ് <ph name="SEPARATOR" /> ശുപാർശ ചെയ്യുന്നില്ല</translation>
 <translation id="5752232708629533680">GIF മാത്രം പങ്കിടുക</translation>
-<translation id="5754350196967618083">Discover പുതുക്കിയെടുക്കാനാകുന്നില്ല</translation>
+<translation id="5754350196967618083">Discover റീഫ്രഷ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="5763382633136178763">ആൾമാറാട്ട ടാബുകൾ</translation>
 <translation id="5763514718066511291">ഈ ആപ്പിനായുള്ള URL പകർത്താൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5765517223145864268">നിങ്ങളുടെ അനുഭവം ഞങ്ങളോട് പറയൂ. അല്ലെങ്കിൽ <ph name="BEGIN_LINK" />നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക<ph name="END_LINK" />.</translation>
@@ -1034,7 +1034,7 @@
 <translation id="7173114856073700355">ക്രമീകരണം തുറക്കുക</translation>
 <translation id="7177466738963138057">നിങ്ങൾക്കിത് പിന്നീട് ക്രമീകരണങ്ങളിൽ മാറ്റാനാവും</translation>
 <translation id="7177873915659574692">QR കോഡ് സൃഷ്‌ടിക്കാനാകുന്നില്ല. URL-ൽ <ph name="CHARACTER_LIMIT" /> പ്രതീകങ്ങളിൽ കൂടുതൽ അടങ്ങിയിരിക്കുന്നു.</translation>
-<translation id="7180611975245234373">പുതുക്കുക</translation>
+<translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="7187993566681480880">നിങ്ങൾ സൈൻ ഇൻ ആയിരിക്കുമ്പോൾ Chrome-ൽ നിങ്ങളെ സുരക്ഷിതരാക്കുകയും മറ്റ് Google ആപ്പുകളിൽ നിങ്ങളുടെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ ഉപയോഗിക്കുകയും ചെയ്യും.</translation>
 <translation id="718926126787620637">മുഴുവൻ ഉയരത്തിൽ തുറന്ന ബുക്ക്‌മാർക്ക് ഫോൾഡറുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="7191430249889272776">ടാബ് പശ്ചാത്തലത്തിൽ തുറന്നു.</translation>

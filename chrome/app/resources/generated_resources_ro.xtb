@@ -2387,6 +2387,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3449393517661170867">Fereastră nouă cu file</translation>
 <translation id="3449839693241009168">Apasă pe <ph name="SEARCH_KEY" /> pentru a trimite comenzi la <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Procentaj de ocupare în starea inactivă</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare.</translation>
 <translation id="3451753556629288767">Au permisiunea de a deschide tipuri de fișiere</translation>
 <translation id="3452999110156026232">Acces pentru părinți</translation>
 <translation id="3453612417627951340">Necesită autorizare</translation>
@@ -4249,6 +4250,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5472627187093107397">Salvează parolele pentru acest site</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Codul PIN trebuie să conțină minimum un caracter}few{Codul PIN trebuie să conțină minimum # caractere}other{Codul PIN trebuie să conțină minimum # de caractere}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> îți solicită să te conectezi acum la rețeaua Wi-Fi și să descarci o actualizare. Sau poți să descarci folosind o conexiune contorizată (se pot aplica taxe).</translation>
 <translation id="5481273127572794904">Nu au permisiunea de a descărca automat mai multe fișiere</translation>
 <translation id="5481941284378890518">Adaugă imprimantele din apropiere</translation>
 <translation id="5483785310822538350">Revocă accesul la fișiere și la dispozitive</translation>
@@ -4671,6 +4673,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="592880897588170157">Descarcă fișierele PDF în loc să le deschizi automat în Chrome</translation>
 <translation id="592919310198008711">Când dau clic pe extensie</translation>
 <translation id="5932124097031739492">S-a făcut upgrade la Linux.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> îți solicită să actualizezi imediat dispozitivul <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5932224571077948991">Site-ul afișează anunțuri deranjante sau înșelătoare</translation>
 <translation id="59324397759951282">Dispozitiv USB de la <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Nu ai suficiente licențe disponibile ca să înregistrezi acest dispozitiv hardware Google Meet. Contactează departamentul de vânzări ca să cumperi mai multe. În cazul în care consideri că acest mesaj este afișat din greșeală, contactează serviciul de asistență.</translation>

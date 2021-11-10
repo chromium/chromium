@@ -2392,6 +2392,7 @@
 <translation id="3449393517661170867">نافذة ذات علامات تبويب جديدة</translation>
 <translation id="3449839693241009168">اضغط على <ph name="SEARCH_KEY" /> لإرسال الأوامر إلى <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">نسبة الإشغال لحالة الخمول</translation>
+<translation id="3450180775417907283">‏يتطلّب <ph name="MANAGER" /> الاتصال بشبكة Wi-Fi الآن وتنزيل تحديث.</translation>
 <translation id="3451753556629288767">المواقع الإلكترونية التي تم السماح لها بفتح أنواع معيّنة من الملفات</translation>
 <translation id="3452999110156026232">وصول أحد الوالدين</translation>
 <translation id="3453612417627951340">يتطلب تخويل</translation>
@@ -4251,6 +4252,7 @@
 <translation id="5472627187093107397">حفظ كلمات المرور لهذا الموقع الإلكتروني</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{يجب ألا يقلّ رقم التعريف الشخصي عن حرف واحد.}zero{يجب ألا يقلّ رقم التعريف الشخصي عن # حرف.}two{يجب ألا يقلّ رقم التعريف الشخصي عن حرفَين.}few{يجب ألا يقلّ رقم التعريف الشخصي عن # أحرف.}many{يجب ألا يقلّ رقم التعريف الشخصي عن # حرفًا.}other{يجب ألا يقلّ رقم التعريف الشخصي عن # حرف.}}</translation>
+<translation id="5474859849784484111">‏يتطلّب <ph name="MANAGER" /> الاتصال بشبكة Wi-Fi الآن وتنزيل تحديث أو التنزيل من خلال اتصال يفرض تكلفة استخدام ( قد يتم تحصيل رسوم).</translation>
 <translation id="5481273127572794904">المواقع الإلكترونية التي لا يُسمح لها بتنزيل الملفات المتعدّدة تلقائيًا</translation>
 <translation id="5481941284378890518">إضافة طابعات مجاورة</translation>
 <translation id="5483785310822538350">إبطال الوصول للملف والجهاز</translation>
@@ -4673,6 +4675,7 @@
 <translation id="592880897588170157">‏تنزيل ملفات PDF بدلاً من فتحها تلقائيًا في Chrome</translation>
 <translation id="592919310198008711">عند النقر على الإضافة</translation>
 <translation id="5932124097031739492">‏تمت ترقية نظام التشغيل Linux بنجاح.</translation>
+<translation id="5932209916647644605">يتطلّب <ph name="MANAGER" /> تحديث جهاز <ph name="DEVICE_TYPE" /> فورًا.</translation>
 <translation id="5932224571077948991">يعرض الموقع الإلكتروني إعلانات مضلِّلة أو غير مرغوب فيها</translation>
 <translation id="59324397759951282">‏جهاز USB من <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">‏لا تتوفّر لديك تراخيص كافية لتسجيل جهاز Google Meet هذا. يُرجى التواصل مع قسم المبيعات لشراء المزيد من التراخيص. إذا كنت تعتقد أنك تلقّيت هذه الرسالة عن طريق الخطأ، يُرجى التواصل مع فريق الدعم.</translation>
