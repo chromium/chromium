@@ -56,17 +56,17 @@ class MEDIA_EXPORT AudioDiscardHelper {
   // frames should be discarded.
   void Reset(size_t initial_discard);
 
-  // Applies discard padding from the encoded buffer along with any initial
-  // discards.  |decoded_buffer| may be NULL, if not the timestamp and duration
-  // will be set after discards are applied.  Returns true if |decoded_buffer|
-  // exists after processing discard events.  Returns false if |decoded_buffer|
-  // was NULL, is completely discarded, or a processing error occurs.
+  // Applies discard padding from |time_info| along with any initial discards.
+  // |decoded_buffer| may be NULL, if not the timestamp and duration will be set
+  // after discards are applied.  Returns true if |decoded_buffer| exists after
+  // processing discard events.  Returns false if |decoded_buffer| was NULL, is
+  // completely discarded, or a processing error occurs.
   //
   // If AudioDiscardHelper is not initialized() the timestamp of the first
-  // |encoded_buffer| will be used as the basis for all future timestamps set on
-  // |decoded_buffer|s.  If the first buffer has a negative timestamp it will be
-  // clamped to zero.
-  bool ProcessBuffers(const DecoderBuffer& encoded_buffer,
+  // |time_info| will be used as the basis for all future timestamps set on
+  // |decoded_buffer|s.  If the first |time_info| has a negative timestamp it
+  // will be clamped to zero.
+  bool ProcessBuffers(const DecoderBuffer::TimeInfo& time_info,
                       AudioBuffer* decoded_buffer);
 
   // Whether any buffers have been processed.
