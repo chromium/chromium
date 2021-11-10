@@ -228,8 +228,6 @@ std::vector<std::string> GenerateKernelCmdline(
                          start_params.arc_file_picker_experiment),
       base::StringPrintf("androidboot.arc_custom_tabs=%d",
                          start_params.arc_custom_tabs_experiment),
-      base::StringPrintf("androidboot.image_copy_paste_compat=%d",
-                         start_params.enable_image_copy_paste_compat),
       base::StringPrintf(
           "androidboot.keyboard_shortcut_helper_integration=%d",
           start_params.enable_keyboard_shortcut_helper_integration),

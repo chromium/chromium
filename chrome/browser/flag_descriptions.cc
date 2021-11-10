@@ -4014,12 +4014,6 @@ const char kArcFilePickerExperimentName[] =
 const char kArcFilePickerExperimentDescription[] =
     "Enables using Chrome OS file picker in ARC.";
 
-const char kArcImageCopyPasteCompatName[] =
-    "Enable image copy & paste compatibility mode for ARC";
-const char kArcImageCopyPasteCompatDescription[] =
-    "Allows pasting of images to Android apps through commitContent API and "
-    "share intent.";
-
 const char kArcKeyboardShortcutHelperIntegrationName[] =
     "Enable keyboard shortcut helper integration for ARC";
 const char kArcKeyboardShortcutHelperIntegrationDescription[] =

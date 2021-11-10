@@ -2310,9 +2310,6 @@ extern const char kArcDocumentsProviderUnknownSizeDescription[];
 extern const char kArcFilePickerExperimentName[];
 extern const char kArcFilePickerExperimentDescription[];
 
-extern const char kArcImageCopyPasteCompatName[];
-extern const char kArcImageCopyPasteCompatDescription[];
-
 extern const char kArcKeyboardShortcutHelperIntegrationName[];
 extern const char kArcKeyboardShortcutHelperIntegrationDescription[];
 

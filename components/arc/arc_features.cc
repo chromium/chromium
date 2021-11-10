@@ -70,10 +70,6 @@ const base::Feature kGuestZram{"ArcGuestZram",
 // Controls the size of the guest zram.
 const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
 
-// Controls image copy & paste app compat feature in ARC.
-const base::Feature kImageCopyPasteCompatFeature{
-    "ArcImageCopyPasteCompat", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls keyboard shortcut helper integration feature in ARC.
 const base::Feature kKeyboardShortcutHelperIntegrationFeature{
     "ArcKeyboardShortcutHelperIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
