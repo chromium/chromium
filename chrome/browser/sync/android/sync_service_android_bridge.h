@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SYNC_SYNC_SERVICE_ANDROID_BRIDGE_H_
-#define CHROME_BROWSER_SYNC_SYNC_SERVICE_ANDROID_BRIDGE_H_
+#ifndef CHROME_BROWSER_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_
+#define CHROME_BROWSER_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_
 
 #include <memory>
 
@@ -102,4 +102,4 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
 };
 
-#endif  // CHROME_BROWSER_SYNC_SYNC_SERVICE_ANDROID_BRIDGE_H_
+#endif  // CHROME_BROWSER_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_

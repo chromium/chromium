@@ -542,7 +542,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/sync/AccountManagementFragmentTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/AutofillTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/BookmarksTest.java",
-  "javatests/src/org/chromium/chrome/browser/sync/FakeSyncServiceImpl.java",
   "javatests/src/org/chromium/chrome/browser/sync/FirstRunTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/GoogleServicesSettingsTest.java",
   "javatests/src/org/chromium/chrome/browser/sync/ManageSyncSettingsTest.java",

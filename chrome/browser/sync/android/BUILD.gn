@@ -5,5 +5,23 @@
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
-java_group("java") {
+android_library("java") {
+  deps = [
+    "//base:base_java",
+    "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/sync/SyncService.java",
+    "java/src/org/chromium/chrome/browser/sync/SyncServiceImpl.java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [ "//chrome/browser" ]
+  sources = [ "java/src/org/chromium/chrome/browser/sync/SyncServiceImpl.java" ]
 }
