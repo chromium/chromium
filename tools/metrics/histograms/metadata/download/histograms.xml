@@ -226,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DuplicateDialogEvent.{Type}"
-    enum="DuplicateDownloadEvent" expires_after="M99">
+    enum="DuplicateDownloadEvent" expires_after="2022-04-03">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@chromium.org</owner>
   <summary>
@@ -243,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.DuplicateInfobarEvent.{Type}"
-    enum="DuplicateDownloadEvent" expires_after="M99">
+    enum="DuplicateDownloadEvent" expires_after="2022-04-03">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@chromium.org</owner>
   <summary>
