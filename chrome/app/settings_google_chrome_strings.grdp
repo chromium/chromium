@@ -144,6 +144,12 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the standard protection section of the safe browsing card in the privacy review.">
     If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL" desc="Text of the Privacy Sandbox sublabel in the completion card of the privacy review.">
+    See how Chrome plans to safeguard you from cross-site tracking while preserving the open web
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_WAA_SUB_LABEL" desc="Text of the Web and App Activity sublabel in the completion card of the privacy review.">
+    Choose whether to include Chrome history for more personalized experiences in Google services
+  </message>
 
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_BEFORE" desc="This text describes what the safety check is. (It's an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.)">

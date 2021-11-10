@@ -34,6 +34,19 @@ export type ClearBrowsingDataResult = {
   showPasswordsNotice: boolean,
 };
 
+/**
+ * UpdateSyncStateEvent contains relevant information for a summary of a user's
+ * updated Sync State.
+ */
+export type UpdateSyncStateEvent = {
+  signedIn: boolean,
+  syncConsented: boolean,
+  syncingHistory: boolean,
+  shouldShowCookieException: boolean,
+  isNonGoogleDse: boolean,
+  nonGoogleSearchHistoryString: string,
+};
+
 export interface ClearBrowsingDataBrowserProxy {
   /**
    * @return A promise resolved when data clearing has completed. The boolean

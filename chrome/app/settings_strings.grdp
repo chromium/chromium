@@ -1378,8 +1378,14 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_SUB_HEADER" desc="A subheader shown at the top of the completion card in the privacy review that informs users that they can explore more settings or complete the privacy review.">
     Explore more settings below or finish now
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_LEAVE_BUTTON" desc="Text of a button in the completion car in the privacy review that leads the user back to Chrome settings.">
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_LEAVE_BUTTON" desc="Text of a button in the completion card in the privacy review that leads the user back to Chrome settings.">
     Done
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_PRIVACY_SANDBOX_LABEL" desc="Text of the Privacy Sandbox label in the completion card of the privacy review.">
+    Privacy Sandbox trial
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_WAA_LABEL" desc="Text of the Web and App Activity label in the completion card of the privacy review.">
+    Web &#38; App Activity
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_CARD_HEADER" desc="Header of the 'make searches and browsing better' card in the privacy review.">
     Review settings for search and browsing optimization
