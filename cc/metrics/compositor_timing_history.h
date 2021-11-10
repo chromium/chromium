@@ -126,6 +126,21 @@ class CC_EXPORT CompositorTimingHistory {
   RollingTimeDeltaHistory activate_duration_history_;
   RollingTimeDeltaHistory draw_duration_history_;
 
+  // Used for duration estimates when enabled. Without this feature, compositor
+  // timing history collects timing history of each stage and use sum of
+  // percentile for duration estimates. With this feature, we use percentile of
+  // sum instead.
+  bool duration_estimates_enabled_;
+  RollingTimeDeltaHistory bmf_start_to_ready_to_commit_critical_history_;
+  double bmf_start_to_ready_to_commit_critical_percentile_;
+  RollingTimeDeltaHistory bmf_start_to_ready_to_commit_not_critical_history_;
+  double bmf_start_to_ready_to_commit_not_critical_percentile_;
+  RollingTimeDeltaHistory bmf_queue_to_activate_critical_history_;
+  double bmf_queue_to_activate_critical_percentile_;
+
+  base::TimeDelta begin_main_frame_queue_duration_;
+  base::TimeDelta bmf_start_to_activate_duration_;
+
   bool begin_main_frame_on_critical_path_;
   base::TimeTicks begin_main_frame_sent_time_;
   base::TimeTicks begin_main_frame_start_time_;
