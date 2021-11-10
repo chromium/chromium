@@ -16,6 +16,7 @@
 #include "ash/style/style_util.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -213,6 +214,15 @@ class CaptureModeOption
     label_view_->SetEnabledColor(GetState() == STATE_DISABLED
                                      ? provider->GetDisabledColor(enabled_color)
                                      : enabled_color);
+  }
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    Button::GetAccessibleNodeData(node_data);
+    node_data->SetName(GetOptionLabel());
+    node_data->role = ax::mojom::Role::kRadioButton;
+    node_data->SetCheckedState(IsOptionChecked()
+                                   ? ax::mojom::CheckedState::kTrue
+                                   : ax::mojom::CheckedState::kFalse);
   }
 
   // CaptureModeSessionFocusCycler::HighlightableView:
