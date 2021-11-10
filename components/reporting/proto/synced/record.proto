@@ -103,14 +103,12 @@ message EncryptedRecord {
   // If missing, the record is either not encrypted or missing.
   optional EncryptionInfo encryption_info = 2;
 
-  optional SequenceInformation sequencing_information = 3 [deprecated = true];
-
   // Sequencing information (required). Must be present to allow
   // tracking and confirmation of the events by server.
-  optional SequenceInformation sequence_information = 4;
+  optional SequenceInformation sequence_information = 3;
 
   // Compression information (optional).
-  optional CompressionInformation compression_information = 5;
+  optional CompressionInformation compression_information = 4;
 }
 
 // Tracking information for what compression is used.
