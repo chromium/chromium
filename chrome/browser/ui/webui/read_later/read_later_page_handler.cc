@@ -268,8 +268,11 @@ void ReadLaterPageHandler::UpdateCurrentPageActionButtonState() {
 
 void ReadLaterPageHandler::ShowUI() {
   auto embedder = read_later_ui_->embedder();
-  if (embedder)
+  if (embedder) {
     embedder->ShowUI();
+    if (!base::FeatureList::IsEnabled(features::kSidePanel))
+      UpdateCurrentPageActionButton();
+  }
 }
 
 void ReadLaterPageHandler::CloseUI() {
