@@ -440,6 +440,26 @@ class MesonBuilder(InstrumentedPackageBuilder):
     return os.path.join(self.temp_dir(), 'usr', self._libdir)
 
 
+class CmakeBuilder(InstrumentedPackageBuilder):
+  def build_and_install(self):
+    cmake_cmd = [
+      'cmake',
+      '.',
+      '-DCMAKE_INSTALL_PREFIX=/usr',
+      '-DCMAKE_INSTALL_LIBDIR=/%s/' % self._libdir,
+      self._extra_configure_flags,
+    ]
+    self.shell_call(' '.join(cmake_cmd), env=self._build_env,
+                    cwd=self._source_dir)
+
+    args = ['DESTDIR', 'BUILDROOT', 'INSTALL_ROOT']
+    make_args = ['%s=%s' % (name, self.temp_dir()) for name in args]
+    self.make(make_args)
+    self.make_install(make_args)
+
+    self.post_install()
+
+
 class NSSBuilder(InstrumentedPackageBuilder):
   def build_and_install(self):
     # NSS uses a build system that's different from configure/make/install. All
@@ -548,6 +568,8 @@ def main():
     builder = DebianBuilder(args, clobber)
   elif args.build_method == 'meson':
     builder = MesonBuilder(args, clobber)
+  elif args.build_method == 'cmake':
+    builder = CmakeBuilder(args, clobber)
   elif args.build_method == 'stub':
     builder = StubBuilder(args, clobber)
   else:
