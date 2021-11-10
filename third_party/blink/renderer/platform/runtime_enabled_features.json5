@@ -1912,6 +1912,11 @@
       status: "stable"
     },
     {
+      // The renderpriority attribute feature.
+      // https://github.com/WICG/display-locking/blob/main/explainers/update-rendering.md
+      name: "RenderPriorityAttribute"
+    },
+    {
       // See https://crbug.com/1012063
       name: "RequestVideoFrameCallback",
       status: "stable",
