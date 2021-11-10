@@ -655,6 +655,11 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     return;
   }
 
+  if (url.ProtocolIs("filesystem")) {
+    document_loader_->CountUse(
+        mojom::blink::WebFeature::kFileSystemUrlNavigation);
+  }
+
   frame_load_type = HandleInitialEmptyDocumentReplacementIfNeeded(
       resource_request.Url(), frame_load_type);
 

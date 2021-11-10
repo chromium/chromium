@@ -35274,6 +35274,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4072" label="WebCodecsVideoFrameFromBuffer"/>
   <int value="4073" label="OpenWebDatabaseInsecureContext"/>
   <int value="4074" label="ScriptWebBundle"/>
+  <int value="4077" label="FileSystemUrlNavigation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
