@@ -107,7 +107,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_message_filter.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
-#include "content/browser/renderer_host/renderer_sandboxed_process_launcher_delegate.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
@@ -125,6 +124,7 @@
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_or_resource_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/network_service_instance.h"
@@ -145,6 +145,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/result_codes.h"
+#include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "google_apis/gaia/gaia_config.h"
@@ -162,6 +163,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
@@ -219,6 +221,9 @@
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
+#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/win/sandbox_win.h"
+#include "sandbox/win/src/sandbox_policy.h"
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -242,6 +247,10 @@
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_switches.h"
+#endif
+
+#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+#include "content/public/common/zygote/zygote_handle.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
@@ -384,6 +393,108 @@ SiteProcessMap* GetSiteProcessMapForBrowserContext(BrowserContext* context) {
   context->SetUserData(kSiteProcessMapKeyName, std::move(new_map));
   return new_map_ptr;
 }
+
+// NOTE: changes to this class need to be reviewed by the security team.
+class RendererSandboxedProcessLauncherDelegate
+    : public SandboxedProcessLauncherDelegate {
+ public:
+  RendererSandboxedProcessLauncherDelegate() = default;
+
+  ~RendererSandboxedProcessLauncherDelegate() override = default;
+
+#if BUILDFLAG(USE_ZYGOTE_HANDLE)
+  ZygoteHandle GetZygote() override {
+    const base::CommandLine& browser_command_line =
+        *base::CommandLine::ForCurrentProcess();
+    base::CommandLine::StringType renderer_prefix =
+        browser_command_line.GetSwitchValueNative(switches::kRendererCmdPrefix);
+    if (!renderer_prefix.empty())
+      return nullptr;
+    return GetGenericZygote();
+  }
+#endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
+
+#if defined(OS_MAC)
+  bool EnableCpuSecurityMitigations() override { return true; }
+#endif  // defined(OS_MAC)
+
+  sandbox::mojom::Sandbox GetSandboxType() override {
+    return sandbox::mojom::Sandbox::kRenderer;
+  }
+};
+
+#if defined(OS_WIN)
+// NOTE: changes to this class need to be reviewed by the security team.
+class RendererSandboxedProcessLauncherDelegateWin
+    : public RendererSandboxedProcessLauncherDelegate {
+ public:
+  RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line,
+                                              bool is_jit_disabled)
+      : renderer_code_integrity_enabled_(
+            GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()) {
+    if (is_jit_disabled) {
+      dynamic_code_can_be_disabled_ = true;
+      return;
+    }
+    if (cmd_line->HasSwitch(blink::switches::kJavaScriptFlags)) {
+      std::string js_flags =
+          cmd_line->GetSwitchValueASCII(blink::switches::kJavaScriptFlags);
+      std::vector<base::StringPiece> js_flag_list = base::SplitStringPiece(
+          js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      for (const auto& js_flag : js_flag_list) {
+        if (js_flag == "--jitless") {
+          // If v8 is running jitless then there is no need for the ability to
+          // mark writable pages as executable to be available to the process.
+          dynamic_code_can_be_disabled_ = true;
+          break;
+        }
+      }
+    }
+  }
+
+  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
+    sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);
+
+    const std::wstring& sid =
+        GetContentClient()->browser()->GetAppContainerSidForSandboxType(
+            GetSandboxType());
+    if (!sid.empty())
+      sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());
+
+    ContentBrowserClient::ChildSpawnFlags flags(
+        ContentBrowserClient::ChildSpawnFlags::NONE);
+    if (renderer_code_integrity_enabled_) {
+      flags = ContentBrowserClient::ChildSpawnFlags::RENDERER_CODE_INTEGRITY;
+
+      // If the renderer process is protected by code integrity, more
+      // mitigations become available.
+      if (dynamic_code_can_be_disabled_) {
+        sandbox::MitigationFlags mitigation_flags =
+            policy->GetDelayedProcessMitigations();
+        mitigation_flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
+        if (sandbox::SBOX_ALL_OK !=
+            policy->SetDelayedProcessMitigations(mitigation_flags)) {
+          return false;
+        }
+      }
+    }
+
+    return GetContentClient()->browser()->PreSpawnChild(
+        policy, sandbox::mojom::Sandbox::kRenderer, flags);
+  }
+
+  bool CetCompatible() override {
+    // Disable CET for renderer because v8 deoptimization swaps stacks in a
+    // non-compliant way. CET can be enabled where the renderer is known to
+    // be jitless.
+    return dynamic_code_can_be_disabled_;
+  }
+
+ private:
+  const bool renderer_code_integrity_enabled_;
+  bool dynamic_code_can_be_disabled_ = false;
+};
+#endif  // defined(OS_WIN)
 
 // This class manages spare RenderProcessHosts.
 //

@@ -1636,8 +1636,6 @@ source_set("browser") {
     "renderer_host/render_widget_host_view_child_frame.h",
     "renderer_host/render_widget_targeter.cc",
     "renderer_host/render_widget_targeter.h",
-    "renderer_host/renderer_sandboxed_process_launcher_delegate.cc",
-    "renderer_host/renderer_sandboxed_process_launcher_delegate.h",
     "renderer_host/should_swap_browsing_instance.h",
     "renderer_host/stored_page.cc",
     "renderer_host/stored_page.h",
