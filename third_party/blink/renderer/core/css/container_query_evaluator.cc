@@ -57,15 +57,18 @@ double ContainerQueryEvaluator::Height() const {
 }
 
 bool ContainerQueryEvaluator::Eval(
-    const ContainerQuery& container_query,
-    MediaQueryResultList* viewport_dependent) const {
+    const ContainerQuery& container_query) const {
+  return Eval(container_query, MediaQueryEvaluator::Results());
+}
+
+bool ContainerQueryEvaluator::Eval(const ContainerQuery& container_query,
+                                   MediaQueryEvaluator::Results results) const {
   if (container_query.QueriedAxes() == PhysicalAxes(kPhysicalAxisNone))
     return false;
   if (!IsSufficientlyContained(contained_axes_, container_query.QueriedAxes()))
     return false;
   DCHECK(media_query_evaluator_);
-  return media_query_evaluator_->Eval(*container_query.media_queries_,
-                                      {viewport_dependent, nullptr});
+  return media_query_evaluator_->Eval(*container_query.media_queries_, results);
 }
 
 void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {
@@ -75,9 +78,15 @@ void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {
 bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
                                          MatchResult& match_result) {
   MediaQueryResultList viewport_dependent;
-  bool result = Eval(query, &viewport_dependent);
+  unsigned unit_flags = MediaQueryExpValue::UnitFlags::kNone;
+
+  bool result = Eval(query, {&viewport_dependent, nullptr, &unit_flags});
   if (!viewport_dependent.IsEmpty())
     match_result.SetDependsOnViewportContainerQueries();
+  if (unit_flags & MediaQueryExpValue::UnitFlags::kRootFontRelative)
+    match_result.SetDependsOnRemContainerQueries();
+  if (unit_flags & MediaQueryExpValue::UnitFlags::kFontRelative)
+    depends_on_font_ = true;
   Add(query, result);
   return result;
 }
@@ -87,10 +96,11 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
     const ComputedStyle& style,
     PhysicalSize size,
     PhysicalAxes contained_axes) {
-  if (size_ == size && contained_axes_ == contained_axes)
+  if (size_ == size && contained_axes_ == contained_axes && !font_dirty_)
     return Change::kNone;
 
   SetData(document, style, size, contained_axes);
+  font_dirty_ = false;
 
   Change change = ComputeChange();
 
@@ -125,6 +135,7 @@ void ContainerQueryEvaluator::SetData(Document& document,
 void ContainerQueryEvaluator::ClearResults() {
   results_.clear();
   referenced_by_unit_ = false;
+  depends_on_font_ = false;
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
@@ -142,6 +153,14 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeChange() const {
   }
 
   return change;
+}
+
+void ContainerQueryEvaluator::MarkFontDirtyIfNeeded(
+    const ComputedStyle& old_style,
+    const ComputedStyle& new_style) {
+  if (!depends_on_font_ || font_dirty_)
+    return;
+  font_dirty_ = old_style.GetFont() != new_style.GetFont();
 }
 
 }  // namespace blink

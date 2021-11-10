@@ -85,6 +85,8 @@ class CORE_EXPORT MediaQueryEvaluator final
   struct Results {
     MediaQueryResultList* viewport_dependent = nullptr;
     MediaQueryResultList* device_dependent = nullptr;
+    // Or'ed MediaQueryExpValue::UnitFlags.
+    unsigned* unit_flags = nullptr;
   };
 
   // Evaluates a list of media queries.

@@ -1092,6 +1092,11 @@ void MediaQueryEvaluator::Init() {
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr) const {
+  return Eval(expr, Results());
+}
+
+bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr,
+                               Results results) const {
   if (!media_values_ || !media_values_->HasValues()) {
     // media_values_ should only be nullptr when parsing UA stylesheets. The
     // only media queries we support in UA stylesheets are media type queries.
@@ -1124,19 +1129,14 @@ bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr) const {
     result &= func(bounds.left.value, op, *media_values_);
   }
 
-  return result;
-}
-
-bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr,
-                               Results results) const {
-  bool value = Eval(expr);
-
   if (results.viewport_dependent && expr.IsViewportDependent())
-    results.viewport_dependent->push_back(MediaQueryResult(expr, value));
+    results.viewport_dependent->push_back(MediaQueryResult(expr, result));
   if (results.device_dependent && expr.IsDeviceDependent())
-    results.device_dependent->push_back(MediaQueryResult(expr, value));
+    results.device_dependent->push_back(MediaQueryResult(expr, result));
+  if (results.unit_flags)
+    *results.unit_flags |= expr.GetUnitFlags();
 
-  return value;
+  return result;
 }
 
 }  // namespace blink

@@ -1070,6 +1070,8 @@ void StyleResolver::ApplyBaseStyle(
       state.Style()->SetDependsOnContainerQueries(true);
     if (collector.MatchedResult().DependsOnViewportContainerQueries())
       state.Style()->SetHasViewportUnits(true);
+    if (collector.MatchedResult().DependsOnRemContainerQueries())
+      state.Style()->SetHasRemUnits();
     if (collector.MatchedResult().ConditionallyAffectsAnimations())
       state.SetCanAffectAnimations();
 

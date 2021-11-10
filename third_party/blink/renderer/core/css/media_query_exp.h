@@ -87,6 +87,14 @@ class CORE_EXPORT MediaQueryExpValue {
     return ratio_.denominator;
   }
 
+  enum UnitFlags {
+    kNone = 0x0,
+    kFontRelative = 0x1,
+    kRootFontRelative = 0x2,
+  };
+
+  UnitFlags GetUnitFlags() const;
+
   String CssText() const;
   bool operator==(const MediaQueryExpValue& other) const {
     if (type_ != other.type_)
@@ -250,6 +258,9 @@ class CORE_EXPORT MediaQueryExp {
   bool IsHeightDependent() const;
 
   String Serialize() const;
+
+  // Return the union of GetUnitFlags() from the expr values.
+  unsigned GetUnitFlags() const;
 
  private:
   MediaQueryExp(const String&, const MediaQueryExpValue&);

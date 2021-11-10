@@ -3297,6 +3297,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
         EnsureElementRareData()
             .EnsureContainerQueryData()
             .SetContainerQueryEvaluator(evaluator);
+      } else if (evaluator) {
+        DCHECK(old_style);
+        evaluator->MarkFontDirtyIfNeeded(*old_style, *new_style);
       }
     }
   }

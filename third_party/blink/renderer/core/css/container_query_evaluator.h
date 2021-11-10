@@ -65,6 +65,9 @@ class CORE_EXPORT ContainerQueryEvaluator final
                           PhysicalSize,
                           PhysicalAxes contained_axes);
 
+  void MarkFontDirtyIfNeeded(const ComputedStyle& old_style,
+                             const ComputedStyle& new_style);
+
   void Trace(Visitor*) const;
 
  private:
@@ -76,8 +79,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
                PhysicalAxes contained_axes);
   void ClearResults();
   Change ComputeChange() const;
-  bool Eval(const ContainerQuery&,
-            MediaQueryResultList* viewport_dependent = nullptr) const;
+  bool Eval(const ContainerQuery&) const;
+  bool Eval(const ContainerQuery&, MediaQueryEvaluator::Results) const;
 
   // TODO(crbug.com/1145970): Don't lean on MediaQueryEvaluator.
   Member<MediaQueryEvaluator> media_query_evaluator_;
@@ -85,6 +88,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
   PhysicalAxes contained_axes_;
   HeapHashMap<Member<const ContainerQuery>, bool> results_;
   bool referenced_by_unit_ = false;
+  bool depends_on_font_ = false;
+  bool font_dirty_ = false;
 };
 
 }  // namespace blink

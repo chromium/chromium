@@ -509,6 +509,15 @@ String MediaQueryExp::Serialize() const {
   return result.ToString();
 }
 
+unsigned MediaQueryExp::GetUnitFlags() const {
+  unsigned unit_flags = 0;
+  if (Bounds().left.IsValid())
+    unit_flags |= Bounds().left.value.GetUnitFlags();
+  if (Bounds().right.IsValid())
+    unit_flags |= Bounds().right.value.GetUnitFlags();
+  return unit_flags;
+}
+
 static inline String PrintNumber(double number) {
   return Decimal::FromDouble(number).ToString();
 }
@@ -533,6 +542,21 @@ String MediaQueryExpValue::CssText() const {
   }
 
   return output.ToString();
+}
+
+MediaQueryExpValue::UnitFlags MediaQueryExpValue::GetUnitFlags() const {
+  if (!IsNumeric())
+    return UnitFlags::kNone;
+  switch (Unit()) {
+    case CSSPrimitiveValue::UnitType::kEms:
+    case CSSPrimitiveValue::UnitType::kExs:
+    case CSSPrimitiveValue::UnitType::kChs:
+      return UnitFlags::kFontRelative;
+    case CSSPrimitiveValue::UnitType::kRems:
+      return UnitFlags::kRootFontRelative;
+    default:
+      return UnitFlags::kNone;
+  }
 }
 
 String MediaQueryExpNode::Serialize() const {

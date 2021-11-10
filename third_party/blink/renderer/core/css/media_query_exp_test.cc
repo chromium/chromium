@@ -26,6 +26,10 @@ MediaQueryExpValue EmValue(double value) {
   return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kEms);
 }
 
+MediaQueryExpValue RemValue(double value) {
+  return MediaQueryExpValue(value, CSSPrimitiveValue::UnitType::kRems);
+}
+
 MediaQueryExpValue InvalidValue() {
   return MediaQueryExpValue();
 }
@@ -337,6 +341,27 @@ TEST(MediaQueryExpTest, CollectExpressions) {
     ASSERT_EQ(1u, expressions.size());
     EXPECT_EQ(width_lt10, expressions[0]);
   }
+}
+
+TEST(MediaQueryExpTest, UnitFlags) {
+  // (width < 10px)
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kNone,
+            RightExp("width", LtCmp(PxValue(10.0))).GetUnitFlags());
+  // (width < 10em)
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kFontRelative,
+            RightExp("width", LtCmp(EmValue(10.0))).GetUnitFlags());
+  // (width < 10rem)
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootFontRelative,
+            RightExp("width", LtCmp(RemValue(10.0))).GetUnitFlags());
+  // (10px < width)
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kNone,
+            LeftExp("width", LtCmp(PxValue(10.0))).GetUnitFlags());
+  // (10em <  width)
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kFontRelative,
+            LeftExp("width", LtCmp(EmValue(10.0))).GetUnitFlags());
+  // (10rem < width)
+  EXPECT_EQ(MediaQueryExpValue::UnitFlags::kRootFontRelative,
+            LeftExp("width", LtCmp(RemValue(10.0))).GetUnitFlags());
 }
 
 }  // namespace blink
