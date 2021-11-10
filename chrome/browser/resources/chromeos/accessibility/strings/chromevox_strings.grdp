@@ -2004,6 +2004,9 @@
   <message desc="Title of the button that opens up the ChromeVox menus." name="IDS_CHROMEVOX_MENUS_TITLE">
     ChromeVox Menus
   </message>
+  <message desc="Title of the button that opens up the ChromeVox menus." name="IDS_CHROMEVOX_MENUS_COLLAPSE_TITLE">
+    ChromeVox Menus collapse
+  </message>
   <message desc="Title of the button that opens up ChromeVox options." name="IDS_CHROMEVOX_OPTIONS">
     ChromeVox Options
   </message>
