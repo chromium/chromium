@@ -10,8 +10,11 @@
 namespace password_manager {
 
 BuiltInBackendToAndroidBackendMigrator::BuiltInBackendToAndroidBackendMigrator(
-    PrefService* prefs)
-    : prefs_(prefs) {}
+    PrefService* prefs,
+    base::RepeatingCallback<bool()> is_syncing_passwords_callback)
+    : prefs_(prefs),
+      is_syncing_passwords_callback_(std::move(is_syncing_passwords_callback)) {
+}
 
 BuiltInBackendToAndroidBackendMigrator::
     ~BuiltInBackendToAndroidBackendMigrator() = default;

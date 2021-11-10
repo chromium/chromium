@@ -28,7 +28,8 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   PasswordStoreBackendMigrationDecorator(
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
       std::unique_ptr<PasswordStoreBackend> android_backend,
-      PrefService* prefs);
+      PrefService* prefs,
+      base::RepeatingCallback<bool()> is_syncing_passwords_callback);
   PasswordStoreBackendMigrationDecorator(
       const PasswordStoreBackendMigrationDecorator&) = delete;
   PasswordStoreBackendMigrationDecorator(
@@ -87,6 +88,8 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   std::unique_ptr<PasswordStoreBackend> active_backend_;
 
   PrefService* prefs_ = nullptr;
+
+  base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
 
   std::unique_ptr<BuiltInBackendToAndroidBackendMigrator> migrator_;
 

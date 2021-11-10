@@ -125,7 +125,8 @@ class PasswordStoreBackend {
   // provided `login_db` for storage and Android backend for migration purposes.
   static std::unique_ptr<PasswordStoreBackend> Create(
       std::unique_ptr<LoginDatabase> login_db,
-      PrefService* prefs);
+      PrefService* prefs,
+      base::RepeatingCallback<bool()> is_syncing_passwords_callback);
 };
 
 }  // namespace password_manager

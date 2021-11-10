@@ -25,10 +25,12 @@ constexpr int kMigrationToAndroidBackendDelay = 30;
 PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
-    PrefService* prefs)
+    PrefService* prefs,
+    base::RepeatingCallback<bool()> is_syncing_passwords_callback)
     : built_in_backend_(std::move(built_in_backend)),
       android_backend_(std::move(android_backend)),
-      prefs_(prefs) {
+      prefs_(prefs),
+      is_syncing_passwords_callback_(std::move(is_syncing_passwords_callback)) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
@@ -163,7 +165,8 @@ void PasswordStoreBackendMigrationDecorator::GetSyncStatus(
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
-  migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(prefs_);
+  migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
+      prefs_, is_syncing_passwords_callback_);
   migrator_->StartMigrationIfNecessary();
 }
 

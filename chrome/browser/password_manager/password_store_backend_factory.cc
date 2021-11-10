@@ -22,7 +22,8 @@ namespace password_manager {
 
 std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
     std::unique_ptr<LoginDatabase> login_db,
-    PrefService* prefs) {
+    PrefService* prefs,
+    base::RepeatingCallback<bool()> is_syncing_passwords_callback) {
 #if !defined(OS_ANDROID) || BUILDFLAG(USE_LEGACY_PASSWORD_STORE_BACKEND)
   return std::make_unique<PasswordStoreBuiltInBackend>(std::move(login_db));
 #else  // OS_ANDROID && !USE_LEGACY_PASSWORD_STORE_BACKEND
@@ -36,7 +37,7 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
         std::make_unique<PasswordStoreBuiltInBackend>(std::move(login_db)),
         std::make_unique<PasswordStoreAndroidBackend>(
             PasswordStoreAndroidBackendBridge::Create()),
-        prefs);
+        prefs, is_syncing_passwords_callback);
   }
   return std::make_unique<PasswordStoreBuiltInBackend>(std::move(login_db));
 #endif

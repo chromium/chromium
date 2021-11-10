@@ -23,8 +23,9 @@ class BuiltInBackendToAndroidBackendMigratorTest : public testing::Test {
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
     prefs_->registry()->RegisterIntegerPref(
         prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
-    migrator_ =
-        std::make_unique<BuiltInBackendToAndroidBackendMigrator>(prefs_.get());
+    migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
+        prefs_.get(), /*is_syncing_passwords_callback=*/base::BindRepeating(
+            []() { return false; }));
   }
 
   ~BuiltInBackendToAndroidBackendMigratorTest() override = default;

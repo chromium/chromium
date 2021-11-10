@@ -16,7 +16,9 @@ namespace password_manager {
 // operation and shouldn't start during the hot phase of Chrome start.
 class BuiltInBackendToAndroidBackendMigrator {
  public:
-  explicit BuiltInBackendToAndroidBackendMigrator(PrefService* prefs);
+  BuiltInBackendToAndroidBackendMigrator(
+      PrefService* prefs,
+      base::RepeatingCallback<bool()> is_syncing_passwords_callback);
   BuiltInBackendToAndroidBackendMigrator(
       const BuiltInBackendToAndroidBackendMigrator&) = delete;
   BuiltInBackendToAndroidBackendMigrator& operator=(
@@ -34,6 +36,8 @@ class BuiltInBackendToAndroidBackendMigrator {
   void UpdateMigrationVersionInPref();
 
   PrefService* prefs_ = nullptr;
+
+  base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
 };
 
 }  // namespace password_manager

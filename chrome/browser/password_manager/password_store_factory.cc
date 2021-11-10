@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -28,6 +29,9 @@
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
@@ -36,6 +40,18 @@
 using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
+
+namespace {
+
+bool IsSyncingPasswords(Profile* profile) {
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  return sync_service && sync_service->IsSyncFeatureEnabled() &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords);
+}
+
+}  // namespace
 
 // static
 scoped_refptr<PasswordStoreInterface> PasswordStoreFactory::GetForProfile(
@@ -78,10 +94,21 @@ PasswordStoreFactory::BuildServiceInstanceFor(
   scoped_refptr<PasswordStore> ps;
 #if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_MAC) || \
     defined(USE_OZONE)
-
+  // Since SyncService has dependency on PasswordStore keyed service, there
+  // are no guarantees that during the construction of the password store
+  // about the sync service existence. And hence we cannot directly query the
+  // status of password syncing. However, status of password syncing is
+  // relevant for migrating passwords from the built-in backend to the Android
+  // backend. Since migration does *not* start immediately after start up, we
+  // inject a repeating callback that queries the sync service. Assumption is
+  // by the time the migration starts, the sync service will have been
+  // created. As a safety mechanism, if the sync service isn't created yet, we
+  // proceed as if the user isn't syncing which forces moving the passwords to
+  // the Android backend to avoid data loss.
   ps = new password_manager::PasswordStore(
-      password_manager::PasswordStoreBackend::Create(std::move(login_db),
-                                                     profile->GetPrefs()));
+      password_manager::PasswordStoreBackend::Create(
+          std::move(login_db), profile->GetPrefs(),
+          base::BindRepeating(&IsSyncingPasswords, profile)));
 #else
   NOTIMPLEMENTED();
 #endif
