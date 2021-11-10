@@ -93,6 +93,7 @@ struct PaymentInstrument {
                     std::unique_ptr<autofill::AutofillProfile> billing_address);
   ~PaymentInstrument();
 
+  absl::optional<std::string> identifier;
   std::unique_ptr<autofill::CreditCard> card;
   std::unique_ptr<autofill::AutofillProfile> billing_address;
 };
@@ -104,6 +105,7 @@ struct Contact {
   Contact(std::unique_ptr<autofill::AutofillProfile> profile);
   ~Contact();
 
+  absl::optional<std::string> identifier;
   std::unique_ptr<autofill::AutofillProfile> profile;
 };
 
@@ -114,6 +116,7 @@ struct Address {
   Address(std::unique_ptr<autofill::AutofillProfile> profile);
   ~Address();
 
+  absl::optional<std::string> identifier;
   std::unique_ptr<autofill::AutofillProfile> profile;
 };
 

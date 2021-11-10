@@ -2358,6 +2358,8 @@ message AutofillEntryProto {
 message ProfileProto {
   // The values, where the key is one of autofill::ServerFieldType.
   map<int32, AutofillEntryProto> values = 2;
+  // The identifier for this set of profile data.
+  optional string identifier = 3;
 
   reserved 1;
 }
@@ -2368,6 +2370,8 @@ message PaymentInstrumentProto {
   // The values for the billing address, where the key is one of
   // autofill::ServerFieldType.
   map<int32, AutofillEntryProto> address_values = 3;
+  // The identifier for this payment instrument (credit card + billing address).
+  optional string identifier = 4;
 
   reserved 1;
 }
@@ -2472,9 +2476,25 @@ message CollectUserDataProto {
   repeated RequiredDataPiece required_billing_address_data_piece = 36;
 
   message UserDataProto {
+    // Available contacts to select.
     repeated ProfileProto available_contacts = 1;
+    // The identifier of the contact to select. If not specified, the client
+    // will use its own heuristics to select a default contact.
+    optional string selected_contact_identifier = 5;
+
+    // Available (shipping) addresses to select.
     repeated ProfileProto available_addresses = 4;
+    // The identifier of the shipping address to select. If not specified, the
+    // client will use its own heuristics to select a default shipping address.
+    optional string selected_shipping_address_identifier = 6;
+
+    // Available payment instruments to select.
     repeated PaymentInstrumentProto available_payment_instruments = 2;
+    // The identifier of the payment instrument to select. If not specified,
+    // the client will use its own heuristics to select a default payment
+    // instrument.
+    optional string selected_payment_instrument_identifier = 7;
+
     // The locale to be used when creating this data. This can have influence
     // on the potential processing by Autofill.
     optional string locale = 3;
