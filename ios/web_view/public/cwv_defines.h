@@ -37,4 +37,10 @@
 // Supports APIs used to implement the iOS credential provider extension.
 #define IOS_WEB_VIEW_SUPPORTS_CREDENTIAL_EXTENSION_PROVIDER_APIS 1
 
+// Supports new APIs that simplifies how CWVSyncController is used.
+#define IOS_WEB_VIEW_SUPPORTS_NEW_CWV_SYNC_CONTROLLER_APIS 1
+
+// Supports APIs used to implement the trusted vault for chrome sync.
+#define IOS_WEB_VIEW_SUPPORTS_TRUSTED_VAULT_APIS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
