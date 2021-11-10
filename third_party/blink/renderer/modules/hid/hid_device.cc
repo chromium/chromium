@@ -22,7 +22,6 @@ namespace blink {
 
 namespace {
 
-const char kDetachedBuffer[] = "The data buffer has been detached.";
 const char kDeviceStateChangeInProgress[] =
     "An operation that changes the device state is in progress.";
 const char kOpenRequired[] = "The device must be opened first.";
@@ -297,12 +296,6 @@ ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
     return promise;
   }
 
-  if (data.IsDetached()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
-    return promise;
-  }
-
   if (!base::CheckedNumeric<wtf_size_t>(data.ByteLength()).IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError, kArrayBufferTooBig));
@@ -331,12 +324,6 @@ ScriptPromise HIDDevice::sendFeatureReport(ScriptState* script_state,
   if (!opened()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, kOpenRequired));
-    return promise;
-  }
-
-  if (data.IsDetached()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
     return promise;
   }
 

@@ -67,11 +67,13 @@ hid_test(async (t, fake) => {
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
-  const reportBytes = new Uint8Array(7);
-  detachBuffer(reportBytes.buffer);
-  await promise_rejects_dom(t, 'InvalidStateError',
-                            device.sendReport(kReportId, reportBytes));
-}, 'sendReport fails on a detached buffer');
+  const detachedReport = new Uint8Array(7);
+  detachBuffer(detachedReport.buffer);
+  const emptyReport = new Uint8Array(0);
+  fakeConnection.queueExpectedWrite(true, kReportId, emptyReport);
+  await device.sendReport(kReportId, detachedReport);
+  fakeConnection.assertExpectationsMet();
+}, 'sendReport treates a detached buffer as an empty report');
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
@@ -110,11 +112,13 @@ hid_test(async (t, fake) => {
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
-  const reportBytes = new Uint8Array(7);
-  detachBuffer(reportBytes.buffer);
-  await promise_rejects_dom(t, 'InvalidStateError',
-                            device.sendFeatureReport(kReportId, reportBytes));
-}, 'sendFeatureReport fails with a detached buffer');
+  const detachedReport = new Uint8Array(7);
+  detachBuffer(detachedReport.buffer);
+  const emptyReport = new Uint8Array(0);
+  fakeConnection.queueExpectedSendFeatureReport(true, kReportId, emptyReport);
+  await device.sendFeatureReport(kReportId, detachedReport);
+  fakeConnection.assertExpectationsMet();
+}, 'sendFeatureReport treates a detached buffer as an empty report');
 
 </script>
 </body>
