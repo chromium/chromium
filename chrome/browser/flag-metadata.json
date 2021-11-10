@@ -522,7 +522,7 @@
   {
     "name": "bluetooth-advertisement-monitoring",
     "owners": [ "cvandermerwe@google.com", "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 98
   },
   {
     "name": "bluetooth-bond-on-demand",
