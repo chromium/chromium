@@ -228,8 +228,16 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
       chromeos::kWindowManagerManagesOpacityKey));
 }
 
+// Fails on MSAN (crbug.com/1268795).
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_PersonalizationAppDisablesWindowBackdrop \
+  DISABLED_PersonalizationAppDisablesWindowBackdrop
+#else
+#define MAYBE_PersonalizationAppDisablesWindowBackdrop \
+  PersonalizationAppDisablesWindowBackdrop
+#endif
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
-                       PersonalizationAppDisablesWindowBackdrop) {
+                       MAYBE_PersonalizationAppDisablesWindowBackdrop) {
   WaitForTestSystemAppInstall();
   Browser* browser;
   content::WebContents* web_contents =
@@ -262,11 +270,18 @@ IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
       web_contents->GetRenderWidgetHostView()->GetBackgroundColor().value());
 }
 
+// Fails on MSAN (crbug.com/1268795).
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ScreenshotShowsWallpaperUnderSWA \
+  DISABLED_ScreenshotShowsWallpaperUnderSWA
+#else
+#define MAYBE_ScreenshotShowsWallpaperUnderSWA ScreenshotShowsWallpaperUnderSWA
+#endif
 // Screenshot the entire system UI while in fullscreen preview mode. Should see
 // a bright yellow wallpaper with the full screen controls overlay. Note should
 // not see crop option buttons even though wallpaper type is custom.
 IN_PROC_BROWSER_TEST_P(PersonalizationAppIntegrationTest,
-                       ScreenshotShowsWallpaperUnderSWA) {
+                       MAYBE_ScreenshotShowsWallpaperUnderSWA) {
   ash::ShellTestApi().SetTabletModeEnabledForTest(true);
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay(
