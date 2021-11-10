@@ -14,6 +14,8 @@ syntax = "proto2";
 
 package enterprise_management;
 
+option go_package="chromium/policy/enterprise_management_proto";
+
 import "policy_common_definitions%(full_runtime_suffix)s.proto";
 message CloudPolicySettings {
   optional StringPolicyProto ExampleStringPolicy = 3;
@@ -30,6 +32,8 @@ syntax = "proto2";
 %(full_runtime_comment)soption optimize_for = LITE_RUNTIME;
 
 package enterprise_management;
+
+option go_package="chromium/policy/enterprise_management_proto";
 
 // For StringList and PolicyOptions.
 import "policy_common_definitions%(full_runtime_suffix)s.proto";
