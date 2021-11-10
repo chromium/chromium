@@ -272,10 +272,9 @@ if (!is_ios) {
 
     if (is_posix || is_fuchsia) {
       sources += [ "ipc_message_attachment_set_posix_unittest.cc" ]
-    }
-
-    if (!is_ios) {
-      sources += [ "ipc_send_fds_test.cc" ]
+      if (!is_ios) {
+        sources += [ "ipc_send_fds_test.cc" ]
+      }
     }
 
     deps = [
