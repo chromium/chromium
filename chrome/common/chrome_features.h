@@ -435,6 +435,9 @@ extern const base::Feature kIntentPickerPWAPersistence;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kInvalidatorUniqueOwnerName;
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kIPHInWebUIDemo;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kKernelnextVMs;

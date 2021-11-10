@@ -117,6 +117,7 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   in_files = [
+    "iph_bubble/iph_bubble.ts",
     "most_visited/most_visited.mojom-lite.js",
     "most_visited/most_visited.js",
     "managed_dialog/managed_dialog.js",
@@ -398,6 +399,7 @@ group("closure_compile") {
 group("polymer3_elements") {
   public_deps = [
     "customize_themes:web_components",
+    "iph_bubble:web_components",
     "managed_dialog:web_components",
     "managed_footnote:web_components",
     "most_visited:web_components",
