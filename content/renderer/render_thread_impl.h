@@ -409,6 +409,13 @@ class CONTENT_EXPORT RenderThreadImpl
       mojo::PendingReceiver<
           shared_storage_worklet::mojom::SharedStorageWorkletService> receiver);
 
+  // The time the run loop started for this thread.
+  base::TimeTicks run_loop_start_time() const { return run_loop_start_time_; }
+
+  void set_run_loop_start_time(base::TimeTicks run_loop_start_time) {
+    run_loop_start_time_ = run_loop_start_time;
+  }
+
  private:
   friend class RenderThreadImplBrowserTest;
   friend class AgentSchedulingGroup;
@@ -620,6 +627,9 @@ class CONTENT_EXPORT RenderThreadImpl
   // Delegate is expected to live as long as requests may be sent.
   blink::WebResourceRequestSenderDelegate* resource_request_sender_delegate_ =
       nullptr;
+
+  // Tracks the time the run loop started for this thread.
+  base::TimeTicks run_loop_start_time_;
 
   base::WeakPtrFactory<RenderThreadImpl> weak_factory_{this};
 };

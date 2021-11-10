@@ -896,7 +896,9 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
               blink::mojom::
                   AppHistoryEntryPtr>() /* app_history_forward_entries */,
           std::vector<GURL>() /* early_hints_preloaded_resources */,
-          absl::nullopt /* ad_auction_components */);
+          absl::nullopt /* ad_auction_components */,
+          // This timestamp will be populated when the commit IPC is sent.
+          base::TimeTicks() /* commit_sent */);
 #if defined(OS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main

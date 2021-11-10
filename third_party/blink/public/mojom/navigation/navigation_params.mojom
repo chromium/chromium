@@ -483,4 +483,7 @@ struct CommitNavigationParams {
   // Mojo doesn't allow using symbolic constants as array lengths, so hard-code
   // the length here directly.
   array<url.mojom.Url, 20>? ad_auction_components;
+
+  // The time the commit was sent from the browser.
+  mojo_base.mojom.TimeTicks commit_sent;
 };

@@ -10939,6 +10939,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       }
     }
   }
+  commit_params->commit_sent = base::TimeTicks::Now();
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
       std::move(response_head), std::move(response_body),
