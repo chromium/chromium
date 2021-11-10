@@ -35,9 +35,6 @@ mojom("compositing") {
   if (use_ozone) {
     enabled_features += [ "use_ozone" ]
   }
-  if (use_x11) {
-    enabled_features += [ "use_x11" ]
-  }
 
   cpp_typemaps = [
     {

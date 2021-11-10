@@ -5,7 +5,6 @@
 #include "services/viz/privileged/mojom/compositing/renderer_settings_mojom_traits.h"
 
 #include "services/viz/public/cpp/compositing/resource_settings_mojom_traits.h"
-#include "ui/base/ui_base_features.h"
 
 #if defined(OS_ANDROID)
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
@@ -57,8 +56,7 @@ bool StructTraits<viz::mojom::RendererSettingsDataView, viz::RendererSettings>::
 #endif
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform() &&
-      !data.ReadOverlayStrategies(&out->overlay_strategies))
+  if (!data.ReadOverlayStrategies(&out->overlay_strategies))
     return false;
 #endif
 
