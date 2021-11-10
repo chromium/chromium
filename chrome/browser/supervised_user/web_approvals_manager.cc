@@ -35,7 +35,7 @@ void WebApprovalsManager::RequestLocalApproval(
     ApprovalRequestInitiatedCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::ParentAccessDialog::ShowError result =
-      chromeos::ParentAccessDialog::Show(/*parent*/ nullptr);
+      chromeos::ParentAccessDialog::Show();
 
   if (result != chromeos::ParentAccessDialog::ShowError::kNone) {
     LOG(ERROR) << "Error showing ParentAccessDialog: " << result;

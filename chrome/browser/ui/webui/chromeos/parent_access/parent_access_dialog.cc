@@ -25,7 +25,7 @@ constexpr int kDialogWidthDp = 462;
 }  // namespace
 
 // static
-ParentAccessDialog::ShowError ParentAccessDialog::Show(gfx::NativeView parent) {
+ParentAccessDialog::ShowError ParentAccessDialog::Show() {
   ParentAccessDialog* current_instance = GetInstance();
   if (current_instance) {
     return ShowError::kDialogAlreadyVisible;
@@ -38,7 +38,7 @@ ParentAccessDialog::ShowError ParentAccessDialog::Show(gfx::NativeView parent) {
   // Note:  |current_instance|'s memory is freed when
   // SystemWebDialogDelegate::OnDialogClosed() is called.
   current_instance = new ParentAccessDialog();
-  current_instance->ShowSystemDialogForBrowserContext(profile, parent);
+  current_instance->ShowSystemDialogForBrowserContext(profile);
   return ShowError::kNone;
 }
 

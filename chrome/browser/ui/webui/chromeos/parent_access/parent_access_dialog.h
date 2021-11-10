@@ -19,7 +19,7 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
   // Shows the dialog; if the dialog is already displayed, this returns an
   // error.
   // TODO(b/200853161): Add parameter which is passed over the the Mojo bridge.
-  static ShowError Show(gfx::NativeView parent);
+  static ShowError Show();
 
   static ParentAccessDialog* GetInstance();
 
