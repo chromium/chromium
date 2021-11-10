@@ -11,6 +11,10 @@ const kTestProductId = 0xabcd;
 const kReportId = 0x01;
 const kReportBytes = new Uint8Array([0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef]);
 
+function detachBuffer(buffer) {
+  window.postMessage('', '*', [buffer]);
+}
+
 // Creates a HidDeviceInfo, adds it to the HID service, opens a connection to
 // the newly created device, and returns the HidConnection fake.
 async function addAndOpenDevice(fake) {
@@ -63,6 +67,14 @@ hid_test(async (t, fake) => {
 
 hid_test(async (t, fake) => {
   const {device, fakeConnection} = await addAndOpenDevice(fake);
+  const reportBytes = new Uint8Array(7);
+  detachBuffer(reportBytes.buffer);
+  await promise_rejects_dom(t, 'InvalidStateError',
+                            device.sendReport(kReportId, reportBytes));
+}, 'sendReport fails on a detached buffer');
+
+hid_test(async (t, fake) => {
+  const {device, fakeConnection} = await addAndOpenDevice(fake);
   // Simulate getFeatureReport() success.
   fakeConnection.queueExpectedGetFeatureReport(true, kReportId, kReportBytes);
   const featureReport = await device.receiveFeatureReport(kReportId);
@@ -95,6 +107,14 @@ hid_test(async (t, fake) => {
                             device.sendFeatureReport(kReportId, kReportBytes));
   fakeConnection.assertExpectationsMet();
 }, 'Failed sendFeatureReport rejects');
+
+hid_test(async (t, fake) => {
+  const {device, fakeConnection} = await addAndOpenDevice(fake);
+  const reportBytes = new Uint8Array(7);
+  detachBuffer(reportBytes.buffer);
+  await promise_rejects_dom(t, 'InvalidStateError',
+                            device.sendFeatureReport(kReportId, reportBytes));
+}, 'sendFeatureReport fails with a detached buffer');
 
 </script>
 </body>

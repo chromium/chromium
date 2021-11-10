@@ -6,12 +6,11 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_collection_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_report_info.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid.h"
@@ -23,6 +22,7 @@ namespace blink {
 
 namespace {
 
+const char kDetachedBuffer[] = "The data buffer has been detached.";
 const char kDeviceStateChangeInProgress[] =
     "An operation that changes the device state is in progress.";
 const char kOpenRequired[] = "The device must be opened first.";
@@ -34,25 +34,6 @@ const char kReceiveFeatureReportFailed[] =
 const char kUnexpectedClose[] = "The device was closed unexpectedly.";
 const char kArrayBufferTooBig[] =
     "The provided ArrayBuffer exceeds the maximum allowed size.";
-
-Vector<uint8_t> ConvertBufferSource(const V8BufferSource* buffer) {
-  DCHECK(buffer);
-  Vector<uint8_t> vector;
-  switch (buffer->GetContentType()) {
-    case V8BufferSource::ContentType::kArrayBuffer:
-      vector.Append(static_cast<uint8_t*>(buffer->GetAsArrayBuffer()->Data()),
-                    base::checked_cast<wtf_size_t>(
-                        buffer->GetAsArrayBuffer()->ByteLength()));
-      break;
-    case V8BufferSource::ContentType::kArrayBufferView:
-      vector.Append(
-          static_cast<uint8_t*>(buffer->GetAsArrayBufferView()->BaseAddress()),
-          base::checked_cast<wtf_size_t>(
-              buffer->GetAsArrayBufferView()->byteLength()));
-      break;
-  }
-  return vector;
-}
 
 bool IsProtected(
     const device::mojom::blink::HidUsageAndPage& hid_usage_and_page) {
@@ -303,8 +284,7 @@ ScriptPromise HIDDevice::close(ScriptState* script_state) {
 
 ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
                                     uint8_t report_id,
-                                    const V8BufferSource* data
-) {
+                                    const DOMArrayPiece& data) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -317,18 +297,23 @@ ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
     return promise;
   }
 
-  size_t data_size = data->IsArrayBuffer()
-                         ? data->GetAsArrayBuffer()->ByteLength()
-                         : data->GetAsArrayBufferView()->byteLength();
+  if (data.IsDetached()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
+    return promise;
+  }
 
-  if (!base::CheckedNumeric<wtf_size_t>(data_size).IsValid()) {
+  if (!base::CheckedNumeric<wtf_size_t>(data.ByteLength()).IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError, kArrayBufferTooBig));
     return promise;
   }
 
+  Vector<uint8_t> vector;
+  vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
+
   device_requests_.insert(resolver);
-  connection_->Write(report_id, ConvertBufferSource(data),
+  connection_->Write(report_id, vector,
                      WTF::Bind(&HIDDevice::FinishSendReport,
                                WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
@@ -336,8 +321,7 @@ ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
 
 ScriptPromise HIDDevice::sendFeatureReport(ScriptState* script_state,
                                            uint8_t report_id,
-                                           const V8BufferSource* data
-) {
+                                           const DOMArrayPiece& data) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -350,19 +334,24 @@ ScriptPromise HIDDevice::sendFeatureReport(ScriptState* script_state,
     return promise;
   }
 
-  size_t data_size = data->IsArrayBuffer()
-                         ? data->GetAsArrayBuffer()->ByteLength()
-                         : data->GetAsArrayBufferView()->byteLength();
+  if (data.IsDetached()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
+    return promise;
+  }
 
-  if (!base::CheckedNumeric<wtf_size_t>(data_size).IsValid()) {
+  if (!base::CheckedNumeric<wtf_size_t>(data.ByteLength()).IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError, kArrayBufferTooBig));
     return promise;
   }
 
+  Vector<uint8_t> vector;
+  vector.Append(data.Bytes(), static_cast<wtf_size_t>(data.ByteLength()));
+
   device_requests_.insert(resolver);
   connection_->SendFeatureReport(
-      report_id, ConvertBufferSource(data),
+      report_id, vector,
       WTF::Bind(&HIDDevice::FinishSendFeatureReport, WrapPersistent(this),
                 WrapPersistent(resolver)));
   return promise;

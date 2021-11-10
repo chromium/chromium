@@ -10,10 +10,10 @@
 #include "third_party/blink/public/mojom/hid/hid.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hid_report_item.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -64,10 +64,10 @@ class MODULES_EXPORT HIDDevice
   ScriptPromise close(ScriptState*);
   ScriptPromise sendReport(ScriptState*,
                            uint8_t report_id,
-                           const V8BufferSource* data);
+                           const DOMArrayPiece& data);
   ScriptPromise sendFeatureReport(ScriptState*,
                                   uint8_t report_id,
-                                  const V8BufferSource* data);
+                                  const DOMArrayPiece& data);
   ScriptPromise receiveFeatureReport(ScriptState*, uint8_t report_id);
 
   // ExecutionContextLifecycleObserver:
