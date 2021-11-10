@@ -8,7 +8,6 @@ import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.SyncStatusObserver;
-import android.os.Bundle;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
@@ -17,7 +16,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -108,9 +106,7 @@ public class AndroidSyncSettings {
         updateSyncability();
 
         SyncService syncService = SyncService.get();
-        if (syncService != null
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)) {
+        if (syncService != null) {
             // Read initial persisted value.
             mShouldDecoupleSyncFromMasterSync = syncService.getDecoupledFromAndroidMasterSync();
         }
@@ -212,20 +208,15 @@ public class AndroidSyncSettings {
      * This is what causes the "Chrome" option to appear in Settings -> Accounts -> Sync .
      */
     private void updateSyncability() {
-        boolean shouldBeSyncable = mAccount != null
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC);
-        if (mIsSyncable == shouldBeSyncable) return;
+        // Following crbug.com/1107371, this method is only ensuring that no account is "syncable".
+        // The logic could probably by simplified, e.g. doing setIsSyncable() for every account
+        // once. However, since this class will be deleted after the migration period anyway
+        // (crbug.com/1107904), let's avoid subtle behavior changes and just keep the code as is.
 
-        mIsSyncable = shouldBeSyncable;
+        if (!mIsSyncable) return;
 
-        // Make account syncable if there is one.
-        if (shouldBeSyncable) {
-            mSyncContentResolverDelegate.setIsSyncable(mAccount, mContractAuthority, 1);
-            // This reduces unnecessary resource usage. See http://crbug.com/480688 for details.
-            mSyncContentResolverDelegate.removePeriodicSync(
-                    mAccount, mContractAuthority, Bundle.EMPTY);
-        } else if (mAccount != null) {
+        mIsSyncable = false;
+        if (mAccount != null) {
             mSyncContentResolverDelegate.setIsSyncable(mAccount, mContractAuthority, 0);
         }
 
@@ -262,10 +253,8 @@ public class AndroidSyncSettings {
         }
         mMasterSyncEnabled = mSyncContentResolverDelegate.getMasterSyncAutomatically();
 
-        if (mAccount != null && SyncService.get() != null
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.DECOUPLE_SYNC_FROM_ANDROID_MASTER_SYNC)
-                && mMasterSyncEnabled && !mShouldDecoupleSyncFromMasterSync) {
+        if (mAccount != null && SyncService.get() != null && mMasterSyncEnabled
+                && !mShouldDecoupleSyncFromMasterSync) {
             // Re-enabling master sync at least once should cause Sync to no longer care whether
             // the former is enabled or not. This fact should be persisted via SyncService
             // so it's known on the next startup.

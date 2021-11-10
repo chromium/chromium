@@ -248,12 +248,8 @@ void SyncServiceImpl::Initialize() {
     user_settings_->SetSyncRequested(false);
 
 #if defined(OS_ANDROID)
-    // If Sync was turned on after the feature toggle was enabled, it should be
-    // in the decoupled state.
-    if (base::FeatureList::IsEnabled(
-            switches::kDecoupleSyncFromAndroidMasterSync)) {
-      sync_prefs_.SetDecoupledFromAndroidMasterSync();
-    }
+    // If Sync gets turned on, it should be in the decoupled state.
+    sync_prefs_.SetDecoupledFromAndroidMasterSync();
 #endif  // defined(OS_ANDROID)
   }
 
@@ -316,11 +312,10 @@ void SyncServiceImpl::AccountStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if defined(OS_ANDROID)
-  // Once the feature toggle is enabled, Sync and master sync should only remain
-  // coupled if the former stays enabled and the latter disabled. Upon sign-out
-  // set the pref so they are decoupled on the next time Sync is turned on.
-  if (!HasSyncConsent() && base::FeatureList::IsEnabled(
-                               switches::kDecoupleSyncFromAndroidMasterSync)) {
+  // Sync and master sync should only remain coupled if the former stays enabled
+  // and the latter disabled. Upon sign-out set the pref so they are decoupled
+  // on the next time Sync is turned on.
+  if (!HasSyncConsent()) {
     sync_prefs_.SetDecoupledFromAndroidMasterSync();
   }
 #endif  // defined(OS_ANDROID)

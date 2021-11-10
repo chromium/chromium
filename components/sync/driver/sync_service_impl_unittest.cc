@@ -1121,10 +1121,6 @@ TEST_F(SyncServiceImplTest, ShouldProvideDisableReasonsAfterShutdown) {
 
 #if defined(OS_ANDROID)
 TEST_F(SyncServiceImplTest, DecoupleFromMasterSyncIfInitializedSignedOut) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kDecoupleSyncFromAndroidMasterSync);
-
   SyncPrefs sync_prefs(prefs());
   CreateService(SyncServiceImpl::MANUAL_START);
   ASSERT_FALSE(sync_prefs.GetDecoupledFromAndroidMasterSync());
@@ -1134,10 +1130,6 @@ TEST_F(SyncServiceImplTest, DecoupleFromMasterSyncIfInitializedSignedOut) {
 }
 
 TEST_F(SyncServiceImplTest, DecoupleFromMasterSyncIfSignsOut) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kDecoupleSyncFromAndroidMasterSync);
-
   SyncPrefs sync_prefs(prefs());
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
