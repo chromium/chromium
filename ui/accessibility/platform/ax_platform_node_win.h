@@ -441,8 +441,6 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   ~AXPlatformNodeWin() override;
 
-  void Init(AXPlatformNodeDelegate* delegate) override;
-
   // Clear any AXPlatformRelationWin nodes owned by this node.
   void ClearOwnRelations();
 
@@ -1159,12 +1157,15 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
       ax::mojom::Event event);
 
  protected:
+  AXPlatformNodeWin();
+
+  // AXPlatformNode overrides.
+  void Init(AXPlatformNodeDelegate* delegate) override;
+
   // This is hard-coded; all products based on the Chromium engine will have the
   // same framework name, so that assistive technology can detect any
   // Chromium-based product.
   static constexpr const wchar_t* FRAMEWORK_ID = L"Chrome";
-
-  AXPlatformNodeWin();
 
   int MSAAState() const;
 
@@ -1492,6 +1493,9 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
 
   // Start and end offsets of an active composition
   gfx::Range active_composition_range_;
+
+  friend AXPlatformNode* AXPlatformNode::Create(
+      AXPlatformNodeDelegate* delegate);
 };
 
 }  // namespace ui

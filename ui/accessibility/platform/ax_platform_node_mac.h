@@ -18,7 +18,6 @@ namespace ui {
 
 class AXPlatformNodeMac : public AXPlatformNodeBase {
  public:
-  AXPlatformNodeMac();
   ~AXPlatformNodeMac() override;
   AXPlatformNodeMac(const AXPlatformNodeMac&) = delete;
   AXPlatformNodeMac& operator=(const AXPlatformNodeMac&) = delete;
@@ -43,12 +42,17 @@ class AXPlatformNodeMac : public AXPlatformNodeBase {
   }
 
  protected:
+  AXPlatformNodeMac();
+
   void AddAttributeToList(const char* name,
                           const char* value,
                           PlatformAttributeList* attributes) override;
 
  private:
   base::scoped_nsobject<AXPlatformNodeCocoa> native_node_;
+
+  friend AXPlatformNode* AXPlatformNode::Create(
+      AXPlatformNodeDelegate* delegate);
 };
 
 // Convenience function to determine whether an internal object role should
