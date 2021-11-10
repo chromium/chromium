@@ -287,15 +287,6 @@ const char kChildWallpaperSmall[] = "child-wallpaper-small";
 // Forces CrOS region value.
 const char kCrosRegion[] = "cros-region";
 
-// Control regions data load ("" is default).
-const char kCrosRegionsMode[] = "cros-regions-mode";
-
-// "Hide" value for kCrosRegionsMode (VPD values are hidden).
-const char kCrosRegionsModeHide[] = "hide";
-
-// "Override" value for kCrosRegionsMode (region's data is read first).
-const char kCrosRegionsModeOverride[] = "override";
-
 // Controls if AuthSession API should be used when interacting with cryptohomed.
 const char kCryptohomeUseAuthSession[] = "cryptohome-use-authsession";
 

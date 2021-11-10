@@ -767,18 +767,6 @@ const FeatureEntry::Choice kLacrosSelectionChoices[] = {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const FeatureEntry::Choice kCrosRegionsModeChoices[] = {
-    {flag_descriptions::kCrosRegionsModeDefault, "", ""},
-    {flag_descriptions::kCrosRegionsModeOverride,
-     chromeos::switches::kCrosRegionsMode,
-     chromeos::switches::kCrosRegionsModeOverride},
-    {flag_descriptions::kCrosRegionsModeHide,
-     chromeos::switches::kCrosRegionsMode,
-     chromeos::switches::kCrosRegionsModeHide},
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 const FeatureEntry::Choice kForceUIDirectionChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kForceDirectionLtr, switches::kForceUIDirection,
@@ -4021,11 +4009,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseWinrtMidiApiDescription, kOsWin,
      FEATURE_VALUE_TYPE(midi::features::kMidiManagerWinrt)},
 #endif  // OS_WIN
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"cros-regions-mode", flag_descriptions::kCrosRegionsModeName,
-     flag_descriptions::kCrosRegionsModeDescription, kOsCrOS,
-     MULTI_VALUE_TYPE(kCrosRegionsModeChoices)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(TOOLKIT_VIEWS) || defined(OS_ANDROID)
     {"enable-autofill-credit-card-upload",
      flag_descriptions::kAutofillCreditCardUploadName,

@@ -385,25 +385,11 @@ bool StatisticsProviderImpl::GetMachineStatistic(const std::string& name,
     return false;
   }
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  std::string cros_regions_mode;
-  if (command_line->HasSwitch(chromeos::switches::kCrosRegionsMode)) {
-    cros_regions_mode =
-        command_line->GetSwitchValueASCII(chromeos::switches::kCrosRegionsMode);
-  }
-
-  // These two modes override existing machine statistics keys.
-  // By default (cros_regions_mode is empty), the same keys are emulated if
-  // they do not exist in machine statistics.
-  if (cros_regions_mode == chromeos::switches::kCrosRegionsModeOverride ||
-      cros_regions_mode == chromeos::switches::kCrosRegionsModeHide) {
-    if (GetRegionalInformation(name, result))
-      return true;
-  }
-
-  if (cros_regions_mode == chromeos::switches::kCrosRegionsModeHide &&
-      GetRegionalDataExtractor(name)) {
-    return false;
+  // Test region should override VPD values.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kCrosRegion) &&
+      GetRegionalInformation(name, result)) {
+    return true;
   }
 
   NameValuePairsParser::NameValueMap::iterator iter = machine_info_.find(name);

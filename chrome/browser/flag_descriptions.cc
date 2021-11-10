@@ -4207,13 +4207,6 @@ const char kCrosOnDeviceGrammarCheckName[] = "On-device Grammar Check";
 const char kCrosOnDeviceGrammarCheckDescription[] =
     "Enable new on-device grammar check component.";
 
-const char kCrosRegionsModeName[] = "Cros-regions load mode";
-const char kCrosRegionsModeDescription[] =
-    "This flag controls cros-regions load mode";
-const char kCrosRegionsModeDefault[] = "Default";
-const char kCrosRegionsModeOverride[] = "Override VPD values.";
-const char kCrosRegionsModeHide[] = "Hide VPD values.";
-
 const char kSystemExtensionsName[] = "Chrome OS System Extensions";
 const char kSystemExtensionsDescription[] =
     "Enable the Chrome OS System Extension platform.";
