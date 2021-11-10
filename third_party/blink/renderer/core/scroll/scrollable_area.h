@@ -613,7 +613,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   void ProgrammaticScrollHelper(const ScrollOffset&,
                                 mojom::blink::ScrollBehavior,
-                                bool,
+                                bool is_sequenced_scroll,
+                                IntSize animation_adjustment,
                                 ScrollCallback on_finish);
   void UserScrollHelper(const ScrollOffset&, mojom::blink::ScrollBehavior);
 

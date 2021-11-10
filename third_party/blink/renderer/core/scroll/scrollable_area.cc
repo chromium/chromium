@@ -297,27 +297,31 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   if (behavior == mojom::blink::ScrollBehavior::kAuto)
     behavior = ScrollBehaviorStyle();
 
+  IntSize animation_adjustment =
+      RoundedIntSize(clamped_offset) - RoundedIntSize(previous_offset);
+
   switch (scroll_type) {
     case mojom::blink::ScrollType::kCompositor:
       ScrollOffsetChanged(clamped_offset, scroll_type);
       break;
     case mojom::blink::ScrollType::kClamping:
-      GetScrollAnimator().AdjustAnimationAndSetScrollOffset(clamped_offset,
-                                                            scroll_type);
+      ScrollOffsetChanged(clamped_offset, scroll_type);
+      GetScrollAnimator().AdjustAnimation(animation_adjustment);
       break;
     case mojom::blink::ScrollType::kAnchoring:
-      GetScrollAnimator().AdjustAnimationAndSetScrollOffset(clamped_offset,
-                                                            scroll_type);
-
+      ScrollOffsetChanged(clamped_offset, scroll_type);
+      GetScrollAnimator().AdjustAnimation(animation_adjustment);
       pending_scroll_anchor_adjustment_ += clamped_offset - previous_offset;
       break;
     case mojom::blink::ScrollType::kProgrammatic:
-      ProgrammaticScrollHelper(clamped_offset, behavior, false,
-                               run_on_return.Release());
+      ProgrammaticScrollHelper(clamped_offset, behavior,
+                               /* is_sequenced_scroll */ false,
+                               animation_adjustment, run_on_return.Release());
       break;
     case mojom::blink::ScrollType::kSequenced:
-      ProgrammaticScrollHelper(clamped_offset, behavior, true,
-                               run_on_return.Release());
+      ProgrammaticScrollHelper(clamped_offset, behavior,
+                               /* is_sequenced_scroll */ true,
+                               animation_adjustment, run_on_return.Release());
       break;
     case mojom::blink::ScrollType::kUser:
       UserScrollHelper(clamped_offset, behavior);
@@ -343,6 +347,7 @@ void ScrollableArea::ProgrammaticScrollHelper(
     const ScrollOffset& offset,
     mojom::blink::ScrollBehavior scroll_behavior,
     bool is_sequenced_scroll,
+    IntSize animation_adjustment,
     ScrollCallback on_finish) {
   bool should_use_animation =
       scroll_behavior == mojom::blink::ScrollBehavior::kSmooth &&
@@ -369,13 +374,13 @@ void ScrollableArea::ProgrammaticScrollHelper(
     GetProgrammaticScrollAnimator().AnimateToOffset(offset, is_sequenced_scroll,
                                                     std::move(callback));
   } else {
-    // If the programmatic scroll will NOT be animated, we should adjust (not
-    // cancel) a user scroll animation already in progress (crbug.com/1264266).
-    IntSize adjustment =
-        RoundedIntSize(offset) - RoundedIntSize(GetScrollOffset());
     GetProgrammaticScrollAnimator().ScrollToOffsetWithoutAnimation(
         offset, is_sequenced_scroll);
-    GetScrollAnimator().AdjustAnimation(adjustment);
+
+    // If the programmatic scroll was NOT animated, we should adjust (but not
+    // cancel) a user scroll animation already in progress (crbug.com/1264266).
+    GetScrollAnimator().AdjustAnimation(animation_adjustment);
+
     if (callback)
       std::move(callback).Run();
   }

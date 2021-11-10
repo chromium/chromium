@@ -824,9 +824,8 @@ TEST(ScrollAnimatorTest, MainThreadAnimationTargetAdjustment) {
       scrollable_area, task_runner->GetMockTickClock());
   scrollable_area->SetScrollAnimator(animator);
 
-  // Twice from tickAnimation, once from reset, and twice from
-  // adjustAnimationAndSetScrollOffset.
-  EXPECT_CALL(*scrollable_area, UpdateScrollOffset(_, _)).Times(5);
+  // Twice from tickAnimation, once from reset.
+  EXPECT_CALL(*scrollable_area, UpdateScrollOffset(_, _)).Times(3);
   // One from call to userScroll and one from updateCompositorAnimations.
   EXPECT_CALL(*scrollable_area, RegisterForAnimation()).Times(2);
   EXPECT_CALL(*scrollable_area, ScheduleAnimation())
@@ -852,8 +851,9 @@ TEST(ScrollAnimatorTest, MainThreadAnimationTargetAdjustment) {
 
   // Adjustment
   ScrollOffset new_offset = offset + ScrollOffset(10, -10);
-  animator->AdjustAnimationAndSetScrollOffset(
-      new_offset, mojom::blink::ScrollType::kAnchoring);
+  animator->SetCurrentOffset(new_offset);
+  animator->AdjustAnimation(RoundedIntSize(new_offset) -
+                            RoundedIntSize(offset));
   EXPECT_EQ(ScrollOffset(110, 90), animator->DesiredTargetOffset());
 
   // Adjusting after finished animation should do nothing.
@@ -863,9 +863,11 @@ TEST(ScrollAnimatorTest, MainThreadAnimationTargetAdjustment) {
   EXPECT_EQ(
       animator->RunStateForTesting(),
       ScrollAnimatorCompositorCoordinator::RunState::kPostAnimationCleanup);
-  new_offset = animator->CurrentOffset() + ScrollOffset(10, -10);
-  animator->AdjustAnimationAndSetScrollOffset(
-      new_offset, mojom::blink::ScrollType::kAnchoring);
+  offset = animator->CurrentOffset();
+  new_offset = offset + ScrollOffset(10, -10);
+  animator->SetCurrentOffset(new_offset);
+  animator->AdjustAnimation(RoundedIntSize(new_offset) -
+                            RoundedIntSize(offset));
   EXPECT_EQ(
       animator->RunStateForTesting(),
       ScrollAnimatorCompositorCoordinator::RunState::kPostAnimationCleanup);

@@ -121,8 +121,6 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // ScrollAnimatorCompositorCoordinator implementation.
   void TickAnimation(base::TimeTicks monotonic_time) override;
   void CancelAnimation() override;
-  void AdjustAnimationAndSetScrollOffset(const ScrollOffset&,
-                                         mojom::blink::ScrollType) override;
   void TakeOverCompositorAnimation() override;
   void ResetAnimationState() override;
   void UpdateCompositorAnimations() override;

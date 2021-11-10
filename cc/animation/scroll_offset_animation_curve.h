@@ -98,7 +98,7 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationCurve
 
   // Shifts the entire curve by a delta without affecting its shape or timing.
   // Used for scroll anchoring adjustments that happen during scroll animations
-  // (see blink::ScrollAnimator::AdjustAnimationAndSetScrollOffset).
+  // (see blink::ScrollAnimator::AdjustAnimation).
   void ApplyAdjustment(const gfx::Vector2dF& adjustment);
 
   // AnimationCurve implementation

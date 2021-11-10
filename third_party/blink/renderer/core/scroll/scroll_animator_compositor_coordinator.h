@@ -99,10 +99,6 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   // and continues it on the main thread. This should only be called when in
   // DocumentLifecycle::LifecycleState::CompositingClean state.
   virtual void TakeOverCompositorAnimation();
-  // Updates the scroll offset of the animator's ScrollableArea by
-  // adjustment and update the target of an ongoing scroll offset animation.
-  virtual void AdjustAnimationAndSetScrollOffset(const ScrollOffset&,
-                                                 mojom::blink::ScrollType);
   virtual void UpdateCompositorAnimations();
 
   virtual ScrollableArea* GetScrollableArea() const = 0;

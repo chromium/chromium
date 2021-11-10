@@ -293,13 +293,6 @@ void ScrollAnimatorCompositorCoordinator::ScrollOffsetChanged(
   GetScrollableArea()->ScrollOffsetChanged(clamped_offset, scroll_type);
 }
 
-void ScrollAnimatorCompositorCoordinator::AdjustAnimationAndSetScrollOffset(
-    const ScrollOffset& offset,
-    mojom::blink::ScrollType scroll_type) {
-  // Subclasses should override this and adjust the animation as necessary.
-  ScrollOffsetChanged(offset, scroll_type);
-}
-
 void ScrollAnimatorCompositorCoordinator::AdjustImplOnlyScrollOffsetAnimation(
     const IntSize& adjustment) {
   if (!GetScrollableArea()->ScrollAnimatorEnabled())
