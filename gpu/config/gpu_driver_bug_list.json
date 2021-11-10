@@ -3235,6 +3235,7 @@
         "type": "win"
       },
       "vendor_id": "0x10de",
+      "multi_gpu_category": "any",
       "driver_version": {
         "op": "<=",
         "value": "24.21.13.9858"
