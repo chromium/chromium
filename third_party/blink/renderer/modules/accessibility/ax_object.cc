@@ -3117,6 +3117,12 @@ bool AXObject::IsFocusableStyleUsingBestAvailableState() const {
 }
 
 bool AXObject::CanSetFocusAttribute() const {
+  // If we are detached or have no document, then we can't set focus on the
+  // object. Note that this early out is necessary since we access the cache and
+  // the document below.
+  if (IsDetached() || !GetDocument())
+    return false;
+
   AXObjectCacheImpl& cache = AXObjectCache();
   auto* document = GetDocument();
 
@@ -3137,13 +3143,13 @@ bool AXObject::CanSetFocusAttribute() const {
 // This does not use Element::IsFocusable(), as that can sometimes recalculate
 // styles because of IsFocusableStyle() check, resetting the document lifecycle.
 bool AXObject::ComputeCanSetFocusAttribute() const {
-  if (IsDetached())
-    return false;
+  DCHECK(!IsDetached());
+  DCHECK(GetDocument());
 
   // Objects within a portal are not focusable.
   // Note that they are ignored but can be included in the tree.
-  bool inside_portal = GetDocument() && GetDocument()->GetPage() &&
-                       GetDocument()->GetPage()->InsidePortal();
+  bool inside_portal =
+      GetDocument()->GetPage() && GetDocument()->GetPage()->InsidePortal();
   if (inside_portal)
     return false;
 
