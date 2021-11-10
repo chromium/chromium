@@ -1981,6 +1981,7 @@ try_.chromium_win_builder(
     tryjob = try_.job(
         location_regexp = [
             ".+/[+]/sandbox/win/.+",
+            ".+/[+]/sandbox/policy/win/.+",
         ],
     ),
 )

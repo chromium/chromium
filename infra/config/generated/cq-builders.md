@@ -409,6 +409,7 @@ builder.
 
   Path regular expressions:
   * [`//sandbox/win/.+`](https://cs.chromium.org/chromium/src/sandbox/win/)
+  * [`//sandbox/policy/win/.+`](https://cs.chromium.org/chromium/src/sandbox/policy/win/)
 
 * [win_optional_gpu_tests_rel](https://ci.chromium.org/p/chromium/builders/try/win_optional_gpu_tests_rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""win_optional_gpu_tests_rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""win_optional_gpu_tests_rel""))
 
