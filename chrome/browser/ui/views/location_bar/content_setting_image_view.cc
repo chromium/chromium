@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
@@ -264,7 +265,7 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
     current_iph_id_for_testing_ =
         FeaturePromoControllerViews::GetForView(this)->ShowCriticalPromo(
             FeaturePromoSpecification::CreateForLegacyPromo(
-                /* feature =*/nullptr,
+                /* feature =*/nullptr, ui::ElementIdentifier(),
                 IDS_NOTIFICATIONS_QUIET_PERMISSION_NEW_REQUEST_PROMO),
             this);
     content_setting_image_model_->SetPromoWasShown(web_contents);

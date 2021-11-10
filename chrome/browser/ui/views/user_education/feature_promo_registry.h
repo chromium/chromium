@@ -8,9 +8,7 @@
 #include <map>
 #include <utility>
 
-#include "base/callback.h"
 #include "chrome/browser/ui/user_education/feature_promo_specification.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BrowserView;
 
@@ -28,9 +26,6 @@ class View;
 // feasible.
 class FeaturePromoRegistry {
  public:
-  using GetAnchorViewCallback =
-      base::RepeatingCallback<views::View*(BrowserView*)>;
-
   FeaturePromoRegistry();
   ~FeaturePromoRegistry();
 
@@ -43,18 +38,14 @@ class FeaturePromoRegistry {
   // The params must be used immediately since it contains a View
   // pointer that may become stale. This may return nothing in which
   // case the promo shouldn't show.
-  absl::optional<std::pair<const FeaturePromoSpecification*, views::View*>>
-  GetParamsForFeature(const base::Feature& iph_feature,
-                      BrowserView* browser_view);
+  const FeaturePromoSpecification* GetParamsForFeature(
+      const base::Feature& iph_feature);
 
   // Registers a feature promo.
-  // |get_anchor_view_callback| specifies how to get the bubble's anchor view
-  // for an arbitrary browser window.
   //
   // Prefer putting these calls in the body of RegisterKnownFeatures()
   // when possible.
-  void RegisterFeature(FeaturePromoSpecification spec,
-                       GetAnchorViewCallback get_anchor_view_callback);
+  void RegisterFeature(FeaturePromoSpecification spec);
 
   void ClearFeaturesForTesting();
   void ReinitializeForTesting();
@@ -64,18 +55,7 @@ class FeaturePromoRegistry {
   // Chrome codebase, you can put your call in here.
   void RegisterKnownFeatures();
 
-  struct FeaturePromoData {
-    FeaturePromoData();
-    FeaturePromoData(FeaturePromoData&&);
-    ~FeaturePromoData();
-
-    // The specification for a promo, minus the anchor view.
-    FeaturePromoSpecification spec;
-
-    GetAnchorViewCallback get_anchor_view_callback;
-  };
-
-  std::map<const base::Feature*, FeaturePromoData> feature_promo_data_;
+  std::map<const base::Feature*, FeaturePromoSpecification> feature_promo_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_REGISTRY_H_

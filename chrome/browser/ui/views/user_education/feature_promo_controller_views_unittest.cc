@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
 #include "chrome/browser/ui/user_education/feature_promo_specification.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
@@ -81,12 +82,12 @@ class FeaturePromoControllerViewsTest : public TestWithBrowserView {
 
   FeaturePromoSpecification DefaultBubbleParams() {
     return FeaturePromoSpecification::CreateForLegacyPromo(
-        &kTestIPHFeature, IDS_REOPEN_TAB_PROMO);
+        &kTestIPHFeature, kAppMenuButtonElementId, IDS_REOPEN_TAB_PROMO);
   }
 
   FeaturePromoSpecification IPHSnoozeBubbleParams() {
     return FeaturePromoSpecification::CreateForSnoozePromo(
-        kTestIPHFeature, IDS_REOPEN_TAB_PROMO);
+        kTestIPHFeature, kAppMenuButtonElementId, IDS_REOPEN_TAB_PROMO);
   }
 
   FeaturePromoControllerViews* controller_;
@@ -344,11 +345,10 @@ TEST_F(FeaturePromoControllerViewsTest,
 }
 
 TEST_F(FeaturePromoControllerViewsTest, GetsParamsFromRegistry) {
-  FeaturePromoRegistry::GetInstance()->RegisterFeature(
-      DefaultBubbleParams(), base::BindRepeating([](BrowserView* browser_view) {
-        return static_cast<views::View*>(
-            browser_view->toolbar()->app_menu_button());
-      }));
+  // If the browser view is not visible, none of the element tracker stuff will
+  // work properly, so ensure the browser widget is visible.
+  browser_view()->GetWidget()->Show();
+  FeaturePromoRegistry::GetInstance()->RegisterFeature(DefaultBubbleParams());
 
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .Times(1)

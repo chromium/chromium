@@ -33,6 +33,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 
@@ -221,17 +222,29 @@ bool FeaturePromoControllerViews::MaybeShowPromo(
     const base::Feature& iph_feature,
     FeaturePromoSpecification::StringReplacements text_replacements,
     BubbleCloseCallback close_callback) {
-  absl::optional<std::pair<const FeaturePromoSpecification*, views::View*>>
-      params = FeaturePromoRegistry::GetInstance()->GetParamsForFeature(
-          iph_feature, browser_view_);
-  if (!params)
+  const FeaturePromoSpecification* spec =
+      FeaturePromoRegistry::GetInstance()->GetParamsForFeature(iph_feature);
+  if (!spec)
     return false;
 
-  DCHECK_EQ(&iph_feature, params->first->feature());
+  DCHECK_EQ(&iph_feature, spec->feature());
+  DCHECK(spec->anchor_element_id());
 
-  return MaybeShowPromoImpl(*params->first, params->second,
-                            std::move(text_replacements),
-                            std::move(close_callback));
+  // Fetch the anchor element. For now, assume all elements are Views.
+  auto* const anchor_element = spec->GetAnchorElement(
+      views::ElementTrackerViews::GetContextForView(browser_view_));
+
+  if (!anchor_element)
+    return false;
+
+  if (!anchor_element->IsA<views::TrackedElementViews>()) {
+    NOTREACHED();
+    return false;
+  }
+
+  return MaybeShowPromoImpl(
+      *spec, anchor_element->AsA<views::TrackedElementViews>()->view(),
+      std::move(text_replacements), std::move(close_callback));
 }
 
 void FeaturePromoControllerViews::OnUserSnooze(

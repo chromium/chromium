@@ -12,6 +12,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 
 namespace base {
 struct Feature;
@@ -28,6 +30,13 @@ class FeaturePromoSpecification {
   // that can be specified situationally. When specifying these parameters,
   // use a |StringReplacements| object.
   using StringReplacements = std::vector<std::u16string>;
+
+  // Optional method that filters a set of potential `elements` to choose and
+  // return the anchor element, or null if none of the inputs is appropriate.
+  // This method can return an element different from the input list, or null
+  // if no valid element is found (this will cause the IPH not to run).
+  using AnchorElementFilter = base::RepeatingCallback<ui::TrackedElement*(
+      const ui::ElementTracker::ElementList& elements)>;
 
   // Describes the type of promo. Used to configure defaults for the promo's
   // bubble.
@@ -98,6 +107,7 @@ class FeaturePromoSpecification {
   // It is recommended that the prompt include an
   static FeaturePromoSpecification CreateForToastPromo(
       const base::Feature& feature,
+      ui::ElementIdentifier anchor_element_id,
       int body_text_string_id,
       int accessible_text_string_id,
       AcceleratorInfo accessible_accelerator);
@@ -105,6 +115,7 @@ class FeaturePromoSpecification {
   // Specifies a promo with snooze buttons.
   static FeaturePromoSpecification CreateForSnoozePromo(
       const base::Feature& feature,
+      ui::ElementIdentifier anchor_element_id,
       int body_text_string_id);
 
   // Specifies a text-only promo without additional accessibility information.
@@ -113,6 +124,7 @@ class FeaturePromoSpecification {
   // the result can only be used for a critical promo.
   static FeaturePromoSpecification CreateForLegacyPromo(
       const base::Feature* feature,
+      ui::ElementIdentifier anchor_element_id,
       int body_text_string_id);
 
   // Set the optional bubble title. This text appears above the body text in a
@@ -126,8 +138,20 @@ class FeaturePromoSpecification {
   // Set the bubble arrow. Default is top-left.
   FeaturePromoSpecification& SetBubbleArrow(BubbleArrow bubble_arrow);
 
+  // Set the anchor element filter.
+  FeaturePromoSpecification& SetAnchorElementFilter(
+      AnchorElementFilter anchor_element_filter);
+
+  // Get the anchor element based on `anchor_element_id`,
+  // `anchor_element_filter`, and `context`.
+  ui::TrackedElement* GetAnchorElement(ui::ElementContext context) const;
+
   const base::Feature* feature() const { return feature_; }
   PromoType promo_type() const { return promo_type_; }
+  ui::ElementIdentifier anchor_element_id() const { return anchor_element_id_; }
+  const AnchorElementFilter& anchor_element_filter() const {
+    return anchor_element_filter_;
+  }
   int bubble_body_string_id() const { return bubble_body_string_id_; }
   const std::u16string& bubble_title_text() const { return bubble_title_text_; }
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
@@ -142,12 +166,21 @@ class FeaturePromoSpecification {
 
   FeaturePromoSpecification(const base::Feature* feature,
                             PromoType promo_type,
+                            ui::ElementIdentifier anchor_element_id,
                             int bubble_body_string_id);
 
   const base::Feature* feature_ = nullptr;
 
   // The type of promo. A promo with type kUnspecified is not valid.
   PromoType promo_type_ = PromoType::kUnspecifiied;
+
+  // The element identifier of the element to attach the promo to.
+  ui::ElementIdentifier anchor_element_id_;
+
+  // The filter to use if there is more than one matching element, or
+  // additional processing is needed (default is to always use the first
+  // matching element).
+  AnchorElementFilter anchor_element_filter_;
 
   // Text to be displayed in the promo bubble body. Should not be zero for
   // valid bubbles. We keep the string ID around because we can specify format

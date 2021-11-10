@@ -7,6 +7,8 @@
 #include <string>
 
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 
 FeaturePromoSpecification::AcceleratorInfo::AcceleratorInfo() = default;
@@ -53,6 +55,9 @@ FeaturePromoSpecification::FeaturePromoSpecification(
     FeaturePromoSpecification&& other)
     : feature_(std::exchange(other.feature_, nullptr)),
       promo_type_(std::exchange(other.promo_type_, PromoType::kUnspecifiied)),
+      anchor_element_id_(
+          std::exchange(other.anchor_element_id_, ui::ElementIdentifier())),
+      anchor_element_filter_(std::move(other.anchor_element_filter_)),
       bubble_body_string_id_(std::exchange(other.bubble_body_string_id_, 0)),
       bubble_title_text_(std::move(other.bubble_title_text_)),
       bubble_icon_(std::exchange(other.bubble_icon_, nullptr)),
@@ -69,6 +74,9 @@ FeaturePromoSpecification& FeaturePromoSpecification::operator=(
   if (this != &other) {
     feature_ = std::exchange(other.feature_, nullptr);
     promo_type_ = std::exchange(other.promo_type_, PromoType::kUnspecifiied);
+    anchor_element_id_ =
+        std::exchange(other.anchor_element_id_, ui::ElementIdentifier());
+    anchor_element_filter_ = std::move(other.anchor_element_filter_);
     bubble_body_string_id_ = std::exchange(other.bubble_body_string_id_, 0);
     bubble_title_text_ = std::move(other.bubble_title_text_);
     bubble_icon_ = std::exchange(other.bubble_icon_, nullptr);
@@ -83,10 +91,11 @@ FeaturePromoSpecification& FeaturePromoSpecification::operator=(
 // static
 FeaturePromoSpecification FeaturePromoSpecification::CreateForToastPromo(
     const base::Feature& feature,
+    ui::ElementIdentifier anchor_element_id,
     int body_text_string_id,
     int accessible_text_string_id,
     AcceleratorInfo accessible_accelerator) {
-  FeaturePromoSpecification spec(&feature, PromoType::kToast,
+  FeaturePromoSpecification spec(&feature, PromoType::kToast, anchor_element_id,
                                  body_text_string_id);
   spec.screen_reader_string_id_ = accessible_text_string_id;
   spec.screen_reader_accelerator_ = std::move(accessible_accelerator);
@@ -96,17 +105,19 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForToastPromo(
 // static
 FeaturePromoSpecification FeaturePromoSpecification::CreateForSnoozePromo(
     const base::Feature& feature,
+    ui::ElementIdentifier anchor_element_id,
     int body_text_string_id) {
   return FeaturePromoSpecification(&feature, PromoType::kSnooze,
-                                   body_text_string_id);
+                                   anchor_element_id, body_text_string_id);
 }
 
 // static
 FeaturePromoSpecification FeaturePromoSpecification::CreateForLegacyPromo(
     const base::Feature* feature,
+    ui::ElementIdentifier anchor_element_id,
     int body_text_string_id) {
   return FeaturePromoSpecification(feature, PromoType::kLegacy,
-                                   body_text_string_id);
+                                   anchor_element_id, body_text_string_id);
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleTitleText(
@@ -129,12 +140,30 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
   return *this;
 }
 
+FeaturePromoSpecification& FeaturePromoSpecification::SetAnchorElementFilter(
+    AnchorElementFilter anchor_element_filter) {
+  anchor_element_filter_ = std::move(anchor_element_filter);
+  return *this;
+}
+
+ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
+    ui::ElementContext context) const {
+  auto* const element_tracker = ui::ElementTracker::GetElementTracker();
+  return anchor_element_filter_ ? anchor_element_filter_.Run(
+                                      element_tracker->GetAllMatchingElements(
+                                          anchor_element_id_, context))
+                                : element_tracker->GetFirstMatchingElement(
+                                      anchor_element_id_, context);
+}
+
 FeaturePromoSpecification::FeaturePromoSpecification(
     const base::Feature* feature,
     PromoType promo_type,
+    ui::ElementIdentifier anchor_element_id,
     int bubble_body_string_id)
     : feature_(feature),
       promo_type_(promo_type),
+      anchor_element_id_(anchor_element_id),
       bubble_body_string_id_(bubble_body_string_id) {
   DCHECK_NE(promo_type, PromoType::kUnspecifiied);
   DCHECK(bubble_body_string_id_);

@@ -36,6 +36,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
@@ -648,6 +649,7 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
     FeaturePromoSpecification promo_spec =
         FeaturePromoSpecification::CreateForLegacyPromo(
             &feature_engagement::kIPHPasswordsAccountStorageFeature,
+            ui::ElementIdentifier(),
             IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT);
     promo_spec.SetBubbleTitleText(
         IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT);
@@ -663,7 +665,7 @@ void PasswordSaveUpdateView::MaybeShowIPH(IPHType type) {
   } else {
     FeaturePromoSpecification promo_spec =
         FeaturePromoSpecification::CreateForLegacyPromo(
-            /* feature =*/nullptr,
+            /* feature =*/nullptr, ui::ElementIdentifier(),
             IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_REAUTH_FAIL);
     promo_spec.SetBubbleArrow(kPromoArrow);
 

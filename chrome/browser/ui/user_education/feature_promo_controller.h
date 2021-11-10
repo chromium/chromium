@@ -20,7 +20,7 @@ class FeaturePromoController {
   FeaturePromoController() = default;
   virtual ~FeaturePromoController() = default;
 
-  using BubbleCloseCallback = base::OnceCallback<void()>;
+  using BubbleCloseCallback = base::OnceClosure;
 
   // Starts the promo if possible. Returns whether it started.
   // |iph_feature| must be an IPH feature defined in
