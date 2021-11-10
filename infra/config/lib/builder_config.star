@@ -206,7 +206,6 @@ def _builder_spec(
         chromium_config,
         android_config = None,
         test_results_config = None,
-        swarming_server = None,
         android_version_file = None,
         clobber = None,
         build_gs_bucket = None,
@@ -225,7 +224,6 @@ def _builder_spec(
         android_config: (android_config) The android config for the builder.
         test_results_config: (test_results_config) The test_results config for
             the builder.
-        swarming_server: (str) A URL to override the swarming server to use.
         android_version_file: (str) A path relative to the checkout to a file
             containing the Chrome version information for Android.
         clobber: (bool) Whether to have bot_update perform a clobber of any
@@ -281,7 +279,6 @@ def _builder_spec(
         chromium_config = chromium_config,
         android_config = android_config,
         test_results_config = test_results_config,
-        swarming_server = swarming_server,
         android_version_file = android_version_file,
         clobber = clobber,
         build_gs_bucket = build_gs_bucket,
