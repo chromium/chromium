@@ -11,7 +11,11 @@ namespace chromeos {
 namespace bluetooth_config {
 
 // Controls the state of the Bluetooth adapter and serves as the source of truth
-// for the adapter's current state.
+// for the adapter's current state. This class modifies the Bluetooth adapter
+// directly and should only be used by classes that do not wish to persist the
+// adapter state to prefs. For classes that do wish to persist the adapter state
+// to prefs, such as those processing incoming user requests,
+// BluetoothPowerController should be used instead.
 class AdapterStateController {
  public:
   class Observer : public base::CheckedObserver {
@@ -30,6 +34,9 @@ class AdapterStateController {
 
   // Turns Bluetooth on or off. If Bluetooth is unavailable or already in the
   // desired state, this function is a no-op.
+  // This does not save to |enabled| to prefs. If |enabled| is wished to be
+  // saved to prefs, BluetoothPowerController::SetBluetoothEnabledState() should
+  // be used instead.
   virtual void SetBluetoothEnabledState(bool enabled) = 0;
 
   void AddObserver(Observer* observer);

@@ -103,6 +103,7 @@ void AdapterStateControllerImpl::AttemptSetEnabled(bool enabled) {
                      weak_ptr_factory_.GetWeakPtr(), enabled),
       base::BindOnce(&AdapterStateControllerImpl::OnSetPoweredError,
                      weak_ptr_factory_.GetWeakPtr(), enabled));
+  // TODO(gordonseto): Add power metric here.
 
   // State has changed to kEnabling or kDisabling; notify observers.
   NotifyAdapterStateChanged();
@@ -118,6 +119,7 @@ void AdapterStateControllerImpl::OnSetPoweredSuccess(bool enabled) {
 void AdapterStateControllerImpl::OnSetPoweredError(bool enabled) {
   BLUETOOTH_LOG(ERROR) << "Error attempting to "
                        << (enabled ? "enable" : "disable") << " Bluetooth";
+  // TODO(gordonseto): Add power metric here.
   in_progress_state_change_ = PowerStateChange::kNoChange;
 
   // State is no longer kEnabling or kDisabling; notify observers.

@@ -5,6 +5,7 @@
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 
 #include "base/run_loop.h"
+#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -30,6 +31,9 @@ void FakeAdapterStateController::SetSystemState(
 
 void FakeAdapterStateController::SetBluetoothEnabledState(bool enabled) {
   if (system_state_ == mojom::BluetoothSystemState::kUnavailable)
+    return;
+
+  if (IsBluetoothEnabledOrEnabling(system_state_) == enabled)
     return;
 
   SetSystemState(enabled ? mojom::BluetoothSystemState::kEnabling

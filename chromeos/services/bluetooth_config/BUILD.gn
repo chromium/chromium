@@ -10,6 +10,9 @@ static_library("bluetooth_config") {
     "adapter_state_controller.h",
     "adapter_state_controller_impl.cc",
     "adapter_state_controller_impl.h",
+    "bluetooth_power_controller.h",
+    "bluetooth_power_controller_impl.cc",
+    "bluetooth_power_controller_impl.h",
     "cros_bluetooth_config.cc",
     "cros_bluetooth_config.h",
     "device_cache.cc",
@@ -45,6 +48,7 @@ static_library("bluetooth_config") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/services/bluetooth_config/public/cpp",
     "//chromeos/services/bluetooth_config/public/mojom",
@@ -86,6 +90,8 @@ static_library("test_support") {
     "fake_adapter_state_controller.h",
     "fake_bluetooth_discovery_delegate.cc",
     "fake_bluetooth_discovery_delegate.h",
+    "fake_bluetooth_power_controller.cc",
+    "fake_bluetooth_power_controller.h",
     "fake_device_cache.cc",
     "fake_device_cache.h",
     "fake_device_name_manager.cc",
@@ -112,6 +118,7 @@ static_library("test_support") {
     ":bluetooth_config",
     ":in_process_bluetooth_config",
     "//base",
+    "//chromeos/services/bluetooth_config/public/cpp",
     "//chromeos/services/bluetooth_config/public/mojom",
     "//components/session_manager/core",
     "//device/bluetooth",
@@ -124,6 +131,7 @@ source_set("unit_tests") {
 
   sources = [
     "adapter_state_controller_impl_unittest.cc",
+    "bluetooth_power_controller_impl_unittest.cc",
     "cros_bluetooth_config_unittest.cc",
     "device_cache_impl_unittest.cc",
     "device_conversion_util_unittest.cc",
@@ -137,6 +145,7 @@ source_set("unit_tests") {
   deps = [
     ":bluetooth_config",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//components/session_manager/core",
