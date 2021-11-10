@@ -239,9 +239,10 @@ export class App {
 
   /**
    * Starts the app by loading the model and opening the camera-view.
+   * @param {!metrics.LaunchType} launchType
    * @return {!Promise}
    */
-  async start() {
+  async start(launchType) {
     document.documentElement.dir = loadTimeData.getTextDirection();
     try {
       await filesystem.initialize();
@@ -337,7 +338,7 @@ export class App {
       }
     })();
 
-    metrics.sendLaunchEvent();
+    metrics.sendLaunchEvent({launchType});
     return Promise.all([showWindow, startCamera, preloadImages]);
   }
 
@@ -509,7 +510,9 @@ let instance = null;
   });
 
   instance = new App({perfLogger, intent, facing, mode});
-  await instance.start();
+  await instance.start(
+      openFrom === 'assistant' ? metrics.LaunchType.ASSISTANT :
+                                 metrics.LaunchType.DEFAULT);
 
   if (autoTake) {
     const takePromise = instance.beginTake(

@@ -109,14 +109,35 @@ export async function initMetrics() {
 }
 
 /**
- * Sends launch type event.
+ * Types of different ways to launch CCA.
+ * @enum {string}
  */
-export function sendLaunchEvent() {
-  sendEvent({
-    eventCategory: 'launch',
-    eventAction: 'start',
-    eventLabel: '',
-  });
+export const LaunchType = {
+  DEFAULT: 'default',
+  ASSISTANT: 'assistant',
+};
+
+/**
+ * Parameters for logging launch event. |launchType| stands for how CCA is
+ * launched.
+ * @typedef {{launchType: !LaunchType}}
+ */
+export let LaunchEventParam;
+
+/**
+ * Sends launch type event.
+ * @param {!LaunchEventParam} param
+ */
+export function sendLaunchEvent({launchType}) {
+  sendEvent(
+      {
+        eventCategory: 'launch',
+        eventAction: 'start',
+        eventLabel: '',
+      },
+      new Map([
+        [32, launchType],
+      ]));
 }
 
 /**
