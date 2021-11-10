@@ -429,11 +429,6 @@ std::vector<AppId> WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() {
   return app_ids;
 }
 
-bool WebAppRegistrar::WasInstalledByDefaultOnly(const AppId& app_id) const {
-  const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->HasOnlySource(Source::Type::kDefault);
-}
-
 void WebAppRegistrar::Start() {
   // Profile manager can be null in unit tests.
   if (g_browser_process->profile_manager())
@@ -463,6 +458,11 @@ bool WebAppRegistrar::IsLocallyInstalled(const AppId& app_id) const {
              : false;
 }
 
+bool WebAppRegistrar::WasInstalledByDefaultOnly(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->HasOnlySource(Source::Type::kDefault);
+}
+
 bool WebAppRegistrar::WasInstalledByUser(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->WasInstalledByUser();
@@ -472,6 +472,11 @@ bool WebAppRegistrar::WasInstalledByOem(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && web_app->chromeos_data().has_value() &&
          web_app->chromeos_data()->oem_installed;
+}
+
+bool WebAppRegistrar::WasInstalledBySubApp(const AppId& app_id) const {
+  const WebApp* web_app = GetAppById(app_id);
+  return web_app && web_app->IsSubAppInstalledApp();
 }
 
 bool WebAppRegistrar::IsAllowedLaunchProtocol(

@@ -106,6 +106,13 @@ class WebAppInstallTask : content::WebContentsObserver {
       webapps::WebappInstallSource install_source,
       OnceInstallCallback callback);
 
+  // Load |install_url| and install SubApp. Posts |LoadUrl| task to |url_loader|
+  // immediately. Doesn't memorize |url_loader| pointer.
+  void LoadAndInstallSubAppFromURL(const GURL& install_url,
+                                   content::WebContents* contents,
+                                   WebAppUrlLoader* url_loader,
+                                   OnceInstallCallback install_callback);
+
   // Fetches the icon URLs in |web_application_info| to populate the icon
   // bitmaps. Once fetched uses the contents of |web_application_info| as the
   // entire web app installation data.

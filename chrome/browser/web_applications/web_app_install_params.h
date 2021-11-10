@@ -102,6 +102,9 @@ struct WebAppInstallParams {
   absl::optional<SystemAppType> system_app_type;
 
   bool oem_installed = false;
+
+  // Set for SUB_APP API installs.
+  absl::optional<AppId> parent_app_id;
 };
 
 }  // namespace web_app

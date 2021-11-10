@@ -131,6 +131,40 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
   tasks_.insert(std::move(task));
 }
 
+void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
+                                         const GURL& install_url,
+                                         OnceInstallCallback callback) {
+  DCHECK(started_);
+
+  // Enqueue full background installation flow. Since app_id isn't available
+  // yet, duplicate installation check will be performed down the line once
+  // app_id is made available.
+
+  auto task = std::make_unique<WebAppInstallTask>(
+      profile_, os_integration_manager_, finalizer_,
+      data_retriever_factory_.Run(), registrar_);
+
+  WebAppInstallParams params;
+  params.parent_app_id = parent_app_id;
+  params.require_manifest = true;
+  params.add_to_quick_launch_bar = false;
+  params.user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  params.fallback_start_url = install_url;
+  // Don't want to allow devs to force manifest updates with the API.
+  params.force_reinstall = false;
+
+  task->SetInstallParams(params);
+
+  base::OnceClosure start_task = base::BindOnce(
+      &WebAppInstallTask::LoadAndInstallSubAppFromURL, task->GetWeakPtr(),
+      install_url, EnsureWebContentsCreated(),
+      base::Unretained(url_loader_.get()),
+      base::BindOnce(&WebAppInstallManager::OnQueuedTaskCompleted,
+                     base::Unretained(this), task.get(), std::move(callback)));
+
+  EnqueueTask(std::move(task), std::move(start_task));
+}
+
 void WebAppInstallManager::InstallWebAppFromInfo(
     std::unique_ptr<WebApplicationInfo> web_application_info,
     bool overwrite_existing_manifest_fields,

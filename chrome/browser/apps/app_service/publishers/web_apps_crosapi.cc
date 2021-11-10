@@ -177,18 +177,27 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
                                   int64_t display_id,
                                   GetMenuModelCallback callback) {
   bool is_system_web_app = false;
-  bool can_use_uninstall = true;
+  bool can_use_uninstall = false;
   apps::mojom::WindowMode display_mode = apps::mojom::WindowMode::kUnknown;
 
   proxy_->AppRegistryCache().ForOneApp(
       app_id, [&is_system_web_app, &can_use_uninstall,
                &display_mode](const apps::AppUpdate& update) {
-        if (update.InstallReason() == apps::mojom::InstallReason::kSystem) {
-          is_system_web_app = true;
-          can_use_uninstall = false;
-        } else if (update.InstallReason() ==
-                   apps::mojom::InstallReason::kPolicy) {
-          can_use_uninstall = false;
+        is_system_web_app =
+            update.InstallReason() == apps::mojom::InstallReason::kSystem;
+        // TODO(1258432): Clean up common logic between ash/lacros.
+        switch (update.InstallReason()) {
+          case apps::mojom::InstallReason::kDefault:
+          case apps::mojom::InstallReason::kSync:
+          case apps::mojom::InstallReason::kUser:
+            can_use_uninstall = true;
+            break;
+          case apps::mojom::InstallReason::kSystem:
+          case apps::mojom::InstallReason::kPolicy:
+          case apps::mojom::InstallReason::kOem:
+          case apps::mojom::InstallReason::kSubApp:
+          case apps::mojom::InstallReason::kUnknown:
+            can_use_uninstall = false;
         }
         display_mode = update.WindowMode();
       });

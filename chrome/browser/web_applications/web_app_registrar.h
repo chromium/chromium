@@ -51,10 +51,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   const WebApp* GetAppByStartUrl(const GURL& start_url) const;
   std::vector<AppId> GetAppsFromSyncAndPendingInstallation();
 
-  // Returns true if the app was preinstalled and NOT installed via any other
-  // mechanism.
-  bool WasInstalledByDefaultOnly(const AppId& app_id) const;
-
   void Start();
   void Shutdown();
 
@@ -76,12 +72,19 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // apps. On Chrome OS all apps are always locally installed.
   bool IsLocallyInstalled(const AppId& app_id) const;
 
+  // Returns true if the app was preinstalled and NOT installed via any other
+  // mechanism.
+  bool WasInstalledByDefaultOnly(const AppId& app_id) const;
+
   // Returns true if the app was installed by user, false if default installed.
   bool WasInstalledByUser(const AppId& app_id) const;
 
   // Returns true if the app was installed by the device OEM. Always false on
   // on non-Chrome OS.
   bool WasInstalledByOem(const AppId& app_id) const;
+
+  // Returns true if the app was installed by the SubApp API.
+  bool WasInstalledBySubApp(const AppId& app_id) const;
 
   // Returns the AppIds and URLs of apps externally installed from
   // |install_source|.

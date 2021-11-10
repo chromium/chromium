@@ -22,13 +22,14 @@ class SubAppsRendererHost
   ~SubAppsRendererHost() override;
 
   // We only want to create this object when the Browser* associated with the
-  // WebContents is a web app and when the RFH is the main frame.
+  // WebContents is an installed web app and when the RFH is the main frame.
   static void CreateIfAllowed(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::SubAppsProvider> receiver);
 
   // blink::mojom::SubAppsProvider
-  void Add(AddCallback result_callback) override;
+  void Add(const std::string& install_path,
+           AddCallback result_callback) override;
 
  private:
   SubAppsRendererHost(

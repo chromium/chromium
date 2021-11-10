@@ -78,6 +78,10 @@ class WebAppInstallManager final : public SyncInstallDelegate {
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback);
 
+  void InstallSubApp(const AppId& parent_app_id,
+                     const GURL& install_url,
+                     OnceInstallCallback callback);
+
   // Starts a background web app installation process for a given
   // |web_contents|.
   void InstallWebAppWithParams(content::WebContents* web_contents,

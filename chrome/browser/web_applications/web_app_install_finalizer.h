@@ -61,6 +61,7 @@ class WebAppInstallFinalizer {
 
     absl::optional<WebAppChromeOsData> chromeos_data;
     absl::optional<WebAppSystemWebAppData> system_web_app_data;
+    absl::optional<AppId> parent_app_id;
   };
 
   WebAppInstallFinalizer(Profile* profile,
