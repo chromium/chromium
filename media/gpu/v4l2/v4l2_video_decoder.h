@@ -130,8 +130,12 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   // Setup format for output queue. This function sets output format on output
   // queue that is supported by a v4l2 driver, can be allocatable by
   // VideoFramePool and can be composited by chrome. This also updates format
-  // in VideoFramePool. Return true if the setup is successful.
-  bool SetupOutputFormat(const gfx::Size& size, const gfx::Rect& visible_rect);
+  // in VideoFramePool.
+  // Return CroStatus::Codes::kOk if the setup is successful.
+  // Return CroStatus::Codes::kResetRequired if the setup is aborted.
+  // Return CroStatus::Codes::kFailedToChangeResolution if other error occurs.
+  CroStatus SetupOutputFormat(const gfx::Size& size,
+                              const gfx::Rect& visible_rect);
 
   // Start streaming V4L2 input and (if |start_output_queue| is true) output
   // queues. Attempt to start |device_poll_thread_| after streaming starts.

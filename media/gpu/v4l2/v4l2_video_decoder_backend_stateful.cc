@@ -125,10 +125,16 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 
-  // Do not decode if a flush is in progress.
-  // This may actually be ok to do if we are changing resolution?
-  if (flush_cb_)
+  // Do not decode if a flush or resolution change is in progress.
+  if (!client_->IsDecoding())
     return;
+
+  if (need_resume_resolution_change_) {
+    need_resume_resolution_change_ = false;
+    ChangeResolution();
+    if (!client_->IsDecoding())
+      return;
+  }
 
   // Get a new decode request if none is in progress.
   if (!current_decode_request_) {
@@ -622,10 +628,10 @@ bool V4L2StatefulVideoDecoderBackend::ApplyResolution(
 
 void V4L2StatefulVideoDecoderBackend::OnChangeResolutionDone(CroStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOGF(3);
+  DVLOGF(3) << "status=" << static_cast<int>(status.code());
 
   if (status == CroStatus::Codes::kResetRequired) {
-    // TODO(b/192523692): Handle the aborted situation.
+    need_resume_resolution_change_ = true;
     return;
   }
 
