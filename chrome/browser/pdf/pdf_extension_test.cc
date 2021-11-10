@@ -2958,8 +2958,15 @@ class PDFExtensionClipboardTest : public PDFExtensionComboBoxTest,
   bool clipboard_changed_ = false;
 };
 
+// TODO(crbug.com/1268983): Fix flakiness on Linux and reenable.
+#if defined(OS_LINUX)
+#define MAYBE_IndividualShiftRightArrowPresses \
+  DISABLED_IndividualShiftRightArrowPresses
+#else
+#define MAYBE_IndividualShiftRightArrowPresses IndividualShiftRightArrowPresses
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
-                       IndividualShiftRightArrowPresses) {
+                       MAYBE_IndividualShiftRightArrowPresses) {
   LoadTestComboBoxPdfGetGuestContents();
 
   // Give the editable combo box focus.
