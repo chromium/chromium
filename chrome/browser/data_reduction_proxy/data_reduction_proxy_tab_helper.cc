@@ -14,7 +14,7 @@
 
 DataReductionProxyTabHelper::DataReductionProxyTabHelper(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    : content::WebContentsUserData<DataReductionProxyTabHelper>(*web_contents) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   drp_settings_ = DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
@@ -40,7 +40,7 @@ void DataReductionProxyTabHelper::OnDataSaverEnabledChanged(bool enabled) {
 }
 
 void DataReductionProxyTabHelper::UpdateWebkitPreferencesNow() {
-  web_contents_->OnWebPreferencesChanged();
+  GetWebContents().OnWebPreferencesChanged();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DataReductionProxyTabHelper);

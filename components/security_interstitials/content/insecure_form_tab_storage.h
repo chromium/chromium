@@ -34,7 +34,7 @@ class InsecureFormTabStorage
   bool IsProceeding() const { return is_proceeding_; }
 
  private:
-  explicit InsecureFormTabStorage(content::WebContents* contents) {}
+  explicit InsecureFormTabStorage(content::WebContents* contents);
   friend class content::WebContentsUserData<InsecureFormTabStorage>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

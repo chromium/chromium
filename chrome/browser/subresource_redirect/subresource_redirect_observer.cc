@@ -168,6 +168,7 @@ bool SubresourceRedirectObserver::IsHttpsImageCompressionApplied(
 SubresourceRedirectObserver::SubresourceRedirectObserver(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SubresourceRedirectObserver>(*web_contents),
       receivers_(web_contents, this) {
   DCHECK(ShouldEnablePublicImageHintsBasedCompression() ||
          ShouldEnableRobotsRulesFetching());

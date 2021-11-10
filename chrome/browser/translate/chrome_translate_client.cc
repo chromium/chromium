@@ -89,7 +89,8 @@ TranslateEventProto::EventType BubbleResultToTranslateEvent(
 }  // namespace
 
 ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ChromeTranslateClient>(*web_contents) {
   DCHECK(web_contents);
   if (translate::IsSubFrameTranslationEnabled()) {
     per_frame_translate_driver_ =

@@ -33,7 +33,7 @@ void MediaRouterGmcUiForTest::SetUp() {
 }
 
 void MediaRouterGmcUiForTest::ShowDialog() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+  Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   MediaToolbarButtonView* button =
       BrowserView::GetBrowserViewForBrowser(browser)->toolbar()->media_button();
   base::RunLoop closure_loop;
@@ -98,7 +98,8 @@ void MediaRouterGmcUiForTest::SetLocalFileSelectionIssue(
 
 MediaRouterGmcUiForTest::MediaRouterGmcUiForTest(
     content::WebContents* web_contents)
-    : MediaRouterUiForTestBase(web_contents) {}
+    : MediaRouterUiForTestBase(web_contents),
+      content::WebContentsUserData<MediaRouterGmcUiForTest>(*web_contents) {}
 
 CastDialogSinkButton* MediaRouterGmcUiForTest::GetSinkButton(
     const std::string& sink_name) const {

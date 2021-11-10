@@ -122,7 +122,8 @@ bool IsHistoryPage(GURL url, GURL history_url) {
 
 HistoryClustersTabHelper::HistoryClustersTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<HistoryClustersTabHelper>(*web_contents) {}
 
 HistoryClustersTabHelper::~HistoryClustersTabHelper() = default;
 
