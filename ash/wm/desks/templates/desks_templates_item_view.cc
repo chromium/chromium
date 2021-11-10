@@ -48,6 +48,10 @@ constexpr int kCornerRadius = 16;
 constexpr gfx::Size kViewSize(250, 20);
 constexpr int kDeleteButtonMargin = 8;
 
+// The margin between the grid item contents and the card container.
+constexpr int kGridItemMargin = 24;
+constexpr int kTimeViewHeight = 20;
+
 // Pixel offset for the focus ring around the whole time. Positive values means
 // the focus ring sits outside of the item.
 constexpr int kFocusRingOffset = 2;
@@ -109,7 +113,9 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
                       .CopyAddressTo(&time_view_)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                       .SetText(GetTimeStr(desk_template->created_time()))
-                      .SetPreferredSize(kViewSize),
+                      .SetPreferredSize(gfx::Size(
+                          kPreferredSize.width() - kGridItemMargin * 2,
+                          kTimeViewHeight)),
                   views::Builder<views::View>().CopyAddressTo(&spacer),
                   views::Builder<DesksTemplatesIconContainer>().CopyAddressTo(
                       &icon_container_view_)),
@@ -142,8 +148,6 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
   focus_ring->SetPathGenerator(
       std::make_unique<views::RoundRectHighlightPathGenerator>(
           gfx::Insets(-kFocusRingOffset), kCornerRadius + kFocusRingOffset));
-  focus_ring->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 DesksTemplatesItemView::~DesksTemplatesItemView() = default;
@@ -176,6 +180,23 @@ void DesksTemplatesItemView::Layout() {
       {(width() - launch_button_preferred_size.width()) / 2,
        height() - launch_button_preferred_size.height() - kVerticalPaddingDp},
       launch_button_preferred_size));
+}
+
+void DesksTemplatesItemView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  auto* color_provider = AshColorProvider::Get();
+  const SkColor control_background_color_inactive =
+      color_provider->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+
+  GetBackground()->SetNativeControlColor(control_background_color_inactive);
+
+  time_view_->SetBackgroundColor(control_background_color_inactive);
+  time_view_->SetEnabledColor(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
+
+  views::FocusRing::Get(this)->SetColor(color_provider->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void DesksTemplatesItemView::OnDeleteTemplate() {

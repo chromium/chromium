@@ -41,6 +41,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
 
   // views::View:
   void Layout() override;
+  void OnThemeChanged() override;
 
  private:
   friend class DesksTemplatesItemViewTestApi;
