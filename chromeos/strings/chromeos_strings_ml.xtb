@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">സ്കാൻ ചെയ്യൽ റദ്ദാക്കുന്നു</translation>
 <translation id="1851218745569890714">വീഡിയോ കോൺഫറൻസിംഗ്</translation>
+<translation id="1857850044054738019">പുതിയ ഉപഭോക്താവിന് ലഭ്യമാക്കാൻ ഉപകരണം വീണ്ടും സ്റ്റോക്ക് ചെയ്യുകയോ പുതുക്കുകയോ ആണെങ്കിൽ
+        ഈ ഓപ്ഷൻ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ഹാർഡ്‌വെയർ അവലോകനം</translation>
 <translation id="1905710495812624430">അനുവദനീയമായ പരമാവധി ശ്രമങ്ങൾ നടത്തിക്കഴിഞ്ഞു.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">മെമ്മറി ടെസ്റ്റ് റൺ ചെയ്യണമെങ്കിൽ ഏറ്റവും കുറഞ്ഞത് 500 MB ആവശ്യമുണ്ട്. ഇടം സൃഷ്ടിക്കാൻ, ക്രമീകരണം &gt; സ്‌റ്റോറേജ് മാനേജ്മെന്റ് എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="4258281355379922695">HTTP പ്രതികരണ സമയം</translation>
 <translation id="4271957103967917607">പൂർണ്ണ സ്‌ക്രീനിൽ കാണുക</translation>
+<translation id="4275799948641988986">റിപ്പയറിന് ശേഷം ആരാണ് ഉപകരണം ഉപയോഗിക്കുക?</translation>
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ചിത്രങ്ങൾ</translation>
 <translation id="4378373042927530923">റൺ ചെയ്‌തിട്ടില്ല</translation>
@@ -409,6 +412,7 @@
 <translation id="7297226631177386107">HTTPS വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">ഉപകരണം മറ്റൊരു ഉടമയ്ക്ക് ലഭ്യമാകും</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">നെറ്റ്‌വർക്ക് ഉപകരണങ്ങൾ</translation>
 <translation id="7359657277149375382">ഫയല്‍ തരം</translation>
@@ -416,6 +420,9 @@
 <translation id="7415801143053185905">വളരെ ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. 1 പേജ് സ്‌കാൻ ചെയ്‌തു}other{സ്‌കാൻ ചെയ്യൽ പൂർത്തിയായി. {NUMBER_OF_PAGES} പേജുകൾ സ്‌കാൻ ചെയ്‌തു}}</translation>
+<translation id="7451112128070628323">ഉപകരണത്തിന്റെ ഉടമസ്ഥത മാറുന്നില്ലെങ്കിൽ ഈ ഓപ്ഷൻ തിരഞ്ഞെടുക്കുക.
+        ഉദാഹരണത്തിന്, ഒരു സ്ഥാപനത്തിലെ മറ്റൊരു വ്യക്തിക്ക്
+        ഉപകരണം കൈമാറുന്നു.</translation>
 <translation id="7469648432129124067">പോര്‍ട്ടല്‍ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="7487067081878637334">സാങ്കേതികവിദ്യ</translation>
 <translation id="7490813197707563893">MAC വിലാസം</translation>
@@ -470,7 +477,7 @@
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
 <translation id="8230672074305416752">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
-<translation id="8246209727385807362">അജ്ഞാത കാരിയർ</translation>
+<translation id="8246209727385807362">അജ്ഞാത സേവനദാതാവ്</translation>
 <translation id="8286154143153872371">വാൾപേപ്പർ കാണാൻ ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="8291967909914612644">ഹോം പ്രൊവൈഡറിന്റെ രാജ്യം</translation>
 <translation id="8294431847097064396">ഉറവിടം</translation>
@@ -539,6 +546,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">നിലവിലെ ഉപയോഗം</translation>
+<translation id="9095415590198785865">ഉപകരണം അതേ ഉടമയ്ക്ക് ലഭ്യമാകും</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> എന്നതിനുള്ള ടിക്കറ്റ് പുതുക്കിയെടുക്കുക</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു</translation>

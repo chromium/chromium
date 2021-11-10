@@ -407,6 +407,7 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="3391512812407811893">Wersje próbne w Piaskownicy prywatności</translation>
 <translation id="3398320232533725830">Otwórz menedżera zakładek</translation>
 <translation id="3414952576877147120">Rozmiar:</translation>
+<translation id="3421726884497337397">Zdecyduj, kiedy mają być blokowane pliki cookie innych firm</translation>
 <translation id="3429160811076349561">Funkcje próbne są wyłączone</translation>
 <translation id="3435465986463792564">Masz sporo okien? Tutaj możesz nimi zarządzać</translation>
 <translation id="3440975416244667276">Naciśnij i przytrzymaj słowo, aby wyświetlić więcej informacji na jego temat</translation>
@@ -749,6 +750,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5524843473235508879">Przekierowanie zostało zablokowane.</translation>
 <translation id="5534640966246046842">Strona została skopiowana</translation>
 <translation id="5548606607480005320">Kontrola zabezpieczeń</translation>
+<translation id="5555525474779371165">Wybierz poziom ochrony Bezpiecznego przeglądania</translation>
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5561549206367097665">Czekam na sieć…</translation>
 <translation id="5568069709869097550">Nie można się zalogować</translation>

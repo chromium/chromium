@@ -60,7 +60,7 @@
 അല്ലാത്തപക്ഷം, നിങ്ങളുടെ സ്വകാര്യതാ ക്രമീകരണം ഇത് ബ്ലോക്ക് ചെയ്യും. നിങ്ങൾ സംവദിക്കുന്ന ഉള്ളടക്കം ശരിയായി പ്രവർത്തിക്കാൻ ഇത് സഹായിക്കും, എന്നാൽ <ph name="EMBEDDED_URL" /> എന്നതിനെ നിങ്ങളുടെ പ്രവർത്തനം ട്രാക്ക് ചെയ്യാനും ഇത് അനുവദിച്ചേക്കാം.</translation>
 <translation id="1175364870820465910">&amp;അച്ചടിക്കൂ...</translation>
 <translation id="1175875016430184367">വലതുവശത്ത് മൂന്ന് തവണ സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
-<translation id="1178581264944972037">അല്പംനിര്‍ത്തൂ</translation>
+<translation id="1178581264944972037">താൽക്കാലികമായി നിർത്തുക</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1186201132766001848">പാസ്‌വേഡ് പരിശോധിക്കൂ</translation>
 <translation id="1195210374336998651">ആപ്പ് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">സമീപത്തുള്ള Bluetooth ഉപകരണങ്ങൾ കണ്ടെത്താൻ ആവശ്യപ്പെടുക</translation>
 <translation id="1426410128494586442">അതെ</translation>
 <translation id="1428146450423315676">സ്റ്റാക്കർ 7</translation>
+<translation id="142858679511221695">ക്ലൗഡ് ഉപയോക്താവ്</translation>
 <translation id="1428729058023778569">ഈ സൈറ്റ് HTTPS പിന്തുണയ്‌ക്കാത്തതിനാലാണ് നിങ്ങൾ ഈ മുന്നറിയിപ്പ് കാണുന്നത്. <ph name="BEGIN_LEARN_MORE_LINK" />കൂടുതലറിയുക<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">അച്ചടിക്കുക</translation>
 <translation id="1432581352905426595">തിരയൽ യന്ത്രം മാനേജ് ചെയ്യുക</translation>
@@ -717,6 +718,7 @@
 <translation id="3329013043687509092">സാച്ചുറേഷൻ</translation>
 <translation id="3333762389743153920">വെർച്വൽ കാർഡിന് യോഗ്യമല്ല</translation>
 <translation id="3338095232262050444">സുരക്ഷിതം</translation>
+<translation id="3339446062576134663">ക്ലൗഡ് (Ash)</translation>
 <translation id="3355823806454867987">പ്രോക്സി ക്രമീകരണങ്ങള്‍ മാറ്റുക...</translation>
 <translation id="3360103848165129075">പേയ്മെന്റ് കൈകാര്യം ചെയ്യുന്ന ഷീറ്റ്</translation>
 <translation id="3361596688432910856">Chrome ഇനിപ്പറയുന്ന വിവരങ്ങൾ <ph name="BEGIN_EMPHASIS" />സംരക്ഷിക്കില്ല<ph name="END_EMPHASIS" />:
@@ -740,6 +742,7 @@
 <translation id="3380365263193509176">അജ്ഞാതമായ പിശക്</translation>
 <translation id="3380864720620200369">ക്ലയന്റ് ഐഡി:</translation>
 <translation id="3381668585148405088">നിങ്ങളുടെ വാങ്ങൽ പരിശോധിച്ചുറപ്പിക്കുക</translation>
+<translation id="3383566085871012386">നിലവിലെ മുൻഗണനാ ക്രമം</translation>
 <translation id="3387261909427947069">പേയ്‌മെന്റ് രീതികൾ</translation>
 <translation id="3391030046425686457">ഡെലിവർ ചെയ്യേണ്ട വിലാസം</translation>
 <translation id="3391482648489541560">ഫയൽ എഡിറ്റ് ചെയ്യൽ</translation>
@@ -924,7 +927,7 @@
 <translation id="3969052498612555048">നിങ്ങളുടെ കോഡ് കണ്ടെത്താനാകുന്നില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ബ്ലോക്കുചെയ്‌തിരിക്കുന്നു</translation>
-<translation id="3986705137476756801">തൽസമയ ക്യാപ്ഷൻ ഇപ്പോഴത്തേക്ക് ഓഫാക്കുക</translation>
+<translation id="3986705137476756801">തത്സമയ ക്യാപ്ഷൻ ഇപ്പോഴത്തേക്ക് ഓഫാക്കുക</translation>
 <translation id="3987940399970879459">ഒരു MB-യിൽ കുറവാണ്</translation>
 <translation id="3990250421422698716">ജോഗ് ഓഫ്‌സെറ്റ്</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> എന്ന സൈറ്റിലേക്കുള്ള എല്ലാ അഭ്യർത്ഥനകൾക്കും ഒരു ഉറവിട നയം
@@ -1251,6 +1254,7 @@
 <translation id="4989163558385430922">എല്ലാം കാണുക</translation>
 <translation id="4989542687859782284">ലഭ്യമല്ല</translation>
 <translation id="4989809363548539747">ഈ പ്ലഗിൻ പിന്തുണയ്‌ക്കുന്നില്ല</translation>
+<translation id="4992066212339426712">അൺമ്യൂട്ടുചെയ്യുക</translation>
 <translation id="4995216769782533993">ഈ സൈറ്റുമായി നിങ്ങളുടെ കാർഡിന്റെ വിശദാംശങ്ങൾ പങ്കിടാൻ സുരക്ഷാ കോഡ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="4995474875135717171">പരിഷ്‌ക്കരിച്ചത്:</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />, സൈറ്റ് തിരയലും നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ യന്ത്രവും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
@@ -1406,6 +1410,7 @@
 <translation id="5478437291406423475">B6/C4 (എൻവലപ്പ്)</translation>
 <translation id="5481076368049295676">ഈ ഉള്ളടക്കം, നിങ്ങളുടെ ഉപകരണത്തിൽ വിവരങ്ങൾ മോഷ്‌ടിക്കുകയോ ഇല്ലാതാക്കുയോ ചെയ്യുന്ന തരത്തിലുള്ള സോഫ്‌റ്റ്‌വെയർ ഇൻസ്‌റ്റാൾ ചെയ്യാൻ ശ്രമിച്ചേക്കാം. <ph name="BEGIN_LINK" />എന്തായാലും കാണിക്കുക<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">ശരിയായ വിലാസം ചേർക്കുക</translation>
+<translation id="5485973315555778056">ക്ലൗഡ് മെഷീൻ</translation>
 <translation id="5490432419156082418">വിലാസങ്ങളും മറ്റും</translation>
 <translation id="5492298309214877701">കമ്പനി, ഓർഗനൈസേഷൻ അല്ലെങ്കിൽ സ്‌കൂൾ ഇൻട്രാനെറ്റിലെ ഈ സൈറ്റിന്, ബാഹ്യ വെബ്‌സൈറ്റിന് സമാനമായ URL ആണുള്ളത്.
     <ph name="LINE_BREAK" />
@@ -1435,6 +1440,7 @@
 <translation id="5571083550517324815">ഈ വിലാസത്തിൽ നിന്ന് പിക്ക്അപ്പ് ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="5580958916614886209">കാലാവധി തീരുന്ന മാസം പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="5586446728396275693">സംരക്ഷിച്ച വിലാസങ്ങളൊന്നുമില്ല</translation>
+<translation id="5587987780934666589">പ്ലാറ്റ്‌ഫോം ഉപയോക്താവ്</translation>
 <translation id="5593349413089863479">കണക്ഷൻ പൂർണ്ണമായും സുരക്ഷിതമല്ല</translation>
 <translation id="5595485650161345191">വിലാസം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="5598944008576757369">പേയ്‌മെന്‍റ് രീതി തിരഞ്ഞെടുക്കുക</translation>
@@ -2121,6 +2127,7 @@
 <translation id="7953569069500808819">മുകളിൽ അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
 <translation id="7956713633345437162">മൊബൈൽ ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>
+<translation id="7962467575542381659">പ്ലാറ്റ്‌ഫോം മെഷീൻ</translation>
 <translation id="7966803981046576691">ജോബ് അക്കൗണ്ട് തരം</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" എന്ന മൂല്യം അസാധുവായ ഒരു ഹെക്സ് നിറമാണ്.</translation>
 <translation id="7968982339740310781">വിശദാംശങ്ങൾ കാണുക</translation>

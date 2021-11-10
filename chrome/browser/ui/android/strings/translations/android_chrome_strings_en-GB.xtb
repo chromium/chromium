@@ -407,6 +407,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3391512812407811893">Privacy Sandbox trials</translation>
 <translation id="3398320232533725830">Open the bookmarks manager</translation>
 <translation id="3414952576877147120">Size:</translation>
+<translation id="3421726884497337397">Choose when to block third-party cookies</translation>
 <translation id="3429160811076349561">Trial features are off</translation>
 <translation id="3435465986463792564">Got many windows? You can manage them from here</translation>
 <translation id="3440975416244667276">Touch &amp; hold for more relevant info</translation>
@@ -749,6 +750,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5524843473235508879">Redirect blocked.</translation>
 <translation id="5534640966246046842">Site copied</translation>
 <translation id="5548606607480005320">Safety check</translation>
+<translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5561549206367097665">Waiting for network…</translation>
 <translation id="5568069709869097550">Can't sign in</translation>
