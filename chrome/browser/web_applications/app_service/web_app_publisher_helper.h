@@ -23,6 +23,8 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -81,7 +83,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
         absl::optional<bool> accessing_microphone) = 0;
   };
 
-  using LoadIconCallback = base::OnceCallback<void(apps::mojom::IconValuePtr)>;
+  using LoadIconCallback = base::OnceCallback<void(apps::IconValuePtr)>;
 
   WebAppPublisherHelper(Profile* profile,
                         WebAppProvider* provider,
@@ -115,6 +117,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
       const WebApp* web_app,
       std::vector<apps::mojom::PermissionPtr>* target);
 
+  // Creates an |std::unique_ptr<apps::App>| describing |web_app|.
+  std::unique_ptr<apps::App> CreateWebApp(const WebApp* web_app);
+
   // Creates an |apps::mojom::App| describing |web_app|.
   apps::mojom::AppPtr ConvertWebApp(const WebApp* web_app);
 
@@ -147,8 +152,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   bool IsPaused(const std::string& app_id);
 
   void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
+                const apps::IconKey& icon_key,
+                apps::IconType icon_type,
                 int32_t size_hint_in_dip,
                 LoadIconCallback callback);
 
