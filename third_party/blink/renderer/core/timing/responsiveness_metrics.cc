@@ -196,6 +196,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     MaybeNotifyPointerdown(pointer_info->GetEntry());
     // The pointer id of the pointerdown is no longer needed.
     pointer_id_entry_map_.erase(pointer_id);
+    last_pointer_id_ = absl::nullopt;
   } else if (event_type == event_type_names::kPointerdown) {
     if (pointer_info) {
       // Flush the existing entry. We are starting a new interaction.
@@ -212,6 +213,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
         pointer_id, PointerEntryAndInfo::Create(entry, event_timestamps));
 
     // Waiting to see if we get a pointercancel or pointerup.
+    last_pointer_id_ = pointer_id;
     return false;
   } else if (event_type == event_type_names::kPointerup) {
     // Generate a new interaction id.
@@ -234,7 +236,15 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
     if (!pointer_flush_timer_.IsActive()) {
       pointer_flush_timer_.StartOneShot(kFlushTimerLength, FROM_HERE);
     }
+    last_pointer_id_ = pointer_id;
   } else if (event_type == event_type_names::kClick) {
+    // We do not rely on the |pointer_id| for clicks because they may be
+    // inaccurate. Instead, we rely on the last pointer id seen.
+    pointer_info = nullptr;
+    if (last_pointer_id_.has_value() &&
+        pointer_id_entry_map_.Contains(*last_pointer_id_)) {
+      pointer_info = pointer_id_entry_map_.at(*last_pointer_id_);
+    }
     if (pointer_info) {
       // There is a previous pointerdown or pointerup entry. Use its
       // interactionId.
@@ -260,6 +270,7 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       RecordDragTapOrClickUKM(
           window, *PointerEntryAndInfo::Create(entry, event_timestamps));
     }
+    last_pointer_id_ = absl::nullopt;
   }
   return true;
 }
@@ -275,6 +286,7 @@ bool ResponsivenessMetrics::SetKeyIdAndRecordLatency(
     PerformanceEventTiming* entry,
     absl::optional<int> key_code,
     EventTimestamps event_timestamps) {
+  last_pointer_id_ = absl::nullopt;
   auto event_type = entry->name();
   if (event_type == event_type_names::kKeydown) {
     DCHECK(key_code.has_value());
