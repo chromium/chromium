@@ -12,6 +12,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event_handler.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -29,6 +30,35 @@ constexpr int kNumColumns = 3;
 constexpr int kGridPaddingDp = 25;
 
 }  // namespace
+
+// -----------------------------------------------------------------------------
+// DesksTemplatesEventHandler:
+
+// This class is owned by DesksTemplatesGridView for the purpose of handling
+// mouse and gesture events.
+class DesksTemplatesEventHandler : public ui::EventHandler {
+ public:
+  explicit DesksTemplatesEventHandler(DesksTemplatesGridView* owner)
+      : owner_(owner) {}
+  DesksTemplatesEventHandler(const DesksTemplatesEventHandler&) = delete;
+  DesksTemplatesEventHandler& operator=(const DesksTemplatesEventHandler&) =
+      delete;
+  ~DesksTemplatesEventHandler() override = default;
+
+  void OnMouseEvent(ui::MouseEvent* event) override {
+    owner_->OnLocatedEvent(event, /*is_touch=*/false);
+  }
+
+  void OnGestureEvent(ui::GestureEvent* event) override {
+    owner_->OnLocatedEvent(event, /*is_touch=*/true);
+  }
+
+ private:
+  DesksTemplatesGridView* const owner_;
+};
+
+// -----------------------------------------------------------------------------
+// DesksTemplatesGridView:
 
 DesksTemplatesGridView::DesksTemplatesGridView() = default;
 
@@ -108,26 +138,22 @@ void DesksTemplatesGridView::UpdateGridUI(
   GetWidget()->SetBounds(widget_bounds);
 }
 
-void DesksTemplatesGridView::OnMouseEvent(ui::MouseEvent* event) {
-  OnLocatedEvent(event, /*is_touch=*/false);
-}
-
-void DesksTemplatesGridView::OnGestureEvent(ui::GestureEvent* event) {
-  OnLocatedEvent(event, /*is_touch=*/true);
-}
-
 void DesksTemplatesGridView::AddedToWidget() {
   // Adding a pre-target handler to ensure that events are not accidentally
-  // captured by the child views. Also, `this` is added as the pre-target
-  // handler to the window as opposed to `Env` to ensure that we only get events
-  // that are on this window.
+  // captured by the child views. Also, an `EventHandler`
+  // (DesksTemplatesEventHandler) is added as the pre-target handler to the
+  // window as opposed to `Env` to ensure that we only get events that are on
+  // this window.
+  event_handler_ = std::make_unique<DesksTemplatesEventHandler>(this);
   widget_window_ = GetWidget()->GetNativeWindow();
-  widget_window_->AddPreTargetHandler(this);
+  widget_window_->AddPreTargetHandler(event_handler_.get());
 }
 
 void DesksTemplatesGridView::RemovedFromWidget() {
+  DCHECK(event_handler_);
   DCHECK(widget_window_);
-  widget_window_->RemovePreTargetHandler(this);
+  widget_window_->RemovePreTargetHandler(event_handler_.get());
+  event_handler_.reset();
   widget_window_ = nullptr;
 }
 
