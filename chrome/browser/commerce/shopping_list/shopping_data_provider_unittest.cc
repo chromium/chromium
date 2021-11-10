@@ -14,9 +14,12 @@ namespace {
 
 const char kLeadImageUrl[] = "image.png";
 const char kFallbackImageUrl[] = "fallback_image.png";
+const char kCurrencyCode[] = "USD";
 
 const char kMainTitle[] = "Title";
 const char kFallbackTitle[] = "Fallback Title";
+
+const uint64_t kClusterId = 67890;
 
 TEST(ShoppingDataProviderTest, TestDataMergeWithLeadImage) {
   power_bookmarks::PowerBookmarkMeta meta;
@@ -67,6 +70,50 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithNoTitle) {
   commerce::BuyableProduct updated_product;
 
   EXPECT_EQ(kFallbackTitle, meta.shopping_specifics().title());
+}
+
+TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecifics) {
+  power_bookmarks::PowerBookmarkMeta meta;
+
+  base::DictionaryValue data_map;
+  data_map.SetString("title", kMainTitle);
+
+  commerce::BuyableProduct product;
+  product.set_title(kMainTitle);
+  product.set_image_url(kLeadImageUrl);
+  product.set_product_cluster_id(kClusterId);
+  product.mutable_current_price()->set_amount_micros(100L);
+  product.mutable_current_price()->set_currency_code(kCurrencyCode);
+
+  power_bookmarks::ShoppingSpecifics out_specifics;
+
+  PopulateShoppingSpecifics(product, &out_specifics);
+
+  EXPECT_EQ(kMainTitle, out_specifics.title());
+  EXPECT_EQ(kLeadImageUrl, out_specifics.image_url());
+  EXPECT_EQ(kClusterId, out_specifics.product_cluster_id());
+  EXPECT_EQ(100L, out_specifics.current_price().amount_micros());
+  EXPECT_EQ(kCurrencyCode, out_specifics.current_price().currency_code());
+}
+
+TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecificsMissingData) {
+  power_bookmarks::PowerBookmarkMeta meta;
+
+  base::DictionaryValue data_map;
+  data_map.SetString("title", kMainTitle);
+
+  commerce::BuyableProduct product;
+  product.set_title(kMainTitle);
+  product.set_image_url(kLeadImageUrl);
+
+  power_bookmarks::ShoppingSpecifics out_specifics;
+
+  PopulateShoppingSpecifics(product, &out_specifics);
+
+  EXPECT_EQ(kMainTitle, out_specifics.title());
+  EXPECT_EQ(kLeadImageUrl, out_specifics.image_url());
+  EXPECT_FALSE(out_specifics.has_product_cluster_id());
+  EXPECT_FALSE(out_specifics.has_current_price());
 }
 
 }  // namespace

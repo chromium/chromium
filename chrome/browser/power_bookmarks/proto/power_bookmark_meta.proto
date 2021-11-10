@@ -11,13 +11,15 @@ option optimize_for = LITE_RUNTIME;
 
 package power_bookmarks;
 
-import "components/commerce/core/proto/price_tracking.proto";
+import "chrome/browser/power_bookmarks/proto/shopping_specifics.proto";
 
 enum PowerBookmarkType {
   UNSPECIFIED = 0;
   SHOPPING = 1;
 }
 
+// This message is used to store the extra information associated with a
+// bookmark. This information is stored with and synced with bookmarks.
 message PowerBookmarkMeta {
   // This is the main image that will be shown in the UI.
   optional Image lead_image = 1;
@@ -33,7 +35,7 @@ message PowerBookmarkMeta {
   optional PowerBookmarkType type = 4;
 
   // Extra information corresponding to the |type|.
-  oneof type_specifics { commerce.BuyableProduct shopping_specifics = 5; }
+  oneof type_specifics { ShoppingSpecifics shopping_specifics = 5; }
 
   message Tag {
     // The name of the tag as displayed to the user.

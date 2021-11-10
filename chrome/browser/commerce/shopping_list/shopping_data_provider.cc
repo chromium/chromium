@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
+#include "chrome/browser/power_bookmarks/proto/shopping_specifics.pb.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
@@ -121,8 +122,8 @@ void ShoppingDataProvider::OnOptimizationGuideDecision(
         meta_for_navigation_->mutable_lead_image()->set_url(
             buyable_product.image_url());
       }
-      meta_for_navigation_->mutable_shopping_specifics()->CopyFrom(
-          buyable_product);
+      PopulateShoppingSpecifics(
+          buyable_product, meta_for_navigation_->mutable_shopping_specifics());
     }
   }
 }
@@ -159,7 +160,8 @@ void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
   // populate fields in |meta|.
   bool data_was_merged = false;
 
-  commerce::BuyableProduct* product_data = meta->mutable_shopping_specifics();
+  power_bookmarks::ShoppingSpecifics* product_data =
+      meta->mutable_shopping_specifics();
 
   for (auto it : on_page_data_map.DictItems()) {
     if (base::CompareCaseInsensitiveASCII(it.first, kOgTitle) == 0) {
@@ -196,7 +198,7 @@ void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
         double amount = 0;
         if (base::StringToDouble(
                 *on_page_data_map.FindStringKey(kOgPriceAmount), &amount)) {
-          commerce::ProductPrice* price_proto =
+          power_bookmarks::ProductPrice* price_proto =
               product_data->mutable_current_price();
           // Currency is stored in micro-units rather than standard units, so we
           // need to convert (open graph provides standard units).
@@ -216,6 +218,26 @@ void MergeData(power_bookmarks::PowerBookmarkMeta* meta,
   base::UmaHistogramBoolean(
       "Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataUsed",
       data_was_merged);
+}
+
+void PopulateShoppingSpecifics(
+    const commerce::BuyableProduct& data,
+    power_bookmarks::ShoppingSpecifics* shopping_specifics) {
+  if (data.has_title())
+    shopping_specifics->set_title(data.title());
+
+  if (data.has_image_url())
+    shopping_specifics->set_image_url(data.image_url());
+
+  if (data.has_product_cluster_id())
+    shopping_specifics->set_product_cluster_id(data.product_cluster_id());
+
+  if (data.has_current_price()) {
+    power_bookmarks::ProductPrice* price =
+        shopping_specifics->mutable_current_price();
+    price->set_currency_code(data.current_price().currency_code());
+    price->set_amount_micros(data.current_price().amount_micros());
+  }
 }
 
 }  // namespace shopping_list

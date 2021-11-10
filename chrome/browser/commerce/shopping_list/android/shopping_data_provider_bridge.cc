@@ -29,13 +29,13 @@ ScopedJavaLocalRef<jbyteArray> JNI_ShoppingDataProviderBridge_GetForWebContents(
       shopping_list::ShoppingDataProvider::FromWebContents(web_contents);
 
   if (!data_provider)
-    ScopedJavaLocalRef<jbyteArray>(nullptr);
+    return nullptr;
 
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       data_provider->GetCurrentMetadata();
 
   if (!meta)
-    ScopedJavaLocalRef<jbyteArray>(nullptr);
+    return nullptr;
 
   int size = meta->ByteSize();
   std::vector<uint8_t> data(size);

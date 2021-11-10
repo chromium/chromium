@@ -10,6 +10,8 @@ option java_package = "org.chromium.components.commerce";
 
 option optimize_for = LITE_RUNTIME;
 
+// These messages are primarily used for over-the-wire communications. If this
+// information needs to be stored locally, consider building a separate proto.
 message PriceTrackingData {
   // metadata relating to the product
   optional BuyableProduct buyable_product = 1;
