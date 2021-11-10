@@ -444,7 +444,18 @@ void DiceWebSigninInterceptor::OnExtendedAccountInfoUpdated(
            !profile_->GetPrefs()
                 ->GetString(prefs::kManagedAccountsSigninRestriction)
                 .empty());
-
+    // In case of a reauth of an account that already had sync enabled,
+    // the user already accepted to use a managed profile. Simply update that
+    // fact.
+    if (!new_account_interception_ &&
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync) ==
+            info.account_id) {
+      chrome::enterprise_util::SetUserAcceptedAccountManagement(profile_, true);
+      RecordSigninInterceptionHeuristicOutcome(
+          SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
+      Reset();
+      return;
+    }
     if (switch_to_entry) {
       interception_type = SigninInterceptionType::kProfileSwitchForced;
       RecordSigninInterceptionHeuristicOutcome(
@@ -621,6 +632,7 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
             account_info.account_id) {
       chrome::enterprise_util::SetUserAcceptedAccountManagement(
           profile_, intercepted_account_management_accepted_);
+      Reset();
     } else {
       OnProfileCreationChoice(account_info, profile_color,
                               SigninInterceptionResult::kAccepted);
