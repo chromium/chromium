@@ -5,7 +5,6 @@
 #ifndef CC_PAINT_SKOTTIE_WRAPPER_H_
 #define CC_PAINT_SKOTTIE_WRAPPER_H_
 
-#include <memory>
 #include <vector>
 
 #include "base/containers/span.h"
