@@ -31,7 +31,7 @@ PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
 }
 
 PageHandler::~PageHandler() {
-  ToggleAdBlocking(/* enabled= */ false);
+  Disable();
 }
 
 void PageHandler::ToggleAdBlocking(bool enabled) {
@@ -58,6 +58,7 @@ protocol::Response PageHandler::Enable() {
 protocol::Response PageHandler::Disable() {
   enabled_ = false;
   ToggleAdBlocking(false /* enable */);
+  SetSPCTransactionMode(protocol::Page::SetSPCTransactionMode::ModeEnum::None);
   // Do not mark the command as handled. Let it fall through instead, so that
   // the handler in content gets a chance to process the command.
   return protocol::Response::FallThrough();

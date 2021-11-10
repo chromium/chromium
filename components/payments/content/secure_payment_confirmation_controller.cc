@@ -138,7 +138,6 @@ void SecurePaymentConfirmationController::
   // after the dialog is created and shown to handle this, in order to keep the
   // automation codepath as close to the 'real' one as possible.
   if (request_->spc_transaction_mode() != SPCTransactionMode::NONE) {
-    // TODO: DCHECK that automation is enabled?
     if (request_->spc_transaction_mode() == SPCTransactionMode::AUTOACCEPT) {
       OnConfirm();
     } else {
