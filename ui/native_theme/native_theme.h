@@ -498,12 +498,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // Assign the focus-ring-appropriate alpha value to the provided base_color.
   virtual SkColor FocusRingColorForBaseColor(SkColor base_color) const;
 
-  virtual float AdjustBorderWidthByZoom(float border_width,
-                                        float zoom_level) const;
+  float AdjustBorderWidthByZoom(float border_width, float zoom_level) const;
 
-  virtual float AdjustBorderRadiusByZoom(Part part,
-                                         float border_width,
-                                         float zoom_level) const;
+  float AdjustBorderRadiusByZoom(Part part,
+                                 float border_width,
+                                 float zoom_level) const;
 
  protected:
   explicit NativeTheme(bool should_only_use_dark_colors,

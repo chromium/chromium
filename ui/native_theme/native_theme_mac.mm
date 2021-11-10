@@ -642,21 +642,4 @@ NativeThemeMacWeb* NativeThemeMacWeb::instance() {
   return s_native_theme.get();
 }
 
-float NativeThemeMacWeb::AdjustBorderWidthByZoom(float border_width,
-                                                 float zoom_level) const {
-  float zoomed = floorf(border_width * zoom_level);
-  return std::max(1.0f, zoomed);
-}
-
-float NativeThemeMacWeb::AdjustBorderRadiusByZoom(Part part,
-                                                  float border_radius,
-                                                  float zoom_level) const {
-  if (part != kTextField && part != kPushButton) {
-    return NativeThemeAura::AdjustBorderRadiusByZoom(part, border_radius,
-                                                     zoom_level);
-  }
-  float zoomed = floorf(border_radius * zoom_level);
-  return std::max(1.0f, zoomed);
-}
-
 }  // namespace ui

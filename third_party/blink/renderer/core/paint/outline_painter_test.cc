@@ -20,9 +20,9 @@ TEST_F(OutlinePainterTest, FocusRingOutset) {
   style->SetOutlineStyleIsAuto(true);
   EXPECT_EQ(2, OutlinePainter::OutlineOutsetExtent(*style));
   style->SetEffectiveZoom(4.75);
-  EXPECT_EQ(4, OutlinePainter::OutlineOutsetExtent(*style));
+  EXPECT_EQ(10, OutlinePainter::OutlineOutsetExtent(*style));
   style->SetEffectiveZoom(10);
-  EXPECT_EQ(8, OutlinePainter::OutlineOutsetExtent(*style));
+  EXPECT_EQ(20, OutlinePainter::OutlineOutsetExtent(*style));
 }
 
 TEST_F(OutlinePainterTest, HugeOutlineWidthOffset) {

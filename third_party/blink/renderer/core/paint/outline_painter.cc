@@ -39,7 +39,13 @@ float FocusRingStrokeWidth(const ComputedStyle& style) {
   DCHECK(style.OutlineStyleIsAuto());
   // Draw focus ring with thickness in proportion to the zoom level, but never
   // so narrow that it becomes invisible.
-  return std::max(style.EffectiveZoom(), 3.f);
+  float width = 3.f;
+  if (style.EffectiveZoom() >= 1.0f) {
+    width = ui::NativeTheme::GetInstanceForWeb()->AdjustBorderWidthByZoom(
+        width, style.EffectiveZoom());
+    DCHECK_GE(width, 3.f);
+  }
+  return std::max(style.EffectiveZoom(), width);
 }
 
 float FocusRingOuterStrokeWidth(const ComputedStyle& style) {
@@ -54,15 +60,17 @@ float FocusRingInnerStrokeWidth(const ComputedStyle& style) {
 int FocusRingOffset(const ComputedStyle& style) {
   DCHECK(style.OutlineStyleIsAuto());
   // How much space the focus ring would like to take from the actual border.
-  constexpr float kMaxInsideBorderWidth = 1;
+  const float max_inside_border_width =
+      ui::NativeTheme::GetInstanceForWeb()->AdjustBorderWidthByZoom(
+          1.0f, style.EffectiveZoom());
   int offset = OutlineOffsetForPainting(style);
   // Focus ring is dependent on whether the border is large enough to have an
   // inset outline. Use the smallest border edge for that test.
   float min_border_width =
       std::min({style.BorderTopWidth(), style.BorderBottomWidth(),
                 style.BorderLeftWidth(), style.BorderRightWidth()});
-  if (min_border_width >= kMaxInsideBorderWidth)
-    offset -= kMaxInsideBorderWidth;
+  if (min_border_width >= max_inside_border_width)
+    offset -= max_inside_border_width;
   return std::floor(offset);
 }
 

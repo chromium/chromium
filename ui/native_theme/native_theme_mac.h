@@ -177,12 +177,6 @@ class NativeThemeMacWeb : public NativeThemeAura {
  public:
   NativeThemeMacWeb();
 
-  float AdjustBorderWidthByZoom(float border_width,
-                                float zoom_level) const override;
-  float AdjustBorderRadiusByZoom(Part part,
-                                 float border_width,
-                                 float zoom_level) const override;
-
   static NativeThemeMacWeb* instance();
 };
 

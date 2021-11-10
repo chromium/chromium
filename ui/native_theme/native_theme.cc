@@ -114,14 +114,17 @@ void NativeTheme::NotifyOnCaptionStyleUpdated() {
 
 float NativeTheme::AdjustBorderWidthByZoom(float border_width,
                                            float zoom_level) const {
-  return border_width;
+  float zoomed = floorf(border_width * zoom_level);
+  return std::max(1.0f, zoomed);
 }
 
 float NativeTheme::AdjustBorderRadiusByZoom(Part part,
                                             float border_radius,
                                             float zoom) const {
-  if (part == kCheckbox)
-    return border_radius * zoom;
+  if (part == kCheckbox || part == kTextField || part == kPushButton) {
+    float zoomed = floorf(border_radius * zoom);
+    return std::max(1.0f, zoomed);
+  }
   return border_radius;
 }
 
