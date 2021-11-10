@@ -49,7 +49,7 @@
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
-//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'.origin> + [ "^" +
+//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'.origin> + [ "^0" +
 //   <StorageKey `key`.top_level_site> ]
 //   value: <empty>
 //
@@ -59,7 +59,7 @@
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
-//   key: "REG:" + <StorageKey 'key'.origin> + [ "^" + <StorageKey
+//   key: "REG:" + <StorageKey 'key'.origin> + [ "^0" + <StorageKey
 //   `key`.top_level_site> ] + '\x00' + <int64_t 'registration_id'>
 //     (ex. "REG:http://example.com\x00123456")
 //   value: <ServiceWorkerRegistrationData (except for the StorageKey)
@@ -87,7 +87,7 @@
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
 //   key: "REGID_TO_ORIGIN:" + <int64_t 'registration_id'>
-//   value: <StorageKey 'key'.origin> + [ "^" + <StorageKey
+//   value: <StorageKey 'key'.origin> + [ "^0" + <StorageKey
 //   `key`.top_level_site> ]
 //
 //   OBSOLETE: https://crbug.com/539713

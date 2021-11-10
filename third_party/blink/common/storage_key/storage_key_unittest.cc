@@ -200,9 +200,9 @@ TEST(StorageKeyTest, SerializeForServiceWorkerPartitioned) {
       {{"https://sub.test.example/", SiteTest}, "https://sub.test.example/"},
       // 3p context case
       {{"https://example.com/", SiteTest},
-       "https://example.com/^https://test.example"},
+       "https://example.com/^0https://test.example"},
       {{"https://sub.test.example/", SiteExample},
-       "https://sub.test.example/^https://example.com"},
+       "https://sub.test.example/^0https://example.com"},
       // File case.
       {{"file:///foo/bar", SiteFile}, "file:///"},
   };
@@ -282,10 +282,10 @@ TEST(StorageKeyTest, DeserializeForServiceWorker) {
   EXPECT_FALSE(key3.has_value());
   EXPECT_FALSE(key4.has_value());
 
-  std::string example_with_test = "https://example.com/^https://test.example";
-  std::string test_with_example = "https://test.example/^https://example.com";
-  std::string example_with_wrong = "https://example.com/^I'm not a valid URL.";
-  std::string wrong_with_example = "I'm not a valid URL.^https://example.com";
+  std::string example_with_test = "https://example.com/^0https://test.example";
+  std::string test_with_example = "https://test.example/^0https://example.com";
+  std::string example_with_wrong = "https://example.com/^0I'm not a valid URL.";
+  std::string wrong_with_example = "I'm not a valid URL.^0https://example.com";
 
   absl::optional<StorageKey> key5 =
       StorageKey::DeserializeForServiceWorker(example_with_test);

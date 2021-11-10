@@ -33,7 +33,7 @@ absl::optional<StorageKey> StorageKey::DeserializeForServiceWorker(
   // serialization.
 
   // As per the SerializeForServiceWorker() call, we have to expect the
-  // following structure: <StorageKey 'key'.origin> + [ "^" + <StorageKey
+  // following structure: <StorageKey 'key'.origin> + [ "^0" + <StorageKey
   // `key`.top_level_site> ] The brackets indicate an optional component.
 
   url::Origin key_origin;
@@ -45,9 +45,13 @@ absl::optional<StorageKey> StorageKey::DeserializeForServiceWorker(
   if (pos != std::string::npos) {
     // The origin is the portion up to, but not including, the caret.
     key_origin = url::Origin::Create(GURL(in.substr(0, pos)));
-    // The top_level_site is the portion beyond the caret.
+    // The top_level_site is the portion beyond the caret and the '0'.
+    // If there is no '0' then this input is malformed.
+    if (in[pos + 1] != '0')
+      return absl::nullopt;
+
     key_top_level_site =
-        net::SchemefulSite(GURL(in.substr(pos + 1, std::string::npos)));
+        net::SchemefulSite(GURL(in.substr(pos + 2, std::string::npos)));
   } else {
     // In this case the top_level_site is implicitly the same site as the
     // origin.
@@ -110,7 +114,7 @@ std::string StorageKey::SerializeForServiceWorker() const {
   DCHECK(!top_level_site_.opaque());
 
   // If storage partitioning is enabled we need to serialize the key to fit the
-  // following structure: <StorageKey 'key'.origin> + [ "^" + <StorageKey
+  // following structure: <StorageKey 'key'.origin> + [ "^0" + <StorageKey
   // `key`.top_level_site> ]
   //
   // The top_level_site is optional if it's the same site as the origin in order
@@ -120,7 +124,7 @@ std::string StorageKey::SerializeForServiceWorker() const {
 
   if (IsThirdPartyStoragePartitioningEnabled() &&
       top_level_site_ != net::SchemefulSite(origin_)) {
-    return origin_.GetURL().spec() + "^" + top_level_site_.Serialize();
+    return origin_.GetURL().spec() + "^0" + top_level_site_.Serialize();
   }
 
   return origin_.GetURL().spec();
