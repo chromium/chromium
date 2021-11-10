@@ -36,10 +36,11 @@ CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
 
 FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
     Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::FIRMWARE_UPDATE,
-                                    "FirmwareUpdate",
-                                    GURL(ash::kChromeUIFirmwareUpdateAppURL),
-                                    profile) {}
+    : web_app::SystemWebAppDelegateBase(
+          web_app::SystemAppType::FIRMWARE_UPDATE,
+          "FirmwareUpdate",
+          GURL(ash::kChromeUIFirmwareUpdateAppURL),
+          profile) {}
 
 std::unique_ptr<WebApplicationInfo>
 FirmwareUpdateSystemAppDelegate::GetWebAppInfo() const {

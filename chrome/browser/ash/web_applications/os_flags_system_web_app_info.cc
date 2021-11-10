@@ -12,10 +12,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 OsFlagsSystemWebAppDelegate::OsFlagsSystemWebAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::OS_FLAGS,
-                                    "OsFlags",
-                                    GURL(chrome::kChromeUIFlagsURL),
-                                    profile) {}
+    : web_app::SystemWebAppDelegateBase(web_app::SystemAppType::OS_FLAGS,
+                                        "OsFlags",
+                                        GURL(chrome::kChromeUIFlagsURL),
+                                        profile) {}
 
 OsFlagsSystemWebAppDelegate::~OsFlagsSystemWebAppDelegate() = default;
 
@@ -52,7 +52,7 @@ bool OsFlagsSystemWebAppDelegate::IsAppEnabled() const {
   return true;
 }
 
-bool OsFlagsSystemWebAppDelegate::ShouldBeSingleWindow() const {
+bool OsFlagsSystemWebAppDelegate::ShouldReuseExistingWindow() const {
   return true;
 }
 

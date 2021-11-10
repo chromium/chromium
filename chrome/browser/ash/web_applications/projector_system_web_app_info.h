@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PROJECTOR_SYSTEM_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PROJECTOR_SYSTEM_WEB_APP_INFO_H_
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
 
 class Profile;
 
-class ProjectorSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
+class ProjectorSystemWebAppDelegate : public web_app::SystemWebAppDelegateBase {
  public:
   explicit ProjectorSystemWebAppDelegate(Profile* profile);
   ProjectorSystemWebAppDelegate(const ProjectorSystemWebAppDelegate&) = delete;

@@ -102,7 +102,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
 }
 
 FileManagerSystemAppDelegate::FileManagerSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(
+    : web_app::SystemWebAppDelegateBase(
           web_app::SystemAppType::FILE_MANAGER,
           "File Manager",
           GURL(kChromeUIFileManagerURL),
@@ -120,7 +120,7 @@ bool FileManagerSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
 
-bool FileManagerSystemAppDelegate::ShouldBeSingleWindow() const {
+bool FileManagerSystemAppDelegate::ShouldReuseExistingWindow() const {
   return false;
 }
 

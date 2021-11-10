@@ -1520,7 +1520,7 @@ void RenderViewContextMenu::AppendOpenInWebAppLinkItems() {
   if (system_app_ &&
       system_app_->GetType() ==
           web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id) &&
-      system_app_->ShouldBeSingleWindow()) {
+      system_app_->ShouldReuseExistingWindow()) {
     return;
   }
 

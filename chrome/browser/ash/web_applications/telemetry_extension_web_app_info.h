@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_TELEMETRY_EXTENSION_WEB_APP_INFO_H_
 
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
 struct WebApplicationInfo;
@@ -15,7 +15,7 @@ struct WebApplicationInfo;
 #error Telemetry Extension should only be included in unofficial builds.
 #endif
 
-class TelemetrySystemAppDelegate : public web_app::SystemWebAppDelegate {
+class TelemetrySystemAppDelegate : public web_app::SystemWebAppDelegateBase {
  public:
   explicit TelemetrySystemAppDelegate(Profile* profile);
 

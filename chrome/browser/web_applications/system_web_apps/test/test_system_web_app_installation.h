@@ -32,7 +32,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
 
   std::vector<AppId> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;
-  bool ShouldBeSingleWindow() const override;
+  bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldIncludeLaunchDirectory() const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
@@ -47,10 +47,23 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
   bool IsAppEnabled() const override;
+  bool HasCustomTabMenuModel() const override;
+  std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
+      ui::SimpleMenuModel::Delegate* delegate) const override;
+  bool ShouldShowTabContextMenuShortcut(Profile* profile,
+                                        int command_id) const override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool HasTitlebarTerminalSelectNewTabButton() const override;
+#endif
+  Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const override;
 
   void SetAppIdsToUninstallAndReplace(const std::vector<AppId>&);
   void SetMinimumWindowSize(const gfx::Size&);
-  void SetShouldBeSingleWindow(bool);
+  void SetShouldReuseExistingWindow(bool);
   void SetShouldShowNewWindowMenuOption(bool);
   void SetShouldIncludeLaunchDirectory(bool);
   void SetEnabledOriginTrials(const OriginTrialsMap&);

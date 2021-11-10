@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, FeedbackAppAttributes) {
       GetManager().GetSystemApp(web_app::SystemAppType::OS_FEEDBACK);
   EXPECT_TRUE(system_app->ShouldShowInLauncher());
   EXPECT_TRUE(system_app->ShouldShowInSearch());
-  EXPECT_TRUE(system_app->ShouldBeSingleWindow());
+  EXPECT_TRUE(system_app->ShouldReuseExistingWindow());
   EXPECT_TRUE(system_app->ShouldAllowScriptsToCloseWindows());
   EXPECT_FALSE(system_app->ShouldAllowResize());
   EXPECT_FALSE(system_app->ShouldAllowMaximize());

@@ -14,10 +14,10 @@
 
 OsUrlHandlerSystemWebAppDelegate::OsUrlHandlerSystemWebAppDelegate(
     Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::OS_URL_HANDLER,
-                                    "OsUrlHandler",
-                                    GURL(chrome::kChromeUIOsUrlAppURL),
-                                    profile) {}
+    : web_app::SystemWebAppDelegateBase(web_app::SystemAppType::OS_URL_HANDLER,
+                                        "OsUrlHandler",
+                                        GURL(chrome::kChromeUIOsUrlAppURL),
+                                        profile) {}
 
 OsUrlHandlerSystemWebAppDelegate::~OsUrlHandlerSystemWebAppDelegate() = default;
 

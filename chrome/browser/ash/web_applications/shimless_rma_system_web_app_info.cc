@@ -34,10 +34,10 @@ CreateWebAppInfoForShimlessRMASystemWebApp() {
 }
 
 ShimlessRMASystemAppDelegate::ShimlessRMASystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::SHIMLESS_RMA,
-                                    "ShimlessRMA",
-                                    GURL(ash::kChromeUIShimlessRMAUrl),
-                                    profile) {}
+    : web_app::SystemWebAppDelegateBase(web_app::SystemAppType::SHIMLESS_RMA,
+                                        "ShimlessRMA",
+                                        GURL(ash::kChromeUIShimlessRMAUrl),
+                                        profile) {}
 
 std::unique_ptr<WebApplicationInfo>
 ShimlessRMASystemAppDelegate::GetWebAppInfo() const {

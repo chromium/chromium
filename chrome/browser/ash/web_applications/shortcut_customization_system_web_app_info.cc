@@ -36,7 +36,7 @@ CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
 
 ShortcutCustomizationSystemAppDelegate::ShortcutCustomizationSystemAppDelegate(
     Profile* profile)
-    : web_app::SystemWebAppDelegate(
+    : web_app::SystemWebAppDelegateBase(
           web_app::SystemAppType::SHORTCUT_CUSTOMIZATION,
           "ShortcutCustomization",
           GURL(ash::kChromeUIShortcutCustomizationAppURL),

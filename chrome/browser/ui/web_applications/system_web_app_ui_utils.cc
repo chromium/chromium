@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -199,6 +200,24 @@ void LaunchSystemWebAppAsync(Profile* profile,
                       std::move(window_info));
 }
 
+void SetLaunchFiles(bool should_include_launch_directory,
+                    const apps::AppLaunchParams& params,
+                    content::WebContents* web_contents,
+                    WebAppProvider* provider) {
+  // Send launch files.
+  if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
+          params.app_id)) {
+    if (should_include_launch_directory) {
+      web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
+          web_contents, web_contents->GetURL(),
+          GetLaunchDirectory(params.launch_files), params.launch_files);
+    } else {
+      web_launch::WebLaunchFilesHelper::SetLaunchPaths(
+          web_contents, web_contents->GetURL(), params.launch_files);
+    }
+  }
+}
+
 Browser* LaunchSystemWebAppImpl(Profile* profile,
                                 SystemAppType app_type,
                                 const GURL& url,
@@ -218,63 +237,17 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
                                                .GetAppLaunchUrl(params.app_id)
                                                .DeprecatedGetOriginAsURL());
 
-  Browser* browser = nullptr;
-  Browser::Type browser_type = Browser::TYPE_APP;
-  if (params.disposition == WindowOpenDisposition::NEW_POPUP)
-    browser_type = Browser::TYPE_APP_POPUP;
   auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
-  browser = FindSystemWebAppBrowser(profile, app_type, browser_type);
+  if (!system_app) {
+    LOG(ERROR) << "Can't find delegate for system app url: " << url
+               << " Not launching.";
+    return nullptr;
+  }
 
-  bool can_resize = system_app && system_app->ShouldAllowResize();
-  bool can_maximize = system_app && system_app->ShouldAllowMaximize();
-
-  // System Web App windows can't be properly restored without storing the app
-  // type. Until that is implemented, skip them for session restore.
-  // TODO(crbug.com/1003170): Enable session restore for System Web Apps by
-  // passing through the underlying value of params.omit_from_session_restore.
-  const bool omit_from_session_restore = true;
-
-  // Always reuse an existing browser for popups, otherwise check app type
-  // whether we should use a single window.
-  // TODO(crbug.com/1060423): Allow apps to control whether popups are single.
-  const bool reuse_existing_window =
-      browser_type == Browser::TYPE_APP_POPUP ||
-      (system_app && system_app->ShouldBeSingleWindow());
-
+  Browser* browser =
+      system_app->LaunchAndNavigateSystemWebApp(profile, provider, url, params);
   if (!browser) {
-    browser = CreateWebApplicationWindow(
-        profile, params.app_id, params.disposition, params.restore_id,
-        omit_from_session_restore, can_resize, can_maximize);
-  } else if (!reuse_existing_window) {
-    gfx::Rect initial_bounds = browser->window()->GetRestoredBounds();
-    initial_bounds.Offset(20, 20);
-    browser = CreateWebApplicationWindow(
-        profile, params.app_id, params.disposition, params.restore_id,
-        omit_from_session_restore, can_resize, can_maximize, initial_bounds);
-  }
-
-  // Navigate application window to application's |url| if necessary.
-  // Help app always navigates because its url might not match the url inside
-  // the iframe, and the iframe's url is the one that matters.
-  content::WebContents* web_contents =
-      browser->tab_strip_model()->GetWebContentsAt(0);
-  if (!web_contents || web_contents->GetURL() != url ||
-      app_type == SystemAppType::HELP) {
-    web_contents = NavigateWebApplicationWindow(
-        browser, params.app_id, url, WindowOpenDisposition::CURRENT_TAB);
-  }
-
-  // Send launch files.
-  if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
-          params.app_id)) {
-    if (system_app && system_app->ShouldIncludeLaunchDirectory()) {
-      web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-          web_contents, web_contents->GetURL(),
-          GetLaunchDirectory(params.launch_files), params.launch_files);
-    } else {
-      web_launch::WebLaunchFilesHelper::SetLaunchPaths(
-          web_contents, web_contents->GetURL(), params.launch_files);
-    }
+    return nullptr;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

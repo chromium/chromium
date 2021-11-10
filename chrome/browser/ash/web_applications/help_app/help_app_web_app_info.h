@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -20,7 +20,7 @@ class Browser;
 
 namespace ash {
 
-class HelpAppSystemAppDelegate : public web_app::SystemWebAppDelegate {
+class HelpAppSystemAppDelegate : public web_app::SystemWebAppDelegateBase {
  public:
   explicit HelpAppSystemAppDelegate(Profile* profile);
 

@@ -57,7 +57,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
 }
 
 SampleSystemAppDelegate::SampleSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(
+    : web_app::SystemWebAppDelegateBase(
           web_app::SystemAppType::SAMPLE,
           "Sample",
           GURL("chrome://sample-system-web-app/pwa.html"),
@@ -81,7 +81,7 @@ bool SampleSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return true;
 }
 
-bool SampleSystemAppDelegate::ShouldBeSingleWindow() const {
+bool SampleSystemAppDelegate::ShouldReuseExistingWindow() const {
   return false;
 }
 

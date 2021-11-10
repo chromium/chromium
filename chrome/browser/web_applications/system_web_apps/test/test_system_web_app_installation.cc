@@ -13,6 +13,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
@@ -22,6 +27,7 @@
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/url_constants.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/webui/webui_allowlist.h"
 
 namespace web_app {
@@ -109,7 +115,7 @@ UnittestingSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
 gfx::Size UnittestingSystemAppDelegate::GetMinimumWindowSize() const {
   return minimum_window_size_;
 }
-bool UnittestingSystemAppDelegate::ShouldBeSingleWindow() const {
+bool UnittestingSystemAppDelegate::ShouldReuseExistingWindow() const {
   return single_window_;
 }
 bool UnittestingSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
@@ -162,6 +168,82 @@ bool UnittestingSystemAppDelegate::IsAppEnabled() const {
   return true;
 }
 
+bool UnittestingSystemAppDelegate::HasCustomTabMenuModel() const {
+  return false;
+}
+std::unique_ptr<ui::SimpleMenuModel>
+UnittestingSystemAppDelegate::GetTabMenuModel(
+    ui::SimpleMenuModel::Delegate* delegate) const {
+  return std::make_unique<ui::SimpleMenuModel>(nullptr);
+}
+bool UnittestingSystemAppDelegate::ShouldShowTabContextMenuShortcut(
+    Profile* profile,
+    int command_id) const {
+  return false;
+}
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+bool UnittestingSystemAppDelegate::HasTitlebarTerminalSelectNewTabButton()
+    const {
+  return false;
+}
+#endif
+Browser* UnittestingSystemAppDelegate::LaunchAndNavigateSystemWebApp(
+    Profile* profile,
+    WebAppProvider* provider,
+    const GURL& url,
+    const apps::AppLaunchParams& params) const {
+  Browser::Type browser_type = Browser::TYPE_APP;
+
+  if (params.disposition == WindowOpenDisposition::NEW_POPUP) {
+    browser_type = Browser::TYPE_APP_POPUP;
+  }
+
+  // Always find an existing window, so that we can offset the screen
+  // coordinates from a previously opened one.
+  Browser* browser = FindSystemWebAppBrowser(profile, GetType(), browser_type);
+
+  // System Web App windows can't be properly restored without storing the app
+  // type. Until that is implemented, skip them for session restore.
+  // TODO(crbug.com/1003170): Enable session restore for System Web Apps by
+  // passing through the underlying value of params.omit_from_session_restore.
+  const bool omit_from_session_restore = true;
+
+  // Always reuse an existing browser for popups, otherwise check app type
+  // whether we should use a single window.
+  // TODO(crbug.com/1060423): Allow apps to control whether popups are single.
+  const bool reuse_existing_window =
+      browser_type == Browser::TYPE_APP_POPUP || ShouldReuseExistingWindow();
+
+  if (!browser) {
+    browser = CreateWebApplicationWindow(
+        profile, params.app_id, params.disposition, params.restore_id,
+        omit_from_session_restore, ShouldAllowResize(), ShouldAllowMaximize());
+  } else if (!reuse_existing_window) {
+    gfx::Rect initial_bounds = browser->window()->GetRestoredBounds();
+    initial_bounds.Offset(20, 20);
+    browser = CreateWebApplicationWindow(
+        profile, params.app_id, params.disposition, params.restore_id,
+        omit_from_session_restore, ShouldAllowResize(), ShouldAllowMaximize(),
+        initial_bounds);
+  }
+
+  // Navigate application window to application's |url| if necessary.
+  // Help app always navigates because its url might not match the url inside
+  // the iframe, and the iframe's url is the one that matters.
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetWebContentsAt(0);
+  if (!web_contents || web_contents->GetURL() != url ||
+      GetType() == SystemAppType::HELP) {
+    web_contents = NavigateWebApplicationWindow(
+        browser, params.app_id, url, WindowOpenDisposition::CURRENT_TAB);
+  }
+
+  SetLaunchFiles(ShouldIncludeLaunchDirectory(), params, web_contents,
+                 provider);
+
+  return browser;
+}
+
 void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
     const std::vector<AppId>& ids) {
   uninstall_and_replace_ = ids;
@@ -169,7 +251,7 @@ void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
 void UnittestingSystemAppDelegate::SetMinimumWindowSize(const gfx::Size& size) {
   minimum_window_size_ = size;
 }
-void UnittestingSystemAppDelegate::SetShouldBeSingleWindow(bool value) {
+void UnittestingSystemAppDelegate::SetShouldReuseExistingWindow(bool value) {
   single_window_ = value;
 }
 void UnittestingSystemAppDelegate::SetShouldShowNewWindowMenuOption(
@@ -295,7 +377,7 @@ TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
           SystemAppType::TERMINAL, "Terminal",
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
-  delegate->SetShouldBeSingleWindow(false);
+  delegate->SetShouldReuseExistingWindow(false);
   delegate->SetShouldHaveTabStrip(true);
 
   return base::WrapUnique(
@@ -535,7 +617,7 @@ TestSystemWebAppInstallation::SetUpAppWithNewWindowMenuItem() {
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   delegate->SetShouldShowNewWindowMenuOption(true);
-  delegate->SetShouldBeSingleWindow(false);
+  delegate->SetShouldReuseExistingWindow(false);
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
@@ -598,19 +680,19 @@ CreateSystemAppDelegateWithWindowConfig(
 
   switch (window_config) {
     case SystemWebAppWindowConfig::SINGLE_WINDOW:
-      delegate->SetShouldBeSingleWindow(true);
+      delegate->SetShouldReuseExistingWindow(true);
       delegate->SetShouldHaveTabStrip(false);
       break;
     case SystemWebAppWindowConfig::SINGLE_WINDOW_TAB_STRIP:
-      delegate->SetShouldBeSingleWindow(true);
+      delegate->SetShouldReuseExistingWindow(true);
       delegate->SetShouldHaveTabStrip(true);
       break;
     case SystemWebAppWindowConfig::MULTI_WINDOW:
-      delegate->SetShouldBeSingleWindow(false);
+      delegate->SetShouldReuseExistingWindow(false);
       delegate->SetShouldHaveTabStrip(false);
       break;
     case SystemWebAppWindowConfig::MULTI_WINDOW_TAB_STRIP:
-      delegate->SetShouldBeSingleWindow(false);
+      delegate->SetShouldReuseExistingWindow(false);
       delegate->SetShouldHaveTabStrip(true);
       break;
   }

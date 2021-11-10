@@ -3129,6 +3129,8 @@ source_set("chromeos") {
     "../ash/web_applications/shimless_rma_system_web_app_info.h",
     "../ash/web_applications/shortcut_customization_system_web_app_info.cc",
     "../ash/web_applications/shortcut_customization_system_web_app_info.h",
+    "../ash/web_applications/system_web_app_delegate_base.cc",
+    "../ash/web_applications/system_web_app_delegate_base.h",
     "../ash/web_applications/system_web_app_install_utils.cc",
     "../ash/web_applications/system_web_app_install_utils.h",
     "../ash/web_applications/terminal_source.cc",

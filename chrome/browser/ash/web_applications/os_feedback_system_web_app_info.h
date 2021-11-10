@@ -7,15 +7,15 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
 struct WebApplicationInfo;
 
-class OSFeedbackAppDelegate : public web_app::SystemWebAppDelegate {
+class OSFeedbackAppDelegate : public web_app::SystemWebAppDelegateBase {
  public:
   explicit OSFeedbackAppDelegate(Profile* profile);
 

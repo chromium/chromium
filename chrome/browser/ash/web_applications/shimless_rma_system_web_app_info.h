@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_SHIMLESS_RMA_SYSTEM_WEB_APP_INFO_H_
 
 #include "ash/webui/shimless_rma/url_constants.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "ui/gfx/geometry/size.h"
 
 struct WebApplicationInfo;
 
-class ShimlessRMASystemAppDelegate : public web_app::SystemWebAppDelegate {
+class ShimlessRMASystemAppDelegate : public web_app::SystemWebAppDelegateBase {
  public:
   explicit ShimlessRMASystemAppDelegate(Profile* profile);
 

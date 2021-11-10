@@ -55,17 +55,18 @@ gfx::Rect GetDefaultBoundsForTerminal(Browser* browser) {
 }
 
 TerminalSystemAppDelegate::TerminalSystemAppDelegate(Profile* profile)
-    : web_app::SystemWebAppDelegate(web_app::SystemAppType::TERMINAL,
-                                    "Terminal",
-                                    GURL(chrome::kChromeUIUntrustedTerminalURL),
-                                    profile) {}
+    : web_app::SystemWebAppDelegateBase(
+          web_app::SystemAppType::TERMINAL,
+          "Terminal",
+          GURL(chrome::kChromeUIUntrustedTerminalURL),
+          profile) {}
 
 std::unique_ptr<WebApplicationInfo> TerminalSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForTerminalSystemWebApp();
 }
 
-bool TerminalSystemAppDelegate::ShouldBeSingleWindow() const {
+bool TerminalSystemAppDelegate::ShouldReuseExistingWindow() const {
   return false;
 }
 bool TerminalSystemAppDelegate::ShouldHaveTabStrip() const {

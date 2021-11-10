@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_FLAGS_SYSTEM_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_FLAGS_SYSTEM_WEB_APP_INFO_H_
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
+#include "chrome/browser/ash/web_applications/system_web_app_delegate_base.h"
 
 class Profile;
 
@@ -13,7 +13,7 @@ class Profile;
 // chrome:// URLs as web applications.
 // To allow users to call Ash's pages directly, they can use os://<url> which
 // will then be handled by this app.
-class OsFlagsSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
+class OsFlagsSystemWebAppDelegate : public web_app::SystemWebAppDelegateBase {
  public:
   explicit OsFlagsSystemWebAppDelegate(Profile* profile);
   OsFlagsSystemWebAppDelegate(const OsFlagsSystemWebAppDelegate&) = delete;
@@ -28,7 +28,7 @@ class OsFlagsSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
   // capturing the os:// search tearms to be used.
   bool ShouldCaptureNavigations() const override;
   bool IsAppEnabled() const override;
-  bool ShouldBeSingleWindow() const override;
+  bool ShouldReuseExistingWindow() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
 };
