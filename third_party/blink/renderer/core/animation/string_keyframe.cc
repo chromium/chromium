@@ -342,6 +342,10 @@ bool StringKeyframe::CSSPropertySpecificKeyframe::IsRevert() const {
   return value_ && value_->IsRevertValue();
 }
 
+bool StringKeyframe::CSSPropertySpecificKeyframe::IsRevertLayer() const {
+  return value_ && value_->IsRevertLayerValue();
+}
+
 Keyframe::PropertySpecificKeyframe*
 StringKeyframe::CSSPropertySpecificKeyframe::NeutralKeyframe(
     double offset,

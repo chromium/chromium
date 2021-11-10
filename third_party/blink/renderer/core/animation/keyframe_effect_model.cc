@@ -338,6 +338,7 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
           keyframe->CreatePropertySpecificKeyframe(property, composite_,
                                                    computed_offset);
       has_revert_ |= property_specific_keyframe->IsRevert();
+      has_revert_ |= property_specific_keyframe->IsRevertLayer();
       group->AppendKeyframe(property_specific_keyframe);
     }
   }

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -113,8 +114,14 @@ class ResolvedRegisteredCustomPropertyChecker
   scoped_refptr<CSSVariableData> resolved_tokens_;
 };
 
+template <typename RevertValueType>
 class RevertChecker : public CSSInterpolationType::ConversionChecker {
  public:
+  static_assert(
+      std::is_same<RevertValueType, cssvalue::CSSRevertValue>::value ||
+          std::is_same<RevertValueType, cssvalue::CSSRevertLayerValue>::value,
+      "RevertCheck only accepts CSSRevertValue and CSSRevertLayerValue");
+
   RevertChecker(const PropertyHandle& property_handle,
                 const CSSValue* resolved_value)
       : property_handle_(property_handle), resolved_value_(resolved_value) {
@@ -124,8 +131,8 @@ class RevertChecker : public CSSInterpolationType::ConversionChecker {
   bool IsValid(const InterpolationEnvironment& environment,
                const InterpolationValue&) const final {
     const auto& css_environment = To<CSSInterpolationEnvironment>(environment);
-    const CSSValue* current_resolved_value = css_environment.Resolve(
-        property_handle_, cssvalue::CSSRevertValue::Create());
+    const CSSValue* current_resolved_value =
+        css_environment.Resolve(property_handle_, RevertValueType::Create());
     return DataEquivalent(resolved_value_.Get(), current_resolved_value);
   }
 
@@ -190,7 +197,16 @@ InterpolationValue CSSInterpolationType::MaybeConvertSingleInternal(
     value = css_environment.Resolve(GetProperty(), value);
     DCHECK(value);
     conversion_checkers.push_back(
-        std::make_unique<RevertChecker>(GetProperty(), value));
+        std::make_unique<RevertChecker<cssvalue::CSSRevertValue>>(GetProperty(),
+                                                                  value));
+  }
+
+  if (value->IsRevertLayerValue()) {
+    value = css_environment.Resolve(GetProperty(), value);
+    DCHECK(value);
+    conversion_checkers.push_back(
+        std::make_unique<RevertChecker<cssvalue::CSSRevertLayerValue>>(
+            GetProperty(), value));
   }
 
   bool is_inherited = CssProperty().IsInherited();
@@ -220,7 +236,13 @@ InterpolationValue CSSInterpolationType::MaybeConvertCustomPropertyDeclaration(
 
   if (declaration.IsRevert()) {
     conversion_checkers.push_back(
-        std::make_unique<RevertChecker>(GetProperty(), value));
+        std::make_unique<RevertChecker<cssvalue::CSSRevertValue>>(GetProperty(),
+                                                                  value));
+  }
+  if (declaration.IsRevertLayer()) {
+    conversion_checkers.push_back(
+        std::make_unique<RevertChecker<cssvalue::CSSRevertLayerValue>>(
+            GetProperty(), value));
   }
   if (const auto* resolved_declaration =
           DynamicTo<CSSCustomPropertyDeclaration>(value)) {

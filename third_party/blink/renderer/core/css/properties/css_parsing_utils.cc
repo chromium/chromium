@@ -2738,7 +2738,8 @@ bool IsContentPositionOrLeftOrRightKeyword(CSSValueID id) {
 
 bool IsCSSWideKeyword(CSSValueID id) {
   return id == CSSValueID::kInherit || id == CSSValueID::kInitial ||
-         id == CSSValueID::kUnset || id == CSSValueID::kRevert;
+         id == CSSValueID::kUnset || id == CSSValueID::kRevert ||
+         id == CSSValueID::kRevertLayer;
 }
 
 // https://drafts.csswg.org/css-values-4/#css-wide-keywords
