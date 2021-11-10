@@ -19,7 +19,7 @@ Storage
   Trust Tokens
 Cache
   Cache Storage
-  Back-forward Cache
+  Back-Forward Cache
 Background Services
   Background Fetch
   Background Sync
@@ -50,7 +50,7 @@ Storage
   Trust Tokens
 Cache
   Cache Storage
-  Back-forward Cache
+  Back-Forward Cache
 Background Services
   Background Fetch
   Background Sync
