@@ -3716,6 +3716,49 @@
             ]
         }
     ],
+    "FeedImageMemoryCache": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "ClearCache_Reduced",
+                    "params": {
+                        "image_memory_cache_size_percentage": "50"
+                    },
+                    "enable_features": [
+                        "FeedClearImageMemoryCache",
+                        "FeedImageMemoryCacheSizePercentage"
+                    ]
+                },
+                {
+                    "name": "CacheDisabled",
+                    "params": {
+                        "image_memory_cache_size_percentage": "0"
+                    },
+                    "enable_features": [
+                        "FeedImageMemoryCacheSizePercentage"
+                    ]
+                },
+                {
+                    "name": "CacheReduced",
+                    "params": {
+                        "image_memory_cache_size_percentage": "50"
+                    },
+                    "enable_features": [
+                        "FeedImageMemoryCacheSizePercentage"
+                    ]
+                },
+                {
+                    "name": "ClearCache",
+                    "enable_features": [
+                        "FeedClearImageMemoryCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedPullToRefresh": [
         {
             "platforms": [
