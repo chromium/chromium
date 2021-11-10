@@ -610,6 +610,9 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.Intercept.Guest.Availability"
     enum="SigninInterceptGuestAvailability" expires_after="2021-12-19">
+  <obsolete>
+    Removed 2021-05.
+  </obsolete>
   <owner>rhalavati@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>

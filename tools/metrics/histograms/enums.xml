@@ -78290,6 +78290,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SigninInterceptGuestAvailability">
+  <obsolete>
+    Removed 2021-05.
+  </obsolete>
   <int value="0" label="Guest option available"/>
   <int value="1" label="Guest already open"/>
   <int value="2" label="Guest mode blocked by policy"/>
