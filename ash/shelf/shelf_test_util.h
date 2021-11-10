@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_item.h"
-#include "base/macros.h"
 
 namespace gfx {
 class ImageSkia;

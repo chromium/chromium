@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/palette/common_palette_tool.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {

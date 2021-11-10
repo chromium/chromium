@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;

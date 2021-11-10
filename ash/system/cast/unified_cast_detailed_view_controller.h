@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 namespace tray {

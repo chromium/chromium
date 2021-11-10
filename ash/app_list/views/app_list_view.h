@@ -17,7 +17,6 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"

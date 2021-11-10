@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/display.h"
 #include "ui/display/unified_desktop_utils.h"

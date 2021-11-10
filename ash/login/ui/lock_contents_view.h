@@ -24,7 +24,6 @@
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"

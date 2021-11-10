@@ -9,7 +9,6 @@
 #include "ash/accessibility/ui/focus_ring_layer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_focus_ring_info.h"
-#include "base/macros.h"
 #include "ui/compositor/paint_recorder.h"
 
 namespace ash {

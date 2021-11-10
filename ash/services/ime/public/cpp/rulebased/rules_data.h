@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "ash/services/ime/public/mojom/input_method.mojom-shared.h"
-#include "base/macros.h"
 
 namespace re2 {
 class RE2;

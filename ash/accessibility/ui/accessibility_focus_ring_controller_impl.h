@@ -16,7 +16,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_focus_ring_controller.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"

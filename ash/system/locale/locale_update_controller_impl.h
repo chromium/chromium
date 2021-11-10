@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/public/cpp/locale_update_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {

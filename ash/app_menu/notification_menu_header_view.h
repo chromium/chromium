@@ -5,7 +5,6 @@
 #ifndef ASH_APP_MENU_NOTIFICATION_MENU_HEADER_VIEW_H_
 #define ASH_APP_MENU_NOTIFICATION_MENU_HEADER_VIEW_H_
 
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace views {

@@ -13,7 +13,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/host/ash_window_tree_host_mirroring_delegate.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/display/manager/display_manager.h"

@@ -12,7 +12,6 @@
 
 #include "ash/public/cpp/session/session_controller_client.h"
 #include "ash/public/cpp/session/session_types.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "components/user_manager/user_type.h"

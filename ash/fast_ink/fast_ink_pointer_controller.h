@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/events/event_handler.h"

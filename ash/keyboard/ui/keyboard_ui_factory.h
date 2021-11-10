@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/keyboard/ui/keyboard_export.h"
-#include "base/macros.h"
 
 namespace keyboard {
 

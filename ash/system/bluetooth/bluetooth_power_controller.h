@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_type.h"
 #include "device/bluetooth/bluetooth_adapter.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/display/display.h"
 #include "ui/gfx/animation/linear_animation.h"

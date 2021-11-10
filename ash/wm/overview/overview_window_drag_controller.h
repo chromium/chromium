@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ash {

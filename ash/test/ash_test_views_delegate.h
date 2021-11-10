@@ -5,7 +5,6 @@
 #ifndef ASH_TEST_ASH_TEST_VIEWS_DELEGATE_H_
 #define ASH_TEST_ASH_TEST_VIEWS_DELEGATE_H_
 
-#include "base/macros.h"
 #include "ui/views/test/test_views_delegate.h"
 
 namespace ash {

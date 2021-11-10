@@ -6,7 +6,6 @@
 #define ASH_ACCESSIBILITY_CHROMEVOX_KEY_ACCESSIBILITY_ENABLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/event_handler.h"
 

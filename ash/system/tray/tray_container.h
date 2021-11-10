@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_TRAY_TRAY_CONTAINER_H_
 #define ASH_SYSTEM_TRAY_TRAY_CONTAINER_H_
 
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"

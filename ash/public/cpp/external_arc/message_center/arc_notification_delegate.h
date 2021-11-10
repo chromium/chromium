@@ -5,7 +5,6 @@
 #ifndef ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_DELEGATE_H_
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_DELEGATE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 

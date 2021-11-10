@@ -9,7 +9,6 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 

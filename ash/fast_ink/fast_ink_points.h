@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"

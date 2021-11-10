@@ -19,7 +19,6 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/testing_pref_service.h"

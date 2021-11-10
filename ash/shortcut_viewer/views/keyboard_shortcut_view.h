@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/search_box/search_box_view_delegate.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_delegate.h"

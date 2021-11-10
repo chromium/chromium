@@ -10,7 +10,6 @@
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "base/macros.h"
 
 namespace ash {
 

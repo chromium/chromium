@@ -13,7 +13,6 @@
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom-forward.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom-forward.h"
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom-forward.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"

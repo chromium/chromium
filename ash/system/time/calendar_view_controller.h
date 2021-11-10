@@ -12,7 +12,6 @@
 #include <set>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"

@@ -9,8 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace ash {
 class DisplayConfigurationController;
 class ScreenRotationAnimator;

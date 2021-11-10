@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_TRAY_SYSTEM_MENU_BUTTON_H_
 
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "base/macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"

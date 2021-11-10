@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/peripheral_battery_listener.h"
-#include "base/macros.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

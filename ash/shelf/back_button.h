@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_control_button.h"
-#include "base/macros.h"
 
 namespace ash {
 

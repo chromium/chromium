@@ -7,7 +7,6 @@
 
 #include "ash/system/model/locale_model.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/macros.h"
 
 namespace ash {
 

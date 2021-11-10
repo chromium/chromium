@@ -6,7 +6,6 @@
 #define ASH_HIGHLIGHTER_HIGHLIGHTER_CONTROLLER_TEST_API_H_
 
 #include "ash/highlighter/highlighter_controller.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/geometry/rect.h"
 

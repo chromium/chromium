@@ -11,7 +11,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"

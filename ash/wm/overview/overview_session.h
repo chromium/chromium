@@ -21,7 +21,6 @@
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"

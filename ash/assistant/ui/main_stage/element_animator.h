@@ -5,7 +5,6 @@
 #ifndef ASH_ASSISTANT_UI_MAIN_STAGE_ELEMENT_ANIMATOR_H_
 #define ASH_ASSISTANT_UI_MAIN_STAGE_ELEMENT_ANIMATOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace ui {

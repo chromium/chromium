@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/wm/overview/overview_types.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 

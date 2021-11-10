@@ -10,7 +10,6 @@
 
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/login/ui/login_detachable_base_model.h"
-#include "base/macros.h"
 #include "components/account_id/account_id.h"
 
 namespace ash {

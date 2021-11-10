@@ -6,7 +6,6 @@
 #define ASH_ASSISTANT_MODEL_ASSISTANT_SCREEN_CONTEXT_MODEL_OBSERVER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 namespace ash {

@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_bubble_base.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 

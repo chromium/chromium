@@ -15,7 +15,6 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_types.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"

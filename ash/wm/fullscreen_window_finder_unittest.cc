@@ -8,7 +8,6 @@
 
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
-#include "base/macros.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"

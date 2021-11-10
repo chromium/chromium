@@ -13,7 +13,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"

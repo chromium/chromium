@@ -18,7 +18,6 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/macros.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"

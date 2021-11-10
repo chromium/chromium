@@ -14,7 +14,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/system_tray_observer.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"

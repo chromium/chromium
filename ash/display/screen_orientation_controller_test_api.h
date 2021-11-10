@@ -6,7 +6,6 @@
 #define ASH_DISPLAY_SCREEN_ORIENTATION_CONTROLLER_TEST_API_H_
 
 #include "ash/display/display_configuration_controller.h"
-#include "base/macros.h"
 #include "chromeos/ui/base/display_util.h"
 #include "ui/display/display.h"
 

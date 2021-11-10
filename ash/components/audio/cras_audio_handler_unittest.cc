@@ -13,7 +13,6 @@
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"

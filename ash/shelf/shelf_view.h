@@ -23,7 +23,6 @@
 #include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shell_observer.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

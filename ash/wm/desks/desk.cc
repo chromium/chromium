@@ -27,7 +27,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ui/base/window_properties.h"

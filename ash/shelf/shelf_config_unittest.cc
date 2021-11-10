@@ -11,7 +11,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

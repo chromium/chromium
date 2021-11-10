@@ -9,7 +9,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/wm/video_detector.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 namespace ash {

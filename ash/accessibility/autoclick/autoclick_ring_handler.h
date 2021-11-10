@@ -5,7 +5,6 @@
 #ifndef ASH_ACCESSIBILITY_AUTOCLICK_AUTOCLICK_RING_HANDLER_H_
 #define ASH_ACCESSIBILITY_AUTOCLICK_AUTOCLICK_RING_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/point.h"

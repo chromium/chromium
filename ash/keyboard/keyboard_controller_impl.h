@@ -15,7 +15,6 @@
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/macros.h"
 
 class PrefChangeRegistrar;
 class PrefRegistrySimple;

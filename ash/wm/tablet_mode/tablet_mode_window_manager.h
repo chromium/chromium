@@ -18,7 +18,6 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display_observer.h"

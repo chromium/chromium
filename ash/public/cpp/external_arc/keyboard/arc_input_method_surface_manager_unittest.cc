@@ -5,7 +5,6 @@
 #include "ash/public/cpp/external_arc/keyboard/arc_input_method_surface_manager.h"
 
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"

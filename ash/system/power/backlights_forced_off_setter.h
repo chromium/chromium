@@ -11,7 +11,6 @@
 #include "ash/public/cpp/screen_backlight.h"
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/public/cpp/screen_backlight_type.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"

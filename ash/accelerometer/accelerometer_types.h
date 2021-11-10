@@ -6,7 +6,6 @@
 #define ASH_ACCELEROMETER_ACCELEROMETER_TYPES_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace gfx {
 class Vector3dF;

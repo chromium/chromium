@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 

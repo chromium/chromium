@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;

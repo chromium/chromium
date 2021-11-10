@@ -7,7 +7,6 @@
 
 #include "ash/system/power/power_button_controller.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 namespace base {
 class TickClock;

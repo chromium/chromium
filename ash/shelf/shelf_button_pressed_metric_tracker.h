@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"

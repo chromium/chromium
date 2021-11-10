@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_handler.h"

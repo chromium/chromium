@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/home_button.h"
-#include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 #include "ui/views/view.h"

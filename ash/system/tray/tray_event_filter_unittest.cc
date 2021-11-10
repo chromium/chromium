@@ -12,7 +12,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"

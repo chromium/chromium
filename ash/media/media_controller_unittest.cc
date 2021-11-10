@@ -11,7 +11,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"

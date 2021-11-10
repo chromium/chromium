@@ -8,7 +8,6 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/ash_export.h"
 #include "ash/search_box/search_box_view_delegate.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/view.h"

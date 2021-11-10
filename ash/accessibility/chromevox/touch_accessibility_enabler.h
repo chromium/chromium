@@ -6,7 +6,6 @@
 #define ASH_ACCESSIBILITY_CHROMEVOX_TOUCH_ACCESSIBILITY_ENABLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/timer/timer.h"

@@ -5,7 +5,6 @@
 #ifndef ASH_APP_LIST_VIEWS_TOP_ICON_ANIMATION_VIEW_H_
 #define ASH_APP_LIST_VIEWS_TOP_ICON_ANIMATION_VIEW_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "ui/compositor/layer_animation_observer.h"

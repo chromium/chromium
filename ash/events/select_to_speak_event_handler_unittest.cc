@@ -13,7 +13,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
-#include "base/macros.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"

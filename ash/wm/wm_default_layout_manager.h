@@ -6,7 +6,6 @@
 #define ASH_WM_WM_DEFAULT_LAYOUT_MANAGER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/aura/layout_manager.h"
 
 namespace ash {

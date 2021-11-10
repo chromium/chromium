@@ -16,7 +16,6 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"

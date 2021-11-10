@@ -55,7 +55,6 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"

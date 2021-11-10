@@ -12,7 +12,6 @@
 #include "ash/shelf/home_button_controller.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "ash/shelf/shelf_control_button.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_targeter_delegate.h"
 

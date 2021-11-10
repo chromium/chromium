@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/wm_default_layout_manager.h"
-#include "base/macros.h"
 #include "ui/display/display_observer.h"
 
 namespace aura {

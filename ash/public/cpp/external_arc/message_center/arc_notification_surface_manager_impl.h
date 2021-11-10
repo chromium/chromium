@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface_manager.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/exo/notification_surface_manager.h"
 

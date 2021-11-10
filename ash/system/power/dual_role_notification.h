@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/power_status.h"
-#include "base/macros.h"
 
 namespace message_center {
 class MessageCenter;

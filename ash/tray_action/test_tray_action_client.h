@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/public/mojom/tray_action.mojom.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

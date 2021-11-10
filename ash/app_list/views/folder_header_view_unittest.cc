@@ -19,7 +19,6 @@
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"

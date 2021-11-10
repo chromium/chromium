@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"

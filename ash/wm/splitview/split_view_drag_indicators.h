@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 

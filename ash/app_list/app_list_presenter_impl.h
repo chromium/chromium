@@ -19,7 +19,6 @@
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window_observer.h"

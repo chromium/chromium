@@ -14,7 +14,6 @@
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

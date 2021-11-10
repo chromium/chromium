@@ -11,7 +11,6 @@
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shell.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 namespace ash {

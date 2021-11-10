@@ -13,7 +13,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/wm/workspace/workspace_types.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 

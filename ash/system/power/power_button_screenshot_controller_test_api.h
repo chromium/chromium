@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_POWER_POWER_BUTTON_SCREENSHOT_CONTROLLER_TEST_API_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 namespace ash {
 

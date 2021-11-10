@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_POWER_POWER_BUTTON_SCREENSHOT_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/accelerators/accelerator.h"

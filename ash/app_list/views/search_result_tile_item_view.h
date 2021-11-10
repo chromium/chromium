@@ -12,7 +12,6 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace ui {

@@ -6,7 +6,6 @@
 #define ASH_METRICS_POINTER_METRICS_RECORDER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {

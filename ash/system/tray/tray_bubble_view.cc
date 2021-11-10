@@ -15,7 +15,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_view.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"

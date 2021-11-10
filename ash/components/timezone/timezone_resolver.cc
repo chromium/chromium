@@ -16,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/rand_util.h"

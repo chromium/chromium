@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "ui/views/animation/ink_drop_observer.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/widget/widget_delegate.h"

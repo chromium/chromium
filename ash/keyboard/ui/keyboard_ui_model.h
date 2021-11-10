@@ -9,7 +9,6 @@
 
 #include "ash/keyboard/ui/keyboard_export.h"
 #include "ash/public/cpp/keyboard/keyboard_config.h"
-#include "base/macros.h"
 
 namespace keyboard {
 

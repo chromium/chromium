@@ -9,7 +9,6 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/system/status_area_widget.h"
-#include "base/macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/widget/widget_delegate.h"

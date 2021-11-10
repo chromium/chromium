@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_CAPS_LOCK_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/ime/ime_controller_impl.h"
-#include "base/macros.h"
 
 class PrefRegistrySimple;
 

@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"

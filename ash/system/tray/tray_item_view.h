@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"

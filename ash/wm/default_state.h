@@ -7,7 +7,6 @@
 
 #include "ash/wm/base_state.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 

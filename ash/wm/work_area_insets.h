@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 

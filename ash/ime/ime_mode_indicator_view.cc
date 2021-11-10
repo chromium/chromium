@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

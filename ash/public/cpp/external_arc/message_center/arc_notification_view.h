@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_VIEW_H_
 
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
-#include "base/macros.h"
 #include "ui/message_center/views/message_view.h"
 
 namespace aura {

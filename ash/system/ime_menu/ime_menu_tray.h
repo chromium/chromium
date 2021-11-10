@@ -12,7 +12,6 @@
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_observer.h"
-#include "base/macros.h"
 #include "ui/base/ime/ash/ime_keyset.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 

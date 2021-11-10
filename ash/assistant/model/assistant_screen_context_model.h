@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 namespace ash {

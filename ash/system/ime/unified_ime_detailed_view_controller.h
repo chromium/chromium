@@ -11,7 +11,6 @@
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "ash/system/virtual_keyboard/virtual_keyboard_observer.h"
-#include "base/macros.h"
 
 namespace ash {
 namespace tray {

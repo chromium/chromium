@@ -8,7 +8,6 @@
 
 #include "ash/accessibility/chromevox/mock_touch_exploration_controller_delegate.h"
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "ui/aura/test/aura_test_base.h"

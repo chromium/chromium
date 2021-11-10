@@ -16,7 +16,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_screen_context_controller.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

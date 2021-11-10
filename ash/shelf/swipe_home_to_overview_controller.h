@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"

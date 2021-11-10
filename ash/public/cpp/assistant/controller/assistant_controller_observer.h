@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 class GURL;

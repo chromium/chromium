@@ -7,7 +7,6 @@
 
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace ash {
 

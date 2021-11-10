@@ -11,7 +11,6 @@
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"

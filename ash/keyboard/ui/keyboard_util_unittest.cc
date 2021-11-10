@@ -11,7 +11,6 @@
 #include "ash/keyboard/ui/test/test_keyboard_controller_observer.h"
 #include "ash/keyboard/ui/test/test_keyboard_layout_delegate.h"
 #include "ash/keyboard/ui/test/test_keyboard_ui_factory.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/base/ime/dummy_input_method.h"

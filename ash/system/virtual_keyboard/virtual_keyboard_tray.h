@@ -10,7 +10,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "base/macros.h"
 
 namespace views {
 class ImageView;

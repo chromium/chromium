@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "base/macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/events/event_handler.h"

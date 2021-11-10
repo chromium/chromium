@@ -19,7 +19,6 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"

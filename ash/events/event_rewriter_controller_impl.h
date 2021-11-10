@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
-#include "base/macros.h"
 #include "ui/aura/env_observer.h"
 
 namespace ui {

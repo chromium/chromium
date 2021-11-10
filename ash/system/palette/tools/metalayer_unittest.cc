@@ -15,7 +15,6 @@
 #include "ash/system/palette/tools/metalayer_mode.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"

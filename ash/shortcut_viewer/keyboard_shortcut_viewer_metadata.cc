@@ -10,7 +10,6 @@
 #include "ash/shortcut_viewer/vector_icons/vector_icons.h"
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"

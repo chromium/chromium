@@ -7,7 +7,6 @@
 
 #include "ash/shelf/shelf_button_pressed_metric_tracker.h"
 
-#include "base/macros.h"
 #include "ui/events/event.h"
 
 namespace base {

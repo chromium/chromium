@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_view.h"
-#include "base/macros.h"
 
 namespace views {
 class View;

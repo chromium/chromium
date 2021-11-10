@@ -39,7 +39,6 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"

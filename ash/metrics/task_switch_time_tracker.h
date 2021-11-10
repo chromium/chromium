@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {

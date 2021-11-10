@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/wm/core/base_focus_rules.h"
 
 namespace ash {

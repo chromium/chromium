@@ -15,7 +15,6 @@
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 

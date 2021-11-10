@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 

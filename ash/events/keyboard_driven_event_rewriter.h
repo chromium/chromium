@@ -6,7 +6,6 @@
 #define ASH_EVENTS_KEYBOARD_DRIVEN_EVENT_REWRITER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/event_rewriter.h"
 
 namespace ash {

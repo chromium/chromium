@@ -11,7 +11,6 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/wm/drag_details.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/wm/public/window_move_client.h"
 

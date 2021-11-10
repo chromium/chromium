@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_STATUS_AREA_WIDGET_TEST_HELPER_H_
 #define ASH_SYSTEM_STATUS_AREA_WIDGET_TEST_HELPER_H_
 
-#include "base/macros.h"
 #include "ui/compositor/layer.h"
 
 namespace ash {

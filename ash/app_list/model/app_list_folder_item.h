@@ -19,7 +19,6 @@
 #include "ash/app_list/model/folder_image.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 namespace gfx {

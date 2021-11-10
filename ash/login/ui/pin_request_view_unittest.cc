@@ -24,7 +24,6 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"

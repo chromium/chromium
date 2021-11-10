@@ -9,7 +9,6 @@
 
 #include "ash/system/power/power_status.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 
 namespace message_center {
 class MessageCenter;

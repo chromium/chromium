@@ -12,7 +12,6 @@
 #include "ash/components/settings/timezone_settings.h"
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace base {

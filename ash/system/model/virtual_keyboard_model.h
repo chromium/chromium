@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {

@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_NETWORK_WIFI_TOGGLE_NOTIFICATION_CONTROLLER_H_
 
 #include "ash/system/network/network_observer.h"
-#include "base/macros.h"
 
 namespace ash {
 

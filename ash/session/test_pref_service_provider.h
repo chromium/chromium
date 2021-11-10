@@ -8,8 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
-
 class AccountId;
 class PrefService;
 

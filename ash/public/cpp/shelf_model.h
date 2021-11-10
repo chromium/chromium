@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_item.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 class AppWindowShelfItemController;

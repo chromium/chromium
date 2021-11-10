@@ -9,7 +9,6 @@
 
 #include "ash/keyboard/ui/keyboard_ui.h"
 #include "ash/keyboard/ui/keyboard_ui_factory.h"
-#include "base/macros.h"
 #include "ui/aura/test/test_window_delegate.h"
 
 namespace aura {

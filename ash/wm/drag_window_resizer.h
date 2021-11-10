@@ -11,7 +11,6 @@
 #include "ash/wm/window_resizer.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/point_f.h"
 

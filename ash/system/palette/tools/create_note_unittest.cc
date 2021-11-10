@@ -10,7 +10,6 @@
 #include "ash/system/palette/palette_tool.h"
 #include "ash/system/palette/tools/create_note_action.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/views/view.h"
 

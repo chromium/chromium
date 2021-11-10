@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace ash {

@@ -13,7 +13,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

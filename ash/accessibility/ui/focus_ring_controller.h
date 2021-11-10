@@ -9,7 +9,6 @@
 
 #include "ash/accessibility/ui/focus_ring_layer.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/widget/widget_observer.h"

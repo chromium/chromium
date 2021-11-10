@@ -7,7 +7,6 @@
 
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 

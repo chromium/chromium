@@ -6,7 +6,6 @@
 #define ASH_EVENTS_SELECT_TO_SPEAK_EVENT_HANDLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 

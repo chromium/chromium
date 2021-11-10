@@ -11,7 +11,6 @@
 
 #include "ash/assistant/model/assistant_query_history.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 

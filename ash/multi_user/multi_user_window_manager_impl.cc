@@ -17,7 +17,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"

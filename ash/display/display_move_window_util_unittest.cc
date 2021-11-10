@@ -18,7 +18,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"

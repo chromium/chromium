@@ -12,7 +12,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"

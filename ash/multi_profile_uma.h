@@ -6,7 +6,6 @@
 #define ASH_MULTI_PROFILE_UMA_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace ash {
 

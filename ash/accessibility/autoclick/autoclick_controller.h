@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/ash_constants.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/window_observer.h"

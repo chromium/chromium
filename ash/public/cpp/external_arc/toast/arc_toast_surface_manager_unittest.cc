@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "components/exo/surface.h"
 #include "components/exo/toast_surface.h"
 #include "components/exo/wm_helper.h"

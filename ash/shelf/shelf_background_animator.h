@@ -12,7 +12,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/shelf/shelf_observer.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/animation_delegate.h"

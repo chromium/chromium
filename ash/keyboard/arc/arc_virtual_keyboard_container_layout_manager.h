@@ -5,7 +5,6 @@
 #ifndef ASH_KEYBOARD_ARC_ARC_VIRTUAL_KEYBOARD_CONTAINER_LAYOUT_MANAGER_H_
 #define ASH_KEYBOARD_ARC_ARC_VIRTUAL_KEYBOARD_CONTAINER_LAYOUT_MANAGER_H_
 
-#include "base/macros.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"

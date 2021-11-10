@@ -11,7 +11,6 @@
 #include "ash/system/model/clock_observer.h"
 #include "ash/system/tray/actionable_view.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/gfx/font_list.h"

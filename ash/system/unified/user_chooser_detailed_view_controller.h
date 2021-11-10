@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 

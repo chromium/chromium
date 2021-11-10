@@ -8,7 +8,6 @@
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui_delegate.h"
 #include "ash/webui/camera_app_ui/camera_app_window_manager.h"
-#include "base/macros.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"

@@ -10,7 +10,6 @@
 #include "ash/system/accessibility/tray_accessibility.h"
 #include "ash/system/tray/actionable_view.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_constants.h"
 

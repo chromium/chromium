@@ -9,7 +9,6 @@
 #include "ash/test/test_window_builder.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"

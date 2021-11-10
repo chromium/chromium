@@ -16,7 +16,6 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"

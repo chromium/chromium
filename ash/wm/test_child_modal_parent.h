@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"

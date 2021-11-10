@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_TEST_NOTIFIER_SETTINGS_CONTROLLER_H_
 
 #include "ash/public/cpp/notifier_settings_controller.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {

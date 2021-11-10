@@ -10,7 +10,6 @@
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/invitation.h"

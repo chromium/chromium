@@ -11,7 +11,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/tray_action/test_tray_action_client.h"
 #include "ash/tray_action/tray_action_observer.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 
 using ash::mojom::TrayActionState;

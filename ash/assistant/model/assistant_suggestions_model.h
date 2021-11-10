@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 

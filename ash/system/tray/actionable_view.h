@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_popup_ink_drop_style.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/button.h"
 

@@ -6,7 +6,6 @@
 #define ASH_KEYBOARD_UI_TEST_TEST_KEYBOARD_LAYOUT_DELEGATE_H_
 
 #include "ash/keyboard/ui/keyboard_layout_delegate.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;

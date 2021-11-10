@@ -11,7 +11,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/assistant/controller/assistant_suggestions_controller.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 namespace ash {

@@ -7,7 +7,6 @@
 
 #include "ash/accelerators/accelerator_table.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"

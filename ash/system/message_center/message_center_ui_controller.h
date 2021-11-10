@@ -11,7 +11,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/message_center/message_center_ui_delegate.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/message_center/message_center_export.h"

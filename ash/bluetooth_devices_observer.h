@@ -6,7 +6,6 @@
 #define ASH_BLUETOOTH_DEVICES_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "ui/events/devices/input_device.h"

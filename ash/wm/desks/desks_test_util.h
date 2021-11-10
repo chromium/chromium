@@ -6,7 +6,6 @@
 #define ASH_WM_DESKS_DESKS_TEST_UTIL_H_
 
 #include "ash/wm/desks/desks_controller.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 
 namespace ash {

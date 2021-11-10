@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"

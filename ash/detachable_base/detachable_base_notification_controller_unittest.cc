@@ -12,7 +12,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"

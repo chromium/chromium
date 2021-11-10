@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_observer.h"
 

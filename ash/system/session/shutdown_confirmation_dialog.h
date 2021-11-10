@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_SESSION_SHUTDOWN_CONFIRMATION_DIALOG_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {

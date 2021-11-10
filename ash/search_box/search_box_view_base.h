@@ -10,7 +10,6 @@
 
 #include "ash/search_box/search_box_constants.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"

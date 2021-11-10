@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace aura {
 class WindowTreeHost;

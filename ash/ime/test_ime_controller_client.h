@@ -6,7 +6,6 @@
 #define ASH_IME_TEST_IME_CONTROLLER_CLIENT_H_
 
 #include "ash/public/cpp/ime_controller_client.h"
-#include "base/macros.h"
 
 namespace ash {
 

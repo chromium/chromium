@@ -5,7 +5,6 @@
 #ifndef ASH_ASSISTANT_UI_LOGO_VIEW_SHAPE_SHAPE_H_
 #define ASH_ASSISTANT_UI_LOGO_VIEW_SHAPE_SHAPE_H_
 
-#include "base/macros.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
 

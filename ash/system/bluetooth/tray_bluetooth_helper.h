@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"

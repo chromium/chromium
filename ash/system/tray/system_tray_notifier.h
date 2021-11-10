@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {

@@ -9,7 +9,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "time_view.h"
 

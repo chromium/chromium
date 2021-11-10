@@ -11,7 +11,6 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/exo/toast_surface_manager.h"
 

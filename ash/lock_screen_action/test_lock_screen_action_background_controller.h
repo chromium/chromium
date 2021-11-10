@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;

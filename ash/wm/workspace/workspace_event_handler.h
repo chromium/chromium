@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/workspace/multi_window_resize_controller.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace aura {

@@ -5,8 +5,6 @@
 #ifndef ASH_SYSTEM_POWER_POWER_EVENT_OBSERVER_TEST_API_H_
 #define ASH_SYSTEM_POWER_POWER_EVENT_OBSERVER_TEST_API_H_
 
-#include "base/macros.h"
-
 namespace ui {
 class Compositor;
 }

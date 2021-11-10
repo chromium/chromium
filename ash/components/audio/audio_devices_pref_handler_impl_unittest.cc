@@ -11,7 +11,6 @@
 #include "ash/components/audio/audio_device.h"
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/dbus/audio/audio_node.h"
 #include "components/prefs/scoped_user_pref_update.h"

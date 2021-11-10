@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/gfx/animation/tween.h"

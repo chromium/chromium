@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/system_tray_client.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

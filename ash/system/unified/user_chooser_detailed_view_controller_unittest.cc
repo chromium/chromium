@@ -14,7 +14,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "base/macros.h"
 #include "components/account_id/account_id.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"

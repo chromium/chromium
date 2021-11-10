@@ -6,7 +6,6 @@
 #define ASH_KEYBOARD_UI_TEST_TEST_KEYBOARD_CONTROLLER_OBSERVER_H_
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
-#include "base/macros.h"
 
 namespace keyboard {
 

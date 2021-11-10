@@ -11,7 +11,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
 

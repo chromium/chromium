@@ -9,7 +9,6 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 

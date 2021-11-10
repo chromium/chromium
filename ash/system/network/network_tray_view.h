@@ -12,7 +12,6 @@
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_item_view.h"
-#include "base/macros.h"
 
 namespace ash {
 namespace tray {

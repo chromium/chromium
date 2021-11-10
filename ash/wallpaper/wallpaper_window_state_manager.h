@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {

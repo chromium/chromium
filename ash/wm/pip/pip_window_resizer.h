@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_resizer.h"
-#include "base/macros.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point_f.h"
 

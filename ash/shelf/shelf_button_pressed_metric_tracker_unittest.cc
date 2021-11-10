@@ -10,7 +10,6 @@
 #include "ash/shelf/shelf_button_pressed_metric_tracker_test_api.h"
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/simple_test_tick_clock.h"

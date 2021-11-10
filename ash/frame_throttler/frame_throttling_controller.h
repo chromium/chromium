@@ -12,7 +12,6 @@
 #include "ash/frame_throttler/frame_throttling_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"

@@ -6,7 +6,6 @@
 #define ASH_TEST_MEDIA_CLIENT_H_
 
 #include "ash/public/cpp/media_client.h"
-#include "base/macros.h"
 
 namespace ash {
 

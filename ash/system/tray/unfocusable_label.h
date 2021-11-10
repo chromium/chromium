@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_TRAY_UNFOCUSABLE_LABEL_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {

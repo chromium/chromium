@@ -16,7 +16,6 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/context_menu_controller.h"
 

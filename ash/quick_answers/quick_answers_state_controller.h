@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/macros.h"
 
 namespace ash {
 

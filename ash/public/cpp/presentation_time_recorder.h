@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"

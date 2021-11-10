@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/tray_action.mojom.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

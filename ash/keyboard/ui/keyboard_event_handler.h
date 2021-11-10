@@ -6,7 +6,6 @@
 #define ASH_KEYBOARD_UI_KEYBOARD_EVENT_HANDLER_H_
 
 #include "ash/keyboard/ui/keyboard_export.h"
-#include "base/macros.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 

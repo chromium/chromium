@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"

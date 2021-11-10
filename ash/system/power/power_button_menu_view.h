@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/power_button_controller.h"
-#include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 

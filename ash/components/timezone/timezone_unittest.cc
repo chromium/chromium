@@ -11,7 +11,6 @@
 #include "ash/components/timezone/timezone_provider.h"
 #include "ash/components/timezone/timezone_resolver.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "net/http/http_response_headers.h"

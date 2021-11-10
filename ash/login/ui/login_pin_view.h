@@ -13,7 +13,6 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace base {

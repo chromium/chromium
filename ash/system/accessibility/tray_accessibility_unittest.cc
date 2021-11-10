@@ -16,7 +16,6 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer_impl_chromeos.h"

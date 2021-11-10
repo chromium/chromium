@@ -9,7 +9,6 @@
 
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace ash {

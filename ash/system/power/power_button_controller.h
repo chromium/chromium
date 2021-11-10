@@ -13,7 +13,6 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/wm/lock_state_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"

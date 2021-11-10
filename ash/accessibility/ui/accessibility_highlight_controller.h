@@ -6,7 +6,6 @@
 #define ASH_ACCESSIBILITY_UI_ACCESSIBILITY_HIGHLIGHT_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/events/event_handler.h"

@@ -20,7 +20,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/button.h"

@@ -66,7 +66,6 @@
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"

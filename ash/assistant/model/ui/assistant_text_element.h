@@ -9,7 +9,6 @@
 
 #include "ash/assistant/model/ui/assistant_ui_element.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ash {
 

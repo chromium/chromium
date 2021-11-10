@@ -11,7 +11,6 @@
 #include "ash/metrics/login_metrics_recorder.h"
 #include "ash/metrics/task_switch_metrics_recorder.h"
 #include "ash/metrics/user_metrics_action.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 namespace ash {

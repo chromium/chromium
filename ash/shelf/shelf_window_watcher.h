@@ -8,7 +8,6 @@
 #include <set>
 
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

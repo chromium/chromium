@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield_controller.h"

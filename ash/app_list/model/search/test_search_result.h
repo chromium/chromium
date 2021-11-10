@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/app_list/model/search/search_result.h"
-#include "base/macros.h"
 
 namespace ash {
 

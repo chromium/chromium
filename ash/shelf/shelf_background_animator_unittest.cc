@@ -17,7 +17,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"

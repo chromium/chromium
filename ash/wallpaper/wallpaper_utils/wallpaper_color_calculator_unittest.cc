@@ -9,7 +9,6 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator_observer.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_extraction_result.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/null_task_runner.h"

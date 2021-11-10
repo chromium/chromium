@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"

@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/drag_drop/drag_drop_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 

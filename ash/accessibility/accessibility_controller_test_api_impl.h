@@ -6,7 +6,6 @@
 #define ASH_ACCESSIBILITY_ACCESSIBILITY_CONTROLLER_TEST_API_IMPL_H_
 
 #include "ash/public/cpp/test/accessibility_controller_test_api.h"
-#include "base/macros.h"
 
 namespace ash {
 

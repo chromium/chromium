@@ -6,7 +6,6 @@
 #define ASH_WM_OVERVIEW_OVERVIEW_TEST_UTIL_H_
 
 #include "ash/wm/overview/overview_session.h"
-#include "base/macros.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ui {

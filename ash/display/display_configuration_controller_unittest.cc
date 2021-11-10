@@ -10,7 +10,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "ui/display/manager/display_manager.h"
 
 namespace ash {

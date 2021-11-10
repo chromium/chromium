@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/display/screen.h"
 
 namespace display {

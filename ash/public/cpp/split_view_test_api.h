@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_SPLIT_VIEW_TEST_API_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;

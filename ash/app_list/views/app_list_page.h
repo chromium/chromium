@@ -7,7 +7,6 @@
 
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace ash {

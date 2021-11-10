@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/metrics/task_switch_source.h"
-#include "base/macros.h"
 
 namespace ash {
 

@@ -16,7 +16,6 @@
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell_observer.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"

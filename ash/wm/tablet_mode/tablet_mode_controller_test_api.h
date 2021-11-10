@@ -9,7 +9,6 @@
 
 #include "ash/wm/tablet_mode/internal_input_devices_event_blocker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 

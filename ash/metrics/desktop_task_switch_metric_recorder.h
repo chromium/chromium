@@ -6,7 +6,6 @@
 #define ASH_METRICS_DESKTOP_TASK_SWITCH_METRIC_RECORDER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace ash {

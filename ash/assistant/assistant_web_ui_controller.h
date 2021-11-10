@@ -12,7 +12,6 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/views/widget/widget_observer.h"
 

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {

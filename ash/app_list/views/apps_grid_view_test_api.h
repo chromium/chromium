@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/app_list/views/apps_grid_view.h"
-#include "base/macros.h"
 
 namespace gfx {
 class Rect;

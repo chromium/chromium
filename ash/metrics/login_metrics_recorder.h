@@ -6,7 +6,6 @@
 #define ASH_METRICS_LOGIN_METRICS_RECORDER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 
 namespace ash {
 

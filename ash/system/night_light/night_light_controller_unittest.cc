@@ -23,7 +23,6 @@
 #include "ash/test_shell_delegate.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/pattern.h"
 #include "base/test/scoped_feature_list.h"

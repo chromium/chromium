@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_NOTE_TAKING_CLIENT_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 
 namespace ash {
 

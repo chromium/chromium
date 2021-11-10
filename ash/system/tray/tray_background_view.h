@@ -13,7 +13,6 @@
 #include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/user/login_status.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/context_menu_controller.h"

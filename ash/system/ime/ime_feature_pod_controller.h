@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/ime/ime_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 

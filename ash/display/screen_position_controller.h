@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/aura/client/screen_position_client.h"
 
 namespace ash {

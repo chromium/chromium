@@ -10,7 +10,6 @@
 #include "ash/detachable_base/detachable_base_observer.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"

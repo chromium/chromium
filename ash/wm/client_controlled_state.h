@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/wm/base_state.h"
 #include "ash/wm/wm_event.h"
-#include "base/macros.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
 

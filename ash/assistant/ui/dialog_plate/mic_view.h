@@ -10,7 +10,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 

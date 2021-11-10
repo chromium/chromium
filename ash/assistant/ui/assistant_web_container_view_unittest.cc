@@ -10,7 +10,6 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_views_delegate.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "ui/views/window/frame_caption_button.h"

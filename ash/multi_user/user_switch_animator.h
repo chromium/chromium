@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/account_id/account_id.h"

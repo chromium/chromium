@@ -6,7 +6,6 @@
 #define ASH_WALLPAPER_WALLPAPER_CONTROLLER_TEST_API_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {

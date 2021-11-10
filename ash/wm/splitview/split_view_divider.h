@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

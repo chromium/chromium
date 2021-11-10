@@ -14,7 +14,6 @@
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/stylus_battery_delegate.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/devices/input_device_event_observer.h"
 

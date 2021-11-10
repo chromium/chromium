@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/network/tray_network_state_observer.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 

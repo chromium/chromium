@@ -6,7 +6,6 @@
 #define ASH_ASSISTANT_MODEL_ASSISTANT_UI_MODEL_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

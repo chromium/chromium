@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/view_click_listener.h"
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 

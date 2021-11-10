@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
-#include "base/macros.h"
 
 namespace ash {
 

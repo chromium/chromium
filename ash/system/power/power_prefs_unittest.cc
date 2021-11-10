@@ -17,7 +17,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"

@@ -12,7 +12,6 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
-#include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window.h"

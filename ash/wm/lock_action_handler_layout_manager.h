@@ -13,7 +13,6 @@
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "ash/wm/lock_layout_manager.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 namespace ash {

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/size.h"
 

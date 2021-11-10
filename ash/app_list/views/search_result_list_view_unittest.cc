@@ -16,7 +16,6 @@
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/views/test/views_test_base.h"

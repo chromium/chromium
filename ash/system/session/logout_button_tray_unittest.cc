@@ -14,7 +14,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
-#include "base/macros.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/base_event_utils.h"

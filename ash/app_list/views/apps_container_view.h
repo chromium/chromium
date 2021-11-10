@@ -18,7 +18,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/controls/separator.h"
 

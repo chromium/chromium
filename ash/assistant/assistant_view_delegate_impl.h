@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/assistant/ui/assistant_view_delegate.h"
-#include "base/macros.h"
 
 namespace ash {
 

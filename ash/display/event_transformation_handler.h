@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {

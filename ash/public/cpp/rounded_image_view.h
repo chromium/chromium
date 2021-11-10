@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_ROUNDED_IMAGE_VIEW_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/metadata/view_factory.h"

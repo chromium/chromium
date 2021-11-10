@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_CONTROLLER_LEGACY_H_
 
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
 
 namespace ash {
 

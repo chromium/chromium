@@ -11,7 +11,6 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 

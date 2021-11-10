@@ -11,7 +11,6 @@
 
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

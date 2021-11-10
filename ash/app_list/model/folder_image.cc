@@ -13,7 +13,6 @@
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/canvas.h"

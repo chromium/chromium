@@ -17,7 +17,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/traits_bag.h"

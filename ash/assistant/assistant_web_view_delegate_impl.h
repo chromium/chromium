@@ -6,7 +6,6 @@
 #define ASH_ASSISTANT_ASSISTANT_WEB_VIEW_DELEGATE_IMPL_H_
 
 #include "ash/assistant/ui/assistant_web_view_delegate.h"
-#include "base/macros.h"
 
 namespace ash {
 

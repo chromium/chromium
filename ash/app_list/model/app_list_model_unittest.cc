@@ -17,7 +17,6 @@
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/list_model_observer.h"

@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "base/macros.h"
 
 namespace ash {
 namespace tray {

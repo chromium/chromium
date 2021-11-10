@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
-#include "base/macros.h"
 
 namespace chromeos {
 namespace ime {

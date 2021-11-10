@@ -7,8 +7,6 @@
 
 #include "ash/wm/workspace/workspace_event_handler.h"
 
-#include "base/macros.h"
-
 namespace ash {
 
 class WorkspaceEventHandlerTestHelper {

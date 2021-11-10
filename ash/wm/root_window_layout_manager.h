@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/aura/layout_manager.h"
 
 namespace ash {

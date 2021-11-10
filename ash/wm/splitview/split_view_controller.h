@@ -19,7 +19,6 @@
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"

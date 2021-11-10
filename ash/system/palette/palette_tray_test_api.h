@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_PALETTE_PALETTE_TRAY_TEST_API_H_
 
 #include "ash/system/palette/palette_tray.h"
-#include "base/macros.h"
 
 namespace ash {
 

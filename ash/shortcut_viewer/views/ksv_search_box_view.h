@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/search_box/search_box_view_base.h"
-#include "base/macros.h"
 
 namespace ash {
 class SearchBoxViewDelegate;

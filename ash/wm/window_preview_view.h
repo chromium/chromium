@@ -9,7 +9,6 @@
 #include "ash/wm/window_mirror_view.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"

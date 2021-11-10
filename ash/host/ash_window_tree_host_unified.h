@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/host/ash_window_tree_host_platform.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {

@@ -12,7 +12,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/image/image_skia.h"
 

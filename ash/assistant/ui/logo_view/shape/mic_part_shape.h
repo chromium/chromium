@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/assistant/ui/logo_view/shape/shape.h"
-#include "base/macros.h"
 #include "chromeos/assistant/internal/logo_view/logo_view_constants.h"
 
 namespace chromeos {

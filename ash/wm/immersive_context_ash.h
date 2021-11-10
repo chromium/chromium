@@ -6,7 +6,6 @@
 #define ASH_WM_IMMERSIVE_CONTEXT_ASH_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "chromeos/ui/frame/immersive/immersive_context.h"
 
 namespace ash {

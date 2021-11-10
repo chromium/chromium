@@ -6,7 +6,6 @@
 #define ASH_SHELF_SHELF_WINDOW_WATCHER_ITEM_DELEGATE_H_
 
 #include "ash/public/cpp/shelf_item_delegate.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;

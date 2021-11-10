@@ -13,7 +13,6 @@
 #include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/unified/custom_shape_button.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"

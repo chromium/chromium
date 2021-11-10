@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"

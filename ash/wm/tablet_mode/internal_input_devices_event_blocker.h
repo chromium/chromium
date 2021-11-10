@@ -6,7 +6,6 @@
 #define ASH_WM_TABLET_MODE_INTERNAL_INPUT_DEVICES_EVENT_BLOCKER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 namespace ash {

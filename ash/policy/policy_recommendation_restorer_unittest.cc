@@ -10,7 +10,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/testing_pref_store.h"

@@ -6,7 +6,6 @@
 #define ASH_METRICS_USER_METRICS_RECORDER_TEST_API_H_
 
 #include "ash/metrics/user_metrics_recorder.h"
-#include "base/macros.h"
 
 namespace ash {
 

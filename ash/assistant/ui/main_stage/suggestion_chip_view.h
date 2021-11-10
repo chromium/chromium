@@ -6,7 +6,6 @@
 #define ASH_ASSISTANT_UI_MAIN_STAGE_SUGGESTION_CHIP_VIEW_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/aura/window_targeter.h"
 
 namespace keyboard {

@@ -14,7 +14,6 @@
 #include "ash/components/drivefs/drivefs_host.h"
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

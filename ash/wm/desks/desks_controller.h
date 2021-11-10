@@ -16,7 +16,6 @@
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"

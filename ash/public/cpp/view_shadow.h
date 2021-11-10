@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/view_observer.h"
 

@@ -14,7 +14,6 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "ash/system/tray/tray_toggle_button.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 

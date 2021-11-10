@@ -49,7 +49,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"

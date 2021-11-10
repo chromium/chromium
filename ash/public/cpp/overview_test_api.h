@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 

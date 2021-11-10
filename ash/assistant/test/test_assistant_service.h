@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"

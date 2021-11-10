@@ -18,7 +18,6 @@
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"

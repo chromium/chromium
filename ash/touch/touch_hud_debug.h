@@ -12,7 +12,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/touch/touch_observer_hud.h"
-#include "base/macros.h"
 
 namespace views {
 class Label;

@@ -12,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 

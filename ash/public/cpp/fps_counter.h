@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_FPS_COUNTER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor_observer.h"
 

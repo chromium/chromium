@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 

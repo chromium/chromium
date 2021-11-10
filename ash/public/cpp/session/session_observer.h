@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_SESSION_SESSION_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "components/session_manager/session_manager_types.h"
 

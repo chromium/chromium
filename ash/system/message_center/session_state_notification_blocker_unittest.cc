@@ -10,7 +10,6 @@
 #include "ash/system/power/battery_notification.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"

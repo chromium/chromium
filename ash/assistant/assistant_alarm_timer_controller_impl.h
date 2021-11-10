@@ -15,7 +15,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_alarm_timer_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"

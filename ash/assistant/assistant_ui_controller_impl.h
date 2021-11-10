@@ -16,7 +16,6 @@
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

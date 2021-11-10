@@ -57,7 +57,6 @@
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/drag_drop_client.h"

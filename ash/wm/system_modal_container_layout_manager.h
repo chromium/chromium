@@ -14,7 +14,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 

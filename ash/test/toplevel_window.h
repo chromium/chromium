@@ -5,7 +5,6 @@
 #ifndef ASH_TEST_TOPLEVEL_WINDOW_H_
 #define ASH_TEST_TOPLEVEL_WINDOW_H_
 
-#include "base/macros.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {

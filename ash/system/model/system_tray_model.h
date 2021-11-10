@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/system_tray.h"
-#include "base/macros.h"
 
 namespace ash {
 

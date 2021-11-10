@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 

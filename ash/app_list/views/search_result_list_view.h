@@ -11,7 +11,6 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/view.h"

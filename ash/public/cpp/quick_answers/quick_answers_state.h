@@ -10,7 +10,6 @@
 
 #include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"

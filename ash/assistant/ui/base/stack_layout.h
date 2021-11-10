@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/views/layout/layout_manager.h"
 
 namespace ash {

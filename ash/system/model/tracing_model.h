@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_MODEL_TRACING_MODEL_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 namespace ash {

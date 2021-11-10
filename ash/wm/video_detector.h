@@ -13,7 +13,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/timer/timer.h"

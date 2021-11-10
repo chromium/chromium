@@ -13,7 +13,6 @@
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_window_state_controller.h"
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"

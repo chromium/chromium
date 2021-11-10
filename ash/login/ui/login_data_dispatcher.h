@@ -13,7 +13,6 @@
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/mojom/tray_action.mojom.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 

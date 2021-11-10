@@ -9,7 +9,6 @@
 #include <string>
 
 #include "ash/public/cpp/test/assistant_test_api.h"
-#include "base/macros.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ui {

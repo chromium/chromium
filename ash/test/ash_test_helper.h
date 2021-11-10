@@ -16,7 +16,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/message_center/test_notifier_settings_controller.h"
-#include "base/macros.h"
 #include "base/test/scoped_command_line.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "ui/aura/test/aura_test_helper.h"

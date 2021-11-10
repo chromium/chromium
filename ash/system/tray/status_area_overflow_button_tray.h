@@ -10,7 +10,6 @@
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
-#include "base/macros.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/canvas.h"

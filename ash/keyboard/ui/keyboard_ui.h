@@ -7,7 +7,6 @@
 
 #include "ash/keyboard/ui/keyboard_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/events/gestures/gesture_types.h"
 

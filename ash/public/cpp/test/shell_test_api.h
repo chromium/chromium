@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;

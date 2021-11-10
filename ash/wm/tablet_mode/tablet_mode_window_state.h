@@ -9,7 +9,6 @@
 
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {

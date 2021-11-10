@@ -12,7 +12,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {

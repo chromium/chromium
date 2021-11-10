@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_FULLSCREEN_NOTIFICATION_BLOCKER_H_
 
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 #include "ui/message_center/notification_blocker.h"
 
 namespace ash {

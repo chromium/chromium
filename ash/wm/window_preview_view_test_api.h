@@ -7,7 +7,6 @@
 
 #include "ash/wm/window_mirror_view.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect_f.h"
 

@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/cast_config_controller.h"
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {

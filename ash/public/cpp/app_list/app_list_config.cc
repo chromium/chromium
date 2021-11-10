@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ui/base/resource/resource_bundle.h"
 

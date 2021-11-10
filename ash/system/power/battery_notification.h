@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/power/power_notification_controller.h"
-#include "base/macros.h"
 
 namespace message_center {
 class MessageCenter;

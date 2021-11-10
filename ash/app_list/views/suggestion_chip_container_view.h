@@ -9,7 +9,6 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_suggestion_chip_view.h"
-#include "base/macros.h"
 
 namespace ash {
 

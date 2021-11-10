@@ -29,7 +29,6 @@
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"

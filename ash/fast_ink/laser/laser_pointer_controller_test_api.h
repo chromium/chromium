@@ -6,7 +6,6 @@
 #define ASH_FAST_INK_LASER_LASER_POINTER_CONTROLLER_TEST_API_H_
 
 #include "ash/system/palette/palette_tray.h"
-#include "base/macros.h"
 #include "ui/display/display.h"
 
 namespace fast_ink {

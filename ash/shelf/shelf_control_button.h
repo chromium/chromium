@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_button.h"
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {

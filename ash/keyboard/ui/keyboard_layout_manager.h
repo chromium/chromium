@@ -6,7 +6,6 @@
 #define ASH_KEYBOARD_UI_KEYBOARD_LAYOUT_MANAGER_H_
 
 #include "ash/keyboard/ui/keyboard_export.h"
-#include "base/macros.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/aura/window.h"
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace gfx {

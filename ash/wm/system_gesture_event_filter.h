@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 
 namespace ash {

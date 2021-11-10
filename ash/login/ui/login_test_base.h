@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/login_types.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 
 namespace views {
 class View;

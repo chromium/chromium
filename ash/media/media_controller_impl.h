@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/media_controller.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/receiver.h"

@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chromeos/disks/mount_point.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

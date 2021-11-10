@@ -11,7 +11,6 @@
 #include "ash/display/persistent_window_info.h"
 #include "ash/wm/drag_details.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

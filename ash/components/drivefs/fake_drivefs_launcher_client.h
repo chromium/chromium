@@ -8,7 +8,6 @@
 #include "ash/components/drivefs/mojom/fake_drivefs_launcher.mojom.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

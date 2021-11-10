@@ -6,7 +6,6 @@
 #define ASH_ASSISTANT_UI_MAIN_STAGE_ASSISTANT_PROGRESS_INDICATOR_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace ash {

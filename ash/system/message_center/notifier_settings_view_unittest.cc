@@ -14,7 +14,6 @@
 #include "ash/system/message_center/test_notifier_settings_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 

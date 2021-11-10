@@ -14,7 +14,6 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace ash {

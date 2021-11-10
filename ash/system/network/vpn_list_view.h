@@ -10,7 +10,6 @@
 
 #include "ash/system/network/network_state_list_detailed_view.h"
 #include "ash/system/network/vpn_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 

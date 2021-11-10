@@ -6,7 +6,6 @@
 #define ASH_COMPONENTS_GEOLOCATION_SIMPLE_GEOLOCATION_REQUEST_TEST_MONITOR_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ash {
 

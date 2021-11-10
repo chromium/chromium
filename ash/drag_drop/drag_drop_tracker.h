@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "ui/events/event.h"
 
 namespace aura {

@@ -12,7 +12,6 @@
 
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"

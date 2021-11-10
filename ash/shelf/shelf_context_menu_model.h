@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ash {

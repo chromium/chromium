@@ -15,7 +15,6 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/ui/base/display_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

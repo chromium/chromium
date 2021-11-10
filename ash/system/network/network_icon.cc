@@ -17,7 +17,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"

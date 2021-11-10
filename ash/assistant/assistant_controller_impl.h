@@ -31,7 +31,6 @@
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "ash/style/ash_color_provider.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"

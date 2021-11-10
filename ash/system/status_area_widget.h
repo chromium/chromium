@@ -10,7 +10,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_component.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/widget/widget.h"
 

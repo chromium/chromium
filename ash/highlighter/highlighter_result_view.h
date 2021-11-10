@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"

@@ -6,7 +6,6 @@
 #define ASH_WEBUI_ECHE_APP_UI_ECHE_APP_UI_H_
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom-forward.h"
-#include "base/macros.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {

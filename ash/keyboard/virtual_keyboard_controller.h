@@ -12,7 +12,6 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/macros.h"
 #include "ui/base/ime/ash/ime_keyset.h"
 #include "ui/events/devices/input_device_event_observer.h"
 

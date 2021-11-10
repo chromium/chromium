@@ -18,7 +18,6 @@
 #include "ash/test/test_window_builder.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/dummy_text_input_client.h"

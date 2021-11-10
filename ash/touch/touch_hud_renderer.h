@@ -8,7 +8,6 @@
 #include <map>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ui {

@@ -11,7 +11,6 @@
 
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ash {
 

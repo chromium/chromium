@@ -49,7 +49,6 @@
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/search_box/search_box_constants.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

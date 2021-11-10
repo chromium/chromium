@@ -33,7 +33,6 @@
 #include "ash/shell.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"

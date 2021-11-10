@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"

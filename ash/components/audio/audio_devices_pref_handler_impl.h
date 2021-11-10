@@ -10,7 +10,6 @@
 
 #include "ash/components/audio/audio_devices_pref_handler.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"

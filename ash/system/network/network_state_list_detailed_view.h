@@ -10,7 +10,6 @@
 #include "ash/login_status.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"

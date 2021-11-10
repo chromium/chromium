@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/unified/detailed_view_controller.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 
 namespace ash {

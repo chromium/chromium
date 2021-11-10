@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"

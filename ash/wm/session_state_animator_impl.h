@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/session_state_animator.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
 
 namespace ui {

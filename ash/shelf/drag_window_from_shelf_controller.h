@@ -12,7 +12,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"

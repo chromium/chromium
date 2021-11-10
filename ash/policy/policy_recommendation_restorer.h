@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 

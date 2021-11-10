@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_drag_delegate.h"
-#include "base/macros.h"
 
 namespace ash {
 

@@ -11,7 +11,6 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "base/macros.h"
 #include "components/soda/soda_installer.h"
 #include "ui/gfx/font.h"
 #include "ui/views/controls/button/button.h"

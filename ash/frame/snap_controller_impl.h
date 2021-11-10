@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 
 namespace ash {

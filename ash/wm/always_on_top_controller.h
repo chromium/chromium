@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_state_observer.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {

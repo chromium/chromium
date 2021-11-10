@@ -79,7 +79,6 @@
 #include "ash/wm/workspace_controller_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"

@@ -13,7 +13,6 @@
 #include "ash/shell_observer.h"
 #include "ash/system/holding_space/holding_space_progress_ring.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "base/macros.h"
 #include "ui/events/event_constants.h"
 
 namespace views {

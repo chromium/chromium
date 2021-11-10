@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"

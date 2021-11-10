@@ -5,8 +5,6 @@
 #ifndef ASH_SHELF_SHELF_FOCUS_CYCLER_H_
 #define ASH_SHELF_SHELF_FOCUS_CYCLER_H_
 
-#include "base/macros.h"
-
 namespace ash {
 class Shelf;
 

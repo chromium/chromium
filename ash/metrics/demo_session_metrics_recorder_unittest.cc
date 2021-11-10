@@ -13,7 +13,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_util.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
 #include "extensions/common/constants.h"

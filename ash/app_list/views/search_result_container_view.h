@@ -12,7 +12,6 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/views/view.h"

@@ -7,7 +7,6 @@
 
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/window_mini_view.h"
-#include "base/macros.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 

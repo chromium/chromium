@@ -17,7 +17,6 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/gfx/geometry/rect.h"

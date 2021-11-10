@@ -17,7 +17,6 @@
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 

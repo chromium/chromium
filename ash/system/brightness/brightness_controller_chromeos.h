@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

@@ -22,7 +22,6 @@
 #include "ash/keyboard/ui/queued_display_change.h"
 #include "ash/public/cpp/keyboard/keyboard_config.h"
 #include "ash/public/cpp/keyboard/keyboard_types.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"

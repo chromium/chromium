@@ -5,7 +5,6 @@
 #ifndef ASH_IME_MODE_INDICATOR_OBSERVER_H_
 #define ASH_IME_MODE_INDICATOR_OBSERVER_H_
 
-#include "base/macros.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {

@@ -9,7 +9,6 @@
 
 #include "ash/accessibility/sticky_keys/sticky_keys_state.h"
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/event_rewriter.h"

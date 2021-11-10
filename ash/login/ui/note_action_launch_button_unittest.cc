@@ -12,7 +12,6 @@
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/shell.h"
 #include "ash/tray_action/test_tray_action_client.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "ui/events/test/event_generator.h"

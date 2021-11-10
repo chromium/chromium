@@ -9,7 +9,6 @@
 #include "ash/components/geolocation/simple_geolocation_provider.h"
 #include "ash/components/geolocation/simple_geolocation_request_test_monitor.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"

@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_NOTIFIER_SETTINGS_CONTROLLER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 
 namespace message_center {
 struct NotifierId;

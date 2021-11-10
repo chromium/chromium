@@ -11,7 +11,6 @@
 #include "ash/shell_observer.h"
 #include "ash/system/screen_security/screen_capture_observer.h"
 #include "ash/system/screen_security/screen_share_observer.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace ash {

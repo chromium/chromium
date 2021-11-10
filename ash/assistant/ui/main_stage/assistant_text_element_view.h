@@ -9,7 +9,6 @@
 
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace views {
 class Label;

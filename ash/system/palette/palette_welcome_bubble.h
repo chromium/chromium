@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/widget/widget_observer.h"
 
