@@ -89,7 +89,7 @@ NSString* const kURLAndDistillationDateFormat = @"%s • %@";
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
   URLCell.titleLabel.text = [self titleLabelText];
   URLCell.URLLabel.text = [self URLLabelText];
-  if (IsReadingListMessagesEnabled()) {
+  if (IsReadingListTimeToReadEnabled()) {
     URLCell.metadataLabel.text = self.estimatedReadTimeText;
   } else {
     URLCell.metadataLabel.text = self.distillationSizeText;

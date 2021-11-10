@@ -174,7 +174,7 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
       return;
     }
   }
-  if (ShouldOnlyExecuteJavascript()) {
+  if (ShouldNotPresentReadingListMessage()) {
     // Log the UKM and return early if the feature should only be executing
     // JavaScript at this time.
     ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(web_state);

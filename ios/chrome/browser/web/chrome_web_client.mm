@@ -318,7 +318,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
 
   features.push_back(print_feature.get());
 
-  if (!browser_state->IsOffTheRecord() && IsReadingListMessagesEnabled()) {
+  BOOL shouldInjectReadingListJavaScript =
+      IsReadingListMessagesEnabled() || IsReadingListTimeToReadEnabled();
+  if (!browser_state->IsOffTheRecord() && shouldInjectReadingListJavaScript) {
     static base::NoDestructor<ReadingListJavaScriptFeature>
         reading_list_feature;
     features.push_back(reading_list_feature.get());

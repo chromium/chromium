@@ -808,7 +808,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(web::features::kSynthesizedRestoreSession)},
     {"remove-extra-ntps", flag_descriptions::kRemoveExcessNTPsExperimentName,
      flag_descriptions::kRemoveExcessNTPsExperimentDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kRemoveExcessNTPs)}};
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kRemoveExcessNTPs)},
+    {"reading-list-time-to-read", flag_descriptions::kReadingListTimeToReadName,
+     flag_descriptions::kReadingListTimeToReadDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kReadingListTimeToRead)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;
