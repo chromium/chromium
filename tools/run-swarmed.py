@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -20,7 +20,7 @@ results/*` to find the tests that failed or otherwise process the log files.
 See //docs/workflow/debugging-with-swarming.md for more details.
 """
 
-from __future__ import print_function
+
 
 import argparse
 import hashlib
@@ -30,6 +30,7 @@ import os
 import shutil
 import subprocess
 import sys
+import traceback
 
 CHROMIUM_ROOT = os.path.join(os.path.dirname(__file__), os.pardir)
 BUILD_DIR = os.path.join(CHROMIUM_ROOT, 'build')
@@ -54,6 +55,14 @@ def _Spawn(args):
   - The json file created by triggering and used to collect results;
   - The command line arguments object.
   """
+  try:
+    return _DoSpawn(args)
+  except Exception as e:
+    traceback.print_exc()
+    return None
+
+
+def _DoSpawn(args):
   index, args, cas_digest, swarming_command = args
   runner_args = []
   json_file = os.path.join(args.results, '%d.json' % index)
@@ -124,6 +133,8 @@ def _Spawn(args):
     if os.path.isfile(filter_file):
       runner_args.append('--test-launcher-filter-file=../../' + filter_file)
 
+  runner_args.extend(args.runner_args)
+
   trigger_args.extend(['-d', 'os=' + args.swarming_os])
   trigger_args.extend(['-d', 'pool=' + args.pool])
   trigger_args.extend(['--relative-cwd', args.out_dir, '--'])
@@ -136,6 +147,9 @@ def _Spawn(args):
 
 
 def _Collect(spawn_result):
+  if spawn_result is None:
+    return 1
+
   index, json_file, args = spawn_result
   with open(json_file) as f:
     task_json = json.load(f)
@@ -162,7 +176,7 @@ def _Collect(spawn_result):
     exit_code = p.returncode
     file_suffix = '' if exit_code == 0 else '.FAILED'
   filename = '%d%s.stdout.txt' % (index, file_suffix)
-  with open(os.path.join(args.results, filename), 'w') as f:
+  with open(os.path.join(args.results, filename), 'wb') as f:
     f.write(stdout)
   return exit_code
 
@@ -196,12 +210,14 @@ def main():
                       help='Use the given swarming pool.')
   parser.add_argument('--results', '-r', default='results',
                       help='Directory in which to store results.')
-  parser.add_argument('--gtest_filter',
-                      help='Use the given gtest_filter, rather than the '
-                           'default filter file, if any.')
+  parser.add_argument(
+      '--gtest_filter',
+      help='Deprecated. Pass as test runner arg instead, like \'-- '
+      '--gtest_filter="*#testFoo"\'')
   parser.add_argument(
       '--gtest_repeat',
-      help='Number of times to repeat the specified set of tests.')
+      help='Deprecated. Pass as test runner arg instead, like \'-- '
+      '--gtest_repeat=99\'')
   parser.add_argument(
       '--test-launcher-shard-index',
       help='Shard index to run. Use with --test-launcher-total-shards.')
@@ -213,8 +229,14 @@ def main():
                            '--system-log-file flags to the comment.')
   parser.add_argument('out_dir', type=str, help='Build directory.')
   parser.add_argument('target_name', type=str, help='Name of target to run.')
+  parser.add_argument(
+      'runner_args',
+      nargs='*',
+      type=str,
+      help='Arguments to pass to the test runner, e.g. gtest_filter and '
+      'gtest_repeat.')
 
-  args = parser.parse_args()
+  args = parser.parse_intermixed_args()
 
   with open(os.path.join(args.out_dir, 'args.gn')) as f:
     gn_args = gn_helpers.FromGNArgs(f.read())
@@ -251,13 +273,18 @@ def main():
     elif args.target_os == 'android':
       args.arch = gn_args.get('target_cpu', 'detect')
 
-  mb_cmd = [sys.executable, 'tools/mb/mb.py', 'isolate']
+  # TODO(crbug.com/1268955): Use sys.executable and remove os-specific logic
+  # once mb.py is in python3
+  mb_cmd = ['tools/mb/mb', 'isolate']
   if not args.build:
     mb_cmd.append('--no-build')
   if args.isolate_map_file:
     mb_cmd += ['--isolate-map-file', args.isolate_map_file]
   mb_cmd += ['//' + args.out_dir, args.target_name]
-  subprocess.check_call(mb_cmd)
+  if os.name == 'nt':
+    subprocess.check_call(' '.join(mb_cmd), shell=True)
+  else:
+    subprocess.check_call(mb_cmd)
 
   print('If you get authentication errors, follow:')
   print(
@@ -274,15 +301,19 @@ def main():
   with open(archive_json) as f:
     cas_digest = json.load(f).get(args.target_name)
 
-  mb_cmd = [
-      sys.executable, 'tools/mb/mb.py', 'get-swarming-command', '--as-list'
-  ]
+  # TODO(crbug.com/1268955): Use sys.executable and remove os-specific logic
+  # once mb.py is in python3
+  mb_cmd = ['tools/mb/mb', 'get-swarming-command', '--as-list']
   if not args.build:
     mb_cmd.append('--no-build')
   if args.isolate_map_file:
     mb_cmd += ['--isolate-map-file', args.isolate_map_file]
   mb_cmd += ['//' + args.out_dir, args.target_name]
-  swarming_cmd = json.loads(subprocess.check_output(mb_cmd))
+  if os.name == 'nt':
+    mb_output = subprocess.check_output(' '.join(mb_cmd), shell=True)
+  else:
+    mb_output = subprocess.check_output(mb_cmd)
+  swarming_cmd = json.loads(mb_output)
 
   if os.path.isdir(args.results):
     shutil.rmtree(args.results)
@@ -293,8 +324,8 @@ def main():
     # Use dummy since threadpools give better exception messages
     # than process pools do, and threads work fine for what we're doing.
     pool = multiprocessing.dummy.Pool()
-    spawn_args = map(lambda i: (i, args, cas_digest, swarming_cmd),
-                     range(args.copies))
+    spawn_args = [(i, args, cas_digest, swarming_cmd)
+                  for i in range(args.copies)]
     spawn_results = pool.imap_unordered(_Spawn, spawn_args)
 
     exit_codes = []
