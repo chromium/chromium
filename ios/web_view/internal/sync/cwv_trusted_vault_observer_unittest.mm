@@ -54,7 +54,6 @@ TEST_F(CWVTrustedVaultObserverTest, NotEqual) {
   CWVTrustedVaultObserver* cwv_observer_2 = [[CWVTrustedVaultObserver alloc]
       initWithTrustedVaultObserver:&observer_2];
   EXPECT_NSNE(cwv_observer_1, cwv_observer_2);
-  EXPECT_NE(cwv_observer_1.hash, cwv_observer_2.hash);
 }
 
 }  // namespace ios_web_view
