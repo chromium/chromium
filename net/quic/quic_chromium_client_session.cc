@@ -2514,6 +2514,8 @@ void QuicChromiumClientSession::OnProbeFailed(
                                                        /*is_success=*/false);
                     });
 
+  LogProbeResultToHistogram(current_migration_cause_, false);
+
   if (connection()->connection_migration_use_new_cid()) {
     auto* context = static_cast<QuicChromiumPathValidationContext*>(
         connection()->GetPathValidationContext());
@@ -2526,8 +2528,6 @@ void QuicChromiumClientSession::OnProbeFailed(
       connection()->CancelPathValidation();
     }
   }
-
-  LogProbeResultToHistogram(current_migration_cause_, false);
 
   if (network != NetworkChangeNotifier::kInvalidNetworkHandle) {
     // Probing failure can be ignored.
