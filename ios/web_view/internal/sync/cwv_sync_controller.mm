@@ -164,6 +164,11 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
 
 #pragma mark - Public Methods
 
+- (BOOL)isSyncing {
+  return _syncService->GetTransportState() ==
+         syncer::SyncService::TransportState::ACTIVE;
+}
+
 - (CWVIdentity*)currentIdentity {
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     CoreAccountInfo accountInfo =
@@ -277,6 +282,10 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
                           }];
       [_delegate syncController:self didFailWithError:error];
     }
+  }
+
+  if ([_delegate respondsToSelector:@selector(syncControllerDidUpdateState:)]) {
+    [_delegate syncControllerDidUpdateState:self];
   }
 }
 

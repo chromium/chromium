@@ -453,10 +453,17 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 }
 
 - (void)showSyncMenu {
-  UIAlertController* alertController = [self actionSheetWithTitle:@"Sync menu"
-                                                          message:nil];
-
   CWVSyncController* syncController = _webView.configuration.syncController;
+
+  NSString* message = [NSString
+      stringWithFormat:@"Passphrase required: %@\nTrusted vault keys required: "
+                       @"%@\nTrusted vault recoverability degraded: %@",
+                       @(syncController.passphraseNeeded),
+                       @(syncController.trustedVaultKeysRequired),
+                       @(syncController.trustedVaultRecoverabilityDegraded)];
+  UIAlertController* alertController = [self actionSheetWithTitle:@"Sync menu"
+                                                          message:message];
+
   CWVIdentity* currentIdentity = syncController.currentIdentity;
   __weak ShellViewController* weakSelf = self;
   if (currentIdentity) {
@@ -1107,6 +1114,10 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 }
 
 - (void)syncControllerDidStopSync:(CWVSyncController*)syncController {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
+}
+
+- (void)syncControllerDidUpdateState:(CWVSyncController*)syncController {
   NSLog(@"%@", NSStringFromSelector(_cmd));
 }
 

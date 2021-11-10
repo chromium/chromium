@@ -34,18 +34,25 @@ CWV_EXPORT
 // The delegate of CWVSyncController.
 @property(nonatomic, weak, nullable) id<CWVSyncControllerDelegate> delegate;
 
+// Whether or not sync is running.
+// This property may change after |syncControllerDidUpdateState:| is invoked on
+// the |delegate|.
+@property(nonatomic, readonly, getter=isSyncing) BOOL syncing;
+
 // The user who is syncing.
+// This property may change after |syncControllerDidUpdateState:| is invoked on
+// the |delegate|.
 @property(nonatomic, readonly, nullable) CWVIdentity* currentIdentity;
 
-// Whether or not a passphrase is needed to access sync data. Not meaningful
-// until |currentIdentity| is set and |syncControllerDidStartSync:| callback in
-// is invoked in |delegate|.
+// Whether or not a passphrase is needed to access sync data.
+// This property may change after |syncControllerDidUpdateState:| is invoked on
+// the |delegate|.
 @property(nonatomic, readonly, getter=isPassphraseNeeded) BOOL passphraseNeeded;
 
 // Whether or not trusted vault keys are required to decrypt encrypted data.
 // If required, UI should be presented to the user to fetch the required keys.
-// Not meaningful until |currentIdentity| is set and
-// |syncControllerDidStartSync:| callback in is invoked in |delegate|.
+// This property may change after |syncControllerDidUpdateState:| is invoked on
+// the |delegate|.
 @property(nonatomic, readonly, getter=isTrustedVaultKeysRequired)
     BOOL trustedVaultKeysRequired;
 
@@ -54,8 +61,8 @@ CWV_EXPORT
 // risk of losing access to their trusted vault. In such a scenario, UI should
 // be presented to allow the user to setup additional knowledge factors so that
 // recoverability is better ensured.
-// Not meaningful until |currentIdentity| is set and
-// |syncControllerDidStartSync:| callback in is invoked in |delegate|.
+// This property may change after |syncControllerDidUpdateState:| is invoked on
+// the |delegate|.
 @property(nonatomic, readonly, getter=isTrustedVaultRecoverabilityDegraded)
     BOOL trustedVaultRecoverabilityDegraded;
 
