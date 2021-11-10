@@ -10,7 +10,9 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/media_router/presentation_receiver_window_delegate.h"
 #include "components/media_router/browser/presentation/presentation_navigation_policy.h"
@@ -19,7 +21,6 @@
 
 class GURL;
 class PresentationReceiverWindow;
-class Profile;
 
 namespace content {
 class WebContents;
@@ -109,6 +110,8 @@ class PresentationReceiverWindowController final
 
   // The profile used for the presentation.
   Profile* otr_profile_;
+  base::ScopedObservation<Profile, ProfileObserver> otr_profile_observation_{
+      this};
 
   // WebContents for rendering the receiver page.
   std::unique_ptr<content::WebContents> web_contents_;
