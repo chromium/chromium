@@ -227,6 +227,16 @@ void PageContentAnnotationsModelManager::SetUpPageTopicsModel(
       proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata);
 }
 
+void PageContentAnnotationsModelManager::SetUpPageTopicsV2Model(
+    OptimizationGuideModelProvider* optimization_guide_model_provider) {
+  on_demand_page_topics_model_executor_ =
+      std::make_unique<PageTopicsModelExecutor>(
+          optimization_guide_model_provider,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+          absl::nullopt);
+}
+
 void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
     const std::string& text,
     std::unique_ptr<history::VisitContentModelAnnotations> current_annotations,
@@ -484,14 +494,27 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
 
   std::unique_ptr<PageContentAnnotationJob> job = job_queue_.Erase(job_ptr);
 
-  base::OnceClosure on_complete_callback = base::BindOnce(
+  base::OnceClosure on_job_complete_callback = base::BindOnce(
       &PageContentAnnotationsModelManager::OnJobExecutionComplete,
       weak_ptr_factory_.GetWeakPtr());
+
+  if (job->type() == AnnotationType::kPageTopics) {
+    if (!on_demand_page_topics_model_executor_) {
+      job->FillWithError(ExecutionStatus::kErrorModelFileNotAvailable);
+      job->OnComplete();
+      job.reset();
+      std::move(on_job_complete_callback).Run();
+      return;
+    }
+    on_demand_page_topics_model_executor_->ExecuteJob(
+        std::move(on_job_complete_callback), std::move(job));
+    return;
+  }
 
   // TODO(crbug/1249632): Actually run the model instead.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&PretendToExecuteJob, std::move(on_complete_callback),
+      base::BindOnce(&PretendToExecuteJob, std::move(on_job_complete_callback),
                      std::move(job)));
 }
 

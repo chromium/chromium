@@ -28,12 +28,21 @@ class PageContentAnnotationJob {
                            AnnotationType type);
   ~PageContentAnnotationJob();
 
+  // Consumes every input, posting new results with the given error status and
+  // nullopt outputs.
+  void FillWithError(ExecutionStatus status);
+
   // Called when the Job has finished executing to call |on_complete_callback_|.
   void OnComplete();
 
   // Returns the next input to be annotated, effectively "draining" the
-  // |inputs_| queue.
+  // |inputs_| queue. Guaranteed to be non-null for the next
+  // |CountOfRemainingNonNullInputs| number of calls.
   absl::optional<std::string> GetNextInput();
+
+  // The count of remaining inputs. |GetNextInput| can be called this many times
+  // without return nullopt.
+  size_t CountOfRemainingNonNullInputs() const;
 
   // Posts a new result after an execution has completed.
   void PostNewResult(const BatchAnnotationResult& result);

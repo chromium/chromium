@@ -14,9 +14,35 @@ PageContentAnnotationJob::PageContentAnnotationJob(
     AnnotationType type)
     : on_complete_callback_(std::move(on_complete_callback)),
       type_(type),
-      inputs_(inputs.begin(), inputs.end()) {}
+      inputs_(inputs.begin(), inputs.end()) {
+  DCHECK(!inputs_.empty());
+}
 
 PageContentAnnotationJob::~PageContentAnnotationJob() = default;
+
+void PageContentAnnotationJob::FillWithError(ExecutionStatus status) {
+  while (auto input = GetNextInput()) {
+    switch (type()) {
+      case AnnotationType::kPageTopics:
+        PostNewResult(BatchAnnotationResult::CreatePageTopicsResult(
+            *input, status, absl::nullopt));
+        break;
+      case AnnotationType::kPageEntities:
+        PostNewResult(BatchAnnotationResult::CreatePageEntitiesResult(
+            *input, status, absl::nullopt));
+        break;
+      case AnnotationType::kContentVisibility:
+        PostNewResult(BatchAnnotationResult::CreateContentVisibilityResult(
+            *input, status, absl::nullopt));
+        break;
+      case AnnotationType::kUnknown:
+        NOTREACHED();
+        PostNewResult(BatchAnnotationResult::CreateEmptyAnnotationsResult(
+            *input, status));
+        break;
+    }
+  }
+}
 
 void PageContentAnnotationJob::OnComplete() {
   DCHECK(inputs_.empty());
@@ -28,11 +54,15 @@ void PageContentAnnotationJob::OnComplete() {
   std::move(on_complete_callback_).Run(results_);
 }
 
+size_t PageContentAnnotationJob::CountOfRemainingNonNullInputs() const {
+  return inputs_.size();
+}
+
 absl::optional<std::string> PageContentAnnotationJob::GetNextInput() {
   if (inputs_.empty()) {
     return absl::nullopt;
   }
-  std::string next = *inputs_.begin();
+  std::string next = inputs_.front();
   inputs_.erase(inputs_.begin());
   return next;
 }
