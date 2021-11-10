@@ -22,6 +22,140 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="AppBanners.BeforeInstallEvent"
+    enum="AppBannersBeforeInstallEvent" expires_after="2022-06-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks
+    usage of the BeforeInstallPromptEvent, which allows developers to control
+    when an app banner appears. The events in this histogram are not mutually
+    exclusive - for example, preventDefault() must be called if prompt() is
+    called.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.DismissEvent" enum="AppBannersDismissEvent"
+    expires_after="2021-12-05">
+  <owner>pjmclachlan@google.com</owner>
+  <owner>pcovell@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks the
+    different ways that an app banner left the screen, e.g. through an automatic
+    dismissal after navigation or an explicit user action.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.DisplayEvent" enum="AppBannersDisplayEvent"
+    expires_after="2022-03-20">
+  <owner>pjmclachlan@google.com</owner>
+  <owner>pcovell@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks
+    when an app banner was requested and how the request was handled, e.g. the
+    user blocked its appearance or the banner was ultimately created.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.InstallableStatusCode"
+    enum="AppBannersInstallableStatusCode" expires_after="2022-05-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks the
+    status code logged by the app banner system as it processes a site's
+    eligibility for an app banner. Every request for a banner will be logged in
+    a bucket of this histogram.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.InstallEvent" enum="AppBannersInstallEvent"
+    expires_after="2022-05-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <owner>pcovell@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks
+    when a user triggers an install dialog for the app promoted by the banner,
+    as well as whether or not the user ultimately decided to install the app.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.MinutesFromFirstVisitToBannerShown" units="minutes"
+    expires_after="2021-06-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks the
+    number of minutes between the first recorded visit to an origin and the time
+    when the banner is actually shown.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.UserResponse" enum="AppBannersUserResponse"
+    expires_after="2022-01-16">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <summary>
+    This stat tracks the user reponse when the add-to-homescreen dialog is shown
+    either: (A) Via the website's JavaScript (B) Via the user tapping the app
+    banner which promotes the application related to the current site.
+  </summary>
+</histogram>
+
+<histogram name="Launch.HomeScreen" enum="LaunchFromHomeScreen"
+    expires_after="2022-04-24">
+  <owner>dominickn@chromium.org</owner>
+  <owner>hartmanng@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records how Chrome handled a launch from an Android Home screen shortcut.
+  </summary>
+</histogram>
+
+<histogram name="Launch.HomeScreenSource" enum="LaunchFromHomeScreenSource"
+    expires_after="2022-04-24">
+  <owner>dominickn@chromium.org</owner>
+  <owner>hartmanng@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records the source of an Android homescreen launch intent used to launch
+    Chrome.
+
+    The Menu item bucket is deprecated as of M57, and will only contain records
+    for shortcuts added to the homescreen until M56.
+
+    For M57+, the Menu item (standalone) bucket contains all launch intents
+    originating from the add to homescreen menu item that launch to standalone
+    mode and *are not* WebAPKs. These are sites which do not meet the PWA
+    eligibility criteria, but have an app manifest that specifies either
+    standalone or fullscreen display. This bucket also contains PWA *and*
+    non-PWA intents that were added to the homescreen *prior* to M57, as we
+    cannot distinguish between them after they are added.
+
+    For M57+, the Menu item (shortcut) bucket contains all launch intents
+    originating from the add to homescreen menu item that launch to a browser
+    tab, regardless of when the intent was added.
+  </summary>
+</histogram>
+
+<histogram name="Launch.WebAppDisplayMode" enum="WebAppDisplayMode"
+    expires_after="2022-04-17">
+  <owner>peter@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the display mode (as defined in the Web App Manifest spec) at the
+    launch of the Added to Home screen or installed Web App (including WebAPKs).
+  </summary>
+</histogram>
+
 <histogram name="Webapp.AddToHomescreenDialog.Timeout" units="ms"
     expires_after="2022-04-17">
   <owner>dominickn@chromium.org</owner>
@@ -144,8 +278,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Webapp.Install.InstallBounce" enum="WebappInstallSource"
     expires_after="2022-04-03">
-  <owner>dominickn@chromium.org</owner>
   <owner>alancutter@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
   <summary>
     Records when a web app install bounced for different install sources. A
     bounce is when the user uninstalls the web app within 1 hour of installing

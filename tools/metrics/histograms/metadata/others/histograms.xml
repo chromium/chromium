@@ -756,93 +756,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AppBanners.BeforeInstallEvent"
-    enum="AppBannersBeforeInstallEvent" expires_after="2022-06-01">
-  <owner>dominickn@chromium.org</owner>
-  <owner>pjmclachlan@google.com</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    App banners promote an application related to the current website, and are
-    requested specifically through the current page's HTML. This stat tracks
-    usage of the BeforeInstallPromptEvent, which allows developers to control
-    when an app banner appears. The events in this histogram are not mutually
-    exclusive - for example, preventDefault() must be called if prompt() is
-    called.
-  </summary>
-</histogram>
-
-<histogram name="AppBanners.DismissEvent" enum="AppBannersDismissEvent"
-    expires_after="2021-12-05">
-  <owner>pjmclachlan@google.com</owner>
-  <owner>pcovell@google.com</owner>
-  <summary>
-    App banners promote an application related to the current website, and are
-    requested specifically through the current page's HTML. This stat tracks the
-    different ways that an app banner left the screen, e.g. through an automatic
-    dismissal after navigation or an explicit user action.
-  </summary>
-</histogram>
-
-<histogram name="AppBanners.DisplayEvent" enum="AppBannersDisplayEvent"
-    expires_after="2022-03-20">
-  <owner>pjmclachlan@google.com</owner>
-  <owner>pcovell@google.com</owner>
-  <summary>
-    App banners promote an application related to the current website, and are
-    requested specifically through the current page's HTML. This stat tracks
-    when an app banner was requested and how the request was handled, e.g. the
-    user blocked its appearance or the banner was ultimately created.
-  </summary>
-</histogram>
-
-<histogram name="AppBanners.InstallableStatusCode"
-    enum="AppBannersInstallableStatusCode" expires_after="2022-05-01">
-  <owner>dominickn@chromium.org</owner>
-  <owner>pjmclachlan@google.com</owner>
-  <summary>
-    App banners promote an application related to the current website, and are
-    requested specifically through the current page's HTML. This stat tracks the
-    status code logged by the app banner system as it processes a site's
-    eligibility for an app banner. Every request for a banner will be logged in
-    a bucket of this histogram.
-  </summary>
-</histogram>
-
-<histogram name="AppBanners.InstallEvent" enum="AppBannersInstallEvent"
-    expires_after="2022-05-01">
-  <owner>pjmclachlan@google.com</owner>
-  <owner>pcovell@google.com</owner>
-  <summary>
-    App banners promote an application related to the current website, and are
-    requested specifically through the current page's HTML. This stat tracks
-    when a user triggers an install dialog for the app promoted by the banner,
-    as well as whether or not the user ultimately decided to install the app.
-  </summary>
-</histogram>
-
-<histogram name="AppBanners.MinutesFromFirstVisitToBannerShown" units="minutes"
-    expires_after="2021-06-01">
-  <owner>dominickn@chromium.org</owner>
-  <owner>pjmclachlan@google.com</owner>
-  <summary>
-    App banners promote an application related to the current website, and are
-    requested specifically through the current page's HTML. This stat tracks the
-    number of minutes between the first recorded visit to an origin and the time
-    when the banner is actually shown.
-  </summary>
-</histogram>
-
-<histogram name="AppBanners.UserResponse" enum="AppBannersUserResponse"
-    expires_after="2022-01-16">
-  <owner>dominickn@chromium.org</owner>
-  <owner>pjmclachlan@google.com</owner>
-  <summary>
-    This stat tracks the user reponse when the add-to-homescreen dialog is shown
-    either: (A) Via the website's JavaScript (B) Via the user tapping the app
-    banner which promotes the application related to the current site.
-  </summary>
-</histogram>
-
 <histogram name="appcache.Manifest.ChromeHeader" enum="BooleanPresent"
     expires_after="M82">
   <obsolete>
@@ -1066,25 +979,6 @@ chromium-metrics-reviews@google.com.
     expires_after="M81">
   <owner>spqchan@chromium.org</owner>
   <summary>The number of times an AppleScript event gets called.</summary>
-</histogram>
-
-<histogram name="AppManagement.AppDetailViews" enum="AppManagementUserAction"
-    expires_after="2022-05-01">
-<!-- Name completed by histogram_suffixes name="AppType" -->
-
-  <owner>jshikaram@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The actions taken by the user when they are viewing the app details of an
-    app in App Management (chrome://os-settings/app-management).
-  </summary>
-</histogram>
-
-<histogram name="AppManagement.EntryPoints" enum="AppManagementEntryPoint"
-    expires_after="2022-05-01">
-  <owner>jshikaram@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>The ways the user opens up the App Management interface.</summary>
 </histogram>
 
 <histogram name="AsyncDNS.ConfigChange" enum="BooleanSuccess"
@@ -4981,20 +4875,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DigitalGoods.CrossSite" enum="Boolean"
-    expires_after="2022-03-29">
-  <owner>glenrob@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records whether the |GetDigitalGoodsService| method was called from a
-    cross-site sub-frame. This metric is emitted when the cross-site check is
-    made in the renderer, i.e. only when the payment method is non-empty and the
-    script context is not being destroyed.
-  </summary>
-</histogram>
-
 <histogram name="DirectSockets.PermissionDeniedFailures"
     enum="DirectSocketPermissionFailureType" expires_after="2022-1-20">
   <owner>ericwilligers@chromium.org</owner>
@@ -8566,62 +8446,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InfoBar.Shown" enum="InfoBarIdentifier" expires_after="never">
-<!-- expires-never: Required as long as infobars exist. -->
-
-  <owner>rkaplow@chromium.org</owner>
-  <owner>src/components/infobars/OWNERS</owner>
-  <summary>
-    Records how many times a particular infobar was shown to the user. On
-    Android, the infobar may be partially hidden due to stacking. On desktop, a
-    tab with a visible infobar will increment this histogram every time the user
-    switches away from the tab and back to it with the infobar still visible.
-  </summary>
-</histogram>
-
-<histogram name="InfoBar.Shown.Hidden" enum="InfoBarIdentifier"
-    expires_after="never">
-<!-- expires-never: Required as long as infobars exist. -->
-
-  <owner>mdjones@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Records how many times a particular infobar was displayed in a hidden state
-    due to at least one other infobar existing. If there are no existing
-    infobars, but the user scrolls at the exact moment a new infobar is added,
-    the infobar may be hidden, but not recorded in this metric. Reliably
-    triggering and detecting this combination is tricky so it isn't done. Only
-    recorded on Android.
-  </summary>
-</histogram>
-
-<histogram name="InfoBar.Shown.Hiding" enum="InfoBarIdentifier"
-    expires_after="never">
-<!-- expires-never: Required as long as infobars exist. -->
-
-  <owner>mdjones@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Records how many times a particular infobar was visible and hiding a new
-    infobar behind it. Only recorded on Android.
-  </summary>
-</histogram>
-
-<histogram name="InfoBar.Shown.Visible" enum="InfoBarIdentifier"
-    expires_after="never">
-<!-- expires-never: Required as long as infobars exist. -->
-
-  <owner>mdjones@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Records how many times a particular infobar was displayed in a visible state
-    due to no other infobars existing. If there are no existing infobars, but
-    the user scrolls at the exact moment a new infobar is added, the infobar may
-    be hidden, but recorded here as visible. Reliably triggering and detecting
-    this combination is tricky so it isn't done. Only recorded on Android.
-  </summary>
-</histogram>
-
 <histogram name="InstanceID.DeleteToken.RequestStatus"
     enum="GCMUnregistrationRequestStatus" expires_after="M77">
   <owner>peter@chromium.org</owner>
@@ -9271,42 +9095,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Launch.HomeScreen" enum="LaunchFromHomeScreen"
-    expires_after="2022-04-24">
-  <owner>dominickn@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <summary>
-    Records how Chrome handled a launch from an Android Home screen shortcut.
-  </summary>
-</histogram>
-
-<histogram name="Launch.HomeScreenSource" enum="LaunchFromHomeScreenSource"
-    expires_after="2022-04-24">
-  <owner>dominickn@chromium.org</owner>
-  <owner>hartmanng@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <summary>
-    Records the source of an Android homescreen launch intent used to launch
-    Chrome.
-
-    The Menu item bucket is deprecated as of M57, and will only contain records
-    for shortcuts added to the homescreen until M56.
-
-    For M57+, the Menu item (standalone) bucket contains all launch intents
-    originating from the add to homescreen menu item that launch to standalone
-    mode and *are not* WebAPKs. These are sites which do not meet the PWA
-    eligibility criteria, but have an app manifest that specifies either
-    standalone or fullscreen display. This bucket also contains PWA *and*
-    non-PWA intents that were added to the homescreen *prior* to M57, as we
-    cannot distinguish between them after they are added.
-
-    For M57+, the Menu item (shortcut) bucket contains all launch intents
-    originating from the add to homescreen menu item that launch to a browser
-    tab, regardless of when the intent was added.
-  </summary>
-</histogram>
-
 <histogram name="Launch.IntentFlags" enum="LaunchIntentFlags"
     expires_after="2020-10-04">
   <owner>dfalcantara@chromium.org</owner>
@@ -9322,16 +9110,6 @@ chromium-metrics-reviews@google.com.
   <owner>calamity@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>The different ways Chrome is launched.</summary>
-</histogram>
-
-<histogram name="Launch.WebAppDisplayMode" enum="WebAppDisplayMode"
-    expires_after="2022-04-17">
-  <owner>peter@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Records the display mode (as defined in the Web App Manifest spec) at the
-    launch of the Added to Home screen or installed Web App (including WebAPKs).
-  </summary>
 </histogram>
 
 <histogram name="Layout.MicroSecondsPerComplexText" units="microseconds"
@@ -13312,34 +13090,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PreferredApps.FileIOAction" enum="PreferredAppsFileIOAction"
-    expires_after="M89">
-  <obsolete>
-    This was used by mistake, add the entry to avoid anyone accidently using
-    this name. Obsolete in 10/2020. Replaced by Apps.PreferredApps.FileIOAction.
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>mxcai@chromium.org</owner>
-  <summary>
-    Recorded at the time a read/write operation happens for preferred app to
-    indicate whether the I/O succeeded or not.
-  </summary>
-</histogram>
-
-<histogram name="PreferredApps.UpdateAction" enum="PreferredAppsUpdateAction"
-    expires_after="M89">
-  <obsolete>
-    This was used by mistake, add the entry to avoid anyone accidently using
-    this name. Obsolete in 10/2020. Replaced by Apps.PreferredApps.UpdateAction.
-  </obsolete>
-  <owner>dominickn@chromium.org</owner>
-  <owner>mxcai@chromium.org</owner>
-  <summary>
-    Recorded at the time a update operation happens for preferred apps to
-    indicate the type of update action.
-  </summary>
-</histogram>
-
 <histogram name="PrefetchedSignedExchangeCache.BodySize" units="bytes"
     expires_after="2022-04-24">
   <owner>horo@chromium.org</owner>
@@ -15969,119 +15719,6 @@ should be kept until we remove incident reporting. -->
   <summary>
     Logs which way had the user navigated into settings screens when they press
     &quot;Clear and Reset&quot; button in settings of a single website.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.DaysSinceLastShortcutLaunch"
-    units="days" expires_after="2021-01-01">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The number of days between launches of an origin saved to homescreen or as a
-    bookmark app shortcut. Recorded at the second and each following launch of a
-    specific origin from a shortcut, independently per origin.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.EngagementScore" units="units"
-    expires_after="2022-03-12">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Distribution of the engagement scores accumulated by a user, recorded at
-    startup per non-incognito profile, and then upon the first
-    engagement-increasing event every hour thereafter.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.EngagementScoreBucket" units="%"
-    expires_after="2022-03-12">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The percentage of sites on a user's profile that have engagement scores that
-    fall in these buckets, recorded at startup per non-incognito profile, and
-    then upon the first engagement-increasing event every hour thereafter.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.EngagementType"
-    enum="SiteEngagementServiceEngagementType" expires_after="2022-03-20">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The type of engagement (navigation, user input, etc.) which led to an
-    accumulation in site engagement.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.MeanEngagement" units="units"
-    expires_after="2022-03-12">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The mean site engagement per origin accumulated by this profile, recorded at
-    startup per non-incognito profile, and then upon the first
-    engagement-increasing event every hour thereafter.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.MedianEngagement" units="units"
-    expires_after="2022-03-12">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The median site engagement per origin accumulated by this profile, recorded
-    at startup per non-incognito profile, and then upon the first
-    engagement-increasing event every hour thereafter.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.OriginsEngaged" units="units"
-    expires_after="2022-03-12">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The total number of origins with a non-zero site engagement score for this
-    profile, recorded at startup per non-incognito profile, and then upon the
-    first engagement-increasing event every hour thereafter.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.OriginsWithMaxDailyEngagement"
-    units="units" expires_after="2021-01-01">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The number of origins which have reached the daily site engagement point
-    cap, recorded at startup per non-incognito profile, and then upon the first
-    engagement-increasing event every hour thereafter. Thus, each bin N contains
-    the number of clients where at least N origins have reached the maximum
-    daily site engagement point cap.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.OriginsWithMaxEngagement" units="units"
-    expires_after="2021-01-01">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The number of origins which have reached the absolute site engagement point
-    cap, recorded at startup per non-incognito profile, and then upon the first
-    engagement-increasing event every hour thereafter. Thus, each bin N contains
-    the number of clients where at least N origins have reached the maximum
-    absolute site engagement point cap.
-  </summary>
-</histogram>
-
-<histogram name="SiteEngagementService.TotalEngagement" units="units"
-    expires_after="2022-03-12">
-  <owner>calamity@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    The total site engagement accumulated by this profile, recorded at startup
-    per non-incognito profile, and then upon the first engagement-increasing
-    event every hour thereafter.
   </summary>
 </histogram>
 
@@ -19983,207 +19620,6 @@ regressions. -->
     NOTE: At the moment, if the user cancels the picker, its recording will be
     delayed, and possibly never recorded (https://crbug.com/636274), so that
     will account for a discrepancy between ShareOutcome and ApiCount.Share.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Action" enum="WebsiteSettingsAction"
-    expires_after="2022-04-03">
-  <owner>estark@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <summary>
-    Tracks actions with the website setting (a.k.a. page info / origin info)
-    bubble, such as opening it up or clicking on the Connection tab.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.AllSitesAction"
-    enum="WebSiteSettingsAllSitesAction" expires_after="M82">
-  <owner>mxcai@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Tracks actions with the &quot;All Sites&quot; page in website settings for
-    builds older than M82.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.AllSitesAction2"
-    enum="WebSiteSettingsAllSitesAction2" expires_after="2022-04-10">
-  <owner>jarrydg@chromium.org</owner>
-  <owner>mxcai@chromium.org</owner>
-  <summary>
-    Tracks actions with the &quot;All Sites&quot; page in website settings
-    starting in M82. No data available for M94, was temporarily expired. Values
-    7 and 8 were added with M96.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Discoverability.Action"
-    enum="WebsiteSettingsDiscoverabilityAction" expires_after="2022-04-03">
-  <owner>eokoyomon@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <summary>
-    Tracks actions related to page info when discoverability has been activated.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Discoverability.TimeToClickHighlight"
-    units="ms" expires_after="M98">
-  <owner>eokoyomon@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <summary>
-    Records the amount of time between when the page info is opened and the
-    highlighted permissions section is clicked.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Discoverability.TimeToClickHighlightStoreInfo"
-    units="ms" expires_after="M100">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the amount of time between when the page info is opened and the
-    highlighted store info section is clicked.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Discoverability.TimeToOpen" units="ms"
-    expires_after="2022-04-10">
-  <owner>eokoyomon@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <summary>
-    Records the amount of time the discoverability icon is shown in the omnibox
-    before the user clicks into page info.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Discoverability.TimeToOpenFromStoreIcon"
-    units="ms" expires_after="M100">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records the amount of time the store icon is shown in the omnibox before the
-    user clicks into page info.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged" enum="ContentType"
-    expires_after="M81">
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is changed using the
-    content settings menu.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.Allowed"
-    enum="ContentType" expires_after="M81">
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is set to 'Allowed'
-    using the content settings menu.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.Ask" enum="ContentType"
-    expires_after="M77">
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is set to 'Ask'
-    using the content settings menu.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.Blocked"
-    enum="ContentType" expires_after="M81">
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is set to 'Blocked'
-    using the content settings menu.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.Reset"
-    enum="ContentType" expires_after="M77">
-  <owner>miguelg@chromium.org</owner>
-  <owner>finnur@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is reset to the
-    default value using the content settings menu.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.Menu.PermissionChanged.SessionOnly"
-    enum="ContentType" expires_after="M96">
-  <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <owner>ravjit@chromium.org</owner>
-  <owner>elklm@chromium.org</owner>
-  <summary>
-    Count of how often a specific content type (permission) is changed to the
-    session only value using the content settings menu. This option only exists
-    for cookies.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.OriginInfo.PermissionChanged"
-    enum="ContentType" expires_after="2022-08-25">
-  <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Count of how often a specific content type (permission) is changed using the
-    Origin Info dialog.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.OriginInfo.PermissionChanged.Allowed"
-    enum="ContentType" expires_after="2022-08-25">
-  <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Count of how often a specific content type (permission) is set to 'Allowed'
-    using the Origin Info dialog.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
-  </summary>
-</histogram>
-
-<histogram name="WebsiteSettings.OriginInfo.PermissionChanged.Blocked"
-    enum="ContentType" expires_after="2022-08-25">
-  <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Count of how often a specific content type (permission) is set to 'Blocked'
-    using the Origin Info dialog.
-
-    Note: The values of this metric collected for Chrome 49 (early 2016) are
-    innacurate and should not be trusted. crbug.com/589255.
   </summary>
 </histogram>
 

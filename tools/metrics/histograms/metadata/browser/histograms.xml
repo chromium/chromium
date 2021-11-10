@@ -1302,6 +1302,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InfoBar.Shown" enum="InfoBarIdentifier" expires_after="never">
+<!-- expires-never: Required as long as infobars exist. -->
+
+  <owner>rkaplow@chromium.org</owner>
+  <owner>src/components/infobars/OWNERS</owner>
+  <summary>
+    Records how many times a particular infobar was shown to the user. On
+    Android, the infobar may be partially hidden due to stacking. On desktop, a
+    tab with a visible infobar will increment this histogram every time the user
+    switches away from the tab and back to it with the infobar still visible.
+  </summary>
+</histogram>
+
+<histogram name="InfoBar.Shown.Hidden" enum="InfoBarIdentifier"
+    expires_after="never">
+<!-- expires-never: Required as long as infobars exist. -->
+
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records how many times a particular infobar was displayed in a hidden state
+    due to at least one other infobar existing. If there are no existing
+    infobars, but the user scrolls at the exact moment a new infobar is added,
+    the infobar may be hidden, but not recorded in this metric. Reliably
+    triggering and detecting this combination is tricky so it isn't done. Only
+    recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="InfoBar.Shown.Hiding" enum="InfoBarIdentifier"
+    expires_after="never">
+<!-- expires-never: Required as long as infobars exist. -->
+
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records how many times a particular infobar was visible and hiding a new
+    infobar behind it. Only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="InfoBar.Shown.Visible" enum="InfoBarIdentifier"
+    expires_after="never">
+<!-- expires-never: Required as long as infobars exist. -->
+
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records how many times a particular infobar was displayed in a visible state
+    due to no other infobars existing. If there are no existing infobars, but
+    the user scrolls at the exact moment a new infobar is added, the infobar may
+    be hidden, but recorded here as visible. Reliably triggering and detecting
+    this combination is tricky so it isn't done. Only recorded on Android.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
