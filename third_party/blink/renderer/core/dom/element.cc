@@ -2837,6 +2837,10 @@ void Element::DetachLayoutTree(bool performing_reattach) {
       GetDocument().ActiveChainNodeDetached(*this);
     GetDocument().UserActionElements().DidDetach(*this);
   }
+
+  if (auto* context = GetDisplayLockContext()) {
+    context->DetachLayoutTree();
+  }
 }
 
 scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(

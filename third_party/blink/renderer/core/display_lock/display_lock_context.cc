@@ -911,6 +911,15 @@ void DisplayLockContext::ElementConnected() {
   ScheduleAnimation();
 }
 
+void DisplayLockContext::DetachLayoutTree() {
+  // When |element_| is removed from the flat tree, we need to set this context
+  // to visible.
+  if (!element_->GetComputedStyle()) {
+    SetRequestedState(EContentVisibility::kVisible);
+    blocked_child_recalc_change_ = StyleRecalcChange();
+  }
+}
+
 void DisplayLockContext::ScheduleAnimation() {
   DCHECK(element_);
   if (!ConnectedToView() || !document_ || !document_->GetPage())

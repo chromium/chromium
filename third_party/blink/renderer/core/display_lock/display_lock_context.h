@@ -168,6 +168,8 @@ class CORE_EXPORT DisplayLockContext final
   void ElementDisconnected();
   void ElementConnected();
 
+  void DetachLayoutTree();
+
   void NotifySubtreeLostFocus();
   void NotifySubtreeGainedFocus();
 
