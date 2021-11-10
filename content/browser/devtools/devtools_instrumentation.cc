@@ -202,6 +202,7 @@ void BackForwardCacheNotUsed(
 }
 
 namespace {
+
 protocol::String BuildBlockedByResponseReason(
     network::mojom::BlockedByResponseReason reason) {
   switch (reason) {
@@ -223,6 +224,53 @@ protocol::String BuildBlockedByResponseReason(
       return protocol::Audits::BlockedByResponseReasonEnum::CorpNotSameSite;
   }
 }
+
+void ReportBlockedByResponseIssue(
+    const GURL& url,
+    std::string& requestId,
+    FrameTreeNode* ftn,
+    RenderFrameHostImpl* parent_frame,
+    const network::URLLoaderCompletionStatus& status) {
+  DCHECK(status.blocked_by_response_reason);
+
+  auto issueDetails = protocol::Audits::InspectorIssueDetails::Create();
+  auto request = protocol::Audits::AffectedRequest::Create()
+                     .SetRequestId(requestId)
+                     .SetUrl(url.spec())
+                     .Build();
+  auto blockedByResponseDetails =
+      protocol::Audits::BlockedByResponseIssueDetails::Create()
+          .SetRequest(std::move(request))
+          .SetReason(
+              BuildBlockedByResponseReason(*status.blocked_by_response_reason))
+          .Build();
+
+  blockedByResponseDetails->SetBlockedFrame(
+      protocol::Audits::AffectedFrame::Create()
+          .SetFrameId(ftn->devtools_frame_token().ToString())
+          .Build());
+  if (parent_frame) {
+    blockedByResponseDetails->SetParentFrame(
+        protocol::Audits::AffectedFrame::Create()
+            .SetFrameId(parent_frame->frame_tree_node()
+                            ->devtools_frame_token()
+                            .ToString())
+            .Build());
+  }
+
+  issueDetails.SetBlockedByResponseIssueDetails(
+      std::move(blockedByResponseDetails));
+
+  auto inspector_issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(
+              protocol::Audits::InspectorIssueCodeEnum::BlockedByResponseIssue)
+          .SetDetails(issueDetails.Build())
+          .Build();
+
+  ReportBrowserInitiatedIssue(ftn->current_frame_host(), inspector_issue.get());
+}
+
 }  // namespace
 
 void OnNavigationRequestFailed(
@@ -232,44 +280,9 @@ void OnNavigationRequestFailed(
   std::string id = nav_request.devtools_navigation_token().ToString();
 
   if (status.blocked_by_response_reason) {
-    auto issueDetails = protocol::Audits::InspectorIssueDetails::Create();
-    auto request =
-        protocol::Audits::AffectedRequest::Create()
-            .SetRequestId(id)
-            .SetUrl(const_cast<NavigationRequest&>(nav_request).GetURL().spec())
-            .Build();
-    auto blockedByResponseDetails =
-        protocol::Audits::BlockedByResponseIssueDetails::Create()
-            .SetRequest(std::move(request))
-            .SetReason(BuildBlockedByResponseReason(
-                *status.blocked_by_response_reason))
-            .Build();
-
-    blockedByResponseDetails->SetBlockedFrame(
-        protocol::Audits::AffectedFrame::Create()
-            .SetFrameId(ftn->devtools_frame_token().ToString())
-            .Build());
-    if (ftn->parent()) {
-      blockedByResponseDetails->SetParentFrame(
-          protocol::Audits::AffectedFrame::Create()
-              .SetFrameId(ftn->parent()
-                              ->frame_tree_node()
-                              ->devtools_frame_token()
-                              .ToString())
-              .Build());
-    }
-    issueDetails.SetBlockedByResponseIssueDetails(
-        std::move(blockedByResponseDetails));
-
-    auto inspector_issue =
-        protocol::Audits::InspectorIssue::Create()
-            .SetCode(protocol::Audits::InspectorIssueCodeEnum::
-                         BlockedByResponseIssue)
-            .SetDetails(issueDetails.Build())
-            .Build();
-
-    ReportBrowserInitiatedIssue(ftn->current_frame_host(),
-                                inspector_issue.get());
+    ReportBlockedByResponseIssue(
+        const_cast<NavigationRequest&>(nav_request).GetURL(), id, ftn,
+        ftn->parent(), status);
   }
 
   // If a BFCache navigation fails, it will be restarted as a regular
@@ -1216,6 +1229,49 @@ void OnServiceWorkerMainScriptFetchingFailed(
                    .SetTimestamp(base::Time::Now().ToDoubleT() * 1000.0)
                    .Build();
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
+}
+
+void OnWorkerMainScriptLoadingFailed(
+    const GURL& url,
+    const base::UnguessableToken& worker_token,
+    FrameTreeNode* ftn,
+    RenderFrameHostImpl* ancestor_rfh,
+    const network::URLLoaderCompletionStatus& status) {
+  DCHECK(ftn);
+
+  std::string id = worker_token.ToString();
+
+  if (status.blocked_by_response_reason)
+    ReportBlockedByResponseIssue(url, id, ftn, ancestor_rfh, status);
+
+  DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete, id,
+                   protocol::Network::ResourceTypeEnum::Other, status);
+}
+
+void OnWorkerMainScriptLoadingFinished(
+    FrameTreeNode* ftn,
+    const base::UnguessableToken& worker_token,
+    const network::URLLoaderCompletionStatus& status) {
+  DCHECK(ftn);
+  DispatchToAgents(ftn, &protocol::NetworkHandler::LoadingComplete,
+                   worker_token.ToString(),
+                   protocol::Network::ResourceTypeEnum::Other, status);
+}
+
+void OnWorkerMainScriptRequestWillBeSent(
+    FrameTreeNode* ftn,
+    const base::UnguessableToken& worker_token,
+    const network::ResourceRequest& request) {
+  DCHECK(ftn);
+
+  auto timestamp = base::TimeTicks::Now();
+  network::mojom::URLRequestDevToolsInfoPtr request_info =
+      network::ExtractDevToolsInfo(request);
+  DispatchToAgents(
+      ftn, &protocol::NetworkHandler::RequestSent, worker_token.ToString(),
+      /*loader_id=*/"", request.headers, *request_info,
+      protocol::Network::Initiator::TypeEnum::Script, ftn->current_url(),
+      /*initiator_devtools_request_id*/ "", timestamp);
 }
 
 void LogWorkletMessage(RenderFrameHostImpl& frame_host,

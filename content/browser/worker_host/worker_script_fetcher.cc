@@ -162,6 +162,7 @@ void WorkerScriptFetcher::CreateAndStart(
     int worker_process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     const GURL& initial_request_url,
+    RenderFrameHost* ancestor_render_frame_host,
     RenderFrameHost* creator_render_frame_host,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& request_initiator,
@@ -270,6 +271,16 @@ void WorkerScriptFetcher::CreateAndStart(
       blink::mojom::InsecureRequestsPolicy::kUpgrade;
 
   AddAdditionalRequestHeaders(resource_request.get(), browser_context);
+
+  // Notify that the request for fetching the main worker script is about to
+  // start to DevTools. It fires `Network.onRequestWillBeSent` event. For
+  // dedicated workers, `creator_render_frame_host` can be null when a worker
+  // is nested. So reports to DevTools in the ancestor's frame instead. For
+  // shared workers, `ancestor_render_frame_host` and
+  // `creator_render_frame_host` are always same.
+  devtools_instrumentation::OnWorkerMainScriptRequestWillBeSent(
+      FrameTreeNode::From(ancestor_render_frame_host), devtools_worker_token,
+      *resource_request);
 
   WorkerScriptFetcher::CreateScriptLoader(
       worker_process_id, worker_token, initial_request_url,

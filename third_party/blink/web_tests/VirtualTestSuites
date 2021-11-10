@@ -462,6 +462,7 @@
               "external/wpt/xhr",
               "fast/workers",
               "http/tests/inspector-protocol/fetch",
+              "http/tests/inspector-protocol/network",
               "http/tests/origin_trials",
               "http/tests/workers",
               "inspector-protocol/worker"],

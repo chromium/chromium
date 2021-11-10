@@ -19,6 +19,7 @@
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/cross_origin_embedder_policy.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -41,6 +42,7 @@
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
@@ -214,7 +216,8 @@ void DedicatedWorkerHost::StartScriptLoad(
   RenderFrameHostImpl* nearest_ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   if (!nearest_ancestor_render_frame_host) {
-    client_->OnScriptLoadStartFailed();
+    ScriptLoadStartFailed(script_url,
+                          network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;
   }
 
@@ -238,7 +241,8 @@ void DedicatedWorkerHost::StartScriptLoad(
     creator_render_frame_host =
         RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value());
     if (!creator_render_frame_host) {
-      client_->OnScriptLoadStartFailed();
+      ScriptLoadStartFailed(
+          script_url, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
       return;
     }
   }
@@ -272,7 +276,8 @@ void DedicatedWorkerHost::StartScriptLoad(
           service_->GetDedicatedWorkerHostFromToken(
               creator_worker_token_.value());
       if (!creator_worker) {
-        client_->OnScriptLoadStartFailed();
+        ScriptLoadStartFailed(
+            script_url, network::URLLoaderCompletionStatus(net::ERR_ABORTED));
         return;
       }
 
@@ -290,7 +295,7 @@ void DedicatedWorkerHost::StartScriptLoad(
 
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host_->GetID(), token_, script_url,
-      creator_render_frame_host,
+      nearest_ancestor_render_frame_host, creator_render_frame_host,
       nearest_ancestor_render_frame_host->ComputeSiteForCookies(),
       creator_origin_,
       nearest_ancestor_render_frame_host->GetIsolationInfoForSubresources(),
@@ -323,7 +328,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
 
   if (!success) {
-    client_->OnScriptLoadStartFailed();
+    ScriptLoadStartFailed(final_response_url,
+                          network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;
   }
 
@@ -337,7 +343,8 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   RenderFrameHostImpl* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   if (!ancestor_render_frame_host) {
-    client_->OnScriptLoadStartFailed();
+    ScriptLoadStartFailed(final_response_url,
+                          network::URLLoaderCompletionStatus(net::ERR_ABORTED));
     return;
   }
 
@@ -372,7 +379,10 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   // network error.
   if (!CheckCrossOriginEmbedderPolicy(creator_cross_origin_embedder_policy_,
                                       cross_origin_embedder_policy())) {
-    client_->OnScriptLoadStartFailed();
+    ScriptLoadStartFailed(final_response_url,
+                          network::URLLoaderCompletionStatus(
+                              network::mojom::BlockedByResponseReason::
+                                  kCoepFrameResourceNeedsCoepHeader));
     return;
   }
 
@@ -402,6 +412,13 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     service_worker_state = controller->object_info->state;
   }
 
+  // Notify that the loading is completed to DevTools. It fires
+  // `Network.onLoadingFinished` event.
+  devtools_instrumentation::OnWorkerMainScriptLoadingFinished(
+      FrameTreeNode::From(ancestor_render_frame_host),
+      WorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
+      network::URLLoaderCompletionStatus(net::OK));
+
   client_->OnScriptLoadStarted(
       service_worker_handle_->TakeContainerInfo(),
       std::move(main_script_load_params),
@@ -417,6 +434,21 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     controller_service_worker_object_host->AddRemoteObjectPtrAndUpdateState(
         std::move(service_worker_remote_object), service_worker_state);
   }
+}
+
+void DedicatedWorkerHost::ScriptLoadStartFailed(
+    const GURL& url,
+    const network::URLLoaderCompletionStatus& status) {
+  auto* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  // Notify that the loading failed to DevTools. It fires
+  // `Network.onLoadingFailed` event.
+  devtools_instrumentation::OnWorkerMainScriptLoadingFailed(
+      url, WorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
+      FrameTreeNode::From(ancestor_render_frame_host),
+      ancestor_render_frame_host, status);
+
+  client_->OnScriptLoadStartFailed();
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>

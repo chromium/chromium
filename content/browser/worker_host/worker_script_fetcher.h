@@ -83,6 +83,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       int worker_process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
       const GURL& initial_request_url,
+      RenderFrameHost* ancestor_render_frame_host,
       RenderFrameHost* creator_render_frame_host,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& request_initiator,

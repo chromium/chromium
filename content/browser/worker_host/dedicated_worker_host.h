@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -209,6 +210,8 @@ class DedicatedWorkerHost final
       base::WeakPtr<ServiceWorkerObjectHost>
           controller_service_worker_object_host,
       const GURL& final_response_url);
+  void ScriptLoadStartFailed(const GURL& url,
+                             const network::URLLoaderCompletionStatus& status);
 
   // Sets up the observer of network service crash.
   void ObserveNetworkServiceCrash(StoragePartitionImpl* storage_partition_impl);
