@@ -14,7 +14,6 @@ button.blue-button {
   margin: 0;
   min-height: 21px;
   min-width: 55px;
-  outline: none;
   padding: 4px 14px;
   position: relative;
   text-align: center;
@@ -23,11 +22,6 @@ button.blue-button {
 
 button.white-button[disabled] {
   border-color: #c6c6c6;
-}
-
-button.white-button:focus:active,
-button.white-button:focus {
-  border-color: rgb(62, 126, 248);
 }
 
 button.white-button:active {
