@@ -5,21 +5,35 @@
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/toast_manager.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/bind.h"
+#include "base/i18n/number_formatting.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
 namespace {
 
 DesksTemplatesPresenter* g_instance = nullptr;
+
+// The amount of time for which the launch template toasts will remain
+// displayed.
+constexpr int kLaunchTemplateToastDurationMs = 6 * 1000;
+
+// Toast name.
+constexpr char kMaximumDeskLaunchTemplateToastName[] =
+    "MaximumDeskLaunchTemplateToast";
 
 // Helper to get the desk model from the shell delegate. Should always return a
 // usable desk model, either from chrome sync, or a local storage.
@@ -123,10 +137,20 @@ void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
 
 void DesksTemplatesPresenter::LaunchDeskTemplate(
     const std::string& template_uuid) {
-  // TODO(richui): If we are at the max desk limit (currently is 8), a new desk
-  // cannot be created, so we need to display a toast to the user.
-  if (!DesksController::Get()->CanCreateDesks())
+  // If we are at the max desk limit (currently is 8), a new desk
+  // cannot be created, and a toast will be displayed to the user.
+  if (!DesksController::Get()->CanCreateDesks()) {
+    ToastData toast_data = {
+        /*id=*/kMaximumDeskLaunchTemplateToastName,
+        /*text=*/
+        l10n_util::GetStringFUTF16(
+            IDS_ASH_DESKS_TEMPLATES_REACH_MAXIMUM_DESK_TOAST,
+            base::FormatNumber(desks_util::kMaxNumberOfDesks)),
+        kLaunchTemplateToastDurationMs,
+        /*dismiss_text=*/absl::nullopt};
+    ToastManager::Get()->Show(toast_data);
     return;
+  }
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 

@@ -1717,6 +1717,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_USE_TEMPLATE_BUTTON" desc="The text of the button to launch the template.">
         Use template
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_REACH_MAXIMUM_DESK_TOAST" desc="The text of the toast displayed when user tries to launch a template while maximum desk number is reached.">
+        Only <ph name="MAX_DESK_LIMIT">$1<ex>8</ex></ph> desks allowed. Remove a desk to open a new one.
+      </message>
 
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The label of the new virtual desk (a.k.a. workspaces) button.">
