@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "content/services/auction_worklet/debug_command_queue.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,6 +24,7 @@ namespace auction_worklet {
 
 class AuctionV8Helper;
 class AuctionV8DevToolsSession;
+class DebugCommandQueue;
 
 // Implementation of blink.mojom.DevToolsAgent for things run via
 // AuctionV8Helper.
@@ -35,11 +35,10 @@ class AuctionV8DevToolsSession;
 // as they are required to be on a different thread for use when the V8
 // thread is busy.
 //
-// Receiver for per-context group blink::mojom::DevToolsAgent pipes. Manages
-// per-context group DebugCommandQueues and creates/manages the lifetimes of the
-// blink::mojom::DevToolsSessions. Also serves as the
-// v8_inspector::V8InspectorClient  to handle pause/resume calls received back
-// from V8.
+// Receiver for per-context group blink::mojom::DevToolsAgent pipes.
+// Creates/manages the lifetimes of the blink::mojom::DevToolsSessions. Also
+// serves as the v8_inspector::V8InspectorClient  to handle pause/resume calls
+// received back from V8.
 //
 // To summarize, the thread split is as follows:
 //
@@ -56,11 +55,13 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
                                public v8_inspector::V8InspectorClient {
  public:
   // `v8_helper` is expected to own `this`.
+  // `debug_command_queue` is expected to be owned by `v8_helper`.
   // `io_session_receiver_sequence` must be distinct from
   // `v8_helper->v8_runner()`, and be able to grab mutexes (for short duration)
   // and handle a Mojo connection.
   AuctionV8DevToolsAgent(
       AuctionV8Helper* v8_helper,
+      DebugCommandQueue* debug_command_queue,
       scoped_refptr<base::SequencedTaskRunner> io_session_receiver_sequence);
   AuctionV8DevToolsAgent(const AuctionV8DevToolsAgent&) = delete;
   AuctionV8DevToolsAgent& operator=(const AuctionV8DevToolsAgent&) = delete;
@@ -86,9 +87,6 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
   struct ContextGroupInfo {
     ContextGroupInfo();
     ~ContextGroupInfo();
-
-    scoped_refptr<DebugCommandQueue> command_queue =
-        base::MakeRefCounted<DebugCommandQueue>();
 
     // Owned by `sessions_` in the AuctionV8DevToolsAgent object; stale entries
     // removed by its SessionDestroyed().
@@ -140,10 +138,9 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
   // ~AuctionV8DevToolsSession (via a callback).
   std::map<int, ContextGroupInfo> context_groups_;
 
-  // Command queue for context group that has currently paused V8 execution.
-  // While non-empty, the V8 thread's message loop should be blocked
-  // waiting on more commands to be queued, and executing queued commands.
-  scoped_refptr<DebugCommandQueue> paused_context_group_queue_;
+  // Owned by `v8_helper` which owns `this`.
+  DebugCommandQueue* const debug_command_queue_;
+  bool paused_ = false;
 
   SEQUENCE_CHECKER(v8_sequence_checker_);
 };

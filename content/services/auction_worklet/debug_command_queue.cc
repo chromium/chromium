@@ -9,13 +9,20 @@
 namespace auction_worklet {
 
 DebugCommandQueue::DebugCommandQueue()
-    : v8_runner_(base::SequencedTaskRunnerHandle::Get()), wake_up_(&lock_) {}
+    : v8_runner_(base::SequencedTaskRunnerHandle::Get()), wake_up_(&lock_) {
+  // Create helper for posting RunQueue here to bind it to the weak pointer on
+  // the right thread.
+  run_queue_closure_ = base::BindRepeating(&DebugCommandQueue::RunQueue,
+                                           weak_ptr_factory_.GetWeakPtr());
+}
+
+DebugCommandQueue::~DebugCommandQueue() = default;
 
 void DebugCommandQueue::PauseForDebuggerAndRunCommands() {
   DCHECK(v8_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock auto_lock(lock_);
-  DCHECK(!v8_thread_paused_);
+  CHECK(!v8_thread_paused_);
   v8_thread_paused_ = true;
   while (true) {
     RunQueueWithLockHeld();
@@ -45,12 +52,9 @@ void DebugCommandQueue::QueueTaskForV8Thread(base::OnceClosure task) {
   }
 }
 
-DebugCommandQueue::~DebugCommandQueue() = default;
-
 void DebugCommandQueue::PostRunQueue() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
   if (!queue_.empty()) {
-    v8_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&DebugCommandQueue::RunQueue, this));
+    v8_runner_->PostTask(FROM_HERE, run_queue_closure_);
   }
 }
 

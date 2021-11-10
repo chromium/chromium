@@ -8,8 +8,10 @@
 #include <vector>
 
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,14 +22,23 @@ namespace auction_worklet {
 
 class DebugCommandQueueTest : public testing::Test {
  public:
-  DebugCommandQueueTest() : v8_runner_(AuctionV8Helper::CreateTaskRunner()) {
+  DebugCommandQueueTest()
+      : v8_runner_(AuctionV8Helper::CreateTaskRunner()),
+        command_queue_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
     base::RunLoop run_loop;
     // Create `DebugCommandQueue on `v8_runner_`.
     v8_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](scoped_refptr<DebugCommandQueue>* out, base::OnceClosure done) {
-              *out = base::MakeRefCounted<DebugCommandQueue>();
+            [](std::unique_ptr<DebugCommandQueue, base::OnTaskRunnerDeleter>*
+                   out,
+               base::OnceClosure done) {
+              *out =
+                  std::unique_ptr<DebugCommandQueue, base::OnTaskRunnerDeleter>(
+                      new DebugCommandQueue,
+                      base::OnTaskRunnerDeleter(
+                          base::SequencedTaskRunnerHandle::Get()));
+
               std::move(done).Run();
             },
             &command_queue_, run_loop.QuitClosure()));
@@ -39,12 +50,12 @@ class DebugCommandQueueTest : public testing::Test {
     v8_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](scoped_refptr<DebugCommandQueue> queue,
-               base::OnceClosure to_post, base::OnceClosure done) {
+            [](DebugCommandQueue* queue, base::OnceClosure to_post,
+               base::OnceClosure done) {
               queue->QueueTaskForV8Thread(std::move(to_post));
               std::move(done).Run();
             },
-            command_queue_, std::move(to_post), run_loop.QuitClosure()));
+            command_queue_.get(), std::move(to_post), run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -90,7 +101,7 @@ class DebugCommandQueueTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SingleThreadTaskRunner> v8_runner_;
-  scoped_refptr<DebugCommandQueue> command_queue_;
+  std::unique_ptr<DebugCommandQueue, base::OnTaskRunnerDeleter> command_queue_;
   std::vector<std::string> log_ GUARDED_BY(lock_);
   base::Lock lock_;
 };
@@ -142,7 +153,7 @@ TEST_F(DebugCommandQueueTest, QueueFromTask) {
   // A task that itself queues more tasks.
   base::RunLoop run_loop;
   command_queue_->QueueTaskForV8Thread(base::BindOnce(
-      [](scoped_refptr<DebugCommandQueue> command_queue, base::OnceClosure log1,
+      [](DebugCommandQueue* command_queue, base::OnceClosure log1,
          base::OnceClosure log2, base::OnceClosure log3,
          base::OnceClosure quit_closure) {
         std::move(log1).Run();
@@ -150,7 +161,7 @@ TEST_F(DebugCommandQueueTest, QueueFromTask) {
         command_queue->QueueTaskForV8Thread(std::move(log3));
         command_queue->QueueTaskForV8Thread(std::move(quit_closure));
       },
-      command_queue_, LogString("1"), LogString("2"), LogString("3"),
+      command_queue_.get(), LogString("1"), LogString("2"), LogString("3"),
       run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_THAT(TakeLog(), ElementsAre("1", "2", "3"));
@@ -162,7 +173,7 @@ TEST_F(DebugCommandQueueTest, QueueFromPauseTask) {
   base::RunLoop run_loop;
   command_queue_->QueueTaskForV8Thread(PauseForDebuggerAndRunCommands());
   command_queue_->QueueTaskForV8Thread(base::BindOnce(
-      [](scoped_refptr<DebugCommandQueue> command_queue, base::OnceClosure log1,
+      [](DebugCommandQueue* command_queue, base::OnceClosure log1,
          base::OnceClosure log2, base::OnceClosure log3,
          base::OnceClosure quit_closure) {
         std::move(log1).Run();
@@ -170,7 +181,7 @@ TEST_F(DebugCommandQueueTest, QueueFromPauseTask) {
         command_queue->QueueTaskForV8Thread(std::move(log3));
         command_queue->QueueTaskForV8Thread(std::move(quit_closure));
       },
-      command_queue_, LogString("1"), LogString("2"), LogString("3"),
+      command_queue_.get(), LogString("1"), LogString("2"), LogString("3"),
       run_loop.QuitClosure()));
   run_loop.Run();
 

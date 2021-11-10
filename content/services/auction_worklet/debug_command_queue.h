@@ -7,8 +7,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,14 +17,15 @@ namespace auction_worklet {
 
 // DebugCommandQueue helps coordinate command transfer between Session (lives on
 // V8 thread) and IOSession (lives on mojo thread), as well as blocking
-// execution of V8 thread when paused in debugger. It's jointly owned by Session
-// and IOSession.
-class DebugCommandQueue : public base::RefCountedThreadSafe<DebugCommandQueue> {
+// execution of V8 thread when paused in debugger. It's owned by the
+// AuctionV8Helper
+class DebugCommandQueue {
  public:
-  // This must be created on the v8 thread.
+  // Must be created and destroyed on the v8 thread.
   DebugCommandQueue();
   DebugCommandQueue(const DebugCommandQueue&) = delete;
   DebugCommandQueue& operator=(const DebugCommandQueue&) = delete;
+  ~DebugCommandQueue();
 
   // Blocks the current thread until QuitPauseForDebugger() is called, executing
   // only things added via Post().
@@ -49,9 +49,6 @@ class DebugCommandQueue : public base::RefCountedThreadSafe<DebugCommandQueue> {
   void QueueTaskForV8Thread(base::OnceClosure task);
 
  private:
-  friend class base::RefCountedThreadSafe<DebugCommandQueue>;
-  ~DebugCommandQueue();
-
   void PostRunQueue() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void RunQueue();
   void RunQueueWithLockHeld() EXCLUSIVE_LOCKS_REQUIRED(lock_);
@@ -62,6 +59,9 @@ class DebugCommandQueue : public base::RefCountedThreadSafe<DebugCommandQueue> {
   base::ConditionVariable wake_up_ GUARDED_BY(lock_);
   base::queue<base::OnceClosure> queue_ GUARDED_BY(lock_);
   bool v8_thread_paused_ GUARDED_BY(lock_) = false;
+
+  base::RepeatingClosure run_queue_closure_;
+  base::WeakPtrFactory<DebugCommandQueue> weak_ptr_factory_{this};
 };
 
 }  // namespace auction_worklet

@@ -51,7 +51,7 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
   //
   AuctionV8DevToolsSession(
       AuctionV8Helper* v8_helper,
-      scoped_refptr<DebugCommandQueue> debug_command_queue,
+      DebugCommandQueue* debug_command_queue,
       int context_group_id,
       const std::string& session_id,
       bool client_expects_binary_responses,
@@ -110,7 +110,7 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
       std::vector<uint8_t> message) const;
 
   AuctionV8Helper* const v8_helper_;  // owns agent owns this.
-  scoped_refptr<DebugCommandQueue> debug_command_queue_;
+  DebugCommandQueue* const debug_command_queue_;  // owned by `v8_helper`.
   const int context_group_id_;
   const std::string session_id_;
   const bool client_expects_binary_responses_;

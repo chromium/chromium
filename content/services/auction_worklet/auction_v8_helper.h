@@ -39,6 +39,7 @@ class V8Inspector;
 namespace auction_worklet {
 
 class AuctionV8DevToolsAgent;
+class DebugCommandQueue;
 
 // Helper for Javascript operations. Owns a V8 isolate, and manages operations
 // on it. Must be deleted after all V8 objects created using its isolate. It
@@ -321,6 +322,9 @@ class AuctionV8Helper
 
   // This is keyed by group IDs, and is used to keep track of what's valid.
   std::map<int, base::OnceClosure> resume_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::unique_ptr<DebugCommandQueue> debug_command_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Destruction order between `devtools_agent_` and `v8_inspector_` is

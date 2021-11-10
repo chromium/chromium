@@ -25,6 +25,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/services/auction_worklet/auction_v8_devtools_agent.h"
+#include "content/services/auction_worklet/debug_command_queue.h"
 #include "gin/array_buffer.h"
 #include "gin/converter.h"
 #include "gin/gin_features.h"
@@ -580,7 +581,7 @@ void AuctionV8Helper::ConnectDevToolsAgent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!devtools_agent_) {
     devtools_agent_ = std::make_unique<AuctionV8DevToolsAgent>(
-        this, std::move(mojo_sequence));
+        this, debug_command_queue_.get(), std::move(mojo_sequence));
     v8_inspector_ =
         v8_inspector::V8Inspector::create(isolate(), devtools_agent_.get());
   }
@@ -639,7 +640,7 @@ AuctionV8Helper::ScopedConsoleTarget::~ScopedConsoleTarget() {
 AuctionV8Helper::AuctionV8Helper(
     scoped_refptr<base::SingleThreadTaskRunner> v8_runner)
     : base::RefCountedDeleteOnSequence<AuctionV8Helper>(v8_runner),
-      v8_runner_(std::move(v8_runner)),
+      v8_runner_(v8_runner),
       timer_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -670,6 +671,11 @@ void AuctionV8Helper::CreateIsolate() {
       gin::IsolateHolder::IsolateType::kUtility);
   FullIsolateScope v8_scope(this);
   scratch_context_.Reset(isolate(), CreateContext());
+
+  // This is mostly unneeded unless the debugger agent is in use, but having it
+  // always wil lbe helpful for preventing races if debugger is being created
+  // right as a worklet is being unloaded.
+  debug_command_queue_ = std::make_unique<DebugCommandQueue>();
 }
 
 // static
