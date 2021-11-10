@@ -134,6 +134,18 @@ public class BrowserAccessibilityState {
     }
 
     @VisibleForTesting
+    public static void setFeedbackTypeMaskForTesting(int value) {
+        if (!sInitialized) updateAccessibilityServices();
+
+        sFeedbackTypeMask = value;
+
+        // Inform all listeners of this change.
+        for (Listener listener : sListeners) {
+            listener.onBrowserAccessibilityStateChanged(sScreenReader);
+        }
+    }
+
+    @VisibleForTesting
     public static void setEventTypeMaskForTesting() {
         if (!sInitialized) updateAccessibilityServices();
 
