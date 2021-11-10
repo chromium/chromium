@@ -4,6 +4,8 @@
 
 #include "chrome/browser/lacros/identity_manager_lacros.h"
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "chromeos/lacros/lacros_service.h"
 
 namespace {
@@ -42,7 +44,9 @@ void IdentityManagerLacros::GetAccountFullName(
   }
 
   service->GetRemote<crosapi::mojom::IdentityManager>()->GetAccountFullName(
-      gaia_id, std::move(callback));
+      gaia_id,
+      base::BindOnce(&IdentityManagerLacros::RunFullNameCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void IdentityManagerLacros::GetAccountImage(
@@ -56,7 +60,9 @@ void IdentityManagerLacros::GetAccountImage(
   }
 
   service->GetRemote<crosapi::mojom::IdentityManager>()->GetAccountImage(
-      gaia_id, std::move(callback));
+      gaia_id,
+      base::BindOnce(&IdentityManagerLacros::RunImageCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void IdentityManagerLacros::GetAccountEmail(
@@ -70,5 +76,25 @@ void IdentityManagerLacros::GetAccountEmail(
   }
 
   service->GetRemote<crosapi::mojom::IdentityManager>()->GetAccountEmail(
-      gaia_id, std::move(callback));
+      gaia_id,
+      base::BindOnce(&IdentityManagerLacros::RunEmailCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void IdentityManagerLacros::RunFullNameCallback(
+    crosapi::mojom::IdentityManager::GetAccountFullNameCallback callback,
+    const std::string& name) {
+  std::move(callback).Run(name);
+}
+
+void IdentityManagerLacros::RunImageCallback(
+    crosapi::mojom::IdentityManager::GetAccountImageCallback callback,
+    const gfx::ImageSkia& image) {
+  std::move(callback).Run(image);
+}
+
+void IdentityManagerLacros::RunEmailCallback(
+    crosapi::mojom::IdentityManager::GetAccountEmailCallback callback,
+    const std::string& email) {
+  std::move(callback).Run(email);
 }
