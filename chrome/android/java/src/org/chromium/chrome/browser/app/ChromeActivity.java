@@ -205,6 +205,7 @@ import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -2354,9 +2355,20 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 TabLaunchType.FROM_LINK, getActivityTab());
     }
 
+    /** Opens the chrome://management page on a new tab. */
+    private void openChromeManagementPage() {
+        Tab currentTab = getActivityTab();
+        TabCreator tabCreator = getTabCreator(currentTab != null && currentTab.isIncognito());
+        if (tabCreator == null) return;
+
+        tabCreator.createNewTab(
+                new LoadUrlParams(UrlConstants.MANAGEMENT_URL, PageTransition.AUTO_TOPLEVEL),
+                TabLaunchType.FROM_CHROME_UI, getActivityTab());
+    }
+
     /**
      * @return The {@link MenuOrKeyboardActionController} for registering menu or keyboard action
-     *         handler for this activity.
+     *     handler for this activity.
      */
     public MenuOrKeyboardActionController getMenuOrKeyboardActionController() {
         return this;
@@ -2375,8 +2387,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     /**
      * Handles menu item selection and keyboard shortcuts.
      *
-     * @param id The ID of the selected menu item (defined in main_menu.xml) or
-     *           keyboard shortcut (defined in values.xml).
+     * @param id The ID of the selected menu item (defined in main_menu.xml) or keyboard shortcut
+     *     (defined in values.xml).
      * @param fromMenu Whether this was triggered from the menu.
      * @return Whether the action was handled.
      */
@@ -2583,6 +2595,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (id == R.id.reader_mode_prefs_id) {
             DomDistillerUIUtils.openSettings(currentTab.getWebContents());
+            return true;
+        }
+
+        if (id == R.id.managed_by_menu_id) {
+            assert ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_MANAGEMENT_PAGE);
+
+            openChromeManagementPage();
             return true;
         }
 

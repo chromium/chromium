@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * A custom binder used to bind the managed by menu item.
- */
+/** A custom binder used to bind the managed by menu item. */
 class ManagedByMenuItemViewBinder implements CustomViewBinder {
     private static final int MANAGED_BY_ITEM_VIEW_TYPE = 0;
 
@@ -48,7 +46,13 @@ class ManagedByMenuItemViewBinder implements CustomViewBinder {
             assert id == R.id.managed_by_menu_id;
 
             view.setId(id);
-            view.setFocusable(false);
+        } else if (key == AppMenuItemProperties.ENABLED) {
+            boolean enabled = model.get(AppMenuItemProperties.ENABLED);
+            view.setEnabled(enabled);
+            view.setFocusable(enabled);
+        } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
+            view.setOnClickListener(
+                    v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
         }
     }
 

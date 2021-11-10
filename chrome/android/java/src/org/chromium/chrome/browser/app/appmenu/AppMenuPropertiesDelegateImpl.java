@@ -503,12 +503,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         // Only display the Enter VR button if VR Shell Dev environment is enabled.
         menu.findItem(R.id.enter_vr_id).setVisible(isCurrentTabNotNull && shouldShowEnterVr());
 
-        MenuItem managedByMenuItem = menu.findItem(R.id.managed_by_menu_id);
-        managedByMenuItem.setVisible(
-                isCurrentTabNotNull && shouldShowManagedByMenuItem(currentTab));
-        // TODO(https://crbug.com/1092175): Enable "managed by" menu item after chrome://management
-        // page is added.
-        managedByMenuItem.setEnabled(false);
+        updateManagedByMenuItem(menu, currentTab);
     }
 
     /**
@@ -1139,6 +1134,15 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         boolean isEnabled = WebContentsDarkModeController.isEnabledForUrl(
                 mTabModelSelector.getCurrentModel().getProfile(), currentTab.getUrl());
         autoDarkMenuCheck.setChecked(isEnabled);
+    }
+
+    protected void updateManagedByMenuItem(Menu menu, @Nullable Tab currentTab) {
+        MenuItem managedByMenuItem = menu.findItem(R.id.managed_by_menu_id);
+        boolean managedByMenuItemVisible =
+                currentTab != null && shouldShowManagedByMenuItem(currentTab);
+        managedByMenuItem.setVisible(managedByMenuItemVisible);
+        managedByMenuItem.setEnabled(managedByMenuItemVisible
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_MANAGEMENT_PAGE));
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
