@@ -20,7 +20,7 @@ addUnloadCallback(() => {
 /**
  * Wraps a mojo response promise so that we can handle the situation when the
  * call is dropped by window unload gracefully.
- * @param {!Promise} call
+ * @param {!Promise|undefined} call
  * @return {!Promise} Returns the mojo response which will be resolved when
  *     getting response or will never be resolved if the window unload is about
  *     to happen.
@@ -36,7 +36,15 @@ async function wrapMojoResponse(call) {
 const mojoResponseHandler = {
   get: function(target, property) {
     if (target[property] instanceof Function) {
-      return (...args) => wrapMojoResponse(target[property](...args));
+      return (...args) => {
+        if (windowUnload.isSignaled()) {
+          // Don't try to call the mojo function if window is already unloaded,
+          // since the connection would have already been closed, and there
+          // would be uncaught exception if we try to call the mojo function.
+          return new Promise(() => {});
+        }
+        return wrapMojoResponse(target[property](...args));
+      };
     }
     return target[property];
   },
