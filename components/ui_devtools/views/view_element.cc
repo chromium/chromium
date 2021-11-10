@@ -13,9 +13,11 @@
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/ui_devtools/views/devtools_event_util.h"
 #include "components/ui_devtools/views/element_utility.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -166,8 +168,11 @@ void ViewElement::PaintRect() const {
   view()->SchedulePaint();
 }
 
-int ViewElement::GetBackingElementID() {
-  return view_->GetID();
+bool ViewElement::FindMatchByElementID(
+    const ui::ElementIdentifier& identifier) {
+  auto result = views::ElementTrackerViews::GetInstance()
+                    ->GetAllMatchingViewsInAnyContext(identifier);
+  return std::find(result.begin(), result.end(), view_) != result.end();
 }
 
 bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
