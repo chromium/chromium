@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
@@ -124,9 +125,13 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   std::unique_ptr<VideoDecoder> vd_;
   // Callback for returning the result after this instance is asked to request
   // new frames. The VdaVideoFramePool is blocked until this callback is called.
-  NotifyLayoutChangedCb notify_layout_changed_cb_;
+  NotifyLayoutChangedCb notify_layout_changed_cb_
+      GUARDED_BY_CONTEXT(client_sequence_checker_);
   // Callback for passing the available frames to the pool.
-  ImportFrameCb import_frame_cb_;
+  ImportFrameCb import_frame_cb_ GUARDED_BY_CONTEXT(client_sequence_checker_);
+
+  // Set to true when |vd_| is resetting.
+  bool is_resetting_ GUARDED_BY_CONTEXT(client_sequence_checker_) = false;
 
   // The size requested from VdaVideoFramePool.
   gfx::Size pending_coded_size_;
