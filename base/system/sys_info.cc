@@ -23,14 +23,21 @@
 
 namespace base {
 namespace {
-static const int kLowMemoryDeviceThresholdMB = 512;
+// Updated Desktop default threshold to match the Android 2021 definition.
+constexpr int64_t kLowMemoryDeviceThresholdMB = 2048;
 }  // namespace
 
 // static
 int64_t SysInfo::AmountOfPhysicalMemory() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableLowEndDeviceMode)) {
-    return kLowMemoryDeviceThresholdMB * 1024 * 1024;
+    // Keep using 512MB as the simulated RAM amount for when users or tests have
+    // manually enabled low-end device mode. Note this value is different from
+    // the threshold used for low end devices.
+    constexpr int64_t kSimulatedMemoryForEnableLowEndDeviceMode =
+        512 * 1024 * 1024;
+    return std::min(kSimulatedMemoryForEnableLowEndDeviceMode,
+                    AmountOfPhysicalMemoryImpl());
   }
 
   return AmountOfPhysicalMemoryImpl();
@@ -42,9 +49,9 @@ int64_t SysInfo::AmountOfAvailablePhysicalMemory() {
           switches::kEnableLowEndDeviceMode)) {
     // Estimate the available memory by subtracting our memory used estimate
     // from the fake |kLowMemoryDeviceThresholdMB| limit.
-    size_t memory_used =
+    int64_t memory_used =
         AmountOfPhysicalMemoryImpl() - AmountOfAvailablePhysicalMemoryImpl();
-    size_t memory_limit = kLowMemoryDeviceThresholdMB * 1024 * 1024;
+    int64_t memory_limit = kLowMemoryDeviceThresholdMB * 1024 * 1024;
     // std::min ensures no underflow, as |memory_used| can be > |memory_limit|.
     return memory_limit - std::min(memory_used, memory_limit);
   }
@@ -62,7 +69,8 @@ bool SysInfo::IsLowEndDevice() {
 }
 
 #if !defined(OS_ANDROID)
-
+// The Android equivalent of this lives in `detectLowEndDevice()` at:
+// base/android/java/src/org/chromium/base/SysUtils.java
 bool DetectLowEndDevice() {
   CommandLine* command_line = CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kEnableLowEndDeviceMode))
