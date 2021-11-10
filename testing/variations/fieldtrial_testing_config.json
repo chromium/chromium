@@ -9150,25 +9150,6 @@
             ]
         }
     ],
-    "WebRTC-Vp9DependencyDescriptor": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "WebRTC-Vp9ExternalRefCtrl": [
         {
             "platforms": [
