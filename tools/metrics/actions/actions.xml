@@ -516,21 +516,24 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Accel_ARC_Zoom_Ui_In">
-  <owner>sarakato@chromium.org</owner>
+  <owner>yhanada@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
   <description>
     Record how often accelerator to increase density is used in ARC++.
   </description>
 </action>
 
 <action name="Accel_ARC_Zoom_Ui_Out">
-  <owner>sarakato@chromium.org</owner>
+  <owner>yhanada@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
   <description>
     Record how often accelerator to decrease density is used in ARC++.
   </description>
 </action>
 
 <action name="Accel_ARC_Zoom_Ui_Reset">
-  <owner>sarakato@chromium.org</owner>
+  <owner>yhanada@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
   <description>
     Record how often accelerator to increase density is used in ARC++.
   </description>
