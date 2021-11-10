@@ -36,6 +36,7 @@ extern const base::Feature kTouchModeMouse;
 extern const base::Feature kUsbDeviceDefaultAttachToArcVm;
 extern const base::Feature kUsbStorageUIFeature;
 extern const base::Feature kUseDalvikMemoryProfile;
+extern const base::Feature kUseDefaultBlockSize;
 extern const base::Feature kVideoDecoder;
 extern const base::Feature kVmMemorySize;
 extern const base::FeatureParam<int> kVmMemorySizeShiftMiB;

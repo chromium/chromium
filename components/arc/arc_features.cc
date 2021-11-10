@@ -135,6 +135,11 @@ const base::Feature kUsbStorageUIFeature{"ArcUsbStorageUI",
 const base::Feature kUseDalvikMemoryProfile{"ArcUseDalvikMemoryProfile",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the system/vendor images are mounted without specifying a
+// block size.
+const base::Feature kUseDefaultBlockSize{"ArcVmUseDefaultBlockSize",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether ARC uses VideoDecoder-backed video decoding.
 // When enabled, GpuArcVideoDecodeAccelerator will use VdVideoDecodeAccelerator
 // to delegate decoding tasks to VideoDecoder implementations, instead of using
