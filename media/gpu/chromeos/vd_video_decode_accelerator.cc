@@ -325,6 +325,9 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   DVLOGF(4) << "picture_buffer_id: " << picture_buffer_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
+  if (!import_frame_cb_)
+    return;
+
   // The first imported picture after requesting buffers.
   // |notify_layout_changed_cb_| must be called in this clause because it blocks
   // VdaVideoFramePool.
@@ -332,6 +335,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
     auto fourcc = Fourcc::FromVideoPixelFormat(pixel_format);
     if (!fourcc) {
       VLOGF(1) << "Failed to convert to Fourcc.";
+      import_frame_cb_.Reset();
       std::move(notify_layout_changed_cb_)
           .Run(CroStatus::Codes::kFailedToChangeResolution);
       return;
@@ -351,6 +355,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                << ", coded_size: " << coded_size_.ToString()
                << ", planes: " << VectorToString(planes)
                << ", modifier: " << std::hex << modifier;
+      import_frame_cb_.Reset();
       std::move(notify_layout_changed_cb_)
           .Run(CroStatus::Codes::kFailedToChangeResolution);
       return;
@@ -365,6 +370,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
                << ", planes: " << VectorToString(planes)
                << ", modifier: " << std::hex << modifier;
       layout_ = absl::nullopt;
+      import_frame_cb_.Reset();
       std::move(notify_layout_changed_cb_)
           .Run(CroStatus::Codes::kFailedToChangeResolution);
       return;
@@ -406,7 +412,6 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
              << " still referenced, dropping it.";
   }
 
-  DCHECK(import_frame_cb_);
   import_frame_cb_.Run(std::move(wrapped_frame));
 }
 
