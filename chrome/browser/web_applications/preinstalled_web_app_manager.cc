@@ -31,6 +31,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/user_type_filter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
@@ -51,6 +53,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -336,6 +340,9 @@ const char* PreinstalledWebAppManager::kHistogramInstallResult =
     "Webapp.InstallResult.Default";
 const char* PreinstalledWebAppManager::kHistogramUninstallAndReplaceCount =
     "WebApp.Preinstalled.UninstallAndReplaceCount";
+const char*
+    PreinstalledWebAppManager::kHistogramAppToReplaceStillInstalledCount =
+        "WebApp.Preinstalled.AppToReplaceStillInstalledCount";
 
 void PreinstalledWebAppManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -595,27 +602,52 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       prefs::kWebAppsLastPreinstallSynchronizeVersion,
       version_info::GetMajorVersionNumber());
 
+  DCHECK(
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+
   size_t uninstall_and_replace_count = 0;
+  size_t app_to_replace_still_installed_count = 0;
   for (const auto& url_and_result : install_results) {
     UMA_HISTOGRAM_ENUMERATION(kHistogramInstallResult,
                               url_and_result.second.code);
     if (url_and_result.second.did_uninstall_and_replace) {
       ++uninstall_and_replace_count;
     }
-    // We mark the app as migrated to a web app as long as the installation
-    // was successful, even if the previous app was not installed. This ensures
-    // we properly re-install apps if the migration feature is rolled back.
-    if (IsSuccess(url_and_result.second.code)) {
-      auto iter = desired_uninstalls.find(url_and_result.first);
-      if (iter != desired_uninstalls.end()) {
-        for (const auto& uninstalled_id : iter->second) {
-          MarkAppAsMigratedToWebApp(profile_, uninstalled_id, true);
-        }
+
+    if (!IsSuccess(url_and_result.second.code))
+      continue;
+
+    auto iter = desired_uninstalls.find(url_and_result.first);
+    if (iter == desired_uninstalls.end())
+      continue;
+
+    for (const auto& replace_id : iter->second) {
+      // We mark the app as migrated to a web app as long as the
+      // installation was successful, even if the previous app was not
+      // installed. This ensures we properly re-install apps if the
+      // migration feature is rolled back.
+      MarkAppAsMigratedToWebApp(profile_, replace_id, /*was_migrated=*/true);
+
+      // Track whether the app to replace is still present. This is
+      // possibly due to getting reinstalled by the user or by Chrome app
+      // sync. See https://crbug.com/1266234 for context.
+      if (proxy && url_and_result.second.code ==
+                       InstallResultCode::kSuccessAlreadyInstalled) {
+        proxy->AppRegistryCache().ForOneApp(
+            replace_id, [&app_to_replace_still_installed_count](
+                            const apps::AppUpdate& app) {
+              if (apps_util::IsInstalled(app.Readiness()))
+                ++app_to_replace_still_installed_count;
+            });
       }
     }
   }
   UMA_HISTOGRAM_COUNTS_100(kHistogramUninstallAndReplaceCount,
                            uninstall_and_replace_count);
+
+  UMA_HISTOGRAM_COUNTS_100(kHistogramAppToReplaceStillInstalledCount,
+                           app_to_replace_still_installed_count);
 
   SetMigrationRun(profile_, kMigrateDefaultChromeAppToWebAppsGSuite.name,
                   IsPreinstalledAppInstallFeatureEnabled(

@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -186,6 +187,7 @@ class PreinstalledWebAppMigrationBrowserTest
           if (expect_install) {
             code = install_results.at(GetWebAppUrl()).code;
             EXPECT_TRUE(*code == InstallResultCode::kSuccessNewInstall ||
+                        *code == InstallResultCode::kSuccessAlreadyInstalled ||
                         *code == InstallResultCode::kSuccessOfflineOnlyInstall);
           } else {
             EXPECT_EQ(install_results.find(GetWebAppUrl()),
@@ -563,6 +565,39 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(https://crbug.com/1266234): Make this work under Lacros.
+// Check histogram counts when an app to replace gets installed after the
+// preinstalled web app is installed.
+IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
+                       AppToReplaceStillInstalled) {
+  base::AutoReset<bool> testing_scope =
+      SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
+  ASSERT_TRUE(
+      IsPreinstalledAppInstallFeatureEnabled(kMigrationFlag, *profile()));
+
+  // Preinstall web app.
+  {
+    base::HistogramTester histograms;
+    SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
+    histograms.ExpectUniqueSample(
+        PreinstalledWebAppManager::kHistogramAppToReplaceStillInstalledCount, 0,
+        1);
+  }
+
+  // Manually install Extension app to be replaced.
+  LoadExtension(test_data_dir_.AppendASCII("hosted_app.crx"),
+                {.ignore_manifest_warnings = true});
+
+  // Re-sync preinstalled web apps.
+  {
+    base::HistogramTester histograms;
+    SyncExternalWebApps(/*expect_install=*/true, /*expect_uninstall=*/false);
+    histograms.ExpectUniqueSample(
+        PreinstalledWebAppManager::kHistogramAppToReplaceStillInstalledCount, 1,
+        1);
+  }
+}
+
 // Tests the migration from an extension-app to a preinstalled web app provided
 // by the preinstalled apps (rather than an external config).
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
