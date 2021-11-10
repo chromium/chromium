@@ -171,6 +171,7 @@ class StreamTestingMixin(object):
         self.assertTrue(stream.getvalue())
 
 
+@unittest.removeHandler
 class RunTest(unittest.TestCase, StreamTestingMixin):
     def setUp(self):
         # A real PlatformInfo object is used here instead of a
