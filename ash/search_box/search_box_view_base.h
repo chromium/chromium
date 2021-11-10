@@ -125,8 +125,8 @@ class SearchBoxViewBase : public views::View,
   // Nofifies the active status change.
   void NotifyActiveChanged();
 
-  // Updates the visibility of close button.
-  void UpdateButtonsVisisbility();
+  // Updates the visibility of the close and assistant buttons.
+  void UpdateButtonsVisibility();
 
   // Overridden from views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,

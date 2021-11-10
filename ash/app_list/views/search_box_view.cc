@@ -849,7 +849,7 @@ void SearchBoxView::UpdateSearchBoxTextForSelectedResult(
 void SearchBoxView::Update() {
   search_box()->SetText(
       AppListModelProvider::Get()->search_model()->search_box()->text());
-  UpdateButtonsVisisbility();
+  UpdateButtonsVisibility();
   NotifyQueryChanged();
 }
 
