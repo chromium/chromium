@@ -251,7 +251,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
   virtual display::ScreenInfos GetScreenInfos() const = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
-  virtual float GetDeviceScaleFactor() = 0;
+  virtual float GetDeviceScaleFactor() const = 0;
 
 #if defined(OS_MAC)
   // Set the view's active state (i.e., tint state of controls).

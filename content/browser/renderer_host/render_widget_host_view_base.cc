@@ -602,7 +602,7 @@ display::ScreenInfos RenderWidgetHostViewBase::GetScreenInfos() const {
   return screen_infos_;
 }
 
-float RenderWidgetHostViewBase::GetDeviceScaleFactor() {
+float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
   return screen_infos_.current().device_scale_factor;
 }
 
