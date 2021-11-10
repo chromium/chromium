@@ -70,6 +70,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="1354356357730355833">کاپی کریں</translation>
 <translation id="135978014023467274">‏آپ کو ChromeVox 63 پر اپ ڈیٹ کر دیا گیا ہے!</translation>
 <translation id="1360699455582016846">‏روٹنگ کلید‎ <ph name="ROUTING_KEY_NUMBER" /> کے تحت آئٹم پر کلک کریں</translation>
+<translation id="1376703628032300005">اگلے حرف پر لے جائیں</translation>
 <translation id="1377925789329510816">‏یہ آخری سرخی ہے۔ اس صفحہ پر پہلی سرخی پر جانے کیلئے Search+H دبائیں یا دوسری سرخی پر جانے کیلئے Search+Shift+H دبائیں۔</translation>
 <translation id="138218114945450791">ہلکا نیلا</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
@@ -214,6 +215,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="2450814015951372393">چیک باکس</translation>
 <translation id="2461822463642141190">حالیہ</translation>
 <translation id="2462626033734746142">ریڈیو بٹن گروپ</translation>
+<translation id="2467741090055146971">غیر منتخب کریں</translation>
 <translation id="2471138580042810658">سرخی 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{ستارہ}other{# ستارے}}</translation>
 <translation id="2490721194269245365">گلابی بھورا</translation>
@@ -566,6 +568,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="4854380505292502090">کوئی پچھلا میڈیا ویجیٹ نہیں ہے</translation>
 <translation id="4855927945655956315">‏ضروری کلیدیں: Control</translation>
 <translation id="4862744964787595316">بولڈ نہیں ہے</translation>
+<translation id="4865995900839719272">پچھلی لائن پر لے جائیں</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">‏TTS لاگنگ فعال کریں</translation>
 <translation id="4886524826165775965">‎<ph name="INDEX" />/<ph name="TOTAL" />‎</translation>
@@ -624,6 +627,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="5304943142864553931"><ph name="TITLE" />، ٹیب</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5310788376443009632">ہٹا دیا گیا:</translation>
+<translation id="5316825363044614340">اگلی لائن پر لے جائیں</translation>
 <translation id="5320727453979144100">اسٹیکی وضع فعال کر دی گئی</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{کوما}other{# کومے}}</translation>
 <translation id="532485153932049746">ٹیکسٹ کی فارمیٹنگ
@@ -903,6 +907,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">کوئی پچھلی فارم فیلڈ نہیں ہے</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">امدادی صفحہ</translation>
 <translation id="7317017974771324508">جزوی طور پر منتخب کردہ</translation>
 <translation id="7322442671176251901">ٹچ کے ذریعے دریافت کریں</translation>
 <translation id="7344012264516629579">‏اضافی جمپ کمانڈز میں لنک، بٹن، اور چیک باکس کے ذریعے جمپ کرنا جیسی چند چیزیں شامل ہیں۔ جمپ کمانڈز کی مکمل فہرست ChromeVox مینوز میں حاصل کی جا سکتی ہے جسے Search + Period کو دبانے سے کھولا جا سکتا ہے۔</translation>
@@ -1130,6 +1135,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="9014206344398081366">‏ChromeVox ٹیوٹوریل</translation>
 <translation id="9040132695316389094">سرخی 1</translation>
 <translation id="9061884144798498064">8 ڈاٹ والی بریل ٹیبل منتخب کریں:</translation>
+<translation id="9063946545000394379">پچھلے حرف پر لے جائیں</translation>
 <translation id="9065283790526219006">+پاپ اپ</translation>
 <translation id="9065912140022662363">کوئی اگلا ریڈیو بٹن نہیں ہے</translation>
 <translation id="9067522039955793016">صفحہ کا انقطاع</translation>

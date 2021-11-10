@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}}</translation>
 <translation id="2434158240863470628">Allalaadimine jõudis lõpule: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Alati taotletakse arvutisaiti</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
 <translation id="2490684707762498678">Haldab <ph name="APP_NAME" /></translation>
@@ -95,6 +96,7 @@
 <translation id="3328801116991980348">Saiditeave</translation>
 <translation id="3333961966071413176">Kõik kontaktid</translation>
 <translation id="3386292677130313581">Küsi enne saitidele minu asukoha avaldamist (soovitatav)</translation>
+<translation id="3517437118288792304">Konkreetse saidi puhul taotletakse alati arvutivaadet.</translation>
 <translation id="3538390592868664640">Saitide jaoks blokeeritakse teid ümbritsevast 3D-kaardi loomine või kaamera asendi jälgimine</translation>
 <translation id="3551268116566418498">Kas lahkuda inkognito režiimist?</translation>
 <translation id="3586500876634962664">Kaamera ja mikrofoni kasutamine</translation>
@@ -124,6 +126,7 @@
 <translation id="429312253194641664">Sait esitab meediasisu</translation>
 <translation id="42981349822642051">Laienda</translation>
 <translation id="4336434711095810371">Kustuta kõik andmed</translation>
+<translation id="4353125860368453721">Konkreetse saidi puhul taotletakse alati mobiilivaadet.</translation>
 <translation id="4402755511846832236">Keelake saitidel selle tuvastamine, millal seda seadet aktiivselt kasutate</translation>
 <translation id="4434045419905280838">Hüpikaknad ja ümbersuunamised</translation>
 <translation id="445467742685312942">Saitidel on lubatud esitada kaitstud sisu</translation>
@@ -300,6 +303,7 @@
 <translation id="8447861592752582886">Seadme loa tühistamine</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 küpsisefail on kasutuses}other{# küpsisefaili on kasutuses}}</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
+<translation id="848952951823693243">Alati taotletakse mobiilisaiti</translation>
 <translation id="851751545965956758">Blokeeri saitidel seadmetega ühenduse loomine</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>

@@ -326,6 +326,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="334252345105450327">Neem 'n skermkiekie</translation>
 <translation id="3351879221545518001">Jy saai tans die skerm uit.</translation>
 <translation id="3364721542077212959">Stilusnutsgoed</translation>
+<translation id="3365977133351922112">Jou foon is te ver weg. Bring jou foon nader.</translation>
 <translation id="3368922792935385530">Gekoppel</translation>
 <translation id="3371140690572404006">USB C-toestel (voorste poort aan regterkant)</translation>
 <translation id="3375634426936648815">Gekoppel</translation>
@@ -603,6 +604,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5176318573511391780">Neem gedeeltelike skerm op</translation>
 <translation id="5199367439331364630">Voer wagwoord in om by jou Chromebook aan te meld</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ander kennisgewing}other{# ander kennisgewings}}</translation>
 <translation id="5207949376430453814">Lig tekskaret uit</translation>
 <translation id="5208059991603368177">Aan</translation>
@@ -885,6 +887,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7398254312354928459">Het netwerkverbinding gewissel</translation>
 <translation id="7405710164030118432">Voer jou Family Link-ouertoegangskode in om die toestel te ontsluit</translation>
 <translation id="7406608787870898861">Stel jou mobiele netwerk klaar op</translation>
+<translation id="740790383907119240">Programkortpaaie</translation>
 <translation id="741244894080940828">omskakeling</translation>
 <translation id="7413851974711031813">Druk Escape om toe te maak</translation>
 <translation id="742594950370306541">Kamera word gebruik.</translation>
@@ -987,6 +990,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8061464966246066292">Hoë kontras</translation>
 <translation id="8098591350844501178">Hou op om skerm na <ph name="RECEIVER_NAME" /> toe uit te saai</translation>
 <translation id="8113423164597455979">Aan; alle prog.</translation>
+<translation id="8120151603115102514">Jou foon het nie 'n sluitskerm nie. Voer wagwoord in om jou Chromebook te ontsluit.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8132487352815776550">Stop onderskrifte</translation>
@@ -1035,6 +1039,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> het <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Druk Alt+Search of Shift om te kanselleer.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> werk nie met <ph name="SPECIFIED_RESOLUTION" /> nie. Die resolusie is verander na <ph name="FALLBACK_RESOLUTION" />. Klik Bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
+<translation id="85123341071060231">Jou Chromebook se Bluetooth is af. Voer wagwoord in om jou Chromebook te ontsluit.</translation>
 <translation id="8513108775083588393">Outodraai</translation>
 <translation id="851458219935658693">Wys vensters van die huidige lessenaar af; radioknoppie is gekies</translation>
 <translation id="8517041960877371778">Jou <ph name="DEVICE_TYPE" /> mag nie laai terwyl dit aangeskakel is nie.</translation>

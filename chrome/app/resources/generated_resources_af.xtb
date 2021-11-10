@@ -2401,6 +2401,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3449393517661170867">Nuwe oortjievenster</translation>
 <translation id="3449839693241009168">Druk <ph name="SEARCH_KEY" /> om bevele na <ph name="EXTENSION_NAME" /> te stuur</translation>
 <translation id="3450157232394774192">Rustoestand se besettingpersentasie</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> vereis dat jy nou aan wi-fi koppel en 'n opdatering aflaai.</translation>
 <translation id="3451753556629288767">Word toegelaat om sekere tipes lêers oop te maak</translation>
 <translation id="3452999110156026232">Ouertoegang</translation>
 <translation id="3453612417627951340">Benodig magtiging</translation>
@@ -4264,6 +4265,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5472627187093107397">Stoor wagwoorde vir hierdie werf</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN moet minstens 1 karakter wees}other{PIN moet minstens # karakters wees}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> vereis dat jy nou aan wi-fi koppel en 'n opdatering aflaai. Of laai oor 'n beperkte verbinding af (heffings kan geld).</translation>
 <translation id="5481273127572794904">Mag nie outomaties veelvuldige lêers aflaai nie</translation>
 <translation id="5481941284378890518">Voeg nabygeleë drukkers by</translation>
 <translation id="5483785310822538350">Herroep lêer- en toesteltoegang</translation>
@@ -4687,6 +4689,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="592880897588170157">Laai PDF-lêers af, pleks daarvan om hulle in Chrome oop te maak</translation>
 <translation id="592919310198008711">Wanneer ek die uitbreiding klik</translation>
 <translation id="5932124097031739492">Linux is suksesvol opgegradeer.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> vereis dat jy onmiddellik jou <ph name="DEVICE_TYPE" /> opdateer.</translation>
 <translation id="5932224571077948991">Werf wys indringerige of misleidende advertensies</translation>
 <translation id="59324397759951282">USB-toestel vanaf <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Jy het nie genoeg lisensies beskikbaar om hierdie Google Vergader-hardewaretoestel in te skryf nie. Kontak verkope om meer te koop. Kontak die steundiens as jy glo dis 'n fout dat jy hierdie boodskap sien.</translation>
