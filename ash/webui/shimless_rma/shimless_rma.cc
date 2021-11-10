@@ -65,6 +65,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"componentScreen", IDS_SHIMLESS_RMA_COMPONENT_SCREEN},
       {"componentKeyboard", IDS_SHIMLESS_RMA_COMPONENT_KEYBOARD},
       {"componentPowerButton", IDS_SHIMLESS_RMA_COMPONENT_POWER_BUTTON},
+      // Splash screen
+      {"shimlessSplashMessage", IDS_SHIMLESS_RMA_SPLASH_MESSAGE},
       // Landing page
       {"welcomeTitleText", IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE},
       {"beginRmaWarningText", IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING},

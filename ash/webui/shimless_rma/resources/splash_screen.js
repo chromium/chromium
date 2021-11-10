@@ -8,14 +8,24 @@ import './base_page.js';
 import './icons.js';
 import './shimless_rma_shared_css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
  * 'splash-screen' is displayed while waiting for the first state to be fetched
  * by getCurrentState.
  */
-export class SplashScreen extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const SplashScreenBase = mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class SplashScreen extends SplashScreenBase {
   static get is() {
     return 'splash-screen';
   }
