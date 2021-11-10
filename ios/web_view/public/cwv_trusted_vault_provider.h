@@ -30,8 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 // should be a list of opaque key data whose format is already privately
 // established internally. If successful, NSArray will be non-nil and NSError
 // will be nil. Otherwise, NSArray will be nil and NSError will be non-nil.
-// The provider should also notify the observers by calling
-// -[CWVTrustedVaultObserver trustedVaultKeysDidChange].
 - (void)fetchKeysForIdentity:(CWVIdentity*)identity
                   completion:(void (^)(NSArray<NSData*>* _Nullable,
                                        NSError* _Nullable))completion;
@@ -50,8 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 // operation is successful, BOOL will indicate whether or not recoverability is
 // degraded and the NSError will be nil. If the operation fails, the BOOL will
 // be set to NO and the NSError will be non-nil to provide additional details.
-// The provider should also notify the observers by calling
-// -[CWVTrustedVaultObserver trustedVaultRecoverabilityDidChange].
 - (void)isRecoverabilityDegradedForIdentity:(CWVIdentity*)identity
                                  completion:(void (^)(BOOL, NSError* _Nullable))
                                                 completion;
