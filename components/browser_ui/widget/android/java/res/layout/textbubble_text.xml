@@ -10,13 +10,13 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="16dp"
     android:gravity="center" >
 
      <org.chromium.ui.widget.TextViewWithTightWrap
           android:id="@+id/message"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
+          android:padding="16dp"
           android:layout_weight="1"
           android:textAppearance="@style/TextAppearance.TextMediumThick.Primary.Baseline.Inverse" />
 
