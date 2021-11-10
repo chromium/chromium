@@ -4,9 +4,13 @@
 
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
+import './strings.m.js';
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FirmwareUpdate, InstallationProgress, UpdateControllerInterface} from './firmware_update_types.js';
 import {getUpdateController} from './mojo_interface_provider.js';
 
@@ -22,7 +26,18 @@ export const DialogState = {
  * @fileoverview
  * 'firmware-update-dialog' displays information related to a firmware update.
  */
-export class FirmwareUpdateDialogElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const FirmwareUpdateDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class FirmwareUpdateDialogElement extends
+    FirmwareUpdateDialogElementBase {
   static get is() {
     return 'firmware-update-dialog';
   }

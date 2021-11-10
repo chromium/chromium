@@ -6,15 +6,27 @@ import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
 import './firmware_update_dialog.js';
 import './peripheral_updates_list.js';
+import './strings.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview
  * 'firmware-update-app' is the main landing page for the firmware
  * update app.
  */
-export class FirmwareUpdateAppElement extends PolymerElement {
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const FirmwareUpdateAppElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class FirmwareUpdateAppElement extends FirmwareUpdateAppElementBase {
   static get is() {
     return 'firmware-update-app';
   }

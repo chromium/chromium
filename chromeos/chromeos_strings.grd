@@ -2209,6 +2209,47 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_TITLE" translateable="false" desc="The title for the page to manually disable write-protect on the device.">
         Manually disable write-protect
       </message>
+
+      <!-- Firmware Update -->
+      <message translateable="false" name="IDS_FIRMWARE_TITLE_TEXT" desc="The title of the Firmware update app.">
+        Firmware updates
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_CRITICAL_UPDATE_TEXT" desc="The text shown when an update is deemed critcal.">
+        Critical update
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_PREPARE_DEVICE_TEXT" desc="Title of the dialog that explains how to prepare the device to be updated.">
+        Prepare your device
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_NEXT_BUTTON_TEXT" desc="Label for button that transitions the user to the firmware update dialog.">
+        Next
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_CANCEL_BUTTON_TEXT" desc="Label for the button that cancels the dialog.">
+        Cancel
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_DONE_BUTTON_TEXT" desc="Label for button shown when the firmware update is completed.">
+        Done
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_UPDATE_BUTTON_TEXT" desc="Label for button to start the firmware update.">
+        Update
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_UPDATING_TEXT" desc="Label for showing that a device is being updated.">
+        Updating <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph>
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_DEVICE_UP_TO_DATE_TEXT" desc="Label for when a device is up to date.">
+        Your <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> is up to date
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_HAS_BEEN_UPDATED_TEXT" desc="Label for displaying which version the device has been updated to.">
+        Firmware <ph name="DEVICE_NAME">$1<ex>Logitech keyboard</ex></ph> has been updated to version <ph name="VERSION">$2<ex>2.0.12</ex></ph>
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_UPDATING_INFO_TEXT" desc="Label for communicating information about what actions a user can take during an update.">
+        While updating, you can minimize window but do not unplug your device. This may take a few minutes and your device might not work during this update
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_INSTALLING_TEXT" desc="Label that displays what percentage of the update has been installed.">
+        Installing (<ph name="PERCENTAGE_VALUE">$1<ex>94</ex></ph>)%
+      </message>
+      <message translateable="false" name="IDS_FIRMWARE_UP_TO_DATE_TEXT" desc="Label shown when no firmware updates are available.">
+        All firmwares are up to date
+      </message>
     </messages>
   </release>
 </grit>
