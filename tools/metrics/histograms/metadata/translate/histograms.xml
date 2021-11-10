@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.AcceptLanguages.CanBeAcceptDuration" units="ms"
     expires_after="M77">
-  <owner>googleo@chromium.org</owner>
+  <owner>megjablon@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Time taken for the TranslateAcceptLanguages to decide if a given language is
@@ -33,8 +33,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.AlwaysTranslateLang" units="units"
-    expires_after="2022-04-24">
-  <owner>kenjibaheux@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the always translate option was selected in the
@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ApplicationStart.AlwaysTranslateLanguage"
-    enum="LocaleCodeISO639" expires_after="2022-04-24">
+    enum="LocaleCodeISO639" expires_after="2022-06-30">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ApplicationStart.NeverTranslateLanguage"
-    enum="LocaleCodeISO639" expires_after="2022-04-17">
+    enum="LocaleCodeISO639" expires_after="2022-06-30">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -86,7 +86,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ApplicationStart.NeverTranslateLanguage.Count"
-    units="languages" expires_after="2022-04-10">
+    units="languages" expires_after="2022-06-30">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ApplicationStart.NeverTranslateSite.Count"
-    units="sites" expires_after="2022-04-10">
+    units="sites" expires_after="2022-06-30">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -112,13 +112,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.BubbleUiEvent" enum="TranslateBubbleUiEvent"
-    expires_after="2022-04-17">
+    expires_after="2022-06-30">
   <owner>groby@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>Tracks UI events related to the translate bubble.</summary>
 </histogram>
 
-<histogram name="Translate.CaptureText" units="ms" expires_after="2022-04-17">
+<histogram name="Translate.CaptureText" units="ms" expires_after="2022-06-30">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -131,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CLD3.LanguageDetected" enum="LocaleCodeISO639"
-    expires_after="2022-04-10">
+    expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CLD3.LanguagePercentage" units="%"
-    expires_after="2021-12-12">
+    expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CLD3.TopLanguageEvaluationDuration" units="ms"
-    expires_after="2022-01-09">
+    expires_after="2022-06-30">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -162,14 +162,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Event" enum="TranslateCompactUIEvent"
-    expires_after="2022-04-17">
+    expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>Various user actions performed in the translate infobar.</summary>
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.AlwaysTranslate"
-    enum="LocaleCodeISO639" expires_after="2022-04-24">
+    enum="LocaleCodeISO639" expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.MoreLanguages"
-    enum="LocaleCodeISO639" expires_after="2022-04-24">
+    enum="LocaleCodeISO639" expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.NeverTranslate"
-    enum="LocaleCodeISO639" expires_after="2022-04-03">
+    enum="LocaleCodeISO639" expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.PageNotIn"
-    enum="LocaleCodeISO639" expires_after="2022-04-03">
+    enum="LocaleCodeISO639" expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.Translate"
-    enum="LocaleCodeISO639" expires_after="M85">
+    enum="LocaleCodeISO639" expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -254,8 +254,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.DeclineTranslate" units="units"
-    expires_after="2022-04-24">
-  <owner>kenjibaheux@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the &quot;Nope&quot; (don't translate) or the infobar's
@@ -265,7 +265,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.DeclineTranslateCloseInfobar" units="units"
     expires_after="M105">
-  <owner>kenjibaheux@google.com</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the translate infobar was closed by clicking the X
@@ -291,8 +291,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.Event"
-    enum="TranslateExplicitAskPromptEventType" expires_after="2022-04-24">
-  <owner>yyushkina@google.com</owner>
+    enum="TranslateExplicitAskPromptEventType" expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The events (shown, saved, cancelled) happening in the Explicit Language Ask
@@ -301,8 +301,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.LanguageAdded"
-    enum="LocaleCodeISO639" expires_after="2022-04-24">
-  <owner>yyushkina@google.com</owner>
+    enum="LocaleCodeISO639" expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The languages that were added to the Accept Languages list from the Explicit
@@ -311,8 +311,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.LanguageRemoved"
-    enum="LocaleCodeISO639" expires_after="2022-04-24">
-  <owner>yyushkina@google.com</owner>
+    enum="LocaleCodeISO639" expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The languages that were removed from the Accept Languages list from the
@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.HrefHint.PrefsFilterStatus"
-    enum="HrefTranslatePrefsFilterStatus" expires_after="2022-05-14">
+    enum="HrefTranslatePrefsFilterStatus" expires_after="2022-06-30">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.HrefHint.Status" enum="HrefTranslateStatus"
-    expires_after="2022-05-14">
+    expires_after="2022-06-30">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -373,8 +373,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.InitiationStatus.v2"
-    enum="TranslateInitiationStatus" expires_after="2022-04-17">
-  <owner>kenjibaheux@google.com</owner>
+    enum="TranslateInitiationStatus" expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The reason why Chrome decided to perform the next action (e.g., to show
@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.LanguageDetection.ContentLength" units="characters"
-    expires_after="2022-04-17">
+    expires_after="2022-06-30">
   <owner>sclittle@chromium.org</owner>
   <owner>megjablon@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.LanguageDeterminedDuration" units="ms"
-    expires_after="2022-04-17">
+    expires_after="2022-06-30">
   <owner>sclittle@chromium.org</owner>
   <owner>megjablon@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -462,7 +462,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed M90. Replaced by Translate.LanguageDetection.LanguageVerification.
   </obsolete>
-  <owner>yyushkina@chromium.org</owner>
+  <owner>megjablon@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     For each page load, measures whether the provided HTML language (i.e. the
@@ -493,7 +493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.MenuTranslation.IsAvailable" enum="BooleanAvailable"
-    expires_after="2022-04-24">
+    expires_after="2022-06-30">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.MenuTranslation.UnavailableReasons"
-    enum="MenuTranslationUnavailableReason" expires_after="2022-04-03">
+    enum="MenuTranslationUnavailableReason" expires_after="2022-06-30">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -520,7 +520,6 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 10/09/2020. Replaced with Translate.MenuTranslation.IsAvailable.
   </obsolete>
-  <owner>yyushkina@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -530,8 +529,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ModifyOriginalLang" units="units"
-    expires_after="2022-05-01">
-  <owner>kenjibaheux@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the source language in the translate infobar has been
@@ -540,8 +539,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ModifyTargetLang" units="units"
-    expires_after="2022-04-10">
-  <owner>kenjibaheux@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the target language in the translate infobar has been
@@ -550,8 +549,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.NeverTranslateLang" units="units"
-    expires_after="2022-04-24">
-  <owner>kenjibaheux@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the never translate option was selected in the translate
@@ -561,7 +560,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.NeverTranslateSite" units="units"
     expires_after="M105">
-  <owner>kenjibaheux@google.com</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the never translate site was selected in the translate
@@ -841,13 +840,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.PageScheme" enum="TranslateScheme"
     expires_after="M77">
-  <owner>kenjibaheux@google.com</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>Counts translation target page schemes.</summary>
 </histogram>
 
 <histogram name="Translate.Ranker.Model.Status" enum="RankerModelStatus"
-    expires_after="2021-12-26">
+    expires_after="2022-06-30">
   <owner>rogerm@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -958,8 +957,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.RevertTranslation" units="units"
-    expires_after="2022-04-24">
-  <owner>kenjibaheux@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the show original button was clicked in the translate
@@ -968,8 +967,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.ShowErrorUI" enum="TranslateError"
-    expires_after="2022-04-17">
-  <owner>kenjibaheux@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Chrome Translate shows an error UI (infobar or bubble) when an error happens
@@ -980,7 +979,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.SimilarLanguageMatch" enum="BooleanMatched"
     expires_after="M77">
-  <owner>kenjibaheux@google.com</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     This metrics is logged whenever a page is loaded. The logged value is
@@ -993,8 +992,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.SourceLanguage" enum="LocaleCodeISO639"
-    expires_after="2022-04-17">
-  <owner>yyushkina@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of requests sent to the Translate server, grouped by source
@@ -1003,8 +1002,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.TargetLanguage" enum="LocaleCodeISO639"
-    expires_after="2022-04-03">
-  <owner>yyushkina@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of requests sent to the Translate server, grouped by target
@@ -1013,7 +1012,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.TargetLanguage.Origin"
-    enum="TranslateTargetLanguageOrigin" expires_after="2022-04-17">
+    enum="TranslateTargetLanguageOrigin" expires_after="2022-06-30">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -1027,7 +1026,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed M90. Replaced with Translate.Translation.TimeToBeReady.
   </obsolete>
-  <owner>kenjibaheux@google.com</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The time from injecting scripts for Chrome Translate to being ready to
@@ -1057,8 +1056,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Translate" enum="BooleanTranslate"
-    expires_after="2022-04-17">
-  <owner>kenjibaheux@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The number of times the translate button was clicked in the translate
@@ -1067,7 +1066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.Translate.AMPCacheURL" enum="BooleanTranslate"
-    expires_after="2022-04-10">
+    expires_after="2022-06-30">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -1078,7 +1077,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.TranslateAssistContentResult"
-    enum="TranslateAssistContentResult" expires_after="2022-06-12">
+    enum="TranslateAssistContentResult" expires_after="2022-06-30">
   <owner>jds@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -1100,7 +1099,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.TranslateSubframe.ErrorType" enum="TranslateError"
-    expires_after="2021-04-04">
+    expires_after="2022-06-30">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -1112,7 +1111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.TranslateSubframe.SuccessPercentage" units="%"
-    expires_after="2022-05-01">
+    expires_after="2022-06-30">
   <owner>sclittle@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -1124,7 +1123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.TranslateTabIntentResult"
-    enum="TranslateTabIntentResult" expires_after="2022-06-12">
+    enum="TranslateTabIntentResult" expires_after="2022-06-30">
   <owner>jds@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -1277,7 +1276,7 @@ chromium-metrics-reviews@google.com.
   <obsolete>
     Removed 01/09/2021. Not used anymore.
   </obsolete>
-  <owner>kenjibaheux@google.com</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Logs an undisplayable language included in the language list sent by the
@@ -1289,7 +1288,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.UnsupportedLanguageAtInitiation" enum="LanguageName"
     expires_after="M81">
-  <owner>kenjibaheux@google.com</owner>
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     Logs an unsupported source language detected during initiation of the
@@ -1301,8 +1300,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.UserActionDuration" units="ms"
-    expires_after="2022-04-17">
-  <owner>kenjibaheux@google.com</owner>
+    expires_after="2022-06-30">
+  <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
     The time from a page content language being determined to user requesting
@@ -1312,7 +1311,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TranslateModelService.LanguageDetectionModel.PendingRequestCallbacks"
-    units="requests" expires_after="2022-04-03">
+    units="requests" expires_after="2022-06-30">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@chromium.org</owner>
   <summary>
@@ -1323,7 +1322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TranslateModelService.LanguageDetectionModel.WasLoaded"
-    enum="BooleanLoaded" expires_after="2022-04-10">
+    enum="BooleanLoaded" expires_after="2022-06-30">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@chromium.org</owner>
   <summary>
