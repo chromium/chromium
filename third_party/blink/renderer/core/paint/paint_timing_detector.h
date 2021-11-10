@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_TIMING_DETECTOR_H_
 
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_visualizer.h"
@@ -152,8 +151,7 @@ class CORE_EXPORT PaintTimingDetector
   bool NotifyIfChangedLargestImagePaint(base::TimeTicks image_paint_time,
                                         uint64_t image_size,
                                         base::TimeTicks removed_image_time,
-                                        uint64_t removed_image_size,
-                                        bool is_animated);
+                                        uint64_t removed_image_size);
   bool NotifyIfChangedLargestTextPaint(base::TimeTicks, uint64_t size);
 
   void DidChangePerformanceTiming();
@@ -182,9 +180,6 @@ class CORE_EXPORT PaintTimingDetector
     return largest_image_paint_time_;
   }
   uint64_t LargestImagePaintSize() const { return largest_image_paint_size_; }
-  LargestContentfulPaintTypeMask LargestContentfulPaintType() const {
-    return largest_contentful_paint_type_;
-  }
   base::TimeTicks LargestTextPaint() const { return largest_text_paint_time_; }
   uint64_t LargestTextPaintSize() const { return largest_text_paint_size_; }
 
@@ -233,7 +228,6 @@ class CORE_EXPORT PaintTimingDetector
 
   base::TimeTicks largest_image_paint_time_;
   uint64_t largest_image_paint_size_ = 0;
-  LargestContentfulPaintTypeMask largest_contentful_paint_type_ = 0;
   base::TimeTicks largest_text_paint_time_;
   uint64_t largest_text_paint_size_ = 0;
   base::TimeTicks largest_contentful_paint_time_;
