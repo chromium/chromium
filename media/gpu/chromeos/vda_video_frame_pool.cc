@@ -58,54 +58,47 @@ CroStatus::Or<GpuBufferLayout> VdaVideoFramePool::Initialize(
   weak_this_factory_.InvalidateWeakPtrs();
   weak_this_ = weak_this_factory_.GetWeakPtr();
 
-  max_num_frames_ = max_num_frames;
-  fourcc_ = fourcc;
-  coded_size_ = coded_size;
-
   // Clear the pool and reset the layout to prevent previous frames are recycled
   // back to the pool.
   frame_pool_ = {};
+  max_num_frames_ = 0;
   layout_ = absl::nullopt;
+  fourcc_ = absl::nullopt;
+  coded_size_ = gfx::Size();
 
-  // Receive the layout from the callback. |layout_| is accessed on
-  // |parent_task_runner_| except OnRequestFramesDone(). However, we block
-  // |parent_task_runner_| until OnRequestFramesDone() returns. So we don't need
-  // a lock to protect |layout_|.
-  // Also it's safe to use base::Unretained() here because we block here, |this|
-  // must be alive during the callback.
+  absl::optional<GpuBufferLayout> layout;
   base::WaitableEvent done;
   vda_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VdaDelegate::RequestFrames, vda_, fourcc, coded_size,
                      visible_rect, max_num_frames,
                      base::BindOnce(&VdaVideoFramePool::OnRequestFramesDone,
-                                    base::Unretained(this), &done),
+                                    &done, &layout),
                      base::BindRepeating(&VdaVideoFramePool::ImportFrameThunk,
                                          parent_task_runner_, weak_this_)));
   done.Wait();
 
-  if (!layout_)
+  if (!layout || layout->fourcc() != fourcc ||
+      layout->size().height() < coded_size.height() ||
+      layout->size().width() < coded_size.width()) {
     return CroStatus::Codes::kFailedToGetFrameLayout;
+  }
+
+  max_num_frames_ = max_num_frames;
+  layout_ = std::move(layout);
+  fourcc_ = fourcc;
+  coded_size_ = coded_size;
   return *layout_;
 }
 
+// static
 void VdaVideoFramePool::OnRequestFramesDone(
     base::WaitableEvent* done,
-    absl::optional<GpuBufferLayout> layout) {
+    absl::optional<GpuBufferLayout>* layout,
+    absl::optional<GpuBufferLayout> layout_value) {
   DVLOGF(3);
-  // RequestFrames() is blocked on |parent_task_runner_| to wait for this method
-  // finishes, so this method must not be run on the same sequence.
-  DCHECK(!parent_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(fourcc_);
 
-  if (!layout || layout->fourcc() != *fourcc_ ||
-      layout->size().height() < coded_size_.height() ||
-      layout->size().width() < coded_size_.width()) {
-    layout_ = absl::nullopt;
-  } else {
-    layout_ = layout;
-  }
-
+  *layout = std::move(layout_value);
   done->Signal();
 }
 

@@ -74,8 +74,9 @@ class VdaVideoFramePool : public DmabufVideoFramePool {
  private:
   // Update the layout of the buffers. |vda_| calls this as
   // NotifyLayoutChangedCb.
-  void OnRequestFramesDone(base::WaitableEvent* done,
-                           absl::optional<GpuBufferLayout> layout);
+  static void OnRequestFramesDone(base::WaitableEvent* done,
+                                  absl::optional<GpuBufferLayout>* layout,
+                                  absl::optional<GpuBufferLayout> layout_value);
 
   // Thunk to post ImportFrame() to |task_runner|.
   // Because this thunk may be called in any thread, We don't want to
