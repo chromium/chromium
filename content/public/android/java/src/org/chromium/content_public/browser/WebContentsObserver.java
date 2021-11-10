@@ -44,12 +44,6 @@ public abstract class WebContentsObserver {
      */
     public void renderFrameDeleted(GlobalRenderFrameHostId id) {}
 
-    /**
-     * Called when the RenderView of the current RenderViewHost is ready, e.g. because we recreated
-     * it after a crash.
-     */
-    public void renderViewReady() {}
-
     public void renderProcessGone(boolean wasOomProtected) {}
 
     /**

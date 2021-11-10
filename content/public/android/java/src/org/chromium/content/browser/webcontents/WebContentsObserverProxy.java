@@ -93,14 +93,6 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void renderViewReady() {
-        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().renderViewReady();
-        }
-    }
-
-    @Override
-    @CalledByNative
     public void renderProcessGone(boolean wasOomProtected) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().renderProcessGone(wasOomProtected);

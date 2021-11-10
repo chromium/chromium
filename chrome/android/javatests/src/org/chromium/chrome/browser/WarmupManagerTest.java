@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -128,7 +129,7 @@ public class WarmupManagerTest {
     @Test
     @SmallTest
     public void testCreateAndTakeSpareRenderer() {
-        final AtomicBoolean isRenderViewReady = new AtomicBoolean();
+        final AtomicBoolean isRenderFrameCreated = new AtomicBoolean();
         final AtomicReference<WebContents> webContentsReference = new AtomicReference<>();
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
@@ -138,20 +139,22 @@ public class WarmupManagerTest {
                     mWarmupManager.takeSpareWebContents(false, false, !WarmupManager.FOR_CCT);
             Assert.assertNotNull(webContents);
             Assert.assertFalse(mWarmupManager.hasSpareWebContents());
+
+            if (webContents.getMainFrame().isRenderFrameCreated()) {
+                isRenderFrameCreated.set(true);
+            }
             WebContentsObserver observer = new WebContentsObserver(webContents) {
                 @Override
-                public void renderViewReady() {
-                    isRenderViewReady.set(true);
+                public void renderFrameCreated(GlobalRenderFrameHostId id) {
+                    isRenderFrameCreated.set(true);
                 }
             };
-
-            // This is not racy because {@link WebContentsObserver} methods are called on the UI
-            // thread by posting a task. See {@link RenderViewHostImpl::PostRenderViewReady}.
             webContents.addObserver(observer);
+
             webContentsReference.set(webContents);
         });
         CriteriaHelper.pollUiThread(
-                () -> isRenderViewReady.get(), "Spare renderer is not initialized");
+                () -> isRenderFrameCreated.get(), "Spare renderer is not initialized");
         PostTask.runOrPostTask(
                 UiThreadTaskTraits.DEFAULT, () -> webContentsReference.get().destroy());
     }
