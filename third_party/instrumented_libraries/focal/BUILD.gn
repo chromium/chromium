@@ -782,8 +782,8 @@ instrumented_library("pulseaudio") {
 }
 
 instrumented_library("libudev1") {
-  build_method = "debian"
-  pre_build = "scripts/pre-build/udev.sh"
+  build_method = "meson"
+  extra_configure_flags = [ "-Db_lundef=false" ]
 }
 
 instrumented_library("zlib1g") {
