@@ -177,9 +177,8 @@ TEST_F(FirstRunTest, MAYBE_LegacyInitialPrefsUsedIfNewFileIsNotPresent) {
   ASSERT_FALSE(prefs);
 #else
   ASSERT_TRUE(prefs);
-#endif
-
   EXPECT_EQ(prefs->GetFirstRunTabs()[0], "https://www.chromium.org/legacy");
+#endif
 }
 
 }  // namespace first_run
