@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 
 namespace apps {
 
@@ -50,13 +52,13 @@ apps::mojom::IconKeyPtr IconCoalescer::GetIconKey(const std::string& app_id) {
 std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
     apps::mojom::AppType app_type,
     const std::string& app_id,
-    apps::mojom::IconKeyPtr icon_key,
+    apps::mojom::IconKeyPtr mojom_icon_key,
     apps::mojom::IconType icon_type,
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
     apps::mojom::Publisher::LoadIconCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!wrapped_loader_) {
+  if (!wrapped_loader_ || !mojom_icon_key) {
     std::move(callback).Run(apps::mojom::IconValue::New());
     return nullptr;
   }
@@ -64,13 +66,15 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
   if (icon_type != apps::mojom::IconType::kUncompressed &&
       icon_type != apps::mojom::IconType::kStandard) {
     return wrapped_loader_->LoadIconFromIconKey(
-        app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
-        allow_placeholder_icon, std::move(callback));
+        app_type, app_id, std::move(mojom_icon_key), icon_type,
+        size_hint_in_dip, allow_placeholder_icon, std::move(callback));
   }
 
   scoped_refptr<RefCountedReleaser> shared_releaser;
-  IconLoader::Key key(app_type, app_id, icon_key, icon_type, size_hint_in_dip,
-                      allow_placeholder_icon);
+  auto icon_key = ConvertMojomIconKeyToIconKey(mojom_icon_key);
+  IconLoader::Key key(ConvertMojomAppTypToAppType(app_type), app_id, *icon_key,
+                      ConvertMojomIconTypeToIconType(icon_type),
+                      size_hint_in_dip, allow_placeholder_icon);
 
   auto iter = non_immediate_requests_.find(key);
   if (iter != non_immediate_requests_.end()) {
@@ -115,8 +119,8 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
 
     std::unique_ptr<IconLoader::Releaser> unique_releaser =
         wrapped_loader_->LoadIconFromIconKey(
-            app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
-            allow_placeholder_icon,
+            app_type, app_id, std::move(mojom_icon_key), icon_type,
+            size_hint_in_dip, allow_placeholder_icon,
             base::BindOnce(&IconCoalescer::OnLoadIcon,
                            weak_ptr_factory_.GetWeakPtr(), key, seq_num));
 

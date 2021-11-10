@@ -54,7 +54,7 @@ enum class Readiness {
   kMaxValue = kUninstalledByMigration,
 };
 
-struct COMPONENT_EXPORT(APP_UPDATE) App {
+struct COMPONENT_EXPORT(APP_TYPES) App {
   App(AppType app_type, const std::string& app_id);
 
   App(const App&) = delete;
@@ -89,14 +89,14 @@ struct COMPONENT_EXPORT(APP_UPDATE) App {
 
 // TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
 // AppService.
-COMPONENT_EXPORT(APP_UPDATE)
+COMPONENT_EXPORT(APP_TYPES)
 AppType ConvertMojomAppTypToAppType(apps::mojom::AppType mojom_app_type);
 
-COMPONENT_EXPORT(APP_UPDATE)
+COMPONENT_EXPORT(APP_TYPES)
 Readiness ConvertMojomReadinessToReadiness(
     apps::mojom::Readiness mojom_readiness);
 
-COMPONENT_EXPORT(APP_UPDATE)
+COMPONENT_EXPORT(APP_TYPES)
 std::unique_ptr<App> ConvertMojomAppToApp(const apps::mojom::AppPtr& mojom_app);
 
 }  // namespace apps

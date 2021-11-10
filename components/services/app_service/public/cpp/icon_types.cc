@@ -35,7 +35,7 @@ apps::mojom::IconKeyPtr ConvertIconKeyToMojomIconKey(const IconKey& icon_key) {
 }
 
 std::unique_ptr<IconKey> ConvertMojomIconKeyToIconKey(
-    apps::mojom::IconKeyPtr mojom_icon_key) {
+    const apps::mojom::IconKeyPtr& mojom_icon_key) {
   DCHECK(mojom_icon_key);
   return std::make_unique<IconKey>(mojom_icon_key->timeline,
                                    mojom_icon_key->resource_id,

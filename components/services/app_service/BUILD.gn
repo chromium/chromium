@@ -29,6 +29,7 @@ source_set("unit_tests") {
   deps = [
     ":lib",
     "//components/prefs:test_support",
+    "//components/services/app_service/public/cpp:app_types",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:icon_types",
     "//components/services/app_service/public/cpp:intents",

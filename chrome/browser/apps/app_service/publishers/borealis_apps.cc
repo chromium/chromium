@@ -280,8 +280,7 @@ void BorealisApps::LoadIcon(const std::string& app_id,
     return;
   }
 
-  std::unique_ptr<IconKey> key =
-      ConvertMojomIconKeyToIconKey(std::move(icon_key));
+  std::unique_ptr<IconKey> key = ConvertMojomIconKeyToIconKey(icon_key);
   Registry()->LoadIcon(app_id, *key, ConvertMojomIconTypeToIconType(icon_type),
                        size_hint_in_dip, allow_placeholder_icon,
                        apps::mojom::IconKey::kInvalidResourceId,

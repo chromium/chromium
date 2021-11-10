@@ -10,6 +10,8 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -84,21 +86,21 @@ class IconLoader {
   // callers, are expected to refer to a Key.
   class Key {
    public:
-    apps::mojom::AppType app_type_;
+    AppType app_type_;
     std::string app_id_;
-    // apps::mojom::IconKey fields.
+    // IconKey fields.
     uint64_t timeline_;
     int32_t resource_id_;
     uint32_t icon_effects_;
     // Other fields.
-    apps::mojom::IconType icon_type_;
+    IconType icon_type_;
     int32_t size_hint_in_dip_;
     bool allow_placeholder_icon_;
 
-    Key(apps::mojom::AppType app_type,
+    Key(AppType app_type,
         const std::string& app_id,
-        const apps::mojom::IconKeyPtr& icon_key,
-        apps::mojom::IconType icon_type,
+        const IconKey& icon_key,
+        IconType icon_type,
         int32_t size_hint_in_dip,
         bool allow_placeholder_icon);
 

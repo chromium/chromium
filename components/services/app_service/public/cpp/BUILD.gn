@@ -44,6 +44,20 @@ source_set("app_share_target") {
   ]
 }
 
+component("app_types") {
+  output_name = "APP_TYPES"
+  sources = [
+    "app_types.cc",
+    "app_types.h",
+  ]
+
+  defines = [ "IS_APP_TYPES_IMPL" ]
+
+  public_deps = [ "//components/services/app_service/public/mojom" ]
+
+  deps = [ ":icon_types" ]
+}
+
 component("app_update") {
   output_name = "APP_UPDATE"
   sources = [
@@ -55,8 +69,6 @@ component("app_update") {
     "app_registry_cache.h",
     "app_registry_cache_wrapper.cc",
     "app_registry_cache_wrapper.h",
-    "app_types.cc",
-    "app_types.h",
     "app_update.cc",
     "app_update.h",
     "capability_access_update.cc",
@@ -71,6 +83,7 @@ component("app_update") {
   ]
 
   deps = [
+    ":app_types",
     ":icon_types",
     ":intents",
     "//ui/gfx",
@@ -129,6 +142,11 @@ source_set("icon_loader") {
   ]
 
   public_deps = [ "//components/services/app_service/public/mojom" ]
+
+  deps = [
+    ":app_types",
+    ":icon_types",
+  ]
 }
 
 source_set("icon_loader_test_support") {
