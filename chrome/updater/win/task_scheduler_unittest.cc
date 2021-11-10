@@ -64,6 +64,26 @@ class TaskSchedulerTests : public ::testing::Test {
     ASSERT_TRUE(WaitForProcessesStopped(kTestProcessExecutableName));
   }
 
+  // Converts a base::Time that is in UTC and returns the corresponding local
+  // time on the current system.
+  base::Time UTCTimeToLocalTime(const base::Time& time_utc) {
+    const FILETIME file_time_utc = time_utc.ToFileTime();
+    FILETIME file_time_local = {};
+    SYSTEMTIME system_time_utc = {};
+    SYSTEMTIME system_time_local = {};
+
+    // We do not use ::FileTimeToLocalFileTime, since it uses the current
+    // settings for the time zone and daylight saving time, instead of the
+    // settings at the time of `time_utc`.
+    if (!::FileTimeToSystemTime(&file_time_utc, &system_time_utc) ||
+        !::SystemTimeToTzSpecificLocalTime(nullptr, &system_time_utc,
+                                           &system_time_local) ||
+        !::SystemTimeToFileTime(&system_time_local, &file_time_local)) {
+      return base::Time();
+    }
+    return base::Time::FromFileTime(file_time_local);
+  }
+
  protected:
   std::unique_ptr<TaskScheduler> task_scheduler_;
 };
@@ -141,8 +161,8 @@ TEST_F(TaskSchedulerTests, Hourly) {
 
   base::Time next_run_time;
   EXPECT_TRUE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
-  EXPECT_LT(next_run_time, now + one_hour + one_minute);
-  EXPECT_GT(next_run_time, now + one_hour - one_minute);
+  EXPECT_LT(next_run_time, UTCTimeToLocalTime(now + one_hour + one_minute));
+  EXPECT_GT(next_run_time, UTCTimeToLocalTime(now + one_hour - one_minute));
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName1));
@@ -161,13 +181,13 @@ TEST_F(TaskSchedulerTests, EveryFiveHours) {
       TaskScheduler::TRIGGER_TYPE_EVERY_FIVE_HOURS, false));
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
-  base::TimeDelta six_hours(base::Hours(5));
+  base::TimeDelta five_hours(base::Hours(5));
   base::TimeDelta one_minute(base::Minutes(1));
 
   base::Time next_run_time;
   EXPECT_TRUE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
-  EXPECT_LT(next_run_time, now + six_hours + one_minute);
-  EXPECT_GT(next_run_time, now + six_hours - one_minute);
+  EXPECT_LT(next_run_time, UTCTimeToLocalTime(now + five_hours + one_minute));
+  EXPECT_GT(next_run_time, UTCTimeToLocalTime(now + five_hours - one_minute));
 
   EXPECT_TRUE(task_scheduler_->DeleteTask(kTaskName1));
   EXPECT_FALSE(task_scheduler_->IsTaskRegistered(kTaskName1));

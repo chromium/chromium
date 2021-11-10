@@ -97,6 +97,7 @@ class TaskScheduler {
 
   // Return the time of the next schedule run for the given task name. Return
   // false on failure.
+  // `next_run_time` is returned as local time on the current system, not UTC.
   virtual bool GetNextTaskRunTime(const wchar_t* task_name,
                                   base::Time* next_run_time) = 0;
 
