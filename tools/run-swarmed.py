@@ -281,10 +281,7 @@ def main():
   if args.isolate_map_file:
     mb_cmd += ['--isolate-map-file', args.isolate_map_file]
   mb_cmd += ['//' + args.out_dir, args.target_name]
-  if os.name == 'nt':
-    subprocess.check_call(' '.join(mb_cmd), shell=True)
-  else:
-    subprocess.check_call(mb_cmd)
+  subprocess.check_call(mb_cmd, shell=os.name == 'nt')
 
   print('If you get authentication errors, follow:')
   print(
@@ -309,10 +306,7 @@ def main():
   if args.isolate_map_file:
     mb_cmd += ['--isolate-map-file', args.isolate_map_file]
   mb_cmd += ['//' + args.out_dir, args.target_name]
-  if os.name == 'nt':
-    mb_output = subprocess.check_output(' '.join(mb_cmd), shell=True)
-  else:
-    mb_output = subprocess.check_output(mb_cmd)
+  mb_output = subprocess.check_output(mb_cmd, shell=os.name == 'nt')
   swarming_cmd = json.loads(mb_output)
 
   if os.path.isdir(args.results):
