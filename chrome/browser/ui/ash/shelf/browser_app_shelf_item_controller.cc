@@ -25,6 +25,9 @@ BrowserAppShelfItemController::BrowserAppShelfItemController(
       registry_(*apps::AppServiceProxyFactory::GetForProfile(profile_)
                      ->BrowserAppInstanceRegistry()) {
   registry_observation_.Observe(&registry_);
+  // Registers all running instances that started before this shelf item was
+  // created, for example if a running app is later pinned to the shelf.
+  registry_.NotifyExistingInstances(this);
   LoadAppMenuIcon();
 }
 

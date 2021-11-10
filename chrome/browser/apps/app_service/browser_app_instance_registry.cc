@@ -133,6 +133,22 @@ bool BrowserAppInstanceRegistry::IsInstanceActive(
   return false;
 }
 
+void BrowserAppInstanceRegistry::NotifyExistingInstances(
+    BrowserAppInstanceObserver* observer) {
+  for (const auto& pair : ash_instance_tracker_.window_instances_) {
+    observer->OnBrowserWindowAdded(*pair.second);
+  }
+  for (const auto& pair : ash_instance_tracker_.app_instances_) {
+    observer->OnBrowserAppAdded(*pair.second);
+  }
+  for (const auto& pair : lacros_window_instances_) {
+    observer->OnBrowserWindowAdded(*pair.second);
+  }
+  for (const auto& pair : lacros_app_instances_) {
+    observer->OnBrowserAppAdded(*pair.second);
+  }
+}
+
 void BrowserAppInstanceRegistry::BindReceiver(
     crosapi::CrosapiId id,
     mojo::PendingReceiver<crosapi::mojom::BrowserAppInstanceRegistry>
