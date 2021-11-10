@@ -262,6 +262,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         String packageName = mDefaultBrowserProvider.getDefaultBrowser();
         if (packageName != null) {
             intent.setPackage(packageName);
+            // crbug.com/1265223
             if (intent.resolveActivity(mActivity.getPackageManager()) == null) {
                 intent.setPackage(null);
             }
