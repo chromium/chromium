@@ -26,6 +26,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MotionEventCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -92,7 +93,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     /**
      * Handling touch events for resizing the Window.
      */
-    private class PartialCustomTabHandleStrategy extends GestureDetector.SimpleOnGestureListener
+    @VisibleForTesting
+    /* package */ class PartialCustomTabHandleStrategy
+            extends GestureDetector.SimpleOnGestureListener
             implements CustomTabToolbar.HandleStrategy {
         private GestureDetector mGestureDetector;
         private float mLastPosY;
