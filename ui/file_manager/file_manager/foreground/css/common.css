@@ -217,7 +217,7 @@ cr-menu.chrome-menu > [checked]::before {
 
 :root.focus-outline-visible .cr-dialog-container.files-ng .cr-dialog-buttons > button:not(:active):focus,
 :host-context(:root.focus-outline-visible) .cr-dialog-container.files-ng .cr-dialog-buttons > button:not(:active):focus {
-  outline: 2px auto var(--cros-focus-ring-color);
+  outline: 2px solid var(--cros-focus-ring-color);
   outline-offset: 2px;
 }
 
@@ -225,7 +225,7 @@ cr-menu.chrome-menu > [checked]::before {
    rather than the 'OK' button. The dialog buttons should have focus rings in
    this case (regardless of mouse, pointer, keyboard interaction). */
 .cr-dialog-container.files-ng .cr-dialog-frame.files-confirm-dialog-cancel-default .cr-dialog-buttons > button:not(:active):focus {
-  outline: 2px auto var(--cros-focus-ring-color);
+  outline: 2px solid var(--cros-focus-ring-color);
   outline-offset: 2px;
 }
 
