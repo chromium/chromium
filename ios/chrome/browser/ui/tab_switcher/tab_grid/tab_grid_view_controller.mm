@@ -943,7 +943,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self.scrollView setContentOffset:targetOffset animated:YES];
       // |self.currentPage| is set in scrollViewDidEndScrollingAnimation:
     } else {
+      BOOL changed = self.currentPage != targetPage;
       self.currentPage = targetPage;
+      if (changed) {
+        // When there is no scrolling and the page changed, it can be due to
+        // the user dragging the slider and dropping it right on the spot.
+        // Something easy to reproduce with the two edges (incognito / recent
+        // tabs), but also possible with middle position (normal).
+        [self arriveAtCurrentPage];
+        [self broadcastIncognitoContentVisibility];
+        [self configureButtonsForActiveAndCurrentPage];
+      }
     }
   }
 
