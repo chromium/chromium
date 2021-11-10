@@ -9,15 +9,16 @@
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/chromeos/eche_app/app_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/extension_app_utils.h"
-#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -95,11 +96,13 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
     const std::string& app_id,
     Profile* profile) {
   // These file manager apps have a shelf presence, but can only be launched
-  // when provided a filename to open. Likewise, the feedback extension needs
-  // context when launching. Pinning these creates an item that does nothing.
+  // when provided a filename to open. Likewise, the feedback extension, the
+  // Eche application need context when launching. Pinning these creates an
+  // item that does nothing.
   const char* kNoPinAppIds[] = {
       file_manager::kAudioPlayerAppId,
       extension_misc::kFeedbackExtensionId,
+      chromeos::eche_app::kEcheAppId,
   };
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;

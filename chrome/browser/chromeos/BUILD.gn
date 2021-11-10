@@ -3164,6 +3164,7 @@ source_set("chromeos") {
     "app_mode/kiosk_session_plugin_handler_delegate.h",
     "app_mode/kiosk_settings_navigation_throttle.cc",
     "app_mode/kiosk_settings_navigation_throttle.h",
+    "eche_app/app_id.h",
     "eche_app/eche_app_manager_factory.cc",
     "eche_app/eche_app_manager_factory.h",
     "eche_app/eche_app_notification_controller.cc",
