@@ -23,15 +23,16 @@ constexpr int kMessageStorageCapacity = 1000;
 namespace ash {
 namespace quick_pair {
 
-MessageStream::MessageStream(scoped_refptr<device::BluetoothSocket> socket)
-    : socket_(socket) {
+MessageStream::MessageStream(const std::string& device_address,
+                             scoped_refptr<device::BluetoothSocket> socket)
+    : device_address_(device_address), socket_(socket) {
   Receive();
 }
 
 MessageStream::~MessageStream() {
   // Notify observers for lifetime management
   for (auto& obs : observers_)
-    obs.OnMessageStreamDestroyed();
+    obs.OnMessageStreamDestroyed(device_address_);
 }
 
 void MessageStream::AddObserver(Observer* observer) {
@@ -99,7 +100,7 @@ void MessageStream::ReceiveDataError(device::BluetoothSocket::ErrorReason error,
 
 void MessageStream::OnSocketDisconnected() {
   for (auto& obs : observers_)
-    obs.OnDisconnected();
+    obs.OnDisconnected(device_address_);
 }
 
 void MessageStream::ParseMessageStreamSuccess(
@@ -126,70 +127,78 @@ void MessageStream::NotifyObservers(
     const mojom::MessageStreamMessagePtr& message) {
   if (message->is_model_id()) {
     for (auto& obs : observers_)
-      obs.OnModelIdMessage(message->get_model_id());
+      obs.OnModelIdMessage(device_address_, message->get_model_id());
 
     return;
   }
 
   if (message->is_ble_address_update()) {
     for (auto& obs : observers_)
-      obs.OnBleAddressUpdateMessage(message->get_ble_address_update());
+      obs.OnBleAddressUpdateMessage(device_address_,
+                                    message->get_ble_address_update());
 
     return;
   }
 
   if (message->is_battery_update()) {
     for (auto& obs : observers_)
-      obs.OnBatteryUpdateMessage(std::move(message->get_battery_update()));
+      obs.OnBatteryUpdateMessage(device_address_,
+                                 std::move(message->get_battery_update()));
 
     return;
   }
 
   if (message->is_remaining_battery_time()) {
     for (auto& obs : observers_)
-      obs.OnRemainingBatteryTimeMessage(message->get_remaining_battery_time());
+      obs.OnRemainingBatteryTimeMessage(device_address_,
+                                        message->get_remaining_battery_time());
 
     return;
   }
 
   if (message->is_enable_silence_mode()) {
     for (auto& obs : observers_)
-      obs.OnEnableSilenceModeMessage(message->get_enable_silence_mode());
+      obs.OnEnableSilenceModeMessage(device_address_,
+                                     message->get_enable_silence_mode());
 
     return;
   }
 
   if (message->is_companion_app_log_buffer_full()) {
     for (auto& obs : observers_)
-      obs.OnCompanionAppLogBufferFullMessage();
+      obs.OnCompanionAppLogBufferFullMessage(device_address_);
 
     return;
   }
 
   if (message->is_active_components_byte()) {
     for (auto& obs : observers_)
-      obs.OnActiveComponentsMessage(message->get_active_components_byte());
+      obs.OnActiveComponentsMessage(device_address_,
+                                    message->get_active_components_byte());
 
     return;
   }
 
   if (message->is_ring_device_event()) {
     for (auto& obs : observers_)
-      obs.OnRingDeviceMessage(std::move(message->get_ring_device_event()));
+      obs.OnRingDeviceMessage(device_address_,
+                              std::move(message->get_ring_device_event()));
 
     return;
   }
 
   if (message->is_acknowledgement()) {
     for (auto& obs : observers_)
-      obs.OnAcknowledgementMessage(std::move(message->get_acknowledgement()));
+      obs.OnAcknowledgementMessage(device_address_,
+                                   std::move(message->get_acknowledgement()));
 
     return;
   }
 
   if (message->is_sdk_version()) {
     for (auto& obs : observers_)
-      obs.OnAndroidSdkVersionMessage(message->get_sdk_version());
+      obs.OnAndroidSdkVersionMessage(device_address_,
+                                     message->get_sdk_version());
 
     return;
   }

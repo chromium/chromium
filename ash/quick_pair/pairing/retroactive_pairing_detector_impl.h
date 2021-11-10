@@ -7,13 +7,16 @@
 
 #include <string>
 
+#include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
+
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
+#include "ash/quick_pair/message_stream/message_stream.h"
+#include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "ash/quick_pair/pairing/pairer_broker.h"
-#include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
-#include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -29,16 +32,16 @@ namespace ash {
 namespace quick_pair {
 
 struct Device;
-struct NotDiscoverableAdvertisement;
-struct PairingMetadata;
-class DeviceMetadata;
 
 class RetroactivePairingDetectorImpl final
     : public RetroactivePairingDetector,
       public device::BluetoothAdapter::Observer,
-      public PairerBroker::Observer {
+      public PairerBroker::Observer,
+      public MessageStreamLookup::Observer,
+      public MessageStream::Observer {
  public:
-  explicit RetroactivePairingDetectorImpl(PairerBroker* pairer_broker);
+  RetroactivePairingDetectorImpl(PairerBroker* pairer_broker,
+                                 MessageStreamLookup* message_stream_lookup);
   RetroactivePairingDetectorImpl(const RetroactivePairingDetectorImpl&) =
       delete;
   RetroactivePairingDetectorImpl& operator=(
@@ -50,6 +53,20 @@ class RetroactivePairingDetectorImpl final
   void RemoveObserver(RetroactivePairingDetector::Observer* observer) override;
 
  private:
+  // There are three different ways we can retrieve the model id and ble
+  // address from the MessageStream. The first: the MessageStream exists on
+  // pair, so we retrieve it and check for model id and ble address. The
+  // second: we need to wait for the MessageStream to connect and then parse
+  // for ble address and model id. The third: we have the MessageStream but
+  // no ble address or model id, so we add ourselves as an observer and wait
+  // for the messages to arrive. This struct helps us store the data we have
+  // while we wait for more information from the MessageStream per device in
+  // |device_pairing_information_| map.
+  struct RetroactivePairingInformation {
+    std::string model_id;
+    std::string ble_address;
+  };
+
   // device::BluetoothAdapter::Observer
   void DevicePairedChanged(device::BluetoothAdapter* adapter,
                            device::BluetoothDevice* device,
@@ -62,39 +79,63 @@ class RetroactivePairingDetectorImpl final
   void OnAccountKeyWrite(scoped_refptr<Device> device,
                          absl::optional<AccountKeyFailure> error) override;
 
+  // MessageStreamLookup::Observer
+  void OnMessageStreamConnected(const std::string& device_address,
+                                MessageStream* message_stream) override;
+
+  // MessageStream::Observer
+  void OnModelIdMessage(const std::string& device_address,
+                        const std::string& model_id) override;
+  void OnBleAddressUpdateMessage(const std::string& device_address,
+                                 const std::string& ble_address) override;
+  void OnDisconnected(const std::string& device_address) override;
+  void OnMessageStreamDestroyed(const std::string& device_address) override;
+
   // Internal method called by BluetoothAdapterFactory to provide the adapter
   // object.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
+  // Parses MessageStream messages for model id and ble address, and
+  // notifies observers if they exist.
+  void GetModelIdAndAddressFromMessageStream(const std::string& device_address,
+                                             MessageStream* message_stream);
+
+  // Checks |device_pairing_information_| for a ble address and model id
+  // needed for retroactive pairing, and notifies observers.
+  void CheckPairingInformation(const std::string& device_address);
+
   // Converts a Bluetooth device to a Fast Pair Device and notifies observers
   // that a device has been found to retroactively pair to.
   void NotifyDeviceFound(const std::string& model_id,
-                         const std::string& device_address);
+                         const std::string& ble_address,
+                         const std::string& classic_address);
 
-  void OnModelIdRetrieved(const std::string& device_address,
-                          const absl::optional<std::string>& model_id);
-  void OnDeviceMetadataRetrieved(const std::string& device_address,
-                                 const std::string model_id,
-                                 DeviceMetadata* device_metadata);
-  void OnUtilityProcessStoppedOnGetHexModelId(
-      QuickPairProcessManager::ShutdownReason shutdown_reason);
+  void RemoveDeviceInformation(const std::string& device_address);
 
-  void CheckAdvertisementData(const std::string& device_address);
-  void OnAdvertisementParsed(
-      const std::string& device_address,
-      const absl::optional<NotDiscoverableAdvertisement>& advertisement);
-  void OnAccountKeyFilterCheckResult(const std::string& device_address,
-                                     absl::optional<PairingMetadata> metadata);
-  void OnUtilityProcessStoppedOnParseAdvertisement(
-      QuickPairProcessManager::ShutdownReason shutdown_reason);
-
-  // The Bluetooth pairing addresses of Fast Pair devices that we have already
+  // The classic pairing addresses of Fast Pair devices that we have already
   // paired to.
   base::flat_set<std::string> fast_pair_addresses_;
 
+  // The classic pairing addresses of potential Retroactive Pair supported
+  // devices that are found in the adapter. We have to store them and wait for a
+  // MessageStream instance to be created for the device in order to fully
+  // detect a Retroactive Pair device.
+  base::flat_set<std::string> potential_retroactive_addresses_;
+
+  // Map of the classic pairing address to their corresponding MessageStreams.
+  base::flat_map<std::string, MessageStream*> message_streams_;
+
+  // Map of the classic pairing address to their corresponding model id and
+  // ble address, if they exist.
+  base::flat_map<std::string, RetroactivePairingInformation>
+      device_pairing_information_;
+
+  MessageStreamLookup* message_stream_lookup_ = nullptr;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   base::ObserverList<RetroactivePairingDetector::Observer> observers_;
 
+  base::ScopedObservation<MessageStreamLookup, MessageStreamLookup::Observer>
+      message_stream_lookup_observation_{this};
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};

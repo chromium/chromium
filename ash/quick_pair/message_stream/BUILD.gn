@@ -33,9 +33,18 @@ static_library("test_support") {
   sources = [
     "fake_bluetooth_socket.cc",
     "fake_bluetooth_socket.h",
+    "fake_message_stream_lookup.cc",
+    "fake_message_stream_lookup.h",
+    "message_stream.cc",
+    "message_stream.h",
+    "message_stream_lookup.h",
   ]
 
   deps = [
+    "//ash/quick_pair/common",
+    "//ash/services/quick_pair",
+    "//ash/services/quick_pair/public/cpp",
+    "//ash/services/quick_pair/public/mojom",
     "//base",
     "//base/test:test_support",
     "//device/bluetooth",

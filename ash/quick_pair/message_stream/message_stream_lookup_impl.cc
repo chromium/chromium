@@ -118,7 +118,7 @@ void MessageStreamLookupImpl::OnConnected(
     std::string device_address,
     scoped_refptr<device::BluetoothSocket> socket) {
   std::unique_ptr<MessageStream> message_stream =
-      std::make_unique<MessageStream>(std::move(socket));
+      std::make_unique<MessageStream>(device_address, std::move(socket));
 
   for (auto& observer : observers_)
     observer.OnMessageStreamConnected(device_address, message_stream.get());

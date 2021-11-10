@@ -31,57 +31,69 @@ class MessageStream {
    public:
     // Model ID message:
     // https://developers.google.com/nearby/fast-pair/spec#model_id_2
-    virtual void OnModelIdMessage(const std::string& model_id) {}
+    virtual void OnModelIdMessage(const std::string& device_address,
+                                  const std::string& model_id) {}
 
     // BLE Address Update message:
     // https://developers.google.com/nearby/fast-pair/spec#ble_address_2
-    virtual void OnBleAddressUpdateMessage(const std::string& ble_address) {}
+    virtual void OnBleAddressUpdateMessage(const std::string& device_address,
+                                           const std::string& ble_address) {}
 
     // Batter Update message:
     // https://developers.google.com/nearby/fast-pair/spec#battery_updated
     virtual void OnBatteryUpdateMessage(
+        const std::string& device_address,
         const mojom::BatteryUpdatePtr& battery_update) {}
 
     // Remaining Battery Time message:
     // https://developers.google.com/nearby/fast-pair/spec#battery_updated
     virtual void OnRemainingBatteryTimeMessage(
+        const std::string& device_address,
         uint16_t remaining_battery_time) {}
 
     // Silence Mode message:
     // https://developers.google.com/nearby/fast-pair/spec#SilenceMode
-    virtual void OnEnableSilenceModeMessage(bool enable_silence_mode) {}
+    virtual void OnEnableSilenceModeMessage(const std::string& device_address,
+                                            bool enable_silence_mode) {}
 
     // Companion App Log Buffer full message:
     // https://developers.google.com/nearby/fast-pair/spec#companion_app_events
-    virtual void OnCompanionAppLogBufferFullMessage() {}
+    virtual void OnCompanionAppLogBufferFullMessage(
+        const std::string& device_address) {}
 
     // Active components message:
     // https://developers.google.com/nearby/fast-pair/spec#MessageStreamActiveComponents
-    virtual void OnActiveComponentsMessage(uint8_t active_components_byte) {}
+    virtual void OnActiveComponentsMessage(const std::string& device_address,
+                                           uint8_t active_components_byte) {}
 
     // Ring device message:
     // https://developers.google.com/nearby/fast-pair/spec#ringing_a_device
-    virtual void OnRingDeviceMessage(const mojom::RingDevicePtr& ring_device) {}
+    virtual void OnRingDeviceMessage(const std::string& device_address,
+                                     const mojom::RingDevicePtr& ring_device) {}
 
     // Acknowledgement message:
     // https://developers.google.com/nearby/fast-pair/spec#MessageStreamAcknowledgements
     virtual void OnAcknowledgementMessage(
+        const std::string& device_address,
         const mojom::AcknowledgementMessagePtr& acknowledgement) {}
 
     // Platform type message:
     // https://developers.google.com/nearby/fast-pair/spec#PlatformType
-    virtual void OnAndroidSdkVersionMessage(uint8_t sdk_version) {}
+    virtual void OnAndroidSdkVersionMessage(const std::string& device_address,
+                                            uint8_t sdk_version) {}
 
     // Observers are notified when the socket is disconnected, which means the
     // MessageStream will no longer receive new messages.
-    virtual void OnDisconnected() = 0;
+    virtual void OnDisconnected(const std::string& device_address) = 0;
 
     // Observers are notified when the MessageStream is being destroyed to
     // alert them to clean up their MessageStream memory objects.
-    virtual void OnMessageStreamDestroyed() = 0;
+    virtual void OnMessageStreamDestroyed(
+        const std::string& device_address) = 0;
   };
 
-  explicit MessageStream(scoped_refptr<device::BluetoothSocket> socket);
+  MessageStream(const std::string& device_address,
+                scoped_refptr<device::BluetoothSocket> socket);
   MessageStream(const MessageStream&) = delete;
   MessageStream& operator=(const MessageStream&) = delete;
   ~MessageStream();
@@ -118,6 +130,7 @@ class MessageStream {
   void NotifyObservers(const mojom::MessageStreamMessagePtr& message);
 
   int receive_retry_counter_ = 0;
+  std::string device_address_;
 
   // The circular deque of messages is capped at |1000| messages, and old
   // messages will be removed from the front when new messages are added once

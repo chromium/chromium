@@ -8,11 +8,7 @@
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
-#include "ash/quick_pair/repository/fast_pair_repository.h"
-#include "ash/services/quick_pair/public/cpp/account_key_filter.h"
-#include "ash/services/quick_pair/public/cpp/not_discoverable_advertisement.h"
-#include "ash/services/quick_pair/quick_pair_process.h"
-#include "ash/services/quick_pair/quick_pair_process_manager.h"
+#include "ash/quick_pair/message_stream/message_stream.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -23,21 +19,18 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
 
-namespace {
-
-constexpr char kNearbyShareModelId[] = "fc128e";
-
-}  // namespace
-
 namespace ash {
 namespace quick_pair {
 
 RetroactivePairingDetectorImpl::RetroactivePairingDetectorImpl(
-    PairerBroker* pairer_broker) {
+    PairerBroker* pairer_broker,
+    MessageStreamLookup* message_stream_lookup)
+    : message_stream_lookup_(message_stream_lookup) {
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&RetroactivePairingDetectorImpl::OnGetAdapter,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  message_stream_lookup_observation_.Observe(message_stream_lookup_);
   pairer_broker_observation_.Observe(pairer_broker);
 }
 
@@ -47,7 +40,12 @@ void RetroactivePairingDetectorImpl::OnGetAdapter(
   adapter_observation_.Observe(adapter_.get());
 }
 
-RetroactivePairingDetectorImpl::~RetroactivePairingDetectorImpl() = default;
+RetroactivePairingDetectorImpl::~RetroactivePairingDetectorImpl() {
+  // Remove any observation of remaining MessageStreams.
+  for (auto it = message_streams_.begin(); it != message_streams_.end(); it++) {
+    it->second->RemoveObserver(this);
+  }
+}
 
 void RetroactivePairingDetectorImpl::AddObserver(
     RetroactivePairingDetector::Observer* observer) {
@@ -59,41 +57,28 @@ void RetroactivePairingDetectorImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void RetroactivePairingDetectorImpl::NotifyDeviceFound(
-    const std::string& model_id,
-    const std::string& device_address) {
-  device::BluetoothDevice* bluetooth_device =
-      adapter_->GetDevice(device_address);
-  if (!bluetooth_device) {
-    QP_LOG(WARNING) << __func__
-                    << ": Lost device to potentially retroactively pair to.";
-    return;
-  }
-
-  auto device = base::MakeRefCounted<Device>(
-      model_id, bluetooth_device->GetAddress(), Protocol::kFastPairRetroactive);
-  QP_LOG(INFO) << __func__ << ": Found device for Retroactive Pairing.";
-
-  for (auto& observer : observers_)
-    observer.OnRetroactivePairFound(device);
-}
-
 void RetroactivePairingDetectorImpl::OnDevicePaired(
     scoped_refptr<Device> device) {
-  // When a device is paired to via Fast Pair, we save the device's bluetooth
+  // When a device is paired to via Fast Pair, we save the device's classic
   // pairing address here so when we get the the BluetoothAdapter's
   // |DevicePairedChanged| fired, we can determine if it was the one we already
-  // have paired to.
+  // have paired to. The classic address is assigned to the Device during the
+  // initial Fast Pair pairing protocol during the key exchange, and if it
+  // doesn't exist, then it wasn't properly paired during initial Fast Pair
+  // pairing.
+  if (!device->classic_address())
+    return;
+
   QP_LOG(VERBOSE) << __func__ << ":  Storing Fast Pair device address: "
-                  << device->ble_address;
-  fast_pair_addresses_.insert(device->ble_address);
+                  << device->classic_address().value();
+  fast_pair_addresses_.insert(device->classic_address().value());
 }
 
 void RetroactivePairingDetectorImpl::DevicePairedChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     bool new_paired_status) {
-  // This event fires whenever a device is paired with the Bluetooth adapter.
+  // This event fires whenever a device pairing has changed with the adapter.
   // If the |new_paired_status| is false, it means a device was unpaired with
   // the adapter, so we early return since it would not be a device to
   // retroactively pair to. If the device that was paired to that fires this
@@ -101,150 +86,146 @@ void RetroactivePairingDetectorImpl::DevicePairedChanged(
   // since it also wouldn't be one to retroactively pair to. We want to only
   // continue our check here if we have a newly paired device that was paired
   // with classic Bluetooth pairing.
+  const std::string& classic_address = device->GetAddress();
   if (!new_paired_status ||
-      base::Contains(fast_pair_addresses_, device->GetAddress())) {
+      base::Contains(fast_pair_addresses_, classic_address)) {
     return;
   }
 
-  // We now need to check that this is a Fast Pair capable device. If we have
-  // Fast Pair service data, we can continue our check by fetching the model id.
-  const std::vector<uint8_t>* fast_pair_service_data =
-      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
-  if (!fast_pair_service_data || fast_pair_service_data->empty()) {
-    QP_LOG(VERBOSE) << __func__ << ": No Fast Pair service data";
-    return;
-  }
+  potential_retroactive_addresses_.insert(classic_address);
 
-  quick_pair_process::GetHexModelIdFromServiceData(
-      *fast_pair_service_data,
-      base::BindOnce(&RetroactivePairingDetectorImpl::OnModelIdRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), device->GetAddress()),
-      base::BindOnce(&RetroactivePairingDetectorImpl::
-                         OnUtilityProcessStoppedOnGetHexModelId,
-                     weak_ptr_factory_.GetWeakPtr()));
+  // Attempt to retrieve a MessageStream instance immediately, if it was
+  // already connected.
+  MessageStream* message_stream =
+      message_stream_lookup_->GetMessageStream(classic_address);
+  if (!message_stream)
+    return;
+
+  message_streams_[classic_address] = message_stream;
+  GetModelIdAndAddressFromMessageStream(classic_address, message_stream);
 }
 
-void RetroactivePairingDetectorImpl::OnModelIdRetrieved(
+void RetroactivePairingDetectorImpl::OnMessageStreamConnected(
     const std::string& device_address,
-    const absl::optional<std::string>& model_id) {
-  // To check if this is Fast Pair supported: if there is a model id, then we
-  // can fetch the metadata from the repository and check for an
-  // antispoofing-key, which if exists, implies a device that could have used
-  // Fast Pair to pair (i.e. Fast Pair v2+ devices). If
-  // there isn't a model id, then we check the advertisement for an account key
-  // filter, and if there is one, we check the repository for a match. If a
-  // match exists, it implies a device that could have used Fast Pair to pair
-  // (i.e. Fast Pair v2+ devices).
-  if (!model_id) {
-    QP_LOG(VERBOSE)
-        << __func__
-        << ": Checking advertisement data since device is missing model id.";
-    CheckAdvertisementData(device_address);
+    MessageStream* message_stream) {
+  if (!message_stream)
+    return;
+
+  if (!base::Contains(potential_retroactive_addresses_, device_address))
+    return;
+
+  message_streams_[device_address] = message_stream;
+  GetModelIdAndAddressFromMessageStream(device_address, message_stream);
+}
+
+void RetroactivePairingDetectorImpl::GetModelIdAndAddressFromMessageStream(
+    const std::string& device_address,
+    MessageStream* message_stream) {
+  DCHECK(message_stream);
+  DCHECK(device_pairing_information_.find(device_address) ==
+         device_pairing_information_.end());
+
+  RetroactivePairingInformation info;
+  device_pairing_information_[device_address] = info;
+
+  // Iterate over messages for ble address and model id, which is what we
+  // need for retroactive pairing.
+  for (auto& message : message_stream->messages()) {
+    if (message->is_model_id()) {
+      device_pairing_information_[device_address].model_id =
+          message->get_model_id();
+    } else if (message->is_ble_address_update()) {
+      device_pairing_information_[device_address].ble_address =
+          message->get_ble_address_update();
+    }
+  }
+
+  // If we don't have model id and ble address for device, then we will add
+  // ourselves as an observer and wait for these messages to come in. There is
+  // a possibility that they will not come in if the device does not
+  // support retroactive pairing.
+  if (device_pairing_information_[device_address].model_id.empty() ||
+      device_pairing_information_[device_address].ble_address.empty()) {
+    message_stream->AddObserver(this);
     return;
   }
 
-  // The Nearby Share feature advertises under the Fast Pair Service Data UUID
-  // and uses a reserved model ID to enable their 'fast initiation' scenario.
-  // We must detect this instance and ignore these advertisements since they
-  // do not correspond to Fast Pair devices that are open to pairing.
-  if (base::EqualsCaseInsensitiveASCII(model_id.value(), kNearbyShareModelId))
-    return;
-
-  QP_LOG(VERBOSE)
-      << __func__
-      << ": Checking repository for metadata since device has model id.";
-  FastPairRepository::Get()->GetDeviceMetadata(
-      *model_id,
-      base::BindOnce(&RetroactivePairingDetectorImpl::OnDeviceMetadataRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), device_address,
-                     model_id.value()));
+  NotifyDeviceFound(device_pairing_information_[device_address].model_id,
+                    device_pairing_information_[device_address].ble_address,
+                    device_address);
 }
 
-void RetroactivePairingDetectorImpl::CheckAdvertisementData(
+void RetroactivePairingDetectorImpl::OnModelIdMessage(
+    const std::string& device_address,
+    const std::string& model_id) {
+  device_pairing_information_[device_address].model_id = model_id;
+  CheckPairingInformation(device_address);
+}
+
+void RetroactivePairingDetectorImpl::OnBleAddressUpdateMessage(
+    const std::string& device_address,
+    const std::string& ble_address) {
+  device_pairing_information_[device_address].ble_address = ble_address;
+  CheckPairingInformation(device_address);
+}
+
+void RetroactivePairingDetectorImpl::CheckPairingInformation(
     const std::string& device_address) {
-  device::BluetoothDevice* device = adapter_->GetDevice(device_address);
-  if (!device) {
-    QP_LOG(VERBOSE) << __func__
+  DCHECK(device_pairing_information_.find(device_address) !=
+         device_pairing_information_.end());
+
+  if (device_pairing_information_[device_address].model_id.empty() ||
+      device_pairing_information_[device_address].ble_address.empty()) {
+    return;
+  }
+
+  NotifyDeviceFound(device_pairing_information_[device_address].model_id,
+                    device_pairing_information_[device_address].ble_address,
+                    device_address);
+}
+
+void RetroactivePairingDetectorImpl::OnDisconnected(
+    const std::string& device_address) {
+  message_streams_[device_address]->RemoveObserver(this);
+  message_streams_.erase(device_address);
+}
+
+void RetroactivePairingDetectorImpl::OnMessageStreamDestroyed(
+    const std::string& device_address) {
+  message_streams_[device_address]->RemoveObserver(this);
+  message_streams_.erase(device_address);
+}
+
+void RetroactivePairingDetectorImpl::NotifyDeviceFound(
+    const std::string& model_id,
+    const std::string& ble_address,
+    const std::string& classic_address) {
+  device::BluetoothDevice* bluetooth_device =
+      adapter_->GetDevice(classic_address);
+  if (!bluetooth_device) {
+    QP_LOG(WARNING) << __func__
                     << ": Lost device to potentially retroactively pair to.";
+    RemoveDeviceInformation(classic_address);
     return;
   }
 
-  const std::vector<uint8_t>* fast_pair_service_data =
-      device->GetServiceDataForUUID(kFastPairBluetoothUuid);
-  if (!fast_pair_service_data || fast_pair_service_data->empty()) {
-    QP_LOG(VERBOSE) << __func__ << ": No Fast Pair service data";
-    return;
-  }
+  auto device = base::MakeRefCounted<Device>(model_id, ble_address,
+                                             Protocol::kFastPairRetroactive);
+  device->set_classic_address(classic_address);
+  QP_LOG(INFO) << __func__ << ": Found device for Retroactive Pairing.";
 
-  quick_pair_process::ParseNotDiscoverableAdvertisement(
-      *fast_pair_service_data,
-      base::BindOnce(&RetroactivePairingDetectorImpl::OnAdvertisementParsed,
-                     weak_ptr_factory_.GetWeakPtr(), device_address),
-      base::BindOnce(&RetroactivePairingDetectorImpl::
-                         OnUtilityProcessStoppedOnParseAdvertisement,
-                     weak_ptr_factory_.GetWeakPtr()));
+  for (auto& observer : observers_)
+    observer.OnRetroactivePairFound(device);
+
+  RemoveDeviceInformation(classic_address);
 }
 
-void RetroactivePairingDetectorImpl::OnAdvertisementParsed(
-    const std::string& device_address,
-    const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
-  if (!advertisement) {
-    QP_LOG(VERBOSE) << __func__ << ": Missing NotDiscoverableAdvertisement.";
-    return;
-  }
-
-  if (!advertisement->show_ui) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": NotDiscoverableAdvertisement show ui is false.";
-    return;
-  }
-
-  FastPairRepository::Get()->CheckAccountKeys(
-      AccountKeyFilter(advertisement.value()),
-      base::BindOnce(
-          &RetroactivePairingDetectorImpl::OnAccountKeyFilterCheckResult,
-          weak_ptr_factory_.GetWeakPtr(), device_address));
-}
-
-void RetroactivePairingDetectorImpl::OnAccountKeyFilterCheckResult(
-    const std::string& device_address,
-    absl::optional<PairingMetadata> metadata) {
-  QP_LOG(VERBOSE) << __func__ << ": Metadata: " << (metadata ? "yes" : "no");
-  if (!metadata || !metadata->device_metadata)
-    return;
-
-  // Convert the integer model id to uppercase hex string.
-  auto& details = metadata->device_metadata->GetDetails();
-  std::stringstream model_id_stream;
-  model_id_stream << std::uppercase << std::hex << details.id();
-
-  NotifyDeviceFound(model_id_stream.str(), device_address);
-}
-
-void RetroactivePairingDetectorImpl::OnDeviceMetadataRetrieved(
-    const std::string& device_address,
-    const std::string model_id,
-    DeviceMetadata* device_metadata) {
-  if (!device_metadata)
-    return;
-
-  const std::string& public_anti_spoofing_key =
-      device_metadata->GetDetails().anti_spoofing_key_pair().public_key();
-  if (public_anti_spoofing_key.empty())
-    return;
-
-  NotifyDeviceFound(model_id, device_address);
-}
-
-void RetroactivePairingDetectorImpl::OnUtilityProcessStoppedOnGetHexModelId(
-    QuickPairProcessManager::ShutdownReason shutdown_reason) {
-  QP_LOG(WARNING) << __func__ << ": ShutdownReason = " << shutdown_reason;
-}
-
-void RetroactivePairingDetectorImpl::
-    OnUtilityProcessStoppedOnParseAdvertisement(
-        QuickPairProcessManager::ShutdownReason shutdown_reason) {
-  QP_LOG(WARNING) << __func__ << ": ShutdownReason = " << shutdown_reason;
+void RetroactivePairingDetectorImpl::RemoveDeviceInformation(
+    const std::string& device_address) {
+  potential_retroactive_addresses_.erase(device_address);
+  device_pairing_information_.erase(device_address);
+  message_streams_[device_address]->RemoveObserver(this);
+  message_streams_.erase(device_address);
 }
 
 void RetroactivePairingDetectorImpl::OnPairFailure(scoped_refptr<Device> device,

@@ -94,6 +94,7 @@ const std::string kBleAddressString = "AA:BB:CC:DD:EE:FF";
 
 constexpr int kMaxRetryCount = 10;
 constexpr int kMessageStorageCapacity = 1000;
+constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 
 }  // namespace
 
@@ -119,7 +120,8 @@ class MessageStreamTest : public testing::Test, public MessageStream::Observer {
               data_parser_remote_, base::DoNothing());
         });
 
-    message_stream_ = std::make_unique<MessageStream>(fake_socket_.get());
+    message_stream_ =
+        std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
   }
 
   void AddObserver() { message_stream_->AddObserver(this); }
@@ -136,11 +138,14 @@ class MessageStreamTest : public testing::Test, public MessageStream::Observer {
     fake_socket_->TriggerReceiveCallback();
   }
 
-  void OnModelIdMessage(const std::string& model_id) override {
+  void OnModelIdMessage(const std::string& device_address,
+                        const std::string& model_id) override {
     model_id_ = std::move(model_id);
   }
 
-  void OnMessageStreamDestroyed() override { on_destroyed_ = true; }
+  void OnMessageStreamDestroyed(const std::string& device_address) override {
+    on_destroyed_ = true;
+  }
 
   void CleanUpMemory() { message_stream_.reset(); }
 
@@ -151,43 +156,54 @@ class MessageStreamTest : public testing::Test, public MessageStream::Observer {
 
   void SetEmptyBuffer() { fake_socket_->SetEmptyBuffer(); }
 
-  void OnDisconnected() override { on_socket_disconnected_ = true; }
+  void OnDisconnected(const std::string& device_address) override {
+    on_socket_disconnected_ = true;
+  }
 
-  void OnBleAddressUpdateMessage(const std::string& ble_address) override {
+  void OnBleAddressUpdateMessage(const std::string& device_address,
+                                 const std::string& ble_address) override {
     ble_address_ = std::move(ble_address);
   }
 
   void OnBatteryUpdateMessage(
+      const std::string& device_address,
       const mojom::BatteryUpdatePtr& battery_update) override {
     battery_update_ = true;
   }
 
-  void OnRemainingBatteryTimeMessage(uint16_t remaining_battery_time) override {
+  void OnRemainingBatteryTimeMessage(const std::string& device_address,
+                                     uint16_t remaining_battery_time) override {
     remaining_battery_time_ = remaining_battery_time;
   }
 
-  void OnEnableSilenceModeMessage(bool enable_silence_mode) override {
+  void OnEnableSilenceModeMessage(const std::string& device_address,
+                                  bool enable_silence_mode) override {
     enable_silence_mode_ = enable_silence_mode;
   }
 
-  void OnCompanionAppLogBufferFullMessage() override {
+  void OnCompanionAppLogBufferFullMessage(
+      const std::string& device_address) override {
     log_buffer_full_ = true;
   }
 
-  void OnActiveComponentsMessage(uint8_t active_components_byte) override {
+  void OnActiveComponentsMessage(const std::string& device_address,
+                                 uint8_t active_components_byte) override {
     active_components_byte_ = active_components_byte;
   }
 
-  void OnRingDeviceMessage(const mojom::RingDevicePtr& ring_device) override {
+  void OnRingDeviceMessage(const std::string& device_address,
+                           const mojom::RingDevicePtr& ring_device) override {
     ring_device_ = true;
   }
 
   void OnAcknowledgementMessage(
+      const std::string& device_address,
       const mojom::AcknowledgementMessagePtr& acknowledgement) override {
     acknowledgement_ = true;
   }
 
-  void OnAndroidSdkVersionMessage(uint8_t sdk_version) override {
+  void OnAndroidSdkVersionMessage(const std::string& device_address,
+                                  uint8_t sdk_version) override {
     sdk_version_ = sdk_version;
   }
 
