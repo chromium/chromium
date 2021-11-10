@@ -2097,8 +2097,13 @@ bool VaapiWrapper::CreateContext(const gfx::Size& size) {
   if (va_res != VA_STATUS_SUCCESS)
     return false;
 
-  if (IsModeEncoding(mode_) && IsLowPowerIntelProcessor())
+  // TODO(b/200779101): Remove low resolution i965 condition. This was
+  // added to avoid a duplicated frame specific to quality 7 at ~400kbps.
+  if (IsModeEncoding(mode_) && IsLowPowerIntelProcessor() &&
+      !(GetImplementationType() == VAImplementation::kIntelI965 &&
+        picture_size.GetArea() <= gfx::Size(320, 240).GetArea())) {
     MaybeSetLowQualityEncoding_Locked();
+  }
 
   // If we have a protected session already, attach it to this new context.
   return MaybeAttachProtectedSession_Locked();
