@@ -99,7 +99,7 @@ const base::Feature kSideSearchStatePerTab{"SideSearchStatePerTab",
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 const base::Feature kSidePanelBorder{"SidePanelBorder",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSidePanelDragAndDrop{"SidePanelDragAndDrop",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
