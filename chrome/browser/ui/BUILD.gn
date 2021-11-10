@@ -4001,6 +4001,8 @@ static_library("ui") {
       "views/extensions/extensions_menu_view.h",
       "views/extensions/extensions_side_panel_controller.cc",
       "views/extensions/extensions_side_panel_controller.h",
+      "views/extensions/extensions_tabbed_menu_view.cc",
+      "views/extensions/extensions_tabbed_menu_view.h",
       "views/extensions/extensions_toolbar_button.cc",
       "views/extensions/extensions_toolbar_button.h",
       "views/extensions/extensions_toolbar_container.cc",
