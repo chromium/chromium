@@ -2121,7 +2121,20 @@ input.rename:focus,
 #directory-tree .tree-row > .file-row .rename-placeholder > input:focus,
 #directory-tree .tree-row > input:focus,
 #directory-tree .tree-row > .file-row > input:focus {
-  outline-color: rgb(77, 144, 254);
+  background-color: var(--cros-bg-color);
+  border: none;
+  border-radius: 2px;
+  caret-color: var(--cros-textfield-cursor-color-focus);
+  color: var(--cros-text-color-primary);
+  outline: 2px solid var(--cros-focus-ring-color);
+}
+
+input.rename::selection,
+#directory-tree .tree-row .rename-placeholder > input::selection,
+#directory-tree .tree-row > .file-row .rename-placeholder > input::selection,
+#directory-tree .tree-row > input::selection,
+#directory-tree .tree-row > .file-row > input::selection {
+  background-color: var(--cros-text-highlight-color);
 }
 
 input.rename {
