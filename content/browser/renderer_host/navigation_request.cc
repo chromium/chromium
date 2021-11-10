@@ -916,6 +916,30 @@ bool IsOptedInFencedFrame(const net::HttpResponseHeaders& http_headers) {
                         network::mojom::LoadingMode::kFencedFrame);
 }
 
+// If the response does not contain an Accept-CH header, then remove the
+// Sec-CH-UA-Reduced client hint from the Accept-CH cache, if it exists, for the
+// response origin.  The `client_hints` vector also has kUaReduced removed from
+// it if the Accept-CH response header doesn't exist.
+void RemoveUaReducedFromAcceptCH(
+    const GURL& url,
+    ClientHintsControllerDelegate* delegate,
+    const network::mojom::URLResponseHead* response,
+    std::vector<network::mojom::WebClientHintsType>& client_hints) {
+  if (response && !response->parsed_headers->accept_ch &&
+      base::Contains(client_hints,
+                     network::mojom::WebClientHintsType::kUAReduced)) {
+    // For Chrome to continue to send Sec-CH-UA-Reduced, the server must
+    // continue replying with:
+    //  - a valid Origin Trial token.
+    //  - Accept-CH header with Sec-CH-UA-Reduced as a value.
+    //
+    // Here, it did not. So it gets removed from the persisted client hints
+    // for the next request.
+    base::Erase(client_hints, network::mojom::WebClientHintsType::kUAReduced);
+    PersistAcceptCH(url, delegate, client_hints, /*persist_duration=*/nullptr);
+  }
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -3872,11 +3896,26 @@ void NavigationRequest::OnRedirectChecksComplete(
       browser_context->GetClientHintsControllerDelegate();
   if (client_hints_delegate) {
     net::HttpRequestHeaders client_hints_extra_headers;
+    const GURL& source_url = commit_params_->redirects.back();
+    const network::mojom::URLResponseHead* response_head =
+        commit_params_->redirect_response.back().get();
     ParseAndPersistAcceptCHForNavigation(
-        commit_params_->redirects.back(),
-        commit_params_->redirect_response.back()->parsed_headers,
-        commit_params_->redirect_response.back()->headers.get(),
+        source_url, response_head->parsed_headers, response_head->headers.get(),
         browser_context, client_hints_delegate, frame_tree_node_);
+    // CriticalClientHintsThrottle issues a 307 internal redirect without the
+    // original headers, and we don't want to remove Sec-CH-UA-Reduced when
+    // Critical-CH is set.  This means that if the site sends a 307 (instead of
+    // a 301 or 302), Sec-CH-UA-Reduced will *not* be removed from the Accept-CH
+    // cache if the Accept-CH header is missing from the redirect response.
+    if (response_head->headers && response_head->headers->response_code() !=
+                                      net::HTTP_TEMPORARY_REDIRECT) {
+      std::vector<network::mojom::WebClientHintsType> client_hints =
+          LookupAcceptCHForCommit(source_url, client_hints_delegate,
+                                  frame_tree_node_);
+      RemoveUaReducedFromAcceptCH(source_url, client_hints_delegate,
+                                  response_head, client_hints);
+    }
+
     AddNavigationRequestClientHintsHeaders(
         common_params_->url, &client_hints_extra_headers, browser_context,
         client_hints_delegate, is_overriding_user_agent(), frame_tree_node_,
@@ -4280,24 +4319,9 @@ void NavigationRequest::CommitNavigation() {
     }
     commit_params_->enabled_client_hints = LookupAcceptCHForCommit(
         common_params_->url, client_hints_delegate, frame_tree_node_);
-
-    if (frame_tree_node_->IsMainFrame() && response() &&
-        !response()->parsed_headers->accept_ch &&
-        base::Contains(commit_params_->enabled_client_hints,
-                       network::mojom::WebClientHintsType::kUAReduced)) {
-      // For Chrome to continue to send Sec-CH-UA-Reduced, the server must
-      // continue replying with:
-      //  - a valid Origin Trial token.
-      //  - Accept-CH header with Sec-CH-UA-Reduced as a value.
-      //
-      // Here, it did not. So it gets removed from the persisted client hints
-      // for the next request.
-      base::Erase(commit_params_->enabled_client_hints,
-                  network::mojom::WebClientHintsType::kUAReduced);
-      PersistAcceptCH(common_params_->url, client_hints_delegate,
-                      commit_params_->enabled_client_hints,
-                      /*persist_duration=*/nullptr);
-    }
+    RemoveUaReducedFromAcceptCH(common_params_->url, client_hints_delegate,
+                                response(),
+                                commit_params_->enabled_client_hints);
 
     // We may need to add hints that were parsed this time in case they were
     // not permitted to persist in legacy accept-ch-lifetime mode.

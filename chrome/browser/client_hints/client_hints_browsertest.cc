@@ -78,6 +78,7 @@
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -183,6 +184,25 @@ void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
                                 Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED)
     run_loop->Quit();
+}
+
+void CheckUserAgentMinorVersion(const std::string& user_agent_value,
+                                const bool expected_user_agent_reduced) {
+  // A regular expression that matches Chrome/{major_version}.{minor_version}
+  // in the User-Agent string, where the {minor_version} is captured.
+  static constexpr char kChromeVersionRegex[] =
+      "Chrome/[0-9]+\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
+  // The minor version in the reduced UA string is always "0.0.0".
+  static constexpr char kReducedMinorVersion[] = "0.0.0";
+
+  std::string minor_version;
+  EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_value, kChromeVersionRegex,
+                                     &minor_version));
+  if (expected_user_agent_reduced) {
+    EXPECT_EQ(minor_version, kReducedMinorVersion);
+  } else {
+    EXPECT_NE(minor_version, kReducedMinorVersion);
+  }
 }
 
 }  // namespace
@@ -2706,31 +2726,12 @@ class UaReducedOriginTrialBrowserTest : public InProcessBrowserTest {
                 Optional(expected_ua_header_value));
   }
 
-  void CheckUserAgentReduced(const std::string& user_agent_value,
-                             const bool expected_user_agent_reduced) {
-    // A regular expression that matches Chrome/{major_version}.{minor_version}
-    // in the User-Agent string, where the {minor_version} is captured.
-    static constexpr char kChromeVersionRegex[] =
-        "Chrome/[0-9]+\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
-    // The minor version in the reduced UA string is always "0.0.0".
-    static constexpr char kReducedMinorVersion[] = "0.0.0";
-
-    std::string minor_version;
-    EXPECT_TRUE(re2::RE2::PartialMatch(user_agent_value, kChromeVersionRegex,
-                                       &minor_version));
-    if (expected_user_agent_reduced) {
-      EXPECT_EQ(minor_version, kReducedMinorVersion);
-    } else {
-      EXPECT_NE(minor_version, kReducedMinorVersion);
-    }
-  }
-
   void CheckUserAgentReduced(const bool expected_user_agent_reduced) {
     const absl::optional<std::string>& user_agent_header_value =
         GetLastUserAgentHeaderValue();
     EXPECT_TRUE(user_agent_header_value.has_value());
-    CheckUserAgentReduced(*user_agent_header_value,
-                          expected_user_agent_reduced);
+    CheckUserAgentMinorVersion(*user_agent_header_value,
+                               expected_user_agent_reduced);
   }
 
   void NavigateAndCheckHeaders(const GURL& url,
@@ -2935,10 +2936,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
   // Javascript getters as well.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  CheckUserAgentReduced(
+  CheckUserAgentMinorVersion(
       content::EvalJs(web_contents, "navigator.userAgent").ExtractString(),
       /*expected_user_agent_reduced=*/true);
-  CheckUserAgentReduced(
+  CheckUserAgentMinorVersion(
       content::EvalJs(web_contents, "navigator.appVersion").ExtractString(),
       /*expected_user_agent_reduced=*/true);
   // Instead of checking all platform types, just check one that has a
@@ -2961,10 +2962,10 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
   // Javascript getters.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  CheckUserAgentReduced(
+  CheckUserAgentMinorVersion(
       content::EvalJs(web_contents, "navigator.userAgent").ExtractString(),
       /*expected_user_agent_reduced=*/false);
-  CheckUserAgentReduced(
+  CheckUserAgentMinorVersion(
       content::EvalJs(web_contents, "navigator.appVersion").ExtractString(),
       /*expected_user_agent_reduced=*/false);
   // Instead of checking all platform types, just check one that has a
@@ -3147,20 +3148,6 @@ IN_PROC_BROWSER_TEST_F(SameOriginUaReducedOriginTrialBrowserTest,
   // header because the second navigation caused it to get removed.
   NavigateAndCheckHeaders(ua_reduced_with_valid_origin_trial_token_url(),
                           /*ch_ua_reduced_expected=*/false);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SameOriginUaReducedOriginTrialBrowserTest,
-    MissingAcceptCHInIframeResponseHeaderDoesNotRemoveChUaReduced) {
-  // The first navigation sets Sec-CH-UA-Reduced in the client hints storage for
-  // the origin.  The iframe subresource request does not contain Accept-CH in
-  // the response, but because it's not a top-level navigation, it should not
-  // remove Sec-CH-UA-Reduced from the Accept-CH cache.
-  NavigateAndCheckHeaders(accept_ch_ua_reduced_iframe_request_url(),
-                          /*ch_ua_reduced_expected=*/true);
-  // The second navigation still finds Sec-CH-UA-Reduced in the Accept-CH cache.
-  NavigateAndCheckHeaders(ua_reduced_with_valid_origin_trial_token_url(),
-                          /*ch_ua_reduced_expected=*/true);
 }
 
 // Tests that the Sec-CH-UA-Reduced client hint and the reduced User-Agent
@@ -3548,8 +3535,8 @@ class ThirdPartyAcceptChUaReducedOriginTrialBrowserTest
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     // All first party requests will have the full UA string, not the reduced
     // one, since they don't respond with a valid Origin Trial token.
-    CheckUserAgentReduced(request.headers.at("user-agent"),
-                          /*expected_user_agent_reduced=*/false);
+    CheckUserAgentMinorVersion(request.headers.at("user-agent"),
+                               /*expected_user_agent_reduced=*/false);
     request.headers.find("sec-ch-ua-reduced");
     EXPECT_THAT(request.headers, Not(Contains(Key("sec-ch-ua-reduced"))));
   }
@@ -3808,4 +3795,118 @@ IN_PROC_BROWSER_TEST_F(UpdatedGreaseFeatureParamTest,
     }
   }
   ASSERT_TRUE(saw_updated_grease);
+}
+
+// Tests that the Sec-CH-UA-Reduced client hint gets cleared on a redirect if
+// the response doesn't contain the hint in the Accept-CH header.
+class RedirectUaReducedOriginTrialBrowserTest : public InProcessBrowserTest {
+ public:
+  RedirectUaReducedOriginTrialBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    https_server_.ServeFilesFromSourceDirectory(
+        "chrome/test/data/client_hints");
+    https_server_.RegisterRequestMonitor(base::BindRepeating(
+        &RedirectUaReducedOriginTrialBrowserTest::MonitorResourceRequest,
+        base::Unretained(this)));
+    EXPECT_TRUE(https_server_.Start());
+  }
+
+  static constexpr char kRedirectUrl[] = "https://my-site:44444";
+
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    InProcessBrowserTest::SetUpCommandLine(cmd);
+    // Store Sec-CH-UA-Reduced in the Accept-CH cache for the server origin on
+    // browser startup.
+    cmd->AppendSwitchASCII(
+        client_hints::switches::kInitializeClientHintsStorage,
+        base::StringPrintf("{\"%s\":\"%s\"}",
+                           https_server_.GetOrigin().Serialize().c_str(),
+                           "Sec-CH-UA-Reduced"));
+  }
+
+  void SetUpOnMainThread() override {
+    // We use a URLLoaderInterceptor, rather than the EmbeddedTestServer, since
+    // the origin trial token in the response is associated with a fixed
+    // origin, whereas EmbeddedTestServer serves content on a random port.
+    url_loader_interceptor_ =
+        std::make_unique<URLLoaderInterceptor>(base::BindRepeating(
+            &RedirectUaReducedOriginTrialBrowserTest::InterceptURLRequest,
+            base::Unretained(this)));
+
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  GURL accept_ch_without_lifetime_url() const {
+    return https_server_.GetURL("/accept_ch_without_lifetime.html");
+  }
+
+  GURL redirect_url() const { return https_server_.GetURL("/redirect.html"); }
+
+  std::string last_url() const { return last_url_; }
+
+  std::string last_user_agent() const { return last_user_agent_; }
+
+  absl::optional<std::string> last_ua_reduced_ch() const {
+    return last_ua_reduced_ch_;
+  }
+
+ private:
+  bool InterceptURLRequest(URLLoaderInterceptor::RequestParams* params) {
+    if (url::Origin::Create(params->url_request.url) !=
+        url::Origin::Create(GURL(kRedirectUrl))) {
+      return false;
+    }
+
+    std::string resource_path = "chrome/test/data/client_hints";
+    resource_path.append(std::string(params->url_request.url.path_piece()));
+    URLLoaderInterceptor::WriteResponse(resource_path, params->client.get());
+    return true;
+  }
+
+  void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
+    last_url_.clear();
+    last_user_agent_.clear();
+    last_ua_reduced_ch_.reset();
+
+    last_url_ = request.GetURL().spec();
+    last_user_agent_ = request.headers.at("user-agent");
+    std::string ch_ua_reduced;
+    if (request.headers.find("sec-ch-ua-reduced") != request.headers.end()) {
+      last_ua_reduced_ch_ = request.headers.at("sec-ch-ua-reduced");
+    }
+  }
+
+  net::EmbeddedTestServer https_server_;
+  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+  std::string last_url_;
+  std::string last_user_agent_;
+  absl::optional<std::string> last_ua_reduced_ch_;
+};
+
+constexpr char RedirectUaReducedOriginTrialBrowserTest::kRedirectUrl[];
+
+IN_PROC_BROWSER_TEST_F(RedirectUaReducedOriginTrialBrowserTest,
+                       AcceptChUaReducedWithValidOriginTrialToken) {
+  // The first request sends SEc-CH-UA-Reduced and the reduced UA string, but
+  // redirects to a different origin.  Since the response did not contain a
+  // valid origin trial token, Sec-CH-UA-Reduced should be removed from the
+  // Accept-CH cache.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url()));
+  EXPECT_EQ(last_url(), redirect_url());
+  CheckUserAgentMinorVersion(last_user_agent(),
+                             /*expected_user_agent_reduced=*/true);
+  EXPECT_THAT(last_ua_reduced_ch(), Optional(Eq("?1")));
+
+  // The next request to the origin should not send Sec-CH-UA-Reduced.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           accept_ch_without_lifetime_url()));
+  EXPECT_EQ(last_url(), accept_ch_without_lifetime_url());
+  CheckUserAgentMinorVersion(last_user_agent(),
+                             /*expected_user_agent_reduced=*/false);
+  EXPECT_THAT(last_ua_reduced_ch(), Eq(absl::nullopt));
 }
