@@ -46,10 +46,7 @@ template("crx3") {
       rebase_path(invoker.key),
     ]
     inputs = [ _zip_out ]
-    deps = [
-      ":$_zip_target",
-      "//components/crx_file:crx3_build_action",
-    ]
+    deps = [ ":$_zip_target" ]
     forward_variables_from(invoker,
                            [
                              "testonly",
