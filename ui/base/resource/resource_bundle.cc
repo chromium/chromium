@@ -199,7 +199,8 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         ,
         is_lottie_(rb->GetRawDataResourceForScale(resource_id, k100Percent)
-                       .substr(0u, base::size(kLottiePrefix)) == kLottiePrefix)
+                       .substr(0u, base::size(kLottiePrefix)) ==
+                   base::StringPiece(kLottiePrefix, base::size(kLottiePrefix)))
 #endif
   {
   }
@@ -1186,7 +1187,8 @@ bool ResourceBundle::LoadLottie(int resource_id,
                                 gfx::ImageSkiaRep* rep) const {
   const base::StringPiece potential_lottie =
       GetRawDataResourceForScale(resource_id, scale_factor);
-  if (potential_lottie.substr(0u, base::size(kLottiePrefix)) != kLottiePrefix)
+  if (potential_lottie.substr(0u, base::size(kLottiePrefix)) !=
+      base::StringPiece(kLottiePrefix, base::size(kLottiePrefix)))
     return false;
 
   auto bytes_string = base::MakeRefCounted<base::RefCountedString>();
