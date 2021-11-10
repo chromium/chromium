@@ -3984,13 +3984,15 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
   CheckForEmptyStyleChange(change.sibling_before_change,
                            change.sibling_after_change);
 
-  if (!change.ByParser() && change.IsChildElementChange())
+  if (!change.ByParser() && change.IsChildElementChange()) {
     CheckForSiblingStyleChanges(
         change.type == ChildrenChangeType::kElementRemoved
             ? kSiblingElementRemoved
             : kSiblingElementInserted,
         To<Element>(change.sibling_changed), change.sibling_before_change,
         change.sibling_after_change);
+    GetDocument().GetStyleEngine().ChildElementInsertedOrRemoved(this);
+  }
 
   if (ShadowRoot* shadow_root = GetShadowRoot())
     shadow_root->SetNeedsAssignmentRecalc();
@@ -4001,6 +4003,7 @@ void Element::FinishParsingChildren() {
   CheckForEmptyStyleChange(this, this);
   CheckForSiblingStyleChanges(kFinishedParsingChildren, nullptr, lastChild(),
                               nullptr);
+  GetDocument().GetStyleEngine().ChildElementInsertedOrRemoved(parentElement());
 }
 
 AttrNodeList* Element::GetAttrNodeList() {

@@ -1501,14 +1501,16 @@ StyleResolver::CacheSuccess StyleResolver::ApplyMatchedCache(
                                     matched_property_cache_inherited_hit, 1);
 
       EInsideLink link_status = state.Style()->InsideLink();
+      bool ancestors_affected_by_has = state.Style()->AncestorsAffectedByHas();
       // If the cache item parent style has identical inherited properties to
       // the current parent style then the resulting style will be identical
       // too. We copy the inherited properties over from the cache and are done.
       state.Style()->InheritFrom(*cached_matched_properties->computed_style);
 
-      // Unfortunately the link status is treated like an inherited property. We
-      // need to explicitly restore it.
+      // Unfortunately the link status and 'ancestors affected by has' are
+      // treated like an inherited property. We need to explicitly restore it.
       state.Style()->SetInsideLink(link_status);
+      state.Style()->SetAncestorsAffectedByHas(ancestors_affected_by_has);
 
       is_inherited_cache_hit = true;
     }

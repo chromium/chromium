@@ -897,6 +897,10 @@ bool StyleEngine::ShouldSkipInvalidationFor(const Element& element) const {
 #endif  // DCHECK_IS_ON()
     return true;
   }
+  return false;
+}
+
+bool StyleEngine::IsSubtreeAndSiblingsStyleDirty(const Element& element) const {
   if (GetDocument().GetStyleChangeType() == kSubtreeStyleChange)
     return true;
   Element* root = GetDocument().documentElement();
@@ -907,11 +911,60 @@ bool StyleEngine::ShouldSkipInvalidationFor(const Element& element) const {
   return element.parentNode()->GetStyleChangeType() == kSubtreeStyleChange;
 }
 
+namespace {
+
+bool PossiblyAffectingHasState(Element& element) {
+  const ComputedStyle* style = element.GetComputedStyle();
+  // When display:none, the ComputedStyle will be null. So in this case, we
+  // cannot determine whether the element has ancestors affected by ':has()'
+  // or not. There can be an ancestor affected by ':has()', so return true
+  // to walk up to check ancestors.
+  return !style || style->AncestorsAffectedByHas();
+}
+
+void InvalidateAncestorsAffectedByHas(Element* element) {
+  while (element) {
+    const ComputedStyle* style = element->GetComputedStyle();
+
+    if (style && style->AffectedByHas()) {
+      // TODO(blee@igalia.com) non-terminal ':has() is not supported yet,
+      // so we will always invalidate the element marked as 'AffectedByHas'
+
+      // TODO(blee@igalia.com) Need filtering for irrelevant elements.
+      // e.g. When we have '.a:has(.b) {}', '.c:has(.d) {}', mutation of class
+      // value 'd' can invalidate ancestor with class value 'a' because we don't
+      // have any filtering for this case.
+      element->SetNeedsStyleRecalc(
+          StyleChangeType::kLocalStyleChange,
+          StyleChangeReasonForTracing::Create(
+              blink::style_change_reason::kStyleInvalidator));
+    }
+
+    // Stop walk up only when the 'AncestorsAffectedByHas' flag is false.
+    if (style && !style->AncestorsAffectedByHas())
+      return;
+
+    element = element->parentElement();
+  }
+}
+
+}  // namespace
+
 void StyleEngine::ClassChangedForElement(
     const SpaceSplitString& changed_classes,
     Element& element) {
   if (ShouldSkipInvalidationFor(element))
     return;
+
+  if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      PossiblyAffectingHasState(element)) {
+    // TODO(blee@igalia.com) Need filtering for irrelevant mutations
+    InvalidateAncestorsAffectedByHas(element.parentElement());
+  }
+
+  if (IsSubtreeAndSiblingsStyleDirty(element))
+    return;
+
   InvalidationLists invalidation_lists;
   unsigned changed_size = changed_classes.size();
   const RuleFeatureSet& features = GetRuleFeatureSet();
@@ -933,6 +986,15 @@ void StyleEngine::ClassChangedForElement(const SpaceSplitString& old_classes,
     ClassChangedForElement(new_classes, element);
     return;
   }
+
+  if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      PossiblyAffectingHasState(element)) {
+    // TODO(blee@igalia.com) Need filtering for irrelevant mutations
+    InvalidateAncestorsAffectedByHas(element.parentElement());
+  }
+
+  if (IsSubtreeAndSiblingsStyleDirty(element))
+    return;
 
   // Class vectors tend to be very short. This is faster than using a hash
   // table.
@@ -994,6 +1056,15 @@ void StyleEngine::AttributeChangedForElement(
   if (ShouldSkipInvalidationFor(element))
     return;
 
+  if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      PossiblyAffectingHasState(element)) {
+    // TODO(blee@igalia.com) Need filtering for irrelevant mutations
+    InvalidateAncestorsAffectedByHas(element.parentElement());
+  }
+
+  if (IsSubtreeAndSiblingsStyleDirty(element))
+    return;
+
   InvalidationLists invalidation_lists;
   GetRuleFeatureSet().CollectInvalidationSetsForAttribute(
       invalidation_lists, element, attribute_name);
@@ -1014,6 +1085,15 @@ void StyleEngine::IdChangedForElement(const AtomicString& old_id,
   if (ShouldSkipInvalidationFor(element))
     return;
 
+  if (RuntimeEnabledFeatures::CSSPseudoHasEnabled() &&
+      PossiblyAffectingHasState(element)) {
+    // TODO(blee@igalia.com) Need filtering for irrelevant mutations
+    InvalidateAncestorsAffectedByHas(element.parentElement());
+  }
+
+  if (IsSubtreeAndSiblingsStyleDirty(element))
+    return;
+
   InvalidationLists invalidation_lists;
   const RuleFeatureSet& features = GetRuleFeatureSet();
   if (!old_id.IsEmpty())
@@ -1029,6 +1109,8 @@ void StyleEngine::PseudoStateChangedForElement(
     Element& element) {
   if (ShouldSkipInvalidationFor(element))
     return;
+  if (IsSubtreeAndSiblingsStyleDirty(element))
+    return;
 
   InvalidationLists invalidation_lists;
   GetRuleFeatureSet().CollectInvalidationSetsForPseudoClass(
@@ -1039,6 +1121,8 @@ void StyleEngine::PseudoStateChangedForElement(
 
 void StyleEngine::PartChangedForElement(Element& element) {
   if (ShouldSkipInvalidationFor(element))
+    return;
+  if (IsSubtreeAndSiblingsStyleDirty(element))
     return;
   if (element.GetTreeScope() == document_)
     return;
@@ -1051,6 +1135,8 @@ void StyleEngine::PartChangedForElement(Element& element) {
 
 void StyleEngine::ExportpartsChangedForElement(Element& element) {
   if (ShouldSkipInvalidationFor(element))
+    return;
+  if (IsSubtreeAndSiblingsStyleDirty(element))
     return;
   if (!element.GetShadowRoot())
     return;
@@ -1227,6 +1313,13 @@ void StyleEngine::ScheduleCustomElementInvalidations(
   invalidation_lists.descendants.push_back(invalidation_set);
   pending_invalidations_.ScheduleInvalidationSetsForNode(invalidation_lists,
                                                          *document_);
+}
+
+void StyleEngine::ChildElementInsertedOrRemoved(Element* parent) {
+  if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled())
+    return;
+  // TODO(blee@igalia.com) Need filtering for irrelevant insertion or removal
+  InvalidateAncestorsAffectedByHas(parent);
 }
 
 void StyleEngine::InvalidateStyle() {

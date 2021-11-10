@@ -385,6 +385,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                         InvalidationScope =
                                             kInvalidateCurrentScope);
   void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
+  void ChildElementInsertedOrRemoved(Element* parent);
 
   void NodeWillBeRemoved(Node&);
   void ChildrenRemoved(ContainerNode& parent);
@@ -577,6 +578,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       UnorderedTreeScopeSet& tree_scopes_removed);
 
   bool ShouldSkipInvalidationFor(const Element&) const;
+  bool IsSubtreeAndSiblingsStyleDirty(const Element&) const;
   void ScheduleRuleSetInvalidationsForElement(
       Element&,
       const HeapHashSet<Member<RuleSet>>&);

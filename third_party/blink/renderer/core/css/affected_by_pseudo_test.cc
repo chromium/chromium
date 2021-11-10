@@ -328,4 +328,128 @@ TEST_F(AffectedByPseudoTest, HoverScrollbar) {
   EXPECT_FALSE(GetElementById("div1")->GetComputedStyle()->AffectedByHover());
 }
 
+TEST_F(AffectedByPseudoTest, AffectedByHasAndAncestorsAffectedByHas) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>.a:has(.b) { background-color: lime; }</style>
+    <div id=div1>
+      <div id=div2 class='a'>
+        <div id=div3>
+          <div id=div4></div>
+        </div>
+      </div>
+      <div id=div5 class='a'>
+        <div id=div6 style='display: none'>
+          <div id=div7></div>
+        </div>
+      </div>
+      <div id=div8>
+        <div id=div9>
+          <div id=div10></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetElementById("div1")->GetComputedStyle()->AffectedByHas());
+  EXPECT_FALSE(
+      GetElementById("div1")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_TRUE(GetElementById("div2")->GetComputedStyle()->AffectedByHas());
+  EXPECT_TRUE(
+      GetElementById("div2")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_FALSE(GetElementById("div3")->GetComputedStyle()->AffectedByHas());
+  EXPECT_TRUE(
+      GetElementById("div3")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_FALSE(GetElementById("div4")->GetComputedStyle()->AffectedByHas());
+  EXPECT_TRUE(
+      GetElementById("div4")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_TRUE(GetElementById("div5")->GetComputedStyle()->AffectedByHas());
+  EXPECT_TRUE(
+      GetElementById("div5")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_EQ(GetElementById("div6")->GetComputedStyle(), nullptr);
+  EXPECT_EQ(GetElementById("div7")->GetComputedStyle(), nullptr);
+  EXPECT_FALSE(GetElementById("div8")->GetComputedStyle()->AffectedByHas());
+  EXPECT_FALSE(
+      GetElementById("div8")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_FALSE(GetElementById("div9")->GetComputedStyle()->AffectedByHas());
+  EXPECT_FALSE(
+      GetElementById("div9")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_FALSE(GetElementById("div10")->GetComputedStyle()->AffectedByHas());
+  EXPECT_FALSE(
+      GetElementById("div10")->GetComputedStyle()->AncestorsAffectedByHas());
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div10")->setAttribute(html_names::kClassAttr, "b");
+  UpdateAllLifecyclePhasesForTest();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->setAttribute(html_names::kClassAttr, "b");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div7")->setAttribute(html_names::kClassAttr, "b");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
+TEST_F(AffectedByPseudoTest, AncestorsAffectedByHasCheckFalseRestore) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>.a:has(.b) { background-color: lime; }</style>
+    <main id=div1>
+      <div id=div2 class='a'>
+        <div id=div3>
+          <div id=div4></div>
+        </div>
+      </div>
+      <div id=div5>
+        <div id=div6>
+          <div id=div7></div>
+        </div>
+      </div>
+    </main>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetElementById("div1")->GetComputedStyle()->AffectedByHas());
+  EXPECT_FALSE(
+      GetElementById("div1")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_TRUE(GetElementById("div2")->GetComputedStyle()->AffectedByHas());
+  EXPECT_TRUE(
+      GetElementById("div2")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_FALSE(GetElementById("div3")->GetComputedStyle()->AffectedByHas());
+  EXPECT_TRUE(
+      GetElementById("div3")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_FALSE(GetElementById("div4")->GetComputedStyle()->AffectedByHas());
+  EXPECT_TRUE(
+      GetElementById("div4")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_FALSE(GetElementById("div5")->GetComputedStyle()->AffectedByHas());
+  EXPECT_FALSE(
+      GetElementById("div5")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_FALSE(GetElementById("div6")->GetComputedStyle()->AffectedByHas());
+  EXPECT_FALSE(
+      GetElementById("div6")->GetComputedStyle()->AncestorsAffectedByHas());
+  EXPECT_FALSE(GetElementById("div7")->GetComputedStyle()->AffectedByHas());
+  EXPECT_FALSE(
+      GetElementById("div7")->GetComputedStyle()->AncestorsAffectedByHas());
+
+  unsigned start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div7")->setAttribute(html_names::kClassAttr, "b");
+  UpdateAllLifecyclePhasesForTest();
+  unsigned element_count =
+      GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(0U, element_count);
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  GetElementById("div4")->setAttribute(html_names::kClassAttr, "b");
+  UpdateAllLifecyclePhasesForTest();
+  element_count = GetStyleEngine().StyleForElementCount() - start_count;
+  ASSERT_EQ(1U, element_count);
+}
+
 }  // namespace blink

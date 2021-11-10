@@ -1247,6 +1247,18 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         return dialog_element->IsModal();
       return false;
     case CSSSelector::kPseudoHas:
+      if (mode_ == kResolvingStyle) {
+        if (context.in_rightmost_compound) {
+          // Set 'AffectedByHas' flag to indicate that the element is affected
+          // by a ':has()' state. It means that, when we have a mutation on a
+          // descendant of the element, we may need to invalidate the style of
+          // the element because the mutation can affect the state of this
+          // ':has()' selector.
+          element_style_->SetAffectedByHas();
+          element_style_->SetAncestorsAffectedByHas(true);
+        }
+        // TODO(blee@igalia.com) non-terminal ':has() is not supported yet
+      }
       return CheckPseudoHas(context, result);
     case CSSSelector::kPseudoRelativeLeftmost:
       DCHECK(context.relative_leftmost_element);
