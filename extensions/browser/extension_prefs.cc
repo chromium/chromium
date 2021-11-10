@@ -1016,14 +1016,7 @@ void ExtensionPrefs::ClearInapplicableDisableReasonsForComponentExtension(
       disable_reason::DISABLE_RELOAD |
       disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT |
       disable_reason::DISABLE_CORRUPTED | disable_reason::DISABLE_REINSTALL;
-
-  // Allow the camera app to be disabled by extension policy. This is a
-  // temporary solution until there's a dedicated policy to disable the
-  // camera, at which point this should be removed.
-  // TODO(http://crbug.com/1002935)
   int allowed_disable_reasons = kAllowDisableReasons;
-  if (component_extension_id == extension_misc::kCameraAppId)
-    allowed_disable_reasons |= disable_reason::DISABLE_BLOCKED_BY_POLICY;
 
   // Some disable reasons incorrectly cause component extensions to never
   // activate on load. See https://crbug.com/946839 for more details on why we

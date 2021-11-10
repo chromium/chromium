@@ -215,8 +215,6 @@ void RecordAppLaunch(const std::string& app_id,
     RecordDefaultAppLaunch(DefaultAppName::kCalculator, launch_source);
   } else if (app_id == web_app::kCanvasAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kChromeCanvas, launch_source);
-  } else if (app_id == extension_misc::kCameraAppId) {
-    RecordDefaultAppLaunch(DefaultAppName::kCamera, launch_source);
   } else if (app_id == web_app::kCameraAppId) {
     RecordDefaultAppLaunch(DefaultAppName::kCamera, launch_source);
   } else if (app_id == web_app::kHelpAppId) {

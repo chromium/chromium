@@ -73,13 +73,7 @@ std::string
 bool StandardManagementPolicyProvider::UserMayLoad(
     const Extension* extension,
     std::u16string* error) const {
-  // Component extensions are always allowed, besides the camera app that can be
-  // disabled by extension policy. This is a temporary solution until there's a
-  // dedicated policy to disable the camera, at which point the special check in
-  // the 'if' statement should be removed.
-  // TODO(http://crbug.com/1002935)
-  if (Manifest::IsComponentLocation(extension->location()) &&
-      extension->id() != extension_misc::kCameraAppId) {
+  if (Manifest::IsComponentLocation(extension->location())) {
     return true;
   }
 

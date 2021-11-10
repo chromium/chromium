@@ -18,7 +18,6 @@
 
 // Extensions that should not be attempted to be uninstalled and reinstalled.
 const char* const kExemptExtensions[] = {
-    extension_misc::kCameraAppId,
     extension_misc::kChromeAppId,
     extension_misc::kLacrosAppId,
 };

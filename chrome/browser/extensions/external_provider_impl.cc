@@ -84,6 +84,8 @@ namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
+const char kCameraAppId[] = "hfhhnacclhffhdffklopdkcgdhifgngh";
+
 // Certain pre-installed extensions are no longer needed on ARC devices as they
 // were replaced by their ARC counterparts.
 bool ShouldUninstallExtensionReplacedByArcApp(const std::string& extension_id) {
@@ -247,7 +249,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
     const base::DictionaryValue* extension_dict = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (extension_id == extension_misc::kCameraAppId) {
+    if (extension_id == kCameraAppId) {
       unsupported_extensions.insert(extension_id);
       install_stage_tracker->ReportFailure(
           extension_id,

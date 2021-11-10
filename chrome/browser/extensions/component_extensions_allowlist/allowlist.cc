@@ -35,7 +35,6 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     extension_misc::kAccessibilityCommonExtensionId,
-    extension_misc::kCameraAppId,
     extension_misc::kChromeVoxExtensionId,
     extension_misc::kEnhancedNetworkTtsExtensionId,
     extension_misc::kEspeakSpeechSynthesisExtensionId,

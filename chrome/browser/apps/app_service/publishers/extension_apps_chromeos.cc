@@ -613,10 +613,6 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
       (is_pref_disabled_mode_hidden != is_disabled_apps_mode_hidden_);
   is_disabled_apps_mode_hidden_ = is_pref_disabled_mode_hidden;
 
-  UpdateAppDisabledState(
-      disabled_system_features_pref, policy::SystemFeature::kCamera,
-      extension_misc::kCameraAppId, is_disabled_mode_changed);
-
   UpdateAppDisabledState(disabled_system_features_pref,
                          policy::SystemFeature::kWebStore,
                          extensions::kWebStoreAppId, is_disabled_mode_changed);

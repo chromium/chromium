@@ -243,12 +243,6 @@ extern const char kQuickOfficeExtensionId[];
 // The extension id used for testing mimeHandlerPrivate.
 extern const char kMimeHandlerPrivateTestExtensionId[];
 
-// The extension id of the Camera application.
-extern const char kCameraAppId[];
-
-// The extension id of the devoloper version of Camera application.
-extern const char kCameraAppDevId[];
-
 // The extension id of the Chrome component application.
 extern const char kChromeAppId[];
 

@@ -1479,7 +1479,7 @@ TEST_F(AppListSyncableServiceTest, TransferItem) {
   EXPECT_FALSE(GetSyncItem(extension_misc::kYoutubeAppId));
   // Attributes transfer from non-existing app fails.
   EXPECT_FALSE(app_list_syncable_service()->TransferItemAttributes(
-      extension_misc::kCameraAppDevId, extension_misc::kYoutubeAppId));
+      "NonExistingId", extension_misc::kYoutubeAppId));
 
   // Now Chrome app attributes match Webstore app.
   EXPECT_TRUE(AreAllAppAtributesEqualInAppList(webstore_item, chrome_item));

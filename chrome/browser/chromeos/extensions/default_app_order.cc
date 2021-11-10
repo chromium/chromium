@@ -90,7 +90,6 @@ const char* const kDefaultAppOrder[] = {
     extension_misc::kGooglePlayBooksAppId,
     web_app::kPlayBooksAppId,
 
-    extension_misc::kCameraAppId,
     web_app::kCameraAppId,
 
     arc::kGooglePhotosAppId,

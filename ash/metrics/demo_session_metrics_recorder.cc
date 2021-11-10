@@ -59,8 +59,6 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kScreensaver;
   }
 
-  if (app_id == extension_misc::kCameraAppId)
-    return DemoModeApp::kCamera;
   if (app_id == extension_misc::kChromeAppId)
     return DemoModeApp::kBrowser;
   if (app_id == extension_misc::kFilesManagerAppId)
