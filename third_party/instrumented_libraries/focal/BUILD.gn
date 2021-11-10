@@ -47,7 +47,7 @@ group("locally_built") {
     ":libpci3",
     ":libpcre3",
     ":libpixman-1-0",
-    ":libpng12-0",
+    ":libpng16-16",
     ":librtmp1",
     ":libsasl2-2",
     ":libsecret",
@@ -585,7 +585,7 @@ instrumented_library("libpixman-1-0") {
   patches = [ "patches/libpixman-1-0.diff" ]
 }
 
-instrumented_library("libpng12-0") {
+instrumented_library("libpng16-16") {
   extra_configure_flags = [ "--disable-static" ]
 }
 
