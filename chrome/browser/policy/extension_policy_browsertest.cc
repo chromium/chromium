@@ -927,6 +927,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   extensions::InstallStageTracker* install_stage_tracker =
       extensions::InstallStageTracker::Get(browser()->profile());
   install_stage_tracker->AddObserver(&collector_observer);
+
   UpdateProviderPolicy(policies);
   registry_observer.WaitForExtensionWillBeInstalled();
   install_stage_tracker->RemoveObserver(&collector_observer);
@@ -1008,7 +1009,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   // Test policy-installed extensions are reloaded when killed.
   {
     BackgroundContentsService::
-        SetRestartDelayForForceInstalledAppsAndExtensionsForTesting(0);
+        SetRestartDelayForForceInstalledAppsAndExtensionsForTesting(1);
     extensions::ExtensionHostTestHelper extension_crashed_observer(
         browser()->profile(), kGoodCrxId);
     extensions::TestExtensionRegistryObserver extension_loaded_observer(

@@ -24,7 +24,6 @@
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background/background_contents_service_observer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -38,13 +37,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/image_loader.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
@@ -310,8 +307,8 @@ void BackgroundContentsService::StartObserving() {
       base::BindOnce(&BackgroundContentsService::OnExtensionSystemReady,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-                 content::Source<Profile>(profile_));
+  extension_host_registry_observation_.Observe(
+      extensions::ExtensionHostRegistry::Get(profile_));
 
   // Listen for extension uninstall, load, unloaded notification.
   extension_registry_observation_.Observe(
@@ -324,14 +321,18 @@ void BackgroundContentsService::OnExtensionSystemReady() {
   SendChangeNotification();
 }
 
-void BackgroundContentsService::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  TRACE_EVENT0("browser,startup", "BackgroundContentsService::Observe");
-  DCHECK_EQ(type, extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED);
-  HandleExtensionCrashed(
-      content::Details<extensions::ExtensionHost>(details).ptr()->extension());
+void BackgroundContentsService::OnExtensionHostRenderProcessGone(
+    content::BrowserContext* browser_context,
+    extensions::ExtensionHost* extension_host) {
+  // The notification may be for the on/off-the-record pair to this object's
+  // `profile_`; since the BackgroundContentsService has its own instance in
+  // incognito, only consider notifications from our exact context.
+  if (browser_context != profile_)
+    return;
+
+  TRACE_EVENT0("browser,startup",
+               "BackgroundContentsService::OnExtensionHostRenderProcessGone");
+  HandleExtensionCrashed(extension_host->extension());
 }
 
 void BackgroundContentsService::OnExtensionLoaded(
@@ -451,6 +452,17 @@ void BackgroundContentsService::RestartForceInstalledExtensionOnCrash(
     restart_delay = entry->GetTimeUntilRelease().InMilliseconds();
   }
 
+  // Ugly implementation detail: ExtensionService listens to the same
+  // notification that can lead us here, and asynchronously marks the extension
+  // as terminated (with an effective delay of 0) to allow other systems to
+  // receive the notification. However, that means we need to ensure this task
+  // gets ran *after* that, so that the extension is in the terminated set by
+  // the time we try to reload it (even if this service gets the notification
+  // first).
+  //
+  // TODO(devlin): This would be unnecessary if we listened to the
+  // OnExtensionUnloaded() notification and checked the unload reason.
+  DCHECK_GT(restart_delay, 0);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&ReloadExtension, extension->id(), profile_),
       base::Milliseconds(restart_delay));

@@ -53,12 +53,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174734): Remove.
   NOTIFICATION_EXTENSION_INSTALL_ERROR,
 
-  // Sent when extension render process ends (whether it crashes or closes). The
-  // details are an ExtensionHost* and the source is a BrowserContext*. Not sent
-  // during browser shutdown.
-  // TODO(https://crbug.com/1174743): Remove.
-  NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-
   // Sent when an bookmarks extensions API function was successfully invoked.
   // The source is the id of the extension that invoked the function, and the
   // details are a pointer to the const BookmarksFunction in question.

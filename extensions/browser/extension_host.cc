@@ -13,7 +13,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/native_web_keyboard_event.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -29,7 +28,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
@@ -233,10 +231,6 @@ void ExtensionHost::PrimaryMainFrameRenderProcessGone(
   // more central, like EPM maybe.
   ExtensionHostRegistry::Get(browser_context_)
       ->ExtensionHostRenderProcessGone(this);
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-      content::Source<BrowserContext>(browser_context_),
-      content::Details<ExtensionHost>(this));
 
   ProcessManager::Get(browser_context_)
       ->NotifyExtensionProcessTerminated(extension_);
