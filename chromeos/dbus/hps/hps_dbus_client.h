@@ -8,6 +8,8 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "chromeos/dbus/hps/hps_service.pb.h"
+#include "dbus/object_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
@@ -39,13 +41,29 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
   HpsDBusClient(const HpsDBusClient&) = delete;
   HpsDBusClient& operator=(const HpsDBusClient&) = delete;
 
-  // Polls the HPS notify state.
-  virtual void GetResultHpsNotify(GetResultHpsNotifyCallback cb) = 0;
-
   // Registers the given observer to receive HPS signals.
   virtual void AddObserver(Observer* observer) = 0;
   // Deregisters the given observer.
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // D-Bus methods.
+  // Polls the HPS notify state.
+  virtual void GetResultHpsNotify(GetResultHpsNotifyCallback cb) = 0;
+  // Enables HpsSense in HpsService.
+  virtual void EnableHpsSense(const hps::FeatureConfig& config) = 0;
+  // Disables HpsSense in HpsService.
+  virtual void DisableHpsSense() = 0;
+  // Enables HpsNotify in HpsService.
+  virtual void EnableHpsNotify(const hps::FeatureConfig& config) = 0;
+  // Disables HpsNotify in HpsService.
+  virtual void DisableHpsNotify() = 0;
+  // Registers |callback| to run when the HpsService becomes available.
+  // If the service is already available, or if connecting to the name-owner-
+  // changed signal fails, |callback| will be run once asynchronously.
+  // Otherwise, |callback| will be run once in the future after the service
+  // becomes available.
+  virtual void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) = 0;
 
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);

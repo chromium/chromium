@@ -55,6 +55,7 @@ class HpsDBusClientImpl : public HpsDBusClient {
         base::BindOnce(&HpsDBusClientImpl::HpsNotifyChangedConnected,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
   ~HpsDBusClientImpl() override = default;
 
   HpsDBusClientImpl(const HpsDBusClientImpl&) = delete;
@@ -83,7 +84,6 @@ class HpsDBusClientImpl : public HpsDBusClient {
   }
 
   // HpsDBusClient:
-
   void GetResultHpsNotify(GetResultHpsNotifyCallback cb) override {
     dbus::MethodCall method_call(hps::kHpsServiceInterface,
                                  hps::kGetResultHpsNotify);
@@ -101,7 +101,49 @@ class HpsDBusClientImpl : public HpsDBusClient {
     observers_.RemoveObserver(observer);
   }
 
+  void EnableHpsSense(const hps::FeatureConfig& config) override {
+    EnableHpsFeature(hps::kEnableHpsSense, config);
+  }
+
+  void DisableHpsSense() override { DisableHpsFeature(hps::kDisableHpsSense); }
+
+  void EnableHpsNotify(const hps::FeatureConfig& config) override {
+    EnableHpsFeature(hps::kEnableHpsNotify, config);
+  }
+
+  void DisableHpsNotify() override {
+    DisableHpsFeature(hps::kDisableHpsNotify);
+  }
+
+  void WaitForServiceToBeAvailable(
+      dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback)
+      override {
+    hps_proxy_->WaitForServiceToBeAvailable(std::move(callback));
+  }
+
  private:
+  // Send a method call to HpsDBus with given method name and config.
+  void EnableHpsFeature(const std::string& method_name,
+                        const hps::FeatureConfig& config) {
+    dbus::MethodCall method_call(hps::kHpsServiceInterface, method_name);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(config)) {
+      LOG(ERROR) << "Failed to encode protobuf for " << method_name;
+    } else {
+      hps_proxy_->CallMethod(&method_call,
+                             dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                             base::DoNothing());
+    }
+  }
+
+  // Send a method call to HpsDBus with given method name.
+  void DisableHpsFeature(const std::string& method_name) {
+    dbus::MethodCall method_call(hps::kHpsServiceInterface, method_name);
+    hps_proxy_->CallMethod(&method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                           base::DoNothing());
+  }
+
   dbus::ObjectProxy* const hps_proxy_;
 
   base::ObserverList<Observer> observers_;

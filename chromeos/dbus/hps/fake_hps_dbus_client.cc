@@ -42,4 +42,18 @@ void FakeHpsDBusClient::GetResultHpsNotify(GetResultHpsNotifyCallback cb) {
       FROM_HERE, base::BindOnce(std::move(cb), hps_notify_result_));
 }
 
+void FakeHpsDBusClient::EnableHpsSense(const hps::FeatureConfig& config) {}
+
+void FakeHpsDBusClient::DisableHpsSense() {}
+
+void FakeHpsDBusClient::EnableHpsNotify(const hps::FeatureConfig& config) {}
+
+void FakeHpsDBusClient::DisableHpsNotify() {}
+
+void FakeHpsDBusClient::WaitForServiceToBeAvailable(
+    dbus::ObjectProxy::WaitForServiceToBeAvailableCallback cb) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(cb), hps_service_is_avaible_));
+}
+
 }  // namespace chromeos
