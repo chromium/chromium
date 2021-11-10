@@ -2055,7 +2055,9 @@ bool HTMLInputElement::SetupDateTimeChooserParameters(
   parameters.double_value = input_type_->ValueAsDouble();
   parameters.focused_field_index = input_type_view_->FocusedFieldIndex();
   parameters.is_anchor_element_rtl =
-      input_type_view_->ComputedTextDirection() == TextDirection::kRtl;
+      GetLayoutObject()
+          ? input_type_view_->ComputedTextDirection() == TextDirection::kRtl
+          : false;
   if (HTMLDataListElement* data_list = DataList()) {
     HTMLDataListOptionsCollection* options = data_list->options();
     for (unsigned i = 0; HTMLOptionElement* option = options->Item(i); ++i) {
