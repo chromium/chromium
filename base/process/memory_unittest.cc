@@ -450,7 +450,9 @@ TEST_F(OutOfMemoryDeathTest, PosixMemalignPurgeable) {
 // it's likely that they'll fail because they would require a preposterous
 // amount of (virtual) memory.
 
-TEST_F(OutOfMemoryDeathTest, CFAllocatorSystemDefault) {
+// Disabled to investigate crbug.com/1268776.
+// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
+TEST_F(OutOfMemoryDeathTest, DISABLED_CFAllocatorSystemDefault) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     while ((value_ =
@@ -459,7 +461,7 @@ TEST_F(OutOfMemoryDeathTest, CFAllocatorSystemDefault) {
   });
 }
 
-TEST_F(OutOfMemoryDeathTest, CFAllocatorMalloc) {
+TEST_F(OutOfMemoryDeathTest, DISABLED_CFAllocatorMalloc) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     while ((value_ = base::AllocateViaCFAllocatorMalloc(signed_test_size_))) {
@@ -467,7 +469,7 @@ TEST_F(OutOfMemoryDeathTest, CFAllocatorMalloc) {
   });
 }
 
-TEST_F(OutOfMemoryDeathTest, CFAllocatorMallocZone) {
+TEST_F(OutOfMemoryDeathTest, DISABLED_CFAllocatorMallocZone) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
     while (
