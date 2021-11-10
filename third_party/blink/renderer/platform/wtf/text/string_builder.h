@@ -44,7 +44,7 @@ class WTF_EXPORT StringBuilder {
   StringBuilder() : no_buffer_() {}
   StringBuilder(const StringBuilder&) = delete;
   StringBuilder& operator=(const StringBuilder&) = delete;
-  ~StringBuilder() { Clear(); }
+  ~StringBuilder() { ClearBuffer(); }
 
   void Append(const UChar*, unsigned length);
   void Append(const LChar*, unsigned length);
