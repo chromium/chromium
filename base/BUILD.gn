@@ -1663,6 +1663,7 @@ component("base") {
       "files/file_enumerator_posix.cc",
       "files/file_path_watcher_fuchsia.cc",
       "files/file_posix.cc",
+      "files/file_util_fuchsia.cc",
       "files/file_util_posix.cc",
       "files/memory_mapped_file_posix.cc",
       "fuchsia/default_job.cc",
