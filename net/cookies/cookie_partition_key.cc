@@ -13,10 +13,10 @@ namespace net {
 CookiePartitionKey::CookiePartitionKey() = default;
 
 CookiePartitionKey::CookiePartitionKey(const SchemefulSite& site)
-    : site_(site), from_script_(false) {}
+    : site_(site) {}
 
 CookiePartitionKey::CookiePartitionKey(const GURL& url)
-    : site_(SchemefulSite(url)), from_script_(false) {}
+    : site_(SchemefulSite(url)) {}
 
 CookiePartitionKey::CookiePartitionKey(bool from_script)
     : from_script_(from_script) {}

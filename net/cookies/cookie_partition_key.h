@@ -96,7 +96,7 @@ class NET_EXPORT CookiePartitionKey {
   explicit CookiePartitionKey(bool from_script);
 
   SchemefulSite site_;
-  bool from_script_;
+  bool from_script_ = false;
 };
 
 }  // namespace net
