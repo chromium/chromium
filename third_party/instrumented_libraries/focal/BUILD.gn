@@ -582,12 +582,7 @@ instrumented_library("libpixman-1-0") {
     # Avoid a clang issue. http://crbug.com/449183
     "--disable-mmx",
   ]
-  patches = [
-    "patches/libpixman-1-0.1.diff",
-
-    # Fix an incompatibility when building with clang.
-    "patches/libpixman-1-0.2.diff",
-  ]
+  patches = [ "patches/libpixman-1-0.diff" ]
 }
 
 instrumented_library("libpng12-0") {
