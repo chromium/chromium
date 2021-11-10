@@ -19,12 +19,7 @@ CaptureModeNotificationView::CaptureModeNotificationView(
     CaptureModeType capture_type)
     : message_center::NotificationView(notification),
       capture_type_(capture_type) {
-  // Creates the extra view which will depend on the type of the notification.
-  if (!notification.image().IsEmpty())
-    CreateExtraView();
-
-  // Observes image container to make changes to the extra view if necessary.
-  image_container_view()->AddObserver(this);
+  UpdateWithNotification(notification);
 }
 
 CaptureModeNotificationView::~CaptureModeNotificationView() = default;
@@ -47,6 +42,19 @@ CaptureModeNotificationView::CreateForVideo(
                                                        CaptureModeType::kVideo);
 }
 
+void CaptureModeNotificationView::UpdateWithNotification(
+    const message_center::Notification& notification) {
+  // Re-create a new extra view in all circumstances to make sure that the view
+  // is the last child of image container.
+  delete extra_view_;
+  extra_view_ = nullptr;
+
+  NotificationView::UpdateWithNotification(notification);
+
+  if (!notification.image().IsEmpty())
+    CreateExtraView();
+}
+
 void CaptureModeNotificationView::Layout() {
   message_center::NotificationView::Layout();
   if (!extra_view_)
@@ -67,23 +75,6 @@ void CaptureModeNotificationView::Layout() {
   }
 
   extra_view_->SetBoundsRect(extra_view_bounds);
-}
-
-void CaptureModeNotificationView::OnViewVisibilityChanged(
-    views::View* observed_view,
-    views::View* starting_view) {
-  if (observed_view == image_container_view() &&
-      starting_view == image_container_view()) {
-    if (!image_container_view()->GetVisible())
-      extra_view_ = nullptr;
-    else if (image_container_view()->children().empty())
-      CreateExtraView();
-  }
-}
-
-void CaptureModeNotificationView::OnViewIsDeleting(View* observed_view) {
-  DCHECK_EQ(observed_view, image_container_view());
-  views::View::RemoveObserver(this);
 }
 
 void CaptureModeNotificationView::CreateExtraView() {

@@ -20,12 +20,7 @@ CaptureModeAshNotificationView::CaptureModeAshNotificationView(
     bool shown_in_popup)
     : AshNotificationView(notification, shown_in_popup),
       capture_type_(capture_type) {
-  // Creates the extra view which will depend on the type of the notification.
-  if (!notification.image().IsEmpty())
-    CreateExtraView();
-
-  // Observes image container to make changes to the extra view if necessary.
-  image_container_view()->AddObserver(this);
+  UpdateWithNotification(notification);
 }
 
 CaptureModeAshNotificationView::~CaptureModeAshNotificationView() = default;
@@ -48,6 +43,19 @@ CaptureModeAshNotificationView::CreateForVideo(
       notification, CaptureModeType::kVideo, shown_in_popup);
 }
 
+void CaptureModeAshNotificationView::UpdateWithNotification(
+    const message_center::Notification& notification) {
+  // Re-create a new extra view in all circumstances to make sure that the view
+  // is the last child of image container.
+  delete extra_view_;
+  extra_view_ = nullptr;
+
+  NotificationViewBase::UpdateWithNotification(notification);
+
+  if (!notification.image().IsEmpty())
+    CreateExtraView();
+}
+
 void CaptureModeAshNotificationView::Layout() {
   AshNotificationView::Layout();
   if (!extra_view_)
@@ -68,23 +76,6 @@ void CaptureModeAshNotificationView::Layout() {
   }
 
   extra_view_->SetBoundsRect(extra_view_bounds);
-}
-
-void CaptureModeAshNotificationView::OnViewVisibilityChanged(
-    views::View* observed_view,
-    views::View* starting_view) {
-  if (observed_view == image_container_view() &&
-      starting_view == image_container_view()) {
-    if (!image_container_view()->GetVisible())
-      extra_view_ = nullptr;
-    else if (image_container_view()->children().empty())
-      CreateExtraView();
-  }
-}
-
-void CaptureModeAshNotificationView::OnViewIsDeleting(View* observed_view) {
-  DCHECK_EQ(observed_view, image_container_view());
-  views::View::RemoveObserver(this);
 }
 
 void CaptureModeAshNotificationView::CreateExtraView() {
