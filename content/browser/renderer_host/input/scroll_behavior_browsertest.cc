@@ -107,6 +107,23 @@ const std::string kSubframeScrollDataURL = R"HTML(
     </script>
     )HTML";
 
+const std::string kMirroredScrollersDataURL = R"HTML(
+    data:text/html;charset=utf-8,<!DOCTYPE html>
+    <meta name=viewport content="width=device-width, minimum-scale=1">
+    <style>
+      body, p { margin: 0 }
+      .s { overflow: scroll; border: 1px solid black;
+           width: 400px; height: 300px }
+      .sp { height: 1200px; width: 900px }
+    </style>
+    <div id=s1 class=s><p class=sp>SCROLLER</p></div>
+    <div id=s2 class=s><p class=sp>MIRROR</p></div>
+    <script>
+      s1.onscroll = () => { s2.scrollTo(0, s1.scrollTop) }
+      onload = () => { document.title = "ready" }
+    </script>
+    )HTML";
+
 }  // namespace
 
 namespace content {
@@ -316,6 +333,19 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   WaitForScrollToStart("element.scrollTop");
   EXPECT_TRUE(ExecJs(shell()->web_contents(), "element.scrollBy(0, -5);"));
   EXPECT_NEAR(WaitForScrollToEnd("element.scrollTop"), 95, 1);
+}
+
+// This tests that a smooth wheel scroll is not interrupted when script syncs
+// a separate scroller in the onscroll handler. (This was the root cause of
+// crbug.com/1248388 affecting CodeMirror as described in crbug.com/1264266.)
+IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
+                       SmoothWheelScrollCompletesWithScriptedMirror) {
+  LoadURL(kMirroredScrollersDataURL);
+  SimulateScroll(content::mojom::GestureSourceType::kMouseInput, 0, 200,
+                 /* blocking */ false);
+  WaitForScrollToStart("s1.scrollTop");
+  EXPECT_NEAR(WaitForScrollToEnd("s1.scrollTop"), 200, 1);
+  EXPECT_NEAR(WaitForScrollToEnd("s2.scrollTop"), 200, 1);
 }
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element
