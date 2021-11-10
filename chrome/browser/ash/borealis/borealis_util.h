@@ -26,17 +26,19 @@ extern const char kBorealisAppId[];
 extern const char kBorealisMainAppId[];
 // This is used to install the Borealis DLC component.
 extern const char kBorealisDlcName[];
-// The regex used for extracing the Borealis app id of an application.
+// The regex used for extracting the Borealis app ID of an application.
 extern const char kBorealisAppIdRegex[];
 
 // Shows the Borealis installer (borealis_installer_view).
 void ShowBorealisInstallerView(Profile* profile);
 
-// Extracts the borealis app id from |exec| and puts it into |app_id|,
-// returns true if successful.
+// Returns a Borealis app ID parsed from |exec|, or nullopt on failure.
 // TODO(b/173547790): This should probably be moved when we've decided
 // the details of how/where it will be used.
 absl::optional<int> GetBorealisAppId(std::string exec);
+
+// Returns the Borealis app ID of the |window|, or nullopt on failure.
+absl::optional<int> GetBorealisAppId(const aura::Window* window);
 
 // Shows the splash screen (borealis_splash_screen_view).
 void ShowBorealisSplashScreenView(Profile* profile);

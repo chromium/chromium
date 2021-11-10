@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,6 +44,18 @@ TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsEmptyOnFailure) {
 
 TEST_F(BorealisUtilTest, GetBorealisAppIdReturnsId) {
   EXPECT_EQ(GetBorealisAppId("borealis/123").value(), 123);
+}
+
+TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsEmptyOnFailure) {
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.borealis.wmclass.foo");
+  EXPECT_EQ(GetBorealisAppId(window.get()), absl::nullopt);
+}
+
+TEST_F(BorealisUtilTest, GetBorealisAppIdFromWindowReturnsId) {
+  std::unique_ptr<aura::Window> window =
+      MakeWindow("org.chromium.borealis.xprop.123");
+  EXPECT_EQ(GetBorealisAppId(window.get()).value(), 123);
 }
 
 TEST_F(BorealisUtilTest, FeedbackFormUrlExcludesNonGames) {
