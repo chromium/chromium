@@ -35,6 +35,8 @@ const base::Feature kGlobalMediaControlsCastStartStop{
     "GlobalMediaControlsCastStartStop", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kAllowAllSitesToInitiateMirroring{
     "AllowAllSitesToInitiateMirroring", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDialMediaRouteProvider{"DialMediaRouteProvider",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
 namespace {
@@ -124,6 +126,10 @@ std::string GetReceiverIdHashToken(PrefService* pref_service) {
     pref_service->SetString(prefs::kMediaRouterReceiverIdHashToken, token);
   }
   return token;
+}
+
+bool DialMediaRouteProviderEnabled() {
+  return base::FeatureList::IsEnabled(kDialMediaRouteProvider);
 }
 
 bool GlobalMediaControlsCastStartStopEnabled() {

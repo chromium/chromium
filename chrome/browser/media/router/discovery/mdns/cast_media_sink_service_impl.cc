@@ -251,7 +251,9 @@ CastMediaSinkServiceImpl::CastMediaSinkServiceImpl(
 
 CastMediaSinkServiceImpl::~CastMediaSinkServiceImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dial_media_sink_service_->RemoveObserver(this);
+  if (dial_media_sink_service_) {
+    dial_media_sink_service_->RemoveObserver(this);
+  }
   network_monitor_->RemoveObserver(this);
   cast_socket_service_->RemoveObserver(this);
 }
@@ -272,7 +274,9 @@ void CastMediaSinkServiceImpl::Start() {
       &CastMediaSinkServiceImpl::OnNetworksChanged, GetWeakPtr()));
   network_monitor_->AddObserver(this);
 
-  dial_media_sink_service_->AddObserver(this);
+  if (dial_media_sink_service_) {
+    dial_media_sink_service_->AddObserver(this);
+  }
 
   std::vector<MediaSinkInternal> test_sinks = GetFixedIPSinksFromCommandLine();
   if (!test_sinks.empty())
@@ -287,6 +291,9 @@ void CastMediaSinkServiceImpl::RecordDeviceCounts() {
 
 void CastMediaSinkServiceImpl::OnUserGesture() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!dial_media_sink_service_)
+    return;
+
   // Re-sync sinks from DialMediaSinkService. It's possible that a
   // DIAL-discovered sink was added here earlier, but was removed due to flaky
   // network. This gives CastMediaSinkServiceImpl an opportunity to recover even
@@ -622,7 +629,8 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
   // a Cast channel to a device that came from DIAL, remove it from
   // |dial_media_sink_service_|. This ensures the device shows up as a Cast sink
   // only.
-  dial_media_sink_service_->RemoveSinkById(GetDialSinkIdFromCast(sink_id));
+  if (dial_media_sink_service_)
+    dial_media_sink_service_->RemoveSinkById(GetDialSinkIdFromCast(sink_id));
 }
 
 void CastMediaSinkServiceImpl::OnChannelOpenFailed(
@@ -672,7 +680,9 @@ void CastMediaSinkServiceImpl::TryConnectDialDiscoveredSink(
     metrics_.RecordCastSinkDiscoverySource(SinkSource::kMdnsDial);
     // Sink is a Cast device; remove from |dial_media_sink_service_| to prevent
     // duplicates.
-    dial_media_sink_service_->RemoveSink(dial_sink);
+    if (dial_media_sink_service_) {
+      dial_media_sink_service_->RemoveSink(dial_sink);
+    }
     return;
   }
 

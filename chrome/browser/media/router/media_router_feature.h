@@ -79,7 +79,8 @@ bool GetCastAllowAllIPsPref(PrefService* pref_service);
 // randomly generated string and stored in |pref_service|.
 std::string GetReceiverIdHashToken(PrefService* pref_service);
 
-// Returns true if browser side DIAL Media Route Provider is enabled.
+// Returns true if support for DIAL devices is enabled.  Disabling DIAL support
+// also disables SSDP-based discovery for Cast devices.
 bool DialMediaRouteProviderEnabled();
 
 // Returns true if global media controls are used to start and stop casting.

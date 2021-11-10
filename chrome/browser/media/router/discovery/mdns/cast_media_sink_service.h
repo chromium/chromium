@@ -43,8 +43,8 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   // Starts Cast sink discovery. No-ops if already started.
   // |sink_discovery_cb|: Callback to invoke when the list of discovered sinks
   // has been updated.
-  // |dial_media_sink_service|: Pointer to DIAL MediaSinkService for dual
-  // discovery.
+  // |dial_media_sink_service|: Optional pointer to DIAL MediaSinkService for
+  // dual discovery.
   // Marked virtual for tests.
   virtual void Start(const OnSinksDiscoveredCallback& sinks_discovered_cb,
                      MediaSinkServiceBase* dial_media_sink_service);

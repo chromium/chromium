@@ -55,7 +55,8 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // discovered devices.
   // |network_monitor|: DiscoveryNetworkMonitor to use to listen for network
   // changes.
-  // |dial_media_sink_service|: DialMediaSinkServiceImpl for dual discovery.
+  // |dial_media_sink_service|: Optional pointer to DialMediaSinkServiceImpl for
+  // |dual discovery.
   // |allow_all_ips|: If |true|, |this| will try to open channel to
   //     sinks on all IPs, and not just private IPs.
   CastMediaSinkServiceImpl(const OnSinksDiscoveredCallback& callback,
@@ -330,7 +331,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   base::flat_map<MediaSink::Id, int> dial_sink_failure_count_;
 
   // Non-owned pointer to DIAL MediaSinkService. Observed by |this| for dual
-  // discovery.
+  // discovery.  May be nullptr if the DIAL Media Route Provider is disabled.
   MediaSinkServiceBase* const dial_media_sink_service_;
 
   // Mojo Remote to the logger owned by the Media Router. The Remote is not

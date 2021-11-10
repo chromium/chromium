@@ -145,7 +145,9 @@ void MediaRouterDesktop::InitializeMediaRouteProviders() {
 
   InitializeWiredDisplayMediaRouteProvider();
   InitializeCastMediaRouteProvider();
-  InitializeDialMediaRouteProvider();
+  if (DialMediaRouteProviderEnabled()) {
+    InitializeDialMediaRouteProvider();
+  }
 }
 
 void MediaRouterDesktop::InitializeWiredDisplayMediaRouteProvider() {

@@ -194,7 +194,7 @@ Every time you start a new developer build of Chrome you get a system dialog
 asking "Do you want the application Chromium.app to accept incoming
 network connections?" - to avoid this, run with this command-line flag:
 
---disable-features="MediaRouter"
+--disable-features="DialMediaRouteProvider"
 
 ## Running test targets
 

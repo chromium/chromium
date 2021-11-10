@@ -75,16 +75,18 @@ bool DualMediaSinkService::MdnsDiscoveryStarted() {
 }
 
 DualMediaSinkService::DualMediaSinkService() {
-  dial_media_sink_service_ = std::make_unique<DialMediaSinkService>();
-  dial_media_sink_service_->Start(
-      base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
-                          base::Unretained(this), "dial"));
+  if (DialMediaRouteProviderEnabled()) {
+    dial_media_sink_service_ = std::make_unique<DialMediaSinkService>();
+    dial_media_sink_service_->Start(
+        base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
+                            base::Unretained(this), "dial"));
+  }
 
   cast_media_sink_service_ = std::make_unique<CastMediaSinkService>();
   cast_media_sink_service_->Start(
       base::BindRepeating(&DualMediaSinkService::OnSinksDiscovered,
                           base::Unretained(this), "cast"),
-      dial_media_sink_service_->impl());
+      dial_media_sink_service_ ? dial_media_sink_service_->impl() : nullptr);
 
   cast_channel::CastSocketService* cast_socket_service =
       cast_channel::CastSocketService::GetInstance();
@@ -119,9 +121,12 @@ void DualMediaSinkService::BindLogger(LoggerImpl* logger_impl) {
   logger_is_bound_ = true;
   cast_media_sink_service_->BindLogger(logger_impl);
 
-  mojo::PendingRemote<mojom::Logger> dial_pending_remote;
-  logger_impl->Bind(dial_pending_remote.InitWithNewPipeAndPassReceiver());
-  dial_media_sink_service_->BindLogger(std::move(dial_pending_remote));
+  if (dial_media_sink_service_) {
+    mojo::PendingRemote<mojom::Logger> dial_pending_remote;
+    logger_impl->Bind(dial_pending_remote.InitWithNewPipeAndPassReceiver());
+    dial_media_sink_service_->BindLogger(std::move(dial_pending_remote));
+  }
+
   mojo::PendingRemote<mojom::Logger> cast_discovery_pending_remote;
   logger_impl->Bind(
       cast_discovery_pending_remote.InitWithNewPipeAndPassReceiver());
