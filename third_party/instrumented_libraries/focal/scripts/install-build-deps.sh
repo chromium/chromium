@@ -50,6 +50,7 @@ libindicator \
 libjpeg-turbo \
 libmicrohttpd \
 libpng1.6 \
+libsasl2-dev \
 libunity \
 libx11 \
 libxau \
