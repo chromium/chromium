@@ -51,11 +51,6 @@ namespace {
 
 const char kOsSettingsUrl[] = "chrome://os-settings/";
 
-constexpr char kUnset[] = "__unset__";
-constexpr char kDefault[] = "__default__";
-constexpr char kOemAppName[] = "oem_app";
-constexpr char kSomeAppName[] = "some_app";
-
 // These constants are defined as functions so their values can be derived via
 // function calls.  The constant naming scheme is kept to maintain readability.
 const std::string kInvalidOrdinalsId() {
@@ -84,32 +79,6 @@ const std::string kDupeItemId() {
 }
 const std::string kParentId() {
   return GenerateId("parent_id");
-}
-
-syncer::SyncData CreateAppRemoteData(
-    const std::string& id,
-    const std::string& name,
-    const std::string& parent_id,
-    const std::string& item_ordinal,
-    const std::string& item_pin_ordinal,
-    sync_pb::AppListSpecifics_AppListItemType item_type =
-        sync_pb::AppListSpecifics_AppListItemType_TYPE_APP) {
-  sync_pb::EntitySpecifics specifics;
-  sync_pb::AppListSpecifics* app_list = specifics.mutable_app_list();
-  if (id != kUnset)
-    app_list->set_item_id(id);
-  app_list->set_item_type(item_type);
-  if (name != kUnset)
-    app_list->set_item_name(name);
-  if (parent_id != kUnset)
-    app_list->set_parent_id(parent_id);
-  if (item_ordinal != kUnset)
-    app_list->set_item_ordinal(item_ordinal);
-  if (item_pin_ordinal != kUnset)
-    app_list->set_item_pin_ordinal(item_pin_ordinal);
-
-  return syncer::SyncData::CreateRemoteData(
-      specifics, syncer::ClientTagHash::FromHashed("unused"));
 }
 
 syncer::SyncDataList CreateBadAppRemoteData(const std::string& id) {

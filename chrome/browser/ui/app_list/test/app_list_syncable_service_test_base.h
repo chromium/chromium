@@ -48,6 +48,9 @@ class AppListSyncableServiceTestBase : public AppListTestBase {
   // Gets the names of the items ordered by the positions stored in sync data.
   std::vector<std::string> GetNamesOfSortedItemsFromSyncableService();
 
+  // Gets the specified item's position from sync data.
+  syncer::StringOrdinal GetPositionFromSyncData(const std::string& id) const;
+
   AppListModelUpdater* GetModelUpdater();
 
   const app_list::AppListSyncableService::SyncItem* GetSyncItem(

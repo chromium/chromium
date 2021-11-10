@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/app_list/test/test_app_list_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/crx_file/id_util.h"
+#include "components/sync/test/model/fake_sync_change_processor.h"
+#include "components/sync/test/model/sync_error_factory_mock.h"
 
 using crx_file::id_util::GenerateId;
 
@@ -45,6 +47,10 @@ class TemporaryAppListSortTest : public test::AppListSyncableServiceTestBase {
     return static_cast<ash::AppListSortOrder>(
         app_list_syncable_service()->profile()->GetPrefs()->GetInteger(
             prefs::kAppListPreferredOrder));
+  }
+
+  syncer::StringOrdinal GetPositionFromModelUpdater(const std::string& id) {
+    return GetModelUpdater()->FindItem(id)->position();
   }
 
   void Commit() {
@@ -323,4 +329,72 @@ TEST_F(TemporaryAppListSortTest, AppListHidden) {
   EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical, GetSortOrderFromPrefs());
   EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
             std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
+}
+
+// Verifies the temporary sort behavior when handling item move on a synced
+// remote device.
+TEST_F(TemporaryAppListSortTest, HandlePositionSyncUpdate) {
+  // Start syncing.
+  app_list_syncable_service()->MergeDataAndStartSyncing(
+      syncer::APP_LIST, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>(),
+      std::make_unique<syncer::SyncErrorFactoryMock>());
+  content::RunAllTasksUntilIdle();
+  RemoveAllExistingItems();
+
+  // Install four apps.
+  const std::string kItemId1 = CreateNextAppId(GenerateId("app_id1"));
+  scoped_refptr<extensions::Extension> app1 =
+      MakeApp("A", kItemId1, extensions::Extension::NO_FLAGS);
+  InstallExtension(app1.get());
+
+  const std::string kItemId2 = CreateNextAppId(GenerateId("app_id2"));
+  scoped_refptr<extensions::Extension> app2 =
+      MakeApp("B", kItemId2, extensions::Extension::NO_FLAGS);
+  InstallExtension(app2.get());
+
+  const std::string kItemId3 = CreateNextAppId(GenerateId("app_id3"));
+  scoped_refptr<extensions::Extension> app3 =
+      MakeApp("C", kItemId3, extensions::Extension::NO_FLAGS);
+  InstallExtension(app3.get());
+
+  const std::string kItemId4 = CreateNextAppId(GenerateId("app_id4"));
+  scoped_refptr<extensions::Extension> app4 =
+      MakeApp("D", kItemId4, extensions::Extension::NO_FLAGS);
+  InstallExtension(app4.get());
+
+  // Sort with the name alphabetical order.
+  AppListModelUpdater* model_updater = GetModelUpdater();
+  model_updater->OnSortRequested(ash::AppListSortOrder::kNameAlphabetical);
+  Commit();
+
+  // Sort with the name reverse alphabetical order without committing.
+  model_updater->OnSortRequested(
+      ash::AppListSortOrder::kNameReverseAlphabetical);
+  EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
+            std::vector<std::string>({kItemId1, kItemId2, kItemId3, kItemId4}));
+  EXPECT_EQ(GetOrderedItemIdsFromModelUpdater(),
+            std::vector<std::string>({kItemId4, kItemId3, kItemId2, kItemId1}));
+
+  // Emulate that `app4` is moved to the position between `app1` and `app2` on
+  // a remote device.
+  ChromeAppListItem* app4_item = model_updater->FindItem(kItemId4);
+  const syncer::StringOrdinal target_position =
+      GetPositionFromSyncData(kItemId1).CreateBetween(
+          GetPositionFromSyncData(kItemId2));
+  syncer::SyncChangeList change_list;
+  change_list.push_back(syncer::SyncChange(
+      FROM_HERE, syncer::SyncChange::ACTION_UPDATE,
+      CreateAppRemoteData(kItemId4, app4_item->name(), app4_item->folder_id(),
+                          target_position.ToInternalValue(), "")));
+  app_list_syncable_service()->ProcessSyncChanges(base::Location(),
+                                                  change_list);
+  content::RunAllTasksUntilIdle();
+
+  // Verify that the temporary sort is reverted.
+  EXPECT_FALSE(IsUnderTemporarySort());
+  EXPECT_EQ(GetOrderedItemIdsFromSyncableService(),
+            std::vector<std::string>({kItemId1, kItemId4, kItemId2, kItemId3}));
+  EXPECT_EQ(GetOrderedItemIdsFromModelUpdater(),
+            std::vector<std::string>({kItemId1, kItemId4, kItemId2, kItemId3}));
 }

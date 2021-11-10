@@ -68,6 +68,13 @@ void AppListTestBase::ConfigureWebAppProvider() {
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
 }
 
+// Test util constants ---------------------------------------------------------
+
+const char kUnset[] = "__unset__";
+const char kDefault[] = "__default__";
+const char kOemAppName[] = "oem_app";
+const char kSomeAppName[] = "some_app";
+
 // Test util functions----------------------------------------------------------
 
 scoped_refptr<extensions::Extension> MakeApp(
@@ -96,4 +103,29 @@ std::string CreateNextAppId(const std::string& app_id) {
   next_app_id[index]++;
   DCHECK(crx_file::id_util::IdIsValid(next_app_id));
   return next_app_id;
+}
+
+syncer::SyncData CreateAppRemoteData(
+    const std::string& id,
+    const std::string& name,
+    const std::string& parent_id,
+    const std::string& item_ordinal,
+    const std::string& item_pin_ordinal,
+    sync_pb::AppListSpecifics_AppListItemType item_type) {
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::AppListSpecifics* app_list = specifics.mutable_app_list();
+  if (id != kUnset)
+    app_list->set_item_id(id);
+  app_list->set_item_type(item_type);
+  if (name != kUnset)
+    app_list->set_item_name(name);
+  if (parent_id != kUnset)
+    app_list->set_parent_id(parent_id);
+  if (item_ordinal != kUnset)
+    app_list->set_item_ordinal(item_ordinal);
+  if (item_pin_ordinal != kUnset)
+    app_list->set_item_pin_ordinal(item_pin_ordinal);
+
+  return syncer::SyncData::CreateRemoteData(
+      specifics, syncer::ClientTagHash::FromHashed("unused"));
 }
