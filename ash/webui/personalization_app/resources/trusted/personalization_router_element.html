@@ -7,11 +7,11 @@
   #wallpaperContainer {
     display: grid;
     grid-template-areas:
-      ". leftspacer breadcrumb rightspacer ."
-      ". leftspacer selected   rightspacer ."
-      ". leftspacer .          rightspacer ."
-      ". leftspacer imagegrid  rightspacer ."
-      ". leftspacer .          rightspacer .";
+      '. leftspacer breadcrumb rightspacer .'
+      '. leftspacer selected   rightspacer .'
+      '. leftspacer .          rightspacer .'
+      '. leftspacer imagegrid  rightspacer .'
+      '. leftspacer .          rightspacer .';
     grid-template-columns: 1fr 16px minmax(568px, 920px) 16px 1fr;
     grid-template-rows: 56px 172px 12px 1fr 12px;
     height: 100%;
@@ -30,14 +30,17 @@
   wallpaper-selected {
     grid-area: selected;
   }
-  wallpaper-collections, wallpaper-images, google-photos, local-images {
+  wallpaper-collections,
+  wallpaper-images,
+  google-photos,
+  local-images {
     grid-area: imagegrid;
   }
   personalization-toast {
-    position: absolute;
     bottom: 16px;
     left: 16px;
     max-width: 380px;
+    position: absolute;
   }
   wallpaper-fullscreen {
     bottom: 0;
@@ -64,9 +67,10 @@
     <div id="wallpaperContainer">
       <!-- Prevent left margin from collapsing on narrow window in RTL -->
       <div id="leftspacer"></div>
-      <wallpaper-breadcrumb path=[[path_]] collection-id="[[queryParams_.id]]">
+      <wallpaper-breadcrumb path="[[path_]]"
+          collection-id="[[queryParams_.id]]">
       </wallpaper-breadcrumb>
-      <wallpaper-selected path=[[path_]] collection-id="[[queryParams_.id]]">
+      <wallpaper-selected path="[[path_]]" collection-id="[[queryParams_.id]]">
       </wallpaper-selected>
       <!-- do not use hidden$ here - need to listen on property change in
           these elements. -->
