@@ -78,6 +78,9 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
   // Triggered when mounting the filesystem has failed in a fashion that will
   // not be automatically retried.
   virtual void OnFileSystemMountFailed() {}
+
+  // Triggered when the `DriveIntegrationService` is being destroyed.
+  virtual void OnDriveIntegrationServiceDestroyed() {}
 };
 
 // DriveIntegrationService is used to integrate Drive to Chrome. This class

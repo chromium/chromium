@@ -39,6 +39,7 @@ class DriveIntegrationServiceAsh
   void OnFileSystemMounted() override;
   void OnFileSystemBeingUnmounted() override;
   void OnFileSystemMountFailed() override;
+  void OnDriveIntegrationServiceDestroyed() override;
 
  private:
   base::ScopedObservation<drive::DriveIntegrationService,
