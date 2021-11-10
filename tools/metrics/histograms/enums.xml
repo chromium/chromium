@@ -1130,6 +1130,7 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="Chrome profile creation"/>
   <int value="8"
       label="Account addition flow launched by the user from One Google Bar"/>
+  <int value="9" label="Re-auth account button in Avatar bubble"/>
 </enum>
 
 <enum name="AccountManagerTokenLoadStatus">

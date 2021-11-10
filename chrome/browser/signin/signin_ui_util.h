@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/ui/signin_reauth_view_controller.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -24,6 +25,12 @@ class Browser;
 class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace account_manager {
+class AccountManagerFacade;
+}
+#endif
 
 // Utility functions to gather status information from the various signed in
 // services and construct messages suitable for showing in UI.
@@ -41,6 +48,23 @@ void InitializePrefsForProfile(Profile* profile);
 
 // Shows a learn more page for signin errors.
 void ShowSigninErrorLearnMorePage(Profile* profile);
+
+// Shows a reauth page/dialog to reauthanticate a primary account in error
+// state.
+void ShowReauthForPrimaryAccountWithAuthError(
+    Browser* browser,
+    signin_metrics::AccessPoint access_point);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace internal {
+// Same as `ShowReauthForPrimaryAccountWithAuthError` but with a getter function
+// for AccountManagerFacade so that it can be unit tested.
+void ShowReauthForPrimaryAccountWithAuthErrorLacros(
+    Browser* browser,
+    signin_metrics::AccessPoint access_point,
+    account_manager::AccountManagerFacade* account_manager_facade);
+}  // namespace internal
+#endif
 
 // This function is used to enable sync for a given account:
 // * This function does nothing if the user is already signed in to Chrome.

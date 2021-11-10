@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -46,6 +47,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/account_manager/account_manager_util.h"
+#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -145,6 +152,23 @@ std::string GetReauthAccessPointHistogramSuffix(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+account_manager::AccountManagerFacade::AccountAdditionSource
+GetAccountReauthSourceFromAccessPoint(
+    signin_metrics::AccessPoint access_point) {
+  switch (access_point) {
+    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kAvatarBubbleReauthAccountButton;
+    default:
+      NOTREACHED() << "Reauth is requested from an unknown access point "
+                   << static_cast<int>(access_point);
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kMaxValue;
+  }
+}
+#endif
+
 }  // namespace
 
 namespace signin_ui_util {
@@ -186,6 +210,49 @@ void ShowSigninErrorLearnMorePage(Profile* profile) {
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
 }
+
+void ShowReauthForPrimaryAccountWithAuthError(
+    Browser* browser,
+    signin_metrics::AccessPoint access_point) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On ChromeOS, sync errors are fixed by re-signing into the OS.
+  NOTREACHED();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  internal::ShowReauthForPrimaryAccountWithAuthErrorLacros(
+      browser, access_point,
+      ::GetAccountManagerFacade(browser->profile()->GetPath().value()));
+#else
+  browser->signin_view_controller()->ShowSignin(
+      profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH, access_point);
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace internal {
+void ShowReauthForPrimaryAccountWithAuthErrorLacros(
+    Browser* browser,
+    signin_metrics::AccessPoint access_point,
+    account_manager::AccountManagerFacade* account_manager_facade) {
+  Profile* profile = browser->profile();
+  if (IsAccountManagerAvailable(profile)) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    CoreAccountInfo primary_account_info =
+        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+    DCHECK(!primary_account_info.IsEmpty());
+    DCHECK(identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+        primary_account_info.account_id));
+    account_manager_facade->ShowReauthAccountDialog(
+        GetAccountReauthSourceFromAccessPoint(access_point),
+        primary_account_info.email);
+  } else {
+    DCHECK(!base::FeatureList::IsEnabled(kMultiProfileAccountConsistency));
+    browser->signin_view_controller()->ShowSignin(
+        profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH, access_point);
+  }
+}
+}  // namespace internal
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void EnableSyncFromSingleAccountPromo(
     Browser* browser,
