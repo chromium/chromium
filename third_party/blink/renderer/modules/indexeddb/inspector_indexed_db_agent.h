@@ -34,7 +34,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/IndexedDB.h"
+#include "third_party/blink/renderer/core/inspector/protocol/indexed_db.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/IO.h"
+#include "third_party/blink/renderer/core/inspector/protocol/io.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace v8 {

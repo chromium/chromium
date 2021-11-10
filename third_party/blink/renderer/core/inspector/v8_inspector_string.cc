@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 
 #include <utility>
-#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
+#include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 

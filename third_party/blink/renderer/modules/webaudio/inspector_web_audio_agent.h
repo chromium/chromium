@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/WebAudio.h"
+#include "third_party/blink/renderer/core/inspector/protocol/web_audio.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {

@@ -30,7 +30,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_INSPECTOR_DOM_STORAGE_AGENT_H_
 
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/DOMStorage.h"
+#include "third_party/blink/renderer/core/inspector/protocol/dom_storage.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/storage/storage_area.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"

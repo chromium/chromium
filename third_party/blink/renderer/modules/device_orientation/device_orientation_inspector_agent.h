@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/DeviceOrientation.h"
+#include "third_party/blink/renderer/core/inspector/protocol/device_orientation.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
