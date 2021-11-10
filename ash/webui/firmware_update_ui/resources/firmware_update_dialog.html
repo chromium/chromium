@@ -73,33 +73,31 @@
   </cr-dialog>
 </template>
 <template is="dom-if" if="[[shouldShowUpdateDialog_(dialogState)]]" restamp>
-  <!-- TODO(michaelcheco): Remove 'show-close-button' -->
   <cr-dialog id="updateDialog" show-on-attach
-      on-close="closeDialog_"
-      show-close-button>
+      on-close="closeDialog_">
     <div slot="title" id="updateDialogTitle">
       [[computeUpdateDialogTitle_(dialogState)]]
     </div>
     <div slot="body">
       <div>
         <!-- TODO(michaelcheco): i18n string -->
-        While updating, you can minimize window but do not unplug your
-        device. This may take a few minutes and your device might not work
-        during this update.
+        [[computeUpdateDialogBodyText_(dialogState)]]
       </div>
     </div>
     <div slot="footer" hidden$="[[!isUpdateInProgress_(dialogState)]]">
       <label id="progress">
-        [[computeProgressText_()]]
+        [[computeProgressText_(installationProgress.percentage)]]
       </label>
       <paper-progress id="updateProgressBar"
-          value="[[computePercentageValue_()]]" max="100">
+          value="[[computePercentageValue_(installationProgress.percentage)]]"
+          max="100">
       </paper-progress>
     </div>
     <div slot="button-container"
         hidden$="[[isUpdateInProgress_(dialogState)]]">
       <cr-button class="action-button"
-          on-click="closeDialog_">
+          on-click="closeDialog_"
+          id="updateDoneButton">
         <!-- TODO(michaelcheco): i18n string -->
         Done
       </cr-button>

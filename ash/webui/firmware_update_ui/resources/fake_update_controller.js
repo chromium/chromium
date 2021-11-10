@@ -148,7 +148,7 @@ export class FakeUpdateController {
 
   /**
    * Remove the completed firmware update and trigger the list observer.
-   *  @private
+   * @private
    */
   updateDeviceList_() {
     const updatedFakeFirmwareUpdates = fakeFirmwareUpdates.flat().filter(
