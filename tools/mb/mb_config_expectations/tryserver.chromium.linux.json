@@ -210,8 +210,7 @@
       "symbol_level": 1,
       "use_bundled_weston": true,
       "use_goma": true,
-      "use_ozone": true,
-      "use_x11": false
+      "use_ozone": true
     }
   },
   "gpu-fyi-try-lacros-intel-rel": {
@@ -227,8 +226,7 @@
       "symbol_level": 1,
       "use_bundled_weston": true,
       "use_goma": true,
-      "use_ozone": true,
-      "use_x11": false
+      "use_ozone": true
     }
   },
   "gpu-fyi-try-linux-amd-rel": {

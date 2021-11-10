@@ -3762,11 +3762,11 @@
     },
 
     # TODO(anglebug.com/4977): Make angle understand what platform it should
-    # use. Otherwise, the use_x11 && use_ozone config breaks Linux Ozone FYI (Intel) bot
+    # use. Otherwise, the ozone_platform_x11 && use_ozone config breaks Linux Ozone FYI (Intel) bot
     # that exercises angle + ozone (though, it is ozone/drm in reality. We don't support
     # angle on Linux Ozone/X11/Wayland yet).
     'ozone_linux_non_x11': {
-      'gn_args': 'use_x11=false ozone_platform_x11=false'
+      'gn_args': 'ozone_platform_x11=false'
     },
 
     'paeverywhere': {
