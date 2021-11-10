@@ -173,7 +173,11 @@ bool HasUnknownMetrics(const builders::DecodeMap& decode_map,
 }  // namespace
 
 UkmRecorderImpl::UkmRecorderImpl()
-    : sampling_seed_(static_cast<uint32_t>(base::RandUint64())) {}
+    : sampling_seed_(static_cast<uint32_t>(base::RandUint64())) {
+  max_kept_sources_ =
+      static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
+          kUkmFeature, "MaxKeptSources", max_kept_sources_));
+}
 
 UkmRecorderImpl::~UkmRecorderImpl() = default;
 
