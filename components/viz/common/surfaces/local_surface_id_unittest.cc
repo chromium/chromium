@@ -61,8 +61,7 @@ TEST(LocalSurfaceIdTest, VerifyToString) {
 // IsNewerThan gives prcedence to neither sequence. Instead reporting that
 // neither is newer than the other.
 TEST(LocalSurfaceIdTest, NewerThan) {
-  const base::UnguessableToken token =
-      base::UnguessableToken::CreateForTesting(0x111111, 0);
+  const base::UnguessableToken token = base::UnguessableToken::Create();
   // Consider a base case of (6, 2). Here `id1` has only the child advancing.
   // While `id2` only the parent advanced.
   const viz::LocalSurfaceId id1(6, 3, token);

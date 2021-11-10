@@ -67,12 +67,6 @@ constexpr FrameSinkId kArbitraryFrameSinkId2(3, 3);
 constexpr FrameSinkId kArbitraryMiddleFrameSinkId(4, 4);
 constexpr FrameSinkId kArbitraryReservedFrameSinkId(5, 5);
 constexpr FrameSinkId kArbitraryFrameSinkId3(6, 6);
-const base::UnguessableToken kArbitraryToken =
-    base::UnguessableToken::CreateForTesting(1, 2);
-const base::UnguessableToken kArbitraryToken2 =
-    base::UnguessableToken::CreateForTesting(3, 4);
-const base::UnguessableToken kArbitraryToken3 =
-    base::UnguessableToken::CreateForTesting(5, 6);
 
 constexpr gfx::Size kSurfaceSize(100, 100);
 constexpr gfx::Rect kEmptyDamage(0, 0);
@@ -2130,12 +2124,13 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, MultiPassSurfaceReference) {
 // Tests an invalid surface reference in a frame. The surface quad should just
 // be dropped.
 TEST_F(SurfaceAggregatorValidSurfaceTest, InvalidSurfaceReference) {
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+
   std::vector<Quad> quads = {
       Quad::SolidColorQuad(SK_ColorGREEN, gfx::Rect(5, 5)),
       Quad::SurfaceQuad(
           SurfaceRange(SurfaceId(
-              FrameSinkId(),
-              LocalSurfaceId(0xdeadbeef, 0xdeadbeef, kArbitraryToken))),
+              FrameSinkId(), LocalSurfaceId(0xdeadbeef, 0xdeadbeef, token))),
           SK_ColorWHITE, gfx::Rect(5, 5),
           /*stretch_content_to_fill_bounds=*/false),
       Quad::SolidColorQuad(SK_ColorBLUE, gfx::Rect(5, 5))};

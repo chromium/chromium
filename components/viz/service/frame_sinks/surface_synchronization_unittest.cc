@@ -2523,12 +2523,9 @@ TEST_F(SurfaceSynchronizationTest,
 // its nonce is different.
 TEST_F(SurfaceSynchronizationTest, LatestInFlightSurfaceSkipDifferentNonce) {
   const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1);
-  const base::UnguessableToken nonce1(
-      base::UnguessableToken::CreateForTesting(0, 1));
-  const base::UnguessableToken nonce2(
-      base::UnguessableToken::CreateForTesting(1, 1));
-  const base::UnguessableToken nonce3(
-      base::UnguessableToken::CreateForTesting(2, 1));
+  const base::UnguessableToken nonce1 = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce2 = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce3 = base::UnguessableToken::Create();
   const SurfaceId child_id1 =
       SurfaceId(kChildFrameSink1, LocalSurfaceId(1, nonce1));
   const SurfaceId child_id2 =

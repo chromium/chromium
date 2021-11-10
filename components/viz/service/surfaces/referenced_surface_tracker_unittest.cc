@@ -30,10 +30,8 @@ base::flat_set<SurfaceId> MakeReferenceSet(
 }
 
 SurfaceId MakeSurfaceId(const FrameSinkId& frame_sink_id, uint32_t parent_id) {
-  return SurfaceId(
-      frame_sink_id,
-      LocalSurfaceId(parent_id,
-                     base::UnguessableToken::CreateForTesting(0, 1u)));
+  return SurfaceId(frame_sink_id,
+                   LocalSurfaceId(parent_id, base::UnguessableToken::Create()));
 }
 
 }  // namespace

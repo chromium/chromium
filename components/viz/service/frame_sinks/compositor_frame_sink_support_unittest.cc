@@ -53,10 +53,6 @@ const base::UnguessableToken kArbitraryToken =
     base::UnguessableToken::CreateForTesting(1, 2);
 const base::UnguessableToken kAnotherArbitraryToken =
     base::UnguessableToken::CreateForTesting(2, 2);
-const base::UnguessableToken kArbitrarySourceId1 =
-    base::UnguessableToken::CreateForTesting(0xdead, 0xbeef);
-const base::UnguessableToken kArbitrarySourceId2 =
-    base::UnguessableToken::CreateForTesting(0xdead, 0xbee0);
 
 // Matches a SurfaceInfo for |surface_id|.
 MATCHER_P(SurfaceInfoWithId, surface_id, "") {
@@ -865,6 +861,9 @@ TEST_F(CompositorFrameSinkSupportTest, CopyRequestOnSubtree) {
 }
 
 TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
+  const base::UnguessableToken source_id1 = base::UnguessableToken::Create();
+  const base::UnguessableToken source_id2 = base::UnguessableToken::Create();
+
   const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
 
   {
@@ -884,7 +883,7 @@ TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called1,
                      called1_run_loop.QuitClosure()));
-  request->set_source(kArbitrarySourceId1);
+  request->set_source(source_id1);
 
   support_->RequestCopyOfOutput(
       {local_surface_id_, SubtreeCaptureId(), std::move(request)});
@@ -898,7 +897,7 @@ TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called2,
                      called2_run_loop.QuitClosure()));
-  request->set_source(kArbitrarySourceId2);
+  request->set_source(source_id2);
 
   support_->RequestCopyOfOutput(
       {local_surface_id_, SubtreeCaptureId(), std::move(request)});
@@ -914,7 +913,7 @@ TEST_F(CompositorFrameSinkSupportTest, DuplicateCopyRequest) {
       CopyOutputRequest::ResultDestination::kSystemMemory,
       base::BindOnce(&CopyRequestTestCallback, &called3,
                      called3_run_loop.QuitClosure()));
-  request->set_source(kArbitrarySourceId1);
+  request->set_source(source_id1);
 
   support_->RequestCopyOfOutput(
       {local_surface_id_, SubtreeCaptureId(), std::move(request)});
