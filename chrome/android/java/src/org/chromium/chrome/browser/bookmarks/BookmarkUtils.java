@@ -540,24 +540,9 @@ public class BookmarkUtils {
     public static String getSaveFlowTitleForBookmark(
             Context context, BookmarkId bookmarkId, @Nullable PowerBookmarkMeta meta) {
         if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING) {
-            return context.getResources().getString(R.string.price_tracking_save_flow_title);
+            return context.getResources().getString(R.string.price_tracking_title);
         }
-        return context.getResources().getString(R.string.bookmark_page_saved_default);
-    }
-
-    /**
-     * Retrieve the save flow subtitle for the given bookmark.
-     *
-     * @param context The current Android {@link Context}.
-     * @param bookmarkId The {@link BookmarkId} to get the subtitle for.
-     * @return The subtitle associated with the given bookmarkId.
-     */
-    public static String getSaveFlowSubtitleForBookmark(
-            Context context, BookmarkId bookmarkId, @Nullable PowerBookmarkMeta meta) {
-        if (meta != null && meta.getType() == PowerBookmarkType.SHOPPING) {
-            return context.getResources().getString(R.string.price_tracking_save_flow_subtitle);
-        }
-        return null;
+        return context.getResources().getString(R.string.bookmark_save_flow_title);
     }
 
     /**
@@ -688,5 +673,21 @@ public class BookmarkUtils {
             SharedPreferencesManager.getInstance().removeKey(
                     ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL);
         }
+    }
+
+    /** Allows strings to be landed for translation. */
+    private void fakeFunctiontoAllowStringMerge() {
+        int id = R.string.price_tracking_save_flow_notification_switch_subtitle_error;
+        id = R.string.disable_price_tracking_menu_item;
+        id = R.string.price_tracking_bookmarks_filter_title;
+        id = R.string.tracked_products_empty_list_title;
+        id = R.string.price_tracking_disabled_snackbar;
+        id = R.string.price_tracking_enabled_snackbar;
+        id = R.string.price_tracking_error_snackbar;
+        id = R.string.price_tracking_error_snackbar_action;
+        id = R.string.iph_price_tracking_menu_item;
+        id = R.string.iph_price_tracking_menu_item_accessibility;
+        id = R.string.iph_shopping_list_save_flow;
+        id = R.string.iph_shopping_list_save_flow_accessibility;
     }
 }

@@ -3438,17 +3438,53 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Power bookmarks strings-->
-      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_TITLE" desc="The title when a user chooses to track the price of a product.">
-        Tracking
+      <message name="IDS_BOOKMARK_SAVE_FLOW_TITLE" desc="The title when a user chooses save a bookmarks.">
+        Bookmark saved
       </message>
-      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_SUBTITLE" desc="The subtitle when a user chooses to track the price of a product.">
-        You will be notified if the price drops on any site
-      </message>
-      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_NOTIFICATION_SWITCH_TITLE" desc="The title of an optional switch to track the price for product pages added as bookmarks.">
-        Track price
+      <message name="IDS_PRICE_TRACKING_TITLE" desc="The title when a user chooses to track the price of a product.">
+        Tracking price
       </message>
       <message name="IDS_PRICE_TRACKING_SAVE_FLOW_NOTIFICATION_SWITCH_SUBTITLE" desc="The subtitle of an optional switch to track the price for product pages added as bookmarks.">
-        Get price drop notifications
+        Get alerts if the price drops on any site
+      </message>
+      <message name="IDS_PRICE_TRACKING_SAVE_FLOW_NOTIFICATION_SWITCH_SUBTITLE_ERROR" desc="The subtitle of an optional switch to track the price for product pages added as bookmarks shown in error.">
+        Couldn’t update Track price
+      </message>
+      <message name="IDS_ENABLE_PRICE_TRACKING_MENU_ITEM" desc="Menu item which allows user to track the price of a product page. [CHAR_LIMIT=32]">
+        Track price
+      </message>
+      <message name="IDS_DISABLE_PRICE_TRACKING_MENU_ITEM" desc="Menu item which allows user to stop tracking the price of a product page. [CHAR_LIMIT=32]">
+        Stop tracking price
+      </message>
+      <message name="IDS_PRICE_TRACKING_BOOKMARKS_FILTER_TITLE" desc="The title of the filter in the bookmarks manager.">
+        Tracked products
+      </message>
+      <message name="IDS_TRACKED_PRODUCTS_EMPTY_LIST_TITLE" desc="The text on tracked products page when there are no tracked products. Informing user that tracked products is supposed to appear on this surface.">
+        You’ll find your tracked products here
+      </message>
+      <message name="IDS_PRICE_TRACKING_DISABLED_SNACKBAR" desc="Snackbar for when price-tracking is disabled.">
+        Stopped tracking price
+      </message>
+      <message name="IDS_PRICE_TRACKING_ENABLED_SNACKBAR" desc="Snackbar for when price-tracking is enabled.">
+        Tracking price. Get alerts if the price drops on any site.
+      </message>
+      <message name="IDS_PRICE_TRACKING_ERROR_SNACKBAR" desc="Snackbar for when price-tracking encountered an error.">
+        Something went wrong. Couldn’t update Track price.
+      </message>
+      <message name="IDS_PRICE_TRACKING_ERROR_SNACKBAR_ACTION" desc="Snackbar retry action for when price-tracking encountered an error.">
+        Try again
+      </message>
+      <message name="IDS_IPH_PRICE_TRACKING_MENU_ITEM" desc="In-product-help text that describes that a user can track the price of a product in the overflow menu.">
+        Track price here
+      </message>
+      <message name="IDS_IPH_PRICE_TRACKING_MENU_ITEM_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="In-product-help accessibility text that describes that a user can track the price of a product in the overflow menu.">
+        Track price from the More options button
+      </message>
+      <message name="IDS_IPH_SHOPPING_LIST_SAVE_FLOW" desc="In-product help text that notifies a user that they can organize their saved products from a folder in bookmarks.">
+        Organize your tracked products in Bookmarks
+      </message> 
+      <message name="IDS_IPH_SHOPPING_LIST_SAVE_FLOW_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="In-product help accessibility text that notifies a user that they can organize their saved products from a folder in bookmarks.">
+        Organize your tracked products in Bookmarks from the folder icon
       </message>
 
       <!-- Read later strings -->
