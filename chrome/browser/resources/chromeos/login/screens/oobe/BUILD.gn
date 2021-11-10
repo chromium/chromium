@@ -12,6 +12,7 @@ group("polymer3_elements") {
     ":auto_enrollment_check_module",
     ":demo_preferences_module",
     ":demo_setup_module",
+    ":enable_debugging_module",
     ":hid_detection_module",
     ":oobe_eula_module",
     ":packaged_license_module",
@@ -28,7 +29,6 @@ group("closure_compile") {
 js_type_check("closure_compile_local") {
   uses_legacy_modules = true
   deps = [
-    ":enable_debugging",
     ":oobe_network",
   ]
 }
@@ -40,6 +40,7 @@ js_type_check("closure_compile_module") {
     ":auto_enrollment_check.m",
     ":demo_preferences.m",
     ":demo_setup.m",
+    ":enable_debugging.m",
     ":hid_detection.m",
     ":oobe_eula.m",
     ":packaged_license.m",
@@ -52,20 +53,11 @@ js_type_check("closure_compile_module") {
 ###############################
 # Closure compiler libraries below
 
-js_library("enable_debugging") {
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-  ]
-}
-
 js_library("oobe_network") {
   deps = [
     # TODO(crbug.com/251576): Restore when migrate to Polymer 3.
     # "../../components:network_select_login",
+    "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -112,6 +104,19 @@ js_library("demo_setup.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":demo_setup_module" ]
+}
+
+js_library("enable_debugging.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/enable_debugging.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  extra_deps = [ ":enable_debugging_module" ]
 }
 
 js_library("hid_detection.m") {
@@ -227,6 +232,14 @@ polymer_modulizer("demo_preferences") {
 polymer_modulizer("demo_setup") {
   js_file = "demo_setup.js"
   html_file = "demo_setup.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("enable_debugging") {
+  js_file = "enable_debugging.js"
+  html_file = "enable_debugging.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
