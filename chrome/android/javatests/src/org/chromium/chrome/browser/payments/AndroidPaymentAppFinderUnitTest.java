@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.payments.AndroidPaymentAppFinder;
+import org.chromium.components.payments.AppCreationFailureReason;
 import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppFactoryDelegate;
@@ -158,7 +159,8 @@ public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
         Mockito.verify(delegate, Mockito.never())
                 .onPaymentAppCreated(Mockito.any(PaymentApp.class));
         Mockito.verify(delegate, Mockito.never())
-                .onPaymentAppCreationError(Mockito.any(String.class));
+                .onPaymentAppCreationError(
+                        Mockito.any(String.class), Mockito.eq(AppCreationFailureReason.UNKNOWN));
         Mockito.verify(delegate).onCanMakePaymentCalculated(false);
         Mockito.verify(delegate).onDoneCreatingPaymentApps(/*factory=*/null);
     }

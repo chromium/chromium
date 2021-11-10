@@ -95,7 +95,8 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   using StatusCallback = base::OnceCallback<void(bool)>;
   using MethodsSupportedCallback =
       base::OnceCallback<void(bool methods_supported,
-                              const std::string& error_message)>;
+                              const std::string& error_message,
+                              AppCreationFailureReason error_reason)>;
 
   // The `spec` parameter should not be null.
   PaymentRequestState(
@@ -139,7 +140,10 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   bool MayCrawlForInstallablePaymentApps() override;
   bool IsOffTheRecord() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
-  void OnPaymentAppCreationError(const std::string& error_message) override;
+  void OnPaymentAppCreationError(
+      const std::string& error_message,
+      AppCreationFailureReason reason =
+          AppCreationFailureReason::UNKNOWN) override;
   bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;
@@ -387,6 +391,8 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   MethodsSupportedCallback are_requested_methods_supported_callback_;
   bool are_requested_methods_supported_ = false;
   std::string get_all_payment_apps_error_;
+  AppCreationFailureReason get_all_payment_apps_error_reason_ =
+      AppCreationFailureReason::UNKNOWN;
 
   autofill::AutofillProfile* selected_shipping_profile_ = nullptr;
   autofill::AutofillProfile* selected_shipping_option_error_profile_ = nullptr;

@@ -275,13 +275,19 @@ void SecurePaymentConfirmationAppFactory::OnAppIcon(
   if (!request->delegate || !request->web_contents())
     return;
 
-  if (!request->delegate->GetSpec() || !request->authenticator || !instrument) {
+  // In the case of a failed icon download/decode, we reject the show() promise
+  // without showing any user UX. To avoid a privacy leak here, we MUST do this
+  // check ahead of checking whether any credential matched (the 'instrument'
+  // argument to this function), as otherwise an attacker could deliberately
+  // pass an invalid icon and do a timing attack to see if a credential matches.
+  if (icon.drawsNothing()) {
+    request->delegate->OnPaymentAppCreationError(
+        errors::kInvalidIcon, AppCreationFailureReason::ICON_DOWNLOAD_FAILED);
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
 
-  if (icon.drawsNothing()) {
-    request->delegate->OnPaymentAppCreationError(errors::kInvalidIcon);
+  if (!request->delegate->GetSpec() || !request->authenticator || !instrument) {
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }

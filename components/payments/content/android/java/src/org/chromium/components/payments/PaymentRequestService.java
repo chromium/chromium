@@ -108,6 +108,9 @@ public class PaymentRequestService
     /** If not empty, use this error message for rejecting PaymentRequest.show(). */
     private String mRejectShowErrorMessage;
 
+    /** Internal reason for why PaymentRequest.show() should be rejected. */
+    private @AppCreationFailureReason int mRejectShowErrorReason = AppCreationFailureReason.UNKNOWN;
+
     /** Whether PaymentRequest.show() was invoked with a user gesture. */
     private boolean mIsUserGestureShow;
 
@@ -641,10 +644,12 @@ public class PaymentRequestService
         if (mClient != null) {
             boolean isSpc = PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
                                     PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
-                    && mSpec != null && mSpec.isSecurePaymentConfirmationRequested();
-            // Secure Payment Confirmation should make it indistinguishable
-            // to the merchant page as for whether the error is caused by
-            // user aborting or lack of credentials.
+                    && mSpec != null && mSpec.isSecurePaymentConfirmationRequested()
+                    && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED;
+            // Secure Payment Confirmation must make it indistinguishable to the merchant page as to
+            // whether an error is caused by user aborting or lack of credentials. An exception is
+            // erroring due to icon download failure; this happens before checking for credential
+            // matching and so is not a privacy leak.
             mClient.onError(isSpc ? PaymentErrorReason.NOT_ALLOWED_ERROR : reason,
                     isSpc ? ErrorStrings.WEB_AUTHN_OPERATION_TIMED_OUT_OR_NOT_ALLOWED
                           : debugMessage);
@@ -859,7 +864,12 @@ public class PaymentRequestService
         if (mSpec != null && !mSpec.isDestroyed() && mSpec.isSecurePaymentConfirmationRequested()
                 && !mBrowserPaymentRequest.hasAvailableApps()
                 && PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
-                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
+                        PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
+                // In most cases, we show the 'No Matching Payment Credential' dialog in order to
+                // preserve user privacy. An exception is failure to download the card art icon -
+                // because we download it in all cases, revealing a failure doesn't leak any
+                // information about the user to the site.
+                && mRejectShowErrorReason != AppCreationFailureReason.ICON_DOWNLOAD_FAILED) {
             mNoMatchingController =
                     SecurePaymentConfirmationNoMatchingCredController.create(mWebContents);
             mNoMatchingController.show(() -> {
@@ -1157,9 +1167,11 @@ public class PaymentRequestService
 
     // Implements PaymentAppFactoryDelegate:
     @Override
-    public void onPaymentAppCreationError(String errorMessage) {
+    public void onPaymentAppCreationError(
+            String errorMessage, @AppCreationFailureReason int errorReason) {
         if (TextUtils.isEmpty(mRejectShowErrorMessage)) {
             mRejectShowErrorMessage = errorMessage;
+            mRejectShowErrorReason = errorReason;
         }
     }
 

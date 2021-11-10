@@ -638,7 +638,8 @@ bool PaymentRequest::ChangeShippingAddress(
 
 void PaymentRequest::AreRequestedMethodsSupportedCallback(
     bool methods_supported,
-    const std::string& error_message) {
+    const std::string& error_message,
+    AppCreationFailureReason error_reason) {
   is_requested_methods_supported_invoked_ = true;
   if (is_show_called_ && spec_ && spec_->IsInitialized() &&
       observer_for_testing_) {
@@ -647,7 +648,12 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
 
   if (web_contents() && spec_->IsSecurePaymentConfirmationRequested() &&
       state()->available_apps().empty() &&
-      base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation)) {
+      base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation) &&
+      // In most cases, we show the 'No Matching Payment Credential' dialog in
+      // order to preserve user privacy. An exception is failure to download the
+      // card art icon - because we download it in all cases, revealing a
+      // failure doesn't leak any information about the user to the site.
+      error_reason != AppCreationFailureReason::ICON_DOWNLOAD_FAILED) {
     delegate_->ShowNoMatchingPaymentCredentialDialog(
         url_formatter::FormatUrlForSecurityDisplay(
             state_->GetTopOrigin(),

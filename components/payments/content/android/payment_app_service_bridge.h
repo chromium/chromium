@@ -35,7 +35,8 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   using PaymentAppCreatedCallback =
       base::RepeatingCallback<void(std::unique_ptr<PaymentApp>)>;
   using PaymentAppCreationErrorCallback =
-      base::RepeatingCallback<void(const std::string&)>;
+      base::RepeatingCallback<void(const std::string&,
+                                   AppCreationFailureReason)>;
 
   // Creates a new PaymentAppServiceBridge. This object is self-deleting; its
   // memory is freed when OnDoneCreatingPaymentApps() is called
@@ -86,7 +87,9 @@ class PaymentAppServiceBridge : public PaymentAppFactory::Delegate {
   base::WeakPtr<PaymentRequestSpec> GetSpec() const override;
   std::string GetTwaPackageName() const override;
   void OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) override;
-  void OnPaymentAppCreationError(const std::string& error_message) override;
+  void OnPaymentAppCreationError(
+      const std::string& error_message,
+      AppCreationFailureReason error_reason) override;
   bool SkipCreatingNativePaymentApps() const override;
   void OnDoneCreatingPaymentApps() override;
   void SetCanMakePaymentEvenWithoutApps() override;

@@ -191,8 +191,10 @@ void PaymentRequestState::OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) {
 }
 
 void PaymentRequestState::OnPaymentAppCreationError(
-    const std::string& error_message) {
+    const std::string& error_message,
+    AppCreationFailureReason reason) {
   get_all_payment_apps_error_ = error_message;
+  get_all_payment_apps_error_reason_ = reason;
 }
 
 bool PaymentRequestState::SkipCreatingNativePaymentApps() const {
@@ -372,7 +374,8 @@ void PaymentRequestState::CheckRequestedMethodsSupported(
     get_all_payment_apps_error_ = errors::kAppStoreMethodOnlySupportedInTwa;
   }
 
-  std::move(callback).Run(supported, get_all_payment_apps_error_);
+  std::move(callback).Run(supported, get_all_payment_apps_error_,
+                          get_all_payment_apps_error_reason_);
 }
 
 std::string PaymentRequestState::GetAuthenticatedEmail() const {

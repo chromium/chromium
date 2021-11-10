@@ -248,6 +248,7 @@ android_library("minimal_java") {
     "//url:origin_java",
   ]
   srcjar_deps = [
+    ":app_creation_failure_reason_generated_enum",
     ":method_strings_generated_srcjar",
     ":payment_app_type_generated_enum",
   ]
@@ -290,6 +291,10 @@ java_cpp_strings("prefs_strings_generated_srcjar") {
 
 java_cpp_enum("payment_app_type_generated_enum") {
   sources = [ "//components/payments/content/payment_app.h" ]
+}
+
+java_cpp_enum("app_creation_failure_reason_generated_enum") {
+  sources = [ "//components/payments/content/payment_app_factory.h" ]
 }
 
 java_cpp_enum("payments_journey_logger_enum_javagen") {

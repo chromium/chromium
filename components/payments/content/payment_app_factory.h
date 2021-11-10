@@ -36,6 +36,15 @@ class InternalAuthenticator;
 
 namespace payments {
 
+// Known reasons why an app may fail to be created. Passed to a
+// PaymentAppFactory Delegate to allow it to better handle the lack of creation
+// of an app, if appropriate.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.payments
+enum class AppCreationFailureReason {
+  UNKNOWN,
+  ICON_DOWNLOAD_FAILED,
+};
+
 class ContentPaymentRequestDelegate;
 class PaymentManifestWebDataService;
 class PaymentRequestSpec;
@@ -98,7 +107,9 @@ class PaymentAppFactory {
     // Called when there is an error creating a payment app. Called when unable
     // to download a web app manifest, for example.
     virtual void OnPaymentAppCreationError(
-        const std::string& error_message) = 0;
+        const std::string& error_message,
+        AppCreationFailureReason failure_reason =
+            AppCreationFailureReason::UNKNOWN) = 0;
 
     // Whether the factory should early exit before creating platform-specific
     // PaymentApp objects. This is used by PaymentAppServiceBridge to skip

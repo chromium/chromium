@@ -201,8 +201,10 @@ class PaymentRequest : public mojom::PaymentRequest,
   void HasEnrolledInstrumentCallback(bool has_enrolled_instrument);
 
   // The callback for PaymentRequestState::AreRequestedMethodsSupported.
-  void AreRequestedMethodsSupportedCallback(bool methods_supported,
-                                            const std::string& error_message);
+  void AreRequestedMethodsSupportedCallback(
+      bool methods_supported,
+      const std::string& error_message,
+      AppCreationFailureReason error_reason);
 
   // Sends either HAS_ENROLLED_INSTRUMENT or HAS_NO_ENROLLED_INSTRUMENT to the
   // renderer, depending on |has_enrolled_instrument| value. Does not check

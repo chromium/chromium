@@ -223,7 +223,8 @@ const char kValidInstrumentIconRequired[] =
     "The \"secure-payment-confirmation\" method requires a valid URL in the "
     "\"instrument.icon\" field.";
 
-const char kInvalidIcon[] = "The icon is not valid.";
+const char kInvalidIcon[] =
+    "The \"instrument.icon\" either could not be downloaded or decoded.";
 
 }  // namespace errors
 }  // namespace payments
