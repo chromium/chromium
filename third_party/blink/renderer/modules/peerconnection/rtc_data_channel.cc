@@ -188,13 +188,19 @@ void SendOnSignalingThread(
   // signaling thread to resolve from the JS main thread. So we make sure that
   // channel->Send() doesn't fail by replicating the checks in the Blink layer.
   // The possible failures per the spec are:
-  // - Channel not in open state (checked in every Send() implementation).
+  // - Channel not in open state. Although we check the state in each Send()
+  // implementation, it's possible to have a short race between the WebRTC state
+  // and the Chrome state, i.e. sending while a remote close event is pending.
+  // In this case, it's safe to ignore send failures.
   // - Data longer than the transport maxMessageSize (not yet implemented in
   // WebRTC or Blink).
   // - Send Buffers full (buffered amount accounting in Blink layer to check for
   // it).
   bool result = channel->Send(data_buffer);
-  CHECK(result);
+  if (!result) {
+    // TODO(orphis): Add collect UMA stats about failure.
+    LOG(ERROR) << "Send failed, channel state: " << channel->state();
+  }
 }
 
 }  // namespace
