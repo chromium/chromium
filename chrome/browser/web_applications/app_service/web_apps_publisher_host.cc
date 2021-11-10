@@ -166,16 +166,10 @@ void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
                                     apps::IconType icon_type,
                                     int32_t size_hint_in_dip,
                                     apps::LoadIconCallback callback) {
-  if (!icon_key) {
-    // On failure, we still run the callback, with an empty IconValue.
-    std::move(callback).Run(std::make_unique<apps::IconValue>());
-    return;
-  }
-
-  std::unique_ptr<apps::IconKey> key =
-      apps::ConvertMojomIconKeyToIconKey(std::move(icon_key));
-  publisher_helper().LoadIcon(app_id, *key, icon_type, size_hint_in_dip,
-                              std::move(callback));
+  publisher_helper().LoadIcon(
+      app_id, std::move(icon_key),
+      apps::ConvertIconTypeToMojomIconType(icon_type), size_hint_in_dip,
+      apps::MojomIconValueToIconValueCallback(std::move(callback)));
 }
 
 void WebAppsPublisherHost::OpenNativeSettings(const std::string& app_id) {

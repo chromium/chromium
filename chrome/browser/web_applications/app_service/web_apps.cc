@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -92,21 +91,24 @@ void AddDefaultPreferredApp(const std::string& app_id,
 
 }  // namespace
 
-WebApps::WebApps(apps::AppServiceProxy* proxy)
-    : apps::AppPublisher(proxy),
-      profile_(proxy->profile()),
+WebApps::WebApps(const mojo::Remote<apps::mojom::AppService>& app_service,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                 apps::InstanceRegistry* instance_registry,
+#endif
+                 Profile* profile)
+    : profile_(profile),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_)),
-      app_service_(proxy->AppService().get()),
+      app_service_(nullptr),
       app_type_(GetWebAppType()),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      instance_registry_(&proxy->InstanceRegistry()),
+      instance_registry_(instance_registry),
 #endif
       publisher_helper_(profile_,
                         provider_,
                         app_type_,
                         this,
                         ShouldObserveMediaRequests()) {
-  Initialize(proxy->AppService());
+  Initialize(app_service);
 }
 
 WebApps::~WebApps() = default;
@@ -159,19 +161,7 @@ void WebApps::Initialize(
   DCHECK(provider_);
 
   PublisherBase::Initialize(app_service, app_type_);
-
-  provider_->on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(&WebApps::InitWebApps, AsWeakPtr()));
-}
-
-void WebApps::LoadIcon(const std::string& app_id,
-                       const apps::IconKey& icon_key,
-                       apps::IconType icon_type,
-                       int32_t size_hint_in_dip,
-                       bool allow_placeholder_icon,
-                       apps::LoadIconCallback callback) {
-  publisher_helper().LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
-                              std::move(callback));
+  app_service_ = app_service.get();
 }
 
 void WebApps::Connect(
@@ -190,18 +180,8 @@ void WebApps::LoadIcon(const std::string& app_id,
                        int32_t size_hint_in_dip,
                        bool allow_placeholder_icon,
                        LoadIconCallback callback) {
-  if (!icon_key) {
-    // On failure, we still run the callback, with an empty IconValue.
-    std::move(callback).Run(apps::mojom::IconValue::New());
-    return;
-  }
-
-  std::unique_ptr<apps::IconKey> key =
-      apps::ConvertMojomIconKeyToIconKey(std::move(icon_key));
-  publisher_helper().LoadIcon(
-      app_id, *key, apps::ConvertMojomIconTypeToIconType(icon_type),
-      size_hint_in_dip,
-      apps::IconValueToMojomIconValueCallback(std::move(callback)));
+  publisher_helper().LoadIcon(app_id, std::move(icon_key), std::move(icon_type),
+                              size_hint_in_dip, std::move(callback));
 }
 
 void WebApps::Launch(const std::string& app_id,
@@ -240,7 +220,7 @@ void WebApps::OpenNativeSettings(const std::string& app_id) {
   publisher_helper().OpenNativeSettings(app_id);
 }
 
-void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> mojom_apps) {
+void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> apps) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const WebApp* web_app = GetWebApp(ash::kChromeUITrustedProjectorSwaAppId);
   if (web_app) {
@@ -250,27 +230,15 @@ void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> mojom_apps) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  if (mojom_apps.empty()) {
-    return;
-  }
-
-  std::vector<std::unique_ptr<apps::App>> apps;
-  for (apps::mojom::AppPtr& app : mojom_apps) {
-    apps.push_back(apps::ConvertMojomAppToApp(app));
-  }
-
-  apps::AppPublisher::Publish(std::move(apps));
-
   const bool should_notify_initialized = false;
   if (subscribers_.size() == 1) {
     auto& subscriber = *subscribers_.begin();
-    subscriber->OnApps(std::move(mojom_apps), app_type(),
-                       should_notify_initialized);
+    subscriber->OnApps(std::move(apps), app_type(), should_notify_initialized);
     return;
   }
   for (auto& subscriber : subscribers_) {
     std::vector<apps::mojom::AppPtr> cloned_apps;
-    for (const auto& app : mojom_apps)
+    for (const auto& app : apps)
       cloned_apps.push_back(app.Clone());
     subscriber->OnApps(std::move(cloned_apps), app_type(),
                        should_notify_initialized);
@@ -290,8 +258,7 @@ void WebApps::PublishWebApp(apps::mojom::AppPtr app) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  apps::AppPublisher::Publish(apps::ConvertMojomAppToApp(app));
-  PublisherBase::Publish(std::move(app), subscribers_);
+  Publish(std::move(app), subscribers_);
 }
 
 void WebApps::ModifyWebAppCapabilityAccess(
@@ -302,18 +269,6 @@ void WebApps::ModifyWebAppCapabilityAccess(
                          std::move(accessing_microphone));
 }
 
-std::vector<std::unique_ptr<apps::App>> WebApps::CreateWebApps() {
-  DCHECK(provider_);
-
-  std::vector<std::unique_ptr<apps::App>> apps;
-  for (const WebApp& web_app : provider_->registrar().GetApps()) {
-    if (Accepts(web_app.app_id())) {
-      apps.push_back(publisher_helper().CreateWebApp(&web_app));
-    }
-  }
-  return apps;
-}
-
 void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
   DCHECK(provider_);
 
@@ -322,14 +277,6 @@ void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
       apps_out->push_back(publisher_helper().ConvertWebApp(&web_app));
     }
   }
-}
-
-void WebApps::InitWebApps() {
-  std::vector<std::unique_ptr<apps::App>> apps = CreateWebApps();
-  if (apps.empty()) {
-    return;
-  }
-  apps::AppPublisher::Publish(std::move(apps));
 }
 
 void WebApps::StartPublishingWebApps(

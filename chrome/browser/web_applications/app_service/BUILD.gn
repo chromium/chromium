@@ -10,14 +10,9 @@ source_set("app_service") {
     "link_capturing_migration_manager.h",
     "web_app_publisher_helper.cc",
     "web_app_publisher_helper.h",
+    "web_apps.cc",
+    "web_apps.h",
   ]
-
-  if (!is_chromeos_lacros) {
-    sources += [
-      "web_apps.cc",
-      "web_apps.h",
-    ]
-  }
 
   allow_circular_includes_from = [ "//chrome/browser/ui" ]
 

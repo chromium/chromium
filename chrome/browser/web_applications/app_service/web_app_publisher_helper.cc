@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,6 +37,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
@@ -356,33 +356,6 @@ void WebAppPublisherHelper::PopulateWebAppPermissions(
   }
 }
 
-std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
-    const WebApp* web_app) {
-  apps::Readiness readiness =
-      web_app->is_locally_installed()
-          ? (web_app->is_uninstalling() ? apps::Readiness::kUninstalledByUser
-                                        : apps::Readiness::kReady)
-          : apps::Readiness::kDisabledByUser;
-#if defined(OS_CHROMEOS)
-  DCHECK(web_app->chromeos_data().has_value());
-  if (web_app->chromeos_data()->is_disabled)
-    readiness = apps::Readiness::kDisabledByPolicy;
-#endif
-
-  std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
-      apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id(),
-      readiness, web_app->name());
-
-  app->description = web_app->description();
-
-  // Web App's publisher_id the start url.
-  app->publisher_id = web_app->start_url().spec();
-
-  app->icon_key =
-      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
-  return app;
-}
-
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app) {
   apps::mojom::Readiness readiness =
@@ -579,14 +552,22 @@ bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
 }
 
 void WebAppPublisherHelper::LoadIcon(const std::string& app_id,
-                                     const apps::IconKey& icon_key,
-                                     apps::IconType icon_type,
+                                     apps::mojom::IconKeyPtr icon_key,
+                                     apps::mojom::IconType icon_type,
                                      int32_t size_hint_in_dip,
                                      LoadIconCallback callback) {
   DCHECK(provider_);
-  LoadIconFromWebApp(profile_, icon_type, size_hint_in_dip, app_id,
-                     static_cast<IconEffects>(icon_key.icon_effects),
-                     std::move(callback));
+
+  if (icon_key) {
+    LoadIconFromWebApp(
+        profile_, apps::ConvertMojomIconTypeToIconType(icon_type),
+        size_hint_in_dip, app_id,
+        static_cast<IconEffects>(icon_key->icon_effects),
+        apps::IconValueToMojomIconValueCallback(std::move(callback)));
+    return;
+  }
+  // On failure, we still run the callback, with the zero IconValue.
+  std::move(callback).Run(apps::mojom::IconValue::New());
 }
 
 content::WebContents* WebAppPublisherHelper::Launch(
