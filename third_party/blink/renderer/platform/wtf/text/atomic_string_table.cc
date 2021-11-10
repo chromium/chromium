@@ -299,20 +299,22 @@ scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
                           HashAndUTF8CharactersTranslator>(buffer);
 }
 
-StringImpl* AtomicStringTable::WeakFindSlow(StringImpl* string) {
+AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlow(
+    StringImpl* string) {
   DCHECK(string->length());
   const auto& it = table_.find(string);
   if (it == table_.end())
-    return nullptr;
-  return *it;
+    return WeakResult();
+  return WeakResult(*it);
 }
 
-StringImpl* AtomicStringTable::WeakFindSlow(const StringView& string) {
+AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlow(
+    const StringView& string) {
   DCHECK(string.length());
   const auto& it = table_.Find<StringViewLookupTranslator>(string);
   if (it == table_.end())
-    return nullptr;
-  return *it;
+    return WeakResult();
+  return WeakResult(*it);
 }
 
 AtomicStringTable::WeakResult AtomicStringTable::WeakFindLowercasedSlow(
@@ -326,38 +328,38 @@ AtomicStringTable::WeakResult AtomicStringTable::WeakFindLowercasedSlow(
   return WeakResult(*it);
 }
 
-StringImpl* AtomicStringTable::WeakFindInternal(const LChar* chars,
-                                                unsigned length) {
+AtomicStringTable::WeakResult AtomicStringTable::WeakFind(const LChar* chars,
+                                                          unsigned length) {
   if (!chars)
-    return nullptr;
+    return WeakResult();
 
   // Mirror the empty logic in Add().
   if (!length)
-    return StringImpl::empty_;
+    return WeakResult(StringImpl::empty_);
 
   LCharBuffer buffer = {chars, length};
   const auto& it = table_.Find<LCharBufferTranslator>(buffer);
   if (it == table_.end())
-    return nullptr;
+    return WeakResult();
 
-  return *it;
+  return WeakResult(*it);
 }
 
-StringImpl* AtomicStringTable::WeakFindInternal(const UChar* chars,
-                                                unsigned length) {
+AtomicStringTable::WeakResult AtomicStringTable::WeakFind(const UChar* chars,
+                                                          unsigned length) {
   if (!chars)
-    return nullptr;
+    return WeakResult();
 
   // Mirror the empty logic in Add().
   if (!length)
-    return StringImpl::empty_;
+    return WeakResult(StringImpl::empty_);
 
   UCharBuffer buffer = {chars, length};
   const auto& it = table_.Find<UCharBufferTranslator>(buffer);
   if (it == table_.end())
-    return nullptr;
+    return WeakResult();
 
-  return *it;
+  return WeakResult(*it);
 }
 
 void AtomicStringTable::Remove(StringImpl* string) {

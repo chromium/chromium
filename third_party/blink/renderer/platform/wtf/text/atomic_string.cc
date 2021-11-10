@@ -112,18 +112,4 @@ void AtomicString::Show() const {
 }
 #endif
 
-MaybeAtomicString::MaybeAtomicString(const LChar* chars, unsigned length) {
-  atomic_string_.string_ =
-      String(AtomicStringTable::Instance().Find(chars, length));
-}
-
-MaybeAtomicString::MaybeAtomicString(const UChar* chars, unsigned length) {
-  atomic_string_.string_ =
-      String(AtomicStringTable::Instance().Find(chars, length));
-}
-
-MaybeAtomicString::MaybeAtomicString(const String& string) {
-  atomic_string_.string_ = String(AtomicStringTable::Instance().Find(string));
-}
-
 }  // namespace WTF

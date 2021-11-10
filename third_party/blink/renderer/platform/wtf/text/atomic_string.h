@@ -226,7 +226,6 @@ class WTF_EXPORT AtomicString {
 
  private:
   friend struct HashTraits<AtomicString>;
-  friend class MaybeAtomicString;
 
   String string_;
 
@@ -307,31 +306,11 @@ inline StringView::StringView(const AtomicString& string, unsigned offset)
 inline StringView::StringView(const AtomicString& string)
     : StringView(string.Impl()) {}
 
-// MaybeAtomicString is a wrapper of AtomicString that holds a null
-// string if the query was not in the AtomicStringTable on construction.
-class WTF_EXPORT MaybeAtomicString {
- public:
-  MaybeAtomicString() = delete;
-  MaybeAtomicString(const LChar* chars, unsigned length);
-  MaybeAtomicString(const UChar* chars, unsigned length);
-  explicit MaybeAtomicString(const String& string);
-  explicit MaybeAtomicString(AtomicString atomic)
-      : atomic_string_(std::move(atomic)) {}
-
-  bool IsNull() const { return atomic_string_.IsNull(); }
-  bool Is8Bit() const { return atomic_string_.Is8Bit(); }
-  const AtomicString& ToAtomicString() const { return atomic_string_; }
-
- private:
-  AtomicString atomic_string_;
-};
-
 }  // namespace WTF
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(AtomicString)
 
 using WTF::AtomicString;
-using WTF::MaybeAtomicString;
 using WTF::g_null_atom;
 using WTF::g_empty_atom;
 using WTF::g_star_atom;

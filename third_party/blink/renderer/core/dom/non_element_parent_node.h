@@ -12,22 +12,13 @@ namespace blink {
 
 class NonElementParentNode {
  public:
-  static Element* getElementById(Document& document,
-                                 const MaybeAtomicString& id) {
-    // If id is null, it indicates that the id does not currently exist. Hence
-    // the corresponding element should not exist, and we can return null.
-    if (id.IsNull())
-      return nullptr;
-    return document.getElementById(id.ToAtomicString());
+  static Element* getElementById(Document& document, const AtomicString& id) {
+    return document.getElementById(id);
   }
 
   static Element* getElementById(DocumentFragment& fragment,
-                                 const MaybeAtomicString& id) {
-    // If id is null, it indicates that the id does not currently exist. Hence
-    // the corresponding element should not exist, and we can return null.
-    if (id.IsNull())
-      return nullptr;
-    return fragment.getElementById(id.ToAtomicString());
+                                 const AtomicString& id) {
+    return fragment.getElementById(id);
   }
 };
 

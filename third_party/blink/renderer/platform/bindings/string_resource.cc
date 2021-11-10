@@ -31,21 +31,10 @@ struct StringTraits<String> {
 template <>
 struct StringTraits<AtomicString> {
   static const AtomicString FromStringResource(StringResourceBase* resource) {
-    return resource->GetString<AtomicString>();
+    return resource->GetAtomicString();
   }
   template <typename V8StringTrait>
   static AtomicString FromV8String(v8::Isolate*, v8::Local<v8::String>, int);
-};
-template <>
-struct StringTraits<MaybeAtomicString> {
-  static const MaybeAtomicString FromStringResource(
-      StringResourceBase* resource) {
-    return resource->GetString<MaybeAtomicString>();
-  }
-  template <typename V8StringTrait>
-  static MaybeAtomicString FromV8String(v8::Isolate*,
-                                        v8::Local<v8::String>,
-                                        int);
 };
 
 struct V8StringTwoBytesTrait {
@@ -96,25 +85,6 @@ AtomicString StringTraits<AtomicString>::FromV8String(
   String string = String::CreateUninitialized(length, buffer);
   V8StringTrait::Write(isolate, v8_string, buffer, length);
   return AtomicString(string);
-}
-
-template <typename V8StringTrait>
-MaybeAtomicString StringTraits<MaybeAtomicString>::FromV8String(
-    v8::Isolate* isolate,
-    v8::Local<v8::String> v8_string,
-    int length) {
-  DCHECK(v8_string->Length() == length);
-  static const int kInlineBufferSize =
-      32 / sizeof(typename V8StringTrait::CharType);
-  if (length <= kInlineBufferSize) {
-    typename V8StringTrait::CharType inline_buffer[kInlineBufferSize];
-    V8StringTrait::Write(isolate, v8_string, inline_buffer, length);
-    return MaybeAtomicString(inline_buffer, static_cast<unsigned>(length));
-  }
-  typename V8StringTrait::CharType* buffer;
-  String string = String::CreateUninitialized(length, buffer);
-  V8StringTrait::Write(isolate, v8_string, buffer, length);
-  return MaybeAtomicString(string);
 }
 
 ALWAYS_INLINE bool CanExternalize(v8::Local<v8::String> v8_string,
@@ -181,7 +151,7 @@ ConvertAndExternalizeString(v8::Isolate* isolate,
                      V8StringTwoBytesTrait>(isolate, v8_string, length);
 
   *was_externalized = false;
-  if (LIKELY(can_externalize && !result.IsNull())) {
+  if (LIKELY(can_externalize)) {
     if (result.Is8Bit()) {
       StringResource8* string_resource = new StringResource8(result);
       if (UNLIKELY(!v8_string->MakeExternal(string_resource))) {
@@ -239,9 +209,6 @@ StringType ToBlinkString(v8::Local<v8::String> v8_string, ExternalMode mode) {
 template String ToBlinkString<String>(v8::Local<v8::String>, ExternalMode);
 template AtomicString ToBlinkString<AtomicString>(v8::Local<v8::String>,
                                                   ExternalMode);
-template MaybeAtomicString ToBlinkString<MaybeAtomicString>(
-    v8::Local<v8::String>,
-    ExternalMode);
 
 StringView ToBlinkStringView(v8::Local<v8::String> v8_string,
                              StringView::StackBackingStore& backing_store,
