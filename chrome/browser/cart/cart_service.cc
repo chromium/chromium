@@ -913,6 +913,11 @@ void CartService::RecordFetchTimestamp() {
                                 base::Time::Now());
 }
 
+void CartService::UpdateFreeListingCoupons(
+    const CouponService::CouponsMap& map) {
+  coupon_service_->UpdateFreeListingCoupons(map);
+}
+
 void CartService::CacheUsedDiscounts(
     const cart_db::ChromeCartContentProto& proto) {
   if (!proto.has_discount_info() ||

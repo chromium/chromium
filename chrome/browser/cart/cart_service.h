@@ -120,6 +120,8 @@ class CartService : public history::HistoryServiceObserver,
   bool IsDiscountUsed(const std::string& rule_id);
   // Records timestamp of the latest fetch for discount.
   void RecordFetchTimestamp();
+  // Called by discount worker to pass new coupons to CouponService.
+  void UpdateFreeListingCoupons(const CouponService::CouponsMap& map);
   // KeyedService:
   void Shutdown() override;
 

@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
 #include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/commerce/coupons/coupon_service.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 
 namespace network {
@@ -36,6 +37,7 @@ class CartServiceDelegate {
                           const cart_db::ChromeCartContentProto new_proto,
                           const bool is_tester);
   virtual void RecordFetchTimestamp();
+  virtual void UpdateFreeListingCoupons(const CouponService::CouponsMap& map);
 
  private:
   CartService* cart_service_;
