@@ -921,7 +921,7 @@ if (is_win) {
       "//chrome/credential_provider",
       "//chrome/installer/gcapi",
       "//chrome/installer/mini_installer",
-      "//chrome/updater/win/installer",
+      "//chrome/updater/win:updater_zip",
       "//cloud_print",
       "//cloud_print/virtual_driver/win/port_monitor:copy_gcp_portmon_binaries",
       "//components/policy:pack_policy_templates",
