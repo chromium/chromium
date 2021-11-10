@@ -2989,11 +2989,23 @@ This file contains the strings for ash.
       <message name="IDS_FAST_PAIR_CONNECTION_ERROR_MESSAGE" desc="Notification message shown when a there is a Fast Pair connection error.">
         Open Bluetooth settings to pair the device manually
       </message>
+      <message name="IDS_FAST_PAIR_ASSOCIATE_ACCOUNT_NOTIFICATION_TITLE" desc="Notification title shown to ask users if they want to save a Fast Pair device that was paired via classic bluetooth to their Google account.">
+        Save <ph name="NAME">$1<ex>Pixel Buds</ex></ph>
+      </message>
+      <message name="IDS_FAST_PAIR_ASSOCIATE_ACCOUNT_NOTIFICATION_MESSAGE" desc="Notification message shown to ask users if they want to save a Fast Pair device that was paired via classic bluetooth to their Google account.">
+        Save <ph name="NAME">$1<ex>Pixel Buds</ex></ph> to <ph name="EMAIL">$2<ex>alisha123@gmail.com</ex></ph> for faster pairing to your other devices
+      </message>
       <message name="IDS_FAST_PAIR_SETTINGS_BUTTON" desc="Button title shown to direct users to settings when there is an error connecting with Fast Pair">
         Settings
       </message>
       <message name="IDS_FAST_PAIR_CONNECT_BUTTON" desc="Message on button to tell users to connect bluetooth device with Fast Pair.">
         Connect
+      </message>
+      <message name="IDS_FAST_PAIR_SAVE_BUTTON" desc="Message on button to tell users to save Fast Pair device to the user's Google account.">
+        Save
+      </message>
+      <message name="IDS_FAST_PAIR_LEARN_MORE_BUTTON" desc="Message on button to tell users to learn more about saving their Fast Pair device to the user's Google account.">
+        Learn More
       </message>
       <message name="IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_TITLE" desc="Notification title shown when a there is a device discovered with Fast Pair.">
         Connect <ph name="NAME">$1<ex>Pixel Buds</ex></ph>

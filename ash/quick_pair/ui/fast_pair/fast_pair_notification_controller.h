@@ -26,16 +26,22 @@ class COMPONENT_EXPORT(QUICK_PAIR_UI) FastPairNotificationController {
   // Creates and displays corresponding system notification.
   void ShowErrorNotification(const std::u16string& device_name,
                              gfx::Image device_image,
-                             base::OnceClosure launch_bluetooth_pairing,
+                             base::RepeatingClosure launch_bluetooth_pairing,
                              base::OnceCallback<void(bool)> on_close);
   void ShowDiscoveryNotification(const std::u16string& device_name,
                                  gfx::Image device_image,
-                                 base::OnceClosure on_connect_clicked,
+                                 base::RepeatingClosure on_connect_clicked,
                                  base::OnceCallback<void(bool)> on_close);
   void ShowPairingNotification(const std::u16string& device_name,
                                gfx::Image device_image,
-                               base::OnceClosure on_cancel_clicked,
+                               base::RepeatingClosure on_cancel_clicked,
                                base::OnceCallback<void(bool)> on_close);
+  void ShowAssociateAccount(const std::u16string& device_name,
+                            const std::u16string& email_address,
+                            gfx::Image device_image,
+                            base::RepeatingClosure on_save_clicked,
+                            base::RepeatingClosure on_learn_more_clicked,
+                            base::OnceCallback<void(bool)> on_close);
   void RemoveNotifications();
 };
 

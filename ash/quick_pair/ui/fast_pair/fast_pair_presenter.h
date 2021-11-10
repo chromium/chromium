@@ -18,11 +18,12 @@ namespace quick_pair {
 struct Device;
 class DeviceMetadata;
 
-using DiscoveryCallback = base::OnceCallback<void(DiscoveryAction)>;
-using PairingFailedCallback = base::OnceCallback<void(PairingFailedAction)>;
+using DiscoveryCallback = base::RepeatingCallback<void(DiscoveryAction)>;
+using PairingFailedCallback =
+    base::RepeatingCallback<void(PairingFailedAction)>;
 using AssociateAccountCallback =
-    base::OnceCallback<void(AssociateAccountAction)>;
-using CompanionAppCallback = base::OnceCallback<void(CompanionAppAction)>;
+    base::RepeatingCallback<void(AssociateAccountAction)>;
+using CompanionAppCallback = base::RepeatingCallback<void(CompanionAppAction)>;
 
 class FastPairPresenter {
  public:
@@ -49,6 +50,11 @@ class FastPairPresenter {
   void OnPairingFailedDismissed(PairingFailedCallback callback,
                                 bool user_dismissed);
 
+  void OnAssociateAccountActionClicked(AssociateAccountCallback callback);
+  void OnLearnMoreClicked(AssociateAccountCallback callback);
+  void OnAssociateAccountDismissed(AssociateAccountCallback callback,
+                                   bool user_dismissed);
+
   void OnDiscoveryMetadataRetrieved(scoped_refptr<Device> device,
                                     DiscoveryCallback callback,
                                     DeviceMetadata* device_metadata);
@@ -57,6 +63,9 @@ class FastPairPresenter {
   void OnPairingFailedMetadataRetrieved(scoped_refptr<Device> device,
                                         PairingFailedCallback callback,
                                         DeviceMetadata* device_metadata);
+  void OnAssociateAccountMetadataRetrieved(scoped_refptr<Device> device,
+                                           AssociateAccountCallback callback,
+                                           DeviceMetadata* device_metadata);
 
   std::unique_ptr<FastPairNotificationController> notification_controller_;
   base::WeakPtrFactory<FastPairPresenter> weak_pointer_factory_{this};
