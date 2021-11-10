@@ -998,15 +998,19 @@ selectmenu {
     display: inline-block;
 }
 
-/* TODO(crbug.com/1121840) It's deliberate for now that this provides styles
-for <option> but not other element types with part="option".  Could this
-be a mechanism for allowing authors to specify their own styles for
-option parts by using e.g. <div part="option">, while authors that
-want the default styles can instead just use <option>? */
 selectmenu option:hover {
     background-color: lightgray;
     cursor: default;
     user-select: none;
+}
+
+selectmenu popup {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+  box-sizing: border-box;
+  overflow: auto;
+  padding: 4px;
 }
 
 output {

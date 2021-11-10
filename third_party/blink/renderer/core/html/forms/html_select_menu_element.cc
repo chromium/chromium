@@ -273,6 +273,15 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   SetListboxPart(MakeGarbageCollected<HTMLPopupElement>(document));
   listbox_part_->setAttribute(html_names::kPartAttr, kListboxPartName);
   listbox_part_->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
+  listbox_part_->setAttribute(html_names::kStyleAttr,
+                              R"CSS(
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+        box-sizing: border-box;
+        overflow: auto;
+        padding: 4px;
+  )CSS");
 
   auto* options_slot = MakeGarbageCollected<HTMLSlotElement>(document);
 

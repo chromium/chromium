@@ -48,6 +48,7 @@ void HTMLPopupElement::hide() {
     return;
   open_ = false;
   invoker_ = nullptr;
+  needs_repositioning_for_select_menu_ = false;
   DCHECK(isConnected());
   GetDocument().HideAllPopupsUntil(this);
   PopPopupElement(this);
@@ -354,21 +355,24 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
   if (!window)
     return;
 
-  IntRect anchor_rect_in_screen = RoundedIntRect(
-      owner_select_menu_element_->GetBoundingClientRectNoLifecycleUpdate());
+  FloatRect anchor_rect_in_screen =
+      owner_select_menu_element_->GetBoundingClientRectNoLifecycleUpdate();
+  const float anchor_zoom = owner_select_menu_element_->GetLayoutObject()
+                                ? owner_select_menu_element_->GetLayoutObject()
+                                      ->StyleRef()
+                                      .EffectiveZoom()
+                                : 1;
+  anchor_rect_in_screen.Scale(anchor_zoom);
   // Don't use the LocalDOMWindow innerHeight/innerWidth getters, as those can
   // trigger a re-entrant style and layout update.
-  int zoomAdjustedWidth =
-      AdjustForAbsoluteZoom::AdjustInt(GetDocument().View()->Size().width(),
-                                       window->GetFrame()->PageZoomFactor());
-  int zoomAdjustedHeight =
-      AdjustForAbsoluteZoom::AdjustInt(GetDocument().View()->Size().height(),
-                                       window->GetFrame()->PageZoomFactor());
-  IntRect avail_rect = IntRect(0, 0, zoomAdjustedWidth, zoomAdjustedHeight);
+  int avail_width = GetDocument().View()->Size().width();
+  int avail_height = GetDocument().View()->Size().height();
+  IntRect avail_rect = IntRect(0, 0, avail_width, avail_height);
 
   // Position the listbox part where is more space available.
-  const int available_space_above = anchor_rect_in_screen.y() - avail_rect.y();
-  const int available_space_below =
+  const float available_space_above =
+      anchor_rect_in_screen.y() - avail_rect.y();
+  const float available_space_below =
       avail_rect.bottom() - anchor_rect_in_screen.bottom();
   if (available_space_below < available_space_above) {
     style.SetMaxHeight(Length::Fixed(available_space_above));
@@ -380,9 +384,9 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
     style.SetTop(Length::Fixed(anchor_rect_in_screen.bottom()));
   }
 
-  const int available_space_if_left_anchored =
+  const float available_space_if_left_anchored =
       avail_rect.right() - anchor_rect_in_screen.x();
-  const int available_space_if_right_anchored =
+  const float available_space_if_right_anchored =
       anchor_rect_in_screen.right() - avail_rect.x();
   style.SetMinWidth(Length::Fixed(anchor_rect_in_screen.width()));
   if (available_space_if_left_anchored > anchor_rect_in_screen.width() ||
@@ -395,8 +399,6 @@ void HTMLPopupElement::AdjustPopupPositionForSelectMenu(ComputedStyle& style) {
     style.SetLeft(Length::Auto());
     style.SetMaxWidth(Length::Fixed(available_space_if_right_anchored));
   }
-
-  needs_repositioning_for_select_menu_ = false;
 }
 
 void HTMLPopupElement::Trace(Visitor* visitor) const {
