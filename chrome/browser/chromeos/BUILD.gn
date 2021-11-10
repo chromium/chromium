@@ -4693,6 +4693,7 @@ source_set("unit_tests") {
     "//components/pref_registry",
     "//components/prefs:test_support",
     "//components/renderer_context_menu",
+    "//components/reporting/metrics:test_support",
     "//components/reporting/storage:missive_storage_module",
     "//components/resources",
     "//components/services/app_service/public/cpp:test_support",

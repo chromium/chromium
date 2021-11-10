@@ -10,76 +10,18 @@
 
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/reporting/client/report_queue.h"
+#include "components/reporting/metrics/fake_metric_report_queue.h"
 #include "components/reporting/metrics/fake_reporting_settings.h"
+#include "components/reporting/metrics/fake_sampler.h"
 #include "components/reporting/metrics/metric_report_queue.h"
-#include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/metric_data.pb.h"
-#include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/util/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
-
-class FakeSampler : public Sampler {
- public:
-  FakeSampler() = default;
-
-  FakeSampler(const FakeSampler& other) = delete;
-  FakeSampler& operator=(const FakeSampler& other) = delete;
-
-  ~FakeSampler() override = default;
-
-  void Collect(MetricCallback cb) override {
-    num_calls_++;
-    std::move(cb).Run(std::move(metric_data_));
-  }
-
-  void SetMetricData(MetricData metric_data) {
-    metric_data_ = std::move(metric_data);
-  }
-
-  int GetNumCollectCalls() { return num_calls_; }
-
- private:
-  MetricData metric_data_;
-
-  int num_calls_ = 0;
-};
-
-class FakeMetricReportQueue : public MetricReportQueue {
- public:
-  FakeMetricReportQueue()
-      : MetricReportQueue(
-            std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
-                nullptr,
-                base::OnTaskRunnerDeleter(
-                    base::SequencedTaskRunnerHandle::Get())),
-            Priority::IMMEDIATE) {}
-
-  FakeMetricReportQueue(const FakeMetricReportQueue& other) = delete;
-  FakeMetricReportQueue& operator=(const FakeMetricReportQueue& other) = delete;
-
-  ~FakeMetricReportQueue() override = default;
-
-  void Enqueue(const MetricData& metric_data,
-               ReportQueue::EnqueueCallback callback) override {
-    reported_data_.emplace_back(metric_data);
-    std::move(callback).Run(Status());
-  }
-
-  void Flush() override {}
-
-  std::vector<MetricData> GetMetricDataReported() { return reported_data_; }
-
- private:
-  std::vector<MetricData> reported_data_;
-};
+namespace test {
 
 class FakeEventDetector : public EventDetector {
  public:
@@ -111,13 +53,14 @@ class FakeEventDetector : public EventDetector {
 
   std::vector<MetricData> previous_metric_list_;
 };
+}  // namespace test
 
 class MetricDataCollectorTest : public ::testing::Test {
  public:
   void SetUp() override {
     settings_ = std::make_unique<FakeReportingSettings>();
-    sampler_ = std::make_unique<FakeSampler>();
-    metric_report_queue_ = std::make_unique<FakeMetricReportQueue>();
+    sampler_ = std::make_unique<test::FakeSampler>();
+    metric_report_queue_ = std::make_unique<test::FakeMetricReportQueue>();
   }
 
  protected:
@@ -128,8 +71,8 @@ class MetricDataCollectorTest : public ::testing::Test {
   const std::string kRateSettingPath = "rate_path";
 
   std::unique_ptr<FakeReportingSettings> settings_;
-  std::unique_ptr<FakeSampler> sampler_;
-  std::unique_ptr<FakeMetricReportQueue> metric_report_queue_;
+  std::unique_ptr<test::FakeSampler> sampler_;
+  std::unique_ptr<test::FakeMetricReportQueue> metric_report_queue_;
 };
 
 TEST_F(MetricDataCollectorTest, OneShotCollector_InitiallyEnabled) {
@@ -306,7 +249,7 @@ TEST_F(MetricDataCollectorTest, PeriodicEventCollector_NoAdditionalSamplers) {
   metric_data[0].mutable_info_data();
   metric_data[1].mutable_telemetry_data();
 
-  auto event_detector = std::make_unique<FakeEventDetector>();
+  auto event_detector = std::make_unique<test::FakeEventDetector>();
   auto* event_detector_ptr = event_detector.get();
 
   PeriodicEventCollector collector(sampler_.get(), std::move(event_detector),
@@ -377,14 +320,14 @@ TEST_F(MetricDataCollectorTest, PeriodicEventCollector_WithAdditionalSamplers) {
       ->mutable_https_latency_data()
       ->set_latency_ms(1500);
 
-  FakeSampler additional_samplers[3];
+  test::FakeSampler additional_samplers[3];
   std::vector<Sampler*> additional_sampler_ptrs;
   for (int i = 0; i < 3; ++i) {
     additional_samplers[i].SetMetricData(additional_metric_data[i]);
     additional_sampler_ptrs.emplace_back(additional_samplers + i);
   }
 
-  auto event_detector = std::make_unique<FakeEventDetector>();
+  auto event_detector = std::make_unique<test::FakeEventDetector>();
   auto* event_detector_ptr = event_detector.get();
 
   PeriodicEventCollector collector(sampler_.get(), std::move(event_detector),

@@ -10,6 +10,7 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
+#include "components/reporting/metrics/fake_sampler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -17,21 +18,6 @@
 #include "base/logging.h"
 
 namespace reporting {
-
-class FakeHttpsLatencySampler : public Sampler {
- public:
-  ~FakeHttpsLatencySampler() override = default;
-
-  explicit FakeHttpsLatencySampler(MetricData metric_data)
-      : metric_data_(std::move(metric_data)) {}
-
-  void Collect(MetricCallback callback) override {
-    std::move(callback).Run(metric_data_);
-  }
-
- private:
-  const MetricData metric_data_;
-};
 
 struct FakeNetworkData {
   std::string guid;
@@ -54,8 +40,8 @@ TelemetryData NetworkTelemetrySamplerTestHelper(
   latency_data->set_verdict(RoutineVerdict::PROBLEM);
   latency_data->set_problem(HttpsLatencyProblem::VERY_HIGH_LATENCY);
   latency_data->set_latency_ms(3000);
-  auto https_latency_sampler =
-      std::make_unique<FakeHttpsLatencySampler>(metric_data);
+  auto https_latency_sampler = std::make_unique<test::FakeSampler>();
+  https_latency_sampler->SetMetricData(metric_data);
 
   chromeos::NetworkHandlerTestHelper network_handler_test_helper;
   const std::string profile_path = "/profile/path";
