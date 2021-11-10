@@ -242,6 +242,10 @@ class PictureBufferManagerImpl : public PictureBufferManager {
                        picture_buffer_id),
         picture_buffer_data.texture_size, visible_rect, natural_size,
         timestamp);
+    if (!frame) {
+      DLOG(ERROR) << "Failed to create VideoFrame for picture.";
+      return nullptr;
+    }
 
     frame->set_color_space(picture.color_space());
 
