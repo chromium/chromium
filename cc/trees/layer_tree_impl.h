@@ -64,9 +64,10 @@ class UIResourceRequest;
 class VideoFrameControllerClient;
 struct PendingPageScaleAnimation;
 
-typedef std::vector<UIResourceRequest> UIResourceRequestQueue;
-typedef SyncedProperty<AdditionGroup<float>> SyncedBrowserControls;
-typedef SyncedProperty<AdditionGroup<gfx::Vector2dF>> SyncedElasticOverscroll;
+using UIResourceRequestQueue = std::vector<UIResourceRequest>;
+using SyncedScale = SyncedProperty<ScaleGroup>;
+using SyncedBrowserControls = SyncedProperty<AdditionGroup<float>>;
+using SyncedElasticOverscroll = SyncedProperty<AdditionGroup<gfx::Vector2dF>>;
 
 class LayerTreeLifecycle {
  public:
@@ -104,7 +105,7 @@ class CC_EXPORT LayerTreeImpl {
   enum : int { kFixedPointHitsThreshold = 3 };
   LayerTreeImpl(
       LayerTreeHostImpl* host_impl,
-      scoped_refptr<SyncedProperty<ScaleGroup>> page_scale_factor,
+      scoped_refptr<SyncedScale> page_scale_factor,
       scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
       scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
       scoped_refptr<SyncedElasticOverscroll> elastic_overscroll);
@@ -362,8 +363,8 @@ class CC_EXPORT LayerTreeImpl {
 
   float page_scale_delta() const { return page_scale_factor()->Delta(); }
 
-  SyncedProperty<ScaleGroup>* page_scale_factor();
-  const SyncedProperty<ScaleGroup>* page_scale_factor() const;
+  SyncedScale* page_scale_factor();
+  const SyncedScale* page_scale_factor() const;
 
   void SetDeviceScaleFactor(float device_scale_factor);
   float device_scale_factor() const { return device_scale_factor_; }
@@ -817,7 +818,7 @@ class CC_EXPORT LayerTreeImpl {
 
   LayerSelection selection_;
 
-  scoped_refptr<SyncedProperty<ScaleGroup>> page_scale_factor_;
+  scoped_refptr<SyncedScale> page_scale_factor_;
   float min_page_scale_factor_;
   float max_page_scale_factor_;
   float external_page_scale_factor_;

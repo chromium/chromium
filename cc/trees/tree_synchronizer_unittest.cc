@@ -41,7 +41,7 @@ bool AreScrollOffsetsEqual(const SyncedScrollOffset* a,
                            const SyncedScrollOffset* b) {
   return a->ActiveBase() == b->ActiveBase() &&
          a->PendingBase() == b->PendingBase() && a->Delta() == b->Delta() &&
-         a->PendingDelta().get() == b->PendingDelta().get();
+         a->PendingDelta() == b->PendingDelta();
 }
 
 class MockLayerImpl : public LayerImpl {

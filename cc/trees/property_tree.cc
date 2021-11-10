@@ -1687,7 +1687,7 @@ const gfx::Vector2dF ScrollTree::GetScrollOffsetDeltaForTesting(
   if (GetSyncedScrollOffset(id)) {
     return property_trees()->is_active
                ? GetSyncedScrollOffset(id)->Delta()
-               : GetSyncedScrollOffset(id)->PendingDelta().get();
+               : GetSyncedScrollOffset(id)->PendingDelta();
   }
   return gfx::Vector2dF();
 }

@@ -442,7 +442,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
   // LTHI always has an active tree.
   active_tree_ = std::make_unique<LayerTreeImpl>(
-      this, new SyncedProperty<ScaleGroup>, new SyncedBrowserControls,
+      this, new SyncedScale, new SyncedBrowserControls,
       new SyncedBrowserControls, new SyncedElasticOverscroll);
   active_tree_->property_trees()->is_active = true;
 

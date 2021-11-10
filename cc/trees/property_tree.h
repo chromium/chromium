@@ -49,7 +49,7 @@ struct ScrollNode;
 struct TransformNode;
 struct TransformCachedNodeData;
 
-typedef SyncedProperty<AdditionGroup<gfx::Vector2dF>> SyncedScrollOffset;
+using SyncedScrollOffset = SyncedProperty<AdditionGroup<gfx::Vector2dF>>;
 
 class PropertyTrees;
 

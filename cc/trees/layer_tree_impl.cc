@@ -132,7 +132,7 @@ void LayerTreeLifecycle::AdvanceTo(LifecycleState next_state) {
 
 LayerTreeImpl::LayerTreeImpl(
     LayerTreeHostImpl* host_impl,
-    scoped_refptr<SyncedProperty<ScaleGroup>> page_scale_factor,
+    scoped_refptr<SyncedScale> page_scale_factor,
     scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
     scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
     scoped_refptr<SyncedElasticOverscroll> elastic_overscroll)
@@ -1238,11 +1238,11 @@ void LayerTreeImpl::SetExternalPageScaleFactor(
   DidUpdatePageScale();
 }
 
-SyncedProperty<ScaleGroup>* LayerTreeImpl::page_scale_factor() {
+SyncedScale* LayerTreeImpl::page_scale_factor() {
   return page_scale_factor_.get();
 }
 
-const SyncedProperty<ScaleGroup>* LayerTreeImpl::page_scale_factor() const {
+const SyncedScale* LayerTreeImpl::page_scale_factor() const {
   return page_scale_factor_.get();
 }
 
