@@ -226,7 +226,10 @@ void ScrollAnimator::AdjustAnimationAndSetScrollOffset(
   IntSize adjustment = RoundedIntSize(offset) -
                        RoundedIntSize(scrollable_area_->GetScrollOffset());
   ScrollOffsetChanged(offset, scroll_type);
+  AdjustAnimation(adjustment);
+}
 
+void ScrollAnimator::AdjustAnimation(const IntSize& adjustment) {
   if (run_state_ == RunState::kIdle) {
     AdjustImplOnlyScrollOffsetAnimation(adjustment);
   } else if (HasRunningAnimation()) {

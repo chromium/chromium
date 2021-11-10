@@ -144,10 +144,18 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     if (disable_threaded_scrolling_) {
       command_line->AppendSwitch(blink::switches::kDisableThreadedScrolling);
     }
-    // Set the scroll animation duration to 5 seconds so that we ensure
-    // the second scroll happens before the scroll animation finishes.
+    // Set the scroll animation duration to 1 second (artificially slow) to make
+    // it likely that the second scroll interrupts the first scroll's animation.
+    //
+    // NOTE: It is likely but NOT guaranteed that interruption will occur. If
+    // interruption occurs, tests should verify that the behavior is correct.
+    // But if interruption does not occur, tests should be written to pass.
+    //
+    // We also do not want the animation to be TOO slow - both to be kind to the
+    // bots and to avoid false positives from the "value holds" checks.
+    //
     command_line->AppendSwitchASCII(
-        cc::switches::kCCScrollAnimationDurationForTesting, "5");
+        cc::switches::kCCScrollAnimationDurationForTesting, "1");
   }
 
   void LoadURL(const std::string page_url) {
@@ -179,7 +187,8 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
   // right.
   void SimulateScroll(content::mojom::GestureSourceType gesture_source_type,
                       int scroll_delta_x,
-                      int scroll_delta_y) {
+                      int scroll_delta_y,
+                      bool blocking = true) {
     auto scroll_update_watcher = std::make_unique<InputMsgWatcher>(
         GetWidgetHost(), blink::WebInputEvent::Type::kGestureScrollEnd);
 
@@ -201,7 +210,8 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
         std::move(gesture),
         base::BindOnce(&ScrollBehaviorBrowserTest::OnSyntheticGestureCompleted,
                        base::Unretained(this)));
-    run_loop_->Run();
+    if (blocking)
+      run_loop_->Run();
   }
 
   void WaitForScrollToStart(const std::string& script) {
@@ -234,11 +244,31 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     // This function checks that the scroll top value holds at the given value
     // for 10 frames.
     MainThreadFrameObserver frame_observer(GetWidgetHost());
-    int frame_count = 5;
+    int frame_count = 10;
     while (frame_count > 0) {
       ASSERT_EQ(ExecuteScriptAndExtractDouble(scroll_top_script), scroll_top);
       frame_observer.Wait();
       frame_count--;
+    }
+  }
+
+  double WaitForScrollToEnd(const std::string& script) {
+    MainThreadFrameObserver frame_observer(GetWidgetHost());
+    int frame_count = 0;
+    double scroll_top = -1;
+    while (true) {
+      double new_scroll_top = ExecuteScriptAndExtractDouble(script);
+      if (new_scroll_top == scroll_top) {
+        frame_count++;
+        // Return when the scroll top value holds steady for 10 frames.
+        if (frame_count == 10)
+          return scroll_top;
+      } else {
+        // Scroll top value changed; reset counter.
+        frame_count = 0;
+        scroll_top = new_scroll_top;
+      }
+      frame_observer.Wait();
     }
   }
 
@@ -251,7 +281,7 @@ INSTANTIATE_TEST_SUITE_P(All, ScrollBehaviorBrowserTest, ::testing::Bool());
 // This tests that a in-progress smooth scroll on an overflow:scroll element
 // stops when interrupted by an instant scroll.
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       OverflowScrollInterruptedByInstantScroll) {
+                       InstantScriptScrollAbortsSmoothScriptScroll) {
   // TODO(crbug.com/1133492): the last animation is committed after we set the
   // scrollTop even when we cancel the animation, so the final scrollTop value
   // is not 0, we need to fix it.
@@ -268,7 +298,6 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
   double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
   ASSERT_GT(scroll_top, 0);
-  ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
   // When interrupted by an instant scroll, the in-progress smooth scrolls stop.
   EXPECT_TRUE(ExecJs(shell()->web_contents(), "element.scrollTop = 0;"));
@@ -277,10 +306,22 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   ValueHoldsAt(scroll_top_script, 0);
 }
 
+// This tests that a in-progress smooth wheel scroll on a scrollable element is
+// adjusted (without cancellation) when interrupted by an instant script scroll.
+IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
+                       InstantScriptScrollAdjustsSmoothWheelScroll) {
+  LoadURL(kOverflowScrollDataURL);
+  SimulateScroll(content::mojom::GestureSourceType::kMouseInput, 0, 100,
+                 /* blocking */ false);
+  WaitForScrollToStart("element.scrollTop");
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), "element.scrollBy(0, -5);"));
+  EXPECT_NEAR(WaitForScrollToEnd("element.scrollTop"), 95, 1);
+}
+
 // This tests that a in-progress smooth scroll on an overflow:scroll element
 // stops when interrupted by another smooth scroll.
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       OverflowScrollInterruptedBySmoothScroll) {
+                       OneSmoothScriptScrollAbortsAnother_Element) {
   LoadURL(kOverflowScrollDataURL);
 
   EXPECT_TRUE(ExecJs(shell()->web_contents(),
@@ -291,7 +332,6 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
   double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
   ASSERT_GT(scroll_top, 0);
-  ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
   // When interrupted by a smooth scroll, the in-progress smooth scrolls stop.
   EXPECT_TRUE(ExecJs(shell()->web_contents(),
@@ -300,7 +340,6 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   WaitUntilLessThan(scroll_top_script, scroll_top);
   double new_scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
   EXPECT_LT(new_scroll_top, scroll_top);
-  EXPECT_GT(new_scroll_top, 0);
 }
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element
@@ -308,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 // Currently only pre-Scroll-Unification main-thread input-handling gets this
 // right (crbug.com/1116647#c5).
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       DISABLED_OverflowScrollInterruptedByTouchScroll) {
+                       DISABLED_TouchScrollAbortsSmoothScriptScroll) {
   // TODO(crbug.com/1116647): compositing scroll should be able to cancel a
   // running programmatic scroll.
   if (!disable_threaded_scrolling_)
@@ -339,7 +378,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 // Flaky, mainly on Mac, but also on other slower builders/testers:
 // https://crbug.com/1175392
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       DISABLED_OverflowScrollInterruptedByWheelScroll) {
+                       DISABLED_WheelScrollAbortsSmoothScriptScroll) {
   // TODO(crbug.com/1116647): compositing scroll should be able to cancel a
   // running programmatic scroll.
   if (!disable_threaded_scrolling_)
@@ -375,7 +414,7 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 // This tests that a in-progress smooth scroll on the main frame stops when
 // interrupted by another smooth scroll.
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       MainFrameScrollInterruptedBySmoothScroll) {
+                       OneSmoothScriptScrollAbortsAnother_Document) {
   LoadURL(kMainFrameScrollDataURL);
 
   EXPECT_TRUE(ExecJs(shell()->web_contents(),
@@ -386,7 +425,6 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
   double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
   ASSERT_GT(scroll_top, 0);
-  ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
   // When interrupted by a smooth scroll, the in-progress smooth scrolls stop.
   EXPECT_TRUE(ExecJs(shell()->web_contents(),
@@ -395,13 +433,12 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   WaitUntilLessThan(scroll_top_script, scroll_top);
   double new_scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
   EXPECT_LT(new_scroll_top, scroll_top);
-  EXPECT_GT(new_scroll_top, 0);
 }
 
 // This tests that a in-progress smooth scroll on a subframe stops when
 // interrupted by another smooth scroll.
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
-                       SubframeScrollInterruptedBySmoothScroll) {
+                       OneSmoothScriptScrollAbortsAnother_Subframe) {
   LoadURL(kSubframeScrollDataURL);
 
   EXPECT_TRUE(ExecJs(
@@ -414,7 +451,6 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
 
   double scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
   ASSERT_GT(scroll_top, 0);
-  ASSERT_LT(scroll_top, kIntermediateScrollOffset);
 
   // When interrupted by a smooth scroll, the in-progress smooth scrolls stop.
   EXPECT_TRUE(
@@ -424,7 +460,6 @@ IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTest,
   WaitUntilLessThan(scroll_top_script, scroll_top);
   double new_scroll_top = ExecuteScriptAndExtractDouble(scroll_top_script);
   EXPECT_LT(new_scroll_top, scroll_top);
-  EXPECT_GT(new_scroll_top, 0);
 }
 
 }  // namespace content

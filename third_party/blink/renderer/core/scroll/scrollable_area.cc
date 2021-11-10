@@ -344,7 +344,15 @@ void ScrollableArea::ProgrammaticScrollHelper(
     mojom::blink::ScrollBehavior scroll_behavior,
     bool is_sequenced_scroll,
     ScrollCallback on_finish) {
-  CancelScrollAnimation();
+  bool should_use_animation =
+      scroll_behavior == mojom::blink::ScrollBehavior::kSmooth &&
+      ScrollAnimatorEnabled();
+  if (should_use_animation) {
+    // If the programmatic scroll will be animated, cancel any user scroll
+    // animation already in progress. We don't want two scroll animations
+    // running at the same time.
+    CancelScrollAnimation();
+  }
 
   ScrollCallback callback = std::move(on_finish);
   callback = ScrollCallback(WTF::Bind(
@@ -357,13 +365,17 @@ void ScrollableArea::ProgrammaticScrollHelper(
       },
       std::move(callback), WrapWeakPersistent(this)));
 
-  if (scroll_behavior == mojom::blink::ScrollBehavior::kSmooth &&
-      ScrollAnimatorEnabled()) {
+  if (should_use_animation) {
     GetProgrammaticScrollAnimator().AnimateToOffset(offset, is_sequenced_scroll,
                                                     std::move(callback));
   } else {
+    // If the programmatic scroll will NOT be animated, we should adjust (not
+    // cancel) a user scroll animation already in progress (crbug.com/1264266).
+    IntSize adjustment =
+        RoundedIntSize(offset) - RoundedIntSize(GetScrollOffset());
     GetProgrammaticScrollAnimator().ScrollToOffsetWithoutAnimation(
         offset, is_sequenced_scroll);
+    GetScrollAnimator().AdjustAnimation(adjustment);
     if (callback)
       std::move(callback).Run();
   }

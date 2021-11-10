@@ -77,6 +77,8 @@ class CORE_EXPORT ScrollAnimatorBase
   // area.
   virtual ScrollOffset ComputeDeltaToConsume(const ScrollOffset& delta) const;
 
+  virtual void AdjustAnimation(const IntSize& adjustment) {}
+
   // ScrollAnimatorCompositorCoordinator implementation.
   ScrollableArea* GetScrollableArea() const override {
     return scrollable_area_;

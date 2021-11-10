@@ -116,6 +116,7 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
                           ScrollableArea::ScrollCallback on_finish) override;
   void ScrollToOffsetWithoutAnimation(const ScrollOffset&) override;
   ScrollOffset DesiredTargetOffset() const override;
+  void AdjustAnimation(const IntSize& adjustment) override;
 
   // ScrollAnimatorCompositorCoordinator implementation.
   void TickAnimation(base::TimeTicks monotonic_time) override;
