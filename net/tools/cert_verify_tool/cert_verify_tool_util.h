@@ -7,12 +7,17 @@
 
 #include <string>
 #include <vector>
+#include "third_party/boringssl/src/include/openssl/base.h"
 
 #include "base/files/file_path.h"
 
 namespace base {
 class SupportsUserData;
 }
+
+namespace net {
+class X509Certificate;
+}  // namespace net
 
 // Stores DER certificate bytes and details about where they were read from.
 // This allows decoupling the input file reading from the certificate parsing
@@ -55,5 +60,14 @@ void PrintCertError(const std::string& error, const CertInput& cert);
 
 // Prints any known debug information from |debug_data|.
 void PrintDebugData(const base::SupportsUserData* debug_data);
+
+// Returns a hex-encoded sha256 of the DER-encoding of |cert_handle|.
+std::string FingerPrintCryptoBuffer(const CRYPTO_BUFFER* cert_handle);
+
+// Returns a textual representation of the Subject of |cert|.
+std::string SubjectFromX509Certificate(const net::X509Certificate* cert);
+
+// Returns a textual representation of the Subject of |cert_handle|.
+std::string SubjectFromCryptoBuffer(CRYPTO_BUFFER* cert_handle);
 
 #endif  // NET_TOOLS_CERT_VERIFY_TOOL_CERT_VERIFY_TOOL_UTIL_H_

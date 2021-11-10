@@ -8,7 +8,6 @@
 
 #include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "crypto/sha2.h"
@@ -46,27 +45,6 @@ bool DumpX509CertificateChain(const base::FilePath& file_path,
     return false;
   }
   return WriteToFile(file_path, base::StrCat(pem_encoded));
-}
-
-// Returns a hex-encoded sha256 of the DER-encoding of |cert_handle|.
-std::string FingerPrintCryptoBuffer(const CRYPTO_BUFFER* cert_handle) {
-  net::SHA256HashValue hash =
-      net::X509Certificate::CalculateFingerprint256(cert_handle);
-  return base::HexEncode(hash.data, base::size(hash.data));
-}
-
-// Returns a textual representation of the Subject of |cert|.
-std::string SubjectFromX509Certificate(const net::X509Certificate* cert) {
-  return cert->subject().GetDisplayName();
-}
-
-// Returns a textual representation of the Subject of |cert_handle|.
-std::string SubjectFromCryptoBuffer(CRYPTO_BUFFER* cert_handle) {
-  scoped_refptr<net::X509Certificate> cert =
-      net::X509Certificate::CreateFromBuffer(bssl::UpRef(cert_handle), {});
-  if (!cert)
-    return std::string();
-  return SubjectFromX509Certificate(cert.get());
 }
 
 void PrintCertStatus(int cert_status) {
