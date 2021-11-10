@@ -252,6 +252,14 @@ bool IsSigninForcedByPolicy() {
 @property(nonatomic, strong)
     NSDictionary<NSString*, NSString*>* specificProductData;
 
+// YES if the process of dismissing the sign-in prompt is from an external
+// trigger and is currently ongoing. An external trigger isn't done from the
+// signin prompt itself (i.e., tapping a button in the sign-in prompt that
+// dismisses the prompt). For example, the -dismissModalDialogswithCompletion
+// command is considered as an external trigger because it comes from something
+// outside the sign-in prompt UI.
+@property(nonatomic, assign) BOOL dismissingSigninPromptFromExternalTrigger;
+
 @end
 
 @implementation SceneController
@@ -2662,6 +2670,19 @@ bool IsSigninForcedByPolicy() {
 
 - (void)closeSettingsOrSigninAnimated:(BOOL)animated
                            completion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  BOOL resetSigninState = self.signinCoordinator != nil;
+  completion = ^{
+    __typeof(self) strongSelf = weakSelf;
+    if (completion) {
+      completion();
+    }
+    if (resetSigninState) {
+      strongSelf.sceneState.signinInProgress = NO;
+    }
+    strongSelf.dismissingSigninPromptFromExternalTrigger = NO;
+  };
+
   if (self.settingsNavigationController) {
     ProceduralBlock dismissSettings = ^() {
       [self.settingsNavigationController cleanUpSettings];
@@ -2707,6 +2728,8 @@ bool IsSigninForcedByPolicy() {
   SigninCoordinatorInterruptAction action =
       animated ? SigninCoordinatorInterruptActionDismissWithAnimation
                : SigninCoordinatorInterruptActionDismissWithoutAnimation;
+
+  self.dismissingSigninPromptFromExternalTrigger = YES;
   [self.signinCoordinator interruptWithAction:action completion:completion];
 }
 
@@ -2740,10 +2763,17 @@ bool IsSigninForcedByPolicy() {
         strongSelf.signinCoordinator = nil;
         uiBlocker.reset();
 
-        weakSelf.sceneState.signinInProgress = NO;
-
         if (completion) {
           completion(result == SigninCoordinatorResultSuccess);
+        }
+
+        if (!weakSelf.dismissingSigninPromptFromExternalTrigger) {
+          // If the coordinator isn't stopped by an external trigger, sign-in
+          // is done. Otherwise, there might be extra steps to be done before
+          // considering sign-in as done. This is up to the handler that sets
+          // |self.dismissingSigninPromptFromExternalTrigger| to YES to set
+          // back |signinInProgress| to NO.
+          weakSelf.sceneState.signinInProgress = NO;
         }
 
         switch (info.signinCompletionAction) {
