@@ -54,6 +54,15 @@ constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kHeaderViewLabelSize = 12;
 constexpr char kNotificationBodyFontWeight = 13;
 
+constexpr int kTitleRowTimestampFadeInAnimationDelayMs = 100;
+constexpr int kTitleRowTimestampFadeInAnimationDurationMs = 100;
+constexpr int kHeaderRowFadeInAnimationDelayMs = 50;
+constexpr int kHeaderRowFadeInAnimationDurationMs = 150;
+constexpr int kMessageViewFadeInAnimationDelayMs = 100;
+constexpr int kMessageViewFadeInAnimationDurationMs = 100;
+constexpr int kMessageViewInExpandedStateFadeInAnimationDelayMs = 100;
+constexpr int kMessageViewInExpandedStateFadeInAnimationDurationMs = 183;
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_CONSTANTS_H_

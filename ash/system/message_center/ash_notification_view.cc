@@ -23,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -39,6 +40,7 @@
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/message_center/views/relative_time_formatter.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -148,6 +150,28 @@ views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
                     .SetTextStyle(views::style::STYLE_SECONDARY));
 }
 
+// Initializes the layer for the specified `view` for animations.
+void InitLayerForAnimations(views::View* view) {
+  view->SetPaintToLayer();
+  view->layer()->SetFillsBoundsOpaquely(false);
+}
+
+// Fade in animation using AnimationBuilder.
+void FadeInView(views::View* view,
+                int delay_in_ms,
+                int duration_in_ms,
+                gfx::Tween::Type tween_type = gfx::Tween::LINEAR) {
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetOpacity(view, 0.0f)
+      .At(base::Milliseconds(delay_in_ms))
+      .SetDuration(base::Milliseconds(duration_in_ms))
+      .SetOpacity(view, 1.0f, tween_type);
+}
+
 }  // namespace
 
 namespace ash {
@@ -176,9 +200,11 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
 
   ConfigureLabelStyle(title_row_divider_, kTimestampInCollapsedViewSize,
                       /*is_color_primary=*/false);
+  InitLayerForAnimations(title_row_divider_);
   ConfigureLabelStyle(timestamp_in_collapsed_view_,
                       kTimestampInCollapsedViewSize,
                       /*is_color_primary=*/false);
+  InitLayerForAnimations(timestamp_in_collapsed_view_);
   ConfigureLabelStyle(title_view_, kTitleLabelSize,
                       /*is_color_primary=*/true);
 }
@@ -213,6 +239,20 @@ void AshNotificationView::NotificationTitleRow::UpdateVisibility(
     bool in_collapsed_mode) {
   timestamp_in_collapsed_view_->SetVisible(in_collapsed_mode);
   title_row_divider_->SetVisible(in_collapsed_mode);
+}
+
+void AshNotificationView::NotificationTitleRow::
+    PerformExpandCollapseAnimation() {
+  if (title_row_divider_->GetVisible()) {
+    FadeInView(title_row_divider_, kTitleRowTimestampFadeInAnimationDelayMs,
+               kTitleRowTimestampFadeInAnimationDurationMs,
+               gfx::Tween::ACCEL_20_DECEL_100);
+    DCHECK(timestamp_in_collapsed_view_->GetVisible());
+    FadeInView(timestamp_in_collapsed_view_,
+               kTitleRowTimestampFadeInAnimationDelayMs,
+               kTitleRowTimestampFadeInAnimationDurationMs,
+               gfx::Tween::ACCEL_20_DECEL_100);
+  }
 }
 
 AshNotificationView::AshNotificationView(
@@ -367,6 +407,10 @@ AshNotificationView::AshNotificationView(
   }
   layer()->SetIsFastRoundedCorner(true);
 
+  // Create layer in some views for animations.
+  InitLayerForAnimations(header_row());
+  InitLayerForAnimations(message_view_in_expanded_state_);
+
   UpdateWithNotification(notification);
 }
 
@@ -375,6 +419,8 @@ AshNotificationView::~AshNotificationView() = default;
 void AshNotificationView::ToggleExpand() {
   SetManuallyExpandedOrCollapsed(true);
   SetExpanded(!IsExpanded());
+
+  PerformExpandCollapseAnimation();
 }
 
 void AshNotificationView::AddGroupNotification(
@@ -467,6 +513,7 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     // `message_view()` is shown only in collapsed mode.
     if (!expanded) {
       ConfigureLabelStyle(message_view(), kMessageLabelSize, false);
+      InitLayerForAnimations(message_view());
     }
     message_view()->SetVisible(!expanded);
     message_view_in_expanded_state_->SetVisible(expanded &&
@@ -583,9 +630,6 @@ void AshNotificationView::CreateOrUpdateInlineSettingsViews(
     return;
   }
 
-  // This string can be very long. Do we put this inside a button (any text
-  // length limit)
-  // Q2: What is the big settings button on the right side?
   inline_settings_row()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
   auto turn_off_notifications_button = GenerateNotificationLabelButton(
@@ -779,6 +823,29 @@ void AshNotificationView::UpdateAppIconView() {
   app_icon_view_->SetImage(
       gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
           kAppIconViewSize / 2, icon_background_color, app_icon));
+}
+
+void AshNotificationView::PerformExpandCollapseAnimation() {
+  title_row_->PerformExpandCollapseAnimation();
+
+  // Fade in `header row()`.
+  if (header_row()->GetVisible()) {
+    FadeInView(header_row(), kHeaderRowFadeInAnimationDelayMs,
+               kHeaderRowFadeInAnimationDurationMs);
+  }
+
+  // Fade in `message_view()`.
+  if (message_view()) {
+    FadeInView(message_view(), kMessageViewFadeInAnimationDelayMs,
+               kMessageViewFadeInAnimationDurationMs);
+  }
+
+  // Fade in `message_view_in_expanded_state_`.
+  if (message_view_in_expanded_state_->GetVisible()) {
+    FadeInView(message_view_in_expanded_state_,
+               kMessageViewInExpandedStateFadeInAnimationDelayMs,
+               kMessageViewInExpandedStateFadeInAnimationDurationMs);
+  }
 }
 
 }  // namespace ash

@@ -103,6 +103,9 @@ class ASH_EXPORT AshNotificationView
     // Update children's visibility based on the state of expand/collapse.
     void UpdateVisibility(bool in_collapsed_mode);
 
+    // Perform expand/collapse animation in children views.
+    void PerformExpandCollapseAnimation();
+
    private:
     friend class AshNotificationViewTest;
 
@@ -134,6 +137,9 @@ class ASH_EXPORT AshNotificationView
 
   // Update the color and icon for `app_icon_view_`.
   void UpdateAppIconView();
+
+  // Perform expand/collapse animation in children views.
+  void PerformExpandCollapseAnimation();
 
   // Owned by views hierarchy.
   RoundedImageView* app_icon_view_ = nullptr;
