@@ -29,67 +29,69 @@ namespace {
 
 // Fake API for testing.
 const char kAlphaAPIName[] = "alpha";
-const char kAlphaAPISpec[] =
-    "{"
-    "  'types': [{"
-    "    'id': 'alpha.objRef',"
-    "    'type': 'object',"
-    "    'properties': {"
-    "      'prop1': {'type': 'string'},"
-    "      'prop2': {'type': 'integer', 'optional': true}"
-    "    }"
-    "  }, {"
-    "    'id': 'alpha.enumRef',"
-    "    'type': 'string',"
-    "    'enum': ['cat', 'dog']"
-    "  }],"
-    "  'functions': [{"
-    "    'name': 'functionWithCallback',"
-    "    'parameters': [{"
-    "      'name': 'str',"
-    "      'type': 'string'"
-    "    }, {"
-    "      'name': 'callback',"
-    "      'type': 'function'"
-    "    }]"
-    "  }, {"
-    "    'name': 'functionWithRefAndCallback',"
-    "    'parameters': [{"
-    "      'name': 'ref',"
-    "      '$ref': 'alpha.objRef'"
-    "    }, {"
-    "      'name': 'callback',"
-    "      'type': 'function'"
-    "    }]"
-    "  }, {"
-    "    'name': 'functionWithEnum',"
-    "    'parameters': [{'name': 'e', '$ref': 'alpha.enumRef'}]"
-    "  }],"
-    "  'events': [{"
-    "    'name': 'alphaEvent'"
-    "  }, {"
-    "    'name': 'alphaOtherEvent'"
-    "  }]"
-    "}";
+const char kAlphaAPISpec[] = R"(
+    {
+      "types": [{
+        "id": "alpha.objRef",
+        "type": "object",
+        "properties": {
+          "prop1": {"type": "string"},
+          "prop2": {"type": "integer", "optional": true}
+        }
+      }, {
+        "id": "alpha.enumRef",
+        "type": "string",
+        "enum": ["cat", "dog"]
+      }],
+      "functions": [{
+        "name": "functionWithCallback",
+        "parameters": [{
+          "name": "str",
+          "type": "string"
+        }],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [{"name": "strResult", "type": "string"}]
+        }
+      }, {
+        "name": "functionWithRefAndCallback",
+        "parameters": [{
+          "name": "ref",
+          "$ref": "alpha.objRef"
+        }],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
+      }, {
+        "name": "functionWithEnum",
+        "parameters": [{"name": "e", "$ref": "alpha.enumRef"}]
+      }],
+      "events": [{
+        "name": "alphaEvent"
+      }, {
+        "name": "alphaOtherEvent"
+      }]
+    })";
 
 // Another fake API for testing.
 const char kBetaAPIName[] = "beta";
-const char kBetaAPISpec[] =
-    "{"
-    "  'functions': [{"
-    "    'name': 'simpleFunc',"
-    "    'parameters': [{'name': 'int', 'type': 'integer'}]"
-    "  }]"
-    "}";
+const char kBetaAPISpec[] = R"(
+    {
+      "functions": [{
+        "name": "simpleFunc",
+        "parameters": [{"name": "int", "type": "integer"}]
+      }]
+    })";
 
 const char kGammaAPIName[] = "gamma";
-const char kGammaAPISpec[] =
-    "{"
-    "  'functions': [{"
-    "    'name': 'functionWithExternalRef',"
-    "    'parameters': [{ 'name': 'someRef', '$ref': 'alpha.objRef' }]"
-    "  }]"
-    "}";
+const char kGammaAPISpec[] = R"(
+    {
+      "functions": [{
+        "name": "functionWithExternalRef",
+        "parameters": [{ "name": "someRef", "$ref": "alpha.objRef" }]
+      }]
+    })";
 
 bool AllowAllAPIs(v8::Local<v8::Context> context, const std::string& name) {
   return true;
@@ -230,21 +232,21 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
 
   {
     // Test a simple call -> response.
-    const char kTestCall[] =
-        "obj.functionWithCallback('foo', function() {\n"
-        "  this.callbackArguments = Array.from(arguments);\n"
-        "});";
+    const char kTestCall[] = R"(
+        obj.functionWithCallback('foo', function() {
+          this.callbackArguments = Array.from(arguments);
+        });)";
     CallFunctionOnObject(context, alpha_api, kTestCall);
 
     ValidateLastRequest("alpha.functionWithCallback", "['foo']");
 
-    const char kResponseArgsJson[] = "['response',1,{'key':42}]";
+    const char kResponseArgsJson[] = R"(["response"])";
     std::unique_ptr<base::ListValue> expected_args =
         ListValueFromString(kResponseArgsJson);
     bindings_system()->CompleteRequest(last_request()->request_id,
                                        *expected_args, std::string());
 
-    EXPECT_EQ(ReplaceSingleQuotes(kResponseArgsJson),
+    EXPECT_EQ(kResponseArgsJson,
               GetStringPropertyFromObject(context->Global(), context,
                                           "callbackArguments"));
     reset_last_request();
@@ -252,11 +254,11 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
 
   {
     // Test a call with references -> response.
-    const char kTestCall[] =
-        "obj.functionWithRefAndCallback({prop1: 'alpha', prop2: 42},\n"
-        "                               function() {\n"
-        "  this.callbackArguments = Array.from(arguments);\n"
-        "});";
+    const char kTestCall[] = R"(
+        obj.functionWithRefAndCallback({prop1: 'alpha', prop2: 42},
+                                       function() {
+          this.callbackArguments = Array.from(arguments);
+        });)";
 
     CallFunctionOnObject(context, alpha_api, kTestCall);
 
@@ -290,19 +292,19 @@ TEST_F(APIBindingsSystemTest, TestInitializationAndCallbacks) {
 
   {
     // Test an event registration -> event occurrence.
-    const char kTestCall[] =
-        "obj.alphaEvent.addListener(function() {\n"
-        "  this.eventArguments = Array.from(arguments);\n"
-        "});\n";
+    const char kTestCall[] = R"(
+        obj.alphaEvent.addListener(function() {
+          this.eventArguments = Array.from(arguments);
+        });)";
     CallFunctionOnObject(context, alpha_api, kTestCall);
 
-    const char kResponseArgsJson[] = "['response',1,{'key':42}]";
+    const char kResponseArgsJson[] = R"(["response",1,{"key":42}])";
     std::unique_ptr<base::ListValue> expected_args =
         ListValueFromString(kResponseArgsJson);
     bindings_system()->FireEventInContext("alpha.alphaEvent", context,
                                           *expected_args, nullptr);
 
-    EXPECT_EQ(ReplaceSingleQuotes(kResponseArgsJson),
+    EXPECT_EQ(kResponseArgsJson,
               GetStringPropertyFromObject(context->Global(), context,
                                           "eventArguments"));
   }
@@ -360,14 +362,14 @@ TEST_F(APIBindingsSystemTest, TestCustomHooks) {
 
   {
     // Test a simple call -> response.
-    const char kTestCall[] =
-        "obj.functionWithCallback('foo', function() {\n"
-        "  this.callbackArguments = Array.from(arguments);\n"
-        "});";
+    const char kTestCall[] = R"(
+        obj.functionWithCallback('foo', function() {
+          this.callbackArguments = Array.from(arguments);
+        });)";
     CallFunctionOnObject(context, alpha_api, kTestCall);
     EXPECT_TRUE(did_call);
 
-    EXPECT_EQ("[\"bar\"]",
+    EXPECT_EQ(R"(["bar"])",
               GetStringPropertyFromObject(context->Global(), context,
                                           "callbackArguments"));
   }
@@ -378,18 +380,18 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  const char kHook[] =
-      "(function(hooks) {\n"
-      "  hooks.setCustomCallback(\n"
-      "      'functionWithCallback', (name, request, originalCallback,\n"
-      "                               firstResult, secondResult) => {\n"
-      "    this.methodName = name;\n"
-      // TODO(devlin): Currently, we don't actually pass anything useful in for
-      // the |request| object. If/when we do, we should test it.
-      "    this.results = [firstResult, secondResult];\n"
-      "    originalCallback(secondResult);\n"
-      "  });\n"
-      "})";
+  const char kHook[] = R"(
+      (function(hooks) {
+        hooks.setCustomCallback(
+            'functionWithCallback', (name, request, originalCallback,
+                                     firstResult, secondResult) => {
+          this.methodName = name;
+          // TODO(devlin): Currently, we don't actually pass anything useful in
+          // for the |request| object. If/when we do, we should test it.
+          this.results = [firstResult, secondResult];
+          originalCallback(secondResult);
+        });
+      }))";
 
   APIBindingHooks* hooks = nullptr;
   v8::Local<v8::Object> alpha_api =
@@ -402,26 +404,35 @@ TEST_F(APIBindingsSystemTest, TestSetCustomCallback) {
   RunFunctionOnGlobal(function, context, base::size(args), args);
 
   {
-    const char kTestCall[] =
-        "obj.functionWithCallback('foo', function() {\n"
-        "  this.callbackArguments = Array.from(arguments);\n"
-        "});";
+    const char kTestCall[] = R"(
+        obj.functionWithCallback('foo', function() {
+          this.callbackArguments = Array.from(arguments);
+        });)";
     CallFunctionOnObject(context, alpha_api, kTestCall);
 
     ValidateLastRequest("alpha.functionWithCallback", "['foo']");
 
+    // Although this response would violate the return on the spec, since this
+    // method has a custom callback defined it skips response validation. We
+    // expect the custom callback will transform the return to the correct form
+    // when calling the original callback, but this is not currently enforced or
+    // validated.
+    // TODO(tjudkins): Now that we use the CustomCallbackAdaptor, we could
+    // potentially send the response validator to the custom callback adaptor
+    // and validate the result returned from the custom callback before sending
+    // it on to the original callback.
     std::unique_ptr<base::ListValue> response =
-        ListValueFromString("['alpha','beta']");
+        ListValueFromString(R"(["alpha","beta"])");
     bindings_system()->CompleteRequest(last_request()->request_id, *response,
                                        std::string());
 
     EXPECT_EQ(
-        "\"alpha.functionWithCallback\"",
+        R"("alpha.functionWithCallback")",
         GetStringPropertyFromObject(context->Global(), context, "methodName"));
     EXPECT_EQ(
-        "[\"alpha\",\"beta\"]",
+        R"(["alpha","beta"])",
         GetStringPropertyFromObject(context->Global(), context, "results"));
-    EXPECT_EQ("[\"beta\"]",
+    EXPECT_EQ(R"(["beta"])",
               GetStringPropertyFromObject(context->Global(), context,
                                           "callbackArguments"));
   }
@@ -473,7 +484,7 @@ TEST_F(APIBindingsSystemTest, TestCustomEvent) {
 
   v8::Local<v8::Object> event;
   ASSERT_TRUE(GetPropertyFromObjectAs(api, context, "alphaEvent", &event));
-  EXPECT_EQ("\"alpha.alphaEvent\"",
+  EXPECT_EQ(R"("alpha.alphaEvent")",
             GetStringPropertyFromObject(event, context, "name"));
   v8::Local<v8::Value> event2 =
       GetPropertyFromObject(api, context, "alphaEvent");
@@ -482,7 +493,7 @@ TEST_F(APIBindingsSystemTest, TestCustomEvent) {
   v8::Local<v8::Object> other_event;
   ASSERT_TRUE(
       GetPropertyFromObjectAs(api, context, "alphaOtherEvent", &other_event));
-  EXPECT_EQ("\"alpha.alphaOtherEvent\"",
+  EXPECT_EQ(R"("alpha.alphaOtherEvent")",
             GetStringPropertyFromObject(other_event, context, "name"));
   EXPECT_NE(event, other_event);
 }
