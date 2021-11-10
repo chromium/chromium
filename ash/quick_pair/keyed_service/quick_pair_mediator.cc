@@ -195,6 +195,7 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
 
   switch (action) {
     case AssociateAccountAction::kAssoicateAccount:
+      pairer_broker_->PairDevice(device);
       break;
     case AssociateAccountAction::kLearnMore:
       break;

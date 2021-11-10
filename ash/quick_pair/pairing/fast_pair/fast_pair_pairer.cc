@@ -134,14 +134,30 @@ void FastPairPairer::OnDataEncryptorCreateAsync(
   fast_pair_data_encryptor_ = std::move(fast_pair_data_encryptor);
   QP_LOG(VERBOSE) << "Fast Pair GATT service client initialization successful.";
 
-  DCHECK(!device_->ble_address.empty());
-  fast_pair_gatt_service_client_->WriteRequestAsync(
-      /*message_type=*/0x00,
-      /*flags=*/0x00,
-      /*provider_address=*/device_->ble_address,
-      /*seekers_address=*/"", fast_pair_data_encryptor_.get(),
-      base::BindOnce(&FastPairPairer::OnWriteResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
+  switch (device_->protocol) {
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairSubsequent:
+      fast_pair_gatt_service_client_->WriteRequestAsync(
+          /*message_type=*/0x00,
+          /*flags=*/0x00,
+          /*provider_address=*/device_->ble_address,
+          /*seekers_address=*/"", fast_pair_data_encryptor_.get(),
+          base::BindOnce(&FastPairPairer::OnWriteResponse,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+    case Protocol::kFastPairRetroactive:
+      // The different flag in this raw request tells the device we are going
+      // to retroactively write an account key.
+      fast_pair_gatt_service_client_->WriteRequestAsync(
+          /*message_type=*/0x00,
+          /*flags=*/0x10,
+          /*provider_address=*/device_->ble_address,
+          /*seekers_address=*/adapter_->GetAddress(),
+          fast_pair_data_encryptor_.get(),
+          base::BindOnce(&FastPairPairer::OnWriteResponse,
+                         weak_ptr_factory_.GetWeakPtr()));
+      break;
+  }
 }
 
 void FastPairPairer::OnWriteResponse(std::vector<uint8_t> response_bytes,
@@ -172,33 +188,44 @@ void FastPairPairer::OnParseDecryptedResponse(
     return;
   }
 
-  // Now that we have validated the decrypted response, we can attempt to
-  // retrieve the device from the adapter by the address. If we are able to
-  // retrieve the device in this way, we can pair directly. Often, we will not
-  // be able to find the device this way, and we will have to connect via
-  // address and add ourselves as a pairing delegate.
   std::string device_address =
       device::CanonicalizeBluetoothAddress(response->address_bytes);
   device_->set_classic_address(device_address);
 
   device::BluetoothDevice* device = adapter_->GetDevice(device_address);
-  QP_LOG(VERBOSE) << "Key-based pairing changed. Address: " << device_address
-                  << ". Found device: " << ((device != nullptr) ? "Yes" : "No")
-                  << ".";
+  switch (device_->protocol) {
+    case Protocol::kFastPairInitial:
+    case Protocol::kFastPairSubsequent:
+      // Now that we have validated the decrypted response, we can attempt to
+      // retrieve the device from the adapter by the address. If we are able to
+      // retrieve the device in this way, we can pair directly. Often, we will
+      // not be able to find the device this way, and we will have to connect
+      // via address and add ourselves as a pairing delegate.
+      QP_LOG(VERBOSE) << "Key-based pairing changed. Address: "
+                      << device_address << ". Found device: "
+                      << ((device != nullptr) ? "Yes" : "No") << ".";
+      if (device) {
+        device->Pair(this, base::BindOnce(&FastPairPairer::OnPairConnected,
+                                          weak_ptr_factory_.GetWeakPtr()));
+      } else {
+        adapter_->AddPairingDelegate(
+            this, device::BluetoothAdapter::PairingDelegatePriority::
+                      PAIRING_DELEGATE_PRIORITY_HIGH);
 
-  if (device) {
-    device->Pair(this, base::BindOnce(&FastPairPairer::OnPairConnected,
-                                      weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    adapter_->AddPairingDelegate(
-        this, device::BluetoothAdapter::PairingDelegatePriority::
-                  PAIRING_DELEGATE_PRIORITY_HIGH);
-
-    adapter_->ConnectDevice(device_address, /*address_type=*/absl::nullopt,
-                            base::BindOnce(&FastPairPairer::OnConnectDevice,
-                                           weak_ptr_factory_.GetWeakPtr()),
-                            base::BindOnce(&FastPairPairer::OnConnectError,
-                                           weak_ptr_factory_.GetWeakPtr()));
+        adapter_->ConnectDevice(device_address, /*address_type=*/absl::nullopt,
+                                base::BindOnce(&FastPairPairer::OnConnectDevice,
+                                               weak_ptr_factory_.GetWeakPtr()),
+                                base::BindOnce(&FastPairPairer::OnConnectError,
+                                               weak_ptr_factory_.GetWeakPtr()));
+      }
+      break;
+    case Protocol::kFastPairRetroactive:
+      // Because the devices are already bonded, BR/EDR bonding and
+      // Passkey verification will be skipped and we will directly write an
+      // account key to the Provider after a shared secret is established.
+      adapter_->RemovePairingDelegate(this);
+      SendAccountKey();
+      break;
   }
 }
 
