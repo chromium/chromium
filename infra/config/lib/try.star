@@ -607,6 +607,7 @@ def orchestrator_pair_builders(
         service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
         os = os.LINUX_BIONIC,
         description_html = orchestrator_description,
+        ssd = None,
         **common_kwargs
     )
     compilator_builder = builder_group_func(
@@ -664,6 +665,15 @@ def chromium_android_orchestrator_pair(
         **kwargs
     )
 
+def chromium_mac_orchestrator_pair(
+        **kwargs):
+    return orchestrator_pair_builders(
+        builder_group_func = chromium_mac_builder,
+        orchestrator_builder_group = "tryserver.chromium.mac",
+        compilator_cores = None,
+        **kwargs
+    )
+
 def presubmit_builder(*, name, tryjob, os = builders.os.LINUX_BIONIC_SWITCH_TO_DEFAULT, **kwargs):
     """Define a presubmit builder.
 
@@ -717,6 +727,7 @@ try_ = struct(
     chromium_linux_orchestrator_pair = chromium_linux_orchestrator_pair,
     chromium_mac_builder = chromium_mac_builder,
     chromium_mac_ios_builder = chromium_mac_ios_builder,
+    chromium_mac_orchestrator_pair = chromium_mac_orchestrator_pair,
     chromium_rust_builder = chromium_rust_builder,
     chromium_swangle_linux_builder = chromium_swangle_linux_builder,
     chromium_swangle_mac_builder = chromium_swangle_mac_builder,
