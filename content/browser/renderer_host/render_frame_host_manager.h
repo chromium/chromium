@@ -569,14 +569,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   // FrameTree immediately after this call.
   std::unique_ptr<StoredPage> TakePrerenderedPage();
 
-  // Returns the first RenderFrameProxyHosts in `proxy_hosts_` found to not have
-  // a corresponding RenderViewHost. Used to check if a subframe creation can
-  // proceed, since it needs the RenderViewHosts to create proxies for the
-  // subframe. This is only used for temporary debugging to figure out how this
-  // case can happen.
-  // TODO(https://crbug.com/1243541): Remove this once the bug is fixed.
-  RenderFrameProxyHost* GetProxyHostWithoutRenderViewHostForDebugging();
-
  private:
   friend class NavigatorTest;
   friend class RenderFrameHostManagerTest;
