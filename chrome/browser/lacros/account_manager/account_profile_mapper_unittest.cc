@@ -424,6 +424,67 @@ TEST_F(AccountProfileMapperTest, GetAccounts) {
   testing::Mock::VerifyAndClearExpectations(mock_facade());
 }
 
+// Test basic functionality for `GetAccountsMap()` with unassigned accounts:
+// - returns the complete map, incl. unassigned accounts,
+// - does not trigger a call to GetAccounts() on the facade.
+TEST_F(AccountProfileMapperTest, GetAccountsMapWithUnassigned) {
+  base::FilePath other_path = GetProfilePath("Other");
+  base::FilePath empty_path;
+  AccountProfileMapper* mapper = CreateMapper(
+      {{main_path(), {"A"}}, {other_path, {"B", "C"}}, {empty_path, {"D"}}});
+
+  // `GetAccountsMap()` does not go through the facade, but directly reads from
+  // storage.
+  EXPECT_CALL(*mock_facade(), GetAccounts(testing::_)).Times(0);
+
+  base::MockRepeatingCallback<void(
+      const std::map<base::FilePath, std::vector<account_manager::Account>>&)>
+      mock_callback;
+  EXPECT_CALL(
+      mock_callback,
+      Run(testing::UnorderedElementsAre(
+          testing::Pair(main_path(),
+                        testing::UnorderedElementsAre(
+                            Field(&Account::key, AccountKey{"A", kGaiaType}))),
+          testing::Pair(other_path,
+                        testing::UnorderedElementsAre(
+                            Field(&Account::key, AccountKey{"B", kGaiaType}),
+                            Field(&Account::key, AccountKey{"C", kGaiaType}))),
+          testing::Pair(empty_path,
+                        testing::UnorderedElementsAre(Field(
+                            &Account::key, AccountKey{"D", kGaiaType}))))));
+  mapper->GetAccountsMap(mock_callback.Get());
+}
+
+// Test basic functionality for `GetAccountsMap()` without unassigned accounts:
+// - returns the complete map, without the entry for unassigned accounts,
+// - does not trigger a call to GetAccounts() on the facade.
+TEST_F(AccountProfileMapperTest, GetAccountsMapWithoutUnassigned) {
+  base::FilePath other_path = GetProfilePath("Other");
+  AccountProfileMapper* mapper =
+      CreateMapper({{main_path(), {"A"}}, {other_path, {"B", "C"}}});
+
+  // `GetAccountsMap()` does not go through the facade, but directly reads from
+  // storage.
+  EXPECT_CALL(*mock_facade(), GetAccounts(testing::_)).Times(0);
+
+  base::MockRepeatingCallback<void(
+      const std::map<base::FilePath, std::vector<account_manager::Account>>&)>
+      mock_callback;
+  EXPECT_CALL(
+      mock_callback,
+      Run(testing::UnorderedElementsAre(
+          testing::Pair(main_path(),
+                        testing::UnorderedElementsAre(
+                            Field(&Account::key, AccountKey{"A", kGaiaType}))),
+          testing::Pair(
+              other_path,
+              testing::UnorderedElementsAre(
+                  Field(&Account::key, AccountKey{"B", kGaiaType}),
+                  Field(&Account::key, AccountKey{"C", kGaiaType}))))));
+  mapper->GetAccountsMap(mock_callback.Get());
+}
+
 // Tests that accounts are added by default to the main profile when there is
 // only one profile.
 TEST_F(AccountProfileMapperTest, UpdateSingleProfile) {

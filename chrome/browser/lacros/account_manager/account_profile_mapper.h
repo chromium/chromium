@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_ACCOUNT_PROFILE_MAPPER_H_
 #define CHROME_BROWSER_LACROS_ACCOUNT_MANAGER_ACCOUNT_PROFILE_MAPPER_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -61,6 +62,10 @@ class AccountProfileMapper
 
   using AddAccountCallback =
       base::OnceCallback<void(const absl::optional<AddAccountResult>&)>;
+  using ListAccountsCallback =
+      base::OnceCallback<void(const std::vector<account_manager::Account>&)>;
+  using MapAccountsCallback = base::OnceCallback<void(
+      const std::map<base::FilePath, std::vector<account_manager::Account>>&)>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -84,10 +89,8 @@ class AccountProfileMapper
   // Interface similar to `AccountManagerFacade`, but split per profile. If
   // there is no profile with `profile_path`, the behavior is the same as a
   // profile without accounts.
-  void GetAccounts(
-      const base::FilePath& profile_path,
-      base::OnceCallback<void(const std::vector<account_manager::Account>&)>
-          callback);
+  void GetAccounts(const base::FilePath& profile_path,
+                   ListAccountsCallback callback);
   void GetPersistentErrorForAccount(
       const base::FilePath& profile_path,
       const account_manager::AccountKey& account,
@@ -97,6 +100,11 @@ class AccountProfileMapper
       const account_manager::AccountKey& account,
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer);
+
+  // Returns the whole map of accounts per profile. An empty path is used as the
+  // key for unassigned accounts (this key is not set if there are no unassigned
+  // accounts).
+  void GetAccountsMap(MapAccountsCallback callback);
 
   // Profile creation methods and assignment of accounts to profiles:
 

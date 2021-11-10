@@ -6383,6 +6383,7 @@ test("unit_tests") {
       "../browser/chromeos/policy/dlp/dlp_content_tab_helper_unittest.cc",
       "../browser/chromeos/policy/dlp/mock_dlp_content_observer.cc",
       "../browser/chromeos/policy/dlp/mock_dlp_content_observer.h",
+      "../browser/lacros/account_manager/account_manager_util_unittest.cc",
       "../browser/lacros/account_manager/account_profile_mapper_unittest.cc",
       "../browser/lacros/account_manager/get_account_information_helper_unittest.cc",
       "../browser/lacros/account_manager/profile_account_manager_unittest.cc",

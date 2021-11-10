@@ -67,10 +67,8 @@ void AccountProfileMapper::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void AccountProfileMapper::GetAccounts(
-    const base::FilePath& profile_path,
-    base::OnceCallback<void(const std::vector<account_manager::Account>&)>
-        callback) {
+void AccountProfileMapper::GetAccounts(const base::FilePath& profile_path,
+                                       ListAccountsCallback callback) {
   if (!initialized_) {
     initialization_callbacks_.push_back(base::BindOnce(
         &AccountProfileMapper::GetAccounts, weak_factory_.GetWeakPtr(),
@@ -132,6 +130,38 @@ AccountProfileMapper::CreateAccessTokenFetcher(
 
   return account_manager_facade_->CreateAccessTokenFetcher(
       account, oauth_consumer_name, consumer);
+}
+
+void AccountProfileMapper::GetAccountsMap(MapAccountsCallback callback) {
+  if (!initialized_) {
+    initialization_callbacks_.push_back(
+        base::BindOnce(&AccountProfileMapper::GetAccountsMap,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  std::map<base::FilePath, std::vector<account_manager::Account>> accounts_map;
+  base::flat_map<std::string, account_manager::Account> unassigned_accounts(
+      account_cache_);
+  for (ProfileAttributesEntry* entry :
+       profile_attributes_storage_->GetAllProfilesAttributes()) {
+    const base::FilePath path = entry->GetPath();
+    for (const std::string& gaia_id : entry->GetGaiaIds()) {
+      base::flat_map<std::string, account_manager::Account>::const_iterator it =
+          account_cache_.find(gaia_id);
+      if (it == account_cache_.cend()) {
+        NOTREACHED() << "Account " << gaia_id << " missing.";
+        continue;
+      }
+      accounts_map[path].push_back(it->second);
+      unassigned_accounts.erase(gaia_id);
+    }
+  }
+  for (std::pair<std::string, account_manager::Account> pair :
+       unassigned_accounts) {
+    accounts_map[base::FilePath()].push_back(pair.second);
+  }
+  std::move(callback).Run(accounts_map);
 }
 
 void AccountProfileMapper::ShowAddAccountDialog(
