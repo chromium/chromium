@@ -8,6 +8,10 @@
 #include "ash/ash_export.h"
 #include "base/time/time.h"
 
+namespace gfx {
+class Point;
+}  // namespace gfx
+
 namespace ash {
 namespace magnifier_utils {
 
@@ -64,6 +68,11 @@ float ASH_EXPORT GetNextMagnifierScaleValue(int delta_index,
                                             float current_scale,
                                             float min_scale,
                                             float max_scale);
+
+// If either of the fullscreen or docked magnifier is enabled, its focus will be
+// updated to center around the given `point_in_screen`. Note that both
+// magnifiers are mutually exclusive.
+void MaybeUpdateActiveMagnifierFocus(const gfx::Point& point_in_screen);
 
 }  // namespace magnifier_utils
 }  // namespace ash

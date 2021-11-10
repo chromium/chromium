@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
@@ -269,19 +270,10 @@ void OverviewHighlightController::UpdateHighlight(
     highlighted_view_->GetView()->NotifyAccessibilityEvent(
         ax::mojom::Event::kSelection, true);
   }
-  // Note that both magnifiers are mutually exclusive. The overview "focus"
-  // works differently from regular focusing so we need to update the magnifier
-  // manually here.
-  DockedMagnifierController* docked_magnifier =
-      Shell::Get()->docked_magnifier_controller();
-  FullscreenMagnifierController* fullscreen_magnifier =
-      Shell::Get()->fullscreen_magnifier_controller();
-  const gfx::Point point_of_interest =
-      highlighted_view_->GetMagnifierFocusPointInScreen();
-  if (docked_magnifier->GetEnabled())
-    docked_magnifier->CenterOnPoint(point_of_interest);
-  else if (fullscreen_magnifier->IsEnabled())
-    fullscreen_magnifier->CenterOnPoint(point_of_interest);
+  // The overview "focus" works differently from regular focusing so we need to
+  // update the magnifier manually here.
+  magnifier_utils::MaybeUpdateActiveMagnifierFocus(
+      highlighted_view_->GetMagnifierFocusPointInScreen());
 
   if (previous_view)
     previous_view->SetHighlightVisibility(false);

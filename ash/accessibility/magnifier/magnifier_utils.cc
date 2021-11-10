@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
@@ -56,6 +58,17 @@ float GetNextMagnifierScaleValue(int delta_index,
   const int new_scale_index = current_index + delta_index;
   const float new_scale = std::pow(kMagnificationScaleFactor, new_scale_index);
   return base::clamp(new_scale, min_scale, max_scale);
+}
+
+void MaybeUpdateActiveMagnifierFocus(const gfx::Point& point_in_screen) {
+  DockedMagnifierController* docked_magnifier =
+      Shell::Get()->docked_magnifier_controller();
+  FullscreenMagnifierController* fullscreen_magnifier =
+      Shell::Get()->fullscreen_magnifier_controller();
+  if (docked_magnifier->GetEnabled())
+    docked_magnifier->CenterOnPoint(point_in_screen);
+  else if (fullscreen_magnifier->IsEnabled())
+    fullscreen_magnifier->CenterOnPoint(point_in_screen);
 }
 
 }  // namespace magnifier_utils

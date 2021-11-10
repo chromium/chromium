@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_advanced_settings_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
@@ -18,6 +19,7 @@
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
+#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
@@ -28,6 +30,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -120,6 +123,9 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   focus_ring_->SchedulePaint();
 
   view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
+
+  magnifier_utils::MaybeUpdateActiveMagnifierFocus(
+      view->GetBoundsInScreen().CenterPoint());
 }
 
 void CaptureModeSessionFocusCycler::HighlightableView::PseudoBlur() {
@@ -197,21 +203,50 @@ void CaptureModeSessionFocusCycler::AdvanceFocus(bool reverse) {
 
   // Selection focus is drawn directly on a layer owned by |session_|. Notify
   // the layer to repaint if necessary.
+  const bool current_group_is_selection =
+      current_focus_group_ == FocusGroup::kSelection;
   const bool redraw_layer = previous_focus_group == FocusGroup::kSelection ||
-                            current_focus_group_ == FocusGroup::kSelection;
+                            current_group_is_selection;
+
   if (redraw_layer)
     session_->RepaintRegion();
 
-  // Windows highlight is handled directly on a layer owned by |session_|.
+  if (current_group_is_selection) {
+    const gfx::Rect user_region =
+        CaptureModeController::Get()->user_capture_region();
+    if (user_region.IsEmpty())
+      return;
+
+    const auto fine_tune_position = GetFocusedFineTunePosition();
+    DCHECK_NE(fine_tune_position, FineTunePosition::kNone);
+
+    gfx::Point point_of_interest =
+        fine_tune_position == FineTunePosition::kCenter
+            ? user_region.CenterPoint()
+            : capture_mode_util::GetLocationForFineTunePosition(
+                  user_region, fine_tune_position);
+    wm::ConvertPointToScreen(session_->current_root(), &point_of_interest);
+    magnifier_utils::MaybeUpdateActiveMagnifierFocus(point_of_interest);
+
+    return;
+  }
+
   if (current_focus_group_ == FocusGroup::kCaptureWindow) {
+    // Windows highlight is handled directly on a layer owned by |session_|.
     const std::vector<aura::Window*> windows =
         GetWindowListIgnoreModalForActiveDesk();
     // Make sure |focus_index_| is still valid since window could be
     // destroyed.
-    if (windows.empty() || focus_index_ >= windows.size())
+    if (windows.empty() || focus_index_ >= windows.size()) {
       AdvanceFocus(reverse);
-    else
-      session_->HighlightWindowForTab(windows[focus_index_]);
+    } else {
+      auto* window = windows[focus_index_];
+      session_->HighlightWindowForTab(window);
+      // TODO(afakhry): Check with a11y team if we need to focus on a different
+      // region of the window.
+      magnifier_utils::MaybeUpdateActiveMagnifierFocus(
+          window->GetBoundsInScreen().origin());
+    }
   }
 }
 
