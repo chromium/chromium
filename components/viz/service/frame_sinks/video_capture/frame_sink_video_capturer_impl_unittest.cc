@@ -260,9 +260,18 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   gfx::Rect GetCopyOutputRequestRegion(
       const CapturableFrameSink::RegionSpecifier& specifier) const override {
     if (absl::holds_alternative<RegionCaptureCropId>(specifier)) {
+      current_capture_id_ = SubtreeCaptureId();
       current_crop_id_ = absl::get<RegionCaptureCropId>(specifier);
       if (!current_crop_id_.is_zero()) {
         return crop_bounds_;
+      }
+      return {};
+    }
+    if (absl::holds_alternative<SubtreeCaptureId>(specifier)) {
+      current_capture_id_ = absl::get<SubtreeCaptureId>(specifier);
+      current_crop_id_ = RegionCaptureCropId();
+      if (current_capture_id_.is_valid()) {
+        return capture_bounds_;
       }
       return {};
     }
@@ -278,7 +287,12 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     auto& request = pending_copy_output_request.copy_output_request;
     EXPECT_EQ(CopyOutputResult::Format::I420_PLANES, request->result_format());
     EXPECT_NE(base::UnguessableToken(), request->source());
-    EXPECT_EQ(size_set_.source_rect, request->area());
+
+    if (pending_copy_output_request.subtree_capture_id.is_valid()) {
+      EXPECT_EQ(capture_bounds_, request->area());
+    } else {
+      EXPECT_EQ(size_set_.source_rect, request->area());
+    }
     EXPECT_EQ(gfx::Rect(size_set_.expected_content_rect.size()),
               request->result_selection());
 
@@ -302,8 +316,16 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     return current_crop_id_;
   }
 
+  const SubtreeCaptureId& current_capture_id() const {
+    return current_capture_id_;
+  }
+
   void set_crop_bounds(const gfx::Rect& crop_bounds) {
     crop_bounds_ = crop_bounds;
+  }
+
+  void set_capture_bounds(const gfx::Rect& capture_bounds) {
+    capture_bounds_ = capture_bounds;
   }
 
   void set_size_set(const SizeSet& size_set) { size_set_ = size_set; }
@@ -338,7 +360,9 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
   mutable RegionCaptureCropId current_crop_id_;
+  mutable SubtreeCaptureId current_capture_id_;
   gfx::Rect crop_bounds_;
+  gfx::Rect capture_bounds_;
   std::vector<base::OnceClosure> results_;
 };
 
@@ -1372,6 +1396,46 @@ TEST_F(FrameSinkVideoCapturerTest, RegionCaptureCropId) {
 
   // The frame sink's current crop ID should have been set as a side-effect.
   EXPECT_EQ(kCropId, frame_sink_.current_crop_id());
+}
+
+TEST_F(FrameSinkVideoCapturerTest, HandlesSubtreeCaptureId) {
+  SwitchToSizeSet(kSizeSets[4]);
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  static const gfx::Rect kCaptureBounds{1, 2, 1024, 768};
+  static const SubtreeCaptureId kCaptureId{1234567u};
+  frame_sink_.set_capture_bounds(kCaptureBounds);
+  capturer_->ChangeTarget(kFrameSinkId,
+                          mojom::SubTarget::NewSubtreeCaptureId(kCaptureId));
+
+  // Start capturing. frame_sink_ should now have one client capturing.
+  NiceMock<MockConsumer> consumer;
+  StartCapture(&consumer);
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 1);
+  EXPECT_EQ((RegionCaptureCropId()), frame_sink_.current_crop_id());
+
+  // The frame sink's capture ID should have been set as a side-effect.
+  EXPECT_EQ(kCaptureId, frame_sink_.current_capture_id());
+}
+
+TEST_F(FrameSinkVideoCapturerTest, HandlesNullSubTargetPtrCorrectly) {
+  SwitchToSizeSet(kSizeSets[4]);
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(kFrameSinkId))
+      .WillRepeatedly(Return(&frame_sink_));
+
+  // The default cause is a target with no sub target, passed as nullptr. Since
+  // the SubTarget is a mojom variant, the default SubTarget::New() is actually
+  // a zero value subtree capture identifier.
+  capturer_->ChangeTarget(kFrameSinkId, nullptr);
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 0);
+
+  // Start capturing. frame_sink_ should now have one client capturing.
+  NiceMock<MockConsumer> consumer;
+  StartCapture(&consumer);
+  EXPECT_EQ(frame_sink_.number_clients_capturing(), 1);
+  EXPECT_EQ(SubtreeCaptureId(), frame_sink_.current_capture_id());
+  EXPECT_EQ(RegionCaptureCropId(), frame_sink_.current_crop_id());
 }
 
 }  // namespace viz

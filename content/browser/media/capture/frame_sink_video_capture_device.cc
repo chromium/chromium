@@ -73,15 +73,14 @@ viz::mojom::SubTargetPtr ToSubTargetPtr(
   // but is reiterated here for clarity's sake.
   DCHECK(!target.subtree_capture_id.is_valid() || target.crop_id.is_zero());
 
-  auto sub_target = viz::mojom::SubTarget::New();
-  if (target.crop_id.is_zero()) {
-    // Note: Irrelevant if `target_.subtree_capture_id.is_valid()`.
-    sub_target->set_subtree_capture_id(target.subtree_capture_id);
-  } else {
-    sub_target->set_region_capture_crop_id(target.crop_id);
+  if (target.subtree_capture_id.is_valid()) {
+    return viz::mojom::SubTarget::NewSubtreeCaptureId(
+        target.subtree_capture_id);
   }
-
-  return sub_target;
+  if (!target.crop_id.is_zero()) {
+    return viz::mojom::SubTarget::NewRegionCaptureCropId(target.crop_id);
+  }
+  return nullptr;
 }
 
 }  // namespace

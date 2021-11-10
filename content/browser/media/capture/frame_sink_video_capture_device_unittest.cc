@@ -114,7 +114,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                     viz::mojom::SubTargetPtr sub_target) final {
     DCHECK_NOT_ON_DEVICE_THREAD();
     viz::SubtreeCaptureId subtree_id;
-    if (sub_target->is_subtree_capture_id()) {
+    if (sub_target && sub_target->is_subtree_capture_id()) {
       subtree_id = sub_target->get_subtree_capture_id();
     }
     MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget(
