@@ -72,6 +72,10 @@
 #include "net/reporting/reporting_report.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+#if BUILDFLAG(IS_CT_SUPPORTED)
+#include "services/network/sct_auditing/sct_auditing_handler.h"
+#endif  // BUILDFLAG(IS_CT_SUPPORTED)
+
 namespace base {
 class UnguessableToken;
 }  // namespace base
@@ -299,7 +303,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void OnCTLogListUpdated(
       const std::vector<network::mojom::CTLogInfoPtr>& log_list,
       base::Time update_time);
-  bool is_sct_auditing_enabled() { return is_sct_auditing_enabled_; }
+  SCTAuditingHandler* sct_auditing_handler() { return &sct_auditing_handler_; }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
   void CreateUDPSocket(
       mojo::PendingReceiver<mojom::UDPSocket> receiver,
@@ -556,12 +560,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   WebBundleManager& GetWebBundleManager() { return web_bundle_manager_; }
 
-#if BUILDFLAG(IS_CT_SUPPORTED)
-  void SetIsSCTAuditingEnabledForTesting(bool enabled) {
-    is_sct_auditing_enabled_ = enabled;
-  }
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
   // Returns the current same-origin-policy exceptions.  For more details see
   // network::mojom::NetworkContextParams::cors_origin_access_list and
   // network::mojom::NetworkContext::SetCorsOriginAccessListsForOrigin.
@@ -751,7 +749,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   certificate_transparency::ChromeCTPolicyEnforcer* ct_policy_enforcer_ =
       nullptr;
 
-  bool is_sct_auditing_enabled_ = false;
+  SCTAuditingHandler sct_auditing_handler_;
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

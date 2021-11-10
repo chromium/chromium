@@ -128,13 +128,4 @@ interface NetworkServiceTest {
   // default.
   [Sync]
   SetSCTAuditingRetryDelay(mojo_base.mojom.TimeDelta? delay) => ();
-
-  // Gets the current count of pending reports in the SCT auditing cache.
-  [Sync]
-  GetSCTAuditingPendingReportsCount() => (uint64 reports);
-
-  // Runs the callback passed by the caller when an SCT auditing report
-  // completes. This lets the caller wait on report completion by passing a
-  // QuitClosure as the callback and running a RunLoop.
-  SetSCTAuditingReportCompletionCallback() => ();
 };

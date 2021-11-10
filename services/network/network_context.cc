@@ -129,6 +129,7 @@
 #include "services/network/ct_log_list_distributor.h"
 #include "services/network/expect_ct_reporter.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
+#include "services/network/sct_auditing/sct_auditing_handler.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -371,7 +372,7 @@ void SCTAuditingDelegate::MaybeEnqueueReport(
 bool SCTAuditingDelegate::IsSCTAuditingEnabled() {
   if (!context_)
     return false;
-  return context_->is_sct_auditing_enabled();
+  return context_->sct_auditing_handler()->is_enabled();
 }
 
 // Filters `log_list` for disqualified or Google-operated logs,
@@ -506,7 +507,7 @@ NetworkContext::NetworkContext(
 #if BUILDFLAG(IS_CT_SUPPORTED)
   if (params_->ct_policy)
     SetCTPolicy(std::move(params_->ct_policy));
-  SetSCTAuditingEnabled(params_->enable_sct_auditing);
+  sct_auditing_handler()->SetEnabled(params_->enable_sct_auditing);
 #endif
 
 #if defined(OS_ANDROID)
@@ -1379,15 +1380,15 @@ void NetworkContext::MaybeEnqueueSCTReport(
     const net::X509Certificate* validated_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps) {
-  if (!this->is_sct_auditing_enabled())
+  if (!sct_auditing_handler()->is_enabled())
     return;
   network_service()->sct_auditing_cache()->MaybeEnqueueReport(
-      host_port_pair, validated_certificate_chain,
+      this, host_port_pair, validated_certificate_chain,
       signed_certificate_timestamps);
 }
 
 void NetworkContext::SetSCTAuditingEnabled(bool enabled) {
-  is_sct_auditing_enabled_ = enabled;
+  sct_auditing_handler()->SetEnabled(enabled);
 }
 
 void NetworkContext::OnCTLogListUpdated(

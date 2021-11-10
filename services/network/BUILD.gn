@@ -269,6 +269,10 @@ component("network_service") {
       "expect_ct_reporter.h",
       "sct_auditing/sct_auditing_cache.cc",
       "sct_auditing/sct_auditing_cache.h",
+      "sct_auditing/sct_auditing_handler.cc",
+      "sct_auditing/sct_auditing_handler.h",
+      "sct_auditing/sct_auditing_reporter.cc",
+      "sct_auditing/sct_auditing_reporter.h",
     ]
     deps += [
       "//components/certificate_transparency",

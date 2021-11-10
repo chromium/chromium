@@ -658,13 +658,6 @@ class SCTReportingServiceWithRetryAndPersistBrowserTest
     return network_service_test_.get();
   }
 
-  uint64_t GetSCTAuditingPendingReportsCount() {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    uint64_t count;
-    network_service_test()->GetSCTAuditingPendingReportsCount(&count);
-    return count;
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -719,26 +712,18 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceWithRetryAndPersistBrowserTest,
 
   SetExtendedReportingEnabled(true);
 
-  // Set the callback to run when a reporter completes.
-  base::RunLoop run_loop;
-  network_service_test()->SetSCTAuditingReportCompletionCallback(
-      run_loop.QuitClosure());
-
   // Visit an HTTPS page and wait for the report to be sent.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("a.test", "/")));
 
-  // Wait until the reporter completes.
-  run_loop.Run();
+  // Wait until the reporter completes 16 requests.
+  WaitForRequests(16);
 
   // Check that the report was sent 16x and contains the expected details.
   EXPECT_EQ(16u, requests_seen());
   EXPECT_EQ(
       "a.test",
       GetLastSeenReport().certificate_report(0).context().origin().hostname());
-
-  // Check that the pending reporter completed and was deleted.
-  EXPECT_EQ(0u, GetSCTAuditingPendingReportsCount());
 }
 
 // Test that a cert error on the first attempt to send a report will trigger
