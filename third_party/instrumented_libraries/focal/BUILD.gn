@@ -42,8 +42,6 @@ group("locally_built") {
     ":libindicator3-7",
     ":libjpeg-turbo8",
     ":libldap-2.4-2",
-    ":libnih-dbus1",
-    ":libnih1",
     ":libnspr4",
     ":libp11-kit0",
     ":libpci3",
@@ -539,22 +537,6 @@ instrumented_library("libldap-2.4-2") {
   # Debian adds a custom patch that adds @VERSION_OPTION@, which must
   # be substituted before building.
   pre_build = "scripts/pre-build/dh_autoreconf.sh"
-}
-
-instrumented_library("libnih1") {
-  extra_configure_flags = [ "--disable-static" ]
-
-  pre_build = "scripts/pre-build/libnih1.sh"
-
-  patches = [ "patches/libnih1.diff" ]
-}
-
-instrumented_library("libnih-dbus1") {
-  extra_configure_flags = [ "--disable-static" ]
-
-  pre_build = "scripts/pre-build/libnih1.sh"
-
-  patches = [ "patches/libnih1.diff" ]
 }
 
 instrumented_library("libnspr4") {
