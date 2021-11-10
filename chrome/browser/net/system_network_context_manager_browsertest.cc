@@ -222,8 +222,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
 }
 
 class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
-    : public SystemNetworkContextManagerBrowsertest,
-      public testing::WithParamInterface<bool> {
+    : public SystemNetworkContextManagerBrowsertest {
  public:
   SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest() = default;
 
@@ -234,42 +233,21 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     component_updater::FirstPartySetsComponentInstallerPolicy::
-        WriteComponentForTesting(component_dir_.GetPath(),
-                                 GetComponentContents());
-  }
-
-  bool UseV2Format() const { return GetParam(); }
-
- private:
-  std::string GetComponentContents() const {
-    if (UseV2Format()) {
-      // Use the V2 format of the component.
-      return "{\"owner\": \"https://example.test\", \"members\": [ "
-             "\"https://member1.test\", \"https://member2.test\"]}\n"
-             "{\"owner\": \"https://example2.test\", \"members\": [ "
-             "\"https://member3.test\", \"https://member4.test\"]}";
-    }
-    return R"([{
+        WriteComponentForTesting(component_dir_.GetPath(), R"([{
           "owner": "https://example.test",
           "members": [
             "https://member1.test",
             "https://member2.test"
             ]
-          },
-          {
-            "owner": "https://example2.test",
-            "members": [
-              "https://member3.test",
-              "https://member4.test"
-              ]
-          }])";
+          }])");
   }
 
+ private:
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir component_dir_;
 };
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
     ReloadsFirstPartySetsAfterCrash) {
   // Network service is not running out of process, so cannot be crashed.
@@ -277,18 +255,13 @@ IN_PROC_BROWSER_TEST_P(
     return;
 
   PollForFirstPartySetEntryCount(base::Seconds(5),
-                                 /*expected_count=*/6);
+                                 /*expected_count=*/3);
 
   SimulateNetworkServiceCrash();
 
   PollForFirstPartySetEntryCount(base::Seconds(5),
-                                 /*expected_count=*/6);
+                                 /*expected_count=*/3);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
-    testing::Bool());
 
 class SystemNetworkContextManagerReferrersFeatureBrowsertest
     : public SystemNetworkContextManagerBrowsertest,
