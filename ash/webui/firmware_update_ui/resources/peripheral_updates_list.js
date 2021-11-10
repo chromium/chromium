@@ -54,6 +54,14 @@ export class PeripheralUpdateListElement extends PolymerElement {
   onUpdateListChanged(firmwareUpdates) {
     this.firmwareUpdates_ = firmwareUpdates;
   }
+
+  /**
+   * @protected
+   * @return {boolean}
+   */
+  hasFirmwareUpdates_() {
+    return this.firmwareUpdates_.length > 0;
+  }
 }
 
 customElements.define(
