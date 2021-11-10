@@ -109,6 +109,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/peerconnection/execution_context_metronome_provider.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -519,12 +520,6 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
       load_timer_(document.GetTaskRunner(TaskType::kInternalMedia),
                   this,
                   &HTMLMediaElement::LoadTimerFired),
-      progress_event_timer_(document.GetTaskRunner(TaskType::kInternalMedia),
-                            this,
-                            &HTMLMediaElement::ProgressEventTimerFired),
-      playback_progress_timer_(document.GetTaskRunner(TaskType::kInternalMedia),
-                               this,
-                               &HTMLMediaElement::PlaybackProgressTimerFired),
       audio_tracks_timer_(document.GetTaskRunner(TaskType::kInternalMedia),
                           this,
                           &HTMLMediaElement::AudioTracksTimerFired),
@@ -532,7 +527,16 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
           document.GetTaskRunner(TaskType::kInternalMedia),
           this,
           &HTMLMediaElement::OnRemovedFromDocumentTimerFired),
-      played_time_ranges_(),
+      progress_event_timer_(
+          GetExecutionContextMetronomeProvider(),
+          document.GetTaskRunner(TaskType::kInternalMedia),
+          WTF::BindRepeating(&HTMLMediaElement::ProgressEventTimerFired,
+                             WrapWeakPersistent(this))),
+      playback_progress_timer_(
+          GetExecutionContextMetronomeProvider(),
+          document.GetTaskRunner(TaskType::kInternalMedia),
+          WTF::BindRepeating(&HTMLMediaElement::PlaybackProgressTimerFired,
+                             WrapWeakPersistent(this))),
       async_event_queue_(
           MakeGarbageCollected<EventQueue>(GetExecutionContext(),
                                            TaskType::kMediaElementEvent)),
@@ -610,6 +614,9 @@ void HTMLMediaElement::Dispose() {
   // See Document::isDelayingLoadEvent().
   // Also see http://crbug.com/275223 for more details.
   ClearMediaPlayerAndAudioSourceProviderClientWithoutLocking();
+
+  progress_event_timer_.Shutdown();
+  playback_progress_timer_.Shutdown();
 }
 
 void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
@@ -1691,7 +1698,7 @@ void HTMLMediaElement::StartProgressEventTimer() {
 
   previous_progress_time_ = base::ElapsedTimer();
   // 350ms is not magic, it is in the spec!
-  progress_event_timer_.StartRepeating(base::Milliseconds(350), FROM_HERE);
+  progress_event_timer_.StartRepeating(base::Milliseconds(350));
 }
 
 void HTMLMediaElement::WaitForSourceChange() {
@@ -2132,7 +2139,7 @@ void HTMLMediaElement::UpdateLayoutObject() {
     GetLayoutObject()->UpdateFromElement();
 }
 
-void HTMLMediaElement::ProgressEventTimerFired(TimerBase*) {
+void HTMLMediaElement::ProgressEventTimerFired() {
   // The spec doesn't require to dispatch the "progress" or "stalled" events
   // when the resource fetch mode is "local".
   // https://html.spec.whatwg.org/multipage/media.html#concept-media-load-resource
@@ -3004,11 +3011,10 @@ void HTMLMediaElement::StartPlaybackProgressTimer() {
     return;
 
   previous_progress_time_ = base::ElapsedTimer();
-  playback_progress_timer_.StartRepeating(kMaxTimeupdateEventFrequency,
-                                          FROM_HERE);
+  playback_progress_timer_.StartRepeating(kMaxTimeupdateEventFrequency);
 }
 
-void HTMLMediaElement::PlaybackProgressTimerFired(TimerBase*) {
+void HTMLMediaElement::PlaybackProgressTimerFired() {
   if (!std::isnan(fragment_end_time_) && currentTime() >= fragment_end_time_ &&
       GetDirectionOfPlayback() == kForward) {
     fragment_end_time_ = std::numeric_limits<double>::quiet_NaN();
@@ -3048,11 +3054,10 @@ void HTMLMediaElement::ScheduleTimeupdateEvent(bool periodic_event) {
 
   last_time_update_event_media_time_ = media_time;
 
-  // Ensure periodic event fires 250ms from _this_ event. Restarting the timer
-  // cancels pending callbacks.
+  // Restart the timer to ensure periodic event fires 250ms from _this_ event.
   if (!periodic_event && playback_progress_timer_.IsActive()) {
-    playback_progress_timer_.StartRepeating(kMaxTimeupdateEventFrequency,
-                                            FROM_HERE);
+    playback_progress_timer_.Stop();
+    playback_progress_timer_.StartRepeating(kMaxTimeupdateEventFrequency);
   }
 }
 
@@ -3919,6 +3924,17 @@ void HTMLMediaElement::ContextDestroyed() {
   removed_from_document_timer_.Stop();
 }
 
+scoped_refptr<MetronomeProvider>
+HTMLMediaElement::GetExecutionContextMetronomeProvider() const {
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context || execution_context->IsContextDestroyed()) {
+    // It's possible to create an element of a detached document.
+    return nullptr;
+  }
+  return ExecutionContextMetronomeProvider::From(*execution_context)
+      .metronome_provider();
+}
+
 bool HTMLMediaElement::HasPendingActivity() const {
   const auto result = HasPendingActivityInternal();
   // TODO(dalecurtis): Replace c-style casts in followup patch.
@@ -4301,8 +4317,6 @@ void HTMLMediaElement::BindMediaPlayerReceiver(
 void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(audio_source_node_);
   visitor->Trace(load_timer_);
-  visitor->Trace(progress_event_timer_);
-  visitor->Trace(playback_progress_timer_);
   visitor->Trace(audio_tracks_timer_);
   visitor->Trace(removed_from_document_timer_);
   visitor->Trace(played_time_ranges_);
