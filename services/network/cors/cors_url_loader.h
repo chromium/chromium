@@ -114,9 +114,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
  private:
   void StartRequest();
-  void StartNetworkRequest(int net_error,
-                           absl::optional<CorsErrorStatus> status,
-                           bool has_authorization_covered_by_wildcard);
+  void OnPreflightRequestComplete(int net_error,
+                                  absl::optional<CorsErrorStatus> status,
+                                  bool has_authorization_covered_by_wildcard);
+  void StartNetworkRequest();
 
   // Called when there is a connection error on the upstream pipe used for the
   // actual request.

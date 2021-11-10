@@ -120,6 +120,17 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
         header_names::kAccessControlRequestHeaders, request_headers);
   }
 
+  preflight_request->target_ip_address_space = request.target_ip_address_space;
+  if (preflight_request->target_ip_address_space !=
+      mojom::IPAddressSpace::kUnknown) {
+    // See the CORS-preflight fetch algorithm modifications laid out in the
+    // Private Network Access spec, in step 4 of the CORS preflight section as
+    // of writing: https://wicg.github.io/private-network-access/#cors-preflight
+    preflight_request->headers.SetHeader(
+        header_names::kAccessControlRequestPrivateNetwork, "true");
+  }
+
+  // TODO(https://crbug.com/1263483): Remove this.
   if (request.is_external_request) {
     preflight_request->headers.SetHeader(
         header_names::kAccessControlRequestExternal, "true");
@@ -276,9 +287,21 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
   if (*detected_error_status)
     return nullptr;
 
+  // TODO(https://crbug.com/1263483): Remove this.
   if (original_request.is_external_request) {
     *detected_error_status = CheckExternalPreflight(GetHeaderString(
         head.headers, header_names::kAccessControlAllowExternal));
+    if (*detected_error_status)
+      return nullptr;
+  }
+
+  // See the CORS-preflight fetch algorithm modifications laid out in the
+  // Private Network Access spec, in step 4 of the CORS preflight section as of
+  // writing: https://wicg.github.io/private-network-access/#cors-preflight
+  if (original_request.target_ip_address_space !=
+      mojom::IPAddressSpace::kUnknown) {
+    *detected_error_status = CheckExternalPreflight(GetHeaderString(
+        head.headers, header_names::kAccessControlAllowPrivateNetwork));
     if (*detected_error_status)
       return nullptr;
   }
@@ -293,6 +316,7 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
 
   if (error)
     *detected_error_status = CorsErrorStatus(*error);
+
   return result;
 }
 
@@ -427,6 +451,10 @@ class PreflightController::PreflightLoader final {
     }
 
     if (!(original_request_.load_flags & net::LOAD_DISABLE_CACHE) &&
+        // TODO(https://crbug.com/1268312): Key the cache by target address
+        // space and remove this guard.
+        original_request_.target_ip_address_space ==
+            mojom::IPAddressSpace::kUnknown &&
         !detected_error_status) {
       controller_->AppendToCache(*original_request_.request_initiator,
                                  original_request_.url, network_isolation_key_,
@@ -440,6 +468,9 @@ class PreflightController::PreflightLoader final {
 
   void HandleResponseBody(std::unique_ptr<std::string> response_body) {
     const int error = loader_->NetError();
+    const absl::optional<URLLoaderCompletionStatus>& status =
+        loader_->CompletionStatus();
+
     if (!completion_callback_.is_null()) {
       // As HandleResponseHeader() isn't called due to a request failure, such
       // as unknown hosts. unreachable remote, reset by peer, and so on, we
@@ -449,7 +480,10 @@ class PreflightController::PreflightLoader final {
         devtools_observer_->OnCorsPreflightRequestCompleted(
             *devtools_request_id_, network::URLLoaderCompletionStatus(error));
       }
-      std::move(completion_callback_).Run(error, absl::nullopt, false);
+      std::move(completion_callback_)
+          .Run(error,
+               status.has_value() ? status->cors_error_status : absl::nullopt,
+               false);
     }
 
     RemoveFromController();
@@ -547,7 +581,12 @@ void PreflightController::PerformPreflightCheck(
           : request.trusted_params.has_value()
                 ? request.trusted_params->isolation_info.network_isolation_key()
                 : net::NetworkIsolationKey();
-  if (!RetrieveCacheFlags(request.load_flags) && !request.is_external_request &&
+  if (!RetrieveCacheFlags(request.load_flags) &&
+      // TODO(https://crbug.com/1263483): Remove this.
+      !request.is_external_request &&
+      // TODO(https://crbug.com/1268312): Key the cache by target address space
+      // and remove this guard.
+      request.target_ip_address_space == mojom::IPAddressSpace::kUnknown &&
       cache_.CheckIfRequestCanSkipPreflight(
           request.request_initiator.value(), request.url, network_isolation_key,
           request.credentials_mode, request.method, request.headers,

@@ -3790,6 +3790,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   EXPECT_EQ(
       network::mojom::IPAddressSpace::kPublic,
       bidder_request->trusted_params->client_security_state->ip_address_space);
+
+  const network::URLLoaderCompletionStatus& bidder_status =
+      url_loader_monitor.WaitForRequestCompletion(bidder_url);
+  EXPECT_EQ(net::ERR_FAILED, bidder_status.error_code);
+  EXPECT_THAT(
+      bidder_status.cors_error_status,
+      Optional(network::CorsErrorStatus(
+          network::mojom::CorsError::kPreflightMissingAllowOriginHeader)));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
@@ -3829,6 +3837,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
       url_loader_monitor.GetRequestInfo(seller_url);
   ASSERT_TRUE(seller_request);
   EXPECT_FALSE(seller_request->trusted_params);
+
+  const network::URLLoaderCompletionStatus& seller_status =
+      url_loader_monitor.WaitForRequestCompletion(seller_url);
+  EXPECT_EQ(net::ERR_FAILED, seller_status.error_code);
+  EXPECT_THAT(
+      seller_status.cors_error_status,
+      Optional(network::CorsErrorStatus(
+          network::mojom::CorsError::kPreflightMissingAllowOriginHeader)));
 }
 
 // Have the auction and worklets server from public IPs, but send reports to a
@@ -3845,7 +3861,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   GURL bidder_report_to_url = https_server_->GetURL("b.test", "/bidder_report");
   GURL seller_report_to_url = https_server_->GetURL("b.test", "/seller_report");
   URLLoaderMonitor url_loader_monitor;
-  ;
 
   EXPECT_TRUE(JoinInterestGroupAndWaitInJs(
       /*owner=*/test_origin,
@@ -3878,22 +3893,25 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             url_loader_monitor.WaitForUrl(bidder_report_to_url)
                 .trusted_params->client_security_state->ip_address_space);
-  EXPECT_EQ(net::ERR_FAILED,
-            url_loader_monitor.WaitForRequestCompletion(bidder_report_to_url)
-                .error_code);
   EXPECT_EQ(network::mojom::IPAddressSpace::kPublic,
             url_loader_monitor.WaitForUrl(seller_report_to_url)
                 .trusted_params->client_security_state->ip_address_space);
-  EXPECT_EQ(net::ERR_FAILED,
-            url_loader_monitor.WaitForRequestCompletion(seller_report_to_url)
-                .error_code);
 
-  // The reporting requests should have been blocked before the test server say
-  // them.
-  EXPECT_FALSE(
-      HasServerSeenUrl(https_server_->GetURL(bidder_report_to_url.path())));
-  EXPECT_FALSE(
-      HasServerSeenUrl(https_server_->GetURL(seller_report_to_url.path())));
+  const network::URLLoaderCompletionStatus& bidder_report_status =
+      url_loader_monitor.WaitForRequestCompletion(bidder_report_to_url);
+  EXPECT_EQ(net::ERR_FAILED, bidder_report_status.error_code);
+  EXPECT_THAT(
+      bidder_report_status.cors_error_status,
+      Optional(network::CorsErrorStatus(
+          network::mojom::CorsError::kPreflightMissingAllowOriginHeader)));
+
+  const network::URLLoaderCompletionStatus& seller_report_status =
+      url_loader_monitor.WaitForRequestCompletion(seller_report_to_url);
+  EXPECT_EQ(net::ERR_FAILED, seller_report_status.error_code);
+  EXPECT_THAT(
+      seller_report_status.cors_error_status,
+      Optional(network::CorsErrorStatus(
+          network::mojom::CorsError::kPreflightMissingAllowOriginHeader)));
 }
 
 // Have all requests for an auction served from a public network, and all

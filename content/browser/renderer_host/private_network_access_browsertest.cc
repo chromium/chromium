@@ -51,6 +51,12 @@ constexpr char kTreatAsPublicAddressPath[] =
 // cross-origin without triggering CORS violations.
 constexpr char kCorsPath[] = "/set-header?Access-Control-Allow-Origin: *";
 
+// Path to a response that passes Private Network Access checks.
+constexpr char kPnaPath[] =
+    "/set-header?"
+    "Access-Control-Allow-Origin: *&"
+    "Access-Control-Allow-Private-Network: true";
+
 // Path to a cacheable response.
 constexpr char kCacheablePath[] = "/cachetime";
 
@@ -2734,6 +2740,36 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
   // origin to avoid running afoul of mixed content restrictions.
   EXPECT_EQ(true, EvalJs(root_frame_host(),
                          FetchSubresourceScript(SecureLocalURL(kCorsPath))));
+}
+
+// This test verifies that when preflights are sent but not enforced, requests:
+//  - from a secure page served from a local IP address
+//  - to a local IP address
+//  - for which the target server responds OK to the preflight request
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestSendPreflights,
+                       FromSecurePublicToLocalPreflightOK) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  // Check that the page can load a local resource. We load it from a secure
+  // origin to avoid running afoul of mixed content restrictions.
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLocalURL(kPnaPath))));
+}
+
+// This test verifies that when preflights are sent and enforced, requests:
+//  - from a secure page served from a local IP address
+//  - to a local IP address
+//  - for which the target server responds OK to the preflight request
+// are not blocked.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
+                       FromSecurePublicToLocalPreflightOK) {
+  EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
+
+  // Check that the page can load a local resource. We load it from a secure
+  // origin to avoid running afoul of mixed content restrictions.
+  EXPECT_EQ(true, EvalJs(root_frame_host(),
+                         FetchSubresourceScript(SecureLocalURL(kPnaPath))));
 }
 
 // This test verifies that when the right feature is enabled but the content
