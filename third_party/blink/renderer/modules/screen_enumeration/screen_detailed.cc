@@ -28,8 +28,14 @@ const display::ScreenInfo& GetScreenInfo(LocalFrame& frame,
 
 }  // namespace
 
-ScreenDetailed::ScreenDetailed(LocalDOMWindow* window, int64_t display_id)
-    : Screen(window), display_id_(display_id) {}
+ScreenDetailed::ScreenDetailed(LocalDOMWindow* window,
+                               int64_t display_id,
+                               bool label_is_internal,
+                               uint32_t label_idx)
+    : Screen(window),
+      label_idx_(label_idx),
+      label_is_internal_(label_is_internal),
+      display_id_(display_id) {}
 
 // static
 bool ScreenDetailed::AreWebExposedScreenDetailedPropertiesEqual(
@@ -151,9 +157,13 @@ float ScreenDetailed::devicePixelRatio() const {
   return GetScreenInfo(*frame, display_id_).device_scale_factor;
 }
 
-const String& ScreenDetailed::label() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return g_empty_string;
+String ScreenDetailed::label() const {
+  // Returns a placeholder label, e.g. "Internal Display 1".
+  // These don't have to be unique, but it's nice to be able to differentiate
+  // if a user has two external screens, for example.
+  const char* prefix =
+      label_is_internal_ ? "Internal Display " : "External Display ";
+  return String(prefix) + String::Number(label_idx_);
 }
 
 int64_t ScreenDetailed::DisplayId() const {
