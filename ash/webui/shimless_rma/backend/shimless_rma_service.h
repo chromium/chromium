@@ -66,6 +66,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   void WriteProtectManuallyDisabled(
       WriteProtectManuallyDisabledCallback callback) override;
+  void GetWriteProtectManuallyDisabledInstructions(
+      GetWriteProtectManuallyDisabledInstructionsCallback callback) override;
 
   void GetWriteProtectDisableCompleteState(
       GetWriteProtectDisableCompleteStateCallback callback) override;

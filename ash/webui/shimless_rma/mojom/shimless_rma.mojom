@@ -495,6 +495,11 @@ interface ShimlessRmaService {
   WriteProtectManuallyDisabled()
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
+  // Returns a display string and QR Code image representing the URL that takes
+  // users to the manufacturer specific instructions page for manually disabling
+  // write protect.
+  GetWriteProtectManuallyDisabledInstructions()
+      => (string display_url, QrCode? qr_code);
 
   ///////////////////////////////////////
   // Methods for kWPDisableComplete state.

@@ -47,6 +47,31 @@ bool HaveAllowedNetworkConnection() {
   return network && network->IsConnectedState() && !metered;
 }
 
+mojom::QrCodePtr GenerateQRCode(const std::string& input) {
+  QRCodeGenerator qr_generator;
+  absl::optional<QRCodeGenerator::GeneratedCode> qr_data =
+      qr_generator.Generate(
+          base::as_bytes(base::make_span(input.data(), input.size())));
+  if (!qr_data || qr_data->data.data() == nullptr ||
+      qr_data->data.size() == 0) {
+    return nullptr;
+  }
+
+  // Data returned from QRCodeGenerator consist of bytes that represents
+  // tiles. Least significant bit of each byte is set if the tile should be
+  // filled. Other bit positions indicate QR Code structure and are not required
+  // for rendering. Convert this data to 0 or 1 values for simpler UI side
+  // rendering.
+  for (uint8_t& qr_data_byte : qr_data->data) {
+    qr_data_byte &= 1;
+  }
+
+  mojom::QrCodePtr qr_code = mojom::QrCode::New();
+  qr_code->size = qr_data->qr_size;
+  qr_code->data.assign(qr_data->data.begin(), qr_data->data.end());
+  return qr_code;
+}
+
 }  // namespace
 
 ShimlessRmaService::ShimlessRmaService() {
@@ -283,29 +308,9 @@ void ShimlessRmaService::GetRsuDisableWriteProtectChallengeQrCode(
     std::move(callback).Run(nullptr);
     return;
   }
-  QRCodeGenerator qr_generator;
-  absl::optional<QRCodeGenerator::GeneratedCode> qr_data =
-      qr_generator.Generate(base::as_bytes(base::make_span(
-          state_proto_.wp_disable_rsu().challenge_url().data(),
-          state_proto_.wp_disable_rsu().challenge_url().size())));
-  if (!qr_data || qr_data->data.data() == nullptr ||
-      qr_data->data.size() == 0) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
 
-  // Data returned from QRCodeGenerator consist of bytes that represents
-  // tiles. Least significant bit of each byte is set if the tile should be
-  // filled. Other bit positions indicate QR Code structure and are not required
-  // for rendering. Convert this data to 0 or 1 values for simpler UI side
-  // rendering.
-  for (uint8_t& qr_data_byte : qr_data->data) {
-    qr_data_byte &= 1;
-  }
-
-  mojom::QrCodePtr qr_code = mojom::QrCode::New();
-  qr_code->size = qr_data->qr_size;
-  qr_code->data.assign(qr_data->data.begin(), qr_data->data.end());
+  mojom::QrCodePtr qr_code =
+      GenerateQRCode(state_proto_.wp_disable_rsu().challenge_url());
   std::move(callback).Run(std::move(qr_code));
 }
 
@@ -335,6 +340,14 @@ void ShimlessRmaService::WriteProtectManuallyDisabled(
     return;
   }
   TransitionNextStateGeneric(std::move(callback));
+}
+
+void ShimlessRmaService::GetWriteProtectManuallyDisabledInstructions(
+    GetWriteProtectManuallyDisabledInstructionsCallback callback) {
+  // TODO (crbug/1268612): Replace with manufacturer specific help site.
+  const std::string url = "g.co/chromebook/";
+  mojom::QrCodePtr qr_code = GenerateQRCode(url);
+  std::move(callback).Run(url, std::move(qr_code));
 }
 
 void ShimlessRmaService::GetWriteProtectDisableCompleteState(

@@ -360,6 +360,8 @@ export class FakeShimlessRmaService {
         'writeProtectManuallyDisabled', RmaState.kWaitForManualWPDisable);
   }
 
+  getWriteProtectManuallyDisabledInstructions() {}
+
   /** @return {!Promise<!{state: !WriteProtectDisableCompleteState}>} */
   getWriteProtectDisableCompleteState() {
     return this.methods_.resolveMethod('getWriteProtectDisableCompleteState');
