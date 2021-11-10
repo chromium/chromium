@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">समस्या ठीक करने के तरीके आज़माएं</translation>
 <translation id="202500043506723828">ईआईडी</translation>
 <translation id="2080070583977670716">ज़्यादा सेटिंग</translation>
+<translation id="2104796393919810494">मरम्मत का काम पूरा हुआ</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, वर्शन <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> जीबी में से <ph name="AVAILABLE_MEMORY" /> जीबी उपलब्ध है</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
@@ -259,6 +260,7 @@
 <translation id="5049856988445523908">सिम लॉक है (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">समूह नाम</translation>
 <translation id="5051044138948155788">सिर्फ़ यह पेज है. यह आपको उस स्क्रीन पर ले जाएगा जहां स्कैनिंग शुरू होती है.</translation>
+<translation id="5061169534910302641">वर्शन को अपडेट करके, रीस्टार्ट करें</translation>
 <translation id="5088172560898466307">सर्वर होस्‍टनाम</translation>
 <translation id="5089810972385038852">राज्य</translation>
 <translation id="5142961317498132443">पहचान करना</translation>

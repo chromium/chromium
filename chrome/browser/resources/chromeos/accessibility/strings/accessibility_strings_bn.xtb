@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">কপি করুন</translation>
 <translation id="135978014023467274">আপনার ChormeVox, ChromeVox 63 তে আপগ্রেড করা হয়েছে!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> নম্বর রাউটিং কী-এর আইটেমে ক্লিক করুন</translation>
+<translation id="1376703628032300005">পরের অক্ষরে সরান</translation>
 <translation id="1377925789329510816">এটিই সর্বশেষ শিরোনাম। প্রথম শিরোনামে ফিরে যেতে সার্চ+H টিপুন, অথবা এই পৃষ্ঠার দ্বিতীয় শিরোনামে যেতে সার্চ+Shift+H টিপুন।</translation>
 <translation id="138218114945450791">হালকা নীল</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">চেকবাক্স</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
 <translation id="2462626033734746142">রেডিও বোতাম গ্রুপ</translation>
+<translation id="2467741090055146971">বাদ দিন</translation>
 <translation id="2471138580042810658">শিরোনাম ৬</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{তারা}one{#টি তারা}other{#টি তারা}}</translation>
 <translation id="2490721194269245365">লালচে বাদামি</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">কোনও পূর্ববর্তী মিডিয়া উইজেট নেই</translation>
 <translation id="4855927945655956315">গুরুত্বপূর্ণ কী: Control</translation>
 <translation id="4862744964787595316">মোটা অক্ষর নয়</translation>
+<translation id="4865995900839719272">আগের লাইনে সরান</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS লগ ইন সক্ষম করুন</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, ট্যাব</translation>
 <translation id="5308380583665731573">সংযুক্ত করুন</translation>
 <translation id="5310788376443009632">সরানো হয়েছে:</translation>
+<translation id="5316825363044614340">পরের লাইনে সরান</translation>
 <translation id="5320727453979144100">স্টিকি মোড সক্ষম</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{কমা}one{# টি কমা}other{# টি কমা}}</translation>
 <translation id="532485153932049746">টেক্সট ফর্ম্যাট করা
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">কোনও পূর্ববর্তী ফর্ম ফিল্ড নেই</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">help</translation>
 <translation id="7317017974771324508">আংশিকভাবে টিকচিহ্ন দেওয়া হয়েছে</translation>
 <translation id="7322442671176251901">টাচের মাধ্যমে এক্সপ্লোর করা</translation>
 <translation id="7344012264516629579">লিঙ্ক, বোতাম এবং চেকবক্সের মতো অতিরিক্ত জাম্প কমান্ড অন্তর্ভুক্ত রয়েছে। ChromeVox মেনুতে জাম্প কমান্ডের একটি সম্পূর্ণ তালিকা পাওয়া যাবে, যা Search + Period কী প্রেস করে খোলা যেতে পারে।</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox টিউটোরিয়াল</translation>
 <translation id="9040132695316389094">শিরোনাম ১</translation>
 <translation id="9061884144798498064">একটি ৮-ডটের ব্রেইল সারণী বেছে নিন:</translation>
+<translation id="9063946545000394379">আগের অক্ষরে সরান</translation>
 <translation id="9065283790526219006">+পপআপ</translation>
 <translation id="9065912140022662363">কোনও পরবর্তী রেডিও বোতাম নেই</translation>
 <translation id="9067522039955793016">পৃষ্ঠা বিরতি</translation>

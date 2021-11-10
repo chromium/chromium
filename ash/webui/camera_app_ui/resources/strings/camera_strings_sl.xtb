@@ -3,8 +3,10 @@
 <translationbundle lang="sl">
 <translation id="1113173431709655881">Način fotoaparata</translation>
 <translation id="1175958423215084756">Zaznana je bila povezava. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Zavrti za 90 stopinj v desno</translation>
 <translation id="1276998909102132017">Slike v galeriji</translation>
 <translation id="1300209025925956156">Optično branje dokumenta</translation>
+<translation id="1303487788671416818">Omogoči posnetek videoposnetka v polni velikosti</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tipka za iskanja + puščica levo za dostop.</translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ni priključena.</translation>
@@ -54,6 +56,7 @@
 <translation id="3517926952904427380">Portretne fotografije ni bilo mogoče posneti</translation>
 <translation id="3569311554794739032">Ali res želite odstraniti datoteko <ph name="FILE" />?</translation>
 <translation id="3573890771273113519">Preklop na način iskanja</translation>
+<translation id="3789724198583203151">Zavrti za 90 stopinj v levo</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Optično branje črtne kode</translation>
 <translation id="3892148308691398805">Kopiraj besedilo</translation>

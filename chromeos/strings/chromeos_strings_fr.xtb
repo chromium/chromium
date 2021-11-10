@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">Connexion</translation>
 <translation id="4832079907277790330">Sélectionner un dossier dans l'application Fichiers…</translation>
 <translation id="4835901797422965222">Aucun réseau actif</translation>
+<translation id="4839698083503556542">Créez votre propre film</translation>
 <translation id="484790837831576105">(Android) Résolution DNS</translation>
 <translation id="4848429997038228357">EN COURS</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentative restante}one{<ph name="ERROR_MESSAGE" /> {0} tentative restante}other{<ph name="ERROR_MESSAGE" /> {0} tentatives restantes}}</translation>

@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">kopiraj</translation>
 <translation id="135978014023467274">ChromeVox je bil posodobljen na različico 63.</translation>
 <translation id="1360699455582016846">Kliknite element pod tipko za usmerjanje <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">premik na naslednji znak</translation>
 <translation id="1377925789329510816">To je zadnji naslov. Pritisnite tipko za iskanje in tipko H, če želite prelomiti vrstico do prvega naslova, ali tipko za iskanje, tipko Shift in tipko H, če se želite pomakniti do drugega naslova na tej strani.</translation>
 <translation id="138218114945450791">Svetlo modra</translation>
 <translation id="1383876407941801731">Išči</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Potrditveno polje</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2462626033734746142">Skupina izbirnih gumbov</translation>
+<translation id="2467741090055146971">odznači</translation>
 <translation id="2471138580042810658">Naslov 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{zvezdica}one{# zvezdica}two{# zvezdici}few{# zvezdice}other{# zvezdic}}</translation>
 <translation id="2490721194269245365">Rožnato rjava</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Ni pripomočka za prejšnjo predstavnost</translation>
 <translation id="4855927945655956315">Pomembne tipke: Control</translation>
 <translation id="4862744964787595316">Ni krepko</translation>
+<translation id="4865995900839719272">premik na prejšnjo vrstico</translation>
 <translation id="4866956062845190338">izelmen</translation>
 <translation id="4867316986324544967">Omogočanje zapisovanja dnevnikov TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931">zavihek <ph name="TITLE" /></translation>
 <translation id="5308380583665731573">Povezovanje</translation>
 <translation id="5310788376443009632">odstranjeno:</translation>
+<translation id="5316825363044614340">premik na naslednjo vrstico</translation>
 <translation id="5320727453979144100">Način zaklepanja je omogočen</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{vejica}one{# vejica}two{# vejici}few{# vejice}other{# vejic}}</translation>
 <translation id="532485153932049746">Oblikovanje besedila
@@ -740,6 +744,7 @@
 <translation id="6034000775414344507">Svetlo siva</translation>
 <translation id="6036135911048686884">Raziskovanje z dotikom</translation>
 <translation id="6037602951055904232">Panoramsko premikanje naprej</translation>
+<translation id="604240746417122825">slovnična napaka</translation>
 <translation id="6082768461603900813">Osnovno pomikanje</translation>
 <translation id="609281021724813947">Ni prejšnjega drsnika</translation>
 <translation id="6100239002225743044">Premik navzgor za eno vrstico</translation>
@@ -901,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Ni prejšnjega polja obrazca</translation>
 <translation id="731121099745151312">eldrv</translation>
+<translation id="7313717760367325059">pomoč</translation>
 <translation id="7317017974771324508">delno izbrano</translation>
 <translation id="7322442671176251901">Raziskovanje z dotikom</translation>
 <translation id="7344012264516629579">Dodatni ukazi za preskakovanje med drugim vključujejo preskakovanje po povezavi, gumbu in potrditvenem polju. Celoten seznam ukazov za preskakovanje je mogoče najti v menijih ChromeVoxa, ki jih lahko odprete tako, da pritisnete tipko za iskanje + piko.</translation>
@@ -1128,6 +1134,7 @@
 <translation id="9014206344398081366">Vadnica za ChromeVox</translation>
 <translation id="9040132695316389094">Naslov 1</translation>
 <translation id="9061884144798498064">Izbira tabele za 8-točkovno braillovo pisavo:</translation>
+<translation id="9063946545000394379">premik na prejšnji znak</translation>
 <translation id="9065283790526219006">+pojavnookno</translation>
 <translation id="9065912140022662363">Ni naslednjega izbirnega gumba</translation>
 <translation id="9067522039955793016">Prelom strani</translation>

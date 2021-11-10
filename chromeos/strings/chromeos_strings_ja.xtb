@@ -237,6 +237,7 @@
 <translation id="4813345808229079766">接続</translation>
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
 <translation id="4835901797422965222">有効なネットワークがありません</translation>
+<translation id="4839698083503556542">オリジナルの動画を作成しましょう</translation>
 <translation id="484790837831576105">（Android）DNS の解決</translation>
 <translation id="4848429997038228357">実行中</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}other{<ph name="ERROR_MESSAGE" />あと {0} 回試行できます}}</translation>
