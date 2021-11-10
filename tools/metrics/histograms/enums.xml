@@ -20796,6 +20796,41 @@ Called by update_debug_scenarios.py.-->
   <int value="40" label="Recorder"/>
 </enum>
 
+<enum name="DevToolsRecordingEdited">
+  <int value="1" label="Selector picker used"/>
+  <int value="2" label="Step added"/>
+  <int value="3" label="Step removed"/>
+  <int value="4" label="Selector added"/>
+  <int value="5" label="Selector removed"/>
+  <int value="6" label="Selector part added"/>
+  <int value="7" label="Selector part edited"/>
+  <int value="8" label="Selector part removed"/>
+  <int value="9" label="Type changed"/>
+  <int value="10" label="Other editing"/>
+</enum>
+
+<enum name="DevToolsRecordingExported">
+  <int value="1" label="To Puppeteer"/>
+  <int value="2" label="To JSON"/>
+</enum>
+
+<enum name="DevToolsRecordingReplayFinished">
+  <int value="1" label="Success"/>
+  <int value="2" label="Timeout error - Selectors"/>
+  <int value="3" label="Timeout error - Target"/>
+  <int value="4" label="Other error"/>
+</enum>
+
+<enum name="DevToolsRecordingReplayStarted">
+  <int value="1" label="Replay only"/>
+  <int value="2" label="Replay with performance tracing"/>
+</enum>
+
+<enum name="DevToolsRecordingToggled">
+  <int value="1" label="Recording started"/>
+  <int value="2" label="Recording finished"/>
+</enum>
+
 <enum name="DevToolsSetting">
   <obsolete>
     Instrumentation was removed before M76.

@@ -400,6 +400,48 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools panel was shown.</summary>
 </histogram>
 
+<histogram name="DevTools.RecordingEdited" enum="DevToolsRecordingEdited"
+    expires_after="2022-11-08">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when a recording is being edited by the user.</summary>
+</histogram>
+
+<histogram name="DevTools.RecordingExported" enum="DevToolsRecordingExported"
+    expires_after="2022-11-08">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when a recording is exported.</summary>
+</histogram>
+
+<histogram name="DevTools.RecordingReplayFinished"
+    enum="DevToolsRecordingReplayFinished" expires_after="2022-11-08">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when a replay is over.</summary>
+</histogram>
+
+<histogram name="DevTools.RecordingReplayStarted"
+    enum="DevToolsRecordingReplayStarted" expires_after="2022-11-08">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when a recording is being replayed.</summary>
+</histogram>
+
+<histogram name="DevTools.RecordingToggled" enum="DevToolsRecordingToggled"
+    expires_after="2022-11-08">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Recorded when a recording is started or finished in the Recorder panel.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.SettingChanged" enum="DevToolsSetting"
     expires_after="2021-12-05">
   <obsolete>
