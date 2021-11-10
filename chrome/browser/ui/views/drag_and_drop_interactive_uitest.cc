@@ -1260,6 +1260,10 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
 // a drag-and-drop loop run by Windows OS.
 #define MAYBE_DragSameOriginImageBetweenFrames \
   DISABLED_DragSameOriginImageBetweenFrames
+#elif (defined(ADDRESS_SANITIZER) && defined(OS_LINUX))
+// Failing to receive final drop event on linux-asan crbug.com/1268407.
+#define MAYBE_DragSameOriginImageBetweenFrames \
+  DISABLED_DragSameOriginImageBetweenFrames
 #else
 #define MAYBE_DragSameOriginImageBetweenFrames DragSameOriginImageBetweenFrames
 #endif
@@ -1287,6 +1291,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 #if defined(OS_WIN)
 #define MAYBE_DragCorsSameOriginImageBetweenFrames \
   DISABLED_DragCorsSameOriginImageBetweenFrames
+#elif (defined(ADDRESS_SANITIZER) && defined(OS_LINUX))
+#define MAYBE_DragCorsSameOriginImageBetweenFrames \
+  DISABLED_DragCorsSameOriginImageBetweenFrames
 #else
 #define MAYBE_DragCorsSameOriginImageBetweenFrames \
   DragCorsSameOriginImageBetweenFrames
@@ -1304,6 +1311,9 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
 }
 
 #if defined(OS_WIN)
+#define MAYBE_DragCrossOriginImageBetweenFrames \
+  DISABLED_DragCrossOriginImageBetweenFrames
+#elif (defined(ADDRESS_SANITIZER) && defined(OS_LINUX))
 #define MAYBE_DragCrossOriginImageBetweenFrames \
   DISABLED_DragCrossOriginImageBetweenFrames
 #else
