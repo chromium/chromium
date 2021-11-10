@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_
 
+#include "base/trace_event/traced_value.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
@@ -38,6 +39,9 @@ std::vector<display::GammaRampRGBEntry> ResampleLut(
 
 // Check DRM driver name match.
 bool IsDriverName(const char* device_file_name, const char* driver);
+
+void DrmAsValueIntoHelper(const drmModeModeInfo& mode_info,
+                          base::trace_event::TracedValue* value);
 
 }  // namespace ui
 

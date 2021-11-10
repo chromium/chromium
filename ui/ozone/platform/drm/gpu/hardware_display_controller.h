@@ -17,6 +17,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/traced_value.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/swap_result.h"
@@ -181,6 +182,8 @@ class HardwareDisplayController {
       int modeset_sequence,
       DrmOverlayPlaneList pending_planes,
       const gfx::PresentationFeedback& presentation_feedback);
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
  private:
   // Loops over |crtc_controllers_| and save their props into |commit_request|

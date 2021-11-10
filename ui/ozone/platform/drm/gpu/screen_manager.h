@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/trace_event/traced_value.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
@@ -95,6 +96,8 @@ class ScreenManager {
   // Updates the mapping between display controllers and windows such that a
   // controller will be associated with at most one window.
   void UpdateControllerToWindowMapping();
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
  private:
   using HardwareDisplayControllers =

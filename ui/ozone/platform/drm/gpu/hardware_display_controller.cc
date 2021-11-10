@@ -7,14 +7,19 @@
 #include <drm.h>
 #include <string.h>
 #include <xf86drm.h>
+#include <ios>
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
+#include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -63,6 +68,16 @@ void DrawCursor(DrmDumbBuffer* cursor, const SkBitmap& image) {
   SkCanvas* canvas = cursor->GetCanvas();
   canvas->clear(SK_ColorTRANSPARENT);
   canvas->drawImageRect(image.asImage(), damage, SkSamplingOptions());
+}
+
+template <typename T>
+std::string NumberToHexString(const T value) {
+  static_assert(std::is_unsigned<T>::value,
+                "Can only convert unsigned ints to hex");
+
+  std::stringstream ss;
+  ss << "0x" << std::hex << std::uppercase << value;
+  return ss.str();
 }
 
 }  // namespace
@@ -454,6 +469,37 @@ void HardwareDisplayController::OnPageFlipComplete(
     }
   }
   page_flip_request_ = nullptr;
+}
+
+void HardwareDisplayController::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  using base::trace_event::ValueToString;
+
+  value->SetString("origin", ValueToString(origin_));
+  value->SetString("cursor_location", ValueToString(cursor_location_));
+  value->SetInteger("failed_page_flip_counter", failed_page_flip_counter_);
+  value->SetBoolean("is_crash_timer_running", crash_gpu_timer_.IsRunning());
+  value->SetBoolean("has_page_flip_request", page_flip_request_ != nullptr);
+
+  {
+    auto scoped_dict = value->BeginDictionaryScoped("owned_hardware_planes");
+    owned_hardware_planes_.AsValueInto(value);
+  }
+  {
+    auto scoped_array = value->BeginArrayScoped("crtc_controllers");
+    for (const auto& crtc : crtc_controllers_) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      crtc->AsValueInto(value);
+    }
+  }
+  {
+    auto scoped_array = value->BeginArrayScoped("preferred_format_modifiers");
+    for (const auto& format_modifier : preferred_format_modifier_) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      value->SetString("format", NumberToHexString(format_modifier.first));
+      value->SetString("modifier", NumberToHexString(format_modifier.second));
+    }
+  }
 }
 
 void HardwareDisplayController::OnModesetComplete(

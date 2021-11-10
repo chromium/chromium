@@ -96,6 +96,16 @@ DrmOverlayPlane DrmOverlayPlane::Clone() const {
                          crop_rect, enable_blend, CloneGpuFence(gpu_fence));
 }
 
+void DrmOverlayPlane::AsValueInto(base::trace_event::TracedValue* value) const {
+  value->SetInteger("framebuffer_id", buffer ? buffer->framebuffer_id() : -1);
+  value->SetInteger("z_order", z_order);
+  value->SetInteger("plane_transform", plane_transform);
+  value->SetString("display_bounds", display_bounds.ToString());
+  value->SetString("crop_rect", crop_rect.ToString());
+  value->SetBoolean("enable_blend", enable_blend);
+  value->SetBoolean("has_fence", !!gpu_fence);
+}
+
 // static
 std::vector<DrmOverlayPlane> DrmOverlayPlane::Clone(
     const std::vector<DrmOverlayPlane>& planes) {

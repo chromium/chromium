@@ -36,6 +36,24 @@ HardwareDisplayPlaneList::PageFlipInfo::PageFlipInfo(
 
 HardwareDisplayPlaneList::PageFlipInfo::~PageFlipInfo() = default;
 
+void HardwareDisplayPlaneList::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  {
+    auto scoped_array = value->BeginArrayScoped("plane_list");
+    for (const auto* plane : plane_list) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      plane->AsValueInto(value);
+    }
+  }
+  {
+    auto scoped_array = value->BeginArrayScoped("old_plane_list");
+    for (const auto* plane : old_plane_list) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      plane->AsValueInto(value);
+    }
+  }
+}
+
 HardwareDisplayPlaneManager::CrtcProperties::CrtcProperties() = default;
 HardwareDisplayPlaneManager::CrtcProperties::CrtcProperties(
     const CrtcProperties& other) = default;
