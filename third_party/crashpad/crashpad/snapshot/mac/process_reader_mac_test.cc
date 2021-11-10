@@ -736,7 +736,9 @@ bool ExpectCLKernels() {
          MacOSVersionNumber() >= 10'07'00;
 }
 
-TEST(ProcessReaderMac, SelfModules) {
+// Disabled to investigate crbug.com/1268776.
+// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
+TEST(ProcessReaderMac, DISABLED_SelfModules) {
   ScopedOpenCLNoOpKernel ensure_cl_kernels;
   ASSERT_NO_FATAL_FAILURE(ensure_cl_kernels.SetUp());
 
@@ -935,7 +937,9 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
   bool ensure_cl_kernels_success_;
 };
 
-TEST(ProcessReaderMac, ChildModules) {
+// Disabled to investigate crbug.com/1268776.
+// TODO(crbug.com/1268776): Re-enable or remove if no longer relevant.
+TEST(ProcessReaderMac, DISABLED_ChildModules) {
   ScopedOpenCLNoOpKernel ensure_cl_kernels;
   ASSERT_NO_FATAL_FAILURE(ensure_cl_kernels.SetUp());
 
