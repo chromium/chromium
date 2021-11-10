@@ -11,6 +11,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/util/statusor.h"
 
 namespace net {
@@ -19,13 +20,21 @@ class BackoffEntry;
 
 namespace reporting {
 
-// Report queue factory simplify the creation of ReportQueues by abstracting
+// Report queue factory simplifies the creation of ReportQueues by abstracting
 // away both the ReportQueueProvider and the ReportQueueConfiguration. It also
 // allows automatic retries under the hood if the creation of the ReportQueue
-// fails. Usage would be ReportQueueFactory::Create(dm_token, destination,
-// success_callback) which represent the bare minimum requirements to create a
-// ReportQueue. dm_token is the DMToken value (as StringPiece) under which
-// identity the ReportQueue will be created. destination is a requirement to
+// fails.
+//
+// Usage:
+// 1. ReportQueueFactory::Create(dm_token, destination, success_callback)
+// 2. ReportQueueFactory::Create(event_type, destination, success_callback)
+//
+// Option 1 is deprecated in favor of option 2 since the new version retrieves
+// DM tokens autonomously without forcing the user to specify them before hand.
+// dm_token is the DMToken value (as StringPiece) under which
+// identity the ReportQueue will be created. event_type describes the type of
+// events being reported so the provider can determine what DM token needs to be
+// used for reporting purposes. destination is a requirement to
 // define where the event is coming from. success_callback is the callback that
 // will pass the ReportQueue back to the model.
 class ReportQueueFactory {
@@ -35,13 +44,22 @@ class ReportQueueFactory {
   using TrySetReportQueueCallback =
       base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>;
 
+  // Deprecated
   static void Create(base::StringPiece dm_token_value,
-                     const Destination destination,
+                     Destination destination,
                      SuccessCallback done_cb);
 
+  static void Create(EventType event_type,
+                     Destination destination,
+                     SuccessCallback done_cb);
+
+  // Deprecated
   static std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
   CreateSpeculativeReportQueue(base::StringPiece dm_token_value,
-                               const Destination destination);
+                               Destination destination);
+
+  static std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+  CreateSpeculativeReportQueue(EventType event_type, Destination destination);
 
  private:
   static void TrySetReportQueue(
@@ -49,8 +67,7 @@ class ReportQueueFactory {
       StatusOr<std::unique_ptr<reporting::ReportQueue>> report_queue_result);
 
   static TrySetReportQueueCallback CreateTrySetCallback(
-      base::StringPiece dm_token_value,
-      const Destination destination,
+      Destination destination,
       SuccessCallback success_cb,
       std::unique_ptr<net::BackoffEntry> backoff_entry);
 };

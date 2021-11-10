@@ -9,6 +9,7 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -25,7 +26,14 @@ class MockReportQueueProvider : public ReportQueueProvider {
   // always returns a new std::unique_ptr<MockReportQueue> to simulate the
   // original behaviour. Note times is also added to be expected so you should
   // know how often you expect this method to be called.
-  void ExpectCreateNewQueueAndReturnNewMockQueue(int times);
+  void ExpectCreateNewQueueAndReturnNewMockQueue(size_t times);
+
+  // This method will make sure - by mocking - that CreateNewSpeculativeQueue on
+  // the provider always returns a new std::unique_ptr<MockReportQueue,
+  // base::OnTaskRunnerDeleter> on a sequenced task runner to simulate the
+  // original behaviour. Note times is also added to be expected so you should
+  // know how often you expect this method to be called.
+  void ExpectCreateNewSpeculativeQueueAndReturnNewMockQueue(size_t times);
 
   MOCK_METHOD(void,
               CreateNewQueue,
