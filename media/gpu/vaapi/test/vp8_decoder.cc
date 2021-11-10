@@ -369,7 +369,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame() {
   last_decoded_surface_ = surface;
 
   for (const auto buffer_id : buffers) {
-    VAStatus res = vaUnmapBuffer(va_device_.display(), buffer_id);
+    res = vaUnmapBuffer(va_device_.display(), buffer_id);
     VA_LOG_ASSERT(res, "vaUnmapBuffer");
 
     res = vaDestroyBuffer(va_device_.display(), buffer_id);

@@ -176,10 +176,10 @@ void ScenicSurface::Present(
                                          DuplicateGpuFences(acquire_fences),
                                          /*release_fences=*/{});
 
-    auto& handle =
+    auto& overlay_handle =
         static_cast<SysmemNativePixmap*>(overlay.pixmap.get())->PeekHandle();
     gfx::SysmemBufferCollectionId overlay_id =
-        handle.buffer_collection_id.value();
+        overlay_handle.buffer_collection_id.value();
     auto it = overlay_views_.find(overlay_id);
     CHECK(it != overlay_views_.end());
     auto& overlay_view_info = it->second;
