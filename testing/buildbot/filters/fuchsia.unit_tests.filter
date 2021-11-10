@@ -2,7 +2,6 @@
 -BookmarkBarViewTest.Mutate*
 -BookmarkMenuDelegateTest.Drop*
 -BrowserReportGeneratorTest.Generate*
--BrowserUnitTest.DisablePrint*
 -ChromeDownloadManagerDelegateTest.Maybe*
 -DevToolsFile*
 -DevToolsUIDataSourceTest.TestDevToolsBundledU*
