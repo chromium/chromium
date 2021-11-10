@@ -22,8 +22,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 public final class FeedFeatures {
     private static final String TAG = "FeedFeatures";
 
-    // Finch param constants for controlling the feed tab stickyness logic to use.
-    private static final String FEED_TAB_STICKYNESS_LOGIC_PARAM = "feed_tab_stickyness_logic";
+    // Finch param constants for controlling the feed tab stickiness logic to use.
+    private static final String FEED_TAB_STICKYNESS_LOGIC_PARAM = "feed_tab_stickiness_logic";
     private static final String RESET_UPON_CHROME_RESTART = "reset_upon_chrome_restart";
     private static final String INDEFINITELY_PERSISTED = "indefinitely_persisted";
 
@@ -76,7 +76,7 @@ public final class FeedFeatures {
 
     /**
      * Returns the feed tab ID to restore depending on the configured logic controlling the
-     * "stickyness" of the selected feed tab. These are the available options:
+     * "stickiness" of the selected feed tab. These are the available options:
      * - reset_for_every_new_ntp: tab choice is reset for each newly opened NTP (default behavior;
      *   not an actual Finch param).
      * - indefinitely_persisted: tab choice is kept forever.
