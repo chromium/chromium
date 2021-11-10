@@ -1192,7 +1192,9 @@ CanvasResourceProvider::CanvasResourceProvider(
     context_provider_wrapper_->AddObserver(this);
     const auto& caps =
         context_provider_wrapper_->ContextProvider()->GetCapabilities();
-    oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
+    // TODO(crbug.com/1268600): It seems that DMSAA might still be worthwhile
+    // on GPUs with slow MSAA.  Let's Monitor perf and revise if needed.
+    oopr_uses_dmsaa_ = /*!caps.msaa_is_slow &&*/ !caps.avoid_stencil_buffers;
   }
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
