@@ -24,9 +24,8 @@ class ViewsContentClientMainPartsAura : public ViewsContentClientMainParts {
       const ViewsContentClientMainPartsAura&) = delete;
 
  protected:
-  ViewsContentClientMainPartsAura(
-      const content::MainFunctionParams& content_params,
-      ViewsContentClient* views_content_client);
+  ViewsContentClientMainPartsAura(content::MainFunctionParams content_params,
+                                  ViewsContentClient* views_content_client);
   ~ViewsContentClientMainPartsAura() override;
 
   // content::BrowserMainParts:

@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/main_function_params.h"
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/cpp/features.h"
@@ -298,17 +299,18 @@ void ContentMainDelegateImpl::PostEarlyInitialization(bool is_running_tests) {
   browser_client_->CreateFeatureListAndFieldTrials();
 }
 
-int ContentMainDelegateImpl::RunProcess(
+absl::variant<int, content::MainFunctionParams>
+ContentMainDelegateImpl::RunProcess(
     const std::string& process_type,
-    const content::MainFunctionParams& main_function_params) {
+    content::MainFunctionParams main_function_params) {
   // For non-browser process, return and have the caller run the main loop.
   if (!process_type.empty())
-    return -1;
+    return std::move(main_function_params);
 
 #if !defined(OS_ANDROID)
-  // On non-Android, we can return -1 and have the caller run BrowserMain()
-  // normally.
-  return -1;
+  // On non-Android, we can return |main_function_params| back and have the
+  // caller run BrowserMain() normally.
+  return std::move(main_function_params);
 #else
   // On Android, we defer to the system message loop when the stack unwinds.
   // So here we only create (and leak) a BrowserMainRunner. The shutdown
@@ -318,7 +320,8 @@ int ContentMainDelegateImpl::RunProcess(
   // In browser tests, the |main_function_params| contains a |ui_task| which
   // will execute the testing. The task will be executed synchronously inside
   // Initialize() so we don't depend on the BrowserMainRunner being Run().
-  int initialize_exit_code = main_runner->Initialize(main_function_params);
+  int initialize_exit_code =
+      main_runner->Initialize(std::move(main_function_params));
   DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in MainDelegate";
   ignore_result(main_runner.release());

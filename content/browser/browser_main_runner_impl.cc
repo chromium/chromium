@@ -63,7 +63,7 @@ BrowserMainRunnerImpl::~BrowserMainRunnerImpl() {
     Shutdown();
 }
 
-int BrowserMainRunnerImpl::Initialize(const MainFunctionParams& parameters) {
+int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
   SCOPED_UMA_HISTOGRAM_LONG_TIMER(
       "Startup.BrowserMainRunnerImplInitializeLongTime");
   TRACE_EVENT0("startup", "BrowserMainRunnerImpl::Initialize");
@@ -79,10 +79,10 @@ int BrowserMainRunnerImpl::Initialize(const MainFunctionParams& parameters) {
 
     SkGraphics::Init();
 
-    if (parameters.command_line.HasSwitch(switches::kWaitForDebugger))
+    if (parameters.command_line->HasSwitch(switches::kWaitForDebugger))
       base::debug::WaitForDebugger(60, true);
 
-    if (parameters.command_line.HasSwitch(switches::kBrowserStartupDialog))
+    if (parameters.command_line->HasSwitch(switches::kBrowserStartupDialog))
       WaitForDebugger("Browser");
 
     notification_service_ = std::make_unique<NotificationServiceImpl>();
@@ -96,15 +96,16 @@ int BrowserMainRunnerImpl::Initialize(const MainFunctionParams& parameters) {
 
     gfx::InitializeFonts();
 
+    auto created_main_parts_closure =
+        std::move(parameters.created_main_parts_closure);
+
     main_loop_ = std::make_unique<BrowserMainLoop>(
-        parameters, std::move(scoped_execution_fence_));
+        std::move(parameters), std::move(scoped_execution_fence_));
 
     main_loop_->Init();
 
-    if (parameters.created_main_parts_closure) {
-      std::move(*parameters.created_main_parts_closure)
-          .Run(main_loop_->parts());
-      delete parameters.created_main_parts_closure;
+    if (created_main_parts_closure) {
+      std::move(created_main_parts_closure).Run(main_loop_->parts());
     }
 
     const int early_init_error_code = main_loop_->EarlyInitialization();

@@ -44,9 +44,9 @@ class AwMainDelegate : public content::ContentMainDelegate {
   // content::ContentMainDelegate implementation:
   bool BasicStartupComplete(int* exit_code) override;
   void PreSandboxStartup() override;
-  int RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
   bool ShouldCreateFeatureList() override;
   void PostEarlyInitialization(bool is_running_tests) override;

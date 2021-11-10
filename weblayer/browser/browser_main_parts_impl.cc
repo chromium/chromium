@@ -150,10 +150,10 @@ void StopMessageLoop(base::OnceClosure quit_closure) {
 
 BrowserMainPartsImpl::BrowserMainPartsImpl(
     MainParams* params,
-    const content::MainFunctionParams& main_function_params,
+    content::MainFunctionParams main_function_params,
     std::unique_ptr<PrefService> local_state)
     : params_(params),
-      main_function_params_(main_function_params),
+      main_function_params_(std::move(main_function_params)),
       local_state_(std::move(local_state)) {}
 
 BrowserMainPartsImpl::~BrowserMainPartsImpl() = default;
@@ -252,8 +252,7 @@ int BrowserMainPartsImpl::PreMainMessageLoopRun() {
           base::BindOnce(&PublishSubresourceFilterRulesetFromResourceBundle));
 
   if (main_function_params_.ui_task) {
-    std::move(*main_function_params_.ui_task).Run();
-    delete main_function_params_.ui_task;
+    std::move(main_function_params_.ui_task).Run();
     run_message_loop_ = false;
   }
 

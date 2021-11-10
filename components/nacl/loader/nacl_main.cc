@@ -10,9 +10,6 @@
 #include "base/power_monitor/power_monitor_device_source.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/timer/hi_res_timer_manager.h"
-#if defined(OS_WIN)
-#include "base/win/win_util.h"
-#endif
 #include "build/build_config.h"
 #include "components/nacl/loader/nacl_listener.h"
 #include "components/nacl/loader/nacl_main_platform_delegate.h"
@@ -20,9 +17,13 @@
 #include "mojo/core/embedder/embedder.h"
 #include "sandbox/policy/switches.h"
 
+#if defined(OS_WIN)
+#include "base/win/win_util.h"
+#endif
+
 // main() routine for the NaCl loader process.
-int NaClMain(const content::MainFunctionParams& parameters) {
-  const base::CommandLine& parsed_command_line = parameters.command_line;
+int NaClMain(content::MainFunctionParams parameters) {
+  const base::CommandLine& parsed_command_line = *parameters.command_line;
 
   // The Mojo EDK must be initialized before using IPC.
   mojo::core::Init();

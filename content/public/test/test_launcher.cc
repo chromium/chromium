@@ -79,10 +79,12 @@ const char kPreTestPrefix[] = "PRE_";
 const char kManualTestPrefix[] = "MANUAL_";
 
 TestLauncherDelegate* g_launcher_delegate = nullptr;
-#if !defined(OS_ANDROID)
+
 // ContentMain is not run on Android in the test process, and is run via
 // java for child processes. So ContentMainParams does not exist there.
-ContentMainParams* g_params = nullptr;
+#if !defined(OS_ANDROID)
+// The global ContentMainParams config to be copied in each test.
+const ContentMainParams* g_params = nullptr;
 #endif
 
 void PrintUsage() {
@@ -381,7 +383,7 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
     // child processes don't have a TestSuite, and must initialize this
     // explicitly before ContentMain.
     TestTimeouts::Initialize();
-    return ContentMain(params);
+    return ContentMain(std::move(params));
   }
 #endif
 
@@ -447,8 +449,8 @@ TestLauncherDelegate* GetCurrentTestLauncherDelegate() {
 }
 
 #if !defined(OS_ANDROID)
-ContentMainParams* GetContentMainParams() {
-  return g_params;
+ContentMainParams CopyContentMainParams() {
+  return g_params->ShallowCopyForTesting();
 }
 #endif
 

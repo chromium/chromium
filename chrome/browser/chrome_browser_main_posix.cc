@@ -137,9 +137,9 @@ void ExitHandler::Exit() {
 // ChromeBrowserMainPartsPosix -------------------------------------------------
 
 ChromeBrowserMainPartsPosix::ChromeBrowserMainPartsPosix(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainParts(parameters, startup_data) {}
+    : ChromeBrowserMainParts(std::move(parameters), startup_data) {}
 
 int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   const int result = ChromeBrowserMainParts::PreEarlyInitialization();

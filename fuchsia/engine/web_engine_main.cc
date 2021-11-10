@@ -24,5 +24,5 @@ int main(int argc, const char** argv) {
   params.argc = 0;
   params.argv = nullptr;
 
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }

@@ -309,12 +309,12 @@ ContentBrowserClientImpl::~ContentBrowserClientImpl() = default;
 
 std::unique_ptr<content::BrowserMainParts>
 ContentBrowserClientImpl::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
+    content::MainFunctionParams parameters) {
   // This should be called after CreateFeatureListAndFieldTrials(), which
   // creates |local_state_|.
   DCHECK(local_state_);
   std::unique_ptr<BrowserMainPartsImpl> browser_main_parts =
-      std::make_unique<BrowserMainPartsImpl>(params_, parameters,
+      std::make_unique<BrowserMainPartsImpl>(params_, std::move(parameters),
                                              std::move(local_state_));
 
   return browser_main_parts;

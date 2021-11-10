@@ -1334,37 +1334,37 @@ void ChromeContentBrowserClient::SetApplicationLocale(
 
 std::unique_ptr<content::BrowserMainParts>
 ChromeContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
+    content::MainFunctionParams parameters) {
   std::unique_ptr<ChromeBrowserMainParts> main_parts;
   // Construct the Main browser parts based on the OS type.
 #if defined(OS_WIN)
-  main_parts =
-      std::make_unique<ChromeBrowserMainPartsWin>(parameters, &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainPartsWin>(
+      std::move(parameters), &startup_data_);
 #elif defined(OS_MAC)
-  main_parts =
-      std::make_unique<ChromeBrowserMainPartsMac>(parameters, &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainPartsMac>(
+      std::move(parameters), &startup_data_);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  main_parts = std::make_unique<ash::ChromeBrowserMainPartsAsh>(parameters,
-                                                                &startup_data_);
+  main_parts = std::make_unique<ash::ChromeBrowserMainPartsAsh>(
+      std::move(parameters), &startup_data_);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  main_parts = std::make_unique<ChromeBrowserMainPartsLacros>(parameters,
-                                                              &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainPartsLacros>(
+      std::move(parameters), &startup_data_);
 #elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  main_parts =
-      std::make_unique<ChromeBrowserMainPartsLinux>(parameters, &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainPartsLinux>(
+      std::move(parameters), &startup_data_);
 #elif defined(OS_ANDROID)
-  main_parts = std::make_unique<ChromeBrowserMainPartsAndroid>(parameters,
-                                                               &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainPartsAndroid>(
+      std::move(parameters), &startup_data_);
 #elif defined(OS_POSIX)
-  main_parts =
-      std::make_unique<ChromeBrowserMainPartsPosix>(parameters, &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainPartsPosix>(
+      std::move(parameters), &startup_data_);
 #elif defined(OS_FUCHSIA)
-  main_parts = std::make_unique<ChromeBrowserMainPartsFuchsia>(parameters,
-                                                               &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainPartsFuchsia>(
+      std::move(parameters), &startup_data_);
 #else
   NOTREACHED();
-  main_parts =
-      std::make_unique<ChromeBrowserMainParts>(parameters, &startup_data_);
+  main_parts = std::make_unique<ChromeBrowserMainParts>(std::move(parameters),
+                                                        &startup_data_);
 #endif
 
   bool add_profiles_extra_parts = true;

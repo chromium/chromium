@@ -148,7 +148,7 @@ int ChromeMain(int argc, const char** argv) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
     defined(OS_WIN)
     if (command_line->HasSwitch(switches::kHeadless))
-      return headless::HeadlessShellMain(params);
+      return headless::HeadlessShellMain(std::move(params));
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN)
   }
@@ -169,7 +169,7 @@ int ChromeMain(int argc, const char** argv) {
   }
 #endif
 
-  int rv = content::ContentMain(params);
+  int rv = content::ContentMain(std::move(params));
 
   return rv;
 }

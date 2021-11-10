@@ -560,9 +560,9 @@ int DoUninstallTasks(bool chrome_still_running) {
 // ChromeBrowserMainPartsWin ---------------------------------------------------
 
 ChromeBrowserMainPartsWin::ChromeBrowserMainPartsWin(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainParts(parameters, startup_data) {}
+    : ChromeBrowserMainParts(std::move(parameters), startup_data) {}
 
 ChromeBrowserMainPartsWin::~ChromeBrowserMainPartsWin() = default;
 

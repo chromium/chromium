@@ -357,10 +357,10 @@ std::vector<std::string> CastContentBrowserClient::GetStartupServices() {
 
 std::unique_ptr<content::BrowserMainParts>
 CastContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
+    content::MainFunctionParams parameters) {
   DCHECK(!cast_browser_main_parts_);
 
-  auto main_parts = CastBrowserMainParts::Create(parameters, this);
+  auto main_parts = CastBrowserMainParts::Create(std::move(parameters), this);
 
   cast_browser_main_parts_ = main_parts.get();
   CastBrowserProcess::GetInstance()->SetCastContentBrowserClient(this);

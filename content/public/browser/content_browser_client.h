@@ -34,6 +34,7 @@
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
+#include "content/public/common/main_function_params.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -240,7 +241,6 @@ class WebUIBrowserInterfaceBrokerRegistry;
 class XrIntegrationClient;
 struct GlobalRenderFrameHostId;
 struct GlobalRequestID;
-struct MainFunctionParams;
 struct OpenURLParams;
 struct PepperPluginInfo;
 struct Referrer;
@@ -277,7 +277,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // implementations for the browser startup code. See comments in
   // browser_main_parts.h.
   virtual std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
-      const MainFunctionParams& parameters);
+      MainFunctionParams parameters);
 
   // Allows the embedder to change the default behavior of
   // BrowserThread::PostAfterStartupTask to better match whatever

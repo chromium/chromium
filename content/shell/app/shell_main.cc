@@ -30,7 +30,7 @@ int main() {
   content::ContentMainParams params(&delegate);
   params.instance = instance;
   params.sandbox_info = &sandbox_info;
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 
 #else
@@ -40,7 +40,7 @@ int main(int argc, const char** argv) {
   content::ContentMainParams params(&delegate);
   params.argc = argc;
   params.argv = argv;
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 
 #endif  // OS_POSIX

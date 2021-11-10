@@ -53,6 +53,7 @@
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/main_function_params.h"
 #include "device/base/features.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
@@ -330,20 +331,18 @@ void AwMainDelegate::PreSandboxStartup() {
   sdk_int_key.Set(base::NumberToString(android_build_info->sdk_int()));
 }
 
-int AwMainDelegate::RunProcess(
+absl::variant<int, content::MainFunctionParams> AwMainDelegate::RunProcess(
     const std::string& process_type,
-    const content::MainFunctionParams& main_function_params) {
+    content::MainFunctionParams main_function_params) {
   // Defer to the default main method outside the browser process.
   if (!process_type.empty())
-    return -1;
+    return std::move(main_function_params);
 
   browser_runner_ = content::BrowserMainRunner::Create();
-  int exit_code = browser_runner_->Initialize(main_function_params);
+  int exit_code = browser_runner_->Initialize(std::move(main_function_params));
   // We do not expect Initialize() to ever fail in AndroidWebView. On success
   // it returns a negative value but we do not want to use that on Android.
   DCHECK_LT(exit_code, 0);
-  // Return 0 so that we do NOT trigger the default behavior. On Android, the
-  // UI message loop is managed by the Java application.
   return 0;
 }
 

@@ -27,7 +27,7 @@ class ViewsContentBrowserClient : public content::ContentBrowserClient {
 
   // content::ContentBrowserClient:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      content::MainFunctionParams parameters) override;
 
  private:
   ViewsContentClient* views_content_client_;

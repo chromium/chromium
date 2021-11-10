@@ -43,9 +43,8 @@
 
 namespace content {
 
-WebTestBrowserMainParts::WebTestBrowserMainParts(
-    const MainFunctionParams& parameters)
-    : ShellBrowserMainParts(parameters) {}
+WebTestBrowserMainParts::WebTestBrowserMainParts(MainFunctionParams parameters)
+    : ShellBrowserMainParts(std::move(parameters)) {}
 
 WebTestBrowserMainParts::~WebTestBrowserMainParts() {}
 

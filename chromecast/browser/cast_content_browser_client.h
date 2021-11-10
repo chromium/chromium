@@ -181,7 +181,7 @@ class CastContentBrowserClient
 
   // content::ContentBrowserClient implementation:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      content::MainFunctionParams parameters) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool IsHandledURL(const GURL& url) override;
   void SiteInstanceGotProcess(content::SiteInstance* site_instance) override;

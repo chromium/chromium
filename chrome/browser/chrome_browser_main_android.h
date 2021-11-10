@@ -12,7 +12,7 @@
 
 class ChromeBrowserMainPartsAndroid : public ChromeBrowserMainParts {
  public:
-  ChromeBrowserMainPartsAndroid(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsAndroid(content::MainFunctionParams parameters,
                                 StartupData* startup_data);
 
   ChromeBrowserMainPartsAndroid(const ChromeBrowserMainPartsAndroid&) = delete;

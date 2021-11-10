@@ -13,7 +13,7 @@
 
 class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
  public:
-  ChromeBrowserMainPartsLinux(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsLinux(content::MainFunctionParams parameters,
                               StartupData* startup_data);
 
   ChromeBrowserMainPartsLinux(const ChromeBrowserMainPartsLinux&) = delete;

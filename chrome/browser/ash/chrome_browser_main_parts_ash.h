@@ -120,7 +120,7 @@ class DarkResumeController;
 // src/ash or chrome/browser/ui/ash.
 class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
  public:
-  ChromeBrowserMainPartsAsh(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsAsh(content::MainFunctionParams parameters,
                             StartupData* startup_data);
 
   ChromeBrowserMainPartsAsh(const ChromeBrowserMainPartsAsh&) = delete;

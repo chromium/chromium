@@ -198,9 +198,9 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
 }  // namespace
 
 ChromeBrowserMainPartsFuchsia::ChromeBrowserMainPartsFuchsia(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainParts(parameters, startup_data) {}
+    : ChromeBrowserMainParts(std::move(parameters), startup_data) {}
 
 ChromeBrowserMainPartsFuchsia::~ChromeBrowserMainPartsFuchsia() = default;
 

@@ -33,9 +33,9 @@ class ChromeMainDelegateAndroid : public ChromeMainDelegate {
 
   bool BasicStartupComplete(int* exit_code) override;
   void PreSandboxStartup() override;
-  int RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
 
  private:

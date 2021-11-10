@@ -33,9 +33,8 @@ class HeadlessBrowserImpl;
 class HEADLESS_EXPORT HeadlessBrowserMainParts
     : public content::BrowserMainParts {
  public:
-  explicit HeadlessBrowserMainParts(
-      const content::MainFunctionParams& parameters,
-      HeadlessBrowserImpl* browser);
+  explicit HeadlessBrowserMainParts(content::MainFunctionParams parameters,
+                                    HeadlessBrowserImpl* browser);
 
   HeadlessBrowserMainParts(const HeadlessBrowserMainParts&) = delete;
   HeadlessBrowserMainParts& operator=(const HeadlessBrowserMainParts&) = delete;
@@ -75,7 +74,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   void CreatePrefService();
 #endif
 
-  const content::MainFunctionParams parameters_;  // For running browser tests.
+  content::MainFunctionParams parameters_;  // For running browser tests.
   HeadlessBrowserImpl* browser_;  // Not owned.
 
 #if defined(HEADLESS_USE_POLICY)

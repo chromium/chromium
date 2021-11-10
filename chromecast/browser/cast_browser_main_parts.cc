@@ -398,11 +398,11 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
 }  // namespace
 
 CastBrowserMainParts::CastBrowserMainParts(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     CastContentBrowserClient* cast_content_browser_client)
     : BrowserMainParts(),
       cast_browser_process_(new CastBrowserProcess()),
-      parameters_(parameters),
+      parameters_(std::move(parameters)),
       cast_content_browser_client_(cast_content_browser_client),
 
       media_caps_(std::make_unique<media::MediaCapsImpl>()),
@@ -699,8 +699,7 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   cast_browser_process_->cast_service()->Start();
 
   if (parameters_.ui_task) {
-    std::move(*parameters_.ui_task).Run();
-    delete parameters_.ui_task;
+    std::move(parameters_.ui_task).Run();
     run_message_loop_ = false;
   }
 

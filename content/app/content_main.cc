@@ -216,13 +216,19 @@ void InitializeMojo(mojo::core::Configuration* config) {
 
 }  // namespace
 
+ContentMainParams::ContentMainParams(ContentMainDelegate* delegate)
+    : delegate(delegate) {}
+
+ContentMainParams::~ContentMainParams() = default;
+
+ContentMainParams::ContentMainParams(ContentMainParams&&) = default;
+ContentMainParams& ContentMainParams::operator=(ContentMainParams&&) = default;
+
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
 int NO_STACK_PROTECTOR
-RunContentProcess(const ContentMainParams& params,
+RunContentProcess(ContentMainParams params,
                   ContentMainRunner* content_main_runner) {
-  ContentMainParams content_main_params(params);
-
   int exit_code = -1;
   base::debug::GlobalActivityTracker* tracker = nullptr;
 #if defined(OS_MAC)
@@ -314,7 +320,7 @@ RunContentProcess(const ContentMainParams& params,
     // Each "main" needs to flush this pool right before it goes into its main
     // event loop to get rid of the cruft.
     autorelease_pool = std::make_unique<base::mac::ScopedNSAutoreleasePool>();
-    content_main_params.autorelease_pool = autorelease_pool.get();
+    params.autorelease_pool = autorelease_pool.get();
     InitializeMac();
 #endif
 
@@ -328,7 +334,7 @@ RunContentProcess(const ContentMainParams& params,
 
     ui::RegisterPathProvider();
     tracker = base::debug::GlobalActivityTracker::Get();
-    exit_code = content_main_runner->Initialize(content_main_params);
+    exit_code = content_main_runner->Initialize(std::move(params));
 
     if (exit_code >= 0) {
       if (tracker) {
@@ -387,7 +393,7 @@ RunContentProcess(const ContentMainParams& params,
 
   if (IsSubprocess())
     CommonSubprocessInit();
-  exit_code = content_main_runner->Run(params.minimal_browser_mode);
+  exit_code = content_main_runner->Run();
 
   if (tracker) {
     if (exit_code == 0) {
@@ -413,9 +419,9 @@ RunContentProcess(const ContentMainParams& params,
 
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
-int NO_STACK_PROTECTOR ContentMain(const ContentMainParams& params) {
+int NO_STACK_PROTECTOR ContentMain(ContentMainParams params) {
   auto runner = ContentMainRunner::Create();
-  return RunContentProcess(params, runner.get());
+  return RunContentProcess(std::move(params), runner.get());
 }
 
 }  // namespace content

@@ -65,15 +65,15 @@ sandbox::TargetServices* g_utility_target_services = nullptr;
 namespace content {
 
 // Mainline routine for running as the utility process.
-int UtilityMain(const MainFunctionParams& parameters) {
+int UtilityMain(MainFunctionParams parameters) {
   base::MessagePumpType message_pump_type =
-      parameters.command_line.HasSwitch(switches::kMessageLoopTypeUi)
+      parameters.command_line->HasSwitch(switches::kMessageLoopTypeUi)
           ? base::MessagePumpType::UI
           : base::MessagePumpType::DEFAULT;
 
 #if defined(OS_MAC)
   auto sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
+      sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
   if (sandbox_type != sandbox::mojom::Sandbox::kNoSandbox) {
     // On Mac, the TYPE_UI pump for the main thread is an NSApplication loop.
     // In a sandboxed utility process, NSApp attempts to acquire more Mach
@@ -94,8 +94,8 @@ int UtilityMain(const MainFunctionParams& parameters) {
     message_pump_type = base::MessagePumpType::IO;
 #endif  // defined(OS_FUCHSIA)
 
-  if (parameters.command_line.HasSwitch(switches::kTimeZoneForTesting)) {
-    std::string time_zone = parameters.command_line.GetSwitchValueASCII(
+  if (parameters.command_line->HasSwitch(switches::kTimeZoneForTesting)) {
+    std::string time_zone = parameters.command_line->GetSwitchValueASCII(
         switches::kTimeZoneForTesting);
     icu::TimeZone::adoptDefault(
         icu::TimeZone::createTimeZone(icu::UnicodeString(time_zone.c_str())));
@@ -105,11 +105,11 @@ int UtilityMain(const MainFunctionParams& parameters) {
   base::SingleThreadTaskExecutor main_thread_task_executor(message_pump_type);
   base::PlatformThread::SetName("CrUtilityMain");
 
-  if (parameters.command_line.HasSwitch(switches::kUtilityStartupDialog)) {
-    auto dialog_match = parameters.command_line.GetSwitchValueASCII(
+  if (parameters.command_line->HasSwitch(switches::kUtilityStartupDialog)) {
+    auto dialog_match = parameters.command_line->GetSwitchValueASCII(
         switches::kUtilityStartupDialog);
     auto sub_type =
-        parameters.command_line.GetSwitchValueASCII(switches::kUtilitySubType);
+        parameters.command_line->GetSwitchValueASCII(switches::kUtilitySubType);
     if (dialog_match.empty() || dialog_match == sub_type) {
       WaitForDebugger(sub_type.empty() ? "Utility" : sub_type);
     }
@@ -120,7 +120,7 @@ int UtilityMain(const MainFunctionParams& parameters) {
   // TODO(jorgelo): move this after GTK initialization when we enable a strict
   // Seccomp-BPF policy.
   auto sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
+      sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
   sandbox::policy::SandboxLinux::PreSandboxHook pre_sandbox_hook;
   switch (sandbox_type) {
     case sandbox::mojom::Sandbox::kNetwork:
@@ -199,7 +199,7 @@ int UtilityMain(const MainFunctionParams& parameters) {
 
 #if defined(OS_WIN)
   auto sandbox_type =
-      sandbox::policy::SandboxTypeFromCommandLine(parameters.command_line);
+      sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
   DVLOG(1) << "Sandbox type: " << static_cast<int>(sandbox_type);
 
   // https://crbug.com/1076771 https://crbug.com/1075487 Premature unload of

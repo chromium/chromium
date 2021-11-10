@@ -6,9 +6,9 @@
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_BROWSER_MAIN_RUNNER_H_
 
 #include "base/files/scoped_temp_dir.h"
+#include "content/public/common/main_function_params.h"
 
 namespace content {
-struct MainFunctionParams;
 
 class WebTestBrowserMainRunner {
  public:
@@ -18,7 +18,7 @@ class WebTestBrowserMainRunner {
   void Initialize();
 
   // Main routine for running as the Browser process.
-  void RunBrowserMain(const content::MainFunctionParams& parameters);
+  void RunBrowserMain(content::MainFunctionParams parameters);
 
  private:
   base::ScopedTempDir browser_context_path_for_web_tests_;

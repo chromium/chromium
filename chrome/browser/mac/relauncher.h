@@ -68,7 +68,7 @@ namespace internal {
 
 // The entry point from ChromeMain into the relauncher process. This is not a
 // user API. Don't call it if your name isn't ChromeMain.
-int RelauncherMain(const content::MainFunctionParams& main_parameters);
+int RelauncherMain(content::MainFunctionParams main_parameters);
 
 }  // namespace internal
 

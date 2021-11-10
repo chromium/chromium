@@ -58,7 +58,7 @@ class FirstRunInternalPosixTest : public InProcessBrowserTest {
 
     // The modal dialog will spawn and spin a nested RunLoop when
     // content::BrowserTestBase::SetUp() invokes content::ContentMain().
-    // BrowserTestBase sets GetContentMainParams()->ui_task before this, but the
+    // BrowserTestBase sets ContentMainParams::ui_task before this, but the
     // ui_task isn't actually Run() until after the dialog is spawned in
     // ChromeBrowserMainParts::PreMainMessageLoopRunImpl(). Instead, try to
     // inspect state by posting a task to run in that nested RunLoop.

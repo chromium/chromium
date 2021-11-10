@@ -500,10 +500,10 @@ bool ProcessSingletonNotificationCallback(
 // BrowserMainParts ------------------------------------------------------------
 
 ChromeBrowserMainParts::ChromeBrowserMainParts(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : parameters_(parameters),
-      parsed_command_line_(parameters.command_line),
+    : parameters_(std::move(parameters)),
+      parsed_command_line_(*parameters.command_line),
       should_call_pre_main_loop_start_startup_on_variations_service_(
           !parameters.ui_task),
       startup_data_(startup_data) {
@@ -1097,7 +1097,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRun() {
 //   PostProfileInit()
 //   ... additional setup
 //   PreBrowserStart()
-//   ... browser_creator_->Start (OR parameters().ui_task->Run())
+//   ... browser_creator_->Start (OR parameters_.ui_task->Run())
 //   PostBrowserStart()
 
 void ChromeBrowserMainParts::PreProfileInit() {
@@ -1433,7 +1433,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // This step is costly and is already measured in Startup.CreateFirstProfile
   // and more directly Profile.CreateAndInitializeProfile.
   StartupProfileInfo profile_info = CreatePrimaryProfile(
-      parameters(), /*cur_dir=*/base::FilePath(), parsed_command_line());
+      parameters_, /*cur_dir=*/base::FilePath(), parsed_command_line());
 
   profile_ = profile_info.profile;
   if (profile_info.mode == StartupProfileMode::kError)
@@ -1726,8 +1726,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if defined(OS_MAC)
     // Call Recycle() here as late as possible, before going into the loop
     // because Start() will add things to it while creating the main window.
-    if (parameters().autorelease_pool)
-      parameters().autorelease_pool->Recycle();
+    if (parameters_.autorelease_pool)
+      parameters_.autorelease_pool->Recycle();
 #endif  // defined(OS_MAC)
 
     // Transfer ownership of the browser's lifetime to the BrowserProcess.
@@ -1744,9 +1744,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   // The ui_task can be injected by tests to replace the main message loop.
   // In that case we Run() it here, and set a flag to avoid running the main
   // message loop later, as the test will do so as needed from the |ui_task|.
-  if (parameters().ui_task) {
-    std::move(*parameters().ui_task).Run();
-    delete parameters().ui_task;
+  if (parameters_.ui_task) {
+    std::move(parameters_.ui_task).Run();
     run_message_loop_ = false;
   }
 
@@ -1840,7 +1839,7 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
   // Some tests don't set parameters.ui_task, so they started translate
   // language fetch that was never completed so we need to cleanup here
   // otherwise it will be done by the destructor in a wrong thread.
-  TranslateService::Shutdown(!parameters().ui_task);
+  TranslateService::Shutdown(!parameters_.ui_task);
 
   if (notify_result_ == ProcessSingleton::PROCESS_NONE)
     process_singleton_->Cleanup();

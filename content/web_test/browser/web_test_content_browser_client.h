@@ -66,7 +66,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
-      const MainFunctionParams& parameters) override;
+      MainFunctionParams parameters) override;
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override;
   std::unique_ptr<OverlayWindow> CreateWindowForPictureInPicture(
       PictureInPictureWindowController* controller) override;

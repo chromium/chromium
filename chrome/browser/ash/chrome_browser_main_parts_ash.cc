@@ -532,9 +532,9 @@ class DBusServices {
 // ChromeBrowserMainPartsAsh ---------------------------------------------------
 
 ChromeBrowserMainPartsAsh::ChromeBrowserMainPartsAsh(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainPartsLinux(parameters, startup_data) {}
+    : ChromeBrowserMainPartsLinux(std::move(parameters), startup_data) {}
 
 ChromeBrowserMainPartsAsh::~ChromeBrowserMainPartsAsh() {
   // To be precise, logout (browser shutdown) is not yet done, but the
@@ -1077,7 +1077,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit() {
 
   manager->SetState(session_manager->GetDefaultIMEState(profile()));
 
-  bool is_running_test = parameters().ui_task != nullptr;
+  bool is_running_test = !!parameters().ui_task;
   g_browser_process->platform_part()->session_manager()->Initialize(
       parsed_command_line(), profile(), is_running_test);
 

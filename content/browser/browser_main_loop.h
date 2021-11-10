@@ -122,7 +122,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   // The ThreadPoolInstance must exist but not to be started when building
   // BrowserMainLoop.
   explicit BrowserMainLoop(
-      const MainFunctionParams& parameters,
+      MainFunctionParams parameters,
       std::unique_ptr<base::ThreadPoolInstance::ScopedExecutionFence> fence);
 
   BrowserMainLoop(const BrowserMainLoop&) = delete;
@@ -284,7 +284,7 @@ class CONTENT_EXPORT BrowserMainLoop {
   //   OnFirstIdle()
 
   // Members initialized on construction ---------------------------------------
-  const MainFunctionParams& parameters_;
+  MainFunctionParams parameters_;
   const base::CommandLine& parsed_command_line_;
   int result_code_;
   bool created_threads_;  // True if the non-UI threads were created.

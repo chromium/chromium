@@ -12,6 +12,7 @@
 #include "base/fuchsia/intl_profile_watcher.h"
 #include "base/path_service.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/main_function_params.h"
 #include "fuchsia/base/init_logging.h"
 #include "fuchsia/engine/browser/web_engine_browser_main.h"
 #include "fuchsia/engine/browser/web_engine_content_browser_client.h"
@@ -111,13 +112,14 @@ void WebEngineMainDelegate::PreSandboxStartup() {
   InitializeResources();
 }
 
-int WebEngineMainDelegate::RunProcess(
+absl::variant<int, content::MainFunctionParams>
+WebEngineMainDelegate::RunProcess(
     const std::string& process_type,
-    const content::MainFunctionParams& main_function_params) {
+    content::MainFunctionParams main_function_params) {
   if (!process_type.empty())
-    return -1;
+    return std::move(main_function_params);
 
-  return WebEngineBrowserMain(main_function_params);
+  return WebEngineBrowserMain(std::move(main_function_params));
 }
 
 content::ContentClient* WebEngineMainDelegate::CreateContentClient() {

@@ -242,7 +242,7 @@ void RelauncherSynchronizeWithParent() {
 
 namespace internal {
 
-int RelauncherMain(const content::MainFunctionParams& main_parameters) {
+int RelauncherMain(content::MainFunctionParams main_parameters) {
   @autoreleasepool {
     // CommandLine rearranges the order of the arguments returned by
     // main_parameters.argv(), rendering it impossible to determine which

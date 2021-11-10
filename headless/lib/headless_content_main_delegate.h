@@ -44,9 +44,9 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   // content::ContentMainDelegate implementation:
   bool BasicStartupComplete(int* exit_code) override;
   void PreSandboxStartup() override;
-  int RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
 #if defined(OS_MAC)
   void PreBrowserMain() override;
 #endif

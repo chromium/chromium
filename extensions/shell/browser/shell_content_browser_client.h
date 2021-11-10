@@ -60,7 +60,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
 
   // content::ContentBrowserClient overrides.
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      content::MainFunctionParams parameters) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool ShouldUseProcessPerSite(content::BrowserContext* browser_context,
                                const GURL& site_url) override;
@@ -142,7 +142,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
  protected:
   // Subclasses may wish to provide their own ShellBrowserMainParts.
   virtual std::unique_ptr<ShellBrowserMainParts> CreateShellBrowserMainParts(
-      const content::MainFunctionParams& parameters,
+      content::MainFunctionParams parameters,
       ShellBrowserMainDelegate* browser_main_delegate);
 
  private:

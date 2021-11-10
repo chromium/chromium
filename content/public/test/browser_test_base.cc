@@ -533,9 +533,8 @@ void BrowserTestBase::SetUp() {
   // FeatureList::SetInstance, which expects no instance to exist.
   base::FeatureList::ClearInstanceForTesting();
 
-  auto created_main_parts_closure = std::make_unique<CreatedMainPartsClosure>(
-      base::BindOnce(&BrowserTestBase::CreatedBrowserMainPartsImpl,
-                     base::Unretained(this)));
+  auto created_main_parts_closure = base::BindOnce(
+      &BrowserTestBase::CreatedBrowserMainPartsImpl, base::Unretained(this));
 
   // If tracing is enabled, customise the output filename based on the name of
   // the test.
@@ -649,20 +648,20 @@ void BrowserTestBase::SetUp() {
     // run.
     base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
 
-    auto ui_task = std::make_unique<base::OnceClosure>(
-        base::BindOnce(&BrowserTestBase::WaitUntilJavaIsReady,
-                       base::Unretained(this), loop.QuitClosure(),
-                       /*wait_retry_left=*/
-                       TestTimeouts::action_max_timeout()));
+    auto ui_task = base::BindOnce(&BrowserTestBase::WaitUntilJavaIsReady,
+                                  base::Unretained(this), loop.QuitClosure(),
+                                  /*wait_retry_left=*/
+                                  TestTimeouts::action_max_timeout());
 
     // The MainFunctionParams must out-live all the startup tasks running.
-    MainFunctionParams params(*command_line);
-    params.ui_task = ui_task.release();
-    params.created_main_parts_closure = created_main_parts_closure.release();
-    params.startup_data = startup_data.get();
+    MainFunctionParams params(command_line);
+    params.ui_task = std::move(ui_task);
+    params.created_main_parts_closure = std::move(created_main_parts_closure);
+    params.startup_data = std::move(startup_data);
     // Passing "" as the process type to indicate the browser process.
-    int exit_code = delegate->RunProcess("", params);
-    DCHECK_EQ(exit_code, 0);
+    auto exit_code = delegate->RunProcess("", std::move(params));
+    DCHECK(absl::holds_alternative<int>(exit_code));
+    DCHECK_EQ(absl::get<int>(exit_code), 0);
 
     // Waits for Java to finish initialization, then we can run the test.
     loop.Run();
@@ -694,12 +693,12 @@ void BrowserTestBase::SetUp() {
   BrowserTaskExecutor::Shutdown();
 
 #else   // defined(OS_ANDROID)
-  auto ui_task = std::make_unique<base::OnceClosure>(base::BindOnce(
-      &BrowserTestBase::ProxyRunTestOnMainThreadLoop, base::Unretained(this)));
-  GetContentMainParams()->ui_task = ui_task.release();
-  GetContentMainParams()->created_main_parts_closure =
-      created_main_parts_closure.release();
-  EXPECT_EQ(expected_exit_code_, ContentMain(*GetContentMainParams()));
+  auto ui_task = base::BindOnce(&BrowserTestBase::ProxyRunTestOnMainThreadLoop,
+                                base::Unretained(this));
+  auto params = CopyContentMainParams();
+  params.ui_task = std::move(ui_task);
+  params.created_main_parts_closure = std::move(created_main_parts_closure);
+  EXPECT_EQ(expected_exit_code_, ContentMain(std::move(params)));
 #endif  // defined(OS_ANDROID)
 
   TearDownInProcessBrowserTestFixture();

@@ -15,7 +15,7 @@ class ProcessLifecycle;
 
 class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
  public:
-  ChromeBrowserMainPartsFuchsia(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsFuchsia(content::MainFunctionParams parameters,
                                 StartupData* startup_data);
 
   ChromeBrowserMainPartsFuchsia(const ChromeBrowserMainPartsFuchsia&) = delete;

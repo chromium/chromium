@@ -49,7 +49,7 @@ class ContentBrowserClientImpl : public content::ContentBrowserClient {
 
   // ContentBrowserClient overrides.
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      content::MainFunctionParams parameters) override;
   std::string GetApplicationLocale() override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   content::AllowServiceWorkerResult AllowServiceWorker(

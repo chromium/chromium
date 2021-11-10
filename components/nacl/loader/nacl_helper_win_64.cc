@@ -31,12 +31,12 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/win/src/sandbox_types.h"
 
-extern int NaClMain(const content::MainFunctionParams&);
+extern int NaClMain(content::MainFunctionParams);
 
 namespace {
 // main() routine for the NaCl broker process.
 // This is necessary for supporting NaCl in Chrome on Win64.
-int NaClBrokerMain(const content::MainFunctionParams& parameters) {
+int NaClBrokerMain(content::MainFunctionParams parameters) {
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
   base::PlatformThread::SetName("CrNaClBrokerMain");
 
@@ -60,23 +60,24 @@ int NaClWin64Main() {
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
 
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
   std::string process_type =
-      command_line.GetSwitchValueASCII(switches::kProcessType);
+      command_line->GetSwitchValueASCII(switches::kProcessType);
 
   // Copy what ContentMain() does.
   base::EnableTerminationOnHeapCorruption();
   base::EnableTerminationOnOutOfMemory();
   base::win::RegisterInvalidParamHandler();
-  base::win::SetupCRT(command_line);
+  base::win::SetupCRT(*command_line);
   // Route stdio to parent console (if any) or create one.
-  if (command_line.HasSwitch(switches::kEnableLogging))
+  if (command_line->HasSwitch(switches::kEnableLogging))
     base::RouteStdioToConsole(true);
 
   // Initialize the sandbox for this process.
   bool sandbox_initialized_ok = sandbox::policy::Sandbox::Initialize(
-      sandbox::policy::SandboxTypeFromCommandLine(command_line), &sandbox_info);
+      sandbox::policy::SandboxTypeFromCommandLine(*command_line),
+      &sandbox_info);
 
   // Die if the sandbox can't be enabled.
   CHECK(sandbox_initialized_ok) << "Error initializing sandbox for "
@@ -85,10 +86,10 @@ int NaClWin64Main() {
   main_params.sandbox_info = &sandbox_info;
 
   if (process_type == switches::kNaClLoaderProcess)
-    return NaClMain(main_params);
+    return NaClMain(std::move(main_params));
 
   if (process_type == switches::kNaClBrokerProcess)
-    return NaClBrokerMain(main_params);
+    return NaClBrokerMain(std::move(main_params));
 
   CHECK(false) << "Unknown NaCl 64 process.";
   return -1;

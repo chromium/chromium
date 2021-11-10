@@ -78,7 +78,7 @@
 namespace content {
 
 std::unique_ptr<BrowserMainParts> ContentBrowserClient::CreateBrowserMainParts(
-    const MainFunctionParams& parameters) {
+    MainFunctionParams parameters) {
   return nullptr;
 }
 

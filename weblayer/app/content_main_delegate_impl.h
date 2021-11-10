@@ -34,9 +34,9 @@ class ContentMainDelegateImpl : public content::ContentMainDelegate {
   variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;
   void PreSandboxStartup() override;
   void PostEarlyInitialization(bool is_running_tests) override;
-  int RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;

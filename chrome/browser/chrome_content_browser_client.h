@@ -131,7 +131,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   // content::ContentBrowserClient:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      content::MainFunctionParams parameters) override;
   void PostAfterStartupTask(
       const base::Location& from_here,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,

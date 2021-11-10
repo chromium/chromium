@@ -248,8 +248,9 @@ ShellContentBrowserClient::~ShellContentBrowserClient() {
 
 std::unique_ptr<BrowserMainParts>
 ShellContentBrowserClient::CreateBrowserMainParts(
-    const MainFunctionParams& parameters) {
-  auto browser_main_parts = std::make_unique<ShellBrowserMainParts>(parameters);
+    MainFunctionParams parameters) {
+  auto browser_main_parts =
+      std::make_unique<ShellBrowserMainParts>(std::move(parameters));
 
   shell_browser_main_parts_ = browser_main_parts.get();
 

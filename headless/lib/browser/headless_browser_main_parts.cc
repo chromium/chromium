@@ -44,9 +44,9 @@ const base::FilePath::CharType kLocalStateFilename[] =
 }  // namespace
 
 HeadlessBrowserMainParts::HeadlessBrowserMainParts(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     HeadlessBrowserImpl* browser)
-    : parameters_(parameters), browser_(browser) {}
+    : parameters_(std::move(parameters)), browser_(browser) {}
 
 HeadlessBrowserMainParts::~HeadlessBrowserMainParts() = default;
 
@@ -59,8 +59,7 @@ int HeadlessBrowserMainParts::PreMainMessageLoopRun() {
   browser_->RunOnStartCallback();
 
   if (parameters_.ui_task) {
-    std::move(*parameters_.ui_task).Run();
-    delete parameters_.ui_task;
+    std::move(parameters_.ui_task).Run();
     run_message_loop_ = false;
   }
 

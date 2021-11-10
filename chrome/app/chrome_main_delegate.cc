@@ -64,6 +64,7 @@
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/main_function_params.h"
 #include "content/public/common/profiling.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
@@ -197,10 +198,10 @@ base::LazyInstance<ChromeContentRendererClient>::DestructorAtExit
 base::LazyInstance<ChromeContentUtilityClient>::DestructorAtExit
     g_chrome_content_utility_client = LAZY_INSTANCE_INITIALIZER;
 
-extern int NaClMain(const content::MainFunctionParams&);
+extern int NaClMain(content::MainFunctionParams);
 
 #if !defined(OS_CHROMEOS)
-extern int CloudPrintServiceProcessMain(const content::MainFunctionParams&);
+extern int CloudPrintServiceProcessMain(content::MainFunctionParams);
 #endif
 
 const char* const ChromeMainDelegate::kNonWildcardDomainNonPortSchemes[] = {
@@ -383,7 +384,7 @@ void SetUpProfilingShutdownHandler() {
 
 struct MainFunction {
   const char* name;
-  int (*function)(const content::MainFunctionParams&);
+  int (*function)(content::MainFunctionParams);
 };
 
 // Initializes the user data dir. Must be called before InitializeLocalState().
@@ -1211,9 +1212,9 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
 #endif
 }
 
-int ChromeMainDelegate::RunProcess(
+absl::variant<int, content::MainFunctionParams> ChromeMainDelegate::RunProcess(
     const std::string& process_type,
-    const content::MainFunctionParams& main_function_params) {
+    content::MainFunctionParams main_function_params) {
 // ANDROID doesn't support "service", so no CloudPrintServiceProcessMain, and
 // arraysize doesn't support empty array. So we comment out the block for
 // Android.
@@ -1241,11 +1242,11 @@ int ChromeMainDelegate::RunProcess(
 
   for (size_t i = 0; i < base::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name)
-      return kMainFunctions[i].function(main_function_params);
+      return kMainFunctions[i].function(std::move(main_function_params));
   }
 #endif  // !defined(OS_ANDROID)
 
-  return -1;
+  return std::move(main_function_params);
 }
 
 void ChromeMainDelegate::ProcessExiting(const std::string& process_type) {

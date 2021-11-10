@@ -93,9 +93,9 @@ content::BrowserContext* ShellContentBrowserClient::GetBrowserContext() {
 
 std::unique_ptr<content::BrowserMainParts>
 ShellContentBrowserClient::CreateBrowserMainParts(
-    const content::MainFunctionParams& parameters) {
-  auto browser_main_parts =
-      CreateShellBrowserMainParts(parameters, browser_main_delegate_);
+    content::MainFunctionParams parameters) {
+  auto browser_main_parts = CreateShellBrowserMainParts(std::move(parameters),
+                                                        browser_main_delegate_);
 
   browser_main_parts_ = browser_main_parts.get();
 
@@ -379,9 +379,9 @@ std::string ShellContentBrowserClient::GetUserAgent() {
 
 std::unique_ptr<ShellBrowserMainParts>
 ShellContentBrowserClient::CreateShellBrowserMainParts(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     ShellBrowserMainDelegate* browser_main_delegate) {
-  return std::make_unique<ShellBrowserMainParts>(parameters,
+  return std::make_unique<ShellBrowserMainParts>(std::move(parameters),
                                                  browser_main_delegate);
 }
 

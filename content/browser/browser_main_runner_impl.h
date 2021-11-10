@@ -35,7 +35,7 @@ class BrowserMainRunnerImpl : public BrowserMainRunner {
   ~BrowserMainRunnerImpl() override;
 
   // BrowserMainRunner:
-  int Initialize(const MainFunctionParams& parameters) override;
+  int Initialize(MainFunctionParams parameters) override;
 #if defined(OS_ANDROID)
   void SynchronouslyFlushStartupTasks() override;
 #endif

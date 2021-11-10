@@ -106,7 +106,7 @@ std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
 }  // namespace
 
 // mainline routine for running as the Renderer process
-int RendererMain(const MainFunctionParams& parameters) {
+int RendererMain(MainFunctionParams parameters) {
   // Don't use the TRACE_EVENT0 macro because the tracing infrastructure doesn't
   // expect synchronous events around the main loop of a thread.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("startup", "RendererMain",
@@ -117,7 +117,7 @@ int RendererMain(const MainFunctionParams& parameters) {
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventRendererProcessSortIndex);
 
-  const base::CommandLine& command_line = parameters.command_line;
+  const base::CommandLine& command_line = *parameters.command_line;
 
 #if defined(OS_MAC)
   base::mac::ScopedNSAutoreleasePool* pool = parameters.autorelease_pool;

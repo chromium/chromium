@@ -39,7 +39,7 @@ class ShellNetworkController;
 // Handles initialization of AppShell.
 class ShellBrowserMainParts : public content::BrowserMainParts {
  public:
-  ShellBrowserMainParts(const content::MainFunctionParams& parameters,
+  ShellBrowserMainParts(content::MainFunctionParams parameters,
                         ShellBrowserMainDelegate* browser_main_delegate);
 
   ShellBrowserMainParts(const ShellBrowserMainParts&) = delete;
@@ -88,7 +88,7 @@ class ShellBrowserMainParts : public content::BrowserMainParts {
   ShellExtensionSystem* extension_system_;
 
   // For running app browsertests.
-  const content::MainFunctionParams parameters_;
+  content::MainFunctionParams parameters_;
 
   // If true, indicates the main message loop should be run
   // in MainMessageLoopRun. If false, it has already been run.

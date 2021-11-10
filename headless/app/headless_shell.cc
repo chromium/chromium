@@ -173,7 +173,7 @@ int RunContentMain(
       std::move(on_browser_start_callback), std::move(options));
   HeadlessContentMainDelegate delegate(std::move(browser));
   params.delegate = &delegate;
-  return content::ContentMain(params);
+  return content::ContentMain(std::move(params));
 }
 
 bool ValidateCommandLine(const base::CommandLine& command_line) {

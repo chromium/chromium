@@ -474,7 +474,7 @@ void RenderViewTest::SetUp() {
 #endif
   command_line_ =
       std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
-  params_ = std::make_unique<MainFunctionParams>(*command_line_);
+  params_ = std::make_unique<MainFunctionParams>(command_line_.get());
   platform_ = std::make_unique<RendererMainPlatformDelegate>(*params_);
   platform_->PlatformInitialize();
 

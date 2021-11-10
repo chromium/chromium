@@ -109,9 +109,8 @@ scoped_refptr<base::RefCountedMemory> PlatformResourceProvider(int key) {
 
 }  // namespace
 
-ShellBrowserMainParts::ShellBrowserMainParts(
-    const MainFunctionParams& parameters)
-    : parameters_(parameters), run_message_loop_(true) {}
+ShellBrowserMainParts::ShellBrowserMainParts(MainFunctionParams parameters)
+    : parameters_(std::move(parameters)), run_message_loop_(true) {}
 
 ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 
@@ -188,8 +187,7 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
   InitializeMessageLoopContext();
 
   if (parameters_.ui_task) {
-    std::move(*parameters_.ui_task).Run();
-    delete parameters_.ui_task;
+    std::move(parameters_.ui_task).Run();
     run_message_loop_ = false;
   }
 

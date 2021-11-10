@@ -47,7 +47,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 
   // ContentBrowserClient overrides.
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
-      const MainFunctionParams& parameters) override;
+      MainFunctionParams parameters) override;
   bool IsHandledURL(const GURL& url) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;

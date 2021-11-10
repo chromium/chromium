@@ -456,11 +456,11 @@ media::AudioManager* BrowserMainLoop::GetAudioManager() {
 }
 
 BrowserMainLoop::BrowserMainLoop(
-    const MainFunctionParams& parameters,
+    MainFunctionParams parameters,
     std::unique_ptr<base::ThreadPoolInstance::ScopedExecutionFence>
         scoped_execution_fence)
-    : parameters_(parameters),
-      parsed_command_line_(parameters.command_line),
+    : parameters_(std::move(parameters)),
+      parsed_command_line_(*parameters_.command_line),
       result_code_(RESULT_CODE_NORMAL_EXIT),
       created_threads_(false),
       scoped_execution_fence_(std::move(scoped_execution_fence))
@@ -486,19 +486,27 @@ BrowserMainLoop::~BrowserMainLoop() {
 void BrowserMainLoop::Init() {
   TRACE_EVENT0("startup", "BrowserMainLoop::Init");
 
-  // |startup_data| is optional. If set, the thread owned by the data
-  // will be registered as BrowserThread::IO in CreateThreads() instead of
-  // creating a brand new thread.
   if (parameters_.startup_data) {
     StartupDataImpl* startup_data =
-        static_cast<StartupDataImpl*>(parameters_.startup_data);
+        static_cast<StartupDataImpl*>(parameters_.startup_data.get());
+
     // This is always invoked before |io_thread_| is initialized (i.e. never
-    // resets it).
+    // resets it). The thread owned by the data will be registered as
+    // BrowserThread::IO in CreateThreads() instead of creating a brand new
+    // thread.
+    DCHECK(!io_thread_);
     io_thread_ = std::move(startup_data->io_thread);
+
+    DCHECK(!mojo_ipc_support_);
     mojo_ipc_support_ = std::move(startup_data->mojo_ipc_support);
+
+    // The StartupDataImpl was destined to BrowserMainLoop, do not pass it
+    // forward.
+    parameters_.startup_data.reset();
   }
 
-  parts_ = GetContentClient()->browser()->CreateBrowserMainParts(parameters_);
+  parts_ = GetContentClient()->browser()->CreateBrowserMainParts(
+      std::move(parameters_));
 }
 
 // BrowserMainLoop stages ==================================================

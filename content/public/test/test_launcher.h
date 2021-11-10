@@ -72,10 +72,11 @@ int LaunchTests(TestLauncherDelegate* launcher_delegate,
 
 TestLauncherDelegate* GetCurrentTestLauncherDelegate();
 
-#if !defined(OS_ANDROID)
 // ContentMain is not run on Android in the test process, and is run via
 // java for child processes. So ContentMainParams does not exist there.
-ContentMainParams* GetContentMainParams();
+#if !defined(OS_ANDROID)
+// Returns a copy of the ContentMainParams initialized before launching tests.
+ContentMainParams CopyContentMainParams();
 #endif
 
 // Returns true if the currently running test has a prefix that indicates it

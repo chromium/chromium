@@ -232,10 +232,10 @@ void WebTestBrowserMainRunner::Initialize() {
 }
 
 void WebTestBrowserMainRunner::RunBrowserMain(
-    const content::MainFunctionParams& parameters) {
+    content::MainFunctionParams parameters) {
   std::unique_ptr<content::BrowserMainRunner> main_runner =
       content::BrowserMainRunner::Create();
-  int initialize_exit_code = main_runner->Initialize(parameters);
+  int initialize_exit_code = main_runner->Initialize(std::move(parameters));
   DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in WebTestBrowserMainRunner";
 

@@ -60,7 +60,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 #endif
 
  protected:
-  ChromeBrowserMainParts(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainParts(content::MainFunctionParams parameters,
                          StartupData* startup_data);
 
   // content::BrowserMainParts overrides.
@@ -139,7 +139,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
 
   // Members initialized on construction ---------------------------------------
 
-  const content::MainFunctionParams parameters_;
+  content::MainFunctionParams parameters_;
   // TODO(sky): remove this. This class (and related calls), may mutate the
   // CommandLine, so it is misleading keeping a const ref here.
   const base::CommandLine& parsed_command_line_;

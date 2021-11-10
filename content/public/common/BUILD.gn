@@ -72,30 +72,22 @@ source_set("static_switches") {
   ]
 }
 
-# This target allows you to use the content_features constants and statically
-# link to it, without depending on the rest of content. This is only for use
-# without content, or you will get multiply defined symbols.
-source_set("static_features") {
-  public = [ "content_features.h" ]
+# This target allows you to use the content MainFunctionParams struct and
+# statically link to it, without depending on the rest of content. This is only
+# for use without content, or you will get multiply defined symbols.
+source_set("static_main_function_params") {
+  public = [ "main_function_params.h" ]
   sources = [
     "//content/common/content_export.h",
-    "content_features.cc",
+    "main_function_params.cc",
+    "startup_data.h",
   ]
   public_deps = [ "//base" ]
-
-  deps = [
-    "//build:chromeos_buildflags",
-    "//content/common:buildflags",
-  ]
 
   public_configs = [
     ":static_switches_defines",
     "//tools/v8_context_snapshot:use_v8_context_snapshot",
   ]
-
-  if (is_chromeos_ash) {
-    public_deps += [ "//media/capture/video/chromeos/public" ]
-  }
 }
 
 source_set("common_sources") {
@@ -132,6 +124,7 @@ source_set("common_sources") {
     "input_event_ack_state.h",
     "isolated_world_ids.h",
     "javascript_dialog_type.h",
+    "main_function_params.cc",
     "main_function_params.h",
     "mhtml_generation_params.cc",
     "mhtml_generation_params.h",
@@ -161,6 +154,7 @@ source_set("common_sources") {
     "sandboxed_process_launcher_delegate.cc",
     "sandboxed_process_launcher_delegate.h",
     "socket_permission_request.h",
+    "startup_data.h",
     "stop_find_action.h",
     "storage_quota_params.h",
     "three_d_api_types.h",

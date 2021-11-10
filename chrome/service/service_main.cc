@@ -15,8 +15,7 @@
 #include "net/url_request/url_request.h"
 
 // Mainline routine for running as the Cloud Print service process.
-int CloudPrintServiceProcessMain(
-    const content::MainFunctionParams& parameters) {
+int CloudPrintServiceProcessMain(content::MainFunctionParams parameters) {
   // This is a hack: the Cloud Print service doesn't actually set up a sandbox,
   // but sandbox::policy::SandboxTypeFromCommandLine(command_line)) doesn't know
   // about it, so it's considered sandboxed, causing shared memory hooks to be
@@ -43,12 +42,12 @@ int CloudPrintServiceProcessMain(
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 #endif
 
-  if (parameters.command_line.HasSwitch(switches::kWaitForDebugger)) {
+  if (parameters.command_line->HasSwitch(switches::kWaitForDebugger)) {
     base::debug::WaitForDebugger(60, true);
   }
 
   VLOG(1) << "Service process launched: "
-          << parameters.command_line.GetCommandLineString();
+          << parameters.command_line->GetCommandLineString();
 
   auto initialize_service = [](ServiceProcessState* service) {
     for (int i = 0; i < 10; ++i) {
@@ -70,7 +69,7 @@ int CloudPrintServiceProcessMain(
   base::RunLoop run_loop;
   ServiceProcess service_process;
   if (service_process.Initialize(run_loop.QuitClosure(),
-                                 parameters.command_line, std::move(state))) {
+                                 *parameters.command_line, std::move(state))) {
     run_loop.Run();
   } else {
     LOG(ERROR) << "Service process failed to initialize";

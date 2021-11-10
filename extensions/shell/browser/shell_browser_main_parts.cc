@@ -102,13 +102,12 @@ void CrashForTest() {
 }  // namespace
 
 ShellBrowserMainParts::ShellBrowserMainParts(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     ShellBrowserMainDelegate* browser_main_delegate)
     : extension_system_(nullptr),
-      parameters_(parameters),
+      parameters_(std::move(parameters)),
       run_message_loop_(true),
-      browser_main_delegate_(browser_main_delegate) {
-}
+      browser_main_delegate_(browser_main_delegate) {}
 
 ShellBrowserMainParts::~ShellBrowserMainParts() = default;
 
@@ -245,8 +244,7 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
 
   if (parameters_.ui_task) {
     // For running browser tests.
-    std::move(*parameters_.ui_task).Run();
-    delete parameters_.ui_task;
+    std::move(parameters_.ui_task).Run();
     run_message_loop_ = false;
   } else {
     browser_main_delegate_->Start(browser_context_.get());

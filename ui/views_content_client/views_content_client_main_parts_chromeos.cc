@@ -19,7 +19,7 @@ class ViewsContentClientMainPartsChromeOS
     : public ViewsContentClientMainPartsAura {
  public:
   ViewsContentClientMainPartsChromeOS(
-      const content::MainFunctionParams& content_params,
+      content::MainFunctionParams content_params,
       ViewsContentClient* views_content_client);
 
   ViewsContentClientMainPartsChromeOS(
@@ -39,10 +39,10 @@ class ViewsContentClientMainPartsChromeOS
 };
 
 ViewsContentClientMainPartsChromeOS::ViewsContentClientMainPartsChromeOS(
-    const content::MainFunctionParams& content_params,
+    content::MainFunctionParams content_params,
     ViewsContentClient* views_content_client)
-    : ViewsContentClientMainPartsAura(content_params, views_content_client) {
-}
+    : ViewsContentClientMainPartsAura(std::move(content_params),
+                                      views_content_client) {}
 
 int ViewsContentClientMainPartsChromeOS::PreMainMessageLoopRun() {
   ViewsContentClientMainPartsAura::PreMainMessageLoopRun();
@@ -70,11 +70,10 @@ void ViewsContentClientMainPartsChromeOS::PostMainMessageLoopRun() {
 
 // static
 std::unique_ptr<ViewsContentClientMainParts>
-ViewsContentClientMainParts::Create(
-    const content::MainFunctionParams& content_params,
-    ViewsContentClient* views_content_client) {
+ViewsContentClientMainParts::Create(content::MainFunctionParams content_params,
+                                    ViewsContentClient* views_content_client) {
   return std::make_unique<ViewsContentClientMainPartsChromeOS>(
-      content_params, views_content_client);
+      std::move(content_params), views_content_client);
 }
 
 }  // namespace ui

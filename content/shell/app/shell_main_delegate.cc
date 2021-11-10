@@ -23,6 +23,7 @@
 #include "content/common/content_constants_internal.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/main_function_params.h"
 #include "content/public/common/url_constants.h"
 #include "content/shell/app/shell_crash_reporter_client.h"
 #include "content/shell/browser/shell_content_browser_client.h"
@@ -223,12 +224,12 @@ void ShellMainDelegate::PreSandboxStartup() {
   InitializeResourceBundle();
 }
 
-int ShellMainDelegate::RunProcess(
+absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
     const std::string& process_type,
-    const MainFunctionParams& main_function_params) {
+    MainFunctionParams main_function_params) {
   // For non-browser process, return and have the caller run the main loop.
   if (!process_type.empty())
-    return -1;
+    return std::move(main_function_params);
 
   base::trace_event::TraceLog::GetInstance()->set_process_name("Browser");
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
@@ -237,7 +238,7 @@ int ShellMainDelegate::RunProcess(
 #if !defined(OS_ANDROID)
   if (switches::IsRunWebTestsSwitchPresent()) {
     // Web tests implement their own BrowserMain() replacement.
-    web_test_runner_->RunBrowserMain(main_function_params);
+    web_test_runner_->RunBrowserMain(std::move(main_function_params));
     web_test_runner_.reset();
     // Returning 0 to indicate that we have replaced BrowserMain() and the
     // caller should not call BrowserMain() itself. Web tests do not ever
@@ -245,9 +246,9 @@ int ShellMainDelegate::RunProcess(
     return 0;
   }
 
-  // On non-Android, we can return -1 and have the caller run BrowserMain()
-  // normally.
-  return -1;
+  // On non-Android, we can return the |main_function_params| back and have the
+  // caller run BrowserMain() normally.
+  return std::move(main_function_params);
 #else
   // On Android, we defer to the system message loop when the stack unwinds.
   // So here we only create (and leak) a BrowserMainRunner. The shutdown
@@ -257,7 +258,8 @@ int ShellMainDelegate::RunProcess(
   // In browser tests, the |main_function_params| contains a |ui_task| which
   // will execute the testing. The task will be executed synchronously inside
   // Initialize() so we don't depend on the BrowserMainRunner being Run().
-  int initialize_exit_code = main_runner->Initialize(main_function_params);
+  int initialize_exit_code =
+      main_runner->Initialize(std::move(main_function_params));
   DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in ShellMainDelegate";
   ignore_result(main_runner.release());

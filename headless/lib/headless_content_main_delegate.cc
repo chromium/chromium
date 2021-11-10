@@ -26,6 +26,7 @@
 #include "components/viz/common/switches.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/main_function_params.h"
 #include "content/public/common/profiling.h"
 #include "gpu/config/gpu_switches.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -378,12 +379,12 @@ void HeadlessContentMainDelegate::PreSandboxStartup() {
   InitApplicationLocale(command_line);
 }
 
-int HeadlessContentMainDelegate::RunProcess(
+absl::variant<int, content::MainFunctionParams>
+HeadlessContentMainDelegate::RunProcess(
     const std::string& process_type,
-    const content::MainFunctionParams& main_function_params) {
-
+    content::MainFunctionParams main_function_params) {
   if (!process_type.empty())
-    return -1;
+    return std::move(main_function_params);
 
   base::trace_event::TraceLog::GetInstance()->set_process_name(
       "HeadlessBrowser");
@@ -393,7 +394,7 @@ int HeadlessContentMainDelegate::RunProcess(
   std::unique_ptr<content::BrowserMainRunner> browser_runner =
       content::BrowserMainRunner::Create();
 
-  int exit_code = browser_runner->Initialize(main_function_params);
+  int exit_code = browser_runner->Initialize(std::move(main_function_params));
   DCHECK_LT(exit_code, 0) << "content::BrowserMainRunner::Initialize failed in "
                              "HeadlessContentMainDelegate::RunProcess";
 
@@ -401,7 +402,7 @@ int HeadlessContentMainDelegate::RunProcess(
   browser_runner->Shutdown();
   browser_.reset();
 
-  // Return value >=0 here to disable calling content::BrowserMain.
+  // Return an int here to disable calling content::BrowserMain.
   return 0;
 }
 

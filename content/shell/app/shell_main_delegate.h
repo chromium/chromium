@@ -36,8 +36,9 @@ class ShellMainDelegate : public ContentMainDelegate {
   bool BasicStartupComplete(int* exit_code) override;
   bool ShouldCreateFeatureList() override;
   void PreSandboxStartup() override;
-  int RunProcess(const std::string& process_type,
-                 const MainFunctionParams& main_function_params) override;
+  absl::variant<int, MainFunctionParams> RunProcess(
+      const std::string& process_type,
+      MainFunctionParams main_function_params) override;
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   void ZygoteForked() override;
 #endif

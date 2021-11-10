@@ -31,9 +31,9 @@
 #include "ui/base/ui_base_paths.h"
 
 ChromeBrowserMainPartsAndroid::ChromeBrowserMainPartsAndroid(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainParts(parameters, startup_data) {}
+    : ChromeBrowserMainParts(std::move(parameters), startup_data) {}
 
 ChromeBrowserMainPartsAndroid::~ChromeBrowserMainPartsAndroid() {
 }

@@ -10,7 +10,7 @@
 
 class ChromeBrowserMainPartsMac : public ChromeBrowserMainPartsPosix {
  public:
-  ChromeBrowserMainPartsMac(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsMac(content::MainFunctionParams parameters,
                             StartupData* startup_data);
 
   ChromeBrowserMainPartsMac(const ChromeBrowserMainPartsMac&) = delete;

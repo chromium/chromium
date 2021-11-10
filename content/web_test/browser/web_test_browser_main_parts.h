@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "content/public/common/main_function_params.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "ppapi/buildflags/buildflags.h"
 
@@ -18,7 +19,7 @@ class ShellPluginServiceFilter;
 
 class WebTestBrowserMainParts : public ShellBrowserMainParts {
  public:
-  explicit WebTestBrowserMainParts(const MainFunctionParams& parameters);
+  explicit WebTestBrowserMainParts(MainFunctionParams parameters);
 
   WebTestBrowserMainParts(const WebTestBrowserMainParts&) = delete;
   WebTestBrowserMainParts& operator=(const WebTestBrowserMainParts&) = delete;
