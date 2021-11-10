@@ -79,8 +79,7 @@ void SearchResultExtractorProducer::FetchResults(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
   client_.RequestData(
-      web_contents,
-      {mojom::ResultType::kSearchResults, mojom::ResultType::kAds},
+      web_contents, {mojom::ResultType::kSearchResults},
       base::BindOnce(&SearchResultExtractorProducer::OnResultsCallback,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::android::ConvertJavaStringToUTF8(env, j_query)));

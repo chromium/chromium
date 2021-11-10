@@ -96,24 +96,6 @@ bool ExtractResultCards(blink::WebElement node, mojom::ResultGroupPtr& group) {
   return had_results;
 }
 
-bool ExtractAds(blink::WebDocument document,
-                mojom::CategoryResultsPtr& results) {
-  // Top ads ignoring carousels.
-  blink::WebElement ads = document.GetElementById("tads");
-  if (ads.IsNull()) {
-    return false;
-  }
-
-  auto group = mojom::ResultGroup::New();
-  group->type = mojom::ResultType::kAds;
-  if (!ExtractResultCards(ads, group)) {
-    return false;
-  }
-
-  results->groups.push_back(std::move(group));
-  return true;
-}
-
 bool ExtractResults(blink::WebDocument document,
                     mojom::CategoryResultsPtr& results) {
   blink::WebElement cards = document.GetElementById("rso");
@@ -233,9 +215,6 @@ void SearchResultExtractorImpl::ExtractCurrentSearchResults(
 
   for (const auto& result_type : result_types) {
     switch (result_type) {
-      case mojom::ResultType::kAds:
-        ExtractAds(document, category_result);
-        break;
       case mojom::ResultType::kSearchResults:
         if (!ExtractResults(document, category_result)) {
           // Extracting search results is a requirement, if requested.

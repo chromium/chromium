@@ -102,13 +102,6 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         int urlCount = 0;
         List<PageGroup> groups = new ArrayList<PageGroup>();
         for (int i = 0; i < groupType.length; i++) {
-            boolean isAdGroup = groupType[i] == 1; // continuous_search::mojom::ResultType::kAds.
-            if (isAdGroup) {
-                // Account for the resulting group offset to ensure proper indexing.
-                groupOffset += groupSize[i];
-                continue;
-            }
-
             List<PageItem> results = new ArrayList<PageItem>();
             Set<GURL> groupUrls = new HashSet<>();
             for (int j = 0; j < groupSize[i]; j++) {
@@ -120,7 +113,7 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
             }
 
             groupOffset += groupSize[i];
-            groups.add(new PageGroup(/*label=*/"", isAdGroup, results));
+            groups.add(new PageGroup(/*label=*/"", false, results));
         }
 
         if (urlCount < mMinimumUrlCount) {

@@ -89,16 +89,15 @@ public class SearchResultExtractorProducerTest {
      * @param cancelled Whether to treat the fetch as if it was cancelled.
      */
     private void finishFetching(boolean cancelled) {
-        GURL url1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);
-        GURL url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
-        GURL url3 = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_2);
-        GURL url4 = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_3);
-        GURL url5 = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+        GURL url1 = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1);
+        GURL url2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_2);
+        GURL url3 = JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_3);
+        GURL url4 = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
 
         mSearchResultProducer.onResultsAvailable(mTestUrl, TEST_QUERY, TEST_RESULT_TYPE,
-                new int[] {1, 0, 0}, new int[] {1, 3, 1},
-                new String[] {"Foo.com 1", "Bar.com 1", "Bar.com 2", "Bar.com 3", "Baz.com 1"},
-                new GURL[] {url1, url2, url3, url4, url5});
+                new int[] {0, 0}, new int[] {3, 1},
+                new String[] {"Bar.com 1", "Bar.com 2", "Bar.com 3", "Baz.com 1"},
+                new GURL[] {url1, url2, url3, url4});
 
         if (cancelled) {
             verify(mListenerMock, never()).onResult(any());
@@ -108,12 +107,12 @@ public class SearchResultExtractorProducerTest {
         List<PageGroup> groups = new ArrayList<PageGroup>();
         // results1 would be an ad group and is skipped.
         List<PageItem> results2 = new ArrayList<PageItem>();
-        results2.add(new PageItem(url2, "Bar.com 1"));
-        results2.add(new PageItem(url3, "Bar.com 2"));
-        results2.add(new PageItem(url4, "Bar.com 3"));
+        results2.add(new PageItem(url1, "Bar.com 1"));
+        results2.add(new PageItem(url2, "Bar.com 2"));
+        results2.add(new PageItem(url3, "Bar.com 3"));
         groups.add(new PageGroup("", false, results2));
         List<PageItem> results3 = new ArrayList<PageItem>();
-        results3.add(new PageItem(url5, "Baz.com 1"));
+        results3.add(new PageItem(url4, "Baz.com 1"));
         groups.add(new PageGroup("", false, results3));
 
         verify(mListenerMock, times(1))
