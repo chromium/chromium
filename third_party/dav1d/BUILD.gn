@@ -79,10 +79,6 @@ config("public_dav1d_config") {
     defines += [ "STACK_ALIGNMENT=$stack_alignment" ]
   }
 
-  if (!is_android && !is_win) {
-    defines += [ "HAVE_PTHREAD_GETAFFINITY_NP=1" ]
-  }
-
   # Don't let dav1d export any symbols. Otherwise the verify_order step on macOS
   # can fail since these exports end up in the final Chromium binary.
   defines += [ "DAV1D_API=" ]

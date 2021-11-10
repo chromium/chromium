@@ -33,8 +33,6 @@
 
 #define HAVE_POSIX_MEMALIGN 1
 
-// #define HAVE_PTHREAD_GETAFFINITY_NP 1 -- pthread_getaffinity_np is controlled by Chromium
-
 #define HAVE_UNISTD_H 1
 
 // #define STACK_ALIGNMENT 32 -- Stack alignment is controlled by Chromium
