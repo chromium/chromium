@@ -67,12 +67,7 @@ class NativeIOFile final : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  // Data accessed on the threads that do file I/O.
-  //
-  // Instances are allocated on the PartitionAlloc heap. Instances are initially
-  // constructed on Blink's main thread, or on a worker thread. Afterwards,
-  // instances are only accessed on dedicated threads that do blocking file I/O.
-  struct FileState;
+  class FileState;
 
   // Called when the mojo backend disconnects.
   void OnBackendDisconnect();
@@ -84,7 +79,7 @@ class NativeIOFile final : public ScriptWrappable {
   static void DoClose(
       CrossThreadPersistent<NativeIOFile> native_io_file,
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      NativeIOFile::FileState* file_state,
+      scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
   // Performs the post file I/O part of close(), on the main thread.
   void DidClose(CrossThreadPersistent<ScriptPromiseResolver> resolver);
@@ -93,7 +88,7 @@ class NativeIOFile final : public ScriptWrappable {
   static void DoGetLength(
       CrossThreadPersistent<NativeIOFile> native_io_file,
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      NativeIOFile::FileState* file_state,
+      scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
   // Performs the post file I/O part of getLength(), on the main thread.
   void DidGetLength(CrossThreadPersistent<ScriptPromiseResolver> resolver,
@@ -104,7 +99,7 @@ class NativeIOFile final : public ScriptWrappable {
   static void DoSetLength(
       CrossThreadPersistent<NativeIOFile> native_io_file,
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      NativeIOFile::FileState* file_state,
+      scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner,
       int64_t expected_length);
   // Performs the post file I/O part of setLength(), on the main thread.
@@ -128,7 +123,7 @@ class NativeIOFile final : public ScriptWrappable {
   // Performs the file I/O part of read(), off the main thread.
   static void DoRead(CrossThreadPersistent<NativeIOFile> native_io_file,
                      CrossThreadPersistent<ScriptPromiseResolver> resolver,
-                     NativeIOFile::FileState* file_state,
+                     scoped_refptr<NativeIOFile::FileState> file_state,
                      scoped_refptr<base::SequencedTaskRunner> file_task_runner,
                      std::unique_ptr<NativeIODataBuffer> result_buffer_data,
                      uint64_t file_offset,
@@ -143,7 +138,7 @@ class NativeIOFile final : public ScriptWrappable {
   static void DoWrite(
       CrossThreadPersistent<NativeIOFile> native_io_file,
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      NativeIOFile::FileState* file_state,
+      scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> resolver_task_runner,
       std::unique_ptr<NativeIODataBuffer> result_buffer_data,
       uint64_t file_offset,
@@ -163,7 +158,7 @@ class NativeIOFile final : public ScriptWrappable {
   static void DoFlush(
       CrossThreadPersistent<NativeIOFile> native_io_file,
       CrossThreadPersistent<ScriptPromiseResolver> resolver,
-      NativeIOFile::FileState* file_state,
+      scoped_refptr<NativeIOFile::FileState> file_state,
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
   // Performs the post file-I/O part of flush(), on the main thread.
   void DidFlush(CrossThreadPersistent<ScriptPromiseResolver> resolver,
@@ -210,8 +205,13 @@ class NativeIOFile final : public ScriptWrappable {
   // TODO(rstz): Consider moving this variable into `file_state_`
   int64_t file_length_ = 0;
 
-  // See NativeIOFile::FileState, declared above.
-  const std::unique_ptr<FileState> file_state_;
+  // Points to a NativeIOFile::FileState while the underlying file is open.
+  //
+  // When the underlying file is closed, this pointer is nulled out, and the
+  // FileState instance is passed to a different thread, where the closing
+  // happens. This avoids having any I/O performed by the base::File::Close()
+  // jank the JavaScript thread that owns this NativeIOFile instance.
+  scoped_refptr<FileState> file_state_;
 
   // Schedules resolving Promises with file I/O results.
   const scoped_refptr<base::SequencedTaskRunner> resolver_task_runner_;
