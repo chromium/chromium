@@ -111,7 +111,8 @@ const CGFloat kProgressBarHeight = 2.0f;
     [separator.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
     [separator.heightAnchor
         constraintEqualToConstant:ui::AlignValueToUpperPixel(kSeparatorHeight)],
-    [separator.bottomAnchor constraintEqualToAnchor:self.progressBar.topAnchor],
+    [separator.bottomAnchor
+        constraintEqualToAnchor:self.webStateView.topAnchor],
     [self.progressBar.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
     [self.progressBar.trailingAnchor
