@@ -284,19 +284,6 @@ bool WorkQueue::RemoveFence() {
   return false;
 }
 
-bool WorkQueue::ShouldRunBefore(const WorkQueue* other_queue) const {
-  DCHECK(!tasks_.empty());
-  DCHECK(!other_queue->tasks_.empty());
-  EnqueueOrder enqueue_order;
-  EnqueueOrder other_enqueue_order;
-  bool have_task = GetFrontTaskEnqueueOrder(&enqueue_order);
-  bool have_other_task =
-      other_queue->GetFrontTaskEnqueueOrder(&other_enqueue_order);
-  DCHECK(have_task);
-  DCHECK(have_other_task);
-  return enqueue_order < other_enqueue_order;
-}
-
 void WorkQueue::MaybeShrinkQueue() {
   tasks_.MaybeShrinkQueue();
 }

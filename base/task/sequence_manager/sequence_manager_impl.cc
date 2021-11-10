@@ -349,12 +349,6 @@ void SequenceManagerImpl::BindToCurrentThread() {
   CompleteInitializationOnBoundThread();
 }
 
-void SequenceManagerImpl::BindToCurrentThread(
-    std::unique_ptr<MessagePump> pump) {
-  associated_thread_->BindToCurrentThread();
-  BindToMessagePump(std::move(pump));
-}
-
 scoped_refptr<SequencedTaskRunner>
 SequenceManagerImpl::GetTaskRunnerForCurrentTask() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
@@ -1107,10 +1101,6 @@ bool SequenceManagerImpl::ShouldRecordCPUTimeForTask() {
 const SequenceManager::MetricRecordingSettings&
 SequenceManagerImpl::GetMetricRecordingSettings() const {
   return metric_recording_settings_;
-}
-
-MessagePumpType SequenceManagerImpl::GetType() const {
-  return settings_.message_loop_type;
 }
 
 void SequenceManagerImpl::SetTaskExecutionAllowed(bool allowed) {

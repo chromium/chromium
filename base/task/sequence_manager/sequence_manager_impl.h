@@ -168,8 +168,6 @@ class BASE_EXPORT SequenceManagerImpl
   void AttachToMessagePump();
 #endif
   bool IsIdleForTesting() override;
-  void BindToCurrentThread(std::unique_ptr<MessagePump> pump);
-  MessagePumpType GetType() const;
 
   // Requests that a task to process work is scheduled.
   void ScheduleWork();
