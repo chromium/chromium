@@ -6,33 +6,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 
-polymer_element_files = [
-  "google_photos_element.js",
-  "local_images_element.js",
-  "personalization_grid_item_element.js",
-  "personalization_router_element.js",
-  "personalization_toast_element.js",
-  "wallpaper_breadcrumb_element.js",
-  "wallpaper_collections_element.js",
-  "wallpaper_error_element.js",
-  "wallpaper_fullscreen_element.js",
-  "wallpaper_images_element.js",
-  "wallpaper_selected_element.js",
-]
-
-static_files = [
-  "index.html",
-  "mojo_interface_provider.js",
-  "personalization_actions.js",
-  "personalization_app.js",
-  "personalization_controller.js",
-  "personalization_message_handler.js",
-  "personalization_reducers.js",
-  "personalization_store.js",
-  "personalization_test_api.js",
-  "styles.js",
-]
-
 js_library("google_photos_element") {
   deps = [
     ":personalization_store",
@@ -250,48 +223,5 @@ js_type_check("closure_compile") {
     ":wallpaper_collections_element",
     ":wallpaper_images_element",
     ":wallpaper_selected_element",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = polymer_element_files
-}
-
-copy("copy_static") {
-  sources = static_files
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-copy("copy_mojo_to_trusted") {
-  deps = [
-    "../../mojom:mojom_js",
-    "//mojo/public/mojom/base",
-  ]
-  sources = [
-    "$root_gen_dir/mojo/public/mojom/base/file_path.mojom-lite.js",
-    "$target_gen_dir/../../mojom/personalization_app.mojom-lite.js",
-  ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-preprocess_if_expr("preprocess") {
-  deps = [
-    ":copy_mojo_to_trusted",
-    ":copy_static",
-    ":web_components",
-  ]
-  in_folder = "$target_gen_dir/.."
-  out_folder = "$target_gen_dir/processed"
-  out_manifest = "$target_gen_dir/manifest.json"
-  in_files = []
-  foreach(file, polymer_element_files) {
-    in_files += [ "trusted/$file" ]
-  }
-  foreach(file, static_files) {
-    in_files += [ "trusted/$file" ]
-  }
-  in_files += [
-    "trusted/personalization_app.mojom-lite.js",
-    "trusted/file_path.mojom-lite.js",
   ]
 }
