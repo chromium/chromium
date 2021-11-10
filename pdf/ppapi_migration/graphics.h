@@ -19,6 +19,7 @@ namespace gfx {
 class Point;
 class Rect;
 class Vector2d;
+class Vector2dF;
 }  // namespace gfx
 
 namespace pp {
@@ -97,6 +98,13 @@ class SkiaGraphics final : public Graphics {
 
     // Updates the client with the latest snapshot created by Flush().
     virtual void UpdateSnapshot(sk_sp<SkImage> snapshot) = 0;
+
+    // Updates the client with the latest output scale.
+    virtual void UpdateScale(float scale) = 0;
+
+    // Updates the client with the latest output layer transform.
+    virtual void UpdateLayerTransform(float scale,
+                                      const gfx::Vector2dF& translate) = 0;
   };
 
   // `client` must remain valid throughout the lifespan of the object.
