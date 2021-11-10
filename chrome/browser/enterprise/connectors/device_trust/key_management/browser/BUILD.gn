@@ -5,7 +5,11 @@
 source_set("browser") {
   public = [ "key_rotation_launcher.h" ]
 
-  sources = [ "key_rotation_launcher.cc" ]
+  sources = [
+    "key_rotation_launcher.cc",
+    "key_rotation_launcher_impl.cc",
+    "key_rotation_launcher_impl.h",
+  ]
 
   public_deps = [ "//base" ]
 

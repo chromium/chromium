@@ -40,6 +40,11 @@ class KeyRotationLauncherTest : public testing::Test {
     scoped_command_factory_.SetMock(std::move(mock_command));
   }
 
+  std::unique_ptr<KeyRotationLauncher> CreateLauncher() {
+    return KeyRotationLauncher::Create(&fake_dm_token_storage_,
+                                       &fake_device_management_service_);
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   testing::StrictMock<test::MockKeyRotationCommand>* mock_command_;
   ScopedKeyRotationCommandFactory scoped_command_factory_;
@@ -62,8 +67,8 @@ TEST_F(KeyRotationLauncherTest, LaunchKeyRotation) {
             return true;
           }));
 
-  EXPECT_TRUE(LaunchKeyRotation(&fake_dm_token_storage_,
-                                &fake_device_management_service_, kNonce));
+  auto launcher = CreateLauncher();
+  EXPECT_TRUE(launcher->LaunchKeyRotation(kNonce));
 
   ASSERT_TRUE(params.has_value());
   EXPECT_EQ(kNonce, params->nonce);
@@ -75,8 +80,8 @@ TEST_F(KeyRotationLauncherTest, LaunchKeyRotation_InvalidDMToken) {
   // Set the DM token to an invalid value (i.e. empty string).
   fake_dm_token_storage_.SetDMToken("");
 
-  EXPECT_FALSE(LaunchKeyRotation(&fake_dm_token_storage_,
-                                 &fake_device_management_service_, kNonce));
+  auto launcher = CreateLauncher();
+  EXPECT_FALSE(launcher->LaunchKeyRotation(kNonce));
 }
 
 }  // namespace enterprise_connectors
