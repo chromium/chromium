@@ -616,4 +616,12 @@ if (enable_extensions) {
       "//base",
     ]
   }
+
+  fuzzer_test("extension_manifest_fuzzer") {
+    sources = [ "manifest_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
+    ]
+  }
 }  # enable_extensions
