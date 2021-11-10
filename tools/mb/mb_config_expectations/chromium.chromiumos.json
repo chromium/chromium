@@ -157,6 +157,17 @@
       "use_goma": true
     }
   },
+  "linux-chromeos-annotator-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "ChromeOS",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux-chromeos-dbg": {
     "gn_args": {
       "ffmpeg_branding": "ChromeOS",

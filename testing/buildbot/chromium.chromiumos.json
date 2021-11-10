@@ -1622,6 +1622,15 @@
       }
     ]
   },
+  "linux-chromeos-annotator-rel": {
+    "scripts": [
+      {
+        "name": "test_traffic_annotation_auditor",
+        "script": "test_traffic_annotation_auditor.py",
+        "swarming": {}
+      }
+    ]
+  },
   "linux-chromeos-dbg": {
     "gtest_tests": [
       {

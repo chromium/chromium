@@ -905,6 +905,10 @@ try_.chromium_chromiumos_builder(
 )
 
 try_.chromium_chromiumos_builder(
+    name = "linux-chromeos-annotator-rel",
+)
+
+try_.chromium_chromiumos_builder(
     name = "linux-cfm-rel",
     tryjob = try_.job(
         location_regexp = [

@@ -1531,6 +1531,11 @@
           'gtest_tests': 'linux_cfm_gtests',
         },
       },
+      'linux-chromeos-annotator-rel': {
+        'test_suites': {
+          'scripts': 'test_traffic_annotation_auditor_script'
+        },
+      },
       'linux-chromeos-dbg': {
         'mixins': [
           'linux-bionic',
@@ -1557,7 +1562,7 @@
           'all',
         ],
         'test_suites': {
-          'gtest_tests': 'linux_chromeos_specific_and_lacros_dependent_gtests',
+          'gtest_tests': 'linux_chromeos_specific_and_lacros_dependent_gtests'
         },
       },
       'linux-lacros-dbg': {
