@@ -7,6 +7,7 @@ import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/util/process_version.gni")
 import("//chrome/updater/branding.gni")
+import("//components/crx_file/crx3.gni")
 import("//testing/test.gni")
 
 # Run 'gn check out\Default --check-generated //chrome/updater/*' every time
@@ -472,6 +473,31 @@ if (is_win || is_mac) {
     ]
   }
 
+  crx3("updater_selfupdate_test_crx") {
+    base_dir = "$root_build_dir"
+    key = "test/data/selfupdate_test_key.der"
+    output = "$root_build_dir/updater_selfupdate.crx3"
+    testonly = true
+
+    if (is_mac) {
+      inputs = [
+        "$root_build_dir/$updater_product_full_name.app/Contents/Info.plist",
+        "$root_build_dir/$updater_product_full_name.app/Contents/MacOS/$updater_product_full_name",
+        "$root_build_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
+        "$root_build_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+        "$root_build_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+        "$root_build_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
+        "$root_build_dir/$updater_product_full_name.app/Contents/PkgInfo",
+      ]
+      deps = [ "//chrome/updater/mac:updater_bundle" ]
+    }
+
+    if (is_win) {
+      inputs = [ "$root_build_dir/UpdaterSetup.exe" ]
+      deps = [ "//chrome/updater/win/installer" ]
+    }
+  }
+
   source_set("updater_test_sources") {
     testonly = true
     sources = [
@@ -513,6 +539,7 @@ if (is_win || is_mac) {
       ":base",
       ":branding_header",
       ":constants_test",
+      ":updater_selfupdate_test_crx",
       ":updater_tests_support",
       ":version_header",
       "//base",
