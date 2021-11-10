@@ -100,6 +100,11 @@ importer.Destination = {
  * @return {boolean}
  */
 importer.isEligibleType = entry => {
+  if (window.isSWA) {
+    // Disables the Cloud Import for SWA.
+    return false;
+  }
+
   // TODO(mtomasz): Add support to mime types.
   return !!entry && entry.isFile &&
       FileType.isType(['image', 'raw', 'video'], entry);
@@ -248,21 +253,6 @@ importer.getMediaDirectory = directory => {
               }
             });
           });
-};
-
-/**
- * @param {!DirectoryEntry} directory Presumably the root of a filesystem.
- * @return {!Promise<boolean>} True if the directory contains a
- *     child media directory (like 'DCIM').
- */
-importer.hasMediaDirectory = directory => {
-  return importer.getMediaDirectory(directory).then(
-      result => {
-        return Promise.resolve(!!result);
-      },
-      () => {
-        return Promise.resolve(false);
-      });
 };
 
 /**

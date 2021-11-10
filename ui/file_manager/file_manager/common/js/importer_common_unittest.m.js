@@ -224,12 +224,13 @@ export function testDeflateAppUrl() {
       'Deflated then inflated URLs must match original URL.');
 }
 
-export function testHasMediaDirectory(callback) {
+export async function testHasMediaDirectory(done) {
   const dir = createDirectoryEntry(sdVolume, '/DCIM');
-  const promise = importer.hasMediaDirectory(sdVolume.fileSystem.root)
-                      .then(assertTrue.bind(null));
+  const mediaDir = await importer.getMediaDirectory(sdVolume.fileSystem.root);
 
-  reportPromise(promise, callback);
+  assertTrue(!!mediaDir);
+
+  done();
 }
 
 /** @param {string} path */
