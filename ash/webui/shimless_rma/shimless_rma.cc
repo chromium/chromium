@@ -120,6 +120,11 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"rsuCodePlaceHolderText", IDS_SHIMLESS_RMA_RSU_CODE_PLACEHOLDER},
       // Repair complete page
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
+      // Manual disable wp page
+      {"manuallyDisableWpTitleText",
+       IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_TITLE},
+      {"manuallyDisableWpInstructionsText",
+       IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_INSTRUCTIONS},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

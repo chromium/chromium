@@ -3,14 +3,24 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {fakeRsuChallengeQrCode} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {OnboardingWaitForManualWpDisablePageElement} from 'chrome://shimless-rma/onboarding_wait_for_manual_wp_disable_page.js';
+import {OnboardingWaitForManualWpDisablePage} from 'chrome://shimless-rma/onboarding_wait_for_manual_wp_disable_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
+/**
+ * It is not possible to suppress visibility inline so this helper
+ * function wraps the access to canvasSize_.
+ * @suppress {visibility}
+ */
+function suppressedComponentCanvasSize_(component) {
+  return component.canvasSize_;
+}
+
 export function onboardingWaitForManualWpDisablePageTest() {
-  /** @type {?OnboardingWaitForManualWpDisablePageElement} */
+  /** @type {?OnboardingWaitForManualWpDisablePage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -35,9 +45,12 @@ export function onboardingWaitForManualWpDisablePageTest() {
    * @return {!Promise}
    */
   function initializeWaitForManualWpDisablePage() {
+    service.setGetWriteProtectManuallyDisabledInstructionsResult(
+        'g.co/help', fakeRsuChallengeQrCode);
+
     assertFalse(!!component);
 
-    component = /** @type {!OnboardingWaitForManualWpDisablePageElement} */ (
+    component = /** @type {!OnboardingWaitForManualWpDisablePage} */ (
         document.createElement('onboarding-wait-for-manual-wp-disable-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
@@ -85,5 +98,20 @@ export function onboardingWaitForManualWpDisablePageTest() {
     await flushTasks();
 
     assertDeepEquals(savedResult, expectedResult);
+  });
+
+  test('ManualWpDisablePageRendersQrCode', async () => {
+    await initializeWaitForManualWpDisablePage();
+
+    const expectedCanvasSize = 60;
+
+    assertEquals(suppressedComponentCanvasSize_(component), expectedCanvasSize);
+    const canvas = component.shadowRoot.querySelector('#qrCodeCanvas');
+    assertTrue(!!canvas);
+    assertEquals(canvas.width, expectedCanvasSize);
+    assertEquals(canvas.height, expectedCanvasSize);
+
+    const context = canvas.getContext('2d');
+    assertTrue(!!context);
   });
 }
