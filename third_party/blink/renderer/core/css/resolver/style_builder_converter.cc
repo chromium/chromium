@@ -984,7 +984,9 @@ static void ConvertGridLineNamesList(
     const CSSValue& value,
     wtf_size_t current_named_grid_line,
     NamedGridLinesMap& named_grid_lines,
-    OrderedNamedGridLines& ordered_named_grid_lines) {
+    OrderedNamedGridLines& ordered_named_grid_lines,
+    bool is_in_repeat = false,
+    bool is_first_repeat = false) {
   DCHECK(value.IsGridLineNamesValue());
 
   for (auto& named_grid_line_value : To<CSSValueList>(value)) {
@@ -995,8 +997,9 @@ static void ConvertGridLineNamesList(
     result.stored_value->value.push_back(current_named_grid_line);
     OrderedNamedGridLines::AddResult ordered_insertion_result =
         ordered_named_grid_lines.insert(current_named_grid_line,
-                                        Vector<String>());
-    ordered_insertion_result.stored_value->value.push_back(named_grid_line);
+                                        Vector<NamedGridLine>());
+    ordered_insertion_result.stored_value->value.push_back(
+        NamedGridLine(named_grid_line, is_in_repeat, is_first_repeat));
   }
 }
 
@@ -1031,10 +1034,13 @@ void StyleBuilderConverter::ConvertGridTrackList(
   }
 
   wtf_size_t current_named_grid_line = 0;
-  auto convert_line_name_or_track_size = [&](const CSSValue& curr_value) {
+  auto ConvertLineNameOrTrackSize = [&](const CSSValue& curr_value,
+                                        bool is_in_repeat = false,
+                                        bool is_first_repeat = false) {
     if (curr_value.IsGridLineNamesValue()) {
       ConvertGridLineNamesList(curr_value, current_named_grid_line,
-                               named_grid_lines, ordered_named_grid_lines);
+                               named_grid_lines, ordered_named_grid_lines,
+                               is_in_repeat, is_first_repeat);
     } else {
       ++current_named_grid_line;
       track_sizes.LegacyTrackList().push_back(
@@ -1065,7 +1071,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
             ConvertGridTrackSize(state, *auto_repeat_value));
       }
       if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
-        track_sizes.NGTrackList().AddAutoRepeater(
+        track_sizes.NGTrackList().AddRepeater(
             repeated_track_sizes,
             static_cast<NGGridTrackRepeater::RepeatType>(auto_repeat_type));
       }
@@ -1075,31 +1081,38 @@ void StyleBuilderConverter::ConvertGridTrackList(
       continue;
     }
 
-    if (auto* repeated_values =
+    if (auto* grid_integer_repeat_value =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value.Get())) {
-      wtf_size_t repetitions = repeated_values->Repetitions();
+      const wtf_size_t repetitions = grid_integer_repeat_value->Repetitions();
+
       for (wtf_size_t i = 0; i < repetitions; ++i) {
-        for (auto curr_repeat_value : *repeated_values)
-          convert_line_name_or_track_size(*curr_repeat_value);
+        for (auto integer_repeat_value : *grid_integer_repeat_value) {
+          ConvertLineNameOrTrackSize(*integer_repeat_value,
+                                     /* is_inside_repeat */ true,
+                                     /* is_first_repeat */ i == 0);
+        }
       }
+
       if (RuntimeEnabledFeatures::LayoutNGGridEnabled()) {
-        Vector<GridTrackSize, 1> repeater_sizes;
-        for (auto curr_repeat_value : *repeated_values) {
-          if (!curr_repeat_value->IsGridLineNamesValue()) {
-            repeater_sizes.push_back(
-                ConvertGridTrackSize(state, *curr_repeat_value));
+        Vector<GridTrackSize, 1> repeater_track_sizes;
+        for (auto integer_repeat_value : *grid_integer_repeat_value) {
+          if (!integer_repeat_value->IsGridLineNamesValue()) {
+            repeater_track_sizes.push_back(
+                ConvertGridTrackSize(state, *integer_repeat_value));
           }
         }
-        track_sizes.NGTrackList().AddRepeater(repeater_sizes, repetitions);
+        track_sizes.NGTrackList().AddRepeater(
+            repeater_track_sizes, NGGridTrackRepeater::RepeatType::kInteger,
+            repetitions);
       }
       continue;
     }
 
-    convert_line_name_or_track_size(*curr_value);
+    ConvertLineNameOrTrackSize(*curr_value);
     if (RuntimeEnabledFeatures::LayoutNGGridEnabled() &&
         !curr_value->IsGridLineNamesValue()) {
       track_sizes.NGTrackList().AddRepeater(
-          {ConvertGridTrackSize(state, *curr_value)}, 1);
+          {ConvertGridTrackSize(state, *curr_value)});
     }
   }
 

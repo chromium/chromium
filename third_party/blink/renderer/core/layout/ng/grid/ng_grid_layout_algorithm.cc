@@ -1396,6 +1396,10 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
        repeater_index < track_list.RepeaterCount(); ++repeater_index) {
     const wtf_size_t repeater_track_count =
         track_list.RepeatSize(repeater_index);
+    const auto repeat_type = track_list.RepeatType(repeater_index);
+    const bool is_auto_repeater =
+        repeat_type == NGGridTrackRepeater::kAutoFill ||
+        repeat_type == NGGridTrackRepeater::kAutoFit;
     LayoutUnit repeater_size;
     for (wtf_size_t track_index = 0; track_index < repeater_track_count;
          ++track_index) {
@@ -1425,15 +1429,12 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
       // standalone axis, the UA must floor the track size to a UA-specified
       // value to avoid division by zero. It is suggested that this floor be
       // 1px.
-      if (track_list.RepeatType(repeater_index) !=
-          NGGridTrackRepeater::kNoAutoRepeat) {
+      if (is_auto_repeater)
         track_contribution = std::max(LayoutUnit(1), track_contribution);
-      }
 
       repeater_size += track_contribution + grid_gap;
     }
-    if (track_list.RepeatType(repeater_index) ==
-        NGGridTrackRepeater::kNoAutoRepeat) {
+    if (!is_auto_repeater) {
       non_auto_specified_size +=
           repeater_size * track_list.RepeatCount(repeater_index, 0);
     } else {
