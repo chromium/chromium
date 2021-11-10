@@ -7244,11 +7244,8 @@ crbug.com/1265924 [ Fuchsia ] synthetic_gestures/smooth-scroll-tiny-delta.html [
 crbug.com/1257806 http/tests/devtools/console/console-external-array.js [ Skip ]
 crbug.com/1257806 http/tests/devtools/console/console-log-side-effects.js [ Skip ]
 
-# Flaky on Windows and Mac.
 # TODO(https://crbug.com/1265311): Make the test behave the same way on all platforms
-crbug.com/1265311 [ Win7 ] http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
-crbug.com/1265311 [ Win10.20h2 ] http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
-crbug.com/1265311 [ Mac11-arm64 ] http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
+crbug.com/1265311 http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]
 
 # Sheriff 2021-11-03
 crbug.com/1266199 [ Mac10.12 ] fast/css3-text/css3-text-decoration/text-decoration-style-wavy-font-size.html [ Failure Pass ]
