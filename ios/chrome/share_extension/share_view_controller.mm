@@ -152,6 +152,13 @@ const CGFloat kMediumAlpha = 0.5;
 }
 
 - (void)displayErrorView {
+  __weak ShareViewController* weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf displayErrorViewMainThread];
+  });
+}
+
+- (void)displayErrorViewMainThread {
   NSString* errorMessage =
       NSLocalizedString(@"IDS_IOS_ERROR_MESSAGE_SHARE_EXTENSION",
                         @"The error message to display to the user.");
