@@ -9,6 +9,7 @@
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 class GURL;
+class PrefService;
 
 namespace ash {
 
@@ -16,7 +17,9 @@ namespace ash {
 // TODO(b/193670945): Migrate to ash/components and ash/webui.
 class TrustedProjectorUI : public ui::MojoBubbleWebUIController {
  public:
-  TrustedProjectorUI(content::WebUI* web_ui, const GURL& url);
+  TrustedProjectorUI(content::WebUI* web_ui,
+                     const GURL& url,
+                     PrefService* pref_service);
   ~TrustedProjectorUI() override;
   TrustedProjectorUI(const TrustedProjectorUI&) = delete;
   TrustedProjectorUI& operator=(const TrustedProjectorUI&) = delete;

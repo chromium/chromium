@@ -101,6 +101,25 @@ export class ProjectorBrowserProxy {
   // TODO(b/204372280): return
   // "Promise<!Array<!projectorApp.PendingScreencast>>"
   getPendingScreencasts() {}
+
+  /**
+   * Returns the value associated with the user preference if it is supported;
+   * If the `userPref` is not supported the returned promise will be rejected.
+   * @param {string} userPref
+   * @return {!Promise<Object>}
+   */
+  getUserPref(userPref) {}
+
+  /**
+   * Sets the user preference  if the preference is supported and the value is
+   * valid. If the `userPref` is not supported or the `value` is not the correct
+   * type, the returned promise will be rejected.
+   * @param {string} userPref
+   * @param {Object} value A preference can store multiple types (dictionaries,
+   *     lists, Boolean, etc..); therefore, accept a generic Object value.
+   * @return {!Promise} Promise resolved when the request was handled.
+   */
+  setUserPref(userPref, value) {}
 }
 
 /**
@@ -129,7 +148,7 @@ export class ProjectorBrowserProxyImpl {
   }
 
   /** @override */
-  startProjectorSession(storageDir ) {
+  startProjectorSession(storageDir) {
     return sendWithPromise('startProjectorSession', [storageDir]);
   }
 
@@ -140,7 +159,7 @@ export class ProjectorBrowserProxyImpl {
 
   /** @override */
   onError(msg) {
-    return chrome.send("onError", msg);
+    return chrome.send('onError', msg);
   }
 
   /** @override */
@@ -163,9 +182,20 @@ export class ProjectorBrowserProxyImpl {
   installSoda() {
     return sendWithPromise('installSoda');
   }
+
   /** @override */
   getPendingScreencasts() {
     return sendWithPromise('getPendingScreencasts');
+  }
+
+  /** @override */
+  getUserPref(userPref) {
+    return sendWithPromise('getUserPref', [userPref]);
+  }
+
+  /** @override */
+  setUserPref(userPref, value) {
+    return sendWithPromise('setUserPref', [userPref, value]);
   }
 }
 

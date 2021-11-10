@@ -30,6 +30,7 @@ static_library("projector_app") {
     "//ash/webui/resources:projector_app_trusted_resources",
     "//ash/webui/resources:projector_app_untrusted_resources",
     "//chromeos/strings",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//content/public/browser",
     "//ui/resources",
@@ -70,6 +71,7 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//base",
+    "//components/prefs:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

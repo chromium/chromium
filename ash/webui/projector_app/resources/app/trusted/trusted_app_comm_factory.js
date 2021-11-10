@@ -112,6 +112,18 @@ export class TrustedAppRequestHandler extends RequestHandler {
     this.registerMethod('getPendingScreencasts', (args) => {
       return this.browserProxy_.getPendingScreencasts();
     });
+    this.registerMethod('getUserPref', (args) => {
+      if (!args || args.length != 1) {
+        return;
+      }
+      return this.browserProxy_.getUserPref(args[0]);
+    });
+    this.registerMethod('setUserPref', (args) => {
+      if (!args || args.length != 2) {
+        return;
+      }
+      return this.browserProxy_.setUserPref(args[0], args[1]);
+    });
   }
 }
 

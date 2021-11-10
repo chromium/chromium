@@ -137,8 +137,8 @@ const CLIENT_DELEGATE = {
    * @return {!Promise<Object>}
    */
   getUserPref(userPref) {
-    // TODO(b/200205765): Pass request to PostMessageApiClient.
-    return Promise.reject('Unsupported.');
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'getUserPref', [userPref]);
   },
 
   /**
@@ -150,8 +150,8 @@ const CLIENT_DELEGATE = {
    * @return {!Promise} Promise resolved when the request was handled.
    */
   setUserPref(userPref, value) {
-    // TODO(b/200205765): Pass request to PostMessageApiClient.
-    return Promise.reject('Unsupported');
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'setUserPref', [userPref, value]);
   },
 };
 

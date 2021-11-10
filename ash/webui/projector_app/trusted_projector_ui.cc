@@ -10,6 +10,7 @@
 #include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/projector_message_handler.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -41,7 +42,9 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
 
 }  // namespace
 
-TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui, const GURL& url)
+TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui,
+                                       const GURL& url,
+                                       PrefService* pref_service)
     : MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true) {
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, CreateProjectorHTMLSource());
@@ -63,7 +66,8 @@ TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui, const GURL& url)
     return;
 
   // The requested WebUI is hosting the Projector SWA.
-  web_ui->AddMessageHandler(std::make_unique<ProjectorMessageHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<ProjectorMessageHandler>(pref_service));
 }
 
 TrustedProjectorUI::~TrustedProjectorUI() = default;

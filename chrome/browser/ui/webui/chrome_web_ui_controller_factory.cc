@@ -396,7 +396,8 @@ WebUIController* NewWebUI<chromeos::OobeUI>(WebUI* web_ui, const GURL& url) {
 template <>
 WebUIController* NewWebUI<ash::TrustedProjectorUI>(WebUI* web_ui,
                                                    const GURL& url) {
-  return new ash::TrustedProjectorUI(web_ui, url);
+  return new ash::TrustedProjectorUI(web_ui, url,
+                                     Profile::FromWebUI(web_ui)->GetPrefs());
 }
 
 void BindPrintManagement(
@@ -751,8 +752,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIChromeSigninHost)
     return &NewWebUI<InlineLoginUI>;
   if (base::FeatureList::IsEnabled(features::kEnterpriseCastingUI)) {
-      if (url.host_piece() == chrome::kChromeUIEnterpriseCastingHost)
-        return &NewWebUI<EnterpriseCastingUI>;
+    if (url.host_piece() == chrome::kChromeUIEnterpriseCastingHost)
+      return &NewWebUI<EnterpriseCastingUI>;
   }
 #endif  // !defined(OS_ANDROID)
 #if defined(OS_WIN)

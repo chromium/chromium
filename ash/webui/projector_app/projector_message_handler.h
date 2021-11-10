@@ -19,6 +19,8 @@ namespace signin {
 struct AccessTokenInfo;
 }  // namespace signin
 
+class PrefService;
+
 namespace ash {
 
 // Enum to record the different errors that may occur in the Projector app.
@@ -32,7 +34,7 @@ enum class ProjectorError {
 class ProjectorMessageHandler : public content::WebUIMessageHandler,
                                 public ProjectorAppClient::Observer {
  public:
-  ProjectorMessageHandler();
+  explicit ProjectorMessageHandler(PrefService* pref_service);
   ProjectorMessageHandler(const ProjectorMessageHandler&) = delete;
   ProjectorMessageHandler& operator=(const ProjectorMessageHandler&) = delete;
   ~ProjectorMessageHandler() override;
@@ -94,6 +96,12 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // Called by the Projector SWA when an error occurred.
   void OnError(const base::Value::ConstListView args);
 
+  // Requested by the Projector SWA to get access to a particular user pref.
+  void GetUserPref(const base::Value::ConstListView args);
+
+  // Requested by the Projector SWA to set the value of a user pref.
+  void SetUserPref(const base::Value::ConstListView args);
+
   // Called when OAuth token fetch request is completed by
   // ProjectorOAuthTokenFetcher. Resolves the javascript promise created by
   // ProjectorBrowserProxy.getOAuthTokenForAccount by calling the
@@ -116,6 +124,9 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
   std::unique_ptr<ProjectorXhrSender> xhr_sender_;
+
+  // Primary user pref service.
+  PrefService* const pref_service_;
 
   base::WeakPtrFactory<ProjectorMessageHandler> weak_ptr_factory_{this};
 };
