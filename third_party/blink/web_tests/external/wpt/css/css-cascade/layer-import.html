@@ -252,6 +252,18 @@ const testCases = [
             }
         `
     },
+    {
+        title: 'E1 Named imports establish layer even with network errors',
+        style: `
+            @import "nonexist.css" layer(A);
+            @layer B {
+                target { color: green; }
+            }
+            @layer A {
+                target { color: red; }
+            }
+        `,
+    },
 ];
 
 for (let testCase of testCases) {
@@ -264,6 +276,7 @@ for (let testCase of testCases) {
 
         await new Promise(resolve => {
             styleElement.onload = resolve;
+            styleElement.onerror = resolve;
             document.head.append(styleElement);
         });
 

@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>CSS Cascade Layers: Media queries</title>
-<meta name="assert" content="Import functionality of CSS Cascade Layers">
+<meta name="assert" content="CSS Cascade Layers nested in Media Queries">
 <link rel="author" title="Antti Koivisto" href="mailto:antti@apple.com">
 <link rel="help" href="https://www.w3.org/TR/css-cascade-5/#layering">
 <script src="/resources/testharness.js"></script>
@@ -20,6 +20,7 @@ const imports = {
     "basic-red.css": `
         target { color: red; }
     `,
+    "empty.css": "",
 };
 
 // For 300px wide iframe the target should be red and for 500px green.
@@ -110,6 +111,21 @@ const testCases = [
             @media (min-width: 500px) {
                 @layer A, B;
             }
+            @layer A {
+                target { color: red; }
+            }
+            @layer B {
+                target { color: green; }
+            }
+        `
+    },
+    {
+        title: 'C4 Reordering',
+        style: `
+            @import url(empty.css) layer(B) (max-width: 300px);
+            @import url(empty.css) layer(A) (max-width: 300px);
+            @import url(empty.css) layer(A) (min-width: 500px);
+            @import url(empty.css) layer(B) (min-width: 500px);
             @layer A {
                 target { color: red; }
             }

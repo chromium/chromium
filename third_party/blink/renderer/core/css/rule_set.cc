@@ -485,13 +485,14 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
       sheet->ImportRules();
   for (unsigned i = 0; i < import_rules.size(); ++i) {
     StyleRuleImport* import_rule = import_rules[i].Get();
+    if (!MatchMediaForAddRules(medium, import_rule->MediaQueries()))
+      continue;
     CascadeLayer* import_layer = cascade_layer;
     if (import_rule->IsLayered()) {
       import_layer =
           GetOrAddSubLayer(cascade_layer, import_rule->GetLayerName());
     }
-    if (import_rule->GetStyleSheet() &&
-        MatchMediaForAddRules(medium, import_rule->MediaQueries())) {
+    if (import_rule->GetStyleSheet()) {
       AddRulesFromSheet(import_rule->GetStyleSheet(), medium, add_rule_flags,
                         import_layer);
     }
