@@ -8,7 +8,6 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/check.h"
 #include "base/containers/stack_container.h"
@@ -438,7 +437,6 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
     main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
     LazyNow lazy_now(time_domain_now);
     MoveReadyDelayedTasksToWorkQueue(&lazy_now);
-    UpdateDelayedWakeUp(&lazy_now);
   } else {
     // If |delayed_run_time| is in the future we can queue it as normal.
     PushOntoDelayedIncomingQueueFromMainThread(std::move(pending_task),
@@ -552,15 +550,10 @@ absl::optional<DelayedWakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
   return DelayedWakeUp{top_task.delayed_run_time, resolution};
 }
 
-TaskQueueImpl::WakeUpHandle TaskQueueImpl::OnStartWakeUp(LazyNow& lazy_now) {
-  SetNextDelayedWakeUp(&lazy_now, absl::nullopt);
-  return WakeUpHandle(this, &lazy_now);
-}
-
-void TaskQueueImpl::OnFinishWakeUp(LazyNow& lazy_now) {
-  UpdateDelayedWakeUp(&lazy_now);
+void TaskQueueImpl::OnWakeUp(LazyNow* lazy_now) {
+  MoveReadyDelayedTasksToWorkQueue(lazy_now);
   if (main_thread_only().throttler) {
-    main_thread_only().throttler->OnWakeUp(&lazy_now);
+    main_thread_only().throttler->OnWakeUp(lazy_now);
   }
 }
 
@@ -595,9 +588,6 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
   WorkQueue::TaskPusher delayed_work_queue_task_pusher(
       main_thread_only().delayed_work_queue->CreateTaskPusher());
 
-  // TODO(crbug.com/1264069): Try to remove the duplication between this and
-  // TaskReadyDelayedTasks.
-
   // Because task destructors could have a side-effect of posting new tasks, we
   // move all the cancelled tasks into a temporary container before deleting
   // them. This is to avoid the queue from changing while iterating over it.
@@ -615,56 +605,23 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
     if (task.delayed_run_time > lazy_now->Now())
       break;
 
-    UpdateTaskOnDelayExpired(task);
+#if DCHECK_IS_ON()
+    if (sequence_manager_->settings().log_task_delay_expiry)
+      VLOG(0) << name_ << " Delay expired for " << task.posted_from.ToString();
+#endif  // DCHECK_IS_ON()
+    DCHECK(!task.delayed_run_time.is_null());
+    ActivateDelayedFenceIfNeeded(task.delayed_run_time);
+    DCHECK(!task.enqueue_order_set());
+    task.set_enqueue_order(sequence_manager_->GetNextSequenceNumber());
+
     delayed_work_queue_task_pusher.Push(std::move(task));
     main_thread_only().delayed_incoming_queue.pop();
   }
 
   // Explicitly delete tasks last.
   tasks_to_delete->clear();
-}
 
-void TaskQueueImpl::TakeReadyDelayedTasks(
-    LazyNow& lazy_now,
-    std::vector<ReadyDelayedTask>& tasks) {
-  // Because task destructors could have a side-effect of posting new tasks, we
-  // move all the cancelled tasks into a temporary container before deleting
-  // them. This is to avoid the queue from changing while iterating over it.
-  StackVector<Task, 8> tasks_to_delete;
-
-  while (!main_thread_only().delayed_incoming_queue.empty()) {
-    Task& task =
-        const_cast<Task&>(main_thread_only().delayed_incoming_queue.top());
-    if (!task.task || task.task.IsCancelled()) {
-      tasks_to_delete->push_back(std::move(task));
-      main_thread_only().delayed_incoming_queue.pop();
-      continue;
-    }
-    if (task.delayed_run_time > lazy_now.Now())
-      break;
-
-    tasks.emplace_back(this, std::move(task));
-    main_thread_only().delayed_incoming_queue.pop();
-  }
-
-  // Explicitly delete tasks last.
-  tasks_to_delete->clear();
-}
-
-void TaskQueueImpl::MoveReadyDelayedTaskToWorkQueue(Task task) {
-  UpdateTaskOnDelayExpired(task);
-  main_thread_only().delayed_work_queue->Push(std::move(task));
-}
-
-void TaskQueueImpl::UpdateTaskOnDelayExpired(Task& task) {
-#if DCHECK_IS_ON()
-  if (sequence_manager_->settings().log_task_delay_expiry)
-    VLOG(0) << name_ << " Delay expired for " << task.posted_from.ToString();
-#endif  // DCHECK_IS_ON()
-  DCHECK(!task.delayed_run_time.is_null());
-  ActivateDelayedFenceIfNeeded(task.delayed_run_time);
-  DCHECK(!task.enqueue_order_set());
-  task.set_enqueue_order(sequence_manager_->GetNextSequenceNumber());
+  UpdateDelayedWakeUp(lazy_now);
 }
 
 void TaskQueueImpl::TraceQueueSize() const {
@@ -1489,35 +1446,6 @@ Value TaskQueueImpl::DelayedIncomingQueue::PQueue::AsValue(
   for (const Task& task : c)
     state.Append(TaskAsValue(task, now));
   return state;
-}
-
-TaskQueueImpl::ReadyDelayedTask::ReadyDelayedTask(TaskQueueImpl* queue,
-                                                  Task task)
-    : task_queue(queue), task(std::move(task)) {}
-
-TaskQueueImpl::ReadyDelayedTask::ReadyDelayedTask(ReadyDelayedTask&& other) =
-    default;
-
-TaskQueueImpl::ReadyDelayedTask& TaskQueueImpl::ReadyDelayedTask::operator=(
-    TaskQueueImpl::ReadyDelayedTask&& other) = default;
-
-bool TaskQueueImpl::ReadyDelayedTask::operator<(
-    const TaskQueueImpl::ReadyDelayedTask& other) const {
-  return task < other.task;
-}
-
-TaskQueueImpl::WakeUpHandle::WakeUpHandle(TaskQueueImpl* queue,
-                                          LazyNow* lazy_now)
-    : task_queue_(queue), lazy_now_(lazy_now) {}
-
-TaskQueueImpl::WakeUpHandle::WakeUpHandle(WakeUpHandle&& other)
-    : task_queue_(other.task_queue_), lazy_now_(other.lazy_now_) {
-  other.task_queue_ = nullptr;
-}
-
-TaskQueueImpl::WakeUpHandle::~WakeUpHandle() {
-  if (task_queue_)
-    task_queue_->OnFinishWakeUp(*lazy_now_);
 }
 
 }  // namespace internal
