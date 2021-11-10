@@ -141,6 +141,24 @@ void MetricIntegrationTest::ExpectUKMPageLoadMetric(StringPiece metric_name,
                                      expected_value);
 }
 
+void MetricIntegrationTest::ExpectUKMPageLoadMetricFlagSet(
+    base::StringPiece metric_name,
+    uint32_t flag_set,
+    bool expected) {
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder().GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const auto& kv = merged_entries.begin();
+  const int64_t* metric =
+      TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
+  EXPECT_TRUE(metric != nullptr);
+  if (expected) {
+    EXPECT_TRUE(*metric & static_cast<int64_t>(flag_set));
+  } else {
+    EXPECT_FALSE(*metric & static_cast<int64_t>(flag_set));
+  }
+}
+
 void MetricIntegrationTest::ExpectUKMPageLoadMetricNear(StringPiece metric_name,
                                                         double expected_value,
                                                         double epsilon) {

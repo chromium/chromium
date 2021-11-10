@@ -56,6 +56,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "ui/events/blink/blink_features.h"
 
@@ -594,6 +595,8 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     builder.SetPaintTiming_NavigationToLargestContentfulPaint2(
         all_frames_largest_contentful_paint.Time().value().InMilliseconds());
+    builder.SetPaintTiming_LargestContentfulPaintType(
+        all_frames_largest_contentful_paint.Type());
   }
   const page_load_metrics::ContentfulPaintTimingInfo&
       cross_site_sub_frame_largest_contentful_paint =
@@ -775,7 +778,7 @@ void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(
     if (WasStartedInForegroundOptionalEventInForeground(
             all_frames_largest_contentful_paint.Time(), GetDelegate())) {
       debug_builder.SetPaintTiming_LargestContentfulPaint_ContentType(
-          static_cast<int>(all_frames_largest_contentful_paint.Type()));
+          static_cast<int>(all_frames_largest_contentful_paint.TextOrImage()));
       lcp_state = LargestContentState::kReported;
     } else {
       // This can be reached if LCP occurs after tab hide.
