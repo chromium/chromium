@@ -171,7 +171,7 @@ class HistoryClustersService : public KeyedService {
                      base::Time continuation_end_time,
                      base::TimeTicks cluster_start_time,
                      QueryClustersCallback callback,
-                     const std::vector<history::Cluster>& clusters) const;
+                     std::vector<history::Cluster> clusters) const;
 
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
   // placed in `incomplete_visit_context_annotations_` and saved to the history

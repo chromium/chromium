@@ -14,7 +14,7 @@ namespace history_clusters {
 class ClusteringBackend {
  public:
   using ClustersCallback =
-      base::OnceCallback<void(const std::vector<history::Cluster>&)>;
+      base::OnceCallback<void(std::vector<history::Cluster>)>;
 
   virtual ~ClusteringBackend() = default;
 

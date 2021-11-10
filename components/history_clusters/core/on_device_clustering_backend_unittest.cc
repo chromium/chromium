@@ -91,8 +91,8 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
         base::BindOnce(
             [](base::RunLoop* run_loop,
                std::vector<history::Cluster>* out_clusters,
-               const std::vector<history::Cluster>& clusters) {
-              *out_clusters = clusters;
+               std::vector<history::Cluster> clusters) {
+              *out_clusters = std::move(clusters);
               run_loop->Quit();
             },
             &run_loop, &clusters),

@@ -96,7 +96,7 @@ class RemoteClusteringBackendTest : public testing::Test {
 TEST_F(RemoteClusteringBackendTest, EndToEnd) {
   remote_clustering_backend_->GetClusters(
       base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
+          [&](std::vector<history::Cluster> clusters) {
             ASSERT_EQ(clusters.size(), 2u);
 
             ASSERT_EQ(clusters[0].visits.size(), 2u);
@@ -195,11 +195,10 @@ TEST_F(RemoteClusteringBackendTest, EndToEnd) {
 
 TEST_F(RemoteClusteringBackendTest, EmptyVisitsRequest) {
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_TRUE(clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       std::vector<history::AnnotatedVisit>());
 
   // Verify no request is made.
@@ -212,11 +211,10 @@ TEST_F(RemoteClusteringBackendTest, EmptyVisitsRequest) {
 TEST_F(RemoteClusteringBackendTest, EmptyResponse) {
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_TRUE(clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       GetHardcodedTestVisits());
 
   // Verify a request is made.
@@ -234,11 +232,10 @@ TEST_F(RemoteClusteringBackendTest, EmptyResponse) {
 TEST_F(RemoteClusteringBackendTest, InvalidJsonResponse) {
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_TRUE(clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       GetHardcodedTestVisits());
 
   // Verify a request is made.
@@ -256,11 +253,10 @@ TEST_F(RemoteClusteringBackendTest, InvalidJsonResponse) {
 TEST_F(RemoteClusteringBackendTest, EmptyJsonResponse) {
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kFakeEndpoint));
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_TRUE(clusters.empty());
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_TRUE(clusters.empty());
+        run_loop_quit_.Run();
+      }),
       GetHardcodedTestVisits());
 
   // Verify a request is made.
@@ -277,12 +273,11 @@ TEST_F(RemoteClusteringBackendTest, EmptyJsonResponse) {
 
 TEST_F(RemoteClusteringBackendTest, TwoSimultaneousRequests) {
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_EQ(clusters.size(), 2u);
-            // Don't quit the run loop. We want to use the second request's
-            // response as the complete-condition for this test.
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_EQ(clusters.size(), 2u);
+        // Don't quit the run loop. We want to use the second request's
+        // response as the complete-condition for this test.
+      }),
       GetHardcodedTestVisits());
 
   // Verify there's a single request to the endpoint.
@@ -290,11 +285,10 @@ TEST_F(RemoteClusteringBackendTest, TwoSimultaneousRequests) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
 
   remote_clustering_backend_->GetClusters(
-      base::BindLambdaForTesting(
-          [&](const std::vector<history::Cluster>& clusters) {
-            EXPECT_EQ(clusters.size(), 2u);
-            run_loop_quit_.Run();
-          }),
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        EXPECT_EQ(clusters.size(), 2u);
+        run_loop_quit_.Run();
+      }),
       GetHardcodedTestVisits());
 
   // Verify there are two requests to the endpoint.

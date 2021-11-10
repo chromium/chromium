@@ -605,7 +605,7 @@ void HistoryClustersService::OnGotClusters(
     base::Time continuation_end_time,
     base::TimeTicks cluster_start_time,
     QueryClustersCallback callback,
-    const std::vector<history::Cluster>& clusters) const {
+    std::vector<history::Cluster> clusters) const {
   NotifyDebugMessage("HistoryClustersService::OnGotClusters()");
   QueryClustersResult result;
   if (!continuation_end_time.is_null()) {
