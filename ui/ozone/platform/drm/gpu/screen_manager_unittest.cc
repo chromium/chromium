@@ -31,9 +31,12 @@
 namespace ui {
 namespace {
 
+constexpr drmModeModeInfo ConstructMode(uint16_t hdisplay, uint16_t vdisplay) {
+  return {.hdisplay = hdisplay, .vdisplay = vdisplay};
+}
+
 // Create a basic mode for a 6x4 screen.
-const drmModeModeInfo kDefaultMode = {0, 6, 0, 0, 0, 0, 4,     0,
-                                      0, 0, 0, 0, 0, 0, {'\0'}};
+const drmModeModeInfo kDefaultMode = ConstructMode(6, 4);
 
 const uint32_t kPrimaryDisplayId = 1;
 const uint32_t kSecondaryDisplayId = 2;
@@ -51,10 +54,6 @@ constexpr uint32_t kInFormatsBlobPropIdBase = 400;
 constexpr uint32_t kFbIdPropId = 3005;
 constexpr uint32_t kTypePropId = 3010;
 constexpr uint32_t kInFormatsPropId = 3011;
-
-drmModeModeInfo ConstructMode(uint16_t hdisplay, uint16_t vdisplay) {
-  return {0, hdisplay, 0, 0, 0, 0, vdisplay, 0, 0, 0, 0, 0, 0, 0, {'\0'}};
-}
 
 }  // namespace
 
@@ -104,7 +103,7 @@ class ScreenManagerTest : public testing::Test {
       connector_properties[i].id = kPrimaryConnector + i;
       for (const auto& pair : connector_property_names) {
         connector_properties[i].properties.push_back(
-            {/* .id = */ pair.first, /* .value = */ 0});
+            {.id = pair.first, .value = 0});
       }
     }
 
@@ -133,7 +132,7 @@ class ScreenManagerTest : public testing::Test {
       crtc_properties[crtc_idx].id = kPrimaryCrtc + crtc_idx;
       for (const auto& pair : crtc_property_names) {
         crtc_properties[crtc_idx].properties.push_back(
-            {/* .id = */ pair.first, /* .value = */ 0});
+            {.id = pair.first, .value = 0});
       }
 
       std::vector<ui::MockDrmDevice::PlaneProperties> crtc_plane_properties(
@@ -153,8 +152,10 @@ class ScreenManagerTest : public testing::Test {
             std::vector<drm_format_modifier> drm_format_modifiers;
             if (use_modifiers_list) {
               for (const auto modifier : supported_modifiers_) {
-                drm_format_modifiers.push_back(
-                    {/*formats=*/1, /*offset=*/0, /*pad=*/0, modifier});
+                drm_format_modifiers.push_back({.formats = 1,
+                                                .offset = 0,
+                                                .pad = 0,
+                                                .modifier = modifier});
               }
             }
 
@@ -164,7 +165,7 @@ class ScreenManagerTest : public testing::Test {
           }
 
           crtc_plane_properties[plane_idx].properties.push_back(
-              {/* .id = */ pair.first, /* .value = */ value});
+              {.id = pair.first, .value = value});
         }
       }
 
@@ -191,15 +192,8 @@ class ScreenManagerTest : public testing::Test {
                                      bool use_modifiers_list = false) {
     // A Sample of CRTC states.
     std::vector<CrtcState> crtc_states = {
-        {/* .planes = */
-         {
-             {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-         }},
-        {/* .planes = */
-         {
-             {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-         }},
-    };
+        {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}},
+        {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}}};
     InitializeDrmState(drm, crtc_states, is_atomic, use_modifiers_list);
   }
 
@@ -612,21 +606,10 @@ TEST_F(ScreenManagerTest, CheckForControllersInMirroredMode) {
 
 TEST_F(ScreenManagerTest, CheckMirrorModeTransitions) {
   std::vector<CrtcState> crtc_states = {
-      {
-          /* .planes = */
-          {
-              {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}},
-          },
-      },
-      {
-          /* .planes = */
-          {
-              {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-              {/* .formats = */ {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}},
-          },
-      },
-  };
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
+                  {.formats = {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}}}},
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}},
+                  {.formats = {DRM_FORMAT_XRGB8888, DRM_FORMAT_NV12}}}}};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
 
   screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
@@ -908,18 +891,9 @@ TEST_F(ScreenManagerTest, ConfigureOnDifferentDrmDevices) {
 
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/false);
   std::vector<CrtcState> crtc_states = {
-      {/* .planes = */
-       {
-           {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-       }},
-      {/* .planes = */
-       {
-           {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-       }},
-      {/* .planes = */
-       {
-           {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-       }}};
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}},
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}},
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}}};
   InitializeDrmState(drm2.get(), crtc_states, /*is_atomic=*/false);
 
   screen_manager_->AddDisplayController(drm_, kPrimaryCrtc, kPrimaryConnector);
@@ -1374,21 +1348,21 @@ TEST_F(ScreenManagerTest, ShouldNotUnbindFramebufferOnJoiningMirror) {
   constexpr uint32_t kConnector2 = kSecondaryConnector;
 
   constexpr drmModeModeInfo k1080p60Screen = {
-      /* clock= */ 148500,
-      /* hdisplay= */ 1920,
-      /* hsync_start= */ 2008,
-      /* hsync_end= */ 2052,
-      /* htotal= */ 2200,
-      /* hskew= */ 0,
-      /* vdisplay= */ 1080,
-      /* vsync_start= */ 1084,
-      /* vsync_end= */ 1089,
-      /* vtotal= */ 1125,
-      /* vscan= */ 0,
-      /* vrefresh= */ 60,
-      /* flags= */ 0xa,
-      /* type= */ 64,
-      /* name= */ "1920x1080",
+      .clock = 148500,
+      .hdisplay = 1920,
+      .hsync_start = 2008,
+      .hsync_end = 2052,
+      .htotal = 2200,
+      .hskew = 0,
+      .vdisplay = 1080,
+      .vsync_start = 1084,
+      .vsync_end = 1089,
+      .vtotal = 1125,
+      .vscan = 0,
+      .vrefresh = 60,
+      .flags = 0xa,
+      .type = 64,
+      .name = "1920x1080",
   };
 
   // Both displays connect at startup.
@@ -1500,11 +1474,11 @@ TEST_F(ScreenManagerTest, CloningPlanesOnModeset) {
 
 TEST_F(ScreenManagerTest, CloningMultiplePlanesOnModeset) {
   std::vector<CrtcState> crtc_states = {{
-      /* .planes = */
-      {
-          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-      },
+      .planes =
+          {
+              {.formats = {DRM_FORMAT_XRGB8888}},
+              {.formats = {DRM_FORMAT_XRGB8888}}
+          }
   }};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
 
@@ -1582,11 +1556,11 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesNoOverlays) {
 
 TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlaySucceeding) {
   std::vector<CrtcState> crtc_states = {{
-      /* .planes = */
-      {
-          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-      },
+      .planes =
+          {
+              {.formats = {DRM_FORMAT_XRGB8888}},
+              {.formats = {DRM_FORMAT_XRGB8888}}
+          }
   }};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
 
@@ -1632,11 +1606,11 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlaySucceeding) {
 
 TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
   std::vector<CrtcState> crtc_states = {{
-      /* .planes = */
-      {
-          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-      },
+      .planes =
+          {
+              {.formats = {DRM_FORMAT_XRGB8888}},
+              {.formats = {DRM_FORMAT_XRGB8888}}
+          }
   }};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
 
@@ -1683,11 +1657,11 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
 
 TEST_F(ScreenManagerTest, ModesetWithNewBuffersOnModifiersChange) {
   std::vector<CrtcState> crtc_states = {{
-      /* .planes = */
-      {
-          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-          {/* .formats = */ {DRM_FORMAT_XRGB8888}},
-      },
+      .planes =
+          {
+              {.formats = {DRM_FORMAT_XRGB8888}},
+              {.formats = {DRM_FORMAT_XRGB8888}}
+          }
   }};
   InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true,
                      /*use_modifiers_list=*/true);

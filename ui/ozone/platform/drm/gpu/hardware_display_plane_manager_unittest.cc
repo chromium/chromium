@@ -55,8 +55,7 @@ constexpr uint32_t kInFormatsBlobPropId = 400;
 
 const gfx::Size kDefaultBufferSize(2, 2);
 // Create a basic mode for a 6x4 screen.
-drmModeModeInfo kDefaultMode = {0, 6, 0, 0, 0, 0, 4,     0,
-                                0, 0, 0, 0, 0, 0, {'\0'}};
+drmModeModeInfo kDefaultMode = {.hdisplay = 6, .vdisplay = 4};
 
 class HardwareDisplayPlaneManagerTest
     : public testing::Test,
@@ -135,7 +134,7 @@ void HardwareDisplayPlaneManagerTest::InitializeDrmState(
     connector_properties[i].id = kConnectorIdBase + i;
     for (const auto& pair : connector_property_names) {
       connector_properties[i].properties.push_back(
-          {/* .id = */ pair.first, /* .value = */ 0});
+          {.id = pair.first, .value = 0});
     }
   }
   connector_properties_ = connector_properties;
@@ -166,8 +165,7 @@ void HardwareDisplayPlaneManagerTest::InitializeDrmState(
     // Start ID at 1 cause 0 is an invalid ID.
     crtc_prop.id = kCrtcIdBase + i;
     for (const auto& pair : crtc_property_names) {
-      crtc_prop.properties.push_back(
-          {/* .id = */ pair.first, /* .value = */ 0});
+      crtc_prop.properties.push_back({.id = pair.first, .value = 0});
     }
     crtc_properties_.emplace_back(std::move(crtc_prop));
 
@@ -187,8 +185,7 @@ void HardwareDisplayPlaneManagerTest::InitializeDrmState(
         } else if (pair.first == kInFormatsPropId) {
           value = kInFormatsBlobPropId;
         }
-        plane_prop.properties.push_back(
-            {/* .id = */ pair.first, /* .value = */ value});
+        plane_prop.properties.push_back({.id = pair.first, .value = value});
       }
 
       plane_properties_.emplace_back(std::move(plane_prop));
@@ -271,7 +268,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, ResettingConnectorCache) {
   for (size_t i = 0; i < connector_and_crtc_count; ++i) {
     connector_properties[i].id = kConnectorIdBase + i;
     connector_properties[i].properties.push_back(
-        {/* .id = */ kCrtcIdPropId, /* .value = */ 0});
+        {.id = kCrtcIdPropId, .value = 0});
   }
 
   fake_drm_->InitializeState(crtc_properties_, connector_properties,
@@ -678,8 +675,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, SharedPlanes) {
   plane_prop.id = 102;
   plane_prop.crtc_mask = (1 << 0) | (1 << 1);
   plane_prop.properties = {
-      {/* .id = */ kTypePropId, /* .value = */ DRM_PLANE_TYPE_OVERLAY},
-      {/* .id = */ kInFormatsPropId, /* .value = */ kInFormatsBlobPropId},
+      {.id = kTypePropId, .value = DRM_PLANE_TYPE_OVERLAY},
+      {.id = kInFormatsPropId, .value = kInFormatsBlobPropId},
   };
   plane_properties_.emplace_back(std::move(plane_prop));
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
@@ -836,10 +833,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultipleFramesDifferentPlanes) {
 TEST_P(HardwareDisplayPlaneManagerAtomicTest,
        SetColorCorrectionOnAllCrtcPlanes_Success) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
-  plane_properties_[0].properties.push_back(
-      {/* .id = */ kPlaneCtmId, /* .value = */ 0});
-  plane_properties_[1].properties.push_back(
-      {/* .id = */ kPlaneCtmId, /* .value = */ 0});
+  plane_properties_[0].properties.push_back({.id = kPlaneCtmId, .value = 0});
+  plane_properties_[1].properties.push_back({.id = kPlaneCtmId, .value = 0});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
 
@@ -864,8 +859,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest,
 TEST_P(HardwareDisplayPlaneManagerAtomicTest,
        SetColorCorrectionOnAllCrtcPlanes_OnePlaneMissingCtmProperty) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/2);
-  plane_properties_[0].properties.push_back(
-      {/* .id = */ kPlaneCtmId, /* .value = */ 0});
+  plane_properties_[0].properties.push_back({.id = kPlaneCtmId, .value = 0});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
 
@@ -877,8 +871,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest,
 
 TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_Success) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
-  crtc_properties_[0].properties.push_back(
-      {/* .id = */ kCtmPropId, /* .value = */ 0});
+  crtc_properties_[0].properties.push_back({.id = kCtmPropId, .value = 0});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
 
@@ -900,8 +893,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_Success) {
 
 TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_ErrorEmptyCtm) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
-  crtc_properties_[0].properties.push_back(
-      {/* .id = */ kCtmPropId, /* .value = */ 0});
+  crtc_properties_[0].properties.push_back({.id = kCtmPropId, .value = 0});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
 
@@ -919,8 +911,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetColorMatrix_ErrorEmptyCtm) {
 
 TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingDegamma) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
-  crtc_properties_[0].properties.push_back(
-      {/* .id = */ kCtmPropId, /* .value = */ 0});
+  crtc_properties_[0].properties.push_back({.id = kCtmPropId, .value = 0});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
 
@@ -936,7 +927,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingDegamma) {
   }
 
   crtc_properties_[0].properties.push_back(
-      {/* .id = */ kDegammaLutSizePropId, /* .value = */ 1});
+      {.id = kDegammaLutSizePropId, .value = 1});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_,
                              /*use_atomic=*/true);
@@ -955,8 +946,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingDegamma) {
 
 TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingGamma) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
-  crtc_properties_[0].properties.push_back(
-      {/* .id = */ kCtmPropId, /* .value = */ 0});
+  crtc_properties_[0].properties.push_back({.id = kCtmPropId, .value = 0});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
 
@@ -972,7 +962,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_MissingGamma) {
   }
 
   crtc_properties_[0].properties.push_back(
-      {/* .id = */ kGammaLutSizePropId, /* .value = */ 1});
+      {.id = kGammaLutSizePropId, .value = 1});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_,
                              /*use_atomic=*/true);
@@ -1011,8 +1001,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_LegacyGamma) {
 
 TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
-  crtc_properties_[0].properties.push_back(
-      {/* .id = */ kCtmPropId, /* .value = */ 0});
+  crtc_properties_[0].properties.push_back({.id = kCtmPropId, .value = 0});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
 
@@ -1021,13 +1010,12 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
   EXPECT_EQ(0, fake_drm_->get_commit_count());
 
   crtc_properties_[0].properties.push_back(
-      {/* .id = */ kDegammaLutSizePropId, /* .value = */ 1});
+      {.id = kDegammaLutSizePropId, .value = 1});
   crtc_properties_[0].properties.push_back(
-      {/* .id = */ kDegammaLutPropId, /* .value = */ 0});
+      {.id = kDegammaLutPropId, .value = 0});
   crtc_properties_[0].properties.push_back(
-      {/* .id = */ kGammaLutSizePropId, /* .value = */ 1});
-  crtc_properties_[0].properties.push_back(
-      {/* .id = */ kGammaLutPropId, /* .value = */ 0});
+      {.id = kGammaLutSizePropId, .value = 1});
+  crtc_properties_[0].properties.push_back({.id = kGammaLutPropId, .value = 0});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
 
@@ -1067,7 +1055,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetGammaCorrection_Success) {
 TEST_P(HardwareDisplayPlaneManagerTest, SetBackgroundColor_Success) {
   InitializeDrmState(/*crtc_count=*/1, /*planes_per_crtc=*/1);
   crtc_properties_[0].properties.push_back(
-      {/* .id = */ kBackgroundColorPropId, /* .value = */ 0});
+      {.id = kBackgroundColorPropId, .value = 0});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
   fake_drm_->plane_manager()->SetBackgroundColor(crtc_properties_[0].id, 0);
@@ -1082,7 +1070,7 @@ TEST_P(HardwareDisplayPlaneManagerTest, SetBackgroundColor_Success) {
   }
 
   crtc_properties_[0].properties.push_back(
-      {/* .id = */ kBackgroundColorPropId, /* .value = */ 1});
+      {.id = kBackgroundColorPropId, .value = 1});
   fake_drm_->InitializeState(crtc_properties_, connector_properties_,
                              plane_properties_, property_names_, use_atomic_);
   fake_drm_->plane_manager()->SetBackgroundColor(crtc_properties_[0].id, 1);
@@ -1130,9 +1118,9 @@ TEST_P(HardwareDisplayPlaneManagerTest,
        InitializationFailsIfSupportForOutFencePropertiesIsPartial) {
   InitializeDrmState(/*crtc_count=*/3, /*planes_per_crtc=*/1);
   crtc_properties_[0].properties.push_back(
-      {/* .id = */ kOutFencePtrPropId, /* .value = */ 1});
+      {.id = kOutFencePtrPropId, .value = 1});
   crtc_properties_[2].properties.push_back(
-      {/* .id = */ kOutFencePtrPropId, /* .value = */ 2});
+      {.id = kOutFencePtrPropId, .value = 2});
 
   EXPECT_FALSE(fake_drm_->InitializeStateWithResult(
       crtc_properties_, connector_properties_, plane_properties_,
@@ -1143,11 +1131,11 @@ TEST_P(HardwareDisplayPlaneManagerTest,
        InitializationSucceedsIfSupportForOutFencePropertiesIsComplete) {
   InitializeDrmState(/*crtc_count=*/3, /*planes_per_crtc=*/1);
   crtc_properties_[0].properties.push_back(
-      {/* .id = */ kOutFencePtrPropId, /* .value = */ 1});
+      {.id = kOutFencePtrPropId, .value = 1});
   crtc_properties_[1].properties.push_back(
-      {/* .id = */ kOutFencePtrPropId, /* .value = */ 2});
+      {.id = kOutFencePtrPropId, .value = 2});
   crtc_properties_[2].properties.push_back(
-      {/* .id = */ kOutFencePtrPropId, /* .value = */ 3});
+      {.id = kOutFencePtrPropId, .value = 3});
 
   EXPECT_TRUE(fake_drm_->InitializeStateWithResult(
       crtc_properties_, connector_properties_, plane_properties_,
