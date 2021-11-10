@@ -384,7 +384,7 @@ cr.define('settings_people_page_quick_unlock', function() {
 
       test('Deep link to enable lock screen', async () => {
         const params = new URLSearchParams;
-        params.append('settingId', '303');
+        params.append('settingId', '1109');
         settings.Router.getInstance().navigateTo(
             settings.routes.LOCK_SCREEN, params);
 
@@ -394,7 +394,7 @@ cr.define('settings_people_page_quick_unlock', function() {
         await test_util.waitAfterNextRender(deepLinkElement);
         assertEquals(
             deepLinkElement, getDeepActiveElement(),
-            'Lock screen toggle should be focused for settingId=303.');
+            'Lock screen toggle should be focused for settingId=1109.');
       });
 
       // The various radio buttons update internal state and do not modify

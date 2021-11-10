@@ -97,7 +97,7 @@ namespace {
 
 constexpr std::pair<arc::mojom::ChromePage, const char*> kOSSettingsMapping[] =
     {{ChromePage::ACCOUNTS,
-      chromeos::settings::mojom::kManageOtherPeopleSubpagePath},
+      chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2},
      {ChromePage::BLUETOOTH,
       chromeos::settings::mojom::kBluetoothDevicesSubpagePath},
      {ChromePage::BLUETOOTHDEVICES,
@@ -116,7 +116,7 @@ constexpr std::pair<arc::mojom::ChromePage, const char*> kOSSettingsMapping[] =
      {ChromePage::OSLANGUAGESLANGUAGES,
       chromeos::settings::mojom::kLanguagesSubpagePath},
      {ChromePage::LOCKSCREEN,
-      chromeos::settings::mojom::kSecurityAndSignInSubpagePath},
+      chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2},
      {ChromePage::MAIN, ""},
      {ChromePage::MANAGEACCESSIBILITY,
       chromeos::settings::mojom::kManageAccessibilitySubpagePath},

@@ -45,9 +45,6 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kPeopleSectionPath,
       chromeos::settings::mojom::kMyAccountsSubpagePath,
       chromeos::settings::mojom::kSyncSubpagePath,
-      chromeos::settings::mojom::kSecurityAndSignInSubpagePath,
-      chromeos::settings::mojom::kFingerprintSubpagePath,
-      chromeos::settings::mojom::kManageOtherPeopleSubpagePath,
 
       // Device section.
       chromeos::settings::mojom::kDeviceSectionPath,

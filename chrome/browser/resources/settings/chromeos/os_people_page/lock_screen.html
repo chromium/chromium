@@ -84,8 +84,7 @@
           pref="{{prefs.settings.enable_screen_lock}}"
           on-settings-boolean-control-change="onScreenLockChange_" no-set-pref
           label="$i18n{enableScreenlock}"
-          deep-link-focus-id$="[[Setting.kLockScreen]]
-              [[Setting.kLockScreenV2]]">
+          deep-link-focus-id$="[[Setting.kLockScreenV2]]">
       </settings-toggle-button>
 
       <template is="dom-if" if="[[quickUnlockEnabled_]]">
@@ -104,8 +103,7 @@
                 disabled$="[[quickUnlockDisabledByPolicy_]]"
                 selected="{{selectedUnlockType}}"
                 aria-labelledby="lockScreenOptionsTitle"
-                deep-link-focus-id$="[[Setting.kChangeAuthPin]]
-                    [[Setting.kChangeAuthPinV2]]">
+                deep-link-focus-id$="[[Setting.kChangeAuthPinV2]]">
               <cr-radio-button name="password" class="list-item underbar"
                   label=$i18n{lockScreenPasswordOnly}>
               </cr-radio-button>

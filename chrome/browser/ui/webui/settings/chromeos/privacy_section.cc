@@ -90,7 +90,7 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             mojom::SearchResultIcon::kLock,
             mojom::SearchResultDefaultRank::kMedium,
             mojom::SearchResultType::kSetting,
-            {.setting = mojom::Setting::kChangeAuthPin},
+            {.setting = mojom::Setting::kChangeAuthPinV2},
             {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_PIN_OR_PASSWORD_ALT1,
              SearchConcept::kAltTagEnd}},
            {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING,
@@ -98,7 +98,7 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             mojom::SearchResultIcon::kLock,
             mojom::SearchResultDefaultRank::kMedium,
             mojom::SearchResultType::kSetting,
-            {.setting = mojom::Setting::kLockScreen},
+            {.setting = mojom::Setting::kLockScreenV2},
             {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_WHEN_WAKING_ALT1,
              SearchConcept::kAltTagEnd}},
            {IDS_OS_SETTINGS_TAG_LOCK_SCREEN_V2,
@@ -106,7 +106,7 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             mojom::SearchResultIcon::kLock,
             mojom::SearchResultDefaultRank::kMedium,
             mojom::SearchResultType::kSubpage,
-            {.subpage = mojom::Subpage::kSecurityAndSignIn}}});
+            {.subpage = mojom::Subpage::kSecurityAndSignInV2}}});
     }
 
     // TODO(chromium:1262869): add smart privacy search concepts.
@@ -336,7 +336,7 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // Fingerprint.
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_SUBPAGE_TITLE,
-      mojom::Subpage::kFingerprintV2, mojom::Subpage::kSecurityAndSignIn,
+      mojom::Subpage::kFingerprintV2, mojom::Subpage::kSecurityAndSignInV2,
       mojom::SearchResultIcon::kFingerprint,
       mojom::SearchResultDefaultRank::kMedium,
       mojom::kFingerprintSubpagePathV2);

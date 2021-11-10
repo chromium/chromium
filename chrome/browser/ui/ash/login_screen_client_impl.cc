@@ -264,7 +264,7 @@ void LoginScreenClientImpl::ShowParentAccessHelpApp() {
 void LoginScreenClientImpl::ShowLockScreenNotificationSettings() {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kSecurityAndSignInSubpagePath);
+      chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2);
 }
 
 void LoginScreenClientImpl::OnFocusLeavingSystemTray(bool reverse) {

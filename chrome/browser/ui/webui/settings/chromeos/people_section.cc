@@ -184,36 +184,6 @@ const std::vector<SearchConcept>& GetSyncOffSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetFingerprintSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_FINGERPRINT_ADD,
-       mojom::kFingerprintSubpagePath,
-       mojom::SearchResultIcon::kFingerprint,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kAddFingerprint}},
-      {IDS_OS_SETTINGS_TAG_FINGERPRINT,
-       mojom::kFingerprintSubpagePath,
-       mojom::SearchResultIcon::kFingerprint,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kFingerprint}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetRemoveFingerprintSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_FINGERPRINT_REMOVE,
-       mojom::kFingerprintSubpagePath,
-       mojom::SearchResultIcon::kFingerprint,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kRemoveFingerprint}},
-  });
-  return *tags;
-}
-
 const std::vector<SearchConcept>& GetParentalSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS,
@@ -851,51 +821,9 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterNestedSetting(mojom::Setting::kSplitSyncOnOff,
                                    mojom::Subpage::kSync);
 
-  // Security and sign-in.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK,
-      mojom::Subpage::kSecurityAndSignIn, mojom::SearchResultIcon::kLock,
-      mojom::SearchResultDefaultRank::kMedium,
-      mojom::kSecurityAndSignInSubpagePath);
-  static constexpr mojom::Setting kSecurityAndSignInSettings[] = {
-      mojom::Setting::kLockScreen,
-      mojom::Setting::kChangeAuthPin,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kSecurityAndSignIn,
-                            kSecurityAndSignInSettings, generator);
-
-  // Fingerprint.
-  generator->RegisterNestedSubpage(
-      IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_SUBPAGE_TITLE,
-      mojom::Subpage::kFingerprint, mojom::Subpage::kSecurityAndSignIn,
-      mojom::SearchResultIcon::kFingerprint,
-      mojom::SearchResultDefaultRank::kMedium, mojom::kFingerprintSubpagePath);
-  static constexpr mojom::Setting kFingerprintSettings[] = {
-      mojom::Setting::kAddFingerprint,
-      mojom::Setting::kRemoveFingerprint,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kFingerprint, kFingerprintSettings,
-                            generator);
-
   // Smart Lock -- main setting is on multidevice page, but is mirrored here
   generator->RegisterNestedAltSetting(mojom::Setting::kSmartLockOnOff,
-                                      mojom::Subpage::kSecurityAndSignIn);
-
-  // Manage other people.
-  generator->RegisterTopLevelSubpage(IDS_SETTINGS_PEOPLE_MANAGE_OTHER_PEOPLE,
-                                     mojom::Subpage::kManageOtherPeople,
-                                     mojom::SearchResultIcon::kAvatar,
-                                     mojom::SearchResultDefaultRank::kMedium,
-                                     mojom::kManageOtherPeopleSubpagePath);
-  static constexpr mojom::Setting kManageOtherPeopleSettings[] = {
-      mojom::Setting::kGuestBrowsing,
-      mojom::Setting::kShowUsernamesAndPhotosAtSignIn,
-      mojom::Setting::kRestrictSignIn,
-      mojom::Setting::kAddToUserAllowlist,
-      mojom::Setting::kRemoveFromUserAllowlist,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kManageOtherPeople,
-                            kManageOtherPeopleSettings, generator);
+                                      mojom::Subpage::kSecurityAndSignInV2);
 }
 
 void PeopleSection::FetchAccounts() {
