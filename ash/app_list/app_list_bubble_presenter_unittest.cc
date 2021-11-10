@@ -16,6 +16,7 @@
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/icu_test_util.h"
@@ -155,6 +156,7 @@ TEST_F(AppListBubblePresenterTest, BubbleIsNotShowingByDefault) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
 
   EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_FALSE(presenter->GetWindow());
 }
 
 TEST_F(AppListBubblePresenterTest, BubbleIsShowingAfterShow) {
@@ -162,6 +164,7 @@ TEST_F(AppListBubblePresenterTest, BubbleIsShowingAfterShow) {
   presenter->Show(GetPrimaryDisplay().id());
 
   EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_TRUE(presenter->GetWindow());
 }
 
 TEST_F(AppListBubblePresenterTest, BubbleIsNotShowingAfterDismiss) {
@@ -170,6 +173,7 @@ TEST_F(AppListBubblePresenterTest, BubbleIsNotShowingAfterDismiss) {
   presenter->Dismiss();
 
   EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_FALSE(presenter->GetWindow());
 }
 
 TEST_F(AppListBubblePresenterTest, CannotShowWhileAnimatingClosed) {
@@ -255,6 +259,44 @@ TEST_F(AppListBubblePresenterTest, ClickInCornerOfScreenClosesBubble) {
 
   // Bubble is closed (and did not reopen).
   EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+}
+
+// Regression test for https://crbug.com/1268220.
+TEST_F(AppListBubblePresenterTest, CreatingActiveWidgetClosesBubble) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Create a new widget, which will activate itself and deactivate the bubble.
+  std::unique_ptr<views::Widget> widget =
+      TestWidgetBuilder().SetShow(true).BuildOwnsNativeWidget();
+  EXPECT_TRUE(widget->IsActive());
+
+  // Bubble is closed.
+  EXPECT_FALSE(presenter->IsShowing());
+}
+
+// Regression test for https://crbug.com/1268220.
+TEST_F(AppListBubblePresenterTest, CreatingChildWidgetDoesNotCloseBubble) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Create a new widget parented to the bubble, similar to an app uninstall
+  // confirmation dialog.
+  aura::Window* bubble_window =
+      presenter->bubble_widget_for_test()->GetNativeWindow();
+  std::unique_ptr<views::Widget> widget = TestWidgetBuilder()
+                                              .SetShow(true)
+                                              .SetParent(bubble_window)
+                                              .BuildOwnsNativeWidget();
+
+  // Bubble stays open.
+  EXPECT_TRUE(presenter->IsShowing());
+
+  // Close the widget.
+  widget.reset();
+
+  // Bubble stays open.
+  EXPECT_TRUE(presenter->IsShowing());
 }
 
 TEST_F(AppListBubblePresenterTest, BubbleOpensInBottomLeftForBottomShelf) {

@@ -423,6 +423,8 @@ void AppListControllerImpl::ShowAppList() {
 }
 
 aura::Window* AppListControllerImpl::GetWindow() {
+  if (ShouldShowAppListBubble())
+    return bubble_presenter_->GetWindow();
   return fullscreen_presenter_->GetWindow();
 }
 

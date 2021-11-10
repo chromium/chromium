@@ -18,6 +18,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/wm/container_finder.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -25,6 +26,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/services/assistant/public/cpp/assistant_enums.h"
+#include "ui/aura/client/focus_client.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -175,6 +177,8 @@ void AppListBubblePresenter::Show(int64_t display_id) {
   bubble_widget_->widget_delegate()->SetEnableArrowKeyTraversal(true);
 
   bubble_widget_->AddObserver(this);
+  aura::client::GetFocusClient(bubble_widget_->GetNativeWindow())
+      ->AddObserver(this);
   controller_->OnVisibilityWillChange(/*visible=*/true, display_id);
   bubble_widget_->Show();
   if (features::IsProductivityLauncherAnimationEnabled()) {
@@ -238,6 +242,10 @@ void AppListBubblePresenter::Dismiss() {
   AssistantUiController::Get()->CloseUi(AssistantExitPoint::kLauncherClose);
 }
 
+aura::Window* AppListBubblePresenter::GetWindow() const {
+  return bubble_widget_ ? bubble_widget_->GetNativeWindow() : nullptr;
+}
+
 bool AppListBubblePresenter::IsShowing() const {
   return !!bubble_widget_;
 }
@@ -255,9 +263,30 @@ void AppListBubblePresenter::ShowEmbeddedAssistantUI() {
 void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {
   // `bubble_event_filter_` holds a pointer to the widget.
   bubble_event_filter_.reset();
+  aura::client::GetFocusClient(bubble_widget_->GetNativeView())
+      ->RemoveObserver(this);
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
   bubble_view_ = nullptr;
+}
+
+void AppListBubblePresenter::OnWindowFocused(aura::Window* gained_focus,
+                                             aura::Window* lost_focus) {
+  if (!bubble_widget_)
+    return;
+
+  aura::Window* app_list_container =
+      bubble_widget_->GetNativeWindow()->parent();
+
+  // If the bubble or one of its children (e.g. an uninstall dialog) gained
+  // focus, the bubble should stay open.
+  if (gained_focus && app_list_container->Contains(gained_focus))
+    return;
+
+  // Otherwise, if the bubble or one of its children lost focus, the bubble
+  // should close.
+  if (lost_focus && app_list_container->Contains(lost_focus))
+    Dismiss();
 }
 
 void AppListBubblePresenter::OnDisplayMetricsChanged(
