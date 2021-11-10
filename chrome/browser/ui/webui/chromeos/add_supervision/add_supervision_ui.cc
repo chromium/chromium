@@ -59,7 +59,7 @@ const char kAddSupervisionSwitch[] = "add-supervision-url";
 // AddSupervisionDialog implementations.
 
 // static
-void AddSupervisionDialog::Show(gfx::NativeView parent) {
+void AddSupervisionDialog::Show() {
   // Get the system singleton instance of the AddSupervisionDialog.
   SystemWebDialogDelegate* current_instance = GetInstance();
   if (current_instance) {
@@ -75,7 +75,7 @@ void AddSupervisionDialog::Show(gfx::NativeView parent) {
   current_instance = new AddSupervisionDialog();
 
   current_instance->ShowSystemDialogForBrowserContext(
-      ProfileManager::GetPrimaryUserProfile(), parent);
+      ProfileManager::GetPrimaryUserProfile());
 
   // Record UMA metric that user has initiated the Add Supervision process.
   AddSupervisionMetricsRecorder::GetInstance()->RecordAddSupervisionEnrollment(

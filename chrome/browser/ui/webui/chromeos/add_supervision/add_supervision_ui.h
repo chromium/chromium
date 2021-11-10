@@ -29,7 +29,7 @@ class AddSupervisionDialog : public SystemWebDialogDelegate {
 
   // Shows the dialog; if the dialog is already displayed, this function is a
   // no-op.
-  static void Show(gfx::NativeView parent);
+  static void Show();
 
   static AddSupervisionDialog* GetInstance();
 

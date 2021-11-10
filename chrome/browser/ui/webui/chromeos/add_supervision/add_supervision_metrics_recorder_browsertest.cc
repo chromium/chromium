@@ -38,10 +38,7 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
     test_web_ui_.set_web_contents(web_contents);
   }
 
-  void ShowAddSupervisionDialog() {
-    content::WebContents* web_contents = test_web_ui_.GetWebContents();
-    AddSupervisionDialog::Show(web_contents->GetTopLevelNativeWindow());
-  }
+  void ShowAddSupervisionDialog() { AddSupervisionDialog::Show(); }
 
   void CloseNowForTesting() {
     AddSupervisionDialog* instance =

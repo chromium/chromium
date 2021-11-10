@@ -54,8 +54,7 @@ void ParentalControlsHandler::OnJavascriptDisallowed() {}
 void ParentalControlsHandler::HandleShowAddSupervisionDialog(
     const base::ListValue* args) {
   DCHECK(args->GetList().empty());
-  AddSupervisionDialog::Show(
-      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
+  AddSupervisionDialog::Show();
 }
 
 void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
