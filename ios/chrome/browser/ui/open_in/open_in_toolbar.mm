@@ -131,7 +131,7 @@ const CGFloat kTopBorderHeight = 0.5f;
         constraintEqualToAnchor:self.superview.safeAreaLayoutGuide
                                     .bottomAnchor];
   }
-  self.self.openButtonBottomConstraint.active = YES;
+  self.openButtonBottomConstraint.active = YES;
 }
 
 #pragma mark UIView
