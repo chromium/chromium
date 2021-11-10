@@ -56930,20 +56930,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.MemoryBandwidth.ReadWrite" units="MB/s"
-    expires_after="M85">
-  <obsolete>
-    Removed 09/2020 due to lack of usage.
-  </obsolete>
-  <owner>hajimehoshi@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    Peak memory bandwith (read and write) usage during the last sample interval.
-    The sample interval may vary from seconds to several minutes.
-  </summary>
-</histogram>
-
 <histogram name="Platform.MountEncrypted.EncryptedFsType"
     enum="MountEncryptedEncryptedFsType" expires_after="M85">
   <obsolete>

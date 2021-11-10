@@ -2310,26 +2310,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cast.Network.Down.Duration.In.Seconds" units="seconds"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    Records the time the network has been down on a Cast device. Recorded when
-    network goes up.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Network.Up.Duration.In.Minutes" units="minutes"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    Records the time the network has been up on a Cast device. Recorded when
-    network goes down.
-  </summary>
-</histogram>
-
 <histogram name="Cast.Sender.CastMediaType" enum="MediaContainers"
     expires_after="2022-02-01">
   <owner>takumif@chromium.org</owner>

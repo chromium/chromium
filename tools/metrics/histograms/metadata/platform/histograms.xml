@@ -157,15 +157,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.CpuUsage" units="%" expires_after="2021-07-02">
-  <owner>sonnyrao@chromium.org</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    Peak total (single core) CPU usage for the last sample interval. The sample
-    interval may vary from seconds to several minutes.
-  </summary>
-</histogram>
-
 <histogram name="Platform.Cr50.BoardIdFlags" enum="Cr50BoardIdFlags"
     expires_after="2022-03-20">
   <owner>apronin@chromium.org</owner>
