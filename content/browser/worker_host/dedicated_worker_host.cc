@@ -359,6 +359,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
 
   // Create a COEP reporter with worker's policy.
   coep_reporter_ = std::make_unique<CrossOriginEmbedderPolicyReporter>(
+      CrossOriginEmbedderPolicyReporter::Creator::kDedicatedWorker,
       worker_process_host_->GetStoragePartition(), final_response_url,
       worker_cross_origin_embedder_policy_->reporting_endpoint,
       worker_cross_origin_embedder_policy_->report_only_reporting_endpoint,

@@ -37,7 +37,17 @@ class StoragePartition;
 class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
     : public network::mojom::CrossOriginEmbedderPolicyReporter {
  public:
+  // This is defined to investigate a crash. Remove this once the investigation
+  // is done.
+  enum class Creator : uint32_t {
+    kDocument = 0xafafafaf,
+    kDedicatedWorker = 0xbfbfbfbf,
+    kSharedWorker = 0xcfcfcfcf,
+    kServiceWorker = 0xdfdfdfdf,
+  };
+
   CrossOriginEmbedderPolicyReporter(
+      Creator creator,
       StoragePartition* storage_partition,
       const GURL& context_url,
       const absl::optional<std::string>& endpoint,
@@ -81,6 +91,8 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   void QueueAndNotify(std::initializer_list<
                           std::pair<base::StringPiece, base::StringPiece>> body,
                       bool report_only);
+
+  const Creator creator_;
 
   // See the class comment.
   StoragePartition* const storage_partition_;
