@@ -34,6 +34,8 @@ class EncryptedReportingUploadProvider {
                               UploadClient::CreatedCallback)>;
 
   explicit EncryptedReportingUploadProvider(
+      UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
+      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
       GetCloudPolicyClientCallback build_cloud_policy_client_cb =
           GetCloudPolicyClientCb(),
       UploadClientBuilderCb upload_client_builder_cb =
@@ -48,8 +50,6 @@ class EncryptedReportingUploadProvider {
   void RequestUploadEncryptedRecords(
       bool need_encryption_key,
       std::unique_ptr<std::vector<EncryptedRecord>> records,
-      UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
       base::OnceCallback<void(Status)> result_cb);
 
  private:

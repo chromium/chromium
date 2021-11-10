@@ -86,6 +86,8 @@ class ReportingClient : public ReportQueueProvider {
 
   // Returns default upload provider for the client.
   std::unique_ptr<EncryptedReportingUploadProvider> GetDefaultUploadProvider(
+      UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
+      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
       GetCloudPolicyClientCallback build_cloud_policy_client_cb);
 
   // Configures the report queue config with an appropriate DM token after its

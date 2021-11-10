@@ -42,13 +42,13 @@ class DmServerUploadService {
   // the owner of |this| (the respone consists of sequencing information and
   // force_confirm flag).
   using ReportSuccessfulUploadCallback =
-      base::OnceCallback<void(SequenceInformation,
-                              /*force_confirm*/ bool)>;
+      base::RepeatingCallback<void(SequenceInformation,
+                                   /*force_confirm*/ bool)>;
 
   // ReceivedEncryptionKeyCallback is called if server attached encryption key
   // to the response.
   using EncryptionKeyAttachedCallback =
-      base::OnceCallback<void(SignedEncryptionInfo)>;
+      base::RepeatingCallback<void(SignedEncryptionInfo)>;
 
   // Successful response consists of Sequencing information that may be
   // accompanied with force_confirm flag.
@@ -136,8 +136,8 @@ class DmServerUploadService {
 
     const bool need_encryption_key_;
     std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
-    ReportSuccessfulUploadCallback report_success_upload_cb_;
-    EncryptionKeyAttachedCallback encryption_key_attached_cb_;
+    const ReportSuccessfulUploadCallback report_success_upload_cb_;
+    const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
     RecordHandler* handler_;
 
     SEQUENCE_CHECKER(sequence_checker_);

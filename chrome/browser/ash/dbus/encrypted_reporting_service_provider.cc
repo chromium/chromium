@@ -91,31 +91,38 @@ void EncryptedReportingServiceProvider::OnExported(
                           << method_name;
 }
 
+// static
 ::reporting::UploadClient::ReportSuccessfulUploadCallback
 EncryptedReportingServiceProvider::GetReportSuccessUploadCallback() {
   MissiveClient* const missive_client = MissiveClient::Get();
-  return base::BindRepeating(
-      [](base::WeakPtr<MissiveClient> missive_client,
-         ::reporting::SequenceInformation sequence_information,
-         bool force_confirm) {
-        if (missive_client) {
-          missive_client->ReportSuccess(sequence_information, force_confirm);
-        }
-      },
-      missive_client->GetWeakPtr());
+  return base::BindPostTask(
+      missive_client->origin_task_runner(),
+      base::BindRepeating(
+          [](base::WeakPtr<MissiveClient> missive_client,
+             ::reporting::SequenceInformation sequence_information,
+             bool force_confirm) {
+            if (missive_client) {
+              missive_client->ReportSuccess(std::move(sequence_information),
+                                            force_confirm);
+            }
+          },
+          missive_client->GetWeakPtr()));
 }
 
+// static
 ::reporting::UploadClient::EncryptionKeyAttachedCallback
 EncryptedReportingServiceProvider::GetEncryptionKeyAttachedCallback() {
   MissiveClient* const missive_client = MissiveClient::Get();
-  return base::BindRepeating(
-      [](base::WeakPtr<MissiveClient> missive_client,
-         ::reporting::SignedEncryptionInfo signed_encryption_info) {
-        if (missive_client) {
-          missive_client->UpdateEncryptionKey(signed_encryption_info);
-        }
-      },
-      missive_client->GetWeakPtr());
+  return base::BindPostTask(
+      missive_client->origin_task_runner(),
+      base::BindRepeating(
+          [](base::WeakPtr<MissiveClient> missive_client,
+             ::reporting::SignedEncryptionInfo signed_encryption_info) {
+            if (missive_client) {
+              missive_client->UpdateEncryptionKey(signed_encryption_info);
+            }
+          },
+          missive_client->GetWeakPtr()));
 }
 
 void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
@@ -166,10 +173,6 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
 
   upload_provider_->RequestUploadEncryptedRecords(
       request.need_encryption_keys(), std::move(records),
-      base::BindPostTask(missive_client->origin_task_runner(),
-                         GetReportSuccessUploadCallback()),
-      base::BindPostTask(missive_client->origin_task_runner(),
-                         GetEncryptionKeyAttachedCallback()),
       base::BindPostTask(
           origin_thread_runner_,
           base::BindOnce(&SendStatusAsResponse, std::move(response),
@@ -183,6 +186,7 @@ bool EncryptedReportingServiceProvider::OnOriginThread() const {
 // static
 std::unique_ptr<::reporting::EncryptedReportingUploadProvider>
 EncryptedReportingServiceProvider::GetDefaultUploadProvider() {
-  return std::make_unique<::reporting::EncryptedReportingUploadProvider>();
+  return std::make_unique<::reporting::EncryptedReportingUploadProvider>(
+      GetReportSuccessUploadCallback(), GetEncryptionKeyAttachedCallback());
 }
 }  // namespace ash

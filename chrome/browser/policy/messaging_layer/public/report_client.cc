@@ -323,6 +323,11 @@ void ReportingClient::DeliverAsyncStartUploader(
                 DCHECK(!instance->upload_provider_)
                     << "Upload provider already recorded";
                 instance->upload_provider_ = instance->GetDefaultUploadProvider(
+                    base::BindRepeating(&StorageModuleInterface::ReportSuccess,
+                                        instance->storage()),
+                    base::BindRepeating(
+                        &StorageModuleInterface::UpdateEncryptionKey,
+                        instance->storage()),
                     instance->build_cloud_policy_client_cb_);
               } else {
                 std::move(start_uploader_cb)
@@ -335,24 +340,14 @@ void ReportingClient::DeliverAsyncStartUploader(
                     EncryptionModuleInterface::is_enabled() &&
                     reason == UploaderInterface::UploadReason::KEY_DELIVERY),
                 base::BindOnce(
-                    [](UploadClient::ReportSuccessfulUploadCallback
-                           report_success_upload_cb,
-                       UploadClient::EncryptionKeyAttachedCallback
-                           encryption_key_attached_cb,
-                       EncryptedReportingUploadProvider* upload_provider,
+                    [](EncryptedReportingUploadProvider* upload_provider,
                        bool need_encryption_key,
                        std::unique_ptr<std::vector<EncryptedRecord>> records) {
                       upload_provider->RequestUploadEncryptedRecords(
                           need_encryption_key, std::move(records),
-                          std::move(report_success_upload_cb),
-                          std::move(encryption_key_attached_cb),
                           base::DoNothing());
                       return Status::StatusOK();
                     },
-                    base::BindOnce(&StorageModuleInterface::ReportSuccess,
-                                   instance->storage()),
-                    base::BindOnce(&StorageModuleInterface::UpdateEncryptionKey,
-                                   instance->storage()),
                     base::Unretained(instance->upload_provider_.get())));
             std::move(start_uploader_cb).Run(std::move(uploader));
           },
@@ -361,8 +356,11 @@ void ReportingClient::DeliverAsyncStartUploader(
 
 std::unique_ptr<EncryptedReportingUploadProvider>
 ReportingClient::GetDefaultUploadProvider(
+    UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
+    UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
     GetCloudPolicyClientCallback build_cloud_policy_client_cb) {
   return std::make_unique<::reporting::EncryptedReportingUploadProvider>(
+      report_successful_upload_cb, encryption_key_attached_cb,
       build_cloud_policy_client_cb);
 }
 
