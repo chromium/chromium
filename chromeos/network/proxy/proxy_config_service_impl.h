@@ -108,4 +108,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProxyConfigServiceImpl
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::ProxyConfigServiceImpl;
+}
+
 #endif  // CHROMEOS_NETWORK_PROXY_PROXY_CONFIG_SERVICE_IMPL_H_

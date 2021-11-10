@@ -16,7 +16,7 @@ namespace arc {
 
 // This class observes ARC provisioning state and keeps ARC unthrottled until
 // provisioning is done.
-class ArcProvisioningThrottleObserver : public chromeos::ThrottleObserver,
+class ArcProvisioningThrottleObserver : public ash::ThrottleObserver,
                                         public ArcSessionManagerObserver {
  public:
   ArcProvisioningThrottleObserver();
@@ -28,7 +28,7 @@ class ArcProvisioningThrottleObserver : public chromeos::ThrottleObserver,
 
   ~ArcProvisioningThrottleObserver() override = default;
 
-  // chromeos::ThrottleObserver:
+  // ash::ThrottleObserver:
   void StartObserving(content::BrowserContext* context,
                       const ObserverStateChangedCallback& callback) override;
   void StopObserving() override;

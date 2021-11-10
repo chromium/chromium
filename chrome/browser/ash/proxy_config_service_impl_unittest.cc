@@ -42,7 +42,7 @@
 // rename. This is really more of an integration test than a unit test at this
 // point and currently relies on some chrome specific components.
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -541,4 +541,4 @@ TEST_F(ProxyConfigServiceImplTest, SharedEthernetAndUserPolicy) {
   EXPECT_TRUE(expected_config.value().Equals(actual_config.value()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -588,14 +588,14 @@ void AboutHandler::RequestUpdateOverCellular(const std::string& update_version,
 
 void AboutHandler::HandleRefreshTPMFirmwareUpdateStatus(
     const base::ListValue* args) {
-  chromeos::tpm_firmware_update::GetAvailableUpdateModes(
+  ash::tpm_firmware_update::GetAvailableUpdateModes(
       base::BindOnce(&AboutHandler::RefreshTPMFirmwareUpdateStatus,
                      weak_factory_.GetWeakPtr()),
       base::TimeDelta());
 }
 
 void AboutHandler::RefreshTPMFirmwareUpdateStatus(
-    const std::set<chromeos::tpm_firmware_update::Mode>& modes) {
+    const std::set<ash::tpm_firmware_update::Mode>& modes) {
   std::unique_ptr<base::DictionaryValue> event(new base::DictionaryValue);
   event->SetBoolean("updateAvailable", !modes.empty());
   FireWebUIListener("tpm-firmware-update-status-changed", *event);

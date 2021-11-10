@@ -19,7 +19,7 @@ namespace net {
 class NSSCertDatabase;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Initializes a global NSSCertDatabase for the system token and stores it in a
 // global SystemTokenCertDbStorage instance which can be used by all ChromeOS
@@ -99,12 +99,6 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
   base::WeakPtrFactory<SystemTokenCertDBInitializer> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SystemTokenCertDBInitializer;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_TOKEN_CERT_DB_INITIALIZER_H_

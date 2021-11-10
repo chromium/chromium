@@ -28,7 +28,7 @@ namespace crostini {
 class CrostiniPackageService : public KeyedService,
                                public LinuxPackageOperationProgressObserver,
                                public PendingAppListUpdatesObserver,
-                               public chromeos::VmShutdownObserver {
+                               public ash::VmShutdownObserver {
  public:
   using StateChangeCallback =
       base::RepeatingCallback<void(PackageOperationStatus)>;
@@ -71,7 +71,7 @@ class CrostiniPackageService : public KeyedService,
   void OnPendingAppListUpdates(const ContainerId& container_id,
                                int count) override;
 
-  // chromeos::VmShutdownObserver
+  // ash::VmShutdownObserver
   void OnVmShutdown(const std::string& vm_name) override;
 
   // (Eventually) install a Linux package. If successfully started, a system

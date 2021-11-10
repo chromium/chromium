@@ -35,11 +35,8 @@ class PrefService;
 namespace ash {
 class KioskTest;
 class LocaleChangeGuard;
-}
-
-namespace chromeos {
 class Preferences;
-}  // namespace chromeos
+}  // namespace ash
 #endif
 
 namespace base {
@@ -291,7 +288,7 @@ class ProfileImpl : public Profile {
   std::unique_ptr<ProfileKey> key_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::Preferences> chromeos_preferences_;
+  std::unique_ptr<ash::Preferences> chromeos_preferences_;
 
   std::unique_ptr<ash::LocaleChangeGuard> locale_change_guard_;
 #endif

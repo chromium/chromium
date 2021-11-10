@@ -3289,7 +3289,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/policy/status_collector/child_status_collector_browsertest.cc",
         "../browser/ash/policy/status_collector/device_status_collector_browsertest.cc",
         "../browser/ash/policy/status_collector/legacy_device_status_collector_browsertest.cc",
-        "../browser/ash/preferences_ash_browsertest.cc",
+        "../browser/ash/preferences_browsertest.cc",
         "../browser/ash/printing/history/test_print_job_history_service_observer.cc",
         "../browser/ash/printing/history/test_print_job_history_service_observer.h",
         "../browser/ash/profiles/profile_helper_browsertest.cc",

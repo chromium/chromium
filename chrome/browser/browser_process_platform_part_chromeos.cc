@@ -265,7 +265,7 @@ void BrowserProcessPlatformPart::ShutdownCrosComponentManager() {
 void BrowserProcessPlatformPart::InitializeSchedulerConfigurationManager() {
   DCHECK(!scheduler_configuration_manager_);
   scheduler_configuration_manager_ =
-      std::make_unique<chromeos::SchedulerConfigurationManager>(
+      std::make_unique<ash::SchedulerConfigurationManager>(
           chromeos::DBusThreadManager::Get()->GetDebugDaemonClient(),
           g_browser_process->local_state());
 }

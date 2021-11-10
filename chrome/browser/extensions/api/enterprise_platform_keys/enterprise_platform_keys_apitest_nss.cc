@@ -376,8 +376,7 @@ class EnterprisePlatformKeysLoginScreenTest
   ash::DeviceStateMixin device_state_mixin_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  chromeos::ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{
-      &mixin_host_};
+  ash::ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{&mixin_host_};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 
   // Allows tests to generate software-backed keys by configuring fake ChapsUtil

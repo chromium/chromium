@@ -14,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
+namespace ash {
 namespace {
 
 const char kSpanishLocale[] = "es";
@@ -48,3 +49,4 @@ IN_PROC_BROWSER_TEST_F(StartupSettingsCacheTest, RendererLocale) {
 }
 
 }  // namespace
+}  // namespace ash

@@ -28,7 +28,7 @@
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/events/event_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 class PreferencesTest : public LoginManagerTest {
  public:
@@ -59,8 +59,8 @@ class PreferencesTest : public LoginManagerTest {
   // |variant| value. For opposite |variant| values all preferences receive
   // different values.
   void SetPrefs(PrefService* prefs, bool variant) {
-    prefs->SetBoolean(ash::prefs::kMouseReverseScroll, variant);
-    prefs->SetBoolean(ash::prefs::kNaturalScroll, variant);
+    prefs->SetBoolean(prefs::kMouseReverseScroll, variant);
+    prefs->SetBoolean(prefs::kNaturalScroll, variant);
     prefs->SetBoolean(::prefs::kTapToClickEnabled, variant);
     prefs->SetBoolean(::prefs::kPrimaryMouseButtonRight, !variant);
     prefs->SetBoolean(::prefs::kPrimaryPointingStickButtonRight, !variant);
@@ -78,9 +78,9 @@ class PreferencesTest : public LoginManagerTest {
     prefs->SetInteger(::prefs::kTouchpadHapticClickSensitivity,
                       variant ? 1 : 3);
     prefs->SetInteger(::prefs::kTouchpadScrollSensitivity, variant ? 1 : 4);
-    prefs->SetBoolean(ash::prefs::kXkbAutoRepeatEnabled, variant);
-    prefs->SetInteger(ash::prefs::kXkbAutoRepeatDelay, variant ? 100 : 500);
-    prefs->SetInteger(ash::prefs::kXkbAutoRepeatInterval, variant ? 1 : 4);
+    prefs->SetBoolean(prefs::kXkbAutoRepeatEnabled, variant);
+    prefs->SetInteger(prefs::kXkbAutoRepeatDelay, variant ? 100 : 500);
+    prefs->SetInteger(prefs::kXkbAutoRepeatInterval, variant ? 1 : 4);
     prefs->SetString(
         ::prefs::kLanguagePreloadEngines,
         variant ? "xkb:us::eng,xkb:us:dvorak:eng" : "xkb:us::eng,xkb:ru::rus");
@@ -95,7 +95,7 @@ class PreferencesTest : public LoginManagerTest {
     EXPECT_EQ(prefs->GetBoolean(::prefs::kPrimaryPointingStickButtonRight),
               input_settings_->current_pointing_stick_settings()
                   .GetPrimaryButtonRight());
-    EXPECT_EQ(prefs->GetBoolean(ash::prefs::kMouseReverseScroll),
+    EXPECT_EQ(prefs->GetBoolean(prefs::kMouseReverseScroll),
               input_settings_->current_mouse_settings().GetReverseScroll());
     EXPECT_EQ(prefs->GetBoolean(::prefs::kMouseAcceleration),
               input_settings_->current_mouse_settings().GetAcceleration());
@@ -130,12 +130,12 @@ class PreferencesTest : public LoginManagerTest {
     EXPECT_EQ(
         prefs->GetInteger(::prefs::kTouchpadScrollSensitivity),
         input_settings_->current_touchpad_settings().GetScrollSensitivity());
-    EXPECT_EQ(prefs->GetBoolean(ash::prefs::kXkbAutoRepeatEnabled),
+    EXPECT_EQ(prefs->GetBoolean(prefs::kXkbAutoRepeatEnabled),
               keyboard_->auto_repeat_is_enabled_);
     input_method::AutoRepeatRate rate = keyboard_->last_auto_repeat_rate_;
-    EXPECT_EQ(prefs->GetInteger(ash::prefs::kXkbAutoRepeatDelay),
+    EXPECT_EQ(prefs->GetInteger(prefs::kXkbAutoRepeatDelay),
               (int)rate.initial_delay_in_ms);
-    EXPECT_EQ(prefs->GetInteger(ash::prefs::kXkbAutoRepeatInterval),
+    EXPECT_EQ(prefs->GetInteger(prefs::kXkbAutoRepeatInterval),
               (int)rate.repeat_interval_in_ms);
     EXPECT_EQ(prefs->GetString(::prefs::kLanguageCurrentInputMethod),
               input_method::InputMethodManager::Get()
@@ -235,4 +235,4 @@ IN_PROC_BROWSER_TEST_F(PreferencesTest, MultiProfiles) {
   CheckLocalStateCorrespondsToPrefs(prefs1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

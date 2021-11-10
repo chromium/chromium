@@ -13,7 +13,7 @@ namespace arc {
 // component.
 // TODO(b/201683917): Maybe rename and use this lock for other special cases
 // like demo mode.
-class ArcKioskModeThrottleObserver : public chromeos::ThrottleObserver {
+class ArcKioskModeThrottleObserver : public ash::ThrottleObserver {
  public:
   ArcKioskModeThrottleObserver();
 
@@ -23,7 +23,7 @@ class ArcKioskModeThrottleObserver : public chromeos::ThrottleObserver {
 
   ~ArcKioskModeThrottleObserver() override = default;
 
-  // chromeos::ThrottleObserver:
+  // ash::ThrottleObserver:
   void StartObserving(content::BrowserContext* context,
                       const ObserverStateChangedCallback& callback) override;
   void StopObserving() override;

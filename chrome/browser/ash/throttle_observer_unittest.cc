@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class ThrottleObserverTest
     : public testing::Test,
@@ -60,4 +60,4 @@ TEST_F(ThrottleObserverTest, TestSetActive) {
   EXPECT_EQ(2U, notify_count());
 }
 
-}  // namespace chromeos
+}  // namespace ash

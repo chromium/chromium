@@ -22,7 +22,7 @@
 #include "net/cert/nss_cert_database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class SystemTokenCertDbInitializerTest : public testing::Test {
  public:
@@ -151,4 +151,4 @@ TEST_F(SystemTokenCertDbInitializerTest, GetDatabaseFailureDisabledTPM) {
       get_system_token_cert_db_callback_wrapper.IsDbRetrievalSucceeded());
 }
 
-}  // namespace chromeos
+}  // namespace ash

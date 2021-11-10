@@ -11,7 +11,7 @@
 #include "chromeos/login/login_state/login_state.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -48,4 +48,4 @@ void SetTimeDialog::GetDialogSize(gfx::Size* size) const {
                                    : kDefaultHeightWithoutTimezone);
 }
 
-}  // namespace chromeos
+}  // namespace ash

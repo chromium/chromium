@@ -27,8 +27,8 @@ namespace {
 // Triggers a TPM firmware update using the least destructive mode from
 // |available_modes|.
 void TriggerTPMFirmwareUpdate(
-    const std::set<chromeos::tpm_firmware_update::Mode>& available_modes) {
-  using chromeos::tpm_firmware_update::Mode;
+    const std::set<ash::tpm_firmware_update::Mode>& available_modes) {
+  using ::ash::tpm_firmware_update::Mode;
 
   // Decide which update mode to use.
   for (Mode mode :
@@ -98,7 +98,7 @@ void BrowserLifetimeHandler::HandleFactoryReset(
   bool tpm_firmware_update_requested = args_list[0].GetBool();
 
   if (tpm_firmware_update_requested) {
-    chromeos::tpm_firmware_update::GetAvailableUpdateModes(
+    ash::tpm_firmware_update::GetAvailableUpdateModes(
         base::BindOnce(&TriggerTPMFirmwareUpdate), base::TimeDelta());
     return;
   }

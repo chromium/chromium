@@ -7,12 +7,14 @@
 
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
+
 class VmShutdownObserver : public base::CheckedObserver {
  public:
   // Called when the given VM has shutdown.
   virtual void OnVmShutdown(const std::string& vm_name) = 0;
 };
-}  // namespace chromeos
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_VM_SHUTDOWN_OBSERVER_H_

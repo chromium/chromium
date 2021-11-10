@@ -65,7 +65,7 @@ class ArcBridgeService;
 // while RequestSystemProcessList() is responsible for System Processes.
 class ArcProcessService : public KeyedService,
                           public ConnectionObserver<mojom::ProcessInstance>,
-                          public ProcessSnapshotServer::Observer {
+                          public ash::ProcessSnapshotServer::Observer {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.

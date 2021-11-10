@@ -17,11 +17,13 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
 constexpr base::FeatureParam<std::string> kSchedulerConfigurationParam{
     &features::kSchedulerConfiguration, "config", ""};
+
 }  // namespace
 
 SchedulerConfigurationManager::SchedulerConfigurationManager(
@@ -121,4 +123,4 @@ void SchedulerConfigurationManager::OnConfigurationSet(
     obs.OnConfigurationSet(result, num_cores_disabled);
 }
 
-}  // namespace chromeos
+}  // namespace ash

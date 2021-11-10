@@ -39,17 +39,17 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view.h"
 
-namespace em = enterprise_management;
-
-namespace chromeos {
+namespace ash {
 
 namespace {
 
+namespace em = ::enterprise_management;
+
 void WaitForShutdownButtonVisibility(bool visible) {
-  int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
-  while (ash::LoginScreenTestApi::IsShutdownButtonShown() != visible) {
-    ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
-    ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
+  int ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
+  while (LoginScreenTestApi::IsShutdownButtonShown() != visible) {
+    LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
+    ui_update_count = LoginScreenTestApi::GetUiUpdateCount();
   }
 }
 
@@ -71,7 +71,7 @@ class ShutdownPolicyBaseTest
   // policy::DevicePolicyCrosBrowserTest:
   void SetUpOnMainThread() override {
     policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
-    tray_test_api_ = ash::SystemTrayTestApi::Create();
+    tray_test_api_ = SystemTrayTestApi::Create();
   }
 
   // Updates the device shutdown policy and sets it to |reboot_on_shutdown|.
@@ -105,7 +105,7 @@ class ShutdownPolicyBaseTest
 
   bool result_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
+  std::unique_ptr<SystemTrayTestApi> tray_test_api_;
 };
 
 class ShutdownPolicyInSessionTest
@@ -128,7 +128,7 @@ class ShutdownPolicyInSessionTest
   // Returns true if the shutdown button's tooltip matches |tooltip|.
   bool HasShutdownButtonTooltip(const std::string& tooltip) {
     std::u16string actual_tooltip =
-        tray_test_api_->GetBubbleViewTooltip(ash::VIEW_ID_POWER_BUTTON);
+        tray_test_api_->GetBubbleViewTooltip(VIEW_ID_POWER_BUTTON);
     return base::UTF8ToUTF16(tooltip) == actual_tooltip;
   }
 };
@@ -255,20 +255,20 @@ class ShutdownPolicyLoginTest : public ShutdownPolicyBaseTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyLoginTest, PolicyNotSet) {
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsRestartButtonShown());
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsShutdownButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsRestartButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsShutdownButtonShown());
 }
 
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyLoginTest, PolicyChange) {
   UpdateRebootOnShutdownPolicy(true);
   RefreshDevicePolicy();
   WaitForShutdownButtonVisibility(false);
-  EXPECT_TRUE(ash::LoginScreenTestApi::IsRestartButtonShown());
+  EXPECT_TRUE(LoginScreenTestApi::IsRestartButtonShown());
 
   UpdateRebootOnShutdownPolicy(false);
   RefreshDevicePolicy();
   WaitForShutdownButtonVisibility(true);
-  EXPECT_FALSE(ash::LoginScreenTestApi::IsRestartButtonShown());
+  EXPECT_FALSE(LoginScreenTestApi::IsRestartButtonShown());
 }
 
-}  // namespace chromeos
+}  // namespace ash

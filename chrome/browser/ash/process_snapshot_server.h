@@ -15,6 +15,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
+namespace ash {
+
 // Provides an interface to regularly getting a full snapshot of the running
 // processes on the system.
 // The process snapshot will be refreshed at the highest refresh rate (i.e.
@@ -107,5 +109,7 @@ class ProcessSnapshotServer {
 
   base::WeakPtrFactory<ProcessSnapshotServer> weak_ptr_factory_;
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PROCESS_SNAPSHOT_SERVER_H_

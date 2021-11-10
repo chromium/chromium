@@ -11,6 +11,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
 namespace {
 
 // -----------------------------------------------------------------------------
@@ -113,3 +114,4 @@ TEST_F(ProcessSnapshotServerTest, AddRemoveObservers) {
 }
 
 }  // namespace
+}  // namespace ash

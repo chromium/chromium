@@ -232,8 +232,7 @@ class NSSContextChromeOSBrowserTest : public ash::LoginManagerTest {
   static constexpr size_t kUnaffiliatedUserIdx1 = 2;
   static constexpr size_t kUnaffiliatedUserIdx2 = 3;
 
-  chromeos::ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{
-      &mixin_host_};
+  ash::ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{&mixin_host_};
   ash::DeviceStateMixin device_state_mixin_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};

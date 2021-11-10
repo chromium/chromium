@@ -21,7 +21,7 @@
 #include "crypto/scoped_test_system_nss_key_slot.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -86,4 +86,4 @@ void ScopedTestSystemNSSKeySlotMixin::DestroyOnIo() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

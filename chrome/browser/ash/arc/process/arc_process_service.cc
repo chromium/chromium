@@ -40,10 +40,8 @@
 
 namespace arc {
 
-using base::kNullProcessId;
-using base::Process;
-using base::ProcessId;
-using std::vector;
+using ::base::kNullProcessId;
+using ::base::ProcessId;
 
 namespace {
 
@@ -114,7 +112,7 @@ void UpdateNspidToPidMap(
   TRACE_EVENT0("browser", "ArcProcessService::UpdateNspidToPidMap");
 
   // NB: |process_list| may have inconsistent information because the
-  // ProcessSnapshotServer gets them by simply walking procfs. Especially
+  // |ash::ProcessSnapshotServer| gets them by simply walking procfs. Especially
   // we must not assume the parent-child relationships are consistent.
 
   // Construct the process tree.
@@ -294,7 +292,7 @@ ArcProcessService* ArcProcessService::GetForBrowserContext(
 
 ArcProcessService::ArcProcessService(content::BrowserContext* context,
                                      ArcBridgeService* bridge_service)
-    : ProcessSnapshotServer::Observer(kProcessSnapshotRefreshTime),
+    : ash::ProcessSnapshotServer::Observer(kProcessSnapshotRefreshTime),
       arc_bridge_service_(bridge_service),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
@@ -307,7 +305,7 @@ ArcProcessService::ArcProcessService(content::BrowserContext* context,
 ArcProcessService::~ArcProcessService() {
   arc_bridge_service_->process()->RemoveObserver(this);
   if (is_observing_process_snapshot_)
-    ProcessSnapshotServer::Get()->RemoveObserver(this);
+    ash::ProcessSnapshotServer::Get()->RemoveObserver(this);
 }
 
 // static
@@ -438,14 +436,15 @@ void ArcProcessService::MaybeStopObservingProcessSnapshots() {
   if (!is_observing_process_snapshot_)
     return;
 
-  // We can stop observing the ProcessSnapshotServer only if there are no more
-  // pending requests, and we have a recent enough |cached_process_snapshot_|.
+  // We can stop observing the |ash::ProcessSnapshotServer| only if there are no
+  // more pending requests, and we have a recent enough
+  // |cached_process_snapshot_|.
   const bool should_stop_observing =
       pending_requests_.empty() && CanUseStaleProcessSnapshot();
   if (!should_stop_observing)
     return;
 
-  ProcessSnapshotServer::Get()->RemoveObserver(this);
+  ash::ProcessSnapshotServer::Get()->RemoveObserver(this);
   is_observing_process_snapshot_ = false;
 }
 
@@ -459,10 +458,10 @@ void ArcProcessService::HandleRequest(base::OnceClosure request) {
   }
 
   // We have a too stale |cached_process_snapshot_|, therefore request a fresher
-  // one by observing the ProcessSnapshotServer, and add |request| to the
+  // one by observing the |ash::ProcessSnapshotServer|, and add |request| to the
   // pending requests.
   if (!is_observing_process_snapshot_) {
-    ProcessSnapshotServer::Get()->AddObserver(this);
+    ash::ProcessSnapshotServer::Get()->AddObserver(this);
     is_observing_process_snapshot_ = true;
   }
 

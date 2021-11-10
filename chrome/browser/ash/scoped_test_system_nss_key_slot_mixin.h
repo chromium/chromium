@@ -10,7 +10,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "crypto/scoped_nss_types.h"
 
-namespace chromeos {
+namespace ash {
 
 // Owns a persistent NSS software database in the user directory and the
 // association of the system slot with this database.
@@ -45,12 +45,6 @@ class ScopedTestSystemNSSKeySlotMixin final : public InProcessBrowserTestMixin {
   crypto::ScopedPK11Slot slot_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ScopedTestSystemNSSKeySlotMixin;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCOPED_TEST_SYSTEM_NSS_KEY_SLOT_MIXIN_H_

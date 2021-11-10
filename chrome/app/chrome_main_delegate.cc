@@ -1090,7 +1090,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
     if (process_type == switches::kZygoteProcess) {
       DCHECK(locale.empty());
       // See comment at ReadAppLocale() for why we do this.
-      locale = chromeos::startup_settings_cache::ReadAppLocale();
+      locale = ash::startup_settings_cache::ReadAppLocale();
     }
 
     ui::ResourceBundle::SetParseLottieAsStillImage(

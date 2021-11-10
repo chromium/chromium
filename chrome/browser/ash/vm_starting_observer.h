@@ -7,12 +7,13 @@
 
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 class VmStartingObserver : public base::CheckedObserver {
  public:
   // Called when the given VM is starting.
   virtual void OnVmStarting() = 0;
 };
-}  // namespace chromeos
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_VM_STARTING_OBSERVER_H_

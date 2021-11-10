@@ -298,7 +298,7 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone) {
 
       profile->GetPrefs()->SetString(prefs::kUserTimezone,
                                      timezone->timeZoneId);
-      // For non-enterprise device, chromeos::Preferences::ApplyPreferences()
+      // For non-enterprise device, `Preferences::ApplyPreferences()`
       // will automatically change system timezone because user is primary.
       // But it may not happen for enterprise device, as policy may prevent
       // user from changing device time zone manually.

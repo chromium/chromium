@@ -78,12 +78,9 @@
 #include "ui/events/event_utils.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
-
-// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
-namespace language_prefs = ::ash::language_prefs;
 
 // The keyboard preferences that determine how we remap modifier keys. These
 // preferences will be saved in global user preferences dictionary so that they
@@ -112,7 +109,7 @@ Preferences::Preferences(input_method::InputMethodManager* input_method_manager)
       input_method_manager_(input_method_manager),
       user_(NULL),
       user_is_primary_(false) {
-  ash::BindCrosDisplayConfigController(
+  BindCrosDisplayConfigController(
       cros_display_config_.BindNewPipeAndPassReceiver());
 }
 
@@ -141,13 +138,12 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       ::prefs::kLacrosLaunchSwitch,
       static_cast<int>(crosapi::browser_util::LacrosLaunchSwitch::kUserChoice));
+  registry->RegisterBooleanPref(prefs::kDeviceSystemWideTracingEnabled, true);
   registry->RegisterBooleanPref(
-      chromeos::prefs::kDeviceSystemWideTracingEnabled, true);
-  registry->RegisterBooleanPref(
-      ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
-  registry->RegisterBooleanPref(ash::prefs::kDeviceI18nShortcutsEnabled, true);
+      prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
+  registry->RegisterBooleanPref(prefs::kDeviceI18nShortcutsEnabled, true);
 
-  ash::RegisterLocalStatePrefs(registry);
+  RegisterLocalStatePrefs(registry);
   sync_consent_optional_field_trial::RegisterLocalStatePrefs(registry);
 }
 
@@ -156,12 +152,12 @@ void Preferences::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Some classes register their own prefs.
   AshTurnSyncOnHelper::RegisterProfilePrefs(registry);
-  ash::input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
+  input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
   crosapi::browser_util::RegisterProfilePrefs(registry);
 
   std::string hardware_keyboard_id;
   // TODO(yusukes): Remove the runtime hack.
-  if (IsRunningAsSystemCompositor()) {
+  if (chromeos::IsRunningAsSystemCompositor()) {
     DCHECK(g_browser_process);
     PrefService* local_state = g_browser_process->local_state();
     DCHECK(local_state);
@@ -189,12 +185,12 @@ void Preferences::RegisterProfilePrefs(
                                 PrefRegistry::NO_REGISTRATION_FLAGS);
   // TODO(anasalazar): Finish moving this to ash.
   registry->RegisterBooleanPref(
-      ash::prefs::kNaturalScroll,
+      prefs::kNaturalScroll,
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNaturalScrollDefault),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
-      ash::prefs::kMouseReverseScroll, false,
+      prefs::kMouseReverseScroll, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
 
   registry->RegisterBooleanPref(
@@ -268,15 +264,11 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterStringPref(::prefs::kLanguagePreloadEngines,
                                hardware_keyboard_id);
   registry->RegisterStringPref(::prefs::kLanguageEnabledImes, "");
-  registry->RegisterDictionaryPref(
-      chromeos::prefs::kAssistiveInputFeatureSettings);
-  registry->RegisterBooleanPref(chromeos::prefs::kAssistPersonalInfoEnabled,
-                                true);
-  registry->RegisterBooleanPref(
-      chromeos::prefs::kAssistPredictiveWritingEnabled, true);
-  registry->RegisterBooleanPref(chromeos::prefs::kEmojiSuggestionEnabled, true);
-  registry->RegisterBooleanPref(
-      chromeos::prefs::kEmojiSuggestionEnterpriseAllowed, true);
+  registry->RegisterDictionaryPref(prefs::kAssistiveInputFeatureSettings);
+  registry->RegisterBooleanPref(prefs::kAssistPersonalInfoEnabled, true);
+  registry->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled, true);
+  registry->RegisterBooleanPref(prefs::kEmojiSuggestionEnabled, true);
+  registry->RegisterBooleanPref(prefs::kEmojiSuggestionEnterpriseAllowed, true);
   registry->RegisterDictionaryPref(
       ::prefs::kLanguageInputMethodSpecificSettings);
   registry->RegisterBooleanPref(prefs::kLastUsedImeShortcutReminderDismissed,
@@ -360,10 +352,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(::prefs::kTouchVirtualKeyboardEnabled, false);
 
   std::string current_timezone_id;
-  if (chromeos::CrosSettings::IsInitialized()) {
+  if (CrosSettings::IsInitialized()) {
     // In unit tests CrosSettings is not always initialized.
-    chromeos::CrosSettings::Get()->GetString(kSystemTimezone,
-                                             &current_timezone_id);
+    CrosSettings::Get()->GetString(kSystemTimezone, &current_timezone_id);
   }
   // |current_timezone_id| will be empty if CrosSettings doesn't know the
   // timezone yet.
@@ -459,7 +450,7 @@ void Preferences::RegisterProfilePrefs(
   // By default showing Sync Consent is set to true. It can changed by policy.
   registry->RegisterBooleanPref(::prefs::kEnableSyncConsent, true);
 
-  registry->RegisterBooleanPref(chromeos::prefs::kSyncOobeCompleted, false);
+  registry->RegisterBooleanPref(prefs::kSyncOobeCompleted, false);
 
   registry->RegisterBooleanPref(::prefs::kTPMFirmwareUpdateCleanupDismissed,
                                 false);
@@ -474,18 +465,17 @@ void Preferences::RegisterProfilePrefs(
                                std::string(),
                                PrefRegistry::NO_REGISTRATION_FLAGS);
 
-  registry->RegisterBooleanPref(
-      chromeos::prefs::kLoginDisplayPasswordButtonEnabled, true);
+  registry->RegisterBooleanPref(prefs::kLoginDisplayPasswordButtonEnabled,
+                                true);
 
   registry->RegisterBooleanPref(
-      chromeos::prefs::kSuggestedContentEnabled, true,
+      prefs::kSuggestedContentEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
-      chromeos::prefs::kLauncherResultEverLaunched, false,
+      prefs::kLauncherResultEverLaunched, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  registry->RegisterDictionaryPref(
-      chromeos::prefs::kLauncherSearchNormalizerParameters);
+  registry->RegisterDictionaryPref(prefs::kLauncherSearchNormalizerParameters);
 
   registry->RegisterListPref(
       ::prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
@@ -505,8 +495,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   unified_desktop_enabled_by_default_.Init(
       ::prefs::kUnifiedDesktopEnabledByDefault, prefs, callback);
   // TODO(anasalazar): Finish moving this to ash.
-  natural_scroll_.Init(ash::prefs::kNaturalScroll, prefs, callback);
-  mouse_reverse_scroll_.Init(ash::prefs::kMouseReverseScroll, prefs, callback);
+  natural_scroll_.Init(prefs::kNaturalScroll, prefs, callback);
+  mouse_reverse_scroll_.Init(prefs::kMouseReverseScroll, prefs, callback);
 
   mouse_sensitivity_.Init(::prefs::kMouseSensitivity, prefs, callback);
   mouse_scroll_sensitivity_.Init(::prefs::kMouseScrollSensitivity, prefs,
@@ -550,14 +540,12 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   if (ime_menu_activated_.GetValue())
     input_method::InputMethodManager::Get()->ImeMenuActivationChanged(true);
 
-  xkb_auto_repeat_enabled_.Init(ash::prefs::kXkbAutoRepeatEnabled, prefs,
-                                callback);
-  xkb_auto_repeat_delay_pref_.Init(ash::prefs::kXkbAutoRepeatDelay, prefs,
-                                   callback);
-  xkb_auto_repeat_interval_pref_.Init(ash::prefs::kXkbAutoRepeatInterval, prefs,
+  xkb_auto_repeat_enabled_.Init(prefs::kXkbAutoRepeatEnabled, prefs, callback);
+  xkb_auto_repeat_delay_pref_.Init(prefs::kXkbAutoRepeatDelay, prefs, callback);
+  xkb_auto_repeat_interval_pref_.Init(prefs::kXkbAutoRepeatInterval, prefs,
                                       callback);
   pci_data_access_enabled_pref_.Init(
-      ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled,
+      prefs::kLocalStateDevicePeripheralDataAccessEnabled,
       g_browser_process->local_state(), callback);
 
   pref_change_registrar_.Init(prefs);
@@ -608,7 +596,7 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   if (user_is_primary_ && !login_input_method_id_used.empty()) {
     // Persist input method when transitioning from Login screen into the
     // session.
-    ash::input_method::InputMethodPersistence::SetUserLastLoginInputMethodId(
+    input_method::InputMethodPersistence::SetUserLastLoginInputMethodId(
         login_input_method_id_used, input_method::InputMethodManager::Get(),
         profile);
   }
@@ -624,7 +612,7 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
     input_method_manager_->SetState(ime_state_);
 
   input_method_syncer_ =
-      std::make_unique<ash::input_method::InputMethodSyncer>(prefs, ime_state_);
+      std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
   input_method_syncer_->Initialize();
 
   // If a guest is logged in, initialize the prefs as if this is the first
@@ -648,7 +636,7 @@ void Preferences::InitUserPrefsForTesting(
   InitUserPrefs(prefs);
 
   input_method_syncer_ =
-      std::make_unique<ash::input_method::InputMethodSyncer>(prefs, ime_state_);
+      std::make_unique<input_method::InputMethodSyncer>(prefs, ime_state_);
   input_method_syncer_->Initialize();
 }
 
@@ -736,8 +724,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
   }
   // TODO(anasalazar): Finish moving this to ash.
-  if (reason != REASON_PREF_CHANGED ||
-      pref_name == ash::prefs::kNaturalScroll) {
+  if (reason != REASON_PREF_CHANGED || pref_name == prefs::kNaturalScroll) {
     // Force natural scroll default if we've sync'd and if the cmd line arg is
     // set.
     ForceNaturalScrollDefault();
@@ -750,7 +737,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
                                  "Touchpad.NaturalScroll.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ash::prefs::kMouseReverseScroll) {
+      pref_name == prefs::kMouseReverseScroll) {
     const bool enabled = mouse_reverse_scroll_.GetValue();
     if (user_is_active)
       mouse_settings.SetReverseScroll(enabled);
@@ -917,7 +904,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
 
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ash::prefs::kXkbAutoRepeatEnabled) {
+      pref_name == prefs::kXkbAutoRepeatEnabled) {
     if (user_is_active) {
       const bool enabled = xkb_auto_repeat_enabled_.GetValue();
       input_method::InputMethodManager::Get()
@@ -925,12 +912,12 @@ void Preferences::ApplyPreferences(ApplyReason reason,
           ->SetAutoRepeatEnabled(enabled);
 
       user_manager::known_user::SetBooleanPref(
-          user_->GetAccountId(), ash::prefs::kXkbAutoRepeatEnabled, enabled);
+          user_->GetAccountId(), prefs::kXkbAutoRepeatEnabled, enabled);
     }
   }
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ash::prefs::kXkbAutoRepeatDelay ||
-      pref_name == ash::prefs::kXkbAutoRepeatInterval) {
+      pref_name == prefs::kXkbAutoRepeatDelay ||
+      pref_name == prefs::kXkbAutoRepeatInterval) {
     if (user_is_active)
       UpdateAutoRepeatRate();
   }
@@ -1065,21 +1052,21 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
   }
 
-  if (pref_name == chromeos::prefs::kLoginDisplayPasswordButtonEnabled ||
+  if (pref_name == prefs::kLoginDisplayPasswordButtonEnabled ||
       reason != REASON_ACTIVE_USER_CHANGED) {
     const bool value =
-        prefs_->GetBoolean(chromeos::prefs::kLoginDisplayPasswordButtonEnabled);
+        prefs_->GetBoolean(prefs::kLoginDisplayPasswordButtonEnabled);
     user_manager::known_user::SetBooleanPref(
-        user_->GetAccountId(),
-        chromeos::prefs::kLoginDisplayPasswordButtonEnabled, value);
+        user_->GetAccountId(), prefs::kLoginDisplayPasswordButtonEnabled,
+        value);
   }
 
-  if (pref_name == ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled &&
+  if (pref_name == prefs::kLocalStateDevicePeripheralDataAccessEnabled &&
       reason == REASON_PREF_CHANGED) {
     const bool value = g_browser_process->local_state()->GetBoolean(
-        ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled);
-    if (ash::PciePeripheralManager::IsInitialized()) {
-      ash::PciePeripheralManager::Get()->SetPcieTunnelingAllowedState(value);
+        prefs::kLocalStateDevicePeripheralDataAccessEnabled);
+    if (PciePeripheralManager::IsInitialized()) {
+      PciePeripheralManager::Get()->SetPcieTunnelingAllowedState(value);
     }
     PciguardClient::Get()->SendExternalPciDevicesPermissionState(value);
   }
@@ -1090,16 +1077,16 @@ void Preferences::OnIsSyncingChanged() {
   ForceNaturalScrollDefault();
 }
 
-// TODO(anasalazar): Finish moving this to ash::TouchDevicesController.
+// TODO(anasalazar): Finish moving this to TouchDevicesController.
 void Preferences::ForceNaturalScrollDefault() {
   DVLOG(1) << "ForceNaturalScrollDefault";
   // Natural scroll is a priority pref.
-  bool is_syncing = chromeos::features::IsSyncSettingsCategorizationEnabled()
+  bool is_syncing = features::IsSyncSettingsCategorizationEnabled()
                         ? prefs_->AreOsPriorityPrefsSyncing()
                         : prefs_->IsPrioritySyncing();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNaturalScrollDefault) &&
-      is_syncing && !prefs_->GetUserPrefValue(ash::prefs::kNaturalScroll)) {
+      is_syncing && !prefs_->GetUserPrefValue(prefs::kNaturalScroll)) {
     DVLOG(1) << "Natural scroll forced to true";
     natural_scroll_.SetValue(true);
   }
@@ -1164,10 +1151,10 @@ void Preferences::UpdateAutoRepeatRate() {
       rate);
 
   user_manager::known_user::SetIntegerPref(user_->GetAccountId(),
-                                           ash::prefs::kXkbAutoRepeatDelay,
+                                           prefs::kXkbAutoRepeatDelay,
                                            rate.initial_delay_in_ms);
   user_manager::known_user::SetIntegerPref(user_->GetAccountId(),
-                                           ash::prefs::kXkbAutoRepeatInterval,
+                                           prefs::kXkbAutoRepeatInterval,
                                            rate.repeat_interval_in_ms);
 }
 
@@ -1177,4 +1164,4 @@ void Preferences::ActiveUserChanged(user_manager::User* active_user) {
   ApplyPreferences(REASON_ACTIVE_USER_CHANGED, "");
 }
 
-}  // namespace chromeos
+}  // namespace ash

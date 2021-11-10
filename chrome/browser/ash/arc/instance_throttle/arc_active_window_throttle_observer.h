@@ -12,8 +12,7 @@ namespace arc {
 
 // This class observes window activations and sets the state to active if the
 // currently active window is an ARC window.
-class ArcActiveWindowThrottleObserver
-    : public chromeos::WindowThrottleObserverBase {
+class ArcActiveWindowThrottleObserver : public ash::WindowThrottleObserverBase {
  public:
   ArcActiveWindowThrottleObserver();
 

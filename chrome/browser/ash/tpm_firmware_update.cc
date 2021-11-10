@@ -30,7 +30,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace tpm_firmware_update {
 
 namespace {
@@ -319,4 +319,4 @@ void UpdateAvailable(base::OnceCallback<void(bool)> completion,
 }
 
 }  // namespace tpm_firmware_update
-}  // namespace chromeos
+}  // namespace ash

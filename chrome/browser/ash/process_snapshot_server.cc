@@ -12,6 +12,8 @@
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
 
+namespace ash {
+
 namespace {
 
 base::LazyInstance<ProcessSnapshotServer>::DestructorAtExit g_instance =
@@ -109,3 +111,5 @@ void ProcessSnapshotServer::RefreshTimer(base::TimeDelta new_refresh_time) {
                base::BindRepeating(&ProcessSnapshotServer::RefreshSnapshot,
                                    base::Unretained(this)));
 }
+
+}  // namespace ash

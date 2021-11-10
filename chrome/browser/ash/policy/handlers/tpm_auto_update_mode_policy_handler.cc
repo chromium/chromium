@@ -54,7 +54,7 @@ policy::AutoUpdateMode GetTPMAutoUpdateModeSetting(
     return policy::AutoUpdateMode::kNever;
 
   const base::Value* const auto_update_mode = tpm_settings->FindKeyOfType(
-      chromeos::tpm_firmware_update::kSettingsKeyAutoUpdateMode,
+      ash::tpm_firmware_update::kSettingsKeyAutoUpdateMode,
       base::Value::Type::INTEGER);
 
   // Policy not set.
@@ -129,7 +129,7 @@ void TPMAutoUpdateModePolicyHandler::OnPolicyChanged() {
 
 void TPMAutoUpdateModePolicyHandler::CheckForUpdate(
     base::OnceCallback<void(bool)> callback) {
-  chromeos::tpm_firmware_update::UpdateAvailable(
+  ash::tpm_firmware_update::UpdateAvailable(
       std::move(callback), kFirmwareAvailabilityCheckerTimeout);
 }
 

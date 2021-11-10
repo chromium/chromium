@@ -881,7 +881,7 @@ void ArcAppLaunchHandler::RecordRestoreResult() {
 #endif
 }
 
-chromeos::SchedulerConfigurationManager*
+ash::SchedulerConfigurationManager*
 ArcAppLaunchHandler::GetSchedulerConfigurationManager() {
   if (!g_browser_process || !g_browser_process->platform_part())
     return nullptr;

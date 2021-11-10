@@ -222,7 +222,7 @@ class ArcAppLaunchHandler
   void RecordLaunchBoundsState(bool has_root_bounds, bool has_screen_bounds);
   void RecordRestoreResult();
 
-  chromeos::SchedulerConfigurationManager* GetSchedulerConfigurationManager();
+  ash::SchedulerConfigurationManager* GetSchedulerConfigurationManager();
 
   AppLaunchHandler* handler_ = nullptr;
 

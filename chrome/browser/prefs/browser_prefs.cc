@@ -1042,9 +1042,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       registry);
   ash::power::auto_screen_brightness::MetricsReporter::RegisterLocalStatePrefs(
       registry);
-  chromeos::Preferences::RegisterPrefs(registry);
+  ash::Preferences::RegisterPrefs(registry);
   ash::ResetScreen::RegisterPrefs(registry);
-  chromeos::SchedulerConfigurationManager::RegisterLocalStatePrefs(registry);
+  ash::SchedulerConfigurationManager::RegisterLocalStatePrefs(registry);
   ash::ServicesCustomizationDocument::RegisterPrefs(registry);
   chromeos::SigninScreenHandler::RegisterPrefs(registry);
   ash::StartupUtils::RegisterPrefs(registry);
@@ -1359,7 +1359,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::HelpAppNotificationController::RegisterProfilePrefs(registry);
   ash::quick_unlock::FingerprintStorage::RegisterProfilePrefs(registry);
   ash::quick_unlock::PinStoragePrefs::RegisterProfilePrefs(registry);
-  chromeos::Preferences::RegisterProfilePrefs(registry);
+  ash::Preferences::RegisterProfilePrefs(registry);
   ash::EnterprisePrintersProvider::RegisterProfilePrefs(registry);
   ash::parent_access::ParentAccessService::RegisterProfilePrefs(registry);
   ash::quick_answers::prefs::RegisterProfilePrefs(registry);

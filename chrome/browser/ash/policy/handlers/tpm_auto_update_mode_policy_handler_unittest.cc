@@ -52,7 +52,7 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
 
   void SetAutoUpdateMode(AutoUpdateMode auto_update_mode) {
     base::DictionaryValue dict;
-    dict.SetKey(chromeos::tpm_firmware_update::kSettingsKeyAutoUpdateMode,
+    dict.SetKey(ash::tpm_firmware_update::kSettingsKeyAutoUpdateMode,
                 base::Value(static_cast<int>(auto_update_mode)));
     scoped_testing_cros_settings_.device_settings()->Set(
         ash::kTPMFirmwareUpdateSettings, dict);

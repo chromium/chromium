@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/throttle_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 std::string LevelToString(ThrottleObserver::PriorityLevel level) {
@@ -63,4 +63,4 @@ std::ostream& operator<<(std::ostream& os,
   return os << LevelToString(level);
 }
 
-}  // namespace chromeos
+}  // namespace ash

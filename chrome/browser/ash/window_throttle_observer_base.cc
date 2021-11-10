@@ -9,7 +9,7 @@
 #include "ui/aura/window.h"
 #include "ui/wm/public/activation_change_observer.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Returns true if the window is in the app list window container.
@@ -19,7 +19,7 @@ bool IsAppListWindow(const aura::Window* window) {
 
   const aura::Window* parent = window->parent();
   return parent &&
-         parent->GetId() == ash::ShellWindowId::kShellWindowId_AppListContainer;
+         parent->GetId() == ShellWindowId::kShellWindowId_AppListContainer;
 }
 
 // Returns true if this window activation should be ignored (app list
@@ -90,4 +90,4 @@ void WindowThrottleObserverBase::OnWindowActivated(ActivationReason reason,
   SetActive(ProcessWindowActivation(reason, gained_active, lost_active));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
 
-namespace chromeos {
+namespace ash {
 namespace startup_settings_cache {
 namespace {
 
@@ -73,4 +73,4 @@ void WriteAppLocale(std::string app_locale) {
 }
 
 }  // namespace startup_settings_cache
-}  // namespace chromeos
+}  // namespace ash

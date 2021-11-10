@@ -1483,7 +1483,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
 
   // This object watches for IME preference changes and reflects those in
   // the IME framework state.
-  chromeos::Preferences prefs;
+  Preferences prefs;
   prefs.InitUserPrefsForTesting(
       PrefServiceSyncableFromProfile(GetActiveUserProfile()),
       user_manager::UserManager::Get()->GetActiveUser(),

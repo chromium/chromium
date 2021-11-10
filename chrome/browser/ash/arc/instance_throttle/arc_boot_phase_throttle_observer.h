@@ -19,7 +19,7 @@ namespace arc {
 
 // This class observes phases of ARC boot and unthrottles the container
 // when ARC is booting or restarting.
-class ArcBootPhaseThrottleObserver : public chromeos::ThrottleObserver,
+class ArcBootPhaseThrottleObserver : public ash::ThrottleObserver,
                                      public ArcSessionManagerObserver,
                                      public ArcBootPhaseMonitorBridge::Observer,
                                      public SessionRestoreObserver {
@@ -32,7 +32,7 @@ class ArcBootPhaseThrottleObserver : public chromeos::ThrottleObserver,
 
   ~ArcBootPhaseThrottleObserver() override = default;
 
-  // chromeos::ThrottleObserver:
+  // ash::ThrottleObserver:
   void StartObserving(content::BrowserContext* context,
                       const ObserverStateChangedCallback& callback) override;
   void StopObserving() override;

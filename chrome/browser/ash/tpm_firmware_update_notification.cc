@@ -24,7 +24,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace chromeos {
+namespace ash {
 namespace tpm_firmware_update {
 namespace {
 
@@ -75,7 +75,7 @@ void OnAvailableUpdateModes(Profile* profile,
   }
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kTPMFirmwareUpdateNotificationId,
           l10n_util::GetStringUTF16(IDS_TPM_FIRMWARE_UPDATE_NOTIFICATION_TITLE),
@@ -110,4 +110,4 @@ void ShowNotificationIfNeeded(Profile* profile) {
 }
 
 }  // namespace tpm_firmware_update
-}  // namespace chromeos
+}  // namespace ash

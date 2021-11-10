@@ -318,7 +318,7 @@ void SystemTrayClientImpl::ShowDateSettings() {
 }
 
 void SystemTrayClientImpl::ShowSetTimeDialog() {
-  chromeos::SetTimeDialog::ShowDialog();
+  ash::SetTimeDialog::ShowDialog();
 }
 
 void SystemTrayClientImpl::ShowDisplaySettings() {

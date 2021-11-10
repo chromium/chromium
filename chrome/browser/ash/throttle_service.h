@@ -19,7 +19,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
+namespace ash {
 
 // This class is the base for different throttle services on ChromeOS.
 // The class holds a number of ThrottleObservers which watch for several
@@ -97,6 +97,11 @@ class ThrottleService {
   base::WeakPtrFactory<ThrottleService> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::ThrottleService;
+}
 
 #endif  // CHROME_BROWSER_ASH_THROTTLE_SERVICE_H_

@@ -196,7 +196,7 @@ CrostiniManager::RestartOptions& CrostiniManager::RestartOptions::operator=(
     RestartOptions&&) = default;
 
 class CrostiniManager::CrostiniRestarter
-    : public chromeos::VmShutdownObserver,
+    : public ash::VmShutdownObserver,
       public chromeos::SchedulerConfigurationManagerBase::Observer {
  public:
   CrostiniRestarter(Profile* profile,
@@ -250,7 +250,7 @@ class CrostiniManager::CrostiniRestarter
     }
   }
 
-  // chromeos::VmShutdownObserver
+  // ash::VmShutdownObserver
   void OnVmShutdown(const std::string& vm_name) override {
     if (ReturnEarlyIfAborted()) {
       return;
@@ -2200,21 +2200,19 @@ void CrostiniManager::RemoveUpgradeContainerProgressObserver(
   upgrade_container_progress_observers_.RemoveObserver(observer);
 }
 
-void CrostiniManager::AddVmShutdownObserver(
-    chromeos::VmShutdownObserver* observer) {
+void CrostiniManager::AddVmShutdownObserver(ash::VmShutdownObserver* observer) {
   vm_shutdown_observers_.AddObserver(observer);
 }
 void CrostiniManager::RemoveVmShutdownObserver(
-    chromeos::VmShutdownObserver* observer) {
+    ash::VmShutdownObserver* observer) {
   vm_shutdown_observers_.RemoveObserver(observer);
 }
 
-void CrostiniManager::AddVmStartingObserver(
-    chromeos::VmStartingObserver* observer) {
+void CrostiniManager::AddVmStartingObserver(ash::VmStartingObserver* observer) {
   vm_starting_observers_.AddObserver(observer);
 }
 void CrostiniManager::RemoveVmStartingObserver(
-    chromeos::VmStartingObserver* observer) {
+    ash::VmStartingObserver* observer) {
   vm_starting_observers_.RemoveObserver(observer);
 }
 

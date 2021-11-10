@@ -256,8 +256,6 @@
 namespace ash {
 namespace {
 
-namespace startup_settings_cache = ::chromeos::startup_settings_cache;
-
 void ChromeOSVersionCallback(const std::string& version) {
   base::SetLinuxDistro(std::string("CrOS ") + version);
 }
@@ -740,7 +738,7 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   g_browser_process->platform_part()->InitializeChromeUserManager();
 
-  if (base::FeatureList::IsEnabled(ash::features::kPerUserMetrics)) {
+  if (base::FeatureList::IsEnabled(features::kPerUserMetrics)) {
     // Enable per-user metrics support as soon as user_manager is created.
     g_browser_process->metrics_service()->InitPerUserMetrics();
   }
@@ -1119,10 +1117,10 @@ void ChromeBrowserMainPartsAsh::PostProfileInit() {
   login_screen_extensions_storage_cleaner_ =
       std::make_unique<LoginScreenExtensionsStorageCleaner>();
 
-  ash::QuickAnswersController::Get()->SetClient(
-      std::make_unique<ash::quick_answers::QuickAnswersClient>(
+  QuickAnswersController::Get()->SetClient(
+      std::make_unique<quick_answers::QuickAnswersClient>(
           g_browser_process->shared_url_loader_factory(),
-          ash::QuickAnswersController::Get()->GetQuickAnswersDelegate()));
+          QuickAnswersController::Get()->GetQuickAnswersDelegate()));
 
   ChromeBrowserMainPartsLinux::PostProfileInit();
 }

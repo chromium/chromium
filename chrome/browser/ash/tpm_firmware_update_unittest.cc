@@ -25,7 +25,7 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace tpm_firmware_update {
 
 TEST(TPMFirmwareUpdateTest, DecodeSettingsProto) {
@@ -353,4 +353,4 @@ TEST_F(TPMFirmwareAutoUpdateTest, NoUpdate) {
 }
 
 }  // namespace tpm_firmware_update
-}  // namespace chromeos
+}  // namespace ash

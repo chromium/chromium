@@ -17,7 +17,7 @@ namespace aura {
 class Window;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Base class for locks that observe changes in window activation.
 class WindowThrottleObserverBase : public ThrottleObserver,
@@ -50,6 +50,6 @@ class WindowThrottleObserverBase : public ThrottleObserver,
                                        aura::Window* lost_active) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_WINDOW_THROTTLE_OBSERVER_BASE_H_

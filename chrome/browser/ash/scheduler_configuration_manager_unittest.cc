@@ -17,18 +17,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 class SchedulerConfigurationManagerTest
     : public testing::Test,
-      public SchedulerConfigurationManagerBase::Observer {
+      public chromeos::SchedulerConfigurationManagerBase::Observer {
  public:
   SchedulerConfigurationManagerTest() {
     SchedulerConfigurationManager::RegisterLocalStatePrefs(
         local_state_.registry());
   }
 
-  // SchedulerConfigurationManagerBase::Observer:
+  // chromeos::SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override {
     ++configuration_set_count_;
   }
@@ -165,4 +165,4 @@ TEST_F(SchedulerConfigurationManagerTest, FinchDefault) {
   EXPECT_EQ("config", debug_daemon_client_.scheduler_configuration_name());
 }
 
-}  // namespace chromeos
+}  // namespace ash

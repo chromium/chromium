@@ -34,7 +34,7 @@
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/nss_cert_database_chromeos.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -243,4 +243,4 @@ void SystemTokenCertDBInitializer::InitializeDatabase(
   system_token_cert_db_storage->SetDatabase(system_token_cert_database_.get());
 }
 
-}  // namespace chromeos
+}  // namespace ash

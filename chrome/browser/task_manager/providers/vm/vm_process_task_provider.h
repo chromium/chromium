@@ -23,7 +23,7 @@ struct VmProcessData;
 // display tasks for the VMs themselves, later that will be expanded to also
 // include the processes inside of the VM as part of the TaskGroup.
 class VmProcessTaskProvider : public TaskProvider,
-                              public ProcessSnapshotServer::Observer {
+                              public ash::ProcessSnapshotServer::Observer {
  public:
   VmProcessTaskProvider();
   VmProcessTaskProvider(const VmProcessTaskProvider&) = delete;
@@ -33,7 +33,7 @@ class VmProcessTaskProvider : public TaskProvider,
   // task_manager::TaskProvider:
   Task* GetTaskOfUrlRequest(int child_id, int route_id) override;
 
-  // ProcessSnapshotServer::Observer:
+  // ash::ProcessSnapshotServer::Observer:
   void OnProcessSnapshotRefreshed(
       const base::ProcessIterator::ProcessEntries& snapshot) override;
 
@@ -45,7 +45,7 @@ class VmProcessTaskProvider : public TaskProvider,
   void OnUpdateVmProcessList(const std::vector<VmProcessData>& vm_process_list);
 
   // The time at which the most recent process snapshot was received from the
-  // ProcessSnapshotServer.
+  // `ash::ProcessSnapshotServer`.
   base::Time last_process_snapshot_time_;
 
   // Map of PIDs to the corresponding Task object for a running VM.

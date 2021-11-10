@@ -19,13 +19,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
+
+namespace {
+
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
-
-namespace chromeos {
-
-namespace {
 
 class MockSessionLengthLimiterDelegate : public SessionLengthLimiter::Delegate {
  public:
@@ -814,4 +814,4 @@ TEST_F(SessionLengthLimiterTest, SuspendAndRun) {
   EXPECT_EQ(session_start_time_ + base::Seconds(60), session_stop_time_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

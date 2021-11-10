@@ -78,9 +78,8 @@ class PluginVmManagerImpl
 
   bool IsRelaunchNeededForNewPermissions() const override;
 
-  void AddVmStartingObserver(chromeos::VmStartingObserver* observer) override;
-  void RemoveVmStartingObserver(
-      chromeos::VmStartingObserver* observer) override;
+  void AddVmStartingObserver(ash::VmStartingObserver* observer) override;
+  void RemoveVmStartingObserver(ash::VmStartingObserver* observer) override;
 
   PluginVmUninstallerNotification* uninstaller_notification_for_testing()
       const {
@@ -155,7 +154,7 @@ class PluginVmManagerImpl
   vm_tools::plugin_dispatcher::VmState vm_state_ =
       vm_tools::plugin_dispatcher::VmState::VM_STATE_UNKNOWN;
 
-  base::ObserverList<chromeos::VmStartingObserver> vm_starting_observers_;
+  base::ObserverList<ash::VmStartingObserver> vm_starting_observers_;
 
   // Members used in the launch flow.
 

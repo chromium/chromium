@@ -24,7 +24,7 @@ class LockToSingleUserManager final
     : public user_manager::UserManager::UserSessionStateObserver,
       public arc::ArcSessionManagerObserver,
       public chromeos::ConciergeClient::VmObserver,
-      public chromeos::VmStartingObserver {
+      public ash::VmStartingObserver {
  public:
   static LockToSingleUserManager* GetLockToSingleUserManagerInstance();
 
@@ -49,7 +49,7 @@ class LockToSingleUserManager final
   void OnVmStarted(const vm_tools::concierge::VmStartedSignal& signal) override;
   void OnVmStopped(const vm_tools::concierge::VmStoppedSignal& signal) override;
 
-  // chromeos::VmStartingObserver:
+  // ash::VmStartingObserver:
   void OnVmStarting() override;
 
   // On affiliation established of the active user.

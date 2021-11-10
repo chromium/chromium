@@ -19,7 +19,7 @@ namespace enterprise_management {
 class TPMFirmwareUpdateSettingsProto;
 }
 
-namespace chromeos {
+namespace ash {
 namespace tpm_firmware_update {
 
 // Constants to identify the TPM firmware update modes that are supported. Do
@@ -64,16 +64,13 @@ void UpdateAvailable(base::OnceCallback<void(bool)> completion,
                      base::TimeDelta timeout);
 
 }  // namespace tpm_firmware_update
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace ash {
-namespace tpm_firmware_update {
-using ::chromeos::tpm_firmware_update::DecodeSettingsProto;
-using ::chromeos::tpm_firmware_update::GetAvailableUpdateModes;
-using ::chromeos::tpm_firmware_update::Mode;
-}  // namespace tpm_firmware_update
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace tpm_firmware_update {
+using ::ash::tpm_firmware_update::Mode;
+}
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_TPM_FIRMWARE_UPDATE_H_

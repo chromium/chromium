@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 namespace startup_settings_cache {
 
 // On Chrome OS, the application locale is stored in local state prefs. The
@@ -27,6 +27,6 @@ std::string ReadAppLocale();
 void WriteAppLocale(std::string app_locale);
 
 }  // namespace startup_settings_cache
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_STARTUP_SETTINGS_CACHE_H_

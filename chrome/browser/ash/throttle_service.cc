@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 
 ThrottleService::ThrottleService(content::BrowserContext* context)
     : context_(context) {}
@@ -111,4 +111,4 @@ void ThrottleService::SetLevel(ThrottleObserver::PriorityLevel level) {
     observer.OnThrottle(level);
 }
 
-}  // namespace chromeos
+}  // namespace ash

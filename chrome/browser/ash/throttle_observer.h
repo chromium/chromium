@@ -15,7 +15,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Base throttle observer class. Each throttle observer watches a particular
 // condition (window activates, mojom instance disconnects, and so on) and
@@ -67,6 +67,11 @@ class ThrottleObserver {
 std::ostream& operator<<(std::ostream& os,
                          const ThrottleObserver::PriorityLevel& level);
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::ThrottleObserver;
+}
 
 #endif  // CHROME_BROWSER_ASH_THROTTLE_OBSERVER_H_

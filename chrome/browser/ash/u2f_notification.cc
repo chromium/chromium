@@ -29,7 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kU2FNotificationId[] = "chrome://u2f_notification";
@@ -104,7 +104,7 @@ void U2FNotification::ShowNotification() {
   data.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_RESET));
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kU2FNotificationId,
           l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_TITLE),
           l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_MESSAGE),
@@ -169,4 +169,4 @@ void U2FNotification::OnNotificationClick(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

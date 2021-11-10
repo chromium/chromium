@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // Detects whether the legacy, never-officially-launched built-in U2F feature is
 // enabled. If so, shows a notification to tell the user about a security issue.
@@ -42,12 +42,6 @@ class U2FNotification {
   base::WeakPtrFactory<U2FNotification> weak_factory_{this};
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::U2FNotification;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_U2F_NOTIFICATION_H_

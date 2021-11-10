@@ -43,7 +43,7 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone);
 bool IsTimezonePrefsManaged(const std::string& pref_name);
 
 // Updates system timezone from user profile data if needed.
-// This is called from chromeos::Preferences after updating profile
+// This is called from `Preferences` after updating profile
 // preferences to apply new value to system time zone.
 void UpdateSystemTimezone(Profile* profile);
 

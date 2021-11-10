@@ -1472,7 +1472,7 @@ void ProfileImpl::OnLogin() {
 }
 
 void ProfileImpl::InitChromeOSPreferences() {
-  chromeos_preferences_ = std::make_unique<chromeos::Preferences>();
+  chromeos_preferences_ = std::make_unique<ash::Preferences>();
   chromeos_preferences_->Init(
       this, chromeos::ProfileHelper::Get()->GetUserByProfile(this));
 }

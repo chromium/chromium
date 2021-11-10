@@ -34,7 +34,7 @@ class PowerInstance;
 // (window activation, mojom instance connection, etc) and adjusts the
 // throttling state of the ARC container on a change in conditions.
 class ArcInstanceThrottle : public KeyedService,
-                            public chromeos::ThrottleService,
+                            public ash::ThrottleService,
                             public ConnectionObserver<mojom::PowerInstance> {
  public:
   class Delegate {
@@ -77,9 +77,8 @@ class ArcInstanceThrottle : public KeyedService,
   }
 
  private:
-  // chromeos::ThrottleService:
-  void ThrottleInstance(
-      chromeos::ThrottleObserver::PriorityLevel level) override;
+  // ash::ThrottleService:
+  void ThrottleInstance(ash::ThrottleObserver::PriorityLevel level) override;
   void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
                                        base::TimeDelta delta) override;
 

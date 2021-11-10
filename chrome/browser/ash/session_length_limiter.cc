@@ -21,7 +21,7 @@
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/events/event.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -224,4 +224,4 @@ void SessionLengthLimiter::UpdateLimit() {
                 &SessionLengthLimiter::Delegate::StopSession);
 }
 
-}  // namespace chromeos
+}  // namespace ash

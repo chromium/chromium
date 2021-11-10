@@ -184,7 +184,7 @@ struct VmProcessData {
 };
 
 VmProcessTaskProvider::VmProcessTaskProvider()
-    : ProcessSnapshotServer::Observer(kRefreshProcessListDelay) {}
+    : ash::ProcessSnapshotServer::Observer(kRefreshProcessListDelay) {}
 
 VmProcessTaskProvider::~VmProcessTaskProvider() = default;
 
@@ -197,8 +197,8 @@ void VmProcessTaskProvider::OnProcessSnapshotRefreshed(
     const base::ProcessIterator::ProcessEntries& snapshot) {
   TRACE_EVENT0("browser", "VmProcessTaskProvider::OnProcessSnapshotRefreshed");
 
-  // Throttle the refreshes in case the ProcessSnapshotServer has observers with
-  // a much higher desired refresh rates.
+  // Throttle the refreshes in case the `ash::ProcessSnapshotServer` has
+  // observers with a much higher desired refresh rates.
   const auto old_snapshot_time = last_process_snapshot_time_;
   last_process_snapshot_time_ = base::Time::Now();
   if ((last_process_snapshot_time_ - old_snapshot_time) <
@@ -234,11 +234,11 @@ void VmProcessTaskProvider::OnProcessSnapshotRefreshed(
 }
 
 void VmProcessTaskProvider::StartUpdating() {
-  ProcessSnapshotServer::Get()->AddObserver(this);
+  ash::ProcessSnapshotServer::Get()->AddObserver(this);
 }
 
 void VmProcessTaskProvider::StopUpdating() {
-  ProcessSnapshotServer::Get()->RemoveObserver(this);
+  ash::ProcessSnapshotServer::Get()->RemoveObserver(this);
   task_map_.clear();
 }
 

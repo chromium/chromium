@@ -146,14 +146,14 @@ class ArcInstanceThrottleFactory
 };
 
 CpuRestrictionState LevelToCpuRestriction(
-    chromeos::ThrottleObserver::PriorityLevel level) {
+    ash::ThrottleObserver::PriorityLevel level) {
   switch (level) {
-    case chromeos::ThrottleObserver::PriorityLevel::CRITICAL:
-    case chromeos::ThrottleObserver::PriorityLevel::IMPORTANT:
-    case chromeos::ThrottleObserver::PriorityLevel::NORMAL:
+    case ash::ThrottleObserver::PriorityLevel::CRITICAL:
+    case ash::ThrottleObserver::PriorityLevel::IMPORTANT:
+    case ash::ThrottleObserver::PriorityLevel::NORMAL:
       return CpuRestrictionState::CPU_RESTRICTION_FOREGROUND;
-    case chromeos::ThrottleObserver::PriorityLevel::LOW:
-    case chromeos::ThrottleObserver::PriorityLevel::UNKNOWN:
+    case ash::ThrottleObserver::PriorityLevel::LOW:
+    case ash::ThrottleObserver::PriorityLevel::UNKNOWN:
       return CpuRestrictionState::CPU_RESTRICTION_BACKGROUND;
   }
 }
@@ -203,7 +203,7 @@ void ArcInstanceThrottle::OnConnectionReady() {
 }
 
 void ArcInstanceThrottle::ThrottleInstance(
-    chromeos::ThrottleObserver::PriorityLevel level) {
+    ash::ThrottleObserver::PriorityLevel level) {
   const CpuRestrictionState cpu_restriction_state =
       LevelToCpuRestriction(level);
   NotifyCpuRestriction(cpu_restriction_state);

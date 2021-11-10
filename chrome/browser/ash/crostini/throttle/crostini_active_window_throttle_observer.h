@@ -13,7 +13,7 @@ namespace crostini {
 // This class observes window activations and sets the state to active if the
 // currently active window is a Crostini window.
 class CrostiniActiveWindowThrottleObserver
-    : public chromeos::WindowThrottleObserverBase {
+    : public ash::WindowThrottleObserverBase {
  public:
   CrostiniActiveWindowThrottleObserver();
 

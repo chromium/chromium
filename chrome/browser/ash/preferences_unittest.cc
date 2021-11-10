@@ -45,7 +45,7 @@
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kIdentityIMEID[] =
@@ -223,11 +223,10 @@ class InputMethodPreferencesTest : public PreferencesTest,
  public:
   InputMethodPreferencesTest() {
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          ash::features::kSyncSettingsCategorization);
+      feature_list_.InitAndEnableFeature(features::kSyncSettingsCategorization);
     } else {
       feature_list_.InitAndDisableFeature(
-          ash::features::kSyncSettingsCategorization);
+          features::kSyncSettingsCategorization);
     }
   }
 
@@ -689,4 +688,4 @@ TEST_P(InputMethodPreferencesTest, MergeAfterSyncing) {
 
 INSTANTIATE_TEST_SUITE_P(All, InputMethodPreferencesTest, testing::Bool());
 
-}  // namespace chromeos
+}  // namespace ash

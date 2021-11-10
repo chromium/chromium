@@ -511,12 +511,12 @@ class CrostiniManager : public KeyedService,
       UpgradeContainerProgressObserver* observer);
 
   // Add/remove vm shutdown observers.
-  void AddVmShutdownObserver(chromeos::VmShutdownObserver* observer);
-  void RemoveVmShutdownObserver(chromeos::VmShutdownObserver* observer);
+  void AddVmShutdownObserver(ash::VmShutdownObserver* observer);
+  void RemoveVmShutdownObserver(ash::VmShutdownObserver* observer);
 
   // Add/remove vm starting observers.
-  void AddVmStartingObserver(chromeos::VmStartingObserver* observer);
-  void RemoveVmStartingObserver(chromeos::VmStartingObserver* observer);
+  void AddVmStartingObserver(ash::VmStartingObserver* observer);
+  void RemoveVmStartingObserver(ash::VmStartingObserver* observer);
 
   // AnomalyDetectorClient::Observer:
   void OnGuestFileCorruption(
@@ -902,8 +902,8 @@ class CrostiniManager : public KeyedService,
   base::ObserverList<UpgradeContainerProgressObserver>::Unchecked
       upgrade_container_progress_observers_;
 
-  base::ObserverList<chromeos::VmShutdownObserver> vm_shutdown_observers_;
-  base::ObserverList<chromeos::VmStartingObserver> vm_starting_observers_;
+  base::ObserverList<ash::VmShutdownObserver> vm_shutdown_observers_;
+  base::ObserverList<ash::VmStartingObserver> vm_starting_observers_;
 
   // Only one restarter flow is actually running for a given container, other
   // restarters will just have their callback called when the running restarter

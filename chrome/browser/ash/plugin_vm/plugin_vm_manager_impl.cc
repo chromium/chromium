@@ -206,11 +206,11 @@ void PluginVmManagerImpl::LaunchPluginVm(LaunchPluginVmCallback callback) {
 }
 
 void PluginVmManagerImpl::AddVmStartingObserver(
-    chromeos::VmStartingObserver* observer) {
+    ash::VmStartingObserver* observer) {
   vm_starting_observers_.AddObserver(observer);
 }
 void PluginVmManagerImpl::RemoveVmStartingObserver(
-    chromeos::VmStartingObserver* observer) {
+    ash::VmStartingObserver* observer) {
   vm_starting_observers_.RemoveObserver(observer);
 }
 

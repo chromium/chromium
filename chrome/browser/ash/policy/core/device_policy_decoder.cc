@@ -1681,12 +1681,11 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
 
   if (policy.has_tpm_firmware_update_settings()) {
-    policies->Set(
-        key::kTPMFirmwareUpdateSettings, POLICY_LEVEL_MANDATORY,
-        POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-        std::move(*(chromeos::tpm_firmware_update::DecodeSettingsProto(
-            policy.tpm_firmware_update_settings()))),
-        nullptr);
+    policies->Set(key::kTPMFirmwareUpdateSettings, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                  std::move(*(ash::tpm_firmware_update::DecodeSettingsProto(
+                      policy.tpm_firmware_update_settings()))),
+                  nullptr);
   }
 
   if (policy.has_device_minimum_version()) {
