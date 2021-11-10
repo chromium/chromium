@@ -51,6 +51,11 @@ class ScopedAppGLStateRestore {
   StencilState stencil_state() const;
   int framebuffer_binding_ext() const;
 
+  // Android HWUI has a bug that asks functor to draw into a 8-bit mask for
+  // functionality that is not related to and not needed by webview.
+  // Skip this draw which is doing extra unnecessary work.
+  bool skip_draw() const;
+
   class Impl {
    public:
     Impl();
@@ -58,10 +63,12 @@ class ScopedAppGLStateRestore {
 
     const StencilState& stencil_state() const { return stencil_state_; }
     int framebuffer_binding_ext() const { return framebuffer_binding_ext_; }
+    bool skip_draw() const { return skip_draw_; }
 
    protected:
     StencilState stencil_state_{};
     int framebuffer_binding_ext_ = 0;
+    bool skip_draw_ = false;
   };
 
  private:
