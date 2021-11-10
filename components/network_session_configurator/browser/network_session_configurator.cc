@@ -506,7 +506,7 @@ bool AreQuicParamsValid(const base::CommandLine& command_line,
     // Failed to parse epoch as int.
     return false;
   }
-  if (epoch < 20210915) {
+  if (epoch < 20211025) {
     // All channels currently have an epoch of at least this value. This
     // can be confirmed by checking the internal QUIC field trial config file.
     return false;

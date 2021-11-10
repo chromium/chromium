@@ -486,6 +486,10 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
       connection.release(),
       quic::QuicServerId(url_.host(), url_.EffectiveIntPort()), &crypto_config_,
       &push_promise_index_, this);
+  if (!original_supported_versions_.empty()) {
+    session_->set_client_original_supported_versions(
+        original_supported_versions_);
+  }
 
   packet_reader_ = std::make_unique<QuicChromiumPacketReader>(
       socket_.get(), quic_context_->clock(), this, kQuicYieldAfterPacketsRead,
@@ -751,6 +755,8 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
   if (!retried_with_new_version_ &&
       session_->error() == quic::QUIC_INVALID_VERSION) {
     retried_with_new_version_ = true;
+    DCHECK(original_supported_versions_.empty());
+    original_supported_versions_ = supported_versions_;
     base::EraseIf(
         supported_versions_, [this](const quic::ParsedQuicVersion& version) {
           return !base::Contains(
