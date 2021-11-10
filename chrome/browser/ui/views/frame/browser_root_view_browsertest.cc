@@ -29,6 +29,10 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
   }
 };
 
+// TODO(https://crbug.com/1220680): These tests produces wayland protocol error
+// wl_display.error(xdg_surface, 1, "popup parent not constructed") on LaCrOS
+// with Exo.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Clear drop info after performing drop. http://crbug.com/838791
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
   ui::OSExchangeData data;
@@ -95,3 +99,4 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, RunDropCallback) {
   EXPECT_EQ(output_drag_op, ui::mojom::DragOperation::kCopy);
   EXPECT_EQ(tab_strip_model->count(), 2);
 }
+#endif  // #if !BUILDFLAG(IS_CHROMEOS_LACROS)

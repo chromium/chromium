@@ -273,7 +273,13 @@ bool WaylandEventWatcher::CheckForErrors() {
     if (!shutdown_cb_.is_null()) {
       // Force a crash so that a crash report is generated.
       CHECK(err == EPIPE || err == ECONNRESET) << "Wayland protocol error.";
-      std::move(shutdown_cb_).Run();
+      if (ui_thread_task_runner_->BelongsToCurrentThread()) {
+        DCHECK(!use_dedicated_polling_thread_);
+        std::move(shutdown_cb_).Run();
+      } else {
+        DCHECK(use_dedicated_polling_thread_);
+        ui_thread_task_runner_->PostTask(FROM_HERE, std::move(shutdown_cb_));
+      }
     }
     return false;
   }
