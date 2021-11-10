@@ -729,8 +729,8 @@ class WizardControllerFlowTest : public WizardControllerTest {
     WaitUntilTimezoneResolved();
     EXPECT_EQ(
         "America/Anchorage",
-        base::UTF16ToUTF8(chromeos::system::TimezoneSettings::GetInstance()
-                              ->GetCurrentTimezoneID()));
+        base::UTF16ToUTF8(
+            system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID()));
   }
 
   // All of the *Screen types are owned by WizardController. The views are owned

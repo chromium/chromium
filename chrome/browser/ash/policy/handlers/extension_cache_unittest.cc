@@ -64,7 +64,7 @@ class ExtensionCacheTest : public testing::Test {
 
 TEST_F(ExtensionCacheTest, SizePolicy) {
   scoped_testing_cros_settings_.device_settings()->SetInteger(
-      chromeos::kExtensionCacheSize, kMaxCacheSize);
+      ash::kExtensionCacheSize, kMaxCacheSize);
 
   // Create and initialize local cache.
   const base::Time now = base::Time::Now();

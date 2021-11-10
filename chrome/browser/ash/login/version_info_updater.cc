@@ -36,9 +36,8 @@ namespace ash {
 namespace {
 
 const char* const kReportingFlags[] = {
-    chromeos::kReportDeviceVersionInfo, chromeos::kReportDeviceActivityTimes,
-    chromeos::kReportDeviceBootMode, chromeos::kReportDeviceLocation,
-    chromeos::kDeviceLoginScreenSystemInfoEnforced};
+    kReportDeviceVersionInfo, kReportDeviceActivityTimes, kReportDeviceBootMode,
+    kReportDeviceLocation, kDeviceLoginScreenSystemInfoEnforced};
 
 // Strings used to generate the serial number part of the version string.
 const char kSerialNumberPrefix[] = "SN:";
@@ -119,7 +118,7 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
 
 absl::optional<bool> VersionInfoUpdater::IsSystemInfoEnforced() const {
   bool is_system_info_enforced = false;
-  if (cros_settings_->GetBoolean(chromeos::kDeviceLoginScreenSystemInfoEnforced,
+  if (cros_settings_->GetBoolean(kDeviceLoginScreenSystemInfoEnforced,
                                  &is_system_info_enforced)) {
     return is_system_info_enforced;
   }

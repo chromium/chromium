@@ -159,7 +159,7 @@ MinimumVersionPolicyHandler::MinimumVersionPolicyHandler(
       cros_settings_(cros_settings),
       clock_(base::DefaultClock::GetInstance()) {
   policy_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kDeviceMinimumVersion,
+      ash::kDeviceMinimumVersion,
       base::BindRepeating(&MinimumVersionPolicyHandler::OnPolicyChanged,
                           weak_factory_.GetWeakPtr()));
 
@@ -217,12 +217,11 @@ bool MinimumVersionPolicyHandler::IsPolicyApplicable() {
 }
 
 void MinimumVersionPolicyHandler::OnPolicyChanged() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&MinimumVersionPolicyHandler::OnPolicyChanged,
                          weak_factory_.GetWeakPtr()));
-  if (status != chromeos::CrosSettingsProvider::TRUSTED ||
-      !IsPolicyApplicable() ||
+  if (status != ash::CrosSettingsProvider::TRUSTED || !IsPolicyApplicable() ||
       !chromeos::features::IsMinimumChromeVersionEnabled()) {
     VLOG(1) << "Ignore policy change - policy is not applicable or settings "
                "are not trusted.";
@@ -230,7 +229,7 @@ void MinimumVersionPolicyHandler::OnPolicyChanged() {
   }
 
   const base::DictionaryValue* policy_value;
-  if (!cros_settings_->GetDictionary(chromeos::kDeviceMinimumVersion,
+  if (!cros_settings_->GetDictionary(ash::kDeviceMinimumVersion,
                                      &policy_value)) {
     VLOG(1) << "Revoke policy - policy is unset or value is incorrect.";
     HandleUpdateNotRequired();

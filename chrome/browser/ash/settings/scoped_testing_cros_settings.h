@@ -8,14 +8,12 @@
 #include <memory>
 
 #include "base/macros.h"
-// TODO(https://crbug.com/1164001): forward declare SystemSettingsProvider when
-// moved to ash.
-#include "ash/components/settings/system_settings_provider.h"
 
 namespace ash {
 
 class CrosSettings;
 class StubCrosSettingsProvider;
+class SystemSettingsProvider;
 
 // Helper class which calls CrosSettings::SetForTesting when it is constructed,
 // and calls CrosSettings::ShutdownForTesting when it goes out of scope,

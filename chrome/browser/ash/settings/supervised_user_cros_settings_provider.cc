@@ -16,12 +16,10 @@ namespace ash {
 SupervisedUserCrosSettingsProvider::SupervisedUserCrosSettingsProvider(
     const CrosSettingsProvider::NotifyObserversCallback& notify_cb)
     : CrosSettingsProvider(notify_cb) {
-  child_user_restrictions_[chromeos::kAccountsPrefAllowGuest] =
-      base::Value(false);
-  child_user_restrictions_[chromeos::kAccountsPrefShowUserNamesOnSignIn] =
+  child_user_restrictions_[kAccountsPrefAllowGuest] = base::Value(false);
+  child_user_restrictions_[kAccountsPrefShowUserNamesOnSignIn] =
       base::Value(true);
-  child_user_restrictions_[chromeos::kAccountsPrefAllowNewUser] =
-      base::Value(true);
+  child_user_restrictions_[kAccountsPrefAllowNewUser] = base::Value(true);
 }
 
 SupervisedUserCrosSettingsProvider::~SupervisedUserCrosSettingsProvider() =

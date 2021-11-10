@@ -171,8 +171,7 @@ bool IsUserAllowedForARC(const AccountId& account_id) {
 
 AccountId GetOwnerAccountId() {
   std::string owner_email;
-  chromeos::CrosSettings::Get()->GetString(chromeos::kDeviceOwner,
-                                           &owner_email);
+  CrosSettings::Get()->GetString(kDeviceOwner, &owner_email);
   const AccountId owner = user_manager::known_user::GetAccountId(
       owner_email, std::string() /* id */, AccountType::UNKNOWN);
   return owner;
@@ -932,9 +931,8 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
             gaia::ExtractDomainName(user->display_email());
       }
     }
-    chromeos::CrosSettings::Get()->GetBoolean(
-        chromeos::kDeviceShowNumericKeyboardForPassword,
-        &user_info.show_pin_pad_for_password);
+    CrosSettings::Get()->GetBoolean(kDeviceShowNumericKeyboardForPassword,
+                                    &user_info.show_pin_pad_for_password);
     user_manager::known_user::GetBooleanPref(
         user->GetAccountId(), prefs::kLoginDisplayPasswordButtonEnabled,
         &user_info.show_display_password_button);

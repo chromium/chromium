@@ -744,7 +744,7 @@ TEST_F(BrowserUtilTest, DeviceSettingsWithData) {
   base::RunLoop().RunUntilIdle();
   testing_profile_.ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
-      ->SetBoolean(chromeos::kAttestationForContentProtectionEnabled, true);
+      ->SetBoolean(ash::kAttestationForContentProtectionEnabled, true);
 
   base::Value allowlist(base::Value::Type::LIST);
   base::Value ids(base::Value::Type::DICTIONARY);
@@ -753,7 +753,7 @@ TEST_F(BrowserUtilTest, DeviceSettingsWithData) {
   allowlist.Append(std::move(ids));
 
   testing_profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->Set(
-      chromeos::kUsbDetachableAllowlist, std::move(allowlist));
+      ash::kUsbDetachableAllowlist, std::move(allowlist));
 
   auto settings = browser_util::GetDeviceSettings();
   testing_profile_.ScopedCrosSettingsTestHelper()

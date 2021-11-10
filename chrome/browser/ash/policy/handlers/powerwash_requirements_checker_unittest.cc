@@ -45,7 +45,7 @@ class PowerwashRequirementsCheckerTest : public BrowserWithTestWindowTest {
   }
 
   void SetDeviceRebootOnUserSignoutPolicy(int value) {
-    settings_helper_.SetInteger(chromeos::kDeviceRebootOnUserSignout, value);
+    settings_helper_.SetInteger(ash::kDeviceRebootOnUserSignout, value);
   }
 
   void SetupCryptohomeRequiresPowerwash(bool requires_powerwash) {

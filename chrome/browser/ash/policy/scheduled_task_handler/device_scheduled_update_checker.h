@@ -26,7 +26,7 @@ namespace policy {
 // This class listens for changes in the scheduled update check policy and then
 // manages recurring update checks based on the policy.
 class DeviceScheduledUpdateChecker
-    : public chromeos::system::TimezoneSettings::Observer {
+    : public ash::system::TimezoneSettings::Observer {
  public:
   DeviceScheduledUpdateChecker(
       ash::CrosSettings* cros_settings,
@@ -39,7 +39,7 @@ class DeviceScheduledUpdateChecker
 
   ~DeviceScheduledUpdateChecker() override;
 
-  // chromeos::system::TimezoneSettings::Observer implementation.
+  // ash::system::TimezoneSettings::Observer implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override;
 
  protected:

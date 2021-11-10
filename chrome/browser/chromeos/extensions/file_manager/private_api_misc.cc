@@ -237,9 +237,8 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.search_suggest_enabled =
       service->GetBoolean(prefs::kSearchSuggestEnabled);
   result.use24hour_clock = service->GetBoolean(prefs::kUse24HourClock);
-  result.timezone =
-      base::UTF16ToUTF8(chromeos::system::TimezoneSettings::GetInstance()
-                            ->GetCurrentTimezoneID());
+  result.timezone = base::UTF16ToUTF8(
+      ash::system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID());
   result.arc_enabled = service->GetBoolean(arc::prefs::kArcEnabled);
   result.arc_removable_media_access_enabled =
       service->GetBoolean(arc::prefs::kArcHasAccessToRemovableMedia);

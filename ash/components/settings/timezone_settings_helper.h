@@ -10,7 +10,7 @@
 
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 // Return a timezone in the list matching |timezone| in terms of
@@ -21,6 +21,6 @@ const icu::TimeZone* GetKnownTimezoneOrNull(
     const std::vector<std::unique_ptr<icu::TimeZone>>& timezone_list);
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_HELPER_H_

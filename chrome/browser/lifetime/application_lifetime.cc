@@ -117,7 +117,7 @@ bool SetLocaleForNextStart(PrefService* local_state) {
   ash::CrosSettings* cros_settings = ash::CrosSettings::Get();
   const base::ListValue* login_screen_locales = nullptr;
   std::string login_screen_locale;
-  if (cros_settings->GetList(chromeos::kDeviceLoginScreenLocales,
+  if (cros_settings->GetList(ash::kDeviceLoginScreenLocales,
                              &login_screen_locales) &&
       !login_screen_locales->GetList().empty() &&
       login_screen_locales->GetString(0, &login_screen_locale)) {

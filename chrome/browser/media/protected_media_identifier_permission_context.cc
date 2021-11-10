@@ -155,8 +155,7 @@ bool ProtectedMediaIdentifierPermissionContext::
   // settings.
   bool enabled_for_device = false;
   if (!ash::CrosSettings::Get()->GetBoolean(
-          chromeos::kAttestationForContentProtectionEnabled,
-          &enabled_for_device) ||
+          ash::kAttestationForContentProtectionEnabled, &enabled_for_device) ||
       !enabled_for_device) {
     DVLOG(1) << "Protected media identifier disabled by the user or by device "
                 "policy.";

@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 COMPONENT_EXPORT(ASH_SETTINGS)
@@ -43,4 +43,4 @@ const icu::TimeZone* GetKnownTimezoneOrNull(
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

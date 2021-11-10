@@ -17,9 +17,9 @@
 
 namespace base {
 class Value;
-}
+}  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(ASH_SETTINGS) SystemSettingsProvider
     : public CrosSettingsProvider,
@@ -50,11 +50,11 @@ class COMPONENT_EXPORT(ASH_SETTINGS) SystemSettingsProvider
   std::unique_ptr<base::Value> fine_grained_time_zone_enabled_value_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::SystemSettingsProvider;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::SystemSettingsProvider;
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_SETTINGS_SYSTEM_SETTINGS_PROVIDER_H_

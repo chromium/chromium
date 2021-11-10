@@ -337,11 +337,11 @@ bool ChromeExtensionsAPIClient::ShouldAllowDetachingUsb(int vid,
   // have access to ash::CrosSettings (https://crbug.com/1219329).
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const base::ListValue* policy_list;
-  if (ash::CrosSettings::Get()->GetList(chromeos::kUsbDetachableAllowlist,
+  if (ash::CrosSettings::Get()->GetList(ash::kUsbDetachableAllowlist,
                                         &policy_list)) {
     for (const auto& entry : policy_list->GetList()) {
-      if (entry.FindIntKey(chromeos::kUsbDetachableAllowlistKeyVid) == vid &&
-          entry.FindIntKey(chromeos::kUsbDetachableAllowlistKeyPid) == pid) {
+      if (entry.FindIntKey(ash::kUsbDetachableAllowlistKeyVid) == vid &&
+          entry.FindIntKey(ash::kUsbDetachableAllowlistKeyPid) == pid) {
         return true;
       }
     }

@@ -186,8 +186,8 @@ base::Version UpdateRequiredNotificationTest::GetCurrentVersion() const {
 }
 
 void UpdateRequiredNotificationTest::SetPolicyPref(base::Value value) {
-  scoped_testing_cros_settings_.device_settings()->Set(
-      chromeos::kDeviceMinimumVersion, value);
+  scoped_testing_cros_settings_.device_settings()->Set(kDeviceMinimumVersion,
+                                                       value);
 }
 
 void UpdateRequiredNotificationTest::VerifyUpdateRequiredNotification(

@@ -302,7 +302,7 @@ TEST_P(SystemLogUploaderTest, LogThrottleTest) {
         false, SystemLogUploader::SystemLogs(), is_zipped_upload_);
 
     syslog_delegate->set_upload_allowed(true);
-    settings_helper_.SetBoolean(chromeos::kSystemLogUploadEnabled, true);
+    settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
 
     SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
 
@@ -326,7 +326,7 @@ TEST_P(SystemLogUploaderTest, ImmediateLogUpload) {
       false, SystemLogUploader::SystemLogs(), is_zipped_upload_);
 
   syslog_delegate->set_upload_allowed(true);
-  settings_helper_.SetBoolean(chromeos::kSystemLogUploadEnabled, true);
+  settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
 
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
   for (int upload_num = 0;
@@ -363,7 +363,7 @@ TEST_P(SystemLogUploaderTest, SuccessTest) {
                                 SystemLogUploader::SystemLogs(),
                                 is_zipped_upload_));
   syslog_delegate->set_upload_allowed(true);
-  settings_helper_.SetBoolean(chromeos::kSystemLogUploadEnabled, true);
+  settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
 
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
@@ -382,7 +382,7 @@ TEST_P(SystemLogUploaderTest, ThreeFailureTest) {
                                 SystemLogUploader::SystemLogs(),
                                 is_zipped_upload_));
   syslog_delegate->set_upload_allowed(true);
-  settings_helper_.SetBoolean(chromeos::kSystemLogUploadEnabled, true);
+  settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
 
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
@@ -408,7 +408,7 @@ TEST_P(SystemLogUploaderTest, CheckHeaders) {
       new MockSystemLogDelegate(/*is_upload_error=*/false, system_logs,
                                 is_zipped_upload_));
   syslog_delegate->set_upload_allowed(true);
-  settings_helper_.SetBoolean(chromeos::kSystemLogUploadEnabled, true);
+  settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
 
   EXPECT_EQ(1U, task_runner_->NumPendingTasks());
@@ -427,7 +427,7 @@ TEST_P(SystemLogUploaderTest, DisableLogUpload) {
                                 SystemLogUploader::SystemLogs(),
                                 is_zipped_upload_));
   MockSystemLogDelegate* mock_delegate = syslog_delegate.get();
-  settings_helper_.SetBoolean(chromeos::kSystemLogUploadEnabled, true);
+  settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, true);
   mock_delegate->set_upload_allowed(true);
   SystemLogUploader uploader(std::move(syslog_delegate), task_runner_);
 
@@ -438,7 +438,7 @@ TEST_P(SystemLogUploaderTest, DisableLogUpload) {
 
   // Disable log upload and check that frequency is usual, because there is no
   // errors, we should not upload logs.
-  settings_helper_.SetBoolean(chromeos::kSystemLogUploadEnabled, false);
+  settings_helper_.SetBoolean(ash::kSystemLogUploadEnabled, false);
   mock_delegate->set_upload_allowed(false);
   task_runner_->RunPendingTasks();
 

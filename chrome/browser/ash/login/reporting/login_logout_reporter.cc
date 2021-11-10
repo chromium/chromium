@@ -112,7 +112,7 @@ std::unique_ptr<LoginLogoutReporter> LoginLogoutReporter::CreateForTest(
 
 void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
                                            const AccountId& account_id) {
-  if (!reporter_helper_->ReportingEnabled(chromeos::kReportDeviceLoginLogout)) {
+  if (!reporter_helper_->ReportingEnabled(kReportDeviceLoginLogout)) {
     return;
   }
 

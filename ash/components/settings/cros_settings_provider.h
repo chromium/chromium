@@ -12,9 +12,9 @@
 
 namespace base {
 class Value;
-}
+}  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(ASH_SETTINGS) CrosSettingsProvider {
  public:
@@ -68,11 +68,11 @@ class COMPONENT_EXPORT(ASH_SETTINGS) CrosSettingsProvider {
   NotifyObserversCallback notify_cb_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::CrosSettingsProvider;
-}
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CrosSettingsProvider;
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_SETTINGS_CROS_SETTINGS_PROVIDER_H_

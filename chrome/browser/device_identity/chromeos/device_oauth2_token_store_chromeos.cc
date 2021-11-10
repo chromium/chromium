@@ -21,7 +21,7 @@ DeviceOAuth2TokenStoreChromeOS::DeviceOAuth2TokenStoreChromeOS(
     : local_state_(local_state),
       service_account_identity_subscription_(
           CrosSettings::Get()->AddSettingsObserver(
-              kServiceAccountIdentity,
+              ash::kServiceAccountIdentity,
               base::BindRepeating(&DeviceOAuth2TokenStoreChromeOS::
                                       OnServiceAccountIdentityChanged,
                                   base::Unretained(this)))) {}
@@ -47,7 +47,7 @@ void DeviceOAuth2TokenStoreChromeOS::Init(InitCallback callback) {
 
 CoreAccountId DeviceOAuth2TokenStoreChromeOS::GetAccountId() const {
   std::string email;
-  CrosSettings::Get()->GetString(kServiceAccountIdentity, &email);
+  CrosSettings::Get()->GetString(ash::kServiceAccountIdentity, &email);
   return CoreAccountId::FromEmail(email);
 }
 

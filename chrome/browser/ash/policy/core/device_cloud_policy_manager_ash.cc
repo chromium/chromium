@@ -311,7 +311,7 @@ void DeviceCloudPolicyManagerAsh::CreateStatusUploader() {
   bool granular_reporting_enabled;
   ash::CrosSettings* settings = ash::CrosSettings::Get();
 
-  if (!settings->GetBoolean(chromeos::kEnableDeviceGranularReporting,
+  if (!settings->GetBoolean(ash::kEnableDeviceGranularReporting,
                             &granular_reporting_enabled)) {
     granular_reporting_enabled = true;
   }

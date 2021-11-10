@@ -48,7 +48,7 @@ DeviceScheduledUpdateChecker::DeviceScheduledUpdateChecker(
     std::unique_ptr<ScheduledTaskExecutor> update_check_executor)
     : cros_settings_(cros_settings),
       cros_settings_subscription_(cros_settings_->AddSettingsObserver(
-          chromeos::kDeviceScheduledUpdateCheck,
+          ash::kDeviceScheduledUpdateCheck,
           base::BindRepeating(
               &DeviceScheduledUpdateChecker::OnScheduledUpdateCheckDataChanged,
               base::Unretained(this)))),
@@ -57,13 +57,13 @@ DeviceScheduledUpdateChecker::DeviceScheduledUpdateChecker(
           update_checker_internal::kStartUpdateCheckTimerRetryTime),
       os_and_policies_update_checker_(network_state_handler),
       update_check_executor_(std::move(update_check_executor)) {
-  chromeos::system::TimezoneSettings::GetInstance()->AddObserver(this);
+  ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
   // Check if policy already exists.
   OnScheduledUpdateCheckDataChanged();
 }
 
 DeviceScheduledUpdateChecker::~DeviceScheduledUpdateChecker() {
-  chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  ash::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 }
 
 void DeviceScheduledUpdateChecker::OnUpdateCheckTimerExpired() {
@@ -118,7 +118,7 @@ void DeviceScheduledUpdateChecker::OnScheduledUpdateCheckDataChanged() {
   // If the policy is removed then reset all state including any existing update
   // checks.
   const base::Value* value =
-      cros_settings_->GetPref(chromeos::kDeviceScheduledUpdateCheck);
+      cros_settings_->GetPref(ash::kDeviceScheduledUpdateCheck);
   if (!value) {
     ResetState();
     return;

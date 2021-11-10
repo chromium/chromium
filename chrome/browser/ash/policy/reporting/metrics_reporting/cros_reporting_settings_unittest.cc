@@ -23,12 +23,12 @@ TEST(CrosReportingSettingsTest, InvalidPath) {
   int int_value = -1;
 
   // Getting boolean from an integer path is not valid.
-  EXPECT_FALSE(cros_reporting_settings.GetBoolean(
-      chromeos::kReportUploadFrequency, &bool_value));
+  EXPECT_FALSE(cros_reporting_settings.GetBoolean(ash::kReportUploadFrequency,
+                                                  &bool_value));
   EXPECT_FALSE(bool_value);
   // Getting integer from a boolean path is not valid.
   EXPECT_FALSE(cros_reporting_settings.GetInteger(
-      chromeos::kReportDeviceNetworkStatus, &int_value));
+      ash::kReportDeviceNetworkStatus, &int_value));
   EXPECT_EQ(int_value, -1);
 }
 
@@ -38,9 +38,9 @@ TEST(CrosReportingSettingsTest, GetBoolean) {
   bool bool_value;
 
   scoped_testing_cros_settings.device_settings()->SetBoolean(
-      chromeos::kReportDeviceNetworkStatus, true);
+      ash::kReportDeviceNetworkStatus, true);
   bool is_valid = cros_reporting_settings.GetBoolean(
-      chromeos::kReportDeviceNetworkStatus, &bool_value);
+      ash::kReportDeviceNetworkStatus, &bool_value);
 
   ASSERT_TRUE(is_valid);
   EXPECT_TRUE(bool_value);
@@ -52,9 +52,8 @@ TEST(CrosReportingSettingsTest, GetInteger) {
   int int_value = -1;
 
   scoped_testing_cros_settings.device_settings()->SetInteger(
-      chromeos::kReportUploadFrequency, 100);
-  cros_reporting_settings.GetInteger(chromeos::kReportUploadFrequency,
-                                     &int_value);
+      ash::kReportUploadFrequency, 100);
+  cros_reporting_settings.GetInteger(ash::kReportUploadFrequency, &int_value);
 
   EXPECT_EQ(int_value, 100);
 }
@@ -66,11 +65,11 @@ TEST(CrosReportingSettingsTest, AddSettingsObserver) {
 
   base::CallbackListSubscription bool_subscription =
       cros_reporting_settings.AddSettingsObserver(
-          chromeos::kReportDeviceNetworkStatus,
+          ash::kReportDeviceNetworkStatus,
           base::BindLambdaForTesting(
               [&callback_called]() { callback_called = true; }));
   scoped_testing_cros_settings.device_settings()->SetBoolean(
-      chromeos::kReportDeviceNetworkStatus, true);
+      ash::kReportDeviceNetworkStatus, true);
 
   EXPECT_TRUE(callback_called);
 }
@@ -80,7 +79,7 @@ TEST(CrosReportingSettingsTest, PrepareTrustedValues_InitiallyUntrusted) {
   CrosReportingSettings cros_reporting_settings;
 
   scoped_testing_cros_settings.device_settings()->SetTrustedStatus(
-      chromeos::CrosSettingsProvider::TEMPORARILY_UNTRUSTED);
+      ash::CrosSettingsProvider::TEMPORARILY_UNTRUSTED);
   bool callback_called = false;
   bool trusted =
       cros_reporting_settings.PrepareTrustedValues(base::BindLambdaForTesting(
@@ -92,7 +91,7 @@ TEST(CrosReportingSettingsTest, PrepareTrustedValues_InitiallyUntrusted) {
 
   // Callback will be called after setting the trusted status to TRUSTED.
   scoped_testing_cros_settings.device_settings()->SetTrustedStatus(
-      chromeos::CrosSettingsProvider::TRUSTED);
+      ash::CrosSettingsProvider::TRUSTED);
   EXPECT_TRUE(callback_called);
 }
 
@@ -101,7 +100,7 @@ TEST(CrosReportingSettingsTest, PrepareTrustedValues_InitiallyTrusted) {
   CrosReportingSettings cros_reporting_settings;
 
   scoped_testing_cros_settings.device_settings()->SetTrustedStatus(
-      chromeos::CrosSettingsProvider::TRUSTED);
+      ash::CrosSettingsProvider::TRUSTED);
   bool callback_called = false;
   bool trusted =
       cros_reporting_settings.PrepareTrustedValues(base::BindLambdaForTesting(

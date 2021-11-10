@@ -55,9 +55,9 @@
 #include "net/proxy_resolution/proxy_config.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 
-using ::chromeos::system::TimezoneSettings;
-
 namespace {
+
+using ::ash::system::TimezoneSettings;
 
 constexpr char kSetFontScaleAction[] =
     "org.chromium.arc.intent_helper.SET_FONT_SCALE";
@@ -130,10 +130,9 @@ class ArcSettingsServiceFactory
 
 // Listens to changes for select Chrome settings (prefs) that Android cares
 // about and sends the new values to Android to keep the state in sync.
-class ArcSettingsServiceImpl
-    : public chromeos::system::TimezoneSettings::Observer,
-      public ConnectionObserver<mojom::AppInstance>,
-      public chromeos::NetworkStateHandlerObserver {
+class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
+                               public ConnectionObserver<mojom::AppInstance>,
+                               public chromeos::NetworkStateHandlerObserver {
  public:
   ArcSettingsServiceImpl(Profile* profile,
                          ArcBridgeService* arc_bridge_service);

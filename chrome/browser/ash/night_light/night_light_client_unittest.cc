@@ -28,7 +28,7 @@ std::unique_ptr<icu::TimeZone> CreateTimezone(const char* timezone_id) {
 }
 
 std::u16string GetTimezoneId(const icu::TimeZone& timezone) {
-  return chromeos::system::TimezoneSettings::GetTimezoneID(timezone);
+  return ash::system::TimezoneSettings::GetTimezoneID(timezone);
 }
 
 // A fake implementation of NightLightController for testing.

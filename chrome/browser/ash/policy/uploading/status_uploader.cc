@@ -59,12 +59,12 @@ StatusUploader::StatusUploader(
   // server.
   upload_frequency_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kReportUploadFrequency,
+          ash::kReportUploadFrequency,
           base::BindRepeating(&StatusUploader::RefreshUploadFrequency,
                               base::Unretained(this)));
   granular_reporting_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kEnableDeviceGranularReporting,
+          ash::kEnableDeviceGranularReporting,
           base::BindRepeating(&StatusUploader::UpdateStatusCollector,
                               base::Unretained(this)));
 
@@ -116,7 +116,7 @@ void StatusUploader::UpdateStatusCollector() {
   }
 
   ash::CrosSettings* settings = ash::CrosSettings::Get();
-  if (chromeos::CrosSettingsProvider::TRUSTED !=
+  if (ash::CrosSettingsProvider::TRUSTED !=
       settings->PrepareTrustedValues(
           base::BindOnce(&StatusUploader::UpdateStatusCollector,
                          weak_factory_.GetWeakPtr()))) {
@@ -124,7 +124,7 @@ void StatusUploader::UpdateStatusCollector() {
   }
 
   bool granular_reporting_enabled;
-  if (!settings->GetBoolean(chromeos::kEnableDeviceGranularReporting,
+  if (!settings->GetBoolean(ash::kEnableDeviceGranularReporting,
                             &granular_reporting_enabled)) {
     granular_reporting_enabled = true;
   }
@@ -146,7 +146,7 @@ void StatusUploader::RefreshUploadFrequency() {
   // If trusted values are not available, register this function to be called
   // back when they are available.
   ash::CrosSettings* settings = ash::CrosSettings::Get();
-  if (chromeos::CrosSettingsProvider::TRUSTED !=
+  if (ash::CrosSettingsProvider::TRUSTED !=
       settings->PrepareTrustedValues(
           base::BindOnce(&StatusUploader::RefreshUploadFrequency,
                          weak_factory_.GetWeakPtr()))) {
@@ -157,7 +157,7 @@ void StatusUploader::RefreshUploadFrequency() {
   // value because CrosSettings can become untrusted at arbitrary times and we
   // want to use the last trusted value).
   int frequency;
-  if (settings->GetInteger(chromeos::kReportUploadFrequency, &frequency)) {
+  if (settings->GetInteger(ash::kReportUploadFrequency, &frequency)) {
     SYSLOG(INFO) << "Changing status upload frequency from "
                  << upload_frequency_ << " to "
                  << base::Milliseconds(frequency);

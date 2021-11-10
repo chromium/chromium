@@ -552,7 +552,7 @@ void EventRouter::Shutdown() {
   if (intent_helper)
     intent_helper->RemoveObserver(this);
 
-  chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  ash::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
 
   DLOG_IF(WARNING, !file_watchers_.empty())
       << "Not all file watchers are "
@@ -664,7 +664,7 @@ void EventRouter::ObserveEvents() {
   pref_change_registrar_->Add(plugin_vm::prefs::kPluginVmImageExists,
                               plugin_vm_callback);
 
-  chromeos::system::TimezoneSettings::GetInstance()->AddObserver(this);
+  ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
 
   auto* intent_helper =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);

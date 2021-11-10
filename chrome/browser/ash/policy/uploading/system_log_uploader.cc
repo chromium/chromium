@@ -336,7 +336,7 @@ SystemLogUploader::SystemLogUploader(
 
   // Watch for policy changes.
   upload_enabled_subscription_ = ash::CrosSettings::Get()->AddSettingsObserver(
-      chromeos::kSystemLogUploadEnabled,
+      ash::kSystemLogUploadEnabled,
       base::BindRepeating(&SystemLogUploader::RefreshUploadSettings,
                           base::Unretained(this)));
 
@@ -413,13 +413,12 @@ void SystemLogUploader::RefreshUploadSettings() {
   ash::CrosSettings* settings = ash::CrosSettings::Get();
   auto trust_status = settings->PrepareTrustedValues(base::BindOnce(
       &SystemLogUploader::RefreshUploadSettings, weak_factory_.GetWeakPtr()));
-  if (trust_status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (trust_status != ash::CrosSettingsProvider::TRUSTED)
     return;
 
   // CrosSettings are trusted - we want to use the last trusted values, by
   // default do not upload system logs.
-  if (!settings->GetBoolean(chromeos::kSystemLogUploadEnabled,
-                            &upload_enabled_)) {
+  if (!settings->GetBoolean(ash::kSystemLogUploadEnabled, &upload_enabled_)) {
     upload_enabled_ = false;
   }
 }

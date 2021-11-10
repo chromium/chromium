@@ -133,7 +133,7 @@ CloudExternalDataPolicyObserver::CloudExternalDataPolicyObserver(
     device_local_account_policy_service_->AddObserver(this);
 
   device_local_accounts_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kAccountsPrefDeviceLocalAccounts,
+      ash::kAccountsPrefDeviceLocalAccounts,
       base::BindRepeating(
           &CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts,
           base::Unretained(this)));
@@ -224,7 +224,7 @@ void CloudExternalDataPolicyObserver::OnDeviceLocalAccountsChanged() {
 
 void CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts() {
   // Schedule a callback if device policy has not yet been verified.
-  if (chromeos::CrosSettingsProvider::TRUSTED !=
+  if (ash::CrosSettingsProvider::TRUSTED !=
       cros_settings_->PrepareTrustedValues(base::BindOnce(
           &CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts,
           weak_factory_.GetWeakPtr()))) {

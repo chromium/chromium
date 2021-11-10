@@ -311,7 +311,7 @@ void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
 #else   // BUILDFLAG(IS_CHROMEOS_LACROS)
   bool enabled_for_device = false;
   ash::CrosSettings::Get()->GetBoolean(
-      chromeos::kAttestationForContentProtectionEnabled, &enabled_for_device);
+      ash::kAttestationForContentProtectionEnabled, &enabled_for_device);
   std::move(callback).Run(enabled_for_device);
 #endif  // else BUILDFLAG(IS_CHROMEOS_LACROS)
 }

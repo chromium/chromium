@@ -149,7 +149,7 @@ bool IsUnaffiliatedArcAllowed() {
         return true;
     }
   }
-  if (ash::CrosSettings::Get()->GetBoolean(chromeos::kUnaffiliatedArcAllowed,
+  if (ash::CrosSettings::Get()->GetBoolean(ash::kUnaffiliatedArcAllowed,
                                            &arc_allowed)) {
     return arc_allowed;
   }
@@ -535,7 +535,7 @@ bool IsArcStatsReportingEnabled() {
   }
 
   bool pref = false;
-  ash::CrosSettings::Get()->GetBoolean(chromeos::kStatsReportingPref, &pref);
+  ash::CrosSettings::Get()->GetBoolean(ash::kStatsReportingPref, &pref);
   return pref;
 }
 

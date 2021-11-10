@@ -19,7 +19,7 @@ DeviceWiFiAllowedHandler::DeviceWiFiAllowedHandler(
     ash::CrosSettings* cros_settings)
     : cros_settings_(cros_settings) {
   wifi_policy_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kDeviceWiFiAllowed,
+      ash::kDeviceWiFiAllowed,
       base::BindRepeating(&DeviceWiFiAllowedHandler::OnWiFiPolicyChanged,
                           weak_factory_.GetWeakPtr()));
 
@@ -30,15 +30,15 @@ DeviceWiFiAllowedHandler::DeviceWiFiAllowedHandler(
 DeviceWiFiAllowedHandler::~DeviceWiFiAllowedHandler() = default;
 
 void DeviceWiFiAllowedHandler::OnWiFiPolicyChanged() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&DeviceWiFiAllowedHandler::OnWiFiPolicyChanged,
                          weak_factory_.GetWeakPtr()));
-  if (status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (status != ash::CrosSettingsProvider::TRUSTED)
     return;
 
   bool wifi_allowed = true;
-  cros_settings_->GetBoolean(chromeos::kDeviceWiFiAllowed, &wifi_allowed);
+  cros_settings_->GetBoolean(ash::kDeviceWiFiAllowed, &wifi_allowed);
   if (!wifi_allowed) {
     chromeos::NetworkHandler::Get()
         ->prohibited_technologies_handler()

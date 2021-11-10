@@ -81,7 +81,7 @@ class UnaffiliatedArcAllowedTest
     base::RunLoop run_loop;
     base::CallbackListSubscription subscription =
         ash::CrosSettings::Get()->AddSettingsObserver(
-            chromeos::kUnaffiliatedArcAllowed, run_loop.QuitClosure());
+            ash::kUnaffiliatedArcAllowed, run_loop.QuitClosure());
     RefreshDevicePolicy();
     run_loop.Run();
   }

@@ -104,7 +104,7 @@ void ContentProtectionAsh::IsVerifiedAccessEnabled(
     IsVerifiedAccessEnabledCallback callback) {
   bool enabled_for_device = false;
   ash::CrosSettings::Get()->GetBoolean(
-      chromeos::kAttestationForContentProtectionEnabled, &enabled_for_device);
+      ash::kAttestationForContentProtectionEnabled, &enabled_for_device);
   std::move(callback).Run(enabled_for_device);
 }
 

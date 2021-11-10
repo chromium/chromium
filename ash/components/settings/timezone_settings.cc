@@ -27,11 +27,11 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 const char kUTCTimezoneName[] = "Etc/GMT";
-}
-}
+}  // namespace system
+}  // namespace ash
 
 namespace {
 
@@ -91,7 +91,7 @@ static const char* kTimeZones[] = {
     "America/Godthab",
     "Atlantic/South_Georgia",
     "Atlantic/Cape_Verde",
-    chromeos::system::kUTCTimezoneName,
+    ash::system::kUTCTimezoneName,
     "Atlantic/Azores",
     "Atlantic/Reykjavik",
     "Atlantic/St_Helena",
@@ -275,7 +275,7 @@ void SetTimezoneIDFromString(const std::string& id) {
 }
 
 // Common code of the TimezoneSettings implementations.
-class TimezoneSettingsBaseImpl : public chromeos::system::TimezoneSettings {
+class TimezoneSettingsBaseImpl : public ash::system::TimezoneSettings {
  public:
   TimezoneSettingsBaseImpl(const TimezoneSettingsBaseImpl&) = delete;
   TimezoneSettingsBaseImpl& operator=(const TimezoneSettingsBaseImpl&) = delete;
@@ -350,7 +350,7 @@ const icu::TimeZone& TimezoneSettingsBaseImpl::GetTimezone() {
 }
 
 std::u16string TimezoneSettingsBaseImpl::GetCurrentTimezoneID() {
-  return chromeos::system::TimezoneSettings::GetTimezoneID(GetTimezone());
+  return ash::system::TimezoneSettings::GetTimezoneID(GetTimezone());
 }
 
 void TimezoneSettingsBaseImpl::SetTimezoneFromID(
@@ -382,7 +382,7 @@ TimezoneSettingsBaseImpl::TimezoneSettingsBaseImpl() {
 
 const icu::TimeZone* TimezoneSettingsBaseImpl::GetKnownTimezoneOrNull(
     const icu::TimeZone& timezone) const {
-  return chromeos::system::GetKnownTimezoneOrNull(timezone, timezones_);
+  return ash::system::GetKnownTimezoneOrNull(timezone, timezones_);
 }
 
 void TimezoneSettingsImpl::SetTimezone(const icu::TimeZone& timezone) {
@@ -470,7 +470,7 @@ TimezoneSettingsStubImpl::TimezoneSettingsStubImpl() {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 TimezoneSettings::Observer::~Observer() = default;
@@ -491,4 +491,4 @@ std::u16string TimezoneSettings::GetTimezoneID(const icu::TimeZone& timezone) {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

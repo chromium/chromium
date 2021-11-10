@@ -245,7 +245,7 @@ base::TimeTicks ScheduledTaskExecutorImpl::GetTicksSinceBoot() {
 }
 
 const icu::TimeZone& ScheduledTaskExecutorImpl::GetTimeZone() {
-  return chromeos::system::TimezoneSettings::GetInstance()->GetTimezone();
+  return ash::system::TimezoneSettings::GetInstance()->GetTimezone();
 }
 
 }  // namespace policy

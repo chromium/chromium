@@ -168,7 +168,7 @@ void DeviceLocalAccountPolicyProvider::UpdateFromBroker() {
 
   bool device_restricted_managed_guest_session_enabled = false;
   ash::CrosSettings::Get()->GetBoolean(
-      chromeos::kDeviceRestrictedManagedGuestSessionEnabled,
+      ash::kDeviceRestrictedManagedGuestSessionEnabled,
       &device_restricted_managed_guest_session_enabled);
   if (device_restricted_managed_guest_session_enabled) {
     ApplyRestrictedManagedGuestSessionOverride(&chrome_policy);

@@ -300,9 +300,8 @@ void ChromeFeaturesServiceProvider::IsPeripheralDataAccessEnabled(
             prefs::kLocalStateDevicePeripheralDataAccessEnabled);
   } else {
     // Consumer devices use the CrosSetting pref.
-    CrosSettings::Get()->GetBoolean(
-        chromeos::kDevicePeripheralDataAccessEnabled,
-        &peripheral_data_access_enabled);
+    CrosSettings::Get()->GetBoolean(kDevicePeripheralDataAccessEnabled,
+                                    &peripheral_data_access_enabled);
   }
   SendResponse(method_call, std::move(response_sender),
                peripheral_data_access_enabled);

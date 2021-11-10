@@ -2204,7 +2204,7 @@ TEST_F(ArcSessionManagerPowerwashTest, PowerwashRequestBlocksArcStart) {
       /* create_settings_service=*/false};
   settings_helper.ReplaceDeviceSettingsProviderWithStub();
   settings_helper.SetInteger(
-      chromeos::kDeviceRebootOnUserSignout,
+      ash::kDeviceRebootOnUserSignout,
       enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
 
   // Initialize cryptohome to require powerwash.

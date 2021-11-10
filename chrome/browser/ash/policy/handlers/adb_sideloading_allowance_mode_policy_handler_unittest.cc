@@ -70,7 +70,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
 
   void SetDevicePolicy(int policy) {
     scoped_testing_cros_settings_.device_settings()->SetInteger(
-        chromeos::kDeviceCrostiniArcAdbSideloadingAllowed, policy);
+        ash::kDeviceCrostiniArcAdbSideloadingAllowed, policy);
     base::RunLoop().RunUntilIdle();
   }
 

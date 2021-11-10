@@ -182,7 +182,7 @@ base::Version MinimumVersionPolicyHandlerTest::GetCurrentVersion() const {
 
 void MinimumVersionPolicyHandlerTest::SetPolicyPref(base::Value value) {
   scoped_testing_cros_settings_.device_settings()->Set(
-      chromeos::kDeviceMinimumVersion, value);
+      ash::kDeviceMinimumVersion, value);
 }
 
 TEST_F(MinimumVersionPolicyHandlerTest, RequirementsNotMetState) {

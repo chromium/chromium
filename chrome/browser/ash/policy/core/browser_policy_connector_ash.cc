@@ -312,7 +312,7 @@ void BrowserPolicyConnectorAsh::Init(
             GetPolicyService()));
   }
   system_proxy_handler_ =
-      std::make_unique<SystemProxyHandler>(chromeos::CrosSettings::Get());
+      std::make_unique<SystemProxyHandler>(ash::CrosSettings::Get());
 
   adb_sideloading_allowance_mode_policy_handler_ =
       std::make_unique<AdbSideloadingAllowanceModePolicyHandler>(
@@ -547,7 +547,7 @@ BrowserPolicyConnectorAsh::CreatePolicyProviders() {
 }
 
 void BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable() {
-  typedef chromeos::CrosSettingsProvider Provider;
+  typedef ash::CrosSettingsProvider Provider;
   Provider::TrustedStatus result =
       ash::CrosSettings::Get()->PrepareTrustedValues(base::BindOnce(
           &BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable,
@@ -557,10 +557,10 @@ void BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable() {
     return;
 
   std::string timezone;
-  if (ash::CrosSettings::Get()->GetString(chromeos::kSystemTimezonePolicy,
+  if (ash::CrosSettings::Get()->GetString(ash::kSystemTimezonePolicy,
                                           &timezone) &&
       !timezone.empty()) {
-    chromeos::system::SetSystemAndSigninScreenTimezone(timezone);
+    ash::system::SetSystemAndSigninScreenTimezone(timezone);
   }
 }
 

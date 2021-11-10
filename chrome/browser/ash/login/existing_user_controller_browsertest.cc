@@ -522,7 +522,7 @@ class ExistingUserControllerPublicSessionTest
         proto.device_local_accounts().auto_login_id() != user_email) {
       runner1 = new content::MessageLoopRunner;
       subscription1 = CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kAccountsPrefDeviceLocalAccountAutoLoginId,
+          kAccountsPrefDeviceLocalAccountAutoLoginId,
           base::BindLambdaForTesting([&]() { runner1->Quit(); }));
     }
     scoped_refptr<content::MessageLoopRunner> runner2;
@@ -532,7 +532,7 @@ class ExistingUserControllerPublicSessionTest
         proto.device_local_accounts().auto_login_delay() != delay) {
       runner2 = new content::MessageLoopRunner;
       subscription2 = CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kAccountsPrefDeviceLocalAccountAutoLoginDelay,
+          kAccountsPrefDeviceLocalAccountAutoLoginDelay,
           base::BindLambdaForTesting([&]() { runner2->Quit(); }));
     }
 

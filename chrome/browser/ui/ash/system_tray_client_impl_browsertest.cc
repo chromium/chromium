@@ -167,7 +167,7 @@ class SystemTrayClientClockUnknownPrefTest
  public:
   SystemTrayClientClockUnknownPrefTest() {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        chromeos::kSystemUse24HourClock, true);
+        ash::kSystemUse24HourClock, true);
   }
   // ash::localStateMixin::Delegate:
   void SetUpLocalState() override {

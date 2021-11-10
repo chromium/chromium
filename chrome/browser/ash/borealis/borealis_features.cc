@@ -21,8 +21,8 @@ bool BorealisFeatures::IsAllowed() {
     return false;
 
   bool allowed_for_device;
-  if (chromeos::CrosSettings::Get()->GetBoolean(
-          chromeos::kBorealisAllowedForDevice, &allowed_for_device)) {
+  if (ash::CrosSettings::Get()->GetBoolean(ash::kBorealisAllowedForDevice,
+                                           &allowed_for_device)) {
     if (!allowed_for_device)
       return false;
   }

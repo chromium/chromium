@@ -130,7 +130,7 @@ class UsersPrivateApiTest : public ExtensionApiTest {
         ->SetOwnerKeyUtilForTesting(owner_key_util);
 
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kDeviceOwner, base::Value("testuser@gmail.com"));
+        ash::kDeviceOwner, base::Value("testuser@gmail.com"));
   }
 
   UsersPrivateApiTest(const UsersPrivateApiTest&) = delete;

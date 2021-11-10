@@ -69,7 +69,7 @@ bool IsAutoUpdateDisabled() {
   if (!settings)
     return update_disabled;
   const base::Value* update_disabled_value =
-      settings->GetPref(chromeos::kUpdateDisabled);
+      settings->GetPref(ash::kUpdateDisabled);
   if (update_disabled_value) {
     CHECK(update_disabled_value->is_bool());
     update_disabled = update_disabled_value->GetBool();
@@ -189,7 +189,7 @@ void VersionUpdaterCros::SetChannel(const std::string& channel,
           : nullptr;
   // For local owner set the field in the policy blob.
   if (service)
-    service->SetString(chromeos::kReleaseChannel, channel);
+    service->SetString(ash::kReleaseChannel, channel);
   DBusThreadManager::Get()->GetUpdateEngineClient()->
       SetChannel(channel, is_powerwash_allowed);
 }

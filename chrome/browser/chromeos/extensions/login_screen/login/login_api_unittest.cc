@@ -652,7 +652,7 @@ TEST_F(LoginApiSharedSessionUnittest, LaunchSharedManagedGuestSession) {
 TEST_F(LoginApiSharedSessionUnittest,
        LaunchSharedManagedGuestSessionRestrictedMGSNotEnabled) {
   GetCrosSettingsHelper()->SetBoolean(
-      chromeos::kDeviceRestrictedManagedGuestSessionEnabled, false);
+      ash::kDeviceRestrictedManagedGuestSessionEnabled, false);
 
   ASSERT_EQ(
       login_api_errors::kNoPermissionToUseApi,
@@ -933,7 +933,7 @@ TEST_F(LoginApiSharedSessionUnittest, EnterSharedSession) {
 TEST_F(LoginApiSharedSessionUnittest,
        EnterSharedSessionRestrictedMGSNotEnabled) {
   GetCrosSettingsHelper()->SetBoolean(
-      chromeos::kDeviceRestrictedManagedGuestSessionEnabled, false);
+      ash::kDeviceRestrictedManagedGuestSessionEnabled, false);
 
   ASSERT_EQ(login_api_errors::kNoPermissionToUseApi,
             RunFunctionAndReturnError(new LoginEnterSharedSessionFunction(),

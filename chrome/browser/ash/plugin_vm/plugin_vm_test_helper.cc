@@ -140,7 +140,7 @@ void PluginVmTestHelper::SetPolicyRequirementsToAllowPluginVm() {
   testing_profile_->GetPrefs()->SetString(plugin_vm::prefs::kPluginVmUserId,
                                           "fake-id");
   testing_profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
-      chromeos::kPluginVmAllowed, true);
+      ash::kPluginVmAllowed, true);
 }
 
 void PluginVmTestHelper::SetUserRequirementsToAllowPluginVm() {

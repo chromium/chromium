@@ -66,8 +66,7 @@ void ArcOemCryptoBridge::Connect(
   // implementation.
   bool attestation_enabled = false;
   if (!ash::CrosSettings::Get()->GetBoolean(
-          chromeos::kAttestationForContentProtectionEnabled,
-          &attestation_enabled)) {
+          ash::kAttestationForContentProtectionEnabled, &attestation_enabled)) {
     LOG(ERROR) << "Failed to get attestation device setting";
     return;
   }

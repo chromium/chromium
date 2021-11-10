@@ -58,9 +58,8 @@ void LowDiskNotification::LowDiskSpace(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   bool show_low_disk_space_notification = true;
-  if (!CrosSettings::Get()->GetBoolean(
-          chromeos::kDeviceShowLowDiskSpaceNotification,
-          &show_low_disk_space_notification)) {
+  if (!CrosSettings::Get()->GetBoolean(kDeviceShowLowDiskSpaceNotification,
+                                       &show_low_disk_space_notification)) {
     DVLOG(1) << "DeviceShowLowDiskSpaceNotification not set, "
                 "defaulting to showing the notification.";
   }

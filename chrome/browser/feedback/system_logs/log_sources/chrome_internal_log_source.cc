@@ -241,7 +241,7 @@ std::string GetChromeVersionString() {
   // The value of the policy is ignored here.
   std::string value;
   const bool is_lts =
-      ash::CrosSettings::Get()->GetString(chromeos::kReleaseLtsTag, &value);
+      ash::CrosSettings::Get()->GetString(ash::kReleaseLtsTag, &value);
   if (is_lts)
     browser_version = kLTSChromeVersionPrefix + browser_version;
 

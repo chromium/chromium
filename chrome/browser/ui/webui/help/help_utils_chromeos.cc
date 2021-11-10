@@ -28,7 +28,7 @@ bool IsUpdateOverCellularAllowed(bool interactive) {
     return default_update_over_cellular_allowed;
 
   const base::Value* types_value =
-      settings->GetPref(chromeos::kAllowedConnectionTypesForUpdate);
+      settings->GetPref(ash::kAllowedConnectionTypesForUpdate);
   if (!types_value)
     return default_update_over_cellular_allowed;
   CHECK(types_value->is_list());

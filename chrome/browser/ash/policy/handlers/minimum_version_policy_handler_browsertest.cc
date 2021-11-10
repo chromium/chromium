@@ -157,7 +157,7 @@ void MinimumVersionPolicyTestBase::SetDevicePolicyAndWaitForSettingChange(
     const base::Value& value) {
   SetMinimumChromeVersionPolicy(value);
   helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-      {chromeos::kDeviceMinimumVersion});
+      {ash::kDeviceMinimumVersion});
 }
 
 void MinimumVersionPolicyTestBase::SetAndRefreshMinimumChromeVersionPolicy(

@@ -280,63 +280,62 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       base::Value entry_dict(base::Value::Type::DICTIONARY);
       if (entry.has_type()) {
         if (entry.has_account_id()) {
-          entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyId,
-              entry.account_id());
+          entry_dict.SetStringKey(ash::kAccountsPrefDeviceLocalAccountsKeyId,
+                                  entry.account_id());
         }
-        entry_dict.SetIntKey(chromeos::kAccountsPrefDeviceLocalAccountsKeyType,
+        entry_dict.SetIntKey(ash::kAccountsPrefDeviceLocalAccountsKeyType,
                              entry.type());
         if (entry.kiosk_app().has_app_id()) {
           entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
+              ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
               entry.kiosk_app().app_id());
         }
         if (entry.kiosk_app().has_update_url()) {
           entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
+              ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
               entry.kiosk_app().update_url());
         }
         if (entry.android_kiosk_app().has_package_name()) {
           entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+              ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
               entry.android_kiosk_app().package_name());
         }
         if (entry.android_kiosk_app().has_class_name()) {
           entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+              ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
               entry.android_kiosk_app().class_name());
         }
         if (entry.android_kiosk_app().has_action()) {
           entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+              ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
               entry.android_kiosk_app().action());
         }
         if (entry.android_kiosk_app().has_display_name()) {
           entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+              ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
               entry.android_kiosk_app().display_name());
         }
         if (entry.web_kiosk_app().has_url()) {
           entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
+              ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
               entry.web_kiosk_app().url());
         }
         if (entry.web_kiosk_app().has_title()) {
           entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
+              ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
               entry.web_kiosk_app().title());
         }
         if (entry.web_kiosk_app().has_icon_url()) {
           entry_dict.SetStringKey(
-              chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
+              ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
               entry.web_kiosk_app().icon_url());
         }
 
       } else if (entry.has_deprecated_public_session_id()) {
         // Deprecated public session specification.
-        entry_dict.SetStringKey(chromeos::kAccountsPrefDeviceLocalAccountsKeyId,
+        entry_dict.SetStringKey(ash::kAccountsPrefDeviceLocalAccountsKeyId,
                                 entry.deprecated_public_session_id());
-        entry_dict.SetIntKey(chromeos::kAccountsPrefDeviceLocalAccountsKeyType,
+        entry_dict.SetIntKey(ash::kAccountsPrefDeviceLocalAccountsKeyType,
                              DeviceLocalAccount::TYPE_PUBLIC_SESSION);
       }
       account_list.Append(std::move(entry_dict));

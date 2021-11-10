@@ -338,8 +338,7 @@ void TriggerShowLoginWizardFinish(
 std::string GetManagedLoginScreenLocale() {
   auto* cros_settings = CrosSettings::Get();
   const base::ListValue* login_screen_locales = nullptr;
-  if (!cros_settings->GetList(chromeos::kDeviceLoginScreenLocales,
-                              &login_screen_locales))
+  if (!cros_settings->GetList(kDeviceLoginScreenLocales, &login_screen_locales))
     return std::string();
 
   // Currently, only the first element is used. The setting is a list for future

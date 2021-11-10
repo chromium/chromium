@@ -142,8 +142,8 @@ PowerwashRequirementsChecker::State PowerwashRequirementsChecker::GetState()
 
 bool PowerwashRequirementsChecker::IsPolicySet() const {
   int policy_value = RebootOnSignOutPolicy::NEVER;
-  if (!ash::CrosSettings::Get()->GetInteger(
-          chromeos::kDeviceRebootOnUserSignout, &policy_value)) {
+  if (!ash::CrosSettings::Get()->GetInteger(ash::kDeviceRebootOnUserSignout,
+                                            &policy_value)) {
     return false;
   }
 

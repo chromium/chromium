@@ -1085,7 +1085,7 @@ TEST_F(DeviceLocalAccountPolicyProviderTest,
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
   cros_settings_helper_->SetBoolean(
-      chromeos::kDeviceRestrictedManagedGuestSessionEnabled, false);
+      ash::kDeviceRestrictedManagedGuestSessionEnabled, false);
   InstallDeviceLocalAccountPolicy(kAccount1);
   broker->core()->store()->Load();
   FlushDeviceSettings();
@@ -1101,7 +1101,7 @@ TEST_F(DeviceLocalAccountPolicyProviderTest,
   EXPECT_CALL(provider_observer_, OnUpdatePolicy(provider_.get()))
       .Times(AtLeast(1));
   cros_settings_helper_->SetBoolean(
-      chromeos::kDeviceRestrictedManagedGuestSessionEnabled, true);
+      ash::kDeviceRestrictedManagedGuestSessionEnabled, true);
   device_local_account_policy_.payload()
       .mutable_passwordmanagerenabled()
       ->set_value(true);

@@ -116,7 +116,7 @@ std::string GetUserLastInputMethodId(const AccountId& account_id) {
 void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
   auto* cros_settings = CrosSettings::Get();
   const base::ListValue* login_screen_input_methods = nullptr;
-  if (!cros_settings->GetList(chromeos::kDeviceLoginScreenInputMethods,
+  if (!cros_settings->GetList(kDeviceLoginScreenInputMethods,
                               &login_screen_input_methods) ||
       login_screen_input_methods->GetList().empty()) {
     StopEnforcingPolicyInputMethods();

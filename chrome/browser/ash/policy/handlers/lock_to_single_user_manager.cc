@@ -74,8 +74,8 @@ void LockToSingleUserManager::OnUserAffiliationEstablished(
     return;
 
   int policy_value = -1;
-  if (!ash::CrosSettings::Get()->GetInteger(
-          chromeos::kDeviceRebootOnUserSignout, &policy_value)) {
+  if (!ash::CrosSettings::Get()->GetInteger(ash::kDeviceRebootOnUserSignout,
+                                            &policy_value)) {
     return;
   }
 

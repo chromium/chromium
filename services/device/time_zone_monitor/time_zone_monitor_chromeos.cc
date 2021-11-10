@@ -12,22 +12,21 @@
 
 namespace device {
 
-class TimeZoneMonitorChromeOS
-    : public TimeZoneMonitor,
-      public chromeos::system::TimezoneSettings::Observer {
+class TimeZoneMonitorChromeOS : public TimeZoneMonitor,
+                                public ash::system::TimezoneSettings::Observer {
  public:
   TimeZoneMonitorChromeOS() : TimeZoneMonitor() {
-    chromeos::system::TimezoneSettings::GetInstance()->AddObserver(this);
+    ash::system::TimezoneSettings::GetInstance()->AddObserver(this);
   }
 
   TimeZoneMonitorChromeOS(const TimeZoneMonitorChromeOS&) = delete;
   TimeZoneMonitorChromeOS& operator=(const TimeZoneMonitorChromeOS&) = delete;
 
   ~TimeZoneMonitorChromeOS() override {
-    chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+    ash::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
   }
 
-  // chromeos::system::TimezoneSettings::Observer implementation.
+  // ash::system::TimezoneSettings::Observer implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override {
     // ICU's default time zone is already set to a new zone. No need to redetect
     // it with detectHostTimeZone() or to update ICU.

@@ -49,12 +49,12 @@ DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
       handler_(handler),
       device_name_policy_(ComputeInitialPolicy()) {
   template_policy_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kDeviceHostnameTemplate,
+      ash::kDeviceHostnameTemplate,
       base::BindRepeating(
           &DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged,
           weak_factory_.GetWeakPtr()));
   configurable_policy_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kDeviceHostnameUserConfigurable,
+      ash::kDeviceHostnameUserConfigurable,
       base::BindRepeating(
           &DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged,
           weak_factory_.GetWeakPtr()));
@@ -91,11 +91,11 @@ void DeviceNamePolicyHandlerImpl::DefaultNetworkChanged(
 }
 
 void DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(base::BindOnce(
           &DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged,
           weak_factory_.GetWeakPtr()));
-  if (status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (status != ash::CrosSettingsProvider::TRUSTED)
     return;
 
   // Continue when machine statistics are loaded, to avoid blocking.
@@ -120,7 +120,7 @@ void DeviceNamePolicyHandlerImpl::
 
 DeviceNamePolicyHandler::DeviceNamePolicy
 DeviceNamePolicyHandlerImpl::ComputePolicy(std::string* hostname_template_out) {
-  if (cros_settings_->GetString(chromeos::kDeviceHostnameTemplate,
+  if (cros_settings_->GetString(ash::kDeviceHostnameTemplate,
                                 hostname_template_out)) {
     // Do not set an empty hostname (which would overwrite any custom hostname
     // set) if DeviceHostnameTemplate is not specified by policy.
@@ -130,7 +130,7 @@ DeviceNamePolicyHandlerImpl::ComputePolicy(std::string* hostname_template_out) {
 
   bool hostname_user_configurable;
   if (ash::features::IsHostnameSettingEnabled() &&
-      cros_settings_->GetBoolean(chromeos::kDeviceHostnameUserConfigurable,
+      cros_settings_->GetBoolean(ash::kDeviceHostnameUserConfigurable,
                                  &hostname_user_configurable)) {
     return hostname_user_configurable
                ? DeviceNamePolicy::kPolicyHostnameConfigurableByManagedUser

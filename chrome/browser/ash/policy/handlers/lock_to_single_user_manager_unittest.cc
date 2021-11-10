@@ -107,7 +107,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   }
 
   void SetPolicyValue(int value) {
-    settings_helper_.SetInteger(chromeos::kDeviceRebootOnUserSignout, value);
+    settings_helper_.SetInteger(ash::kDeviceRebootOnUserSignout, value);
   }
 
   void StartArc() { arc_session_manager_->StartArcForTesting(); }

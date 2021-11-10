@@ -45,7 +45,7 @@ class CrostiniLowDiskNotificationTest : public BrowserWithTestWindowTest {
 
     GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
     GetCrosSettingsHelper()->SetBoolean(
-        chromeos::kDeviceShowLowDiskSpaceNotification, true);
+        ash::kDeviceShowLowDiskSpaceNotification, true);
 
     auto user_manager = std::make_unique<user_manager::FakeUserManager>();
     user_manager_ = user_manager.get();
@@ -165,8 +165,8 @@ TEST_F(CrostiniLowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
   user_manager_->AddUser(
       AccountId::FromUserEmailGaiaId("test_user2@example.com", "1234567892"));
 
-  GetCrosSettingsHelper()->SetBoolean(
-      chromeos::kDeviceShowLowDiskSpaceNotification, false);
+  GetCrosSettingsHelper()->SetBoolean(ash::kDeviceShowLowDiskSpaceNotification,
+                                      false);
 
   SetNotificationThrottlingInterval(-1);
   low_disk_notification_->OnLowDiskSpaceTriggered(high_notification);

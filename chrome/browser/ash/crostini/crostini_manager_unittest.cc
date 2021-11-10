@@ -397,7 +397,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
       /* create_settings_service=*/false};
   settings_helper.ReplaceDeviceSettingsProviderWithStub();
   settings_helper.SetInteger(
-      chromeos::kDeviceRebootOnUserSignout,
+      ash::kDeviceRebootOnUserSignout,
       enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
 
   // Set cryptohome requiring powerwash.
@@ -432,7 +432,7 @@ TEST_F(CrostiniManagerTest,
       /* create_settings_service=*/false};
   settings_helper.ReplaceDeviceSettingsProviderWithStub();
   settings_helper.SetInteger(
-      chromeos::kDeviceRebootOnUserSignout,
+      ash::kDeviceRebootOnUserSignout,
       enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
 
   // Reset cryptohome state to undefined and make cryptohome unavailable.

@@ -36,7 +36,7 @@ UserAddedRemovedReporter::UserAddedRemovedReporter()
 UserAddedRemovedReporter::~UserAddedRemovedReporter() = default;
 
 void UserAddedRemovedReporter::OnLogin(Profile* profile) {
-  if (!helper_->ReportingEnabled(chromeos::kReportDeviceLoginLogout)) {
+  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
     return;
   }
   if (!helper_->IsCurrentUserNew()) {
@@ -62,7 +62,7 @@ void UserAddedRemovedReporter::OnLogin(Profile* profile) {
 }
 
 void UserAddedRemovedReporter::OnUserToBeRemoved(const AccountId& account_id) {
-  if (!helper_->ReportingEnabled(chromeos::kReportDeviceLoginLogout)) {
+  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
     return;
   }
   const user_manager::User* user =
@@ -81,7 +81,7 @@ void UserAddedRemovedReporter::OnUserToBeRemoved(const AccountId& account_id) {
 void UserAddedRemovedReporter::OnUserRemoved(
     const AccountId& account_id,
     user_manager::UserRemovalReason reason) {
-  if (!helper_->ReportingEnabled(chromeos::kReportDeviceLoginLogout)) {
+  if (!helper_->ReportingEnabled(ash::kReportDeviceLoginLogout)) {
     return;
   }
   auto it = users_to_be_deleted_.find(account_id);

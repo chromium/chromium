@@ -1735,8 +1735,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ManagedSessionTimezoneChange) {
   std::string timezone_id2("Europe/Berlin");
   std::u16string timezone_id2_utf16(u"Europe/Berlin");
 
-  chromeos::system::TimezoneSettings* timezone_settings =
-      chromeos::system::TimezoneSettings::GetInstance();
+  ash::system::TimezoneSettings* timezone_settings =
+      ash::system::TimezoneSettings::GetInstance();
 
   timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(em::SystemTimezoneProto::DISABLED);

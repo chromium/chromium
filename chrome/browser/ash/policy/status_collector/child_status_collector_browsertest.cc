@@ -237,9 +237,9 @@ class ChildStatusCollectorTest : public testing::Test {
 
     // Disable network reporting since it requires additional setup.
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        chromeos::kReportDeviceNetworkConfiguration, false);
+        ash::kReportDeviceNetworkConfiguration, false);
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        chromeos::kReportDeviceNetworkStatus, false);
+        ash::kReportDeviceNetworkStatus, false);
 
     // Mock clock in task environment is set to Unix Epoch, advance it to avoid
     // using times from before Unix Epoch in some tests.
@@ -476,9 +476,8 @@ TEST_F(ChildStatusCollectorTest, ReportingPartialVersionInfo) {
 }
 
 TEST_F(ChildStatusCollectorTest, TimeZoneReporting) {
-  const std::string timezone =
-      base::UTF16ToUTF8(chromeos::system::TimezoneSettings::GetInstance()
-                            ->GetCurrentTimezoneID());
+  const std::string timezone = base::UTF16ToUTF8(
+      ash::system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID());
 
   GetStatus();
 

@@ -23,7 +23,7 @@ DeviceDockMacAddressHandler::DeviceDockMacAddressHandler(
       network_device_handler_(network_device_handler) {
   dock_mac_address_source_policy_subscription_ =
       cros_settings_->AddSettingsObserver(
-          chromeos::kDeviceDockMacAddressSource,
+          ash::kDeviceDockMacAddressSource,
           base::BindRepeating(
               &DeviceDockMacAddressHandler::OnDockMacAddressSourcePolicyChanged,
               weak_factory_.GetWeakPtr()));
@@ -35,15 +35,15 @@ DeviceDockMacAddressHandler::~DeviceDockMacAddressHandler() = default;
 
 void DeviceDockMacAddressHandler::OnDockMacAddressSourcePolicyChanged() {
   // Wait for the |cros_settings_| to become trusted.
-  const chromeos::CrosSettingsProvider::TrustedStatus status =
+  const ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(base::BindOnce(
           &DeviceDockMacAddressHandler::OnDockMacAddressSourcePolicyChanged,
           weak_factory_.GetWeakPtr()));
-  if (status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (status != ash::CrosSettingsProvider::TRUSTED)
     return;
 
   int dock_mac_address_source;
-  if (!cros_settings_->GetInteger(chromeos::kDeviceDockMacAddressSource,
+  if (!cros_settings_->GetInteger(ash::kDeviceDockMacAddressSource,
                                   &dock_mac_address_source)) {
     return;
   }

@@ -27,7 +27,7 @@ namespace {
 bool IsUnaffiliatedCrostiniAllowedByPolicy() {
   bool unaffiliated_crostini_allowed;
   if (ash::CrosSettings::Get()->GetBoolean(
-          chromeos::kDeviceUnaffiliatedCrostiniAllowed,
+          ash::kDeviceUnaffiliatedCrostiniAllowed,
           &unaffiliated_crostini_allowed)) {
     return unaffiliated_crostini_allowed;
   }
@@ -68,14 +68,14 @@ void CanChangeAdbSideloadingOnManagedDevice(
       &CanChangeAdbSideloadingOnManagedDevice, std::move(split_callback.first),
       is_profile_enterprise_managed, is_affiliated_user, user_policy));
 
-  if (status != chromeos::CrosSettingsProvider::TRUSTED) {
+  if (status != ash::CrosSettingsProvider::TRUSTED) {
     return;
   }
 
   // Get the updated policy.
   int crostini_arc_abd_sideloading_device_allowance_mode = -1;
   if (!cros_settings->GetInteger(
-          chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
+          ash::kDeviceCrostiniArcAdbSideloadingAllowed,
           &crostini_arc_abd_sideloading_device_allowance_mode)) {
     // If the device policy is not set, adb sideloading is not allowed
     DVLOG(1) << "adb sideloading device policy is not set, therefore "

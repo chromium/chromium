@@ -390,38 +390,33 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       }
       if (entry.android_kiosk_app().has_package_name()) {
         entry_dict.SetKey(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+            kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
             base::Value(entry.android_kiosk_app().package_name()));
       }
       if (entry.android_kiosk_app().has_class_name()) {
-        entry_dict.SetKey(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-            base::Value(entry.android_kiosk_app().class_name()));
+        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                          base::Value(entry.android_kiosk_app().class_name()));
       }
       if (entry.android_kiosk_app().has_action()) {
-        entry_dict.SetKey(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-            base::Value(entry.android_kiosk_app().action()));
+        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                          base::Value(entry.android_kiosk_app().action()));
       }
       if (entry.android_kiosk_app().has_display_name()) {
         entry_dict.SetKey(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+            kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
             base::Value(entry.android_kiosk_app().display_name()));
       }
       if (entry.web_kiosk_app().has_url()) {
-        entry_dict.SetKey(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
-            base::Value(entry.web_kiosk_app().url()));
+        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
+                          base::Value(entry.web_kiosk_app().url()));
       }
       if (entry.web_kiosk_app().has_title()) {
-        entry_dict.SetKey(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
-            base::Value(entry.web_kiosk_app().title()));
+        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle,
+                          base::Value(entry.web_kiosk_app().title()));
       }
       if (entry.web_kiosk_app().has_icon_url()) {
-        entry_dict.SetKey(
-            chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
-            base::Value(entry.web_kiosk_app().icon_url()));
+        entry_dict.SetKey(kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl,
+                          base::Value(entry.web_kiosk_app().icon_url()));
       }
     } else if (entry.has_deprecated_public_session_id()) {
       // Deprecated public session specification.

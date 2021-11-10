@@ -65,7 +65,7 @@ bool CanModifyUserList(content::BrowserContext* browser_context) {
 
 bool IsExistingUser(const std::string& username) {
   return ash::CrosSettings::Get()->FindEmailInList(
-      chromeos::kAccountsPrefUsers, username, /*wildcard_match=*/nullptr);
+      ash::kAccountsPrefUsers, username, /*wildcard_match=*/nullptr);
 }
 
 // Creates User object for the exising user_manager::User .
@@ -110,7 +110,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
   PrefsUtil* prefs_util = delegate->GetPrefsUtil();
 
   std::unique_ptr<api::settings_private::PrefObject> users_pref_object =
-      prefs_util->GetPref(chromeos::kAccountsPrefUsers);
+      prefs_util->GetPref(ash::kAccountsPrefUsers);
   if (users_pref_object->value && users_pref_object->value->is_list()) {
     email_list = users_pref_object->value->Clone();
   }
@@ -141,7 +141,7 @@ std::unique_ptr<base::ListValue> GetUsersList(
   if (ash::OwnerSettingsServiceAsh* service =
           ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(
               browser_context)) {
-    service->Set(chromeos::kAccountsPrefUsers, email_list);
+    service->Set(ash::kAccountsPrefUsers, email_list);
   }
 
   // Now populate the list of User objects for returning to the JS.
@@ -218,7 +218,7 @@ ExtensionFunction::ResponseAction UsersPrivateAddUserFunction::Run() {
   UsersPrivateDelegate* delegate =
       UsersPrivateDelegateFactory::GetForBrowserContext(browser_context());
   PrefsUtil* prefs_util = delegate->GetPrefsUtil();
-  bool added = prefs_util->AppendToListCrosSetting(chromeos::kAccountsPrefUsers,
+  bool added = prefs_util->AppendToListCrosSetting(ash::kAccountsPrefUsers,
                                                    username_value);
   return RespondNow(OneArgument(base::Value(added)));
 }
@@ -245,8 +245,8 @@ ExtensionFunction::ResponseAction UsersPrivateRemoveUserFunction::Run() {
   UsersPrivateDelegate* delegate =
       UsersPrivateDelegateFactory::GetForBrowserContext(browser_context());
   PrefsUtil* prefs_util = delegate->GetPrefsUtil();
-  bool removed = prefs_util->RemoveFromListCrosSetting(
-      chromeos::kAccountsPrefUsers, canonical_email);
+  bool removed = prefs_util->RemoveFromListCrosSetting(ash::kAccountsPrefUsers,
+                                                       canonical_email);
   user_manager::UserManager::Get()->RemoveUser(
       AccountId::FromUserEmail(parameters->email),
       user_manager::UserRemovalReason::LOCAL_USER_INITIATED,

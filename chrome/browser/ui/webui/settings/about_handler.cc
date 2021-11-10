@@ -123,8 +123,7 @@ bool CanChangeChannel(Profile* profile) {
     bool value = false;
     // On a managed machine we delegate this setting to the affiliated users
     // only if the policy value is true.
-    ash::CrosSettings::Get()->GetBoolean(chromeos::kReleaseChannelDelegated,
-                                         &value);
+    ash::CrosSettings::Get()->GetBoolean(ash::kReleaseChannelDelegated, &value);
     if (!value)
       return false;
 
@@ -557,7 +556,7 @@ void AboutHandler::OnGetTargetChannel(std::string callback_id,
   // its value.
   std::string value;
   bool is_lts =
-      ash::CrosSettings::Get()->GetString(chromeos::kReleaseLtsTag, &value);
+      ash::CrosSettings::Get()->GetString(ash::kReleaseLtsTag, &value);
   channel_info->SetBoolean("isLts", is_lts);
 
   ResolveJavascriptCallback(base::Value(callback_id), *channel_info);

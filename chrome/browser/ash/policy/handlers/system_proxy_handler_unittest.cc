@@ -84,7 +84,7 @@ class SystemProxyHandlerTest : public testing::Test {
     dict.SetKey("system_services_password",
                 base::Value(system_services_password));
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kSystemProxySettings, dict);
+        ash::kSystemProxySettings, dict);
     task_environment_.RunUntilIdle();
   }
 

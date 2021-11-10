@@ -4626,8 +4626,7 @@ AutotestPrivateSetMetricsEnabledFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
   bool value;
-  if (ash::CrosSettings::Get()->GetBoolean(chromeos::kStatsReportingPref,
-                                           &value) &&
+  if (ash::CrosSettings::Get()->GetBoolean(ash::kStatsReportingPref, &value) &&
       value == target_value_) {
     VLOG(1) << "Value at target; returning early";
     return RespondNow(NoArguments());
@@ -4647,13 +4646,12 @@ AutotestPrivateSetMetricsEnabledFunction::Run() {
 
 void AutotestPrivateSetMetricsEnabledFunction::OnDeviceSettingsStored() {
   bool actual;
-  if (!ash::CrosSettings::Get()->GetBoolean(chromeos::kStatsReportingPref,
+  if (!ash::CrosSettings::Get()->GetBoolean(ash::kStatsReportingPref,
                                             &actual)) {
     NOTREACHED() << "AutotestPrivateSetMetricsEnabledFunction: "
                  << "kStatsReportingPref should be set";
-    Respond(Error(base::StrCat(
-        {"Failed to set metrics consent: ", chromeos::kStatsReportingPref,
-         " is not set."})));
+    Respond(Error(base::StrCat({"Failed to set metrics consent: ",
+                                ash::kStatsReportingPref, " is not set."})));
     return;
   }
   VLOG(1) << "AutotestPrivateSetMetricsEnabledFunction: actual: "
@@ -4663,7 +4661,7 @@ void AutotestPrivateSetMetricsEnabledFunction::OnDeviceSettingsStored() {
     Respond(NoArguments());
   } else {
     Respond(Error(base::StrCat(
-        {"Failed to set metrics consent: ", chromeos::kStatsReportingPref,
+        {"Failed to set metrics consent: ", ash::kStatsReportingPref,
          " has wrong value."})));
   }
 }

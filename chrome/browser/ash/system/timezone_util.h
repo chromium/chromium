@@ -56,7 +56,7 @@ bool SetSystemTimezone(const user_manager::User* user,
                        const std::string& timezone);
 
 // Updates Local State preference prefs::kSigninScreenTimezone AND
-// also immediately sets system timezone (chromeos::system::TimezoneSettings).
+// also immediately sets system timezone (ash::system::TimezoneSettings).
 // This is called when there is no user session (i.e. OOBE and signin screen),
 // or when device policies are updated.
 void SetSystemAndSigninScreenTimezone(const std::string& timezone);

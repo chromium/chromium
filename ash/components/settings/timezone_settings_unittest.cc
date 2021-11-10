@@ -10,7 +10,7 @@
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 using icu::TimeZone;
@@ -102,4 +102,4 @@ TEST_F(KnownTimeZoneTest, NoMatch) {
 }
 
 }  // namespace system
-}  // namespace chromeos
+}  // namespace ash

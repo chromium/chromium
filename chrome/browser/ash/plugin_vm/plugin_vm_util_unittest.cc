@@ -99,12 +99,12 @@ TEST_F(PluginVmUtilTest, AddPluginVmPolicyObserver) {
 
   EXPECT_CALL(*this, OnPolicyChanged(false));
   testing_profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
-      chromeos::kPluginVmAllowed, false);
+      ash::kPluginVmAllowed, false);
   testing::Mock::VerifyAndClearExpectations(this);
 
   EXPECT_CALL(*this, OnPolicyChanged(true));
   testing_profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
-      chromeos::kPluginVmAllowed, true);
+      ash::kPluginVmAllowed, true);
   testing::Mock::VerifyAndClearExpectations(this);
 
   EXPECT_CALL(*this, OnPolicyChanged(false));

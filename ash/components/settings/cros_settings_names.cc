@@ -4,7 +4,7 @@
 
 #include "ash/components/settings/cros_settings_names.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kCrosSettingsPrefix[] = "cros.";
 
@@ -568,4 +568,5 @@ const char kDeviceScheduledReboot[] = "cros.device.device_scheduled_reboot";
 // taken care of via clean-up mechanism in the managed guest session).
 const char kDeviceRestrictedManagedGuestSessionEnabled[] =
     "cros.device.restricted_managed_guest_session_enabled";
-}  // namespace chromeos
+
+}  // namespace ash

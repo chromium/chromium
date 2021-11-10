@@ -652,8 +652,8 @@ TEST_F(PluginVmInstallerDownloadServiceTest, VerifyDownloadTest) {
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, CannotStartIfPluginVmIsDisabled) {
-  profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
-      chromeos::kPluginVmAllowed, false);
+  profile_->ScopedCrosSettingsTestHelper()->SetBoolean(ash::kPluginVmAllowed,
+                                                       false);
   EXPECT_EQ(FailureReason::NOT_ALLOWED, installer_->Start());
   task_environment_.RunUntilIdle();
 }

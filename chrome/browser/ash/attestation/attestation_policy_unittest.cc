@@ -12,14 +12,14 @@ namespace ash {
 namespace attestation {
 
 TEST(AttestationDevicePolicyTest, ContentProtectionTest) {
-  ash::ScopedTestingCrosSettings settings;
+  ScopedTestingCrosSettings settings;
 
   settings.device_settings()->SetBoolean(
-      chromeos::kAttestationForContentProtectionEnabled, true);
+      kAttestationForContentProtectionEnabled, true);
   EXPECT_TRUE(PlatformVerificationFlow::IsAttestationAllowedByPolicy());
 
   settings.device_settings()->SetBoolean(
-      chromeos::kAttestationForContentProtectionEnabled, false);
+      kAttestationForContentProtectionEnabled, false);
   EXPECT_FALSE(PlatformVerificationFlow::IsAttestationAllowedByPolicy());
 }
 

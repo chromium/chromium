@@ -36,15 +36,14 @@ GetAdbSideloadingDevicePolicyMode(const ash::CrosSettings* cros_settings,
   auto status = cros_settings->PrepareTrustedValues(callback);
 
   // If the policy value is still not trusted, return optional null
-  if (status != chromeos::CrosSettingsProvider::TRUSTED) {
+  if (status != ash::CrosSettingsProvider::TRUSTED) {
     return absl::nullopt;
   }
 
   // Get the trusted policy value.
   int sideloading_mode = -1;
-  if (!cros_settings->GetInteger(
-          chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
-          &sideloading_mode)) {
+  if (!cros_settings->GetInteger(ash::kDeviceCrostiniArcAdbSideloadingAllowed,
+                                 &sideloading_mode)) {
     // Here we do not return null because we want to handle this case separately
     // and to reset all the prefs for the notifications so that they can be
     // displayed again if the policy changes
@@ -96,7 +95,7 @@ AdbSideloadingAllowanceModePolicyHandler::
       power_manager_observer_(this) {
   DCHECK(local_state_);
   policy_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kDeviceCrostiniArcAdbSideloadingAllowed,
+      ash::kDeviceCrostiniArcAdbSideloadingAllowed,
       base::BindRepeating(
           &AdbSideloadingAllowanceModePolicyHandler::MaybeShowNotification,
           weak_factory_.GetWeakPtr()));

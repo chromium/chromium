@@ -55,14 +55,14 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   // and set the hostname_.
   void SetTemplate(const std::string& hostname_template) {
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kDeviceHostnameTemplate, base::Value(hostname_template));
+        ash::kDeviceHostnameTemplate, base::Value(hostname_template));
     // Makes sure that template is set before continuing.
     base::RunLoop().RunUntilIdle();
   }
 
   void UnsetTemplate() {
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kDeviceHostnameTemplate, base::Value());
+        ash::kDeviceHostnameTemplate, base::Value());
     // Makes sure that template is set before continuing.
     base::RunLoop().RunUntilIdle();
   }
@@ -71,14 +71,14 @@ class DeviceNamePolicyHandlerImplTest : public testing::Test {
   // the class to stop making direct calls to NetworkStateHandler::SetHostname()
   void SetConfigurable(bool configurable) {
     scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        chromeos::kDeviceHostnameUserConfigurable, configurable);
+        ash::kDeviceHostnameUserConfigurable, configurable);
     // Makes sure that template is set before continuing.
     base::RunLoop().RunUntilIdle();
   }
 
   void UnsetConfigurable() {
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kDeviceHostnameUserConfigurable, base::Value());
+        ash::kDeviceHostnameUserConfigurable, base::Value());
     // Makes sure that template is set before continuing.
     base::RunLoop().RunUntilIdle();
   }

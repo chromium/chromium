@@ -20,10 +20,10 @@ const char kSystemProxyService[] = "system-proxy-service";
 
 namespace policy {
 
-SystemProxyHandler::SystemProxyHandler(chromeos::CrosSettings* cros_settings)
+SystemProxyHandler::SystemProxyHandler(ash::CrosSettings* cros_settings)
     : cros_settings_(cros_settings),
       system_proxy_subscription_(cros_settings_->AddSettingsObserver(
-          chromeos::kSystemProxySettings,
+          ash::kSystemProxySettings,
           base::BindRepeating(
               &SystemProxyHandler::OnSystemProxySettingsPolicyChanged,
               base::Unretained(this)))) {
@@ -34,30 +34,30 @@ SystemProxyHandler::SystemProxyHandler(chromeos::CrosSettings* cros_settings)
 SystemProxyHandler::~SystemProxyHandler() = default;
 
 void SystemProxyHandler::OnSystemProxySettingsPolicyChanged() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings_->PrepareTrustedValues(base::BindOnce(
           &SystemProxyHandler::OnSystemProxySettingsPolicyChanged,
           base::Unretained(this)));
-  if (status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (status != ash::CrosSettingsProvider::TRUSTED)
     return;
 
   const base::Value* proxy_settings =
-      cros_settings_->GetPref(chromeos::kSystemProxySettings);
+      cros_settings_->GetPref(ash::kSystemProxySettings);
 
   if (!proxy_settings)
     return;
 
   bool system_proxy_enabled =
-      proxy_settings->FindBoolKey(chromeos::kSystemProxySettingsKeyEnabled)
+      proxy_settings->FindBoolKey(ash::kSystemProxySettingsKeyEnabled)
           .value_or(false);
   const std::string* username = proxy_settings->FindStringKey(
-      chromeos::kSystemProxySettingsKeySystemServicesUsername);
+      ash::kSystemProxySettingsKeySystemServicesUsername);
 
   const std::string* password = proxy_settings->FindStringKey(
-      chromeos::kSystemProxySettingsKeySystemServicesPassword);
+      ash::kSystemProxySettingsKeySystemServicesPassword);
 
   const base::Value* auth_schemes =
-      proxy_settings->FindListKey(chromeos::kSystemProxySettingsKeyAuthSchemes);
+      proxy_settings->FindListKey(ash::kSystemProxySettingsKeyAuthSchemes);
 
   std::vector<std::string> system_services_auth_schemes;
   if (auth_schemes) {

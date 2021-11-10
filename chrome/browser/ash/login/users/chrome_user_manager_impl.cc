@@ -585,8 +585,7 @@ void ChromeUserManagerImpl::CacheRemovedUser(
     user_manager::UserRemovalReason reason) {
   // There is only a need to cache removed users if they should be reported.
   bool reporting_enabled = false;
-  chromeos::CrosSettings::Get()->GetBoolean(chromeos::kReportDeviceLoginLogout,
-                                            &reporting_enabled);
+  CrosSettings::Get()->GetBoolean(kReportDeviceLoginLogout, &reporting_enabled);
   if (!reporting_enabled) {
     return;
   }

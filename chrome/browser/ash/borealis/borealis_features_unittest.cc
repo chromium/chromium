@@ -54,7 +54,7 @@ TEST_F(BorealisFeaturesTest, CanDisableByDevicePolicy) {
   EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
 
   profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->SetBoolean(
-      chromeos::kBorealisAllowedForDevice, false);
+      ash::kBorealisAllowedForDevice, false);
 
   EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
 }

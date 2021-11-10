@@ -71,8 +71,8 @@ void CrostiniLowDiskNotification::ShowNotificationIfAppropriate(
   if (severity == Severity::NONE) {
     return;
   }
-  if (!chromeos::CrosSettings::Get()->GetBoolean(
-          chromeos::kDeviceShowLowDiskSpaceNotification,
+  if (!ash::CrosSettings::Get()->GetBoolean(
+          ash::kDeviceShowLowDiskSpaceNotification,
           &show_low_disk_space_notification)) {
     DVLOG(1) << "DeviceShowLowDiskSpaceNotification not set, "
                 "defaulting to showing the notification.";

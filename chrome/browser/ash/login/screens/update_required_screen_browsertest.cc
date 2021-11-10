@@ -195,7 +195,7 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
     em::ChromeDeviceSettingsProto& proto(device_policy->payload());
     proto.mutable_device_minimum_version_aue_message()->set_value(eol_message);
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {chromeos::kDeviceMinimumVersionAueMessage});
+        {kDeviceMinimumVersionAueMessage});
   }
 
  protected:

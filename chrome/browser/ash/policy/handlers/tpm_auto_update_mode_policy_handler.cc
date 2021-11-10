@@ -43,12 +43,12 @@ policy::AutoUpdateMode GetTPMAutoUpdateModeSetting(
     return policy::AutoUpdateMode::kNever;
   }
 
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  ash::CrosSettingsProvider::TrustedStatus status =
       cros_settings->PrepareTrustedValues(callback);
-  if (status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (status != ash::CrosSettingsProvider::TRUSTED)
     return policy::AutoUpdateMode::kNever;
   const base::Value* tpm_settings =
-      cros_settings->GetPref(chromeos::kTPMFirmwareUpdateSettings);
+      cros_settings->GetPref(ash::kTPMFirmwareUpdateSettings);
 
   if (!tpm_settings)
     return policy::AutoUpdateMode::kNever;
@@ -84,7 +84,7 @@ TPMAutoUpdateModePolicyHandler::TPMAutoUpdateModePolicyHandler(
     : cros_settings_(cros_settings), local_state_(local_state) {
   DCHECK(local_state_);
   policy_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kTPMFirmwareUpdateSettings,
+      ash::kTPMFirmwareUpdateSettings,
       base::BindRepeating(&TPMAutoUpdateModePolicyHandler::OnPolicyChanged,
                           weak_factory_.GetWeakPtr()));
 

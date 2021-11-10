@@ -1031,7 +1031,7 @@ TEST_F(PluginVmAppTest, EnableAndDisablePluginVm) {
             GetModelContent(model_updater_.get()));
 
   testing_profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
-      chromeos::kPluginVmAllowed, false);
+      ash::kPluginVmAllowed, false);
 
   app_service_test_.FlushMojoCalls();
   EXPECT_THAT(GetModelContent(model_updater_.get()), testing::IsEmpty());

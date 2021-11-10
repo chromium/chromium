@@ -11,7 +11,7 @@ namespace virtual_machines {
 
 bool AreVirtualMachinesAllowedByPolicy() {
   bool virtual_machines_allowed;
-  if (ash::CrosSettings::Get()->GetBoolean(chromeos::kVirtualMachinesAllowed,
+  if (ash::CrosSettings::Get()->GetBoolean(ash::kVirtualMachinesAllowed,
                                            &virtual_machines_allowed)) {
     return virtual_machines_allowed;
   }

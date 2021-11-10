@@ -53,7 +53,7 @@ class EventRouter
     : public KeyedService,
       public network::NetworkConnectionTracker::NetworkConnectionObserver,
       public extensions::ExtensionRegistryObserver,
-      public chromeos::system::TimezoneSettings::Observer,
+      public ash::system::TimezoneSettings::Observer,
       public VolumeManagerObserver,
       public arc::ArcIntentHelperObserver,
       public drive::DriveIntegrationServiceObserver,
@@ -136,7 +136,7 @@ class EventRouter
                            const extensions::Extension* extension,
                            extensions::UnloadedExtensionReason reason) override;
 
-  // chromeos::system::TimezoneSettings::Observer overrides.
+  // ash::system::TimezoneSettings::Observer overrides.
   void TimezoneChanged(const icu::TimeZone& timezone) override;
 
   // VolumeManagerObserver overrides.

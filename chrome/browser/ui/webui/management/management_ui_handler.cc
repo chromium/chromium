@@ -578,7 +578,7 @@ void ManagementUIHandler::AddDeviceReportingInfo(
   }
 
   bool report_print_jobs = false;
-  chromeos::CrosSettings::Get()->GetBoolean(chromeos::kReportDevicePrintJobs,
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePrintJobs,
                                             &report_print_jobs);
   if (report_print_jobs) {
     AddDeviceReportingElement(report_sources, kManagementReportPrintJobs,
@@ -624,7 +624,7 @@ void ManagementUIHandler::AddDeviceReportingInfo(
   }
 
   bool report_login_logout = false;
-  chromeos::CrosSettings::Get()->GetBoolean(chromeos::kReportDeviceLoginLogout,
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceLoginLogout,
                                             &report_login_logout);
   if (report_login_logout) {
     AddDeviceReportingElement(report_sources, kManagementReportLoginLogout,
@@ -653,7 +653,7 @@ void ManagementUIHandler::AddUpdateRequiredEolInfo(
                                  base::UTF8ToUTF16(GetDeviceManager()),
                                  ui::GetChromeOSDeviceName()));
   std::string eol_admin_message;
-  ash::CrosSettings::Get()->GetString(chromeos::kDeviceMinimumVersionAueMessage,
+  ash::CrosSettings::Get()->GetString(ash::kDeviceMinimumVersionAueMessage,
                                       &eol_admin_message);
   response->SetStringPath("eolAdminMessage", eol_admin_message);
 }

@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 COMPONENT_EXPORT(ASH_SETTINGS) extern const char kCrosSettingsPrefix[];
 
@@ -319,142 +319,24 @@ extern const char kDeviceScheduledReboot[];
 
 COMPONENT_EXPORT(ASH_SETTINGS)
 extern const char kDeviceRestrictedManagedGuestSessionEnabled[];
-}  // namespace chromeos
 
-// TODO(https://crbug.com/1164001): remove when migrated to ash/components/.
-namespace ash {
-using ::chromeos::kAccountsPrefAllowGuest;
-using ::chromeos::kAccountsPrefAllowNewUser;
-using ::chromeos::kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled;
-using ::chromeos::kAccountsPrefDeviceLocalAccountAutoLoginDelay;
-using ::chromeos::kAccountsPrefDeviceLocalAccountAutoLoginId;
-using ::chromeos::kAccountsPrefDeviceLocalAccountPromptForNetworkWhenOffline;
-using ::chromeos::kAccountsPrefDeviceLocalAccounts;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyId;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyKioskAppId;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyType;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskIconUrl;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle;
-using ::chromeos::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl;
-using ::chromeos::kAccountsPrefEphemeralUsersEnabled;
-using ::chromeos::kAccountsPrefFamilyLinkAccountsAllowed;
-using ::chromeos::kAccountsPrefLoginScreenDomainAutoComplete;
-using ::chromeos::kAccountsPrefShowUserNamesOnSignIn;
-using ::chromeos::kAccountsPrefTransferSAMLCookies;
-using ::chromeos::kAccountsPrefUsers;
-using ::chromeos::kAllowBluetooth;
-using ::chromeos::kAllowedConnectionTypesForUpdate;
-using ::chromeos::kAllowRedeemChromeOsRegistrationOffers;
-using ::chromeos::kAttestationForContentProtectionEnabled;
-using ::chromeos::kBorealisAllowedForDevice;
-using ::chromeos::kCastReceiverName;
-using ::chromeos::kCrosSettingsPrefix;
-using ::chromeos::kDeviceAllowedBluetoothServices;
-using ::chromeos::kDeviceAttestationEnabled;
-using ::chromeos::kDeviceAutoUpdateTimeRestrictions;
-using ::chromeos::kDeviceChannelDowngradeBehavior;
-using ::chromeos::kDeviceCrostiniArcAdbSideloadingAllowed;
-using ::chromeos::kDeviceDisabled;
-using ::chromeos::kDeviceDisabledMessage;
-using ::chromeos::kDeviceDisplayResolution;
-using ::chromeos::kDeviceDockMacAddressSource;
-using ::chromeos::kDeviceHostnameTemplate;
-using ::chromeos::kDeviceHostnameUserConfigurable;
-using ::chromeos::kDeviceLoginScreenInputMethods;
-using ::chromeos::kDeviceLoginScreenLocales;
-using ::chromeos::kDeviceLoginScreenSystemInfoEnforced;
-using ::chromeos::kDeviceMinimumVersion;
-using ::chromeos::kDeviceMinimumVersionAueMessage;
-using ::chromeos::kDeviceOffHours;
-using ::chromeos::kDeviceOwner;
-using ::chromeos::kDevicePeripheralDataAccessEnabled;
-using ::chromeos::kDevicePowerwashAllowed;
-using ::chromeos::kDevicePrintersAccessMode;
-using ::chromeos::kDevicePrintersAllowlist;
-using ::chromeos::kDevicePrintersBlocklist;
-using ::chromeos::kDeviceQuirksDownloadEnabled;
-using ::chromeos::kDeviceRebootOnUserSignout;
-using ::chromeos::kDeviceRestrictedManagedGuestSessionEnabled;
-using ::chromeos::kDeviceScheduledReboot;
-using ::chromeos::kDeviceScheduledUpdateCheck;
-using ::chromeos::kDeviceSecondFactorAuthenticationMode;
-using ::chromeos::kDeviceShowLowDiskSpaceNotification;
-using ::chromeos::kDeviceShowNumericKeyboardForPassword;
-using ::chromeos::kDeviceUnaffiliatedCrostiniAllowed;
-using ::chromeos::kDeviceWebBasedAttestationAllowedUrls;
-using ::chromeos::kDeviceWiFiAllowed;
-using ::chromeos::kDeviceWilcoDtcAllowed;
-using ::chromeos::kDisplayRotationDefault;
-using ::chromeos::kEnableDeviceGranularReporting;
-using ::chromeos::kExtensionCacheSize;
-using ::chromeos::kFeatureFlags;
-using ::chromeos::kHeartbeatEnabled;
-using ::chromeos::kHeartbeatFrequency;
-using ::chromeos::kKioskCRXManifestUpdateURLIgnored;
-using ::chromeos::kLoginAuthenticationBehavior;
-using ::chromeos::kLoginVideoCaptureAllowedUrls;
-using ::chromeos::kPluginVmAllowed;
-using ::chromeos::kPolicyMissingMitigationMode;
-using ::chromeos::kRebootOnShutdown;
-using ::chromeos::kReleaseChannel;
-using ::chromeos::kReleaseChannelDelegated;
-using ::chromeos::kReleaseLtsTag;
-using ::chromeos::kReportDeviceActivityTimes;
-using ::chromeos::kReportDeviceAppInfo;
-using ::chromeos::kReportDeviceAudioStatus;
-using ::chromeos::kReportDeviceBacklightInfo;
-using ::chromeos::kReportDeviceBluetoothInfo;
-using ::chromeos::kReportDeviceBoardStatus;
-using ::chromeos::kReportDeviceBootMode;
-using ::chromeos::kReportDeviceCpuInfo;
-using ::chromeos::kReportDeviceCrashReportInfo;
-using ::chromeos::kReportDeviceFanInfo;
-using ::chromeos::kReportDeviceGraphicsStatus;
-using ::chromeos::kReportDeviceHardwareStatus;
-using ::chromeos::kReportDeviceLocation;
-using ::chromeos::kReportDeviceLoginLogout;
-using ::chromeos::kReportDeviceMemoryInfo;
-using ::chromeos::kReportDeviceNetworkConfiguration;
-using ::chromeos::kReportDeviceNetworkInterfaces;
-using ::chromeos::kReportDeviceNetworkStatus;
-using ::chromeos::kReportDeviceNetworkTelemetryCollectionRateMs;
-using ::chromeos::kReportDeviceNetworkTelemetryEventCheckingRateMs;
-using ::chromeos::kReportDevicePowerStatus;
-using ::chromeos::kReportDevicePrintJobs;
-using ::chromeos::kReportDeviceSecurityStatus;
-using ::chromeos::kReportDeviceSessionStatus;
-using ::chromeos::kReportDeviceStorageStatus;
-using ::chromeos::kReportDeviceSystemInfo;
-using ::chromeos::kReportDeviceTimezoneInfo;
-using ::chromeos::kReportDeviceUsers;
-using ::chromeos::kReportDeviceVersionInfo;
-using ::chromeos::kReportDeviceVpdInfo;
-using ::chromeos::kReportOsUpdateStatus;
-using ::chromeos::kReportRunningKioskApp;
-using ::chromeos::kReportUploadFrequency;
-using ::chromeos::kSamlLoginAuthenticationType;
-using ::chromeos::kServiceAccountIdentity;
-using ::chromeos::kSignedDataRoamingEnabled;
-using ::chromeos::kStatsReportingPref;
-using ::chromeos::kSystemLogUploadEnabled;
-using ::chromeos::kSystemProxySettings;
-using ::chromeos::kSystemTimezone;
-using ::chromeos::kSystemTimezonePolicy;
-using ::chromeos::kSystemUse24HourClock;
-using ::chromeos::kTargetVersionPrefix;
-using ::chromeos::kTPMFirmwareUpdateSettings;
-using ::chromeos::kUnaffiliatedArcAllowed;
-using ::chromeos::kUpdateDisabled;
-using ::chromeos::kUsbDetachableAllowlist;
-using ::chromeos::kUsbDetachableAllowlistKeyPid;
-using ::chromeos::kUsbDetachableAllowlistKeyVid;
-using ::chromeos::kVariationsRestrictParameter;
-using ::chromeos::kVirtualMachinesAllowed;
 }  // namespace ash
+
+namespace chromeos {
+using ::ash::kAccountsPrefAllowNewUser;
+using ::ash::kAccountsPrefDeviceLocalAccountAutoLoginBailoutEnabled;
+using ::ash::kAccountsPrefFamilyLinkAccountsAllowed;
+using ::ash::kAccountsPrefLoginScreenDomainAutoComplete;
+using ::ash::kDeviceCrostiniArcAdbSideloadingAllowed;
+using ::ash::kDeviceOwner;
+using ::ash::kDevicePeripheralDataAccessEnabled;
+using ::ash::kDeviceSecondFactorAuthenticationMode;
+using ::ash::kDeviceWebBasedAttestationAllowedUrls;
+using ::ash::kFineGrainedTimeZoneResolveEnabled;
+using ::ash::kLoginAuthenticationBehavior;
+using ::ash::kSystemTimezone;
+using ::ash::kSystemTimezonePolicy;
+using ::ash::kTPMFirmwareUpdateSettings;
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_SETTINGS_CROS_SETTINGS_NAMES_H_

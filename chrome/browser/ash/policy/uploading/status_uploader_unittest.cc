@@ -192,7 +192,7 @@ TEST_F(StatusUploaderTest, DifferentFrequencyAtStart) {
   const base::TimeDelta new_delay = kDefaultStatusUploadDelay * 2;
 
   scoped_testing_cros_settings_.device_settings()->SetInteger(
-      chromeos::kReportUploadFrequency, new_delay.InMilliseconds());
+      ash::kReportUploadFrequency, new_delay.InMilliseconds());
   EXPECT_FALSE(task_runner_->HasPendingTask());
   auto uploader = CreateStatusUploader();
   ASSERT_EQ(1U, task_runner_->NumPendingTasks());
@@ -287,7 +287,7 @@ TEST_F(StatusUploaderTest, ChangeFrequency) {
   // used for the next callback.
   const base::TimeDelta new_delay = kDefaultStatusUploadDelay * 2;
   scoped_testing_cros_settings_.device_settings()->SetInteger(
-      chromeos::kReportUploadFrequency, new_delay.InMilliseconds());
+      ash::kReportUploadFrequency, new_delay.InMilliseconds());
   RunPendingUploadTaskAndCheckNext(*uploader, new_delay,
                                    true /* upload_success */);
 }

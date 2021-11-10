@@ -82,7 +82,7 @@ PolicyConfigured CheckPolicyConfigured(const Profile* profile) {
 
   // Check that PluginVm is allowed to run by policy.
   bool plugin_vm_allowed_for_device;
-  if (!ash::CrosSettings::Get()->GetBoolean(chromeos::kPluginVmAllowed,
+  if (!ash::CrosSettings::Get()->GetBoolean(ash::kPluginVmAllowed,
                                             &plugin_vm_allowed_for_device)) {
     return PolicyConfigured::kErrorUnableToCheckDevicePolicy;
   }

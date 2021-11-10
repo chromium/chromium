@@ -8,7 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 CrosSettingsProvider::CrosSettingsProvider(
     const NotifyObserversCallback& notify_cb)
@@ -27,4 +27,4 @@ void CrosSettingsProvider::SetNotifyObserversCallback(
   notify_cb_ = notify_cb;
 }
 
-}  // namespace chromeos
+}  // namespace ash

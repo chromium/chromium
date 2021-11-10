@@ -21,7 +21,7 @@ namespace policy {
 // manages recurring reboots based on the policy. Reboots are only applied if
 // the device is in the kiosk mode.
 class DeviceScheduledRebootHandler
-    : public chromeos::system::TimezoneSettings::Observer {
+    : public ash::system::TimezoneSettings::Observer {
  public:
   explicit DeviceScheduledRebootHandler(
       ash::CrosSettings* cros_settings,
@@ -32,7 +32,7 @@ class DeviceScheduledRebootHandler
   ~DeviceScheduledRebootHandler() override;
 
   // TODO(https://crbug.com/1228718): Move Timezone observation to
-  // ScheduledTaskExecutor. chromeos::system::TimezoneSettings::Observer
+  // ScheduledTaskExecutor. ash::system::TimezoneSettings::Observer
   // implementation.
   void TimezoneChanged(const icu::TimeZone& time_zone) override;
 

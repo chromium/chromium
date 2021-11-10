@@ -213,7 +213,7 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl() {
   local_state_ = g_browser_process->local_state();
   show_user_names_on_signin_subscription_ =
       ash::CrosSettings::Get()->AddSettingsObserver(
-          chromeos::kAccountsPrefShowUserNamesOnSignIn,
+          ash::kAccountsPrefShowUserNamesOnSignIn,
           base::BindRepeating(
               &WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen,
               weak_factory_.GetWeakPtr()));
@@ -697,8 +697,8 @@ void WallpaperControllerClientImpl::FetchDailyRefreshWallpaper(
 
 bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
   bool show_user_names = true;
-  ash::CrosSettings::Get()->GetBoolean(
-      chromeos::kAccountsPrefShowUserNamesOnSignIn, &show_user_names);
+  ash::CrosSettings::Get()->GetBoolean(ash::kAccountsPrefShowUserNamesOnSignIn,
+                                       &show_user_names);
   return show_user_names;
 }
 

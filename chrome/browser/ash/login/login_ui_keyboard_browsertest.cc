@@ -341,7 +341,7 @@ class LoginUIKeyboardPolicy : public LoginManagerTest {
     proto.mutable_login_screen_input_methods()->add_login_screen_input_methods(
         method);
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {chromeos::kDeviceLoginScreenInputMethods});
+        {kDeviceLoginScreenInputMethods});
   }
   LoginManagerMixin login_manager_{&mixin_host_};
   DeviceStateMixin device_state_{
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
   proto.mutable_login_screen_input_methods()
       ->clear_login_screen_input_methods();
   policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-      {chromeos::kDeviceLoginScreenInputMethods});
+      {kDeviceLoginScreenInputMethods});
 
   ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethodIds().size(), 0U);
   ASSERT_EQ(expected_input_methods, input_method::InputMethodManager::Get()

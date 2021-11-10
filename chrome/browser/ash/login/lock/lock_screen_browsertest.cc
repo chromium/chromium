@@ -193,7 +193,7 @@ class LockScreenDevicePolicyInputsTest : public LockScreenBaseTest {
     proto.mutable_login_screen_input_methods()->add_login_screen_input_methods(
         allowed_input_method.front());
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {chromeos::kDeviceLoginScreenInputMethods});
+        {kDeviceLoginScreenInputMethods});
 
     input_method::InputMethodManager::Get()->MigrateInputMethods(
         &allowed_input_method);

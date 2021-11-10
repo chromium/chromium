@@ -27,7 +27,7 @@ class SharedURLLoaderFactory;
 // Periodically requests the IP-based geolocation and provides it to the
 // NightLightController running in ash.
 class NightLightClient : public ash::NightLightController::Observer,
-                         public chromeos::system::TimezoneSettings::Observer {
+                         public ash::system::TimezoneSettings::Observer {
  public:
   explicit NightLightClient(
       scoped_refptr<network::SharedURLLoaderFactory> factory);
@@ -46,7 +46,7 @@ class NightLightClient : public ash::NightLightController::Observer,
   void OnScheduleTypeChanged(
       ash::NightLightController::ScheduleType new_type) override;
 
-  // chromeos::system::TimezoneSettings::Observer:
+  // ash::system::TimezoneSettings::Observer:
   void TimezoneChanged(const icu::TimeZone& timezone) override;
 
   const base::OneShotTimer& timer() const { return *timer_; }

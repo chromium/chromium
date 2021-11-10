@@ -1526,53 +1526,53 @@ LegacyDeviceStatusCollector::LegacyDeviceStatusCollector(
       base::BindRepeating(&LegacyDeviceStatusCollector::UpdateReportingSettings,
                           base::Unretained(this));
   version_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceVersionInfo, callback);
+      ash::kReportDeviceVersionInfo, callback);
   activity_times_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceActivityTimes, callback);
-  boot_mode_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceBootMode, callback);
+      ash::kReportDeviceActivityTimes, callback);
+  boot_mode_subscription_ =
+      cros_settings_->AddSettingsObserver(ash::kReportDeviceBootMode, callback);
   network_interfaces_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceNetworkInterfaces, callback);
-  users_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceUsers, callback);
+      ash::kReportDeviceNetworkInterfaces, callback);
+  users_subscription_ =
+      cros_settings_->AddSettingsObserver(ash::kReportDeviceUsers, callback);
   hardware_status_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceHardwareStatus, callback);
+      ash::kReportDeviceHardwareStatus, callback);
   session_status_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceSessionStatus, callback);
-  os_update_status_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportOsUpdateStatus, callback);
+      ash::kReportDeviceSessionStatus, callback);
+  os_update_status_subscription_ =
+      cros_settings_->AddSettingsObserver(ash::kReportOsUpdateStatus, callback);
   running_kiosk_app_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportRunningKioskApp, callback);
+      ash::kReportRunningKioskApp, callback);
   power_status_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDevicePowerStatus, callback);
+      ash::kReportDevicePowerStatus, callback);
   storage_status_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceStorageStatus, callback);
+      ash::kReportDeviceStorageStatus, callback);
   board_status_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceBoardStatus, callback);
-  cpu_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceCpuInfo, callback);
+      ash::kReportDeviceBoardStatus, callback);
+  cpu_info_subscription_ =
+      cros_settings_->AddSettingsObserver(ash::kReportDeviceCpuInfo, callback);
   graphics_status_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceGraphicsStatus, callback);
+      ash::kReportDeviceGraphicsStatus, callback);
   timezone_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceTimezoneInfo, callback);
+      ash::kReportDeviceTimezoneInfo, callback);
   memory_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceMemoryInfo, callback);
+      ash::kReportDeviceMemoryInfo, callback);
   backlight_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceBacklightInfo, callback);
+      ash::kReportDeviceBacklightInfo, callback);
   crash_report_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceCrashReportInfo, callback);
+      ash::kReportDeviceCrashReportInfo, callback);
   bluetooth_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceBluetoothInfo, callback);
-  fan_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceFanInfo, callback);
-  vpd_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceVpdInfo, callback);
-  app_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceAppInfo, callback);
+      ash::kReportDeviceBluetoothInfo, callback);
+  fan_info_subscription_ =
+      cros_settings_->AddSettingsObserver(ash::kReportDeviceFanInfo, callback);
+  vpd_info_subscription_ =
+      cros_settings_->AddSettingsObserver(ash::kReportDeviceVpdInfo, callback);
+  app_info_subscription_ =
+      cros_settings_->AddSettingsObserver(ash::kReportDeviceAppInfo, callback);
   system_info_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kReportDeviceSystemInfo, callback);
-  stats_reporting_pref_subscription_ = cros_settings_->AddSettingsObserver(
-      chromeos::kStatsReportingPref, callback);
+      ash::kReportDeviceSystemInfo, callback);
+  stats_reporting_pref_subscription_ =
+      cros_settings_->AddSettingsObserver(ash::kStatsReportingPref, callback);
 
   // TODO(b/191986061):: consider using ScopedObservation instead.
   power_manager_->AddObserver(this);
@@ -1647,7 +1647,7 @@ void LegacyDeviceStatusCollector::UpdateReportingSettings() {
   // Attempt to fetch the current value of the reporting settings.
   // If trusted values are not available, register this function to be called
   // back when they are available.
-  if (chromeos::CrosSettingsProvider::TRUSTED !=
+  if (ash::CrosSettingsProvider::TRUSTED !=
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&LegacyDeviceStatusCollector::UpdateReportingSettings,
                          weak_factory_.GetWeakPtr()))) {
@@ -1656,94 +1656,93 @@ void LegacyDeviceStatusCollector::UpdateReportingSettings() {
 
   // Keep the default values in sync with DeviceReportingProto in
   // components/policy/proto/chrome_device_policy.proto.
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceVersionInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceVersionInfo,
                                   &report_version_info_)) {
     report_version_info_ = true;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceActivityTimes,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceActivityTimes,
                                   &report_activity_times_)) {
     report_activity_times_ = true;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceBootMode,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceBootMode,
                                   &report_boot_mode_)) {
     report_boot_mode_ = true;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceSessionStatus,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceSessionStatus,
                                   &report_kiosk_session_status_)) {
     report_kiosk_session_status_ = true;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceNetworkInterfaces,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceNetworkInterfaces,
                                   &report_network_interfaces_)) {
     report_network_interfaces_ = true;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceUsers,
-                                  &report_users_)) {
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceUsers, &report_users_)) {
     report_users_ = true;
   }
   const bool already_reporting_hardware_status = report_hardware_status_;
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceHardwareStatus,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceHardwareStatus,
                                   &report_hardware_status_)) {
     report_hardware_status_ = true;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDevicePowerStatus,
+  if (!cros_settings_->GetBoolean(ash::kReportDevicePowerStatus,
                                   &report_power_status_)) {
     report_power_status_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceStorageStatus,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceStorageStatus,
                                   &report_storage_status_)) {
     report_storage_status_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceBoardStatus,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceBoardStatus,
                                   &report_board_status_)) {
     report_board_status_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceCpuInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceCpuInfo,
                                   &report_cpu_info_)) {
     report_cpu_info_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceGraphicsStatus,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceGraphicsStatus,
                                   &report_graphics_status_)) {
     report_graphics_status_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceTimezoneInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceTimezoneInfo,
                                   &report_timezone_info_)) {
     report_timezone_info_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceMemoryInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceMemoryInfo,
                                   &report_memory_info_)) {
     report_memory_info_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceBacklightInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceBacklightInfo,
                                   &report_backlight_info_)) {
     report_backlight_info_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceCrashReportInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceCrashReportInfo,
                                   &report_crash_report_info_)) {
     report_crash_report_info_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceBluetoothInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceBluetoothInfo,
                                   &report_bluetooth_info_)) {
     report_bluetooth_info_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceSystemInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceSystemInfo,
                                   &report_system_info_)) {
     report_system_info_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceFanInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceFanInfo,
                                   &report_fan_info_)) {
     report_fan_info_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceVpdInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceVpdInfo,
                                   &report_vpd_info_)) {
     report_vpd_info_ = false;
   }
   report_app_info_ = false;
-  if (!cros_settings_->GetBoolean(chromeos::kReportDeviceAppInfo,
+  if (!cros_settings_->GetBoolean(ash::kReportDeviceAppInfo,
                                   &report_app_info_)) {
     report_app_info_ = false;
   }
   app_info_generator_.OnReportingChanged(report_app_info_);
-  if (!cros_settings_->GetBoolean(chromeos::kStatsReportingPref,
+  if (!cros_settings_->GetBoolean(ash::kStatsReportingPref,
                                   &stat_reporting_pref_)) {
     stat_reporting_pref_ = false;
   }
@@ -1757,11 +1756,11 @@ void LegacyDeviceStatusCollector::UpdateReportingSettings() {
   }
 
   // Os update status and running kiosk app reporting are disabled by default.
-  if (!cros_settings_->GetBoolean(chromeos::kReportOsUpdateStatus,
+  if (!cros_settings_->GetBoolean(ash::kReportOsUpdateStatus,
                                   &report_os_update_status_)) {
     report_os_update_status_ = false;
   }
-  if (!cros_settings_->GetBoolean(chromeos::kReportRunningKioskApp,
+  if (!cros_settings_->GetBoolean(ash::kReportRunningKioskApp,
                                   &report_running_kiosk_app_)) {
     report_running_kiosk_app_ = false;
   }

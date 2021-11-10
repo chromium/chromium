@@ -14,12 +14,12 @@
 #include "base/values.h"
 #include "chromeos/login/login_state/login_state.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 // TODO(olsen): PerUserTimeZoneEnabled and FineGrainedTimeZoneDetectionEnabled
 // are duplicated in chrome/browser/ash/system/timezone_util.cc, which
 // is not visible from this package. Try to re-unify these functions by moving
-// timezone_util to src/chromeos too (out of src/chrome/browser).
+// timezone_util to src/ash too (out of src/chrome/browser).
 
 bool PerUserTimezoneEnabled() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -91,4 +91,4 @@ void SystemSettingsProvider::TimezoneChanged(const icu::TimeZone& timezone) {
   NotifyObservers(kSystemTimezone);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -446,8 +446,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
             GetTestConfig().report_users, GetTestConfig().report_crash_info,
             GetTestConfig().report_app_info_and_activity);
     settings_.device_settings()->SetTrustedStatus(
-        chromeos::CrosSettingsProvider::TRUSTED);
-    settings_.device_settings()->SetBoolean(chromeos::kSystemLogUploadEnabled,
+        ash::CrosSettingsProvider::TRUSTED);
+    settings_.device_settings()->SetBoolean(ash::kSystemLogUploadEnabled,
                                             GetTestConfig().upload_enabled);
     profile_->GetPrefs()->SetBoolean(
         prefs::kPrintingSendUsernameAndFilenameEnabled,

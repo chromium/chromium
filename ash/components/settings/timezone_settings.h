@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
-namespace chromeos {
+namespace ash {
 namespace system {
 
 // Canonical name of UTC timezone.
@@ -53,13 +53,13 @@ class COMPONENT_EXPORT(ASH_SETTINGS) TimezoneSettings {
 };
 
 }  // namespace system
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace system {
-using ::chromeos::system::TimezoneSettings;
-}  // namespace system
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace system {
+using ::ash::system::TimezoneSettings;
+}  // namespace system
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_SETTINGS_TIMEZONE_SETTINGS_H_

@@ -1181,7 +1181,7 @@ bool ExistingUserController::password_changed() const {
 user_manager::UserList ExistingUserController::ExtractLoginUsers(
     const user_manager::UserList& users) {
   bool show_users_on_signin;
-  CrosSettings::Get()->GetBoolean(chromeos::kAccountsPrefShowUserNamesOnSignIn,
+  CrosSettings::Get()->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                                   &show_users_on_signin);
   user_manager::UserList filtered_users;
   for (auto* user : users) {

@@ -168,8 +168,8 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
     browser()->profile()->GetPrefs()->SetBoolean(
         plugin_vm::prefs::kPluginVmAllowed, true);
     // Device policies.
-    scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kPluginVmAllowed, base::Value(true));
+    scoped_testing_cros_settings_.device_settings()->Set(ash::kPluginVmAllowed,
+                                                         base::Value(true));
   }
 
   void SetUserWithAffiliation() {
