@@ -27,3 +27,7 @@ SwitchAccess*
 -SwitchAccessFocusRingManagerTest.GroupFocus
 -SwitchAccessItemScanManagerTest.*
 -SwitchAccessPointScanManagerTest.PointScanLeftClick
+# Flaky (crbug.com/1268842).
+-ChromeVoxLiveRegionsTest.LiveRegionRemoveElement
+-ChromeVoxLiveRegionsTest.LiveRegionAddElement
+-ChromeVoxLiveRegionsTest.FocusThenLiveRegion
