@@ -12,16 +12,19 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './styles.js';
 import '../common/icons.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getWallpaperLayoutEnum, isNonEmptyArray} from '../common/utils.js';
+
+import {isNonEmptyArray} from '../common/utils.js';
+
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {beginLoadSelectedImageAction, setFullscreenEnabledAction, setSelectedImageAction} from './personalization_actions.js';
+import {WallpaperLayout, WallpaperObserverReceiver, WallpaperType} from './personalization_app.mojom-webui.js';
 import {getDailyRefreshCollectionId, setCustomWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './personalization_controller.js';
-import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
 import {Paths} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
+import {getWallpaperLayoutEnum} from './utils.js';
 
 let setTimeout = window.setTimeout;
 let clearTimeout = window.clearTimeout;
@@ -34,14 +37,13 @@ export function mockTimeoutForTesting(mock) {
 
 /**
  * Set up the observer to listen for wallpaper changes.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface}
+ * @param {!WallpaperProviderInterface}
  *     wallpaperProvider
- * @param {!ash.personalizationApp.mojom.WallpaperObserverInterface} target
- * @return {!ash.personalizationApp.mojom.WallpaperObserverReceiver}
+ * @param {!WallpaperObserverInterface} target
+ * @return {!WallpaperObserverReceiver}
  */
 function initWallpaperObserver(wallpaperProvider, target) {
-  const receiver =
-      new ash.personalizationApp.mojom.WallpaperObserverReceiver(target);
+  const receiver = new WallpaperObserverReceiver(target);
   wallpaperProvider.setWallpaperObserver(receiver.$.bindNewPipeAndPassRemote());
   return receiver;
 }
@@ -69,7 +71,7 @@ function hasHttpScheme(url) {
 
 /**
  * @polymer
- * @implements {ash.personalizationApp.mojom.WallpaperObserverInterface}
+ * @implements {WallpaperObserverInterface}
  */
 export class WallpaperSelected extends WithPersonalizationStore {
   static get is() {
@@ -97,7 +99,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       },
 
       /**
-       * @type {?ash.personalizationApp.mojom.CurrentWallpaper}
+       * @type {?CurrentWallpaper}
        * @private
        */
       image_: {
@@ -253,7 +255,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   /**
    * Called when the wallpaper changes.
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper}
+   * @param {?CurrentWallpaper}
    *     currentWallpaper
    */
   onWallpaperChanged(currentWallpaper) {
@@ -271,7 +273,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   /**
    * Return a chrome://image or data:// url to load the image safely. Returns
    * empty string in case |image| is null or invalid.
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -286,7 +288,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?CurrentWallpaper} image
    * @param {boolean} loading
    * @return {boolean}
    * @private
@@ -298,7 +300,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?CurrentWallpaper} image
    * @param {!string} dailyRefreshCollectionId
    * @return {string}
    * @private
@@ -326,7 +328,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?CurrentWallpaper} image
    * @return {Array<!string>}
    * @private
    */
@@ -346,7 +348,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?CurrentWallpaper} image
    * @param {string} path
    * @return {boolean}
    * @private
@@ -366,7 +368,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {!ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {!CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -375,7 +377,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {!ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {!CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -385,7 +387,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {!ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {!CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -397,7 +399,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {!ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {!CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -488,7 +490,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * Determine whether there is an error in showing selected image. An error
    * happens when there is no previously loaded image and either no new image
    * is being loaded or there is an error from upstream.
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?CurrentWallpaper} image
    * @param {boolean} loading
    * @param {?string} error
    * @return {boolean}
@@ -499,7 +501,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?CurrentWallpaper} image
    * @return {string}
    * @private
    */
@@ -535,8 +537,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
   /**
    * Cache the attribution in local storage when image is updated
    * Populate the attribution map in local storage when image is updated
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} newImage
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} oldImage
+   * @param {?CurrentWallpaper} newImage
+   * @param {?CurrentWallpaper} oldImage
    * @private
    */
   async onImageChanged_(newImage, oldImage) {

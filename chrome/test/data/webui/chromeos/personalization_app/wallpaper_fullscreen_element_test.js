@@ -4,6 +4,7 @@
 
 /** @fileoverview Test suite for wallpaper-fullscreen component.  */
 
+import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {DisplayableImage} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {WallpaperFullscreen} from 'chrome://personalization/trusted/wallpaper_fullscreen_element.js';
 
@@ -24,12 +25,12 @@ export function WallpaperFullscreenTest() {
   /** @type {?TestPersonalizationStore} */
   let personalizationStore = null;
 
-  /** @type {!ash.personalizationApp.mojom.CurrentWallpaper} */
+  /** @type {!CurrentWallpaper} */
   const currentSelectedCustomImage = {
     attribution: ['Custom image'],
-    layout: ash.personalizationApp.mojom.WallpaperLayout.kCenter,
+    layout: WallpaperLayout.kCenter,
     key: 'testing',
-    type: ash.personalizationApp.mojom.WallpaperType.kCustomized,
+    type: WallpaperType.kCustomized,
     url: {url: 'data://testing'},
   };
 
@@ -122,7 +123,7 @@ export function WallpaperFullscreenTest() {
     await requestFullscreenPromise;
 
     assertEquals(
-        ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped,
+        WallpaperLayout.kCenterCropped,
         wallpaperFullscreenElement.selectedLayout_);
 
     personalizationStore.data.fullscreen = false;
@@ -213,9 +214,7 @@ export function WallpaperFullscreenTest() {
     wallpaperProvider.reset();
 
     assertEquals(pendingSelectedCustomImage, fillImage);
-    assertEquals(
-        ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped,
-        fillLayout);
+    assertEquals(WallpaperLayout.kCenterCropped, fillLayout);
     assertTrue(fillPreviewMode);
 
     wallpaperFullscreenElement.shadowRoot
@@ -226,8 +225,7 @@ export function WallpaperFullscreenTest() {
         await wallpaperProvider.whenCalled('selectLocalImage');
 
     assertEquals(pendingSelectedCustomImage, centerImage);
-    assertEquals(
-        ash.personalizationApp.mojom.WallpaperLayout.kCenter, centerLayout);
+    assertEquals(WallpaperLayout.kCenter, centerLayout);
     assertTrue(centerPreviewMode);
   });
 
@@ -245,7 +243,7 @@ export function WallpaperFullscreenTest() {
 
     // Current image is kCenter but initial state should reset to default.
     assertEquals(
-        ash.personalizationApp.mojom.WallpaperLayout.kCenter,
+        WallpaperLayout.kCenter,
         personalizationStore.data.currentSelected.layout);
 
     const center = wallpaperFullscreenElement.shadowRoot.querySelector(
@@ -256,8 +254,7 @@ export function WallpaperFullscreenTest() {
     assertEquals('false', center.getAttribute('aria-selected'));
     assertEquals('true', fill.getAttribute('aria-selected'));
 
-    wallpaperFullscreenElement.selectedLayout_ =
-        ash.personalizationApp.mojom.WallpaperLayout.kCenter;
+    wallpaperFullscreenElement.selectedLayout_ = WallpaperLayout.kCenter;
     await waitAfterNextRender(wallpaperFullscreenElement);
 
     assertEquals('true', center.getAttribute('aria-selected'));
@@ -272,7 +269,7 @@ export function WallpaperFullscreenTest() {
     personalizationStore.data.fullscreen = true;
     personalizationStore.data.currentSelected = {
       ...personalizationStore.data.currentSelected,
-      type: ash.personalizationApp.mojom.WallpaperType.kDaily,
+      type: WallpaperType.kDaily,
     };
     personalizationStore.data.dailyRefresh.collectionId =
         wallpaperProvider.collections[0].id;

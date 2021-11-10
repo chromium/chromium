@@ -81,7 +81,7 @@ export class PersonalizationRouter extends PolymerElement {
   /**
    * Navigate to the selected collection id. Assumes validation of the
    * collection has already happened.
-   * @param {!ash.personalizationApp.mojom.WallpaperCollection} collection
+   * @param {!WallpaperCollection} collection
    */
   selectCollection(collection) {
     document.title = collection.name;

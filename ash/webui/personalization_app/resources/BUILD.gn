@@ -15,10 +15,10 @@ preprocess_folder = "preprocessed"
 # polymer based js files that need to be processed first,
 # `static_resource_files` are non-js files, e.g. image, html, css
 static_js_files = [
-  "common/constants.js",
-  "common/icons.js",
+  "common/constants.ts",
+  "common/icons.ts",
   "common/iframe_api.js",
-  "common/styles.js",
+  "common/styles.ts",
   "common/utils.js",
 
   "trusted/mojo_interface_provider.js",
@@ -30,9 +30,10 @@ static_js_files = [
   "trusted/personalization_store.js",
   "trusted/personalization_test_api.js",
   "trusted/styles.js",
+  "trusted/utils.js",
 
   "untrusted/setup.js",
-  "untrusted/styles.js",
+  "untrusted/styles.ts",
 ]
 
 polymer_js_files = [
@@ -86,14 +87,8 @@ preprocess_if_expr("preprocess_generated") {
 }
 
 copy("copy_mojo_to_trusted") {
-  deps = [
-    "../mojom:mojom_js",
-    "//mojo/public/mojom/base",
-  ]
-  sources = [
-    "$root_gen_dir/mojo/public/mojom/base/file_path.mojom-lite.js",
-    "$target_gen_dir/../mojom/personalization_app.mojom-lite.js",
-  ]
+  deps = [ "../mojom:mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/ash/webui/personalization_app/mojom/personalization_app.mojom-webui.js" ]
   outputs =
       [ "$target_gen_dir/$preprocess_folder/trusted/{{source_file_part}}" ]
 }
@@ -104,14 +99,14 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
 
   in_files = static_js_files + polymer_js_files + [
-               "trusted/file_path.mojom-lite.js",
-               "trusted/personalization_app.mojom-lite.js",
+               "trusted/personalization_app.mojom-webui.js",
                "untrusted/untrusted_shared_vars_css.js",
              ]
 
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
   ]
 
   definitions = []
@@ -130,12 +125,4 @@ generate_grd("build_grd") {
   manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   grd_prefix = "ash_personalization_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-}
-
-group("closure_compile") {
-  deps = [
-    "common:closure_compile",
-    "trusted:closure_compile",
-    "untrusted:closure_compile",
-  ]
 }

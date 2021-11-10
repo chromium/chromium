@@ -8,20 +8,6 @@
  */
 
 /**
- * @param {string} layout
- * @return {ash.personalizationApp.mojom.WallpaperLayout}
- */
-export function getWallpaperLayoutEnum(layout) {
-  switch (layout) {
-    case 'FILL':
-      return ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped;
-    case 'CENTER': // fall through
-    default:
-      return ash.personalizationApp.mojom.WallpaperLayout.kCenter;
-  }
-}
-
-/**
  * Checks if argument is an array with non-zero length.
  * @param {?Object} maybeArray
  * @return {boolean}

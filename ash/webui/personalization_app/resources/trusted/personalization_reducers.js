@@ -12,13 +12,8 @@ import './mojo_interface_provider.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {ActionName} from './personalization_actions.js';
 
-export const WallpaperLayout = ash.personalizationApp.mojom.WallpaperLayout;
-
-export const WallpaperType = ash.personalizationApp.mojom.WallpaperType;
-
 /**
- * @typedef {mojoBase.mojom.FilePath |
- * ash.personalizationApp.mojom.WallpaperImage}
+ * @typedef {mojoBase.mojom.FilePath | WallpaperImage}
  */
 export let DisplayableImage;
 
@@ -27,9 +22,9 @@ export let DisplayableImage;
  * |images| is a mapping of collection id to the list of images.
  * @typedef {{
  *   collections:
- *     ?Array<!ash.personalizationApp.mojom.WallpaperCollection>,
+ *     ?Array<!WallpaperCollection>,
  *   images: !Object<string,
- *     ?Array<!ash.personalizationApp.mojom.WallpaperImage>>,
+ *     ?Array<!WallpaperImage>>,
  * }}
  */
 export let BackdropState;
@@ -112,7 +107,7 @@ export let DailyRefreshState;
  *   backdrop: !BackdropState,
  *   loading: !LoadingState,
  *   local: !LocalState,
- *   currentSelected: ?ash.personalizationApp.mojom.CurrentWallpaper,
+ *   currentSelected: ?CurrentWallpaper,
  *   pendingSelected: ?DisplayableImage,
  *   dailyRefresh: !DailyRefreshState,
  *   error: ?string,
@@ -372,9 +367,9 @@ function localReducer(state, action) {
 }
 
 /**
- * @param {?ash.personalizationApp.mojom.CurrentWallpaper} state
+ * @param {?CurrentWallpaper} state
  * @param {!Action} action
- * @return {?ash.personalizationApp.mojom.CurrentWallpaper}
+ * @return {?CurrentWallpaper}
  */
 function currentSelectedReducer(state, action) {
   switch (action.name) {

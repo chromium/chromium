@@ -71,7 +71,7 @@ export class LocalImages extends WithPersonalizationStore {
       },
 
       /**
-       * @type {?ash.personalizationApp.mojom.CurrentWallpaper}
+       * @type {?CurrentWallpaper}
        * @private
        */
       currentSelected_: {
@@ -181,7 +181,7 @@ export class LocalImages extends WithPersonalizationStore {
 
   /**
    * @param {!mojoBase.mojom.FilePath} image
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper}
+   * @param {?CurrentWallpaper}
    *     currentSelected
    * @param {?DisplayableImage} pendingSelected
    * @return {string}

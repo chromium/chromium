@@ -17,7 +17,7 @@ import {isNonEmptyArray, isNullOrArray, isNullOrNumber} from './utils.js';
 /**
  * Send an array of wallpaper collections to untrusted.
  * @param {!Object} target the untrusted iframe window to send the message to.
- * @param {!Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+ * @param {!Array<!WallpaperCollection>}
  *     collections
  */
 export function sendCollections(target, collections) {
@@ -78,7 +78,7 @@ export function sendVisible(target, visible) {
  * Send an array of wallpaper images to chrome-untrusted://.
  * Will clear the page if images is empty array.
  * @param {!Window} target the iframe window to send the message to.
- * @param {!Array<!ash.personalizationApp.mojom.WallpaperImage>} images
+ * @param {!Array<!WallpaperImage>} images
  */
 export function sendImages(target, images) {
   /** @type {!SendImagesEvent} */

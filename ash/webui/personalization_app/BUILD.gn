@@ -32,10 +32,6 @@ static_library("personalization_app") {
   ]
 }
 
-group("closure_compile") {
-  deps = [ "resources:closure_compile" ]
-}
-
 js2gtest("browser_tests_js") {
   test_type = "mojo_lite_webui"
 

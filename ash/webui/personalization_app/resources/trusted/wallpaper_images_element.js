@@ -13,7 +13,7 @@ import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {sendCurrentWallpaperAssetId, sendImages, sendPendingWallpaperAssetId, sendVisible} from '../common/iframe_api.js';
 import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
-import {DisplayableImage, WallpaperType} from './personalization_reducers.js';
+import {WallpaperType} from './personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
@@ -45,7 +45,7 @@ export function promisifyImagesIframeFunctionsForTesting() {
 /**
  * If |current| is set and is an online wallpaper (include daily refresh
  * wallpaper), return the assetId of that image. Otherwise returns null.
- * @param {?ash.personalizationApp.mojom.CurrentWallpaper} current
+ * @param {?CurrentWallpaper} current
  * @return {?bigint}
  */
 function getAssetId(current) {
@@ -109,7 +109,7 @@ export class WallpaperImages extends WithPersonalizationStore {
       },
 
       /**
-       * @type {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+       * @type {?Array<!WallpaperCollection>}
        */
       collections_: {
         type: Array,
@@ -122,7 +122,7 @@ export class WallpaperImages extends WithPersonalizationStore {
 
       /**
        * @type {!Object<string,
-       *     ?Array<!ash.personalizationApp.mojom.WallpaperImage>>}
+       *     ?Array<!WallpaperImage>>}
        * @private
        */
       images_: {
@@ -138,7 +138,7 @@ export class WallpaperImages extends WithPersonalizationStore {
       },
 
       /**
-       * @type {?ash.personalizationApp.mojom.CurrentWallpaper}
+       * @type {?CurrentWallpaper}
        */
       currentSelected_: {
         type: Object,
@@ -218,7 +218,7 @@ export class WallpaperImages extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} selected
+   * @param {?CurrentWallpaper} selected
    * @private
    */
   async onCurrentSelectedChanged_(selected) {
@@ -244,9 +244,9 @@ export class WallpaperImages extends WithPersonalizationStore {
    * |collectionId|. Check that collections list loaded successfully, and that
    * the collection with id |collectionId| also loaded successfully.
    * @param {?Object<string,
-   *     Array<!ash.personalizationApp.mojom.WallpaperImage>>} images
+   *     Array<!WallpaperImage>>} images
    * @param {?Object<string, boolean>} imagesLoading
-   * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+   * @param {?Array<!WallpaperCollection>}
    *     collections
    * @param {boolean} collectionsLoading
    * @param {string} collectionId
@@ -274,7 +274,7 @@ export class WallpaperImages extends WithPersonalizationStore {
 
   /**
    * @param {?Object<string,
-   *     Array<!ash.personalizationApp.mojom.WallpaperImage>>} images
+   *     Array<!WallpaperImage>>} images
    * @param {Object<string, boolean>} imagesLoading
    * @param {string} collectionId
    * @return {boolean}
@@ -313,7 +313,7 @@ export class WallpaperImages extends WithPersonalizationStore {
   /**
    * @private
    * @param {string} collectionId
-   * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+   * @param {?Array<!WallpaperCollection>}
    *     collections
    * @return {string}
    */

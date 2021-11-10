@@ -11,14 +11,17 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/icons.js';
+
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getWallpaperLayoutEnum} from '../common/utils.js';
+
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {setFullscreenEnabledAction} from './personalization_actions.js';
+import {WallpaperLayout} from './personalization_app.mojom-webui.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './personalization_controller.js';
 import {DisplayableImage} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
+import {getWallpaperLayoutEnum} from './utils.js';
 
 const fullscreenClass = 'fullscreen-preview';
 
@@ -48,7 +51,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
       /**
        * Note that this contains information about the non-preview wallpaper
        * that was set before entering fullscreen mode.
-       * @type {!ash.personalizationApp.mojom.CurrentWallpaper}
+       * @type {!CurrentWallpaper}
        * @private
        */
       currentSelected_: {
@@ -69,7 +72,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
        * user changes layout option, this will be updated locally to track which
        * option the user has selected (currentSelected.layout does not change
        * until confirmPreviewWallpaper is called).
-       * @type {?ash.personalizationApp.mojom.WallpaperLayout}
+       * @type {?WallpaperLayout}
        * @private
        */
       selectedLayout_: {
@@ -131,8 +134,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   onVisibleChanged_(value) {
     if (value && !this.getFullscreenElement()) {
       // Reset to default wallpaper layout each time.
-      this.selectedLayout_ =
-          ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped;
+      this.selectedLayout_ = WallpaperLayout.kCenterCropped;
       this.shadowRoot.getElementById('container')
           .requestFullscreen()
           .then(() => document.body.classList.add(fullscreenClass));
@@ -184,7 +186,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   }
 
   /**
-   * @param {?ash.personalizationApp.mojom.WallpaperLayout} selectedLayout
+   * @param {?WallpaperLayout} selectedLayout
    * @param {string} str
    * @return {string}
    * @private

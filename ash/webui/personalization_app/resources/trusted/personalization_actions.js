@@ -62,7 +62,7 @@ export function beginLoadGooglePhotosPhotosAction() {
 
 /**
  * Notify that app is loading image list for the given collection.
- * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+ * @param {?Array<!WallpaperCollection>}
  *     collections
  * @return {!Action}
  */
@@ -132,7 +132,7 @@ export function endSelectImageAction(image, success) {
 
 /**
  * Set the collections. May be called with null if an error occurred.
- * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+ * @param {?Array<!WallpaperCollection>}
  *     collections
  * @return {!Action}
  */
@@ -186,7 +186,7 @@ export function setGooglePhotosPhotosAction(photos) {
  * Set the images for a given collection. May be called with null if an error
  * occurred.
  * @param {string} collectionId
- * @param {?Array<!ash.personalizationApp.mojom.WallpaperImage>} images
+ * @param {?Array<!WallpaperImage>} images
  * @returns
  */
 export function setImagesForCollectionAction(collectionId, images) {
@@ -237,7 +237,7 @@ export function setUpdatedDailyRefreshImageAction() {
  * Returns an action to set the current image as currently selected across the
  * app. Can be called with null to represent no image currently selected or that
  * an error occurred.
- * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
+ * @param {?CurrentWallpaper} image
  * @return {!Action}
  */
 export function setSelectedImageAction(image) {

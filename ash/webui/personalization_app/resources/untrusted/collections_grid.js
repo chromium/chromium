@@ -171,7 +171,7 @@ export class CollectionsGrid extends PolymerElement {
   static get properties() {
     return {
       /**
-       * @type {Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+       * @type {Array<!WallpaperCollection>}
        * @private
        */
       collections_: {
@@ -272,7 +272,7 @@ export class CollectionsGrid extends PolymerElement {
    * a mapping of collection id to the number of images in that collection.
    * A value of null indicates that the given collection id has failed to load.
    * @private
-   * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+   * @param {?Array<!WallpaperCollection>}
    *     collections
    * @param {?Object<string, ?number>} imageCounts
    */

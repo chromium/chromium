@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {promisifyImagesIframeFunctionsForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper_images_element.js';
+
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
+
 import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -61,9 +64,9 @@ export function WallpaperImagesTest() {
     // The currentSelected asset id should be sent to iframe.
     personalizationStore.data.currentSelected = {
       attribution: ['Image 1'],
-      layout: ash.personalizationApp.mojom.WallpaperLayout.kCenter,
+      layout: WallpaperLayout.kCenter,
       key: '2',
-      type: ash.personalizationApp.mojom.WallpaperType.kDaily,
+      type: WallpaperType.kDaily,
       url: {url: 'https://images.googleusercontent.com/1'},
     };
     personalizationStore.notifyObservers();
@@ -81,9 +84,9 @@ export function WallpaperImagesTest() {
     // No asset id is sent to iframe.
     personalizationStore.data.currentSelected = {
       attribution: ['Image 2'],
-      layout: ash.personalizationApp.mojom.WallpaperLayout.kCenter,
+      layout: WallpaperLayout.kCenter,
       key: '3',
-      type: ash.personalizationApp.mojom.WallpaperType.kDefault,
+      type: WallpaperType.kDefault,
       url: {url: 'https://images.googleusercontent.com/2'},
     };
     personalizationStore.notifyObservers();

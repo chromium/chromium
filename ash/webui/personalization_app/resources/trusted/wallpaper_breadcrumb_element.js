@@ -47,7 +47,7 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
 
       /**
        * @private
-       * @type {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+       * @type {?Array<!WallpaperCollection>}
        */
       collections_: {
         type: Array,
@@ -77,7 +77,7 @@ export class WallpaperBreadcrumb extends WithPersonalizationStore {
   /**
    * @private
    * @param {string} path
-   * @param {?Array<!ash.personalizationApp.mojom.WallpaperCollection>}
+   * @param {?Array<!WallpaperCollection>}
    *     collections
    * @param {string} collectionId
    * @return {string}

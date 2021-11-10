@@ -4,8 +4,7 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import 'chrome://personalization/trusted/file_path.mojom-lite.js';
-import 'chrome://personalization/trusted/personalization_app.mojom-lite.js';
+import 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {fetchLocalData, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/personalization_controller.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {TestWallpaperProvider} from './test_mojo_interface_provider.js';

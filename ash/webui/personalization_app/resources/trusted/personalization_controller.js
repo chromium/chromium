@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isNonEmptyArray} from '../common/utils.js';
 import * as action from './personalization_actions.js';
-import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
+import {WallpaperLayout, WallpaperType} from './personalization_app.mojom-webui.js';
 import {PersonalizationStore} from './personalization_store.js';
 
 /**
@@ -17,7 +17,7 @@ import {PersonalizationStore} from './personalization_store.js';
 
 /**
  * Fetch wallpaper collections and save them to the store.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 async function fetchCollections(provider, store) {
@@ -31,7 +31,7 @@ async function fetchCollections(provider, store) {
 
 /**
  * Fetch all of the wallpaper collections one at a time.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 async function fetchAllImagesForCollections(provider, store) {
@@ -62,7 +62,7 @@ async function fetchAllImagesForCollections(provider, store) {
 
 /**
  * Gets the list of Google Photos albums and saves it to the store.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 async function getGooglePhotosAlbums(provider, store) {
@@ -78,7 +78,7 @@ async function getGooglePhotosAlbums(provider, store) {
 
 /**
  * Gets the count of Google Photos photos and saves it to the store.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 async function getGooglePhotosCount(provider, store) {
@@ -94,7 +94,7 @@ async function getGooglePhotosCount(provider, store) {
 
 /**
  * Gets the list of Google Photos photos and saves it to the store.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 async function getGooglePhotosPhotos(provider, store) {
@@ -111,7 +111,7 @@ async function getGooglePhotosPhotos(provider, store) {
 
 /**
  * Get list of local images from disk and save it to the store.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 async function getLocalImages(provider, store) {
@@ -134,7 +134,7 @@ const imageThumbnailsToFetch = new Set();
 /**
  * Get an image thumbnail one at a time for every local image that does not have
  * a thumbnail yet.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 async function getMissingLocalImageThumbnails(provider, store) {
@@ -171,15 +171,14 @@ async function getMissingLocalImageThumbnails(provider, store) {
 }
 
 /**
- * @param {!ash.personalizationApp.mojom.WallpaperImage |
+ * @param {!WallpaperImage |
  *     !mojoBase.mojom.FilePath} image
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
- * @param {!ash.personalizationApp.mojom.WallpaperLayout=} layout
+ * @param {!WallpaperLayout=} layout
  */
 export async function selectWallpaper(
-    image, provider, store,
-    layout = ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped) {
+    image, provider, store, layout = WallpaperLayout.kCenterCropped) {
   // Batch these changes together to reduce polymer churn as multiple state
   // fields change quickly.
   store.beginBatchUpdate();
@@ -196,7 +195,7 @@ export async function selectWallpaper(
     } else if (image.path) {
       return provider.selectLocalImage(
           /** @type {!mojoBase.mojom.FilePath} */ (image),
-          /** @type {!ash.personalizationApp.mojom.WallpaperLayout} */ (layout),
+          /** @type {!WallpaperLayout} */ (layout),
           /*preview_mode=*/ shouldPreview);
     } else {
       console.warn('Image must be a local image or a WallpaperImage');
@@ -219,8 +218,8 @@ export async function selectWallpaper(
 }
 
 /**
- * @param {!ash.personalizationApp.mojom.WallpaperLayout} layout
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperLayout} layout
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 export async function setCustomWallpaperLayout(layout, provider, store) {
@@ -240,7 +239,7 @@ export async function setCustomWallpaperLayout(layout, provider, store) {
 
 /**
  * @param {string} collectionId
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 export async function setDailyRefreshCollectionId(
@@ -253,7 +252,7 @@ export async function setDailyRefreshCollectionId(
 /**
  * Get the daily refresh collection id. It can be empty if daily refresh is not
  * enabled.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 export async function getDailyRefreshCollectionId(provider, store) {
@@ -263,7 +262,7 @@ export async function getDailyRefreshCollectionId(provider, store) {
 
 /**
  * Refresh the wallpaper. Noop if daily refresh is not enabled.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 export async function updateDailyRefreshWallpaper(provider, store) {
@@ -277,7 +276,7 @@ export async function updateDailyRefreshWallpaper(provider, store) {
 
 /**
  * Confirm and set preview wallpaper as actual wallpaper.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  */
 export async function confirmPreviewWallpaper(provider) {
   await provider.confirmPreviewWallpaper();
@@ -285,7 +284,7 @@ export async function confirmPreviewWallpaper(provider) {
 
 /**
  * Cancel preview wallpaper and show the previous wallpaper.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  */
 export async function cancelPreviewWallpaper(provider) {
   await provider.cancelPreviewWallpaper();
@@ -293,7 +292,7 @@ export async function cancelPreviewWallpaper(provider) {
 
 /**
  * Fetches list of collections, then fetches list of images for each collection.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 export async function initializeBackdropData(provider, store) {
@@ -303,7 +302,7 @@ export async function initializeBackdropData(provider, store) {
 
 /**
  * Gets the initial Google Photos data state and saves it to the store.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 export async function initializeGooglePhotosData(provider, store) {
@@ -332,7 +331,7 @@ export async function initializeGooglePhotosData(provider, store) {
 /**
  * Gets list of local images, then fetches image thumbnails for each local
  * image.
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
  */
 export async function fetchLocalData(provider, store) {

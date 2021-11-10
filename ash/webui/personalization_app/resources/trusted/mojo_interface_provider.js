@@ -8,17 +8,15 @@
  * mojom data and mocking out the implementation for testing.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-// file_path is not available at chrome://resources and is copied here for use.
-import './file_path.mojom-lite.js';
-import './personalization_app.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/js/bindings.js';
+import 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {WallpaperProvider} from './personalization_app.mojom-webui.js';
 
-/** @type {?ash.personalizationApp.mojom.WallpaperProviderInterface} */
+/** @type {?WallpaperProviderInterface} */
 let wallpaperProvider = null;
 
 /**
- * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface}
+ * @param {!WallpaperProviderInterface}
  *     testProvider
  */
 export function setWallpaperProviderForTesting(testProvider) {
@@ -27,12 +25,11 @@ export function setWallpaperProviderForTesting(testProvider) {
 
 /**
  * Returns a singleton for the WallpaperProvider mojom interface.
- * @return {!ash.personalizationApp.mojom.WallpaperProviderInterface}
+ * @return {!WallpaperProviderInterface}
  */
 export function getWallpaperProvider() {
   if (!wallpaperProvider) {
-    wallpaperProvider =
-        ash.personalizationApp.mojom.WallpaperProvider.getRemote();
+    wallpaperProvider = WallpaperProvider.getRemote();
     wallpaperProvider.makeTransparent();
   }
   return wallpaperProvider;
