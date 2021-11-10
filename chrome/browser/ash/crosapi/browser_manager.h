@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -44,12 +46,14 @@ class BrowserLoader;
 class TestMojoConnectionManager;
 
 using browser_util::LacrosSelection;
+using component_updater::ComponentUpdateService;
 
-// Manages the lifetime of lacros-chrome, and its loading status. This class is
-// a part of ash-chrome.
+// Manages the lifetime of lacros-chrome, and its loading status. Observes the
+// component updater for future updates. This class is a part of ash-chrome.
 class BrowserManager : public session_manager::SessionManagerObserver,
                        public BrowserServiceHostObserver,
-                       public policy::CloudPolicyStore::Observer {
+                       public policy::CloudPolicyStore::Observer,
+                       public ComponentUpdateService::Observer {
  public:
   // Static getter of BrowserManager instance. In real use cases,
   // BrowserManager instance should be unique in the process.
@@ -57,16 +61,14 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   explicit BrowserManager(
       scoped_refptr<component_updater::CrOSComponentManager> manager);
+  // Constructor for testing.
+  BrowserManager(scoped_refptr<component_updater::CrOSComponentManager> manager,
+                 ComponentUpdateService* update_service);
 
   BrowserManager(const BrowserManager&) = delete;
   BrowserManager& operator=(const BrowserManager&) = delete;
 
   ~BrowserManager() override;
-
-  // TODO(crbug.com/1237235): Make this function private in preparation for
-  // browser manager reload support.
-  // Returns true if the binary is ready to launch or already launched.
-  bool IsReady() const;
 
   // Returns true if Lacros is in running state.
   // Virtual for testing.
@@ -244,6 +246,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
   friend class apps::StandaloneBrowserExtensionApps;
 
+  // Returns true if the binary is ready to launch or already launched.
+  bool IsReady() const;
+
   // Remember the launch mode of Lacros.
   void RecordLacrosLaunchMode();
 
@@ -345,8 +350,13 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OnStoreError(policy::CloudPolicyStore* store) override;
   void OnStoreDestruction(policy::CloudPolicyStore* store) override;
 
-  // Called on load completion.
-  void OnLoadComplete(const base::FilePath& path, LacrosSelection selection);
+  // component_updater::ComponentUpdateService::Observer:
+  void OnEvent(Events event, const std::string& id) override;
+
+  // crosapi::BrowserManagerObserver:
+  void OnLoadComplete(browser_util::InitialBrowserAction initial_browser_action,
+                      const base::FilePath& path,
+                      LacrosSelection selection);
 
   // Methods for features to register and de-register for needing to keep Lacros
   // alive.
@@ -366,6 +376,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // May be null in tests.
   scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
+
+  // May be null in tests.
+  ComponentUpdateService* const component_update_service_;
 
   std::unique_ptr<crosapi::BrowserLoader> browser_loader_;
 
@@ -404,10 +417,18 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // new or existing lacros startup tasks are not executed during shutdown.
   bool shutdown_requested_ = false;
 
+  // Tracks whether an updated browser component is available. Used to determine
+  // if an update should be loaded prior to starting the browser.
+  bool update_available_ = false;
+
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when
   // '--lacros-mojo-socket-for-testing' is present in the command line.
   std::unique_ptr<TestMojoConnectionManager> test_mojo_connection_manager_;
+
+  base::ScopedObservation<ComponentUpdateService,
+                          ComponentUpdateService::Observer>
+      component_update_observation_{this};
 
   // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
   std::unique_ptr<EnvironmentProvider> environment_provider_;

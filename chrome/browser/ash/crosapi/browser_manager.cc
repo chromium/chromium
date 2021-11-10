@@ -259,7 +259,13 @@ BrowserManager* BrowserManager::Get() {
 
 BrowserManager::BrowserManager(
     scoped_refptr<component_updater::CrOSComponentManager> manager)
+    : BrowserManager(manager, g_browser_process->component_updater()) {}
+
+BrowserManager::BrowserManager(
+    scoped_refptr<component_updater::CrOSComponentManager> manager,
+    component_updater::ComponentUpdateService* update_service)
     : component_manager_(manager),
+      component_update_service_(update_service),
       environment_provider_(std::make_unique<EnvironmentProvider>()) {
   DCHECK(!g_instance);
   g_instance = this;
@@ -464,9 +470,11 @@ void BrowserManager::InitializeAndStart() {
 
   // Must be checked after user session start because it depends on user type.
   if (browser_util::IsLacrosEnabled()) {
+    component_update_observation_.Observe(component_update_service_);
     SetState(State::MOUNTING);
     browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
-                                         weak_factory_.GetWeakPtr()));
+                                         weak_factory_.GetWeakPtr(),
+                                         GetInitialBrowserAction()));
   } else {
     SetState(State::UNAVAILABLE);
     browser_loader_->Unload();
@@ -637,9 +645,22 @@ BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
     return MaybeStartResult::kStarting;
   }
 
+  // If lacros-chrome is not running, launch it.
   if (state_ == State::STOPPED) {
-    // If lacros-chrome is not running, launch it.
-    Start(std::move(initial_browser_action));
+    // If an update is available, load the most up-to-date installed version and
+    // let the load complete callback start the browser.
+    if (update_available_) {
+      update_available_ = false;
+
+      SetState(State::MOUNTING);
+      lacros_path_ = base::FilePath();
+      lacros_selection_ = absl::nullopt;
+      browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
+                                           weak_factory_.GetWeakPtr(),
+                                           std::move(initial_browser_action)));
+    } else {
+      Start(std::move(initial_browser_action));
+    }
     return MaybeStartResult::kStarting;
   }
 
@@ -654,8 +675,9 @@ void BrowserManager::Start(
   // Ensure we're not trying to open a window before the shelf is initialized.
   DCHECK(ChromeShelfController::instance());
 
-  // Always reset |relaunch_requested_| when launching Lacros.
+  // Always reset the |relaunch_requested_| flag when launching Lacros.
   relaunch_requested_ = false;
+
   SetState(State::CREATING_LOG_FILE);
 
   // TODO(ythjkt): After M92 cherry-pick, clean up the following code by moving
@@ -918,7 +940,7 @@ void BrowserManager::OnLacrosChromeTerminated() {
   SetLaunchOnLoginPref(false);
 
   if (!shutdown_requested_ && relaunch_requested_) {
-    Start(browser_util::InitialBrowserAction(
+    MaybeStart(browser_util::InitialBrowserAction(
         mojom::InitialBrowserAction::kRestoreLastSession));
   }
 }
@@ -954,14 +976,27 @@ void BrowserManager::OnStoreDestruction(policy::CloudPolicyStore* store) {
   store->RemoveObserver(this);
 }
 
-void BrowserManager::OnLoadComplete(const base::FilePath& path,
-                                    LacrosSelection selection) {
+void BrowserManager::OnEvent(Events event, const std::string& id) {
+  // Track whether an update has been installed and should be loaded next time
+  // the browser is started.
+  if (event == Events::COMPONENT_UPDATED &&
+      id == browser_util::GetLacrosComponentInfo().crx_id) {
+    update_available_ = true;
+  }
+}
+
+void BrowserManager::OnLoadComplete(
+    browser_util::InitialBrowserAction initial_browser_action,
+    const base::FilePath& path,
+    LacrosSelection selection) {
   DCHECK_EQ(state_, State::MOUNTING);
 
   lacros_path_ = path;
   lacros_selection_ = absl::optional<LacrosSelection>(selection);
   SetState(path.empty() ? State::UNAVAILABLE : State::STOPPED);
 
+  // TODO(crbug.com/1266010): In the event the load operation failed, we should
+  // launch the last successfully loaded image.
   const bool success = !path.empty();
   for (auto& observer : observers_) {
     observer.OnLoadComplete(success);
@@ -969,7 +1004,7 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path,
 
   if (state_ == State::STOPPED && !shutdown_requested_ &&
       (browser_util::IsLacrosPrimaryBrowser() || GetLaunchOnLoginPref())) {
-    Start(GetInitialBrowserAction());
+    Start(std::move(initial_browser_action));
   }
 }
 

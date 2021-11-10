@@ -33,21 +33,6 @@ constexpr char kLacrosMounterUpstartJob[] = "lacros_2dmounter";
 
 }  // namespace
 
-// Delegate for testing.
-class DelegateImpl : public BrowserLoader::Delegate {
- public:
-  DelegateImpl() = default;
-  DelegateImpl(const DelegateImpl&) = delete;
-  DelegateImpl& operator=(const DelegateImpl&) = delete;
-  ~DelegateImpl() override = default;
-
-  // BrowserLoader::Delegate:
-  void SetLacrosUpdateAvailable() override { ++set_lacros_update_available_; }
-
-  // Public because this is test code.
-  int set_lacros_update_available_ = 0;
-};
-
 class BrowserLoaderTest : public testing::Test {
  public:
   BrowserLoaderTest() {
@@ -66,13 +51,9 @@ class BrowserLoaderTest : public testing::Test {
         g_browser_process->platform_part());
     browser_part_->InitializeCrosComponentManager(component_manager_);
 
-    // Create object under test.
-    auto delegate_ptr = std::make_unique<DelegateImpl>();
-    delegate_ = delegate_ptr.get();
-
     browser_loader_ = std::make_unique<BrowserLoader>(
-        std::move(delegate_ptr), component_manager_,
-        &mock_component_update_service_, &fake_upstart_client_);
+        component_manager_, &mock_component_update_service_,
+        &fake_upstart_client_);
   }
 
   ~BrowserLoaderTest() override {
@@ -84,42 +65,12 @@ class BrowserLoaderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  protected:
-  DelegateImpl* delegate_;
   component_updater::MockComponentUpdateService mock_component_update_service_;
   scoped_refptr<component_updater::FakeCrOSComponentManager> component_manager_;
   chromeos::FakeUpstartClient fake_upstart_client_;
   std::unique_ptr<BrowserProcessPlatformPartTestApi> browser_part_;
   std::unique_ptr<BrowserLoader> browser_loader_;
 };
-
-TEST_F(BrowserLoaderTest, ShowUpdateNotification) {
-  // Creating the loader does not trigger an update notification.
-  EXPECT_EQ(0, delegate_->set_lacros_update_available_);
-
-  // The initial load of the component does not trigger an update notification.
-  base::RunLoop run_loop;
-  browser_loader_->Load(base::BindLambdaForTesting(
-      [&](const base::FilePath&, LacrosSelection) { run_loop.Quit(); }));
-  run_loop.Run();
-  EXPECT_EQ(0, delegate_->set_lacros_update_available_);
-
-  // Update check does not trigger an update notification.
-  browser_loader_->OnEvent(
-      UpdateClient::Observer::Events::COMPONENT_CHECKING_FOR_UPDATES,
-      kLacrosComponentId);
-  EXPECT_EQ(0, delegate_->set_lacros_update_available_);
-
-  // Update download does not trigger an update notification.
-  browser_loader_->OnEvent(
-      UpdateClient::Observer::Events::COMPONENT_UPDATE_DOWNLOADING,
-      kLacrosComponentId);
-  EXPECT_EQ(0, delegate_->set_lacros_update_available_);
-
-  // Update completion trigger the notification.
-  browser_loader_->OnEvent(UpdateClient::Observer::Events::COMPONENT_UPDATED,
-                           kLacrosComponentId);
-  EXPECT_EQ(1, delegate_->set_lacros_update_available_);
-}
 
 TEST_F(BrowserLoaderTest, OnLoadSelectionQuicklyChooseRootfs) {
   bool callback_called = false;

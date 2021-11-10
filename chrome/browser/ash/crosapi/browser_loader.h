@@ -19,32 +19,22 @@ namespace crosapi {
 
 using browser_util::LacrosSelection;
 
-// Manages download of the lacros-chrome binary. After the initial component is
-// downloaded and mounted, observes the component updater for future updates.
-// If it detects a new update, triggers a user-visible notification.
+// Manages download of the lacros-chrome binary.
 // This class is a part of ash-chrome.
-class BrowserLoader
-    : public component_updater::ComponentUpdateService::Observer {
+class BrowserLoader {
  public:
-  // Delete for testing.
-  class Delegate {
-   public:
-    virtual void SetLacrosUpdateAvailable() = 0;
-    virtual ~Delegate() = default;
-  };
   // Contructor for production.
   explicit BrowserLoader(
       scoped_refptr<component_updater::CrOSComponentManager> manager);
   // Constructor for testing.
-  BrowserLoader(std::unique_ptr<Delegate> delegate,
-                scoped_refptr<component_updater::CrOSComponentManager> manager,
+  BrowserLoader(scoped_refptr<component_updater::CrOSComponentManager> manager,
                 component_updater::ComponentUpdateService* updater,
                 chromeos::UpstartClient* upstart_client);
 
   BrowserLoader(const BrowserLoader&) = delete;
   BrowserLoader& operator=(const BrowserLoader&) = delete;
 
-  ~BrowserLoader() override;
+  ~BrowserLoader();
 
   // Starts to load lacros-chrome binary or the rootfs lacros-chrome binary.
   // |callback| is called on completion with the path to the lacros-chrome on
@@ -57,9 +47,6 @@ class BrowserLoader
   // Starts to unload lacros-chrome binary.
   // Note that this triggers to remove the user directory for lacros-chrome.
   void Unload();
-
-  // component_updater::ComponentUpdateService::Observer:
-  void OnEvent(Events event, const std::string& id) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest,
@@ -107,9 +94,6 @@ class BrowserLoader
 
   // Callback from upstart mounting lacros-chrome.
   void OnUpstartLacrosMounter(LoadCompletionCallback callback, bool success);
-
-  // Allows stubbing out some methods for testing.
-  std::unique_ptr<Delegate> delegate_;
 
   scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
 

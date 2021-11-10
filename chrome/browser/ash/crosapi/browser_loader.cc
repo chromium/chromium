@@ -19,17 +19,12 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/component_updater/component_updater_service.h"
 
 namespace crosapi {
 
 namespace {
-
-// Emergency kill switch in case the notification code doesn't work properly.
-const base::Feature kLacrosShowUpdateNotifications{
-    "LacrosShowUpdateNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // The rootfs lacros-chrome binary related files.
 constexpr char kLacrosChromeBinary[] = "chrome";
@@ -48,11 +43,6 @@ constexpr char kLacrosUnmounterUpstartJob[] = "lacros_2dunmounter";
 
 std::string GetLacrosComponentName() {
   return browser_util::GetLacrosComponentInfo().name;
-}
-
-// Returns the CRX "extension" ID for a lacros component.
-std::string GetLacrosComponentCrxId() {
-  return browser_util::GetLacrosComponentInfo().crx_id;
 }
 
 // Returns whether lacros-chrome component is registered.
@@ -92,52 +82,25 @@ bool CheckInstalledAndMaybeRemoveUserDirectory(
   return true;
 }
 
-// Production delegate implementation.
-class DelegateImpl : public BrowserLoader::Delegate {
- public:
-  DelegateImpl() = default;
-  DelegateImpl(const DelegateImpl&) = delete;
-  DelegateImpl& operator=(const DelegateImpl&) = delete;
-  ~DelegateImpl() override = default;
-
-  // BrowserLoader::Delegate:
-  void SetLacrosUpdateAvailable() override {
-    if (base::FeatureList::IsEnabled(kLacrosShowUpdateNotifications)) {
-      // Show the update notification in ash.
-      SystemTrayClientImpl::Get()->SetLacrosUpdateAvailable();
-    }
-  }
-};
-
 }  // namespace
 
 BrowserLoader::BrowserLoader(
     scoped_refptr<component_updater::CrOSComponentManager> manager)
-    : BrowserLoader(std::make_unique<DelegateImpl>(),
-                    manager,
+    : BrowserLoader(manager,
                     g_browser_process->component_updater(),
                     chromeos::UpstartClient::Get()) {}
 
 BrowserLoader::BrowserLoader(
-    std::unique_ptr<Delegate> delegate,
     scoped_refptr<component_updater::CrOSComponentManager> manager,
     component_updater::ComponentUpdateService* updater,
     chromeos::UpstartClient* upstart_client)
-    : delegate_(std::move(delegate)),
-      component_manager_(manager),
+    : component_manager_(manager),
       component_update_service_(updater),
       upstart_client_(upstart_client) {
-  DCHECK(delegate_);
   DCHECK(component_manager_);
 }
 
-BrowserLoader::~BrowserLoader() {
-  // May be null in tests.
-  if (component_update_service_) {
-    // Removing an observer is a no-op if the observer wasn't added.
-    component_update_service_->RemoveObserver(this);
-  }
-}
+BrowserLoader::~BrowserLoader() = default;
 
 void BrowserLoader::Load(LoadCompletionCallback callback) {
   DCHECK(browser_util::IsLacrosEnabled());
@@ -334,13 +297,6 @@ void BrowserLoader::Unload() {
                             base::BindOnce([](bool) {}));
 }
 
-void BrowserLoader::OnEvent(Events event, const std::string& id) {
-  // Check for the Lacros component being updated.
-  if (event == Events::COMPONENT_UPDATED && id == GetLacrosComponentCrxId()) {
-    delegate_->SetLacrosUpdateAvailable();
-  }
-}
-
 void BrowserLoader::OnLoadComplete(
     LoadCompletionCallback callback,
     component_updater::CrOSComponentManager::Error error,
@@ -362,14 +318,6 @@ void BrowserLoader::OnLoadComplete(
   // Log the path on success.
   LOG(WARNING) << "Loaded lacros image at " << path.MaybeAsASCII();
   std::move(callback).Run(path, selection);
-
-  // May be null in tests.
-  if (component_update_service_) {
-    // Now that we have the initial component download, start observing for
-    // future updates. We don't do this in the constructor because we don't want
-    // to show the "update available" notification for the initial load.
-    component_update_service_->AddObserver(this);
-  }
 }
 
 void BrowserLoader::OnCheckInstalled(bool was_installed) {
