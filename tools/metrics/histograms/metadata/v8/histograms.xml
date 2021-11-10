@@ -350,6 +350,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.ContextSnapshotDecompress" units="microseconds"
+    expires_after="2022-02-01">
+  <owner>sky@chromium.org</owner>
+  <owner>yukishiino@chromium.org</owner>
+  <summary>
+    Total time spent decompressing snapshots for a context. This is emitted
+    immediately after decompressing the snapshots.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="V8.DebugFeatureUsage" enum="V8DebugFeature"
     expires_after="2022-04-24">
   <owner>yangguo@chromium.org</owner>
@@ -1267,8 +1279,8 @@ chromium-metrics-reviews@google.com.
   <owner>sky@chromium.org</owner>
   <owner>yukishiino@chromium.org</owner>
   <summary>
-    Total time spent decompressing snapshots. This is emitted immediately after
-    decompressing the snapshots (from Snapshot::Initialize()).
+    Total time spent decompressing snapshots for the isolate. This is emitted
+    immediately after decompressing the snapshots (from Snapshot::Initialize()).
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
