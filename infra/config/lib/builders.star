@@ -894,29 +894,20 @@ def _bootstrap_properties(ctx):
             bootstrap = bootstrap_node.props.bootstrap
 
             properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
-            properties_property = {
-                "top_level_project": {
-                    "repo": {
-                        "host": "chromium.googlesource.com",
-                        "project": "chromium/src",
-                    },
-                    "ref": settings.ref,
-                },
-                "properties_file": "infra/config/generated/{}".format(properties_file),
-            }
-            exe_property = {
-                "exe": builder.exe,
-            }
-
-            # TODO(crbug.com/1261886) Once bootstrapper is changed to use
-            # $bootstrap/properties and $bootstrap/exe, we can remove code for
-            # setting $bootstrap
-            bootstrap_property = dict(properties_property)
-            bootstrap_property.update(exe_property)
             non_bootstrapped_properties = {
-                "$bootstrap/properties": properties_property,
-                "$bootstrap/exe": exe_property,
-                "$bootstrap": bootstrap_property,
+                "$bootstrap/properties": {
+                    "top_level_project": {
+                        "repo": {
+                            "host": "chromium.googlesource.com",
+                            "project": "chromium/src",
+                        },
+                        "ref": settings.ref,
+                    },
+                    "properties_file": "infra/config/generated/{}".format(properties_file),
+                },
+                "$bootstrap/exe": {
+                    "exe": builder.exe,
+                },
                 "led_builder_is_bootstrapped": True,
             }
             builder_properties = json.decode(builder.properties)
