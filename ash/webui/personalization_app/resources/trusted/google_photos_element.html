@@ -40,7 +40,10 @@
   }
 
   .album {
+    align-items: center;
     background: rgba(0, 0, 0, 0.12);
+    display: flex;
+    justify-content: center;
   }
 
   .row {
@@ -97,7 +100,7 @@
       <iron-list id="albumsGrid" items="[[albums_]]" as="album" grid>
         <template>
           <personalization-grid-item>
-            <div class="album"></div>
+            <div class="album" tabindex$="[[tabIndex]]">[[album.name]]</div>
           </personalization-grid-item>
         </template>
       </iron-list>

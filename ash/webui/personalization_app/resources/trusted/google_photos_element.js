@@ -51,7 +51,7 @@ export class GooglePhotos extends WithPersonalizationStore {
 
       /**
        * The list of albums.
-       * @type {?Array<undefined>}
+       * @type {?Array<WallpaperCollection>}
        * @private
        */
       albums_: {
@@ -132,7 +132,6 @@ export class GooglePhotos extends WithPersonalizationStore {
   static get observers() {
     return [
       'onHiddenChanged_(hidden)',
-      'onAlbumsChanged_(albums_, albumsLoading_)',
       'onPhotosChanged_(photos_, photosLoading_, photosPerRow_)',
     ];
   }
@@ -175,16 +174,6 @@ export class GooglePhotos extends WithPersonalizationStore {
     // will render incorrectly. Force relayout by invalidating the grid for the
     // currently selected tab when this element becomes visible.
     afterNextRender(this, () => this.invalidateGrid_());
-  }
-
-  /**
-   * Invoked on changes to the list of albums and its loading state.
-   * @param {?Array<undefined>} albums
-   * @param {?boolean} albumsLoading
-   * @private
-   */
-  onAlbumsChanged_(albums, albumsLoading) {
-    // TODO(dmblack): Send event to untrusted via iframe API.
   }
 
   /**

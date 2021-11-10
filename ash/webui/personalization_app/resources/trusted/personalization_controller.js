@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isNonEmptyArray} from '../common/utils.js';
 import * as action from './personalization_actions.js';
-import {WallpaperLayout, WallpaperType} from './personalization_app.mojom-webui.js';
+import {WallpaperCollection, WallpaperLayout, WallpaperType} from './personalization_app.mojom-webui.js';
 import {PersonalizationStore} from './personalization_store.js';
 
 /**
@@ -69,9 +69,20 @@ async function getGooglePhotosAlbums(provider, store) {
   store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
 
   // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
-  // request that returns an empty response list of Google Photos albums.
+  // request that returns a list of fictitious Google Photos albums.
   return new Promise(resolve => setTimeout(() => {
-                       store.dispatch(action.setGooglePhotosAlbumsAction([]));
+                       store.dispatch(action.setGooglePhotosAlbumsAction([
+                         '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+                         '0ec40478-9712-42e1-b5bf-3e75870ca042',
+                         '0a268a37-877a-4936-81d4-38cc84b0f596',
+                         '27597eb3-a42d-474c-ab39-592680dcf35a',
+                         'bdcd6ba5-ed70-4866-9bc0-87ccf87db08c',
+                       ].map((uuid, i) => {
+                         const album = new WallpaperCollection();
+                         album.id = uuid;
+                         album.name = `Album ${i}`;
+                         return album;
+                       })));
                        resolve();
                      }, 1000));
 }

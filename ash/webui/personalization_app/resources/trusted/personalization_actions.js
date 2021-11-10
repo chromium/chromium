@@ -62,8 +62,7 @@ export function beginLoadGooglePhotosPhotosAction() {
 
 /**
  * Notify that app is loading image list for the given collection.
- * @param {?Array<!WallpaperCollection>}
- *     collections
+ * @param {?Array<!WallpaperCollection>} collections
  * @return {!Action}
  */
 export function beginLoadImagesForCollectionsAction(collections) {
@@ -132,8 +131,7 @@ export function endSelectImageAction(image, success) {
 
 /**
  * Set the collections. May be called with null if an error occurred.
- * @param {?Array<!WallpaperCollection>}
- *     collections
+ * @param {?Array<!WallpaperCollection>} collections
  * @return {!Action}
  */
 export function setCollectionsAction(collections) {
@@ -157,7 +155,7 @@ export function setDailyRefreshCollectionIdAction(collectionId) {
 
 /**
  * Sets the list of Google Photos albums. May be called with null on error.
- * @param {?Array<undefined>} albums
+ * @param {?Array<WallpaperCollection>} albums
  * @return {!Action}
  */
 export function setGooglePhotosAlbumsAction(albums) {

@@ -68,7 +68,28 @@ suite('Updating local images', () => {
           },
           {
             name: 'set_google_photos_albums',
-            albums: [],
+            albums: [
+              {
+                id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+                name: 'Album 0',
+              },
+              {
+                id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
+                name: 'Album 1',
+              },
+              {
+                id: '0a268a37-877a-4936-81d4-38cc84b0f596',
+                name: 'Album 2',
+              },
+              {
+                id: '27597eb3-a42d-474c-ab39-592680dcf35a',
+                name: 'Album 3',
+              },
+              {
+                id: 'bdcd6ba5-ed70-4866-9bc0-87ccf87db08c',
+                name: 'Album 4',
+              },
+            ],
           },
           {
             name: 'set_google_photos_photos',
@@ -140,7 +161,28 @@ suite('Updating local images', () => {
             },
             googlePhotos: {
               count: 1000,
-              albums: [],
+              albums: [
+                {
+                  id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+                  name: 'Album 0',
+                },
+                {
+                  id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
+                  name: 'Album 1',
+                },
+                {
+                  id: '0a268a37-877a-4936-81d4-38cc84b0f596',
+                  name: 'Album 2',
+                },
+                {
+                  id: '27597eb3-a42d-474c-ab39-592680dcf35a',
+                  name: 'Album 3',
+                },
+                {
+                  id: 'bdcd6ba5-ed70-4866-9bc0-87ccf87db08c',
+                  name: 'Album 4',
+                },
+              ],
               photos: undefined,
             },
           },
@@ -153,7 +195,28 @@ suite('Updating local images', () => {
             },
             googlePhotos: {
               count: 1000,
-              albums: [],
+              albums: [
+                {
+                  id: '9bd1d7a3-f995-4445-be47-53c5b58ce1cb',
+                  name: 'Album 0',
+                },
+                {
+                  id: '0ec40478-9712-42e1-b5bf-3e75870ca042',
+                  name: 'Album 1',
+                },
+                {
+                  id: '0a268a37-877a-4936-81d4-38cc84b0f596',
+                  name: 'Album 2',
+                },
+                {
+                  id: '27597eb3-a42d-474c-ab39-592680dcf35a',
+                  name: 'Album 3',
+                },
+                {
+                  id: 'bdcd6ba5-ed70-4866-9bc0-87ccf87db08c',
+                  name: 'Album 4',
+                },
+              ],
               photos: Array.from({length: 1000}),
             },
           },

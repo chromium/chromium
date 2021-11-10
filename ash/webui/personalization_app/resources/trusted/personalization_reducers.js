@@ -21,10 +21,8 @@ export let DisplayableImage;
  * Stores collections and images from backdrop server.
  * |images| is a mapping of collection id to the list of images.
  * @typedef {{
- *   collections:
- *     ?Array<!WallpaperCollection>,
- *   images: !Object<string,
- *     ?Array<!WallpaperImage>>,
+ *   collections: ?Array<!WallpaperCollection>,
+ *   images: !Object<string, ?Array<!WallpaperImage>>,
  * }}
  */
 export let BackdropState;
@@ -39,7 +37,7 @@ export let BackdropState;
  * has been initialized, then either null (in error state) or a valid Array.
  * @typedef {{
  *  count: (?number|undefined),
- *  albums: (?Array<undefined>|undefined),
+ *  albums: (?Array<WallpaperCollection>|undefined),
  *  photos: (?Array<undefined>|undefined),
  * }}
  */
@@ -489,7 +487,8 @@ function googlePhotosReducer(state, action) {
     case ActionName.SET_GOOGLE_PHOTOS_ALBUMS:
       return /** @type {!GooglePhotosState} */ ({
         ...state,
-        albums: (/** @type {{albums: ?Array<undefined>}} */ (action)).albums,
+        albums: (/** @type {{albums: ?Array<WallpaperCollection>}} */ (action))
+                    .albums,
       });
     case ActionName.SET_GOOGLE_PHOTOS_COUNT:
       return /** @type {!GooglePhotosState} */ ({
