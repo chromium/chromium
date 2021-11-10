@@ -520,22 +520,41 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #error "absl endian detection needs to be set up for your compiler"
 #endif
 
-// macOS 10.13 and iOS 10.11 don't let you use <any>, <optional>, or <variant>
-// even though the headers exist and are publicly noted to work.  See
-// https://github.com/abseil/abseil-cpp/issues/207 and
+// macOS < 10.13 and iOS < 11 don't let you use <any>, <optional>, or <variant>
+// even though the headers exist and are publicly noted to work, because the
+// libc++ shared library shipped on the system doesn't have the requisite
+// exported symbols.  See https://github.com/abseil/abseil-cpp/issues/207 and
 // https://developer.apple.com/documentation/xcode_release_notes/xcode_10_release_notes
+//
 // libc++ spells out the availability requirements in the file
 // llvm-project/libcxx/include/__config via the #define
 // _LIBCPP_AVAILABILITY_BAD_OPTIONAL_ACCESS.
-#if defined(__APPLE__) && defined(_LIBCPP_VERSION) && \
-  ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) && \
-   __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101400) || \
-  (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) && \
-   __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 120000) || \
-  (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) && \
-   __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 50000) || \
-  (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) && \
-   __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 120000))
+//
+// Unfortunately, Apple initially mis-stated the requirements as macOS < 10.14
+// and iOS < 12 in the libc++ headers. This was corrected by
+// https://github.com/llvm/llvm-project/commit/7fb40e1569dd66292b647f4501b85517e9247953
+// which subsequently made it into the XCode 12.5 release. We need to match the
+// old (incorrect) conditions when built with old XCode, but can use the
+// corrected earlier versions with new XCode.
+#if defined(__APPLE__) && defined(_LIBCPP_VERSION) &&               \
+    ((_LIBCPP_VERSION >= 11000 && /* XCode 12.5 or later: */        \
+      ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&   \
+        __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101300) ||  \
+       (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&  \
+        __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 110000) || \
+       (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) &&   \
+        __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 40000) ||   \
+       (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&      \
+        __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 110000))) ||   \
+     (_LIBCPP_VERSION < 11000 && /* Pre-XCode 12.5: */              \
+      ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&   \
+        __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101400) ||  \
+       (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&  \
+        __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 120000) || \
+       (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) &&   \
+        __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 50000) ||   \
+       (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&      \
+        __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 120000))))
 #define ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE 1
 #else
 #define ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE 0

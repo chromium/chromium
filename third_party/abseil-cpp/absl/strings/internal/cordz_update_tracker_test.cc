@@ -58,6 +58,7 @@ Methods AllMethods() {
                  Method::kPrependString,
                  Method::kRemovePrefix,
                  Method::kRemoveSuffix,
+                 Method::kSetExpectedChecksum,
                  Method::kSubCord};
 }
 

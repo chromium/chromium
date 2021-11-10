@@ -81,6 +81,7 @@
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
 #include "absl/strings/internal/cord_rep_btree_reader.h"
+#include "absl/strings/internal/cord_rep_crc.h"
 #include "absl/strings/internal/cord_rep_ring.h"
 #include "absl/strings/internal/cordz_functions.h"
 #include "absl/strings/internal/cordz_info.h"
@@ -670,6 +671,29 @@ class Cord {
   friend void AbslFormatFlush(absl::Cord* cord, absl::string_view part) {
     cord->Append(part);
   }
+
+  // Cord::SetExpectedChecksum()
+  //
+  // Stores a checksum value with this non-empty cord instance, for later
+  // retrieval.
+  //
+  // The expected checksum is a number stored out-of-band, alongside the data.
+  // It is preserved across copies and assignments, but any mutations to a cord
+  // will cause it to lose its expected checksum.
+  //
+  // The expected checksum is not part of a Cord's value, and does not affect
+  // operations such as equality or hashing.
+  //
+  // This field is intended to store a CRC32C checksum for later validation, to
+  // help support end-to-end checksum workflows.  However, the Cord API itself
+  // does no CRC validation, and assigns no meaning to this number.
+  //
+  // This call has no effect if this cord is empty.
+  void SetExpectedChecksum(uint32_t crc);
+
+  // Returns this cord's expected checksum, if it has one.  Otherwise, returns
+  // nullopt.
+  absl::optional<uint32_t> ExpectedChecksum() const;
 
   template <typename H>
   friend H AbslHashValue(H hash_state, const absl::Cord& c) {
@@ -1274,6 +1298,7 @@ inline bool Cord::StartsWith(absl::string_view rhs) const {
 }
 
 inline void Cord::ChunkIterator::InitTree(cord_internal::CordRep* tree) {
+  tree = cord_internal::SkipCrcNode(tree);
   if (tree->tag == cord_internal::BTREE) {
     current_chunk_ = btree_reader_.Init(tree->btree());
     return;

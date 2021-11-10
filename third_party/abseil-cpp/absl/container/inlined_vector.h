@@ -36,7 +36,6 @@
 #define ABSL_CONTAINER_INLINED_VECTOR_H_
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
@@ -233,8 +232,8 @@ class InlinedVector {
   // specified allocator is also `noexcept`.
   InlinedVector(
       InlinedVector&& other,
-      const allocator_type& allocator)
-      noexcept(absl::allocator_is_nothrow<allocator_type>::value)
+      const allocator_type&
+          allocator) noexcept(absl::allocator_is_nothrow<allocator_type>::value)
       : storage_(allocator) {
     if (IsMemcpyOk<A>::value) {
       storage_.MemcpyFrom(other.storage_);
@@ -486,8 +485,8 @@ class InlinedVector {
   InlinedVector& operator=(InlinedVector&& other) {
     if (ABSL_PREDICT_TRUE(this != std::addressof(other))) {
       if (IsMemcpyOk<A>::value || other.storage_.GetIsAllocated()) {
-        inlined_vector_internal::DestroyElements<A>(storage_.GetAllocator(),
-                                                    data(), size());
+        inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
+            storage_.GetAllocator(), data(), size());
         storage_.DeallocateIfAllocated();
         storage_.MemcpyFrom(other.storage_);
 
@@ -721,8 +720,8 @@ class InlinedVector {
   // Destroys all elements in the inlined vector, setting the size to `0` and
   // deallocating any held memory.
   void clear() noexcept {
-    inlined_vector_internal::DestroyElements<A>(storage_.GetAllocator(), data(),
-                                                size());
+    inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
+        storage_.GetAllocator(), data(), size());
     storage_.DeallocateIfAllocated();
 
     storage_.SetInlinedSize(0);

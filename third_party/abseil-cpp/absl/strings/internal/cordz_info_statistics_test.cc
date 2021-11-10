@@ -22,6 +22,7 @@
 #include "absl/strings/cord.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
+#include "absl/strings/internal/cord_rep_crc.h"
 #include "absl/strings/internal/cord_rep_flat.h"
 #include "absl/strings/internal/cord_rep_ring.h"
 #include "absl/strings/internal/cordz_info.h"
@@ -533,6 +534,27 @@ TEST(CordzInfoStatisticsTest, BtreeNodeShared) {
   expected.node_counts.btree = 1 + leaf_count;
 
   EXPECT_THAT(SampleCord(tree), EqStatistics(expected));
+}
+
+TEST(CordzInfoStatisticsTest, Crc) {
+  RefHelper ref;
+  auto* left = Flat(1000);
+  auto* right = Flat(1000);
+  auto* concat = Concat(left, right);
+  auto* crc = ref.NeedsUnref(CordRepCrc::New(concat, 12345));
+
+  CordzStatistics expected;
+  expected.size = concat->length;
+  expected.estimated_memory_usage =
+      SizeOf(crc) + SizeOf(concat) + SizeOf(left) + SizeOf(right);
+  expected.estimated_fair_share_memory_usage = expected.estimated_memory_usage;
+  expected.node_count = 4;
+  expected.node_counts.flat = 2;
+  expected.node_counts.flat_1k = 2;
+  expected.node_counts.concat = 1;
+  expected.node_counts.crc = 1;
+
+  EXPECT_THAT(SampleCord(crc), EqStatistics(expected));
 }
 
 TEST(CordzInfoStatisticsTest, ThreadSafety) {

@@ -60,6 +60,7 @@ class CordzUpdateTracker {
     kPrependString,
     kRemovePrefix,
     kRemoveSuffix,
+    kSetExpectedChecksum,
     kSubCord,
 
     // kNumMethods defines the number of entries: must be the last entry.

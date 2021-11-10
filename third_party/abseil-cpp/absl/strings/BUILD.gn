@@ -123,7 +123,9 @@ absl_source_set("cord_internal") {
     "internal/cord_rep_btree.cc",
     "internal/cord_rep_btree_navigator.cc",
     "internal/cord_rep_btree_reader.cc",
+    "internal/cord_rep_concat.cc",
     "internal/cord_rep_consume.cc",
+    "internal/cord_rep_crc.cc",
     "internal/cord_rep_ring.cc",
   ]
   public = [
@@ -132,6 +134,7 @@ absl_source_set("cord_internal") {
     "internal/cord_rep_btree_navigator.h",
     "internal/cord_rep_btree_reader.h",
     "internal/cord_rep_consume.h",
+    "internal/cord_rep_crc.h",
     "internal/cord_rep_flat.h",
     "internal/cord_rep_ring.h",
     "internal/cord_rep_ring_reader.h",
@@ -154,11 +157,13 @@ absl_source_set("cord_internal") {
   ]
 }
 
-absl_source_set("cord_internal_test") {
+absl_source_set("cord_rep_concat_test") {
   testonly = true
-  sources = [ "internal/cord_internal_test.cc" ]
+  sources = [ "internal/cord_rep_concat_test.cc" ]
   deps = [
     ":cord_internal",
+    ":cord_rep_test_util",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/googletest:gmock",
     "//third_party/googletest:gtest",
   ]
@@ -189,6 +194,18 @@ absl_source_set("cord_rep_btree_reader_test") {
     ":strings",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/googletest:gmock",
+    "//third_party/googletest:gtest",
+  ]
+}
+
+absl_source_set("cord_rep_crc_test") {
+  testonly = true
+  sources = [ "internal/cord_rep_crc_test.cc" ]
+  deps = [
+    ":cord_internal",
+    ":cord_rep_test_util",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/googletest:gmock",
     "//third_party/googletest:gtest",
   ]
@@ -477,6 +494,7 @@ absl_source_set("cordz_test_helpers") {
 #     "//third_party/abseil-cpp/absl/base:endian",
 #     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
 #     "//third_party/abseil-cpp/absl/container:fixed_array",
+#     "//third_party/abseil-cpp/absl/hash",
 #     "//third_party/abseil-cpp/absl/random",
 #     "//third_party/googletest:gtest",
 #   ]

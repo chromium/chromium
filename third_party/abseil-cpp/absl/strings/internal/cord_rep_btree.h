@@ -240,10 +240,40 @@ class CordRepBtree : public CordRep {
   // length of the flat node and involved tree nodes have been increased by
   // `span.length()`. The caller is responsible for immediately assigning values
   // to all uninitialized data reference by the returned span.
-  // Requires `this->refcount.IsMutable()`: this function forces the
-  // caller to do this fast path check on the top level node, as this is the
-  // most commonly shared node of a cord tree.
+  // Requires `this->refcount.IsOne()`: this function forces the caller to do
+  // this fast path check on the top level node, as this is the most commonly
+  // shared node of a cord tree.
   Span<char> GetAppendBuffer(size_t size);
+
+  // Extracts the right-most data edge from this tree iff:
+  // - the tree and all internal edges to the right-most node are not shared.
+  // - the right-most node is a FLAT node and not shared.
+  // - the right-most node has at least the desired extra capacity.
+  //
+  // Returns {tree, nullptr} if any of the above conditions are not met.
+  // This method effectively removes data from the tree. The intent of this
+  // method is to allow applications appending small string data to use
+  // pre-existing capacity, and add the modified rep back to the tree.
+  //
+  // Simplified such code would look similar to this:
+  //   void MyTreeBuilder::Append(string_view data) {
+  //     ExtractResult result = CordRepBtree::ExtractAppendBuffer(tree_, 1);
+  //     if (CordRep* rep = result.extracted) {
+  //       size_t available = rep->Capacity() - rep->length;
+  //       size_t n = std::min(data.size(), n);
+  //       memcpy(rep->Data(), data.data(), n);
+  //       rep->length += n;
+  //       data.remove_prefix(n);
+  //       if (!result.tree->IsBtree()) {
+  //         tree_ = CordRepBtree::Create(result.tree);
+  //       }
+  //       tree_ = CordRepBtree::Append(tree_, rep);
+  //     }
+  //     ...
+  //     // Remaining edge in `result.tree`.
+  //   }
+  static ExtractResult ExtractAppendBuffer(CordRepBtree* tree,
+                                           size_t extra_capacity = 1);
 
   // Returns the `height` of the tree. The height of a tree is limited to
   // kMaxHeight. `height` is implemented as an `int` as in some places we
@@ -849,7 +879,7 @@ inline CordRepBtree* CordRepBtree::Create(CordRep* rep) {
 }
 
 inline Span<char> CordRepBtree::GetAppendBuffer(size_t size) {
-  assert(refcount.IsMutable());
+  assert(refcount.IsOne());
   CordRepBtree* tree = this;
   const int height = this->height();
   CordRepBtree* n1 = tree;
@@ -858,21 +888,21 @@ inline Span<char> CordRepBtree::GetAppendBuffer(size_t size) {
   switch (height) {
     case 3:
       tree = tree->Edge(kBack)->btree();
-      if (!tree->refcount.IsMutable()) return {};
+      if (!tree->refcount.IsOne()) return {};
       n2 = tree;
       ABSL_FALLTHROUGH_INTENDED;
     case 2:
       tree = tree->Edge(kBack)->btree();
-      if (!tree->refcount.IsMutable()) return {};
+      if (!tree->refcount.IsOne()) return {};
       n1 = tree;
       ABSL_FALLTHROUGH_INTENDED;
     case 1:
       tree = tree->Edge(kBack)->btree();
-      if (!tree->refcount.IsMutable()) return {};
+      if (!tree->refcount.IsOne()) return {};
       ABSL_FALLTHROUGH_INTENDED;
     case 0:
       CordRep* edge = tree->Edge(kBack);
-      if (!edge->refcount.IsMutable()) return {};
+      if (!edge->refcount.IsOne()) return {};
       if (edge->tag < FLAT) return {};
       size_t avail = edge->flat()->Capacity() - edge->length;
       if (avail == 0) return {};

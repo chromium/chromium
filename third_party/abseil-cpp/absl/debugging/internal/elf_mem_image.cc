@@ -222,7 +222,7 @@ void ElfMemImage::Init(const void *base) {
       reinterpret_cast<ElfW(Dyn) *>(dynamic_program_header->p_vaddr +
                                     relocation);
   for (; dynamic_entry->d_tag != DT_NULL; ++dynamic_entry) {
-    const ElfW(Xword) value = dynamic_entry->d_un.d_val + relocation;
+    const auto value = dynamic_entry->d_un.d_val + relocation;
     switch (dynamic_entry->d_tag) {
       case DT_HASH:
         hash_ = reinterpret_cast<ElfW(Word) *>(value);

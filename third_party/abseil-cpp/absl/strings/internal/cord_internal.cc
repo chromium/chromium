@@ -19,6 +19,7 @@
 
 #include "absl/container/inlined_vector.h"
 #include "absl/strings/internal/cord_rep_btree.h"
+#include "absl/strings/internal/cord_rep_crc.h"
 #include "absl/strings/internal/cord_rep_flat.h"
 #include "absl/strings/internal/cord_rep_ring.h"
 
@@ -70,6 +71,9 @@ void CordRep::Destroy(CordRep* rep) {
         rep = child;
         continue;
       }
+    } else if (rep->tag == CRC) {
+      CordRepCrc::Destroy(rep->crc());
+      rep = nullptr;
     } else {
       CordRepFlat::Delete(rep);
       rep = nullptr;

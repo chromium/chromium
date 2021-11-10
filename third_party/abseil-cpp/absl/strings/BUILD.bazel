@@ -271,7 +271,9 @@ cc_library(
         "internal/cord_rep_btree.cc",
         "internal/cord_rep_btree_navigator.cc",
         "internal/cord_rep_btree_reader.cc",
+        "internal/cord_rep_concat.cc",
         "internal/cord_rep_consume.cc",
+        "internal/cord_rep_crc.cc",
         "internal/cord_rep_ring.cc",
     ],
     hdrs = [
@@ -280,6 +282,7 @@ cc_library(
         "internal/cord_rep_btree_navigator.h",
         "internal/cord_rep_btree_reader.h",
         "internal/cord_rep_consume.h",
+        "internal/cord_rep_crc.h",
         "internal/cord_rep_flat.h",
         "internal/cord_rep_ring.h",
         "internal/cord_rep_ring_reader.h",
@@ -306,12 +309,15 @@ cc_library(
 )
 
 cc_test(
-    name = "cord_internal_test",
-    srcs = ["internal/cord_internal_test.cc"],
+    name = "cord_rep_concat_test",
+    size = "small",
+    srcs = ["internal/cord_rep_concat_test.cc"],
     copts = ABSL_TEST_COPTS,
     visibility = ["//visibility:private"],
     deps = [
         ":cord_internal",
+        ":cord_rep_test_util",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -362,6 +368,20 @@ cc_test(
         ":strings",
         "//absl/base:config",
         "//absl/base:raw_logging_internal",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "cord_rep_crc_test",
+    size = "small",
+    srcs = ["internal/cord_rep_crc_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":cord_internal",
+        ":cord_rep_test_util",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -695,6 +715,7 @@ cc_test(
         "//absl/base:endian",
         "//absl/base:raw_logging_internal",
         "//absl/container:fixed_array",
+        "//absl/hash",
         "//absl/random",
         "@com_google_googletest//:gtest_main",
     ],

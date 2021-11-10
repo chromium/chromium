@@ -41,6 +41,7 @@ struct CordzStatistics {
     size_t concat = 0;     // #concat reps
     size_t ring = 0;       // #ring buffer reps
     size_t btree = 0;      // #btree reps
+    size_t crc = 0;        // #crc reps
   };
 
   // The size of the cord in bytes. This matches the result of Cord::size().

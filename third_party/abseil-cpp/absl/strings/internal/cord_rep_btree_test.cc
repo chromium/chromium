@@ -128,6 +128,16 @@ MATCHER_P2(IsSubstring, start, length,
   return true;
 }
 
+MATCHER_P2(EqExtractResult, tree, rep, "Equals ExtractResult") {
+  if (arg.tree != tree || arg.extracted != rep) {
+    *result_listener << "Expected {" << static_cast<const void*>(tree) << ", "
+                     << static_cast<const void*>(rep) << "}, got {" << arg.tree
+                     << ", " << arg.extracted << "}";
+    return false;
+  }
+  return true;
+}
+
 // DataConsumer is a simple helper class used by tests to 'consume' string
 // fragments from the provided input in forward or backward direction.
 class DataConsumer {
@@ -1481,6 +1491,125 @@ TEST_P(CordRepBtreeTest, Rebuild) {
     });
     EXPECT_TRUE(ok && it == flats.end()) << "Rebuild edges mismatch";
   }
+}
+
+// Convenience helper for CordRepBtree::ExtractAppendBuffer
+CordRepBtree::ExtractResult ExtractLast(CordRepBtree* input, size_t cap = 1) {
+  return CordRepBtree::ExtractAppendBuffer(input, cap);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferLeafSingleFlat) {
+  CordRep* flat = MakeFlat("Abc");
+  CordRepBtree* leaf = CordRepBtree::Create(flat);
+  EXPECT_THAT(ExtractLast(leaf), EqExtractResult(nullptr, flat));
+  CordRep::Unref(flat);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferNodeSingleFlat) {
+  CordRep* flat = MakeFlat("Abc");
+  CordRepBtree* leaf = CordRepBtree::Create(flat);
+  CordRepBtree* node = CordRepBtree::New(leaf);
+  EXPECT_THAT(ExtractLast(node), EqExtractResult(nullptr, flat));
+  CordRep::Unref(flat);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferLeafTwoFlats) {
+  std::vector<CordRep*> flats = CreateFlatsFromString("abcdef", 3);
+  CordRepBtree* leaf = CreateTree(flats);
+  EXPECT_THAT(ExtractLast(leaf), EqExtractResult(flats[0], flats[1]));
+  CordRep::Unref(flats[0]);
+  CordRep::Unref(flats[1]);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferNodeTwoFlats) {
+  std::vector<CordRep*> flats = CreateFlatsFromString("abcdef", 3);
+  CordRepBtree* leaf = CreateTree(flats);
+  CordRepBtree* node = CordRepBtree::New(leaf);
+  EXPECT_THAT(ExtractLast(node), EqExtractResult(flats[0], flats[1]));
+  CordRep::Unref(flats[0]);
+  CordRep::Unref(flats[1]);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferNodeTwoFlatsInTwoLeafs) {
+  std::vector<CordRep*> flats = CreateFlatsFromString("abcdef", 3);
+  CordRepBtree* leaf1 = CordRepBtree::Create(flats[0]);
+  CordRepBtree* leaf2 = CordRepBtree::Create(flats[1]);
+  CordRepBtree* node = CordRepBtree::New(leaf1, leaf2);
+  EXPECT_THAT(ExtractLast(node), EqExtractResult(flats[0], flats[1]));
+  CordRep::Unref(flats[0]);
+  CordRep::Unref(flats[1]);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferLeafThreeFlats) {
+  std::vector<CordRep*> flats = CreateFlatsFromString("abcdefghi", 3);
+  CordRepBtree* leaf = CreateTree(flats);
+  EXPECT_THAT(ExtractLast(leaf), EqExtractResult(leaf, flats[2]));
+  CordRep::Unref(flats[2]);
+  CordRep::Unref(leaf);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferNodeThreeFlatsRightNoFolding) {
+  CordRep* flat = MakeFlat("Abc");
+  std::vector<CordRep*> flats = CreateFlatsFromString("defghi", 3);
+  CordRepBtree* leaf1 = CordRepBtree::Create(flat);
+  CordRepBtree* leaf2 = CreateTree(flats);
+  CordRepBtree* node = CordRepBtree::New(leaf1, leaf2);
+  EXPECT_THAT(ExtractLast(node), EqExtractResult(node, flats[1]));
+  EXPECT_THAT(node->Edges(), ElementsAre(leaf1, leaf2));
+  EXPECT_THAT(leaf1->Edges(), ElementsAre(flat));
+  EXPECT_THAT(leaf2->Edges(), ElementsAre(flats[0]));
+  CordRep::Unref(node);
+  CordRep::Unref(flats[1]);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferNodeThreeFlatsRightLeafFolding) {
+  CordRep* flat = MakeFlat("Abc");
+  std::vector<CordRep*> flats = CreateFlatsFromString("defghi", 3);
+  CordRepBtree* leaf1 = CreateTree(flats);
+  CordRepBtree* leaf2 = CordRepBtree::Create(flat);
+  CordRepBtree* node = CordRepBtree::New(leaf1, leaf2);
+  EXPECT_THAT(ExtractLast(node), EqExtractResult(leaf1, flat));
+  EXPECT_THAT(leaf1->Edges(), ElementsAreArray(flats));
+  CordRep::Unref(leaf1);
+  CordRep::Unref(flat);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferNoCapacity) {
+  std::vector<CordRep*> flats = CreateFlatsFromString("abcdef", 3);
+  CordRepBtree* leaf = CreateTree(flats);
+  size_t avail = flats[1]->flat()->Capacity() - flats[1]->length;
+  EXPECT_THAT(ExtractLast(leaf, avail + 1), EqExtractResult(leaf, nullptr));
+  EXPECT_THAT(ExtractLast(leaf, avail), EqExtractResult(flats[0], flats[1]));
+  CordRep::Unref(flats[0]);
+  CordRep::Unref(flats[1]);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferNotFlat) {
+  std::vector<CordRep*> flats = CreateFlatsFromString("abcdef", 3);
+  auto substr = MakeSubstring(1, 2, flats[1]);
+  CordRepBtree* leaf = CreateTree({flats[0], substr});
+  EXPECT_THAT(ExtractLast(leaf), EqExtractResult(leaf, nullptr));
+  CordRep::Unref(leaf);
+}
+
+TEST(CordRepBtreeTest, ExtractAppendBufferShared) {
+  std::vector<CordRep*> flats = CreateFlatsFromString("abcdef", 3);
+  CordRepBtree* leaf = CreateTree(flats);
+
+  CordRep::Ref(flats[1]);
+  EXPECT_THAT(ExtractLast(leaf), EqExtractResult(leaf, nullptr));
+  CordRep::Unref(flats[1]);
+
+  CordRep::Ref(leaf);
+  EXPECT_THAT(ExtractLast(leaf), EqExtractResult(leaf, nullptr));
+  CordRep::Unref(leaf);
+
+  CordRepBtree* node = CordRepBtree::New(leaf);
+  CordRep::Ref(node);
+  EXPECT_THAT(ExtractLast(node), EqExtractResult(node, nullptr));
+  CordRep::Unref(node);
+
+  CordRep::Unref(node);
 }
 
 }  // namespace

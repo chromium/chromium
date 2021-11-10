@@ -20,6 +20,7 @@
 #include "absl/debugging/stacktrace.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
+#include "absl/strings/internal/cord_rep_crc.h"
 #include "absl/strings/internal/cord_rep_ring.h"
 #include "absl/strings/internal/cordz_handle.h"
 #include "absl/strings/internal/cordz_statistics.h"
@@ -80,6 +81,14 @@ class CordRepAnalyzer {
     // top level node is assumed to be referenced only for analysis purposes.
     size_t refcount = rep->refcount.Get();
     RepRef repref{rep, (refcount > 1) ? refcount - 1 : 1};
+
+    // Process the top level CRC node, if present.
+    if (repref.rep->tag == CRC) {
+      statistics_.node_count++;
+      statistics_.node_counts.crc++;
+      memory_usage_.Add(sizeof(CordRepCrc), repref.refcount);
+      repref = repref.Child(repref.rep->crc()->child);
+    }
 
     // Process all top level linear nodes (substrings and flats).
     repref = CountLinearReps(repref, memory_usage_);
