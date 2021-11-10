@@ -38,9 +38,9 @@ void FastPairPresenter::ShowDiscovery(scoped_refptr<Device> device,
   const auto metadata_id = device->metadata_id;
   FastPairRepository::Get()->GetDeviceMetadata(
       metadata_id,
-      base::BindOnce(&FastPairPresenter::OnDiscoveryMetadataRetrieved,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(device),
-                     std::move(callback)));
+      base::BindRepeating(&FastPairPresenter::OnDiscoveryMetadataRetrieved,
+                          weak_pointer_factory_.GetWeakPtr(), std::move(device),
+                          std::move(callback)));
 }
 
 void FastPairPresenter::OnDiscoveryMetadataRetrieved(

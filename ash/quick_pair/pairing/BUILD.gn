@@ -52,15 +52,19 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_retroactive_pairing_detector.cc",
+    "fake_retroactive_pairing_detector.h",
     "mock_pairer_broker.cc",
     "mock_pairer_broker.h",
     "pairer_broker.h",
+    "retroactive_pairing_detector.h",
   ]
 
   deps = [
     "//ash/quick_pair/common",
     "//base",
     "//base/test:test_support",
+    "//device/bluetooth",
     "//testing/gtest",
   ]
 }

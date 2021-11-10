@@ -13,7 +13,10 @@
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
 #include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
+#include "ash/quick_pair/message_stream/message_stream_lookup.h"
+#include "ash/quick_pair/message_stream/message_stream_lookup_impl.h"
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
+#include "ash/quick_pair/pairing/retroactive_pairing_detector_impl.h"
 #include "ash/quick_pair/repository/fast_pair/pending_write_store.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
@@ -40,11 +43,16 @@ std::unique_ptr<Mediator> Mediator::Factory::Create() {
     return g_test_factory->BuildInstance();
 
   auto process_manager = std::make_unique<QuickPairProcessManagerImpl>();
+  auto pairer_broker = std::make_unique<PairerBrokerImpl>();
+  auto message_stream_lookup = std::make_unique<MessageStreamLookupImpl>();
 
   return std::make_unique<Mediator>(
       std::make_unique<FeatureStatusTrackerImpl>(),
       std::make_unique<ScannerBrokerImpl>(process_manager.get()),
-      std::make_unique<PairerBrokerImpl>(), std::make_unique<UIBrokerImpl>(),
+      std::make_unique<RetroactivePairingDetectorImpl>(
+          pairer_broker.get(), message_stream_lookup.get()),
+      std::move(message_stream_lookup), std::move(pairer_broker),
+      std::make_unique<UIBrokerImpl>(),
       std::make_unique<FastPairRepositoryImpl>(), std::move(process_manager));
 }
 
@@ -53,14 +61,19 @@ void Mediator::Factory::SetFactoryForTesting(Factory* factory) {
   g_test_factory = factory;
 }
 
-Mediator::Mediator(std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
-                   std::unique_ptr<ScannerBroker> scanner_broker,
-                   std::unique_ptr<PairerBroker> pairer_broker,
-                   std::unique_ptr<UIBroker> ui_broker,
-                   std::unique_ptr<FastPairRepository> fast_pair_repository,
-                   std::unique_ptr<QuickPairProcessManager> process_manager)
+Mediator::Mediator(
+    std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
+    std::unique_ptr<ScannerBroker> scanner_broker,
+    std::unique_ptr<RetroactivePairingDetector> retroactive_pairing_detector,
+    std::unique_ptr<MessageStreamLookup> message_stream_lookup,
+    std::unique_ptr<PairerBroker> pairer_broker,
+    std::unique_ptr<UIBroker> ui_broker,
+    std::unique_ptr<FastPairRepository> fast_pair_repository,
+    std::unique_ptr<QuickPairProcessManager> process_manager)
     : feature_status_tracker_(std::move(feature_status_tracker)),
       scanner_broker_(std::move(scanner_broker)),
+      retroactive_pairing_detector_(std::move(retroactive_pairing_detector)),
+      message_stream_lookup(std::move(message_stream_lookup)),
       pairer_broker_(std::move(pairer_broker)),
       ui_broker_(std::move(ui_broker)),
       fast_pair_repository_(std::move(fast_pair_repository)),
@@ -70,6 +83,8 @@ Mediator::Mediator(std::unique_ptr<FeatureStatusTracker> feature_status_tracker,
 
   feature_status_tracker_observation_.Observe(feature_status_tracker_.get());
   scanner_broker_observation_.Observe(scanner_broker_.get());
+  retroactive_pairing_detector_observation_.Observe(
+      retroactive_pairing_detector_.get());
   pairer_broker_observation_.Observe(pairer_broker_.get());
   ui_broker_observation_.Observe(ui_broker_.get());
 
@@ -107,6 +122,11 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
 void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
   ui_broker_->RemoveNotifications(std::move(device));
+}
+
+void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
+  QP_LOG(INFO) << __func__ << ": " << device;
+  ui_broker_->ShowAssociateAccount(std::move(device));
 }
 
 void Mediator::SetFastPairState(bool is_enabled) {
@@ -172,6 +192,16 @@ void Mediator::OnCompanionAppAction(scoped_refptr<Device> device,
 void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
                                         AssociateAccountAction action) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
+
+  switch (action) {
+    case AssociateAccountAction::kAssoicateAccount:
+      break;
+    case AssociateAccountAction::kLearnMore:
+      break;
+    case AssociateAccountAction::kDismissedByUser:
+    case AssociateAccountAction::kDismissed:
+      break;
+  }
 }
 
 }  // namespace quick_pair
