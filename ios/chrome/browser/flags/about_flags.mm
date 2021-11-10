@@ -596,11 +596,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kEnableManualPasswordGeneration)},
-    {"interest-feed-notice-card-auto-dismiss",
-     flag_descriptions::kInterestFeedNoticeCardAutoDismissName,
-     flag_descriptions::kInterestFeedNoticeCardAutoDismissDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(feed::kInterestFeedNoticeCardAutoDismiss)},
     {"autofill-address-verification-in-save-prompt",
      flag_descriptions::kEnableAutofillAddressSavePromptAddressVerificationName,
      flag_descriptions::

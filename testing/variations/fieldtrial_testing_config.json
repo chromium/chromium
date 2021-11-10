@@ -4395,21 +4395,6 @@
             ]
         }
     ],
-    "IOSDiscoverNoticeCardAutoDismiss": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InterestFeedNoticeCardAutoDismiss"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFeedPreview": [
         {
             "platforms": [

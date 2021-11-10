@@ -249,10 +249,6 @@ extern const char kIncognitoBrandConsistencyForIOSDescription[];
 extern const char kIncognitoNtpRevampName[];
 extern const char kIncognitoNtpRevampDescription[];
 
-// Title and description for the flag to auto-dismiss the privacy notice card.
-extern const char kInterestFeedNoticeCardAutoDismissName[];
-extern const char kInterestFeedNoticeCardAutoDismissDescription[];
-
 // Title and description for the flag that conditionally uploads clicks and view
 // actions in the feed (e.g., the user needs to view X cards).
 extern const char kInterestFeedV2ClickAndViewActionsConditionalUploadName[];

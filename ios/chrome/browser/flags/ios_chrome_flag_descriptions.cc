@@ -282,12 +282,6 @@ const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI.";
 
-const char kInterestFeedNoticeCardAutoDismissName[] =
-    "New Content Suggestions notice card auto-dismiss";
-const char kInterestFeedNoticeCardAutoDismissDescription[] =
-    "Auto-dismiss the notice card when there are enough clicks or views on the "
-    "notice card.";
-
 const char kInterestFeedV2ClickAndViewActionsConditionalUploadName[] =
     "New Content Suggestions taps/views conditional upload";
 const char kInterestFeedV2ClickAndViewActionsConditionalUploadDescription[] =
