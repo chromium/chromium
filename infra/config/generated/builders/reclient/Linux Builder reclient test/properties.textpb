@@ -1,5 +1,6 @@
 {
   "$build/reclient": {
+    "fail_early": true,
     "instance": "goma-foundry-experiments",
     "metrics_project": "chromium-reclient-metrics"
   },
