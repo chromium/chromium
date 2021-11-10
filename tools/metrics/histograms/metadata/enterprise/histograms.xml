@@ -277,12 +277,15 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
-    enum="NetErrorCodes" expires_after="2021-10-31">
+    enum="NetErrorCodes" expires_after="2022-10-31">
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
     Network error code (if applicable) for auto-enrollment PSM requests.
     {EnterpriseAutoEnrollmentType}
+
+    The histogram was expired (not recording data) from 2021-10-31 until
+    2021-11-09.
   </summary>
   <token key="EnterpriseAutoEnrollmentType"
       variants="EnterpriseAutoEnrollmentType">
