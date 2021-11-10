@@ -805,7 +805,9 @@ const base::Feature kDisableProcessReuse{"DisableProcessReuse",
 
 #if defined(OS_ANDROID)
 // Controls whether Android tries to always have a warm spare renderer process
-// around for the most recently requested BrowserContext.
+// around for the most recently requested BrowserContext. Unlike desktop which
+// creates a spare renderer as soon as the previous one is used, Android creates
+// it after a page stops loading.
 const base::Feature kSpareRenderer{"SpareRenderer",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
