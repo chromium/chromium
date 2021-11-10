@@ -12,8 +12,6 @@
 -EnterpriseCsdDownloadTest.SkipsConsumerCsdWhenEnabled/0
 -EnterpriseHardwarePlatformAPITest.GetHardwarePlatformInfoAllowed
 -ExtensionInstalledBubbleModelTest.Extension*
--ExtensionProtocolsTest.Resource*
--ExtensionProtocolsTest.Verification*
 -ExtensionServiceTest.InstallTheme
 -ExtensionUserScriptLoaderTest.Component*
 -ExtensionsMenuViewUnitTest.ContextMenuButtonUserAction
