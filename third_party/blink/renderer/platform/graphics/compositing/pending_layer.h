@@ -28,7 +28,7 @@ struct PLATFORM_EXPORT PreCompositedLayerInfo {
   // If this is not nullptr, we should use the composited layer created by the
   // GraphicsLayer. Otherwise we should layerize |chunks|. A GraphicsLayer with
   // ShouldCreateLayersAfterPaint() == true should set this field to nullptr.
-  const Member<GraphicsLayer> graphics_layer = nullptr;
+  Member<GraphicsLayer> graphics_layer = nullptr;
   void Trace(Visitor* visitor) const;
 };
 

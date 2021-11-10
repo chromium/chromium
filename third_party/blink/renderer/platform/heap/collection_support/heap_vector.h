@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_COLLECTION_SUPPORT_HEAP_VECTOR_H_
 
+#include <initializer_list>
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator_impl.h"
@@ -58,8 +59,13 @@ class HeapVector final : public GarbageCollected<HeapVector<T, inlineCapacity>>,
   }
 
   HeapVector(std::initializer_list<T> elements)
-      : Vector<T, inlineCapacity, HeapAllocator>(elements) {
+      : Vector<T, inlineCapacity, HeapAllocator>(std::move(elements)) {
     CheckType();
+  }
+
+  HeapVector& operator=(std::initializer_list<T> elements) {
+    Vector<T, inlineCapacity, HeapAllocator>::operator=(std::move(elements));
+    return *this;
   }
 
   void Trace(Visitor* visitor) const {
