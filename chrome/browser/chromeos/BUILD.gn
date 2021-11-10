@@ -4632,7 +4632,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/cros_disks",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:attestation_proto",
-    "//chromeos/dbus/dlcservice:test_support",
+    "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/gnubby",
     "//chromeos/dbus/lorgnette_manager:lorgnette_proto",
     "//chromeos/dbus/missive",

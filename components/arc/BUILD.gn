@@ -489,7 +489,7 @@ source_set("unit_tests") {
     "//chromeos",
     "//chromeos/cryptohome:cryptohome",
     "//chromeos/dbus:test_support",
-    "//chromeos/dbus/dlcservice:test_support",
+    "//chromeos/dbus/dlcservice",
     "//chromeos/dbus/permission_broker",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

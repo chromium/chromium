@@ -69,7 +69,7 @@ source_set("unit_tests") {
       ":constants",
       ":soda",
       "//ash/constants",
-      "//chromeos/dbus/dlcservice:test_support",
+      "//chromeos/dbus/dlcservice",
       "//components/live_caption:constants",
       "//components/prefs:test_support",
       "//content/test:test_support",

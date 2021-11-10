@@ -26,8 +26,7 @@ source_set("unit_tests") {
     ":language_packs",
     "//base",
     "//base/test:test_support",
-    "//chromeos/dbus/dlcservice:dlcservice",
-    "//chromeos/dbus/dlcservice:test_support",
+    "//chromeos/dbus/dlcservice",
     "//testing/gmock",
     "//testing/gtest",
   ]
