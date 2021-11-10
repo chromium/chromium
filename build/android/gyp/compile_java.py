@@ -47,6 +47,7 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'UnescapedEntity',
     'NonCanonicalType',
     'AlmostJavadoc',
+    'ReturnValueIgnored',
     # The following are added for errorprone update: https://crbug.com/1216032
     'InlineMeSuggester',
     'DoNotClaimAnnotations',
@@ -59,6 +60,8 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'StaticMockMember',
     'MissingSuperCall',
     'ToStringReturnsNull',
+    # If possible, this should be automatically fixed if turned on:
+    'MalformedInlineTag',
     # TODO(crbug.com/834807): Follow steps in bug
     'DoubleBraceInitialization',
     # TODO(crbug.com/834790): Follow steps in bug.
@@ -181,6 +184,9 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'RemoveUnusedImports',
     # We do not care about unnecessary parenthesis enough to check for them.
     'UnnecessaryParentheses',
+    # The only time we trigger this is when it is better to be explicit in a
+    # list of unicode characters, e.g. FindAddress.java
+    'UnicodeEscape',
 ]
 
 # Full list of checks: https://errorprone.info/bugpatterns
