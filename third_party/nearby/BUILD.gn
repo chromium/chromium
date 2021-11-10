@@ -63,7 +63,11 @@ source_set("core") {
 
 source_set("core_types") {
   public_configs = [ ":nearby_include_config" ]
-  sources = [ "src/cpp/core/strategy.cc" ]
+  sources = [
+    "src/cpp/core/options.cc",
+    "src/cpp/core/payload.cc",
+    "src/cpp/core/strategy.cc",
+  ]
   public = [
     "src/cpp/core/listeners.h",
     "src/cpp/core/options.h",
@@ -252,20 +256,20 @@ source_set("core_internal_mediums_webrtc") {
   sources = [
     "src/cpp/core/internal/mediums/utils.cc",
     "src/cpp/core/internal/mediums/webrtc/connection_flow.cc",
-    "src/cpp/core/internal/mediums/webrtc/peer_id.cc",
     "src/cpp/core/internal/mediums/webrtc/signaling_frames.cc",
     "src/cpp/core/internal/mediums/webrtc/webrtc_socket.cc",
+    "src/cpp/core/internal/mediums/webrtc_peer_id.cc",
   ]
   public = [
     "src/cpp/core/internal/mediums/utils.h",
     "src/cpp/core/internal/mediums/webrtc/connection_flow.h",
     "src/cpp/core/internal/mediums/webrtc/data_channel_listener.h",
     "src/cpp/core/internal/mediums/webrtc/local_ice_candidate_listener.h",
-    "src/cpp/core/internal/mediums/webrtc/peer_id.h",
     "src/cpp/core/internal/mediums/webrtc/session_description_wrapper.h",
     "src/cpp/core/internal/mediums/webrtc/signaling_frames.h",
     "src/cpp/core/internal/mediums/webrtc/webrtc_socket.h",
-    "src/cpp/core/internal/mediums/webrtc/webrtc_socket_wrapper.h",
+    "src/cpp/core/internal/mediums/webrtc_peer_id.h",
+    "src/cpp/core/internal/mediums/webrtc_socket_wrapper.h",
   ]
   public_deps = [
     ":core_types",
@@ -296,7 +300,6 @@ source_set("platform_api_comm") {
     "src/cpp/platform/api/webrtc.h",
     "src/cpp/platform/api/wifi.h",
     "src/cpp/platform/api/wifi_lan.h",
-    "src/cpp/platform/api/wifi_lan_v2.h",
   ]
   public_deps = [
     ":offline_wire_formats_proto",
@@ -358,6 +361,7 @@ source_set("platform_base") {
     "src/cpp/platform/base/base64_utils.cc",
     "src/cpp/platform/base/bluetooth_utils.cc",
     "src/cpp/platform/base/input_stream.cc",
+    "src/cpp/platform/base/nsd_service_info.cc",
     "src/cpp/platform/base/prng.cc",
   ]
   public = [
@@ -369,6 +373,7 @@ source_set("platform_base") {
     "src/cpp/platform/base/feature_flags.h",
     "src/cpp/platform/base/input_stream.h",
     "src/cpp/platform/base/listeners.h",
+    "src/cpp/platform/base/nsd_service_info.h",
     "src/cpp/platform/base/output_stream.h",
     "src/cpp/platform/base/payload_id.h",
     "src/cpp/platform/base/prng.h",
@@ -504,6 +509,7 @@ source_set("platform_public_comm") {
   sources = [
     "src/cpp/platform/public/ble.cc",
     "src/cpp/platform/public/bluetooth_classic.cc",
+    "src/cpp/platform/public/file.cc",
     "src/cpp/platform/public/wifi_lan.cc",
   ]
   public = [
