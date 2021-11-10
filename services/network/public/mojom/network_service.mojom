@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -368,14 +369,15 @@ interface NetworkService {
   // environments.
   BindTestInterface(pending_receiver<NetworkServiceTest> receiver);
 
-  // Sets the First-Party Sets data. |raw_sets| is the JSON-encoded
-  // string representation of a collection of set declarations according to the
-  // format specified in this document:
-  // https://github.com/privacycg/first-party-sets
-  // Note that by setting the First-Party Sets, any previous notion of
-  // First-Party Sets is cleared. On any kind of error, all First-Party Sets are
-  // cleared (except for the manually-specified set, if one exists).
-  SetFirstPartySets(string raw_sets);
+  // Sets the First-Party Sets data. |sets_file| is the file containing a
+  // collection of set declarations according to the format specified in this
+  // document: https://github.com/privacycg/first-party-sets. The collection may
+  // either be a single JSON array of such records, or a sequence of
+  // newline-delimited JSON objects (one per line). Note that by setting the
+  // First-Party Sets, any previous notion of First-Party Sets is cleared. On
+  // any kind of error, all First-Party Sets are cleared (except for the
+  // manually-specified set, if one exists).
+  SetFirstPartySets(mojo_base.mojom.ReadOnlyFile sets_file);
 
   // Sets the First-Party Sets data that was persisted to compare it with the
   // current First-Party Sets data set by `SetFirstPartySets()`, which is

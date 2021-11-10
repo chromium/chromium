@@ -206,7 +206,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif
   void BindTestInterface(
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
-  void SetFirstPartySets(const std::string& raw_sets) override;
+  void SetFirstPartySets(base::File sets_file) override;
   void SetPersistedFirstPartySetsAndGetCurrentSets(
       const std::string& persisted_sets,
       mojom::NetworkService::SetPersistedFirstPartySetsAndGetCurrentSetsCallback
@@ -296,6 +296,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // Called by a NetworkContext when its mojo pipe is closed. Deletes the
   // context.
   void OnNetworkContextConnectionClosed(NetworkContext* network_context);
+
+  // Sets First-Party Set data after having read it from a file.
+  void OnReadFirstPartySetsFile(const std::string& raw_sets);
 
   bool initialized_ = false;
 
@@ -395,6 +398,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // that renderer process (the renderer will proxy requests from PPAPI - such
   // requests should have their initiator origin within the set stored here).
   std::map<int, std::set<url::Origin>> plugin_origins_;
+
+  base::WeakPtrFactory<NetworkService> weak_factory_{this};
 };
 
 }  // namespace network

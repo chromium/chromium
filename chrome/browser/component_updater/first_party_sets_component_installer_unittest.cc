@@ -25,9 +25,17 @@
 namespace component_updater {
 
 namespace {
+
 using ::testing::_;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
+
+std::string ReadToString(base::File file) {
+  std::string contents;
+  base::ScopedFILE scoped_file(base::FileToFILE(std::move(file), "r"));
+  return base::ReadStreamToString(scoped_file.get(), &contents) ? contents : "";
+}
+
 }  // namespace
 
 class FirstPartySetsComponentInstallerTest : public ::testing::Test {
@@ -70,7 +78,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
       base::DeleteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
           component_install_dir_.GetPath())));
 
-  FirstPartySetsComponentInstallerPolicy(base::DoNothing())
+  FirstPartySetsComponentInstallerPolicy(
+      base::BindRepeating([](base::File) { CHECK(false); }))
       .ComponentReady(base::Version(), component_install_dir_.GetPath(),
                       base::Value(base::Value::Type::DICTIONARY));
 
@@ -82,9 +91,9 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
   const std::string expectation = "some first party sets";
   base::RunLoop run_loop;
   auto policy = std::make_unique<FirstPartySetsComponentInstallerPolicy>(
-      base::BindLambdaForTesting([&](const std::string& got) {
+      base::BindLambdaForTesting([&](base::File file) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-        EXPECT_EQ(got, expectation);
+        EXPECT_EQ(ReadToString(std::move(file)), expectation);
         run_loop.Quit();
       }));
 
@@ -114,9 +123,9 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
   int callback_calls = 0;
   FirstPartySetsComponentInstallerPolicy policy(
       // It should run only once for the first ComponentReady call.
-      base::BindLambdaForTesting([&](const std::string& got) {
+      base::BindLambdaForTesting([&](base::File file) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-        EXPECT_EQ(got, sets_v1);
+        EXPECT_EQ(ReadToString(std::move(file)), sets_v1);
         callback_calls++;
       }));
 
@@ -149,9 +158,9 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
   {
     base::RunLoop run_loop;
     FirstPartySetsComponentInstallerPolicy policy(
-        base::BindLambdaForTesting([&](const std::string& got) {
+        base::BindLambdaForTesting([&](base::File file) {
           DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-          EXPECT_EQ(got, expectation);
+          EXPECT_EQ(ReadToString(std::move(file)), expectation);
           run_loop.Quit();
         }));
 
@@ -170,9 +179,9 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
     base::RunLoop run_loop;
 
     FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
-        base::BindLambdaForTesting([&](const std::string& got) {
+        base::BindLambdaForTesting([&](base::File file) {
           DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-          EXPECT_EQ(got, expectation);
+          EXPECT_EQ(ReadToString(std::move(file)), expectation);
           run_loop.Quit();
         }));
 
@@ -194,9 +203,9 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnNetworkRestart) {
   CHECK(dir_v2.CreateUniqueTempDirUnderPath(component_install_dir_.GetPath()));
 
   FirstPartySetsComponentInstallerPolicy policy(
-      base::BindLambdaForTesting([&](const std::string& got) {
+      base::BindLambdaForTesting([&](base::File file) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-        EXPECT_EQ(got, sets_v1);
+        EXPECT_EQ(ReadToString(std::move(file)), sets_v1);
       }));
 
   ASSERT_TRUE(
@@ -220,9 +229,9 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnNetworkRestart) {
   // ReconfigureAfterNetworkRestart calls the callback with the correct version.
   int callback_calls = 0;
   FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
-      base::BindLambdaForTesting([&](const std::string& got) {
+      base::BindLambdaForTesting([&](base::File file) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-        EXPECT_EQ(got, sets_v1);
+        EXPECT_EQ(ReadToString(std::move(file)), sets_v1);
         callback_calls++;
       }));
 
