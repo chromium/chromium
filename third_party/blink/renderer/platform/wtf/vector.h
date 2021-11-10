@@ -1647,8 +1647,16 @@ Vector<T, inlineCapacity, Allocator>::Vector(
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-Vector<T, inlineCapacity, Allocator>& Vector<T, inlineCapacity, Allocator>::
-operator=(Vector<T, inlineCapacity, Allocator>&& other) {
+Vector<T, inlineCapacity, Allocator>&
+Vector<T, inlineCapacity, Allocator>::operator=(
+    Vector<T, inlineCapacity, Allocator>&& other) {
+  // Explicitly clearing allows the backing to be freed
+  // immediately. In the non-garbage-collected case this is
+  // often just slightly moving it earlier as the old backing
+  // would otherwise be freed in the destructor. For the
+  // garbage-collected case this allows for freeing the backing
+  // right away without introducing GC pressure.
+  clear();
   swap(other);
   return *this;
 }
