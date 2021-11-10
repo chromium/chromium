@@ -163,6 +163,15 @@
                 </span>
               </div>
             </template>
+            <template is="dom-if" if="[[phoneHubCameraRollEnabled_]]">
+              <div class="feature-detail">
+                <iron-icon icon="multidevice-setup-icons-20:image">
+                </iron-icon>
+                <span>
+                  [[i18nDynamic(locale, 'startSetupPageFeatureCameraRoll')]]
+                </span>
+              </div>
+            </template>
             <div class="feature-detail">
               <iron-icon icon="multidevice-setup-icons-20:features"></iron-icon>
               <span>

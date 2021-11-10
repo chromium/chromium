@@ -57,6 +57,8 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MIRROR_PHONE_NOTIFICATIONS},
     {"startSetupPageFeatureWifiSync",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC},
+    {"startSetupPageFeatureCameraRoll",
+     IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_CAMERA_ROLL},
     {"startSetupPageFeatureListInstallApps",
      IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTALL_APPS_DESCRIPTION},
     {"startSetupPageFeatureListAddFeatures",
@@ -133,6 +135,12 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "phoneHubEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kPhoneHub));
+
+  html_source->AddBoolean(
+      "phoneHubCameraRollEnabled",
+      base::FeatureList::IsEnabled(chromeos::features::kPhoneHub) &&
+          base::FeatureList::IsEnabled(
+              chromeos::features::kPhoneHubCameraRoll));
 
   html_source->AddBoolean(
       "wifiSyncEnabled",

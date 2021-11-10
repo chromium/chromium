@@ -73,6 +73,15 @@ Polymer({
       },
     },
 
+    /** @private */
+    phoneHubCameraRollEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('phoneHubCameraRollEnabled') &&
+            loadTimeData.getBoolean('phoneHubCameraRollEnabled');
+      },
+    },
+
     /**
      * Whether the multidevice setup page is being rendered in dark mode.
      * @private {boolean}
