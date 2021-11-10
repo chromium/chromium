@@ -50,20 +50,6 @@ class CORE_EXPORT ScriptSourceCode final {
   DISALLOW_NEW();
 
  public:
-  // Return whether chrome should use the request URL or the response URL as the
-  // 'url' of the script. This can be observed in:
-  // 1) The 'source-file' in CSP violations reports.
-  // 2) The URL(s) in javascript stack traces.
-  // 3) How relative source map are resolved.
-  //
-  // This returns false by default. This corresponds to the current
-  // specification and matches Firefox behavior. This also avoids leaking
-  // post-redirect data cross-origin. See https://crbug.com/1074317.
-  //
-  // This can be enabled using the switch:
-  // --enable-features=UnsafeScriptReportPostRedirectURL
-  static bool UsePostRedirectURL();
-
   // For inline scripts.
   ScriptSourceCode(
       const String& source,
