@@ -22,8 +22,9 @@
 - (void)unifiedConsentViewControllerDidTapSettingsLink:
     (UnifiedConsentViewController*)controller;
 
-// Performs operations needed to open management help page.
-- (void)unifiedConsentViewControllerDidTapManagementLearnMore;
+// Called when the user taps on the 'Learn More' link.
+- (void)unifiedConsentViewControllerDidTapLearnMoreLink:
+    (UnifiedConsentViewController*)controller;
 
 // Called when the user taps at |point| on the IdentityButtonControl. |point| is
 // in the window coordinates.
