@@ -5,6 +5,7 @@
 import argparse
 import importlib
 import logging
+import multiprocessing
 import os
 import sys
 
@@ -63,6 +64,19 @@ def _LoadTargetClass(target_path):
   return loaded_target.GetTargetType()
 
 
+def _GetDefaultEmulatedCpuCoreCount():
+  # Revise the processor count on arm64, the trybots on arm64 are in
+  # dockers and cannot use all processors.
+  # For x64, fvdl always assumes hyperthreading is supported by intel
+  # processors, but the cpu_count returns the number regarding if the core
+  # is a physical one or a hyperthreading one, so the number should be
+  # divided by 2 to avoid creating more threads than the processor
+  # supports.
+  if GetHostArchFromPlatform() == 'x64':
+    return max(int(multiprocessing.cpu_count() / 2) - 1, 4)
+  return 4
+
+
 def AddCommonArgs(arg_parser):
   """Adds command line arguments to |arg_parser| for options which are shared
   across test and executable target types.
@@ -102,7 +116,7 @@ def AddCommonArgs(arg_parser):
   emu_args = arg_parser.add_argument_group('emu', 'General emulator arguments')
   emu_args.add_argument('--cpu-cores',
                         type=int,
-                        default=4,
+                        default=_GetDefaultEmulatedCpuCoreCount(),
                         help='Sets the number of CPU cores to provide.')
   emu_args.add_argument('--ram-size-mb',
                         type=int,

@@ -27,6 +27,7 @@ def main():
   args = parser.parse_args()
   args.out_dir = None
   args.device = 'fvdl'
+  args.cpu_cores = 4
   common_args.ConfigureLogging(args)
   with common_args.GetDeploymentTargetForArgs(args) as fvdl_target:
     if fvdl_target._with_network:

@@ -234,8 +234,9 @@ class FuchsiaPort(base.Port):
         # is a physical one or a hyperthreading one, so the number should be
         # divided by 2 to avoid creating more threads than the processor
         # supports.
-        return max(multiprocessing.cpu_count() / 2 -
-                   1, 4) if self._target_cpu() == 'x64' else 4
+        if self._target_cpu() == 'x64':
+            return max(int(multiprocessing.cpu_count() / 2) - 1, 4)
+        return 4
 
     def setup_test_run(self):
         super(FuchsiaPort, self).setup_test_run()
