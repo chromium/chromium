@@ -17,9 +17,8 @@
 
 <base-page orientation="column">
   <div slot="header">
-    <!-- TODO(gavindodd): Update strings for i18n -->
-    <h1>Make sure Chrome OS is up to date</h1>
-    <p>[[updateNoticeMessage_]]</p>
+    <h1>[[i18n('osUpdateTitleText')]]</h1>
+    <div>[[updateNoticeMessage_]]</div>
     <div id="versionInfo">
       <iron-icon id="updateIcon" icon="[[getUpdateNoticeIcon_(updateAvailable_)]]"
         class="small-icon">

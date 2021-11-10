@@ -2165,6 +2165,27 @@ Try tapping the mic to ask me anything.
         Repair completed
       </message>
       <!-- OS update page -->
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_PAGE_TITLE" translateable="false" desc="Title of Chrome OS update page.">
+        Make sure Chrome OS is up to date
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_INVALID_COMPONENTS" translateable="false" desc="Description when components could not be validated.">
+        An unrecognized component has been found. Unrecognized devices will not
+        be configured correctly and may be unusable. Updating to the latest
+        version of Chrome OS may resolve this issue.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_VERY_OUT_OF_DATE" translateable="false" desc="Description when the installed OS is too many versions behind the update.">
+        If Chrome OS is out of date, Shimless RMA process may have been updated
+        since this version was installed.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_OUT_OF_DATE" translateable="false" desc="Description when the installed OS is not the most recent available.">
+        Chrome OS needs an additional update to get fully up to date.
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_NETWORK_UNAVAILABLE" translateable="false" desc="Notice that no network is available when attempting to update Chrome OS.">
+        To check if OS is up to date, connect to the internet in previous screen
+      </message>
+      <message name="IDS_SHIMLESS_RMA_UPDATE_OS_FAILED_TO_START" translateable="false" desc="Notice when the call to update Chrome OS fails unexpectedly.">
+        Failed to start Chrome OS update.
+      </message>
       <message name="IDS_SHIMLESS_RMA_CURRENT_VERSION" translateable="false" desc="Label that shows the current installed version of Chrome OS.">
         Current version <ph name="VERSION_NUMBER">$1<ex>90.0.1234.56</ex></ph>
       </message>

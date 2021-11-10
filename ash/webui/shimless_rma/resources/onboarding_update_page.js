@@ -180,8 +180,7 @@ export class OnboardingUpdatePageElement extends
         ));
     this.shimlessRmaService_.updateOs().then((res) => {
       if (!res.updateStarted) {
-        // TODO(gavindodd): i18n string
-        this.updateProgressMessage_ = 'OS update failed';
+        this.updateProgressMessage_ = this.i18n('osUpdateFailedToStartText');
         this.updateInProgress_ = false;
         this.dispatchEvent(new CustomEvent(
             'disable-next-button',
@@ -206,18 +205,15 @@ export class OnboardingUpdatePageElement extends
 
   /** @private */
   setUpdateNoticeMessage_() {
-    // TODO(gavindodd): i18n string
     if (!this.isCompliant_) {
-      this.updateNoticeMessage_ = 'An unrecognized component has been found. ' +
-          'Unrecognized devices will not be configured correctly and may be ' +
-          'unusable. Updating to the latest version of Chrome OS may resolve ' +
-          'this issue.';
+      this.updateNoticeMessage_ =
+          this.i18n('osUpdateInvalidComponentsDescriptionText');
     } else if (this.updateAvailable_) {
       // TODO(gavindodd): Do we need a check that the current major version is
       // within n of the installed version to switch between this message and
       // 'Chrome OS needs an additional update to get fully up to date.'?
-      this.updateNoticeMessage_ = 'If Chrome OS is out of date, Shimless RMA ' +
-          'process may have been updated since this version was installed.';
+      this.updateNoticeMessage_ =
+          this.i18n('osUpdateVeryOutOfDateDescriptionText');
     } else {
       // Note: In current implementation this should not be reached, but it is
       // still a perfectly valid state.

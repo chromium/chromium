@@ -68,6 +68,16 @@ void VersionUpdater::SetStatusCallback(StatusCallback status_callback) {
   status_callback_ = std::move(status_callback);
 }
 
+// TODO(gavindodd): Align with chrome/browser/ui/webui/help/version_updater.h:27
+// so that the update messages are the same as normal Chrome updates.
+// See
+// chrome/browser/ui/webui/help/version_updater_chromeos.cc:271
+// chrome/browser/resources/settings/chromeos/os_about_page/os_about_page.js:418
+// chrome/browser/ui/webui/settings/settings_localized_strings_provider.cc:261
+// chrome/app/shared_settings_strings.grdp:378
+// chrome/app/os_settings_strings.grdp:66
+// for mapping of OS update status to strings
+
 bool VersionUpdater::CheckOsUpdateAvailable() {
   // TODO(gavindodd): Does this need thread guarding.
   if (check_update_available_ == UPDATE_AVAILABLE ||
