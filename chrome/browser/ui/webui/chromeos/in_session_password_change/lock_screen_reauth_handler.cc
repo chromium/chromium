@@ -79,14 +79,15 @@ LockScreenReauthHandler::LockScreenReauthHandler(const std::string& email)
 
 LockScreenReauthHandler::~LockScreenReauthHandler() = default;
 
-void LockScreenReauthHandler::HandleInitialize(const base::ListValue* value) {
+void LockScreenReauthHandler::HandleInitialize(
+    base::Value::ConstListView value) {
   AllowJavascript();
   OnReauthDialogReadyForTesting();
   LoadAuthenticatorParam();
 }
 
 void LockScreenReauthHandler::HandleAuthenticatorLoaded(
-    const base::ListValue* value) {
+    base::Value::ConstListView value) {
   VLOG(1) << "Authenticator finished loading";
   authenticator_state_ = AuthenticatorState::LOADED;
 
@@ -222,18 +223,18 @@ void LockScreenReauthHandler::CallJavascript(
 }
 
 void LockScreenReauthHandler::HandleCompleteAuthentication(
-    const base::ListValue* params) {
-  CHECK_EQ(params->GetList().size(), 6);
+    base::Value::ConstListView params) {
+  CHECK_EQ(params.size(), 6);
   std::string gaia_id, email, password;
   bool using_saml;
   ::login::StringList services = ::login::StringList();
   const base::DictionaryValue* password_attributes;
-  gaia_id = params->GetList()[0].GetString();
-  email = params->GetList()[1].GetString();
-  password = params->GetList()[2].GetString();
-  using_saml = params->GetList()[3].GetBool();
-  services = ConvertToVector(params->GetList()[4]);
-  params->GetList()[5].GetAsDictionary(&password_attributes);
+  gaia_id = params[0].GetString();
+  email = params[1].GetString();
+  password = params[2].GetString();
+  using_saml = params[3].GetBool();
+  services = ConvertToVector(params[4]);
+  params[5].GetAsDictionary(&password_attributes);
 
   if (gaia::CanonicalizeEmail(email) != gaia::CanonicalizeEmail(email_)) {
     // The authenticated user email doesn't match the current user's email.
@@ -303,9 +304,9 @@ void LockScreenReauthHandler::CheckCredentials(
 }
 
 void LockScreenReauthHandler::HandleUpdateUserPassword(
-    const base::ListValue* value) {
-  DCHECK(!value->GetList().empty());
-  std::string old_password = value->GetList()[0].GetString();
+    base::Value::ConstListView value) {
+  DCHECK(!value.empty());
+  std::string old_password = value[0].GetString();
   password_sync_manager_->UpdateUserPassword(old_password);
 }
 
@@ -314,21 +315,21 @@ void LockScreenReauthHandler::ShowPasswordChangedScreen() {
 }
 
 void LockScreenReauthHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initialize",
       base::BindRepeating(&LockScreenReauthHandler::HandleInitialize,
                           weak_factory_.GetWeakPtr()));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "authenticatorLoaded",
       base::BindRepeating(&LockScreenReauthHandler::HandleAuthenticatorLoaded,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "completeAuthentication",
       base::BindRepeating(
           &LockScreenReauthHandler::HandleCompleteAuthentication,
           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "updateUserPassword",
       base::BindRepeating(&LockScreenReauthHandler::HandleUpdateUserPassword,
                           weak_factory_.GetWeakPtr()));

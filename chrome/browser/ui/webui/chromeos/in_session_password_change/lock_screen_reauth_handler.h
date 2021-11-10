@@ -25,10 +25,10 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   void ShowPasswordChangedScreen();
 
   // WebUI message handlers.
-  void HandleInitialize(const base::ListValue*);
-  void HandleCompleteAuthentication(const base::ListValue*);
-  void HandleAuthenticatorLoaded(const base::ListValue*);
-  void HandleUpdateUserPassword(const base::ListValue*);
+  void HandleInitialize(base::Value::ConstListView);
+  void HandleCompleteAuthentication(base::Value::ConstListView);
+  void HandleAuthenticatorLoaded(base::Value::ConstListView);
+  void HandleUpdateUserPassword(base::Value::ConstListView);
 
   bool IsAuthenticatorLoaded(base::OnceClosure callback);
   bool IsJsReadyForTesting(base::OnceClosure js_ready_callback);
