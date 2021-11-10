@@ -309,7 +309,7 @@ def write_parsed_scripts(task_output_dir):
     if not os.path.exists(source_directory):
       os.makedirs(source_directory)
 
-    with open(os.path.join(output_dir, source_path), 'w') as f:
+    with open(os.path.join(output_dir, source_path), 'wb') as f:
       f.write(script_data['text'].encode('utf8'))
 
   return output_dir

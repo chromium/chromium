@@ -16,6 +16,8 @@ def CommonChecks(input_api, output_api):
         output_api,
         '.',
         files_to_check=['.*test.py'],
+        run_on_python2=not USE_PYTHON3,
+        run_on_python3=USE_PYTHON3,
         skip_shebang_check=True)
 
 
