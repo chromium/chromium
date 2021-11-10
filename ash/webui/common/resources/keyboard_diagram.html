@@ -169,6 +169,12 @@
     grid-row: 1;
   }
 
+  /* Modifications for Assistant key */
+
+  [data-show-assistant-key] #leftCtrlKey {
+    grid-column: span 3;
+  }
+
   /* Number pad */
 
   #numberPad {
@@ -218,7 +224,8 @@
     data-show-number-pad$="[[showNumberPad]]">
   <div class="main-cluster"
       data-mech-layout$="[[mechanicalLayout]]"
-      data-physical-layout$="[[physicalLayout]]">
+      data-physical-layout$="[[physicalLayout]]"
+      data-show-assistant-key$="[[showAssistantKey]]">
     <div id="topRow">
       <keyboard-key main-glyph="esc"></keyboard-key>
       <!-- TODO(crbug.com/1207678): Use icons for the top row keys. -->
@@ -311,6 +318,9 @@
       <keyboard-key id="fnKey" class="disabled" main-glyph="fn"></keyboard-key>
       <!-- TODO(crbug.com/1207678): Add an icon for the layout switch key. -->
       <keyboard-key id="layoutSwitchKey" main-glyph="[g]"></keyboard-key>
+    </template>
+    <template is="dom-if" if="[[showAssistantKey]]">
+      <keyboard-key icon="keyboard:assistant"></keyboard-key>
     </template>
     <keyboard-key id="leftAltKey" class="left" main-glyph="alt"></keyboard-key>
     <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">

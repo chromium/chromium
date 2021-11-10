@@ -58,6 +58,9 @@ export class KeyboardDiagramElement extends PolymerElement {
        */
       physicalLayout: String,
 
+      /** Whether to show the Assistant key (between Ctrl and Alt). */
+      showAssistantKey: Boolean,
+
       /** Whether to show a Chrome OS-style number pad.  */
       showNumberPad: {
         type: Boolean,
