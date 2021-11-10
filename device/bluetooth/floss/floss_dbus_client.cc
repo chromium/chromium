@@ -21,6 +21,11 @@ bool ReadReturnFromResponse(dbus::MessageReader* reader, uint8_t* value) {
 }
 
 template <>
+bool ReadReturnFromResponse(dbus::MessageReader* reader, uint32_t* value) {
+  return reader->PopUint32(value);
+}
+
+template <>
 bool ReadReturnFromResponse(dbus::MessageReader* reader, std::string* value) {
   return reader->PopString(value);
 }
@@ -39,8 +44,12 @@ const char kGetAddress[] = "GetAddress";
 const char kStartDiscovery[] = "StartDiscovery";
 const char kCancelDiscovery[] = "CancelDiscovery";
 const char kCreateBond[] = "CreateBond";
+const char kGetConnectionState[] = "GetConnectionState";
+const char kConnectAllEnabledProfiles[] = "ConnectAllEnabledProfiles";
 const char kRegisterCallback[] = "RegisterCallback";
 const char kRegisterConnectionCallback[] = "RegisterConnectionCallback";
+const char kSetPairingConfirmation[] = "SetPairingConfirmation";
+const char kSetPasskey[] = "SetPasskey";
 
 // TODO(abps) - Rename this to AdapterCallback in platform and here
 const char kCallbackInterface[] = "org.chromium.bluetooth.BluetoothCallback";
@@ -160,6 +169,11 @@ void FlossDBusClient::DefaultResponseWithCallback(
 
 template void FlossDBusClient::DefaultResponseWithCallback(
     ResponseCallback<uint8_t> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
+
+template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<uint32_t> callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response);
 

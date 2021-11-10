@@ -130,6 +130,27 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                           FlossDeviceId device,
                           BluetoothTransport transport);
 
+  // Get connection state of a device.
+  // TODO(b/202334519): Change return type to enum instead of u32
+  virtual void GetConnectionState(ResponseCallback<uint32_t> callback,
+                                  const FlossDeviceId& device);
+
+  // Connect to all enabled profiles.
+  virtual void ConnectAllEnabledProfiles(ResponseCallback<Void> callback,
+                                         const FlossDeviceId& device);
+
+  // Indicates whether the user approves the pairing, if accepted then a pairing
+  // should be completed on the remote device.
+  virtual void SetPairingConfirmation(ResponseCallback<Void> callback,
+                                      const FlossDeviceId& device,
+                                      bool accept);
+
+  // Indicates whether the user approves the pairing with the given passkey.
+  virtual void SetPasskey(ResponseCallback<Void> callback,
+                          const FlossDeviceId& device,
+                          bool accept,
+                          const std::vector<uint8_t>& passkey);
+
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
 
@@ -214,6 +235,13 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                           const char* member,
                           const T1& arg1,
                           const T2& arg2);
+
+  template <typename R, typename T1, typename T2, typename T3>
+  void CallAdapterMethod3(ResponseCallback<R> callback,
+                          const char* member,
+                          const T1& arg1,
+                          const T2& arg2,
+                          const T3& arg3);
 
   // Object path for exported callbacks registered against adapter interface.
   static const char kExportedCallbacksPath[];

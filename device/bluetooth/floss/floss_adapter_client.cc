@@ -53,6 +53,34 @@ void FlossAdapterClient::CreateBond(ResponseCallback<Void> callback,
                            transport);
 }
 
+void FlossAdapterClient::GetConnectionState(ResponseCallback<uint32_t> callback,
+                                            const FlossDeviceId& device) {
+  CallAdapterMethod1<uint32_t>(std::move(callback),
+                               adapter::kGetConnectionState, device);
+}
+
+void FlossAdapterClient::ConnectAllEnabledProfiles(
+    ResponseCallback<Void> callback,
+    const FlossDeviceId& device) {
+  CallAdapterMethod1<Void>(std::move(callback),
+                           adapter::kConnectAllEnabledProfiles, device);
+}
+
+void FlossAdapterClient::SetPairingConfirmation(ResponseCallback<Void> callback,
+                                                const FlossDeviceId& device,
+                                                bool accept) {
+  CallAdapterMethod2<Void>(std::move(callback),
+                           adapter::kSetPairingConfirmation, device, accept);
+}
+
+void FlossAdapterClient::SetPasskey(ResponseCallback<Void> callback,
+                                    const FlossDeviceId& device,
+                                    bool accept,
+                                    const std::vector<uint8_t>& passkey) {
+  CallAdapterMethod3<Void>(std::move(callback), adapter::kSetPasskey, device,
+                           accept, passkey);
+}
+
 void FlossAdapterClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const std::string& adapter_path) {
@@ -423,6 +451,18 @@ void FlossAdapterClient::WriteDBusParam(dbus::MessageWriter* writer,
   writer->AppendString(data);
 }
 
+template <>
+void FlossAdapterClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                        const bool& data) {
+  writer->AppendBool(data);
+}
+
+template <>
+void FlossAdapterClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                        const std::vector<uint8_t>& data) {
+  writer->AppendArrayOfBytes(data.data(), data.size());
+}
+
 template <typename R, typename F>
 void FlossAdapterClient::CallAdapterMethod(ResponseCallback<R> callback,
                                            const char* member,
@@ -473,6 +513,20 @@ void FlossAdapterClient::CallAdapterMethod2(ResponseCallback<R> callback,
                     [&arg1, &arg2](dbus::MessageWriter* writer) {
                       FlossAdapterClient::WriteDBusParam(writer, arg1);
                       FlossAdapterClient::WriteDBusParam(writer, arg2);
+                    });
+}
+
+template <typename R, typename T1, typename T2, typename T3>
+void FlossAdapterClient::CallAdapterMethod3(ResponseCallback<R> callback,
+                                            const char* member,
+                                            const T1& arg1,
+                                            const T2& arg2,
+                                            const T3& arg3) {
+  CallAdapterMethod(std::move(callback), member,
+                    [&arg1, &arg2, &arg3](dbus::MessageWriter* writer) {
+                      FlossAdapterClient::WriteDBusParam(writer, arg1);
+                      FlossAdapterClient::WriteDBusParam(writer, arg2);
+                      FlossAdapterClient::WriteDBusParam(writer, arg3);
                     });
 }
 

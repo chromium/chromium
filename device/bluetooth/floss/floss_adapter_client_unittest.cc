@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "dbus/bus.h"
@@ -36,9 +37,15 @@ constexpr char kTestMethod1[] = "TestMethod1";
 constexpr char kTestMethod2[] = "TestMethod2";
 
 constexpr uint8_t kFakeU8Return = 100;
+constexpr uint32_t kFakeU32Return = 20000;
 constexpr char kFakeStrReturn[] = "fake return";
 constexpr uint32_t kFakeU32Param = 30;
 constexpr char kFakeStrParam[] = "fake param";
+constexpr bool kFakeBoolParam = true;
+
+constexpr char kFakeDeviceAddr[] = "11:22:33:44:55:66";
+constexpr char kFakeDeviceName[] = "Some Device";
+constexpr uint8_t kFakeBytes[] = {1, 1, 2, 3, 5, 8, 13};
 
 }  // namespace
 
@@ -586,6 +593,162 @@ TEST_F(FlossAdapterClientTest, CallAdapterMethods) {
         EXPECT_EQ(std::string(), err->message);
       }),
       kTestMethod0);
+}
+
+TEST_F(FlossAdapterClientTest, GenericMethodGetConnectionState) {
+  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
+
+  // Method of 1 parameter with uint32_t return.
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kGetConnectionState), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 1 parameter.
+        FlossDeviceId param1;
+        ASSERT_TRUE(FlossAdapterClient::ParseFlossDeviceId(&msg, &param1));
+        EXPECT_EQ(FlossDeviceId(
+                      {.address = kFakeDeviceAddr, .name = kFakeDeviceName}),
+                  param1);
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with a return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        dbus::MessageWriter writer(response.get());
+        writer.AppendUint32(kFakeU32Return);
+        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+      });
+  base::RunLoop run_loop;
+  client_->GetConnectionState(
+      base::BindLambdaForTesting(
+          [&run_loop](const absl::optional<uint32_t>& ret,
+                      const absl::optional<Error>& err) {
+            // Check that return is correctly parsed and there should be no
+            // error.
+            EXPECT_FALSE(err.has_value());
+            EXPECT_TRUE(ret.has_value());
+            EXPECT_EQ(kFakeU32Return, ret);
+            run_loop.Quit();
+          }),
+      FlossDeviceId({.address = kFakeDeviceAddr, .name = kFakeDeviceName}));
+  run_loop.Run();
+}
+
+TEST_F(FlossAdapterClientTest, GenericMethodConnectAllEnabledProfiles) {
+  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
+
+  // Method of 1 parameter with no return.
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kConnectAllEnabledProfiles), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 1 parameter.
+        FlossDeviceId param1;
+        ASSERT_TRUE(FlossAdapterClient::ParseFlossDeviceId(&msg, &param1));
+        EXPECT_EQ(FlossDeviceId(
+                      {.address = kFakeDeviceAddr, .name = kFakeDeviceName}),
+                  param1);
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with no return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+      });
+  base::RunLoop run_loop;
+  client_->ConnectAllEnabledProfiles(
+      base::BindLambdaForTesting([&run_loop](const absl::optional<Void>& ret,
+                                             const absl::optional<Error>& err) {
+        // Check that there should be no return and error.
+        EXPECT_FALSE(err.has_value());
+        EXPECT_FALSE(ret.has_value());
+        run_loop.Quit();
+      }),
+      FlossDeviceId({.address = kFakeDeviceAddr, .name = kFakeDeviceName}));
+  run_loop.Run();
+}
+
+TEST_F(FlossAdapterClientTest, GenericMethodSetPairingConfirmation) {
+  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
+
+  // Method of 2 parameters with no return.
+  EXPECT_CALL(*adapter_object_proxy_.get(),
+              DoCallMethodWithErrorResponse(
+                  HasMemberOf(adapter::kSetPairingConfirmation), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 2 parameters.
+        FlossDeviceId param1;
+        bool param2;
+        ASSERT_TRUE(FlossAdapterClient::ParseFlossDeviceId(&msg, &param1));
+        ASSERT_TRUE(msg.PopBool(&param2));
+        EXPECT_EQ(FlossDeviceId(
+                      {.address = kFakeDeviceAddr, .name = kFakeDeviceName}),
+                  param1);
+        EXPECT_EQ(kFakeBoolParam, param2);
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with no return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+      });
+  base::RunLoop run_loop;
+  client_->SetPairingConfirmation(
+      base::BindLambdaForTesting([&run_loop](const absl::optional<Void>& ret,
+                                             const absl::optional<Error>& err) {
+        // Check that there should be no return and error.
+        EXPECT_FALSE(err.has_value());
+        EXPECT_FALSE(ret.has_value());
+        run_loop.Quit();
+      }),
+      FlossDeviceId({.address = kFakeDeviceAddr, .name = kFakeDeviceName}),
+      kFakeBoolParam);
+  run_loop.Run();
+}
+
+TEST_F(FlossAdapterClientTest, GenericMethodSetPasskey) {
+  client_->Init(bus_.get(), kAdapterInterface, adapter_path_.value());
+
+  // Method of 3 parameters with no return.
+  EXPECT_CALL(
+      *adapter_object_proxy_.get(),
+      DoCallMethodWithErrorResponse(HasMemberOf(adapter::kSetPasskey), _, _))
+      .WillOnce([](::dbus::MethodCall* method_call, int timeout_ms,
+                   ::dbus::ObjectProxy::ResponseOrErrorCallback* cb) {
+        dbus::MessageReader msg(method_call);
+        // D-Bus method call should have 3 parameters.
+        FlossDeviceId param1;
+        bool param2;
+        const uint8_t* param3;
+        size_t param3_len;
+        ASSERT_TRUE(FlossAdapterClient::ParseFlossDeviceId(&msg, &param1));
+        ASSERT_TRUE(msg.PopBool(&param2));
+        ASSERT_TRUE(msg.PopArrayOfBytes(&param3, &param3_len));
+        EXPECT_EQ(FlossDeviceId(
+                      {.address = kFakeDeviceAddr, .name = kFakeDeviceName}),
+                  param1);
+        EXPECT_EQ(kFakeBoolParam, param2);
+        EXPECT_EQ(
+            std::vector<uint8_t>(kFakeBytes, kFakeBytes + sizeof(kFakeBytes)),
+            std::vector<uint8_t>(param3, param3 + param3_len));
+        EXPECT_FALSE(msg.HasMoreData());
+        // Create a fake response with no return value.
+        auto response = ::dbus::Response::CreateEmpty();
+        std::move(*cb).Run(response.get(), /*err=*/nullptr);
+      });
+  base::RunLoop run_loop;
+  client_->SetPasskey(
+      base::BindLambdaForTesting([&run_loop](const absl::optional<Void>& ret,
+                                             const absl::optional<Error>& err) {
+        // Check that there should be no return and error.
+        EXPECT_FALSE(err.has_value());
+        EXPECT_FALSE(ret.has_value());
+        run_loop.Quit();
+      }),
+      FlossDeviceId({.address = kFakeDeviceAddr, .name = kFakeDeviceName}),
+      kFakeBoolParam,
+      std::vector<uint8_t>(kFakeBytes, kFakeBytes + sizeof(kFakeBytes)));
+  run_loop.Run();
 }
 
 }  // namespace floss

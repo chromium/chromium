@@ -32,10 +32,14 @@ extern DEVICE_BLUETOOTH_EXPORT const char kGetAddress[];
 extern DEVICE_BLUETOOTH_EXPORT const char kStartDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCancelDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateBond[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetConnectionState[];
+extern DEVICE_BLUETOOTH_EXPORT const char kConnectAllEnabledProfiles[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterConnectionCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kConnectionCallbackInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetPairingConfirmation[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetPasskey[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceFound[];
