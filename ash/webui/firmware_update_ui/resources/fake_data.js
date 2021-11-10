@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FirmwareUpdate, UpdatePriority} from './firmware_update_types.js';
+import {FirmwareUpdate, InstallationProgress, UpdatePriority} from './firmware_update_types.js';
 
 /** @type {!Array<!Array<!FirmwareUpdate>>} */
 export const fakeFirmwareUpdates = [[
@@ -38,3 +38,19 @@ export const fakeFirmwareUpdates = [[
     screenshotUrl: '',
   },
 ]];
+
+/** @type {!Array<!InstallationProgress>} */
+export const fakeInstallationProgress = [
+  {
+    status: '',
+    percentage: 33,
+  },
+  {
+    status: '',
+    percentage: 66,
+  },
+  {
+    status: '',
+    percentage: 100,
+  },
+];

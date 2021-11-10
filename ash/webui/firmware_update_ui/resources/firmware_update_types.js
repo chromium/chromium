@@ -57,5 +57,33 @@ export let ObservePeripheralUpdatesFunction;
  */
 export let UpdateProviderInterface;
 
-/** @typedef {Object} */
+/**
+ * @typedef {{
+ *   status: string,
+ *   percentage: number,
+ * }}
+ */
+export let InstallationProgress;
+
+/**
+ * Type alias for UpdateProgressObserver.
+ * @typedef {{
+ *   onProgressChanged: !function(!InstallationProgress)
+ * }}
+ */
+export let UpdateProgressObserver;
+
+/**
+ * Type of UpdateControllerInterface.startUpdateFunction function.
+ * @typedef {!function(string, !UpdateProgressObserver): void}
+ */
+export let startUpdateFunction;
+
+/**
+ * Type alias for the UpdateControllerInterface.
+ * TODO(michaelcheco): Replace with a real mojo type when implemented.
+ * @typedef {{
+ *   startUpdate: !startUpdateFunction,
+ * }}
+ */
 export let UpdateControllerInterface;

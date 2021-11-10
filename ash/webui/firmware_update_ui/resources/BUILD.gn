@@ -57,6 +57,10 @@ js_library("fake_data") {
 }
 
 js_library("fake_update_controller") {
+  deps = [
+    "//ash/webui/common/resources:fake_observables",
+    "//ui/webui/resources/js:cr.m",
+  ]
 }
 
 js_library("fake_update_provider") {
