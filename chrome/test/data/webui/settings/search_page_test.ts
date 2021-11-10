@@ -15,12 +15,10 @@ import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_se
 // clang-format on
 
 function generateSearchEngineInfo(): SearchEnginesInfo {
-  const searchEngines0 = createSampleSearchEngine(true, false, false);
-  searchEngines0.default = true;
-  const searchEngines1 = createSampleSearchEngine(true, false, false);
-  searchEngines1.default = false;
-  const searchEngines2 = createSampleSearchEngine(true, false, false);
-  searchEngines2.default = false;
+  const searchEngines0 =
+      createSampleSearchEngine({canBeDefault: true, default: true});
+  const searchEngines1 = createSampleSearchEngine({canBeDefault: true});
+  const searchEngines2 = createSampleSearchEngine({canBeDefault: true});
 
   return {
     defaults: [searchEngines0, searchEngines1, searchEngines2],

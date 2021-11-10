@@ -8,36 +8,14 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrInputElement, SettingsOmniboxExtensionEntryElement, SettingsSearchEngineDialogElement, SettingsSearchEngineEntryElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
-import { ExtensionControlBrowserProxyImpl, SearchEngine, SearchEnginesBrowserProxyImpl,SearchEnginesInfo} from 'chrome://settings/settings.js';
+import {ExtensionControlBrowserProxyImpl, loadTimeData, SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestExtensionControlBrowserProxy} from './test_extension_control_browser_proxy.js';
-import {TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
+import {createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
 // clang-format on
-
-function createSampleSearchEngine(
-    id: number, name: string, canBeDefault: boolean, canBeEdited: boolean,
-    canBeRemoved: boolean): SearchEngine {
-  return {
-    canBeDefault: canBeDefault,
-    canBeEdited: canBeEdited,
-    canBeRemoved: canBeRemoved,
-    canBeActivated: false,
-    canBeDeactivated: false,
-    default: false,
-    displayName: name + ' displayName',
-    iconURL: 'http://www.google.com/favicon.ico',
-    id: id,
-    isOmniboxExtension: false,
-    keyword: name,
-    modelIndex: 0,
-    name: name,
-    url: 'https://' + name + '.com/search?p=%s',
-    urlLocked: false,
-  };
-}
 
 function createSampleOmniboxExtension(): SearchEngine {
   return {
@@ -142,23 +120,23 @@ suite('AddSearchEngineDialogTests', function() {
   });
 
   test('DialogCloseWhenEnginesChangedModelEngineNotFound', function() {
-    dialog.set('model', createSampleSearchEngine(0, 'G', false, false, false));
+    dialog.set('model', createSampleSearchEngine({id: 0, name: 'G'}));
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
       actives: [],
-      others: [createSampleSearchEngine(1, 'H', false, false, false)],
+      others: [createSampleSearchEngine({id: 1, name: 'H'})],
       extensions: [],
     });
     return browserProxy.whenCalled('searchEngineEditCancelled');
   });
 
   test('DialogValidateInputsWhenEnginesChanged', function() {
-    dialog.set('model', createSampleSearchEngine(0, 'G', false, false, false));
+    dialog.set('model', createSampleSearchEngine({name: 'G'}));
     dialog.set('keyword_', 'G');
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
       actives: [],
-      others: [createSampleSearchEngine(0, 'G', false, false, false)],
+      others: [createSampleSearchEngine({name: 'G'})],
       extensions: [],
     });
     return browserProxy.whenCalled('validateSearchEngineInput');
@@ -169,7 +147,8 @@ suite('SearchEngineEntryTests', function() {
   let entry: SettingsSearchEngineEntryElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
 
-  const searchEngine = createSampleSearchEngine(0, 'G', true, true, true);
+  const searchEngine = createSampleSearchEngine(
+      {canBeDefault: true, canBeEdited: true, canBeRemoved: true});
 
   setup(function() {
     browserProxy = new TestSearchEnginesBrowserProxy();
@@ -266,8 +245,7 @@ suite('SearchEngineEntryTests', function() {
   }
 
   test('Remove_Hidden', function() {
-    testButtonHidden(
-        createSampleSearchEngine(0, 'G', true, true, false), 'delete');
+    testButtonHidden(createSampleSearchEngine({canBeRemoved: false}), 'delete');
   });
 
   /**
@@ -283,12 +261,55 @@ suite('SearchEngineEntryTests', function() {
 
   test('MakeDefault_Disabled', function() {
     testButtonDisabled(
-        createSampleSearchEngine(0, 'G', false, true, true), 'makeDefault');
+        createSampleSearchEngine({canBeDefault: false}), 'makeDefault');
   });
 
   test('Edit_Disabled', function() {
-    testButtonDisabled(
-        createSampleSearchEngine(0, 'G', true, false, true), 'edit');
+    testButtonDisabled(createSampleSearchEngine({canBeEdited: false}), 'edit');
+  });
+
+  // Test that clicking the "activate" button fires an activate event.
+  test('Activate', async function() {
+    entry.set('isActiveSearchEnginesFlagEnabled', true);
+    flush();
+    entry.engine = createSampleSearchEngine({canBeActivated: true});
+
+    const activateButton = entry.shadowRoot!.querySelector<HTMLButtonElement>(
+        'cr-button.secondary-button')!;
+    assertTrue(!!activateButton);
+    assertFalse(activateButton.hidden);
+    activateButton.click();
+
+    // Ensure that the activate event is fired.
+    const [modelIndex, isActive] =
+        await browserProxy.whenCalled('setIsActiveSearchEngine');
+    assertEquals(entry.engine.modelIndex, modelIndex);
+    assertTrue(isActive);
+  });
+
+  // Test that clicking the "Deactivate" button fires a deactivate event.
+  test('Deactivate', async function() {
+    entry.set('isActiveSearchEnginesFlagEnabled', true);
+    flush();
+    entry.engine = createSampleSearchEngine({canBeDeactivated: true});
+
+    // Open action menu.
+    entry.shadowRoot!
+        .querySelector<HTMLElement>('cr-icon-button.icon-more-vert')!.click();
+    const menu = entry.shadowRoot!.querySelector('cr-action-menu')!;
+    assertTrue(menu.open);
+
+    const deactivateButton = entry.shadowRoot!.querySelector<HTMLButtonElement>(
+        'button#deactivate.dropdown-item')!;
+    assertTrue(!!deactivateButton);
+    assertFalse(deactivateButton.hidden);
+    deactivateButton.click();
+
+    // Ensure that the deactivate event is fired.
+    const [modelIndex, isActive] =
+        await browserProxy.whenCalled('setIsActiveSearchEngine');
+    assertEquals(entry.engine.modelIndex, modelIndex);
+    assertFalse(isActive);
   });
 });
 
@@ -297,12 +318,26 @@ suite('SearchEnginePageTests', function() {
   let browserProxy: TestSearchEnginesBrowserProxy;
 
   const searchEnginesInfo: SearchEnginesInfo = {
-    defaults:
-        [createSampleSearchEngine(0, 'search_engine_G', false, false, false)],
+    defaults: [createSampleSearchEngine({
+      id: 0,
+      name: 'search_engine_G',
+      displayName: 'search_engine_G displayName',
+      keyword: 'search_engine_G'
+    })],
     actives: [],
     others: [
-      createSampleSearchEngine(1, 'search_engine_B', false, false, false),
-      createSampleSearchEngine(2, 'search_engine_A', false, false, false),
+      createSampleSearchEngine({
+        id: 1,
+        name: 'search_engine_B',
+        displayName: 'search_engine_B displayName',
+        keyword: 'search_engine_B'
+      }),
+      createSampleSearchEngine({
+        id: 2,
+        name: 'search_engine_A',
+        displayName: 'search_engine_A displayName',
+        keyword: 'search_engine_A'
+      }),
     ],
     extensions: [createSampleOmniboxExtension()],
   };
@@ -318,9 +353,15 @@ suite('SearchEnginePageTests', function() {
       others: searchEnginesInfo.others.slice(),
       extensions: searchEnginesInfo.extensions.slice(),
     });
+    loadTimeData.overrideValues({'showKeywordTriggerSetting': true});
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-search-engines-page');
+    page.set('prefs.omnibox.keyword_space_triggering_enabled', {
+      key: 'prefs.omnibox.keyword_space_triggering_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    });
     document.body.appendChild(page);
     return browserProxy.whenCalled('getSearchEnginesList');
   });
@@ -362,6 +403,37 @@ suite('SearchEnginePageTests', function() {
     assertEquals(searchEnginesInfo.extensions.length, extensionEntries!.length);
   });
 
+  // Test that the keyboard shortcut radio buttons are shown as expected, and
+  // toggling them fires the appropriate events.
+  test('KeyboardShortcutSettingToggle', async function() {
+    const radioGroup = page.$.keyboardShortcutSettingGroup;
+    assertTrue(!!radioGroup);
+    assertFalse(radioGroup.hidden);
+
+    const radioButtons =
+        page.shadowRoot!.querySelectorAll('controlled-radio-button')!;
+    assertEquals(2, radioButtons.length);
+    assertEquals('true', radioButtons.item(0)!.name);
+    assertEquals('false', radioButtons.item(1)!.name);
+
+    // Check behavior when switching space triggering off.
+    radioButtons.item(1)!.click();
+    flush();
+    assertEquals('false', radioGroup.selected);
+    let result =
+        await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(SearchEnginesInteractions.KEYBOARD_SHORTCUT_TAB, result);
+    browserProxy.reset();
+
+    // Check behavior when switching space triggering on.
+    radioButtons.item(0).click();
+    flush();
+    assertEquals('true', radioGroup.selected);
+    result = await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
+    assertEquals(
+        SearchEnginesInteractions.KEYBOARD_SHORTCUT_SPACE_OR_TAB, result);
+  });
+
   // Test that the "no other search engines" message is shown/hidden as
   // expected.
   test('NoOtherSearchEnginesMessage', function() {
@@ -379,7 +451,7 @@ suite('SearchEnginePageTests', function() {
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
       actives: [],
-      others: [createSampleSearchEngine(0, 'G', false, false, false)],
+      others: [createSampleSearchEngine()],
       extensions: [],
     });
     assertTrue(message!.hasAttribute('hidden'));

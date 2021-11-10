@@ -77280,6 +77280,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="Passwords, manage weak passwords"/>
 </enum>
 
+<enum name="SettingsSearchEnginesInteractions">
+  <int value="0" label="Search engine activated"/>
+  <int value="1" label="Search engine deactivated"/>
+  <int value="2" label="Keyboard shortcut switched to Tab only"/>
+  <int value="3" label="Keyboard shortcut switched to Space or Tab"/>
+</enum>
+
 <enum name="SettingsSections">
   <summary>
     A collection of sections from chrome://settings. Used for metrics about
