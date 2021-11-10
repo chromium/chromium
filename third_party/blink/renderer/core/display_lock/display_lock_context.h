@@ -225,6 +225,8 @@ class CORE_EXPORT DisplayLockContext final
   void NotifyHasTopLayerElement();
   void ClearHasTopLayerElement();
 
+  void ScheduleTopLayerCheck();
+
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
   // |NotifyForcedUpdateScopeEnded()|.
@@ -498,6 +500,10 @@ class CORE_EXPORT DisplayLockContext final
   // If true, we need to clear the fact that we have a top layer at the start of
   // the next frame.
   bool has_pending_clear_has_top_layer_ = false;
+
+  // If ture, we need to check if this subtree has any top layer elements at the
+  // start of the next frame.
+  bool has_pending_top_layer_check_ = false;
 };
 
 }  // namespace blink
