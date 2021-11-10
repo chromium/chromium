@@ -181,6 +181,16 @@ TrialComparisonResult IsSynchronouslyIgnorableDifference(
     return TrialComparisonResult::kIgnoredBothKnownRoot;
   }
 
+  // If the primary has an error and cert_status reports that a Symantec legacy
+  // cert is present, ignore the error if trial reports
+  // ERR_CERT_AUTHORITY_INVALID as trial will report AUTHORITY_INVALID and short
+  // circuits other checks resulting in mismatching errors and cert status.
+  if (primary_error != OK && trial_error == ERR_CERT_AUTHORITY_INVALID &&
+      (primary_result.cert_status & CERT_STATUS_SYMANTEC_LEGACY)) {
+    return TrialComparisonResult::
+        kIgnoredBuiltinAuthorityInvalidPlatformSymantec;
+  }
+
   return TrialComparisonResult::kInvalid;
 }
 
