@@ -67,12 +67,12 @@ FileSystemURL::FileSystemURL(const GURL& url,
       type_(kFileSystemTypeUnknown),
       mount_option_(FlushPolicy::NO_FLUSH_ON_COMPLETION) {
   GURL origin_url;
+  // URL should be able to be parsed and the parsed origin should match the
+  // StorageKey's origin member.
   is_valid_ =
-      ParseFileSystemSchemeURL(url, &origin_url, &mount_type_, &virtual_path_);
-  if (is_valid_) {
-    DCHECK(
-        storage_key.origin().IsSameOriginWith(url::Origin::Create(origin_url)));
-  }
+      ParseFileSystemSchemeURL(url, &origin_url, &mount_type_,
+                               &virtual_path_) &&
+      storage_key.origin().IsSameOriginWith(url::Origin::Create(origin_url));
   storage_key_ = storage_key;
   path_ = virtual_path_;
   type_ = mount_type_;

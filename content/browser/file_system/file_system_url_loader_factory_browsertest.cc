@@ -481,12 +481,11 @@ class FileSystemURLLoaderFactoryTest
     if (extra_headers)
       request.headers.MergeFrom(*extra_headers);
     const std::string storage_domain = url.DeprecatedGetOriginAsURL().host();
-
     mojo::Remote<network::mojom::URLLoaderFactory> factory(
         CreateFileSystemURLLoaderFactory(
             render_frame_host()->GetProcess()->GetID(),
             render_frame_host()->GetFrameTreeNodeId(), file_system_context,
-            storage_domain));
+            storage_domain, blink::StorageKey(url::Origin::Create(url))));
 
     auto client = std::make_unique<network::TestURLLoaderClient>();
     loader_.reset();

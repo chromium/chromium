@@ -95,6 +95,8 @@
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 #if defined(OS_ANDROID)
 #include "content/browser/android/content_url_loader_factory.h"
@@ -1292,12 +1294,18 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
     }
 
     const std::string storage_domain;
+    // TODO(https://crbug.com/1264405): Determine if we should deprecate
+    // navigation in filesystem: URLs entirely or in 3p contexts; alter the
+    // below as necessary. NOTE: while the logic below is appropriate for
+    // browser-initiated navigations, it is likely incorrect to always use
+    // first-party StorageKeys for renderer-initiated navigations.
     non_network_url_loader_factories_.emplace(
         url::kFileSystemScheme,
         CreateFileSystemURLLoaderFactory(
             ChildProcessHost::kInvalidUniqueID,
             frame_tree_node->frame_tree_node_id(),
-            storage_partition_->GetFileSystemContext(), storage_domain));
+            storage_partition_->GetFileSystemContext(), storage_domain,
+            blink::StorageKey(url::Origin::Create(url_))));
   }
 
   non_network_url_loader_factories_.emplace(url::kAboutScheme,

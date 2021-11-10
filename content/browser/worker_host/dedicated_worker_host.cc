@@ -297,7 +297,7 @@ void DedicatedWorkerHost::StartScriptLoad(
       worker_process_host_->GetID(), token_, script_url,
       nearest_ancestor_render_frame_host, creator_render_frame_host,
       nearest_ancestor_render_frame_host->ComputeSiteForCookies(),
-      creator_origin_,
+      creator_origin_, storage_key_,
       nearest_ancestor_render_frame_host->GetIsolationInfoForSubresources(),
       credentials_mode, std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kWorker,
@@ -754,7 +754,8 @@ void DedicatedWorkerHost::UpdateSubresourceLoaderFactories() {
           WorkerScriptFetcher::LoaderType::kSubResource,
           worker_process_host_->GetID(), storage_partition_impl,
           partition_domain, file_url_support_,
-          /*filesystem_url_support=*/true, creator_render_frame_host);
+          /*filesystem_url_support=*/true, creator_render_frame_host,
+          storage_key_);
 
   bool bypass_redirect_checks = false;
   subresource_loader_factories->pending_default_factory() =

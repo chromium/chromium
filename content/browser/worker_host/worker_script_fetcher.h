@@ -30,6 +30,7 @@ struct ResourceRequest;
 
 namespace blink {
 class PendingURLLoaderFactoryBundle;
+class StorageKey;
 class ThrottlingURLLoader;
 class URLLoaderThrottle;
 }  // namespace blink
@@ -87,6 +88,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
       RenderFrameHost* creator_render_frame_host,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& request_initiator,
+      const blink::StorageKey& request_initiator_storage_key,
       const net::IsolationInfo& trusted_isolation_info,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::FetchClientSettingsObjectPtr
@@ -113,7 +115,8 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
                       const std::string& storage_domain,
                       bool file_support,
                       bool filesystem_url_support,
-                      RenderFrameHost* creator_render_frame_host);
+                      RenderFrameHost* creator_render_frame_host,
+                      const blink::StorageKey& request_initiator_storage_key);
 
   // Calculates the final response URL from the redirect chain, URLs fetched by
   // the service worker and the initial request URL. The logic is mostly based

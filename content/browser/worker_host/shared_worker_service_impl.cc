@@ -366,7 +366,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host->GetID(), host->token(), host->instance().url(),
       &creator, &creator, net::SiteForCookies::FromOrigin(worker_origin),
-      host->instance().storage_key().origin(),
+      host->instance().storage_key().origin(), host->instance().storage_key(),
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, worker_origin, worker_origin,
           net::SiteForCookies::FromOrigin(worker_origin),

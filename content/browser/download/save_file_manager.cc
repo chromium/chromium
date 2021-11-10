@@ -37,7 +37,9 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -281,9 +283,13 @@ void SaveFileManager::SaveURL(
           static_cast<StoragePartitionImpl*>(storage_partition);
       auto partition_domain =
           rfh->GetSiteInstance()->GetPartitionDomain(storage_partition_impl);
+      // TODO(https://crbug.com/1267272): Replace the in-line conversion to
+      // StorageKey below to use the correct third-party StorageKey value. May
+      // require fixing bugs in the browser tests covering this code path.
       factory_remote.Bind(CreateFileSystemURLLoaderFactory(
           rfh->GetProcess()->GetID(), rfh->GetFrameTreeNodeId(),
-          storage_partition->GetFileSystemContext(), partition_domain));
+          storage_partition->GetFileSystemContext(), partition_domain,
+          blink::StorageKey(url::Origin::Create(url))));
       factory = factory_remote.get();
     } else if (rfh && url.SchemeIs(content::kChromeUIScheme)) {
       factory_remote.Bind(CreateWebUIURLLoaderFactory(rfh, url.scheme(), {}));

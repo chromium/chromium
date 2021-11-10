@@ -68,6 +68,7 @@ struct FactoryParams {
   int frame_tree_node_id;
   scoped_refptr<FileSystemContext> file_system_context;
   std::string storage_domain;
+  blink::StorageKey storage_key;
 };
 
 constexpr size_t kDefaultFileSystemUrlPipeSize = 65536;
@@ -204,10 +205,8 @@ class FileSystemEntryURLLoader
         }
       }
     }
-    // TODO(https://crbug.com/1221308): function will use StorageKey for the
-    // receiver frame/worker in future CL
-    url_ = params_.file_system_context->CrackURL(
-        request.url, blink::StorageKey(url::Origin::Create(request.url)));
+    url_ =
+        params_.file_system_context->CrackURL(request.url, params_.storage_key);
     if (!url_.is_valid()) {
       const FileSystemRequestInfo request_info = {
           request.url, params_.storage_domain, params_.frame_tree_node_id};
@@ -669,10 +668,11 @@ CreateFileSystemURLLoaderFactory(
     int render_process_host_id,
     int frame_tree_node_id,
     scoped_refptr<FileSystemContext> file_system_context,
-    const std::string& storage_domain) {
+    const std::string& storage_domain,
+    const blink::StorageKey& storage_key) {
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
   FactoryParams params = {render_process_host_id, frame_tree_node_id,
-                          file_system_context, storage_domain};
+                          file_system_context, storage_domain, storage_key};
 
   // The FileSystemURLLoaderFactory will delete itself when there are no more
   // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect

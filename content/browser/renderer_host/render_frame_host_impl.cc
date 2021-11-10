@@ -7968,10 +7968,11 @@ void RenderFrameHostImpl::CommitNavigation(
 
     auto* partition = GetStoragePartition();
     non_network_factories.emplace(
-        url::kFileSystemScheme, CreateFileSystemURLLoaderFactory(
-                                    GetProcess()->GetID(), GetFrameTreeNodeId(),
-                                    partition->GetFileSystemContext(),
-                                    partition->GetPartitionDomain()));
+        url::kFileSystemScheme,
+        CreateFileSystemURLLoaderFactory(
+            GetProcess()->GetID(), GetFrameTreeNodeId(),
+            partition->GetFileSystemContext(), partition->GetPartitionDomain(),
+            commit_params->storage_key));
 
     non_network_factories.emplace(url::kDataScheme,
                                   DataURLLoaderFactory::Create());
