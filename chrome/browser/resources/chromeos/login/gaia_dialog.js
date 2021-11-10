@@ -267,6 +267,8 @@ Polymer({
   },
 
   show() {
+    this.navigationEnabled = true;
+    chrome.send('enableShelfButtons', [true]);
     this.getFrame().focus();
   },
 
