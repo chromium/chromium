@@ -100,7 +100,7 @@ class BASE_EXPORT UnguessableToken {
   bool operator==(const UnguessableToken& other) const;
 
   bool operator!=(const UnguessableToken& other) const {
-    return !(token_ == other.token_);
+    return !(*this == other);
   }
 
 #if defined(UNIT_TEST)
