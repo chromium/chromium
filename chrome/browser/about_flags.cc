@@ -5136,12 +5136,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableNetworkLoggingToFileDescription, kOsAll,
      SINGLE_VALUE_TYPE(network::switches::kLogNetLog)},
 
-    {"enable-web-authentication-authenticator-attachment",
-     flag_descriptions::kEnableWebAuthenticationAuthenticatorAttachmentName,
-     flag_descriptions::
-         kEnableWebAuthenticationAuthenticatorAttachmentDescription,
-     kOsAll, FEATURE_VALUE_TYPE(features::kWebAuthAuthenticatorAttachment)},
-
     {"enable-web-authentication-cable-v2-support",
      flag_descriptions::kEnableWebAuthenticationCableV2SupportName,
      flag_descriptions::kEnableWebAuthenticationCableV2SupportDescription,

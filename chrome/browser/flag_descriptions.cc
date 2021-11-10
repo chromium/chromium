@@ -1232,12 +1232,6 @@ const char kEnableSubresourceRedirectName[] =
 const char kEnableSubresourceRedirectDescription[] =
     "Allow subresource compression for data savings";
 
-const char kEnableWebAuthenticationAuthenticatorAttachmentName[] =
-    "Web Authentication Authenticator Attachment support";
-const char kEnableWebAuthenticationAuthenticatorAttachmentDescription[] =
-    "Enable Web Authentication to provide the Authenticator Attachment type "
-    "used on both authentication and registration success.";
-
 const char kEnableWebAuthenticationCableV2SupportName[] =
     "Web Authentication caBLE v2 support";
 const char kEnableWebAuthenticationCableV2SupportDescription[] =

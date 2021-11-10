@@ -398,8 +398,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppTranslations", blink::features::kWebAppEnableTranslations},
           {"WebAppWindowControlsOverlay",
            features::kWebAppWindowControlsOverlay},
-          {"WebAuthAuthenticatorAttachment",
-           features::kWebAuthAuthenticatorAttachment},
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
           {"SyncLoadDataUrlFonts", blink::features::kSyncLoadDataUrlFonts},
           {"CSSCascadeLayers", blink::features::kCSSCascadeLayers},

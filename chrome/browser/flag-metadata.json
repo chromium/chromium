@@ -2784,11 +2784,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-web-authentication-authenticator-attachment",
-    "owners": [ "ridouh@google.com", "//device/fido/OWNERS"] ,
-    "expiry_milestone" : 100
-  },
-  {
     "name": "enable-web-authentication-cable-v2-support",
     "owners": [ "webauthn-team@google.com" ],
     "expiry_milestone": 95
