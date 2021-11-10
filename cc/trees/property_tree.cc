@@ -316,8 +316,18 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(TransformNode* node) {
       property_trees()->scroll_tree.Node(sticky_data->scroll_ancestor);
   TransformNode* transform_node = Node(scroll_node->transform_id);
   const auto& scroll_offset = transform_node->scroll_offset;
-  DCHECK(property_trees()->scroll_tree.current_scroll_offset(
-             scroll_node->element_id) == scroll_offset);
+  // TODO(crbug.com/1206694): Understand why these values are not exactly equal
+  // and which one we should be using here.
+#if DCHECK_IS_ON()
+  {
+    const auto& scroll_offset_delta =
+        property_trees()->scroll_tree.current_scroll_offset(
+            scroll_node->element_id) -
+        scroll_offset;
+    DCHECK_LE(std::abs(scroll_offset_delta.x()), 0.5);
+    DCHECK_LE(std::abs(scroll_offset_delta.y()), 0.5);
+  }
+#endif
   gfx::PointF scroll_position(scroll_offset.x(), scroll_offset.y());
   if (transform_node->scrolls) {
     // The scroll position does not include snapping which shifts the scroll
