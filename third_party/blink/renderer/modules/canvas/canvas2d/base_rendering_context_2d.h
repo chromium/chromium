@@ -270,6 +270,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
     return nullptr;
   }
 
+  ExecutionContext* GetTopExecutionContext() const override = 0;
+
   void ValidateStateStack() const {
 #if DCHECK_IS_ON()
     ValidateStateStackWithCanvas(GetPaintCanvas());

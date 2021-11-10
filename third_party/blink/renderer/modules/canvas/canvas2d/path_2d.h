@@ -88,6 +88,11 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
 
   void Trace(Visitor*) const override;
 
+  ExecutionContext* GetTopExecutionContext() const override {
+    NOTREACHED();
+    return nullptr;
+  }
+
   explicit Path2D(ExecutionContext* context) {
     identifiability_study_helper_.SetExecutionContext(context);
   }

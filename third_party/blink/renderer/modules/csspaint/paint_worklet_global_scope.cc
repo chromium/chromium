@@ -219,7 +219,7 @@ void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
   auto* definition = MakeGarbageCollected<CSSPaintDefinition>(
       ScriptController()->GetScriptState(), paint_ctor, paint,
       native_invalidation_properties, custom_invalidation_properties,
-      input_argument_types, context_settings);
+      input_argument_types, context_settings, this);
   paint_definitions_.Set(name, definition);
 
   if (!WTF::IsMainThread()) {

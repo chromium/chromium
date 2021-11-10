@@ -226,7 +226,7 @@ void BaseRenderingContext2D::beginLayer() {
   setGlobalCompositeOperation("source-over");
   V8UnionCanvasFilterOrString* filter =
       MakeGarbageCollected<V8UnionCanvasFilterOrString>("none");
-  setFilter(GetCanvasRenderingContextHost()->GetTopExecutionContext(), filter);
+  setFilter(GetTopExecutionContext(), filter);
 }
 
 void BaseRenderingContext2D::endLayer() {
@@ -355,7 +355,7 @@ void BaseRenderingContext2D::ResetInternal() {
 }
 
 void BaseRenderingContext2D::reset() {
-  UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+  UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DReset);
   ResetInternal();
 }
@@ -432,7 +432,7 @@ void BaseRenderingContext2D::setStrokeStyle(
         ContentType::kCSSColorValue:
       if (GetCanvasRenderingContextHost() &&
           !RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-              GetCanvasRenderingContextHost()->GetTopExecutionContext()))
+              GetTopExecutionContext()))
         return;
       canvas_style = MakeGarbageCollected<CanvasStyle>(
           style->GetAsCSSColorValue()->ToColor().Rgb());
@@ -495,7 +495,7 @@ void BaseRenderingContext2D::setFillStyle(
         ContentType::kCSSColorValue:
       if (GetCanvasRenderingContextHost() &&
           !RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-              GetCanvasRenderingContextHost()->GetTopExecutionContext()))
+              GetTopExecutionContext()))
         return;
       canvas_style = MakeGarbageCollected<CanvasStyle>(
           style->GetAsCSSColorValue()->ToColor().Rgb());
@@ -754,10 +754,9 @@ void BaseRenderingContext2D::setFilter(
     case V8UnionCanvasFilterOrString::ContentType::kCanvasFilter:
       if (GetCanvasRenderingContextHost() &&
           RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-              GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
-        UseCounter::Count(
-            GetCanvasRenderingContextHost()->GetTopExecutionContext(),
-            WebFeature::kCanvasRenderingContext2DCanvasFilter);
+              GetTopExecutionContext())) {
+        UseCounter::Count(GetTopExecutionContext(),
+                          WebFeature::kCanvasRenderingContext2DCanvasFilter);
         GetState().SetCanvasFilter(input->GetAsCanvasFilter());
         SnapshotStateForFilter();
         // TODO(crbug.com/1234113): Instrument new canvas APIs.
@@ -1467,12 +1466,11 @@ bool BaseRenderingContext2D::ShouldDrawImageAntialiased(
 
 void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
   if (GetCanvasRenderingContextHost() &&
-      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-          GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
+      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetTopExecutionContext())) {
     Event* event = Event::CreateCancelable(event_type_names::kContextlost);
     GetCanvasRenderingContextHost()->HostDispatchEvent(event);
 
-    UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+    UseCounter::Count(GetTopExecutionContext(),
                       WebFeature::kCanvasRenderingContext2DContextLostEvent);
     if (event->defaultPrevented()) {
       context_restorable_ = false;
@@ -1498,12 +1496,11 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
   ResetInternal();
   context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
   if (GetCanvasRenderingContextHost() &&
-      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-          GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
+      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetTopExecutionContext())) {
     Event* event(Event::Create(event_type_names::kContextrestored));
     GetCanvasRenderingContextHost()->HostDispatchEvent(event);
     UseCounter::Count(
-        GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+        GetTopExecutionContext(),
         WebFeature::kCanvasRenderingContext2DContextRestoredEvent);
   }
 }
@@ -1785,7 +1782,7 @@ CanvasGradient* BaseRenderingContext2D::createRadialGradient(
 CanvasGradient* BaseRenderingContext2D::createConicGradient(double startAngle,
                                                             double centerX,
                                                             double centerY) {
-  UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+  UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DConicGradient);
   if (!std::isfinite(startAngle) || !std::isfinite(centerX) ||
       !std::isfinite(centerY))
@@ -2021,7 +2018,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   // through getImageData, thus uses CPU rendering from the start in such cases.
   if (GetCanvasRenderingContextHost() &&
       !RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-          GetCanvasRenderingContextHost()->GetTopExecutionContext())) {
+          GetTopExecutionContext())) {
     // GetImagedata is faster in Unaccelerated canvases.
     // In Desynchronized canvas disabling the acceleration will break
     // putImageData: crbug.com/1112060.
@@ -2370,7 +2367,7 @@ void BaseRenderingContext2D::WillOverwriteCanvas(
     BaseRenderingContext2D::OverdrawOp op) {
   auto* host = GetCanvasRenderingContextHost();
   if (host) {  // CSS paint use cases not counted.
-    UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+    UseCounter::Count(GetTopExecutionContext(),
                       WebFeature::kCanvasRenderingContext2DHasOverdraw);
     CanvasOverdrawHistogram(op);
     CanvasOverdrawHistogram(OverdrawOp::kTotal);

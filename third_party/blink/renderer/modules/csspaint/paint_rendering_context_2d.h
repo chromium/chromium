@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_paint_rendering_context_2d_settings.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
+#include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -34,13 +35,15 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   PaintRenderingContext2D(const IntSize& container_size,
                           const PaintRenderingContext2DSettings*,
                           float zoom,
-                          float device_scale_factor);
+                          float device_scale_factor,
+                          PaintWorkletGlobalScope* global_scope = nullptr);
 
   PaintRenderingContext2D(const PaintRenderingContext2D&) = delete;
   PaintRenderingContext2D& operator=(const PaintRenderingContext2D&) = delete;
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(context_settings_);
+    visitor->Trace(global_scope_);
     ScriptWrappable::Trace(visitor);
     BaseRenderingContext2D::Trace(visitor);
   }
@@ -97,6 +100,10 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   sk_sp<PaintRecord> GetRecord();
   cc::PaintCanvas* GetDrawingPaintCanvas();
 
+  ExecutionContext* GetTopExecutionContext() const override {
+    return global_scope_.Get();
+  }
+
  protected:
   CanvasColorParams GetCanvas2DColorParams() const override;
   bool IsPaint2D() const override { return true; }
@@ -115,6 +122,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   // paint worklet canvas needs to handle device scale factor and browser zoom,
   // and this is designed for that purpose.
   const float effective_zoom_;
+  WeakMember<PaintWorkletGlobalScope> global_scope_;
 };
 
 }  // namespace blink

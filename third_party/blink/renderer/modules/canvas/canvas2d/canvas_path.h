@@ -109,6 +109,7 @@ class MODULES_EXPORT CanvasPath : public GarbageCollectedMixin,
     return identifiability_study_helper_.GetToken();
   }
 
+  virtual ExecutionContext* GetTopExecutionContext() const = 0;
   virtual CanvasRenderingContextHost* GetCanvasRenderingContextHost() {
     return nullptr;
   }

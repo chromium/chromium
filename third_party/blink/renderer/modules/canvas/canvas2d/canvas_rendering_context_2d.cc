@@ -661,6 +661,10 @@ CanvasRenderingContext2D::GetCanvasRenderingContextHost() {
   return Host();
 }
 
+ExecutionContext* CanvasRenderingContext2D::GetTopExecutionContext() const {
+  return Host()->GetTopExecutionContext();
+}
+
 bool CanvasRenderingContext2D::ParseColorOrCurrentColor(
     Color& color,
     const String& color_string) const {

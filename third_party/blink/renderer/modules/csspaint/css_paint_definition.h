@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_definition.h"
+#include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -43,7 +44,8 @@ class MODULES_EXPORT CSSPaintDefinition final
       const Vector<CSSPropertyID>& native_invalidation_properties,
       const Vector<AtomicString>& custom_invalidation_properties,
       const Vector<CSSSyntaxDefinition>& input_argument_types,
-      const PaintRenderingContext2DSettings*);
+      const PaintRenderingContext2DSettings*,
+      PaintWorkletGlobalScope*);
   ~CSSPaintDefinition() override;
 
   // PaintDefinition override
@@ -110,6 +112,7 @@ class MODULES_EXPORT CSSPaintDefinition final
   // Input argument types, if applicable.
   Vector<CSSSyntaxDefinition> input_argument_types_;
   Member<const PaintRenderingContext2DSettings> context_settings_;
+  WeakMember<PaintWorkletGlobalScope> global_scope_;
 };
 
 }  // namespace blink

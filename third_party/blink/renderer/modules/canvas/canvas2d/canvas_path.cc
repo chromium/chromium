@@ -501,7 +501,7 @@ void CanvasPath::roundRect(
     double double_height,
     const HeapVector<Member<V8UnionDOMPointInitOrUnrestrictedDouble>>& radii,
     ExceptionState& exception_state) {
-  UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
+  UseCounter::Count(GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DRoundRect);
   const int num_radii = radii.size();
   if (UNLIKELY(num_radii < 1 || num_radii > 4)) {

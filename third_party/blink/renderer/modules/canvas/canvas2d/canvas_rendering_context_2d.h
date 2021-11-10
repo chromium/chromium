@@ -194,6 +194,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void FinalizeFrame() override;
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() override;
+  ExecutionContext* GetTopExecutionContext() const override;
 
   bool IsPaintable() const final {
     return canvas() && canvas()->GetCanvas2DLayerBridge();

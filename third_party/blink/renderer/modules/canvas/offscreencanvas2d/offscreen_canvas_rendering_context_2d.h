@@ -142,6 +142,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   bool PushFrame() override;
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() override;
+  ExecutionContext* GetTopExecutionContext() const override;
 
   IdentifiableToken IdentifiableTextToken() const override {
     return identifiability_study_helper_.GetToken();

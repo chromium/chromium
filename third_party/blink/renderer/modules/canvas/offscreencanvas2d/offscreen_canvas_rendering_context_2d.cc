@@ -230,6 +230,10 @@ CanvasRenderingContextHost*
 OffscreenCanvasRenderingContext2D::GetCanvasRenderingContextHost() {
   return Host();
 }
+ExecutionContext* OffscreenCanvasRenderingContext2D::GetTopExecutionContext()
+    const {
+  return Host()->GetTopExecutionContext();
+}
 
 ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
     ScriptState* script_state) {
