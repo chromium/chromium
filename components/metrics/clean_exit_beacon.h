@@ -10,8 +10,10 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/version_info/channel.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -123,9 +125,24 @@ class CleanExitBeacon {
   static void SkipCleanShutdownStepsForTesting();
 
  private:
+  // Returns true if the previous session exited cleanly. Either Local State
+  // or |beacon_file_contents| is used to get this information. Which is used
+  // depends on the client's Extended Variations Safe Mode experiment group in
+  // the previous session.
+  // TODO(crbug/1241702): Update this comment when experimentation is over.
+  bool DidPreviousSessionExitCleanly(base::Value* beacon_file_contents);
+
   // Writes |exited_cleanly| and the crash streak to the file located at
   // |beacon_file_path_|.
   void WriteBeaconFile(bool exited_cleanly) const;
+
+#if defined(OS_WIN) || defined(OS_IOS)
+  // Returns whether Chrome exited cleanly in the previous session according to
+  // the platform-specific beacon (the registry for Windows or NSUserDefaults
+  // for iOS). Returns absl::nullopt if the platform-specific location does not
+  // have beacon info.
+  absl::optional<bool> ExitedCleanly();
+#endif  // defined(OS_WIN) || defined(OS_IOS)
 
 #if defined(OS_IOS)
   // Returns true if the NSUserDefaults beacon value is set.

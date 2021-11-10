@@ -165,6 +165,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.CleanExitBeacon.BeaconFileConsistency"
+    enum="UmaCleanExitConsistency2" expires_after="2022-08-01">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Emitted by clients in the |kSignalAndWriteViaFileUtilGroup| of the Extended
+    Variations Safe Mode experiment when the CleanExitBeacon is initialized.
+    Reports the combined state of distinct beacons stored the beacon file and in
+    Local State.
+  </summary>
+</histogram>
+
 <histogram name="UMA.CleanExitBeaconConsistency" enum="UmaCleanExitConsistency"
     expires_after="2022-01-18">
   <obsolete>

@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/values.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -48,6 +47,40 @@ using ::variations::prefs::kVariationsCrashStreak;
 // Chrome is exiting cleanly and then CHECKing that is has shutdown cleanly.
 // This may be modified by SkipCleanShutdownStepsForTesting().
 bool g_skip_clean_shutdown_steps = false;
+
+// Records the the combined state of two distinct beacons' values in the given
+// histogram. One beacon is stored in Local State while the other is stored
+// elsewhere (e.g. in platform-specific storage, like the Windows registry, or
+// in the beacon file).
+void RecordBeaconConsistency(const std::string& histogram_name,
+                             absl::optional<bool> other_beacon_value,
+                             absl::optional<bool> local_state_beacon_value) {
+  CleanExitBeaconConsistency consistency =
+      CleanExitBeaconConsistency::kDirtyDirty;
+
+  if (!other_beacon_value) {  // The non-Local-State-backed beacon is missing.
+    if (!local_state_beacon_value) {  // The Local State beacon is missing.
+      consistency = CleanExitBeaconConsistency::kMissingMissing;
+    } else {
+      consistency = local_state_beacon_value.value()
+                        ? CleanExitBeaconConsistency::kMissingClean
+                        : CleanExitBeaconConsistency::kMissingDirty;
+    }
+  } else if (!local_state_beacon_value) {
+    consistency = other_beacon_value.value()
+                      ? CleanExitBeaconConsistency::kCleanMissing
+                      : CleanExitBeaconConsistency::kDirtyMissing;
+  } else if (other_beacon_value.value()) {
+    consistency = local_state_beacon_value.value()
+                      ? CleanExitBeaconConsistency::kCleanClean
+                      : CleanExitBeaconConsistency::kCleanDirty;
+  } else {
+    consistency = local_state_beacon_value.value()
+                      ? CleanExitBeaconConsistency::kDirtyClean
+                      : CleanExitBeaconConsistency::kDirtyDirty;
+  }
+  base::UmaHistogramEnumeration(histogram_name, consistency);
+}
 
 // Increments kVariationsCrashStreak if |did_previous_session_exit_cleanly| is
 // false. Also, emits the crash streak to a histogram.
@@ -88,18 +121,6 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
   }
   base::UmaHistogramSparse("Variations.SafeMode.Streak.Crashes",
                            base::clamp(num_crashes, 0, 100));
-}
-
-// Returns true if the previous session exited cleanly. Either |local_state| or
-// |beacon_file_contents| is used to get this information. Which is used depends
-// on the client's Extended Variations Safe Mode experiment group in the
-// previous session.
-bool DidPreviousSessionExitCleanly(base::Value* beacon_file_contents,
-                                   PrefService* local_state) {
-  if (beacon_file_contents)
-    return beacon_file_contents->FindKey(prefs::kStabilityExitedCleanly)
-        ->GetBool();
-  return local_state->GetBoolean(prefs::kStabilityExitedCleanly);
 }
 
 // Returns the contents of the file at |beacon_file_path| if the following
@@ -236,89 +257,51 @@ void CleanExitBeacon::Initialize() {
       MaybeGetFileContents(beacon_file_path_);
 
   did_previous_session_exit_cleanly_ =
-      DidPreviousSessionExitCleanly(beacon_file_contents.get(), local_state_);
+      DidPreviousSessionExitCleanly(beacon_file_contents.get());
+
+  MaybeIncrementCrashStreak(did_previous_session_exit_cleanly_,
+                            beacon_file_contents.get(), local_state_);
+  initialized_ = true;
+}
+
+bool CleanExitBeacon::DidPreviousSessionExitCleanly(
+    base::Value* beacon_file_contents) {
+  absl::optional<bool> local_state_beacon_value;
+  if (local_state_->HasPrefPath(prefs::kStabilityExitedCleanly)) {
+    local_state_beacon_value = absl::make_optional(
+        local_state_->GetBoolean(prefs::kStabilityExitedCleanly));
+  }
 
 #if defined(OS_WIN) || defined(OS_IOS)
-  // An enumeration of all possible permutations of the the beacon state in the
-  // registry (Windows) or NSUserDefaults (iOS) and in Local State.
-  enum class CleanExitBeaconConsistency {
-    kCleanClean = 0,
-    kCleanDirty = 1,
-    kCleanMissing = 2,
-    kDirtyClean = 3,
-    kDirtyDirty = 4,
-    kDirtyMissing = 5,
-    kMissingClean = 6,
-    kMissingDirty = 7,
-    kMissingMissing = 8,
-    kMaxValue = kMissingMissing,
-  };
-  CleanExitBeaconConsistency consistency =
-      CleanExitBeaconConsistency::kDirtyDirty;
+  absl::optional<bool> backup_beacon_value = ExitedCleanly();
+  RecordBeaconConsistency("UMA.CleanExitBeaconConsistency2",
+                          backup_beacon_value, local_state_beacon_value);
+#endif  // defined(OS_WIN) || defined(OS_IOS)
 
-  bool local_state_beacon_is_missing =
-      !local_state_->HasPrefPath(prefs::kStabilityExitedCleanly);
-  bool local_state_was_last_shutdown_clean = did_previous_session_exit_cleanly_;
-
-  bool backup_beacon_was_last_shutdown_clean = true;
-  bool backup_beacon_is_missing = false;
-#if defined(OS_WIN)
-  base::win::RegKey regkey;
-  DWORD value = 0u;
-  if (regkey.Open(HKEY_CURRENT_USER, backup_registry_key_.c_str(),
-                  KEY_ALL_ACCESS) == ERROR_SUCCESS &&
-      regkey.ReadValueDW(
-          base::ASCIIToWide(prefs::kStabilityExitedCleanly).c_str(), &value) ==
-          ERROR_SUCCESS) {
-    backup_beacon_was_last_shutdown_clean = value ? true : false;
-  } else {
-    backup_beacon_is_missing = true;
-  }
-#elif defined(OS_IOS)
-  if (HasUserDefaultsBeacon()) {
-    backup_beacon_was_last_shutdown_clean = GetUserDefaultsBeacon();
-  } else {
-    backup_beacon_is_missing = true;
-  }
-#endif  // defined(OS_IOS)
-
-  if (backup_beacon_is_missing) {
-    if (local_state_beacon_is_missing) {
-      consistency = CleanExitBeaconConsistency::kMissingMissing;
-    } else {
-      consistency = local_state_was_last_shutdown_clean
-                        ? CleanExitBeaconConsistency::kMissingClean
-                        : CleanExitBeaconConsistency::kMissingDirty;
+  absl::optional<bool> beacon_file_beacon_value;
+  bool use_beacon_file =
+      base::FieldTrialList::FindFullName(kExtendedSafeModeTrial) ==
+      kSignalAndWriteViaFileUtilGroup;
+  if (use_beacon_file) {
+    if (beacon_file_contents) {
+      beacon_file_beacon_value = absl::make_optional(
+          beacon_file_contents->FindKey(prefs::kStabilityExitedCleanly)
+              ->GetBool());
     }
-  } else {
-    if (local_state_beacon_is_missing) {
-      consistency = backup_beacon_was_last_shutdown_clean
-                        ? CleanExitBeaconConsistency::kCleanMissing
-                        : CleanExitBeaconConsistency::kDirtyMissing;
-    } else if (backup_beacon_was_last_shutdown_clean) {
-      consistency = local_state_was_last_shutdown_clean
-                        ? CleanExitBeaconConsistency::kCleanClean
-                        : CleanExitBeaconConsistency::kCleanDirty;
-    } else {
-      consistency = local_state_was_last_shutdown_clean
-                        ? CleanExitBeaconConsistency::kDirtyClean
-                        : CleanExitBeaconConsistency::kDirtyDirty;
-    }
+    RecordBeaconConsistency("UMA.CleanExitBeacon.BeaconFileConsistency",
+                            beacon_file_beacon_value, local_state_beacon_value);
   }
-  base::UmaHistogramEnumeration("UMA.CleanExitBeaconConsistency2", consistency);
 
 #if defined(OS_IOS)
   // For the time being, this is a no-op to avoid interference with the Extended
   // Variations Safe Mode experiment; i.e., ShouldUseUserDefaultsBeacon() always
   // returns false.
   if (ShouldUseUserDefaultsBeacon())
-    did_previous_session_exit_cleanly_ = backup_beacon_was_last_shutdown_clean;
-#endif
-#endif  // defined(OS_WIN) || defined(OS_IOS)
+    return backup_beacon_value.value_or(true);
+#endif  // defined(OS_IOS)
 
-  MaybeIncrementCrashStreak(did_previous_session_exit_cleanly_,
-                            beacon_file_contents.get(), local_state_);
-  initialized_ = true;
+  return use_beacon_file ? beacon_file_beacon_value.value_or(true)
+                         : local_state_beacon_value.value_or(true);
 }
 
 void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
@@ -359,6 +342,28 @@ void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
   SetUserDefaultsBeacon(exited_cleanly);
 #endif  // defined(OS_WIN)
 }
+
+#if defined(OS_WIN) || defined(OS_IOS)
+absl::optional<bool> CleanExitBeacon::ExitedCleanly() {
+#if defined(OS_WIN)
+  base::win::RegKey regkey;
+  DWORD value = 0u;
+  if (regkey.Open(HKEY_CURRENT_USER, backup_registry_key_.c_str(),
+                  KEY_ALL_ACCESS) == ERROR_SUCCESS &&
+      regkey.ReadValueDW(
+          base::ASCIIToWide(prefs::kStabilityExitedCleanly).c_str(), &value) ==
+          ERROR_SUCCESS) {
+    return value ? true : false;
+  }
+  return absl::nullopt;
+#endif  // defined(OS_WIN)
+#if defined(OS_IOS)
+  if (HasUserDefaultsBeacon())
+    return GetUserDefaultsBeacon();
+  return absl::nullopt;
+#endif  // defined(OS_IOS)
+}
+#endif  // #if defined(OS_WIN) || defined(OS_IOS)
 
 void CleanExitBeacon::UpdateLastLiveTimestamp() {
   local_state_->SetTime(prefs::kStabilityBrowserLastLiveTimeStamp,
