@@ -112,18 +112,8 @@ bool MediaQueryEvaluator::Eval(const MediaQuery& query) const {
 bool MediaQueryEvaluator::Eval(const MediaQuery& query, Results results) const {
   if (!MediaTypeMatch(query.MediaType()))
     return ApplyRestrictor(query.Restrictor(), false);
-
-  const ExpressionHeapVector& expressions = query.Expressions();
-  // Iterate through expressions, stop if any of them eval to false (AND
-  // semantics).
-  wtf_size_t i = 0;
-  for (; i < expressions.size(); ++i) {
-    if (!Eval(expressions.at(i), results))
-      break;
-  }
-
-  // Assume true if we are at the end of the list, otherwise assume false.
-  return ApplyRestrictor(query.Restrictor(), expressions.size() == i);
+  return ApplyRestrictor(query.Restrictor(),
+                         !query.ExpNode() || Eval(*query.ExpNode(), results));
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set) const {

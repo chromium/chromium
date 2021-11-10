@@ -51,7 +51,7 @@ String MediaQuery::Serialize() const {
       break;
   }
 
-  if (expressions_.IsEmpty()) {
+  if (!exp_node_) {
     result.Append(media_type_);
     return result.ReleaseString();
   }
@@ -61,48 +61,34 @@ String MediaQuery::Serialize() const {
     result.Append(" and ");
   }
 
-  result.Append(expressions_.at(0).Serialize());
-  for (wtf_size_t i = 1; i < expressions_.size(); ++i) {
-    result.Append(" and ");
-    result.Append(expressions_.at(i).Serialize());
-  }
+  if (exp_node_)
+    result.Append(exp_node_->Serialize());
+
   return result.ReleaseString();
 }
 
 std::unique_ptr<MediaQuery> MediaQuery::CreateNotAll() {
   return std::make_unique<MediaQuery>(MediaQuery::kNot, media_type_names::kAll,
-                                      ExpressionHeapVector());
+                                      std::unique_ptr<MediaQueryExpNode>());
 }
 
 MediaQuery::MediaQuery(RestrictorType restrictor,
                        String media_type,
-                       ExpressionHeapVector expressions)
+                       std::unique_ptr<MediaQueryExpNode> exp_node)
     : restrictor_(restrictor),
       media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
-      expressions_(std::move(expressions)) {}
+      exp_node_(std::move(exp_node)) {}
 
 MediaQuery::MediaQuery(const MediaQuery& o)
     : restrictor_(o.restrictor_),
       media_type_(o.media_type_),
-      serialization_cache_(o.serialization_cache_) {
-  expressions_.ReserveInitialCapacity(o.expressions_.size());
-  for (unsigned i = 0; i < o.expressions_.size(); ++i)
-    expressions_.push_back(o.expressions_[i]);
-}
+      exp_node_(o.exp_node_ ? o.exp_node_->Copy() : nullptr),
+      serialization_cache_(o.serialization_cache_) {}
 
 MediaQuery::~MediaQuery() = default;
 
 PhysicalAxes MediaQuery::QueriedAxes() const {
-  PhysicalAxes axes(kPhysicalAxisNone);
-
-  for (const auto& expression : Expressions()) {
-    if (expression.IsWidthDependent())
-      axes |= PhysicalAxes(kPhysicalAxisHorizontal);
-    if (expression.IsHeightDependent())
-      axes |= PhysicalAxes(kPhysicalAxisVertical);
-  }
-
-  return axes;
+  return exp_node_ ? exp_node_->QueriedAxes() : PhysicalAxes(kPhysicalAxisNone);
 }
 
 // https://drafts.csswg.org/cssom/#compare-media-queries

@@ -226,8 +226,23 @@ void MediaQueryData::Clear() {
 }
 
 std::unique_ptr<MediaQuery> MediaQueryData::TakeMediaQuery() {
+  std::unique_ptr<MediaQueryExpNode> node;
+
+  // For now we just convert |expressions_| into a chain of
+  // MediaQueryAndExpNodes.
+  //
+  // TODO(crbug.com/962417): Support advanced trees of MediaQueryExpNodes.
+  for (const MediaQueryExp& expr : expressions_) {
+    if (!node) {
+      node = std::make_unique<MediaQueryFeatureExpNode>(expr);
+    } else {
+      node = std::make_unique<MediaQueryAndExpNode>(
+          std::move(node), std::make_unique<MediaQueryFeatureExpNode>(expr));
+    }
+  }
+
   std::unique_ptr<MediaQuery> media_query = std::make_unique<MediaQuery>(
-      restrictor_, std::move(media_type_), std::move(expressions_));
+      restrictor_, std::move(media_type_), std::move(node));
   Clear();
   return media_query;
 }

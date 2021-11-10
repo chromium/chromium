@@ -1710,7 +1710,9 @@ std::unique_ptr<protocol::CSS::CSSMedia> InspectorCSSAgent::BuildMediaObject(
   bool has_media_query_items = false;
   for (wtf_size_t i = 0; i < query_vector.size(); ++i) {
     MediaQuery& query = *query_vector.at(i);
-    const ExpressionHeapVector& expressions = query.Expressions();
+    Vector<MediaQueryExp> expressions;
+    if (query.ExpNode())
+      query.ExpNode()->CollectExpressions(expressions);
     auto expression_array = std::make_unique<
         protocol::Array<protocol::CSS::MediaQueryExpression>>();
     bool has_expression_items = false;
