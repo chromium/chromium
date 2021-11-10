@@ -363,6 +363,7 @@ const AcceleratorAction kActionsNeedingWindow[] = {
     // clang-format off
     DESKS_MOVE_ACTIVE_ITEM_LEFT,
     DESKS_MOVE_ACTIVE_ITEM_RIGHT,
+    DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS,
     MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS,
     ROTATE_WINDOW,
     TOGGLE_FLOATING,

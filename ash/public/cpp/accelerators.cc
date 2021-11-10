@@ -218,11 +218,9 @@ const AcceleratorData kAcceleratorData[] = {
      DESKS_MOVE_ACTIVE_ITEM_LEFT},
     {true, ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
      DESKS_MOVE_ACTIVE_ITEM_RIGHT},
-    // TODO(afakhry): Implement activating and moving windows to a desk by
-    // its index directly.
+    // TODO(afakhry): Implement moving windows to a desk by its index directly.
 
-    // TODO(yusukes): Handle VKEY_MEDIA_STOP, and
-    // VKEY_MEDIA_LAUNCH_MAIL.
+    // TODO(yusukes): Handle VKEY_MEDIA_STOP, and VKEY_MEDIA_LAUNCH_MAIL.
 
     // ARC-specific shortcut.
     {true, ui::VKEY_C, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN,
@@ -309,6 +307,33 @@ const AcceleratorData kEnableWithPositionalAcceleratorsData[] = {
 
 const size_t kEnableWithPositionalAcceleratorsDataLength =
     base::size(kEnableWithPositionalAcceleratorsData);
+
+const AcceleratorData
+    kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[] = {
+        // Indexed-desk activation:
+        {true, ui::VKEY_1, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         DESKS_ACTIVATE_0},
+        {true, ui::VKEY_2, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         DESKS_ACTIVATE_1},
+        {true, ui::VKEY_3, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         DESKS_ACTIVATE_2},
+        {true, ui::VKEY_4, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         DESKS_ACTIVATE_3},
+        {true, ui::VKEY_5, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         DESKS_ACTIVATE_4},
+        {true, ui::VKEY_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         DESKS_ACTIVATE_5},
+        {true, ui::VKEY_7, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         DESKS_ACTIVATE_6},
+        {true, ui::VKEY_8, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         DESKS_ACTIVATE_7},
+        // Toggle assign to all desks:
+        {true, ui::VKEY_A, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+         DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS},
+};
+
+const size_t kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength =
+    base::size(kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData);
 
 // static
 AcceleratorController* AcceleratorController::Get() {

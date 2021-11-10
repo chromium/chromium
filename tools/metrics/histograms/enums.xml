@@ -49164,6 +49164,7 @@ from previous Chrome versions.
   <int value="-1510844027" label="ScanAppStickySettings:enabled"/>
   <int value="-1510839574" label="disable-sync-synced-notifications"/>
   <int value="-1508852757" label="CreditCardAutofillTouchBar:disabled"/>
+  <int value="-1507722271" label="ImprovedDesksKeyboardShortcuts:enabled"/>
   <int value="-1506880454"
       label="SupervisedUserCommittedInterstitials:disabled"/>
   <int value="-1504305449" label="NTPPhysicalWebPageSuggestions:enabled"/>
@@ -51816,6 +51817,7 @@ from previous Chrome versions.
   <int value="491258649" label="UseFirstPartySet"/>
   <int value="491334698" label="ConditionalTabStripAndroid:enabled"/>
   <int value="492113129" label="ExperimentalAppBanners:enabled"/>
+  <int value="492849345" label="ImprovedDesksKeyboardShortcuts:disabled"/>
   <int value="492985975" label="use-monitor-color-space"/>
   <int value="493758709" label="RestrictGamepadAccess:disabled"/>
   <int value="493903641" label="disable-appcontainer"/>

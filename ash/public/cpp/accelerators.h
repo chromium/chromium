@@ -33,6 +33,15 @@ enum AcceleratorAction {
   DESKS_MOVE_ACTIVE_ITEM_RIGHT,
   DESKS_NEW_DESK,
   DESKS_REMOVE_CURRENT_DESK,
+  DESKS_ACTIVATE_0,
+  DESKS_ACTIVATE_1,
+  DESKS_ACTIVATE_2,
+  DESKS_ACTIVATE_3,
+  DESKS_ACTIVATE_4,
+  DESKS_ACTIVATE_5,
+  DESKS_ACTIVATE_6,
+  DESKS_ACTIVATE_7,
+  DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS,
   DISABLE_CAPS_LOCK,
   EXIT,
   FOCUS_NEXT_PANE,
@@ -184,6 +193,12 @@ ASH_PUBLIC_EXPORT extern const AcceleratorData
     kEnableWithPositionalAcceleratorsData[];
 ASH_PUBLIC_EXPORT extern const size_t
     kEnableWithPositionalAcceleratorsDataLength;
+
+// Accelerators that are enabled with improved desks keyboards shortcuts.
+ASH_PUBLIC_EXPORT extern const AcceleratorData
+    kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorData[];
+ASH_PUBLIC_EXPORT extern const size_t
+    kEnabledWithImprovedDesksKeyboardShortcutsAcceleratorDataLength;
 
 // The public-facing interface for accelerator handling, which is Ash's duty to
 // implement.

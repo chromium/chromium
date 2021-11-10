@@ -60,6 +60,7 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -703,6 +704,7 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
   // the one that has already been added.
   if (!visible_on_all_desks_windows_.emplace(window).second)
     return;
+  wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
   NotifyAllDesksForContentChanged();
   UMA_HISTOGRAM_ENUMERATION(
       kMoveWindowFromActiveDeskHistogramName,
@@ -710,8 +712,10 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
 }
 
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
-  if (visible_on_all_desks_windows_.erase(window))
+  if (visible_on_all_desks_windows_.erase(window)) {
+    wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
     NotifyAllDesksForContentChanged();
+  }
 }
 
 void DesksController::NotifyAllDesksForContentChanged() {

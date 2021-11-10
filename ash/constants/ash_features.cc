@@ -706,6 +706,11 @@ const base::Feature kImeSystemEmojiPickerClipboard{
 const base::Feature kImeStylusHandwriting{"StylusHandwriting",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables improved keyboard shortcuts for activating desks at specified indices
+// and toggling whether a window is assigned to all desks.
+const base::Feature kImprovedDesksKeyboardShortcuts{
+    "ImprovedDesksKeyboardShortcuts", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enable or disable the improved screen capture settings.
 const base::Feature kImprovedScreenCaptureSettings{
     "ImprovedScreenCaptureSettings", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1500,6 +1505,10 @@ bool IsSnoopingProtectionEnabled() {
 
 bool IsIdleInhibitEnabled() {
   return base::FeatureList::IsEnabled(kEnableIdleInhibit);
+}
+
+bool IsImprovedDesksKeyboardShortcutsEnabled() {
+  return base::FeatureList::IsEnabled(kImprovedDesksKeyboardShortcuts);
 }
 
 bool IsInputInDiagnosticsAppEnabled() {

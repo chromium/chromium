@@ -3392,6 +3392,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "improved-desks-keyboard-shortcuts",
+    "owners": [ "chinsenj", "janetmac"],
+    "expiry_milestone": 101
+  },
+  {
     "name": "improved-keyboard-shortcuts",
     "owners": [ "zentaro@google.com", "jimmyxgong@google.com",
                 "cros-peripherals@google.com"],

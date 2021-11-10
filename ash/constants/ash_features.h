@@ -272,6 +272,8 @@ extern const base::Feature kImeSystemEmojiPickerClipboard;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeStylusHandwriting;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kImprovedDesksKeyboardShortcuts;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImprovedScreenCaptureSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kInstantTethering;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -539,6 +541,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceIncognitoProfileIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsIdleInhibitEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImprovedDesksKeyboardShortcutsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

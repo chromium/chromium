@@ -828,6 +828,9 @@ extern const char kHttpsOnlyModeDescription[];
 extern const char kIgnoreGpuBlocklistName[];
 extern const char kIgnoreGpuBlocklistDescription[];
 
+extern const char kImprovedDesksKeyboardShortcutsName[];
+extern const char kImprovedDesksKeyboardShortcutsDescription[];
+
 extern const char kImprovedKeyboardShortcutsName[];
 extern const char kImprovedKeyboardShortcutsDescription[];
 
