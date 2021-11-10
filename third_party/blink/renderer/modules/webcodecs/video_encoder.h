@@ -105,6 +105,10 @@ class MODULES_EXPORT VideoEncoder final
   void ContinueConfigureWithGpuFactories(
       Request* request,
       media::GpuVideoAcceleratorFactories* gpu_factories);
+  std::unique_ptr<media::VideoEncoder> CreateAcceleratedVideoEncoder(
+      media::VideoCodecProfile profile,
+      const media::VideoEncoder::Options& options,
+      media::GpuVideoAcceleratorFactories* gpu_factories);
   std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(
       const ParsedConfig& config,
       media::GpuVideoAcceleratorFactories* gpu_factories);

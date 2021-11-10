@@ -21,6 +21,10 @@
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}
+
 namespace blink {
 
 class ExceptionState;
@@ -160,6 +164,9 @@ class MODULES_EXPORT EncoderBase
 
   // Used to differentiate Encoders' counters during tracing.
   int trace_counter_id_;
+
+  // A runner for callbacks and deleting objects.
+  scoped_refptr<base::SingleThreadTaskRunner> callback_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
