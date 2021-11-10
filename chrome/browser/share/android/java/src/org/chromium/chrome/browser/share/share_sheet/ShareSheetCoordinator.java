@@ -443,16 +443,18 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             resolveInfos.put(name, r);
         }
 
-        int length = numberOf3PTilesToShow(activity);
+        int fold = numberOf3PTilesThatFitOnScreen(activity);
+        int length = numberOf3PTilesToShow(fold);
 
         // TODO(ellyjones): Does !saveLastUsed always imply that we shouldn't incorporate the share
         // into our ranking?
         boolean persist = !profile.isOffTheRecord() && saveLastUsed;
 
-        ShareRankingBridge.rank(profile, type, availableActivities, length, persist, ranking -> {
-            onThirdPartyShareTargetsReceived(
-                    callback, resolveInfos, activity, params, saveLastUsed, ranking);
-        });
+        ShareRankingBridge.rank(
+                profile, type, availableActivities, fold, length, persist, ranking -> {
+                    onThirdPartyShareTargetsReceived(
+                            callback, resolveInfos, activity, params, saveLastUsed, ranking);
+                });
     }
 
     // Returns a new list of ResovleInfos containing only the elements of the
@@ -469,16 +471,20 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         return remaining;
     }
 
-    private int numberOf3PTilesToShow(Activity activity) {
+    private int numberOf3PTilesToShow(int fold) {
         final boolean shouldFixMore =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_USAGE_RANKING_FIXED_MORE);
 
-        if (!shouldFixMore) {
-            // + 1 to allow for the More item, which takes up an app slot in
-            // the share ranking backend.
-            return ShareSheetPropertyModelBuilder.MAX_NUM_APPS + 1;
-        }
+        // Let's say that the screen is 4 tiles wide, and MAX_NUM_APPS is 7.
+        // Then, in FIXED_MORE mode, there should be 4 app tiles total:
+        //    aaa bbb ccc more ^
+        // where ^ marks the screen edge.
+        // In non-FIXED_MORE mode there should be 8:
+        //    aaa bbb ccc ddd ^ eee fff ggg more
+        return shouldFixMore ? fold : ShareSheetPropertyModelBuilder.MAX_NUM_APPS + 1;
+    }
 
+    private int numberOf3PTilesThatFitOnScreen(Activity activity) {
         int screenWidth =
                 ContextUtils.getApplicationContext().getResources().getDisplayMetrics().widthPixels;
         int tileWidth =

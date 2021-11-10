@@ -57,6 +57,7 @@ class ShareRankingTest : public testing::Test {
       ShareHistory* history,
       const std::vector<std::string>& available,
       const std::string& type = "type",
+      int fold = 4,
       int length = 4,
       bool persist = true) {
     base::RunLoop loop;
@@ -68,7 +69,8 @@ class ShareRankingTest : public testing::Test {
         });
 
     backing_db()->QueueGetResult(true);
-    db()->Rank(history, type, available, length, persist, std::move(callback));
+    db()->Rank(history, type, available, fold, length, persist,
+               std::move(callback));
     loop.Run();
 
     return ranking;
@@ -110,7 +112,7 @@ TEST(ShareRankingStaticTest, CountsMatchOldRanking) {
   ShareRanking::Ranking current{"foo", "bar", "baz"};
 
   ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
-                               4, &displayed, &persisted);
+                               4, 4, &displayed, &persisted);
 
   ShareRanking::Ranking expected_displayed{"foo", "bar", "baz", "$more"};
   EXPECT_EQ(displayed, expected_displayed);
@@ -129,7 +131,7 @@ TEST(ShareRankingStaticTest, UnavailableAppDoesNotShow) {
   ShareRanking::Ranking current{"foo", "bar", "baz", "quxx", "blit"};
 
   ShareRanking::ComputeRanking(history, {}, current,
-                               {"foo", "quxx", "baz", "blit"}, 4, &displayed,
+                               {"foo", "quxx", "baz", "blit"}, 4, 4, &displayed,
                                &persisted);
   ShareRanking::Ranking expected_displayed{
       "foo",
@@ -148,7 +150,7 @@ TEST(ShareRankingStaticTest, HighAllUsageAppReplacesLowest) {
   ShareRanking::Ranking displayed, persisted;
   ShareRanking::Ranking current{"foo", "bar", "baz", "quxx", "blit"};
   ShareRanking::ComputeRanking(history, {}, current,
-                               {"foo", "bar", "quxx", "baz", "blit"}, 5,
+                               {"foo", "bar", "quxx", "baz", "blit"}, 5, 5,
                                &displayed, &persisted);
   ShareRanking::Ranking expected_displayed{
       "foo", "bar", "baz", "blit", "$more",
@@ -165,7 +167,7 @@ TEST(ShareRankingStaticTest, HighRecentUsageAppReplacesLowest) {
   ShareRanking::Ranking displayed, persisted;
   ShareRanking::Ranking current{"foo", "bar", "baz", "quxx", "blit"};
   ShareRanking::ComputeRanking({}, history, current,
-                               {"foo", "bar", "quxx", "baz", "blit"}, 5,
+                               {"foo", "bar", "quxx", "baz", "blit"}, 5, 5,
                                &displayed, &persisted);
   ShareRanking::Ranking expected_displayed{"foo", "bar", "baz", "blit",
                                            "$more"};
@@ -185,7 +187,7 @@ TEST(ShareRankingStaticTest, MoreTargetReplacesLast) {
   ShareRanking::Ranking current{"foo", "bar", "baz"};
 
   ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
-                               3, &displayed, &persisted);
+                               3, 3, &displayed, &persisted);
 
   std::vector<std::string> expected_displayed{"foo", "bar",
                                               ShareRanking::kMoreTarget};
@@ -212,7 +214,7 @@ TEST_F(ShareRankingStaticTest, PromotedTargetIsVisible) {
   ShareRanking::Ranking current{"foo", "bar", "baz"};
 
   ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
-                               3, &displayed, &persisted);
+                               3, 3, &displayed, &persisted);
 
   std::vector<std::string> expected_displayed{"foo", "baz",
                                               ShareRanking::kMoreTarget};
@@ -235,7 +237,7 @@ TEST_F(ShareRankingStaticTest, UsedAppNotPresentInRanking) {
   ShareRanking::Ranking current{"foo", "bar", "quxx"};
 
   ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
-                               3, &displayed, &persisted);
+                               3, 3, &displayed, &persisted);
 
   // Since length is 3 only 2 actual items show, with the visible one with the
   // lowest usage (bar) replaced with baz. Since baz was new (not in the old
@@ -263,7 +265,7 @@ TEST_F(ShareRankingStaticTest, LowestUsageItemSwappedIgnoringDisplayOrder) {
   ShareRanking::Ranking current{"bar", "foo", "baz"};
 
   ShareRanking::ComputeRanking(history, history, current,
-                               {"foo", "bar", "baz", "quxx"}, 3, &displayed,
+                               {"foo", "bar", "baz", "quxx"}, 3, 3, &displayed,
                                &persisted);
 
   ShareRanking::Ranking expected_displayed{"quxx", "foo", "$more"};
@@ -285,7 +287,7 @@ TEST_F(ShareRankingStaticTest, SystemAppsReplaceUnavailableInRankedOrder) {
 
   ShareRanking::Ranking displayed, persisted;
 
-  ShareRanking::ComputeRanking({}, {}, current, available, 4, &displayed,
+  ShareRanking::ComputeRanking({}, {}, current, available, 4, 4, &displayed,
                                &persisted);
 
   ShareRanking::Ranking expected_displayed{"aaa", "eee", "ccc", "$more"};
@@ -303,12 +305,38 @@ TEST_F(ShareRankingStaticTest, NotEnoughPreferredApps) {
 
   ShareRanking::Ranking displayed, persisted;
 
-  ShareRanking::ComputeRanking({}, {}, current, available, 4, &displayed,
+  ShareRanking::ComputeRanking({}, {}, current, available, 4, 4, &displayed,
                                &persisted);
 
   ShareRanking::Ranking expected_displayed{"aaa", "zzz", "ccc", "$more"};
 
   EXPECT_EQ(displayed, expected_displayed);
+}
+
+TEST_F(ShareRankingStaticTest, SwapAboveFold) {
+  const ShareRanking::Ranking current{
+      "aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg",
+  };
+  const std::vector<std::string> available{
+      "aaa", "bbb", "ccc", "ddd", "eee", "fff", "ggg", "hhh", "iii", "jjj",
+  };
+
+  std::map<std::string, int> history = {
+      {"bbb", 1},
+      {"ccc", 1},
+      {"ddd", 1},
+      {"eee", 1},
+  };
+
+  ShareRanking::Ranking displayed, persisted;
+  ShareRanking::ComputeRanking(history, history, current, available, 4, 7,
+                               &displayed, &persisted);
+
+  ShareRanking::Ranking expected_displayed{
+      "eee", "bbb", "ccc", "ddd", "aaa", "fff", "$more",
+  };
+
+  EXPECT_EQ(expected_displayed, displayed);
 }
 
 // Regression test for https://crbug.com/1233232
@@ -323,7 +351,7 @@ TEST_F(ShareRankingTest, OldRankingContainsItemsWithNoRecentHistory) {
   ShareRanking::Ranking current{"foo", "bar", "baz", "abc"};
 
   ShareRanking::ComputeRanking(history, history, current, {"foo", "bar", "baz"},
-                               4, &displayed, &persisted);
+                               4, 4, &displayed, &persisted);
 
   // Note that since "abc" isn't available on the system, it won't appear in the
   // displayed ranking, but the persisted ranking should still get updated.
