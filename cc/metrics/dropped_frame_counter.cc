@@ -293,6 +293,10 @@ void DroppedFrameCounter::ReportFrames() {
 void DroppedFrameCounter::ReportFramesForUI() {
   DCHECK(report_for_ui_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  UMA_HISTOGRAM_PERCENTAGE(
+      "Ash.Smoothness.MaxPercentDroppedFrames_1sWindow.Uniform",
+      sliding_window_max_percent_dropped_);
+
   if (sliding_window_max_percent_dropped_ !=
       last_reported_metrics_.max_window) {
     UMA_HISTOGRAM_PERCENTAGE("Ash.Smoothness.MaxPercentDroppedFrames_1sWindow",

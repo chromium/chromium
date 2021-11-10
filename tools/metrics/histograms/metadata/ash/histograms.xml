@@ -2817,14 +2817,25 @@ chromium-metrics-reviews@google.com.
   <owner>xiyuan@chromium.org</owner>
   <owner>chromeos-perfmetrics-eng@google.com</owner>
   <summary>
-    Similar to &quot;Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow&quot;
-    but for ui::Compositor. Tracks the max percent of dropped frames for in a 1
-    second sliding window.
+    Similar to Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow but for
+    ui::Compositor. Tracks the max percent of dropped frames for in a 1 second
+    sliding window when the percentage changes.
 
     PercentDroppedFrames is measured by tracking the number of frames which were
     not displayed on screen out of the total number of frames expected to be
     produced and displayed. In other words, the lower this number is, the
     smoother experience.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Smoothness.MaxPercentDroppedFrames_1sWindow.Uniform"
+    units="%" expires_after="2022-09-30">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Same as Ash.Smoothness.MaxPercentDroppedFrames_1sWindow but instead of
+    recording samples when dropped frame percentage changes, it records the
+    percentage uniformly over time.
   </summary>
 </histogram>
 
