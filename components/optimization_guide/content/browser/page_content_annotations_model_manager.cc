@@ -220,12 +220,11 @@ void PageContentAnnotationsModelManager::SetUpPageTopicsModel(
       proto::PAGE_TOPICS_SUPPORTED_OUTPUT_CATEGORIES);
   page_topics_model_metadata.SerializeToString(model_metadata.mutable_value());
 
-  page_topics_model_executor_handle_ =
-      std::make_unique<BertModelExecutorHandle>(
-          optimization_guide_model_provider,
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-          proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata);
+  page_topics_model_handler_ = std::make_unique<BertModelHandler>(
+      optimization_guide_model_provider,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+      proto::OPTIMIZATION_TARGET_PAGE_TOPICS, model_metadata);
 }
 
 void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
@@ -238,7 +237,7 @@ void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
       "PageTopicsModelExecutionRequested",
       true);
 
-  bool model_available = page_topics_model_executor_handle_->ModelAvailable();
+  bool model_available = page_topics_model_handler_->ModelAvailable();
 
   base::UmaHistogramBoolean(
       "OptimizationGuide.PageContentAnnotationsService.ModelAvailable",
@@ -254,7 +253,7 @@ void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
   }
 
   absl::optional<proto::PageTopicsModelMetadata> model_metadata =
-      page_topics_model_executor_handle_->ParsedSupportedFeaturesForLoadedModel<
+      page_topics_model_handler_->ParsedSupportedFeaturesForLoadedModel<
           proto::PageTopicsModelMetadata>();
   if (!model_metadata) {
     NOTREACHED();
@@ -279,7 +278,7 @@ void PageContentAnnotationsModelManager::ExecutePageTopicsModel(
     return;
   }
 
-  page_topics_model_executor_handle_->ExecuteModelWithInput(
+  page_topics_model_handler_->ExecuteModelWithInput(
       base::BindOnce(&PageContentAnnotationsModelManager::
                          OnPageTopicsModelExecutionCompleted,
                      weak_ptr_factory_.GetWeakPtr(), text,
@@ -309,7 +308,7 @@ void PageContentAnnotationsModelManager::OnPageTopicsModelExecutionCompleted(
 absl::optional<int64_t>
 PageContentAnnotationsModelManager::GetPageTopicsModelVersion() const {
   absl::optional<proto::PageTopicsModelMetadata> model_metadata =
-      page_topics_model_executor_handle_->ParsedSupportedFeaturesForLoadedModel<
+      page_topics_model_handler_->ParsedSupportedFeaturesForLoadedModel<
           proto::PageTopicsModelMetadata>();
   if (model_metadata)
     return model_metadata->version();

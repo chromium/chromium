@@ -7,7 +7,7 @@
 
 #include "components/history/core/browser/url_row.h"
 #include "components/optimization_guide/content/browser/page_content_annotator.h"
-#include "components/optimization_guide/core/bert_model_executor.h"
+#include "components/optimization_guide/core/bert_model_handler.h"
 #include "components/optimization_guide/core/entity_metadata.h"
 #include "components/optimization_guide/core/page_content_annotation_job.h"
 #include "components/optimization_guide/core/page_content_annotations_common.h"
@@ -195,7 +195,7 @@ class PageContentAnnotationsModelManager : public PageContentAnnotator {
   //
   // Can be nullptr if the page topics model will not be running for the
   // session.
-  std::unique_ptr<BertModelExecutorHandle> page_topics_model_executor_handle_;
+  std::unique_ptr<BertModelHandler> page_topics_model_handler_;
 
   // The model executor responsible for executing the page entities model.
   //

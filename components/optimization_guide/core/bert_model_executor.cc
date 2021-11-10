@@ -40,19 +40,4 @@ BertModelExecutor::BuildModelExecutionTask(base::MemoryMappedFile* model_file) {
   return nullptr;
 }
 
-BertModelExecutorHandle::BertModelExecutorHandle(
-    OptimizationGuideModelProvider* model_provider,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-    proto::OptimizationTarget optimization_target,
-    const absl::optional<proto::Any>& model_metadata)
-    : ModelHandler<std::vector<tflite::task::core::Category>,
-                   const std::string&>(
-          model_provider,
-          background_task_runner,
-          std::make_unique<BertModelExecutor>(optimization_target),
-          optimization_target,
-          model_metadata) {}
-
-BertModelExecutorHandle::~BertModelExecutorHandle() = default;
-
 }  // namespace optimization_guide

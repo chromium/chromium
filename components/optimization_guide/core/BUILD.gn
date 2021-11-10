@@ -107,7 +107,10 @@ static_library("core") {
       "base_model_executor_helpers.h",
       "bert_model_executor.cc",
       "bert_model_executor.h",
+      "bert_model_handler.cc",
+      "bert_model_handler.h",
       "model_executor.h",
+      "model_handler.h",
       "model_validator.cc",
       "model_validator.h",
       "page_entities_model_executor.h",
@@ -242,7 +245,11 @@ source_set("unit_tests") {
     sources += [
       "bert_model_executor_unittest.cc",
       "model_executor_unittest.cc",
+      "model_handler_unittest.cc",
       "model_validator_unittest.cc",
+      "test_model_executor.cc",
+      "test_model_executor.h",
+      "test_model_handler.h",
     ]
   }
 

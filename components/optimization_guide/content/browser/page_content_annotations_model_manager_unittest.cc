@@ -114,7 +114,7 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
             .SetModelFilePath(model_file_path)
             .SetModelMetadata(model_metadata)
             .Build();
-    model_manager()->page_topics_model_executor_handle_->OnModelUpdated(
+    model_manager()->page_topics_model_handler_->OnModelUpdated(
         proto::OPTIMIZATION_TARGET_PAGE_TOPICS, *model_info);
     RunUntilIdle();
   }
