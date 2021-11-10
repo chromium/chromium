@@ -3834,6 +3834,16 @@ TEST_F(PartitionAllocTest, SortFreelist) {
   allocator.root()->Free(first_ptr);
 }
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_LINUX) && \
+    defined(ARCH_CPU_64_BITS)
+TEST_F(PartitionAllocTest, CrashOnUnknownPointer) {
+  int not_a_heap_object = 42;
+  EXPECT_DEATH(
+      allocator.root()->Free(reinterpret_cast<void*>(&not_a_heap_object)), "");
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_LINUX) &&
+        // defined(ARCH_CPU_64_BITS)
+
 }  // namespace internal
 }  // namespace base
 
