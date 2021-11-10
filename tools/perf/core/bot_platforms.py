@@ -653,12 +653,19 @@ LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
                               1,
                               'linux',
                               is_fyi=True)
+# TODO(crbug.com/1268204): Rename to platform-specific name.
 FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
                                 '',
                                 _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
                                 3,
                                 'fuchsia',
                                 is_fyi=True)
+FUCHSIA_PERF_SHERLOCK_FYI = PerfPlatform('fuchsia-perf-sherlock-fyi',
+                                         '',
+                                         _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
+                                         3,
+                                         'fuchsia',
+                                         is_fyi=True)
 
 # Calibration bots
 LINUX_PERF_CALIBRATION = PerfPlatform(

@@ -30,6 +30,7 @@ _VALID_PERF_POOLS = {
     'chromeos-kevin-perf-fyi': {'chrome.tests'},
     'chromeos-amd64-generic-lacros-builder-perf': {'chrome.tests'},
     'fuchsia-perf-fyi': {'chrome.tests'},
+    'fuchsia-perf-sherlock-fyi': {'chrome.tests'},
     'linux-builder-perf': {'chrome.tests'},
     'mac-arm-builder-perf': {'chrome.tests'},
     'mac-builder-perf': {'chrome.tests'},

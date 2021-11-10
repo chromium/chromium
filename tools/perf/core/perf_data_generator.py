@@ -264,6 +264,29 @@ FYI_BUILDERS = {
             'pool': 'chrome.tests',
         },
     },
+    'fuchsia-perf-sherlock-fyi': {
+        'tests': [{
+            'isolate':
+            'performance_web_engine_test_suite',
+            'extra_args': [
+                '--output-format=histograms',
+                '--experimental-tbmv3-metrics',
+                '-d',
+                '--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested',
+                '--os-check=update',
+            ],
+            'type':
+            TEST_TYPES.TELEMETRY,
+        }],
+        'platform':
+        'fuchsia',
+        'dimension': {
+            'cpu': None,
+            'device_type': 'Sherlock',
+            'os': 'Fuchsia',
+            'pool': 'chrome.tests',
+        },
+    },
     'win-10_laptop_low_end-perf_HP-Candidate': {
         'tests': [
             {

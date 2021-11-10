@@ -295,6 +295,59 @@
       }
     ]
   },
+  "fuchsia-perf-sherlock-fyi": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=web-engine-shell",
+          "--upload-results",
+          "--test-shard-map-filename=fuchsia-perf-sherlock-fyi_map.json",
+          "--output-format=histograms",
+          "--experimental-tbmv3-metrics",
+          "-d",
+          "--system-image-dir=../../third_party/fuchsia-sdk/images-internal/sherlock-release/smart_display_max_eng_arrested",
+          "--os-check=update"
+        ],
+        "isolate_name": "performance_web_engine_test_suite",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_web_engine_test_suite",
+        "override_compile_targets": [
+          "performance_web_engine_test_suite"
+        ],
+        "resultdb": {
+          "enable": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": null,
+              "device_type": "Sherlock",
+              "os": "Fuchsia",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 21600,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
   "linux-perf-fyi": {
     "isolated_scripts": [
       {
