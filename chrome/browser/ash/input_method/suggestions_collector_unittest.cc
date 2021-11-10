@@ -6,11 +6,11 @@
 
 #include <vector>
 
+#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
-#include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {

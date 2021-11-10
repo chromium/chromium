@@ -5,10 +5,11 @@
 #include "chrome/browser/ash/input_method/multi_word_suggester.h"
 
 #include <cmath>
+
+#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
-#include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ash {

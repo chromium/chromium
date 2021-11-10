@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/emoji_suggester.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
-#include "chromeos/services/ime/public/cpp/suggestions.h"
 
 namespace ash {
 namespace input_method {

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 
+#include "ash/services/ime/public/cpp/suggestions.h"
+#include "ash/services/ime/public/mojom/input_engine.mojom.h"
+#include "ash/services/ime/public/mojom/input_method.mojom.h"
+#include "ash/services/ime/public/mojom/input_method_host.mojom.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
@@ -12,10 +16,6 @@
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/suggestions_collector.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#include "chromeos/services/ime/public/cpp/suggestions.h"
-#include "chromeos/services/ime/public/mojom/input_engine.mojom.h"
-#include "chromeos/services/ime/public/mojom/input_method.mojom.h"
-#include "chromeos/services/ime/public/mojom/input_method_host.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"

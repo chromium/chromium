@@ -6,9 +6,9 @@
 
 #include <vector>
 
+#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
-#include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"

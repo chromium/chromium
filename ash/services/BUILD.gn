@@ -16,6 +16,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 source_set("unit_tests") {
   testonly = true
   deps = [
+    "//ash/services/ime:services_unittests",
+    "//ash/services/ime:unit_tests",
     "//ash/services/quick_pair:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:ash_unit_tests",
   ]

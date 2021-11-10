@@ -7,11 +7,11 @@
 
 #include <vector>
 
+#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
-#include "chromeos/services/ime/public/cpp/suggestions.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_suggester.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"

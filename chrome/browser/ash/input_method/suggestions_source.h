@@ -7,8 +7,8 @@
 
 #include <vector>
 
+#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/callback.h"
-#include "chromeos/services/ime/public/cpp/suggestions.h"
 
 namespace ash {
 namespace input_method {
