@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/grit/theme_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -52,6 +53,34 @@ TEST(ProfileInfoUtilTest, SizedMenuIcon) {
 
   VerifyScaling(result2, size);
 }
+
+// On CrOS, the rectangular avatar icons needed for this test are not available.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST(ProfileInfoUtilTest, SizedAvatarIconWithPaintOptions) {
+  // Test that a modern rectangular avatar icon isn't changed.
+  const gfx::Image& profile_image(
+      ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+          IDR_PROFILE_AVATAR_27));
+  gfx::Image opaque = profiles::GetSizedAvatarIcon(
+      profile_image, /*is_rectangle=*/true, 96, 96, profiles::SHAPE_SQUARE,
+      profiles::AvatarPaintOptions{/*background_color=*/SK_ColorGREEN,
+                                   /*avatar_alpha=*/255u});
+
+  EXPECT_FALSE(gfx::test::IsEmpty(opaque));
+  EXPECT_TRUE(gfx::test::AreImagesEqual(profile_image, opaque));
+
+  gfx::Image transparent = profiles::GetSizedAvatarIcon(
+      profile_image, /*is_rectangle=*/true, 96, 96, profiles::SHAPE_SQUARE,
+      profiles::AvatarPaintOptions{/*background_color=*/SK_ColorGREEN,
+                                   /*avatar_alpha=*/0u});
+  transparent.AsImageSkia().EnsureRepsForSupportedScales();
+  std::vector<gfx::ImageSkiaRep> reps = transparent.AsImageSkia().image_reps();
+
+  // CreateBitmap creates a solid bitmap with SK_ColorGREEN.
+  SkBitmap green_bitmap(gfx::test::CreateBitmap(96, 96));
+  EXPECT_TRUE(gfx::test::AreBitmapsEqual(green_bitmap, reps[0].GetBitmap()));
+}
+#endif
 
 TEST(ProfileInfoUtilTest, WebUIIcon) {
   // Test that an avatar icon isn't changed.

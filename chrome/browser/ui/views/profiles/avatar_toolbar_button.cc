@@ -315,16 +315,25 @@ ui::ImageModel AvatarToolbarButton::GetAvatarIcon(
       return ui::ImageModel::FromVectorIcon(kIncognitoIcon, icon_color,
                                             icon_size);
     case State::kGuestSession:
-      return profiles::GetGuestAvatar(icon_size);
+      return profiles::GetGuestAvatar(icon_size, icon_color);
     case State::kAnimatedUserIdentity:
     case State::kSyncError:
     // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon should
     // be different.
     case State::kSyncPaused:
-    case State::kNormal:
+    case State::kNormal: {
+      // Use the alpha value of `icon_color` for the avatar image and paint it
+      // over the toolbar background _color_ (this avoids toolbar background
+      // image bleeding through a semi-transparent avatar if the avatar icon
+      // should be dimmed, i.e. if the alpha value < 255).
+      profiles::AvatarPaintOptions paint_options{
+          /*background_color=*/GetThemeProvider()->GetColor(
+              ThemeProperties::COLOR_TOOLBAR),
+          /*avatar_alpha=*/static_cast<SkAlpha>(SkColorGetA(icon_color))};
       return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
           delegate_->GetProfileAvatarImage(gaia_account_image, icon_size), true,
-          icon_size, icon_size, profiles::SHAPE_CIRCLE));
+          icon_size, icon_size, profiles::SHAPE_CIRCLE, paint_options));
+    }
   }
   NOTREACHED();
   return ui::ImageModel();
