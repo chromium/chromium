@@ -129,7 +129,7 @@
     <template is="dom-repeat" items="[[unassignedAccounts_]]">
       <button class="account-button" on-click="onAccountClick_">
         <!-- Placeholder account image. -->
-        <img class="account-avatar" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==">
+        <img class="account-avatar" src="[[item.accountImageUrl]]">
         <div class="account-text">
           <div class="account-name">[[item.name]]</div>
           <div class="account-email">[[item.email]]</div>

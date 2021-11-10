@@ -115,6 +115,7 @@ suite('ProfilePickerAppTest', function() {
       gaiaId: 'unassigned-id',
       name: 'Account Name',
       email: 'email@gmail.com',
+      accountImageUrl: 'account-image-url',
     };
     webUIListenerCallback('unassigned-accounts-changed', [unassignedAccount]);
     flushTasks();

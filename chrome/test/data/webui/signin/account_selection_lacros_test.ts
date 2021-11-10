@@ -24,6 +24,7 @@ suite('ProfileTypeChoiceTest', function() {
                                      gaiaId: `gaia-id-${i}`,
                                      name: `name-${i}`,
                                      email: `email-${i}`,
+                                     accountImageUrl: `account-image-${i}`,
                                    }));
   }
 

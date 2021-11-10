@@ -58,6 +58,7 @@ export type UnassignedAccount = {
   gaiaId: string,
   name: string,
   email: string,
+  accountImageUrl: string,
 };
 // </if>
 
