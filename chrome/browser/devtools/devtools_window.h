@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
@@ -57,16 +58,6 @@ enum class DevToolsOpenedByAction {
 class DevToolsWindow : public DevToolsUIBindings::Delegate,
                        public content::WebContentsDelegate {
  public:
-  class ObserverWithAccessor : public content::WebContentsObserver {
-   public:
-    explicit ObserverWithAccessor(content::WebContents* web_contents);
-
-    ObserverWithAccessor(const ObserverWithAccessor&) = delete;
-    ObserverWithAccessor& operator=(const ObserverWithAccessor&) = delete;
-
-    ~ObserverWithAccessor() override;
-  };
-
   static const char kDevToolsApp[];
 
   DevToolsWindow(const DevToolsWindow&) = delete;
@@ -432,7 +423,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   void OnLocaleChanged();
   void OverrideAndSyncDevToolsRendererPrefs();
 
-  std::unique_ptr<ObserverWithAccessor> inspected_contents_observer_;
+  base::WeakPtr<content::WebContents> inspected_web_contents_;
 
   FrontendType frontend_type_;
   Profile* profile_;
