@@ -141,13 +141,14 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       password_: {type: String, value: ''},
 
       /**
-       * If either username or password entered incorrectly the save button will
-       * be disabled.
+       * If either website, username or password entered incorrectly the save
+       * button will be disabled.
        * */
       isSaveButtonDisabled_: {
         type: Boolean,
         computed:
-            'computeIsSaveButtonDisabled_(websiteUrls_, usernameInputInvalid_, password_)'
+            'computeIsSaveButtonDisabled_(websiteUrls_, websiteInputInvalid_, ' +
+            'usernameInputInvalid_, password_)'
       }
     };
   }
@@ -209,8 +210,8 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   }
 
   private computeIsSaveButtonDisabled_(): boolean {
-    return !this.websiteUrls_ || this.usernameInputInvalid_ ||
-        !this.password_.length;
+    return !this.websiteUrls_ || this.websiteInputInvalid_ ||
+        this.usernameInputInvalid_ || !this.password_.length;
   }
 
   /**
@@ -347,11 +348,17 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     return this.isInViewMode_ ? this.i18n('done') : this.i18n('save');
   }
 
-  /**
-   * Manually de-select texts for readonly inputs.
-   */
-  private onInputBlur_() {
-    this.shadowRoot!.getSelection()!.removeAllRanges();
+  private onWebsiteInputBlur_() {
+    if (!this.isWebsiteEditable_()) {
+      // Manually de-select text when input is readonly.
+      this.shadowRoot!.getSelection()!.removeAllRanges();
+      return;
+    }
+    if (this.websiteUrls_ && !this.$.websiteInput.value.includes('.')) {
+      this.websiteInputErrorMessage_ =
+          this.i18n('missingTLD', `${this.$.websiteInput.value}.com`);
+      this.websiteInputInvalid_ = true;
+    }
   }
 
   /**

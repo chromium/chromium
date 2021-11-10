@@ -510,4 +510,43 @@ suite('PasswordEditDialog', function() {
     addDialog.$.usernameInput.value = 'username2';
     assertTrue(addDialog.$.usernameInput.invalid);
   });
+
+  test('validatesWebsiteHasTopLevelDomainOnFocusLoss', async function() {
+    const addDialog = elementFactory.createPasswordEditDialog();
+    addDialog.$.passwordInput.value = 'password';
+
+    // TLD error doesn't appear if another website error is shown.
+    await updateWebsiteInput(
+        addDialog, passwordManager, 'invalid-without-TLD',
+        /* isValid= */ false);
+    addDialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
+    assertTrue(addDialog.$.websiteInput.invalid);
+    assertEquals(
+        addDialog.$.websiteInput.errorMessage,
+        addDialog.i18n('notValidWebAddress'));
+    assertTrue(addDialog.$.actionButton.disabled);
+
+    // TLD error appears if no other website error.
+    await updateWebsiteInput(
+        addDialog, passwordManager, 'valid-without-TLD', /* isValid= */ true);
+    addDialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
+    assertTrue(addDialog.$.websiteInput.invalid);
+    assertEquals(
+        addDialog.$.websiteInput.errorMessage,
+        addDialog.i18n('missingTLD', 'valid-without-TLD.com'));
+    assertTrue(addDialog.$.actionButton.disabled);
+
+    // TLD error disappears on website input change.
+    await updateWebsiteInput(
+        addDialog, passwordManager, 'changed-without-TLD', /* isValid= */ true);
+    assertFalse(addDialog.$.websiteInput.invalid);
+    assertFalse(addDialog.$.actionButton.disabled);
+
+    // TLD error doesn't appear if TLD is present.
+    await updateWebsiteInput(
+        addDialog, passwordManager, 'valid-with-TLD.com', /* isValid= */ true);
+    addDialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
+    assertFalse(addDialog.$.websiteInput.invalid);
+    assertFalse(addDialog.$.actionButton.disabled);
+  });
 });
