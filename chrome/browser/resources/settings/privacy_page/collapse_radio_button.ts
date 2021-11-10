@@ -8,9 +8,15 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared_css.js';
 
+import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import {CrRadioButtonBehavior} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+export interface SettingsCollapseRadioButtonElement {
+  $: {
+    expandButton: CrExpandButtonElement,
+  };
+}
 const SettingsCollapseRadioButtonElementBase =
     mixinBehaviors([CrRadioButtonBehavior], PolymerElement) as
     {new (): PolymerElement & CrRadioButtonBehavior};

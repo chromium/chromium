@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isLacros, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SafeBrowsingSetting, SettingsSecurityPageElement} from 'chrome://settings/lazy_load.js';
@@ -17,14 +16,9 @@ import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js'
 // clang-format on
 
 suite('CrSettingsSecurityPageTest', function() {
-  /** @type {!TestMetricsBrowserProxy} */
-  let testMetricsBrowserProxy;
-
-  /** @type {!TestPrivacyPageBrowserProxy} */
-  let testPrivacyBrowserProxy;
-
-  /** @type {!SettingsSecurityPageElement} */
-  let page;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
+  let page: SettingsSecurityPageElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -39,8 +33,7 @@ suite('CrSettingsSecurityPageTest', function() {
     testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
     document.body.innerHTML = '';
-    page = /** @type {!SettingsSecurityPageElement} */ (
-        document.createElement('settings-security-page'));
+    page = document.createElement('settings-security-page');
     page.prefs = {
       profile: {password_manager_leak_detection: {value: false}},
       safebrowsing: {
@@ -58,8 +51,8 @@ suite('CrSettingsSecurityPageTest', function() {
       https_only_mode_enabled: {value: false},
     };
     document.body.appendChild(page);
-    page.shadowRoot.querySelector('#safeBrowsingEnhanced').updateCollapsed();
-    page.shadowRoot.querySelector('#safeBrowsingStandard').updateCollapsed();
+    page.$.safeBrowsingEnhanced.updateCollapsed();
+    page.$.safeBrowsingStandard.updateCollapsed();
     flush();
   });
 
@@ -68,40 +61,39 @@ suite('CrSettingsSecurityPageTest', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  if (isMac || isWindows) {
-    test('NativeCertificateManager', function() {
-      page.shadowRoot.querySelector('#manageCertificates').click();
-      return testPrivacyBrowserProxy.whenCalled('showManageSSLCertificates');
-    });
-  }
+  // <if expr="is_macosx or is_win">
+  test('NativeCertificateManager', function() {
+    page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
+    return testPrivacyBrowserProxy.whenCalled('showManageSSLCertificates');
+  });
+  // </if>
 
   // Initially specified pref option should be expanded
   test('SafeBrowsingRadio_InitialPrefOptionIsExpanded', function() {
-    assertFalse(
-        page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
+    assertFalse(page.$.safeBrowsingEnhanced.expanded);
+    assertTrue(page.$.safeBrowsingStandard.expanded);
   });
 
+  // <if expr="not lacros">
   // TODO(crbug.com/1148302): This class directly calls
   // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
   // moment and is never called from Lacros-Chrome. This should be revisited
   // when there is a solution for the client certificates settings page on
   // Lacros-Chrome.
-  if (!isLacros) {
-    test('LogManageCerfificatesClick', async function() {
-      page.shadowRoot.querySelector('#manageCertificates').click();
-      const result = await testMetricsBrowserProxy.whenCalled(
-          'recordSettingsPageHistogram');
-      assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
-    });
-  }
+  test('LogManageCerfificatesClick', async function() {
+    page.shadowRoot!.querySelector<HTMLElement>('#manageCertificates')!.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
+  });
+  // </if>
 
   test('ManageSecurityKeysSubpageVisible', function() {
     assertTrue(isChildVisible(page, '#security-keys-subpage-trigger'));
   });
 
   test('PasswordsLeakDetectionSubLabel', function() {
-    const toggle = page.shadowRoot.querySelector('#passwordsLeakToggle');
+    const toggle = page.$.passwordsLeakToggle;
     const defaultSubLabel =
         loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
     const activeWhenSignedInSubLabel =
@@ -129,27 +121,26 @@ suite('CrSettingsSecurityPageTest', function() {
   });
 
   test('LogSafeBrowsingExtendedToggle', async function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     flush();
 
-    page.shadowRoot.querySelector('#safeBrowsingReportingToggle').click();
+    page.$.safeBrowsingReportingToggle.click();
     const result =
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.IMPROVE_SECURITY, result);
   });
 
   test('safeBrowsingReportingToggle', function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
 
-    const safeBrowsingReportingToggle =
-        page.shadowRoot.querySelector('#safeBrowsingReportingToggle');
+    const safeBrowsingReportingToggle = page.$.safeBrowsingReportingToggle;
     assertFalse(safeBrowsingReportingToggle.disabled);
     assertTrue(safeBrowsingReportingToggle.checked);
 
     // This could also be set to disabled, anything other than standard.
-    page.shadowRoot.querySelector('#safeBrowsingEnhanced').click();
+    page.$.safeBrowsingEnhanced.click();
     assertEquals(
         SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
     flush();
@@ -157,7 +148,7 @@ suite('CrSettingsSecurityPageTest', function() {
     assertTrue(safeBrowsingReportingToggle.checked);
     assertTrue(page.prefs.safebrowsing.scout_reporting_enabled.value);
 
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
     flush();
@@ -168,94 +159,76 @@ suite('CrSettingsSecurityPageTest', function() {
   test(
       'SafeBrowsingRadio_ManuallyExpandedRemainExpandedOnRepeatSelection',
       function() {
-        page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+        page.$.safeBrowsingStandard.click();
         flush();
         assertEquals(
             SafeBrowsingSetting.STANDARD,
             page.prefs.generated.safe_browsing.value);
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
-        assertFalse(
-            page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+        assertFalse(page.$.safeBrowsingEnhanced.expanded);
 
         // Expanding another radio button should not collapse already expanded
         // option.
-        page.shadowRoot.querySelector('#safeBrowsingEnhanced')
-            .shadowRoot.querySelector('cr-expand-button')
-            .click();
+        page.$.safeBrowsingEnhanced.$.expandButton.click();
         flush();
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+        assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
         // Clicking on already selected button should not collapse manually
         // expanded option.
-        page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+        page.$.safeBrowsingStandard.click();
         flush();
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+        assertTrue(page.$.safeBrowsingEnhanced.expanded);
       });
 
   test(
       'SafeBrowsingRadio_ManuallyExpandedRemainExpandedOnSelectedChanged',
       async function() {
-        page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+        page.$.safeBrowsingStandard.click();
         flush();
         assertEquals(
             SafeBrowsingSetting.STANDARD,
             page.prefs.generated.safe_browsing.value);
 
-        page.shadowRoot.querySelector('#safeBrowsingEnhanced')
-            .shadowRoot.querySelector('cr-expand-button')
-            .click();
+        page.$.safeBrowsingEnhanced.$.expandButton.click();
         flush();
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+        assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
-        page.shadowRoot.querySelector('#safeBrowsingDisabled').click();
+        page.$.safeBrowsingDisabled.click();
         flush();
 
         // Previously selected option must remain opened.
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
+        assertTrue(page.$.safeBrowsingStandard.expanded);
+        assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
-        page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog')
-            .shadowRoot.querySelector('.action-button')
-            .click();
+        page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!
+            .$.confirm.click();
         flush();
 
         // Wait for onDisableSafebrowsingDialogClose_ to finish.
         await flushTasks();
 
         // The deselected option should become collapsed.
-        assertFalse(
-            page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
-        assertTrue(
-            page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
+        assertFalse(page.$.safeBrowsingStandard.expanded);
+        assertTrue(page.$.safeBrowsingEnhanced.expanded);
       });
 
   test('DisableSafebrowsingDialog_Confirm', async function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
     flush();
 
-    page.shadowRoot.querySelector('#safeBrowsingDisabled').click();
+    page.$.safeBrowsingDisabled.click();
     flush();
 
     // Previously selected option must remain opened.
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
+    assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog')
-        .shadowRoot.querySelector('.action-button')
-        .click();
+    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+        .confirm.click();
     flush();
 
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
@@ -263,30 +236,29 @@ suite('CrSettingsSecurityPageTest', function() {
 
     assertEquals(
         null,
-        page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog'));
+        page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog'));
 
-    assertFalse(page.shadowRoot.querySelector('#safeBrowsingEnhanced').checked);
-    assertFalse(page.shadowRoot.querySelector('#safeBrowsingStandard').checked);
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingDisabled').checked);
+    assertFalse(page.$.safeBrowsingEnhanced.checked);
+    assertFalse(page.$.safeBrowsingStandard.checked);
+    assertTrue(page.$.safeBrowsingDisabled.checked);
     assertEquals(
         SafeBrowsingSetting.DISABLED, page.prefs.generated.safe_browsing.value);
   });
 
   test('DisableSafebrowsingDialog_CancelFromEnhanced', async function() {
-    page.shadowRoot.querySelector('#safeBrowsingEnhanced').click();
+    page.$.safeBrowsingEnhanced.click();
     assertEquals(
         SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
     flush();
 
-    page.shadowRoot.querySelector('#safeBrowsingDisabled').click();
+    page.$.safeBrowsingDisabled.click();
     flush();
 
     // Previously selected option must remain opened.
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
+    assertTrue(page.$.safeBrowsingEnhanced.expanded);
 
-    page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog')
-        .shadowRoot.querySelector('.cancel-button')
-        .click();
+    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+        .cancel.click();
     flush();
 
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
@@ -294,30 +266,29 @@ suite('CrSettingsSecurityPageTest', function() {
 
     assertEquals(
         null,
-        page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog'));
+        page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog'));
 
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingEnhanced').checked);
-    assertFalse(page.shadowRoot.querySelector('#safeBrowsingStandard').checked);
-    assertFalse(page.shadowRoot.querySelector('#safeBrowsingDisabled').checked);
+    assertTrue(page.$.safeBrowsingEnhanced.checked);
+    assertFalse(page.$.safeBrowsingStandard.checked);
+    assertFalse(page.$.safeBrowsingDisabled.checked);
     assertEquals(
         SafeBrowsingSetting.ENHANCED, page.prefs.generated.safe_browsing.value);
   });
 
   test('DisableSafebrowsingDialog_CancelFromStandard', async function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
     flush();
 
-    page.shadowRoot.querySelector('#safeBrowsingDisabled').click();
+    page.$.safeBrowsingDisabled.click();
     flush();
 
     // Previously selected option must remain opened.
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
+    assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog')
-        .shadowRoot.querySelector('.cancel-button')
-        .click();
+    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+        .cancel.click();
     flush();
 
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
@@ -325,34 +296,32 @@ suite('CrSettingsSecurityPageTest', function() {
 
     assertEquals(
         null,
-        page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog'));
+        page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog'));
 
-    assertFalse(page.shadowRoot.querySelector('#safeBrowsingEnhanced').checked);
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingStandard').checked);
-    assertFalse(page.shadowRoot.querySelector('#safeBrowsingDisabled').checked);
+    assertFalse(page.$.safeBrowsingEnhanced.checked);
+    assertTrue(page.$.safeBrowsingStandard.checked);
+    assertFalse(page.$.safeBrowsingDisabled.checked);
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
   });
 
   test('noControlSafeBrowsingReportingInEnhanced', function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     flush();
 
-    assertFalse(
-        page.shadowRoot.querySelector('#safeBrowsingReportingToggle').disabled);
-    page.shadowRoot.querySelector('#safeBrowsingEnhanced').click();
+    assertFalse(page.$.safeBrowsingReportingToggle.disabled);
+    page.$.safeBrowsingEnhanced.click();
     flush();
 
-    assertTrue(
-        page.shadowRoot.querySelector('#safeBrowsingReportingToggle').disabled);
+    assertTrue(page.$.safeBrowsingReportingToggle.disabled);
   });
 
   test('noValueChangeSafeBrowsingReportingInEnhanced', function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     flush();
     const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
 
-    page.shadowRoot.querySelector('#safeBrowsingEnhanced').click();
+    page.$.safeBrowsingEnhanced.click();
     flush();
 
     assertTrue(
@@ -360,43 +329,39 @@ suite('CrSettingsSecurityPageTest', function() {
   });
 
   test('noControlSafeBrowsingReportingInDisabled', async function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     flush();
 
-    assertFalse(
-        page.shadowRoot.querySelector('#safeBrowsingReportingToggle').disabled);
-    page.shadowRoot.querySelector('#safeBrowsingDisabled').click();
+    assertFalse(page.$.safeBrowsingReportingToggle.disabled);
+    page.$.safeBrowsingDisabled.click();
     flush();
 
     // Previously selected option must remain opened.
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
+    assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog')
-        .shadowRoot.querySelector('.action-button')
-        .click();
+    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+        .confirm.click();
     flush();
 
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
     await flushTasks();
 
-    assertTrue(
-        page.shadowRoot.querySelector('#safeBrowsingReportingToggle').disabled);
+    assertTrue(page.$.safeBrowsingReportingToggle.disabled);
   });
 
   test('noValueChangeSafeBrowsingReportingInDisabled', async function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     flush();
     const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
 
-    page.shadowRoot.querySelector('#safeBrowsingDisabled').click();
+    page.$.safeBrowsingDisabled.click();
     flush();
 
     // Previously selected option must remain opened.
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
+    assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog')
-        .shadowRoot.querySelector('.action-button')
-        .click();
+    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+        .confirm.click();
     flush();
 
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
@@ -407,11 +372,11 @@ suite('CrSettingsSecurityPageTest', function() {
   });
 
   test('noValueChangePasswordLeakSwitchToEnhanced', function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     flush();
     const previous = page.prefs.profile.password_manager_leak_detection.value;
 
-    page.shadowRoot.querySelector('#safeBrowsingEnhanced').click();
+    page.$.safeBrowsingEnhanced.click();
     flush();
 
     assertTrue(
@@ -419,19 +384,18 @@ suite('CrSettingsSecurityPageTest', function() {
   });
 
   test('noValuePasswordLeakSwitchToDisabled', async function() {
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     flush();
     const previous = page.prefs.profile.password_manager_leak_detection.value;
 
-    page.shadowRoot.querySelector('#safeBrowsingDisabled').click();
+    page.$.safeBrowsingDisabled.click();
     flush();
 
     // Previously selected option must remain opened.
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
+    assertTrue(page.$.safeBrowsingStandard.expanded);
 
-    page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog')
-        .shadowRoot.querySelector('.action-button')
-        .click();
+    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+        .confirm.click();
     flush();
 
     // Wait for onDisableSafebrowsingDialogClose_ to finish.
@@ -444,7 +408,7 @@ suite('CrSettingsSecurityPageTest', function() {
   test('safeBrowsingUserActionRecorded', async function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
-    page.shadowRoot.querySelector('#safeBrowsingStandard').click();
+    page.$.safeBrowsingStandard.click();
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
     // Not logged because it is already in standard mode.
@@ -456,7 +420,7 @@ suite('CrSettingsSecurityPageTest', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot.querySelector('#safeBrowsingEnhanced').click();
+    page.$.safeBrowsingEnhanced.click();
     flush();
     const [enhancedClickedResult, enhancedClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
@@ -473,9 +437,7 @@ suite('CrSettingsSecurityPageTest', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot.querySelector('#safeBrowsingEnhanced')
-        .shadowRoot.querySelector('cr-expand-button')
-        .click();
+    page.$.safeBrowsingEnhanced.$.expandButton.click();
     flush();
     const [enhancedExpandedResult, enhancedExpandedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
@@ -493,9 +455,7 @@ suite('CrSettingsSecurityPageTest', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot.querySelector('#safeBrowsingStandard')
-        .shadowRoot.querySelector('cr-expand-button')
-        .click();
+    page.$.safeBrowsingStandard.$.expandButton.click();
     flush();
     const [standardExpandedResult, standardExpandedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
@@ -513,7 +473,7 @@ suite('CrSettingsSecurityPageTest', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot.querySelector('#safeBrowsingDisabled').click();
+    page.$.safeBrowsingDisabled.click();
     flush();
     const [disableClickedResult, disableClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
@@ -530,9 +490,8 @@ suite('CrSettingsSecurityPageTest', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog')
-        .shadowRoot.querySelector('.cancel-button')
-        .click();
+    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+        .cancel.click();
     flush();
     const [disableDeniedResult, disableDeniedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
@@ -549,14 +508,13 @@ suite('CrSettingsSecurityPageTest', function() {
 
     await flushTasks();
 
-    page.shadowRoot.querySelector('#safeBrowsingDisabled').click();
+    page.$.safeBrowsingDisabled.click();
     flush();
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
-    page.shadowRoot.querySelector('settings-disable-safebrowsing-dialog')
-        .shadowRoot.querySelector('.action-button')
-        .click();
+    page.shadowRoot!.querySelector('settings-disable-safebrowsing-dialog')!.$
+        .confirm.click();
     flush();
     const [disableConfirmedResult, disableConfirmedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
@@ -576,7 +534,7 @@ suite('CrSettingsSecurityPageTest', function() {
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     Router.getInstance().navigateTo(
-        routes.SECURITY, /* dynamicParams= */ null,
+        routes.SECURITY, /* dynamicParams= */ undefined,
         /* removeSearch= */ true);
     assertEquals(
         SafeBrowsingInteractions.SAFE_BROWSING_SHOWED,
@@ -587,9 +545,8 @@ suite('CrSettingsSecurityPageTest', function() {
   test('enhancedProtectionAutoExpanded', function() {
     // Standard protection should be pre-expanded if there is no param.
     Router.getInstance().navigateTo(routes.SECURITY);
-    assertFalse(
-        page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
+    assertFalse(page.$.safeBrowsingEnhanced.expanded);
+    assertTrue(page.$.safeBrowsingStandard.expanded);
     // Enhanced protection should be pre-expanded if the param is set to
     // enhanced.
     Router.getInstance().navigateTo(
@@ -597,15 +554,14 @@ suite('CrSettingsSecurityPageTest', function() {
         /* dynamicParams= */ new URLSearchParams('q=enhanced'));
     assertEquals(
         SafeBrowsingSetting.STANDARD, page.prefs.generated.safe_browsing.value);
-    assertTrue(page.shadowRoot.querySelector('#safeBrowsingEnhanced').expanded);
-    assertFalse(
-        page.shadowRoot.querySelector('#safeBrowsingStandard').expanded);
+    assertTrue(page.$.safeBrowsingEnhanced.expanded);
+    assertFalse(page.$.safeBrowsingStandard.expanded);
   });
 
   // Tests that toggling the HTTPS-Only Mode setting sets the associated pref.
   test('httpsOnlyModeToggle', function() {
     const httpsOnlyModeToggle =
-        page.shadowRoot.querySelector('#httpsOnlyModeToggle');
+        page.shadowRoot!.querySelector<HTMLElement>('#httpsOnlyModeToggle')!;
     assertFalse(page.prefs.https_only_mode_enabled.value);
     httpsOnlyModeToggle.click();
     assertTrue(page.prefs.https_only_mode_enabled.value);
@@ -614,8 +570,7 @@ suite('CrSettingsSecurityPageTest', function() {
 
 
 suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
-  /** @type {!SettingsSecurityPageElement} */
-  let page;
+  let page: SettingsSecurityPageElement;
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
@@ -626,8 +581,7 @@ suite('CrSettingsSecurityPageTest_FlagsDisabled', function() {
 
   setup(function() {
     document.body.innerHTML = '';
-    page = /** @type {!SettingsSecurityPageElement} */ (
-        document.createElement('settings-security-page'));
+    page = document.createElement('settings-security-page');
     page.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing: {
