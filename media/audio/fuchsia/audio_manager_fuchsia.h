@@ -49,6 +49,10 @@ class AudioManagerFuchsia : public AudioManagerBase {
   AudioParameters GetPreferredOutputStreamParameters(
       const std::string& output_device_id,
       const AudioParameters& input_params) override;
+
+ private:
+  AudioInputStream* MakeInputStream(const AudioParameters& input_params,
+                                    const std::string& device_id);
 };
 
 }  // namespace media

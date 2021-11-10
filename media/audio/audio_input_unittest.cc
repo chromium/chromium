@@ -4,6 +4,9 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -14,6 +17,7 @@
 #include "base/test/test_message_loop.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "build/os_buildflags.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
 #include "media/audio/audio_io.h"
@@ -23,7 +27,39 @@
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include <fuchsia/media/cpp/fidl_test_base.h>
+
+#include "base/fuchsia/scoped_service_binding.h"
+#include "base/fuchsia/test_component_context_for_process.h"
+#include "media/fuchsia/audio/fake_audio_capturer.h"
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
 namespace media {
+
+#if BUILDFLAG(IS_FUCHSIA)
+class FakeAudio : public fuchsia::media::testing::Audio_TestBase {
+ public:
+  FakeAudio()
+      : audio_binding_(test_component_context_.additional_services(), this) {}
+
+  // fuchsia::media::testing::Audio_TestBase
+  void CreateAudioCapturer(
+      fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request,
+      bool is_loopback) override {
+    capturer_.push_back(
+        std::make_unique<FakeAudioCapturer>(std::move(request)));
+  }
+  void NotImplemented_(const std::string& name) override {
+    FAIL() << "Unexpected call to: " << name;
+  }
+
+ private:
+  base::TestComponentContextForProcess test_component_context_;
+  base::ScopedServiceBinding<fuchsia::media::Audio> audio_binding_;
+  std::vector<std::unique_ptr<FakeAudioCapturer>> capturer_;
+};
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // This class allows to find out if the callbacks are occurring as
 // expected and if any error has been reported.
@@ -85,13 +121,15 @@ class AudioInputTest : public testing::Test {
 
  protected:
   bool InputDevicesAvailable() {
-#if defined(OS_FUCHSIA)
-    // On Fuchsia HasAudioInputDevices() returns true, but AudioInputStream is
-    // not implemented. Audio input is implemented in
-    // FuchsiaAudioCapturerStream. It implements AudioCapturerStream interface
-    // and runs in the renderer process.
-    return false;
-#elif defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_FUCHSIA)
+    // TODO(crbug.com/852834): On Fuchsia HasAudioInputDevices() returns true
+    // unconditionally, so the tests will fail on any device having no input
+    // device.
+    if (!fake_audio_) {
+      fake_audio_ = std::make_unique<FakeAudio>();
+    }
+    return true;
+#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
     // TODO(crbug.com/1128458): macOS on ARM64 says it has devices, but won't
     // let any of them be opened or listed.
     return false;
@@ -189,6 +227,9 @@ class AudioInputTest : public testing::Test {
   void OnLogMessage(const std::string& message) {}
 
   base::TestMessageLoop message_loop_;
+#if BUILDFLAG(IS_FUCHSIA)
+  std::unique_ptr<FakeAudio> fake_audio_;
+#endif  // BUILDFLAG(IS_FUCHSIA)
   std::unique_ptr<AudioManager> audio_manager_;
   AudioInputStream* audio_input_stream_;
 };

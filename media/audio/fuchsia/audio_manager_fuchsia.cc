@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/fuchsia/scheduler.h"
+#include "media/audio/fuchsia/audio_input_stream_fuchsia.h"
 #include "media/audio/fuchsia/audio_output_stream_fuchsia.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/media_switches.h"
@@ -121,16 +122,16 @@ AudioInputStream* AudioManagerFuchsia::MakeLinearInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
-  NOTREACHED();
-  return nullptr;
+  DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
+  return MakeInputStream(params, device_id);
 }
 
 AudioInputStream* AudioManagerFuchsia::MakeLowLatencyInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
-  NOTREACHED();
-  return nullptr;
+  DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
+  return MakeInputStream(params, device_id);
 }
 
 std::unique_ptr<AudioManager> CreateAudioManager(
@@ -140,4 +141,15 @@ std::unique_ptr<AudioManager> CreateAudioManager(
                                                audio_log_factory);
 }
 
+AudioInputStream* AudioManagerFuchsia::MakeInputStream(
+    const AudioParameters& params,
+    const std::string& device_id) {
+  if (!device_id.empty() &&
+      device_id != AudioDeviceDescription::kDefaultDeviceId &&
+      device_id != AudioDeviceDescription::kLoopbackInputDeviceId) {
+    return nullptr;
+  }
+
+  return new AudioInputStreamFuchsia(this, params, device_id);
+}
 }  // namespace media
