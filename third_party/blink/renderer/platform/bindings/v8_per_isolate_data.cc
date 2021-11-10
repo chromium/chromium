@@ -30,6 +30,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
+#include "base/trace_event/trace_event.h"
 #include "gin/public/v8_idle_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
@@ -130,6 +131,8 @@ v8::Isolate* V8PerIsolateData::Initialize(
     V8ContextSnapshotMode context_mode,
     v8::CreateHistogramCallback create_histogram_callback,
     v8::AddHistogramSampleCallback add_histogram_sample_callback) {
+  TRACE_EVENT1("v8", "V8PerIsolateData::Initialize", "V8ContextSnapshotMode",
+               context_mode);
   V8PerIsolateData* data = nullptr;
   if (context_mode == V8ContextSnapshotMode::kTakeSnapshot) {
     data = new V8PerIsolateData(context_mode);
