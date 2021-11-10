@@ -176,6 +176,23 @@ mojolpm_fuzzer_test("file_system_manager_mojolpm_fuzzer") {
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
 }
 
+mojolpm_fuzzer_test("audio_context_manager_mojolpm_fuzzer") {
+  sources = [ "audio_context_manager_mojolpm_fuzzer.cc" ]
+
+  proto_source = "audio_context_manager_mojolpm_fuzzer.proto"
+
+  deps = [
+    "//base/test:test_support",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//storage/browser:test_support",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+}
+
 fuzzer_test("speech_audio_encoder_fuzzer") {
   sources = [
     "../../browser/speech/audio_buffer.cc",
