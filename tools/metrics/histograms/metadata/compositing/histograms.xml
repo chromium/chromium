@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Compositing.Browser.GPUMemoryForTilingsInKb" units="Kb"
-    expires_after="2022-04-17">
+    expires_after="2022-11-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <owner>sky@chromium.org</owner>
@@ -430,7 +430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Renderer.GPUMemoryForTilingsInKb" units="Kb"
-    expires_after="M99">
+    expires_after="2022-11-09">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
