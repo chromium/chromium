@@ -33,6 +33,7 @@ class ExploreSurfaceNavigationDelegate implements NativePageNavigationDelegate {
     @Nullable
     public Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
         Tab newTab = ReturnToChromeExperimentsUtil.handleLoadUrlFromStartSurface(loadUrlParams,
+                windowOpenDisposition == WindowOpenDisposition.NEW_BACKGROUND_TAB,
                 windowOpenDisposition == WindowOpenDisposition.OFF_THE_RECORD,
                 mParentTabSupplier.get());
         assert newTab != null;

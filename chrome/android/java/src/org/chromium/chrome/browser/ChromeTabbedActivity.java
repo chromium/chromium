@@ -2172,6 +2172,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mTabModelSelector.selectModel(/*incognito=*/false);
                 }
                 showOverview(StartSurfaceState.SHOWING_HOMEPAGE);
+                if (type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                        && !StartSurfaceUserData.getKeepTab(currentTab)) {
+                    getCurrentTabModel().closeTab(currentTab);
+                }
             } else {
                 // Otherwise, clicking the back button should close the tab and go back to the
                 // previous overview mode.

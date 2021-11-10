@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -68,8 +69,8 @@ import org.chromium.ui.util.ColorUtils;
 import java.util.List;
 
 /** The mediator implements the logic to interact with the surfaces and caller. */
-class StartSurfaceMediator
-        implements StartSurface.Controller, TabSwitcher.OverviewModeObserver, View.OnClickListener {
+class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.OverviewModeObserver,
+                                      View.OnClickListener, StartSurface.OnTabSelectingListener {
     /** Interface to initialize a secondary tasks surface for more tabs. */
     interface SecondaryTasksSurfaceInitializer {
         /**
@@ -157,6 +158,8 @@ class StartSurfaceMediator
     private final JankTracker mJankTracker;
     private boolean mHideMVForNewSurface;
     private boolean mHideTabCarouselForNewSurface;
+    private boolean mHideOverviewOnTabSelecting = true;
+    private StartSurface.OnTabSelectingListener mOnTabSelectingListener;
 
     StartSurfaceMediator(TabSwitcher.Controller controller, TabModelSelector tabModelSelector,
             @Nullable PropertyModel propertyModel,
@@ -222,6 +225,17 @@ class StartSurfaceMediator
                     }
                     setTabCarouselVisibility(
                             mTabModelSelector.getModel(false).getCount() > 0 && !mIsIncognito);
+                }
+
+                @Override
+                public void willAddTab(Tab tab, @TabLaunchType int type) {
+                    // When the tab model is empty and a new background tab is added, it is
+                    // immediately selected, which normally causes the overview to hide. We
+                    // don't want to hide the overview when creating a tab in the background, so
+                    // when a background tab is added to an empty tab model, we should skip the next
+                    // onTabSelecting().
+                    mHideOverviewOnTabSelecting = mTabModelSelector.getModel(false).getCount() != 0
+                            || type != TabLaunchType.FROM_LONGPRESS_BACKGROUND;
                 }
             };
             if (mTabModelSelector.getModels().isEmpty()) {
@@ -727,6 +741,17 @@ class StartSurfaceMediator
         setOverviewState(StartSurfaceState.SHOWN_TABSWITCHER);
     }
 
+    // StartSurface.OnTabSelectingListener
+    @Override
+    public void onTabSelecting(long time, int tabId) {
+        if (!mHideOverviewOnTabSelecting) {
+            mHideOverviewOnTabSelecting = true;
+            return;
+        }
+        assert mOnTabSelectingListener != null;
+        mOnTabSelectingListener.onTabSelecting(time, tabId);
+    }
+
     public boolean shouldShowFeedPlaceholder() {
         if (mFeedVisibilityInSharedPreferenceOnStartUp == null) {
             mFeedVisibilityInSharedPreferenceOnStartUp =
@@ -932,5 +957,9 @@ class StartSurfaceMediator
 
     TabSwitcher.Controller getSecondaryTasksSurfaceController() {
         return mSecondaryTasksSurfaceController;
+    }
+
+    void setOnTabSelectingListener(StartSurface.OnTabSelectingListener onTabSelectingListener) {
+        mOnTabSelectingListener = onTabSelectingListener;
     }
 }

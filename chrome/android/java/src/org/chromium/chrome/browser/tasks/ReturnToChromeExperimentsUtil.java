@@ -237,9 +237,23 @@ public final class ReturnToChromeExperimentsUtil {
      */
     public static Tab handleLoadUrlFromStartSurface(
             LoadUrlParams params, @Nullable Boolean incognito, @Nullable Tab parentTab) {
+        return handleLoadUrlFromStartSurface(params, false, incognito, parentTab);
+    }
+
+    /**
+     * Check if we should handle the navigation. If so, create a new tab and load the URL.
+     *
+     * @param params The LoadUrlParams to load.
+     * @param isBackground Whether to load the URL in a new tab in the background.
+     * @param incognito Whether to load URL in an incognito Tab.
+     * @param parentTab  The parent tab used to create a new tab if needed.
+     * @return Current tab created if we have handled the navigation, null otherwise.
+     */
+    public static Tab handleLoadUrlFromStartSurface(LoadUrlParams params, boolean isBackground,
+            @Nullable Boolean incognito, @Nullable Tab parentTab) {
         try (TraceEvent e = TraceEvent.scoped("StartSurface.LoadUrl")) {
-            return handleLoadUrlWithPostDataFromStartSurface(
-                    params, null, null, incognito, parentTab, false, false, null, null);
+            return handleLoadUrlWithPostDataFromStartSurface(params, null, null, isBackground,
+                    incognito, parentTab, false, false, null, null);
         }
     }
 
@@ -259,7 +273,8 @@ public final class ReturnToChromeExperimentsUtil {
             @PageTransition int transition, @Nullable Boolean incognito, @Nullable Tab parentTab,
             TabModel currentTabModel, @Nullable Runnable emptyTabCloseCallback) {
         LoadUrlParams params = new LoadUrlParams(url, transition);
-        handleLoadUrlWithPostDataFromStartSurface(params, null, null, incognito, parentTab,
+        handleLoadUrlWithPostDataFromStartSurface(params, null, null, /*isBackground=*/false,
+                incognito, parentTab,
                 /*focusOnOmnibox*/ true, /*skipOverviewCheck*/ true, currentTabModel,
                 emptyTabCloseCallback);
     }
@@ -280,8 +295,8 @@ public final class ReturnToChromeExperimentsUtil {
     public static boolean handleLoadUrlWithPostDataFromStartSurface(LoadUrlParams params,
             @Nullable String postDataType, @Nullable byte[] postData, @Nullable Boolean incognito,
             @Nullable Tab parentTab) {
-        return handleLoadUrlWithPostDataFromStartSurface(params, postDataType, postData, incognito,
-                       parentTab, false, false, null, null)
+        return handleLoadUrlWithPostDataFromStartSurface(params, postDataType, postData, false,
+                       incognito, parentTab, false, false, null, null)
                 != null;
     }
 
@@ -293,6 +308,7 @@ public final class ReturnToChromeExperimentsUtil {
      * @param postDataType   postData type.
      * @param postData       POST data to include in the tab URL's request body, ex. bitmap when
      *         image search.
+     * @param isBackground Whether to load the URL in a new tab in the background.
      * @param incognito Whether to load URL in an incognito Tab. If null, the current tab model will
      *         be used.
      * @param parentTab  The parent tab used to create a new tab if needed.
@@ -304,9 +320,10 @@ public final class ReturnToChromeExperimentsUtil {
      * @return Current tab created if we have handled the navigation, null otherwise.
      */
     private static Tab handleLoadUrlWithPostDataFromStartSurface(LoadUrlParams params,
-            @Nullable String postDataType, @Nullable byte[] postData, @Nullable Boolean incognito,
-            @Nullable Tab parentTab, boolean focusOnOmnibox, boolean skipOverviewCheck,
-            @Nullable TabModel currentTabModel, @Nullable Runnable emptyTabCloseCallback) {
+            @Nullable String postDataType, @Nullable byte[] postData, boolean isBackground,
+            @Nullable Boolean incognito, @Nullable Tab parentTab, boolean focusOnOmnibox,
+            boolean skipOverviewCheck, @Nullable TabModel currentTabModel,
+            @Nullable Runnable emptyTabCloseCallback) {
         String url = params.getUrl();
         ChromeActivity chromeActivity =
                 getActivityPresentingOverviewWithOmnibox(url, skipOverviewCheck);
@@ -326,10 +343,18 @@ public final class ReturnToChromeExperimentsUtil {
         }
 
         Tab newTab = chromeActivity.getTabCreator(incognitoParam)
-                             .createNewTab(params, TabLaunchType.FROM_START_SURFACE, parentTab);
+                             .createNewTab(params,
+                                     isBackground ? TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                                                  : TabLaunchType.FROM_START_SURFACE,
+                                     parentTab);
+        if (isBackground) {
+            StartSurfaceUserData.setOpenedFromStart(newTab);
+        }
+
         if (focusOnOmnibox && newTab != null) {
             // This observer lives for as long as the user is focused in the Omnibox. It stops
-            // observing once the focus is cleared, e.g, Tab navigates or user taps the back button.
+            // observing once the focus is cleared, e.g, Tab navigates or user taps the back
+            // button.
             new TabStateObserver(newTab, currentTabModel,
                     chromeActivity.getToolbarManager().getOmniboxStub(), emptyTabCloseCallback,
                     chromeActivity.getActivityTabProvider());

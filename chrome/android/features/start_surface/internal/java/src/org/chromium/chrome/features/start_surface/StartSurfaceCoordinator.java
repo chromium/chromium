@@ -363,19 +363,20 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public void setOnTabSelectingListener(StartSurface.OnTabSelectingListener listener) {
+        mStartSurfaceMediator.setOnTabSelectingListener(listener);
         if (mTasksSurface != null) {
-            mTasksSurface.setOnTabSelectingListener(listener);
+            mTasksSurface.setOnTabSelectingListener(mStartSurfaceMediator);
         } else {
-            mTabSwitcher.setOnTabSelectingListener(listener);
+            mTabSwitcher.setOnTabSelectingListener(mStartSurfaceMediator);
         }
 
         // Set OnTabSelectingListener to the more tabs tasks surface as well if it has been
         // instantiated, otherwise remember it for the future instantiation.
         if (mIsStartSurfaceEnabled) {
             if (mSecondaryTasksSurface == null) {
-                mOnTabSelectingListener = listener;
+                mOnTabSelectingListener = mStartSurfaceMediator;
             } else {
-                mSecondaryTasksSurface.setOnTabSelectingListener(listener);
+                mSecondaryTasksSurface.setOnTabSelectingListener(mStartSurfaceMediator);
             }
         }
     }
