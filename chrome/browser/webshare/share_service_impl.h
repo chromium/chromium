@@ -12,7 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/browser/webshare/safe_browsing_request.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/document_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
@@ -34,13 +34,11 @@ constexpr const char* kWebShareApiCountMetric = "WebShare.ApiCount";
 constexpr size_t kMaxSharedFileCount = 10;
 constexpr uint64_t kMaxSharedFileBytes = 50 * 1024 * 1024;
 
-class ShareServiceImpl : public blink::mojom::ShareService,
-                         public content::WebContentsObserver {
+class ShareServiceImpl
+    : public content::DocumentService<blink::mojom::ShareService> {
  public:
-  explicit ShareServiceImpl(content::RenderFrameHost& render_frame_host);
   ShareServiceImpl(const ShareServiceImpl&) = delete;
   ShareServiceImpl& operator=(const ShareServiceImpl&) = delete;
-  ~ShareServiceImpl() override;
 
   static void Create(
       content::RenderFrameHost* render_frame_host,
@@ -64,16 +62,16 @@ class ShareServiceImpl : public blink::mojom::ShareService,
       ShareCallback callback,
       bool is_safe);
 
-  // content::WebContentsObserver:
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-
  private:
+  ShareServiceImpl(content::RenderFrameHost* render_frame_host,
+                   mojo::PendingReceiver<blink::mojom::ShareService> receiver);
+  ~ShareServiceImpl() override;
+
   absl::optional<SafeBrowsingRequest> safe_browsing_request_;
 
 #if defined(OS_CHROMEOS)
   webshare::SharesheetClient sharesheet_client_;
 #endif
-  content::RenderFrameHost* render_frame_host_;
 
   base::WeakPtrFactory<ShareServiceImpl> weak_factory_{this};
 };

@@ -47,7 +47,8 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    share_service_ = std::make_unique<ShareServiceImpl>(*main_rfh());
+    ShareServiceImpl::Create(
+        main_rfh(), share_service_remote_.BindNewPipeAndPassReceiver());
 
 #if defined(OS_CHROMEOS)
     webshare::SharesheetClient::SetSharesheetCallbackForTesting(
@@ -82,7 +83,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
 
     ShareError result;
     base::RunLoop run_loop;
-    share_service_->Share(
+    share_service_remote_->Share(
         kTitle, kText, kUrl, std::move(files),
         base::BindLambdaForTesting([&result, &run_loop](ShareError error) {
           result = error;
@@ -160,7 +161,7 @@ class ShareServiceUnitTest : public ChromeRenderViewHostTestHarness {
   webshare::ScopedShareOperationFakeComponents scoped_fake_components_;
 #endif
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<ShareServiceImpl> share_service_;
+  mojo::Remote<blink::mojom::ShareService> share_service_remote_;
 };
 
 TEST_F(ShareServiceUnitTest, FileCount) {
