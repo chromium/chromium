@@ -208,7 +208,8 @@ struct URLRequestContextConfig {
  private:
   // Parses experimental options and makes appropriate changes to settings in
   // the URLRequestContextConfig and URLRequestContextBuilder.
-  void ParseAndSetExperimentalOptions(
+  // Returns whether the operation was successful.
+  bool ParseAndSetExperimentalOptions(
       net::URLRequestContextBuilder* context_builder,
       net::HttpNetworkSessionParams* session_params,
       net::QuicParams* quic_params);

@@ -278,30 +278,34 @@ URLRequestContextConfig::URLRequestContextConfig(
 
 URLRequestContextConfig::~URLRequestContextConfig() {}
 
-void URLRequestContextConfig::ParseAndSetExperimentalOptions(
+bool URLRequestContextConfig::ParseAndSetExperimentalOptions(
     net::URLRequestContextBuilder* context_builder,
     net::HttpNetworkSessionParams* session_params,
     net::QuicParams* quic_params) {
   if (experimental_options.empty())
-    return;
+    return true;
 
   DVLOG(1) << "Experimental Options:" << experimental_options;
-  std::unique_ptr<base::Value> options =
-      base::JSONReader::ReadDeprecated(experimental_options);
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(experimental_options);
 
-  if (!options) {
-    DCHECK(false) << "Parsing experimental options failed: "
-                  << experimental_options;
-    return;
+  if (!parsed_json.value) {
+    LOG(ERROR) << "Parsing experimental options failed: '"
+               << experimental_options << "', error "
+               << parsed_json.error_message;
+    return false;
   }
 
+  std::unique_ptr<base::Value> root =
+      base::Value::ToUniquePtrValue(std::move(*parsed_json.value));
+
   std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(std::move(options));
+      base::DictionaryValue::From(std::move(root));
 
   if (!dict) {
-    DCHECK(false) << "Experimental options string is not a dictionary: "
-                  << experimental_options;
-    return;
+    LOG(ERROR) << "Experimental options string is not a dictionary: "
+               << experimental_options;
+    return false;
   }
 
   bool async_dns_enable = false;
@@ -730,6 +734,7 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
     context_builder->set_network_error_logging_enabled(true);
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+  return true;
 }
 
 void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
@@ -764,8 +769,13 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
         kDefaultQuicGoAwaySessionsOnIpChange;
   }
 
-  ParseAndSetExperimentalOptions(context_builder, &session_params,
-                                 quic_context->params());
+  // Somewhat hacky DCHECK use here. We don't want to crash third party
+  // applications on invalid experimental options in prod, yet, detecting
+  // an issue early is useful during development.
+  bool experimental_options_success = ParseAndSetExperimentalOptions(
+      context_builder, &session_params, quic_context->params());
+  DCHECK(experimental_options_success);
+
   context_builder->set_http_network_session_params(session_params);
   context_builder->set_quic_context(std::move(quic_context));
 
