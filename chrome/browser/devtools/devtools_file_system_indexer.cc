@@ -343,7 +343,7 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::CollectFilesToIndex() {
       g_trigram_index.Get().LastModifiedTimeForFile(file_path);
   FileEnumerator::FileInfo file_info = file_enumerator_->GetInfo();
   Time current_last_modified_time = file_info.GetLastModifiedTime();
-  if (current_last_modified_time > saved_last_modified_time) {
+  if (current_last_modified_time >= saved_last_modified_time) {
     file_path_times_[file_path] = current_last_modified_time;
   }
   impl_task_runner()->PostTask(

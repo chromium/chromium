@@ -3,7 +3,7 @@
 -BookmarkMenuDelegateTest.Drop*
 -BrowserReportGeneratorTest.Generate*
 -ChromeDownloadManagerDelegateTest.Maybe*
--DevToolsFile*
+-DevToolsFileWatcher*
 -DevToolsUIDataSourceTest.TestDevToolsBundledU*
 -DiagnosticsController*
 -DiagnosticsModelTest.Run*
