@@ -20,7 +20,7 @@ namespace net {
 //
 // It can also represent a finite number of cookie partition keys, including
 // zero.
-// TODO(crbug.com/1225444): Consider changing the name of this class since the
+// TODO(crbug.com/1268880): Consider changing the name of this class since the
 // term "keychain" has a certain meaning for iOS and macOS.
 class NET_EXPORT CookiePartitionKeychain {
  public:
