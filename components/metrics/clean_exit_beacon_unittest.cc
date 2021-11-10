@@ -174,10 +174,6 @@ TEST_F(CleanExitBeaconTest,
                                        1);
 }
 
-#if !defined(OS_ANDROID)
-// TODO(crbug/1248239): Run these tests on Android once the Extended Variations
-// Safe Mode experiment is enabled on Android Chrome.
-
 // Verify that (a) the client is excluded from the Extended Variations Safe Mode
 // experiment and (b) no attempt is made to read the beacon file when no user
 // data dir is provided.
@@ -273,6 +269,9 @@ TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
       "Variations.ExtendedSafeMode.GotVariationsFileContents", false, 1);
 }
 
+// TODO(crbug/1248239): Enable these tests on Android when the Extended
+// Variations Safe Mode experiment is fully enabled on Android Chrome.
+#if !defined(OS_ANDROID)
 // Verify that successfully reading the beacon file's contents results in
 // correctly (a) setting the |did_previous_session_exit_cleanly_| field and (b)
 // recording metrics when the last session exited cleanly.
@@ -319,6 +318,7 @@ TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        updated_num_crashes, 1);
 }
+#endif  // !defined(OS_ANDROID)
 
 // The below CleanExitBeaconTest.BeaconState*ExtendedSafeMode tests verify that
 // the logic for recording UMA.CleanExitBeacon.BeaconFileConsistency is correct
@@ -370,6 +370,7 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<BeaconConsistencyTestParams>& params) {
       return params.param.test_name;
     });
+
 TEST_P(BeaconFileConsistencyTest, BeaconConsistency) {
   // Verify that the beacon file is not present. Unless set below, this beacon
   // is considered missing.
@@ -401,11 +402,10 @@ TEST_P(BeaconFileConsistencyTest, BeaconConsistency) {
       "UMA.CleanExitBeacon.BeaconFileConsistency", params.expected_consistency,
       1);
 }
-#endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)
-// TODO(crbug/1248239, crbug/1255305): Remove this test once the Extended
-// Variations Safe Mode experiment is enabled on Android Chrome.
+// TODO(crbug/1248239): Remove this test once the Extended Variations Safe Mode
+// experiment is fully enabled on Android Chrome.
 
 // Verify that the beacon file, if any, is ignored on Android.
 TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnAndroid) {
@@ -432,15 +432,12 @@ TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnAndroid) {
 
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
 
-  // Verify that (a) the GotVariationsFileContents metric was not emitted and
-  // (b) the PrefService was used (and not the beacon file).
-  histogram_tester_.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.GotVariationsFileContents", 0);
+  // Verify that the Local State beacon was used (not the beacon file beacon).
   EXPECT_TRUE(clean_exit_beacon.exited_cleanly());
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        expected_num_crashes, 1);
 }
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // defined(OS_ANDROID)
 
 // Verify that attempting to write synchronously DCHECKs for clients that do not
 // belong to the SignalAndWriteViaFileUtil experiment group.

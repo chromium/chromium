@@ -48,7 +48,7 @@
 
 #if defined(OS_ANDROID)
 #include "components/variations/seed_response.h"
-#endif  // OS_ANDROID
+#endif
 
 namespace variations {
 namespace {
@@ -70,10 +70,8 @@ const char kTestSeedSerializedData[] = "a serialized seed, 100% realistic";
 const char kTestSeedSignature[] = "a totally valid signature, I swear!";
 const int kTestSeedMilestone = 90;
 
-#if !defined(OS_ANDROID)
 // The content of an empty prefs file.
 const char kEmptyPrefsFile[] = "{}";
-#endif
 
 // Used for similar tests.
 struct TestParams {
@@ -133,7 +131,7 @@ std::string SerializeSeed(const VariationsSeed& seed) {
   seed.SerializeToString(&serialized_seed);
   return serialized_seed;
 }
-#endif  // OS_ANDROID
+#endif  // defined(OS_ANDROID)
 
 class TestPlatformFieldTrials : public PlatformFieldTrials {
  public:
@@ -320,7 +318,6 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     return was_maybe_extend_variations_safe_mode_called_;
   }
 
-#if !defined(OS_ANDROID)
  protected:
   void MaybeExtendVariationsSafeMode(
       metrics::MetricsStateManager* metrics_state_manager) override {
@@ -328,7 +325,6 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
         metrics_state_manager);
   }
-#endif  // !defined(OS_ANDROID)
 
  private:
   VariationsSeedStore* GetSeedStore() override { return &seed_store_; }
@@ -380,8 +376,6 @@ class FieldTrialCreatorTest : public ::testing::Test {
   std::unique_ptr<base::FeatureList> global_feature_list_;
 };
 
-#if !defined(OS_ANDROID)
-// TODO(crbug/1248239): Enable Extended Variations Safe Mode on Android Chrome.
 class FieldTrialCreatorSafeModeExperimentTest : public FieldTrialCreatorTest {
  public:
   FieldTrialCreatorSafeModeExperimentTest()
@@ -435,7 +429,6 @@ struct StartupVisibilityTestParams {
 class FieldTrialCreatorTestWithStartupVisibility
     : public FieldTrialCreatorSafeModeExperimentTest,
       public ::testing::WithParamInterface<StartupVisibilityTestParams> {};
-#endif  // !defined(OS_ANDROID)
 
 // Verify that unexpired seeds are used.
 TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSeed_NotExpired) {
@@ -874,7 +867,7 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_SafeSeedForFutureMilestone) {
 }
 
 #if defined(OS_ANDROID)
-// This is a regression test for https://crbug.com/829527
+// This is a regression test for crbug/829527.
 TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   DisableTestingConfig();
 
@@ -938,11 +931,8 @@ TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
       field_trial_creator.GetClientFilterableStateForVersion(current_version);
   EXPECT_NE(client_filterable_state->hardware_class, std::string());
 }
-#endif  // OS_ANDROID
+#endif  // defined(OS_ANDROID)
 
-#if !defined(OS_ANDROID)
-// TODO(crbug/1248239): Enable Extended Variations Safe Mode on Android Chrome.
-// TODO(crbug/1255305): Re-enable it on iOS.
 TEST_F(FieldTrialCreatorSafeModeExperimentTest, OptOutOfExperiment) {
   std::unique_ptr<PrefService> pref_service(CreatePrefService());
 
@@ -1157,6 +1147,5 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
   ASSERT_TRUE(base::ReadFileToString(prefs_file(), &pref_file_contents));
   EXPECT_EQ(kEmptyPrefsFile, pref_file_contents);
 }
-#endif  // !defined(OS_ANDROID)
 
 }  // namespace variations

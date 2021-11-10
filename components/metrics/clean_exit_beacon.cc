@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -194,7 +193,6 @@ version_info::Channel GetChannel(version_info::Channel channel) {
   return channel;
 }
 
-#if !defined(OS_ANDROID)
 // Sets up the Extended Variations Safe Mode experiment, which is enabled on
 // only some channels. If assigned to an experiment group, returns the name of
 // the group name, e.g. "Control"; otherwise, returns the empty string.
@@ -215,7 +213,6 @@ std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
   trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 50);
   return trial->group_name();
 }
-#endif  // !defined(OS_ANDROID)
 
 }  // namespace
 
@@ -231,24 +228,17 @@ CleanExitBeacon::CleanExitBeacon(const std::wstring& backup_registry_key,
       channel_(GetChannel(channel)) {
   DCHECK_NE(PrefService::INITIALIZATION_STATUS_WAITING,
             local_state_->GetInitializationStatus());
-  // TODO(crbug/1248239, crbug/1255305): Remove the below line once the Extended
-  // Variations Safe Mode experiment is enabled on Clank and re-enabled on iOS.
-  ANALYZER_ALLOW_UNUSED(channel_);
 }
 
 void CleanExitBeacon::Initialize() {
   DCHECK(!initialized_);
 
   std::string group;
-#if !defined(OS_ANDROID)
-  // TODO(crbug/1248239): Allow the file to be used once the Extended Variations
-  // Safe Mode experiment is enabled on Clank.
   if (!user_data_dir_.empty()) {
     // Platforms that pass an empty path do so deliberately. They should not
     // participate in this experiment.
     group = SetUpExtendedSafeModeTrial(channel_);
   }
-#endif  // !defined(OS_ANDROID)
 
   if (group == kSignalAndWriteViaFileUtilGroup)
     beacon_file_path_ = user_data_dir_.Append(variations::kVariationsFilename);
@@ -258,6 +248,13 @@ void CleanExitBeacon::Initialize() {
 
   did_previous_session_exit_cleanly_ =
       DidPreviousSessionExitCleanly(beacon_file_contents.get());
+
+#if defined(OS_ANDROID)
+  // TODO(crbug/1248239): Use the beacon file, if any, to determine the crash
+  // crash once the Extended Variations Safe Mode experiment is fully enabled
+  // on Android Chrome.
+  beacon_file_contents.reset();
+#endif  // defined(OS_ANDROID)
 
   MaybeIncrementCrashStreak(did_previous_session_exit_cleanly_,
                             beacon_file_contents.get(), local_state_);
@@ -292,6 +289,12 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
                             beacon_file_beacon_value, local_state_beacon_value);
   }
 
+#if defined(OS_ANDROID)
+  // TODO(crbug/1248239): Fully enable the Extended Variations Safe Mode
+  // experiment on Android Chrome by using the beacon file's beacon value for
+  // clients in the SignalAndWriteViaFileUtil group.
+  return local_state_beacon_value.value_or(true);
+#else
 #if defined(OS_IOS)
   // For the time being, this is a no-op to avoid interference with the Extended
   // Variations Safe Mode experiment; i.e., ShouldUseUserDefaultsBeacon() always
@@ -302,6 +305,7 @@ bool CleanExitBeacon::DidPreviousSessionExitCleanly(
 
   return use_beacon_file ? beacon_file_beacon_value.value_or(true)
                          : local_state_beacon_value.value_or(true);
+#endif  // defined(OS_ANDROID)
 }
 
 void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,

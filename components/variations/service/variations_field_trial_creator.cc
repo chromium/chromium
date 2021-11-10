@@ -190,9 +190,6 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   DCHECK(platform_field_trials);
   DCHECK(safe_seed_manager);
 
-#if !defined(OS_ANDROID)
-  // TODO(crbug/1248239): Enable Extended Variations Safe Mode on Android
-  // Chrome.
   if (extend_variations_safe_mode &&
       !metrics_state_manager->is_background_session()) {
     // If the session is expected to be a background session, then do not extend
@@ -202,7 +199,6 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     // crashes.
     MaybeExtendVariationsSafeMode(metrics_state_manager);
   }
-#endif  // !defined(OS_ANDROID)
 
   // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is
   // in MetricsStateManager::InstantiateFieldTrialList(). It's not ideal that
@@ -448,7 +444,6 @@ bool VariationsFieldTrialCreator::IsOverrideResourceMapEmpty() {
   return overridden_strings_map_.empty();
 }
 
-#if !defined(OS_ANDROID)
 void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
     metrics::MetricsStateManager* metrics_state_manager) {
   const std::string group_name =
@@ -469,7 +464,6 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
       /*has_session_shutdown_cleanly=*/false,
       /*write_synchronously=*/true);
 }
-#endif  // !defined(OS_ANDROID)
 
 bool VariationsFieldTrialCreator::HasSeedExpired(bool is_safe_seed) {
   const base::Time fetch_time = is_safe_seed
