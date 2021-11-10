@@ -132,12 +132,12 @@
   {
     "name": "android-detailed-language-settings",
     "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 99
   },
   {
     "name": "android-force-app-language-prompt",
     "owners": [ "perrier", "chrome-language@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 99
   },
   {
     "name": "android-picture-in-picture-api",
