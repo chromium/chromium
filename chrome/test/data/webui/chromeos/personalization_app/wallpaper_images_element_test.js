@@ -139,7 +139,7 @@ export function WallpaperImagesTest() {
 
   test('navigates back to main page on loading failure', async () => {
     const reloadPromise = new Promise((resolve) => {
-      PersonalizationRouter.reloadAtRoot = resolve;
+      PersonalizationRouter.reloadAtWallpaper = resolve;
     });
 
     personalizationStore.data.backdrop.collections =
@@ -163,7 +163,7 @@ export function WallpaperImagesTest() {
 
   test('navigates back to main page on unknown collection id', async () => {
     const reloadPromise = new Promise((resolve) => {
-      PersonalizationRouter.reloadAtRoot = resolve;
+      PersonalizationRouter.reloadAtWallpaper = resolve;
     });
 
     personalizationStore.data.backdrop.collections =

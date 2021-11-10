@@ -299,7 +299,7 @@ export class WallpaperImages extends WithPersonalizationStore {
     if (hasError) {
       console.warn('An error occurred while loading collections or images');
       // Navigate back to main page and refresh.
-      PersonalizationRouter.reloadAtRoot();
+      PersonalizationRouter.reloadAtWallpaper();
       return;
     }
 

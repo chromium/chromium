@@ -97,6 +97,17 @@ void AddStrings(content::WebUIDataSource* source) {
   source->UseStringsJs();
 }
 
+void AddBooleans(content::WebUIDataSource* source) {
+  source->AddBoolean("fullScreenPreviewEnabled",
+                     features::IsWallpaperFullScreenPreviewEnabled());
+
+  source->AddBoolean("isGooglePhotosIntegrationEnabled",
+                     features::IsWallpaperGooglePhotosIntegrationEnabled());
+
+  source->AddBoolean("isPersonalizationHubEnabled",
+                     features::IsPersonalizationHubEnabled());
+}
+
 }  // namespace
 
 PersonalizationAppUI::PersonalizationAppUI(
@@ -125,10 +136,7 @@ PersonalizationAppUI::PersonalizationAppUI(
 
   AddResources(source.get());
   AddStrings(source.get());
-  source->AddBoolean("fullScreenPreviewEnabled",
-                     features::IsWallpaperFullScreenPreviewEnabled());
-  source->AddBoolean("isGooglePhotosIntegrationEnabled",
-                     features::IsWallpaperGooglePhotosIntegrationEnabled());
+  AddBooleans(source.get());
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, source.release());

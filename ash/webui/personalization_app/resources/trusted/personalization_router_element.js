@@ -9,14 +9,16 @@
 
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @enum {string} */
 export const Paths = {
-  CollectionImages: '/collection',
-  Collections: '/',
-  GooglePhotosCollection: '/google-photos',
-  LocalCollection: '/local',
+  CollectionImages: '/wallpaper/collection',
+  Collections: '/wallpaper',
+  GooglePhotosCollection: '/wallpaper/google-photos',
+  LocalCollection: '/wallpaper/local',
+  Root: '/',
 };
 
 export class PersonalizationRouter extends PolymerElement {
@@ -54,8 +56,19 @@ export class PersonalizationRouter extends PolymerElement {
   /**
    * Reload the application at the collections page.
    */
-  static reloadAtRoot() {
+  static reloadAtWallpaper() {
     window.location.replace(Paths.Collections);
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    // Force the user onto the wallpaper subpage if personalization hub feature
+    // is not enabled, and the user is not already on a wallpaper page.
+    if (!loadTimeData.getBoolean('isPersonalizationHubEnabled') &&
+        !this.shouldShowWallpaperSubpage_(this.path_)) {
+      PersonalizationRouter.reloadAtWallpaper();
+    }
   }
 
   get collectionId() {
@@ -133,6 +146,25 @@ export class PersonalizationRouter extends PolymerElement {
    */
   isGooglePhotosIntegrationEnabled_() {
     return loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled');
+  }
+
+  /**
+   * @param {?string} path
+   * @return {boolean}
+   * @private
+   */
+  shouldShowRootPage_(path) {
+    return loadTimeData.getBoolean('isPersonalizationHubEnabled') &&
+        path === Paths.Root;
+  }
+
+  /**
+   * @param {?string} path
+   * @return {boolean}
+   * @private
+   */
+  shouldShowWallpaperSubpage_(path) {
+    return !!path?.startsWith(Paths.Collections);
   }
 }
 

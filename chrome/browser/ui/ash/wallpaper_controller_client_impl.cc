@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
+#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -613,6 +614,7 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   DCHECK(profile);
   if (ash::features::IsWallpaperWebUIEnabled()) {
     web_app::SystemAppLaunchParams params;
+    params.url = GURL(ash::kChromeUIPersonalizationAppWallpaperSubpageURL);
     params.launch_source = apps::mojom::LaunchSource::kFromShelf;
     web_app::LaunchSystemWebAppAsync(
         profile, web_app::SystemAppType::PERSONALIZATION, params);
