@@ -1667,8 +1667,14 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
 }
 
 // Tests successfully going back to a page with a fenced frame.
+#if defined(OS_ANDROID)
+// Test always failed in Android builder, crbug.com/1269438
+#define MAYBE_GoBackToPageWithFencedFrame DISABLED_GoBackToPageWithFencedFrame
+#else
+#define MAYBE_GoBackToPageWithFencedFrame GoBackToPageWithFencedFrame
+#endif
 IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
-                       GoBackToPageWithFencedFrame) {
+                       MAYBE_GoBackToPageWithFencedFrame) {
   GURL main_url(https_server()->GetURL(
       "a.test", "/fenced_frames/basic_fenced_frame_src.html"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
