@@ -10054,6 +10054,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Persisted"/>
 </enum>
 
+<enum name="BooleanPhotosOptedIn">
+  <int value="0" label="Opted-in"/>
+  <int value="1" label="Not opted-in"/>
+</enum>
+
 <enum name="BooleanPinned">
   <int value="0" label="Not Pinned"/>
   <int value="1" label="Pinned"/>
