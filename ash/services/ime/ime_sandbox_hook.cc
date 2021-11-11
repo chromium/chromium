@@ -18,7 +18,7 @@
 using sandbox::syscall_broker::BrokerFilePermission;
 using sandbox::syscall_broker::MakeBrokerCommandSet;
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
@@ -83,4 +83,4 @@ bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

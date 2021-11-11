@@ -22,7 +22,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/thunks.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 namespace {
@@ -142,11 +142,10 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
 
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, "AssistiveEmojiEnhanced") == 0) {
-    return base::FeatureList::IsEnabled(
-        chromeos::features::kAssistEmojiEnhanced);
+    return base::FeatureList::IsEnabled(features::kAssistEmojiEnhanced);
   }
   if (strcmp(feature_name, "AssistiveMultiWord") == 0) {
-    return chromeos::features::IsAssistiveMultiWordEnabled();
+    return features::IsAssistiveMultiWordEnabled();
   }
   if (strcmp(feature_name, "AssistiveMultiWordLacrosSupport") == 0) {
     return base::FeatureList::IsEnabled(
@@ -238,4 +237,4 @@ ImeCrosDownloader* ImeService::GetDownloader() {
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash

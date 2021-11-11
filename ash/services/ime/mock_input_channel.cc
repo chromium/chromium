@@ -4,7 +4,7 @@
 
 #include "ash/services/ime/mock_input_channel.h"
 
-namespace chromeos {
+namespace ash {
 namespace ime {
 
 MockInputChannel::MockInputChannel() : receiver_(this) {}
@@ -30,4 +30,4 @@ void MockInputChannel::ProcessMessage(const std::vector<uint8_t>& message,
 }
 
 }  // namespace ime
-}  // namespace chromeos
+}  // namespace ash
