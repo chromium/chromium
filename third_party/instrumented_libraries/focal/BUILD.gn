@@ -54,7 +54,7 @@ group("locally_built") {
     ":libtasn1-6",
     ":libudev1",
     ":libunity9",
-    ":libva1",
+    ":libva2",
     ":libwayland-client0",
     ":libx11-6",
     ":libxau6",
@@ -153,7 +153,6 @@ template("instrumented_library") {
 
 instrumented_library("atk1.0") {
   build_method = "meson"
-  package_ldflags = [ "-Wl,-z,undefs" ]
   extra_configure_flags = [ "-Dintrospection=false" ]
 }
 
@@ -225,12 +224,10 @@ instrumented_library("libasound2") {
 
 instrumented_library("libatk-bridge2.0-0") {
   build_method = "meson"
-  package_ldflags = [ "-Wl,-z,undefs" ]
 }
 
 instrumented_library("libatspi2.0-0") {
   build_method = "meson"
-  package_ldflags = [ "-Wl,-z,undefs" ]
   extra_configure_flags = [ "-Dintrospection=no" ]
 }
 
@@ -421,7 +418,6 @@ instrumented_library("libgdk-pixbuf2.0-0") {
 instrumented_library("libglib2.0-0") {
   build_method = "meson"
   extra_configure_flags = [
-    "-Db_lundef=false",
     "-Dgdk_doc=false",
     "-Dman=false",
   ]
@@ -630,9 +626,8 @@ instrumented_library("libunity9") {
   pre_build = "scripts/pre-build/autogen.sh"
 }
 
-instrumented_library("libva1") {
-  extra_configure_flags = [ "--disable-static" ]
-  pre_build = "scripts/pre-build/libva1.sh"
+instrumented_library("libva2") {
+  build_method = "meson"
 }
 
 instrumented_library("libwayland-client0") {
@@ -778,7 +773,6 @@ instrumented_library("pulseaudio") {
 
 instrumented_library("libudev1") {
   build_method = "meson"
-  extra_configure_flags = [ "-Db_lundef=false" ]
 }
 
 instrumented_library("zlib1g") {

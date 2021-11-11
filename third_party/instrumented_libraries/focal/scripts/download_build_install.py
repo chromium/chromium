@@ -424,6 +424,7 @@ class MesonBuilder(InstrumentedPackageBuilder):
       'build',
       '.',
       ' '.join('--%s %s' % item for item in meson_flags.items()),
+      '-Db_lundef=false',
       self._extra_configure_flags,
     ]
 
