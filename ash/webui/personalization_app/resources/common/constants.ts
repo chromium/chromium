@@ -9,6 +9,8 @@
 
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+
 import {WallpaperCollection, WallpaperImage} from '../trusted/personalization_app.mojom-webui.js';
 
 export const untrustedOrigin = 'chrome-untrusted://personalization';
@@ -95,4 +97,15 @@ export type SelectImageEvent = BaseEvent&{
  */
 export type SendVisibleEvent = BaseEvent&{
   visible: boolean,
+};
+
+/**
+ * A displayable type constructed from WallpaperImages to display them as a
+ * single unit. e.g. Dark/Light wallpaper images.
+ */
+export type ImageTile = {
+  assetId: bigint,
+  attribution: string[],
+  unitId: bigint,
+  preview: Url[],
 };

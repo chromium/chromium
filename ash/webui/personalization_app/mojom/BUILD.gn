@@ -33,6 +33,10 @@ mojom("mojom") {
           mojom = "ash.personalization_app.mojom.WallpaperImage"
           cpp = "backdrop::Image"
         },
+        {
+          mojom = "ash.personalization_app.mojom.OnlineImageType"
+          cpp = "backdrop::Image::ImageType"
+        },
       ]
       traits_headers = [ "personalization_app_mojom_traits.h" ]
       traits_sources = [ "personalization_app_mojom_traits.cc" ]

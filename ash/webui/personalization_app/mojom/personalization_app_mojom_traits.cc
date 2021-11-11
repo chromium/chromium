@@ -19,6 +19,7 @@ namespace mojo {
 
 using MojomWallpaperLayout = ash::personalization_app::mojom::WallpaperLayout;
 using MojomWallpaperType = ash::personalization_app::mojom::WallpaperType;
+using MojomOnlineImageType = ash::personalization_app::mojom::OnlineImageType;
 
 MojomWallpaperLayout
 EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::ToMojom(
@@ -117,6 +118,37 @@ bool EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
   return false;
 }
 
+MojomOnlineImageType
+EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::ToMojom(
+    ::backdrop::Image::ImageType input) {
+  switch (input) {
+    case ::backdrop::Image::IMAGE_TYPE_UNKNOWN:
+      return MojomOnlineImageType::kUnknown;
+    case ::backdrop::Image::IMAGE_TYPE_LIGHT_MODE:
+      return MojomOnlineImageType::kLight;
+    case ::backdrop::Image::IMAGE_TYPE_DARK_MODE:
+      return MojomOnlineImageType::kDark;
+  }
+}
+
+bool EnumTraits<MojomOnlineImageType, ::backdrop::Image::ImageType>::FromMojom(
+    MojomOnlineImageType input,
+    ::backdrop::Image::ImageType* output) {
+  switch (input) {
+    case MojomOnlineImageType::kUnknown:
+      *output = ::backdrop::Image::IMAGE_TYPE_UNKNOWN;
+      return true;
+    case MojomOnlineImageType::kLight:
+      *output = ::backdrop::Image::IMAGE_TYPE_LIGHT_MODE;
+      return true;
+    case MojomOnlineImageType::kDark:
+      *output = ::backdrop::Image::IMAGE_TYPE_DARK_MODE;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
 const std::string&
 StructTraits<ash::personalization_app::mojom::WallpaperCollectionDataView,
              backdrop::Collection>::id(const backdrop::Collection& collection) {
@@ -168,6 +200,19 @@ StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
 uint64_t StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
                       backdrop::Image>::asset_id(const backdrop::Image& image) {
   return image.asset_id();
+}
+
+int32_t StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
+                     backdrop::Image>::unit_id(const backdrop::Image& image) {
+  // TODO(b/202859390): remove condition once unit_id is available.
+  return image.has_unit_id() ? image.unit_id() : image.asset_id();
+}
+
+::backdrop::Image::ImageType
+StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
+             backdrop::Image>::type(const backdrop::Image& image) {
+  return image.has_image_type() ? image.image_type()
+                                : backdrop::Image::IMAGE_TYPE_UNKNOWN;
 }
 
 // Default to false as we don't ever need to convert back to

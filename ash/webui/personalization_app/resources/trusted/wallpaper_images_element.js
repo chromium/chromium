@@ -9,36 +9,38 @@
  * wallpaper collection id to avoid refetching data unnecessarily.
  */
 
+import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {sendCurrentWallpaperAssetId, sendImages, sendPendingWallpaperAssetId, sendVisible} from '../common/iframe_api.js';
+import {ImageTile} from '../common/constants.js';
+import {sendCurrentWallpaperAssetId, sendImageTiles, sendPendingWallpaperAssetId, sendVisible} from '../common/iframe_api.js';
 import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
-import {WallpaperType} from './personalization_app.mojom-webui.js';
+import {DisplayableImage, OnlineImageType, WallpaperType} from './personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 let sendCurrentWallpaperAssetIdFunction = sendCurrentWallpaperAssetId;
-let sendImagesFunction = sendImages;
+let sendImageTilesFunction = sendImageTiles;
 
 /**
  * Mock out the images iframe api functions for testing. Return promises that
  * are resolved when the function is called by |WallpaperImagesElement|.
  * @return {{
  *   sendCurrentWallpaperAssetId: Promise<?>,
- *   sendImages: Promise<?>,
+ *   sendImageTiles: Promise<?>,
  * }}
  */
 export function promisifyImagesIframeFunctionsForTesting() {
   const resolvers = {};
   const promises =
-      [sendCurrentWallpaperAssetId, sendImages].reduce((result, next) => {
+      [sendCurrentWallpaperAssetId, sendImageTiles].reduce((result, next) => {
         result[next.name] =
             new Promise(resolve => resolvers[next.name] = resolve);
         return result;
       }, {});
   sendCurrentWallpaperAssetIdFunction = (...args) =>
       resolvers[sendCurrentWallpaperAssetId.name](args);
-  sendImagesFunction = (...args) => resolvers[sendImages.name](args);
+  sendImageTilesFunction = (...args) => resolvers[sendImageTiles.name](args);
   return promises;
 }
 
@@ -77,6 +79,56 @@ function isLoading(collectionsLoading, imagesLoading, collectionId) {
     return true;
   }
   return collectionsLoading || (imagesLoading[collectionId] !== false);
+}
+
+/**
+ * Return a list of tile where each tile contains a single image.
+ * @param {!Array<!ash.personalizationApp.mojom.WallpaperImage>} images
+ * @return {!Array<!ImageTile>}
+ */
+export function getRegularImageTiles(images) {
+  return images.reduce((result, next) => {
+    result.push({
+      assetId: next.assetId,
+      attribution: next.attribution,
+      preview: [next.url],
+    });
+    return result;
+  }, []);
+}
+
+/**
+ * Return a list of tiles capturing units of Dark/Light images.
+ * @param {!Array<!ash.personalizationApp.mojom.WallpaperImage>} images
+ * @param {boolean} isDarkModeActive
+ * @return {!Array<!ImageTile>}
+ */
+export function getDarkLightImageTiles(isDarkModeActive, images) {
+  console.log('isDarkModeActive', isDarkModeActive);
+  const tileMap = images.reduce((result, next) => {
+    if (next.unitId in result) {
+      // Add light url to the front and dark url to the back of the preview.
+      if (next.type === OnlineImageType.kLight) {
+        result[next.unitId]['preview'].unshift(next.url);
+      } else {
+        result[next.unitId]['preview'].push(next.url);
+      }
+    } else {
+      result[next.unitId] = {
+        preview: [next.url],
+        unitId: next.unitId,
+      };
+    }
+    // Populate the assetId and attribution based on image type and system's
+    // color mode.
+    if ((isDarkModeActive && next.type !== OnlineImageType.kLight) ||
+        (!isDarkModeActive && next.type !== OnlineImageType.kDark)) {
+      result[next.unitId]['assetId'] = next.assetId;
+      result[next.unitId]['attribution'] = next.attribution;
+    }
+    return result;
+  }, {});
+  return Object.values(tileMap);
 }
 
 /** @polymer */
@@ -175,6 +227,15 @@ export class WallpaperImages extends WithPersonalizationStore {
       hasImages_: {
         type: Boolean,
         computed: 'computeHasImages_(images_, imagesLoading_, collectionId)',
+      },
+
+      /**
+       * Whether dark mode is the active preferred color scheme.
+       * @private {boolean}
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -305,7 +366,19 @@ export class WallpaperImages extends WithPersonalizationStore {
 
     if (hasImages && collectionId) {
       const iframe = await this.iframePromise_;
-      sendImagesFunction(iframe.contentWindow, this.images_[collectionId]);
+      const imageArr =
+          /** @type {!Array<!ash.personalizationApp.mojom.WallpaperImage>} */ (
+              this.images_[collectionId]);
+      const isPersonalizationHubEnabled =
+          loadTimeData.getBoolean('isPersonalizationHubEnabled');
+      if (isPersonalizationHubEnabled) {
+        sendImageTilesFunction(
+            iframe.contentWindow,
+            getDarkLightImageTiles(this.isDarkModeActive_, imageArr));
+      } else {
+        sendImageTilesFunction(
+            iframe.contentWindow, getRegularImageTiles(imageArr));
+      }
     }
   }
 

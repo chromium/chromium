@@ -3,18 +3,21 @@
     margin: 12px 0;
   }
 </style>
-<iron-list scroll-target="document" grid items="[[images_]]" role="listbox"
-    aria-setsize$="[[images_.length]]">
+<iron-list scroll-target="document" grid items="[[tiles_]]" role="listbox"
+    aria-setsize$="[[tiles_.length]]">
   <template>
     <div class="photo-container">
       <div class="photo-inner-container" tabindex$="[[tabIndex]]" role="option"
-          data-id$="[[item.assetId]]" on-click="onImageSelected_"
+          data-asset-id$="[[item.assetId]]"
+          data-unit-id$="[[item.unitId]]" on-click="onImageSelected_"
           on-keypress="onImageSelected_"
           aria-posinset$="[[getAriaIndex_(index)]]"
           aria-selected$="[[getAriaSelected_(item, selectedAssetId_, pendingSelectedAssetId_)]]"
           aria-label$="[[getAriaLabel_(item)]]">
         <div class="photo-images-container">
-          <img src$="[[item.url.url]]" aria-hidden="true">
+          <template is="dom-repeat" items="[[item.preview]]" as="preview">
+            <img src$="[[preview.url]]" aria-hidden="true">
+          </template>
           <iron-icon icon="personalization:checkmark"></iron-icon>
         </div>
       </div>

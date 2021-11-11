@@ -4,8 +4,7 @@
 
 import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
-import {promisifyImagesIframeFunctionsForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper_images_element.js';
-
+import {getDarkLightImageTiles, getRegularImageTiles, promisifyImagesIframeFunctionsForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper_images_element.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 
@@ -110,7 +109,7 @@ export function WallpaperImagesTest() {
     personalizationStore.data.loading.images = {'id_0': false, 'id_1': false};
     personalizationStore.data.loading.collections = false;
 
-    let {sendImages: sendImagesPromise} =
+    let {sendImageTiles: sendImageTilesPromise} =
         promisifyImagesIframeFunctionsForTesting();
     wallpaperImagesElement =
         initElement(WallpaperImages.is, {collectionId: 'id_0'});
@@ -119,25 +118,86 @@ export function WallpaperImagesTest() {
         wallpaperImagesElement.shadowRoot.getElementById('images-iframe');
 
     // Wait for iframe to receive data.
-    let [targetWindow, data] = await sendImagesPromise;
+    let [targetWindow, data] = await sendImageTilesPromise;
     assertEquals(iframe.contentWindow, targetWindow);
-    assertDeepEquals(personalizationStore.data.backdrop.images['id_0'], data);
+    assertDeepEquals(
+        getRegularImageTiles(personalizationStore.data.backdrop.images['id_0']),
+        data);
     // Wait for a render to happen.
     await waitAfterNextRender(wallpaperImagesElement);
     assertFalse(iframe.hidden);
 
-    sendImagesPromise = promisifyImagesIframeFunctionsForTesting().sendImages;
+    sendImageTilesPromise =
+        promisifyImagesIframeFunctionsForTesting().sendImageTiles;
     wallpaperImagesElement.collectionId = 'id_1';
 
     // Wait for iframe to receive new data.
-    [targetWindow, data] = await sendImagesPromise;
+    [targetWindow, data] = await sendImageTilesPromise;
 
     await waitAfterNextRender(wallpaperImagesElement);
 
     assertFalse(iframe.hidden);
 
     assertWindowObjectsEqual(iframe.contentWindow, targetWindow);
-    assertDeepEquals(personalizationStore.data.backdrop.images['id_1'], data);
+    assertDeepEquals(
+        getRegularImageTiles(personalizationStore.data.backdrop.images['id_1']),
+        data);
+  });
+
+  test('display dark/light tile for personalization hub', async () => {
+    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
+    personalizationStore.data.backdrop.images = {
+      'id_0': wallpaperProvider.images,
+      'id_1': [
+        {assetId: BigInt(10), url: {url: 'https://id_1-0/'}},
+        {assetId: BigInt(20), url: {url: 'https://id_1-1/'}},
+      ],
+    };
+    personalizationStore.data.backdrop.collections =
+        wallpaperProvider.collections;
+    personalizationStore.data.loading.images = {'id_0': false, 'id_1': false};
+    personalizationStore.data.loading.collections = false;
+
+    let {sendImageTiles: sendImageTilesPromise} =
+        promisifyImagesIframeFunctionsForTesting();
+    wallpaperImagesElement =
+        initElement(WallpaperImages.is, {collectionId: 'id_0'});
+
+    const iframe =
+        wallpaperImagesElement.shadowRoot.getElementById('images-iframe');
+
+    // Wait for iframe to receive data.
+    let [targetWindow, data] = await sendImageTilesPromise;
+    assertEquals(iframe.contentWindow, targetWindow);
+    const tiles = getDarkLightImageTiles(
+        false, personalizationStore.data.backdrop.images['id_0']);
+    assertDeepEquals(tiles, data);
+    assertEquals(data[0].preview.length, 2);
+    // Check that light variant comes before dark variant.
+    assertEquals(
+        data[0].preview[0].url, 'https://images.googleusercontent.com/1');
+    assertEquals(
+        data[0].preview[1].url, 'https://images.googleusercontent.com/0');
+    // Wait for a render to happen.
+    await waitAfterNextRender(wallpaperImagesElement);
+    assertFalse(iframe.hidden);
+
+    sendImageTilesPromise =
+        promisifyImagesIframeFunctionsForTesting().sendImageTiles;
+    wallpaperImagesElement.collectionId = 'id_1';
+
+    // Wait for iframe to receive new data.
+    [targetWindow, data] = await sendImageTilesPromise;
+
+    await waitAfterNextRender(wallpaperImagesElement);
+
+    assertFalse(iframe.hidden);
+
+    assertWindowObjectsEqual(iframe.contentWindow, targetWindow);
+    assertDeepEquals(
+        getDarkLightImageTiles(
+            false, personalizationStore.data.backdrop.images['id_1']),
+        data);
   });
 
   test('navigates back to main page on loading failure', async () => {

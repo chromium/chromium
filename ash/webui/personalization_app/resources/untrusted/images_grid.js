@@ -6,13 +6,13 @@ import 'chrome-untrusted://personalization/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
 import './styles.js';
 import {html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {EventType} from '../common/constants.js';
+import {EventType, ImageTile} from '../common/constants.js';
 import {selectImage, validateReceivedData} from '../common/iframe_api.js';
 import {isSelectionEvent} from '../common/utils.js';
 
 /**
- * @fileoverview Responds to |SendImagesEvent| from trusted. Handles user input
- * and responds with |SelectImageEvent| when an image is selected.
+ * @fileoverview Responds to |SendImageTilesEvent| from trusted. Handles user
+ * input and responds with |SelectImageEvent| when an image is selected.
  */
 
 class ImagesGrid extends PolymerElement {
@@ -27,10 +27,10 @@ class ImagesGrid extends PolymerElement {
   static get properties() {
     return {
       /**
-       * @type {!Array<!WallpaperImage>}
+       * @type {!Array<!ImageTile>}
        * @private
        */
-      images_: {
+      tiles_: {
         type: Array,
         value: [],
       },
@@ -80,12 +80,13 @@ class ImagesGrid extends PolymerElement {
    */
   onMessageReceived_(message) {
     switch (message.data.type) {
-      case EventType.SEND_IMAGES:
+      case EventType.SEND_IMAGE_TILES:
         try {
-          this.images_ = validateReceivedData(message, EventType.SEND_IMAGES);
+          this.tiles_ =
+              validateReceivedData(message, EventType.SEND_IMAGE_TILES);
         } catch (e) {
           console.warn('Invalid images received', e);
-          this.images_ = [];
+          this.tiles_ = [];
         }
         return;
       case EventType.SEND_CURRENT_WALLPAPER_ASSET_ID:
@@ -107,7 +108,7 @@ class ImagesGrid extends PolymerElement {
           for (const image of images) {
             image.src = '';
           }
-          this.images_ = [];
+          this.tiles_ = [];
         }
         return;
       default:
@@ -116,17 +117,17 @@ class ImagesGrid extends PolymerElement {
   }
 
   /**
-   * @param {!WallpaperImage} image
+   * @param {ImageTile} tile
    * @param {?bigint} selectedAssetId
    * @param {?bigint} pendingSelectedAssetId
    * @return {string}
    */
-  getAriaSelected_(image, selectedAssetId, pendingSelectedAssetId) {
+  getAriaSelected_(tile, selectedAssetId, pendingSelectedAssetId) {
     // Make sure that both are bigint (not undefined) and equal.
     return (typeof selectedAssetId === 'bigint' &&
-            image.assetId === selectedAssetId && !pendingSelectedAssetId ||
+                tile?.assetId === selectedAssetId && !pendingSelectedAssetId ||
             typeof pendingSelectedAssetId === 'bigint' &&
-            image.assetId === pendingSelectedAssetId)
+                tile?.assetId === pendingSelectedAssetId)
         .toString();
   }
 
@@ -139,17 +140,17 @@ class ImagesGrid extends PolymerElement {
     if (!isSelectionEvent(e)) {
       return;
     }
-    const assetId = BigInt(e.currentTarget.dataset.id);
+    const assetId = BigInt(e.currentTarget.dataset['assetId']);
     selectImage(window.parent, assetId);
   }
 
   /**
    * @private
-   * @param {!WallpaperImage} image
+   * @param {!ImageTile} tile
    * @return {string}
    */
-  getAriaLabel_(image) {
-    return image.attribution.join(' ');
+  getAriaLabel_(tile) {
+    return tile.attribution.join(' ');
   }
 
   /**

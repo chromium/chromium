@@ -35,6 +35,16 @@ struct EnumTraits<ash::personalization_app::mojom::WallpaperType,
 };
 
 template <>
+struct EnumTraits<ash::personalization_app::mojom::OnlineImageType,
+                  ::backdrop::Image::ImageType> {
+  using MojomOnlineImageType =
+      ::ash::personalization_app::mojom::OnlineImageType;
+  static MojomOnlineImageType ToMojom(::backdrop::Image::ImageType input);
+  static bool FromMojom(MojomOnlineImageType input,
+                        ::backdrop::Image::ImageType* output);
+};
+
+template <>
 struct StructTraits<
     ash::personalization_app::mojom::WallpaperCollectionDataView,
     backdrop::Collection> {
@@ -54,6 +64,8 @@ struct StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
   static GURL url(const backdrop::Image& image);
   static std::vector<std::string> attribution(const backdrop::Image& image);
   static uint64_t asset_id(const backdrop::Image& image);
+  static int32_t unit_id(const backdrop::Image& image);
+  static ::backdrop::Image::ImageType type(const backdrop::Image& image);
 
   static bool Read(ash::personalization_app::mojom::WallpaperImageDataView data,
                    backdrop::Image* out);

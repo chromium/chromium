@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {OnlineImageType, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 
 import {assertTrue} from '../../chai_assert.js';
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
@@ -59,11 +59,22 @@ export class TestWallpaperProvider extends TestBrowserProxy {
         assetId: BigInt(0),
         attribution: ['Image 0'],
         url: {url: 'https://images.googleusercontent.com/0'},
+        unitId: BigInt(1),
+        type: OnlineImageType.kDark,
+      },
+      {
+        assetId: BigInt(2),
+        attribution: ['Image 2'],
+        url: {url: 'https://images.googleusercontent.com/2'},
+        unitId: BigInt(2),
+        type: OnlineImageType.kDark,
       },
       {
         assetId: BigInt(1),
         attribution: ['Image 1'],
         url: {url: 'https://images.googleusercontent.com/1'},
+        unitId: BigInt(1),
+        type: OnlineImageType.kLight,
       },
     ];
 

@@ -41,6 +41,14 @@ enum WallpaperType {
                      // dimmed.
 };
 
+// The image type specific to online wallpapers. This should be kept in sync
+// with |backdrop::Image::ImageType|.
+enum OnlineImageType {
+  kUnknown = 0,
+  kLight = 1,
+  kDark = 2,
+};
+
 // WallpaperCollection contains a list of |WallpaperImage| objects.
 struct WallpaperCollection {
     // This ID is used as the argument to |FetchImagesForCollection|.
@@ -63,6 +71,13 @@ struct WallpaperImage {
 
     // Unique opaque identifier for this image.
     uint64 asset_id;
+
+    // The identifier of a unit of images e.g. Dark/Light variants of the same
+    // wallpaper.
+    int32 unit_id;
+
+    // The type of the online image .i.e kLight, kDark, etc.
+    OnlineImageType type;
 };
 
 // Represents the currently selected wallpaper image.

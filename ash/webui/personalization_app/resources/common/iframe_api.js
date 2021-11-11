@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '/assert.m.js';
-import {EventType, SelectCollectionEvent, SelectGooglePhotosCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendCurrentWallpaperAssetIdEvent, SendGooglePhotosCountEvent, SendGooglePhotosPhotosEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendPendingWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
+import {EventType, ImageTile, SelectCollectionEvent, SelectGooglePhotosCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendCurrentWallpaperAssetIdEvent, SendGooglePhotosCountEvent, SendGooglePhotosPhotosEvent, SendImageCountsEvent, SendImageTilesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendPendingWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
 import {isNonEmptyArray, isNullOrArray, isNullOrNumber} from './utils.js';
 
 /**
@@ -75,14 +75,14 @@ export function sendVisible(target, visible) {
 }
 
 /**
- * Send an array of wallpaper images to chrome-untrusted://.
+ * Send an array of wallpaper tiles to chrome-untrusted://.
  * Will clear the page if images is empty array.
  * @param {!Window} target the iframe window to send the message to.
- * @param {!Array<!WallpaperImage>} images
+ * @param {!Array<!ImageTile>} tiles
  */
-export function sendImages(target, images) {
-  /** @type {!SendImagesEvent} */
-  const event = {type: EventType.SEND_IMAGES, images};
+export function sendImageTiles(target, tiles) {
+  /** @type {!SendImageTilesEvent} */
+  const event = {type: EventType.SEND_IMAGE_TILES, tiles};
   target.postMessage(event, untrustedOrigin);
 }
 
@@ -231,7 +231,7 @@ export function validateReceivedData(event, expectedEventType) {
    *   SendCollectionsEvent|
    *   SendGooglePhotosCountEvent|
    *   SendGooglePhotosPhotosEvent|
-   *   SendImagesEvent|
+   *   SendImageTilesEvent|
    *   SendCurrentWallpaperAssetIdEvent|
    *   SendPendingWallpaperAssetIdEvent|
    *   SendLocalImagesEvent|
@@ -254,10 +254,13 @@ export function validateReceivedData(event, expectedEventType) {
       assert(typeof data.data === 'object', 'Expected data object');
       return data.data;
     case EventType.SEND_LOCAL_IMAGES:
-    case EventType.SEND_IMAGES:
       // Images array may be empty.
       assert(Array.isArray(data.images), 'Expected images array');
       return data.images;
+    case EventType.SEND_IMAGE_TILES:
+      // tiles array may be empty.
+      assert(Array.isArray(data.tiles), 'Expected images array');
+      return data.tiles;
     case EventType.SEND_CURRENT_WALLPAPER_ASSET_ID:
     case EventType.SEND_PENDING_WALLPAPER_ASSET_ID:
       assert(data.assetId === null || typeof data.assetId === 'bigint');
