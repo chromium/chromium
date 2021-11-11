@@ -1363,7 +1363,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.DesktopCaptureCounters" enum="DesktopCaptureCounters"
     expires_after="2022-05-01">
-  <owner>guidou@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Counters on creation of DesktopCaptureDevice and the first capture call.
@@ -2293,7 +2293,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.UserMediaRequest.Result2"
     enum="MediaStreamRequestResult2" expires_after="2022-02-07">
-  <owner>guidou@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <summary>
     Counters for UserMediaRequests results such as failure reasons. The standard
@@ -4095,7 +4095,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.webkitApiCount" enum="RTCAPIName"
     expires_after="2022-04-24">
-  <owner>guidou@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <owner>hbos@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <owner>emircan@chromium.org</owner>
@@ -4105,7 +4105,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRTC.webkitApiCountPerSession" enum="RTCAPIName"
     expires_after="2022-03-07">
-  <owner>guidou@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <owner>hbos@chromium.org</owner>
   <summary>
     Counts the number of calls to WebRTC APIs from JavaScript once per session.
@@ -4154,7 +4154,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRtcTextLogging.UploadFailureNetErrorCode"
     enum="NetErrorCodes" expires_after="2022-05-01">
-  <owner>guidou@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -4165,7 +4165,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRtcTextLogging.UploadFailureReason"
     enum="WebRtcLoggingUploadFailureReason" expires_after="2022-05-01">
-  <owner>guidou@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -4177,7 +4177,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebRtcTextLogging{WebRtcLoggingEvent}"
     enum="WebRtcLoggingWebAppIdHash" expires_after="2021-12-01">
-  <owner>guidou@chromium.org</owner>
+  <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
