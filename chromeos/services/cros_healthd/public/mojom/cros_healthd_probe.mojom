@@ -430,7 +430,7 @@ union MemoryResult {
 
 // Memory information.
 //
-// NextMinVersion: 1, NextIndex: 4
+// NextMinVersion: 2, NextIndex: 5
 struct MemoryInfo {
   // Total memory, in KiB.
   uint32 total_memory_kib@0;
@@ -440,6 +440,39 @@ struct MemoryInfo {
   uint32 available_memory_kib@2;
   // Number of page faults since the last boot.
   uint64 page_faults_since_last_boot@3;
+  // Memory Encryption info.
+  [MinVersion=1] MemoryEncryptionInfo? memory_encryption_info@4;
+};
+
+// NextMinVersion: 1, NextIndex: 4
+struct MemoryEncryptionInfo {
+  // Memory encryption state.
+  EncryptionState encryption_state@0;
+  // Max number of encryption keys.
+  uint32 max_key_number@1;
+  // Encryption key length.
+  uint32 key_length@2;
+  // Crypto algorithm currently used.
+  CryptoAlgorithm active_algorithm@3;
+};
+
+// Memory encryption states.
+// NextMinVersion: 1, NextIndex: 4
+[Extensible]
+enum EncryptionState {
+  kUnknown = 0,
+  kEncryptionDisabled = 1,
+  kTmeEnabled = 2,
+  kMktmeEnabled = 3,
+};
+
+// Crypto algorithm.
+// NextMinVersion: 1, NextIndex: 3
+[Extensible]
+enum CryptoAlgorithm {
+  kUnknown = 0,
+  kAesXts128 = 1,
+  kAesXts256 = 2,
 };
 
 // Backlight probe result. Can either be populated with the BacklightInfo or an
