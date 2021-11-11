@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">salin</translation>
 <translation id="135978014023467274">Anda telah dikemas kini kepada ChromeVox 63!</translation>
 <translation id="1360699455582016846">Klik item di bawah kekunci penghalaan <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">beralih ke aksara seterusnya</translation>
 <translation id="1377925789329510816">Ini ialah tajuk terakhir. Tekan Carian+H untuk pergi ke tajuk pertama atau Carian+Shift+H untuk pergi ke tajuk kedua pada halaman ini.</translation>
 <translation id="138218114945450791">Biru Cerah</translation>
 <translation id="1383876407941801731">Carian</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Kotak pilihan</translation>
 <translation id="2461822463642141190">Semasa</translation>
 <translation id="2462626033734746142">Kumpulan butang radio</translation>
+<translation id="2467741090055146971">nyahpilih</translation>
 <translation id="2471138580042810658">Tajuk 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisk}other{# asterisk}}</translation>
 <translation id="2490721194269245365">Perang Mawar</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Tiada widget media sebelumnya</translation>
 <translation id="4855927945655956315">Kekunci Penting: Control</translation>
 <translation id="4862744964787595316">Bukan huruf tebal</translation>
+<translation id="4865995900839719272">beralih ke baris sebelumnya</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Dayakan pengelogan TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931">Tab, <ph name="TITLE" /></translation>
 <translation id="5308380583665731573">Sambung</translation>
 <translation id="5310788376443009632">dialih keluar:</translation>
+<translation id="5316825363044614340">beralih ke baris seterusnya</translation>
 <translation id="5320727453979144100">Mod lekit didayakan</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{koma}other{# koma}}</translation>
 <translation id="532485153932049746">Pemformatan teks
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Tiada medan borang sebelumnya</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">bantuan</translation>
 <translation id="7317017974771324508">tidak dipilih sepenuhnya</translation>
 <translation id="7322442671176251901">Teroka melalui sentuhan</translation>
 <translation id="7344012264516629579">Perintah lompat tambahan antaranya termasuklah melompat mengikut pautan, butang dan kotak pilihan. Senarai penuh perintah lompat boleh didapati dalam menu ChromeVox, yang boleh dibuka dengan menekan Carian + Noktah.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">Tutorial ChromeVox</translation>
 <translation id="9040132695316389094">Tajuk 1</translation>
 <translation id="9061884144798498064">Pilih jadual braille 8 titik:</translation>
+<translation id="9063946545000394379">beralih ke aksara sebelumnya</translation>
 <translation id="9065283790526219006">+pop timbul</translation>
 <translation id="9065912140022662363">Tiada butang radio seterusnya</translation>
 <translation id="9067522039955793016">Pemisah halaman</translation>

@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">kopiér</translation>
 <translation id="135978014023467274">Du har opdateret til ChromeVox 63</translation>
 <translation id="1360699455582016846">Klik på elementet under routing-tasten <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">gå til næste tegn</translation>
 <translation id="1377925789329510816">Dette er den sidste overskrift. Tryk på søgetasten+H for at gå til den første overskrift, eller tryk på søgetasten+Shift+H for at gå til den anden overskrift på siden.</translation>
 <translation id="138218114945450791">Lyseblå</translation>
 <translation id="1383876407941801731">Søg</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Afkrydsningsfelt</translation>
 <translation id="2461822463642141190">Aktuel</translation>
 <translation id="2462626033734746142">Gruppe af alternativknapper</translation>
+<translation id="2467741090055146971">fjern markering</translation>
 <translation id="2471138580042810658">Overskrift 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{stjerne}one{# stjerner}other{# stjerner}}</translation>
 <translation id="2490721194269245365">Rosabrun</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Der er ingen forrige mediewidgets</translation>
 <translation id="4855927945655956315">Vigtige taster: Ctrl</translation>
 <translation id="4862744964787595316">Ikke fed</translation>
+<translation id="4865995900839719272">gå tilbage til forrige linje</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Aktivér TTS-logføring</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931">fanen <ph name="TITLE" /></translation>
 <translation id="5308380583665731573">Få forbindelse</translation>
 <translation id="5310788376443009632">fjernet:</translation>
+<translation id="5316825363044614340">gå til næste linje</translation>
 <translation id="5320727453979144100">Sticky-tilstand er aktiveret</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{komma}one{# kommaer}other{# kommaer}}</translation>
 <translation id="532485153932049746">Tekstformatering
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Der er ingen forrige formularfelter</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">hjælp</translation>
 <translation id="7317017974771324508">delvist valgt</translation>
 <translation id="7322442671176251901">Tryk for at høre</translation>
 <translation id="7344012264516629579">Yderligere hoppekommandoer er f.eks. hop efter link, knap og afkrydsningsfelt for blot at nævne nogle få. Du kan se hele listen over hoppekommandoer i ChromeVox-menuerne, som du kan åbne ved at trykke på søgetasten+punktum.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox-selvstudie</translation>
 <translation id="9040132695316389094">Overskrift 1</translation>
 <translation id="9061884144798498064">Vælg en 8-punkts brailletabel:</translation>
+<translation id="9063946545000394379">gå til forrige tegn</translation>
 <translation id="9065283790526219006">+pop op-vindue</translation>
 <translation id="9065912140022662363">Der er ikke flere alternativknapper</translation>
 <translation id="9067522039955793016">Sideskift</translation>

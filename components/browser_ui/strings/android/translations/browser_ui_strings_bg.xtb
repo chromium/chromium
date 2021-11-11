@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}}</translation>
 <translation id="2434158240863470628">Изтеглянето завърши <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Винаги да се заявява настолният сайт</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
 <translation id="2490684707762498678">Управляват се от <ph name="APP_NAME" /></translation>
@@ -95,6 +96,7 @@
 <translation id="3328801116991980348">Информация за сайта</translation>
 <translation id="3333961966071413176">Всички контакти</translation>
 <translation id="3386292677130313581">Извеждане на запитване, преди на сайтовете да се разреши достъп до местоположението ви (препоръчително)</translation>
+<translation id="3517437118288792304">Винаги да се заявява изгледът за настолни компютри за конкретен сайт</translation>
 <translation id="3538390592868664640">Блокиране на сайтовете, така че да не могат да създават триизмерна карта на заобикалящата ви среда или да следят позицията на камерата</translation>
 <translation id="3551268116566418498">Излизане от режим „инкогнито“?</translation>
 <translation id="3586500876634962664">Ползване на камерата и микрофона</translation>
@@ -124,6 +126,7 @@
 <translation id="429312253194641664">Сайт възпроизвежда мултимедийно съдържание</translation>
 <translation id="42981349822642051">Разгъване</translation>
 <translation id="4336434711095810371">Изчистване на всички данни</translation>
+<translation id="4353125860368453721">Винаги да се заявява изгледът за мобилни устройства за конкретен сайт</translation>
 <translation id="4402755511846832236">Блокиране на сайтовете, така че да не знаят дали това устройство се използва активно</translation>
 <translation id="4434045419905280838">Изскач. прозорци и пренасочвания</translation>
 <translation id="445467742685312942">Разрешаване на сайтовете да възпроизвеждат защитено съдържание</translation>
@@ -300,6 +303,7 @@
 <translation id="8447861592752582886">Отмяна на разрешението за достъп до устройството</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Използва се 1 „бисквитка“}other{Използват се # „бисквитки“}}</translation>
 <translation id="8487700953926739672">Налице офлайн</translation>
+<translation id="848952951823693243">Винаги да се заявява мобилният сайт</translation>
 <translation id="851751545965956758">Блокиране на сайтовете, така че да не се свързват с устройства</translation>
 <translation id="8525306231823319788">На цял екран</translation>
 <translation id="857943718398505171">Разрешено (препоръчително)</translation>
