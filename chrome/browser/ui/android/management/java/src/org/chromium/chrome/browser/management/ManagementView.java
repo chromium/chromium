@@ -53,6 +53,12 @@ public class ManagementView extends LinearLayout {
         mIsManaged = false;
         mManagerName = null;
         adjustView();
+
+        // Making the view focusable ensures that it will be presented to the user once they select
+        // the page on the Omnibox. When the view is not focusable, the keyboard needs to be
+        // dismissed before the page is shown.
+        setFocusable(true);
+        setFocusableInTouchMode(true);
     }
 
     /** Sets whether account is managed. Then updates view accordingly. */
