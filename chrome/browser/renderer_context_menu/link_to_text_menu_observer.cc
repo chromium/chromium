@@ -42,6 +42,15 @@ void RemoveHighlightsInFrame(content::RenderFrameHost* render_frame_host) {
       remote.BindNewPipeAndPassReceiver());
   remote->RemoveFragments();
 }
+
+base::OnceCallback<void(const std::string& selector)>*
+GetGenerationCompleteCallbackForTesting() {
+  static base::NoDestructor<
+      base::OnceCallback<void(const std::string& selector)>>
+      callback;
+  return callback.get();
+}
+
 }  // namespace
 
 // static
@@ -135,27 +144,38 @@ void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
     const std::string& selector) {
   is_generation_complete_ = true;
   if (ShouldPreemptivelyGenerateLink()) {
-    if (selector.empty()) {
-      // If there is no valid selector, leave the item disabled.
-      return;
+    // If there is no valid selector, leave the item disabled.
+    if (!selector.empty()) {
+      generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
+      proxy_->UpdateMenuItem(
+          IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, /*enabled=*/true,
+          /*hidden=*/false,
+          l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
     }
-    generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
-    proxy_->UpdateMenuItem(
-        IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, true, false,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
-    return;
+  } else {
+    if (selector.empty()) {
+      generated_link_ = url_.spec();
+    } else {
+      generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
+    }
+    CopyLinkToClipboard();
   }
 
-  if (selector.empty())
-    generated_link_ = url_.spec();
-  else
-    generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
-  CopyLinkToClipboard();
+  // Useful only for testing to be notified when generation is complete.
+  auto* cb = GetGenerationCompleteCallbackForTesting();
+  if (!cb->is_null())
+    std::move(*cb).Run(selector);
 }
 
 void LinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
     const std::string& selector) {
   generated_selector_for_testing_ = url_.spec() + selector;
+}
+
+// static
+void LinkToTextMenuObserver::RegisterGenerationCompleteCallbackForTesting(
+    base::OnceCallback<void(const std::string& selector)> cb) {
+  *GetGenerationCompleteCallbackForTesting() = std::move(cb);
 }
 
 bool LinkToTextMenuObserver::ShouldPreemptivelyGenerateLink() {
