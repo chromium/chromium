@@ -217,6 +217,7 @@ export function getZoomableViewport(
   const dummyPlugin =
       /** @type {!HTMLEmbedElement} */ (document.createElement('embed'));
   dummyPlugin.id = 'plugin';
+  dummyPlugin.src = 'data:text/plain,plugin-content';
   dummyContent.appendChild(dummyPlugin);
   const viewport = new Viewport(
       /** @type {!HTMLElement} */ (scrollParent),
