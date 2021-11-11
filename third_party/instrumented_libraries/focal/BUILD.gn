@@ -508,11 +508,6 @@ instrumented_library("libindicator3-7") {
 
 instrumented_library("libjpeg-turbo8") {
   build_method = "cmake"
-  extra_configure_flags = [
-    # The default is to set the RPATH to /lib, but we want to change it
-    # to be where the rest of the instrumented libraries live.
-    "-DCMAKE_INSTALL_RPATH=\$ORIGIN",
-  ]
 }
 
 instrumented_library("libldap-2.4-2") {

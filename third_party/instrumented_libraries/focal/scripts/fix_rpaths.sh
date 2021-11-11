@@ -16,7 +16,7 @@ function fix_rpath {
     then
       echo "fix_rpaths.sh: fixing $1"
       chrpath -r $(chrpath $1 | cut -d " " -f 2 | sed s/XORIGIN/\$ORIGIN/g \
-        | sed s/RPATH=//g) $1
+        | sed s/RUNPATH=//g) $1
     fi
   else
     # FIXME(eugenis): libcups2 DSOs are created non-writable, causing this
