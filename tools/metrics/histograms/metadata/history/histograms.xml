@@ -485,7 +485,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="History.Clusters.Backend.GetClusterLatency" units="ms"
+<histogram name="History.Clusters.Backend.GetClustersLatency" units="ms"
     expires_after="M101">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
