@@ -46,7 +46,9 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiTest, OobeAPI) {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   test::OobeJS().ExpectFalse("OobeAPI.screens.EulaScreen.shouldSkip()");
-  test::OobeJS().CreateWaiter("OobeAPI.screens.EulaScreen.isVisible()")->Wait();
+  test::OobeJS()
+      .CreateWaiter("OobeAPI.screens.EulaScreen.isReadyForTesting()")
+      ->Wait();
   test::OobeJS().Evaluate("OobeAPI.screens.EulaScreen.clickNext()");
 #else
   test::OobeJS().ExpectTrue("OobeAPI.screens.EulaScreen.shouldSkip()");

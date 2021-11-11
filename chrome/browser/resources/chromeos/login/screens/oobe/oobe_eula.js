@@ -363,6 +363,16 @@ class EulaScreen extends EulaScreenBase {
    * 'chrome://terms' fallback.
    */
   onFrameLoad_() {
+    // Get the already created EulaLoader instance.
+    var eulaLoader = new EulaLoader(
+        this.$.crosEulaFrame, /*timeout=*/ undefined,
+        /*load_offline_callback=*/ undefined, /*clear_anchors=*/ undefined);
+
+    // When online EULA fails to load, wait until the offline EULA is loaded
+    // before updating the UI step.
+    if (eulaLoader.isPerformingRequests_)
+      return;
+
     this.acceptButtonDisabled = false;
     this.setUIStep(EulaScreenState.EULA);
     this.$.eulaDialog.scrollToBottom();

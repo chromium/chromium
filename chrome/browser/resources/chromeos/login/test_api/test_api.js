@@ -161,6 +161,7 @@ class NetworkScreenTester extends ScreenElementApi {
 class EulaScreenTester extends ScreenElementApi {
   constructor() {
     super('oobe-eula-md');
+    this.eulaStep = new PolymerElementApi(this, '#eulaDialog');
     this.nextButton = new PolymerElementApi(this, '#acceptButton');
   }
 
@@ -168,6 +169,15 @@ class EulaScreenTester extends ScreenElementApi {
   shouldSkip() {
     // Eula screen should skipped on non-branded build and on CfM devices.
     return loadTimeData.getBoolean('testapi_shouldSkipEula');
+  }
+
+  /**
+   * Returns if the EULA Screen is ready for test interaction.
+   * @return {boolean}
+   */
+  isReadyForTesting() {
+    return this.isVisible() && this.eulaStep.isVisible() &&
+        this.nextButton.isVisible();
   }
 }
 
