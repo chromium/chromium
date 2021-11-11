@@ -4661,26 +4661,6 @@
             ]
         }
     ],
-    "IncognitoBrandConsistencyForDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IncognitoBrandConsistencyForDesktop",
-                        "InheritNativeThemeFromParentWidget"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncompatibleApplicationsWarning": [
         {
             "platforms": [
