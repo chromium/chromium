@@ -15,9 +15,9 @@ namespace ash {
 namespace input_method {
 namespace {
 
-using ::ash::ime::TextSuggestion;
-using ::ash::ime::TextSuggestionMode;
-using ::ash::ime::TextSuggestionType;
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
 using ::chromeos::machine_learning::mojom::MultiWordExperimentGroup;
 using ::chromeos::machine_learning::mojom::NextWordCompletionCandidate;
 using ::chromeos::machine_learning::mojom::TextSuggesterQuery;

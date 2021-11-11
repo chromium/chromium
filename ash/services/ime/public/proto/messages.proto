@@ -8,7 +8,7 @@
 
 syntax = "proto2";
 
-package ash.ime;
+package chromeos.ime;
 
 // The base message type for all communication between the IME service and the
 // shared library. The IME service and the shared library uses both a public and

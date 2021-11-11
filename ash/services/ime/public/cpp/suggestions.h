@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 
 enum class TextSuggestionMode {
@@ -45,6 +45,15 @@ struct TextCompletionCandidate {
   float score;
 };
 
+}  // namespace ime
+}  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace ime {
+using ::chromeos::ime::TextCompletionCandidate;
+using ::chromeos::ime::TextSuggestion;
+using ::chromeos::ime::TextSuggestionMode;
 }  // namespace ime
 }  // namespace ash
 

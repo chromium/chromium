@@ -19,7 +19,7 @@ namespace ash {
 namespace input_method {
 namespace {
 
-namespace mojom = ::ash::ime::mojom;
+namespace mojom = chromeos::ime::mojom;
 
 constexpr char kUsEnglishEngineId[] = "xkb:us::eng";
 constexpr char kKoreanEngineId[] = "ko-t-i0-und";

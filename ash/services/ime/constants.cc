@@ -12,7 +12,7 @@
 #define FPL FILE_PATH_LITERAL
 #define IME_DIR_STRING "input_methods"
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 
 const base::FilePath::CharType kInputMethodsDirName[] =
@@ -39,4 +39,4 @@ const base::FilePath::CharType kLanguageDataDirName[] =
 const char kGoogleKeyboardDownloadDomain[] = "dl.google.com";
 
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos

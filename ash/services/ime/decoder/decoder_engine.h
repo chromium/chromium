@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 
 // A Mojo wrapper around a "decoder" that converts key events and pointer events
@@ -59,6 +59,6 @@ class DecoderEngine : public mojom::InputChannel {
 };
 
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_SERVICES_IME_DECODER_DECODER_ENGINE_H_

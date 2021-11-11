@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 
 // Handles rule-based input methods such as Arabic and Vietnamese.
@@ -68,6 +68,6 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
 };
 
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_SERVICES_IME_RULE_BASED_ENGINE_H_

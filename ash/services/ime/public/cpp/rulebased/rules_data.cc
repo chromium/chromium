@@ -43,7 +43,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/re2/src/re2/re2.h"
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 namespace rulebased {
 
@@ -434,4 +434,4 @@ bool RulesData::PredictTransform(const std::string& str, int transat) const {
 
 }  // namespace rulebased
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos

@@ -11,7 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 
 constexpr char kImeSpec[] = "xkb:us::eng";
@@ -30,20 +30,20 @@ mojo::ScopedMessagePipeHandle MessagePipeHandleFromInt(uint32_t handle) {
 struct MockInputMethod : public mojom::InputMethod {
   MOCK_METHOD(void,
               OnFocus,
-              (mojom::InputFieldInfoPtr input_field_info,
-               mojom::InputMethodSettingsPtr settings),
+              (chromeos::ime::mojom::InputFieldInfoPtr input_field_info,
+               chromeos::ime::mojom::InputMethodSettingsPtr settings),
               (override));
   MOCK_METHOD(void, OnBlur, (), (override));
   MOCK_METHOD(void,
               OnSurroundingTextChanged,
               (const std::string& text,
                uint32_t offset,
-               mojom::SelectionRangePtr selection_range),
+               chromeos::ime::mojom::SelectionRangePtr selection_range),
               (override));
   MOCK_METHOD(void, OnCompositionCanceledBySystem, (), (override));
   MOCK_METHOD(void,
               ProcessKeyEvent,
-              (mojom::PhysicalKeyEventPtr event,
+              (chromeos::ime::mojom::PhysicalKeyEventPtr event,
                ProcessKeyEventCallback callback),
               (override));
   MOCK_METHOD(void,
@@ -196,4 +196,4 @@ TEST_F(SystemEngineTest, CanReceiveMessagesAfterBinding) {
 }
 
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos

@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace ash {
+namespace chromeos {
 namespace ime {
 
 class ImeService : public mojom::ImeService,
@@ -97,6 +97,6 @@ class ImeService : public mojom::ImeService,
 };
 
 }  // namespace ime
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_SERVICES_IME_IME_SERVICE_H_

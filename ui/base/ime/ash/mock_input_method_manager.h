@@ -108,7 +108,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockInputMethodManager
       InputMethodManager::ImeMenuObserver* observer) override;
   void ActivateInputMethodMenuItem(const std::string& key) override;
   void ConnectInputEngineManager(
-      mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) override;
+      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver)
+      override;
   bool IsISOLevel5ShiftUsedByCurrentInputMethod() const override;
   bool IsAltGrUsedByCurrentInputMethod() const override;
   bool ArePositionalShortcutsUsedByCurrentInputMethod() const override;

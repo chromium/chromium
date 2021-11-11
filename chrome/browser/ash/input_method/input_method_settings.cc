@@ -12,7 +12,7 @@ namespace ash {
 namespace input_method {
 namespace {
 
-namespace mojom = ::ash::ime::mojom;
+namespace mojom = chromeos::ime::mojom;
 
 // The values here should be kept in sync with
 // chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js

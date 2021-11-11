@@ -12,10 +12,10 @@
 #include "base/cxx17_backports.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
-namespace {
+namespace rulebased = chromeos::ime::rulebased;
+namespace mojom = chromeos::ime::mojom;
 
-namespace rulebased = ::ash::ime::rulebased;
-namespace mojom = ::ash::ime::mojom;
+namespace {
 
 // Must match ash/services/ime/public/cpp/rulebased/rulebased_fuzzer.proto
 constexpr mojom::DomCode kKeyCodes[] = {
