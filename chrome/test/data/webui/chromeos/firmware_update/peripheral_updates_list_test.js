@@ -10,7 +10,7 @@ import {PeripheralUpdateListElement} from 'chrome://accessory-update/peripheral_
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {flushTasks} from '../../test_util.js';
 
 export function peripheralUpdatesListTest() {
   /** @type {?PeripheralUpdateListElement} */
@@ -19,9 +19,12 @@ export function peripheralUpdatesListTest() {
   /** @type {?FakeUpdateProvider} */
   let provider = null;
 
-  setup(() => {
+  suiteSetup(() => {
     provider = new FakeUpdateProvider();
     setUpdateProviderForTesting(provider);
+  });
+
+  setup(() => {
     document.body.innerHTML = '';
   });
 
@@ -56,15 +59,6 @@ export function peripheralUpdatesListTest() {
   }
 
   /**
-   * @suppress {visibility}
-   * @return {!Promise}
-   */
-  function clearFirmwareUpdates() {
-    peripheralUpdateListElement.firmwareUpdates_ = [];
-    return flushTasks();
-  }
-
-  /**
    * @return {!Array<!UpdateCardElement>}
    */
   function getUpdateCards() {
@@ -79,15 +73,5 @@ export function peripheralUpdatesListTest() {
         assertEquals(u.deviceName, updateCards[i].$.name.innerText);
       });
     });
-  });
-
-  test('EmptyState', () => {
-    return initializeUpdateList()
-        .then(() => clearFirmwareUpdates())
-        .then(() => {
-          assertTrue(isVisible(/** @type {!HTMLDivElement} */ (
-              peripheralUpdateListElement.shadowRoot.querySelector(
-                  '#upToDateText'))));
-        });
   });
 }

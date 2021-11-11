@@ -4,9 +4,6 @@
   }
 </style>
 <div id="container">
-  <template is="dom-if" if="[[!hasFirmwareUpdates_(firmwareUpdates_)]]">
-    <div id="upToDateText">All firmwares are up to date</div>
-  </template>
   <dom-repeat id="updateList" items="[[firmwareUpdates_]]" as="update">
     <template>
       <update-card update="[[update]]"></update-card>
