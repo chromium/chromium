@@ -33,6 +33,8 @@ const char kBorealisWindowPrefix[] = "org.chromium.borealis.";
 // the GuestOsRegistryService), so to identify them we prepend this.
 const char kBorealisAnonymousPrefix[] = "borealis_anon:";
 
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kShelfAppIdKey, nullptr)
+
 // Returns an ID for this window (which is the app_id or startup_id, depending
 // on which are set. The ID string is owned by the window.
 const std::string* GetWindowId(const aura::Window* window) {
@@ -140,7 +142,7 @@ void BorealisWindowManager::RemoveObserver(
   lifetime_observers_.RemoveObserver(observer);
 }
 
-std::string BorealisWindowManager::GetShelfAppId(const aura::Window* window) {
+std::string BorealisWindowManager::GetShelfAppId(aura::Window* window) {
   if (!IsBorealisWindow(window))
     return {};
 
@@ -153,7 +155,9 @@ std::string BorealisWindowManager::GetShelfAppId(const aura::Window* window) {
              ->InstanceRegistry());
   }
 
-  return WindowToAppId(profile_, window);
+  if (!window->GetProperty(kShelfAppIdKey))
+    window->SetProperty(kShelfAppIdKey, WindowToAppId(profile_, window));
+  return *window->GetProperty(kShelfAppIdKey);
 }
 
 void BorealisWindowManager::OnInstanceUpdate(

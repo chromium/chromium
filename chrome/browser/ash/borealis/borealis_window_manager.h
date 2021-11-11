@@ -110,7 +110,7 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
 
   // Returns the application ID for the given window, or "" if the window does
   // not belong to borealis.
-  std::string GetShelfAppId(const aura::Window* window);
+  std::string GetShelfAppId(aura::Window* window);
 
   // apps::InstanceRegistry::Observer overrides.
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
