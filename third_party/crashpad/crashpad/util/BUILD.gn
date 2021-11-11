@@ -631,7 +631,6 @@ crashpad_static_library("util") {
       "Foundation.framework",
       "IOKit.framework",
     ]
-    deps += [ "../third_party/apple_cf:apple_cf" ]
   }
 
   if (crashpad_is_win) {

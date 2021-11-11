@@ -444,7 +444,10 @@ source_set("snapshot_test") {
   }
 
   if (crashpad_is_ios) {
-    deps += [ "../minidump" ]
+    deps += [
+      ":snapshot_test_ios_data",
+      "../minidump",
+    ]
   }
 
   data_deps = [
@@ -485,6 +488,14 @@ source_set("snapshot_test") {
   }
 }
 
+bundle_data("snapshot_test_ios_data") {
+  testonly = true
+
+  sources = [ "ios/testdata/crash-1fa088dda0adb41459d063078a0f384a0bb8eefa" ]
+
+  outputs = [ "{{bundle_resources_dir}}/crashpad_test_data/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
 crashpad_loadable_module("crashpad_snapshot_test_module") {
   testonly = true
   sources = [ "crashpad_info_client_options_test_module.cc" ]

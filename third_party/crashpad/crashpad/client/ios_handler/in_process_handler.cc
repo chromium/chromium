@@ -114,7 +114,7 @@ void InProcessHandler::DumpExceptionFromSignal(
     ucontext_t* context) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   {
-    ScopedReport report(writer_.get(), system_data);
+    ScopedReport report(writer_.get(), system_data, annotations_);
     InProcessIntermediateDumpHandler::WriteExceptionFromSignal(
         writer_.get(), system_data, siginfo, context);
   }
@@ -133,7 +133,7 @@ void InProcessHandler::DumpExceptionFromMachException(
     mach_msg_type_number_t old_state_count) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   {
-    ScopedReport report(writer_.get(), system_data);
+    ScopedReport report(writer_.get(), system_data, annotations_);
     InProcessIntermediateDumpHandler::WriteExceptionFromMachException(
         writer_.get(),
         behavior,
@@ -153,7 +153,8 @@ void InProcessHandler::DumpExceptionFromNSExceptionFrames(
     const uint64_t* frames,
     const size_t num_frames) {
   {
-    ScopedReport report(writer_.get(), system_data, frames, num_frames);
+    ScopedReport report(
+        writer_.get(), system_data, annotations_, frames, num_frames);
     InProcessIntermediateDumpHandler::WriteExceptionFromNSException(
         writer_.get());
   }
@@ -161,34 +162,14 @@ void InProcessHandler::DumpExceptionFromNSExceptionFrames(
 }
 
 void InProcessHandler::ProcessIntermediateDumps(
-    const std::map<std::string, std::string>& extra_annotations) {
+    const std::map<std::string, std::string>& annotations) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
 
-  std::map<std::string, std::string> annotations(annotations_);
-  annotations.insert(extra_annotations.begin(), extra_annotations.end());
-
   for (auto& file : PendingFiles())
-    ProcessIntermediateDumpWithCompleteAnnotations(file, annotations);
+    ProcessIntermediateDump(file, annotations);
 }
 
 void InProcessHandler::ProcessIntermediateDump(
-    const base::FilePath& file,
-    const std::map<std::string, std::string>& extra_annotations) {
-  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
-
-  std::map<std::string, std::string> annotations(annotations_);
-  annotations.insert(extra_annotations.begin(), extra_annotations.end());
-  ProcessIntermediateDumpWithCompleteAnnotations(file, annotations);
-}
-
-void InProcessHandler::StartProcessingPendingReports() {
-  if (!upload_thread_started_ && upload_thread_) {
-    upload_thread_->Start();
-    upload_thread_started_ = true;
-  }
-}
-
-void InProcessHandler::ProcessIntermediateDumpWithCompleteAnnotations(
     const base::FilePath& file,
     const std::map<std::string, std::string>& annotations) {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
@@ -196,6 +177,13 @@ void InProcessHandler::ProcessIntermediateDumpWithCompleteAnnotations(
   ProcessSnapshotIOSIntermediateDump process_snapshot;
   if (process_snapshot.Initialize(file, annotations)) {
     SaveSnapshot(process_snapshot);
+  }
+}
+
+void InProcessHandler::StartProcessingPendingReports() {
+  if (!upload_thread_started_ && upload_thread_) {
+    upload_thread_->Start();
+    upload_thread_started_ = true;
   }
 }
 
@@ -293,11 +281,12 @@ InProcessHandler::ScopedAlternateWriter::~ScopedAlternateWriter() {
 InProcessHandler::ScopedReport::ScopedReport(
     IOSIntermediateDumpWriter* writer,
     const IOSSystemDataCollector& system_data,
+    const std::map<std::string, std::string>& annotations,
     const uint64_t* frames,
     const size_t num_frames)
     : rootMap_(writer) {
   InProcessIntermediateDumpHandler::WriteHeader(writer);
-  InProcessIntermediateDumpHandler::WriteProcessInfo(writer);
+  InProcessIntermediateDumpHandler::WriteProcessInfo(writer, annotations);
   InProcessIntermediateDumpHandler::WriteSystemInfo(writer, system_data);
   InProcessIntermediateDumpHandler::WriteThreadInfo(writer, frames, num_frames);
   InProcessIntermediateDumpHandler::WriteModuleInfo(writer);

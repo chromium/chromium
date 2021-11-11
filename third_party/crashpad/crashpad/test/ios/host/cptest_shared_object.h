@@ -42,6 +42,10 @@
 // (strings only) respectively.
 - (NSDictionary*)getAnnotations;
 
+// Return an NSDictionary representing the ProcessSnapshotMinidump
+// AnnotationsSimpleMap.
+- (NSDictionary*)getProcessAnnotations;
+
 // Triggers an EXC_BAD_ACCESS exception and crash.
 - (void)crashBadAccess;
 

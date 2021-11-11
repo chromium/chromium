@@ -582,7 +582,8 @@ void InProcessIntermediateDumpHandler::WriteHeader(
 
 // static
 void InProcessIntermediateDumpHandler::WriteProcessInfo(
-    IOSIntermediateDumpWriter* writer) {
+    IOSIntermediateDumpWriter* writer,
+    const std::map<std::string, std::string>& annotations) {
   IOSIntermediateDumpWriter::ScopedMap process_map(
       writer, IntermediateDumpKey::kProcessInfo);
 
@@ -646,6 +647,24 @@ void InProcessIntermediateDumpHandler::WriteProcessInfo(
                   &task_thread_times.system_time);
   } else {
     CRASHPAD_RAW_LOG("task_info task_basic_info");
+  }
+
+  if (!annotations.empty()) {
+    IOSIntermediateDumpWriter::ScopedArray simple_annotations_array(
+        writer, IntermediateDumpKey::kAnnotationsSimpleMap);
+    for (const auto& annotation_pair : annotations) {
+      const std::string& key = annotation_pair.first;
+      const std::string& value = annotation_pair.second;
+      IOSIntermediateDumpWriter::ScopedArrayMap annotation_map(writer);
+      WriteProperty(writer,
+                    IntermediateDumpKey::kAnnotationName,
+                    key.c_str(),
+                    key.length());
+      WriteProperty(writer,
+                    IntermediateDumpKey::kAnnotationValue,
+                    value.c_str(),
+                    value.length());
+    }
   }
 }
 
