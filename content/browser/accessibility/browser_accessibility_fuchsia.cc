@@ -8,6 +8,7 @@
 
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
 
 namespace content {
 
@@ -17,7 +18,19 @@ using FuchsiaRole = fuchsia::accessibility::semantics::Role;
 BrowserAccessibilityFuchsia::BrowserAccessibilityFuchsia(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node)
-    : BrowserAccessibility(manager, node) {}
+    : BrowserAccessibility(manager, node) {
+  ax_node_id_ = GetId();
+}
+
+ui::AccessibilityBridgeFuchsia*
+BrowserAccessibilityFuchsia::GetAccessibilityBridge() const {
+  auto* accessibility_bridge_registry =
+      ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
+  DCHECK(accessibility_bridge_registry);
+
+  return accessibility_bridge_registry->GetAccessibilityBridge(
+      manager()->ax_tree_id());
+}
 
 // static
 std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
@@ -27,7 +40,7 @@ std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
 }
 
 BrowserAccessibilityFuchsia::~BrowserAccessibilityFuchsia() {
-  // TODO(fxb.dev/82820): Request deletion from accessibility bridge.
+  DeleteNode();
 }
 
 fuchsia::accessibility::semantics::Node
@@ -47,8 +60,7 @@ BrowserAccessibilityFuchsia::ToFuchsiaNodeData() const {
 void BrowserAccessibilityFuchsia::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
 
-  // TODO(fxb.dev/82820): Add code path for a node to notify fuchsia that
-  // its data has changed.
+  UpdateNode();
 }
 
 void BrowserAccessibilityFuchsia::OnLocationChanged() {
@@ -311,6 +323,52 @@ fuchsia::ui::gfx::mat4 BrowserAccessibilityFuchsia::GetFuchsiaTransform()
   fuchsia::ui::gfx::Matrix4Value fuchsia_transform =
       scenic::NewMatrix4Value(mat);
   return fuchsia_transform.value;
+}
+
+ui::AXNodeID BrowserAccessibilityFuchsia::GetOffsetContainerOrRootNodeID()
+    const {
+  int offset_container_id = GetData().relative_bounds.offset_container_id;
+
+  if (offset_container_id != ui::kInvalidAXNodeID)
+    return offset_container_id;
+
+  ui::AXNode* root_node = manager()->GetRootAsAXNode();
+  DCHECK(root_node);
+
+  return root_node->id();
+}
+
+void BrowserAccessibilityFuchsia::UpdateNode() {
+  if (!GetAccessibilityBridge() || ax_node_id_ == ui::kInvalidAXNodeID)
+    return;
+
+  ui::AXTreeID ax_tree_id = manager()->ax_tree_id();
+
+  ui::AXNodeUpdateFuchsia update;
+  update.node_id = ui::AXNodeDescriptorFuchsia(ax_tree_id, ax_node_id_);
+  update.node_data = ToFuchsiaNodeData();
+
+  for (const auto* child : node()->children()) {
+    DCHECK(child);
+    update.child_ids.emplace_back(ax_tree_id, child->id());
+  }
+
+  update.offset_container_id.emplace(ax_tree_id,
+                                     GetOffsetContainerOrRootNodeID());
+
+  BrowserAccessibility* root = manager()->GetRoot();
+  update.is_root =
+      manager()->IsRootTree() && root && root->GetId() == ax_node_id_;
+
+  GetAccessibilityBridge()->UpdateNode(std::move(update));
+}
+
+void BrowserAccessibilityFuchsia::DeleteNode() {
+  if (!GetAccessibilityBridge() || ax_node_id_ == ui::kInvalidAXNodeID)
+    return;
+
+  GetAccessibilityBridge()->DeleteNode(
+      ui::AXNodeDescriptorFuchsia(manager()->ax_tree_id(), ax_node_id_));
 }
 
 }  // namespace content

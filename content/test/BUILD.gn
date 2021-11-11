@@ -2342,8 +2342,10 @@ test("content_unittests") {
   }
 
   if (is_fuchsia) {
-    sources +=
-        [ "../browser/accessibility/browser_accessibility_fuchsia_unittest.cc" ]
+    sources += [
+      "../browser/accessibility/browser_accessibility_fuchsia_unittest.cc",
+      "../browser/accessibility/browser_accessibility_manager_fuchsia_unittest.cc",
+    ]
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
 

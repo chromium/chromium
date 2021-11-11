@@ -23,7 +23,9 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
 BrowserAccessibilityManagerFuchsia::BrowserAccessibilityManagerFuchsia(
     const ui::AXTreeUpdate& initial_tree,
     BrowserAccessibilityDelegate* delegate)
-    : BrowserAccessibilityManager(initial_tree, delegate) {}
+    : BrowserAccessibilityManager(delegate) {
+  Initialize(initial_tree);
+}
 
 BrowserAccessibilityManagerFuchsia::~BrowserAccessibilityManagerFuchsia() =
     default;

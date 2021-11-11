@@ -26,7 +26,7 @@ class AX_EXPORT AccessibilityBridgeFuchsia {
 
   // Translates |node_id| to a fuchsia node ID, and sends the deletion to
   // fuchsia.
-  virtual void DeleteSemanticNodes(AXNodeDescriptorFuchsia node_id) = 0;
+  virtual void DeleteNode(AXNodeDescriptorFuchsia node_id) = 0;
 
   // Method to notify the accessibility bridge when a hit test result is
   // received. The accessibility bridge will convert |result| to a fuchsia node

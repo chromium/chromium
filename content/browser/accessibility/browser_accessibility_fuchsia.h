@@ -8,9 +8,12 @@
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 
 #include "content/browser/accessibility/browser_accessibility.h"
+#include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_relative_bounds.h"
+#include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/fuchsia_types.h"
 
 namespace content {
@@ -37,6 +40,10 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
   // node_id).
   fuchsia::accessibility::semantics::Node ToFuchsiaNodeData() const;
 
+  // Returns the AXNodeID of this node's offset container if the offset
+  // container ID is valid. Otherwise, returns the ID of this tree's root node.
+  ui::AXNodeID GetOffsetContainerOrRootNodeID() const;
+
   // BrowserAccessibility overrides.
   void OnDataChanged() override;
   void OnLocationChanged() override;
@@ -45,6 +52,10 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
   friend class BrowserAccessibility;  // Needs access to our constructor.
 
  private:
+  ui::AccessibilityBridgeFuchsia* GetAccessibilityBridge() const;
+
+  void UpdateNode();
+  void DeleteNode();
   std::vector<fuchsia::accessibility::semantics::Action> GetFuchsiaActions()
       const;
   fuchsia::accessibility::semantics::Role GetFuchsiaRole() const;
@@ -52,6 +63,8 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
   fuchsia::accessibility::semantics::Attributes GetFuchsiaAttributes() const;
   fuchsia::ui::gfx::BoundingBox GetFuchsiaLocation() const;
   fuchsia::ui::gfx::mat4 GetFuchsiaTransform() const;
+
+  ui::AXNodeID ax_node_id_ = ui::kInvalidAXNodeID;
 };
 
 BrowserAccessibilityFuchsia* CONTENT_EXPORT

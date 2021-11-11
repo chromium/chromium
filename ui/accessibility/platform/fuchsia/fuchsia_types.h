@@ -10,26 +10,30 @@
 #include <vector>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace ui {
 
-struct AXNodeDescriptorFuchsia {
+struct AX_EXPORT AXNodeDescriptorFuchsia {
   AXTreeID tree_id = ui::AXTreeIDUnknown();
   AXNodeID node_id = ui::kInvalidAXNodeID;
 
   AXNodeDescriptorFuchsia();
+  AXNodeDescriptorFuchsia(AXTreeID tree_id, AXNodeID node_id);
   ~AXNodeDescriptorFuchsia();
 };
 
-struct AXNodeUpdateFuchsia {
+struct AX_EXPORT AXNodeUpdateFuchsia {
+  AXNodeDescriptorFuchsia node_id;
   fuchsia::accessibility::semantics::Node node_data;
   std::vector<AXNodeDescriptorFuchsia> child_ids;
   absl::optional<AXNodeDescriptorFuchsia> offset_container_id;
   bool is_root = false;
 
   AXNodeUpdateFuchsia();
+  AXNodeUpdateFuchsia(AXNodeUpdateFuchsia&&);
   ~AXNodeUpdateFuchsia();
 };
 

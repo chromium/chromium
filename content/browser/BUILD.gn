@@ -2364,9 +2364,11 @@ source_set("browser") {
       "speech/tts_fuchsia.cc",
     ]
     deps += [
+      "//third_party/abseil-cpp:absl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
       "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/zx",
+      "//ui/accessibility",
     ]
   } else if (is_posix) {
     sources += [

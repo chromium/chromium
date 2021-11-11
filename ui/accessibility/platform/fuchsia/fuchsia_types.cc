@@ -7,9 +7,15 @@
 namespace ui {
 
 AXNodeDescriptorFuchsia::AXNodeDescriptorFuchsia() = default;
+
+AXNodeDescriptorFuchsia::AXNodeDescriptorFuchsia(AXTreeID tree_id,
+                                                 AXNodeID node_id)
+    : tree_id(tree_id), node_id(node_id) {}
+
 AXNodeDescriptorFuchsia::~AXNodeDescriptorFuchsia() = default;
 
 AXNodeUpdateFuchsia::AXNodeUpdateFuchsia() = default;
+AXNodeUpdateFuchsia::AXNodeUpdateFuchsia(AXNodeUpdateFuchsia&&) = default;
 AXNodeUpdateFuchsia::~AXNodeUpdateFuchsia() = default;
 
 }  // namespace ui

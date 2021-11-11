@@ -9,6 +9,8 @@
 
 namespace content {
 
+class BrowserAccessibilityFuchsia;
+
 // Manages a tree of BrowserAccessibilityFuchsia objects.
 class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
     : public BrowserAccessibilityManager {
