@@ -229,8 +229,8 @@ bool VulkanDeviceQueue::Initialize(
   // Disable all physical device features by default.
   enabled_device_features_2_ = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
 
-  // Android and Fuchsia need YCbCr sampler support.
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+  // Android, Fuchsia, and Linux(VaapiVideoDecoder) need YCbCr sampler support.
+#if defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_LINUX)
   if (!physical_device_info.feature_sampler_ycbcr_conversion) {
     LOG(ERROR) << "samplerYcbcrConversion is not supported.";
     return false;
@@ -243,7 +243,7 @@ bool VulkanDeviceQueue::Initialize(
   // of VkPhysicalDeviceFeatures2 to enable YCbCr sampler support.
   sampler_ycbcr_conversion_features_.pNext = enabled_device_features_2_.pNext;
   enabled_device_features_2_.pNext = &sampler_ycbcr_conversion_features_;
-#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_LINUX)
 
   if (allow_protected_memory) {
     if (!physical_device_info.feature_protected_memory) {

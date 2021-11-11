@@ -43,7 +43,26 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
   }
 
   auto& native_pixmap_handle = gmb_handle.native_pixmap_handle;
-  DCHECK_EQ(native_pixmap_handle.planes.size(), 1u);
+
+  // 2 plane images are ok, they just need ycbcr set up.
+  DCHECK_LT(native_pixmap_handle.planes.size(), 3u);
+
+  if (native_pixmap_handle.planes.size() == 2) {
+    ycbcr_info_ = VulkanYCbCrInfo(
+        /*image_format=*/format,
+        /*external_format=*/0,
+        /*suggested_ycbcr_model=*/native_pixmap_handle.planes.size(),
+        /*suggested_ycbcr_range=*/1,
+        /*suggested_xchroma_offset=*/0,
+        /*suggested_ychroma_offset=*/0,
+        // The same flags that VaapiVideoDecoderUses to create the texture.
+        /*format_features=*/VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT |
+            VK_FORMAT_FEATURE_TRANSFER_DST_BIT |
+            VK_FORMAT_FEATURE_TRANSFER_SRC_BIT |
+            VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT |
+            VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT |
+            VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
+  }
 
   auto& scoped_fd = native_pixmap_handle.planes[0].fd;
   if (!scoped_fd.is_valid()) {

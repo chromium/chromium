@@ -242,6 +242,7 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   mailbox_frame->set_color_space(frame->ColorSpace());
   mailbox_frame->set_hdr_metadata(frame->hdr_metadata());
   mailbox_frame->set_metadata(frame->metadata());
+  mailbox_frame->set_ycbcr_info(frame->ycbcr_info());
   mailbox_frame->metadata().read_lock_fences_enabled = true;
 
   output_cb_.Run(mailbox_frame);

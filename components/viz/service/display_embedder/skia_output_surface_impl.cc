@@ -1161,8 +1161,15 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
                                           ->GetDeviceQueue()
                                           ->GetVulkanPhysicalDevice(),
                                       VK_IMAGE_TILING_OPTIMAL, ycbcr_info);
+#if defined(OS_LINUX)
+    // Textures that were allocated _on linux_ with ycbcr info came from
+    // VaapiVideoDecoder, which exports using DRM format modifiers.
+    return GrBackendFormat::MakeVk(gr_ycbcr_info,
+                                   /*willUseDRMFormatModifiers=*/true);
+#else
     return GrBackendFormat::MakeVk(gr_ycbcr_info);
-#endif
+#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(ENABLE_VULKAN)
   } else if (dependency_->IsUsingDawn()) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     wgpu::TextureFormat format = ToDawnFormat(resource_format);

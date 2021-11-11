@@ -152,11 +152,11 @@ class COMPONENT_EXPORT(VULKAN) VulkanDeviceQueue {
 
   bool allow_protected_memory_ = false;
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_LINUX)
   VkPhysicalDeviceSamplerYcbcrConversionFeatures
       sampler_ycbcr_conversion_features_{
           VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES};
-#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA) || defined(OS_LINUX)
 
   VkPhysicalDeviceProtectedMemoryFeatures protected_memory_features_{
       VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES};
