@@ -999,6 +999,10 @@ const char kDownloadProgressMessageName[] = "Show download progress message";
 const char kDownloadProgressMessageDescription[] =
     "Shows download progress message UI.";
 
+const char kDownloadRangeName[] = "Enable download range support";
+const char kDownloadRangeDescription[] =
+    "Enables arbitrary download range request support.";
+
 const char kEnableLayoutNGName[] = "Enable LayoutNG";
 const char kEnableLayoutNGDescription[] =
     "Enable Blink's next generation layout engine.";

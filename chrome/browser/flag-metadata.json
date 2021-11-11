@@ -1297,6 +1297,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "download-range",
+    "owners": [ "xingliu" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "download-shelf-webui",
     "owners": [ "robliao", "chrome-webui-for-features@google.com" ],
     "expiry_milestone": 98

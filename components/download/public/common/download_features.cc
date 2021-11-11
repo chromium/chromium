@@ -81,6 +81,9 @@ const base::Feature kAllowSavePackageScanning{"AllowSavePackageScanning",
 const base::Feature kIncognitoDownloadsWarning{
     "IncognitoDownloadsWarning", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDownloadRange{"DownloadRange",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 namespace switches {

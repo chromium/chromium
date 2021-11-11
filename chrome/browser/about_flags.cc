@@ -5099,6 +5099,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          download::features::kUseDownloadOfflineContentProvider)},
 
+    {"download-range", flag_descriptions::kDownloadRangeName,
+     flag_descriptions::kDownloadRangeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(download::features::kDownloadRange)},
+
 #if defined(OS_ANDROID)
     {"screen-capture-android", flag_descriptions::kUserMediaScreenCapturingName,
      flag_descriptions::kUserMediaScreenCapturingDescription, kOsAndroid,
