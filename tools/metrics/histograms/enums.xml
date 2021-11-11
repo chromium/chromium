@@ -65571,6 +65571,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Clicked Close"/>
   <int value="2" label="Clicked Check passwords"/>
   <int value="3" label="Clicked Ok"/>
+  <int value="4" label="Clicked Change password automatically"/>
 </enum>
 
 <enum name="PasswordLeakDetectionError">

@@ -86,13 +86,13 @@ enum class LeakDialogType {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(crbug.com/1264320): Add a kClickedChangePasswordsAutomatically value.
 enum class LeakDialogDismissalReason {
   kNoDirectInteraction = 0,
   kClickedClose = 1,
   kClickedCheckPasswords = 2,
   kClickedOk = 3,
-  kMaxValue = kClickedOk,
+  kClickedChangePasswordAutomatically = 4,
+  kMaxValue = kClickedChangePasswordAutomatically,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

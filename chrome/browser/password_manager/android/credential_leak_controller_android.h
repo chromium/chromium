@@ -61,14 +61,6 @@ class CredentialLeakControllerAndroid {
   // The title of the dialog displaying the leak warning.
   std::u16string GetTitle() const;
 
-  // Checks whether the dialog should show the option to check passwords.
-  bool ShouldCheckPasswords() const;
-
-  // Checks whether the change password button should be shown.
-  // |ShouldShowChangePasswordButton()| and |ShouldCheckPasswords()| are not
-  // both true at the same time.
-  bool ShouldShowChangePasswordButton() const;
-
   // Checks whether the cancel button should be shown.
   bool ShouldShowCancelButton() const;
 

@@ -8,9 +8,11 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -86,21 +88,23 @@ TEST(CredentialLeakControllerAndroidTest, ClickedCheckPasswords) {
 }
 
 TEST(CredentialLeakControllerAndroidTest, ClickedChangePasswordAutomatically) {
+  base::test::ScopedFeatureList enable_password_change;
+  enable_password_change.InitAndEnableFeature(
+      password_manager::features::kPasswordChange);
+
   base::HistogramTester histogram_tester;
 
   MakeController(IsSaved(true), IsReused(false), IsSyncing(true),
                  HasChangeScript(true))
       ->OnAcceptDialog();
 
-  // TODO(crbug.com/1264320): kClickedOk should be replaced by a new
-  // kClickedChangePasswordAutomatically.
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.LeakDetection.DialogDismissalReason",
-      LeakDialogDismissalReason::kClickedOk, 1);
+      LeakDialogDismissalReason::kClickedChangePasswordAutomatically, 1);
 
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.LeakDetection.DialogDismissalReason.Change",
-      LeakDialogDismissalReason::kClickedOk, 1);
+      "PasswordManager.LeakDetection.DialogDismissalReason.ChangeAutomatically",
+      LeakDialogDismissalReason::kClickedChangePasswordAutomatically, 1);
 }
 
 TEST(CredentialLeakControllerAndroidTest, NoDirectInteraction) {
