@@ -785,7 +785,6 @@
 <translation id="1972134432340252414">封鎖瀏覽器程序中的舊版擴充點</translation>
 <translation id="1977581177449752640">如果設定這項政策，遠端存取主機會使用用戶端憑證和指定核發機構一般名稱 (CN)，向 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 進行驗證。如要使用任何可用的用戶端憑證，請將其設為 <ph name="WILDCARD_VALUE" />。如果設為空白或不設定，系統會停用這項功能。</translation>
 <translation id="1984423899110408165">在 Chrome 歷史記錄頁面上顯示叢集記錄</translation>
-<translation id="1986003348976870087">不要在登入畫面中提示使用者選取用戶端憑證。</translation>
 <translation id="1988345404999458987">為可用的列印伺服器提供設定。
 
       這項政策可讓你使用 JSON 檔案為 <ph name="PRODUCT_OS_NAME" />裝置提供外部列印伺服器設定。
@@ -2566,12 +2565,6 @@
 
       如果將這項政策設為 False，自動填入功能一律不會建議或填入信用卡資訊，也不會在使用者瀏覽網頁時儲存其提交的其他信用卡資訊。</translation>
 <translation id="3989829840000169163">封鎖瀏覽器的舊版擴充點</translation>
-<translation id="3996594590700242138">如果將這項政策設為啟用或不設定，就會允許更新 <ph name="PRODUCT_NAME" /> 中的所有元件。
-
-      如果將這項政策設為停用，則會禁止更新元件。不過，部分元件不受本政策規範：只要元件更新不含可執行的程式碼、不大幅變更瀏覽器的行為，或是對元件安全性至關重要，就不會遭到禁止。
-      舉例來說，憑證撤銷清單和安全瀏覽資料等元件不會受到這項政策影響。
-      如要進一步瞭解安全瀏覽功能，請前往 https://developers.google.com/safe-browsing。
-      請注意，我們並不建議將本政策設為停用，因為這種做法可能造成 <ph name="PRODUCT_NAME" /> 開發人員無法及時提供重大安全性修正項目。</translation>
 <translation id="3997519162482760140">可在 SAML 登入網頁取得錄影裝置存取權的網址</translation>
 <translation id="4004523942550416237">在初始設定期間不顯示 Google 助理 Voice Match 流程</translation>
 <translation id="4007646377576030214"> 請注意，這項政策自 M87 版起已遭淘汰，並在 M89 版中移除。請改用 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> 來設定受管理訪客工作階段的隱私權警告訊息。
@@ -4812,7 +4805,6 @@
 
           注意：如果指定 <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />，這項政策會遭到覆寫。</translation>
 <translation id="6833988859168635883">起始頁面、首頁和新分頁</translation>
-<translation id="683399492058633424">當有多個憑證相符時，在登入畫面中提示使用者選擇用戶端憑證。</translation>
 <translation id="6835883744948188639">顯示週期性提示，建議使用者重新啟動瀏覽器</translation>
 <translation id="683688607121170501">如果啟用這項設定，當使用者登入 <ph name="PRODUCT_OS_NAME" />裝置後，將可在瀏覽器視窗的內容區域和 Android 應用程式中切換 Google 帳戶。
 

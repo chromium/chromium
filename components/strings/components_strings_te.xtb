@@ -159,6 +159,7 @@
 <translation id="1422930527989633628">సమీపంలో ఉన్న బ్లూటూత్ పరికరాలను కనుగొనడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="1426410128494586442">అవును</translation>
 <translation id="1428146450423315676">స్టాకర్ 7</translation>
+<translation id="142858679511221695">క్లౌడ్ యూజర్</translation>
 <translation id="1428729058023778569">ఈ సైట్ HTTPS‌కు సపోర్ట్ చేయనందున మీరు ఈ హెచ్చరికను చూస్తున్నారు. <ph name="BEGIN_LEARN_MORE_LINK" />మరింత తెలుసుకోండి<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1432581352905426595">సెర్చ్ ఇంజిన్‌లను మేనేజ్ చేయండి</translation>
@@ -721,6 +722,7 @@
 <translation id="3329013043687509092">సంతృప్తత</translation>
 <translation id="3333762389743153920">వర్చువల్ కార్డ్ కోసం అర్హత లేదు</translation>
 <translation id="3338095232262050444">సురక్షితం</translation>
+<translation id="3339446062576134663">క్లౌడ్ (యాష్)</translation>
 <translation id="3355823806454867987">ప్రాక్సీ సెట్టింగ్‌లను మార్చు...</translation>
 <translation id="3360103848165129075">చెల్లింపు హ్యాండ్లర్ షీట్</translation>
 <translation id="3361596688432910856">Chrome ఈ కింది సమాచారాన్ని <ph name="BEGIN_EMPHASIS" />సేవ్ చేయదు<ph name="END_EMPHASIS" />:
@@ -744,6 +746,7 @@
 <translation id="3380365263193509176">తెలియని ఎర్రర్</translation>
 <translation id="3380864720620200369">క్లయింట్ ID:</translation>
 <translation id="3381668585148405088">మీ కొనుగోలును వెరిఫై చేయండి</translation>
+<translation id="3383566085871012386">ప్రస్తుతం ఉన్న ప్రాధాన్యత క్రమం</translation>
 <translation id="3387261909427947069">పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="3391030046425686457">బట్వాడా అడ్రస్‌</translation>
 <translation id="3391482648489541560">ఫైల్‌ను ఎడిట్ చేయడం</translation>
@@ -1413,6 +1416,7 @@
 <translation id="5478437291406423475">B6/C4 (ఎన్వలప్)</translation>
 <translation id="5481076368049295676">ఈ కంటెంట్ మీ సమాచారాన్ని దొంగిలించగల లేదా తొలగించగల హానికరమైన సాఫ్ట్‌వేర్‌ను మీ పరికరంలో ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు. <ph name="BEGIN_LINK" />ఏదేమైనా చూపు<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">చెల్లుబాటు అయ్యే అడ్రస్‌ను జోడించండి</translation>
+<translation id="5485973315555778056">క్లౌడ్ మెషీన్</translation>
 <translation id="5490432419156082418">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
 <translation id="5492298309214877701">కంపెనీ, సంస్థ లేదా పాఠశాల ఇంట్రానెట్‌లోని ఈ సైట్ బాహ్య వెబ్‌సైట్ కలిగి ఉన్న అదే URLను కలిగి ఉంది.
     <ph name="LINE_BREAK" />
@@ -1442,6 +1446,7 @@
 <translation id="5571083550517324815">ఈ అడ్రస్‌ నుండి పికప్ చేసుకోవడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
 <translation id="5580958916614886209">మీ గడువు ముగింపు నెలను తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి</translation>
 <translation id="5586446728396275693">సేవ్ చేయబడిన అడ్రస్‌లు లేవు</translation>
+<translation id="5587987780934666589">ప్లాట్‌ఫామ్ యూజర్</translation>
 <translation id="5593349413089863479">కనెక్షన్ పూర్తిగా సురక్షితమైనది కాదు</translation>
 <translation id="5595485650161345191">అడ్రస్‌ను సవరించు</translation>
 <translation id="5598944008576757369">చెల్లింపు పద్ధతిని ఎంచుకోండి</translation>
@@ -2130,6 +2135,7 @@
 <translation id="7953569069500808819">ఎగువ భాగంలో కుట్టిన అంచు</translation>
 <translation id="7956713633345437162">మొబైల్ బుక్‌మార్క్‌లు</translation>
 <translation id="7961015016161918242">ఎప్పుడూ లేదు</translation>
+<translation id="7962467575542381659">ప్లాట్‌ఫామ్ మెషీన్</translation>
 <translation id="7966803981046576691">ఉద్యోగ ఖాతా రకం</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" విలువ అన్నది చెల్లని హెక్స్ రంగు.</translation>
 <translation id="7968982339740310781">వివరాలను చూడండి</translation>

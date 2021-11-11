@@ -82,6 +82,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="124116460088058876">Weitere Sprachen</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Fett</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um die Bedienungshilfen in den Chrome OS-Einstellungen zu personalisieren</translation>
 <translation id="1250759482327835220">Damit Zahlungen zukünftig schneller abgewickelt werden können, speichern Sie Ihre Kreditkartendaten, Ihren Namen und Ihre Rechnungsadresse in Ihrem Google-Konto.</translation>
 <translation id="1252799212227771492">Schaltfläche „Tabelle erstellen“ – drücken Sie die Eingabetaste, um schnell eine neue Google-Tabelle zu erstellen</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (synchronisiert)</translation>
@@ -318,6 +319,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="192020519938775529">{COUNT,plural, =0{Keine}=1{1 Website}other{# Websites}}</translation>
 <translation id="1923390796829649802">Schaltfläche „Einstellungen für Bedienungshilfen verwalten“ – drücken Sie die Eingabetaste, um die Bedienungshilfen in den Chrome OS-Einstellungen zu personalisieren</translation>
 <translation id="1924727005275031552">Neu</translation>
+<translation id="1927439593081478069">Schaltfläche zum Ausführen des Chrome-Sicherheitschecks – drücken Sie die Eingabetaste, um den Sicherheitscheck in den Chrome-Einstellungen auszuführen</translation>
 <translation id="1939175642807587452">Darf nachfragen, wenn sie Benachrichtigungen senden möchte</translation>
 <translation id="1945968466830820669">Sie könnten den Zugriff auf das Konto Ihres Unternehmens verlieren oder zum Opfer von Identitätsdiebstahl werden. Chromium empfiehlt Ihnen, Ihr Passwort jetzt zu ändern.</translation>
 <translation id="1947454675006758438">Heftklammer oben rechts</translation>
@@ -337,6 +339,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2003709556000175978">Jetzt Passwort zurücksetzen</translation>
 <translation id="2003775180883135320">Vierfache Lochung oben</translation>
 <translation id="201174227998721785">Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen verwalten</translation>
+<translation id="2019607688127825327">Schaltfläche „Einstellungen für Bedienungshilfen verwalten“ – drücken Sie die Eingabetaste, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
 <translation id="2025115093177348061">Augmented Reality</translation>
 <translation id="2025186561304664664">Proxy ist auf automatische Konfiguration eingestellt.</translation>
 <translation id="2025891858974379949">Unsichere Inhalte</translation>
@@ -502,6 +505,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2556876185419854533">&amp;Bearbeiten rückgängig machen</translation>
 <translation id="2570734079541893434">Einstellungen verwalten</translation>
 <translation id="257674075312929031">Gruppe</translation>
+<translation id="2576880857912732701">Schaltfläche zum Verwalten der Sicherheitseinstellungen – drücken Sie die Eingabetaste, um beispielsweise Safe Browsing in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="2586657967955657006">Zwischenablage</translation>
 <translation id="2587730715158995865">Von <ph name="ARTICLE_PUBLISHER" />. Diese Meldung und <ph name="OTHER_ARTICLE_COUNT" /> weitere Meldungen lesen.</translation>
 <translation id="2587841377698384444">Directory API-ID: </translation>
@@ -546,6 +550,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2713444072780614174">Weiß</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Eingabetaste, um Zahlungen und Kreditkartendaten in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="2721148159707890343">Anfrage erfolgreich</translation>
+<translation id="2723669454293168317">Sicherheitscheck in den Chrome-Einstellungen ausführen</translation>
 <translation id="2726001110728089263">Seitenfach</translation>
 <translation id="2728127805433021124">Das Serverzertifikat ist mit einem schwachen Signaturalgorithmus signiert.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Verbindungsdiagnose ausführen<ph name="END_LINK" /></translation>
@@ -576,6 +581,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="2859806420264540918">Diese Website zeigt aufdringliche oder irreführende Werbung an.</translation>
 <translation id="287596039013813457">Freundlich</translation>
 <translation id="2876489322757410363">Der Inkognitomodus wird deaktiviert, um über eine externe Anwendung zu zahlen. Möchten Sie fortfahren?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um beispielsweise Safe Browsing in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="2878197950673342043">Posterfaltung</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Fensterpositionierung</translation>
@@ -681,6 +687,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3229041911291329567">Versionsinformationen zu Ihrem Gerät und Browser</translation>
 <translation id="323107829343500871">CVC für <ph name="CREDIT_CARD" /> eingeben</translation>
 <translation id="3234666976984236645">Wichtige Inhalte auf dieser Website immer erkennen</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um das Erscheinungsbild Ihres Browsers anzupassen</translation>
 <translation id="3240791268468473923">Sichere Anmeldedaten für Zahlungen – Tabellenblatt für nicht übereinstimmende sichere Anmeldedaten ist geöffnet</translation>
 <translation id="3249845759089040423">Cool</translation>
 <translation id="3252266817569339921">Französisch</translation>
@@ -724,6 +731,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
       • eine dreidimensionale Karte Ihrer Umgebung erstellen und die Kameraposition verfolgen
       • Ihre Kamera verwenden</translation>
 <translation id="337363190475750230">Bereitstellung aufgehoben</translation>
+<translation id="3375754925484257129">Chrome-Sicherheitscheck ausführen</translation>
 <translation id="3377144306166885718">Der Server hat eine veraltete TLS-Version verwendet.</translation>
 <translation id="3377188786107721145">Fehler beim Parsen der Richtlinie</translation>
 <translation id="3377736046129930310">Bildschirmsperre verwenden, um Karten schneller zu bestätigen</translation>
@@ -764,6 +772,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3462200631372590220">Erweiterte Informationen ausblenden</translation>
 <translation id="3467763166455606212">Name des Karteninhabers erforderlich</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, derzeit geöffnet, Tabulatortaste und dann Eingabetaste drücken, um zum offenen Tab zu wechseln</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um alle geöffneten Inkognitofenster zu schließen</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3484560055331845446">Sie könnten den Zugriff auf Ihr Google-Konto verlieren. Chrome empfiehlt Ihnen, Ihr Passwort jetzt zu ändern. Sie werden dazu aufgefordert, sich anzumelden.</translation>
 <translation id="3487845404393360112">Fach 4</translation>
@@ -801,6 +810,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="3611395257124510155">Virtuelle Karte für <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Größe 2</translation>
 <translation id="361438452008624280">Listeneintrag "<ph name="LANGUAGE_ID" />": Unbekannte oder nicht unterstützte Sprache.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um den Sicherheitscheck in den Chrome-Einstellungen auszuführen</translation>
 <translation id="3615877443314183785">Geben Sie ein gültiges Ablaufdatum ein</translation>
 <translation id="36224234498066874">Browserdaten löschen...</translation>
 <translation id="362276910939193118">Gesamtverlauf anzeigen</translation>
@@ -1590,6 +1600,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6218753634732582820">Adresse aus Chromium entfernen?</translation>
 <translation id="622039917539443112">Parallele Faltung</translation>
 <translation id="6221345481584921695">Google Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Malware<ph name="END_LINK" /> auf <ph name="SITE" /> gefunden. Websites, die in der Regel sicher sind, können gelegentlich mit Malware infiziert sein. Der schädliche Inhalt stammt von <ph name="SUBRESOURCE_HOST" />, einem bekannten Verteiler von Malware.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um die Bedienungshilfen in den Chrome-Einstellungen zu personalisieren</translation>
 <translation id="6234122620015464377">Nach jedem Dokument zuschneiden</translation>
 <translation id="6240447795304464094">Google Pay-Logo</translation>
 <translation id="6241121617266208201">Vorschläge ausblenden</translation>
@@ -1608,6 +1619,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6279098320682980337">Wurde die virtuelle Kartennummer nicht eingefügt? Klicken Sie auf die Kartendetails, um sie zu kopieren.</translation>
 <translation id="6280223929691119688">Die Lieferadresse wird nicht unterstützt. Bitte wählen Sie eine andere Adresse aus.</translation>
 <translation id="6282194474023008486">Postleitzahl</translation>
+<translation id="6285507000506177184">Schaltfläche zum Verwalten von Downloads in Chrome – drücken Sie die Eingabetaste, um in Chrome heruntergeladene Dateien zu verwalten</translation>
 <translation id="6289939620939689042">Seitenfarbe</translation>
 <translation id="6290238015253830360">Hier werden Ihre vorgeschlagenen Artikel angezeigt</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1723,6 +1735,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="6689249931105087298">Relativ mit Schwarzpunktkompensation</translation>
 <translation id="6689271823431384964">Chrome bietet Ihnen die Möglichkeit, die Karten in Ihrem Google-Konto zu speichern, weil Sie angemeldet sind. Sie können dies in den Einstellungen ändern. Der Name des Karteninhabers stammt aus Ihrem Konto.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um Ihr Gerät im Google-Konto zu finden</translation>
+<translation id="6696588630955820014">Schaltfläche „Tab teilen“ – drücken Sie die Eingabetaste, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen</translation>
 <translation id="6698381487523150993">Erstellt:</translation>
 <translation id="6702919718839027939">Präsentieren</translation>
 <translation id="6710213216561001401">Zurück</translation>
@@ -1928,6 +1941,7 @@ Weitere Details:
 <translation id="7392089738299859607">Adresse aktualisieren</translation>
 <translation id="7399802613464275309">Sicherheitscheck</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">Diesen Tab über den Link, über einen QR-Code, über Streamen usw. teilen</translation>
 <translation id="7403591733719184120">Ihr <ph name="DEVICE_NAME" /> wird verwaltet</translation>
 <translation id="7407424307057130981">&lt;p&gt;Sie erhalten diese Fehlermeldung, wenn auf Ihrem Windows-Computer Superfish-Software installiert ist.&lt;/p&gt;
       &lt;p&gt;Gehen Sie folgendermaßen vor, um die Software vorübergehend zu deaktivieren und auf das Web zuzugreifen. Wenn Sie die Software deaktivieren möchten, benötigen Sie Administratorrechte.&lt;/p&gt;
@@ -2157,6 +2171,7 @@ Weitere Details:
 <translation id="810875025413331850">Keine Geräte in der Nähe gefunden.</translation>
 <translation id="8116925261070264013">Stummgeschaltet</translation>
 <translation id="8118489163946903409">Zahlungsmethode</translation>
+<translation id="8124639700796374294">Schaltfläche „Chrome anpassen“ – drücken Sie die Eingabetaste, um das Erscheinungsbild Ihres Browsers anzupassen</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" war nicht ordnungsgemäß auf Ihrem Computer oder im Netzwerk installiert. Bitten Sie Ihren IT-Administrator, das Problem zu lösen.</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
 <translation id="8148608574971654810">PDF-Version:</translation>
@@ -2339,6 +2354,7 @@ Weitere Details:
 <translation id="87601671197631245">Diese Website nutzt eine veraltete Sicherheitskonfiguration. Hierdurch können Informationen wie etwa Passwörter, Nachrichten oder Kreditkartendaten, die an diese Website gesendet werden, in die Hände Unbefugter gelangen.</translation>
 <translation id="8761567432415473239">Google Safe Browsing hat vor Kurzem <ph name="BEGIN_LINK" />schädliche Programme<ph name="END_LINK" /> auf <ph name="SITE" /> gefunden.</translation>
 <translation id="8763927697961133303">USB-Gerät</translation>
+<translation id="8763986294015493060">Alle geöffneten Inkognitofenster schließen</translation>
 <translation id="8766943070169463815">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen ist geöffnet</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Löschen wiederholen</translation>
@@ -2352,6 +2368,7 @@ Weitere Details:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="882338992931677877">Manueller Einzug</translation>
+<translation id="8834380158646307944">Schaltfläche „Inkognitofenster schließen“ – drücken Sie die Eingabetaste, um alle geöffneten Inkognitofenster zu schließen</translation>
 <translation id="883848425547221593">Andere Lesezeichen</translation>
 <translation id="884264119367021077">Versandadresse</translation>
 <translation id="884923133447025588">Kein Sperrmechanismus gefunden.</translation>
@@ -2405,6 +2422,7 @@ Weitere Details:
 <translation id="9020200922353704812">Rechnungsadresse für Kreditkarte erforderlich</translation>
 <translation id="9020542370529661692">Die Seite wurde übersetzt und liegt nun auf <ph name="TARGET_LANGUAGE" /> vor.</translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücken Sie die Tabulatortaste und dann die Eingabetaste, um diesen Tab über den Link, über einen QR-Code, über Streamen usw. zu teilen</translation>
 <translation id="9025348182339809926">(Ungültig)</translation>
 <translation id="9030265603405983977">Schwarz-weiß</translation>
 <translation id="9035022520814077154">Sicherheitsfehler</translation>

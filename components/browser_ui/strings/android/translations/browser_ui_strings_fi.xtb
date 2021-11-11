@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> Mt</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta sallittu}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="NUM_MORE" /> muuta sallittu}}</translation>
 <translation id="2434158240863470628">Lataus valmis <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Pyydä aina tietokonesivustoa</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2485422356828889247">Poista</translation>
 <translation id="2490684707762498678">Ylläpitäjä: <ph name="APP_NAME" /></translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">Anna sivustojen käyttää liiketunnistimien lukemia (suositus)</translation>
 <translation id="5050380848339752099">Tämä sivusto aikoo jakaa tietoja sovellukselle incognito-tilan ulkopuolella.</translation>
 <translation id="5063480226653192405">Käyttö</translation>
+<translation id="509133520954049755">Pyydä tietokonenäkymää</translation>
 <translation id="5100237604440890931">Tiivistetty – laajenna klikkaamalla.</translation>
 <translation id="5123685120097942451">Incognito-välilehti</translation>
+<translation id="5134599672855298214">Pyydä mobiilinäkymää (suositus)</translation>
 <translation id="5186036860380548585">Toiminto on käytettävissä näytön yläosassa</translation>
 <translation id="5197729504361054390"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saa valitsemasi yhteystiedot.</translation>
 <translation id="5216942107514965959">Viimeksi avattu tänään</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">Peru laitteen käyttöoikeus</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 eväste käytössä}other{# evästettä käytössä}}</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
+<translation id="848952951823693243">Pyydä aina mobiilisivustoa</translation>
 <translation id="851751545965956758">Estä sivustoja yhdistämästä laitteisiin</translation>
 <translation id="8525306231823319788">Koko näyttö</translation>
 <translation id="857943718398505171">Sallittu (suositus)</translation>

@@ -271,6 +271,13 @@
 <translation id="1352799151662469739">当使用交流电源供电时系统应在设备闲置多久（以毫秒为单位）后锁定屏幕</translation>
 <translation id="1353416417709895349">停用 DNS 拦截检查功能和“您是不是要前往 http://intranetsite/？”信息栏。</translation>
 <translation id="1354424209129232709">上限：</translation>
+<translation id="1355050231181289439"> 此政策用于控制是否启用改进后的国际键盘快捷键映射。
+      该功能可确保键盘快捷键的运行方式契合国际键盘布局并弃用旧版快捷键。
+
+      如果此政策已停用，改进后的国际键盘快捷键会处于停用状态。
+      如果此政策已启用，改进后的国际键盘快捷键会处于启用状态。
+      如果未设置，此政策在受管设备上会处于启用状态，在消费者拥有的设备上也会处于启用状态。
+      请注意，此政策只是一项临时性政策，旨在让受管用户仍能使用已弃用的旧版快捷键。待自定义键盘快捷键可用后，此政策将被弃用。</translation>
 <translation id="1359553908012294236">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 将允许使用访客身份登录。访客身份是指 <ph name="PRODUCT_NAME" /> 个人资料，使用此类个人资料登录后，所有窗口均处于隐身模式。
 
       如果此政策设为 false，<ph name="PRODUCT_NAME" /> 将禁止使用访客个人资料登录。</translation>
@@ -772,7 +779,7 @@
       如果此政策已停用或未设置，系统便不会使用快速切换功能。</translation>
 <translation id="1972134432340252414">屏蔽浏览器进程中的旧版扩展点</translation>
 <translation id="1977581177449752640">如果您设置了此政策，远程访问主机会使用带有指定颁发者 CN 的客户端证书向 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 验证身份。若要使用任意可用的客户端证书，请将此政策设为 <ph name="WILDCARD_VALUE" />。如果您未设置此政策或将它留空，系统会停用此功能。</translation>
-<translation id="1986003348976870087">不提示用户在登录屏幕上选择客户端证书。</translation>
+<translation id="1984423899110408165">将历史记录集群显示在“Chrome 历史记录”页面上</translation>
 <translation id="1988345404999458987">提供可用打印服务器的配置。
 
       此政策让您能够以 JSON 文件的形式向 <ph name="PRODUCT_OS_NAME" />设备提供外部打印服务器的配置。
@@ -1488,6 +1495,14 @@
 <translation id="2725855586003209701">如果此政策已启用或未设置，已注册的设备将会以列表形式报告近期登录过的设备用户。
 
       如果此政策已停用，已注册的设备将不会以列表形式报告用户。</translation>
+<translation id="2725944143509568512">此政策用于控制是否将历史记录集群显示在“Chrome 历史记录”页面上。
+
+      如果此政策已启用，历史记录集群将会显示在 chrome://history/journeys 页面上。
+
+      如果此政策已停用，历史记录集群将不会显示在 chrome://history/journeys 页面上。
+
+      如果此政策未设置，历史记录集群将会默认显示在 chrome://history/journeys 页面上，但用户可以更改历史记录集群的可见性设置。
+      </translation>
 <translation id="2730419309754848345">默认以图片形式打印 PDF 文件</translation>
 <translation id="2731627323327011390">禁止 ARC 应用使用 <ph name="PRODUCT_OS_NAME" /> 证书</translation>
 <translation id="2742843273354638707">在“打开新的标签页”页面和 <ph name="PRODUCT_OS_NAME" />应用启动器中不显示“Chrome 网上应用店”应用和页脚链接。
@@ -2133,6 +2148,7 @@
 
       如果此政策已停用或未设置，系统会关闭 DTC。因此，DTC 无法收集、处理和报告设备的遥测与诊断数据。</translation>
 <translation id="3450649825886735618">不使用任何 Google 网络服务来帮助修正拼写错误</translation>
+<translation id="3451422488938880786"> 允许启用/停用国际键盘快捷键重新映射</translation>
 <translation id="3451901387456196887">在 <ph name="PRODUCT_NAME" /> 菜单中为用户提供通过使用访问代码或扫描二维码选择投射设备的选项。</translation>
 <translation id="3456292544936505775">此政策用于控制不允许 <ph name="PRODUCT_OS_NAME" />设备在哪些时间范围内自动检查是否有更新。
       当此政策设为非空的时间范围列表时：
@@ -2170,6 +2186,7 @@
        屏蔽名单值“<ph name="ALL_EXTENSIONS" />”表示所有扩展程序均已被屏蔽，用户只能安装许可名单中列出的扩展程序。
 
        默认情况下，所有扩展程序都是允许安装的，但如果您依照相关政策禁止了扩展程序，请使用扩展程序许可列表更改该政策。</translation>
+<translation id="3501606938635483637">国际键盘快捷键映射到按键的字形（而非键盘上的按键位置）。</translation>
 <translation id="3502555714327823858">允许所有双面打印模式</translation>
 <translation id="350443680860256679">配置 ARC</translation>
 <translation id="350797926066071931">启用翻译</translation>
@@ -2549,12 +2566,6 @@
 
       如果此政策设为 False，则“自动填充”功能一律不会建议或填充信用卡信息，也不会保存用户在浏览网页时提交的其他信用卡信息。</translation>
 <translation id="3989829840000169163">屏蔽浏览器旧版扩展点</translation>
-<translation id="3996594590700242138">如果此政策未设置或已启用，即意味着允许更新 <ph name="PRODUCT_NAME" /> 中的所有组件。
-
-      如果此政策已停用，则意味着禁止更新组件。不过，某些组件不受此政策限制：只要相应组件不含可执行的代码、不明显改变浏览器的行为，或对浏览器的安全性至关重要，系统就不会禁止更新该组件。
-      这类组件包括证书吊销列表、安全浏览数据，等等。
-      若要详细了解安全浏览功能，请访问 https://developers.google.com/safe-browsing。
-      请注意，停用此政策可能会妨碍 <ph name="PRODUCT_NAME" /> 开发者及时提供重要的安全性修复程序，因此我们不建议您这样做。</translation>
 <translation id="3997519162482760140">可通过 SAML 登录页面访问视频捕获设备的网址</translation>
 <translation id="4004523942550416237">在初始设置期间不显示 Google 助理 Voice Match 流程</translation>
 <translation id="4007646377576030214"> 请注意，此政策已在 M87 中弃用，并已从 M89 中移除。请改用 <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> 来配置受管理访客会话的隐私权警告。
@@ -3121,6 +3132,7 @@
 <translation id="4802905909524200151">配置 <ph name="TPM_FIRMWARE_UPDATE_TPM" /> 固件更新行为</translation>
 <translation id="4804828344300125154">在用户退出后一律重新启动。</translation>
 <translation id="4807950475297505572">删除最近使用最少的用户，直到有足够的可用空间</translation>
+<translation id="4811210934875253713">将历史记录集群显示在 chrome://history/journeys 页面上。</translation>
 <translation id="4812270373673968774">将此政策设为“始终”会自动隐藏 <ph name="PRODUCT_OS_NAME" />工具栏。将此政策设为“永不”可确保工具栏一律不会自动隐藏。
 
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，用户可以决定是否让工具栏自动隐藏。</translation>
@@ -3827,6 +3839,7 @@
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="5620392548325769024">在操作系统升级后，允许该浏览器首次启动时显示欢迎页面</translation>
 <translation id="5622924058222112599">启用默认 CECPQ2 发布流程</translation>
+<translation id="5623304306796942802">有多份证书匹配时发出提示</translation>
 <translation id="5625771176514429288">Chrome 应用可以在这些平台上运行。</translation>
 <translation id="5630352020869108293">恢复上次的会话</translation>
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>
@@ -4382,6 +4395,29 @@
 
           仅当闲置操作为注销或关机时，系统才会显示警告消息。</translation>
 <translation id="6331943515692769234">强制使用旧版 User-Agent GREASE 算法。</translation>
+<translation id="6332192586629642626">不将历史记录集群显示在 chrome://history/journeys 页面上。</translation>
+<translation id="6332489309596092806">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装且无法由用户卸载或停用。
+
+      此政策的每个列表项都是一个对象，其中会包含 1 个必要成员：
+      <ph name="URL_LABEL" />（要安装的 Web 应用的网址）
+
+      以及 5 个可选成员：
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      （用于指明 Web 应用的打开方式，默认在新标签页中打开）
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      （如果您想创建 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面快捷方式，请设为 True。）
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      （自 <ph name="PRODUCT_NAME" /> 90 版起，让您能够替换非渐进式 Web 应用 [PWA] 的应用名称，或临时安装但在安装完毕之前需进行身份验证的 PWA 的应用名称。如果同时提供了 <ph name="CUSTOM_NAME_LABEL" /> 和 <ph name="FALLBACK_APP_NAME_LABEL" />，系统会忽略后者。）
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      （自 <ph name="PRODUCT_NAME" /> 96 版起，让您能够永久地替换所有 Web 应用和 PWA 的应用名称。目前仅在 <ph name="PRODUCT_OS_NAME" />上受支持。）
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      （自 <ph name="PRODUCT_NAME" /> 96 版起，让您能够替换安装式应用的应用图标。图标必须为方形，大小不超过 1 MB，并采用以下格式之一：jpeg、png、gif、webp、ico。哈希值必须是图标文件的 SHA256 哈希。目前仅在 <ph name="PRODUCT_OS_NAME" />上受支持。）
+
+      如需了解如何将应用固定到 <ph name="PRODUCT_OS_NAME" />任务栏中，请参阅 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />。</translation>
 <translation id="6332546092866098577">禁止在这些网站上通过 File System API 读取内容</translation>
 <translation id="6334330017384340264">此政策用于指定哪些应用和网址可以不受应用级使用限制的约束。
         所配置的许可名单会应用于 <ph name="PRODUCT_OS_NAME" />上安装的应用，这些应用针对给定用户设置了应用级使用时限。
@@ -4787,7 +4823,6 @@
 
           注意：<ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />（若已指定）会覆盖此政策。</translation>
 <translation id="6833988859168635883">启动页、主页和新标签页</translation>
-<translation id="683399492058633424">当登录屏幕上有多个证书匹配时提示用户选择客户端证书。</translation>
 <translation id="6835883744948188639">显示建议用户重新启动浏览器的周期性提示</translation>
 <translation id="683688607121170501">通过此设置，您可允许用户在登录其 <ph name="PRODUCT_OS_NAME" />设备后从浏览器窗口的内容区域和 Android 应用中切换 Google 帐号。
 
@@ -5812,6 +5847,7 @@
 
       如果此政策已启用，用户便能够使用 <ph name="LACROS_NAME" /> 浏览器。</translation>
 <translation id="802147957407376460">将屏幕旋转 0 度</translation>
+<translation id="8025620823136567878">国际键盘快捷键映射到键盘中的按键位置（而非按键的字形）。</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>
 <translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
@@ -6588,6 +6624,7 @@
 <translation id="8931555638815157255">如果此政策已启用或未设置，已注册的设备将会定期报告其操作系统和固件版本。
 
       如果此政策已停用，已注册的设备将不会报告版本信息。</translation>
+<translation id="8934618237639919190">历史记录集群默认显示在 chrome://history/journeys 页面上，但用户可以更改历史记录集群的可见性设置。</translation>
 <translation id="8937282917198525844"> 从 M81 开始，我们不仅更新了标准表单控件元素（例如 &lt;select&gt;、&lt;button&gt;、&lt;input type=date&gt;）的外观和风格，还改进了无障碍功能并提升了平台统一性。此政策用于在 M84 之前的版本中恢复“旧版”表单控件元素。
 
       如果此政策设为 True，系统将会为所有网站使用“旧版”表单控件元素。

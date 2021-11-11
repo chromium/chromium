@@ -326,6 +326,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="334252345105450327">Screenshot erstellen</translation>
 <translation id="3351879221545518001">Sie streamen gerade den Bildschirm.</translation>
 <translation id="3364721542077212959">Eingabestift-Tools</translation>
+<translation id="3365977133351922112">Ihr Smartphone ist zu weit weg. Holen Sie es näher heran.</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3371140690572404006">USB-C-Gerät (Port vorne rechts)</translation>
 <translation id="3375634426936648815">Verbunden</translation>
@@ -602,6 +603,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5170568018924773124">In Ordner zeigen</translation>
 <translation id="5176318573511391780">Teil des Bildschirms aufzeichnen</translation>
 <translation id="5199367439331364630">Zum Anmelden auf dem Chromebook Passwort eingeben</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 weitere Benachrichtigung}other{# weitere Benachrichtigungen}}</translation>
 <translation id="5207949376430453814">Textcursor hervorheben</translation>
 <translation id="5208059991603368177">An</translation>
@@ -885,6 +887,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7398254312354928459">Netzwerkverbindung gewechselt</translation>
 <translation id="7405710164030118432">Wenn Sie das Gerät entsperren möchten, geben Sie Ihren Eltern-Zugangscode für Family Link ein</translation>
 <translation id="7406608787870898861">Einrichtung des Mobilfunknetzes abschließen</translation>
+<translation id="740790383907119240">App-Verknüpfungen</translation>
 <translation id="741244894080940828">Umrechnung</translation>
 <translation id="7413851974711031813">Drücken Sie zum Schließen die Escape-Taste</translation>
 <translation id="742594950370306541">Kamera wird verwendet.</translation>
@@ -987,6 +990,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8061464966246066292">Hoher Kontrast</translation>
 <translation id="8098591350844501178">Streamen von Bildschirm an <ph name="RECEIVER_NAME" /> beenden</translation>
 <translation id="8113423164597455979">An: alle Apps</translation>
+<translation id="8120151603115102514">Ihr Smartphone hat keinen Sperrbildschirm. Geben Sie zum Entsperren des Chromebooks das Passwort ein.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
 <translation id="8132487352815776550">Untertitel deaktivieren</translation>
@@ -1035,6 +1039,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> hat <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Drücken Sie Alt + Such-Taste oder die Umschalttaste, um die Aktivierung aufzuheben.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> geändert. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
+<translation id="85123341071060231">Die Bluetooth-Funktion Ihres Chromebooks ist deaktiviert. Wenn Sie es entsperren möchten, geben Sie das Passwort ein.</translation>
 <translation id="8513108775083588393">Autom. drehen</translation>
 <translation id="851458219935658693">Fenster des aktuellen Desktops werden angezeigt, Optionsfeld ausgewählt</translation>
 <translation id="8517041960877371778">Ihr <ph name="DEVICE_TYPE" /> wird möglicherweise nicht aufgeladen, wenn es eingeschaltet ist.</translation>

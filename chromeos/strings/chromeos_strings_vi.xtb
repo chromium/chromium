@@ -277,6 +277,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5294769550414936029">phiên bản <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Di chuyển cửa sổ đến không gian làm việc</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Kết nối</translation>
 <translation id="5315873049536339193">Nhận dạng</translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5318334351163689047">Không gửi được yêu cầu TCP</translation>
@@ -398,6 +399,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="714876143603641390">Khả năng kết nối với mạng LAN</translation>
 <translation id="7162487448488904999">Thư viện</translation>
 <translation id="7172721935181587524">1 hình ảnh</translation>
+<translation id="7175037578838465313">Định cấu hình <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
@@ -500,6 +502,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8620617069779373398">Trạng thái chuyển vùng</translation>
 <translation id="8655295600908251630">Kênh</translation>
 <translation id="8660881923941176839">pao</translation>
+<translation id="8662671328352114214">Kết nối mạng <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Khóa được chia sẻ trước</translation>
 <translation id="871560550817059752">Không thành công – Hết mực</translation>
 <translation id="8723108084122415655">Mạng không phải mạng mặc định vượt ngưỡng độ trễ</translation>

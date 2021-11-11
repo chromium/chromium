@@ -82,6 +82,7 @@
 <translation id="124116460088058876">다른 언어</translation>
 <translation id="1243027604378859286">작성자:</translation>
 <translation id="1246424317317450637">굵게</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS 설정에서 접근성 도구를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="1250759482327835220">다음번에 더 빠르게 결제할 수 있도록 Google 계정에 카드, 이름, 청구서 수신 주소를 저장하세요.</translation>
 <translation id="1252799212227771492">시트 만들기 버튼, Enter를 눌러 빠르게 새 Google 시트 만들기</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" />(동기화됨)</translation>
@@ -318,6 +319,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{없음}=1{사이트 1개}other{사이트 #개}}</translation>
 <translation id="1923390796829649802">접근성 설정 관리 버튼, Chrome OS 설정의 접근성 도구를 맞춤설정하려면 Enter를 누르세요</translation>
 <translation id="1924727005275031552">새로운 주소</translation>
+<translation id="1927439593081478069">Chrome 안전 확인 실행 버튼, Chrome 설정에서 안전 확인을 실행하려면 Enter를 누르세요</translation>
 <translation id="1939175642807587452">알림 전송을 요청할 수 있음</translation>
 <translation id="1945968466830820669">조직의 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="1947454675006758438">오른쪽 상단 스테이플</translation>
@@ -337,6 +339,7 @@
 <translation id="2003709556000175978">지금 비밀번호 재설정</translation>
 <translation id="2003775180883135320">상단 4공 펀칭</translation>
 <translation id="201174227998721785">Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
+<translation id="2019607688127825327">접근성 설정 관리 버튼, Chrome 설정의 접근성 도구를 맞춤설정하려면 Enter를 누르세요</translation>
 <translation id="2025115093177348061">증강 현실</translation>
 <translation id="2025186561304664664">프록시가 자동 설정되도록 지정됩니다.</translation>
 <translation id="2025891858974379949">안전하지 않은 콘텐츠</translation>
@@ -502,6 +505,7 @@
 <translation id="2556876185419854533">수정 실행 취소(&amp;U)</translation>
 <translation id="2570734079541893434">설정 관리하기</translation>
 <translation id="257674075312929031">그룹화</translation>
+<translation id="2576880857912732701">보안 설정 관리 버튼, Chrome 설정에서 세이프 브라우징 등의 기능을 관리하려면 Enter를 누르세요</translation>
 <translation id="2586657967955657006">클립보드</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" />에서 제공한 기사입니다. <ph name="OTHER_ARTICLE_COUNT" />개의 다른 뉴스도 읽어 보세요.</translation>
 <translation id="2587841377698384444">Directory API ID:</translation>
@@ -546,6 +550,7 @@
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 결제 및 신용카드 정보를 관리하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="2721148159707890343">요청 성공</translation>
+<translation id="2723669454293168317">Chrome 설정의 안전 확인 실행</translation>
 <translation id="2726001110728089263">측면 트레이</translation>
 <translation id="2728127805433021124">서버의 인증서가 안전성이 낮은 서명 알고리즘을 사용하여 서명되어 있습니다.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />연결 진단 프로그램 실행<ph name="END_LINK" /></translation>
@@ -576,6 +581,7 @@
 <translation id="2859806420264540918">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다.</translation>
 <translation id="287596039013813457">친근함</translation>
 <translation id="2876489322757410363">시크릿 모드를 종료하고 외부 애플리케이션에서 결제합니다. 계속하시겠습니까?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 세이프 브라우징 등을 관리하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="2878197950673342043">포스터 폴드</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">창 배치</translation>
@@ -681,6 +687,7 @@
 <translation id="3229041911291329567">기기와 브라우저에 관한 버전 정보</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> 카드의 CVC를 입력하세요.</translation>
 <translation id="3234666976984236645">이 사이트에서 중요한 콘텐츠 항상 감지</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, 브라우저 테마를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3240791268468473923">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 열림</translation>
 <translation id="3249845759089040423">그루브</translation>
 <translation id="3252266817569339921">프랑스어</translation>
@@ -724,6 +731,7 @@
       • 주변의 3D 지도 만들기 및 카메라 위치 추적
       • 카메라 사용</translation>
 <translation id="337363190475750230">사용 중단됨</translation>
+<translation id="3375754925484257129">Chrome 안전 확인 실행</translation>
 <translation id="3377144306166885718">서버에서 지원 중단된 TLS 버전을 사용했습니다.</translation>
 <translation id="3377188786107721145">정책 파싱 오류</translation>
 <translation id="3377736046129930310">화면 잠금을 사용하여 빠르게 카드 확인</translation>
@@ -764,6 +772,7 @@
 <translation id="3462200631372590220">세부정보 숨기기</translation>
 <translation id="3467763166455606212">카드 소유자 이름을 입력해야 합니다.</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, 현재 열려 있음, Tab을 누른 다음 Enter를 눌러 열린 탭으로 전환</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, 현재 열려 있는 시크릿 창을 모두 닫으려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3479552764303398839">나중에</translation>
 <translation id="3484560055331845446">Google 계정에 액세스하지 못할 수 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다. 로그인하라는 메시지가 표시됩니다.</translation>
 <translation id="3487845404393360112">트레이 4</translation>
@@ -802,6 +811,7 @@
 <translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> 가상 카드</translation>
 <translation id="3614103345592970299">크기 2</translation>
 <translation id="361438452008624280">목록 항목 ‘<ph name="LANGUAGE_ID" />’: 알 수 없거나 지원되지 않는 언어입니다.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 안전 확인을 실행하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3615877443314183785">올바른 만료일을 입력하세요.</translation>
 <translation id="36224234498066874">인터넷 사용 기록 삭제...</translation>
 <translation id="362276910939193118">방문 기록 전체 보기</translation>
@@ -1592,6 +1602,7 @@
 <translation id="6218753634732582820">Chromium에서 주소를 삭제하시겠습니까?</translation>
 <translation id="622039917539443112">평행 폴드</translation>
 <translation id="6221345481584921695">Google 세이프 브라우징이 최근 <ph name="SITE" />에서 <ph name="BEGIN_LINK" />멀웨어를 감지<ph name="END_LINK" />했습니다. 평소에 안전한 웹사이트도 멀웨어에 감염될 수가 있습니다. 악성 콘텐츠의 출처는 알려진 멀웨어 배포자인 <ph name="SUBRESOURCE_HOST" />입니다.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 접근성 도구를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="6234122620015464377">각 문서 뒤에 트림</translation>
 <translation id="6240447795304464094">Google Pay 로고</translation>
 <translation id="6241121617266208201">추천 숨기기</translation>
@@ -1610,6 +1621,7 @@
 <translation id="6279098320682980337">가상 카드 번호가 자동 완성되지 않았나요? 복사할 카드 세부정보를 클릭하세요.</translation>
 <translation id="6280223929691119688">이 주소로 배달할 수 없습니다. 다른 주소를 선택하세요.</translation>
 <translation id="6282194474023008486">우편번호</translation>
+<translation id="6285507000506177184">Chrome 다운로드 관리 버튼, Chrome에서 다운로드한 파일을 관리하려면 Enter를 누르세요</translation>
 <translation id="6289939620939689042">페이지 색상</translation>
 <translation id="6290238015253830360">추천 콘텐츠가 여기에 표시됩니다.</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1725,6 +1737,7 @@
 <translation id="6689249931105087298">상대적이며 흑점 보정 포함</translation>
 <translation id="6689271823431384964">Google 계정에 로그인되어 있기 때문에 Chrome에서 계정에 카드를 저장할지 묻는 메시지가 표시됩니다. 설정에서 이 동작을 변경할 수 있습니다. 카드 소지자 이름은 계정에서 가져온 것입니다.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google 계정에서 기기를 찾으려면 Tab과 Enter를 차례로 누르세요</translation>
+<translation id="6696588630955820014">탭 공유 버튼, 링크 공유, QR 코드 생성, 전송 등의 옵션으로 탭을 공유하려면 Enter를 누르세요</translation>
 <translation id="6698381487523150993">생성됨:</translation>
 <translation id="6702919718839027939">발표</translation>
 <translation id="6710213216561001401">이전</translation>
@@ -1930,6 +1943,7 @@
 <translation id="7392089738299859607">주소 업데이트</translation>
 <translation id="7399802613464275309">안전 확인</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">링크 공유, QR 코드 생성, 전송 등의 옵션으로 탭 공유</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> 기기는 관리 대상 기기입니다</translation>
 <translation id="7407424307057130981">&lt;p&gt;Windows 컴퓨터에 Superfish 소프트웨어가 있으면 이 오류가 표시됩니다.&lt;/p&gt;
       &lt;p&gt;소프트웨어를 일시적으로 사용 중지하여 웹에 접속하려면 다음 단계를 따르세요. 관리자 권한이 필요합니다.&lt;/p&gt;
@@ -2158,6 +2172,7 @@
 <translation id="810875025413331850">주변 기기를 찾을 수 없습니다.</translation>
 <translation id="8116925261070264013">음소거됨</translation>
 <translation id="8118489163946903409">결제 수단</translation>
+<translation id="8124639700796374294">Chrome 맞춤설정 버튼, 브라우저 테마를 맞춤설정하려면 Enter를 누르세요</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />'이(가) 컴퓨터 또는 네트워크에 제대로 설치되지 않았습니다. IT 관리자에게 문제 해결을 요청해 보세요.</translation>
 <translation id="8131740175452115882">확인</translation>
 <translation id="8148608574971654810">PDF 버전:</translation>
@@ -2339,6 +2354,7 @@
 <translation id="87601671197631245">이 사이트에서는 오래된 보안 설정을 사용하므로 개인정보(예: 비밀번호, 메시지 또는 신용카드)를 이 사이트로 전송할 경우 정보가 유출될 수도 있습니다.</translation>
 <translation id="8761567432415473239">Google 세이프 브라우징 결과 <ph name="SITE" />에서 최근 <ph name="BEGIN_LINK" />악성 프로그램이 발견<ph name="END_LINK" />되었습니다.</translation>
 <translation id="8763927697961133303">USB 기기</translation>
+<translation id="8763986294015493060">현재 열려 있는 시크릿 창 모두 닫기</translation>
 <translation id="8766943070169463815">보안 결제 사용자 인증 정보 승인 시트가 열림</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">삭제 다시 실행(&amp;R)</translation>
@@ -2352,6 +2368,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 Chrome을 업데이트하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="8820817407110198400">북마크</translation>
 <translation id="882338992931677877">수동 슬롯</translation>
+<translation id="8834380158646307944">시크릿 창 닫기 버튼, 현재 열려 있는 시크릿 창을 모두 닫으려면 Enter를 누르세요</translation>
 <translation id="883848425547221593">기타 북마크</translation>
 <translation id="884264119367021077">배송지 주소</translation>
 <translation id="884923133447025588">폐기 매커니즘을 찾을 수 없습니다.</translation>
@@ -2405,6 +2422,7 @@
 <translation id="9020200922353704812">카드 청구서 수신 주소가 필요함</translation>
 <translation id="9020542370529661692">이 페이지는 <ph name="TARGET_LANGUAGE" />로 번역되었습니다.</translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, 링크 공유, QR 코드 생성, 전송 등의 옵션으로 탭을 공유하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="9025348182339809926">(유효하지 않음)</translation>
 <translation id="9030265603405983977">흑백</translation>
 <translation id="9035022520814077154">보안 오류</translation>

@@ -326,6 +326,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="334252345105450327">Atera pantaila-argazki bat</translation>
 <translation id="3351879221545518001">Pantailako edukia igortzen ari zara.</translation>
 <translation id="3364721542077212959">Arkatzaren tresnak</translation>
+<translation id="3365977133351922112">Telefonoa urrunegi dago. Gertura ezazu.</translation>
 <translation id="3368922792935385530">Konektatuta</translation>
 <translation id="3371140690572404006">USB-C gailua (eskuinaldeko aurreko ataka)</translation>
 <translation id="3375634426936648815">Konektatuta</translation>
@@ -603,6 +604,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5176318573511391780">Grabatu pantailaren zati bat</translation>
 <translation id="5199367439331364630">Chromebook-ean saioa hasteko, idatzi pasahitza</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Beste jakinarazpen bat}other{Beste # jakinarazpen}}</translation>
 <translation id="5207949376430453814">Nabarmendu testu-kurtsorea</translation>
 <translation id="5208059991603368177">Aktibatuta</translation>
@@ -886,6 +888,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7398254312354928459">Aldatu egin da sareko konexioa</translation>
 <translation id="7405710164030118432">Gailua desblokeatzeko, idatzi Family Link-eko gurasoen sarbide-kodea.</translation>
 <translation id="7406608787870898861">Amaitu sare mugikorra konfiguratzen</translation>
+<translation id="740790383907119240">Aplikazioetarako lasterbideak</translation>
 <translation id="741244894080940828">bihurketa</translation>
 <translation id="7413851974711031813">Ixteko, sakatu Ihes tekla</translation>
 <translation id="742594950370306541">Kamera abian da.</translation>
@@ -988,6 +991,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8061464966246066292">Kontraste handia</translation>
 <translation id="8098591350844501178">Utzi pantaila <ph name="RECEIVER_NAME" /> izeneko gailura igortzeari</translation>
 <translation id="8113423164597455979">Guzt. aktibat.</translation>
+<translation id="8120151603115102514">Telefonoak ez dauka pantaila blokeaturik. Chromebook-a desblokeatzeko, idatzi pasahitza.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Berretsi</translation>
 <translation id="8132487352815776550">Itxi azpitituluak</translation>
@@ -1036,6 +1040,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> erakundeak <ph name="FEATURE_STATE" /> dauka <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Bertan behera uzteko, sakatu Alt + Bilatu edo Maius.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> pantailak ez du onartzen <ph name="SPECIFIED_RESOLUTION" /> bereizmena. <ph name="FALLBACK_RESOLUTION" /> ezarri da pantailaren bereizmen gisa. Sakatu "Berretsi" aldaketak gordetzeko. <ph name="TIMEOUT_SECONDS" /> barru aurreko ezarpenak leheneratuko dira.</translation>
+<translation id="85123341071060231">Chromebook-aren Bluetooth-a desaktibatuta dago. Chromebook-a desblokeatzeko, idatzi pasahitza.</translation>
 <translation id="8513108775083588393">Biratu auto.</translation>
 <translation id="851458219935658693">Erakutsi lan-eremu honetan dauden leihoak, aukera-botoia hautatuta dago</translation>
 <translation id="8517041960877371778">Baliteke <ph name="DEVICE_TYPE" /> gailua ez kargatzea piztuta dagoen bitartean.</translation>

@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Obre en una pestanya d'un grup</translation>
 <translation id="1103142993930332957">Vols ajudar a millorar Chrome?</translation>
 <translation id="1105960400813249514">Captura de pantalla</translation>
+<translation id="1108938384783527433">Sincronització de l'historial</translation>
 <translation id="1110914759170138831">El text marcat s'ha escurçat</translation>
 <translation id="1111673857033749125">Les adreces d'interès desades als altres dispositius es mostraran aquí.</translation>
 <translation id="1113597929977215864">Mostra la visualització simplificada</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
 <translation id="200114059308480249">Vols incloure el text del voltant a les cerques de Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fitxer}other{# fitxers}}</translation>
+<translation id="2020309681647789787">Tindràs l'historial a tots els dispositius sincronitzats perquè puguis continuar el que estaves fent</translation>
 <translation id="2021896219286479412">Controls de pantalla completa</translation>
 <translation id="2038563949887743358">Activa Mostra com a ordinador</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> també té dades a Chrome</translation>
@@ -234,7 +236,6 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="2450907520913474542">Obtén informació sobre temes dels llocs web sense sortir de la pàgina. La funció Toca per cercar envia una paraula i el context que l'envolta a la Cerca de Google i torna definicions, imatges, resultats de la cerca i altres detalls.
 
 Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, selecciona més paraules o menys. Per editar la cerca, obre el tauler, toca la icona per obrir-la en una pestanya nova i fes els canvis al quadre de cerca.</translation>
-<translation id="2451607499823206582">Seguiment</translation>
 <translation id="2459390580524506445">Cerca per veu millorada</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="247737702124049222">Les descripcions de les imatges estan activades</translation>
@@ -427,7 +428,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB disponibles</translation>
 <translation id="3549657413697417275">Cerca a l'historial</translation>
-<translation id="3557272988124495906">Rep notificacions de baixada de preu</translation>
 <translation id="3557336313807607643">Afegeix als contactes</translation>
 <translation id="3563767357928833671">Es mostren els continguts del porta-retalls</translation>
 <translation id="3566923219790363270">Encara s'està preparant Chrome per a la RV. Reinicia'l més tard.</translation>
@@ -849,6 +849,7 @@ Les proves de Privacy Sandbox encara s'estan desenvolupant i només estan dispon
 <translation id="6070730414166672373">S'està contactant amb el banc\u2026</translation>
 <translation id="6085886413119427067">Determina com es connecta a llocs web amb una connexió segura</translation>
 <translation id="60923314841986378">Queden <ph name="HOURS" /> hores</translation>
+<translation id="6095578583683628124">Si Google també és el teu motor de cerca predeterminat, veuràs suggeriments millors i més rellevants per al context</translation>
 <translation id="6108923351542677676">Configuració en curs...</translation>
 <translation id="6111020039983847643">dades utilitzades</translation>
 <translation id="6112702117600201073">S'està actualitzant la pàgina</translation>
@@ -1229,7 +1230,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8218052821161047641">Pàgina ràpida</translation>
 <translation id="8218622182176210845">Gestiona el compte</translation>
 <translation id="8223642481677794647">Menú de la targeta del tauler</translation>
-<translation id="8242868071038398515">Si el preu baixa en qualsevol lloc web, rebràs una notificació</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">Com que aquesta pàgina fa servir massa memòria, Chrome n'ha suprimit contingut.</translation>
 <translation id="8260126382462817229">Prova d'iniciar la sessió de nou</translation>
@@ -1394,6 +1394,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="9148126808321036104">Torna a iniciar la sessió</translation>
 <translation id="9155898266292537608">També pots fer un toc ràpid en una paraula per fer cerques</translation>
 <translation id="9158770349521403363">Comparteix només el contingut</translation>
+<translation id="916446198114569890">Els URL que visites es desen al teu Compte de Google</translation>
 <translation id="9169507124922466868">L'historial de navegació està obert fins a la meitat</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{S'ha comprovat fa 1 minut}other{S'ha comprovat fa # minuts}}</translation>
 <translation id="9204836675896933765">Queda 1 fitxer</translation>

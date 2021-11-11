@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">မိတ္တူကူးရန်</translation>
 <translation id="135978014023467274">ChromeVox 63 သို့ အပ်ဒိတ်လုပ်ပြီးပါပြီ။</translation>
 <translation id="1360699455582016846">လမ်းကြောင်းခလုတ် <ph name="ROUTING_KEY_NUMBER" /> အောက်ရှိ အရာကို နှိပ်ပါ</translation>
+<translation id="1376703628032300005">နောက်စာလုံးသို့ ရွှေ့ရန်</translation>
 <translation id="1377925789329510816">နောက်ဆုံးခေါင်းစဉ်ကို ရောက်ပါပြီ။ ပထမခေါင်းစဉ်သို့ ပြန်သွားရန် Search+H ကို နှိပ်ပါ သို့မဟုတ် ဤစာမျက်နှာပေါ်ရှိ ဒုတိယခေါင်းစဉ်သို့ သွားရန် Search+Shift+H ကို နှိပ်ပါ။</translation>
 <translation id="138218114945450791">အပြာနု</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">ခြစ်ရန် အကွက်</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
 <translation id="2462626033734746142">ရေဒီယို ခဘုတ် အုပ်စု</translation>
+<translation id="2467741090055146971">ပြန်ဖြုတ်ခြင်း</translation>
 <translation id="2471138580042810658">ခေါင်းစီး ၆</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{ခရေပွင့်}other{# ခရေပွင့်များ}}</translation>
 <translation id="2490721194269245365">နှင်းဆီညို</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">ယခင် မီဒီယာဝိဂျက် မရှိပါ</translation>
 <translation id="4855927945655956315">အဓိက ကီးများ- Control</translation>
 <translation id="4862744964787595316">စာလုံးမည်း မဟုတ်ပါ</translation>
+<translation id="4865995900839719272">အပေါ်စာကြောင်းသို့ ရွှေ့ရန်</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">TTS မှတ်တမ်းတင်ခြင်း ဖွင့်</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />၊ တဘ်</translation>
 <translation id="5308380583665731573">ချိတ်ဆက်ရန်</translation>
 <translation id="5310788376443009632">ဖယ်ရှားပြီး:</translation>
+<translation id="5316825363044614340">အောက်စာကြောင်းသို့ ရွှေ့ရန်</translation>
 <translation id="5320727453979144100">စေးကပ် မုဒ် ဖွင့်ပေးထား</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{ကော်မာ}other{# ကော်မာများ}}</translation>
 <translation id="532485153932049746">စာသား ဖော်မက်ချခြင်း
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">ယခင် ပုံစံအကွက် မရှိပါ</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">အကူအညီ</translation>
 <translation id="7317017974771324508">တချို့တစ်ဝက်ကို ရွေးထားသည်</translation>
 <translation id="7322442671176251901">ထိပြီး ရှာဖွေစူးစမ်းပါ</translation>
 <translation id="7344012264516629579">နောက်ထပ် တိုက်ရိုက်သွားကွန်မန်းများတွင် ဥပမာအားဖြင့် လင့်ခ်၊ ခလုတ်နှင့် အမှတ်ခြစ်ရန်နေရာတို့ဖြင့် တိုက်ရိုက်သွားခြင်းတို့ ပါဝင်သည်။ တိုက်ရိုက်သွားကွန်မန်းများ စာရင်းအပြည့်အစုံကို ChromeVox မီနူးများတွင် တွေ့နိုင်သည်။ ၎င်းကို 'ရှာဖွေရေး + Period' နှိပ်၍ ဖွင့်နိုင်သည်။</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox ရှင်းလင်းပို့ချချက်</translation>
 <translation id="9040132695316389094">ခေါင်းစီး ၁</translation>
 <translation id="9061884144798498064">အစက် ၈ စက်ပါ မျက်မမြင်စာ ဇယားကို ရွေးပါ−</translation>
+<translation id="9063946545000394379">ယခင်စာလုံးသို့ ရွှေ့ရန်</translation>
 <translation id="9065283790526219006">+ပေါ့ပ်အာ့ပ်</translation>
 <translation id="9065912140022662363">နောက်ထပ် ရေဒီယိုခလုတ် မရှိပါ</translation>
 <translation id="9067522039955793016">စာမျက်နှာခြားခြင်း</translation>

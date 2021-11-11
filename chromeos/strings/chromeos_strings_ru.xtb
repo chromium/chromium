@@ -278,6 +278,7 @@
 <translation id="5294769550414936029">версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Переместить окно на рабочий стол</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Подключение</translation>
 <translation id="5315873049536339193">Идентификационные данные</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318334351163689047">Невыполненные запросы TCP.</translation>
@@ -399,6 +400,7 @@
 <translation id="714876143603641390">Подключение к локальной сети</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7172721935181587524">Изображений: 1</translation>
+<translation id="7175037578838465313">Настроить сеть "<ph name="NAME" />"</translation>
 <translation id="7177485034254901881">Этим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" />. Администраторы могут настраивать устройство удаленно.</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
@@ -501,6 +503,7 @@
 <translation id="8620617069779373398">Статус роуминга</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунта</translation>
+<translation id="8662671328352114214">Новая сеть <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Общий ключ</translation>
 <translation id="871560550817059752">Сбой: закончились чернила</translation>
 <translation id="8723108084122415655">В сети, не используемой по умолчанию, превышено пороговое значение задержки.</translation>

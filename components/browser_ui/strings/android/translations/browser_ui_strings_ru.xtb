@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}one{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}few{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}many{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}other{Разрешено: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и ещё <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Скачивание завершено <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Всегда запрашивать полную версию сайта</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2485422356828889247">Удалить</translation>
 <translation id="2490684707762498678">Под управлением приложения "<ph name="APP_NAME" />"</translation>
@@ -298,6 +299,7 @@
 <translation id="8447861592752582886">Отключить доступ к устройству</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Используется 1 файл cookie}one{Используется # файл cookie}few{Используются # файла cookie}many{Используются # файлов cookie}other{Используется # файла cookie}}</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
+<translation id="848952951823693243">Всегда запрашивать мобильный сайт</translation>
 <translation id="851751545965956758">Не разрешать сайтам подключаться к устройствам</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
 <translation id="857943718398505171">Разрешено (рекомендуется)</translation>

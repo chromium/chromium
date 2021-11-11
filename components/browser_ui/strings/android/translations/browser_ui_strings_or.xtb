@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
 <translation id="2434158240863470628">ଡାଉନ୍‌ଲୋଡ୍ ଶେଷ ହେଲା <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">ସର୍ବଦା ଡେସ୍କଟପ ସାଇଟର ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
 <translation id="2485422356828889247">ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> ଦ୍ୱାରା ପରିଚାଳିତ</translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">ମୋସନ୍ ସେନ୍‌ସର୍ ଆକ୍ସେସ୍ କରିବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="5050380848339752099">ଇନକଗ୍ନିଟୋ ମୋଡ୍ ବାହାରେ କୌଣସି ଏକ ଆପ୍ ସହ ଏହି ସାଇଟ୍ ସୂଚନା ସେୟାର୍ କରିବାକୁ ଯାଉଛି।</translation>
 <translation id="5063480226653192405">ବ୍ୟବହାର</translation>
+<translation id="509133520954049755">ଡେସ୍କଟପ ଭ୍ୟୁ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="5100237604440890931">ସଙ୍କୁଚିତ ହୋଇଯାଇଛି - ବିସ୍ତାର କରିବା ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="5123685120097942451">ଇନ୍‌କଗ୍ନିଟୋ ଟାବ୍</translation>
+<translation id="5134599672855298214">ମୋବାଇଲ ଭ୍ୟୁ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="5186036860380548585">ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5197729504361054390">ଆପଣ ଚୟନ କରିଥିବା ଯୋଗାଯୋଗଗୁଡ଼ିକ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ସହିତ ସେୟାର୍ କରାଯିବ।</translation>
 <translation id="5216942107514965959">ଆଜି ଶେଷ ଥର ଭିଜିଟ୍ କରାଯାଇଛି</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">ଡିଭାଇସ୍ ଅନୁମତି କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1ଟି କୁକୀ ବ୍ୟବହାର କରାଯାଉଛି}other{#ଟି କୁକୀ ବ୍ୟବହାର କରାଯାଉଛି}}</translation>
 <translation id="8487700953926739672">ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ</translation>
+<translation id="848952951823693243">ସର୍ବଦା ମୋବାଇଲ ସାଇଟର ଅନୁରୋଧ କରନ୍ତୁ</translation>
 <translation id="851751545965956758">ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ ସହିତ ସଂଯୋଗ ହେବାରୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="8525306231823319788">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌</translation>
 <translation id="857943718398505171">ଅନୁମୋଦିତ (ସୁପାରିଶ କରାଯାଇଛି)</translation>

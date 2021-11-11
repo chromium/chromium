@@ -279,6 +279,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5294769550414936029">verze <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Přesunout okno na plochu</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Připojení</translation>
 <translation id="5315873049536339193">Identita</translation>
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5318334351163689047">Selhání požadavků TCP</translation>
@@ -400,6 +401,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="714876143603641390">Připojení k síti LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">1 obrázek</translation>
+<translation id="7175037578838465313">Konfigurace sítě <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Toto zařízení <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" />. Administrátoři mohou zařízení vzdáleně konfigurovat.</translation>
 <translation id="7180611975245234373">Obnovit</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
@@ -502,6 +504,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8660881923941176839">libry</translation>
+<translation id="8662671328352114214">Připojení k síti <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Předsdílený klíč</translation>
 <translation id="871560550817059752">Tisk selhal – došel inkoust</translation>
 <translation id="8723108084122415655">Jiná než výchozí síť má latenci nad prahovou hodnotou</translation>

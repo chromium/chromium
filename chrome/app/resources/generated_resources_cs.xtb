@@ -3183,7 +3183,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4289732974614035569">Zvolte PIN</translation>
 <translation id="4290791284969893584">Po zavření stránky se zahájené úlohy nemusí dokončit</translation>
 <translation id="4295072614469448764">Aplikace je k dispozici v terminálu. Také může mít ikonu ve Spouštěči.</translation>
-<translation id="4295839147292213505">Pomocí telefonu můžete odesílat textové zprávy z počítače, sdílet připojení k internetu, odpovídat na oznámení o konverzaci a odemykat <ph name="DEVICE_TYPE" />.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Přihlaste se znovu a potvrďte, že je váš účet <ph name="USER_EMAIL" /> možné používat pro weby, aplikace a rozšíření v Chromu a na Google Play. Tento účet můžete také odstranit. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Restartovat a resetovat</translation>
 <translation id="4297813521149011456">Otočení displeje</translation>

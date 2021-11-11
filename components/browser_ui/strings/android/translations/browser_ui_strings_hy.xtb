@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ՄԲ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Թույլատրված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="2434158240863470628">Ներբեռնումն ավարտված է՝ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Միշտ պահանջել կայքի ամբողջական տարբերակը</translation>
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2485422356828889247">Ապատեղադրել</translation>
 <translation id="2490684707762498678">Կառավարվում է <ph name="APP_NAME" /> հավելվածի կողմից</translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">Թույլ տալ կայքերին օգտագործել ձեր տվիչները (խորհուրդ է տրվում)</translation>
 <translation id="5050380848339752099">Այս կայքը պատրաստվում է ուղարկել տվյալները մի հավելվածի, որն ինկոգնիտո ռեժիմից դուրս է գտնվում։</translation>
 <translation id="5063480226653192405">Վիճակագրություն</translation>
+<translation id="509133520954049755">Համակարգչային տարբերակի հարցում</translation>
 <translation id="5100237604440890931">Կոծկված - ընդլայնելու համար սեղմեք</translation>
 <translation id="5123685120097942451">Ինկոգնիտո ներդիր</translation>
+<translation id="5134599672855298214">Բջջային տարբերակի հարցում (խորհուրդ է տրվում)</translation>
 <translation id="5186036860380548585">Գործողությունը հասանելի է էկրանի վերին մասում</translation>
 <translation id="5197729504361054390">Ձեր ընտրած կոնտակտները հասանելի կդառնան <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքին:</translation>
 <translation id="5216942107514965959">Վերջին այցելությունը՝ այսօր</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">Արգելել սարքի օգտագործումը</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 օգտագործվող քուքի}one{# օգտագործվող քուքի}other{# օգտագործվող քուքի}}</translation>
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
+<translation id="848952951823693243">Միշտ պահանջել կայքի բջջային տարբերակը</translation>
 <translation id="851751545965956758">Արգելել կայքերին միանալ սարքերին</translation>
 <translation id="8525306231823319788">Լիաէկրան</translation>
 <translation id="857943718398505171">Թույլատրված է (հանձնարարելի)</translation>

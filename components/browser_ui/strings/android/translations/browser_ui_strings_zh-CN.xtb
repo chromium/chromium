@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已授予“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{已授予“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="2434158240863470628">下载完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">始终请求访问桌面版网站</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">卸载</translation>
 <translation id="2490684707762498678">由 <ph name="APP_NAME" /> 管理</translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">允许网站使用移动传感器（推荐）</translation>
 <translation id="5050380848339752099">该网站即将与某个并非处于无痕模式下的应用共享信息。</translation>
 <translation id="5063480226653192405">空间占用量</translation>
+<translation id="509133520954049755">请求获取桌面版视图</translation>
 <translation id="5100237604440890931">已收起 - 点击此处即可展开。</translation>
 <translation id="5123685120097942451">无痕式标签页</translation>
+<translation id="5134599672855298214">请求获取移动版视图（推荐）</translation>
 <translation id="5186036860380548585">选项位于屏幕顶部附近</translation>
 <translation id="5197729504361054390">系统会将您所选联系人的详细信息分享给 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5216942107514965959">上次访问时间：今天</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">撤消设备权限</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{正在使用 1 个 Cookie}other{正在使用 # 个 Cookie}}</translation>
 <translation id="8487700953926739672">可离线使用</translation>
+<translation id="848952951823693243">始终请求访问移动网站</translation>
 <translation id="851751545965956758">禁止网站连接到设备</translation>
 <translation id="8525306231823319788">全屏</translation>
 <translation id="857943718398505171">允许（推荐）</translation>

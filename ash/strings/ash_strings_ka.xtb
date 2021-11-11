@@ -119,6 +119,7 @@
 <translation id="1743570585616704562">არ არის ამოცნობილი</translation>
 <translation id="1746730358044914197">შეყვანის მეთოდები კონფიგურირებულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="1747827819627189109">ეკრანული კლავიატურა ჩართულია</translation>
+<translation id="1750088060796401187">დაშვებულია მხოლოდ <ph name="MAX_DESK_LIMIT" /> სამუშაო მაგიდა. ახლის გასახსნელად ამოშალეთ ერთ-ერთი არსებული.</translation>
 <translation id="1761222317188459878">ქსელის კავშირის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + წერტილის კლავიატურის მალსახმობი შეიცვალა. Insert კლავიშის გამოსაყენებლად დააჭირეთ <ph name="LAUNCHER_KEY_NAME" /> კლავიშს + Shift + Backspace.</translation>
 <translation id="1771761307086386028">გადაადგილება მარჯვნივ</translation>

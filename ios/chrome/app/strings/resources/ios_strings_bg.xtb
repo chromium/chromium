@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">Нещо се обърка при влизането в профила.</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
 <translation id="1923342640370224680">Последният час</translation>
+<translation id="1930989359703290198">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Докоснете двукратно, за да копирате.</translation>
 <translation id="1952172573699511566">Когато е възможно, текстът на уебсайтовете ще се показва на предпочитания от вас език.</translation>
 <translation id="1965935827552890526">Довършете действията си в другия отворен прозорец на Chrome.</translation>
@@ -225,6 +226,7 @@
 <translation id="3080525922482950719">Можете да запазвате страници за четене по-късно или офлайн</translation>
 <translation id="3081338492074632642">Уверете се, че запазваната парола съвпада с тази за <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Означаване…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Блокиране на всички</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
 <translation id="3153862085237805241">Запазване на картата</translation>
@@ -386,6 +388,8 @@
 <translation id="4802417911091824046">Шифроването с пропуск не включва начините на плащане и адресите от Google Pay.
 
 За да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Управлява се от организацията ви.
+<ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Невалиден номер на картата</translation>
 <translation id="4808744395915275922">Актуализации</translation>
 <translation id="4818522717893377262">Добавяне на език...</translation>

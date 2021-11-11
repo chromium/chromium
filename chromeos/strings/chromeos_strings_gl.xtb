@@ -259,6 +259,7 @@
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nome do grupo</translation>
 <translation id="5051044138948155788">Esta é a única páxina. Ao realizar esta acción, redirixirásete á pantalla de inicio da función do escáner.</translation>
+<translation id="5061169534910302641">Actualizar versión e reiniciar</translation>
 <translation id="5088172560898466307">Nome do host do servidor</translation>
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5142961317498132443">Autenticación</translation>
@@ -278,6 +279,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5294769550414936029">versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mover ventá a escritorio</translation>
 <translation id="5304899856529773394">EvDO</translation>
+<translation id="5308380583665731573">Conectar</translation>
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318334351163689047">Erros nas solicitudes de TCP</translation>
@@ -399,6 +401,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="714876143603641390">Conectividade LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7172721935181587524">1 imaxe</translation>
+<translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> xestiona este dispositivo (<ph name="DEVICE_TYPE" />). Os administradores poden configuralo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Provedor de rede móbil</translation>
@@ -501,6 +504,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>
 <translation id="8655295600908251630">Canle</translation>
 <translation id="8660881923941176839">libras</translation>
+<translation id="8662671328352114214">Unirse á rede <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Clave compartida previamente</translation>
 <translation id="871560550817059752">Produciuse un erro: a impresora quedou sen tinta</translation>
 <translation id="8723108084122415655">A rede non predeterminada supera o límite de latencia</translation>

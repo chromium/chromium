@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">копиране</translation>
 <translation id="135978014023467274">Екранният четец ChromeVox бе актуализиран до версия 63!</translation>
 <translation id="1360699455582016846">Кликване върху елемента под ключ за пренасочване <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1376703628032300005">преминаване към следващия знак</translation>
 <translation id="1377925789329510816">Това е последното заглавие. Натиснете клавиша „търсене“ + H, за да се върнете към първото, или „търсене“ + Shift + H, за да преминете към второто заглавие на тази страница.</translation>
 <translation id="138218114945450791">светлосиньо</translation>
 <translation id="1383876407941801731">Търсене</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Квадратче за отметка</translation>
 <translation id="2461822463642141190">Ток</translation>
 <translation id="2462626033734746142">Група бутони за избор</translation>
+<translation id="2467741090055146971">премахване на избора</translation>
 <translation id="2471138580042810658">Заглавие от шесто ниво</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{звездичка}other{# звездички}}</translation>
 <translation id="2490721194269245365">сивкавочервено</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Няма предишно приспособление за мултимедия</translation>
 <translation id="4855927945655956315">Основни клавиши: Control</translation>
 <translation id="4862744964787595316">Неудебелен текст</translation>
+<translation id="4865995900839719272">преминаване на предишния ред</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Активиране на регистрирането за синтезирания говор</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931">„<ph name="TITLE" />“, раздел</translation>
 <translation id="5308380583665731573">Свързване</translation>
 <translation id="5310788376443009632">премахнато:</translation>
+<translation id="5316825363044614340">преминаване на следващия ред</translation>
 <translation id="5320727453979144100">Фиксираният режим е активиран</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{запетая}other{# запетаи}}</translation>
 <translation id="532485153932049746">Форматиране на текста
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Няма предишно поле на формуляр</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">помощ</translation>
 <translation id="7317017974771324508">частично избрано</translation>
 <translation id="7322442671176251901">Изследване чрез докосване</translation>
 <translation id="7344012264516629579">Допълнителните команди за преминаване включват придвижване по връзки, бутони, квадратчета за отметка и др. Можете да намерите пълния списък с тези команди в менютата на ChromeVox, които се отварят, като натиснете клавиша „търсене“ + точка.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">Урок за ChromeVox</translation>
 <translation id="9040132695316389094">Заглавие от първо ниво</translation>
 <translation id="9061884144798498064">Изберете таблица за 8-точково брайлово писмо:</translation>
+<translation id="9063946545000394379">преминаване към предишния знак</translation>
 <translation id="9065283790526219006">+изскачащ прозорец</translation>
 <translation id="9065912140022662363">Няма следващ бутон за избор</translation>
 <translation id="9067522039955793016">Разделител на страници</translation>

@@ -278,6 +278,7 @@
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> версиясы</translation>
 <translation id="5300814202279832142">Терезени иш тактага жылдыруу</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Туташуу</translation>
 <translation id="5315873049536339193">Идентификация</translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5318334351163689047">Ишке ашпай калган TCP сурамдары</translation>
@@ -399,6 +400,7 @@
 <translation id="714876143603641390">LAN байланышы</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 сүрөт</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> конфигурациялоо</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> түзмөгүн <ph name="MANAGER" /> башкарат. Администраторлор түзмөктү алыстан конфигурациялай алышат.</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
 <translation id="7216409898977639127">Интернет провайдери</translation>
@@ -501,6 +503,7 @@
 <translation id="8620617069779373398">Роуминг статусу</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунт</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> тармагына кошулуу</translation>
 <translation id="8675354002693747642">Алдын ала бөлүшүлгөн ачкыч</translation>
 <translation id="871560550817059752">Басылып чыгарылган жок - Сыя түгөнүп калды</translation>
 <translation id="8723108084122415655">Демейкиден башка тармак күтүү убакытынын босогосунан жогору</translation>

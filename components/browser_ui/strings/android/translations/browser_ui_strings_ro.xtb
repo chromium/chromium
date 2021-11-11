@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="NUM_MORE" /> sunt permise}}</translation>
 <translation id="2434158240863470628">Descărcare finalizată <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Solicită întotdeauna site-ul pentru computer</translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
 <translation id="2490684707762498678">Gestionate de <ph name="APP_NAME" /></translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">Permite accesul site-urilor la senzorii de mișcare (recomandat)</translation>
 <translation id="5050380848339752099">Site-ul este pe cale să permită accesul la informații unei aplicații în afara modului incognito.</translation>
 <translation id="5063480226653192405">Utilizare</translation>
+<translation id="509133520954049755">Solicită afișarea pe desktop</translation>
 <translation id="5100237604440890931">Afișare restrânsă – dă clic pentru a extinde.</translation>
 <translation id="5123685120097942451">Filă incognito</translation>
+<translation id="5134599672855298214">Solicită afișarea pe mobil (recomandat)</translation>
 <translation id="5186036860380548585">Opțiunea este disponibilă în partea de sus a ecranului</translation>
 <translation id="5197729504361054390">Persoanele de contact pe care le selectezi vor fi trimise site-ului <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Accesat ultima dată azi</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">Revocă permisiunea de accesare a dispozitivului</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Un cookie folosit}few{# cookie-uri folosite}other{# de cookie-uri folosite}}</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
+<translation id="848952951823693243">Solicită întotdeauna site-ul mobil</translation>
 <translation id="851751545965956758">Blochează conectarea site-urilor la dispozitive</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="857943718398505171">Acordată (recomandat)</translation>

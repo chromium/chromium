@@ -260,6 +260,7 @@
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Gruppenname</translation>
 <translation id="5051044138948155788">Das ist die einzige Seite. Sie gelangen dann zum Startbildschirm für den Scanvorgang.</translation>
+<translation id="5061169534910302641">Version aktualisieren &amp; neu starten</translation>
 <translation id="5088172560898466307">Hostname des Servers</translation>
 <translation id="5089810972385038852">Bundesstaat</translation>
 <translation id="5142961317498132443">Authentifizierung</translation>
@@ -279,6 +280,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5294769550414936029">Version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Fenster in Desktop verschieben</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Verbinden</translation>
 <translation id="5315873049536339193">Identität</translation>
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5318334351163689047">Fehlgeschlagene TCP-Anfragen</translation>
@@ -400,6 +402,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">1 Bild</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> konfigurieren</translation>
 <translation id="7177485034254901881">Dieses <ph name="DEVICE_TYPE" /> wird von <ph name="MANAGER" /> verwaltet. Administratoren können das Gerät per Remotezugriff konfigurieren.</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
@@ -502,6 +505,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8620617069779373398">Roaming-Status</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">Pfund</translation>
+<translation id="8662671328352114214">Mit <ph name="TYPE" /> verbinden</translation>
 <translation id="8675354002693747642">Vorinstallierter Schlüssel</translation>
 <translation id="871560550817059752">Fehlgeschlagen – Keine Tinte</translation>
 <translation id="8723108084122415655">Das nicht standardmäßige Netzwerk hat den Latenzgrenzwert überschritten</translation>

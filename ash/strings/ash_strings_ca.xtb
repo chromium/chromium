@@ -326,6 +326,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="334252345105450327">Fes una captura de pantalla</translation>
 <translation id="3351879221545518001">Estàs emetent la pantalla.</translation>
 <translation id="3364721542077212959">Eines del llapis òptic</translation>
+<translation id="3365977133351922112">El telèfon és massa lluny. Apropa'l.</translation>
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3371140690572404006">Dispositiu USB-C (port frontal dret)</translation>
 <translation id="3375634426936648815">Connectat</translation>
@@ -602,6 +603,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5176318573511391780">Grava una part de la pantalla</translation>
 <translation id="5199367439331364630">Per iniciar la sessió al Chromebook, introdueix la contrasenya</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificació més}other{# notificacions més}}</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="5208059991603368177">Activat</translation>
@@ -885,6 +887,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7398254312354928459">S'ha canviat la connexió a la xarxa</translation>
 <translation id="7405710164030118432">Introdueix el codi d'accés parental de Family Link per desbloquejar el dispositiu</translation>
 <translation id="7406608787870898861">Acaba de configurar la xarxa mòbil</translation>
+<translation id="740790383907119240">Dreceres d'aplicacions</translation>
 <translation id="741244894080940828">conversió</translation>
 <translation id="7413851974711031813">Prem la tecla d'escapada per tancar</translation>
 <translation id="742594950370306541">La càmera s'està utilitzant.</translation>
@@ -987,6 +990,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8061464966246066292">Contrast alt</translation>
 <translation id="8098591350844501178">Deixa d'emetre la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sí, en totes</translation>
+<translation id="8120151603115102514">El telèfon no té una pantalla de bloqueig. Per desbloquejar el Chromebook, introdueix la contrasenya.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8132487352815776550">Atura els subtítols</translation>
@@ -1035,6 +1039,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> té la funció <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prem Alt+Cerca o Maj per cancel·lar.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" />. La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" />. Fes clic a Confirma per conservar els canvis. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">El Bluetooth del Chromebook està desactivat. Per desbloquejar el Chromebook, introdueix la contrasenya.</translation>
 <translation id="8513108775083588393">Rotació autom.</translation>
 <translation id="851458219935658693">Mostra les finestres de l'escriptori actual amb el botó d'opció seleccionat</translation>
 <translation id="8517041960877371778">És possible que el dispositiu <ph name="DEVICE_TYPE" /> no es carregui mentre està encès.</translation>

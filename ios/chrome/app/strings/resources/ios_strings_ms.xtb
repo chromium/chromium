@@ -107,6 +107,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="1894205589103145703">Kesilapan telah berlaku semasa log masuk.</translation>
 <translation id="1911619930368729126">Muat naik ke Google Drive</translation>
 <translation id="1923342640370224680">Jam Terakhir</translation>
+<translation id="1930989359703290198">Organisasi anda membenarkan anda log masuk dengan akaun tertentu sahaja. Akaun yang tidak dibenarkan disembunyikan. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Ketik dua kali untuk menyalin.</translation>
 <translation id="1952172573699511566">Tapak web akan menunjukkan teks dalam bahasa pilihan anda, jika boleh.</translation>
 <translation id="1965935827552890526">Selesaikan perkara yang anda lakukan di tetingkap Chrome lain yang terbuka.</translation>
@@ -225,6 +226,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3080525922482950719">Anda boleh menyimpan halaman untuk dibaca kemudian atau secara luar talian</translation>
 <translation id="3081338492074632642">Pastikan kata laluan yang anda simpan sepadan dengan kata laluan anda untuk <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Tandakan...</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Lihat Item Yang Boleh Anda Segerakkan<ph name="END_LINK" />.</translation>
 <translation id="3131206671572504478">Sekat Semua</translation>
 <translation id="313283613037595347">Buat tab Inkognito baharu.</translation>
 <translation id="3153862085237805241">Simpan Kad</translation>
@@ -386,6 +388,8 @@ Data anda disulitkan dengan ungkapan laluan segerak anda. Masukkannya untuk memu
 <translation id="4802417911091824046">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay.
 
 Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Diurus oleh organisasi anda.
+<ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Nombor Kad Tidak Sah</translation>
 <translation id="4808744395915275922">Kemaskinian</translation>
 <translation id="4818522717893377262">Tambahkan Bahasa...</translation>

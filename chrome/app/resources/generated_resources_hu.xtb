@@ -3195,7 +3195,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4289732974614035569">PIN-kód megadása</translation>
 <translation id="4290791284969893584">Előfordulhat, hogy az adott oldal bezárása után az elkezdett feladatok nem fejeződnek be</translation>
 <translation id="4295072614469448764">Az alkalmazás rendelkezésre áll a terminálból. Lehet, hogy ikon is került az Indítóba.</translation>
-<translation id="4295839147292213505">Számítógépről küldhet SMS-t, megoszthatja az internetkapcsolatot, válaszolhat a beszélgetések értesítéseire, és feloldhatja <ph name="DEVICE_TYPE" /> eszköze zárolását a telefonjával.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="4295979599050707005">Jelentkezzen be ismét annak megerősítése céljából, hogy fiókja (<ph name="USER_EMAIL" />) használható webhelyekkel, alkalmazásokkal és bővítményekkel a Chrome-ban, illetve a Google Playjel. El is távolíthatja ezt a fiókot. <ph name="LINK_BEGIN" />További információ.<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Újraindítás és visszaállítás</translation>
 <translation id="4297813521149011456">Kijelző elforgatása</translation>

@@ -183,6 +183,7 @@
 <translation id="409427325554347132">Guardar detalhes do teste</translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4131410914670010031">Preto e branco</translation>
+<translation id="4140251671072434548">Execute o desbloqueio do servidor RMA</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4155551848414053977">Certifique-se de que o lscannerestá ativado e disponível através da sua rede ou de uma ligação direta.</translation>
@@ -278,6 +279,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5294769550414936029">versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mover janela para o espaço de trabalho</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Ligar</translation>
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318334351163689047">Falhas de pedidos de TCP.</translation>
@@ -399,6 +401,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="714876143603641390">Conetividade de LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 imagem</translation>
+<translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />. Os administradores podem configurar remotamente o dispositivo.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7216409898977639127">Operador de telemóvel</translation>
@@ -466,6 +469,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Introduza o código de desbloqueio:</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>
@@ -501,6 +505,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8620617069779373398">Estado do roaming</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8660881923941176839">libras</translation>
+<translation id="8662671328352114214">Ligar à rede <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Chave pré-partilhada</translation>
 <translation id="871560550817059752">Falha – Sem tinta</translation>
 <translation id="8723108084122415655">Rede não predefinida acima do limite de latência.</translation>

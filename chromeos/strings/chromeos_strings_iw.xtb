@@ -278,6 +278,7 @@
 <translation id="5294769550414936029">גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">העברת חלון לשולחן עבודה וירטואלי</translation>
 <translation id="5304899856529773394">‏נתוני EvDo</translation>
+<translation id="5308380583665731573">התחברות</translation>
 <translation id="5315873049536339193">זהות</translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5318334351163689047">‏בקשות TCP נכשלו</translation>
@@ -399,6 +400,7 @@
 <translation id="714876143603641390">‏קישוריות LAN</translation>
 <translation id="7162487448488904999">גלריה</translation>
 <translation id="7172721935181587524">תמונה אחת</translation>
+<translation id="7175037578838465313">הגדרה של <ph name="NAME" /></translation>
 <translation id="7177485034254901881">מכשיר <ph name="DEVICE_TYPE" /> זה מנוהל על ידי <ph name="MANAGER" />. מנהלי מערכת עשויים להגדיר את המכשיר הזה מרחוק.</translation>
 <translation id="7180611975245234373">רענון</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
@@ -501,6 +503,7 @@
 <translation id="8620617069779373398">סטטוס נדידה</translation>
 <translation id="8655295600908251630">ערוץ</translation>
 <translation id="8660881923941176839">פאונד</translation>
+<translation id="8662671328352114214">התחברות לרשת <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">מפתח משותף מראש</translation>
 <translation id="871560550817059752">נכשלה – הדיו נגמר</translation>
 <translation id="8723108084122415655">הרשת שאינה מוגדרת כברירת מחדל חורגת מסף זמן האחזור</translation>

@@ -260,6 +260,7 @@
 <translation id="5049856988445523908">SIM Kilitlendi (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Grup adı</translation>
 <translation id="5051044138948155788">Bundan başka sayfa yok. Bu işlem sizi tarama başlangıç ekranına götürür.</translation>
+<translation id="5061169534910302641">Sürümü güncelleyip yeniden başlat</translation>
 <translation id="5088172560898466307">Sunucu ana makinesinin adı</translation>
 <translation id="5089810972385038852">Eyalet</translation>
 <translation id="5142961317498132443">Kimlik Doğrulama</translation>
@@ -279,6 +280,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5294769550414936029">sürüm: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Pencereyi masaya taşı</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Bağlan</translation>
 <translation id="5315873049536339193">Kimlik</translation>
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5318334351163689047">TCP istek hataları</translation>
@@ -400,6 +402,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="714876143603641390">LAN Bağlantısı</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7172721935181587524">1 Resim</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> adlı ağı yapılandırın</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
@@ -502,6 +505,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8620617069779373398">Dolaşım durumu</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">libre</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> ağına katılın</translation>
 <translation id="8675354002693747642">Önceden paylaşılan anahtar</translation>
 <translation id="871560550817059752">İşlem başarısız - Mürekkep yok</translation>
 <translation id="8723108084122415655">Varsayılan olmayan ağ, gecikme eşiğini aştı</translation>

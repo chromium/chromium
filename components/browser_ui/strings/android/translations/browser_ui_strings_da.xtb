@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er tilladt}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more allowed}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er tilladt}}</translation>
 <translation id="2434158240863470628">Downloaden er fuldført <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Anmod altid om computerversion</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
 <translation id="2490684707762498678">Administreret af <ph name="APP_NAME" /></translation>
@@ -298,6 +299,7 @@
 <translation id="8447861592752582886">Tilbagekald adgangstilladelsen til enheden</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 cookie er i brug}one{# cookie er i brug}other{# cookies er i brug}}</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
+<translation id="848952951823693243">Anmod altid om mobilwebsite</translation>
 <translation id="851751545965956758">Bloker websites fra at oprette forbindelse til enheder</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
 <translation id="857943718398505171">Tilladt (anbefales)</translation>

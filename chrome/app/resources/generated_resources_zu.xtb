@@ -2407,6 +2407,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3449393517661170867">Iwindi lethebhu elisha</translation>
 <translation id="3449839693241009168">Cindezela ku-<ph name="SEARCH_KEY" /> ukuze uthumele imiyalo ku-<ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Amaphesenti wokuthatha indawo yesimo esijwayelekile wokungenzi lutho</translation>
+<translation id="3450180775417907283">I-<ph name="MANAGER" /> idinga ukuba uxhume ku-Wi-Fi manje futhi ulande isibuyekezi.</translation>
 <translation id="3451753556629288767">Ivunyelwe ukuhlela izinhlobo zamafayela</translation>
 <translation id="3452999110156026232">Ukufinyelela komzali</translation>
 <translation id="3453612417627951340">Idinga ukugunyazwa</translation>
@@ -3204,7 +3205,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4289732974614035569">Khetha Iphinikhodi</translation>
 <translation id="4290791284969893584">Ngemuva kokuvala ikhasi, imisebenzi oyiqalile kungenzeka ingaqedi</translation>
 <translation id="4295072614469448764">Uhlelo lokuseenza luyatholakala kutheminali yakho. Kungaba nesithonjana kusiqalisi sakho.</translation>
-<translation id="4295839147292213505">Ungase uthumele umbhalo kusuka kukhompuyutha yakho, wabelane ngoxhumano lwe-inthanethi, uphendule isaziso sengxoxo futhi uvule i-<ph name="DEVICE_TYPE" /> yakho ngefoni yakho.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Sicela ungene ngemvume futhi ukuze uqinisekise ukuthi i-akhawunti yakho engu-<ph name="USER_EMAIL" /> ingasetshenziswa namawebhusayithi, izinhlelo zokusebenza, nezandiso ku-Chrome naku-Google Play. Ungaphinda ususe le akhawunti. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Qalisa kabusha futhi usethe kabusha</translation>
 <translation id="4297813521149011456">Bonisa ukuzungezisa</translation>
@@ -4275,6 +4275,7 @@ Ungabela amaswishi amaningi kulesi senzo.</translation>
 <translation id="5472627187093107397">Londoloza amaphasiwedi waleli sayithi</translation>
 <translation id="5473075389972733037">I-IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Iphinikhodi kufanele okungenani ibe nohlamvu olulodwa}one{Iphinikhodi kumele okungenani ibe izinhlamvu ezingu-#}other{Iphinikhodi kumele okungenani ibe izinhlamvu ezingu-#}}</translation>
+<translation id="5474859849784484111">I-<ph name="MANAGER" /> idinga ukuba uxhume ku-Wi-Fi manje futhi ulande isibuyekezi. Noma, ulande ngokuxhuma okwenziwe imitha (kungaba nezinkokhelo).</translation>
 <translation id="5481273127572794904">Ayivumelekile ukulanda amafayela amaningi ngokuzenzekelayo</translation>
 <translation id="5481941284378890518">Engza amaphrinta seduze</translation>
 <translation id="5483785310822538350">Buyisa ifayela nokufinyelela kwedivayisi</translation>
@@ -4700,6 +4701,7 @@ Qiniseka ukuthi awuvezi noma yiluphi ulwazi olubucayi.</translation>
 <translation id="592880897588170157">Landa amafayela e-PDF esikhundleni sokuwavula ngokuzenzakalela ku-Chrome</translation>
 <translation id="592919310198008711">Lapho ngichofoza isandiso</translation>
 <translation id="5932124097031739492">I-Linux ithuthukiswe ngempumelelo.</translation>
+<translation id="5932209916647644605">I-<ph name="MANAGER" /> idinga ukuba ubuyekeze i-<ph name="DEVICE_TYPE" /> yakho ngokushesha.</translation>
 <translation id="5932224571077948991">Isayithi libonisa izikhangiso ezingathandeki noma ezidukisayo</translation>
 <translation id="59324397759951282">Idivayisi ye-USB kusuka ku-<ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Awunawo amalayisense atholakalayo anele wokubhalisa le divayisi yezingxenyekazi zekhompuyutha ze-Google Meet. Sicela uxhumane nabokuthengisa ukuze uthenge okuningi. Uma ukholelwa ukuthi ubona lo myalezo ngephutha, sicela uxhumane nosekelo.</translation>

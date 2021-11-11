@@ -280,6 +280,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5294769550414936029">versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mover la ventana al escritorio</translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="5308380583665731573">Conectar</translation>
 <translation id="5315873049536339193">Identidad</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318334351163689047">Fallos de solicitudes de TCP</translation>
@@ -401,6 +402,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="714876143603641390">Conectividad LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7172721935181587524">1 imagen</translation>
+<translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> administra el dispositivo <ph name="DEVICE_TYPE" />. Los administradores pueden configurarlo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Proveedor de red celular</translation>
@@ -503,6 +505,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8620617069779373398">Estado de roaming</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8660881923941176839">libras</translation>
+<translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Clave compartida previamente</translation>
 <translation id="871560550817059752">Error: Sin tinta</translation>
 <translation id="8723108084122415655">la red no predeterminada supera el umbral de latencia</translation>

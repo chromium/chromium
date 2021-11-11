@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">কাছাকাছি ব্লুটুথ ডিভাইস আছে কিনা তা খুঁজে দেখার জন্য জিজ্ঞাসা করতে পারে</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
 <translation id="1428146450423315676">স্ট্যাকার ৭</translation>
+<translation id="142858679511221695">ক্লাউড ব্যবহারকারী</translation>
 <translation id="1428729058023778569">এই সাইটে HTTPS কাজ করে না, তাই আপনি এই সতর্কতা দেখছেন। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1432581352905426595">সার্চ ইঞ্জিনগুলি পরিচালনা করুন</translation>
@@ -720,6 +721,7 @@
 <translation id="3329013043687509092">পরিপৃক্তি</translation>
 <translation id="3333762389743153920">ভার্চুয়াল কার্ডের জন্য যোগ্য নয়</translation>
 <translation id="3338095232262050444">সুরক্ষিত</translation>
+<translation id="3339446062576134663">ক্লাউড (Ash)</translation>
 <translation id="3355823806454867987">প্রক্সি সেটিংস পরিবর্তন করুন...</translation>
 <translation id="3360103848165129075">পেমেন্ট হ্যান্ডলার শিট</translation>
 <translation id="3361596688432910856">Chrome এ নিম্নলিখিত তথ্য <ph name="BEGIN_EMPHASIS" />সংরক্ষণ করা হয় না<ph name="END_EMPHASIS" />:
@@ -743,6 +745,7 @@
 <translation id="3380365263193509176">অজানা ত্রুটি</translation>
 <translation id="3380864720620200369">ক্লায়েন্ট ID:</translation>
 <translation id="3381668585148405088">আপনার কেনাকাটা যাচাই করুন</translation>
+<translation id="3383566085871012386">বর্তমান অগ্রাধিকারের ক্রম</translation>
 <translation id="3387261909427947069">পেমেন্ট পদ্ধতি</translation>
 <translation id="3391030046425686457">পৌঁছে দেওয়ার ঠিকানা</translation>
 <translation id="3391482648489541560">ফাইল এডিটিং</translation>
@@ -1412,6 +1415,7 @@
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">এই কন্টেন্ট আপনার ডিভাইসে এমন বিপজ্জনক সফ্টওয়্যার ইনস্টল করার চেষ্টা করতে পারে যা আপনার তথ্য চুরি করে বা মুছে দেয়। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">বৈধ ঠিকানা যোগ করুন</translation>
+<translation id="5485973315555778056">ক্লাউড মেশিন</translation>
 <translation id="5490432419156082418">ঠিকানা এবং আরও অনেককিছু</translation>
 <translation id="5492298309214877701">কোম্পানী, সংস্থা বা স্কুল ইন্ট্রানেটে এই সাইটটির একটি বাহ্যিক ওয়েবসাইটের মতো একই URL আছে।
     <ph name="LINE_BREAK" />
@@ -1441,6 +1445,7 @@
 <translation id="5571083550517324815">এই ঠিকানা থেকে পিক-আপ করা যাবে না। অন্য ঠিকানা বেছে নিন।</translation>
 <translation id="5580958916614886209">আপনার মেয়াদ শেষের মাস পরীক্ষা করে আবার চেষ্টা করুন</translation>
 <translation id="5586446728396275693">কোনও ঠিকানা সংরক্ষণ করা নেই</translation>
+<translation id="5587987780934666589">প্ল্যাটফর্ম ব্যবহারকারী</translation>
 <translation id="5593349413089863479">কানেকশন সম্পূর্ণ সুরক্ষিত নয়</translation>
 <translation id="5595485650161345191">ঠিকানা সম্পাদনা করুন</translation>
 <translation id="5598944008576757369">পেমেন্টের পদ্ধতি বেছে নিন</translation>
@@ -2128,6 +2133,7 @@
 <translation id="7953569069500808819">উপরের ধারের দিকে সেলাই</translation>
 <translation id="7956713633345437162">মোবাইল বুকমার্ক</translation>
 <translation id="7961015016161918242">কখনই নয়</translation>
+<translation id="7962467575542381659">প্ল্যাটফর্ম মেশিন</translation>
 <translation id="7966803981046576691">চাকরির অ্যাকাউন্টের ধরন</translation>
 <translation id="79682505114836835"><ph name="VALUE" /> মান ভুল হেক্স কালার কোড।</translation>
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>

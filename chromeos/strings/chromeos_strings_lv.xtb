@@ -277,6 +277,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5294769550414936029">versija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Pārvietot logu uz darbvietu</translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="5308380583665731573">Pievienošana</translation>
 <translation id="5315873049536339193">Identitāte</translation>
 <translation id="5317780077021120954">Saglabāt</translation>
 <translation id="5318334351163689047">TCP pieprasījumu kļūmes</translation>
@@ -398,6 +399,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="714876143603641390">LAN savienojamība</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 attēls</translation>
+<translation id="7175037578838465313">Tīkla “<ph name="NAME" />” konfigurēšana</translation>
 <translation id="7177485034254901881">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" />. Administratori var attālināti konfigurēt ierīci.</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
 <translation id="7216409898977639127">Mobilo sakaru operators</translation>
@@ -500,6 +502,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8620617069779373398">Viesabonēšanas statuss</translation>
 <translation id="8655295600908251630">Kanāls</translation>
 <translation id="8660881923941176839">mārciņas</translation>
+<translation id="8662671328352114214">Pievienošanās <ph name="TYPE" /> tīklam</translation>
 <translation id="8675354002693747642">Iepriekš kopīgota atslēga</translation>
 <translation id="871560550817059752">Neizdevās — beigusies tinte</translation>
 <translation id="8723108084122415655">Tīklā, kas nav noklusējuma tīkls, latentums pārsniedza slieksni</translation>

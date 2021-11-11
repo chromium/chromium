@@ -107,6 +107,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1894205589103145703">A apărut o eroare la conectare.</translation>
 <translation id="1911619930368729126">Încarcă în Google Drive</translation>
 <translation id="1923342640370224680">Ultima oră</translation>
+<translation id="1930989359703290198">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Atinge de două ori pentru a copia.</translation>
 <translation id="1952172573699511566">Site-urile vor afișa textul în limba ta preferată, dacă este posibil.</translation>
 <translation id="1965935827552890526">Termină ce făceai în cealaltă fereastră Chrome deschisă.</translation>
@@ -225,6 +226,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3080525922482950719">Poți să salvezi pagini ca să le citești offline sau mai târziu</translation>
 <translation id="3081338492074632642">Asigură-te că parola pe care o salvezi este aceeași cu parola pentru <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Marchează…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Află ce poți sincroniza<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Blochează-le pe toate</translation>
 <translation id="313283613037595347">Creează o nouă filă incognito.</translation>
 <translation id="3153862085237805241">Salvează cardul</translation>
@@ -386,6 +388,8 @@ Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru 
 <translation id="4802417911091824046">Criptarea expresiei de acces nu include metodele de plată și adresele din Google Pay.
 
 Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincronizarea<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Gestionat de organizația ta.
+<ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Numărul cardului nu este valid</translation>
 <translation id="4808744395915275922">Actualizări</translation>
 <translation id="4818522717893377262">Adaugă o limbă...</translation>

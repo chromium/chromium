@@ -2387,6 +2387,7 @@ Pretende pará-lo?</translation>
 <translation id="3449393517661170867">Nova janela com separadores</translation>
 <translation id="3449839693241009168">Prima <ph name="SEARCH_KEY" /> para enviar comandos para <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Percentagem de ocupação no estado inativo</translation>
+<translation id="3450180775417907283">O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi agora e transfira uma atualização.</translation>
 <translation id="3451753556629288767">Autorização para abrir tipos de ficheiros</translation>
 <translation id="3452999110156026232">Acesso parental</translation>
 <translation id="3453612417627951340">Necessita de autorização</translation>
@@ -3184,7 +3185,6 @@ Pretende pará-lo?</translation>
 <translation id="4289732974614035569">Escolha um PIN</translation>
 <translation id="4290791284969893584">Depois de fechar uma página, as tarefas que iniciou podem não ser concluídas</translation>
 <translation id="4295072614469448764">A aplicação está disponível no terminal. Também pode existir um ícone no Launcher.</translation>
-<translation id="4295839147292213505">Pode enviar mensagens de texto a partir do computador, partilhar a ligação à Internet, responder a notificações de conversas e desbloquear o <ph name="DEVICE_TYPE" /> com o telemóvel.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Inicie sessão novamente para confirmar que a sua conta <ph name="USER_EMAIL" /> pode ser utilizada com Websites, aplicações e extensões no Chrome e no Google Play. Também pode remover esta conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Reiniciar e repor</translation>
 <translation id="4297813521149011456">Rotação do ecrã</translation>
@@ -4249,6 +4249,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5472627187093107397">Guardar palavras-passe para este site</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{O PIN tem de ter, pelo menos, um caráter.}other{O PIN tem de ter, pelo menos, # carateres.}}</translation>
+<translation id="5474859849784484111">O domínio <ph name="MANAGER" /> requer que estabeleça ligação a uma rede Wi-Fi agora e transfira uma atualização. Em alternativa, transfira a partir de uma ligação com acesso limitado (podem aplicar-se custos).</translation>
 <translation id="5481273127572794904">Sem autorização para transferir vários ficheiros automaticamente</translation>
 <translation id="5481941284378890518">Adicionar impressoras próximas</translation>
 <translation id="5483785310822538350">Revogar o acesso a ficheiros e a dispositivos</translation>
@@ -4672,6 +4673,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="592880897588170157">Transferir ficheiros PDF em vez de os abrir automaticamente no Chrome</translation>
 <translation id="592919310198008711">Quando clico na extensão</translation>
 <translation id="5932124097031739492">O Linux foi atualizado com êxito.</translation>
+<translation id="5932209916647644605">O domínio <ph name="MANAGER" /> exige que atualize o dispositivo <ph name="DEVICE_TYPE" /> imediatamente.</translation>
 <translation id="5932224571077948991">O site apresenta anúncios intrusivos ou enganadores.</translation>
 <translation id="59324397759951282">Dispositivo USB de <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Não tem licenças disponíveis suficientes para inscrever este dispositivo hardware Google Meet. Entre em contacto com as vendas para comprar mais. Se considera que recebeu esta mensagem por engano, contacte o apoio técnico.</translation>

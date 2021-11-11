@@ -156,6 +156,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1422930527989633628">Can ask to discover nearby Bluetooth devices</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="1428146450423315676">Stacker 7</translation>
+<translation id="142858679511221695">Cloud user</translation>
 <translation id="1428729058023778569">You are seeing this warning because this site does not support HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1432581352905426595">Manage search engines</translation>
@@ -711,6 +712,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3329013043687509092">Saturation</translation>
 <translation id="3333762389743153920">Not eligible for virtual card</translation>
 <translation id="3338095232262050444">Secure</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">Change proxy settings...</translation>
 <translation id="3360103848165129075">Payment handler sheet</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />won’t save<ph name="END_EMPHASIS" /> the following information:
@@ -733,6 +735,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3380365263193509176">Unknown error</translation>
 <translation id="3380864720620200369">Client ID:</translation>
 <translation id="3381668585148405088">Verify your purchase</translation>
+<translation id="3383566085871012386">Current precedence order</translation>
 <translation id="3387261909427947069">Payment Methods</translation>
 <translation id="3391030046425686457">Delivery address</translation>
 <translation id="3391482648489541560">file editing</translation>
@@ -1400,6 +1403,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">This content might try to install dangerous software on your device that steals or deletes your information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Add valid address</translation>
+<translation id="5485973315555778056">Cloud machine</translation>
 <translation id="5490432419156082418">Addresses and more</translation>
 <translation id="5492298309214877701">This site on the company, organisation or school intranet has the same URL as an external website.
     <ph name="LINE_BREAK" />
@@ -1429,6 +1433,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5571083550517324815">Can’t pick up from this address. Select a different address.</translation>
 <translation id="5580958916614886209">Check your expiry month and try again</translation>
 <translation id="5586446728396275693">No saved addresses</translation>
+<translation id="5587987780934666589">Platform user</translation>
 <translation id="5593349413089863479">Connection is not fully secure</translation>
 <translation id="5595485650161345191">Edit address</translation>
 <translation id="5598944008576757369">Choose payment method</translation>
@@ -2113,6 +2118,7 @@ Additional details:
 <translation id="7953569069500808819">Edge stitch top</translation>
 <translation id="7956713633345437162">Mobile bookmarks</translation>
 <translation id="7961015016161918242">Never</translation>
+<translation id="7962467575542381659">Platform machine</translation>
 <translation id="7966803981046576691">Job account type</translation>
 <translation id="79682505114836835">Value '<ph name="VALUE" />' is an invalid hex colour.</translation>
 <translation id="7968982339740310781">View details</translation>
@@ -2266,6 +2272,7 @@ Additional details:
 <translation id="8438476240229491014">Remember this setting</translation>
 <translation id="8438786541497918448">Use camera and microphone?</translation>
 <translation id="8446884382197647889">Learn More</translation>
+<translation id="8449836157089738489">Open all in new tab group</translation>
 <translation id="8457125768502047971">Indefinite</translation>
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 credit card}other{# credit cards}}</translation>

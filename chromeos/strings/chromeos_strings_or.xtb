@@ -62,6 +62,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଉଛି</translation>
 <translation id="1851218745569890714">ଭିଡିଓ କନଫରେନସିଂ</translation>
+<translation id="1857850044054738019">ଯଦି ଡିଭାଇସଟି ଜଣେ ନୂଆ ଗ୍ରାହକଙ୍କୁ ବିତରଣ କରିବା ପାଇଁ ରିଷ୍ଟକ କିମ୍ବା ରିଫର୍ବିସ କରାଯାଉଥାଏ, ତେବେ ଏହି ବିକଳ୍ପକୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">ହାର୍ଡୱେୟାର୍ ପୁନରାବୃତ୍ତି</translation>
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
@@ -196,6 +197,7 @@
 <translation id="4244962993387259361">ମେମୋରୀ ଟେଷ୍ଟ ଚଲାଇବାକୁ ଅତି କମରେ ଆପଣଙ୍କୁ 500 MBର ଖାଲି ସ୍ଥାନ ଆବଶ୍ୟକ। ସ୍ପେସ୍ ଖାଲି କରିବାକୁ, ସେଟିଂସ୍&gt; ଷ୍ଟୋରେଜ୍ ମ୍ୟାନେଜମେଣ୍ଟକୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="4258281355379922695">HTTP ଲାଟେନ୍ସି</translation>
 <translation id="4271957103967917607">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଦେଖନ୍ତୁ</translation>
+<translation id="4275799948641988986">ମରାମତି କରିବା ପରେ, ଏହି ଡିଭାଇସକୁ କିଏ ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />ଟି ଛବି</translation>
 <translation id="4378373042927530923">ଚାଲୁନାହିଁ</translation>
@@ -260,6 +262,7 @@
 <translation id="5049856988445523908">SIM ଲକ୍ କରାଯାଇଛି (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ଗୋଷ୍ଠୀର ନାମ</translation>
 <translation id="5051044138948155788">ଏହା ହେଉଛି ଏକମାତ୍ର ପୃଷ୍ଠା। ଏହା ଆପଣଙ୍କୁ ସ୍କାନ୍ ଆରମ୍ଭ ହେବାର ସ୍କ୍ରିନକୁ ନେଇଯିବ।</translation>
+<translation id="5061169534910302641">ସଂସ୍କରଣ ଅପଡେଟ କରି ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5088172560898466307">ସର୍ଭର୍ ହୋଷ୍ଟନାମ</translation>
 <translation id="5089810972385038852">ରାଜ୍ୟ</translation>
 <translation id="5142961317498132443">ପ୍ରମାଣିକରଣ</translation>
@@ -279,6 +282,7 @@
 <translation id="5294769550414936029">ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ୱିଣ୍ଡୋକୁ ଡେସ୍କ ସବମେନୁକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5315873049536339193">ପରିଚୟ</translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5318334351163689047">TCP ଅନୁରୋଧ ବିଫଳ</translation>
@@ -400,6 +404,7 @@
 <translation id="714876143603641390">LAN ସଂଯୋଗ</translation>
 <translation id="7162487448488904999">ଗ୍ୟାଲେରୀ</translation>
 <translation id="7172721935181587524">1ଟି ଛବି</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> କନ୍‌ଫିଗର୍‌ କରନ୍ତୁ</translation>
 <translation id="7177485034254901881">ଏହି <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଡିଭାଇସଟିକୁ ରିମୋଟ୍ ଭାବେ କନଫିଗର୍ କରିପାରନ୍ତି।</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
@@ -409,6 +414,7 @@
 <translation id="7297226631177386107">ଫାୟାରୱାଲ ମାଧ୍ୟମରେ HTTPS ୱେବସାଇଟଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">ଡିଭାଇସଟି ଏକ ଭିନ୍ନ ମାଲିକଙ୍କ ପାଖକୁ ଯିବ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">ନେଟୱାର୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="7359657277149375382">ଫାଇଲର ପ୍ରକାର</translation>
@@ -416,6 +422,8 @@
 <translation id="7415801143053185905">HTTPର ବହୁତ ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। 1ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}other{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। {NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}}</translation>
+<translation id="7451112128070628323">ଯଦି ଡିଭାଇସର ମାଲିକାନା ପରିବର୍ତ୍ତନ ହେଉନାହିଁ, ତେବେ ଏହି ବିକଳ୍ପକୁ ଚୟନ କରନ୍ତୁ।
+        ଉଦାହରଣ ସ୍ୱରୂପ, ଡିଭାଇସଟି ଏକ ସଂସ୍ଥା ମଧ୍ୟରେ ଜଣେ ଭିନ୍ନ ବ୍ୟକ୍ତିଙ୍କୁ ଟ୍ରାନ୍ସଫର ହେଉଛି।</translation>
 <translation id="7469648432129124067">ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="7487067081878637334">ଟେକ୍ନୋଲୋଜି</translation>
 <translation id="7490813197707563893">MAC ଠିକଣା</translation>
@@ -502,6 +510,7 @@
 <translation id="8620617069779373398">ରୋମିଂ ସ୍ଥିତି</translation>
 <translation id="8655295600908251630">ଚ୍ୟାନେଲ୍</translation>
 <translation id="8660881923941176839">ପାଉଣ୍ଡ</translation>
+<translation id="8662671328352114214"><ph name="TYPE" />ନେଟ୍‌ୱର୍କରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="8675354002693747642">ପୂର୍ବରୁ-ସେୟାର୍ କରାଯାଇଥିବା କୀ</translation>
 <translation id="871560550817059752">ବିଫଳ ହୋଇଛି - ସ୍ୟାହି ଶେଷ ହୋଇଯାଇଛି</translation>
 <translation id="8723108084122415655">ଡିଫଲ୍ଟ-ନଥିବା ନେଟୱାର୍କ ଲାଟେନ୍ସି ସୀମାର ଉପରେ ଅଛି</translation>
@@ -539,6 +548,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ବ୍ଲୁଟୁଥ୍</translation>
 <translation id="9088306295921699330">ବର୍ତ୍ତମାନର ବ୍ୟବହାର</translation>
+<translation id="9095415590198785865">ଡିଭାଇସଟି ସେହି ସମାନ ମାଲିକଙ୍କ ପାଖରେ ରହିବ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ପାଇଁ ଟିକେଟ୍ ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="9106415115617144481">ପୃଷ୍ଠା <ph name="PAGE_NUMBER" />କୁ ସ୍କାନ୍ କରାଯାଉଛି</translation>

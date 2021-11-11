@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Skanerlash bekor qilinmoqda</translation>
 <translation id="1851218745569890714">Videokonferensiya</translation>
+<translation id="1857850044054738019">Agar qurilma qayta ishlab chiqarilib, boshqa yangi mijozga
+        sotilsa, shu parametrni tanlang.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Qurilma versiyasi</translation>
 <translation id="1905710495812624430">Urinishlar soni cheklovdan oshib ketdi.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">Xotira testini bajarish uchun kamida 500 MB boʻsh joy kerak. Joy ochish uchun Sozlamalar &gt; Xotira boshqaruvi sahifasini oching.</translation>
 <translation id="4258281355379922695">HTTP kechikishi</translation>
 <translation id="4271957103967917607">Toʻliq ekranli rejimda koʻrish</translation>
+<translation id="4275799948641988986">Taʼmirlashdan keyin qurilmadan kim foydalanadi?</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ta rasm</translation>
 <translation id="4378373042927530923">Ishga tushmadi</translation>
@@ -280,6 +283,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5294769550414936029">versiya: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Oynani ish stoliga koʻchirish</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Ulanish</translation>
 <translation id="5315873049536339193">Alohida belgilari</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5318334351163689047">Bajarilmagan TCP soʻrovlari</translation>
@@ -401,6 +405,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="714876143603641390">LAN aloqasi</translation>
 <translation id="7162487448488904999">Galereya</translation>
 <translation id="7172721935181587524">1 ta rasm</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> – sozlash</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7216409898977639127">Mobil tarmoq</translation>
@@ -410,6 +415,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7297226631177386107">HTTPS saytlarga himoya devori orqali ulanish imkonsiz</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Qurilma egasi oʻzgaradi</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Tarmoq qurilmalari</translation>
 <translation id="7359657277149375382">Fayl turi</translation>
@@ -417,6 +423,9 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7415801143053185905">HTTP kechikishi juda yuqori</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanerlandi. 1 ta sahifa skanerlandi}other{Skanerlandi. {NUMBER_OF_PAGES} ta sahifa skanerlandi}}</translation>
+<translation id="7451112128070628323">Qurilma egasi oʻzgarmasa, shu parametrni tanlang.
+        Masalan, qurilma tashkilotning boshqa xodimiga
+        berilayotgan boʻlsa.</translation>
 <translation id="7469648432129124067">Portal aniqlandi</translation>
 <translation id="7487067081878637334">Texnologiya</translation>
 <translation id="7490813197707563893">MAC manzil</translation>
@@ -503,6 +512,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8620617069779373398">Rouming holati</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">funt</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> tarmoqqa ulanish</translation>
 <translation id="8675354002693747642">Umumiy kalit</translation>
 <translation id="871560550817059752">Bajarilmadi - Rang tugadi</translation>
 <translation id="8723108084122415655">Ikkilamchi tarmoq kutish vaqti baland</translation>
@@ -540,6 +550,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Joriy faollik</translation>
+<translation id="9095415590198785865">Qurilma egasi oʻzgarmaydi</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> uchun chiptani yangilash</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ta sahifa skanerlandi</translation>

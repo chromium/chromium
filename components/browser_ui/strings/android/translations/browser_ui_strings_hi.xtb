@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> एमबी</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को इस्तेमाल करने की अनुमति दी गई}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को इस्तेमाल करने की अनुमति दी गई}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को इस्तेमाल करने की अनुमति दी गई}}</translation>
 <translation id="2434158240863470628">डाउनलोड हो गया <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">हमेशा साइट के डेस्कटॉप व्यू का अनुरोध करें</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2485422356828889247">विस्थापित करें</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> मैनेज करता है</translation>
@@ -300,6 +301,7 @@
 <translation id="8447861592752582886">डिवाइस अनुमति निरस्त करें</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 कुकी इस्तेमाल की जा रही है}one{# कुकी इस्तेमाल की जा रही है}other{# कुकी इस्तेमाल की जा रही हैं}}</translation>
 <translation id="8487700953926739672">ऑफ़लाइन उपलब्ध है</translation>
+<translation id="848952951823693243">हमेशा साइट के मोबाइल व्यू का अनुरोध करें</translation>
 <translation id="851751545965956758">साइटों को डिवाइस से कनेक्ट होने से रोकें</translation>
 <translation id="8525306231823319788">फ़ुल स्‍क्रीन</translation>
 <translation id="857943718398505171">अनुमति दी गई (सुझाया गया)</translation>

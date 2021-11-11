@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">Під час входу сталася помилка.</translation>
 <translation id="1911619930368729126">Завантажити на Google Диск</translation>
 <translation id="1923342640370224680">Остання година</translation>
+<translation id="1930989359703290198">Ваша організація дозволяє входити лише в певні облікові записи. Недозволені облікові записи приховано. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Двічі торкніться, щоб скопіювати.</translation>
 <translation id="1952172573699511566">Якщо можливо, текст на веб-сайтах відображатиметься вибраною мовою.</translation>
 <translation id="1965935827552890526">Завершіть те, що ви робили в іншому відкритому вікні Chrome.</translation>
@@ -386,6 +387,8 @@
 <translation id="4802417911091824046">Парольна фраза не стосується способів оплати й адрес із Google Pay.
 
 Щоб змінити це налаштування, <ph name="BEGIN_LINK" />скиньте параметри синхронізації<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Веб-переглядачем керує ваша організація.
+<ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Недійсний номер картки</translation>
 <translation id="4808744395915275922">Оновлення</translation>
 <translation id="4818522717893377262">Додати мову…</translation>

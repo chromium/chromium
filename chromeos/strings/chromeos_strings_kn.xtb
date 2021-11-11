@@ -279,6 +279,7 @@
 <translation id="5294769550414936029">ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ವಿಂಡೋವನ್ನು ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">ಸಂಪರ್ಕಿಸು</translation>
 <translation id="5315873049536339193">ಗುರುತು</translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5318334351163689047">TCP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
@@ -400,6 +401,7 @@
 <translation id="714876143603641390">LAN ಸಂಪರ್ಕ ಕಲ್ಪಿಸುವಿಕೆ</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 ಚಿತ್ರ</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> ಅನ್ನು ಕಾನ್ಫಿಗರ್‌ ಮಾಡಿ</translation>
 <translation id="7177485034254901881">ಈ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ನಿರ್ವಾಹಕರು ರಿಮೋಟ್ ಆಗಿ ಸಾಧನವನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
@@ -502,6 +504,7 @@
 <translation id="8620617069779373398">ರೋಮಿಂಗ್ ಸ್ಥಿತಿ</translation>
 <translation id="8655295600908251630">ಚಾನಲ್</translation>
 <translation id="8660881923941176839">ಪೌಂಡ್‌ಗಳು</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸೇರಿಕೊಳ್ಳಿ</translation>
 <translation id="8675354002693747642">ಪೂರ್ವ-ಹಂಚಿಕೆಯ ಕೀಲಿ</translation>
 <translation id="871560550817059752">ವಿಫಲವಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="8723108084122415655">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್</translation>

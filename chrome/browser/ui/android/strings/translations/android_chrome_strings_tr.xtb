@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Grupta yeni sekmede aç</translation>
 <translation id="1103142993930332957">Chrome'un iyileştirilmesine yardım etmek ister misiniz?</translation>
 <translation id="1105960400813249514">Ekran Kaydediliyor</translation>
+<translation id="1108938384783527433">Geçmiş senkronizasyonu</translation>
 <translation id="1110914759170138831">Vurgulama kısaltıldı</translation>
 <translation id="1111673857033749125">Diğer cihazlarınızda kaydedilmiş yer işaretleri burada görünür.</translation>
 <translation id="1113597929977215864">Basitleştirilmiş görünümü göster</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Adres çubuğundan ve arama kutusundan bazı çerezleri ve aramaları varsayılan arama motorunuza gönderir</translation>
 <translation id="200114059308480249">Seçilen kelimenin etrafındaki metin Google aramalarına dahil edilsin mi?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Dosya}other{# Dosya}}</translation>
+<translation id="2020309681647789787">Geçmiş bilgilerinizi senkronize edilmiş tüm cihazlarınızda bulabileceksiniz. Bu şekilde, son bıraktığınız yerden devam edebilirsiniz</translation>
 <translation id="2021896219286479412">Tam ekran site kontrolleri</translation>
 <translation id="2038563949887743358">Masaüstü sitesi iste işlevini etkinleştir</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> uygulamasına ait veriler Chrome'da da mevcut</translation>
@@ -234,7 +236,6 @@ Arama yapmak için herhangi bir kelimeye dokunun. Aramanızı hassaslaştırmak 
 <translation id="2450907520913474542">Sayfadan ayrılmadan web sitelerindeki konular hakkında bilgi edinin. Dokun ve Ara özelliği, seçilen kelimeyi, çevresindeki içerikle birlikte Google Arama'ya gönderip karşılığında ilgili tanımlar, resimler, arama sonuçları ve diğer ayrıntıları döndürür.
 
 Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı hassaslaştırmak için daha fazla veya daha az kelime seçin. Aramanızı düzenlemek için paneli açın, simgeye dokunarak yeni bir sekmede açın ve arama kutusunda değişikliklerinizi yapın.</translation>
-<translation id="2451607499823206582">İzleniyor</translation>
 <translation id="2459390580524506445">Gelişmiş sesli arama</translation>
 <translation id="2461822463642141190">Mevcut güç tüketimi</translation>
 <translation id="247737702124049222">Resim açıklamaları açık</translation>
@@ -427,7 +428,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3527085408025491307">Klasör</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB kullanılabilir</translation>
 <translation id="3549657413697417275">Geçmişinizde arayın</translation>
-<translation id="3557272988124495906">Fiyat düşüşü bildirimleri al</translation>
 <translation id="3557336313807607643">Kişilere ekle</translation>
 <translation id="3563767357928833671">Pano içerikleri gösteriliyor</translation>
 <translation id="3566923219790363270">Chrome hâlâ VR için hazırlanıyor. Chrome'u daha sonra yeniden başlatın.</translation>
@@ -849,6 +849,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="6070730414166672373">Bankanızla iletişim kuruluyor\u2026</translation>
 <translation id="6085886413119427067">Web siteleriyle güvenli bir bağlantı üzerinden nasıl bağlanılacağını belirler</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> saat kaldı</translation>
+<translation id="6095578583683628124">Google'ı varsayılan arama motorunuz olarak da kullanıyorsanız bağlamla daha alakalı, daha iyi öneriler görürsünüz</translation>
 <translation id="6108923351542677676">Kurulum devam ediyor…</translation>
 <translation id="6111020039983847643">kullanılan veri miktarı</translation>
 <translation id="6112702117600201073">Sayfa yenileniyor</translation>
@@ -1229,7 +1230,6 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="8218052821161047641">Hızlı sayfa</translation>
 <translation id="8218622182176210845">Hesabınızı yönetin</translation>
 <translation id="8223642481677794647">Akış kartı menüsü</translation>
-<translation id="8242868071038398515">Herhangi bir sitede fiyat düşüşü olduğunda bildirim alırsınız</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>
 <translation id="825412236959742607">Bu sayfa çok fazla bellek kullandığından Chrome bazı içerikleri kaldırdı.</translation>
 <translation id="8260126382462817229">Tekrar oturum açmayı deneyin</translation>
@@ -1394,6 +1394,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="9148126808321036104">Tekrar oturum açın</translation>
 <translation id="9155898266292537608">Bir kelimeye hızlıca dokunarak da arama yapabilirsiniz</translation>
 <translation id="9158770349521403363">Yalnızca içerik paylaşılıyor</translation>
+<translation id="916446198114569890">Ziyaret ettiğiniz URL'ler Google hesabınıza kaydedilir</translation>
 <translation id="9169507124922466868">Gezinme geçmişi yarım açık</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 dakika önce kontrol edildi}other{# dakika önce kontrol edildi}}</translation>
 <translation id="9204836675896933765">1 dosya kaldı</translation>

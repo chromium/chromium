@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">로그인 중에 문제가 발생했습니다.</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
 <translation id="1923342640370224680">지난 1시간</translation>
+<translation id="1930989359703290198">조직에서 특정 계정으로만 로그인하도록 허용합니다. 허용되지 않는 계정은 숨겨져 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">복사하려면 두 번 탭하세요.</translation>
 <translation id="1952172573699511566">가능한 경우 웹사이트에서 텍스트를 선호하는 언어로 표시합니다.</translation>
 <translation id="1965935827552890526">열려 있는 다른 Chrome 창에서 진행 중이던 작업을 완료하세요.</translation>
@@ -386,6 +387,8 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4802417911091824046">Google Pay 결제 수단 및 주소는 암호로 암호화되지 않습니다.
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하세요.</translation>
+<translation id="4803185665210547709">조직에서 관리합니다.
+<ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">카드 번호가 잘못됨</translation>
 <translation id="4808744395915275922">업데이트</translation>
 <translation id="4818522717893377262">언어 추가...</translation>

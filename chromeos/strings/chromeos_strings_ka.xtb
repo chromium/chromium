@@ -156,6 +156,8 @@
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
 <translation id="3583278742022654445">სიგნალის სიმძლავრე სუსტია. ცადეთ Wi-Fi სიგნალის წყაროსთან მიახლოება.</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
+<translation id="360089215033199597">აღდგენის პროცესის გასამარტივებლად რეკომენდებულია Wi-Fi ქსელთან დაკავშირება.
+        თქვენი ქსელი შეინახება.</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
 <translation id="3606583719724308068">HTTPS ვებსაიტების რეაგირების დიდი დრო</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> — ტესტი</translation>
@@ -279,6 +281,7 @@
 <translation id="5294769550414936029">ვერსია <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ფანჯრის გადატანა სამუშაო მაგიდაზე</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">დაკავშირება</translation>
 <translation id="5315873049536339193">მოწმობა</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5318334351163689047">წარუმატებელი TCP მოთხოვნები</translation>
@@ -400,6 +403,7 @@
 <translation id="714876143603641390">LAN-ის კავშირი</translation>
 <translation id="7162487448488904999">გალერეა</translation>
 <translation id="7172721935181587524">1 სურათი</translation>
+<translation id="7175037578838465313">„<ph name="NAME" />“-ის კონფიგურაცია</translation>
 <translation id="7177485034254901881">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
 <translation id="7180611975245234373">განახლება</translation>
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
@@ -469,6 +473,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
+<translation id="8217675307824400706">დაამყარეთ კავშირი</translation>
 <translation id="8230672074305416752">ნაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="8246209727385807362">უცნობი ოპერატორი</translation>
 <translation id="8286154143153872371">ფონის სანახავად დაუკავშირდით ქსელს და გადატვირთეთ გვერდი.</translation>
@@ -502,6 +507,7 @@
 <translation id="8620617069779373398">როუმინგის სტატუსი</translation>
 <translation id="8655295600908251630">არხი</translation>
 <translation id="8660881923941176839">ფუნტი</translation>
+<translation id="8662671328352114214">„<ph name="TYPE" />“ ქსელში გაწევრიანება</translation>
 <translation id="8675354002693747642">წინასწარ გაზიარებული გასაღები</translation>
 <translation id="871560550817059752">ვერ მოხერხდა — მელანი გაუთავდა</translation>
 <translation id="8723108084122415655">არანაგულისხმევი ქსელი აღემატება რეაგირების დროის ზღვარს</translation>

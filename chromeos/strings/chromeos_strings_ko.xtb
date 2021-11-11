@@ -278,6 +278,7 @@
 <translation id="5294769550414936029">버전 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">창을 데스크로 이동</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">연결</translation>
 <translation id="5315873049536339193">주소</translation>
 <translation id="5317780077021120954">저장</translation>
 <translation id="5318334351163689047">TCP 요청 실패</translation>
@@ -399,6 +400,7 @@
 <translation id="714876143603641390">LAN 연결</translation>
 <translation id="7162487448488904999">갤러리</translation>
 <translation id="7172721935181587524">이미지 1개</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> 설정</translation>
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7216409898977639127">이동통신사</translation>
@@ -501,6 +503,7 @@
 <translation id="8620617069779373398">로밍 상태</translation>
 <translation id="8655295600908251630">채널</translation>
 <translation id="8660881923941176839">파운드</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> 네트워크에 연결</translation>
 <translation id="8675354002693747642">사전 공유 키:</translation>
 <translation id="871560550817059752">실패 - 잉크 없음</translation>
 <translation id="8723108084122415655">기본이 아닌 네트워크가 지연 시간 기준을 초과했습니다.</translation>

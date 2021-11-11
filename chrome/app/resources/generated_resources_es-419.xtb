@@ -2390,6 +2390,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3449393517661170867">Nueva ventana con pestañas</translation>
 <translation id="3449839693241009168">Presiona <ph name="SEARCH_KEY" /> para enviar comandos a<ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Porcentaje de ocupación de estado de inactividad</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi ahora y descargues una actualización.</translation>
 <translation id="3451753556629288767">Puede abrir determinados tipos de archivos</translation>
 <translation id="3452999110156026232">Acceso parental</translation>
 <translation id="3453612417627951340">Autorización requerida</translation>
@@ -3188,7 +3189,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4289732974614035569">Elige un PIN</translation>
 <translation id="4290791284969893584">Después de cerrar una página, es posible que no puedas completar las tareas que empezaste.</translation>
 <translation id="4295072614469448764">La app está disponible en tu terminal. Es posible que haya un ícono en el Selector.</translation>
-<translation id="4295839147292213505">Puedes enviar mensajes de texto desde tu computadora, compartir tu conexión a Internet, responder a conversaciones desde las notificaciones y desbloquear tu <ph name="DEVICE_TYPE" /> con el teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Vuelve a acceder para confirmar que tu cuenta <ph name="USER_EMAIL" /> se puede usar con sitios web, apps y extensiones en Chrome y Google Play. También puedes quitarla. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Reiniciar y restablecer</translation>
 <translation id="4297813521149011456">Rotación de la pantalla</translation>
@@ -4257,6 +4257,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5472627187093107397">Guardar contraseñas para este sitio</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{El PIN debe tener al menos un carácter}other{El PIN debe tener al menos # caracteres}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi ahora y descargues una actualización. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).</translation>
 <translation id="5481273127572794904">No puede descargar múltiples archivos de forma automática</translation>
 <translation id="5481941284378890518">Agregar impresoras cercanas</translation>
 <translation id="5483785310822538350">Revocar acceso al archivo y al dispositivo</translation>
@@ -4681,6 +4682,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="592880897588170157">Descargar los archivos PDF en lugar de abrirlos de forma automática en Chrome</translation>
 <translation id="592919310198008711">Cuando hago clic en la extensión</translation>
 <translation id="5932124097031739492">Linux se actualizó correctamente.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> de inmediato.</translation>
 <translation id="5932224571077948991">El sitio muestra anuncios intrusivos o engañosos</translation>
 <translation id="59324397759951282">Dispositivo USB de <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">No tienes suficientes licencias disponibles para inscribir este dispositivo de hardware de Google Meet. Comunícate con el departamento de ventas para comprar más. Si crees que ves este mensaje por error, comunícate con el servicio de asistencia.</translation>

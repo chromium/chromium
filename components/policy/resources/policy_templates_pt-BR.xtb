@@ -764,7 +764,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política for definida como "Desativada" ou não for definida, a transição rápida não será usada.</translation>
 <translation id="1972134432340252414">Bloquear pontos de extensão legados no processo do navegador</translation>
 <translation id="1977581177449752640">Se a política for definida, o host de acesso remoto usará um certificado do cliente com o CN do emissor para se autenticar em <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Defina a política como <ph name="WILDCARD_VALUE" /> para usar qualquer certificado do cliente disponível. Este recurso será desativado se for deixado vazio ou sem definição.</translation>
-<translation id="1986003348976870087">Não solicitar que o usuário selecione um certificado do cliente na tela de login.</translation>
 <translation id="1988345404999458987">Oferece as configurações dos servidores de impressão disponíveis.
 
       Esta política permite fornecer a configuração de servidores de impressão externos no formato de arquivo JSON para dispositivos <ph name="PRODUCT_OS_NAME" />.
@@ -2562,12 +2561,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Se a política for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de cartão de crédito nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
 <translation id="3989829840000169163">Bloquear pontos de extensão legados do navegador</translation>
-<translation id="3996594590700242138">Se a política for ativada ou deixada sem definição, as atualizações para todos os componentes no <ph name="PRODUCT_NAME" /> serão ativadas.
-
-      Se a política for desativada, as atualizações dos componentes também serão desativadas. Entretanto, alguns componentes estarão isentos desta política: as atualizações de componentes que não contenham código executável, que não alterem significativamente o comportamento do navegador ou que sejam essenciais para a segurança não serão desativadas.
-      Entre os exemplos desses componentes estão as listas de revogação de certificado e os dados do Navegação segura.
-      Consulte https://developers.google.com/safe-browsing para ver mais informações sobre o Navegação segura.
-      Observe que a desativação dessa política pode impedir que os desenvolvedores do <ph name="PRODUCT_NAME" /> forneçam correções de segurança importantes em tempo hábil e, por isso, ela não é recomendada.</translation>
 <translation id="3997519162482760140">URLs que terão acesso a dispositivos de captura de vídeo em páginas de login SAML</translation>
 <translation id="4004523942550416237">Não mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="4007646377576030214"> Esta política foi suspensa na versão M87 e foi removida na M89. Use a <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar alertas de privacidade de sessões de visitante gerenciadas.
@@ -4787,7 +4780,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 
           Observação: se <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> for especificada, ela substituirá esta política.</translation>
 <translation id="6833988859168635883">Inicialização, página inicial e página "Nova guia"</translation>
-<translation id="683399492058633424">Solicitar o certificado do cliente quando houver correspondência de vários certificados na tela de login.</translation>
 <translation id="6835883744948188639">Mostrar um prompt recorrente ao usuário indicando que a reinicialização é necessária</translation>
 <translation id="683688607121170501">Esta configuração permite que os usuários alternem entre Contas do Google na área de conteúdo da janela do navegador e nos aplicativos Android, depois de fazer login no dispositivo <ph name="PRODUCT_OS_NAME" />.
 

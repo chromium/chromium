@@ -1483,6 +1483,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2489686758589235262">Tetapkan 2 tombol akses lagi</translation>
 <translation id="2489829450872380594">Saat digunakan lagi, ponsel baru akan membuka kunci <ph name="DEVICE_TYPE" /> ini. Anda dapat menonaktifkan Smart Lock di Setelan.</translation>
 <translation id="2489918096470125693">Tambahkan &amp;Map...</translation>
+<translation id="2489931062851778802">Tekan tombol ini di <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">Menghapus '<ph name="FILE_NAME" />' dari daftar</translation>
 <translation id="249113932447298600">Maaf, saat ini perangkat <ph name="DEVICE_LABEL" /> tidak didukung.</translation>
 <translation id="2492461744635776704">Menyiapkan permintaan penandatanganan sertifikat</translation>
@@ -2238,11 +2239,13 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3288047731229977326">Ekstensi yang berjalan dalam mode pengembang dapat membahayakan komputer Anda. Jika Anda bukan pengembang, Anda sebaiknya menonaktifkan ekstensi yang berjalan dalam mode pengembang ini agar tetap aman.</translation>
 <translation id="3289668031376215426">Kapitalisasi otomatis</translation>
 <translation id="3289856944988573801">Untuk memeriksa pembaruan, gunakan Ethernet atau Wi-Fi.</translation>
+<translation id="3290249595466894471">Juga mengirimkan sedikit contoh halaman, download, aktivitas ekstensi, dan informasi sistem untuk membantu menemukan ancaman baru</translation>
 <translation id="3291436823898732747">Peningkatan penjelajahan: Misalnya, saran di Omnibox sebelum Anda mulai mengetik</translation>
 <translation id="3293644607209440645">Kirim halaman ini</translation>
 <translation id="32939749466444286">Container Linux tidak dimulai. Harap coba lagi.</translation>
 <translation id="3294437725009624529">Tamu</translation>
 <translation id="3294686910656423119">Statistik penggunaan dan laporan kerusakan</translation>
+<translation id="3297536526040732495">Menautkan sementara data ini ke Akun Google Anda saat login, untuk melindungi Anda di berbagai aplikasi Google</translation>
 <translation id="329838636886466101">Perbaiki</translation>
 <translation id="3298789223962368867">URL yang dimasukkan tidak valid.</translation>
 <translation id="32991397311664836">Perangkat:</translation>
@@ -3195,7 +3198,6 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4289732974614035569">Pilih PIN</translation>
 <translation id="4290791284969893584">Setelah menutup halaman, tugas yang Anda mulai mungkin tidak selesai</translation>
 <translation id="4295072614469448764">Aplikasi tersedia di terminal Anda. Ikonnya juga mungkin tersedia di Peluncur.</translation>
-<translation id="4295839147292213505">Anda dapat mengirim SMS dari komputer, membagikan koneksi internet, membalas notifikasi percakapan, dan membuka kunci <ph name="DEVICE_TYPE" /> dengan ponsel Anda.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Harap login lagi untuk mengonfirmasi bahwa akun <ph name="USER_EMAIL" /> dapat digunakan dengan situs, aplikasi, dan ekstensi di Chrome serta Google Play. Anda juga dapat menghapus akun ini. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Mulai ulang dan reset</translation>
 <translation id="4297813521149011456">Rotasi layar</translation>
@@ -4352,6 +4354,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5554489410841842733">Ikon ini akan kelihatan saat ekstensi dapat bertindak pada halaman saat ini.</translation>
 <translation id="5554720593229208774">Otoritas Sertifikasi Email</translation>
 <translation id="5555363196923735206">Balik kamera</translation>
+<translation id="5555525474779371165">Pilih perlindungan Safe Browsing Anda</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
 <translation id="5558125320634132440">Situs ini diblokir karena mungkin berisi konten dewasa</translation>
 <translation id="5558129378926964177">Per&amp;besar</translation>
@@ -5716,6 +5719,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Buka Semua di &amp;Jendela Samaran}=1{Buka di &amp;Jendela Samaran}other{Buka Semua ({COUNT}) di &amp;Jendela Samaran}}</translation>
 <translation id="7029307918966275733">Crostini tidak diinstal. Instal Crostini untuk melihat kredit.</translation>
 <translation id="7029809446516969842">Sandi</translation>
+<translation id="7030304022046916278">Mengirimkan URL ke Safe Browsing untuk memeriksanya</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - Port serial terhubung</translation>
 <translation id="7034692021407794547">Administrator yang memiliki hak istimewa Pengelolaan Penagihan harus menerima Persyaratan Layanan Google Meet Hardware terlebih dahulu di bagian Google Meet Hardware pada konsol Admin.</translation>
 <translation id="7036706669646341689">Sebaiknya sediakan ruang sebesar <ph name="DISK_SIZE" /> untuk Linux. Untuk menambah ruang kosong, hapus file dari perangkat Anda.</translation>

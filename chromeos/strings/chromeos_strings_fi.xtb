@@ -259,6 +259,7 @@
 <translation id="5049856988445523908">SIM-kortti lukittu (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Ryhmän nimi</translation>
 <translation id="5051044138948155788">Tämä on ainoa sivu. Sinut ohjataan skannauksen aloitusnäytölle.</translation>
+<translation id="5061169534910302641">Päivitä versio ja käynnistä uudelleen</translation>
 <translation id="5088172560898466307">Palvelimen isäntänimi</translation>
 <translation id="5089810972385038852">Osavaltio/alue</translation>
 <translation id="5142961317498132443">Todennus</translation>
@@ -278,6 +279,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5294769550414936029">versio <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Siirrä ikkuna työpöydälle</translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="5308380583665731573">Muodosta yhteys</translation>
 <translation id="5315873049536339193">Identiteetti</translation>
 <translation id="5317780077021120954">Tallenna</translation>
 <translation id="5318334351163689047">Epäonnistuneita TCP-pyyntöjä</translation>
@@ -399,6 +401,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="714876143603641390">LAN-yhteys</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7172721935181587524">1 kuva</translation>
+<translation id="7175037578838465313">Määritä <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ylläpitää tätä: <ph name="DEVICE_TYPE" />. Järjestelmänvalvojat voivat määrittää laitteen etänä.</translation>
 <translation id="7180611975245234373">Päivitä</translation>
 <translation id="7216409898977639127">Mobiilioperaattori</translation>
@@ -501,6 +504,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8620617069779373398">Roaming-tila</translation>
 <translation id="8655295600908251630">Kanava</translation>
 <translation id="8660881923941176839">paunaa</translation>
+<translation id="8662671328352114214">Liity <ph name="TYPE" />-verkkoon</translation>
 <translation id="8675354002693747642">Esijaettu avain</translation>
 <translation id="871560550817059752">Epäonnistui – Muste loppu</translation>
 <translation id="8723108084122415655">Muu kuin oletusverkko yli viiverajan</translation>

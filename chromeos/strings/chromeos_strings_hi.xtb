@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">स्कैन करने की प्रोसेस रद्द की जा रही है</translation>
 <translation id="1851218745569890714">वीडियो कॉन्फ़्रेंसिंग</translation>
+<translation id="1857850044054738019">अगर डिवाइस को किसी नए ग्राहक को बेचने के लिए,
+        रीस्टॉक किया गया हो या उसे नए जैसा किया गया हो, तो यह विकल्प चुनें.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">हार्डवेयर पुनरीक्षण</translation>
 <translation id="1905710495812624430">अधिकतम स्वीकार्य प्रयासों की सीमा पार हो गई है.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">मेमोरी टेस्ट करने के लिए, 500 एमबी खाली मेमोरी की जगह होनी चाहिए. मेमोरी खाली करने के लिए, सेटिंग &gt; स्टोरेज मैनेजमेंट पर जाएं.</translation>
 <translation id="4258281355379922695">एचटीटीपी अनुरोधों में इंतज़ार का समय</translation>
 <translation id="4271957103967917607">फ़ुल स्क्रीन में देखें</translation>
+<translation id="4275799948641988986">ठीक होने के बाद, डिवाइस का इस्तेमाल कौन करने वाला है?</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
 <translation id="4378373042927530923">चल नहीं पाया</translation>
@@ -280,6 +283,7 @@
 <translation id="5294769550414936029">वर्शन <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">विंडो को डेस्क में ले जाएं</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">कनेक्ट करें</translation>
 <translation id="5315873049536339193">पहचान</translation>
 <translation id="5317780077021120954">सेव करें</translation>
 <translation id="5318334351163689047">टीसीपी अनुरोध पूरे नहीं हो पाए</translation>
@@ -401,6 +405,7 @@
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
 <translation id="7162487448488904999">गैलरी</translation>
 <translation id="7172721935181587524">एक इमेज</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> को कॉन्फ़िगर करें</translation>
 <translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
@@ -410,6 +415,7 @@
 <translation id="7297226631177386107">फ़ायरवॉल के ज़रिए, एचटीटीपीएस वेबसाइटों से नहीं जोड़ा जा सकता</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">डिवाइस का मालिकाना हक किसी और को दे दिया जाएगा</translation>
 <translation id="7319430975418800333">ए3</translation>
 <translation id="7343649194310845056">नेटवर्क के डिवाइस</translation>
 <translation id="7359657277149375382">फ़ाइल प्रकार</translation>
@@ -417,6 +423,9 @@
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कैन करने की प्रोसेस पूरी हुई. 1 पेज स्कैन हो गया}one{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गया}other{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गए}}</translation>
+<translation id="7451112128070628323">अगर डिवाइस के मालिकाना हक में बदलाव नहीं हो रहा है, तो इस विकल्प को चुनें.
+        उदाहरण के लिए, जब डिवाइस को
+        संगठन के ही किसी दूसरे व्यक्ति को ट्रांसफ़र किया जा रहा हो.</translation>
 <translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7487067081878637334">तकनीक</translation>
 <translation id="7490813197707563893">MAC पता</translation>
@@ -503,6 +512,7 @@
 <translation id="8620617069779373398">रोमिंग की स्‍थिति</translation>
 <translation id="8655295600908251630">चैनल</translation>
 <translation id="8660881923941176839">पाउंड</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्क में शामिल हों</translation>
 <translation id="8675354002693747642">पहले से शेयर की गई कुंजी</translation>
 <translation id="871560550817059752">प्रिंट नहीं हो पाया - स्याही खत्म हो गई</translation>
 <translation id="8723108084122415655">ऐसा नेटवर्क जो डिफ़ॉल्ट के तौर पर सेट नहीं है, वह इंतज़ार की समयसीमा से ऊपर है</translation>
@@ -540,6 +550,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9088306295921699330">मौजूदा इस्तेमाल</translation>
+<translation id="9095415590198785865">डिवाइस का मालिकाना हक किसी और को नहीं दिया जाएगा</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>

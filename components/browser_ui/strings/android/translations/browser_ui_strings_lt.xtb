@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}one{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}few{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}many{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}other{Leidžiama: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ir dar <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Atsisiųsta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Visada galite pateikti užklausą dėl svetainės staliniams kompiuteriams</translation>
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2485422356828889247">Pašalinti</translation>
 <translation id="2490684707762498678">Tvarko „<ph name="APP_NAME" />“</translation>
@@ -298,6 +299,7 @@
 <translation id="8447861592752582886">Anuliuoti įrenginio leidimą</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Naudojamas 1 slapukas}one{Naudojamas # slapukas}few{Naudojami # slapukai}many{Naudojama # slapuko}other{Naudojama # slapukų}}</translation>
 <translation id="8487700953926739672">Pasiekiama neprisijungus</translation>
+<translation id="848952951823693243">Visada galite pateikti užklausą dėl svetainės mobiliesiems</translation>
 <translation id="851751545965956758">Blokuoti svetaines, kad nebūtų galima prisijungti prie įrenginių</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
 <translation id="857943718398505171">Leidžiama (rekomenduojama)</translation>

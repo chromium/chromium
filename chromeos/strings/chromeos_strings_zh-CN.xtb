@@ -62,6 +62,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">正在取消扫描</translation>
 <translation id="1851218745569890714">视频会议</translation>
+<translation id="1857850044054738019">若要将设备重新上架或翻新以发放给新客户，请选择此选项。</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">硬件版本</translation>
 <translation id="1905710495812624430">已超过允许的尝试次数上限。</translation>
@@ -196,6 +197,7 @@
 <translation id="4244962993387259361">您需要有至少 500 MB 的可用空间才能运行内存测试。若要释放空间，请依次转到“设置”&gt;“存储空间管理”。</translation>
 <translation id="4258281355379922695">HTTP 延迟时间</translation>
 <translation id="4271957103967917607">全屏查看</translation>
+<translation id="4275799948641988986">修理之后，这部设备将由谁使用？</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 张图片</translation>
 <translation id="4378373042927530923">未运行</translation>
@@ -260,6 +262,7 @@
 <translation id="5049856988445523908">SIM 卡已锁定 (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">群组名称</translation>
 <translation id="5051044138948155788">这是目前仅有的一个页面了。此操作会将您转到扫描开始屏幕。</translation>
+<translation id="5061169534910302641">更新版本并重启</translation>
 <translation id="5088172560898466307">服务器主机名</translation>
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5142961317498132443">身份验证</translation>
@@ -279,6 +282,7 @@
 <translation id="5294769550414936029">版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">将窗口移至桌面</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">连接</translation>
 <translation id="5315873049536339193">身份</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318334351163689047">TCP 请求失败</translation>
@@ -400,6 +404,7 @@
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7162487448488904999">媒体库</translation>
 <translation id="7172721935181587524">1 张图片</translation>
+<translation id="7175037578838465313">配置“<ph name="NAME" />”</translation>
 <translation id="7177485034254901881">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。管理员可能会远程配置此设备。</translation>
 <translation id="7180611975245234373">刷新</translation>
 <translation id="7216409898977639127">移动网络服务提供商</translation>
@@ -409,6 +414,7 @@
 <translation id="7297226631177386107">无法通过防火墙连接到 HTTPS 网站</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">设备将由新所有者使用</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">网络设备</translation>
 <translation id="7359657277149375382">文件类型</translation>
@@ -416,6 +422,8 @@
 <translation id="7415801143053185905">HTTPS 延迟时间非常长</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{已完成扫描。扫描了 1 页}other{已完成扫描。扫描了 {NUMBER_OF_PAGES} 页}}</translation>
+<translation id="7451112128070628323">如果设备的所有权未变，请选择此选项。
+        例如，将该设备转给同一单位内的其他人。</translation>
 <translation id="7469648432129124067">检测到门户</translation>
 <translation id="7487067081878637334">技术</translation>
 <translation id="7490813197707563893">MAC 地址</translation>
@@ -502,6 +510,7 @@
 <translation id="8620617069779373398">漫游状态</translation>
 <translation id="8655295600908251630">版本</translation>
 <translation id="8660881923941176839">磅</translation>
+<translation id="8662671328352114214">加入<ph name="TYPE" />网络</translation>
 <translation id="8675354002693747642">预共享密钥</translation>
 <translation id="871560550817059752">失败 - 墨水已用完</translation>
 <translation id="8723108084122415655">非默认网络的延迟时间超出了阈值</translation>
@@ -539,6 +548,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9088306295921699330">目前用量</translation>
+<translation id="9095415590198785865">设备将由原所有者使用</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">刷新 <ph name="PRINCIPAL_NAME" /> 的票据</translation>
 <translation id="9106415115617144481">正在扫描第 <ph name="PAGE_NUMBER" /> 页</translation>

@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">登录期间出了点问题。</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
 <translation id="1923342640370224680">过去 1 小时</translation>
+<translation id="1930989359703290198">根据贵单位的要求，您只能使用特定帐号登录。不允许使用的帐号会处于隐藏状态。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">点按两次即可复制。</translation>
 <translation id="1952172573699511566">网站将尽可能以您的首选语言显示文字。</translation>
 <translation id="1965935827552890526">请完成您先前在另一已打开的 Chrome 窗口中正在执行的操作。</translation>
@@ -225,6 +226,7 @@
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
 <translation id="3112556859945124369">标为…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">阻止所有 Cookie</translation>
 <translation id="313283613037595347">创建新的无痕式标签页。</translation>
 <translation id="3153862085237805241">保存卡片</translation>
@@ -386,6 +388,8 @@
 <translation id="4802417911091824046">密码加密不包括 Google Pay 中的付款方式和地址。
 
 要更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">由贵单位管理。
+<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">卡号无效</translation>
 <translation id="4808744395915275922">更新</translation>
 <translation id="4818522717893377262">添加语言…</translation>

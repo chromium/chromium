@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Deschide în filă nouă în grup</translation>
 <translation id="1103142993930332957">Ajuți la îmbunătățirea Chrome?</translation>
 <translation id="1105960400813249514">Captură de ecran</translation>
+<translation id="1108938384783527433">Sincronizarea istoricului</translation>
 <translation id="1110914759170138831">Evidențierea a fost scurtată</translation>
 <translation id="1111673857033749125">Marcajele salvate pe alte dispozitive vor apărea aici.</translation>
 <translation id="1113597929977215864">Arată afișarea simplificată</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Trimite anumite cookie-uri și căutări din bara de adrese și din caseta de căutare în motorul de căutare prestabilit</translation>
 <translation id="200114059308480249">Incluzi text din jur în căutările de pe Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
+<translation id="2020309681647789787">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai</translation>
 <translation id="2021896219286479412">Comenzi site în ecran complet</translation>
 <translation id="2038563949887743358">Activează opțiunea Versiune site pentru desktop</translation>
 <translation id="204321170514947529">Și <ph name="APP_NAME" /> are date în Chrome</translation>
@@ -234,7 +236,6 @@ Atinge orice cuvânt pentru a-l căuta. Ca să rafinezi căutarea, atinge lung p
 <translation id="2450907520913474542">Află despre subiectele de pe site-uri fără să părăsești pagina. Funcția Atinge pentru a căuta trimite un cuvânt și contextul aferent către Căutarea Google și returnează definiții, imagini, rezultate ale căutării și alte detalii.
 
 Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectează mai multe sau mai puține cuvinte. Pentru a edita căutarea, deschide panoul, atinge pictograma ca să deschizi într-o filă nouă și fă modificările în caseta de căutare.</translation>
-<translation id="2451607499823206582">Urmărire</translation>
 <translation id="2459390580524506445">Căutare vocală îmbunătățită</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="247737702124049222">Descrierile imaginilor sunt activate</translation>
@@ -427,7 +428,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3527085408025491307">Dosar</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB disponibili</translation>
 <translation id="3549657413697417275">Caută în istoricul tău</translation>
-<translation id="3557272988124495906">Primește notificări privind scăderea prețurilor</translation>
 <translation id="3557336313807607643">Adaugă în Agendă</translation>
 <translation id="3563767357928833671">Conținutul clipboardului este afișat</translation>
 <translation id="3566923219790363270">Chrome încă se pregătește pentru RV. Repornește Chrome mai târziu.</translation>
@@ -849,6 +849,7 @@ Versiunile de încercare Privacy Sandbox sunt încă în dezvoltare și sunt dis
 <translation id="6070730414166672373">Se contactează banca\u2026</translation>
 <translation id="6085886413119427067">Stabilește modul de conectare la site-uri printr-o conexiune securizată</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ore rămase</translation>
+<translation id="6095578583683628124">Dacă Google este și motorul tău de căutare prestabilit, vei vedea sugestii mai bune și mai relevante din punct de vedere contextual</translation>
 <translation id="6108923351542677676">Configurare în curs...</translation>
 <translation id="6111020039983847643">date utilizate</translation>
 <translation id="6112702117600201073">Se actualizează pagina</translation>
@@ -1229,7 +1230,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8218052821161047641">Pagină rapidă</translation>
 <translation id="8218622182176210845">Gestionează contul</translation>
 <translation id="8223642481677794647">Meniul cardului din feed</translation>
-<translation id="8242868071038398515">Vei primi notificări dacă prețul scade pe orice site</translation>
 <translation id="8250920743982581267">Documente</translation>
 <translation id="825412236959742607">Această pagină folosește prea multă memorie, prin urmare Chrome a eliminat o parte din conținut.</translation>
 <translation id="8260126382462817229">Încearcă să te conectezi din nou</translation>
@@ -1394,6 +1394,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="9148126808321036104">Conectează-te din nou</translation>
 <translation id="9155898266292537608">De asemenea, poți căuta atingând scurt un cuvânt</translation>
 <translation id="9158770349521403363">Trimite numai conținutul</translation>
+<translation id="916446198114569890">Adresele URL pe care le accesezi sunt salvate în Contul Google</translation>
 <translation id="9169507124922466868">Istoricul de navigare este pe jumătate deschis</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A rulat acum un minut}few{A rulat acum # minute}other{A rulat acum # de minute}}</translation>
 <translation id="9204836675896933765">1 fișier rămas</translation>

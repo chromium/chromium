@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on lubatud}}</translation>
 <translation id="2434158240863470628">Allalaadimine jõudis lõpule: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Alati taotletakse arvutisaiti</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
 <translation id="2490684707762498678">Haldab <ph name="APP_NAME" /></translation>
@@ -298,6 +299,7 @@
 <translation id="8447861592752582886">Seadme loa tühistamine</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 küpsisefail on kasutuses}other{# küpsisefaili on kasutuses}}</translation>
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
+<translation id="848952951823693243">Alati taotletakse mobiilisaiti</translation>
 <translation id="851751545965956758">Blokeeri saitidel seadmetega ühenduse loomine</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>

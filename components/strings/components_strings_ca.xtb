@@ -82,6 +82,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="124116460088058876">Més idiomes</translation>
 <translation id="1243027604378859286">Autor:</translation>
 <translation id="1246424317317450637">Negreta</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome OS</translation>
 <translation id="1250759482327835220">Perquè la propera vegada puguis pagar més ràpidament, desa la targeta, el nom i l'adreça de facturació al Compte de Google.</translation>
 <translation id="1252799212227771492">Botó Crea un full de càlcul: prem Retorn per crear un full de càlcul de Google ràpidament</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (informació sincronitzada)</translation>
@@ -318,6 +319,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="192020519938775529">{COUNT,plural, =0{Cap}=1{1 lloc}other{# llocs}}</translation>
 <translation id="1923390796829649802">Botó Gestiona la configuració d'accessibilitat: prem Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome OS</translation>
 <translation id="1924727005275031552">Nous</translation>
+<translation id="1927439593081478069">Botó Executa la comprovació de seguretat de Chrome: prem Retorn per executar la comprovació de seguretat a la configuració de Chrome</translation>
 <translation id="1939175642807587452">Pot demanar permís per enviar notificacions</translation>
 <translation id="1945968466830820669">Podries perdre l'accés al compte de la teva organització o ser víctima d'un robatori d'identitat. Chromium et recomana que canviïs la contrasenya ara.</translation>
 <translation id="1947454675006758438">Grapat a la part superior dreta</translation>
@@ -337,6 +339,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2003709556000175978">Restableix la contrasenya ara</translation>
 <translation id="2003775180883135320">Encunyació quàdruple a la part superior</translation>
 <translation id="201174227998721785">Gestiona els permisos i les dades emmagatzemades als llocs web des de la configuració de Chrome</translation>
+<translation id="2019607688127825327">Botó Gestiona la configuració d'accessibilitat: prem Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome</translation>
 <translation id="2025115093177348061">Realitat augmentada</translation>
 <translation id="2025186561304664664">El servidor intermediari està definit perquè es configuri automàticament.</translation>
 <translation id="2025891858974379949">Contingut no segur</translation>
@@ -502,6 +505,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2556876185419854533">&amp;Desfés la modificació</translation>
 <translation id="2570734079541893434">Gestiona la configuració</translation>
 <translation id="257674075312929031">Grup</translation>
+<translation id="2576880857912732701">Botó Gestiona la configuració de seguretat: prem Retorn per gestionar Navegació segura i altres opcions de la configuració de Chrome</translation>
 <translation id="2586657967955657006">Porta-retalls</translation>
 <translation id="2587730715158995865">Publicat per <ph name="ARTICLE_PUBLISHER" />. Llegeix aquesta història i <ph name="OTHER_ARTICLE_COUNT" /> més.</translation>
 <translation id="2587841377698384444">Identificador de l'API de directoris:</translation>
@@ -546,6 +550,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per gestionar la informació dels pagaments i de les targetes de crèdit a la configuració de Chrome</translation>
 <translation id="2721148159707890343">Sol·licitud realitzada correctament</translation>
+<translation id="2723669454293168317">Executa una comprovació de seguretat a la configuració de Chrome</translation>
 <translation id="2726001110728089263">Safata lateral</translation>
 <translation id="2728127805433021124">El certificat del servidor està signat mitjançant un algoritme de signatura dèbil.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Executar el Diagnòstic de connectivitat<ph name="END_LINK" /></translation>
@@ -576,6 +581,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2859806420264540918">Aquest lloc web mostra anuncis intrusius o enganyosos.</translation>
 <translation id="287596039013813457">Amistosa</translation>
 <translation id="2876489322757410363">Per pagar amb una aplicació externa, sortiràs del mode d'incògnit. Vols continuar?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar Navegació segura i altres opcions de la configuració de Chrome</translation>
 <translation id="2878197950673342043">Plegat en pòster</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Col·locació de finestres</translation>
@@ -681,6 +687,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3229041911291329567">Informació sobre la versió del dispositiu i del navegador</translation>
 <translation id="323107829343500871">Introdueix el CVC de la targeta <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Detecta sempre el contingut important d'aquest lloc</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar l'aspecte del teu navegador</translation>
 <translation id="3240791268468473923">S'ha obert el full de credencials no coincidents de credencials de pagament segur</translation>
 <translation id="3249845759089040423">Atrevida</translation>
 <translation id="3252266817569339921">Francès</translation>
@@ -724,6 +731,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
       • Crear un mapa 3D del teu entorn i fer un seguiment de la posició de la càmera.
       • Utilitzar la teva càmera.</translation>
 <translation id="337363190475750230">No administrat</translation>
+<translation id="3375754925484257129">Executa la comprovació de seguretat de Chrome</translation>
 <translation id="3377144306166885718">El servidor ha utilitzat una versió obsoleta de TLS.</translation>
 <translation id="3377188786107721145">S'ha produït un error en analitzar la política</translation>
 <translation id="3377736046129930310">Fes servir el bloqueig de pantalla per confirmar les targetes més ràpidament</translation>
@@ -764,6 +772,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3462200631372590220">Amaga la configuració avançada</translation>
 <translation id="3467763166455606212">El nom del titular de la targeta és obligatori</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, oberta actualment; prem Tab i després Retorn per canviar a la pestanya oberta</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per tancar totes les finestres d'incògnit que estan obertes en aquests moments</translation>
 <translation id="3479552764303398839">Ara no</translation>
 <translation id="3484560055331845446">Podries perdre l'accés al Compte de Google. Chrome et recomana que canviïs la contrasenya ara. Se't demanarà que iniciïs la sessió.</translation>
 <translation id="3487845404393360112">Safata 4</translation>
@@ -802,6 +811,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3611395257124510155">Targeta virtual per a <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Mida 2</translation>
 <translation id="361438452008624280">Entrada "<ph name="LANGUAGE_ID" />" de la llista: l'idioma és desconegut o no s'admet.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per executar la comprovació de seguretat a la configuració de Chrome</translation>
 <translation id="3615877443314183785">Introdueix una data de caducitat vàlida</translation>
 <translation id="36224234498066874">Esborra dades de navegació</translation>
 <translation id="362276910939193118">Mostra l'historial complet</translation>
@@ -1592,6 +1602,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6218753634732582820">Voleu suprimir l'adreça de Chromium?</translation>
 <translation id="622039917539443112">Plegat en paral·lel</translation>
 <translation id="6221345481584921695">Navegació segura de Google ha <ph name="BEGIN_LINK" />detectat programari maliciós<ph name="END_LINK" /> recentment a <ph name="SITE" />. De vegades, els llocs web que acostumen a ser segurs s'infecten amb programari maliciós. El contingut maliciós prové de l'amfitrió <ph name="SUBRESOURCE_HOST" />, un distribuïdor conegut de programari maliciós.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome</translation>
 <translation id="6234122620015464377">Retalla després de cada document</translation>
 <translation id="6240447795304464094">Logotip de Google Pay</translation>
 <translation id="6241121617266208201">Amaga els suggeriments</translation>
@@ -1610,6 +1621,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6279098320682980337">No s'ha emplenat el número de la targeta virtual? Fes clic als detalls de la targeta per copiar-los.</translation>
 <translation id="6280223929691119688">No es pot entregar a aquesta adreça. Selecciona'n una altra.</translation>
 <translation id="6282194474023008486">Codi postal</translation>
+<translation id="6285507000506177184">Botó Gestiona les baixades a Chrome: prem Retorn per gestionar els fitxers que has baixat a Chrome</translation>
 <translation id="6289939620939689042">Color de la pàgina</translation>
 <translation id="6290238015253830360">Els articles suggerits es mostren aquí</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1725,6 +1737,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6689249931105087298">Relatiu amb compressió de punts negres</translation>
 <translation id="6689271823431384964">Chrome t'està oferint desar les targetes al Compte de Google perquè tens la sessió iniciada. Pots canviar aquest comportament a la configuració. El nom del titular de la targeta s'obté del teu compte.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per cercar el teu dispositiu al Compte de Google</translation>
+<translation id="6696588630955820014">Botó Comparteix aquesta pestanya: prem Retorn per compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres</translation>
 <translation id="6698381487523150993">Creat:</translation>
 <translation id="6702919718839027939">Presenta</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1930,6 +1943,7 @@ Detalls addicionals:
 <translation id="7392089738299859607">Actualitza l'adreça</translation>
 <translation id="7399802613464275309">Comprovació de seguretat</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">Pots compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres</translation>
 <translation id="7403591733719184120">El dispositiu <ph name="DEVICE_NAME" /> està gestionat</translation>
 <translation id="7407424307057130981">&lt;p&gt;Aquest error es mostra si teniu el programari Superfish en un ordinador Windows.&lt;/p&gt;
     &lt;p&gt;Seguiu aquests passos per desactivar temporalment el programari perquè pugueu accedir al web. Per fer-ho, necessitareu privilegis d'administrador.&lt;/p&gt;
@@ -2159,6 +2173,7 @@ Detalls addicionals:
 <translation id="810875025413331850">No s'ha trobat cap dispositiu a prop.</translation>
 <translation id="8116925261070264013">Silenciats</translation>
 <translation id="8118489163946903409">Mètode de pagament</translation>
+<translation id="8124639700796374294">Botó Personalitza Chrome: prem Retorn per personalitzar l'aspecte del navegador</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> no s'ha instal·lat correctament a l'ordinador o a la xarxa. Demana a l'administrador de TI que resolgui aquest problema.</translation>
 <translation id="8131740175452115882">Confirma</translation>
 <translation id="8148608574971654810">Versió de PDF:</translation>
@@ -2340,6 +2355,7 @@ Detalls addicionals:
 <translation id="87601671197631245">Aquest lloc web utilitza una configuració de seguretat obsoleta i, per tant, la informació que hi enviïs podria quedar exposada (per exemple, les contrasenyes, els missatges o les targetes de crèdit).</translation>
 <translation id="8761567432415473239">Recentment, amb Navegació segura de Google s'han <ph name="BEGIN_LINK" />detectat programes perjudicials<ph name="END_LINK" /> al lloc <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Dispositiu USB</translation>
+<translation id="8763986294015493060">Tanca totes les finestres d'incògnit que estan obertes en aquests moments</translation>
 <translation id="8766943070169463815">El full d'autenticació de credencials de pagament segur està obert</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Refés la supressió</translation>
@@ -2353,6 +2369,7 @@ Detalls addicionals:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per actualitzar Chrome des de la configuració de Chrome</translation>
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="882338992931677877">Alimentador manual</translation>
+<translation id="8834380158646307944">Botó Tanca les finestres d'incògnit: prem Retorn per tancar totes les finestres d'incògnit que estan obertes en aquests moments</translation>
 <translation id="883848425547221593">Altres adreces d'interès</translation>
 <translation id="884264119367021077">Adreça d’enviament</translation>
 <translation id="884923133447025588">No s'ha trobat cap mecanisme de revocació.</translation>
@@ -2406,6 +2423,7 @@ Detalls addicionals:
 <translation id="9020200922353704812">Es requereix l'adreça de facturació de la targeta</translation>
 <translation id="9020542370529661692">Aquesta pàgina s'ha traduït a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per compartir aquesta pestanya mitjançant l'enllaç, creant un codi QR, fent una emissió i d'altres maneres</translation>
 <translation id="9025348182339809926">(No vàlid)</translation>
 <translation id="9030265603405983977">Monocroma</translation>
 <translation id="9035022520814077154">Error de seguretat</translation>

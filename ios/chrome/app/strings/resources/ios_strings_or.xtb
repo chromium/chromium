@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">ସାଇନ୍-ଇନ୍ କରିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋଇଛି।</translation>
 <translation id="1911619930368729126">Google ଡ୍ରାଇଭ୍‌ରେ ଅପ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="1923342640370224680">ଶେଷ ଘଣ୍ଟାକର</translation>
+<translation id="1930989359703290198">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କୁ କେବଳ ନିର୍ଦ୍ଦିଷ୍ଟ କିଛି ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରିବାକୁ ଅନୁମତି ଦିଏ। ଅନୁମତି ଦିଆଯାଇନଥିବା ଆକାଉଣ୍ଟଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">କପି କରିବାକୁ ଦୁଇଥର ଟାପ୍‌ କରନ୍ତୁ।</translation>
 <translation id="1952172573699511566">ଯେତେବେଳେ ସମ୍ଭବ, ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକ ଆପଣଙ୍କର ଅଗ୍ରାଧିକାର ଭାଷାରେ ଟେକ୍ସଟ ଦେଖାଇବ।</translation>
 <translation id="1965935827552890526">ଆପଣ ଆପଣଙ୍କ ଅନ୍ୟ ଖୋଲା ଥିବା Chrome ୱିଣ୍ଡୋରେ ଯାହା କରୁଛନ୍ତି ତାହା ସମାପ୍ତ କରନ୍ତୁ।</translation>
@@ -225,6 +226,7 @@
 <translation id="3080525922482950719">ଆପଣ ପରେ କିମ୍ବା ଅଫଲାଇନରେ ପଢ଼ିବା ପାଇଁ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="3081338492074632642">ଆପଣ ସେଭ୍ କରୁଥିବା ପାସୱାର୍ଡ <ph name="WEBSITE" /> ପାଇଁ ଆପଣଙ୍କ ପାସୱାର୍ଡ ସହ ମେଳ ହେଉଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="3112556859945124369">ଟିହ୍ନଟ କରନ୍ତୁ…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />ଆପଣ କଣ ସିଙ୍କ କରିପାରିବେ ତାହା ଦେଖନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">ସବୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="313283613037595347">ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ୍ ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="3153862085237805241">କାର୍ଡ ସେଭ୍ କରନ୍ତୁ</translation>
@@ -384,6 +386,8 @@
 <translation id="4802417911091824046">ପାସଫ୍ରେଜ୍ ଏନକ୍ରିପ୍ସନ୍, Google Payରୁ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ ନାହିଁ।
 
 ଏହି ସେଟିଂ ପରିବର୍ତ୍ତନ କରିବାକୁ, <ph name="BEGIN_LINK" />ସିଙ୍କ୍‌ ରିସେଟ୍‍ କରନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ପରିଚାଳିତ।
+<ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">ଅବୈଧ କାର୍ଡ ନମ୍ବର</translation>
 <translation id="4808744395915275922">ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="4818522717893377262">ଭାଷା ଯୋଗ କରନ୍ତୁ...</translation>

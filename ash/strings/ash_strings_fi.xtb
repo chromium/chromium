@@ -326,6 +326,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="334252345105450327">Ota kuvakaappaus</translation>
 <translation id="3351879221545518001">Suoratoistat tällä hetkellä näyttöä.</translation>
 <translation id="3364721542077212959">Näyttökynätyökalut</translation>
+<translation id="3365977133351922112">Puhelimesi on liian kaukana. Siirrä puhelin lähemmäs.</translation>
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3371140690572404006">C-tyypin USB-laite (oikean sivun etummainen portti)</translation>
 <translation id="3375634426936648815">Yhdistetty</translation>
@@ -602,6 +603,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5170568018924773124">Näytä kansiossa</translation>
 <translation id="5176318573511391780">Tallenna osittainen näyttö</translation>
 <translation id="5199367439331364630">Voit kirjautua Chromebookiin lisäämällä salasanan</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 muu ilmoitus}other{# muuta ilmoitusta}}</translation>
 <translation id="5207949376430453814">Korosta tekstikursori</translation>
 <translation id="5208059991603368177">Päällä</translation>
@@ -885,6 +887,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="7398254312354928459">Verkko vaihdettu</translation>
 <translation id="7405710164030118432">Avaa laitteen lukitus vanhemman Family Link ‑käyttökoodilla</translation>
 <translation id="7406608787870898861">Viimeistele mobiiliverkon käyttöönotto</translation>
+<translation id="740790383907119240">Sovellusten pikakuvakkeet</translation>
 <translation id="741244894080940828">muunnos</translation>
 <translation id="7413851974711031813">Sulje painamalla Esc</translation>
 <translation id="742594950370306541">Kamera on käytössä.</translation>
@@ -987,6 +990,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8061464966246066292">Suuri kontrasti</translation>
 <translation id="8098591350844501178">Lopeta suoratoisto: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Päällä, kaikki</translation>
+<translation id="8120151603115102514">Puhelimessasi ei ole lukitusnäyttöä. Avaa Chromebookin lukitus kirjoittamalla salasana.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Vahvista</translation>
 <translation id="8132487352815776550">Sulje tekstitykset</translation>
@@ -1035,6 +1039,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> omistaa tämän: <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Peru painamalla Alt+haku tai vaihto.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />. Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
+<translation id="85123341071060231">Chromebookisi Bluetooth on poissa päältä. Avaa Chromebookin lukitus kirjoittamalla salasana.</translation>
 <translation id="8513108775083588393">Autom. kääntö</translation>
 <translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ei välttämättä lataudu, kun se on käynnissä.</translation>

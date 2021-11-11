@@ -183,6 +183,7 @@
 <translation id="5686916850681061684">Sesuaikan dan kontrol Google Chrome. Ada sesuatu yang memerlukan perhatian Anda - klik untuk melihat detailnya.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome akan dimulai ulang dalam 1 detik}other{Google Chrome akan dimulai ulang dalam # detik}}</translation>
+<translation id="5736850870166430177">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
 <translation id="573759479754913123">Tentang Chrome OS</translation>
 <translation id="5756509061973259733">Profil Chrome dengan akun ini sudah ada di perangkat ini</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
@@ -270,6 +271,7 @@
 <translation id="8290100596633877290">Aduh! Google Chrome ngadat. Luncurkan ulang sekarang?</translation>
 <translation id="8342675569599923794">File ini berbahaya, jadi Chrome telah memblokirnya.</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
+<translation id="8394720698884623075">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome</translation>
 <translation id="840084489713044809">Google Chrome ingin mengekspor sandi.</translation>
 <translation id="8433638294851456451">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
 <translation id="8498858610309223613">Update keamanan khusus untuk Google Chrome baru saja diterapkan. Mulai ulang Google Chrome sekarang dan kami akan memulihkan tab Anda.</translation>

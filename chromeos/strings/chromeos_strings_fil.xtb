@@ -278,6 +278,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5294769550414936029">bersyon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Ilipat sa desk ang window</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Kumonekta</translation>
 <translation id="5315873049536339193">Pagkatao</translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5318334351163689047">Mga hindi naisagawang kahilingan sa TCP</translation>
@@ -399,6 +400,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="714876143603641390">Pagkakonekta sa Lan</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 Larawan</translation>
+<translation id="7175037578838465313">I-configure ang <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /> na ito. Puwedeng i-configure ng mga administrator ang device sa remote na paraan.</translation>
 <translation id="7180611975245234373">I-refresh</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
@@ -501,6 +503,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8620617069779373398">Status ng roaming</translation>
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8660881923941176839">pounds</translation>
+<translation id="8662671328352114214">Sumali sa <ph name="TYPE" /> network</translation>
 <translation id="8675354002693747642">Pre-shared key:</translation>
 <translation id="871560550817059752">Hindi na-print - Wala nang ink</translation>
 <translation id="8723108084122415655">Mas mataas sa limitasyon ng latency ang hindi default na network</translation>

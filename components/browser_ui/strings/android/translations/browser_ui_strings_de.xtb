@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> und <ph name="NUM_MORE" /> weitere zugelassen}}</translation>
 <translation id="2434158240863470628">Download abgeschlossen <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Desktopwebsite immer anfordern</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
 <translation id="2490684707762498678">Über <ph name="APP_NAME" /> verwaltet</translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">Websites den Zugriff auf Bewegungssensoren erlauben (empfohlen)</translation>
 <translation id="5050380848339752099">Diese Website ist im Begriff, Informationen mit einer Anwendung außerhalb des Inkognitomodus zu teilen.</translation>
 <translation id="5063480226653192405">Verwendung</translation>
+<translation id="509133520954049755">Desktop-Ansicht anzeigen</translation>
 <translation id="5100237604440890931">Minimiert – zum Maximieren klicken</translation>
 <translation id="5123685120097942451">Inkognitotab</translation>
+<translation id="5134599672855298214">Mobile Ansicht anzeigen (empfohlen)</translation>
 <translation id="5186036860380548585">Option ist oben auf dem Bildschirm verfügbar</translation>
 <translation id="5197729504361054390">Die von Ihnen ausgewählten Kontakte werden mit <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> geteilt.</translation>
 <translation id="5216942107514965959">Heute zuletzt besucht</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">Zugriffsberechtigung auf Gerät widerrufen</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 verwendeter Cookie}other{# verwendete Cookies}}</translation>
 <translation id="8487700953926739672">Offline verfügbar</translation>
+<translation id="848952951823693243">Mobile Website immer anfordern</translation>
 <translation id="851751545965956758">Verhindern, dass Websites eine Verbindung zu Geräten herstellen</translation>
 <translation id="8525306231823319788">Vollbildmodus</translation>
 <translation id="857943718398505171">Zugelassen (empfohlen)</translation>

@@ -157,6 +157,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1422930527989633628">Atrofdagi Bluetooth qurilmalarni tekshirish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="1426410128494586442">Ha</translation>
 <translation id="1428146450423315676">Taxlovchi 7</translation>
+<translation id="142858679511221695">Cloud foydalanuvchisi</translation>
 <translation id="1428729058023778569">Bu sayt HTTPS protokolda ishlamasligi uchun bu ogohlantiruv chiqarildi. <ph name="BEGIN_LEARN_MORE_LINK" />Batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1432581352905426595">Qidiruv tizimlarini boshqarish</translation>
@@ -716,6 +717,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3329013043687509092">To‘liqlik</translation>
 <translation id="3333762389743153920">Virtual karta uchun mos kelmaydi</translation>
 <translation id="3338095232262050444">Xavfsiz</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">Proksi-server sozlamalarini o‘zgartirish...</translation>
 <translation id="3360103848165129075">Toʻlovni qayta ishlash vositasi</translation>
 <translation id="3361596688432910856">Chrome quyidagi ma’lumotlarni <ph name="BEGIN_EMPHASIS" />saqlab qolmaydi<ph name="END_EMPHASIS" />:
@@ -739,6 +741,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3380365263193509176">Noma’lum xatolik</translation>
 <translation id="3380864720620200369">Mijoz-dastur identifikatori:</translation>
 <translation id="3381668585148405088">Xaridni tasdiqlang</translation>
+<translation id="3383566085871012386">Joriy navbat tartibi</translation>
 <translation id="3387261909427947069">To‘lov usullari</translation>
 <translation id="3391030046425686457">Yetkazib berish manzili</translation>
 <translation id="3391482648489541560">fayllarni tahrirlash</translation>
@@ -1406,6 +1409,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">Bu kontent zararli dastur o‘rnatishga yoki shaxsiy ma’lumotlaringizni o‘g‘irlashga urinishi mumkin. <ph name="BEGIN_LINK" />Baribir ko‘rsatilsin<ph name="END_LINK" />.</translation>
 <translation id="54817484435770891">To‘g‘ri manzilni kiriting</translation>
+<translation id="5485973315555778056">Cloud kompyuteri</translation>
 <translation id="5490432419156082418">Mazillar va boshqa ma’lumotlar</translation>
 <translation id="5492298309214877701">Ushbu kompaniya, tashkilot yoki o‘quv yurti intranetidagi URL manzil Internetdagi veb-sayt manzili bilan bir xil ekan.
 	<ph name="LINE_BREAK" />
@@ -1435,6 +1439,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5571083550517324815">Bu manzildan olib keta olmaymiz. Boshqa manzilni tanlang.</translation>
 <translation id="5580958916614886209">Kartangiz muddatining tugash oyini tekshiring va yana urinib ko‘ring.</translation>
 <translation id="5586446728396275693">Hech qanday manzil saqlanmagan</translation>
+<translation id="5587987780934666589">Platforma foydalanuvchisi</translation>
 <translation id="5593349413089863479">Aloqa butunlay xavfsiz emas</translation>
 <translation id="5595485650161345191">Manzilni o‘zgartirish</translation>
 <translation id="5598944008576757369">To‘lov usulini tanlang</translation>
@@ -2122,6 +2127,7 @@ Batafsil axborot:
 <translation id="7953569069500808819">Yuqori chekkasini tikish</translation>
 <translation id="7956713633345437162">Mobil xatcho‘plar</translation>
 <translation id="7961015016161918242">Hech qachon</translation>
+<translation id="7962467575542381659">Platforma kompyuteri</translation>
 <translation id="7966803981046576691">Vazifa bajarilayotgan hisob turi</translation>
 <translation id="79682505114836835">“<ph name="VALUE" />” qiymati hex formati uchun yaroqsiz.</translation>
 <translation id="7968982339740310781">Tafsilotlarni ko‘rish</translation>

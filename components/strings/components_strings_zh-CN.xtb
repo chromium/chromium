@@ -82,6 +82,7 @@
 <translation id="124116460088058876">更多语言</translation>
 <translation id="1243027604378859286">作者：</translation>
 <translation id="1246424317317450637">粗体</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 操作系统设置中定制您的个性化无障碍工具</translation>
 <translation id="1250759482327835220">若想在下次购物时更快捷地付款，请将您的付款卡信息、姓名和帐单邮寄地址保存到您的 Google 帐号名下。</translation>
 <translation id="1252799212227771492">“创建表格”按钮，按 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />、<ph name="TYPE_2" />（已同步）</translation>
@@ -156,6 +157,7 @@
 <translation id="1422930527989633628">可以询问能否发现附近的蓝牙设备</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1428146450423315676">堆叠出纸器 7</translation>
+<translation id="142858679511221695">云端用户</translation>
 <translation id="1428729058023778569">您之所以会看到此警告，是因为该网站不支持 HTTPS。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
@@ -318,6 +320,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{无}=1{1 个网站}other{# 个网站}}</translation>
 <translation id="1923390796829649802">“管理无障碍设置”按钮，按 Enter 键即可在 Chrome 操作系统设置中定制您的个性化无障碍工具</translation>
 <translation id="1924727005275031552">新</translation>
+<translation id="1927439593081478069">“运行 Chrome 安全检查”按钮，按 Enter 键即可从 Chrome 设置中运行安全检查</translation>
 <translation id="1939175642807587452">可以询问能否向您发送通知</translation>
 <translation id="1945968466830820669">您可能会无法再访问所属组织的帐号，或被他人盗用身份信息。Chromium 建议您立即更改密码。</translation>
 <translation id="1947454675006758438">钉装（右上角）</translation>
@@ -337,6 +340,7 @@
 <translation id="2003709556000175978">立即重置您的密码</translation>
 <translation id="2003775180883135320">四孔（顶部）</translation>
 <translation id="201174227998721785">在 Chrome 设置中管理各网站的权限及存储的数据</translation>
+<translation id="2019607688127825327">“管理无障碍设置”按钮，按 Enter 键即可在 Chrome 设置中定制您的个性化无障碍工具</translation>
 <translation id="2025115093177348061">增强现实</translation>
 <translation id="2025186561304664664">代理已设为自动配置。</translation>
 <translation id="2025891858974379949">不安全内容</translation>
@@ -502,6 +506,7 @@
 <translation id="2556876185419854533">撤消修改(&amp;U)</translation>
 <translation id="2570734079541893434">管理设置</translation>
 <translation id="257674075312929031">群组</translation>
+<translation id="2576880857912732701">“管理安全设置”按钮，按 Enter 键即可在 Chrome 设置中管理您的安全浏览设置及其他设置</translation>
 <translation id="2586657967955657006">剪贴板</translation>
 <translation id="2587730715158995865">来自<ph name="ARTICLE_PUBLISHER" />。阅读这篇报道以及其他 <ph name="OTHER_ARTICLE_COUNT" /> 篇报道。</translation>
 <translation id="2587841377698384444">Directory API ID：</translation>
@@ -546,6 +551,7 @@
 <translation id="2713444072780614174">白色</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您的付款和信用卡信息</translation>
 <translation id="2721148159707890343">请求成功</translation>
+<translation id="2723669454293168317">从 Chrome 设置中运行安全检查</translation>
 <translation id="2726001110728089263">侧面纸匣</translation>
 <translation id="2728127805433021124">服务器的证书是使用弱签名算法进行签名的。</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />运行网络连接诊断<ph name="END_LINK" /></translation>
@@ -576,6 +582,7 @@
 <translation id="2859806420264540918">此网站展示过侵扰性或误导性广告。</translation>
 <translation id="287596039013813457">友好</translation>
 <translation id="2876489322757410363">将要退出无痕模式，以便通过外部应用付款。是否继续？</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中管理您的安全浏览设置及其他设置</translation>
 <translation id="2878197950673342043">海报折</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">窗口放置</translation>
@@ -679,6 +686,7 @@
 <translation id="3229041911291329567">与您的设备和浏览器相关的版本信息</translation>
 <translation id="323107829343500871">输入“<ph name="CREDIT_CARD" />”的银行卡验证码 (CVC)</translation>
 <translation id="3234666976984236645">始终检测此网站上的重要内容</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可自定义您的浏览器外观</translation>
 <translation id="3240791268468473923">“无匹配的安全付款凭据”表单已打开</translation>
 <translation id="3249845759089040423">时髦</translation>
 <translation id="3252266817569339921">法语</translation>
@@ -706,6 +714,7 @@
 <translation id="3329013043687509092">饱和度</translation>
 <translation id="3333762389743153920">无法用作虚拟卡</translation>
 <translation id="3338095232262050444">安全</translation>
+<translation id="3339446062576134663">云端 (Ash)</translation>
 <translation id="3355823806454867987">更改代理服务器设置...</translation>
 <translation id="3360103848165129075">付款处理程序工作表</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />以下信息：
@@ -722,12 +731,14 @@
       • 为您的周边环境创建 3D 地图并跟踪摄像头位置
       • 使用您的摄像头</translation>
 <translation id="337363190475750230">已取消配置</translation>
+<translation id="3375754925484257129">运行 Chrome 安全检查</translation>
 <translation id="3377144306166885718">服务器使用的 TLS 版本已过时。</translation>
 <translation id="3377188786107721145">策略解析错误</translation>
 <translation id="3377736046129930310">使用“屏幕锁定”功能更快地确认银行卡</translation>
 <translation id="3380365263193509176">未知错误</translation>
 <translation id="3380864720620200369">客户端 ID：</translation>
 <translation id="3381668585148405088">验证您的购买交易</translation>
+<translation id="3383566085871012386">当前优先级顺序</translation>
 <translation id="3387261909427947069">付款方式</translation>
 <translation id="3391030046425686457">递送地址</translation>
 <translation id="3391482648489541560">文件修改</translation>
@@ -762,6 +773,7 @@
 <translation id="3462200631372590220">隐藏详情</translation>
 <translation id="3467763166455606212">必须输入持卡人姓名</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />，目前处于打开状态，按 Tab 键再按 Enter 键可切换到打开的标签页</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可关闭当前打开的所有无痕式窗口</translation>
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3484560055331845446">您可能会无法再访问自己的 Google 帐号。Chrome 建议您立即更改密码。系统会要求您登录。</translation>
 <translation id="3487845404393360112">纸匣 4</translation>
@@ -799,6 +811,7 @@
 <translation id="3611395257124510155"><ph name="CARD_IDENTIFIER" /> 的虚拟卡</translation>
 <translation id="3614103345592970299">大小：2</translation>
 <translation id="361438452008624280">列表条目“<ph name="LANGUAGE_ID" />”：语言未知或不受支持。</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可从 Chrome 设置中运行安全检查</translation>
 <translation id="3615877443314183785">请输入有效的失效日期</translation>
 <translation id="36224234498066874">清除浏览数据...</translation>
 <translation id="362276910939193118">显示全部历史记录</translation>
@@ -1388,6 +1401,7 @@
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">此内容可能会试图在您的设备上安装危险的软件来窃取或删除您的信息。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">添加有效地址</translation>
+<translation id="5485973315555778056">云端设备</translation>
 <translation id="5490432419156082418">地址和其他信息</translation>
 <translation id="5492298309214877701">这个位于公司、组织或学校内网中的网站使用的网址与某个外部网站的网址相同。
     <ph name="LINE_BREAK" />
@@ -1417,6 +1431,7 @@
 <translation id="5571083550517324815">无法从此地址取货。请另选一个地址。</translation>
 <translation id="5580958916614886209">请检查您的信用卡到期月份，然后重试</translation>
 <translation id="5586446728396275693">没有已保存的地址</translation>
+<translation id="5587987780934666589">平台用户</translation>
 <translation id="5593349413089863479">连接不够安全</translation>
 <translation id="5595485650161345191">修改地址</translation>
 <translation id="5598944008576757369">选择付款方式</translation>
@@ -1587,6 +1602,7 @@
 <translation id="6218753634732582820">要从 Chromium 中移除地址吗？</translation>
 <translation id="622039917539443112">平行折</translation>
 <translation id="6221345481584921695">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />检测到了恶意软件<ph name="END_LINK" />。平常非常安全的网站有时也会感染恶意软件。检测到的恶意内容来自于<ph name="SUBRESOURCE_HOST" />，这是个已知的恶意软件散布方。</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Chrome 设置中定制您的个性化无障碍工具</translation>
 <translation id="6234122620015464377">完成每份文档后裁切</translation>
 <translation id="6240447795304464094">Google Pay 徽标</translation>
 <translation id="6241121617266208201">隐藏建议</translation>
@@ -1605,6 +1621,7 @@
 <translation id="6279098320682980337">未填充虚拟卡号？点击“信用卡详细信息”即可复制</translation>
 <translation id="6280223929691119688">无法递送到此地址。请另选一个地址。</translation>
 <translation id="6282194474023008486">邮政编码</translation>
+<translation id="6285507000506177184">“管理 Chrome 中的下载内容”按钮，按 Enter 键即可管理您已在 Chrome 中下载的文件</translation>
 <translation id="6289939620939689042">页面颜色</translation>
 <translation id="6290238015253830360">为您推荐的文章会显示在此处</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1720,6 +1737,7 @@
 <translation id="6689249931105087298">相对（使用黑点压缩）</translation>
 <translation id="6689271823431384964">Chrome 正在询问是否要将卡保存到您的 Google 帐号中，因为您已登录。您可在“设置”中更改此行为。持卡人姓名来自您的帐号。</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 帐号中查找您的设备</translation>
+<translation id="6696588630955820014">“分享此标签页”按钮，按 Enter 键即可通过分享链接、创建二维码、投射等操作分享此标签页</translation>
 <translation id="6698381487523150993">创建时间：</translation>
 <translation id="6702919718839027939">演示</translation>
 <translation id="6710213216561001401">上一项</translation>
@@ -1925,6 +1943,7 @@
 <translation id="7392089738299859607">更新地址</translation>
 <translation id="7399802613464275309">安全检查</translation>
 <translation id="7400418766976504921">网址</translation>
+<translation id="7403392780200267761">通过分享链接、创建二维码、投射等操作分享此标签页</translation>
 <translation id="7403591733719184120">您的 <ph name="DEVICE_NAME" /> 受管理</translation>
 <translation id="7407424307057130981">&lt;p&gt;如果您的 Windows 计算机上装有 SuperFish 软件，您将会看到这条错误消息。&lt;/p&gt;
       &lt;p&gt;您可以按照下述步骤暂时停用该软件，以便连接到网络。您需要拥有管理员权限才能执行下列操作。&lt;/p&gt;
@@ -2100,6 +2119,7 @@
 <translation id="7953569069500808819">边缘装订（顶部）</translation>
 <translation id="7956713633345437162">移动设备书签</translation>
 <translation id="7961015016161918242">一律不</translation>
+<translation id="7962467575542381659">平台设备</translation>
 <translation id="7966803981046576691">工作帐号类型</translation>
 <translation id="79682505114836835">值“<ph name="VALUE" />”是无效的十六进制颜色。</translation>
 <translation id="7968982339740310781">查看详情</translation>
@@ -2154,6 +2174,7 @@
 <translation id="810875025413331850">未找到附近的设备。</translation>
 <translation id="8116925261070264013">已静音</translation>
 <translation id="8118489163946903409">付款方式</translation>
+<translation id="8124639700796374294">“自定义 Chrome”按钮，按 Enter 键即可自定义您的浏览器外观</translation>
 <translation id="8127301229239896662">“<ph name="SOFTWARE_NAME" />”没有正确地安装到您的计算机或网络上。请让您的 IT 管理员解决此问题。</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8148608574971654810">PDF 版本：</translation>
@@ -2336,6 +2357,7 @@
 <translation id="87601671197631245">此网站使用的安全性配置已过时，这可能会导致您的信息（例如密码、消息或信用卡卡号）在发送至此网站的过程中遭到泄露。</translation>
 <translation id="8761567432415473239">Google安全浏览功能最近在<ph name="SITE" />上<ph name="BEGIN_LINK" />发现了有害程序<ph name="END_LINK" />。</translation>
 <translation id="8763927697961133303">USB 设备</translation>
+<translation id="8763986294015493060">关闭当前打开的所有无痕式窗口</translation>
 <translation id="8766943070169463815">安全付款凭据身份验证表单已打开</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">恢复删除(&amp;R)</translation>
@@ -2349,6 +2371,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="882338992931677877">手动插槽</translation>
+<translation id="8834380158646307944">“关闭无痕式窗口”按钮，按 Enter 键即可关闭当前打开的所有无痕式窗口</translation>
 <translation id="883848425547221593">其他书签</translation>
 <translation id="884264119367021077">送货地址</translation>
 <translation id="884923133447025588">未找到任何吊销机制。</translation>
@@ -2402,6 +2425,7 @@
 <translation id="9020200922353704812">必须输入信用卡帐单邮寄地址</translation>
 <translation id="9020542370529661692">已将此网页内容翻译成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可通过分享链接、创建二维码、投射等操作分享此标签页</translation>
 <translation id="9025348182339809926">（无效）</translation>
 <translation id="9030265603405983977">单色</translation>
 <translation id="9035022520814077154">安全错误</translation>

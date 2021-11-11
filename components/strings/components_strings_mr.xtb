@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">जवळपासचे ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकते</translation>
 <translation id="1426410128494586442">होय</translation>
 <translation id="1428146450423315676">स्टॅकर ७</translation>
+<translation id="142858679511221695">क्लाउड वापरकर्ता</translation>
 <translation id="1428729058023778569">ही साइट HTTPS ला सपोर्ट करत नसल्यामुळे तुम्हाला ही चेतावणी दिसत आहे. <ph name="BEGIN_LEARN_MORE_LINK" />अधिक जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1432581352905426595">शोध इंजीन व्यवस्थापित करा</translation>
@@ -719,6 +720,7 @@
 <translation id="3329013043687509092">संपृक्तता</translation>
 <translation id="3333762389743153920">व्हर्च्युअल कार्डसाठी पात्र नाही</translation>
 <translation id="3338095232262050444">सुरक्षित</translation>
+<translation id="3339446062576134663">क्लाउड (अ‍ॅश)</translation>
 <translation id="3355823806454867987">प्रॉक्सी सेटिंग्ज बदला...</translation>
 <translation id="3360103848165129075">पेमेंट हँडलर शीट</translation>
 <translation id="3361596688432910856">Chrome पुढील माहिती <ph name="BEGIN_EMPHASIS" />सेव्ह करणार नाही<ph name="END_EMPHASIS" />:
@@ -742,6 +744,7 @@
 <translation id="3380365263193509176">अज्ञात एरर</translation>
 <translation id="3380864720620200369">क्लायंट आयडी:</translation>
 <translation id="3381668585148405088">तुमच्‍या खरेदीची पडताळणी करा</translation>
+<translation id="3383566085871012386">सध्याचा अग्रक्रम</translation>
 <translation id="3387261909427947069">पेमेंट पद्धती</translation>
 <translation id="3391030046425686457">वितरण पत्ता</translation>
 <translation id="3391482648489541560">फाइलचे संपादन</translation>
@@ -1410,6 +1413,7 @@
 <translation id="5478437291406423475">B6/C4 (Envelope)B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">हा आशय तुमच्या डिव्हाइसवर तुमची माहिती चोरू किंवा मिटवू शकणारे धोकादायक सॉफ्टवेअर इंस्टॉल करण्याचा कदाचित प्रयत्न करेल. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">वैध पत्ता जोडा</translation>
+<translation id="5485973315555778056">क्लाउड मशीन</translation>
 <translation id="5490432419156082418">पत्ते आणि बरेच काही</translation>
 <translation id="5492298309214877701">कंपनी, संस्था किंवा शाळा इंट्रानेट वरील या साइटची URL बाह्य वेबसाइटसारखीच आहे.
     <ph name="LINE_BREAK" />
@@ -1439,6 +1443,7 @@
 <translation id="5571083550517324815">या पत्त्यावरून पिक अप करू शकत नाही. वेगळा पत्ता निवडा.</translation>
 <translation id="5580958916614886209">तुमचा कालबाह्यता महिना तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="5586446728396275693">कोणतेही सेव्ह केलेले ॲड्रेस नाही</translation>
+<translation id="5587987780934666589">प्लॅटफॉर्म वापरकर्ता</translation>
 <translation id="5593349413089863479">कनेक्शन पूर्णपणे सुरक्षित नाही</translation>
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
 <translation id="5598944008576757369">पेमेंट पद्धत निवडा</translation>
@@ -2128,6 +2133,7 @@
 <translation id="7953569069500808819">एज स्टिच टॉप</translation>
 <translation id="7956713633345437162">Mobile बुकमार्क</translation>
 <translation id="7961015016161918242">कधीही नाही</translation>
+<translation id="7962467575542381659">प्लॅटफॉर्म मशीन</translation>
 <translation id="7966803981046576691">जॉब खाते प्रकार</translation>
 <translation id="79682505114836835">मूल्य "<ph name="VALUE" />" हा चुकीचा हेक्स रंग आहे.</translation>
 <translation id="7968982339740310781">तपशील पहा</translation>

@@ -326,6 +326,7 @@
 <translation id="334252345105450327">Take a screenshot</translation>
 <translation id="3351879221545518001">Понастоящем предавате екрана.</translation>
 <translation id="3364721542077212959">Инструменти за писане</translation>
+<translation id="3365977133351922112">Телефонът ви е твърде далеч. Преместете го по-близко.</translation>
 <translation id="3368922792935385530">Има връзка</translation>
 <translation id="3371140690572404006">устройство с USB-C (предният десен порт)</translation>
 <translation id="3375634426936648815">Свързано</translation>
@@ -602,6 +603,7 @@
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5176318573511391780">Записване на част от екрана</translation>
 <translation id="5199367439331364630">За да влезете в своя Chromebook, въведете паролата си</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Още 1 известие}other{Още # известия}}</translation>
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
 <translation id="5208059991603368177">Вкл.</translation>
@@ -885,6 +887,7 @@
 <translation id="7398254312354928459">Преминахте към друга мрежа</translation>
 <translation id="7405710164030118432">За да отключите устройството, въведете кода си за достъп на родител от Family Link</translation>
 <translation id="7406608787870898861">Завършете настройването на мобилната си мрежа</translation>
+<translation id="740790383907119240">Преки пътища в приложението</translation>
 <translation id="741244894080940828">преобразуване</translation>
 <translation id="7413851974711031813">Натиснете клавиша Escape, за да затворите</translation>
 <translation id="742594950370306541">Камерата се използва.</translation>
@@ -987,6 +990,7 @@
 <translation id="8061464966246066292">Висок контраст</translation>
 <translation id="8098591350844501178">Спиране на предаването на екрана към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="8113423164597455979">Вкл. за всички</translation>
+<translation id="8120151603115102514">Телефонът ви няма заключен екран. За да отключите своя Chromebook, въведете паролата си.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8132487352815776550">Спиране на надписите</translation>
@@ -1035,6 +1039,7 @@
 <translation id="8473301994082929012">Функцията „<ph name="FEATURE_NAME" />“ е <ph name="FEATURE_STATE" /> от <ph name="ORGANIZATION_NAME" />.</translation>
 <translation id="8477270416194247200">Натиснете Alt + клавиша „търсене“ или само Shift, за да анулирате.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" />. Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" />. Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Функцията за Bluetooth на вашия Chromebook е изключена. За да го отключите, въведете паролата си.</translation>
 <translation id="8513108775083588393">Автоматично</translation>
 <translation id="851458219935658693">Показват се прозорците от текущия работен кът, активиран е бутон за избор</translation>
 <translation id="8517041960877371778">Възможно е вашият <ph name="DEVICE_TYPE" /> да не се зарежда, докато е включен.</translation>

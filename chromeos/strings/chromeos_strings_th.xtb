@@ -183,6 +183,7 @@
 <translation id="409427325554347132">บันทึกรายละเอียดการทดสอบ</translation>
 <translation id="4111761024568264522">ทัชแพด USB</translation>
 <translation id="4131410914670010031">ขาวดำ</translation>
+<translation id="4140251671072434548">ดำเนินการปลดล็อกเซิร์ฟเวอร์ RMA</translation>
 <translation id="4145784616224233563">ไฟร์วอลล์ HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ตรวจสอบว่าเครื่องสแกนเปิดอยู่และใช้งานได้ผ่านทางเครือข่ายของคุณหรือการเชื่อมต่อโดยตรง</translation>
@@ -278,6 +279,7 @@
 <translation id="5294769550414936029">เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ย้ายหน้าต่างไปที่เดสก์</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5315873049536339193">ข้อมูลประจำตัว</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5318334351163689047">ขอ TCP ไม่สำเร็จ</translation>
@@ -399,6 +401,7 @@
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
 <translation id="7162487448488904999">แกลเลอรี</translation>
 <translation id="7172721935181587524">1 ภาพ</translation>
+<translation id="7175037578838465313">กำหนดค่า <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
@@ -466,6 +469,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">ป้อนรหัสปลดล็อก:</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
@@ -501,6 +505,7 @@
 <translation id="8620617069779373398">สถานะการโรมมิ่ง</translation>
 <translation id="8655295600908251630">ช่องทาง</translation>
 <translation id="8660881923941176839">ปอนด์</translation>
+<translation id="8662671328352114214">เข้าร่วมเครือข่าย <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">คีย์ที่แชร์ล่วงหน้า</translation>
 <translation id="871560550817059752">ไม่สำเร็จ - หมึกหมด</translation>
 <translation id="8723108084122415655">เครือข่ายที่ไม่ใช่ค่าเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>

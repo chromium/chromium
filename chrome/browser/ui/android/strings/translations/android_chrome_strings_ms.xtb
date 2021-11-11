@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Buka dlm tab baru dlm kumpulan</translation>
 <translation id="1103142993930332957">Bantu kami menambah baik Chrome?</translation>
 <translation id="1105960400813249514">Tangkapan Skrin</translation>
+<translation id="1108938384783527433">Penyegerakan sejarah</translation>
 <translation id="1110914759170138831">Serlahan dipendekkan</translation>
 <translation id="1111673857033749125">Penanda halaman yang disimpan pada peranti anda yang lain akan dipaparkan di sini.</translation>
 <translation id="1113597929977215864">Tunjukkan paparan ringkas</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Menghantar beberapa kuki dan carian daripada bar alamat dan kotak carian ke enjin carian lalai anda</translation>
 <translation id="200114059308480249">Sertakan teks sekitar dalam carian Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Fail}other{# Fail}}</translation>
+<translation id="2020309681647789787">Sejarah anda boleh didapati pada semua peranti tersegerak anda, jadi anda boleh meneruskan perkara yang sedang anda lakukan</translation>
 <translation id="2021896219286479412">Kawalan tapak skrin penuh</translation>
 <translation id="2038563949887743358">Hidupkan Minta tapak desktop</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> juga mempunyai data dalam Chrome</translation>
@@ -234,7 +236,6 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="2450907520913474542">Ketahui tentang topik pada laman web tanpa meninggalkan halaman. Sentuh untuk Cari akan menghantar perkataan dan konteks sekitar perkataan itu kepada Google Search, mengembalikan takrif, gambar, hasil carian dan butiran lain.
 
 Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, pilih lebih banyak atau lebih sedikit perkataan. Untuk mengedit carian anda, buka panel, ketik ikon untuk membuka dalam tab baharu dan buat perubahan dalam kotak carian.</translation>
-<translation id="2451607499823206582">Penjejakan</translation>
 <translation id="2459390580524506445">Carian suara dipertingkatkan</translation>
 <translation id="2461822463642141190">Semasa</translation>
 <translation id="247737702124049222">Perihalan imej dihidupkan</translation>
@@ -427,7 +428,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB tersedia</translation>
 <translation id="3549657413697417275">Cari sejarah anda</translation>
-<translation id="3557272988124495906">Dapatkan pemberitahuan penurunan harga</translation>
 <translation id="3557336313807607643">Tambahkan pada kenalan</translation>
 <translation id="3563767357928833671">Kandungan papan keratan dipaparkan</translation>
 <translation id="3566923219790363270">Chrome masih bersiap bersedia untuk VR. Mulakan semula Chrome kemudian.</translation>
@@ -849,6 +849,7 @@ Percubaan Kotak Pasir Privasi masih aktif dibangunkan dan tersedia di rantau ter
 <translation id="6070730414166672373">Menghubungi bank anda\u2026</translation>
 <translation id="6085886413119427067">Menentukan cara menyambung kepada laman web melalui sambungan selamat</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> jam lagi</translation>
+<translation id="6095578583683628124">Jika Google juga merupakan enjin carian lalai anda, anda dapat melihat cadangan yang lebih baik dan berkaitan secara kontekstual</translation>
 <translation id="6108923351542677676">Persediaan sedang berjalan...</translation>
 <translation id="6111020039983847643">data digunakan</translation>
 <translation id="6112702117600201073">Memuat semula halaman</translation>
@@ -1229,7 +1230,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8218052821161047641">Halaman pantas</translation>
 <translation id="8218622182176210845">Urus akaun anda</translation>
 <translation id="8223642481677794647">Menu kad suapan</translation>
-<translation id="8242868071038398515">Anda akan dimaklumkan jika harga turun di mana-mana laman</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="825412236959742607">Halaman ini menggunakan terlalu banyak memori, jadi Chrome mengalih keluar sesetengah kandungan.</translation>
 <translation id="8260126382462817229">Cuba log masuk semula</translation>
@@ -1394,6 +1394,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="9148126808321036104">Log masuk semula</translation>
 <translation id="9155898266292537608">Anda juga boleh mencari dengan mengetik pantas pada perkataan</translation>
 <translation id="9158770349521403363">Kongsi kandungan sahaja</translation>
+<translation id="916446198114569890">URL yang anda lawati disimpan pada akaun Google anda</translation>
 <translation id="9169507124922466868">Sejarah navigasi separa terbuka</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Disemak 1 minit yang lalu}other{Disemak # minit yang lalu}}</translation>
 <translation id="9204836675896933765">1 fail lagi</translation>

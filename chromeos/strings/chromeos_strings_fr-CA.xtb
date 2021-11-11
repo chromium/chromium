@@ -258,6 +258,7 @@
 <translation id="5049856988445523908">Carte SIM verrouillée (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom du groupe</translation>
 <translation id="5051044138948155788">C'est la seule page. Cette action vous redirigera vers l'écran du lancement de la numérisation.</translation>
+<translation id="5061169534910302641">Mettre à jour la version et redémarrer</translation>
 <translation id="5088172560898466307">Nom d'hôte du serveur</translation>
 <translation id="5089810972385038852">État/province</translation>
 <translation id="5142961317498132443">Authentification</translation>
@@ -277,6 +278,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Déplacer la fenêtre vers le bureau</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Connecter</translation>
 <translation id="5315873049536339193">Identité</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318334351163689047">Échecs des demandes TCP</translation>
@@ -398,6 +400,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="714876143603641390">Connectivité LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
 <translation id="7172721935181587524">1 image</translation>
+<translation id="7175037578838465313">Configurer <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" />. Les administrateurs peuvent configurer l'appareil à distance.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7216409898977639127">Fournisseur cellulaire</translation>
@@ -500,6 +503,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8620617069779373398">État d'itinérance</translation>
 <translation id="8655295600908251630">Version</translation>
 <translation id="8660881923941176839">livres</translation>
+<translation id="8662671328352114214">Se joindre au réseau <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Clé prépartagée</translation>
 <translation id="871560550817059752">Échec : à court d'encre</translation>
 <translation id="8723108084122415655">Le seuil de latence du réseau autre que par défaut est trop élevé</translation>

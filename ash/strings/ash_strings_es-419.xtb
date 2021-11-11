@@ -326,6 +326,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="334252345105450327">Toma una captura de pantalla</translation>
 <translation id="3351879221545518001">Estás transmitiendo la pantalla.</translation>
 <translation id="3364721542077212959">Herramientas de la pluma stylus</translation>
+<translation id="3365977133351922112">Tu teléfono está demasiado lejos. Acércalo.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (puerto lateral derecho delantero)</translation>
 <translation id="3375634426936648815">Conectado</translation>
@@ -603,6 +604,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5176318573511391780">Grabar parte de la pantalla</translation>
 <translation id="5199367439331364630">Para acceder a la Chromebook, ingresa la contraseña</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación más}other{# notificaciones más}}</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
 <translation id="5208059991603368177">Sí</translation>
@@ -886,6 +888,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7398254312354928459">Se cambió la conexión de red</translation>
 <translation id="7405710164030118432">Para desbloquear el dispositivo, ingresa el código de acceso parental de Family Link</translation>
 <translation id="7406608787870898861">Completa la configuración de la red móvil</translation>
+<translation id="740790383907119240">Accesos directos a aplicaciones</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7413851974711031813">Presiona Esc para cerrar</translation>
 <translation id="742594950370306541">Cámara en uso</translation>
@@ -988,6 +991,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8061464966246066292">Contraste alto</translation>
 <translation id="8098591350844501178">Detener la transmisión de la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sí, para todas</translation>
+<translation id="8120151603115102514">Tu teléfono no tiene una pantalla de bloqueo. Para desbloquear la Chromebook, ingresa la contraseña.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132487352815776550">Desactivar subtítulos</translation>
@@ -1036,6 +1040,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> tiene <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Presiona Alt y la tecla de búsqueda o mayúscula para cancelarlo.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> no admite la resolución <ph name="SPECIFIED_RESOLUTION" />. Se cambió la resolución a <ph name="FALLBACK_RESOLUTION" />. Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>
+<translation id="85123341071060231">La conexión Bluetooth de tu Chromebook está desactivada. Para desbloquear la Chromebook, ingresa la contraseña.</translation>
 <translation id="8513108775083588393">Giro autom.</translation>
 <translation id="851458219935658693">Está seleccionado el botón que muestra las ventanas del escritorio actual</translation>
 <translation id="8517041960877371778">Tu <ph name="DEVICE_TYPE" /> podría no cargarse si el dispositivo está encendido.</translation>

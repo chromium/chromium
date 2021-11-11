@@ -767,7 +767,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, Transisi Cepat tidak akan digunakan.</translation>
 <translation id="1972134432340252414">Blokir titik ekstensi lama dalam Proses browser</translation>
 <translation id="1977581177449752640">Jika kebijakan disetel, host akses jarak jauh akan menggunakan sertifikat klien dengan CN penerbit tertentu untuk melakukan autentikasi ke <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Untuk menggunakan sertifikat klien yang tersedia, setel kebijakan ke <ph name="WILDCARD_VALUE" />. Jika kebijakan tidak disetel atau disetel ke kosong, fitur ini akan dinonaktifkan.</translation>
-<translation id="1986003348976870087">Jangan minta pengguna memilih sertifikat klien di layar login.</translation>
 <translation id="1988345404999458987">Memberikan konfigurasi server cetak yang tersedia.
 
       Kebijakan ini memungkinkan Anda memberikan konfigurasi server cetak eksternal bagi perangkat <ph name="PRODUCT_OS_NAME" /> sebagai file JSON.
@@ -1976,6 +1975,13 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Gunakan karakter pengganti '*' untuk mencocokkan karakter nol atau yang lebih arbitrer. Karakter escape adalah '\', sehingga agar cocok dengan karakter '*' atau '\', tempatkan '\' di depannya.
 
       Jika kebijakan ini tidak ditetapkan, semua akun Google pada perangkat akan terlihat di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3243793808000947475">Jika kebijakan ini disetel ke nonaktif, host dukungan jarak jauh tidak dapat dimulai atau dikonfigurasi untuk menerima koneksi masuk.
+
+          Kebijakan ini tidak memengaruhi skenario akses jarak jauh.
+
+          Kebijakan ini tidak mencegah admin perusahaan terhubung ke perangkat Chrome OS terkelola.
+
+          Kebijakan ini tidak berpengaruh jika disetel ke aktif, dibiarkan kosong, atau tidak disetel.</translation>
 <translation id="3251500716404598358">Konfigurasikan kebijakan untuk beralih ke browser lain.
 
       Situs yang dikonfigurasi akan otomatis terbuka di browser selain <ph name="PRODUCT_NAME" />.</translation>
@@ -2204,6 +2210,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Untuk informasi mendetail tentang pola URL yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Batas Waktu per Aplikasi</translation>
 <translation id="3547954654003013442">Setelan proxy</translation>
+<translation id="3548642468619496972">Blokir download berbahaya, download tidak biasa atau tidak diinginkan, dan jenis file berbahaya.</translation>
 <translation id="3550122827225052130">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
           Menentukan durasi waktu tanpa masukan pengguna setelah layar terkunci saat menggunakan daya AC.
@@ -2564,12 +2571,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Jika kebijakan disetel ke Salah (False), isi otomatis tidak akan menyarankan atau mengisi informasi kartu kredit, juga tidak menyimpan informasi kartu kredit tambahan yang mungkin dikirimkan pengguna saat menjelajahi web.</translation>
 <translation id="3989829840000169163">Memblokir Titik Ekstensi Lama Browser</translation>
-<translation id="3996594590700242138">Mengaktifkan update komponen untuk semua komponen di <ph name="PRODUCT_NAME" /> jika tidak disetel atau disetel ke aktif.
-
-      Jika disetel ke nonaktif, update komponen akan dinonaktifkan. Namun, beberapa komponen akan dikecualikan dari kebijakan ini: update komponen apa pun yang tidak berisi kode yang dapat dieksekusi, atau tidak mengubah perilaku browser secara signifikan, atau demi alasan keamanan, tidak akan dinonaktifkan.
-      Contoh komponen tersebut meliputi daftar pencabutan sertifikat dan data Safe Browsing.
-      Lihat https://developers.google.com/safe-browsing untuk mengetahui info selengkapnya tentang Safe Browsing.
-      Perlu diketahui, kebijakan ini tidak direkomendasikan untuk disetel ke nonaktif karena berpotensi menyebabkan developer <ph name="PRODUCT_NAME" /> tidak dapat menyediakan perbaikan keamanan penting secara tepat waktu.</translation>
 <translation id="3997519162482760140">URL yang akan diberi akses ke perangkat perekam video di halaman masuk SAML</translation>
 <translation id="4004523942550416237">Jangan tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="4007646377576030214"> Perlu diperhatikan bahwa kebijakan ini tidak digunakan lagi di M87 dan dihapus di M89. Sebagai gantinya, gunakan <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> untuk mengonfigurasi peringatan privasi sesi tamu terkelola.
@@ -2918,6 +2919,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Konfigurasikan kebijakan terkait <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Otomatis memberikan izin ke situs untuk menghubungkan semua port serial.</translation>
+<translation id="450080746522343150">Blokir semua download.</translation>
 <translation id="4510923771103268849">Pengguna diizinkan untuk memiliki akses root ke penampung Crostini</translation>
 <translation id="4513691822411041977">Jangan terapkan penggunaan SafeSearch di Google Penelusuran atau Mode Terbatas YouTube</translation>
 <translation id="4515404363392014383">Aktifkan Safe Browsing untuk sumber tepercaya</translation>
@@ -3018,6 +3020,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
       Jika kebijakan ini disetel ke benar (true) atau tidak disetel, pengguna akan dapat melakukan rekaman paket jaringan di perangkat.
       Jika disetel ke salah (false), rekaman paket jaringan tidak akan tersedia di perangkat.</translation>
 <translation id="4600786265870346112">Aktifkan kursor besar</translation>
+<translation id="4602988345256038309">Izinkan koneksi dukungan jarak jauh ke perangkat ini</translation>
 <translation id="4607416370554533118">Menyetel kebijakan memungkinkan Anda membuat daftar pola URL yang menentukan untuk situs mana Chrome dapat memilih sertifikat klien secara otomatis. Nilai berupa array kamus dengan string JSON, dan setiap kamus memiliki bentuk <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, dengan pola setelan kontennya berupa <ph name="URL_PATTERN_PLACEHOLDER" />. <ph name="FILTER_PLACEHOLDER" /> akan membatasi sertifikat klien yang dapat dipilih browser secara otomatis. Terlepas dari filter, hanya sertifikat yang cocok dengan permintaan sertifikat server yang akan dipilih.
 
       Contoh untuk penggunaan bagian <ph name="FILTER_PLACEHOLDER" />:
@@ -3667,6 +3670,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Jika kebijakan disetel ke nonaktif, fitur tersebut akan otomatis dinonaktifkan.
           </translation>
 <translation id="5435888298115339571">Mengaktifkan berbagi desktop di omnibox dan menu 3 titik</translation>
+<translation id="5441508088704391614">Tidak ada batasan khusus. Default.</translation>
 <translation id="5442026853063570579">Kebijakan ini juga mengontrol akses ke Opsi Developer Android. Jika Anda menetapkan kebijakan ini ke 'DeveloperToolsDisallowed' (nilai 2), pengguna tidak dapat mengakses Opsi Developer. Jika Anda menetapkan kebijakan ini ke nilai lain atau tidak menetapkannya, pengguna dapat mengakses Opsi Developer dengan mengetuk nomor build di aplikasi setelan Android sebanyak 7 kali.</translation>
 <translation id="5443582909255996887">Menyetel kebijakan ke Aktif akan mengisolasi semua situs di Android, sehingga setiap situs berjalan dalam prosesnya sendiri, dan hal ini mencegah pengguna menonaktifkannya. Situs adalah skema plus eTLD+1 (misalnya, https://example.com). Perlu diketahui bahwa Android akan mengisolasi situs sensitif tertentu secara default mulai <ph name="PRODUCT_NAME" /> versi 77, dan hal ini akan membuat mode isolasi situs default tersebut diterapkan ke semua situs.
 
@@ -4211,6 +4215,27 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6102449843040973938">Jangan cegah <ph name="BOREALIS_NAME" /> berjalan di perangkat</translation>
 <translation id="6107642964266628393">Mengontrol cara dan waktu update Chrome OS diterapkan.</translation>
 <translation id="6111936128861357925">Izinkan Game Dinosaur Easter Egg</translation>
+<translation id="6112524153927257380">Jika kebijakan ini disetel, pengguna tidak dapat mengabaikan keputusan keamanan download.
+
+      Ada banyak jenis peringatan download dalam Chrome, yang secara umum dibagi menjadi kategori berikut (pelajari keputusan Safe Browsing lebih lanjut https://support.google.com/chrome/?p=ib_download_blocked):
+
+      * Berbahaya, seperti yang ditandai oleh server Safe Browsing
+      * Tidak biasa atau tidak diinginkan, seperti yang ditandai oleh server Safe Browsing
+      * Jenis file berbahaya (misalnya, semua download SWF dan sebagian besar download EXE)
+
+      Menyetel kebijakan ini akan memblokir subset yang berbeda dari kategori berikut, bergantung pada nilai kebijakan:
+
+      0: Tidak ada batasan khusus. Default.
+
+      1: Memblokir file berbahaya yang ditandai oleh server Safe Browsing DAN Memblokir semua jenis file berbahaya. Hanya direkomendasikan untuk OU/browser/pengguna yang memiliki toleransi tinggi terhadap Positif Palsu.
+
+      2: Memblokir file berbahaya yang ditandai oleh server Safe Browsing DAN Memblokir file yang tidak biasa atau tidak diinginkan yang ditandai oleh server Safe Browsing DAN Memblokir semua jenis file berbahaya. Hanya direkomendasikan untuk OU/browser/pengguna yang memiliki toleransi tinggi terhadap Positif Palsu.
+
+      3: Memblokir semua download. Tidak direkomendasikan, kecuali untuk kasus penggunaan khusus.
+
+      4: Memblokir file berbahaya yang ditandai oleh server Safe Browsing; tidak memblokir jenis file berbahaya. Direkomendasikan.
+
+      Catatan: Batasan ini berlaku untuk download yang dipicu dari konten halaman web, serta dari opsi menu Download link .... Batasan ini tidak berlaku untuk download halaman yang sedang ditampilkan, atau untuk penyimpanan sebagai PDF dari opsi pencetakan. Baca selengkapnya tentang Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="6123052603197028610">Jangan izinkan kueri ke server Google untuk mengambil stempel waktu</translation>
 <translation id="6132506775968708399">Blokir cookie pihak ketiga</translation>
 <translation id="6133088669883929098">Izinkan semua situs menggunakan pembuatan kunci</translation>
@@ -4320,6 +4345,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Untuk mengetahui detail <ph name="CORS" />, buka: <ph name="CORS_HELP_URL" />.
 
       Perlu diketahui bahwa kebijakan ini sebelumnya diumumkan akan dihapus di <ph name="PRODUCT_NAME" /> versi 82, tetapi saat ini telah dihapus di versi 84.</translation>
+<translation id="627672037430076089">Cegah koneksi dukungan jarak jauh ke perangkat ini</translation>
 <translation id="6277314550042130537">Gunakan persetujuan kebijakan KDC selama autentikasi HTTP</translation>
 <translation id="6279722058145292462">Menyetel kebijakan akan menentukan seberapa sering klien mengubah sandi akun perangkat mereka dalam hitungan hari. Sandi dibuat oleh klien secara acak dan tidak terlihat oleh pengguna. Menonaktifkan kebijakan ini atau menyetel jumlah hari yang tinggi dapat menimbulkan dampak negatif pada keamanan, karena akan memberi lebih banyak waktu bagi calon penyerang untuk menemukan dan menggunakan sandi akun perangkat.
 
@@ -4775,7 +4801,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
           Catatan: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> akan mengganti kebijakan ini jika kebijakan tersebut ditentukan.</translation>
 <translation id="6833988859168635883">Halaman Awal, Halaman Beranda, dan halaman Tab Baru</translation>
-<translation id="683399492058633424">Meminta sertifikat klien saat beberapa sertifikat cocok pada layar login.</translation>
 <translation id="6835883744948188639">Tampilkan permintaan berulang kepada pengguna yang menunjukkan bahwa peluncuran ulang direkomendasikan</translation>
 <translation id="683688607121170501">Setelan ini memungkinkan pengguna beralih ke Akun Google lain di dalam area konten jendela browser dan aplikasi Android setelah mereka login ke perangkat <ph name="PRODUCT_OS_NAME" />.
 
@@ -5943,6 +5968,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
           Jika tindakannya adalah penangguhan, <ph name="PRODUCT_OS_NAME" /> dapat dikonfigurasi secara terpisah untuk mengunci atau tidak mengunci layar sebelum ditangguhkan.</translation>
 <translation id="8214600119442850823">Mengonfigurasi pengelola sandi.</translation>
 <translation id="8217664958939773083">Jika kebijakan ini disetel ke <ph name="ENABLED" /> atau tidak disetel, penggunaan mode headless akan diizinkan. Jika kebijakan ini disetel ke <ph name="DISABLED" />, penggunaan mode headless tidak akan diizinkan.</translation>
+<translation id="8219813789911069300">Blokir download berbahaya. Direkomendasikan.</translation>
 <translation id="8220023426952118761">Kecepatan download yang diinginkan dalam kbit/dtk.</translation>
 <translation id="8220156281401380422">Mengonfigurasi daftar pesan native yang diizinkan</translation>
 <translation id="8229912067600517877">Aktifkan Developer Tools</translation>
@@ -6240,6 +6266,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8524334245528364388">URL ke file JSON dengan daftar server cetak.</translation>
 <translation id="8525526490824335042">Container Linux</translation>
 <translation id="8528951285051082869">Jangan izinkan aplikasi web apa pun mengakses berbagai jenis file melalui File Handling API</translation>
+<translation id="8533145294731270627">Blokir download dan jenis file berbahaya.</translation>
 <translation id="8537051350735478658">Jika kebijakan ditetapkan ke Benar (True), saran penelusuran akan diaktifkan di kolom URL <ph name="PRODUCT_NAME" />. Jika kebijakan ditetapkan ke Salah (False), saran penelusuran akan dinonaktifkan.
 
       Jika Anda menetapkan kebijakan, pengguna tidak dapat mengubahnya. Jika tidak ditetapkan, saran penelusuran mula-mula akan diaktifkan, tetapi pengguna dapat menonaktifkannya kapan saja.</translation>

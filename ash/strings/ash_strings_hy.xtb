@@ -326,6 +326,7 @@
 <translation id="334252345105450327">Սքրինշոթ անել</translation>
 <translation id="3351879221545518001">Դուք հեռարձակում եք ձեր էկրանի պատկերը:</translation>
 <translation id="3364721542077212959">Ստիլուսի գործիքներ</translation>
+<translation id="3365977133351922112">Հեռախոսը շատ հեռու է։ Մոտեցրեք այն։</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3371140690572404006">USB-C սարք (առջևի ձախակողմյան միացք)</translation>
 <translation id="3375634426936648815">Միացված է</translation>
@@ -602,6 +603,7 @@
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5176318573511391780">Տեսագրել էկրանի մի մասը</translation>
 <translation id="5199367439331364630">Ձեր Chromebook մուտք գործելու համար մուտքագրեք գաղտնաբառը</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />․ <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Եվս 1 ծանուցում}one{Եվս # ծանուցում}other{Եվս # ծանուցում}}</translation>
 <translation id="5207949376430453814">Ընդգծել տեքստի նշորդը</translation>
 <translation id="5208059991603368177">Միացված է</translation>
@@ -885,6 +887,7 @@
 <translation id="7398254312354928459">Դուք միացաք մեկ այլ ցանցի</translation>
 <translation id="7405710164030118432">Սարքն ապակողպելու համար մուտքագրեք Family Link-ի ծնողի մուտքի կոդը</translation>
 <translation id="7406608787870898861">Ավարտեք բջջային ցանցի կարգավորումը</translation>
+<translation id="740790383907119240">Հավելվածների դյուրանցումներ</translation>
 <translation id="741244894080940828">փոխարկում</translation>
 <translation id="7413851974711031813">Փակելու համար սեղմեք Escape</translation>
 <translation id="742594950370306541">Տեսախցիկն օգտագործվում է:</translation>
@@ -987,6 +990,7 @@
 <translation id="8061464966246066292">Բարձր կոնտրաստ</translation>
 <translation id="8098591350844501178">Դադարեցնել էկրանի հեռարձակումը <ph name="RECEIVER_NAME" />-ին</translation>
 <translation id="8113423164597455979">Բոլորը միացված են</translation>
+<translation id="8120151603115102514">Հեռախոսում կարգավորված չէ կողպէկրան։ Ձեր Chromebook-ն ապակողպելու համար մուտքագրեք գաղտնաբառը։</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8132487352815776550">Թաքցնել ենթագրերը</translation>
@@ -1035,6 +1039,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />-ն ունի <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />:</translation>
 <translation id="8477270416194247200">Չեղարկելու համար սեղմեք Alt+Search կամ Shift:</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />-ը չի աջակցում <ph name="SPECIFIED_RESOLUTION" /> լուծաչափը։ Լուծաչափը փոխվել է <ph name="FALLBACK_RESOLUTION" />-ի։ Հպեք «Հաստատել»՝ փոփոխությունները պահպանելու համար։ Նախորդ կարգավորումները կվերականգնվեն <ph name="TIMEOUT_SECONDS" /> հետո։</translation>
+<translation id="85123341071060231">Chromebook-ի Bluetooth-ն անջատված է։ Սարքն ապակողպելու համար մուտքագրեք գաղտնաբառը։</translation>
 <translation id="8513108775083588393">Ինքնապտտում</translation>
 <translation id="851458219935658693">Ընթացիկ աշխատասեղանի պատուհանների ցուցադրում, ընտրված է կետակոճակը</translation>
 <translation id="8517041960877371778">Որպեսզի ձեր <ph name="DEVICE_TYPE" /> սարքը լիցքավորվի, անհրաժեշտ է անջատել այն:</translation>

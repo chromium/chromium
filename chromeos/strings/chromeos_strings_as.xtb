@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">স্কেন বাতিল কৰি থকা হৈছে</translation>
 <translation id="1851218745569890714">ভিডিঅ’ কনফাৰেন্সিং</translation>
+<translation id="1857850044054738019">যদি ডিভাইচটো এগৰাকী নতুন গ্ৰাহকক বিতৰণ কৰিবলৈ পুনৰ ষ্টক কৰা হৈছে অথবা
+        পুনৰায় ভাল অৱস্থালৈ অনা হৈছে, তেন্তে এই বিকল্পটো বাছনি কৰক।</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">হাৰ্ডৱেৰৰ পুনৰীক্ষণ</translation>
 <translation id="1905710495812624430">চেষ্টা কৰাৰ সৰ্বাধিক সীমা অতিক্ৰম কৰিছে।</translation>
@@ -184,6 +186,7 @@
 <translation id="409427325554347132">পৰীক্ষাৰ সবিশেষ ছেভ কৰক</translation>
 <translation id="4111761024568264522">ইউএছবি টাচ্চপেড</translation>
 <translation id="4131410914670010031">ক’লা আৰু বগা</translation>
+<translation id="4140251671072434548">RMA ছাৰ্ভাৰ আনলক সম্পাদন কৰক</translation>
 <translation id="4145784616224233563">HTTPৰ ফায়াৰৱাল</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">নিশ্চিত কৰক যে স্কেনাৰটো অন কৰা আছে আৰু আপোনাৰ নেটৱৰ্ক অথবা এটা পোনপটীয়া সংযোগৰ জৰিয়তে উপলব্ধ হৈ আছে</translation>
@@ -196,6 +199,7 @@
 <translation id="4244962993387259361">মেম’ৰী পৰীক্ষাটো চলাবলৈ আপোনাক অতি কমেও ৫০০ এমবি খালী ঠাই লাগিব। ঠাই খালী কৰিবলৈ, ছেটিং &gt; ষ্ট’ৰেজ পৰিচালনালৈ যাওক</translation>
 <translation id="4258281355379922695">HTTPৰ বিলম্বতা</translation>
 <translation id="4271957103967917607">পূৰ্ণ স্ক্ৰীনত চাওক</translation>
+<translation id="4275799948641988986">মেৰামতি কৰাৰ পাছত ডিভাইচটো কোনে ব্যৱহাৰ কৰিব?</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> খন প্ৰতিচ্ছবি</translation>
 <translation id="4378373042927530923">নাই চলা</translation>
@@ -260,6 +264,7 @@
 <translation id="5049856988445523908">ছিম লক কৰা হ’ল (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">গোটৰ নাম</translation>
 <translation id="5051044138948155788">এইখনেই একমাত্ৰ পৃষ্ঠা। এইটোৱে আপোনাক স্কেন আৰম্ভ হোৱা পৃষ্ঠাখনলৈ লৈ যাব।</translation>
+<translation id="5061169534910302641">সংস্কৰণ আপডে’ট কৰক আৰু ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="5088172560898466307">ছার্ভাৰ হ‘ষ্টনে‘ম</translation>
 <translation id="5089810972385038852">ৰাজ্য</translation>
 <translation id="5142961317498132443">বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ</translation>
@@ -279,6 +284,7 @@
 <translation id="5294769550414936029">সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ৱিণ্ড’ ডেস্কলৈ নিয়ক</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">সংযোগ কৰক</translation>
 <translation id="5315873049536339193">পৰিচয়</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5318334351163689047">বিফল TCP অনুৰোধসমূহ</translation>
@@ -400,6 +406,7 @@
 <translation id="714876143603641390">LAN সংযোগ</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">১ খন প্ৰতিচ্ছবি</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> কনফিগাৰ কৰক</translation>
 <translation id="7177485034254901881">এই <ph name="DEVICE_TYPE" />টো <ph name="MANAGER" />এ পৰিচালনা কৰে। প্ৰশাসকে দূৰৰ পৰাই ডিভাইচটো কনফিগাৰ কৰিব পাৰে।</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="7216409898977639127">চেলুলাৰ প্ৰদানকাৰী</translation>
@@ -409,6 +416,7 @@
 <translation id="7297226631177386107">ফায়াৰৱালৰ জৰিয়তে HTTP ৱেবছাইটসমূহৰ সৈতে সংযোগ কৰিব নোৱাৰি</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">ডিভাইচটো এগৰাকী বেলেগ মালিকৰ ওচৰলৈ যাব</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">নেটৱৰ্ক ডিভাইচ</translation>
 <translation id="7359657277149375382">ফাইলৰ প্রকাৰ</translation>
@@ -416,6 +424,9 @@
 <translation id="7415801143053185905">HTTPৰ অতি উচ্চ বিলম্বতা</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্কেনিং সম্পূৰ্ণ হ’ল। ১ খন পৃষ্ঠা স্কেন কৰা হ’ল}one{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}other{স্কেনিং সম্পূৰ্ণ হ’ল। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হ’ল}}</translation>
+<translation id="7451112128070628323">যদি ডিভাইচটোৰ মালিকীস্বত্ব সলনি হোৱা নাই, তেন্তে এই বিকল্পটো বাছনি কৰক।
+        উদাহৰণস্বৰূপে, ডিভাইচটো এটা প্ৰতিষ্ঠানৰ ভিতৰতে এগৰাকী বেলেগ
+        ব্যক্তিলৈ স্থানান্তৰ কৰি থকা হৈছে।</translation>
 <translation id="7469648432129124067">প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
 <translation id="7487067081878637334">প্ৰযুক্তিবিদ্যা</translation>
 <translation id="7490813197707563893">MAC ঠিকনা</translation>
@@ -467,6 +478,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ট্ৰেফিক কাউণ্টাৰৰ অনুৰোধ কৰক</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">আনলক কৰা ক’ডটো দিয়ক:</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
@@ -502,6 +514,7 @@
 <translation id="8620617069779373398">ৰ’মিঙৰ স্থিতি</translation>
 <translation id="8655295600908251630">চেনেল</translation>
 <translation id="8660881923941176839">পাউণ্ড</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> নেটৱর্কত যোগদান কৰক</translation>
 <translation id="8675354002693747642">আগতীয়াকৈ শ্বেয়াৰ কৰা চাবি</translation>
 <translation id="871560550817059752">বিফল হৈছে - চিয়াহী শেষ হৈছে</translation>
 <translation id="8723108084122415655">ডিফ’ল্ট হিচাপে নথকা নেটৱৰ্ক বিলম্বতাৰ সীমাৰ ওপৰত আছে</translation>
@@ -539,6 +552,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9088306295921699330">এতিয়ালৈকে কৰা ব্যৱহাৰৰ পৰিমাণ</translation>
+<translation id="9095415590198785865">ডিভাইচটো একেগৰাকী মালিকৰ ওচৰলৈ যাব</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />ৰ টিকেট ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে</translation>

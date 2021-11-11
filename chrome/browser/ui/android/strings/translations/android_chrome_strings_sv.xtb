@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Öppna i en ny flik i en grupp</translation>
 <translation id="1103142993930332957">Vill du hjälpa till att förbättra Chrome?</translation>
 <translation id="1105960400813249514">Skärmavbildning</translation>
+<translation id="1108938384783527433">Synkronisera historiken</translation>
 <translation id="1110914759170138831">Den markerade texten har förkortats</translation>
 <translation id="1111673857033749125">Här visas bokmärken som du har sparat på andra enheter.</translation>
 <translation id="1113597929977215864">Använd förenklad visning</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Skickar vissa cookies och sökningar från adressfältet och sökrutan till standardsökmotorn</translation>
 <translation id="200114059308480249">Vill du inkludera omgivande text i sökningar på Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fil}other{# filer}}</translation>
+<translation id="2020309681647789787">Historiken visas på alla synkroniserade enheter, så att du kan fortsätta där du slutade</translation>
 <translation id="2021896219286479412">Helskärmskontroller på webbsidan</translation>
 <translation id="2038563949887743358">Aktivera begäran av skrivbordsversion</translation>
 <translation id="204321170514947529">Data för <ph name="APP_NAME" /> finns även i Chrome</translation>
@@ -234,7 +236,6 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2450907520913474542">Läs om olika ämnen på webbplatser utan att lämna sidan. Med funktionen Tryck för att söka skickas ett ord och dess kontext till Google Sök. Sedan visas definitioner, bilder, sökresultat och annan information.
 
 Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att välja fler eller färre ord. Om du vill redigera sökningen öppnar du panelen, trycker på ikonen för att skapa en ny flik och ändrar i sökrutan.</translation>
-<translation id="2451607499823206582">Spårning</translation>
 <translation id="2459390580524506445">Förbättrad röstsökning</translation>
 <translation id="2461822463642141190">Nuvarande</translation>
 <translation id="247737702124049222">Bildbeskrivningar har aktiverats</translation>
@@ -427,7 +428,6 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3527085408025491307">Mapp</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB tillgängligt</translation>
 <translation id="3549657413697417275">Sök i historik</translation>
-<translation id="3557272988124495906">Få aviseringar om prissänkningar</translation>
 <translation id="3557336313807607643">Lägg till i kontakter</translation>
 <translation id="3563767357928833671">Innehållet i Urklipp visas</translation>
 <translation id="3566923219790363270">Chrome förbereds fortfarande för VR. Starta om Chrome senare.</translation>
@@ -850,6 +850,7 @@ Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillg
 <translation id="6070730414166672373">Kontaktar din bank \u2026</translation>
 <translation id="6085886413119427067">Styr hur du ansluter till webbplatser via en säker anslutning</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timmar kvar</translation>
+<translation id="6095578583683628124">Om du även använder Google som standardsökmotor får du bättre förslag som är relevanta i sammanhanget</translation>
 <translation id="6108923351542677676">Konfigurationen pågår ...</translation>
 <translation id="6111020039983847643">Använd data</translation>
 <translation id="6112702117600201073">Uppdaterar sidan</translation>
@@ -1230,7 +1231,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8218052821161047641">Snabb sida</translation>
 <translation id="8218622182176210845">Hantera kontot</translation>
 <translation id="8223642481677794647">Menyn med flödeskort</translation>
-<translation id="8242868071038398515">Du får en avisering när priset sjunker på en webbplats</translation>
 <translation id="8250920743982581267">Dokument</translation>
 <translation id="825412236959742607">Den här sidan använder för mycket minne, så en del innehåll har tagits bort.</translation>
 <translation id="8260126382462817229">Försök att logga in igen</translation>
@@ -1395,6 +1395,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9155898266292537608">Du kan även söka med ett snabbt tryck eller ett ord</translation>
 <translation id="9158770349521403363">Dela endast innehåll</translation>
+<translation id="916446198114569890">Webbadresserna du besöker sparas i Google-kontot</translation>
 <translation id="9169507124922466868">Navigeringshistoriken visas på halva skärmen</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Genomsöktes för 1 minut sedan}other{Genomsöktes för # minuter sedan}}</translation>
 <translation id="9204836675896933765">1 fil återstår</translation>

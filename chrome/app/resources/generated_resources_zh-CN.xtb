@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">不允许网站连接到 MIDI 设备</translation>
 <translation id="1088654056000736875">Chrome 正在从您的计算机中移除有害软件…</translation>
 <translation id="1088659085457112967">进入阅读器模式</translation>
+<translation id="1089606299949659462">查看完毕！</translation>
 <translation id="1090126737595388931">没有任何后台应用在运行</translation>
 <translation id="1090541560108055381">配对之前，请确保在这两部设备上显示的配对码相同</translation>
 <translation id="1091767800771861448">按 ESC 键可跳过更新（仅限非官方版本）。</translation>
@@ -802,6 +803,7 @@
     <ph name="LINE_BREAKS2" />
     其他设备上的应用或内容均不受影响。</translation>
 <translation id="1809734401532861917">将我的书签、历史记录、密码和其他设置添加至 <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="1810366086647840386">映像服务器</translation>
 <translation id="1813278315230285598">服务</translation>
 <translation id="18139523105317219">EDI 参与方名称</translation>
 <translation id="1815083418640426271">粘贴为纯文本</translation>
@@ -1370,6 +1372,7 @@
 <translation id="2381499968174336913">已分享的标签页的预览视图</translation>
 <translation id="2381756643783702095">发送前先询问（推荐）</translation>
 <translation id="2387052489799050037">转到主屏幕</translation>
+<translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">无法连接到代理，请重新登录</translation>
 <translation id="2390782873446084770">Wi-Fi 同步</translation>
 <translation id="2391419135980381625">标准字体</translation>
@@ -1427,6 +1430,7 @@
 <translation id="2453860139492968684">完成</translation>
 <translation id="2454247629720664989">关键字</translation>
 <translation id="2454264884354864965">摄像头未开启</translation>
+<translation id="2454524890947537054">批准网站请求？</translation>
 <translation id="245650153866130664">若想自动刷新票据，请选中“记住密码”。系统便会将您的密码仅保存在您的设备上。</translation>
 <translation id="2457246892030921239">“<ph name="APP_NAME" />”想从 <ph name="VOLUME_NAME" />复制文件。</translation>
 <translation id="2457842160081795172">目前为<ph name="CHANNEL_NAME" />版本</translation>
@@ -1743,6 +1747,7 @@
 <translation id="2773802008104670137">这种类型的文件可能会损害您的计算机。</translation>
 <translation id="2775104091073479743">修改指纹</translation>
 <translation id="2776560192867872731">更改“<ph name="DEVICE_NAME" />”的设备名称</translation>
+<translation id="2777251078198759550">删除此容器</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">安装 Linux 应用时出错</translation>
 <translation id="2783298271312924866">已下载</translation>
@@ -1824,10 +1829,12 @@
 <translation id="2851728849045278002">出了点问题。点击即可了解更多详情。</translation>
 <translation id="285241945869362924">自动为音频和视频创建字幕。音频和字幕绝不会从设备中泄露出去。</translation>
 <translation id="2854896010770911740">移除第三方 Cookie</translation>
+<translation id="2856776373509145513">创建一个新容器</translation>
 <translation id="2858138569776157458">热门网站</translation>
 <translation id="2861301611394761800">系统更新已完成。请重新启动系统。</translation>
 <translation id="2861941300086904918">Native Client 安全管理器</translation>
 <translation id="2862815659905780618">移除 Linux 开发环境</translation>
+<translation id="2864272167277395865">请选择一部设备：</translation>
 <translation id="2864601841139725659">设置您的个人资料照片</translation>
 <translation id="2865919525181940183">当前屏幕所含程序的屏幕截图</translation>
 <translation id="286674810810214575">正在检查电源…</translation>
@@ -2382,6 +2389,7 @@
 <translation id="3449393517661170867">打开新的标签页窗口</translation>
 <translation id="3449839693241009168">按 <ph name="SEARCH_KEY" /> 可向<ph name="EXTENSION_NAME" />发送命令</translation>
 <translation id="3450157232394774192">闲置状态占用率</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
 <translation id="3451753556629288767">可以打开各类文件</translation>
 <translation id="3452999110156026232">家长访问</translation>
 <translation id="3453612417627951340">需要获得授权</translation>
@@ -2393,6 +2401,7 @@
 <translation id="3458794975359644386">未能停止共享</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3459697287128633276">若想让您的帐号有权访问 Google Play 商店，请通过您的身份提供商进行身份验证。</translation>
+<translation id="3461766685318630278">创建和删除额外容器。</translation>
 <translation id="3462311546193741693">会致使您从大多数网站退出。但您的 Google 帐号仍会保持登录状态，以便清除您的已同步数据。</translation>
 <translation id="3462413494201477527">要取消帐号设置吗？</translation>
 <translation id="346298925039590474">该移动网络将可供此设备上的所有用户使用</translation>
@@ -3178,7 +3187,6 @@
 <translation id="4289732974614035569">选择 PIN 码</translation>
 <translation id="4290791284969893584">关闭网页后，您已启动的任务可能会无法完成</translation>
 <translation id="4295072614469448764">应用已可在您的终端上使用，且可能在启动器中显示图标。</translation>
-<translation id="4295839147292213505">您可通过计算机收发短信、共享互联网连接、回复对话通知以及利用手机解锁 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">请重新登录，以确认您的帐号 (<ph name="USER_EMAIL" />) 可用于 Chrome 和 Google Play 中的网站、应用和扩展程序。您还可以移除此帐号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">重启并重置</translation>
 <translation id="4297813521149011456">显示屏旋转</translation>
@@ -3236,6 +3244,7 @@
 <translation id="4364830672918311045">显示通知</translation>
 <translation id="4366138410738374926">已开始打印</translation>
 <translation id="4369121877634339065">在任一图片上拖动光标即可搜索</translation>
+<translation id="4369215744064167350">网站请求已获批准</translation>
 <translation id="4370975561335139969">您输入的电子邮件地址和密码不匹配。</translation>
 <translation id="4373966964907728675">正在投射桌面</translation>
 <translation id="4374831787438678295">Linux 安装程序</translation>
@@ -3927,6 +3936,7 @@
 <translation id="5117139026559873716">断开手机与 <ph name="DEVICE_TYPE" /> 的连接。断开后，它们将无法再自动连接。</translation>
 <translation id="5117930984404104619">监控其他扩展程序的行为（包括访问过的网址）</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">点击此处即可访问 <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">您的 Linux 容器中的操作系统不再受支持。它将停止接收安全更新和问题修复，而且目前正常运行的功能可能会意外中断。请升级至最新版本，以继续使用 Linux。</translation>
 <translation id="5121130586824819730">您的硬盘已满。请保存到其他位置或在硬盘上腾出更多空间。</translation>
 <translation id="5123433949759960244">篮球</translation>
@@ -4035,6 +4045,7 @@
 <translation id="523505283826916779">无障碍设置</translation>
 <translation id="5235750401727657667">替换您在打开新标签页时看到的页面</translation>
 <translation id="5236374273162681467">若要在您的所有设备上轻松使用这些密码，您可将它们移至您的 Google 帐号中</translation>
+<translation id="523862956770478816">网站权限</translation>
 <translation id="5242724311594467048">要启用“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="5243522832766285132">请稍后重试</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -4244,6 +4255,7 @@
 <translation id="5472627187093107397">为此网站保存密码</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN 码必须包含至少 1 个字符}other{PIN 码必须包含至少 # 个字符}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。您也可使用按流量计费的网络连接进行下载（可能需要支付相应费用）。</translation>
 <translation id="5481273127572794904">不允许自动下载多个文件</translation>
 <translation id="5481941284378890518">添加附近的打印机</translation>
 <translation id="5483785310822538350">撤消对文件和设备的访问权限</translation>
@@ -4310,6 +4322,7 @@
 <translation id="5526745900034778153">需重新登录才能继续同步</translation>
 <translation id="5527463195266282916">已尝试对扩展程序降级。</translation>
 <translation id="5527474464531963247">您也可以选择其他网络。</translation>
+<translation id="5528295196101251711">虚拟机名称</translation>
 <translation id="5532223876348815659">全局</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />想要</translation>
 <translation id="5534304873398226603">舍弃照片或视频</translation>
@@ -4663,9 +4676,11 @@
     <ph name="LINE_BREAK" />
     此图片将会显示在 Chromebook 的登录屏幕和锁定屏幕上。</translation>
 <translation id="5925147183566400388">核证作业准则 (Certification Practice Statement) 指针</translation>
+<translation id="592740088639760830">停止运行此容器</translation>
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
 <translation id="592919310198008711">当我点击此扩展程序时</translation>
 <translation id="5932124097031739492">已成功升级 Linux。</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> 要求您立即更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5932224571077948991">网站展示过侵扰性或误导性广告</translation>
 <translation id="59324397759951282">由<ph name="MANUFACTURER_NAME" />生产的 USB 设备</translation>
 <translation id="5932441198730183141">您没有足够的可用许可来注册此 Google Meet 设备。请与销售代表联系，以购买更多许可。如果您认为自己不该看到这条消息，请与支持人员联系。</translation>
@@ -5200,6 +5215,7 @@
 <translation id="6498249116389603658">所选全部语言(&amp;A)</translation>
 <translation id="6499143127267478107">正在解析代理脚本中的主机...</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> 想打开这个文件：</translation>
+<translation id="6501957628055559556">所有容器</translation>
 <translation id="650266656685499220">如需创建影集，请转至 Google 相册。</translation>
 <translation id="6503077044568424649">常去网站</translation>
 <translation id="650457560773015827">左键</translation>
@@ -5313,6 +5329,7 @@
 <translation id="6619243162837544323">网络状态</translation>
 <translation id="6619801788773578757">添加自助服务终端应用</translation>
 <translation id="6619990499523117484">确认您的 PIN 码</translation>
+<translation id="6620254580880484313">容器名称</translation>
 <translation id="6622980291894852883">继续拦截图片</translation>
 <translation id="6624036901798307345">在平板电脑模式下，只需点按工具栏中的标签页计数器按钮，即可打开会显示每个标签页的缩略图的新标签页栏。</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> 包含敏感或危险内容。请让此文件的所有者解决这一问题。</translation>
@@ -5323,6 +5340,7 @@
 <translation id="6635674640674343739">无法建立网络连接。请检查您的网络连接状况，然后重试。</translation>
 <translation id="6635944431854494329">所有者可以通过“设置”&gt;“高级”&gt;“自动向 Google 发送诊断数据和使用情况数据”来控制这项功能。</translation>
 <translation id="6635956300022133031">选择和自定义文字转语音的语音</translation>
+<translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
 <translation id="6639554308659482635">SQLite 使用的内存</translation>
 <translation id="6640268266988685324">已打开的标签页</translation>
 <translation id="6642720633335369752">要查看所有已打开的应用窗口，请从屏幕底部向上滑动并按住屏幕。</translation>
@@ -6085,6 +6103,7 @@
 <translation id="7450761244949417357">正在<ph name="ALTERNATIVE_BROWSER_NAME" />中打开</translation>
 <translation id="7453008956351770337">选择此打印机即表示您允许以下扩展程序访问您的打印机：</translation>
 <translation id="7454548535253569100">门户网站：<ph name="SUBFRAME_SITE" /></translation>
+<translation id="7455730275746867420">管理额外容器</translation>
 <translation id="7456142309650173560">开发者版本</translation>
 <translation id="7456847797759667638">打开位置...</translation>
 <translation id="7457384018036134905">在 Chrome 操作系统设置中管理语言</translation>
@@ -6600,6 +6619,7 @@
 <translation id="7946586320617670168">来源必须是安全的</translation>
 <translation id="794676567536738329">确认权限</translation>
 <translation id="7947962633355574091">复制视频地址(&amp;O)</translation>
+<translation id="7948407723851303488"><ph name="DOMAIN_NAME" /> 的所有网页</translation>
 <translation id="7951265006188088697">要添加或管理 Google Pay 付款方式，请访问 <ph name="BEGIN_LINK" />Google 帐号<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">网站可以请求查看您剪贴板中的文字和图片</translation>
 <translation id="795282463722894016">恢复完成</translation>
@@ -7665,6 +7685,7 @@
 <translation id="9053893665344928494">记住我的选择</translation>
 <translation id="9055636786322918818">强制执行 RC4 加密。选中此选项会令您面临更大的风险，因为 RC4 加密不安全。</translation>
 <translation id="9056810968620647706">未找到匹配项。</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" />想访问以下内容：</translation>
 <translation id="9057354806206861646">更新时间表</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>
@@ -7752,6 +7773,7 @@
 <translation id="9139258866388561662">登录“<ph name="WEB_DRIVE" />”后才能完成下载</translation>
 <translation id="9139988741193276691">正在配置 Linux</translation>
 <translation id="9140067245205650184">您使用的是不受支持的功能标记：<ph name="BAD_FLAG" />。稳定性和安全性会有所下降。</translation>
+<translation id="9142637293078737510">映像别名</translation>
 <translation id="9143298529634201539">要移除推荐内容吗？</translation>
 <translation id="9147392381910171771">选项(&amp;O)</translation>
 <translation id="9148058034647219655">退出</translation>

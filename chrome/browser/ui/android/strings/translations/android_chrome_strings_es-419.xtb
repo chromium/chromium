@@ -236,7 +236,6 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 <translation id="2450907520913474542">Obtén información sobre los temas en sitios web sin salir de la página. La función Tocar para buscar envía una palabra y el contexto en el que se encuentra a la Búsqueda de Google, y muestra definiciones, fotos, resultados de la búsqueda y otros detalles.
 
 Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqueda, selecciona más o menos palabras. Si quieres editar la búsqueda, abre el panel, presiona el ícono para abrir una pestaña nueva y realiza los cambios que quieras en el cuadro de búsqueda.</translation>
-<translation id="2451607499823206582">Seguimiento</translation>
 <translation id="2459390580524506445">Búsqueda por voz mejorada</translation>
 <translation id="2461822463642141190">Actual</translation>
 <translation id="247737702124049222">Las descripciones de imágenes están activadas.</translation>
@@ -429,7 +428,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3542235761944717775">KB disponibles: <ph name="KILOBYTES" /></translation>
 <translation id="3549657413697417275">Buscar en el historial</translation>
-<translation id="3557272988124495906">Obtener notificaciones de descuentos</translation>
 <translation id="3557336313807607643">Agregar a contactos</translation>
 <translation id="3563767357928833671">Se muestra el contenido del Portapapeles</translation>
 <translation id="3566923219790363270">Chrome todavía se está preparando para la RV. Reinicia Chrome más tarde.</translation>
@@ -1232,7 +1230,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8218052821161047641">Página de carga rápida</translation>
 <translation id="8218622182176210845">Administra tu cuenta</translation>
 <translation id="8223642481677794647">Menú de la tarjeta de feed</translation>
-<translation id="8242868071038398515">Te notificaremos si el precio baja en algún sitio</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="825412236959742607">Chrome quitó parte del contenido de esta página porque usa demasiada memoria.</translation>
 <translation id="8260126382462817229">Intenta volver a acceder</translation>

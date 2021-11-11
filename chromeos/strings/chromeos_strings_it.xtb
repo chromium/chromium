@@ -277,6 +277,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5294769550414936029">versione <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Sposta finestra nella scrivania</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Connetti</translation>
 <translation id="5315873049536339193">Identità</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5318334351163689047">Errori delle richieste TCP</translation>
@@ -398,6 +399,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
 <translation id="7162487448488904999">Galleria</translation>
 <translation id="7172721935181587524">1 immagine</translation>
+<translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Questo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" />. Gli amministratori possono configurarlo da remoto.</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
@@ -500,6 +502,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8620617069779373398">Stato roaming</translation>
 <translation id="8655295600908251630">Canale</translation>
 <translation id="8660881923941176839">libbre</translation>
+<translation id="8662671328352114214">Aggiungi la rete <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Chiave precondivisa</translation>
 <translation id="871560550817059752">Operazione non riuscita - Inchiostro esaurito</translation>
 <translation id="8723108084122415655">la rete non predefinita è al di sopra della soglia di latenza</translation>

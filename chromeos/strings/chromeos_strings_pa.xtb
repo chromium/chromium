@@ -184,6 +184,7 @@
 <translation id="409427325554347132">ਟੈਸਟ ਦੇ ਵੇਰਵੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="4111761024568264522">USB ਟੱਚਪੈਡ</translation>
 <translation id="4131410914670010031">ਕਾਲਾ ਅਤੇ ਚਿੱਟਾ</translation>
+<translation id="4140251671072434548">RMA ਸਰਵਰ ਅਣਲਾਕ ਕਰੋ</translation>
 <translation id="4145784616224233563">HTTP ਫ਼ਾਇਰਵਾਲ</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4155551848414053977">ਪੱਕਾ ਕਰੋ ਕਿ ਸਕੈਨਰ ਚਾਲੂ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਜਾਂ ਕਿਸੇ ਸਿੱਧੇ ਕਨੈਕਸ਼ਨ ਰਾਹੀਂ ਉਪਲਬਧ ਹੈ</translation>
@@ -260,6 +261,7 @@
 <translation id="5049856988445523908">ਸਿਮ ਲਾਕ ਕੀਤਾ ਗਿਆ (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">ਗਰੁੱਪ ਦਾ ਨਾਮ</translation>
 <translation id="5051044138948155788">ਸਿਰਫ਼ ਇਹੀ ਪੰਨਾ ਹੈ। ਇਹ ਤੁਹਾਨੂੰ ਸਕੈਨਿੰਗ ਸ਼ੁਰੂ ਕਰਨ ਵਾਲੀ ਸਕ੍ਰੀਨ 'ਤੇ ਲੈ ਜਾਵੇਗਾ।</translation>
+<translation id="5061169534910302641">ਵਰਜਨ ਨੂੰ ਅੱਪਡੇਟ ਕਰ ਕੇ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="5088172560898466307">ਸਰਵਰ ਹੋਸਟਨਾਮ</translation>
 <translation id="5089810972385038852">ਰਾਜ</translation>
 <translation id="5142961317498132443">ਪ੍ਰਮਾਣੀਕਰਨ</translation>
@@ -278,6 +280,7 @@
 <translation id="5294769550414936029">ਵਰਜਨ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ਵਿੰਡੋ ਨੂੰ ਡੈਸਕ 'ਤੇ ਲਿਜਾਓ</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5315873049536339193">ਪਛਾਣ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5318334351163689047">TCP ਬੇਨਤੀ ਦੀਆਂ ਅਸਫਲਤਾਵਾਂ</translation>
@@ -399,6 +402,7 @@
 <translation id="714876143603641390">LAN ਕਨੈਕਟੀਵਿਟੀ</translation>
 <translation id="7162487448488904999">ਗੈਲਰੀ</translation>
 <translation id="7172721935181587524">1 ਚਿੱਤਰ</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> ਨੂੰ ਸੰਰੂਪਿਤ ਕਰੋ</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸ਼ਾਇਦ ਪ੍ਰਸ਼ਾਸਕ ਰਿਮੋਟਲੀ ਡੀਵਾਈਸ ਦਾ ਸੰਰੂਪਣ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7216409898977639127">ਸੈਲਿਊਲਰ ਪ੍ਰਦਾਨਕ</translation>
@@ -466,6 +470,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">ਅਣਲਾਕ ਕੋਡ ਦਾਖਲ ਕਰੋ:</translation>
 <translation id="8206859287963243715">Cellular</translation>
 <translation id="8208861521865154048">ਫ਼ਾਇਦੇ</translation>
 <translation id="8230672074305416752">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -501,6 +506,7 @@
 <translation id="8620617069779373398">ਰੋਮਿੰਗ ਅਵਸਥਾ</translation>
 <translation id="8655295600908251630">ਚੈਨਲ</translation>
 <translation id="8660881923941176839">ਪੌਂਡ</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> ਨੈੱਟਵਰਕ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="8675354002693747642">ਪਹਿਲਾਂ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਕੁੰਜੀ</translation>
 <translation id="871560550817059752">ਅਸਫਲ ਰਹੀ - ਸਿਆਹੀ ਖਤਮ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="8723108084122415655">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਵਿਲੰਬਤਾ ਨਿਊਨਤਮ ਸੀਮਾ ਤੋਂ ਉੱਤੇ ਹੈ</translation>

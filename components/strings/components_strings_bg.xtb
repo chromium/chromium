@@ -82,6 +82,7 @@
 <translation id="124116460088058876">Още езици</translation>
 <translation id="1243027604378859286">Автор:</translation>
 <translation id="1246424317317450637">Удебелен текст</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS</translation>
 <translation id="1250759482327835220">За да платите по-бързо следващия път, запазете картата, името и адреса си за фактуриране в профила си в Google.</translation>
 <translation id="1252799212227771492">Бутон за създаване на таблица. Натиснете Enter, за да създадете бързо таблица в Google Таблици</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (синхронизирани)</translation>
@@ -320,6 +321,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Няма}=1{1 сайт}other{# сайта}}</translation>
 <translation id="1923390796829649802">Бутон „Управление на настройките за достъпност“. Натиснете Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS.</translation>
 <translation id="1924727005275031552">Нов</translation>
+<translation id="1927439593081478069">Бутон за стартиране на проверка на безопасността в Chrome. Натиснете Enter, за да стартирате такава проверка от настройките на браузъра</translation>
 <translation id="1939175642807587452">Може да поиска разрешение да изпраща известия</translation>
 <translation id="1945968466830820669">Възможно е да загубите достъп до профила си в организацията или самоличността ви да бъде открадната. Chromium препоръчва да промените паролата си сега.</translation>
 <translation id="1947454675006758438">Телбодиране горе вдясно</translation>
@@ -339,6 +341,7 @@
 <translation id="2003709556000175978">Задайте повторно паролата си сега</translation>
 <translation id="2003775180883135320">Четворно перфориране в горната част</translation>
 <translation id="201174227998721785">Управление на разрешенията и съхраняваните данни от сайтовете от настройките на Chrome</translation>
+<translation id="2019607688127825327">Бутон „Управление на настройките за достъпност“. Натиснете Enter, за да персонализирате инструментите за достъпност в настройките на Chrome</translation>
 <translation id="2025115093177348061">Обогатена реалност</translation>
 <translation id="2025186561304664664">За прокси сървъра е зададена автоматична конфигурация.</translation>
 <translation id="2025891858974379949">Незащитено съдържание</translation>
@@ -504,6 +507,7 @@
 <translation id="2556876185419854533">&amp;Отмяна на редактирането</translation>
 <translation id="2570734079541893434">Управление на настройките</translation>
 <translation id="257674075312929031">Група</translation>
+<translation id="2576880857912732701">Бутон „Управление на настройките за сигурност“. Натиснете Enter, за да управлявате Безопасно сърфиране и други функции от настройките на Chrome</translation>
 <translation id="2586657967955657006">Буферна памет</translation>
 <translation id="2587730715158995865">От <ph name="ARTICLE_PUBLISHER" />. Прочетете тази и още <ph name="OTHER_ARTICLE_COUNT" /> статии.</translation>
 <translation id="2587841377698384444">ID на API за директории:</translation>
@@ -548,6 +552,7 @@
 <translation id="2713444072780614174">бяло</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате информацията си за плащане и данните за кредитните си карти в настройките на Chrome</translation>
 <translation id="2721148159707890343">Заявката е успешна</translation>
+<translation id="2723669454293168317">Стартиране на проверка на безопасността от настройките на Chrome</translation>
 <translation id="2726001110728089263">Странична тава</translation>
 <translation id="2728127805433021124">Сертификатът на сървъра е подписан със слаб алгоритъм.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Стартирайте диагностика на свързаността<ph name="END_LINK" /></translation>
@@ -578,6 +583,7 @@
 <translation id="2859806420264540918">На този сайт се показват натрапчиви или подвеждащи реклами.</translation>
 <translation id="287596039013813457">Приятелско</translation>
 <translation id="2876489322757410363">Ще напуснете режим „инкогнито“, за да платите във външно приложение. Искате ли да продължите?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да управлявате Безопасно сърфиране и други функции от настройките на Chrome</translation>
 <translation id="2878197950673342043">Кръстосано сгъване</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Разположение на прозорците</translation>
@@ -683,6 +689,7 @@
 <translation id="3229041911291329567">Информацията за версията на устройството и браузъра</translation>
 <translation id="323107829343500871">Въведете кода за проверка за <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Важното съдържание на този сайт да се открива винаги</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате облика на браузъра си</translation>
 <translation id="3240791268468473923">Листът за несъответстващи идентификационни данни за сигурни плащания е отворен</translation>
 <translation id="3249845759089040423">Приятно</translation>
 <translation id="3252266817569339921">френски</translation>
@@ -726,6 +733,7 @@
       • създаде триизмерна карта на заобикалящата ви среда и да следи позицията на камерата;
       • използва камерата ви.</translation>
 <translation id="337363190475750230">Обезпечаването е отменено</translation>
+<translation id="3375754925484257129">Стартиране на проверка на безопасността в Chrome</translation>
 <translation id="3377144306166885718">Сървърът използва остаряла версия на TLS.</translation>
 <translation id="3377188786107721145">Грешка при синтактичния анализ на правилото</translation>
 <translation id="3377736046129930310">Използване на опцията за заключване на екрана за по-бързо потвърждаване на картите</translation>
@@ -766,6 +774,7 @@
 <translation id="3462200631372590220">Скриване на подробностите</translation>
 <translation id="3467763166455606212">Трябва да въведете името на титуляря на картата</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, понастоящем отворено, натиснете Tab и след това Enter, за да превключите към отворения раздел</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да затворите всички отворени прозорци в режим „инкогнито“</translation>
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3484560055331845446">Възможно е да загубите достъп до профила си в Google. Chrome препоръчва да промените паролата си сега. Ще получите подкана за влизане в профила си.</translation>
 <translation id="3487845404393360112">Тава 4</translation>
@@ -804,6 +813,7 @@
 <translation id="3611395257124510155">Виртуална карта за <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Размер 2</translation>
 <translation id="361438452008624280">Списъчен запис „<ph name="LANGUAGE_ID" />“: Неизвестен или неподдържан език.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да стартирате проверка на безопасността от настройките на Chrome</translation>
 <translation id="3615877443314183785">Въведете валидна дата на изтичане</translation>
 <translation id="36224234498066874">Изчистване на данните за сърфирането...</translation>
 <translation id="362276910939193118">Цялата история</translation>
@@ -1599,6 +1609,7 @@
 <translation id="6218753634732582820">Адресът да се премахне ли от Chromium?</translation>
 <translation id="622039917539443112">Паралелно сгъване</translation>
 <translation id="6221345481584921695">Google Безопасно сърфиране наскоро <ph name="BEGIN_LINK" />откри злонамерен софтуер<ph name="END_LINK" /> на <ph name="SITE" />. Уебсайтовете, които обикновено са надеждни, понякога се заразяват с опасен софтуер. Въпросното съдържание произлиза от <ph name="SUBRESOURCE_HOST" /> – известен разпространител на злонамерени програми.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате инструментите за достъпност в настройките на Chrome</translation>
 <translation id="6234122620015464377">Отрязване след всеки документ</translation>
 <translation id="6240447795304464094">Лого на Google Pay</translation>
 <translation id="6241121617266208201">Скриване на предложенията</translation>
@@ -1617,6 +1628,7 @@
 <translation id="6279098320682980337">Номерът на виртуалната карта не е попълнен? Кликнете върху данните за картата, за да ги копирате</translation>
 <translation id="6280223929691119688">Този адрес за бърза доставка не се поддържа. Изберете друг.</translation>
 <translation id="6282194474023008486">Пощенски код</translation>
+<translation id="6285507000506177184">Бутон „Управление на изтеглянията с Chrome“. Натиснете Enter, за да управлявате файловете, които сте изтеглили с Chrome</translation>
 <translation id="6289939620939689042">Цвят на страницата</translation>
 <translation id="6290238015253830360">Предложените ви статии ще се показват тук</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1732,6 +1744,7 @@
 <translation id="6689249931105087298">Относително с компенсиране на черните точки</translation>
 <translation id="6689271823431384964">Chrome предлага да запази картите ви в профила ви в Google, защото сте влезли в него. Можете да промените това поведение от настройките. Името на картодържателя е от профила ви.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да преминете към „Намиране на устройството ми“ в профила ви Google</translation>
+<translation id="6696588630955820014">Бутон „Споделяне на този раздел“. Натиснете Enter, за да споделите този раздел чрез изпращане на връзката, създаване на QR код, предаване и др.</translation>
 <translation id="6698381487523150993">Създадено:</translation>
 <translation id="6702919718839027939">Представяне</translation>
 <translation id="6710213216561001401">Предишно</translation>
@@ -1937,6 +1950,7 @@
 <translation id="7392089738299859607">Актуализиране на адрес</translation>
 <translation id="7399802613464275309">Проверка на безопасността</translation>
 <translation id="7400418766976504921">URL адрес</translation>
+<translation id="7403392780200267761">Споделяне на този раздел чрез изпращане на връзката, създаване на QR код, предаване и др.</translation>
 <translation id="7403591733719184120">Устройството ви <ph name="DEVICE_NAME" /> е управлявано</translation>
 <translation id="7407424307057130981">&lt;p&gt;Ще виждате това съобщение за грешка, ако софтуерът Superfish е инсталиран на компютъра ви с Windows.&lt;/p&gt;
 &lt;p&gt;Изпълнете следните стъпки, за да деактивирате временно софтуера, така че да можете да се свържете с мрежата. Ще са ви необходими администраторски права.&lt;/p&gt;
@@ -2166,6 +2180,7 @@
 <translation id="810875025413331850">Няма намерени устройства в близост.</translation>
 <translation id="8116925261070264013">Заглушени</translation>
 <translation id="8118489163946903409">Начин на плащане</translation>
+<translation id="8124639700796374294">Бутон за персонализиране на Chrome. Натиснете Enter, за да персонализирате облика на браузъра си</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> не се инсталира правилно на компютъра ви или в мрежата. Помолете системния си администратор да реши този проблем.</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8148608574971654810">PDF версия:</translation>
@@ -2347,6 +2362,7 @@
 <translation id="87601671197631245">Този сайт използва остаряла конфигурация за сигурност, която може да разкрие информацията ви (например пароли, съобщения или кредитни карти) при изпращането ѝ до него.</translation>
 <translation id="8761567432415473239">Google Безопасно сърфиране наскоро <ph name="BEGIN_LINK" />откри опасни програми<ph name="END_LINK" /> на <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">USB устройство</translation>
+<translation id="8763986294015493060">Затваряне на всички отворени прозорци в режим „инкогнито“</translation>
 <translation id="8766943070169463815">Листът за удостоверяване на идентификационни данни за сигурни плащания е отворен</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Възстановяване на изтриването</translation>
@@ -2360,6 +2376,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да актуализирате Chrome от настройките</translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="882338992931677877">Слот за ръчно подаване</translation>
+<translation id="8834380158646307944">Бутон „Затваряне на прозорците в режим „инкогнито“. Натиснете Enter, за да затворите всички прозорци в режим „инкогнито“</translation>
 <translation id="883848425547221593">Други отметки</translation>
 <translation id="884264119367021077">Адрес за доставка</translation>
 <translation id="884923133447025588">Не е намерен механизъм за анулиране.</translation>
@@ -2413,6 +2430,7 @@
 <translation id="9020200922353704812">Свързаният с картата адрес за фактуриране е задължителен</translation>
 <translation id="9020542370529661692">Тази страница е преведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да споделите този раздел чрез изпращане на връзката, създаване на QR код, предаване и др.</translation>
 <translation id="9025348182339809926">(невалиден)</translation>
 <translation id="9030265603405983977">Монохромно</translation>
 <translation id="9035022520814077154">Грешка в сигурността</translation>

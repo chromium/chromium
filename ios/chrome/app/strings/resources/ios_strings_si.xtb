@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">පිරීම අතරතුර යම් දෙයක් වැරදිණි.</translation>
 <translation id="1911619930368729126">Google Drive වෙත උඩුගත කරන්න</translation>
 <translation id="1923342640370224680">අවසන් පැයේ</translation>
+<translation id="1930989359703290198">නිශ්චිත ගිණුම්වලින් පමණක් පිරීමට ඔබගේ සංවිධානය ඔබට ඉඩ ‍දෙයි. ඉඩ නොදෙන ගිණුම් සඟවා ඇත. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">පිටපත් කිරීමට දෙවරක් තට්ටු කරන්න.</translation>
 <translation id="1952172573699511566">හැකි විට, වෙබ් අඩවි ඔබේ කැමතිම භාෂාවෙන් පෙළ පෙන්වනු ඇත.</translation>
 <translation id="1965935827552890526">ඔබගේ අනෙක් විවෘත Chrome කවුළුව තුළ ඔබ කරමින් සිටි දේ අවසන් කරන්න.</translation>
@@ -225,6 +226,7 @@
 <translation id="3080525922482950719">ඔබට පසුව හෝ නොබැඳිව කියවීමට පිටු සුරැකිය හැකිය</translation>
 <translation id="3081338492074632642">ඔබ සුරකින මුරපදය <ph name="WEBSITE" /> සඳහා වන ඔබේ මුරපදයට ගැළපෙන බව සහතික කර ගන්න</translation>
 <translation id="3112556859945124369">ලකුණු කරන්න…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />ඔබට සමමුහුර්ත කළ හැකි දේ බලන්න<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">සියල්ල අවහිර කරන්න</translation>
 <translation id="313283613037595347">නව අප්‍රකට ටැබයක් තනන්න.</translation>
 <translation id="3153862085237805241">කාඩ්පත සුරකින්න</translation>
@@ -386,6 +388,8 @@
 <translation id="4802417911091824046">මුර-වැකිකඩ සංකේතනයට Google Pay වෙතින් ගෙවීමේ ක්‍රම සහ ලිපින ඇතුළු නොවේ.
 
 මෙම සැකසීම වෙනස් කිරීමට, <ph name="BEGIN_LINK" />සමමුහූර්තය යළි සකසන්න<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">ඔබගේ ආයතනය විසින් කළමනාකරණය කෙරේ.
+<ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">අවලංගු කාඩ්පත් අංකය</translation>
 <translation id="4808744395915275922">යාවත්කාලීන</translation>
 <translation id="4818522717893377262">භාෂාව එක් කරන්න...</translation>

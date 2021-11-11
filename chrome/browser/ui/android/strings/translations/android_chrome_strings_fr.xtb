@@ -234,7 +234,6 @@ Appuyez sur n'importe quel mot pour lancer une recherche. Pour affiner la recher
 <translation id="2450907520913474542">Découvrez les thèmes abordés sur la page Web que vous consultez sans devoir quitter cette page. La fonctionnalité Appuyer pour rechercher transmet un mot et son contexte à la recherche Google, qui renvoie à son tour des définitions, des images, des résultats de recherche et d'autres informations.
 
 Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la recherche, sélectionnez plus ou moins de mots. Pour modifier la recherche, ouvrez le panneau, appuyez sur l'icône pour ouvrir la recherche dans un nouvel onglet, puis modifiez-la dans le champ correspondant.</translation>
-<translation id="2451607499823206582">Suivi</translation>
 <translation id="2459390580524506445">Recherche vocale améliorée</translation>
 <translation id="2461822463642141190">Consommation actuelle</translation>
 <translation id="247737702124049222">Les descriptions d'images sont activées</translation>
@@ -427,7 +426,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> Ko disponibles</translation>
 <translation id="3549657413697417275">Recherchez dans l'historique</translation>
-<translation id="3557272988124495906">Recevoir les notifications de prix en baisse</translation>
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
 <translation id="3563767357928833671">Contenu du presse-papiers affiché</translation>
 <translation id="3566923219790363270">Le mode de réalité virtuelle n'est pas encore prêt. Redémarrez Chrome plus tard.</translation>
@@ -1229,7 +1227,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8218052821161047641">Chargement rapide</translation>
 <translation id="8218622182176210845">Gérer votre compte</translation>
 <translation id="8223642481677794647">Menu de la carte de flux</translation>
-<translation id="8242868071038398515">Vous recevrez une notification si le prix baisse sur un site</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">Cette page utilise trop de mémoire, Chrome a donc supprimé du contenu.</translation>
 <translation id="8260126382462817229">Essayez de vous connecter de nouveau à votre compte.</translation>

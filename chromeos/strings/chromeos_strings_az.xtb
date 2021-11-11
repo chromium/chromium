@@ -277,6 +277,7 @@
 <translation id="5294769550414936029">versiya <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Pəncərəni masaya keçirin</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Qoşun</translation>
 <translation id="5315873049536339193">İdentiklik</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5318334351163689047">Alınmayan TCP sorğuları</translation>
@@ -398,6 +399,7 @@
 <translation id="714876143603641390">Lan Bağlantısı</translation>
 <translation id="7162487448488904999">Qalereya</translation>
 <translation id="7172721935181587524">1 şəkil</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> ünvanını konfiqurasiya edin</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur. Administratorlar cihazı məsafədən konfiqurasiya edə bilər.</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
 <translation id="7216409898977639127">Mobil provayder</translation>
@@ -500,6 +502,7 @@
 <translation id="8620617069779373398">Rominq statusu</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">funt</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> şəbəkəsinə qoşulun</translation>
 <translation id="8675354002693747642">Öncədən paylaşılan açar</translation>
 <translation id="871560550817059752">Alınmadı - Mürəkkəb yoxdur</translation>
 <translation id="8723108084122415655">Qeyri-defolt şəbəkə gecikmə həddindən yuxarıdır</translation>

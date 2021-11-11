@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">वरपर रहेका ब्लुटुथ चल्ने डिभाइसहरू पत्ता लगाउने अनुमति माग्न सक्छ</translation>
 <translation id="1426410128494586442">हो</translation>
 <translation id="1428146450423315676">स्ट्याकर ७</translation>
+<translation id="142858679511221695">क्लाउडका प्रयोगकर्ता</translation>
 <translation id="1428729058023778569">यो साइटमा HTTPS नचल्ने भएकाले तपाईंलाई यो चेतावनी देखाइएको हो। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1432581352905426595">खोज इन्जिनहरूको व्यवस्थापन गर्नुहोस्</translation>
@@ -716,6 +717,7 @@
 <translation id="3329013043687509092">संतृप्तीकरण</translation>
 <translation id="3333762389743153920">भर्चुअल कार्डका रूपमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="3338095232262050444">सुरक्षित छ</translation>
+<translation id="3339446062576134663">क्लाउड (Ash)</translation>
 <translation id="3355823806454867987">प्रोक्सी सेटिङहरू परिवर्तन गर्नुहोस्...</translation>
 <translation id="3360103848165129075">भुक्तानी ह्यान्ड्लरसम्बन्धी पाना</translation>
 <translation id="3361596688432910856">Chrome ले निम्न जानकारी <ph name="BEGIN_EMPHASIS" />सुरक्षित गर्नेछैन<ph name="END_EMPHASIS" />:
@@ -739,6 +741,7 @@
 <translation id="3380365263193509176">अज्ञात त्रुटि</translation>
 <translation id="3380864720620200369">ग्राहक आइडी:</translation>
 <translation id="3381668585148405088">आफ्नो खरिद पुष्टि गर्नुहोस्</translation>
+<translation id="3383566085871012386">हाल तय गरिएको प्राथमिकताको क्रम</translation>
 <translation id="3387261909427947069">भुक्तानी विधिहरू</translation>
 <translation id="3391030046425686457">डेलिभरीको ठेगाना</translation>
 <translation id="3391482648489541560">फाइल सम्पादन गर्ने</translation>
@@ -1407,6 +1410,7 @@
 <translation id="5478437291406423475">B6/C4 (Envelope)</translation>
 <translation id="5481076368049295676">यो सामग्रीले तपाईंको डिभाइसमा तपाईंको जानकारी चोर्ने वा मेट्ने खतरनाक सफ्टवेयर स्थापना गर्ने प्रयास गर्न सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्‌<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">मान्य ठेगाना थप्नुहोस्</translation>
+<translation id="5485973315555778056">क्लाउड मेसिन</translation>
 <translation id="5490432419156082418">ठेगाना र थप कुराहरू</translation>
 <translation id="5492298309214877701">कम्पनी, संगठन वा विद्यालयको इन्ट्रानेटमा रहेको यो साइटमा बाह्य वेबसाइट जस्तै उही URL हु्न्छ।
     <ph name="LINE_BREAK" />
@@ -1436,6 +1440,7 @@
 <translation id="5571083550517324815">यो ठेगानाबाट पिकअप गर्न सकिँदैन। कुनै अर्को ठेगाना चयन गर्नुहोस्।</translation>
 <translation id="5580958916614886209">आफ्नो म्याद सकिने महिनाको जाँच गरी फेरि प्रयास गर्नुहोस्</translation>
 <translation id="5586446728396275693">सुरक्षित गरिएको कुनै ठेगाना छैन</translation>
+<translation id="5587987780934666589">प्लेटफर्मका प्रयोगकर्ता</translation>
 <translation id="5593349413089863479">इन्टरनेट पूर्ण रूपमा सुरक्षित छैन</translation>
 <translation id="5595485650161345191">ठेगाना सम्पादन गर्नुहोस्</translation>
 <translation id="5598944008576757369">भुक्तानी विधि छनौट गर्नुहोस्</translation>
@@ -2124,6 +2129,7 @@
 <translation id="7953569069500808819">सिरानको किनारमा स्टिच</translation>
 <translation id="7956713633345437162">मोबाइल बुकमार्कहरू</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
+<translation id="7962467575542381659">प्लेटफर्म मेसिन</translation>
 <translation id="7966803981046576691">कार्य खाताको प्रकार</translation>
 <translation id="79682505114836835">मान "<ph name="VALUE" />" वैध हेक्स कलर होइन।</translation>
 <translation id="7968982339740310781">विवरणहरू हेर्नुहोस्</translation>

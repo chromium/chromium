@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Ακύρωση σάρωσης</translation>
 <translation id="1851218745569890714">Συνεδρίαση με βίντεο</translation>
+<translation id="1857850044054738019">Ορίστε αυτήν την επιλογή εάν η συσκευή ανεφοδιάζεται ή ανακατασκευάζεται για
+        διανομή σε νέο πελάτη.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Έκδοση υλικού</translation>
 <translation id="1905710495812624430">Έγινε υπέρβαση του μέγιστου αριθμού επιτρεπόμενων προσπαθειών.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">Χρειάζεστε τουλάχιστον 500 MB ελεύθερης μνήμης για να εκτελέσετε μια δοκιμή μνήμης. Για να ελευθερώσετε χώρο, μεταβείτε στις Ρυθμίσεις &gt; Διαχείριση αποθηκευτικού χώρου.</translation>
 <translation id="4258281355379922695">Λανθάνων χρόνος HTTP</translation>
 <translation id="4271957103967917607">Προβολή πλήρους οθόνης</translation>
+<translation id="4275799948641988986">Μετά την επισκευή, ποιος θα χρησιμοποιεί τη συσκευή;</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> εικόνες</translation>
 <translation id="4378373042927530923">Δεν εκτελέστηκε</translation>
@@ -260,6 +263,7 @@
 <translation id="5049856988445523908">Κλειδωμένη SIM (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Όνομα ομάδας</translation>
 <translation id="5051044138948155788">Αυτή είναι η μοναδική σελίδα. Θα μεταβείτε στην οθόνη έναρξης σάρωσης.</translation>
+<translation id="5061169534910302641">Ενημέρωση έκδοσης και επανεκκίνηση</translation>
 <translation id="5088172560898466307">Όνομα κεντρικού υπολογιστή διακομιστή</translation>
 <translation id="5089810972385038852">Πολιτεία</translation>
 <translation id="5142961317498132443">Έλεγχος ταυτότητας</translation>
@@ -279,6 +283,7 @@
 <translation id="5294769550414936029">έκδοση <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Μετακίνηση παραθύρου στο γραφείο</translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="5308380583665731573">Σύνδεση</translation>
 <translation id="5315873049536339193">Ταυτότητα</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318334351163689047">Σφάλματα αιτήματος TCP</translation>
@@ -400,6 +405,7 @@
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">1 εικόνα</translation>
+<translation id="7175037578838465313">Διαμόρφωση <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" />. Οι διαχειριστές μπορούν να διαμορφώσουν τη συσκευή απομακρυσμένα.</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
@@ -409,6 +415,7 @@
 <translation id="7297226631177386107">Δεν είναι δυνατή η σύνδεση μέσω τείχους προστασίας σε ιστοτόπους HTTPS</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">Η συσκευή θα μεταβιβαστεί σε διαφορετικό κάτοχο</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Συσκευές δικτύου</translation>
 <translation id="7359657277149375382">Τύπος αρχείου</translation>
@@ -416,6 +423,9 @@
 <translation id="7415801143053185905">Πολύ υψηλός λανθάνων χρόνος HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Η σάρωση ολοκληρώθηκε. Σαρώθηκε 1 σελίδα.}other{Η σάρωση ολοκληρώθηκε. Σαρώθηκαν {NUMBER_OF_PAGES} σελίδες.}}</translation>
+<translation id="7451112128070628323">Ορίστε αυτήν την επιλογή εάν δεν αλλάζει η ιδιοκτησία της συσκευής.
+        Για παράδειγμα, η συσκευή μεταβιβάζεται σε ένα άλλο άτομο
+        εντός ενός οργανισμού.</translation>
 <translation id="7469648432129124067">Εντοπίστηκε πύλη</translation>
 <translation id="7487067081878637334">Τεχνολογία</translation>
 <translation id="7490813197707563893">Διεύθυνση MAC</translation>
@@ -502,6 +512,7 @@
 <translation id="8620617069779373398">Κατάσταση περιαγωγής</translation>
 <translation id="8655295600908251630">Κανάλι</translation>
 <translation id="8660881923941176839">λίβρες</translation>
+<translation id="8662671328352114214">Συμμετοχή στο δίκτυο <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Ήδη κοινόχρηστο κλειδί</translation>
 <translation id="871560550817059752">Σφάλμα - Τελείωσε το μελάνι</translation>
 <translation id="8723108084122415655">Ο λανθάνων χρόνος του μη προεπιλεγμένου δικτύου έχει υπερβεί το ελάχιστο όριο.</translation>
@@ -539,6 +550,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Τρέχουσα χρήση</translation>
+<translation id="9095415590198785865">Η συσκευή θα μεταβιβαστεί στον ίδιο κάτοχο</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Ανανέωση εισιτηρίου για το <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Σάρωση σελίδας <ph name="PAGE_NUMBER" /></translation>

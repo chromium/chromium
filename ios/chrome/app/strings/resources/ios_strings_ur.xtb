@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">سائن ان کرنے کے دوران کچھ غلط ہو گیا۔</translation>
 <translation id="1911619930368729126">‏Google Drive میں اپ لوڈ کریں</translation>
 <translation id="1923342640370224680">پچھلے گھنٹے</translation>
+<translation id="1930989359703290198">آپ کی تنظیم آپ کو صرف مخصوص اکاؤنٹس کے ساتھ سائن ان کرنے کی اجازت دیتی ہے۔ جن اکاؤنٹس کی اجازت نہیں ہے وہ پوشیدہ ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">کاپی کرنے کیلئے دو بار تھپتھپائیں۔</translation>
 <translation id="1952172573699511566">جب ممکن ہوگا، تو ویب سائٹس آپ کی پسندیدہ زبان میں متن دکھائیں گی۔</translation>
 <translation id="1965935827552890526">‏اپنی دوسری کھلی ہوئی Chrome ونڈو میں آپ کیا کر رہے تھے مکمل کریں۔</translation>
@@ -225,6 +226,7 @@
 <translation id="3080525922482950719">آپ بعد میں یا آف لائن پڑھنے کے لیے صفحات کو محفوظ کر سکتے ہیں</translation>
 <translation id="3081338492074632642">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="WEBSITE" /> کے پاس ورڈ سے مماثل ہے</translation>
 <translation id="3112556859945124369">نشان زد کریں…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />دیکھیں کہ آپ کیا سِنک کر سکتے ہیں<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">سبھی کو مسدود کریں</translation>
 <translation id="313283613037595347">نیا پوشیدگی ٹیب بنائیں۔</translation>
 <translation id="3153862085237805241">کارڈ محفوظ کریں</translation>
@@ -386,6 +388,8 @@
 <translation id="4802417911091824046">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔
 
 اس ترتیب کو تبدیل کرنے کیلئے، <ph name="BEGIN_LINK" />مطابقت پذیری کو دوبارہ ترتیب دیں<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">آپ کی تنظیم کے زیر انتظام۔
+<ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">کارڈ نمبر غلط ہے</translation>
 <translation id="4808744395915275922">اپ ڈیٹس</translation>
 <translation id="4818522717893377262">زبان شامل کریں...</translation>

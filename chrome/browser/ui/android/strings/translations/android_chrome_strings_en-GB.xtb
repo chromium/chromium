@@ -234,7 +234,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2450907520913474542">Learn about topics on websites without leaving the page. Touch to search sends a word and its surrounding context to Google Search, returning definitions, pictures, search results and other details.
 
 Touch and hold any word to search. To refine your search, select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.</translation>
-<translation id="2451607499823206582">Tracking</translation>
 <translation id="2459390580524506445">Enhanced voice search</translation>
 <translation id="2461822463642141190">Current</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
@@ -259,6 +258,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2561519700418191927">Video previews</translation>
 <translation id="2567385386134582609">IMAGE</translation>
+<translation id="2567545343356994513">Faster, proactive protection against dangerous websites, downloads and extensions</translation>
 <translation id="2571711316400087311">Offer to send pages in other languages to Google Translate</translation>
 <translation id="2581165646603367611">This will clear cookies, cache and other data of sites Chrome doesn't think is important.</translation>
 <translation id="2587052924345400782">Newer version is available</translation>
@@ -427,7 +427,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB available</translation>
 <translation id="3549657413697417275">Search your history</translation>
-<translation id="3557272988124495906">Get price drop notifications</translation>
 <translation id="3557336313807607643">Add to contacts</translation>
 <translation id="3563767357928833671">Clipboard contents shown</translation>
 <translation id="3566923219790363270">Chrome is still preparing for VR. Restart Chrome later.</translation>
@@ -487,6 +486,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="395377504920307820">Use without an account</translation>
 <translation id="3958287878205277013">To clear Incognito browsing history from your device, close all incognito tabs.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome will load your page when ready}other{Chrome will load your pages when ready}}</translation>
+<translation id="3962119236270174787">Standard protection against websites, downloads and extensions that are known to be dangerous</translation>
 <translation id="3962957115499249330">You’ll see a notification when this download starts on Wi-Fi.</translation>
 <translation id="3963007978381181125">Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to reset sync. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome can’t check your passwords</translation>
@@ -951,6 +951,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6627583120233659107">Edit folder</translation>
 <translation id="6633067410344541938">Unlock Incognito</translation>
 <translation id="663674369910034433">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK1" />Sync<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Google services<ph name="END_LINK2" /></translation>
+<translation id="6640207029842583248">Block all the time</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6643649862576733715">Sort by amount of data saved</translation>
 <translation id="6648459603387803038">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.</translation>
@@ -1077,6 +1078,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7435356471928173109">Turned off by your administrator</translation>
 <translation id="7437998757836447326">Sign out of Chrome</translation>
 <translation id="7438641746574390233">When Lite mode is on, Chrome uses Google servers to make pages load faster. Lite mode rewrites very slow pages to load only essential content. Lite mode does not apply to Incognito tabs.</translation>
+<translation id="7443901082822119557">While in Incognito, sites can’t use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may break.</translation>
 <translation id="7444811645081526538">More categories</translation>
 <translation id="7453467225369441013">Signs you out of most sites. You won't be signed out of your Google Account.</translation>
 <translation id="7454641608352164238">Not enough space</translation>
@@ -1184,6 +1186,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="799576009106109668">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="7998918019931843664">Re-open closed tab</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8006818846907410687">Block while using Incognito</translation>
 <translation id="8013372441983637696">Also clear your Chrome data from this device</translation>
 <translation id="8015452622527143194">Return everything on the page to default size</translation>
 <translation id="8026334261755873520">Clear browsing data</translation>
@@ -1229,9 +1232,9 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8218052821161047641">Fast page</translation>
 <translation id="8218622182176210845">Manage your account</translation>
 <translation id="8223642481677794647">Feed card menu</translation>
-<translation id="8242868071038398515">You will be notified if the price drops on any site</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">This page uses too much memory, so Chrome removed some content.</translation>
+<translation id="8255617931166444521">Sites can only use your cookies to see your browsing activity only on their own site</translation>
 <translation id="8260126382462817229">Try signing in again</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="82619448491672958">See other tabs</translation>

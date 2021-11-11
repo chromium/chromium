@@ -278,6 +278,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5294769550414936029">verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Premestite prozor na radnu površinu</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Povezivanje</translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5318334351163689047">Neuspeli TCP zahtevi</translation>
@@ -399,6 +400,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="714876143603641390">Povezivanje LAN-a</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 slika</translation>
+<translation id="7175037578838465313">Konfigurišite <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
@@ -501,6 +503,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8620617069779373398">Status rominga</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">funte</translation>
+<translation id="8662671328352114214">Pridružite se <ph name="TYPE" /> mreži</translation>
 <translation id="8675354002693747642">Tajni ključ</translation>
 <translation id="871560550817059752">Nije uspelo – nema više mastila</translation>
 <translation id="8723108084122415655">Mreža koja nije podrazumevana premašuje graničnu vrednost za kašnjenje</translation>

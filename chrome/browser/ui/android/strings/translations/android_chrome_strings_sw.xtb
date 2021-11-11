@@ -15,6 +15,7 @@
 <translation id="1100066534610197918">Fungua katika kichupo kipya cha kikundi</translation>
 <translation id="1103142993930332957">Ungependa kusaidia kuboresha Chrome?</translation>
 <translation id="1105960400813249514">Piga Picha ya Skrini</translation>
+<translation id="1108938384783527433">Usawazishaji wa historia</translation>
 <translation id="1110914759170138831">Maandishi uliyoyaangazia yamefupishwa</translation>
 <translation id="1111673857033749125">Alamisho zilizohifadhiwa katika vifaa vyako vingine zitaonekana hapa.</translation>
 <translation id="1113597929977215864">Onyesha mwonekano rahisi</translation>
@@ -157,6 +158,7 @@
 <translation id="2000419248597011803">Hutuma baadhi ya vidakuzi na utafutaji kutoka kwenye sehemu ya anwani na kisanduku cha kutafutia kwenye mtambo wako chaguomsingi wa kutafuta</translation>
 <translation id="200114059308480249">Ungependa kujumuisha maandishi yaliyo karibu na maneno uliyoyachagua katika utafutaji kwenye Google?</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{Faili #}other{Faili #}}</translation>
+<translation id="2020309681647789787">Utapata historia yako kwenye vifaa vyako vyote vilivyosawazishwa, ili uweze kuendeleza ulichokuwa ukifanya</translation>
 <translation id="2021896219286479412">Vidhibiti vya tovuti vya skrini nzima</translation>
 <translation id="2038563949887743358">Washa Omba Tovuti ya Eneo-kazi</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> pia ina data katika Chrome</translation>
@@ -234,7 +236,6 @@ Gusa neno lolote ili utafute. Ili uchuje utafutaji wako, gusa na ushikilie ili u
 <translation id="2450907520913474542">Pata maelezo kuhusu mada zilizo kwenye tovuti bila kufunga ukurasa ulipo. Kipengele cha 'Gusa ili Utafute' hutuma neno na muktadha wake kwenye huduma ya Tafuta na Google kisha huonyesha ufafanuzi, picha, matokeo ya utafutaji na maelezo mengine.
 
 Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua maneno mengi au machache. Ili ubadilishe utafutaji wako, fungua kidirisha, gusa aikoni ili ufungue katika kichupo kipya na ufanye mabadiliko ambayo ungependa kwenye kisanduku cha kutafutia.</translation>
-<translation id="2451607499823206582">Ufuatiliaji</translation>
 <translation id="2459390580524506445">Kipengele kilichoboreshwa cha kutafuta kwa kutamka</translation>
 <translation id="2461822463642141190">Ya sasa</translation>
 <translation id="247737702124049222">Kipengele cha maelezo ya picha kimewashwa</translation>
@@ -427,7 +428,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="3527085408025491307">Folda</translation>
 <translation id="3542235761944717775">KB <ph name="KILOBYTES" /> zinapatikana</translation>
 <translation id="3549657413697417275">Tafuta katika historia yako</translation>
-<translation id="3557272988124495906">Pata arifa za kupunguzwa kwa bei</translation>
 <translation id="3557336313807607643">Ongeza kwenye anwani</translation>
 <translation id="3563767357928833671">Yaliyomo kwenye ubao wa kunakili yameonyeshwa</translation>
 <translation id="3566923219790363270">Chrome bado inasubiri Uhalisia Pepe. Zima kisha uwashe Chrome baadaye</translation>
@@ -849,6 +849,7 @@ Majaribio ya Utaratibu wa Kuwekea Vikwazo vya Faragha bado yanaendelea kutengene
 <translation id="6070730414166672373">Inawasiliana na benki yako\u2026</translation>
 <translation id="6085886413119427067">Hubainisha jinsi ya kuunganisha kwenye tovuti kupitia muunganisho salama</translation>
 <translation id="60923314841986378">Zimesalia saa <ph name="HOURS" /></translation>
+<translation id="6095578583683628124">Ikiwa Google pia ni mtambo wako chaguomsingi wa kutafuta, utaona mapendekezo bora, ya kimuktadha yanayofaa</translation>
 <translation id="6108923351542677676">Usanidi unaendelea...</translation>
 <translation id="6111020039983847643">data iliyotumiwa</translation>
 <translation id="6112702117600201073">Inaonyesha upya ukurasa</translation>
@@ -1229,7 +1230,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8218052821161047641">Ukurasa wa haraka</translation>
 <translation id="8218622182176210845">Dhibiti akaunti yako</translation>
 <translation id="8223642481677794647">Menyu ya kadi ya mipasho</translation>
-<translation id="8242868071038398515">Utaarifiwa bei ikipunguzwa kwenye tovuti yoyote</translation>
 <translation id="8250920743982581267">Hati</translation>
 <translation id="825412236959742607">Ukurasa huu unatumia hifadhi kubwa mno, hivyo basi Chrome imeondoa baadhi ya maudhui.</translation>
 <translation id="8260126382462817229">Jaribu kuingia katika akaunti tena</translation>
@@ -1394,6 +1394,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="9148126808321036104">Ingia tena</translation>
 <translation id="9155898266292537608">Unaweza pia kutafuta kwa kugusa haraka kwenye neno</translation>
 <translation id="9158770349521403363">Shiriki maudhui pekee</translation>
+<translation id="916446198114569890">URL unazotembelea huhifadhiwa kwenye akaunti yako ya Google</translation>
 <translation id="9169507124922466868">Historia ya uelekezaji imefunguliwa nusu</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Imekaguliwa dakika moja iliyopita}other{Imekaguliwa dakika # zilizopita}}</translation>
 <translation id="9204836675896933765">Imesalia faili 1</translation>

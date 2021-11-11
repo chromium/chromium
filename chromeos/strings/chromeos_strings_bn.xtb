@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">স্ক্যানিং বাতিল করা হচ্ছে</translation>
 <translation id="1851218745569890714">ভিডিও কনফারেন্সিং</translation>
+<translation id="1857850044054738019">নতুন গ্রাহককে ডিস্ট্রিবিউট করার জন্য ডিভাইস আবার স্টক করা বা
+        রিফারবিশ করা হলে এই বিকল্পটি বেছে নিন।</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">হার্ডওয়্যার পুনর্বিবেচনাগুলি</translation>
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">মেমরি টেস্ট করাতে আপনার ডিভাইসে অন্তত ৫০০ এমবি খালি জায়গা থাকতে হবে। জায়গা খালি করতে 'সেটিংস' &gt; 'স্টোরেজ ম্যানেজ করা' বিকল্পে যান।</translation>
 <translation id="4258281355379922695">HTTP লেটেন্সি</translation>
 <translation id="4271957103967917607">ফুল স্ক্রিন দেখুন</translation>
+<translation id="4275799948641988986">রিপেয়ার করার পর ডিভাইসটি কে ব্যবহার করবেন?</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />টি ছবি</translation>
 <translation id="4378373042927530923">চালানো যায়নি</translation>
@@ -260,6 +263,7 @@
 <translation id="5049856988445523908">সিম লক করা হয়েছে (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">গ্রুপের নাম</translation>
 <translation id="5051044138948155788">শুধুমাত্র এই পৃষ্ঠাটি সরাতে চাই। এটি আপনাকে সেই স্ক্রিনে নিয়ে যাবে যেখানে স্ক্যান শুরু হয়।</translation>
+<translation id="5061169534910302641">ভার্সন আপডেট করে রিস্টার্ট করুন</translation>
 <translation id="5088172560898466307">সার্ভার হোস্টনাম</translation>
 <translation id="5089810972385038852">রাজ্য</translation>
 <translation id="5142961317498132443">প্রমাণীকরণ</translation>
@@ -278,6 +282,7 @@
 <translation id="5294769550414936029">ভার্সন <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">উইন্ডোকে ডেস্কে সরিয়ে নিয়ে যান</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">সংযুক্ত করুন</translation>
 <translation id="5315873049536339193">পরিচয়</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5318334351163689047">TCP-এর অনুরোধ করা যায়নি</translation>
@@ -399,6 +404,7 @@
 <translation id="714876143603641390">Lan কানেক্টিভিটি</translation>
 <translation id="7162487448488904999">গ্যালারি</translation>
 <translation id="7172721935181587524">১টি ছবি</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> কনফিগার করুন</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" />-এর মাধ্যমে এই <ph name="DEVICE_TYPE" /> ম্যানেজ করা হয়। অ্যাডমিনিস্ট্রেটর অন্য জায়গা থেকে ডিভাইসটি কনফিগার করতে পারেন।</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
@@ -408,6 +414,7 @@
 <translation id="7297226631177386107">ফায়ারওয়ালের সাহায্যে HTTPS ওয়েবসাইটের সাথে কানেক্ট করা যাচ্ছে না</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">ডিভাইসের মালিক অন্য কেউ হবেন</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">নেটওয়ার্ক ডিভাইস</translation>
 <translation id="7359657277149375382">ফাইলের প্রকার</translation>
@@ -415,6 +422,9 @@
 <translation id="7415801143053185905">HTTP লেটেন্সি অনেক বেশি</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{স্ক্যান করা সম্পূর্ণ হয়েছে। ১টি পৃষ্ঠা স্ক্যান করা হয়েছে}one{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}other{স্ক্যান করা সম্পূর্ণ হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}}</translation>
+<translation id="7451112128070628323">ডিভাইসের মালিকানা পরিবর্তন না হলে এই বিকল্পটি বেছে নিন।
+        যেমন, ডিভাইসটি প্রতিষ্ঠানের অন্য ব্যক্তির কাছে
+        ট্রান্সফার করা হচ্ছে।</translation>
 <translation id="7469648432129124067">পোর্টাল শনাক্ত করা হয়েছে</translation>
 <translation id="7487067081878637334">প্রযুক্তি</translation>
 <translation id="7490813197707563893">MAC ঠিকানা</translation>
@@ -501,6 +511,7 @@
 <translation id="8620617069779373398">রোমিং স্থিতি</translation>
 <translation id="8655295600908251630">চ্যানেল</translation>
 <translation id="8660881923941176839">পাউন্ড</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> নেটওয়ার্কে সংযুক্ত হন</translation>
 <translation id="8675354002693747642">আগে-থাকতে শেয়ার করা কী</translation>
 <translation id="871560550817059752">প্রিন্ট করা যায়নি - প্রিন্টারে কালি নেই</translation>
 <translation id="8723108084122415655">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>
@@ -538,6 +549,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ব্লুটুথ</translation>
 <translation id="9088306295921699330">বর্তমান ব্যবহার</translation>
+<translation id="9095415590198785865">ডিভাইস একই মালিকের কাছে থাকবে</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>

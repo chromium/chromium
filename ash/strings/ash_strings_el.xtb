@@ -200,6 +200,7 @@
 <translation id="2352467521400612932">Ρυθμίσεις γραφίδας</translation>
 <translation id="2354174487190027830">Ενεργοποίηση <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
+<translation id="2360625459710946148">Αναδιάταξη κατά</translation>
 <translation id="2367186422933365202">Δεν είναι δυνατή η σύνδεση στο Chromebook</translation>
 <translation id="2369165858548251131">"Γεια σας" στα κινεζικά</translation>
 <translation id="2390318262976603432">Τοπικές ρυθμίσεις</translation>
@@ -326,6 +327,7 @@
 <translation id="334252345105450327">Λήψη στιγμιότυπου οθόνης</translation>
 <translation id="3351879221545518001">Αυτήν τη στιγμή πραγματοποιείτε μετάδοση της οθόνης.</translation>
 <translation id="3364721542077212959">Εργαλεία γραφίδας</translation>
+<translation id="3365977133351922112">Το τηλέφωνό σας είναι πάρα πολύ μακριά. Πλησιάστε περισσότερο το τηλέφωνό σας.</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
 <translation id="3371140690572404006">Συσκευή USB-C (δεξιά μπροστινή θύρα)</translation>
 <translation id="3375634426936648815">Συνδέθηκε</translation>
@@ -602,6 +604,7 @@
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5176318573511391780">Εγγραφή μέρους της οθόνης</translation>
 <translation id="5199367439331364630">Για να συνδεθείτε στο Chromebook, εισαγάγετε κωδικό πρόσβασης</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ακόμη ειδοποίηση}other{# ακόμη ειδοποιήσεις}}</translation>
 <translation id="5207949376430453814">Επισήμανση δρομέα κειμένου</translation>
 <translation id="5208059991603368177">Ενεργό</translation>
@@ -704,6 +707,7 @@
 <translation id="5977415296283489383">Ακουστικά</translation>
 <translation id="5978382165065462689">Κοινόχρηστος έλεγχος της οθόνης σας μέσω της απομακρυσμένης βοήθειας.</translation>
 <translation id="5980301590375426705">Έξοδος επισκέπτη</translation>
+<translation id="598407983968395253">Χρήση προτύπου</translation>
 <translation id="598882571027504733">Για να λάβετε την ενημέρωση, επανεκκινήστε το Chromebook με το συνδεδεμένο πληκτρολόγιο.</translation>
 <translation id="5992218262414051481">Η Λειτουργία υψηλής αντίθεσης ενεργοποιήθηκε. Πατήστε Ctrl+Search+H ξανά για να την απενεργοποιήσετε.</translation>
 <translation id="6018164090099858612">Έξοδος από λειτουργία κατοπτρισμού</translation>
@@ -885,6 +889,7 @@
 <translation id="7398254312354928459">Έγινε εναλλαγή της σύνδεσης δικτύου</translation>
 <translation id="7405710164030118432">Για να ξεκλειδώσετε τη συσκευή, εισαγάγετε τον κωδικό πρόσβασης γονέα στο Family Link</translation>
 <translation id="7406608787870898861">Ολοκληρώστε τη ρύθμιση του δικτύου κινητής τηλεφωνίας σας</translation>
+<translation id="740790383907119240">Συντομεύσεις εφαρμογής</translation>
 <translation id="741244894080940828">μετατροπή</translation>
 <translation id="7413851974711031813">Πατήστε escape για κλείσιμο</translation>
 <translation id="742594950370306541">Η κάμερα δεν χρησιμοποιείται.</translation>
@@ -987,6 +992,7 @@
 <translation id="8061464966246066292">Υψηλή αντίθεση</translation>
 <translation id="8098591350844501178">Διακοπή μετάδοσης οθόνης σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ενεργές, όλες οι εφαρμογές</translation>
+<translation id="8120151603115102514">Το τηλέφωνό σας δεν διαθέτει οθόνη κλειδώματος. Για να ξεκλειδώσετε το Chromebook, εισαγάγετε κωδικό πρόσβασης.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8132487352815776550">Διακοπή υποτίτλων</translation>
@@ -1035,6 +1041,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> έχει <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Πατήστε Alt+Search ή Shift για ακύρωση.</translation>
 <translation id="8492573885090281069">Η οθόνη <ph name="DISPLAY_NAME" /> δεν υποστηρίζει <ph name="SPECIFIED_RESOLUTION" />. Η ανάλυση άλλαξε σε <ph name="FALLBACK_RESOLUTION" />. Κάντε κλικ στην Επιβεβαίωση για να κρατήσετε τις αλλαγές. Θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">Το Bluetooth του Chromebook είναι απενεργοποιημένο. Για να ξεκλειδώσετε το Chromebook, εισαγάγετε κωδικό πρόσβασης</translation>
 <translation id="8513108775083588393">Αυτ. περιστρ.</translation>
 <translation id="851458219935658693">Εμφάνιση παραθύρων από το τρέχον γραφείο, επιλέχτηκε το κουμπί επιλογής.</translation>
 <translation id="8517041960877371778">Δεν είναι δυνατή η φόρτιση της συσκευής <ph name="DEVICE_TYPE" /> ενώ είναι ενεργοποιημένη.</translation>

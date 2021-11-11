@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">स्कॅनिंग रद्द करत आहे</translation>
 <translation id="1851218745569890714">व्हिडिओ कॉंफरन्सिंग</translation>
+<translation id="1857850044054738019">डिव्हाइस हे पुन्हा स्टॉक केले जात असल्यास किंवा नवीन ग्राहकाला देण्यासाठी
+        त्याचे नूतनीकरण केले जात असल्यास, हा पर्याय निवडा.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">हार्डवेअर पुनरावृत्ती</translation>
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">मेमरीसंबंधित चाचणी रन करण्यासाठी तुमच्याकडे किमान ५०० MB जागा मोकळी असणे आवश्यक आहे. जागा मोकळी करण्यासाठी, सेटिंग्ज &gt; स्टोरेज व्यवस्थापन वर जा.</translation>
 <translation id="4258281355379922695">HTTP लेटन्सी</translation>
 <translation id="4271957103967917607">फुल स्क्रीन पहा</translation>
+<translation id="4275799948641988986">दुरूस्त केल्यानंतर, डिव्हाइस कोण वापरणार आहे?</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
 <translation id="4378373042927530923">रन झाले नाही</translation>
@@ -280,6 +283,7 @@
 <translation id="5294769550414936029">आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">विंडो या डेस्कवर हलवा</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5315873049536339193">ओळख</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5318334351163689047">TCP विनंती पूर्ण करता आली नाही</translation>
@@ -401,6 +405,7 @@
 <translation id="714876143603641390">LAN कनेक्टिव्हिटी</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">एक इमेज</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> कॉंफिगर करा</translation>
 <translation id="7177485034254901881">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर रिमोट पद्धतीने डिव्हाइस काँफिगर करू शकतात.</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देणारा</translation>
@@ -410,6 +415,7 @@
 <translation id="7297226631177386107">फायरवॉलद्वारे HTTPS वेबसाइटशी कनेक्ट करू शकत नाही</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">डिव्हाइस दुसऱ्या मालकाला दिले जाईल</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">नेटवर्क डिव्हाइस</translation>
 <translation id="7359657277149375382">फाइल प्रकार</translation>
@@ -417,6 +423,9 @@
 <translation id="7415801143053185905">अत्युच्च HTTP लेटन्सी</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कॅन करणे पूर्ण झाले. एक पेज स्कॅन केले}other{स्कॅन करणे पूर्ण झाले. {NUMBER_OF_PAGES} पेज स्कॅन केली}}</translation>
+<translation id="7451112128070628323">डिव्हाइसची मालकी बदलत नसल्यास, हा पर्याय निवडा.
+        उदाहरणार्थ, डिव्हाइस हे संस्थेमधील दुसऱ्या व्यक्तीकडे
+        ट्रान्सफर केले जात आहे.</translation>
 <translation id="7469648432129124067">पोर्टल डिटेक्ट केले</translation>
 <translation id="7487067081878637334">तंत्रज्ञान</translation>
 <translation id="7490813197707563893">MAC पत्ता</translation>
@@ -503,6 +512,7 @@
 <translation id="8620617069779373398">रोमिंग स्थिती</translation>
 <translation id="8655295600908251630">खाडी</translation>
 <translation id="8660881923941176839">पाउंड</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमध्‍‍‍‍ये सामील व्‍हा</translation>
 <translation id="8675354002693747642">आधी शेअर केलेली की</translation>
 <translation id="871560550817059752">अयशस्वी झाले - शाई संपली आहे</translation>
 <translation id="8723108084122415655">डीफॉल्ट नसलेले नेटवर्क लेटन्सी सीमेपेक्षा जास्त आहे</translation>
@@ -540,6 +550,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9088306295921699330">सद्य वापर</translation>
+<translation id="9095415590198785865">डिव्हाइस त्याच मालकाला दिले जाईल</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>

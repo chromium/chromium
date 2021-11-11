@@ -5,7 +5,7 @@
 <translation id="1013952917065545813">તમે તાજેતરમાં બંધ કરેલા ટૅબ ફરીથી ખોલવા માટે, તમે અહીં પાછા આવી શકો છો</translation>
 <translation id="1016495303386450659">આઇટમ અપડેટ કરી</translation>
 <translation id="1044891598689252897">સાઇટ સામાન્ય રીતે કાર્ય કરશે</translation>
-<translation id="1047726139967079566">આ પૃષ્ઠને બુકમાર્ક કરો...</translation>
+<translation id="1047726139967079566">આ પેજને બુકમાર્ક કરો...</translation>
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="105093091697134113">નીચેનાં એકાઉન્ટમાં એ પાસવર્ડનો ઉપયોગ થાય છે જે ત્રીજા-પક્ષના ડેટાના ઉલ્લંઘન સંબંધે જાહેર થયા હતા અથવા છેતરામણી વેબસાઇટ પર દાખલ કરવામાં આવ્યા હતા. તમારા બધા એકાઉન્ટને સલામત રાખવા માટે, આ બધા પાસવર્ડ તાત્કાલિક બદલો.</translation>
 <translation id="105214722824962652">તમને તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ કરવામાં આવશે નહીં. જ્યારે તમે સાઇન ઇન કર્યુ હોય, ત્યારે તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK" /> સાચવવામાં આવી શકે છે. તમે તેમને કોઈપણ સમયે ડિલીટ કરી શકો છો.
@@ -205,7 +205,7 @@
 <translation id="2898963176829412617">નવું ફોલ્ડર…</translation>
 <translation id="2916171785467530738">શોધ અને URLsને ઑટોમૅટિક રીતે પૂર્ણ કરો</translation>
 <translation id="291754862089661335">QR કોડ અથવા બારકોડને આ ફ્રેમમાં મૂકો</translation>
-<translation id="2921219216347069551">પૃષ્ઠને શેર કરી શકાતું નથી</translation>
+<translation id="2921219216347069551">પેજને શેર કરી શકાતું નથી</translation>
 <translation id="2923448633003185837">પેસ્ટ કરો અને જાઓ</translation>
 <translation id="292639812446257861">વાંચ્યા વગરની તરીકે ચિહ્નિત કરો</translation>
 <translation id="2932085390869194046">પાસવર્ડ સૂચવો...</translation>
@@ -346,7 +346,7 @@
 <translation id="430967081421617822">હંમેશાં</translation>
 <translation id="4334428914252001502">1 વાંચ્યા વગરનો લેખ.</translation>
 <translation id="4338650699862464074">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલે છે.</translation>
-<translation id="4359125752503270327">આ પૃષ્ઠ બીજી અ‍ૅપ્લિકેશનમાં ખુલશે.</translation>
+<translation id="4359125752503270327">આ પેજ બીજી અ‍ૅપ્લિકેશનમાં ખુલશે.</translation>
 <translation id="4375040482473363939">QR કોડ શોધો</translation>
 <translation id="4378154925671717803">ફોન</translation>
 <translation id="4389019817280890563">ભાષા બદલવા માટે ટૅપ કરો.</translation>
@@ -366,7 +366,7 @@
 <translation id="461440297010471931">Google વડે શોધી રહ્યાં છીએ</translation>
 <translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="4619615317237390068">અન્ય ઉપકરણોમાંથી ટૅબ્સ</translation>
-<translation id="4620246317052452550">તમે વાંચેલા પૃષ્ઠો</translation>
+<translation id="4620246317052452550">તમે વાંચેલા પેજ</translation>
 <translation id="4620888520263267479">લિંકના પ્રીવ્યૂ બતાવો</translation>
 <translation id="4630540211544979320">પેજનો અનુવાદ કરો</translation>
 <translation id="4634124774493850572">પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -452,7 +452,7 @@
 <translation id="5416022985862681400">છેલ્લા 7 દિવસ</translation>
 <translation id="543338862236136125">પાસવર્ડમાં ફેરફાર કરો</translation>
 <translation id="5433691172869980887">વપરાશકર્તાનામ કૉપિ કર્યું</translation>
-<translation id="54401264925851789">પૃષ્ઠ સુરક્ષા માહિતી</translation>
+<translation id="54401264925851789">પેજની સુરક્ષા માહિતી</translation>
 <translation id="5443952882982198570">ક્રેડિટ કાર્ડ</translation>
 <translation id="5457226814769348910">ઑફલાઇન વર્ઝન ખોલો</translation>
 <translation id="5489208564673669003">બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="BEGIN_LINK" />કુકી સેટિંગ જુઓ<ph name="END_LINK" />.</translation>
@@ -481,7 +481,7 @@
 <translation id="5728700505257787410">માફ કરશો, તમારા એકાઉન્ટમાં સાઇન ઇન કરવામાં સમસ્યા હતી.</translation>
 <translation id="5731784586962650619">અન્ય ઍપમાંના પાસવર્ડ</translation>
 <translation id="5737974891429562743">એકાઉન્ટ સાઇન ઇન વિગતો જૂની થઈ ગઈ છે. સિંકને પ્રારંભ કરવા માટે અપડેટ કરો.</translation>
-<translation id="5738887413654608789">આ તમને તમારી આસપાસના વાતાવરણના આધારે સંગત વેબ પૃષ્ઠોની શોધ કરવા દે છે.</translation>
+<translation id="5738887413654608789">આ તમને તમારી આસપાસના વાતાવરણના આધારે સુસંગત વેબ પેજને શોધવા દે છે.</translation>
 <translation id="5758631781033351321">તમને તમારી વાંચન સૂચિ અહીં મળશે</translation>
 <translation id="575902488528307720">છબી શોધો</translation>
 <translation id="5781453543752460388">Photosમાં ઉમેરો</translation>
@@ -720,7 +720,7 @@
 <translation id="7772032839648071052">પાસફ્રેઝની પુષ્ટિ કરો</translation>
 <translation id="7778472311864276518">આ ડિવાઇસમાંથી એકાઉન્ટ કાઢી નાખો</translation>
 <translation id="7781011649027948662">પેજનો અનુવાદ કરીએ?</translation>
-<translation id="7781069478569868053">નવું ટેબ પૃષ્ઠ</translation>
+<translation id="7781069478569868053">નવું ટૅબ પેજ</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="778855399387580014">નવા Chrome ટૅબમાં શોધ શરૂ કરો.</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
@@ -796,7 +796,7 @@
 <translation id="8533166274275423134">અન્ય ક્યાંક ખોલવામાં આવ્યું છે</translation>
 <translation id="8533670235862049797">Safe Browsingની સુવિધા ચાલુ છે</translation>
 <translation id="8534481786647257214">Google+ પોસ્ટ પૂર્ણ કરેલ છે.</translation>
-<translation id="8548878600947630424">પૃષ્ઠમાં શોધો...</translation>
+<translation id="8548878600947630424">પેજમાં શોધો...</translation>
 <translation id="8574235780160508979">Chromeની સેવાની શરતો 31મી માર્ચથી બદલાઈ રહી છે. <ph name="BEGIN_LINK" />કૃપા કરીને તેનો રિવ્યૂ કરો<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8590913940444621808">ક્યારેય પૂછશો નહીં</translation>
@@ -806,7 +806,7 @@
 <translation id="863090005774946393">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે. અમુક સુવિધા બંધ હોઈ શકે છે.</translation>
 <translation id="8636825310635137004">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ્સ મેળવવા માટે, સમન્વયન ચાલુ કરો.</translation>
 <translation id="8654802032646794042">રદ કરો</translation>
-<translation id="8668210798914567634">આ પૃષ્ઠ, તમારી વાંચન સૂચિમાં સાચવવામાં આવ્યું છે.</translation>
+<translation id="8668210798914567634">આ પેજ, તમારી વાંચન સૂચિમાં સાચવવામાં આવ્યું છે.</translation>
 <translation id="8680787084697685621">એકાઉન્ટ સાઇન ઇન વિગતો જૂની થઈ ગઈ છે.</translation>
 <translation id="8691262314411702087">શું સમન્વયન કરવાનું છે તે પસંદ કરો</translation>
 <translation id="8693663554456874301">{count,plural, =1{ટૅબ બંધ કરો}one{ટૅબ બંધ કરો}other{ટૅબ બંધ કરો}}</translation>

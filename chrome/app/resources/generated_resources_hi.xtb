@@ -2359,7 +2359,7 @@
 <translation id="3412265149091626468">चुनें पर जाएं</translation>
 <translation id="3413122095806433232">CA जारीकर्ता: <ph name="LOCATION" /></translation>
 <translation id="3414952576877147120">आकार:</translation>
-<translation id="3414966631182382431"><ph name="MANAGER" /> आपके <ph name="BEGIN_LINK" />ब्राउज़र को प्रबंधित करता है<ph name="END_LINK" /></translation>
+<translation id="3414966631182382431"><ph name="MANAGER" /> आपके <ph name="BEGIN_LINK" />ब्राउज़र को मैनेज करता है<ph name="END_LINK" /></translation>
 <translation id="3416468988018290825">हमेशा पूरे यूआरएल दिखाएं</translation>
 <translation id="3417835166382867856">टैब खोजें</translation>
 <translation id="3417836307470882032">24 घंटे वाली घड़ी का इस्तेमाल करें</translation>
@@ -2408,6 +2408,7 @@
 <translation id="3449393517661170867">टैब की गई नई विंडो</translation>
 <translation id="3449839693241009168">आदेशों को <ph name="EXTENSION_NAME" /> पर भेजने के लिए <ph name="SEARCH_KEY" /> दबाएं</translation>
 <translation id="3450157232394774192">निष्क्रिय स्थिति उपयोग प्रतिशत</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> के लिए ज़रूरी है कि आप अभी वाई-फ़ाई से कनेक्ट करें और अपडेट डाउनलोड करें.</translation>
 <translation id="3451753556629288767">अलग-अलग तरह की फ़ाइलें खोलने की अनुमति दी गई</translation>
 <translation id="3452999110156026232">माता-पिता के लिए ऐक्सेस</translation>
 <translation id="3453612417627951340">अनुमति की ज़रुरत है</translation>
@@ -3205,7 +3206,6 @@
 <translation id="4289732974614035569">कोई पिन चुनें</translation>
 <translation id="4290791284969893584">किसी भी पेज को बंद करने पर, हो सकता है कि वे टास्क पूरे न हों जिन्हें आपने शुरू किया था</translation>
 <translation id="4295072614469448764">ऐप्लिकेशन आपके 'टर्मिनल' में उपलब्ध है. आपके 'लॉन्चर' में एक आइकॉन भी मौजूद हो सकता है.</translation>
-<translation id="4295839147292213505">अपने फ़ोन का इस्तेमाल करके, आप <ph name="DEVICE_TYPE" /> को अनलॉक कर सकते हैं, कंप्यूटर से मैसेज भेज सकते हैं, अपना इंटरनेट कनेक्शन शेयर कर सकते हैं, और मैसेज का जवाब दे सकते हैं.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">कृपया साइन इन करके यह पुष्टि करें कि आपका खाता <ph name="USER_EMAIL" /> वेबसाइट, ऐप्लिकेशन और Chrome या Google Play के एक्सटेंशन के लिए इस्तेमाल किया जा सकता है. आप यह खाता हटा भी सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">रीस्टार्ट करें और रीसेट करें</translation>
 <translation id="4297813521149011456">डिसप्ले का घुमाव</translation>
@@ -4275,6 +4275,7 @@
 <translation id="5472627187093107397">इस साइट के लिए पासवर्ड सेव करें</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{पिन में कम से कम 1 वर्ण होना ज़रूरी है}one{पिन में कम से कम # वर्ण होना ज़रूरी है}other{पिन में कम से कम # वर्ण होने ज़रूरी हैं}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> के लिए ज़रूरी है कि आप अभी वाई-फ़ाई से कनेक्ट करें और अपडेट डाउनलोड करें. इसके अलावा, आप सीमित डेटा वाले कनेक्शन से भी डाउनलोड कर सकते हैं. इसके लिए शुल्क लिया जा सकता है.</translation>
 <translation id="5481273127572794904">एक से ज़्यादा फ़ाइलों को अपने-आप डाउनलोड करने की अनुमति नहीं है</translation>
 <translation id="5481941284378890518">आस-पास के प्रिंटर जोड़ें</translation>
 <translation id="5483785310822538350">फ़ाइल और डिवाइस के एक्सेस रद्द करें</translation>
@@ -4699,6 +4700,7 @@
 <translation id="592880897588170157">PDF फ़ाइलों को Chrome में अपने आप खोलने के बजाय उन्हें डाउनलोड करें</translation>
 <translation id="592919310198008711">जब मैं एक्सटेंशन पर क्लिक करता/करती हूं</translation>
 <translation id="5932124097031739492">Linux को पहले से बेहतर बना दिया गया है.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> के लिए ज़रूरी है कि आप तुरंत अपना <ph name="DEVICE_TYPE" /> अपडेट करें.</translation>
 <translation id="5932224571077948991">साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> का यूएसबी डिवाइस</translation>
 <translation id="5932441198730183141">Google Meet के इस हार्डवेयर डिवाइस का नाम दर्ज करने के लिए, आपके पास सभी ज़रूरी लाइसेंस नहीं हैं. लाइसेंस खरीदने के लिए, कृपया सेल्स टीम से संपर्क करें. अगर आपको लगता है कि यह मैसेज किसी गड़बड़ी की वजह से दिख रहा है, तो कृपया सहायता टीम से संपर्क करें.</translation>

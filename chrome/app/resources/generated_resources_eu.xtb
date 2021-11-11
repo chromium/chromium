@@ -2385,6 +2385,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3449393517661170867">Leiho fitxadun berria</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> luzapenera aginduak bidaltzeko, sakatu <ph name="SEARCH_KEY" /></translation>
 <translation id="3450157232394774192">Inaktibo egoerako denboraren ehuneko proportzionala</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> domeinuak wifi-sare batera konektatzea eta eguneratze bat deskargatzea eskatzen du.</translation>
 <translation id="3451753556629288767">Fitxategi mota jakin batzuk ireki ditzakete</translation>
 <translation id="3452999110156026232">Gurasoen sarbidea</translation>
 <translation id="3453612417627951340">Baimena behar da</translation>
@@ -3182,7 +3183,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4289732974614035569">Aukeratu PIN bat</translation>
 <translation id="4290791284969893584">Orri bat ixten baduzu, baliteke hasitako zereginak ez amaitzea</translation>
 <translation id="4295072614469448764">Terminalean duzu erabilgarri aplikazioa. Baliteke haren ikonoa abiarazlean agertzea.</translation>
-<translation id="4295839147292213505">Testu-mezuak bidal ditzakezu ordenagailutik, bai eta Interneteko konexioa partekatu, elkarrizketa batean jasotzen diren jakinarazpenei erantzun eta telefonoa erabilita <ph name="DEVICE_TYPE" /> gailua desblokeatu ere.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Hasi saioa berriro <ph name="USER_EMAIL" /> kontua Chrome eta Google Play-rako webgune, aplikazio eta luzapenetan erabil daitekeela berresteko. Kontua kentzeko aukera ere baduzu. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Berrabiarazi eta berrezarri</translation>
 <translation id="4297813521149011456">Pantaila biratzea</translation>
@@ -4247,6 +4247,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5472627187093107397">Gorde webgune honetako pasahitzak</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN kodeak karaktere bat izan behar du gutxienez}other{PIN kodeak # karaktere izan behar ditu gutxienez}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> domeinuak wifi-sare batera konektatzea eta eguneratze bat deskargatzea eskatzen du. Bestela, deskarga ezazu neurtutako konexio batetik (baliteke zerbait ordaindu behar izatea).</translation>
 <translation id="5481273127572794904">Ezin dituzte hainbat fitxategi deskargatu automatikoki</translation>
 <translation id="5481941284378890518">Gehitu inguruko inprimagailuak</translation>
 <translation id="5483785310822538350">Kendu fitxategietarako eta gailurako sarbidea</translation>
@@ -4669,6 +4670,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="592880897588170157">Chrome-n automatikoki ireki beharrean, deskargatu PDF fitxategiak</translation>
 <translation id="592919310198008711">Luzapena sakatzen dudanean</translation>
 <translation id="5932124097031739492">Bertsio-berritu da Linux.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> domeinuak <ph name="DEVICE_TYPE" /> gailua berehala eguneratzea eskatzen du.</translation>
 <translation id="5932224571077948991">Webguneak iragarki oztopatzaile edo iruzurrezkoak erakusten ditu</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" /> fabrikatzailearen USB bidezko gailua</translation>
 <translation id="5932441198730183141">Ez dituzu behar adina lizentzia erabilgarri Google Meet-en hardware-gailu hau erregistratzeko. Lizentzia gehiago erosteko, jarri salmenta-sailarekin harremanetan. Mezu hau ikusi beharko ez zenukeela uste baduzu, jarri laguntza-zerbitzuarekin harremanetan.</translation>

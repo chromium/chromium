@@ -82,6 +82,7 @@
 <translation id="124116460088058876">مزيد من اللغات</translation>
 <translation id="1243027604378859286">المؤلف:</translation>
 <translation id="1246424317317450637">غامق</translation>
+<translation id="1248573052514400575">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص أدوات تسهيل الاستخدام في إعدادات نظام التشغيل Chrome</translation>
 <translation id="1250759482327835220">‏للدفع بشكلٍ أسرع في المرة القادمة، يمكنك حفظ البطاقة والاسم وعنوان إرسال الفواتير في حسابك على Google.</translation>
 <translation id="1252799212227771492">‏زرّ إنشاء جدول بيانات: اضغط على مفتاح Enter لإنشاء "جدول بيانات Google" جديد بسرعة.</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />، <ph name="TYPE_2" /> (تمت المزامنة)</translation>
@@ -156,6 +157,7 @@
 <translation id="1422930527989633628">السماح للموقع الإلكتروني بالعثور على الأجهزة المجاورة التي تتضمّن بلوتوث</translation>
 <translation id="1426410128494586442">نعم</translation>
 <translation id="1428146450423315676">المكدِّس 7</translation>
+<translation id="142858679511221695">مستخدم السحابة الإلكترونية</translation>
 <translation id="1428729058023778569">‏يظهر هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
@@ -322,6 +324,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{بدون}=1{موقع واحد}two{ موقعان (#)}few{# مواقع}many{# موقعًا}other{# موقع}}</translation>
 <translation id="1923390796829649802">‏زر إدارة إعدادات تسهيل الاستخدام: اضغط على مفتاح Enter لتخصيص أدوات تسهيل الاستخدام في إعدادات نظام التشغيل Chrome.</translation>
 <translation id="1924727005275031552">جديد</translation>
+<translation id="1927439593081478069">‏زر تشغيل ميزة "تأكيد السلامة" في Chrome، اضغط على مفتاح Enter لتشغيل هذه الميزة في إعدادات Chrome</translation>
 <translation id="1939175642807587452">السماح للموقع الإلكتروني بطلب إرسال إشعارات</translation>
 <translation id="1945968466830820669">‏قد تفقد إمكانية الوصول إلى حساب مؤسستك أو تتعرَّض لسرقة هويتك. لذا، يوصي Chromium بتغيير كلمة مرورك الآن.</translation>
 <translation id="1947454675006758438">وضع دبوس أعلى اليمين</translation>
@@ -341,6 +344,7 @@
 <translation id="2003709556000175978">إعادة ضبط كلمة المرورالآن</translation>
 <translation id="2003775180883135320">عمل أربعة ثقوب بالأعلى</translation>
 <translation id="201174227998721785">‏إدارة الأذونات والبيانات المُخزّنة في المواقع الإلكترونية من خلال إعدادات متصفّح Chrome</translation>
+<translation id="2019607688127825327">‏زر إدارة إعدادات تسهيل الاستخدام: اضغط على مفتاح Enter لتخصيص أدوات تسهيل الاستخدام في إعدادات Chrome</translation>
 <translation id="2025115093177348061">الواقع المعزّز</translation>
 <translation id="2025186561304664664">تم ضبط الخادم الوكيل على الإعداد التلقائي.</translation>
 <translation id="2025891858974379949">محتوى غير آمن</translation>
@@ -506,6 +510,7 @@
 <translation id="2556876185419854533">تراجع عن ا&amp;لتحرير</translation>
 <translation id="2570734079541893434">إدارة الإعدادات</translation>
 <translation id="257674075312929031">جمع</translation>
+<translation id="2576880857912732701">‏زر "إدارة إعدادات الأمان": اضغط على مفتاح Enter لإدارة إعدادات ميزة "التصفّح الآمن" وغيرها في إعدادات Chrome</translation>
 <translation id="2586657967955657006">الحافظة</translation>
 <translation id="2587730715158995865">من <ph name="ARTICLE_PUBLISHER" />. يمكنك قراءة هذه المقالة و<ph name="OTHER_ARTICLE_COUNT" /> قصص أخرى.</translation>
 <translation id="2587841377698384444">رقم تعريف واجهة برمجة التطبيقات الدليل:</translation>
@@ -550,6 +555,7 @@
 <translation id="2713444072780614174">أبيض</translation>
 <translation id="2715612312510870559">‏<ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لإدارة الدفعات ومعلومات بطاقة الائتمان في إعدادات Chrome.</translation>
 <translation id="2721148159707890343">تم إرسال الطلب بنجاح</translation>
+<translation id="2723669454293168317">‏تشغيل ميزة "تأكيد السلامة" في إعدادات Chrome</translation>
 <translation id="2726001110728089263">الدُرج الجانبي</translation>
 <translation id="2728127805433021124">شهادة الخادم موقّعة باستخدام خوارزمية توقيع ضعيفة.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />تشغيل بيانات تشخيص الاتصال<ph name="END_LINK" /></translation>
@@ -580,6 +586,7 @@
 <translation id="2859806420264540918">يعرض هذا الموقع الإلكتروني إعلانات مضلِّلة أو غير مرغوب فيها.</translation>
 <translation id="287596039013813457">سهل الاستخدام</translation>
 <translation id="2876489322757410363">ستتم مغادرة وضع التصفُّح المتخفي للدفع عبر تطبيق خارجي. هل تريد المتابعة؟</translation>
+<translation id="2876949457278336305">‏<ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة إعدادات ميزة "التصفُّح الآمن" وغيرها في إعدادات Chrome</translation>
 <translation id="2878197950673342043">الطي على شكل ملصق</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">موضِع النافذة</translation>
@@ -685,6 +692,7 @@
 <translation id="3229041911291329567">معلومات الإصدار حول جهازك ومتصفِّحك</translation>
 <translation id="323107829343500871">‏أدخِل رمز التحقّق (CVC) لبطاقة <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">الكشف دائمًا عن المحتوى المهم على هذا الموقع</translation>
+<translation id="3240683217920639535">‏<ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص مظهر المتصفِّح</translation>
 <translation id="3240791268468473923">تم فتح صفحة عدم تطابق بيانات اعتماد الدفع الآمن.</translation>
 <translation id="3249845759089040423">أنيق</translation>
 <translation id="3252266817569339921">الفرنسية</translation>
@@ -712,6 +720,7 @@
 <translation id="3329013043687509092">تشبع اللون</translation>
 <translation id="3333762389743153920">هذه البطاقة غير مؤهَّلة للاستخدام كبطاقة افتراضية</translation>
 <translation id="3338095232262050444">آمن</translation>
+<translation id="3339446062576134663">‏السحابة الإلكترونية (Ash)</translation>
 <translation id="3355823806454867987">تغيير إعدادات الخادم الوكيل...</translation>
 <translation id="3360103848165129075">جدول بيانات معالج الدفع</translation>
 <translation id="3361596688432910856">‏لن يحفظ <ph name="BEGIN_EMPHASIS" />Chrome<ph name="END_EMPHASIS" /> المعلومات التالية:
@@ -728,12 +737,14 @@
       • إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا
       • استخدام الكاميرا</translation>
 <translation id="337363190475750230">تم إلغاء التوفير</translation>
+<translation id="3375754925484257129">‏تشغيل ميزة "تأكيد السلامة" في Chrome</translation>
 <translation id="3377144306166885718">‏يستخدم الخادم إصدارًا قديمًا لطبقة النقل الآمنة (TLS).</translation>
 <translation id="3377188786107721145">خطأ في تحليل السياسة</translation>
 <translation id="3377736046129930310">استخدام قفل الشاشة للتأكد من البطاقات بشكلٍ أسرع</translation>
 <translation id="3380365263193509176">خطأ غير معروف</translation>
 <translation id="3380864720620200369">معرِّف العميل:</translation>
 <translation id="3381668585148405088">تأكيد عملية الشراء</translation>
+<translation id="3383566085871012386">ترتيب الأولويات الحالي</translation>
 <translation id="3387261909427947069">طرق الدفع</translation>
 <translation id="3391030046425686457">عنوان التسليم</translation>
 <translation id="3391482648489541560">تعديل الملفات</translation>
@@ -768,6 +779,7 @@
 <translation id="3462200631372590220">الإخفاء (خيار متقدم)</translation>
 <translation id="3467763166455606212">اسم حامل البطاقة مطلوب</translation>
 <translation id="3468054117417088249">‏<ph name="TAB_SWITCH_SUFFIX" /> مفتوحة الآن، يمكنك الضغط على مفتاح Tab ثم مفتاح Enter للتبديل إلى علامة التبويب المفتوحة.</translation>
+<translation id="3470563864795286535">‏<ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإغلاق جميع النوافذ المفتوحة حاليًا في وضع التصفُّح المتخفي</translation>
 <translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3484560055331845446">‏قد لا تتمكّن من الوصول إلى حسابك على Google. لذا ينصح Chrome بتغيير كلمة مرورك الآن. وسيُطلَب منك تسجيل الدخول.</translation>
 <translation id="3487845404393360112">الدُرج 4</translation>
@@ -806,6 +818,7 @@
 <translation id="3611395257124510155">البطاقة الافتراضية لـ <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">الحجم 2</translation>
 <translation id="361438452008624280">إدخال في القائمة "<ph name="LANGUAGE_ID" />": لغة غير معروفة أو غير متاحة.</translation>
+<translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتشغيل ميزة "تأكيد السلامة" في إعدادات Chrome</translation>
 <translation id="3615877443314183785">أدخِل تاريخ انتهاء صلاحية صحيحًا</translation>
 <translation id="36224234498066874">محو بيانات التصفّح...</translation>
 <translation id="362276910939193118">عرض السجلّ بكامله</translation>
@@ -1401,6 +1414,7 @@
 <translation id="5478437291406423475">‏B6/C4 (مغلف)</translation>
 <translation id="5481076368049295676">قد يحاول هذا المحتوى تثبيت برامج خطيرة على جهازك تسرق معلوماتك أو تحذفها. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">إضافة عنوان صالح</translation>
+<translation id="5485973315555778056">جهاز على السحابة الإلكترونية</translation>
 <translation id="5490432419156082418">العناوين والمزيد</translation>
 <translation id="5492298309214877701">‏يكون للموقع الإلكتروني هذا على الشبكة الداخلية للشركة أو المؤسسة أو المدرسة نفس عنوان URL لأحد المواقع الإلكترونية الخارجية.
     <ph name="LINE_BREAK" />
@@ -1430,6 +1444,7 @@
 <translation id="5571083550517324815">لا يمكن الاستلام من هذا العنوان. اختَر عنوانًا آخر.</translation>
 <translation id="5580958916614886209">تحقق من شهر انتهاء الصلاحية وأعِد المحاولة مرة أخرى</translation>
 <translation id="5586446728396275693">لا توجد عناوين محفوظة</translation>
+<translation id="5587987780934666589">مستخدم النظام الأساسي</translation>
 <translation id="5593349413089863479">الاتصال بهذا الموقع الإلكتروني غير آمن تمامًا</translation>
 <translation id="5595485650161345191">تعديل العنوان</translation>
 <translation id="5598944008576757369">اختيار طريقة الدفع</translation>
@@ -1601,6 +1616,7 @@
 <translation id="6218753634732582820">‏هل تريد إزالة العنوان من Chromium؟</translation>
 <translation id="622039917539443112">الطي بشكلٍ متوازٍ</translation>
 <translation id="6221345481584921695">‏اكتشف التصفح الآمن من Google‬ مؤخرًا <ph name="BEGIN_LINK" />برامج ضارة<ph name="END_LINK" /> على <ph name="SITE" />. أحيانًا تصاب المواقع الإلكترونية الآمنة في الوضع العادي ببرامج ضارة. مصدر محتوى البرامج الضارة <ph name="SUBRESOURCE_HOST" />، وهو ناشر معروف للبرامج الضارة.</translation>
+<translation id="6226163402662242066">‏<ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص أدوات تسهيل الاستخدام في إعدادات Chrome</translation>
 <translation id="6234122620015464377">القطع بعد كل مستند</translation>
 <translation id="6240447795304464094">‏شعار Google Pay</translation>
 <translation id="6241121617266208201">إخفاء الاقتراحات</translation>
@@ -1619,6 +1635,7 @@
 <translation id="6279098320682980337">ألم تتم تعبئة النموذج برقم البطاقة الافتراضية؟ يمكنك النقر على تفاصيل البطاقة لنسخها.</translation>
 <translation id="6280223929691119688">لا يمكن التسليم على هذا العنوان. اختَر عنوانًا آخر.</translation>
 <translation id="6282194474023008486">الرمز البريدي</translation>
+<translation id="6285507000506177184">‏زر إدارة عمليات التنزيل في Chrome: اضغط على مفتاح Enter لإدارة الملفات التي تم تنزيلها في Chrome</translation>
 <translation id="6289939620939689042">لون الصفحة</translation>
 <translation id="6290238015253830360">ستظهر المقالات المقترحة هنا</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1734,6 +1751,7 @@
 <translation id="6689249931105087298">طباعة نسبية باستخدام ميزة "تعويض النقاط السوداء"</translation>
 <translation id="6689271823431384964">‏يتيح لك Chrome حفظ بطاقاتك في حسابك على Google لأنك سجَّلت الدخول. يمكنك تغيير هذا السلوك في الإعدادات. ويتم الحصول على اسم حامل البطاقة من حسابك.</translation>
 <translation id="6694681292321232194">‏<ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter للانتقال إلى ميزة "العثور على جهازي" المتوفّرة في حسابك على Google.</translation>
+<translation id="6696588630955820014">‏زرّ مشاركة علامة التبويب: اضغط على مفتاح Enter لمشاركة علامة التبويب عن طريق مشاركة الرابط وإنشاء رمز استجابة سريعة وبث المحتوى وغير ذلك</translation>
 <translation id="6698381487523150993">تاريخ الإنشاء:</translation>
 <translation id="6702919718839027939">وضع العرض التقديمي</translation>
 <translation id="6710213216561001401">السابق</translation>
@@ -1939,6 +1957,7 @@
 <translation id="7392089738299859607">تعديل العنوان</translation>
 <translation id="7399802613464275309">تأكيد السلامة</translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>
+<translation id="7403392780200267761">يمكنك مشاركة علامة التبويب هذه عن طريق مشاركة الرابط وإنشاء رمز استجابة سريعة وبث المحتوى وغير ذلك</translation>
 <translation id="7403591733719184120">إدارة <ph name="DEVICE_NAME" /></translation>
 <translation id="7407424307057130981">‏&lt;p&gt;سيظهر هذا الخطأ إذا كان لديك برنامج Superfish على جهاز الكمبيوتر المزوَّد بنظام التشغيل Windows.&lt;/p&gt;
     &lt;p&gt;يُرجى اتِّباع الخطوات التالية لإيقاف البرنامج مؤقّتًا ليتسنى لك الوصول إلى الويب. ستحتاج إلى امتيازات المُشرف لإجراء ذلك.&lt;/p&gt;
@@ -2114,6 +2133,7 @@
 <translation id="7953569069500808819">خزم الحواف من الأعلى</translation>
 <translation id="7956713633345437162">الإشارات المرجعية على الجوّال</translation>
 <translation id="7961015016161918242">مطلقًا</translation>
+<translation id="7962467575542381659">جهاز النظام الأساسي</translation>
 <translation id="7966803981046576691">نوع حساب المهمة</translation>
 <translation id="79682505114836835">القيمة "<ph name="VALUE" />" هي لون سداسي عشري غير صالح.</translation>
 <translation id="7968982339740310781">عرض التفاصيل</translation>
@@ -2168,6 +2188,7 @@
 <translation id="810875025413331850">لم يتم العثور على أجهزة مجاورة.</translation>
 <translation id="8116925261070264013">المواقع الإلكترونية التي تم كتم الصوت فيها</translation>
 <translation id="8118489163946903409">طريقة الدفع</translation>
+<translation id="8124639700796374294">‏زرّ تخصيص Chrome: اضغط على مفتاح Enter لتخصيص مظهر المتصفِّح</translation>
 <translation id="8127301229239896662">لم يتم تثبيت "<ph name="SOFTWARE_NAME" />" بطريقة صحيحة على جهاز الكمبيوتر أو الشبكة. اطلب من مشرف تقنية المعلومات حل هذه المشكلة.</translation>
 <translation id="8131740175452115882">التأكيد</translation>
 <translation id="8148608574971654810">‏نسخة PDF:</translation>
@@ -2350,6 +2371,7 @@
 <translation id="87601671197631245">يستخدم هذا الموقع الإلكتروني إعداد أمان غير محدَّث، وقد يكشف ذلك عن معلوماتك (مثل كلمات المرور أو الرسائل أو بطاقات الائتمان) عند إرسالها إلى هذا الموقع الإلكتروني.</translation>
 <translation id="8761567432415473239">‏عثر ‏‫التصفح الآمن من Google‬ مؤخرًا <ph name="BEGIN_LINK" />على برامج ضارة<ph name="END_LINK" /> في <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">‏جهاز USB</translation>
+<translation id="8763986294015493060">إغلاق جميع النوافذ المفتوحة حاليًا في وضع التصفُّح المتخفي</translation>
 <translation id="8766943070169463815">تم فتح صفحة مصادقة بيانات اعتماد الدفع الآمن.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">إعادة الح&amp;ذف</translation>
@@ -2363,6 +2385,7 @@
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لتحديث Chrome من إعدادات Chrome.</translation>
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="882338992931677877">الفتحة اليدوية</translation>
+<translation id="8834380158646307944">‏زر إغلاق نوافذ التصفُّح المتخفي: اضغط على مفتاح Enter لإغلاق جميع النوافذ المفتوحة حاليًا في وضع التصفُّح المتخفي</translation>
 <translation id="883848425547221593">إشارات أخرى</translation>
 <translation id="884264119367021077">عنوان الشحن</translation>
 <translation id="884923133447025588">لم يتمّ العثور على أي آلبة إبطال.</translation>
@@ -2416,6 +2439,7 @@
 <translation id="9020200922353704812">عنوان إرسال الفواتير للبطاقة مطلوب</translation>
 <translation id="9020542370529661692">تمت ترجمة هذه الصفحة إلى <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859">‏<ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لمشاركة علامة التبويب عن طريق مشاركة الرابط وإنشاء رمز استجابة سريعة وبث المحتوى وغير ذلك</translation>
 <translation id="9025348182339809926">(غير صالحة)</translation>
 <translation id="9030265603405983977">أحادي اللون</translation>
 <translation id="9035022520814077154">خطأ متعلق بالأمان</translation>

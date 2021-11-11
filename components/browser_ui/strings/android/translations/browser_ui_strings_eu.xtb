@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Baimena eman zaie hauei: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}other{Baimena eman zaie hauei: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta beste <ph name="NUM_MORE" />}}</translation>
 <translation id="2434158240863470628">Deskargatu da <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Eskatu beti ordenagailuetarako webgunea</translation>
 <translation id="2482878487686419369">Jakinarazpenak</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
 <translation id="2490684707762498678">Kudeatzailea: <ph name="APP_NAME" /></translation>
@@ -298,6 +299,7 @@
 <translation id="8447861592752582886">Kendu gailua atzitzeko baimena</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Erabiltzen den 1 cookie}other{Erabiltzen diren # cookie}}</translation>
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>
+<translation id="848952951823693243">Eskatu beti mugikorretarako webgunea</translation>
 <translation id="851751545965956758">Ez utzi webguneei gailuekin konektatzen</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="857943718398505171">Baimenduta (gomendatua)</translation>

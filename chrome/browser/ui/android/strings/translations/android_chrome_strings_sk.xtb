@@ -236,7 +236,6 @@ Vyhľadávanie spustíte klepnutím na ľubovoľné slovo. Spresníte ho pridrž
 <translation id="2450907520913474542">Zistite viac o témach na weboch bez toho, aby ste museli opustiť stránku. Funkcia Vyhľadávanie klepnutím odošle slovo a súvisiaci kontext do Vyhľadávania Google a vráti definície, obrázky, výsledky vyhľadávania a ďalšie podrobnosti.
 
 Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výberom väčšieho alebo menšieho počtu slov. Ak chcete vyhľadávania upraviť, otvorte panel, klepnutím na príslušnú ikonu otvorte novú kartu a vykonajte zmeny vo vyhľadávacom poli.</translation>
-<translation id="2451607499823206582">Sledovanie</translation>
 <translation id="2459390580524506445">Zlepšené hlasové vyhľadávanie</translation>
 <translation id="2461822463642141190">Aktuálna</translation>
 <translation id="247737702124049222">Popisy obrázkov sú zapnuté</translation>
@@ -429,7 +428,6 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="3527085408025491307">Priečinok</translation>
 <translation id="3542235761944717775">Voľné miesto: <ph name="KILOBYTES" /> kB</translation>
 <translation id="3549657413697417275">Prehľadať históriu</translation>
-<translation id="3557272988124495906">Dostávajte upozornenia na pokles ceny</translation>
 <translation id="3557336313807607643">Pridať do kontaktov</translation>
 <translation id="3563767357928833671">Zobrazuje sa obsah schránky</translation>
 <translation id="3566923219790363270">Chrome sa stále pripravuje na používanie VR. Skúste Chrome reštartovať neskôr.</translation>
@@ -1232,7 +1230,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8218052821161047641">Rýchla stránka</translation>
 <translation id="8218622182176210845">Spravujte svoj účet</translation>
 <translation id="8223642481677794647">Ponuka karty feedu</translation>
-<translation id="8242868071038398515">Ak na ktoromkoľvek webe dôjde k poklesu ceny, upozorníme vás</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="825412236959742607">Táto stránka využíva príliš veľa pamäte, a preto Chrome odstránil niektorý obsah.</translation>
 <translation id="8260126382462817229">Skúste sa znova prihlásiť</translation>

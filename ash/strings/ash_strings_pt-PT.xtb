@@ -326,6 +326,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="334252345105450327">Tira uma captura de ecrã</translation>
 <translation id="3351879221545518001">Está a transmitir atualmente o ecrã.</translation>
 <translation id="3364721542077212959">Ferramentas da caneta stylus</translation>
+<translation id="3365977133351922112">O seu telemóvel está demasiado longe. Aproxime o seu telemóvel.</translation>
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (porta frontal do lado direito)</translation>
 <translation id="3375634426936648815">Ligado</translation>
@@ -602,6 +603,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
 <translation id="5199367439331364630">Para iniciar sessão no Chromebook, introduza a palavra-passe</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Mais 1 notificação}other{Mais # notificações}}</translation>
 <translation id="5207949376430453814">Realçar cursor do texto</translation>
 <translation id="5208059991603368177">Ativado</translation>
@@ -885,6 +887,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7398254312354928459">Ligação de rede alterada</translation>
 <translation id="7405710164030118432">Para desbloquear este dispositivo, introduza o código de acesso parental do seu Family Link.</translation>
 <translation id="7406608787870898861">Conclua a configuração da sua rede móvel</translation>
+<translation id="740790383907119240">Atalhos de apps</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7413851974711031813">Prima Escape para fechar.</translation>
 <translation id="742594950370306541">A câmara está a ser utilizada.</translation>
@@ -987,6 +990,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8061464966246066292">Alto contraste</translation>
 <translation id="8098591350844501178">Parar a transmissão do ecrã para <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ativado, todas as aplicações</translation>
+<translation id="8120151603115102514">O seu telemóvel não tem um ecrã de bloqueio. Para desbloquear o Chromebook, introduza a palavra-passe.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132487352815776550">Parar legendas</translation>
@@ -1035,6 +1039,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8473301994082929012">A <ph name="ORGANIZATION_NAME" /> colocou a funcionalidade <ph name="FEATURE_NAME" /> como <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prima Alt + Pesquisar ou Shift para cancelar.</translation>
 <translation id="8492573885090281069">O <ph name="DISPLAY_NAME" /> não suporta a resolução <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">O Bluetooth do Chromebook está desativado. Para desbloquear o Chromebook, introduza a palavra-passe.</translation>
 <translation id="8513108775083588393">Rotação auto.</translation>
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>
 <translation id="8517041960877371778">O <ph name="DEVICE_TYPE" /> pode não carregar enquanto estiver ligado.</translation>

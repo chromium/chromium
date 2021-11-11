@@ -234,7 +234,6 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 <translation id="2450907520913474542">Læs om emner på websites uden at forlade siden. Funktionen Tryk for at søge sender et ord og ordets kontekst til Google Søgning og giver dig definitioner, billeder, søgeresultater og andre oplysninger.
 
 Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge flere eller færre ord. Hvis du vil redigere din søgning, skal du åbne panelet, trykke på ikonet Ny fane og så foretage dine ændringer i søgefeltet.</translation>
-<translation id="2451607499823206582">Overvågning</translation>
 <translation id="2459390580524506445">Forbedret stemmesøgning</translation>
 <translation id="2461822463642141190">Aktuel</translation>
 <translation id="247737702124049222">Billedbeskrivelser er slået til</translation>
@@ -427,7 +426,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3542235761944717775">Der er <ph name="KILOBYTES" /> kB til rådighed</translation>
 <translation id="3549657413697417275">Søg i din historik</translation>
-<translation id="3557272988124495906">Få notifikationer om prisfald</translation>
 <translation id="3557336313807607643">Føj til kontakter</translation>
 <translation id="3563767357928833671">Indholdet af udklipsholderen vises</translation>
 <translation id="3566923219790363270">Chrome er stadig i gang med at forberede VR. Genstart Chrome senere.</translation>
@@ -1229,7 +1227,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8218052821161047641">Hurtig side</translation>
 <translation id="8218622182176210845">Administrer din konto</translation>
 <translation id="8223642481677794647">Feedkortmenu</translation>
-<translation id="8242868071038398515">Du får besked, hvis prisen falder på et website</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="825412236959742607">Denne side anvender for meget hukommelse, så Chrome har fjernet noget indhold.</translation>
 <translation id="8260126382462817229">Prøv at logge ind igen</translation>

@@ -183,6 +183,7 @@
 <translation id="409427325554347132">Stoor toetsbesonderhede</translation>
 <translation id="4111761024568264522">USB-raakpaneel</translation>
 <translation id="4131410914670010031">Swart en wit</translation>
+<translation id="4140251671072434548">Voer RMA-bedienerontsluit uit</translation>
 <translation id="4145784616224233563">HTTP-brandmuur</translation>
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4155551848414053977">Maak seker dat die skandeerder aangeskakel is en via jou netwerk of 'n direkte verbinding beskikbaar is</translation>
@@ -278,6 +279,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5294769550414936029">weergawe <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Skuif venster na lessenaar</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Koppel</translation>
 <translation id="5315873049536339193">Identiteit</translation>
 <translation id="5317780077021120954">Berg</translation>
 <translation id="5318334351163689047">Mislukte TCP-versoeke</translation>
@@ -399,6 +401,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>
 <translation id="7162487448488904999">Galery</translation>
 <translation id="7172721935181587524">1 prent</translation>
+<translation id="7175037578838465313">Stel <ph name="NAME" /> op</translation>
 <translation id="7177485034254901881">Hierdie <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" />. Administrateurs kan die toestel oor 'n afstand opstel.</translation>
 <translation id="7180611975245234373">Herlaai</translation>
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
@@ -466,6 +469,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Versoek verkeertellers</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Voer die ontsluitkode in:</translation>
 <translation id="8206859287963243715">Sellulêr</translation>
 <translation id="8208861521865154048">Byvoordele</translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
@@ -501,6 +505,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8620617069779373398">Swerfstatus</translation>
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8660881923941176839">pond</translation>
+<translation id="8662671328352114214">Sluit by <ph name="TYPE" />-netwerk aan</translation>
 <translation id="8675354002693747642">Voorafgedeelde sleutel</translation>
 <translation id="871560550817059752">Misluk – Ink is op</translation>
 <translation id="8723108084122415655">Nieversteknetwerk is bo traagheiddrempel</translation>

@@ -273,6 +273,13 @@
 <translation id="1352799151662469739">Zeitraum ohne Nutzereingabe im Netzbetrieb, nach dem der Bildschirm gesperrt wird, angegeben in Millisekunden.</translation>
 <translation id="1353416417709895349">DNS-Abfangprüfungen und „Meinten Sie: http://intranetsite/“-Infoleisten deaktivieren.</translation>
 <translation id="1354424209129232709">Maximum:</translation>
+<translation id="1355050231181289439"> Mit dieser Richtlinie wird festgelegt, ob die verbesserte Zuordnung internationaler Tastenkürzel aktiviert werden soll.
+      Diese Funktion sorgt dafür, dass Tastenkürzel bei internationalen Tastaturlayouts konsistent verwendet und alte Tastenkürzel verworfen werden.
+
+      Ist diese Richtlinie deaktiviert, werden verbesserte internationale Tastenkürzel deaktiviert.
+      Wenn diese Richtlinie aktiviert ist, werden verbesserte internationale Tastenkürzel aktiviert.
+      Ist die Richtlinie nicht konfiguriert, wird sie für verwaltete und nutzereigene Geräte aktiviert.
+      Beachten Sie, dass es sich hierbei um eine vorübergehende Richtlinie handelt, die dafür sorgt, dass alte Tastenkürzel weiterhin von verwalteten Nutzern verwendet werden können. Diese Richtlinie wird verworfen, sobald benutzerdefinierte Tastenkürzel verfügbar sind.</translation>
 <translation id="1359553908012294236">Wenn für diese Richtlinie "true" festgelegt oder wenn sie nicht konfiguriert ist, sind Gastanmeldungen in <ph name="PRODUCT_NAME" /> möglich. Anmeldungen als Gast entsprechen <ph name="PRODUCT_NAME" />-Profilen, in denen sich alle Fenster im Inkognitomodus befinden.
 
       Ist für die Richtlinie "false" festgelegt, erlaubt <ph name="PRODUCT_NAME" /> das Erstellen von Gastprofilen nicht.</translation>
@@ -778,7 +785,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird „Fast Transition“ nicht verwendet.</translation>
 <translation id="1972134432340252414">Alte Erweiterungspunkte im Browserprozess blockieren</translation>
 <translation id="1977581177449752640">Wenn diese Richtlinie konfiguriert ist, verwendet der Host für den Remotezugriff ein Clientzertifikat mit dem angegebenen Aussteller-CN zur Authentifizierung bei <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Setzen Sie die Richtlinie auf <ph name="WILDCARD_VALUE" />, um alle verfügbaren Clientzertifikate zu verwenden. Diese Funktion ist deaktiviert, wenn sie leer oder nicht konfiguriert ist.</translation>
-<translation id="1986003348976870087">Nutzer nicht auffordern, auf dem Anmeldebildschirm ein Clientzertifikat auszuwählen.</translation>
+<translation id="1984423899110408165">Onlinerecherchen auf der Chrome-Verlaufsseite anzeigen</translation>
 <translation id="1988345404999458987">Mit dieser Richtlinie können Konfigurationen verfügbarer Druckserver zur Verfügung gestellt werden.
 
       So können Sie <ph name="PRODUCT_OS_NAME" />-Geräten Konfigurationen externer Druckserver als JSON-Datei zur Verfügung stellen.
@@ -1492,6 +1499,14 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2725855586003209701">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte alle Gerätenutzer gemeldet, die sich vor Kurzem angemeldet haben.
 
       Ist die Richtlinie deaktiviert, melden die registrierten Geräte keine Nutzer.</translation>
+<translation id="2725944143509568512">Diese Richtlinie legt die Sichtbarkeit von Onlinerecherchen auf der Chrome-Verlaufsseite fest.
+
+      Ist die Richtlinie aktiviert, sind Onlinerecherchen unter chrome://history/journeys sichtbar.
+
+      Wenn die Richtlinie deaktiviert ist, sind Onlinerecherchen nicht unter chrome://history/journeys sichtbar.
+
+      Ist die Richtlinie nicht konfiguriert, sind Onlinerecherchen standardmäßig unter chrome://history/journeys sichtbar und Nutzer können die Sichtbarkeit von Onlinerecherchen ändern.
+      </translation>
 <translation id="2730419309754848345">Standardeinstellung „PDF als Bild drucken“</translation>
 <translation id="2731627323327011390">Verwendung von <ph name="PRODUCT_OS_NAME" />-Zertifikaten für ARC-Apps deaktivieren</translation>
 <translation id="2742843273354638707">Hiermit werden die Chrome Web Store App und der zugehörige Fußzeilenlink auf der "Neuer Tab"-Seite und im App Launcher von <ph name="PRODUCT_OS_NAME" /> ausgeblendet.
@@ -2145,6 +2160,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird DTC ausgeschaltet und kann keine Telemetrie- und Diagnosedaten von dem Gerät erheben, verarbeiten oder melden.</translation>
 <translation id="3450649825886735618">Rechtschreibfehler nicht mithilfe von Google-Webdiensten korrigieren</translation>
+<translation id="3451422488938880786"> Ermöglicht das Aktivieren/Deaktivieren der Neuzuordnung von internationalen Tastenkürzeln</translation>
 <translation id="3451901387456196887">Nutzer erhalten im <ph name="PRODUCT_NAME" />-Menü die Option, Übertragungsgeräte mithilfe eines Zugriffscodes oder durch Scannen eines QR-Codes auszuwählen.</translation>
 <translation id="3456292544936505775">Über diese Richtlinie wird der Zeitraum festgelegt, in dem das <ph name="PRODUCT_OS_NAME" />-Gerät nicht automatisch nach Updates suchen darf.
       Folgendes passiert, wenn diese Richtlinie auf eine nicht leere Liste von Zeiträumen festgelegt wird:
@@ -2182,6 +2198,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
        Der Wert "<ph name="ALL_EXTENSIONS" />" in der Sperrliste gibt an, dass alle Erweiterungen gesperrt sind und Nutzer nur die in der Zulassungsliste angegebenen Erweiterungen installieren können.
 
        Standardmäßig können alle Erweiterungen installiert werden. Wurden jedoch alle Erweiterungen durch eine Richtlinie auf die Sperrliste gesetzt, kann diese Richtlinie mithilfe der Zulassungsliste außer Kraft gesetzt werden.</translation>
+<translation id="3501606938635483637">Internationale Tastenkürzel werden dem Symbol der Tasten statt der Lage der Taste auf der Tastatur zugeordnet.</translation>
 <translation id="3502555714327823858">Alle Duplexmodi zulassen</translation>
 <translation id="350443680860256679">ARC konfigurieren</translation>
 <translation id="350797926066071931">Übersetzung aktivieren</translation>
@@ -2563,12 +2580,6 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Ist sie auf „False“ gesetzt, schlägt die Funktion „Automatisches Ausfüllen“ keine Kreditkartendaten vor und füllt entsprechende Felder auch nicht automatisch aus. Außerdem werden keine zusätzlichen Kreditkartendaten gespeichert, die Nutzer beim Surfen im Internet eventuell senden.</translation>
 <translation id="3989829840000169163">Alte Erweiterungspunkte des Browsers blockieren</translation>
-<translation id="3996594590700242138">Mit der Richtlinie werden Komponentenupdates für alle Komponenten in <ph name="PRODUCT_NAME" /> aktiviert, sofern sie nicht festgelegt oder auf „Aktiviert“ gesetzt ist.
-
-      Wenn sie auf „Deaktiviert“ gesetzt ist, werden die Komponenten nicht aktualisiert. Für einige Komponenten gelten jedoch Ausnahmen: Updates von Komponenten, die keinen ausführbaren Code enthalten, das Browserverhalten nicht maßgeblich verändern oder die wesentlich für die Sicherheit sind, werden nicht deaktiviert.
-      Beispiele für solche Komponenten sind Zertifikatssperrlisten und Safe Browsing-Daten.
-      Weitere Informationen zu Safe Browsing finden Sie unter https://developers.google.com/safe-browsing.
-      Es ist jedoch nicht empfehlenswert, diese Richtlinie auf „Deaktiviert“ zu setzen, da dies die Entwickler von <ph name="PRODUCT_NAME" /> möglicherweise daran hindert, wichtige Sicherheitspatches rechtzeitig bereitzustellen.</translation>
 <translation id="3997519162482760140">URLs, denen auf SAML-Log-in-Seiten Zugriff auf Videoaufnahmegeräte gestattet wird</translation>
 <translation id="4004523942550416237">Ablauf „Voice Match mit Google Assistant“ bei der Ersteinrichtung nicht anzeigen</translation>
 <translation id="4007646377576030214"> Beachten Sie, dass diese Richtlinie ab M87 veraltet ist und in M89 entfernt wird. Verwenden Sie stattdessen <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> zum Konfigurieren der Datenschutzwarnungen verwalteter Gastsitzungen.
@@ -3135,6 +3146,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4802905909524200151">Updateverhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware konfigurieren</translation>
 <translation id="4804828344300125154">Nach Nutzerabmeldung immer neu starten.</translation>
 <translation id="4807950475297505572">Die am längsten nicht verwendeten Nutzer werden entfernt, bis genügend freier Speicherplatz vorhanden ist.</translation>
+<translation id="4811210934875253713">Onlinerecherchen werden unter chrome://history/journeys sichtbar sein.</translation>
 <translation id="4812270373673968774">Wenn die Richtlinie auf "Always" gesetzt ist, wird die Ablage von <ph name="PRODUCT_OS_NAME" /> automatisch ausgeblendet. Ist sie auf "Never" gesetzt, wird die Ablage nie automatisch ausgeblendet.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Falls die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob die Ablage automatisch ausgeblendet werden soll.</translation>
@@ -4401,6 +4413,44 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
           Die Warnung wird nur eingeblendet, wenn infolge der Inaktivität der Nutzer abgemeldet oder das Gerät heruntergefahren wird.</translation>
 <translation id="6331943515692769234">Erzwingt die Verwendung der vorherigen Spezifikation des GREASE-Algorithmus für „User-Agent“-Header.</translation>
+<translation id="6332192586629642626">Onlinerecherchen werden nicht unter chrome://history/journeys sichtbar sein.</translation>
+<translation id="6332489309596092806">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Web-Apps festgelegt, die automatisch – also ohne Interaktion des Nutzers – installiert werden und vom Nutzer weder deinstalliert noch deaktiviert werden können.
+
+      Jedes Listenelement der Richtlinie ist ein Objekt, das aus der obligatorischen Komponente
+      „<ph name="URL_LABEL" />“ (der URL der Web-App, die installiert werden soll)
+
+      und fünf optionalen Komponenten
+      „<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />“
+      (legt fest, wie die Web-App geöffnet wird – standardmäßig in einem neuen Tab),
+
+      „<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />“
+      (auf „True“ setzen, wenn Sie Desktopverknüpfungen für <ph name="LINUX_OS_NAME" /> und
+      <ph name="MS_WIN_NAME" /> erstellen möchten) und
+
+      „<ph name="FALLBACK_APP_NAME_LABEL" />“ besteht.
+      (Ab <ph name="PRODUCT_NAME" /> Version 90 –
+      ermöglicht es Ihnen, den App-Namen zu überschreiben, wenn es keine
+      progressive Web-App (PWA) ist oder es eine temporär installierte PWA ist,
+      für die vor Abschluss der Installation
+      eine Authentifizierung erforderlich ist. Wenn sowohl
+      „<ph name="CUSTOM_NAME_LABEL" />“ als auch
+      „<ph name="FALLBACK_APP_NAME_LABEL" />“ angegeben sind,
+      wird Letzteres ignoriert.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (Ab <ph name="PRODUCT_NAME" />
+      Version 96 – ermöglicht es Ihnen, den App-Namen für alle Web-Apps und PWAs dauerhaft zu überschreiben. Wird derzeit nur bei
+      <ph name="PRODUCT_OS_NAME" /> unterstützt.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (Ab <ph name="PRODUCT_NAME" />
+      Version 96 können Sie das App-Symbol installierter Apps überschreiben. Die
+      Symbole müssen quadratisch und maximal 1 MB groß sein und in einem der folgenden
+      Formate vorliegen: JPEG, PNG, GIF, WEBP, ICO. Der Hashwert muss der SHA256-Hash
+      der Symboldatei sein. Wird derzeit nur bei
+      <ph name="PRODUCT_OS_NAME" /> unterstützt.)
+
+      Siehe „<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />“ für das Anpinnen von Apps an die <ph name="PRODUCT_OS_NAME" />-Ablage.</translation>
 <translation id="6332546092866098577">Lesezugriff über die File System API auf diesen Websites blockieren</translation>
 <translation id="6334330017384340264">Mit dieser Richtlinie wird festgelegt, welche Apps und URLs in Bezug auf Nutzungsbeschränkungen auf die Zulassungsliste gesetzt werden sollen.
         Für Apps, die unter <ph name="PRODUCT_OS_NAME" /> installiert sind und auf der Zulassungsliste stehen, gelten für den jeweiligen Nutzer keine Zeitbeschränkungen.
@@ -4807,7 +4857,6 @@ Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experiment
 
           Hinweis: Sofern konfiguriert, überschreibt "<ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />" diese Richtlinie.</translation>
 <translation id="6833988859168635883">Start, Startseite und Seite "Neuer Tab"</translation>
-<translation id="683399492058633424">Aufforderung zur Eingabe des Clientzertifikats auf dem Anmeldebildschirm, wenn mehrere Zertifikate passen.</translation>
 <translation id="6835883744948188639">Dem Nutzer eine wiederkehrende Aufforderung anzeigen, dass ein Neustart empfohlen wird</translation>
 <translation id="683688607121170501">Mit dieser Einstellung können Nutzer nach der Anmeldung auf ihrem <ph name="PRODUCT_OS_NAME" />-Gerät im Inhaltsbereich des Browserfensters und in Android-Apps zwischen Google-Konten wechseln.
 
@@ -5830,6 +5879,7 @@ Diese Richtlinie kann nur über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME"
 
       Ist die Richtlinie aktiviert, können Nutzer <ph name="LACROS_NAME" /> verwenden.</translation>
 <translation id="802147957407376460">Bildschirm um 0 Grad drehen</translation>
+<translation id="8025620823136567878">Internationale Tastenkürzel werden der Lage der Taste auf der Tastatur, statt dem Symbol der Taste zugeordnet.</translation>
 <translation id="802776363472387903">SHA-256-Hash des <ph name="PLUGIN_VM_NAME" />-Image.</translation>
 <translation id="8028814157747157754">Den Standardsuchanbieter aktivieren und zulassen, dass Nutzer die Liste der Suchanbieter ändern</translation>
 <translation id="8029201909194194377">Maximal zulässige Sitzungsdauer für Verbindungen per Remotezugriff</translation>
@@ -6633,6 +6683,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8931555638815157255">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte von Zeit zu Zeit die Version ihres Betriebssystems und ihrer Firmware gemeldet.
 
       Ist die Richtlinie deaktiviert, melden registrierte Geräte keine Informationen zu der Version.</translation>
+<translation id="8934618237639919190">Onlinerecherchen werden standardmäßig unter chrome://history/journeys sichtbar sein und Nutzer können die Sichtbarkeit von Onlinerecherchen ändern.</translation>
 <translation id="8937282917198525844"> Ab M81 wurde für die Standard-Formularsteuerelemente (z. B. &lt;select&gt;, &lt;button&gt;, &lt;input type=date&gt;) ein überarbeitetes Design mit verbesserter Zugänglichkeit und einer vereinheitlichten Plattform entwickelt. Mit dieser Richtlinie werden die "alten" Formularsteuerelemente bis M84 wiederhergestellt.
 
       Wenn diese Richtlinie auf "True" gesetzt wird, werden die "alten" Formularsteuerelemente für alle Websites verwendet.

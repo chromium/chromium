@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">Սխալի պատճառով չհաջողվեց մուտք գործել։</translation>
 <translation id="1911619930368729126">Վերբեռնել Google Drive</translation>
 <translation id="1923342640370224680">Վերջին ժամը</translation>
+<translation id="1930989359703290198">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։ Հաշիվները, որոնց մուտքն արգելված է, կթաքցվեն։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Կրկնակի հպեք՝ պատճենելու համար:</translation>
 <translation id="1952172573699511566">Կայքերի տեքստը հնարավորության դեպքում կցուցադրվի ձեր ընտրած լեզվով։</translation>
 <translation id="1965935827552890526">Ավարտեք աշխատանքը Chrome-ի մյուս բացված պատուհանում։</translation>
@@ -225,6 +226,7 @@
 <translation id="3080525922482950719">Դուք կարող եք պահել էջերը՝ ավելի ուշ կամ անցանց ռեժիմում կարդալու համար</translation>
 <translation id="3081338492074632642">Ստուգեք՝ արդյոք գաղտնաբառը, որն ուզում եք պահել, համընկնում է <ph name="WEBSITE" /> կայքի ձեր գաղտնաբառի հետ։</translation>
 <translation id="3112556859945124369">Նշել…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Բոլոր քուքիներն արգելափակված են</translation>
 <translation id="313283613037595347">Ստեղծել նոր ինկոգնիտո ներդիր</translation>
 <translation id="3153862085237805241">Պահել քարտը</translation>
@@ -386,6 +388,8 @@
 <translation id="4802417911091824046">Անցաբառով գաղտնագրումը չի կիրառվում վճարման եղանակների և Google Pay-ի հասցեների համար։
 
 Այս կարգավորումը փոփոխելու համար <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Կառավարվում է ձեր կազմակերպության կողմից։
+<ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Քարտի համարը սխալ է</translation>
 <translation id="4808744395915275922">Թարմացումներ</translation>
 <translation id="4818522717893377262">Ավելացնել լեզու…</translation>

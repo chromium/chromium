@@ -62,6 +62,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">正在取消掃描</translation>
 <translation id="1851218745569890714">視訊會議</translation>
+<translation id="1857850044054738019">如果要將裝置重新上架或整新以發布給新客戶，請選取這個選項。</translation>
 <translation id="1874612839560830905">最大傳輸單元</translation>
 <translation id="1887850431809612466">硬體版本</translation>
 <translation id="1905710495812624430">超過嘗試次數上限。</translation>
@@ -184,6 +185,7 @@
 <translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="4111761024568264522">USB 觸控板</translation>
 <translation id="4131410914670010031">黑白</translation>
+<translation id="4140251671072434548">執行 RMA Server Unlock</translation>
 <translation id="4145784616224233563">HTTP 防火牆</translation>
 <translation id="4147897805161313378">Google 相簿</translation>
 <translation id="4155551848414053977">請確認掃描器已開啟，而且可供透過網路或直接連線使用</translation>
@@ -196,6 +198,7 @@
 <translation id="4244962993387259361">如要執行記憶體測試，你必須至少有 500 MB 的可用空間。如要釋出空間，請依序點選 [設定] &gt; [儲存空間管理]。</translation>
 <translation id="4258281355379922695">HTTP 延遲</translation>
 <translation id="4271957103967917607">以全螢幕模式瀏覽</translation>
+<translation id="4275799948641988986">這部裝置修復後將由誰使用？</translation>
 <translation id="4297501883039923494">已停止 - 不明的錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
 <translation id="4378373042927530923">未執行</translation>
@@ -280,6 +283,7 @@
 <translation id="5294769550414936029">版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">將視窗移至桌面</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">連線</translation>
 <translation id="5315873049536339193">身分</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318334351163689047">TCP 要求失敗</translation>
@@ -401,6 +405,7 @@
 <translation id="714876143603641390">LAN 連線狀態</translation>
 <translation id="7162487448488904999">相片庫</translation>
 <translation id="7172721935181587524">1 張圖片</translation>
+<translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7177485034254901881">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。系統管理員可從遠端設定這部裝置。</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7216409898977639127">行動網路提供者</translation>
@@ -410,6 +415,7 @@
 <translation id="7297226631177386107">無法透過防火牆連線到 HTTPS 網站</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">裝置的擁有者會變更</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">網路裝置</translation>
 <translation id="7359657277149375382">檔案類型</translation>
@@ -417,6 +423,8 @@
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
+<translation id="7451112128070628323">如果裝置的擁有權未變更，請選取這個選項。
+        比方說，將裝置轉移給機構中的其他人。</translation>
 <translation id="7469648432129124067">已偵測到網路入口</translation>
 <translation id="7487067081878637334">科技資訊</translation>
 <translation id="7490813197707563893">MAC 位址</translation>
@@ -468,6 +476,7 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">輸入解鎖碼：</translation>
 <translation id="8206859287963243715">手機</translation>
 <translation id="8208861521865154048">獎勵</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網路閘道</translation>
@@ -503,6 +512,7 @@
 <translation id="8620617069779373398">漫遊狀態</translation>
 <translation id="8655295600908251630">頻道</translation>
 <translation id="8660881923941176839">磅</translation>
+<translation id="8662671328352114214">加入 <ph name="TYPE" /> 網路</translation>
 <translation id="8675354002693747642">預先共用金鑰</translation>
 <translation id="871560550817059752">失敗 - 墨水用盡</translation>
 <translation id="8723108084122415655">非預設網路超過延遲門檻</translation>
@@ -540,6 +550,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9088306295921699330">目前用量</translation>
+<translation id="9095415590198785865">裝置的擁有者不會變更</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃描第 <ph name="PAGE_NUMBER" /> 頁</translation>

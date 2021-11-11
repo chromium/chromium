@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">جارٍ إلغاء المسح الضوئي</translation>
 <translation id="1851218745569890714">اختبار اجتماعات الفيديو</translation>
+<translation id="1857850044054738019">حدِّد هذا الخيار في حالة ما إذا كان ستتم إعادة توفير الجهاز أو تجديده
+        لتوزيعه على عميل جديد.</translation>
 <translation id="1874612839560830905">‏وحدة النقل العظمى (MTU)</translation>
 <translation id="1887850431809612466">مراجعة الأجهزة</translation>
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
@@ -195,6 +197,7 @@
 <translation id="4244962993387259361">يجب توفّر مساحة قدرها 500 ميغابايت على الأقل لتشغيل اختبار الذاكرة. لإخلاء بعض المساحة، انتقِل إلى الإعدادات &gt; إدارة مساحة التخزين.</translation>
 <translation id="4258281355379922695">‏وقت استجابة بروتوكول HTTP</translation>
 <translation id="4271957103967917607">عرض بملء الشاشة</translation>
+<translation id="4275799948641988986">من سيستخدم الجهاز بعد إصلاحه؟</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>
 <translation id="4378373042927530923">لم يتم التشغيل</translation>
@@ -278,6 +281,7 @@
 <translation id="5294769550414936029">الإصدار <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">نقل النافذة إلى سطح المكتب</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">اتصال</translation>
 <translation id="5315873049536339193">الهوية</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5318334351163689047">‏تعذَّر طلب بروتوكول TCP.</translation>
@@ -399,6 +403,7 @@
 <translation id="714876143603641390">‏الاتصال بشبكة LAN</translation>
 <translation id="7162487448488904999">معرض الصور</translation>
 <translation id="7172721935181587524">صورة واحدة</translation>
+<translation id="7175037578838465313">إعداد <ph name="NAME" /></translation>
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
@@ -408,6 +413,7 @@
 <translation id="7297226631177386107">‏تعذَّر اجتياز الجدار الناري للاتصال بالمواقع الإلكترونية التي تستخدم بروتوكول HTTPS.</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
+<translation id="7309920310754476121">سيتم نقل الجهاز إلى مالِك آخر</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
 <translation id="7359657277149375382">نوع الملف</translation>
@@ -415,6 +421,9 @@
 <translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
+<translation id="7451112128070628323">حدِّد هذا الخيار في حال عدم تغيُّر ملكية الجهاز.
+        على سبيل المثال، عندما يتم نقل الجهاز إلى مستخدم آخر
+        داخل المؤسسة.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7487067081878637334">التقنية</translation>
 <translation id="7490813197707563893">‏عنوان MAC</translation>
@@ -501,6 +510,7 @@
 <translation id="8620617069779373398">حالة التجوال</translation>
 <translation id="8655295600908251630">القناة</translation>
 <translation id="8660881923941176839">رطل</translation>
+<translation id="8662671328352114214">الانضمام إلى شبكة <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">مفتاح المشاركة المسبقة</translation>
 <translation id="871560550817059752">تعذَّرت الطباعة - نفد الحبر</translation>
 <translation id="8723108084122415655">وقت استجابة الشبكة غير التلقائية أعلى من الحد الأقصى.</translation>
@@ -538,6 +548,7 @@
 <translation id="9073281213608662541">‏بروتوكول مصادقة كلمات المرور (PAP)</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>
+<translation id="9095415590198785865">سيتم نقل الجهاز إلى المالِك نفسه</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUMBER" />.</translation>

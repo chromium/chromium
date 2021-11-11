@@ -260,6 +260,7 @@
 <translation id="5049856988445523908">SIM bloquejada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nom del grup</translation>
 <translation id="5051044138948155788">Aquesta és l'única pàgina. Se't dirigirà a la pantalla d'inici per escanejar.</translation>
+<translation id="5061169534910302641">Actualitza la versió i reinicia</translation>
 <translation id="5088172560898466307">Nom d'amfitrió del servidor</translation>
 <translation id="5089810972385038852">Estat</translation>
 <translation id="5142961317498132443">Autenticació</translation>
@@ -279,6 +280,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5294769550414936029">versió <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mou la finestra a l'escriptori</translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="5308380583665731573">Connecta</translation>
 <translation id="5315873049536339193">Identitat</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5318334351163689047">Errors en la sol·licitud de TCP</translation>
@@ -400,6 +402,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 imatge</translation>
+<translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Aquest dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" />. És possible que els administradors el configurin de manera remota.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
@@ -502,6 +505,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8620617069779373398">Estat d'itinerància</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8660881923941176839">lliures</translation>
+<translation id="8662671328352114214">Connecta't a una xarxa <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Clau precompartida</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>
 <translation id="8723108084122415655">La xarxa no predeterminada supera el llindar de latència</translation>

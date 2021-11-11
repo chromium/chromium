@@ -278,6 +278,7 @@
 <translation id="5294769550414936029">версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Перемістити вікно на робочий стіл</translation>
 <translation id="5304899856529773394">Стандарт EvDo</translation>
+<translation id="5308380583665731573">Під’єднатися</translation>
 <translation id="5315873049536339193">Ідентифікаційна інформація</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5318334351163689047">Не виконано запити за протоколом TCP</translation>
@@ -399,6 +400,7 @@
 <translation id="714876143603641390">З'єднання LAN</translation>
 <translation id="7162487448488904999">Галерея</translation>
 <translation id="7172721935181587524">1 зображення</translation>
+<translation id="7175037578838465313">Налаштувати мережу "<ph name="NAME" />"</translation>
 <translation id="7177485034254901881">Цим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" />. Адміністратори можуть віддалено налаштовувати його.</translation>
 <translation id="7180611975245234373">Оновити</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
@@ -501,6 +503,7 @@
 <translation id="8620617069779373398">Статус роумінгу</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунт.</translation>
+<translation id="8662671328352114214">Під’єднатися до мережі <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Спільний ключ</translation>
 <translation id="871560550817059752">Не надруковано – закінчилося чорнило</translation>
 <translation id="8723108084122415655">Затримка мережі не за умовчанням задовга</translation>

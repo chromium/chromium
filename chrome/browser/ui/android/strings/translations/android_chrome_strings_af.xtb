@@ -234,7 +234,6 @@ Tik op enige woord om te soek. Raak en hou om meer of minder woorde te kies as j
 <translation id="2450907520913474542">Kom meer te wete oor onderwerpe op webwerwe sonder om die bladsy te verlaat. Raak om te Soek stuur 'n woord en sy omringende konteks na Google Search toe en wys definisies, prente, soekresultate en ander besonderhede.
 
 Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog wil verfyn. Maak die paneel oop, tik op die ikoon om dit in 'n nuwe oortjie oop te maak en bring jou veranderinge in die soekkassie aan as jy jou soektog wil wysig.</translation>
-<translation id="2451607499823206582">Spoor tans na</translation>
 <translation id="2459390580524506445">Verbeterde stemsoektog</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="247737702124049222">Prentbeskrywings is aan</translation>
@@ -259,6 +258,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2546283357679194313">Webkoekies en werfdata</translation>
 <translation id="2561519700418191927">Videovoorskoue</translation>
 <translation id="2567385386134582609">PRENT</translation>
+<translation id="2567545343356994513">Vinniger, proaktiewe beskerming teen gevaarlike webwerwe, aflaaie en uitbreidings</translation>
 <translation id="2571711316400087311">Bied aan om bladsye in ander tale na Google Vertaal te stuur</translation>
 <translation id="2581165646603367611">Dit sal koekies, kas en ander data uitvee van werwe wat Chrome nie dink belangrik is nie.</translation>
 <translation id="2587052924345400782">Nuwer weergawe is beskikbaar</translation>
@@ -427,7 +427,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3527085408025491307">Vouer</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB beskikbaar</translation>
 <translation id="3549657413697417275">Deursoek jou geskiedenis</translation>
-<translation id="3557272988124495906">Kry kennisgewings oor prysverlagings</translation>
 <translation id="3557336313807607643">Voeg by kontakte</translation>
 <translation id="3563767357928833671">Knipbordinhoud word gewys</translation>
 <translation id="3566923219790363270">Chrome maak nog gereed vir VR. Herbegin Chrome later.</translation>
@@ -487,6 +486,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="395377504920307820">Gebruik sonder 'n rekening</translation>
 <translation id="3958287878205277013">Maak alle Incognito-oortjies toe om Incognito-blaaigeskiedenis op jou toestel uit te vee.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome sal jou bladsy laai wanneer dit gereed is}other{Chrome sal jou bladsye laai wanneer dit gereed is}}</translation>
+<translation id="3962119236270174787">Standaardbeskerming teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is</translation>
 <translation id="3962957115499249330">Jy sal 'n kennisgewing sien wanneer hierdie aflaai oor wi-fi begin.</translation>
 <translation id="3963007978381181125">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie. Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. As jy jou wagfrase vergeet of hierdie instelling wil verander, sal jy sinkronisering moet terugstel. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome kan nie jou wagwoorde nagaan nie</translation>
@@ -951,6 +951,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6627583120233659107">Wysig vouer</translation>
 <translation id="6633067410344541938">Ontsluit Incognito</translation>
 <translation id="663674369910034433">Raadpleeg <ph name="BEGIN_LINK1" />Sinkronisering<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />Google-dienste<ph name="END_LINK2" /> vir meer instellings wat verband hou met privaatheid, sekuriteit en data-insameling</translation>
+<translation id="6640207029842583248">Blokkeer altyd</translation>
 <translation id="6643016212128521049">Vee uit</translation>
 <translation id="6643649862576733715">Rangskik volgens hoeveelheid data bespaar</translation>
 <translation id="6648459603387803038">Jou administrateur kan jou blaaieropstelling oor 'n afstand verander. Aktiwiteit op hierdie toestel kan ook buite Chrome bestuur word.</translation>
@@ -1077,6 +1078,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7435356471928173109">Afgeskakel deur jou administrateur</translation>
 <translation id="7437998757836447326">Meld af uit Chrome</translation>
 <translation id="7438641746574390233">Wanneer Ligte Modus aan is, gebruik Chrome Google-bedieners om bladsye vinniger te laat laai. Ligte Modus herskryf baie stadige bladsye om net noodsaaklike inhoud te laai. Ligte Modus geld nie vir Incognito-oortjies nie.</translation>
+<translation id="7443901082822119557">Terwyl jy in Incognitomodus is, kan werwe nie jou webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te personaliseer. Kenmerke op sommige werwe kan breek.</translation>
 <translation id="7444811645081526538">Meer kategorieë</translation>
 <translation id="7453467225369441013">Meld jou by die meeste werwe af. Jy sal nie by jou Google-rekening afgemeld word nie.</translation>
 <translation id="7454641608352164238">Nie genoeg spasie nie</translation>
@@ -1184,6 +1186,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="799576009106109668">Jy sal vinniger kan blaai omdat inhoud proaktief op grond van jou huidige webbladsybesoek gelaai word</translation>
 <translation id="7998918019931843664">Heropen toegemaakte oortjie</translation>
 <translation id="8004582292198964060">Blaaier</translation>
+<translation id="8006818846907410687">Blokkeer terwyl Incognitomodus gebruik word</translation>
 <translation id="8013372441983637696">Vee ook jou Chrome-data op hierdie toestel uit</translation>
 <translation id="8015452622527143194">Stel alles op die bladsy terug na verstekgrootte</translation>
 <translation id="8026334261755873520">Vee blaaidata uit</translation>
@@ -1229,9 +1232,9 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8218052821161047641">Vinnige bladsy</translation>
 <translation id="8218622182176210845">Bestuur jou rekening</translation>
 <translation id="8223642481677794647">Stroomkaartkieslys</translation>
-<translation id="8242868071038398515">Jy sal in kennis gestel word as die prys op enige werf verlaag word</translation>
 <translation id="8250920743982581267">Dokumente</translation>
 <translation id="825412236959742607">Hierdie bladsy gebruik te veel berging en daarom het Chrome van die inhoud verwyder.</translation>
+<translation id="8255617931166444521">Werwe kan jou webkoekies net gebruik om jou blaai-aktiwiteit op hul eie werf te sien</translation>
 <translation id="8260126382462817229">Probeer weer om aan te meld</translation>
 <translation id="8261506727792406068">Vee uit</translation>
 <translation id="82619448491672958">Sien ander oortjies</translation>

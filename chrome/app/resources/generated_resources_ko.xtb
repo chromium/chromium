@@ -2401,6 +2401,7 @@
 <translation id="3449393517661170867">새 탭 창</translation>
 <translation id="3449839693241009168"><ph name="SEARCH_KEY" /> 키를 눌러 <ph name="EXTENSION_NAME" />에 명령 보내기</translation>
 <translation id="3450157232394774192">유휴 상태 점유율</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다.</translation>
 <translation id="3451753556629288767">여러 유형의 파일을 열 수 있음</translation>
 <translation id="3452999110156026232">부모 액세스</translation>
 <translation id="3453612417627951340">승인 필요</translation>
@@ -3196,7 +3197,6 @@
 <translation id="4289732974614035569">PIN 선택</translation>
 <translation id="4290791284969893584">페이지를 닫으면 시작한 작업이 완료되지 않을 수 있습니다</translation>
 <translation id="4295072614469448764">단말기에서 앱을 사용할 수 있습니다. 런처에 아이콘이 있을 수도 있습니다.</translation>
-<translation id="4295839147292213505">컴퓨터에서 문자 메시지를 보내고, 인터넷 연결을 공유하고, 대화 알림에 답장을 보내고, 휴대전화로 <ph name="DEVICE_TYPE" /> 기기의 잠금을 해제할 수 있습니다.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">웹사이트, 앱, Chrome 확장 프로그램 및 Google Play에서 계정(<ph name="USER_EMAIL" />)을 사용하도록 확인하려면 다시 로그인하세요. 계정을 삭제할 수도 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">다시 시작 및 재설정</translation>
 <translation id="4297813521149011456">화면 회전</translation>
@@ -4261,6 +4261,7 @@
 <translation id="5472627187093107397">이 사이트의 비밀번호 저장</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN은 1자 이상이어야 합니다.}other{PIN은 #자 이상이어야 합니다.}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" />에서 지금 Wi-Fi에 연결하여 업데이트를 다운로드할 것을 요청합니다. 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.</translation>
 <translation id="5481273127572794904">여러 파일 자동 다운로드가 허용되지 않음</translation>
 <translation id="5481941284378890518">주변 프린터 추가</translation>
 <translation id="5483785310822538350">파일 및 기기 액세스 취소</translation>
@@ -4683,6 +4684,7 @@
 <translation id="592880897588170157">Chrome에서 PDF 파일을 자동으로 여는 대신 다운로드</translation>
 <translation id="592919310198008711">확장 프로그램을 클릭할 경우</translation>
 <translation id="5932124097031739492">Linux가 업그레이드되었습니다.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" />에서 <ph name="DEVICE_TYPE" /> 기기를 즉시 업데이트할 것을 요청합니다.</translation>
 <translation id="5932224571077948991">사이트에서 방해가 되거나 사용자를 현혹하는 광고를 표시함</translation>
 <translation id="59324397759951282"><ph name="MANUFACTURER_NAME" />의 USB 기기</translation>
 <translation id="5932441198730183141">사용 가능한 라이선스가 부족하여 Google Meet 하드웨어 기기를 등록할 수 없습니다. 판매처에 문의하여 추가로 구매하세요. 이 메시지가 잘못 표시되었다고 생각하는 경우 지원팀에 문의하세요.</translation>

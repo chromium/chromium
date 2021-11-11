@@ -278,6 +278,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5294769550414936029">versioon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Teisalda aken töölauale</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Ühendamine</translation>
 <translation id="5315873049536339193">Identiteet</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5318334351163689047">TCP-taotluste vead</translation>
@@ -399,6 +400,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="714876143603641390">LAN-i ühenduvus</translation>
 <translation id="7162487448488904999">Galerii</translation>
 <translation id="7172721935181587524">1 pilt</translation>
+<translation id="7175037578838465313">Võrgu <ph name="NAME" /> seadistamine</translation>
 <translation id="7177485034254901881">Seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" />. Administraatorid saavad seda seadet kaugühenduse teel seadistada.</translation>
 <translation id="7180611975245234373">Värskenda</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
@@ -501,6 +503,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8620617069779373398">Rändluse olek</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">naela</translation>
+<translation id="8662671328352114214"><ph name="TYPE" />-võrguga liitumine</translation>
 <translation id="8675354002693747642">Eeljagatud võti</translation>
 <translation id="871560550817059752">Ebaõnnestus – tint on otsas</translation>
 <translation id="8723108084122415655">Mittevaikevõrk ületab latentsusaja piiri</translation>

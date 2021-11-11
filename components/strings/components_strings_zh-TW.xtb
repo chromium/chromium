@@ -157,6 +157,7 @@
 <translation id="1422930527989633628">可以要求搜尋附近的藍牙裝置</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1428146450423315676">堆疊出紙器 7</translation>
+<translation id="142858679511221695">Cloud 使用者</translation>
 <translation id="1428729058023778569">這個網站不支援 HTTPS，因此瀏覽器顯示這則警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
@@ -715,6 +716,7 @@
 <translation id="3329013043687509092">飽和度</translation>
 <translation id="3333762389743153920">不符合虛擬卡片設定資格</translation>
 <translation id="3338095232262050444">安全</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">變更 Proxy 設定...</translation>
 <translation id="3360103848165129075">付款處理常式工作表</translation>
 <translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />下列資訊：
@@ -738,6 +740,7 @@
 <translation id="3380365263193509176">未知的錯誤</translation>
 <translation id="3380864720620200369">用戶端 ID：</translation>
 <translation id="3381668585148405088">驗證交易</translation>
+<translation id="3383566085871012386">目前的優先順序</translation>
 <translation id="3387261909427947069">付款方式</translation>
 <translation id="3391030046425686457">快遞地址</translation>
 <translation id="3391482648489541560">檔案編輯</translation>
@@ -1402,6 +1405,7 @@
 <translation id="5478437291406423475">B6/C4 (信封)</translation>
 <translation id="5481076368049295676">這項內容可能會試圖在你的裝置上安裝危險軟體，藉此竊取或刪除你的資訊。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">新增有效的地址</translation>
+<translation id="5485973315555778056">雲端機器</translation>
 <translation id="5490432419156082418">地址和其他資訊</translation>
 <translation id="5492298309214877701">這個位於公司、機構或學校內部網路的網站使用的網址與某個外部網站相同。
     <ph name="LINE_BREAK" />
@@ -1431,6 +1435,7 @@
 <translation id="5571083550517324815">無法在這個地址取件，請改用其他地址。</translation>
 <translation id="5580958916614886209">請檢查信用卡到期月份，然後再試一次</translation>
 <translation id="5586446728396275693">沒有已儲存的地址</translation>
+<translation id="5587987780934666589">平台使用者</translation>
 <translation id="5593349413089863479">連線可能有安全漏洞</translation>
 <translation id="5595485650161345191">編輯地址</translation>
 <translation id="5598944008576757369">選擇付款方式</translation>
@@ -2119,6 +2124,7 @@
 <translation id="7953569069500808819">邊緣裝訂 (右側)</translation>
 <translation id="7956713633345437162">行動版書籤</translation>
 <translation id="7961015016161918242">一律不要</translation>
+<translation id="7962467575542381659">平台機器</translation>
 <translation id="7966803981046576691">工作帳戶類型</translation>
 <translation id="79682505114836835">「<ph name="VALUE" />」是無效的十六進位顏色值。</translation>
 <translation id="7968982339740310781">查看詳細資料</translation>
@@ -2273,6 +2279,7 @@
 <translation id="8438476240229491014">記住這項設定</translation>
 <translation id="8438786541497918448">要使用攝影機和麥克風嗎？</translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
+<translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
 <translation id="8457125768502047971">無限期</translation>
 <translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 張信用卡}other{# 張信用卡}}</translation>

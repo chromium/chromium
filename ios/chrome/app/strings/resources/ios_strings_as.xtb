@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">ছাইন ইন কৰি থাকোঁতে কিবা ভুল হ’ল।</translation>
 <translation id="1911619930368729126">Google Driveলৈ আপল’ড কৰক</translation>
 <translation id="1923342640370224680">যোৱা ১ঘণ্টাৰ</translation>
+<translation id="1930989359703290198">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক কেৱল কিছুমান নিৰ্দিষ্ট একাউণ্টৰ জৰিয়তেহে ছাইন ইন কৰিবলৈ দিয়ে। অনুমতি নথকা একাউণ্টসমূহ লুকুৱাই ৰখা হয়। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">প্ৰতিলিপি কৰিবলৈ দুবাৰ টিপক।</translation>
 <translation id="1952172573699511566">ৱেবছাইটবোৰে যেতিয়া সম্ভৱ হয় তেতিয়া আপুনি অগ্ৰাধিকাৰ দিয়া ভাষাত পাঠবোৰ দেখুৱাব।</translation>
 <translation id="1965935827552890526">Chromeৰ খোলা থকা অন্য ৱিণ্ড’ত আপুনি কি কৰি আছিল সেয়া সমাপ্ত কৰক।</translation>
@@ -225,6 +226,7 @@
 <translation id="3080525922482950719">আপুনি পাছত অথবা অফলাইনত পঢ়িবলৈ পৃষ্ঠাসমূহ ছেভ কৰিব পাৰে</translation>
 <translation id="3081338492074632642">আপুনি ছেভ কৰিবলৈ লোৱা পাছৱৰ্ডটো যাতে আপোনাৰ <ph name="WEBSITE" />ৰ পাছৱৰ্ডটোৰ সৈতে মিলে সেয়া নিশ্চিত কৰক</translation>
 <translation id="3112556859945124369">চিহ্নিত কৰক…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />আপুনি কি কি ছিংক কৰিব পাৰে, সেয়া চাওক<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">সকলো অৱৰোধ কৰক</translation>
 <translation id="313283613037595347">নতুন ইনক’গনিট’ টেব সৃষ্টি কৰক।</translation>
 <translation id="3153862085237805241">কাৰ্ড ছেভ কৰক</translation>
@@ -386,6 +388,8 @@
 <translation id="4802417911091824046">পাছফ্ৰেজ এনক্ৰিপশ্বনত Google Payৰ পৰিশোধ পদ্ধতি আৰু ঠিকনা অন্তৰ্ভুক্ত নহয়।
 
 এই ছেটিংটো সলনি কৰিবলৈ <ph name="BEGIN_LINK" />ছিংক ৰিছেট কৰক<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে।
+<ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">কার্ডৰ নম্বৰ অমান্য</translation>
 <translation id="4808744395915275922">আপডে’টসমূহ</translation>
 <translation id="4818522717893377262">ভাষা যোগ কৰক...</translation>

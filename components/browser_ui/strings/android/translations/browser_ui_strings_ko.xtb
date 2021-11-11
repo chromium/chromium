@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" />MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 허용됨}}</translation>
 <translation id="2434158240863470628">다운로드 완료: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">항상 데스크톱 사이트 요청</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" />에서 관리함</translation>
@@ -298,6 +299,7 @@
 <translation id="8447861592752582886">기기 액세스 권한 취소</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{쿠키 1개 사용 중}other{쿠키 #개 사용 중}}</translation>
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
+<translation id="848952951823693243">항상 모바일 사이트 요청</translation>
 <translation id="851751545965956758">사이트에서 기기에 연결하지 못하도록 차단</translation>
 <translation id="8525306231823319788">전체화면</translation>
 <translation id="857943718398505171">허용(권장)</translation>

@@ -260,6 +260,7 @@
 <translation id="5049856988445523908">‏SIM مقفل ہو گیا (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">گروپ کا نام</translation>
 <translation id="5051044138948155788">یہ واحد صفحہ ہے۔ یہ آپ کو سکیننگ اسٹارٹ سکرین پر لے جائے گا۔</translation>
+<translation id="5061169534910302641">ورژن اپ ڈیٹ کریں اور ری اسٹارٹ کریں</translation>
 <translation id="5088172560898466307">سرور کا میزبان نام</translation>
 <translation id="5089810972385038852">ریاست</translation>
 <translation id="5142961317498132443">تصدیق</translation>
@@ -278,6 +279,7 @@
 <translation id="5294769550414936029">‏ورژن ‎<ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ونڈو کو ڈیسک میں منتقل کریں</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5315873049536339193">شناخت</translation>
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5318334351163689047">‏TCP درخواست کی ناکامیاں</translation>
@@ -399,6 +401,7 @@
 <translation id="714876143603641390">‏Lan کنیکٹوٹی</translation>
 <translation id="7162487448488904999">گیلری</translation>
 <translation id="7172721935181587524">1 تصویر</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> کنفیگر کریں</translation>
 <translation id="7177485034254901881">یہ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے۔ منتظمین دور سے آلے کو کنفیگر کر سکتے ہیں۔</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
@@ -501,6 +504,7 @@
 <translation id="8620617069779373398">رومنگ کی صورتحال</translation>
 <translation id="8655295600908251630">چینل</translation>
 <translation id="8660881923941176839">پاؤنڈز</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> نیٹ ورک میں شامل ہوں</translation>
 <translation id="8675354002693747642">پہلے سے اشتراک کردہ کلید</translation>
 <translation id="871560550817059752">ناکام ہو گیا - سیاہی ختم ہو گئی</translation>
 <translation id="8723108084122415655">تاخیر کی حد کے اوپر غیر ڈیفالٹ نیٹ ورک</translation>

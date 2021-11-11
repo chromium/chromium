@@ -200,6 +200,7 @@
 <translation id="2352467521400612932">觸控筆設定</translation>
 <translation id="2354174487190027830">正在啟用 <ph name="NAME" /></translation>
 <translation id="2359808026110333948">繼續</translation>
+<translation id="2360625459710946148">按下列條件重新排列</translation>
 <translation id="2367186422933365202">無法登入 Chromebook</translation>
 <translation id="2369165858548251131">「你好」嘅英文</translation>
 <translation id="2390318262976603432">語言代碼設定</translation>
@@ -326,7 +327,7 @@
 <translation id="334252345105450327">擷取螢幕擷圖</translation>
 <translation id="3351879221545518001">您目前正在投放畫面。</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
-<translation id="3365977133351922112">你的手機距離太遠，請拿近一點。</translation>
+<translation id="3365977133351922112">您的手機距離太遠，請將手機移近。</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3371140690572404006">USB-C 裝置 (右側前方連接埠)</translation>
 <translation id="3375634426936648815">已連線</translation>
@@ -705,6 +706,7 @@
 <translation id="5977415296283489383">耳機</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
+<translation id="598407983968395253">使用範本</translation>
 <translation id="598882571027504733">如要下載更新，請連接鍵盤並重新啟動 Chromebook。</translation>
 <translation id="5992218262414051481">已啟用高對比模式。再次按下 Ctrl+Search+H 鍵即可停用。</translation>
 <translation id="6018164090099858612">正在退出鏡像模式</translation>
@@ -989,7 +991,7 @@
 <translation id="8061464966246066292">高對比模式</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="8113423164597455979">已在所有應用程式上啟用通知</translation>
-<translation id="8120151603115102514">你的手機未設定螢幕鎖定。如要解鎖 Chromebook，請輸入密碼。</translation>
+<translation id="8120151603115102514">您的手機沒有上鎖畫面。如要解鎖 Chromebook，請輸入密碼。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8132487352815776550">停用字幕</translation>
@@ -1038,7 +1040,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> 已 <ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按下 Alt + 搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解像度已變更為 <ph name="FALLBACK_RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
-<translation id="85123341071060231">Chromebook 的藍牙功能已關閉。如要解鎖 Chromebook，請輸入密碼。</translation>
+<translation id="85123341071060231">Chromebook 的藍牙已關閉。如要解鎖 Chromebook，請輸入密碼。</translation>
 <translation id="8513108775083588393">自動旋轉</translation>
 <translation id="851458219935658693">顯示目前桌面嘅視窗，揀咗圓形按鈕</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>

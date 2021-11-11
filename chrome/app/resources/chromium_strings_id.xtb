@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2910007522516064972">Tentang &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>
+<translation id="2977506796191543575">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
 <translation id="2983934633046890458">Chromium mencoba mengedit sandi.</translation>
 <translation id="3032706164202344641">Chromium tidak dapat memeriksa sandi Anda. Coba lagi nanti.</translation>
 <translation id="3032787606318309379">Menambahkan Chromium...</translation>
@@ -167,6 +168,7 @@
 <translation id="6212496753309875659">Komputer ini sudah memiliki versi Chromium yang lebih baru. Jika software tidak bekerja, harap coba uninstal Chromium, lalu cobalah kembali.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan diluncurkan ulang sekarang}=1{Chromium akan diluncurkan ulang dalam 1 detik}other{Chromium akan diluncurkan ulang dalam # detik}}</translation>
 <translation id="6241367896540709610">Chromium memerlukan izin akses penyimpanan untuk mendownload file</translation>
+<translation id="6245734527075554892">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium</translation>
 <translation id="6248213926982192922">Jadikan Chromium browser default</translation>
 <translation id="6266342355635466082">Chromium tidak dapat memeriksa update. Coba periksa koneksi internet Anda.</translation>
 <translation id="6268381023930128611">Keluar dari Chromium?</translation>

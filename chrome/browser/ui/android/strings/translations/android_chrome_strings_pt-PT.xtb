@@ -234,7 +234,6 @@ Toque em qualquer palavra para pesquisar. Para refinar a sua pesquisa, tocar sem
 <translation id="2450907520913474542">Saiba mais acerca de tópicos em Websites sem sair da página. A funcionalidade Tocar para pesquisar envia uma palavra e o contexto circundante para a Pesquisa Google, que devolve definições, imagens, resultados da pesquisa e outros detalhes.
 
 Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa, selecione mais ou menos palavras. Para editar a sua pesquisa, abra o painel, toque no ícone para abrir num novo separador e efetue as suas alterações na caixa de pesquisa.</translation>
-<translation id="2451607499823206582">Monitorizar</translation>
 <translation id="2459390580524506445">Pesquisa por voz otimizada</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="247737702124049222">As descrições de imagens estão ativadas.</translation>
@@ -259,6 +258,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2546283357679194313">Cookies e dados de Web sites</translation>
 <translation id="2561519700418191927">Pré-visualizações de vídeo</translation>
 <translation id="2567385386134582609">IMAGEM</translation>
+<translation id="2567545343356994513">Proteção proativa mais rápida contra transferências, extensões e Websites perigosos</translation>
 <translation id="2571711316400087311">Disponibilizar-se para enviar páginas noutros idiomas para o Google Tradutor</translation>
 <translation id="2581165646603367611">Esta ação elimina os cookies, a cache e outros dados de sites que o Chrome não considera importantes.</translation>
 <translation id="2587052924345400782">Versão mais recente dispon.</translation>
@@ -427,7 +427,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="3527085408025491307">Pasta</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB disponível(eis)</translation>
 <translation id="3549657413697417275">Pesquisar no histórico</translation>
-<translation id="3557272988124495906">Receba notificações de descida do preço</translation>
 <translation id="3557336313807607643">Adicionar aos contactos</translation>
 <translation id="3563767357928833671">Conteúdos de Copiar e colar apresentados</translation>
 <translation id="3566923219790363270">O Chrome ainda se está a preparar para a RV. Reinicie o Chrome mais tarde.</translation>
@@ -487,6 +486,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="395377504920307820">Utilizar sem uma conta</translation>
 <translation id="3958287878205277013">Para limpar o histórico de navegação da Navegação anónima no seu dispositivo, feche todos os separadores de navegação anónima.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{O Chrome irá carregar a página quando estiver pronta.}other{O Chrome irá carregar as páginas quando estiverem prontas.}}</translation>
+<translation id="3962119236270174787">Proteção padrão contra Websites, transferências e extensões identificados como perigosos</translation>
 <translation id="3962957115499249330">Verá uma notificação quando esta transferência for iniciada através de Wi-Fi.</translation>
 <translation id="3963007978381181125">A encriptação da frase de acesso não inclui métodos de pagamento nem endereços do Google Pay. Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de repor a sincronização. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">O Chrome não consegue verificar as suas palavras-passe.</translation>
@@ -951,6 +951,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6627583120233659107">Editar pasta</translation>
 <translation id="6633067410344541938">Desbloquear a Navegação anónima</translation>
 <translation id="663674369910034433">Para obter mais definições relacionadas com privacidade, segurança e recolha de dados, consulte <ph name="BEGIN_LINK1" />Sincronização<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />Serviços Google<ph name="END_LINK2" />.</translation>
+<translation id="6640207029842583248">Bloquear sempre</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6643649862576733715">Ordenar por quantidade de dados poupados</translation>
 <translation id="6648459603387803038">O administrador pode alterar a configuração do navegador remotamente. A atividade neste dispositivo também pode ser gerida fora do Chrome.</translation>
@@ -1077,6 +1078,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7435356471928173109">Desativada pelo seu administrador.</translation>
 <translation id="7437998757836447326">Terminar sessão no Chrome</translation>
 <translation id="7438641746574390233">Quando o Modo Lite está ativado, o Chrome utiliza os servidores Google para carregar as páginas mais rapidamente. O Modo Lite reescreve páginas muito lentas para carregar apenas o conteúdo essencial. O Modo Lite não se aplica aos separadores de navegação anónima.</translation>
+<translation id="7443901082822119557">Quando estiver na Navegação anónima, os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem falhar.</translation>
 <translation id="7444811645081526538">Mais categorias</translation>
 <translation id="7453467225369441013">A sua sessão é terminada na maioria dos sites. A sessão na sua Conta Google não é terminada.</translation>
 <translation id="7454641608352164238">Espaço insuficiente</translation>
@@ -1184,6 +1186,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="799576009106109668">Irá navegar mais depressa porque os conteúdos são carregados proativamente com base na página Web que está a visitar</translation>
 <translation id="7998918019931843664">Reabrir separador fechado</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8006818846907410687">Bloquear durante a utilização da Navegação anónima</translation>
 <translation id="8013372441983637696">Limpar também os dados do Chrome deste dispositivo</translation>
 <translation id="8015452622527143194">Repor tamanho predefinido dos itens na página</translation>
 <translation id="8026334261755873520">Limpar dados de navegação</translation>
@@ -1229,9 +1232,9 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8218052821161047641">Página rápida</translation>
 <translation id="8218622182176210845">Efetue a gestão da sua conta</translation>
 <translation id="8223642481677794647">Menu do cartão do feed</translation>
-<translation id="8242868071038398515">Receberá uma notificação se o preço descer em qualquer site</translation>
 <translation id="8250920743982581267">Docs</translation>
 <translation id="825412236959742607">Esta página utiliza demasiada memória, pelo que o Chrome removeu algum conteúdo.</translation>
+<translation id="8255617931166444521">Os sites apenas podem utilizar os seus cookies para ver a sua atividade de navegação no respetivo site</translation>
 <translation id="8260126382462817229">Experimente iniciar sessão novamente</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="82619448491672958">Ver outros separadores</translation>

@@ -260,6 +260,7 @@
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nama kumpulan</translation>
 <translation id="5051044138948155788">Ini ialah satu-satunya halaman. Tindakan ini akan membawa anda ke skrin permulaan pengimbasan.</translation>
+<translation id="5061169534910302641">Kemas kini versi &amp; mulakan semula</translation>
 <translation id="5088172560898466307">Nama hos pelayan</translation>
 <translation id="5089810972385038852">Negeri</translation>
 <translation id="5142961317498132443">Pengesahan</translation>
@@ -279,6 +280,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5294769550414936029">versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Alihkan tetingkap ke meja</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Sambung</translation>
 <translation id="5315873049536339193">Identiti</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318334351163689047">Kegagalan permintaan TCP</translation>
@@ -400,6 +402,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="714876143603641390">Kesambungan LAN</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7172721935181587524">1 Imej</translation>
+<translation id="7175037578838465313">Konfigurasikan <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />. Pentadbir boleh mengkonfigurasikan peranti dari jauh.</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7216409898977639127">Penyedia selular</translation>
@@ -502,6 +505,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8620617069779373398">Status perayauan</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8660881923941176839">paun</translation>
+<translation id="8662671328352114214">Sertai rangkaian <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Kekunci prakongsi</translation>
 <translation id="871560550817059752">Gagal - Kehabisan dakwat</translation>
 <translation id="8723108084122415655">Rangkaian bukan lalai melebihi ambang kependaman</translation>

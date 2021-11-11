@@ -277,6 +277,7 @@
 <translation id="5294769550414936029">version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Flyt vindue til skrivebord</translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="5308380583665731573">Få forbindelse</translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5318334351163689047">Mislykkede TCP-anmodninger</translation>
@@ -398,6 +399,7 @@
 <translation id="714876143603641390">LAN-forbindelse</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7172721935181587524">1 billede</translation>
+<translation id="7175037578838465313">Konfigurer <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Denne <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" />. Administratorer kan fjernkonfigurere enheden.</translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7216409898977639127">Mobilselskab</translation>
@@ -500,6 +502,7 @@
 <translation id="8620617069779373398">Roamingstatus</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">pund</translation>
+<translation id="8662671328352114214">Opret forbindelse til <ph name="TYPE" />-netværk</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøgle:</translation>
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>
 <translation id="8723108084122415655">Det netværk, der ikke er angivet som standardnetværket, overstiger grænsen for forsinkelse</translation>

@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">Arazoren bat izan da saioa hastean.</translation>
 <translation id="1911619930368729126">Kargatu Google Drive-ra</translation>
 <translation id="1923342640370224680">Azken ordukoak</translation>
+<translation id="1930989359703290198">Erakundeak kontu jakin batzuekin soilik uzten du saioa hasten. Baimenduta ez dauden kontuak ezkutatuta daude. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Kopiatzeko, sakatu birritan.</translation>
 <translation id="1952172573699511566">Ahal den heinean, webguneek testua hizkuntza hobetsian erakutsiko dute.</translation>
 <translation id="1965935827552890526">Amaitu egiten ari zarena irekita daukazun Chrome-ko beste leihoan.</translation>
@@ -386,6 +387,8 @@ Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sink
 <translation id="4802417911091824046">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak.
 
 Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="END_LINK" />.</translation>
+<translation id="4803185665210547709">Erakundeak kudeatzen du.
+<ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Txartel-zenbakiak ez du balio</translation>
 <translation id="4808744395915275922">Eguneratzeak</translation>
 <translation id="4818522717893377262">Gehitu hizkuntza bat…</translation>

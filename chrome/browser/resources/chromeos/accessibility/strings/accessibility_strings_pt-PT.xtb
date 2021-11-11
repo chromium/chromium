@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">copiar</translation>
 <translation id="135978014023467274">O seu ChromeVox foi atualizado para a versão 63.</translation>
 <translation id="1360699455582016846">Clique no item sob a chave de encaminhamento <ph name="ROUTING_KEY_NUMBER" />.</translation>
+<translation id="1376703628032300005">mover para o caráter seguinte</translation>
 <translation id="1377925789329510816">Este é o último cabeçalho. Prima Pesquisar + H para moldar até ao primeiro cabeçalho ou Pesquisar + Shift + H para aceder ao segundo cabeçalho nesta página.</translation>
 <translation id="138218114945450791">Azul-claro</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Caixa de verificação</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="2462626033734746142">Grupo de botões de opção</translation>
+<translation id="2467741090055146971">desmarcar</translation>
 <translation id="2471138580042810658">Título 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisco}other{# asteriscos}}</translation>
 <translation id="2490721194269245365">Castanho rosado</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Não existe nenhum widget multimédia anterior.</translation>
 <translation id="4855927945655956315">Teclas essenciais: Control</translation>
 <translation id="4862744964787595316">Sem negrito</translation>
+<translation id="4865995900839719272">mover para a linha anterior</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Ativar registo TTS</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, separador</translation>
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5310788376443009632">removido:</translation>
+<translation id="5316825363044614340">mover para a linha seguinte</translation>
 <translation id="5320727453979144100">Modo aderente ativado</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{vírgula}other{# vírgulas}}</translation>
 <translation id="532485153932049746">Formatação de texto
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Não existe nenhum campo de formulário anterior.</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">ajuda</translation>
 <translation id="7317017974771324508">parcialmente selecionado</translation>
 <translation id="7322442671176251901">Explorar Através do Toque</translation>
 <translation id="7344012264516629579">Os comandos de avanço adicionais incluem, entre outros, avançar por link, botão e caixa de verificação. Pode encontrar uma lista completa de comandos de avanço nos menus do ChromeVox, que podem ser abertos ao premir a tecla de pesquisa + tecla de ponto final.</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">Tutorial do ChromeVox</translation>
 <translation id="9040132695316389094">Título 1</translation>
 <translation id="9061884144798498064">Selecionar uma tabela de braille de 8 pontos:</translation>
+<translation id="9063946545000394379">mover para o caráter anterior</translation>
 <translation id="9065283790526219006">+popup</translation>
 <translation id="9065912140022662363">Não existe nenhum botão de opção seguinte.</translation>
 <translation id="9067522039955793016">Quebra de página</translation>

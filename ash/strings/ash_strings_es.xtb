@@ -200,6 +200,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2352467521400612932">Configuración del lápiz óptico</translation>
 <translation id="2354174487190027830">Activación de <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2360625459710946148">Reordenar por</translation>
 <translation id="2367186422933365202">No se puede iniciar sesión en tu Chromebook</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2390318262976603432">Configuración regional</translation>
@@ -326,6 +327,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="334252345105450327">Haz una captura de pantalla</translation>
 <translation id="3351879221545518001">Estás enviando la pantalla.</translation>
 <translation id="3364721542077212959">Herramientas del lápiz óptico</translation>
+<translation id="3365977133351922112">Tu teléfono está demasiado lejos. Acércalo al Chromebook.</translation>
 <translation id="3368922792935385530">Conectado</translation>
 <translation id="3371140690572404006">Dispositivo USB tipo C (puerto frontal derecho)</translation>
 <translation id="3375634426936648815">Conectado</translation>
@@ -603,6 +605,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5176318573511391780">Grabar una parte de la pantalla</translation>
 <translation id="5199367439331364630">Para iniciar sesión en tu Chromebook, escribe la contraseña</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación más}other{# notificaciones más}}</translation>
 <translation id="5207949376430453814">Resaltar el símbolo de intercalación del texto</translation>
 <translation id="5208059991603368177">Sí</translation>
@@ -705,6 +708,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5977415296283489383">Auriculares</translation>
 <translation id="5978382165065462689">Compartiendo control de la pantalla a través de Asistencia remota.</translation>
 <translation id="5980301590375426705">Cerrar como invitado</translation>
+<translation id="598407983968395253">Utilizar plantilla</translation>
 <translation id="598882571027504733">Para recibir la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
 <translation id="5992218262414051481">Se ha habilitado el modo de contraste alto. Pulsa Ctrl + Tecla de búsqueda + H de nuevo para desactivarlo.</translation>
 <translation id="6018164090099858612">Saliendo del modo de proyección</translation>
@@ -886,6 +890,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="7398254312354928459">Se ha cambiado la conexión de red</translation>
 <translation id="7405710164030118432">Para desbloquear el dispositivo, introduce tu código de acceso parental de Family Link</translation>
 <translation id="7406608787870898861">Termina de configurar tu red móvil</translation>
+<translation id="740790383907119240">Accesos directos a aplicaciones</translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7413851974711031813">Pulsa Esc para cerrar</translation>
 <translation id="742594950370306541">La cámara se está utilizando.</translation>
@@ -988,6 +993,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8061464966246066292">Contraste alto</translation>
 <translation id="8098591350844501178">Dejar de enviar la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sí, todas</translation>
+<translation id="8120151603115102514">Tu teléfono no tiene pantalla de bloqueo. Para desbloquear tu Chromebook, escribe la contraseña.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132487352815776550">Detener subtítulos</translation>
@@ -1036,6 +1042,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ha <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Pulsa Alt + tecla de búsqueda o Mayús para cancelarlo.</translation>
 <translation id="8492573885090281069">La pantalla <ph name="DISPLAY_NAME" /> no admite <ph name="SPECIFIED_RESOLUTION" />. Se ha cambiado la resolución a <ph name="FALLBACK_RESOLUTION" />. Haz clic en Confirmar para mantener los cambios. La configuración anterior se restaurará en <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="85123341071060231">El Bluetooth de tu Chromebook está desactivado. Para desbloquear tu Chromebook, escribe la contraseña.</translation>
 <translation id="8513108775083588393">Girar autom.</translation>
 <translation id="851458219935658693">Mostrar ventanas del escritorio actual, botón seleccionado</translation>
 <translation id="8517041960877371778">Es posible que tu <ph name="DEVICE_TYPE" /> no se cargue mientras esté encendido.</translation>

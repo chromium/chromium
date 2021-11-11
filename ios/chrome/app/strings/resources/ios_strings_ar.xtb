@@ -107,6 +107,7 @@
 <translation id="1894205589103145703">حدث خطأ أثناء تسجيل الدخول.</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
 <translation id="1923342640370224680">الساعة الأخيرة</translation>
+<translation id="1930989359703290198">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">انقر مرّتين للنسخ.</translation>
 <translation id="1952172573699511566">ستعرض المواقع الإلكترونية النص بلغتك المفضّلة إن أمكن.</translation>
 <translation id="1965935827552890526">‏يجب إنهاء ما كنت تفعله في نافذة Chrome المفتوحة الأخرى.</translation>
@@ -386,6 +387,8 @@
 <translation id="4802417911091824046">‏لا يتضمّن التشفير باستخدام عبارة المرور طرق الدفع والعناوين من Google Pay.
 
 لتغيير هذا الإعداد، يُرجى <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">تتم إدارة المتصفِّح من خلال مؤسستك.
+<ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">رقم البطاقة غير صحيح</translation>
 <translation id="4808744395915275922">التحديثات</translation>
 <translation id="4818522717893377262">إضافة لغة...</translation>

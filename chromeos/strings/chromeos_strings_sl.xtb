@@ -75,6 +75,7 @@
 <translation id="2016697457005847575">Poskusite postopke za odpravljanje težav.</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Več nastavitev</translation>
+<translation id="2104796393919810494">Popravilo je dokončano</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, različica: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">Na voljo je <ph name="AVAILABLE_MEMORY" /> GB od skupno <ph name="TOTAL_MEMORY" /> GB.</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
@@ -183,6 +184,7 @@
 <translation id="409427325554347132">Shrani podrobnosti preizkusa</translation>
 <translation id="4111761024568264522">Sledilna ploščica USB</translation>
 <translation id="4131410914670010031">Črno-belo</translation>
+<translation id="4140251671072434548">Odklepanje strežnika RMA</translation>
 <translation id="4145784616224233563">Požarni zid HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4155551848414053977">Optični bralnik mora biti vklopljen in na voljo prek omrežja ali neposredne povezave.</translation>
@@ -259,6 +261,7 @@
 <translation id="5049856988445523908">Kartica SIM je zaklenjena (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Ime skupine</translation>
 <translation id="5051044138948155788">To je edina stran. S tem se bo odprla stran za začetek optičnega branja.</translation>
+<translation id="5061169534910302641">Posodobi različico in znova zaženi</translation>
 <translation id="5088172560898466307">Gostiteljsko Ime strežnika</translation>
 <translation id="5089810972385038852">Država:</translation>
 <translation id="5142961317498132443">Preverjanje pristnosti</translation>
@@ -278,6 +281,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5294769550414936029">različica <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Premik okna na namizje</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Povezovanje</translation>
 <translation id="5315873049536339193">Identiteta</translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5318334351163689047">Neuspele zahteve TCP</translation>
@@ -399,6 +403,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 slika</translation>
+<translation id="7175037578838465313">Konfiguriranje omrežja <ph name="NAME" /></translation>
 <translation id="7177485034254901881">To napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" />. Skrbniki lahko napravo konfigurirajo na daljavo.</translation>
 <translation id="7180611975245234373">Osveži</translation>
 <translation id="7216409898977639127">Ponudnik mobilnih storitev</translation>
@@ -466,6 +471,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zahtevaj števce prometa</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="816013303019725643">Vnesite kodo za odklepanje:</translation>
 <translation id="8206859287963243715">Prenosni</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>
 <translation id="8230672074305416752">Ni mogoče preveriti privzetega prehoda omrežja</translation>
@@ -501,6 +507,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8620617069779373398">Stanje gostovanja</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">funti</translation>
+<translation id="8662671328352114214">Pridružitev omrežju <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Ključ v predhodni skupni rabi</translation>
 <translation id="871560550817059752">Napaka – zmanjkalo je črnila</translation>
 <translation id="8723108084122415655">Omrežje, ki ni privzeto, je nad pragom zakasnitve</translation>

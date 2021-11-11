@@ -278,6 +278,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> versija</translation>
 <translation id="5300814202279832142">Perkelti langą į darbalaukį</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Prisijungti</translation>
 <translation id="5315873049536339193">Tapatybė</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5318334351163689047">Nepavyko pateikti TCP užklausų</translation>
@@ -399,6 +400,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="714876143603641390">LAN ryšys</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">Vienas vaizdas</translation>
+<translation id="7175037578838465313">„<ph name="NAME" />“ konfigūravimas</translation>
 <translation id="7177485034254901881">Šį „<ph name="DEVICE_TYPE" />“ valdo <ph name="MANAGER" />. Administratoriai gali nuotoliniu būdu konfigūruoti įrenginį.</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
@@ -501,6 +503,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8620617069779373398">Tarptinklinio ryšio būsena</translation>
 <translation id="8655295600908251630">Kanalas</translation>
 <translation id="8660881923941176839">svar.</translation>
+<translation id="8662671328352114214">Prisijungimas prie „<ph name="TYPE" />“ tinklo</translation>
 <translation id="8675354002693747642">Paruoštas bendrinti raktas</translation>
 <translation id="871560550817059752">Nepavyko – baigėsi rašalas</translation>
 <translation id="8723108084122415655">Nenumatytojo tinklo delsa viršija slenksčio vertę</translation>

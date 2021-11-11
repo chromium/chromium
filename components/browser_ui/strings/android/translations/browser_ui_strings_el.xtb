@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη επιτράπηκαν.}}</translation>
 <translation id="2434158240863470628">Η λήψη ολοκληρώθηκε <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Να ζητείται πάντα ιστότοπος για υπολογιστές</translation>
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
 <translation id="2485422356828889247">Απεγκατάσταση</translation>
 <translation id="2490684707762498678">Διαχειριζόμενες από την εφαρμογή <ph name="APP_NAME" /></translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">Να επιτρέπεται στους ιστοτόπους η πρόσβαση στους αισθητήρες κίνησης (συνιστάται)</translation>
 <translation id="5050380848339752099">Αυτός ο ιστότοπος πρόκειται να κοινοποιήσει πληροφορίες σε μια εφαρμογή εκτός της κατάστασης ανώνυμης περιήγησης.</translation>
 <translation id="5063480226653192405">Χρήση</translation>
+<translation id="509133520954049755">Αίτημα για προβολή για υπολογιστές</translation>
 <translation id="5100237604440890931">Συμπτυγμένη - Κάντε κλικ για ανάπτυξη</translation>
 <translation id="5123685120097942451">Καρτέλα ανώνυμης περιήγησης</translation>
+<translation id="5134599672855298214">Αίτημα για προβολή για κινητά (συνιστάται)</translation>
 <translation id="5186036860380548585">Η επιλογή είναι διαθέσιμη κοντά στην κορυφή της οθόνης</translation>
 <translation id="5197729504361054390">Οι επαφές που επιλέγετε θα κοινοποιηθούν στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Τελευταία επίσκεψη σήμερα</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">Ανάκληση άδειας συσκευής</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Χρησιμοποιείται 1 cookie}other{Χρησιμοποιούνται # cookie}}</translation>
 <translation id="8487700953926739672">Διαθέσιμο εκτός σύνδεσης</translation>
+<translation id="848952951823693243">Να ζητείται πάντα ιστότοπος για κινητά</translation>
 <translation id="851751545965956758">Αποκλεισμός ιστοτόπων από τη σύνδεση σε συσκευές</translation>
 <translation id="8525306231823319788">Πλήρης οθόνη</translation>
 <translation id="857943718398505171">Επιτρέπεται (συνιστάται)</translation>

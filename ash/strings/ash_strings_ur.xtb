@@ -326,6 +326,7 @@
 <translation id="334252345105450327">ایک اسکرین شاٹ لیں</translation>
 <translation id="3351879221545518001">آپ فی الحال اسکرین کاسٹ کر رہے ہیں۔</translation>
 <translation id="3364721542077212959">اسٹائلس ٹولز</translation>
+<translation id="3365977133351922112">آپ کا فون بہت دور ہے۔ اپنے فون کو قریب لائیں۔</translation>
 <translation id="3368922792935385530">منسلک</translation>
 <translation id="3371140690572404006">‏USB-C آلہ (دائیں طرف کا اگلا پورٹ)</translation>
 <translation id="3375634426936648815">منسلک ہے</translation>
@@ -602,6 +603,7 @@
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5176318573511391780">جزوی اسکرین کو ریکارڈ کریں</translation>
 <translation id="5199367439331364630">‏اپنے Chromebook میں سائن ان کرنے کیلئے، پاس ورڈ درج کریں</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />، <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />، <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 دیگر اطلاع}other{# دیگر اطلاعات}}</translation>
 <translation id="5207949376430453814">متن کیرٹ کو نمایاں کریں</translation>
 <translation id="5208059991603368177">آن</translation>
@@ -885,6 +887,7 @@
 <translation id="7398254312354928459">نیٹ ورک کنکشن سوئچ ہو گيا</translation>
 <translation id="7405710164030118432">‏آلہ کو غیر مقفل کرنے کیلئے، اپنے Family Link کا والدین کا رسائی کا کوڈ درج کریں</translation>
 <translation id="7406608787870898861">اپنے موبائل نیٹ ورک کو سیٹ اپ کرنا مکمل کریں</translation>
+<translation id="740790383907119240">ایپ شارٹ کٹس</translation>
 <translation id="741244894080940828">تبدیلی</translation>
 <translation id="7413851974711031813">بند کرنے کے لئے "اسکیپ" دبائیں</translation>
 <translation id="742594950370306541">کیمرا زیر استعمال ہے۔</translation>
@@ -987,6 +990,7 @@
 <translation id="8061464966246066292">اعلی تناسب امتزاج</translation>
 <translation id="8098591350844501178">اسکرین کو <ph name="RECEIVER_NAME" /> پر کاسٹ کرنا بند کریں</translation>
 <translation id="8113423164597455979">آن، سبھی ایپس</translation>
+<translation id="8120151603115102514">‏آپ کے فون میں لاک اسکرین نہیں ہے۔ اپنے Chromebook کو غیر مقفل کرنے کے لیے، پاس ورڈ درج کریں۔</translation>
 <translation id="8129620843620772246">C °<ph name="TEMPERATURE_C" /></translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8132487352815776550">سب ٹائٹلز بند کریں</translation>
@@ -1035,6 +1039,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> میں <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ہے۔</translation>
 <translation id="8477270416194247200">‏منسوخ کرنے کے لیے Alt+Search یا Shift دبائیں۔</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> کو سپورٹ نہیں کرتا ہے۔ ریزولیوشن کو تبدیل کر کے <ph name="FALLBACK_RESOLUTION" /> کر دیا گیا تھا۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ تبدیلیوں کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
+<translation id="85123341071060231">‏آپ کے Chromebook کا بلوٹوتھ آف ہے۔ اپنے Chromebook کو غیر مقفل کرنے کے لیے، پاس ورڈ درج کریں۔</translation>
 <translation id="8513108775083588393">خودکار گھمائیں</translation>
 <translation id="851458219935658693">موجودہ ڈیسک سے ونڈوز دکھائیں، ریڈیو بٹن کا انتخاب کیا گیا</translation>
 <translation id="8517041960877371778">ہو سکتا ہے کہ آپ کا <ph name="DEVICE_TYPE" /> آن ہونے کی صورت میں چارج نہ ہو۔</translation>

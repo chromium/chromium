@@ -15,7 +15,7 @@
 <translation id="1100066534610197918">在群組的新分頁中開啟</translation>
 <translation id="1103142993930332957">要協助改善 Chrome 嗎？</translation>
 <translation id="1105960400813249514">擷取螢幕畫面</translation>
-<translation id="1108938384783527433">同步處理歷史記錄</translation>
+<translation id="1108938384783527433">同步處理記錄</translation>
 <translation id="1110914759170138831">已縮短突顯文字長度</translation>
 <translation id="1111673857033749125">儲存在其他裝置上的書籤會在這裡顯示。</translation>
 <translation id="1113597929977215864">顯示簡化檢視模式</translation>
@@ -158,7 +158,7 @@
 <translation id="2000419248597011803">將部分 Cookie，以及網址列和搜尋框中的搜尋內容傳送至預設搜尋引擎</translation>
 <translation id="200114059308480249">要加入上下文來執行 Google 搜尋嗎？</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
-<translation id="2020309681647789787">你可以在所有已同步的裝置上查看歷史記錄，繼續執行先前的任何工作</translation>
+<translation id="2020309681647789787">您可在所有已同步的裝置上查看記錄，繼續執行先前的任何工作</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
 <translation id="2038563949887743358">開啟「切換為電腦版網站」</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> 在 Chrome 中也有資料</translation>
@@ -236,7 +236,6 @@
 <translation id="2450907520913474542">無需離開網頁即可瞭解網站上的主題。「輕觸搜尋」會將字詞及其上下文傳送至「Google 搜尋」，並傳回定義、圖片、搜尋結果和其他詳細資料。
 
 輕觸並按住字詞即可搜尋。如要修正搜尋，請調整選取的字詞長度。如要編輯搜尋，請開啟面板、輕按圖示以在新分頁中開啟，然後在搜尋框中進行變更。</translation>
-<translation id="2451607499823206582">正在追蹤</translation>
 <translation id="2459390580524506445">加強版語音搜尋</translation>
 <translation id="2461822463642141190">電流</translation>
 <translation id="247737702124049222">圖片描述功能已開啟</translation>
@@ -261,6 +260,7 @@
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2561519700418191927">影片預覽</translation>
 <translation id="2567385386134582609">圖片</translation>
+<translation id="2567545343356994513">針對不安全的網站、下載內容和擴充功能提供更快速的主動式防護機制</translation>
 <translation id="2571711316400087311">詢問是否將其他語言的網頁傳送至「Google 翻譯」</translation>
 <translation id="2581165646603367611">這會清除 Chrome 認為不重要的網站內的 Cookie、快取和其他資料。</translation>
 <translation id="2587052924345400782">全新版本現已推出</translation>
@@ -429,7 +429,6 @@
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3542235761944717775">可用空間：<ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">搜尋你的記錄</translation>
-<translation id="3557272988124495906">接收降價通知</translation>
 <translation id="3557336313807607643">新增至通訊錄</translation>
 <translation id="3563767357928833671">顯示咗剪貼簿嘅內容</translation>
 <translation id="3566923219790363270">Chrome 仍在準備 VR。請稍後再重新啟動 Chrome。</translation>
@@ -489,6 +488,7 @@
 <translation id="395377504920307820">使用時不登入帳戶</translation>
 <translation id="3958287878205277013">如要清除裝置上的無痕瀏覽記錄，請關閉所有無痕式分頁。</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome 準備就緒後將載入您的網頁}other{Chrome 準備就緒後將載入您的網頁}}</translation>
+<translation id="3962119236270174787">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制</translation>
 <translation id="3962957115499249330">透過 Wi-Fi 開始下載時，系統會顯示通知。</translation>
 <translation id="3963007978381181125">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。只有知道您密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存您的密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須重設同步功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Chrome 無法檢查密碼</translation>
@@ -851,7 +851,7 @@
 <translation id="6070730414166672373">正在聯絡銀行\u2026</translation>
 <translation id="6085886413119427067">判斷如何透過安全連線連接網站</translation>
 <translation id="60923314841986378">尚餘 <ph name="HOURS" /> 小時</translation>
-<translation id="6095578583683628124">如果 Google 也是預設的搜尋引擎，你將能取得更實用、更符合需求的建議</translation>
+<translation id="6095578583683628124">如果 Google 亦是預設的搜尋引擎，您將能取得更實用、更符合需要的建議</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6111020039983847643">數據用量</translation>
 <translation id="6112702117600201073">正在重新整理網頁</translation>
@@ -954,6 +954,7 @@
 <translation id="6627583120233659107">編輯資料夾</translation>
 <translation id="6633067410344541938">解鎖無痕模式</translation>
 <translation id="663674369910034433">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK1" />同步處理<ph name="END_LINK1" />和 <ph name="BEGIN_LINK2" />Google 服務<ph name="END_LINK2" /></translation>
+<translation id="6640207029842583248">一律封鎖</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6643649862576733715">依節省數據量排序</translation>
 <translation id="6648459603387803038">您的管理員可遠端變更瀏覽器設定。此裝置上的活動也可透過 Chrome 以外的服務管理。</translation>
@@ -1080,6 +1081,7 @@
 <translation id="7435356471928173109">已由管理員關閉</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
 <translation id="7438641746574390233">開啟精簡模式後，Chrome 會使用 Google 伺服器以加快網頁載入。精簡模式重新編寫緩慢的網頁，讓網頁只載入重要內容。 精簡模式不會套用至無痕分頁。</translation>
+<translation id="7443901082822119557">在無痕模式中，網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。某些網站的功能可能無法正常運作。</translation>
 <translation id="7444811645081526538">更多類別</translation>
 <translation id="7453467225369441013">您會登出大部分的網站，但不會因此登出 Google 帳戶。</translation>
 <translation id="7454641608352164238">空間不足</translation>
@@ -1187,6 +1189,7 @@
 <translation id="799576009106109668">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
+<translation id="8006818846907410687">使用無痕模式時封鎖</translation>
 <translation id="8013372441983637696">一併清除您在此裝置上的 Chrome 資料</translation>
 <translation id="8015452622527143194">將網頁中的所有內容回復到預設大小</translation>
 <translation id="8026334261755873520">清除瀏覽數據</translation>
@@ -1232,9 +1235,9 @@
 <translation id="8218052821161047641">快速載入的頁面</translation>
 <translation id="8218622182176210845">管理您的帳戶</translation>
 <translation id="8223642481677794647">資訊提供卡選單</translation>
-<translation id="8242868071038398515">如果產品在任何網站上降價，系統將通知您</translation>
 <translation id="8250920743982581267">文件</translation>
 <translation id="825412236959742607">這個網頁使用過多記憶體，因此 Chrome 已移除部分內容。</translation>
+<translation id="8255617931166444521">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
 <translation id="8260126382462817229">請嘗試再次登入</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="82619448491672958">查看其他分頁</translation>
@@ -1397,7 +1400,7 @@
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9155898266292537608">您亦可以透過快速輕按某個字詞進行搜尋</translation>
 <translation id="9158770349521403363">只分享內容</translation>
-<translation id="916446198114569890">系統會將你造訪的網址儲存到 Google 帳戶</translation>
+<translation id="916446198114569890">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
 <translation id="9169507124922466868">導覽記錄喺畫面下半部分顯示</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{曾在 1 分鐘前檢查}other{曾在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">尚餘 1 個檔案</translation>

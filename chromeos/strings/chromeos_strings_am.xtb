@@ -278,6 +278,7 @@
 <translation id="5294769550414936029">ስሪት <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">መስኮትን ወደ ዴስክ ውሰድ</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">ይገናኙ</translation>
 <translation id="5315873049536339193">ማንነት</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5318334351163689047">የ TCP ጥያቄ አለመሳካቶች</translation>
@@ -399,6 +400,7 @@
 <translation id="714876143603641390">የላን ተገናኝነት</translation>
 <translation id="7162487448488904999">ማዕከለ-ስዕላት</translation>
 <translation id="7172721935181587524">1 ምስል</translation>
+<translation id="7175037578838465313"><ph name="NAME" />ን አዋቅር</translation>
 <translation id="7177485034254901881">ይህ <ph name="DEVICE_TYPE" /> በ<ph name="MANAGER" /> የሚተዳደር ነው። አስተዳዳሪዎች መሣሪያውን ከርቀት ማዋቀር ይችላሉ።</translation>
 <translation id="7180611975245234373">አድስ</translation>
 <translation id="7216409898977639127">የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ</translation>
@@ -501,6 +503,7 @@
 <translation id="8620617069779373398">የውሂብ ዝውውር ሁኔታ</translation>
 <translation id="8655295600908251630">ሰርጥ</translation>
 <translation id="8660881923941176839">ፓውንድ</translation>
+<translation id="8662671328352114214">የ<ph name="TYPE" /> አውታረ መረብን ይቀላቀሉ</translation>
 <translation id="8675354002693747642">ቅድሚያ የተጋራ ቁልፍ</translation>
 <translation id="871560550817059752">አልተሳካም - ቀለም አልቋል</translation>
 <translation id="8723108084122415655">ነባሪ ያልሆነ አውታረ መረብ ከስርዓተ ምላሽ ጊዜ በላይ ነው</translation>

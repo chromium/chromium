@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> မီဂါဘိုက်</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}}</translation>
 <translation id="2434158240863470628">ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">ဒက်စ်တော့ဝဘ်ဆိုက် အမြဲတောင်းဆိုပါ</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="2485422356828889247">ဖြုတ်ရန်</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" /> က စီမံခန့်ခွဲထားပါသည်</translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">အာရုံခံစနစ်များ အသုံးပြုရန် ဤဝဘ်ဆိုက်များကို ခွင့်ပြုသည် (အကြံပြုထားသည်)</translation>
 <translation id="5050380848339752099">ဤဝဘ်ဆိုက်သည် အချက်အလက်များကို ရုပ်ဖျက်မုဒ်ပြင်ပရှိ အက်ပ်တစ်ခုနှင့် မျှဝေပါတော့မည်။</translation>
 <translation id="5063480226653192405">အသုံးပြုပုံ</translation>
+<translation id="509133520954049755">ဒက်စ်တော့ မြင်ကွင်း တောင်းဆိုမည်</translation>
 <translation id="5100237604440890931">ချုံ့ထား၏ - ချဲ့ရန် နှိပ်ပါ။</translation>
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
+<translation id="5134599672855298214">မိုဘိုင်း မြင်ကွင်း တောင်းဆိုမည် (အကြံပြုထားသည်)</translation>
 <translation id="5186036860380548585">ဖန်သားပြင်၏ထိပ်နားတွင် ရွေးချယ်နိုင်သည်</translation>
 <translation id="5197729504361054390">သင်ရွေးချယ်သော အဆက်အသွယ်များကို <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> နှင့် မျှဝေပါမည်။</translation>
 <translation id="5216942107514965959">ယနေ့ နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">စက်ပစ္စည်းခွင့်ပြုချက်ကို ရုပ်သိမ်းပါ</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{ကွတ်ကီးတစ်ခုကို သုံးနေသည်}other{အသုံးပြုနေသော ကွတ်ကီး # ခု}}</translation>
 <translation id="8487700953926739672">Offline ရနိုင်</translation>
+<translation id="848952951823693243">မိုဘိုင်းဝဘ်ဆိုက် အမြဲတောင်းဆိုပါ</translation>
 <translation id="851751545965956758">စက်သို့ ဝဘ်ဆိုက်များ ချိတ်ဆက်ခြင်းကို ပိတ်ထားသည်</translation>
 <translation id="8525306231823319788">မျက်နှာပြင် အပြည့်</translation>
 <translation id="857943718398505171">ခွင့်ပြု၏ (အကြံပြုထား)</translation>

@@ -107,6 +107,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1894205589103145703">S'ha produït un error durant l'inici de sessió.</translation>
 <translation id="1911619930368729126">Penja a Google Drive</translation>
 <translation id="1923342640370224680">Darrera hora</translation>
+<translation id="1930989359703290198">La teva organització només et permet iniciar la sessió amb determinats comptes. Els comptes no admesos estan amagats. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Feu doble toc per copiar-ho.</translation>
 <translation id="1952172573699511566">Quan sigui possible, els llocs web mostraran el text en el teu idioma preferit.</translation>
 <translation id="1965935827552890526">Acaba el que estaves fent a l'altra finestra de Chrome oberta.</translation>
@@ -225,6 +226,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3080525922482950719">Pots desar pàgines per llegir-les més endavant o sense connexió</translation>
 <translation id="3081338492074632642">Assegura't que la contrasenya que estàs desant coincideixi amb la contrasenya de: <ph name="WEBSITE" /></translation>
 <translation id="3112556859945124369">Marca com a…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta què pots sincronitzar<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloqueja-ho tot</translation>
 <translation id="313283613037595347">Crea una pestanya d'incògnit.</translation>
 <translation id="3153862085237805241">Desa la targeta</translation>
@@ -386,6 +388,8 @@ Les teves dades estan encriptades amb la teva frase de contrasenya de sincronitz
 <translation id="4802417911091824046">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay.
 
 Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronització<ph name="END_LINK" />.</translation>
+<translation id="4803185665210547709">Gestionat per la teva organització.
+<ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">El número de targeta no és vàlid</translation>
 <translation id="4808744395915275922">Actualitzacions</translation>
 <translation id="4818522717893377262">Afegeix un idioma...</translation>

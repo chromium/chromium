@@ -82,6 +82,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="124116460088058876">Lagi bahasa</translation>
 <translation id="1243027604378859286">Pengarang:</translation>
 <translation id="1246424317317450637">Huruf tebal</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab kemudian Enter untuk memeribadikan alat kebolehaksesan anda dalam tetapan Chrome OS.</translation>
 <translation id="1250759482327835220">Untuk membayar dengan lebih cepat selepas ini, simpan kad, nama dan alamat pengebilan anda ke Akaun Google.</translation>
 <translation id="1252799212227771492">Butang buat helaian, tekan kekunci Enter untuk membuat Google Sheet baharu dengan pantas</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (disegerakkan)</translation>
@@ -322,6 +323,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="192020519938775529">{COUNT,plural, =0{Tiada}=1{1 tapak}other{# tapak}}</translation>
 <translation id="1923390796829649802">Butang urus tetapan kebolehaksesan, tekan Enter untuk memeribadikan alatan kebolehaksesan anda dalam tetapan Chrome OS</translation>
 <translation id="1924727005275031552">Baharu</translation>
+<translation id="1927439593081478069">Butang Jalankan semakan keselamatan Chrome, tekan Enter untuk menjalankan semakan keselamatan dalam tetapan Chrome</translation>
 <translation id="1939175642807587452">Boleh meminta untuk menghantar pemberitahuan</translation>
 <translation id="1945968466830820669">Anda boleh kehilangan akses kepada akaun organisasi anda atau mengalami kecurian identiti. Chromium mengesyorkan supaya kata laluan anda ditukar sekarang.</translation>
 <translation id="1947454675006758438">Kokot atas sebelah kanan</translation>
@@ -341,6 +343,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2003709556000175978">Tetapkan semula kata laluan anda sekarang</translation>
 <translation id="2003775180883135320">Empat tebukan atas</translation>
 <translation id="201174227998721785">Urus kebenaran dan data yang disimpan merentas berbilang laman dalam tetapan Chrome</translation>
+<translation id="2019607688127825327">Butang urus tetapan kebolehaksesan, tekan Enter untuk memeribadikan alat kebolehaksesan anda dalam tetapan Chrome</translation>
 <translation id="2025115093177348061">Realiti tambahan</translation>
 <translation id="2025186561304664664">Proksi ditetapkan kepada auto konfigurasi.</translation>
 <translation id="2025891858974379949">Kandungan tidak selamat</translation>
@@ -506,6 +509,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2556876185419854533">&amp;Buat Asal Edit</translation>
 <translation id="2570734079541893434">Urus tetapan</translation>
 <translation id="257674075312929031">Kumpulan</translation>
+<translation id="2576880857912732701">Butang urus tetapan keselamatan, tekan Enter untuk mengurus Penyemakan Imbas Selamat anda dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="2586657967955657006">Papan Keratan</translation>
 <translation id="2587730715158995865">Daripada <ph name="ARTICLE_PUBLISHER" />. Baca artikel ini dan <ph name="OTHER_ARTICLE_COUNT" /> cerita lain.</translation>
 <translation id="2587841377698384444">ID API Direktori:</translation>
@@ -550,6 +554,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2713444072780614174">Putih</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menguruskan maklumat kad kredit dan pembayaran anda dalam tetapan Chrome</translation>
 <translation id="2721148159707890343">Permintaan berjaya</translation>
+<translation id="2723669454293168317">Jalankan semakan keselamatan dalam tetapan Chrome</translation>
 <translation id="2726001110728089263">Dulang Sisi</translation>
 <translation id="2728127805433021124">Sijil pelayan ditandatangani menggunakan algoritma tandatangan yang lemah.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Jalankan Diagnostik Sambungan<ph name="END_LINK" /></translation>
@@ -580,6 +585,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2859806420264540918">Tapak ini menyiarkan iklan yang mengganggu atau mengelirukan.</translation>
 <translation id="287596039013813457">Mesra</translation>
 <translation id="2876489322757410363">Meninggalkan mod Inkognito untuk membuat bayaran melalui aplikasi luar. Teruskan?</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengurus Penyemakan Imbas Selamat anda dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="2878197950673342043">Lipatan poster</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Peletakan tetingkap</translation>
@@ -685,6 +691,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3229041911291329567">Maklumat versi tentang peranti dan penyemak imbas anda</translation>
 <translation id="323107829343500871">Masukkan CVC untuk <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Sentiasa kesan kandungan penting di laman web ini</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab kemudian Enter untuk menyesuaikan rupa penyemak imbas anda</translation>
 <translation id="3240791268468473923">Bukti kelayakan pembayaran selamat tiada helaian bukti kelayakan yang sepadan dibuka</translation>
 <translation id="3249845759089040423">Groovy</translation>
 <translation id="3252266817569339921">Bahasa Perancis</translation>
@@ -728,6 +735,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
       • Membuat peta 3D bagi persekitaran anda dan menjejak kedudukan kamera
       • Gunakan kamera anda</translation>
 <translation id="337363190475750230">Nyahperuntukkan</translation>
+<translation id="3375754925484257129">Jalankan semakan keselamatan Chrome</translation>
 <translation id="3377144306166885718">Pelayan menggunakan versi TLS yang sudah lapuk.</translation>
 <translation id="3377188786107721145">Ralat menghuraikan dasar</translation>
 <translation id="3377736046129930310">Gunakan kunci skrin untuk mengesahkan kad dengan lebih cepat</translation>
@@ -768,6 +776,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3462200631372590220">Menyembunyikan butiran</translation>
 <translation id="3467763166455606212">Nama pemegang kad diperlukan</translation>
 <translation id="3468054117417088249"><ph name="TAB_SWITCH_SUFFIX" />, dibuka sekarang, tekan Tab, kemudian Enter untuk beralih ke tab yang terbuka</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab kemudian Enter untuk menutup semua tetingkap Inkognito yang terbuka pada masa ini</translation>
 <translation id="3479552764303398839">Bukan sekarang</translation>
 <translation id="3484560055331845446">Anda mungkin akan kehilangan akses kepada Akaun Google anda. Chrome mengesyorkan supaya anda menukar kata laluan sekarang. Anda akan diminta untuk log masuk.</translation>
 <translation id="3487845404393360112">Dulang 4</translation>
@@ -806,6 +815,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3611395257124510155">Kad maya untuk <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Saiz 2</translation>
 <translation id="361438452008624280">Masukan senarai "<ph name="LANGUAGE_ID" />": Bahasa tidak diketahui atau bahasa tidak disokong.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menjalankan semakan keselamatan dalam tetapan Chrome</translation>
 <translation id="3615877443314183785">Masukkan tarikh tamat tempoh yang sah</translation>
 <translation id="36224234498066874">Kosongkan Data Semakan Imbas...</translation>
 <translation id="362276910939193118">Paparkan Sejarah Penuh</translation>
@@ -1602,6 +1612,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6218753634732582820">Alih keluar alamat daripada Chromium?</translation>
 <translation id="622039917539443112">Lipatan selari</translation>
 <translation id="6221345481584921695">Penyemakan Selamat Google <ph name="BEGIN_LINK" />telah mengesan perisian hasad<ph name="END_LINK" /> pada <ph name="SITE" /> baru-baru ini. Tapak web yang lazimnya selamat kadangkala dijangkiti oleh perisian hasad. Kandungan berniat jahat datang dari <ph name="SUBRESOURCE_HOST" />, pengedar perisian hasad yang diketahui.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab kemudian Enter untuk memeribadikan alat kebolehaksesan anda dalam tetapan Chrome.</translation>
 <translation id="6234122620015464377">Pangkas selepas setiap dokumen</translation>
 <translation id="6240447795304464094">Logo Google Pay</translation>
 <translation id="6241121617266208201">Sembunyikan cadangan</translation>
@@ -1620,6 +1631,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6279098320682980337">Nombor kad maya tidak diisikan? Klik butiran kad untuk disalin</translation>
 <translation id="6280223929691119688">Tidak dapat menghantar ke alamat ini. Pilih alamat lain.</translation>
 <translation id="6282194474023008486">Poskod</translation>
+<translation id="6285507000506177184">Butang urus muat turun dalam Chrome, tekan Enter untuk mengurus fail yang telah anda muat turun dalam Chrome</translation>
 <translation id="6289939620939689042">Warna Halaman</translation>
 <translation id="6290238015253830360">Artikel cadangan anda dipaparkan di sini</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1735,6 +1747,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6689249931105087298">Relatif dengan mampatan mata hitam</translation>
 <translation id="6689271823431384964">Chrome menawarkan penyimpanan kad dalam Akaun Google anda kerana anda telah log masuk. Anda boleh menukar gelagat ini dalam tetapan. Nama pemegang kad diambil daripada akaun anda.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mencari peranti anda dalam Google Account</translation>
+<translation id="6696588630955820014">Butang kongsi tab ini, tekan Enter untuk berkongsi tab ini dengan berkongsi pautan, membuat kod QR, menghantar dan pelbagai lagi</translation>
 <translation id="6698381487523150993">Dicipta:</translation>
 <translation id="6702919718839027939">Pembentangan</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
@@ -1940,6 +1953,7 @@ Butiran tambahan:
 <translation id="7392089738299859607">Kemas Kini Alamat</translation>
 <translation id="7399802613464275309">Semakan Keselamatan</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">Kongsi tab ini dengan berkongsi pautan, membuat kod QR, menghantar dan pelbagai lagi</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> anda diurus</translation>
 <translation id="7407424307057130981">&lt;p&gt;Anda akan melihat ralat ini jika anda memasang perisian Superfish pada komputer Windows anda.&lt;/p&gt;
     &lt;p&gt;Ikut langkah berikut untuk melumpuhkan perisian itu buat sementara waktu supaya anda dapat mengakses web. Anda memerlukan hak keistimewaan pentadbir.&lt;/p&gt;
@@ -2169,6 +2183,7 @@ Butiran tambahan:
 <translation id="810875025413331850">Tiada peranti berdekatan dijumpai.</translation>
 <translation id="8116925261070264013">Diredam</translation>
 <translation id="8118489163946903409">Kaedah pembayaran</translation>
+<translation id="8124639700796374294">Butang Sesuaikan Chrome, tekan Enter untuk menyesuaikan rupa penyemak imbas anda</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" tidak dipasang dengan betul pada komputer atau rangkaian anda. Minta pentadbir IT anda menyelesaikan isu ini.</translation>
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8148608574971654810">Versi PDF:</translation>
@@ -2351,6 +2366,7 @@ Butiran tambahan:
 <translation id="87601671197631245">Tapak ini menggunakan konfigurasi keselamatan yang sudah lapuk, yang mungkin mendedahkan maklumat anda (contohnya, kata laluan, mesej atau nombor kad kredit) apabila dihantar kepada tapak ini.</translation>
 <translation id="8761567432415473239">Penyemakan Imbas Selamat Google baru-baru ini <ph name="BEGIN_LINK" />menemui atur cara berbahaya<ph name="END_LINK" /> pada <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Peranti USB</translation>
+<translation id="8763986294015493060">Tutup semua tetingkap Inkognito yang terbuka pada masa ini</translation>
 <translation id="8766943070169463815">Helaian pengesahan bukti kelayakan pembayaran selamat dibuka</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Buat semula pemadaman</translation>
@@ -2364,6 +2380,7 @@ Butiran tambahan:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengemas kini Chrome daripada tetapan Chrome anda</translation>
 <translation id="8820817407110198400">Penanda buku</translation>
 <translation id="882338992931677877">Slot Manual</translation>
+<translation id="8834380158646307944">Butang tutup tetingkap Inkognito, tekan Enter untuk menutup semua tetingkap Inkognito yang terbuka pada masa ini.</translation>
 <translation id="883848425547221593">Penanda Halaman Lain</translation>
 <translation id="884264119367021077">Alamat penghantaran</translation>
 <translation id="884923133447025588">Tiada mekanisme pembatalan dijumpai.</translation>
@@ -2417,6 +2434,7 @@ Butiran tambahan:
 <translation id="9020200922353704812">Alamat pengebilan kad diperlukan</translation>
 <translation id="9020542370529661692">Halaman ini telah diterjemahkan kepada <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk berkongsi tab ini dengan berkongsi pautan, membuat kod QR, menghantar dan pelbagai lagi</translation>
 <translation id="9025348182339809926">(Tidak sah)</translation>
 <translation id="9030265603405983977">Monokrom</translation>
 <translation id="9035022520814077154">Ralat keselamatan</translation>

@@ -69,6 +69,7 @@
 <translation id="1354356357730355833">պատճենել</translation>
 <translation id="135978014023467274">Դուք օգտագործում եք ChromeVox 63:</translation>
 <translation id="1360699455582016846">Սեղմեք <ph name="ROUTING_KEY_NUMBER" /> երթուղման բանալու տակի տարրի վրա</translation>
+<translation id="1376703628032300005">անցնել հաջորդ նիշին</translation>
 <translation id="1377925789329510816">Սա վերջին պարբերությունն է: Սեղմեք «Search + H»՝ առաջին պարբերությանը վերադառնալու համար, կամ «Search + Shift + H»՝ այս էջի երկրորդ պարբերությանն անցնելու համար:</translation>
 <translation id="138218114945450791">Բաց կապույտ</translation>
 <translation id="1383876407941801731">Որոնում</translation>
@@ -213,6 +214,7 @@
 <translation id="2450814015951372393">Նշավանդակ</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
 <translation id="2462626033734746142">Կետակոճակների խումբ</translation>
+<translation id="2467741090055146971">չեղարկել ընտրությունը</translation>
 <translation id="2471138580042810658">Վերնագիր 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{աստղանիշ}one{# աստղանիշ}other{# աստղանիշ}}</translation>
 <translation id="2490721194269245365">Վարդադարչնագույն</translation>
@@ -565,6 +567,7 @@
 <translation id="4854380505292502090">Նախորդ մեդիա վիջեթ չկա</translation>
 <translation id="4855927945655956315">Հիմնական ստեղներ․ Ctrl</translation>
 <translation id="4862744964787595316">Թավն անջատված է</translation>
+<translation id="4865995900839719272">անցնել նախորդ տող</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
 <translation id="4867316986324544967">Միացնել TTS գրանցումը</translation>
 <translation id="4886524826165775965"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -623,6 +626,7 @@
 <translation id="5304943142864553931"><ph name="TITLE" />, ներդիր</translation>
 <translation id="5308380583665731573">Կապակցվել</translation>
 <translation id="5310788376443009632">հեռացվեց՝</translation>
+<translation id="5316825363044614340">անցնել հաջորդ տող</translation>
 <translation id="5320727453979144100">Կպչուն ռեժիմը միացված է</translation>
 <translation id="5321085947096604457">{COUNT,plural, =1{ստորակետ}one{# ստորակետ}other{# ստորակետ}}</translation>
 <translation id="532485153932049746">Տեքստի ձևաչափում
@@ -902,6 +906,7 @@
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">Ձևաթղթի նախորդ դաշտ չկա</translation>
 <translation id="731121099745151312">tritm</translation>
+<translation id="7313717760367325059">օգնություն</translation>
 <translation id="7317017974771324508">ընտրված է մասամբ</translation>
 <translation id="7322442671176251901">Ուսումնասիրում հպումով</translation>
 <translation id="7344012264516629579">Անցման հրամանների միջոցով կարող եք, օրինակ, անցում կատարել անհրաժեշտ հղումներին, կոճակներին, նշավանդակներին և այլն։ Անցման հրամանների ամբողջական ցանկը կարող եք գտնել ChromeVox-ի ընտրացանկում։ Այն բացելու համար սեղմեք «Որոնում» + ․ (կետ)։</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9014206344398081366">ChromeVox-ի ուղեցույց</translation>
 <translation id="9040132695316389094">Վերնագիր 1</translation>
 <translation id="9061884144798498064">Ընտրեք 8 կետանի բրայլյան աղյուսակը`</translation>
+<translation id="9063946545000394379">անցնել նախորդ նիշին</translation>
 <translation id="9065283790526219006">+ելնող պատուհան</translation>
 <translation id="9065912140022662363">Հաջորդ կետակոճակ չկա</translation>
 <translation id="9067522039955793016">Էջի ընդհատում</translation>

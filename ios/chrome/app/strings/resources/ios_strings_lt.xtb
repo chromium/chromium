@@ -107,6 +107,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="1894205589103145703">Prisijungiant įvyko klaida.</translation>
 <translation id="1911619930368729126">Įkelti į „Google“ diską</translation>
 <translation id="1923342640370224680">Pastaroji valanda</translation>
+<translation id="1930989359703290198">Organizacijoje leidžiama prisijungti tik naudojant tam tikras paskyras. Neleidžiamos paskyros yra paslėptos. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Dukart palieskite, kad nukopijuotumėte.</translation>
 <translation id="1952172573699511566">Kai bus įmanoma, svetainėje tekstas bus rodomas pasirinkta kalba.</translation>
 <translation id="1965935827552890526">Pabaikite tai, ką darėte, kitame atidarytame „Chrome“ lange.</translation>
@@ -386,6 +387,8 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad pradėtumėte s
 <translation id="4802417911091824046">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“.
 
 Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatykite sinchronizavimą<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Valdo jūsų organizacija.
+<ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Netinkamas kortelės numeris</translation>
 <translation id="4808744395915275922">Naujiniai</translation>
 <translation id="4818522717893377262">Pridėti kalbą...</translation>

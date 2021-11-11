@@ -253,6 +253,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2527779675047087889">Sembunyikan konten papan klip</translation>
 <translation id="2532336938189706096">Tampilan Web</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> item dihapus</translation>
+<translation id="2534582914273493287">URL yang Anda buka akan dikirim ke Google</translation>
 <translation id="2536728043171574184">Melihat salinan offline halaman ini</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
 <translation id="2561519700418191927">Pratinjau video</translation>
@@ -372,6 +373,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3234978181857588512">Simpan ke perangkat</translation>
 <translation id="3236059992281584593">1 menit lagi</translation>
 <translation id="3244271242291266297">BB</translation>
+<translation id="3245429137663807393">Jika Anda juga membagikan laporan penggunaan Chrome, laporan tersebut akan menyertakan URL yang Anda buka</translation>
 <translation id="3250563604907490871">Deskripsi gambar akan dilanjutkan saat Anda terhubung ke Wi-Fi</translation>
 <translation id="3254409185687681395">Bookmark halaman ini</translation>
 <translation id="3259831549858767975">Memperkecil semua yang ada di halaman</translation>
@@ -459,6 +461,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3775705724665058594">Kirim ke perangkat Anda</translation>
 <translation id="3778956594442850293">Ditambahkan ke Layar utama</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tab}}</translation>
+<translation id="3803783897442799486">Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan<ph name="END_LINK1" />.\nUntuk membantu meningkatkan kualitas aplikasi, Chrome akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_LINK2" />Kelola<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Kelola putar otomatis</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Kelola</translation>
@@ -607,6 +610,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="47217992755561375">Lihat situs teratas Anda</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Terakhir disinkronkan: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">Anda akan mendapatkan saran yang lebih baik di kolom URL</translation>
 <translation id="4742970037960872810">Hapus sorotan</translation>
 <translation id="4749960740855309258">Membuka tab baru</translation>
 <translation id="4758061975920522644">Hanya bagikan gambar</translation>
@@ -744,6 +748,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5524843473235508879">Pengalihan diblokir.</translation>
 <translation id="5534640966246046842">Situs disalin</translation>
 <translation id="5548606607480005320">Pemeriksaan keamanan</translation>
+<translation id="5555525474779371165">Pilih perlindungan Safe Browsing Anda</translation>
 <translation id="5556459405103347317">Muat ulang</translation>
 <translation id="5561549206367097665">Menunggu jaringan…</translation>
 <translation id="5568069709869097550">Tidak dapat sign in</translation>
@@ -1174,6 +1179,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7975379999046275268">Pratinjau halaman <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pramuat halaman agar browsing dan menelusuri lebih cepat</translation>
 <translation id="7986497153528221272">Untuk melihat sandi, setel kunci layar di perangkat terlebih dahulu</translation>
+<translation id="799576009106109668">Anda akan menjelajah lebih cepat karena konten dimuat secara proaktif berdasarkan halaman web yang sedang Anda buka</translation>
 <translation id="7998918019931843664">Buka kembali tab yang ditutup</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Hapus juga data Chrome Anda dari perangkat ini</translation>
@@ -1239,6 +1245,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8354977102499939946">Telusuri dengan cepat menggunakan suara Anda. Untuk mengedit pintasan ini, buka Setelan.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> download dipulihkan</translation>
 <translation id="8364299278605033898">Lihat situs yang populer</translation>
+<translation id="8368001212524806591">Pantau harga</translation>
 <translation id="8387617938027387193">Verifikasi diri Anda</translation>
 <translation id="8393700583063109961">Kirim pesan</translation>
 <translation id="8410695015584479363">Pantau harga</translation>

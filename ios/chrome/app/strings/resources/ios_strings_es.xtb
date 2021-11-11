@@ -107,6 +107,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1894205589103145703">No se ha podido iniciar la sesión.</translation>
 <translation id="1911619930368729126">Subir a Google Drive</translation>
 <translation id="1923342640370224680">Última hora</translation>
+<translation id="1930989359703290198">Tu organización solo te permite iniciar sesión con determinadas cuentas. Las cuentas no permitidas están ocultas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Toca dos veces para copiar.</translation>
 <translation id="1952172573699511566">Si es posible, los sitios web muestran texto en tu idioma preferido.</translation>
 <translation id="1965935827552890526">Termina lo que estabas haciendo en otra ventana abierta de Chrome.</translation>
@@ -225,6 +226,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión</translation>
 <translation id="3081338492074632642">La contraseña que guardes debe coincidir con tu contraseña de <ph name="WEBSITE" />.</translation>
 <translation id="3112556859945124369">Marcar…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crea una nueva pestaña de incógnito</translation>
 <translation id="3153862085237805241">Guardar tarjeta</translation>
@@ -386,6 +388,8 @@ Tus datos se han cifrado con tu frase de contraseña de sincronización. Introd�
 <translation id="4802417911091824046">El cifrado mediante frase de contraseña no incluye los métodos de pago ni las direcciones de Google Pay.
 
 Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización<ph name="END_LINK" />.</translation>
+<translation id="4803185665210547709">Gestionado por tu organización.
+<ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">El número de tarjeta no es válido</translation>
 <translation id="4808744395915275922">Actualizaciones</translation>
 <translation id="4818522717893377262">Añadir idioma...</translation>

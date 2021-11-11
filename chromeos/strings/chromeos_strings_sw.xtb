@@ -258,6 +258,7 @@
 <translation id="5049856988445523908">SIM Imefungwa (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Jina la kikundi</translation>
 <translation id="5051044138948155788">Huu ndio ukurasa pekee uliosalia. Hatua hii itakuelekeza kwenye skrini ya kuanza kuchanganua.</translation>
+<translation id="5061169534910302641">Sasisha toleo na uzime kisha uwashe</translation>
 <translation id="5088172560898466307">Jina la seva pangishi</translation>
 <translation id="5089810972385038852">Jimbo</translation>
 <translation id="5142961317498132443">Uthibitishaji</translation>
@@ -276,6 +277,7 @@
 <translation id="5294769550414936029">toleo la <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Hamishia dirisha kwenye eneokazi</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Unganisha</translation>
 <translation id="5315873049536339193">Kitambulisho</translation>
 <translation id="5317780077021120954">Hifadhi</translation>
 <translation id="5318334351163689047">Maombi ya TCP ambayo hayakufaulu</translation>
@@ -397,6 +399,7 @@
 <translation id="714876143603641390">Muunganisho wa LAN</translation>
 <translation id="7162487448488904999">Matunzio</translation>
 <translation id="7172721935181587524">Picha moja</translation>
+<translation id="7175037578838465313">Weka mipangilio ya <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> hii inadhibitiwa na <ph name="MANAGER" />. Wasimamizi wanaweza kuweka mipangilio ya kifaa kwa mbali.</translation>
 <translation id="7180611975245234373">Onyesha upya</translation>
 <translation id="7216409898977639127">Mtoa huduma za vifaa vya mkononi</translation>
@@ -499,6 +502,7 @@
 <translation id="8620617069779373398">Hali ya kutumia mtandao usio wako wa kawaida</translation>
 <translation id="8655295600908251630">Kituo</translation>
 <translation id="8660881923941176839">wakia</translation>
+<translation id="8662671328352114214">Jiunge na mtandao wa <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Kitufe kilichoshirikiwa awali</translation>
 <translation id="871560550817059752">Haijakamilika - Wino umeisha</translation>
 <translation id="8723108084122415655">Muda wa kusubiri wa mtandao usio chaguomsingi umezidi kiwango cha juu</translation>

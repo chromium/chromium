@@ -56,7 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}other{已允許「<ph name="PERMISSION_1" />」、「<ph name="PERMISSION_2" />」和另外 <ph name="NUM_MORE" /> 項權限}}</translation>
 <translation id="2434158240863470628">下載完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
-<translation id="2442870161001914531">一律要求電腦版網站</translation>
+<translation id="2442870161001914531">一律要求桌面版網站</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">解除安裝</translation>
 <translation id="2490684707762498678">由 <ph name="APP_NAME" /> 管理</translation>
@@ -149,10 +149,10 @@
 <translation id="5048398596102334565">允許網站存取動作感應器 (建議)</translation>
 <translation id="5050380848339752099">此網站即將退出無痕模式並與外部應用程式分享資料。</translation>
 <translation id="5063480226653192405">用量</translation>
-<translation id="509133520954049755">要求電腦檢視畫面</translation>
+<translation id="509133520954049755">要求桌面電腦檢視模式</translation>
 <translation id="5100237604440890931">已收合 - 點擊即可展開。</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
-<translation id="5134599672855298214">要求行動裝置檢視畫面 (建議)</translation>
+<translation id="5134599672855298214">要求流動裝置檢視模式 (建議)</translation>
 <translation id="5186036860380548585">選項喺螢幕頂部附近</translation>
 <translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
 <translation id="5216942107514965959">上次瀏覽時間：今天</translation>
@@ -301,7 +301,7 @@
 <translation id="8447861592752582886">撤消裝置權限</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{1 個 Cookie 正在使用中}other{# 個 Cookie 正在使用中}}</translation>
 <translation id="8487700953926739672">可離線使用</translation>
-<translation id="848952951823693243">一律要求行動版網站</translation>
+<translation id="848952951823693243">一律要求流動網站</translation>
 <translation id="851751545965956758">禁止網站連接裝置</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="857943718398505171">允許 (建議)</translation>

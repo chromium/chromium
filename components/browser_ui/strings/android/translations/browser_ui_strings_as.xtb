@@ -56,6 +56,7 @@
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> এম. বি.</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আৰু <ph name="NUM_MORE" /> টাৰ অনুমতি দিয়া আছে}}</translation>
 <translation id="2434158240863470628">ডাউনল’ড সম্পূর্ণ হৈছে <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">সদায়েই ডেস্কটপ ছাইট অনুৰোধ কৰিব</translation>
 <translation id="2482878487686419369">জাননী</translation>
 <translation id="2485422356828889247">আনইনষ্টল কৰক</translation>
 <translation id="2490684707762498678"><ph name="APP_NAME" />এ পৰিচালনা কৰে</translation>
@@ -148,8 +149,10 @@
 <translation id="5048398596102334565">ম'শ্বন ছেন্সৰসমূহলৈ এক্সেছ পাবলৈ ছাইটসমূহক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
 <translation id="5050380848339752099">এই ছাইটটোৱে ইনক’গনিট’ ম’ডৰ বাহিৰৰ এটা এপৰ সৈতে তথ্য শ্বেয়াৰ কৰিবলৈ লৈছে।</translation>
 <translation id="5063480226653192405">ব্যৱহাৰ</translation>
+<translation id="509133520954049755">ডেস্কটপ ভিউৰ অনুৰোধ জনাওক</translation>
 <translation id="5100237604440890931">সংকুচিত - সম্প্ৰসাৰণ কৰিবলৈ টিপক</translation>
 <translation id="5123685120097942451">ইনক’গনিট’ টেব</translation>
+<translation id="5134599672855298214">ম’বাইল ভিউৰ অনুৰোধ জনাওক (চুপাৰিছ কৰা)</translation>
 <translation id="5186036860380548585">স্ক্ৰীনৰ ওপৰৰ অংশৰ ওচৰত বিকল্পটো উপলব্ধ</translation>
 <translation id="5197729504361054390">আপুনি বাছনি কৰা সম্পৰ্কবোৰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
 <translation id="5216942107514965959">শেষবাৰ আজি চাইছে</translation>
@@ -298,6 +301,7 @@
 <translation id="8447861592752582886">ডিভাইচৰ অনুমতি প্ৰত্যাহাৰ কৰক</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{১ টা কুকি ব্যৱহাৰ হৈ আছে}one{# টা কুকি ব্যৱহাৰ হৈ আছে}other{# টা কুকি ব্যৱহাৰ হৈ আছে}}</translation>
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>
+<translation id="848952951823693243">সদায়েই ম’বাইল ছাইট অনুৰোধ কৰিব</translation>
 <translation id="851751545965956758">ডিভাইচৰ সৈতে সংযোগ কৰাৰ পৰা ছাইটসমূহক অৱৰোধ কৰক</translation>
 <translation id="8525306231823319788">সম্পূর্ণ স্ক্ৰীণ</translation>
 <translation id="857943718398505171">অনুমোদিত (চুপাৰিছ কৰা)</translation>

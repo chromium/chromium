@@ -82,6 +82,7 @@
 <translation id="124116460088058876">Περισσότερες γλώσσες</translation>
 <translation id="1243027604378859286">Συντάκτης:</translation>
 <translation id="1246424317317450637">Έντονη γραφή</translation>
+<translation id="1248573052514400575"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να εξατομικεύσετε τα εργαλεία προσβασιμότητάς σας στις ρυθμίσεις του Chrome OS</translation>
 <translation id="1250759482327835220">Για πιο γρήγορες πληρωμές στο μέλλον, αποθηκεύστε τα στοιχεία της κάρτας σας, το όνομα και τη διεύθυνση χρέωσης στον Λογαριασμό σας Google.</translation>
 <translation id="1252799212227771492">Κουμπί Δημιουργία φύλλου, πατήστε το πλήκτρο Enter για να δημιουργήσετε γρήγορα ένα νέο Φύλλο Google</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (συγχρονισμένο)</translation>
@@ -156,6 +157,7 @@
 <translation id="1422930527989633628">Μπορεί να ζητά να εντοπίζει κοντινές συσκευές Bluetooth (συνιστάται).</translation>
 <translation id="1426410128494586442">Ναι</translation>
 <translation id="1428146450423315676">Μονάδα στοίβαξης 7</translation>
+<translation id="142858679511221695">Χρήστης cloud</translation>
 <translation id="1428729058023778569">Βλέπετε αυτήν την προειδοποίηση, επειδή αυτός ο ιστότοπος δεν υποστηρίζει HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Μάθετε περισσότερα<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1432581352905426595">Διαχείριση μηχανών αναζήτησης</translation>
@@ -322,6 +324,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Κανένας}=1{1 ιστότοπος}other{# ιστότοποι}}</translation>
 <translation id="1923390796829649802">Κουμπί Διαχείριση ρυθμίσεων προσβασιμότητας, πατήστε Enter για να εξατομικεύσετε τα εργαλεία προσβασιμότητάς σας στις ρυθμίσεις του Chrome OS.</translation>
 <translation id="1924727005275031552">Νέο</translation>
+<translation id="1927439593081478069">Κουμπί Εκτέλεση ελέγχου ασφαλείας Chrome, πατήστε το πλήκτρο Enter για εκτέλεση του ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="1939175642807587452">Μπορεί να ζητά να στέλνει ειδοποιήσεις.</translation>
 <translation id="1945968466830820669">Υπάρχει κίνδυνος να χάσετε την πρόσβαση στον λογαριασμό της επιχείρησής σας ή να σας κλέψουν τη διαδικτυακή σας ταυτότητα. Το Chromium συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα.</translation>
 <translation id="1947454675006758438">Συρραφή επάνω δεξιά</translation>
@@ -341,6 +344,7 @@
 <translation id="2003709556000175978">Επαναφέρετε τον κωδικό πρόσβασής σας τώρα</translation>
 <translation id="2003775180883135320">Τετραπλό τρύπημα στο επάνω μέρος</translation>
 <translation id="201174227998721785">Διαχειριστείτε άδειες και δεδομένα που έχουν αποθηκευτεί σε ιστοτόπους από τις ρυθμίσεις του Chrome</translation>
+<translation id="2019607688127825327">Κουμπί Διαχείριση ρυθμίσεων προσβασιμότητας, πατήστε το πλήκτρο Enter για να εξατομικεύσετε τα εργαλεία προσβασιμότητάς σας στις ρυθμίσεις του Chrome</translation>
 <translation id="2025115093177348061">Επαυξημένη πραγματικότητα</translation>
 <translation id="2025186561304664664">Ο διακομιστής μεσολάβησης έχει ρυθμιστεί σε αυτόματη διαμόρφωση.</translation>
 <translation id="2025891858974379949">Μη ασφαλές περιεχόμενο</translation>
@@ -506,6 +510,7 @@
 <translation id="2556876185419854533">&amp;Αναίρεση επεξεργασίας</translation>
 <translation id="2570734079541893434">Διαχείριση ρυθμίσεων</translation>
 <translation id="257674075312929031">Ομάδα</translation>
+<translation id="2576880857912732701">Κουμπί Διαχείριση ρυθμίσεων ασφάλειας, πατήστε το πλήκτρο Enter για να διαχειριστείτε την Ασφαλή περιήγηση και άλλες επιλογές από τις ρυθμίσεις του Chrome</translation>
 <translation id="2586657967955657006">Πρόχειρο</translation>
 <translation id="2587730715158995865">Από <ph name="ARTICLE_PUBLISHER" />. Διαβάστε αυτό το άρθρο και <ph name="OTHER_ARTICLE_COUNT" /> ακόμα ιστορίες.</translation>
 <translation id="2587841377698384444">Αναγνωριστικό API καταλόγου:</translation>
@@ -550,6 +555,7 @@
 <translation id="2713444072780614174">Λευκό</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να διαχειριστείτε τα στοιχεία πληρωμών και πιστωτικών καρτών στις ρυθμίσεις του Chrome.</translation>
 <translation id="2721148159707890343">Το αίτημα ήταν επιτυχές</translation>
+<translation id="2723669454293168317">Εκτέλεση ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="2726001110728089263">Πλευρικός τροφοδότης χαρτιού</translation>
 <translation id="2728127805433021124">Το πιστοποιητικό του διακομιστή είναι υπογεγραμμένο με έναν αδύναμο αλγόριθμο υπογραφής.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Να εκτελέσετε τα Διαγνωστικά στοιχεία συνδεσιμότητας<ph name="END_LINK" /></translation>
@@ -580,6 +586,7 @@
 <translation id="2859806420264540918">Αυτός ο ιστότοπος εμφανίζει παρεμβατικές ή παραπλανητικές διαφημίσεις.</translation>
 <translation id="287596039013813457">Φιλικό</translation>
 <translation id="2876489322757410363">Έξοδος από την κατάσταση ανώνυμης περιήγησης για πληρωμή μέσω εξωτερικής εφαρμογής. Θέλετε να συνεχίστε;</translation>
+<translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε την Ασφαλή περιήγηση και άλλες επιλογές από τις ρυθμίσεις του Chrome</translation>
 <translation id="2878197950673342043">Δίπλωση αφίσας</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2880660355386638022">Τοποθέτηση παραθύρου</translation>
@@ -685,6 +692,7 @@
 <translation id="3229041911291329567">Πληροφορίες έκδοσης σχετικά με τη συσκευή και το πρόγραμμα περιήγησης</translation>
 <translation id="323107829343500871">Εισαγάγετε τον κωδικό CVC για την πιστωτική κάρτα <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Να εντοπίζεται πάντα σημαντικό περιεχόμενο σε αυτόν τον ιστότοπο</translation>
+<translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να προσαρμόσετε την εμφάνιση του προγράμματος περιήγησης</translation>
 <translation id="3240791268468473923">Έχει ανοίξει το φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
 <translation id="3249845759089040423">Μοδάτο</translation>
 <translation id="3252266817569339921">Γαλλικά
@@ -713,6 +721,7 @@
 <translation id="3329013043687509092">Κορεσμός</translation>
 <translation id="3333762389743153920">Δεν είναι κατάλληλη για έκδοση εικονικής κάρτας</translation>
 <translation id="3338095232262050444">Ασφαλές</translation>
+<translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3355823806454867987">Αλλαγή ρυθμίσεων διακομιστή μεσολάβησης...</translation>
 <translation id="3360103848165129075">Φύλλο δείκτη χειρισμού πληρωμών</translation>
 <translation id="3361596688432910856">Το Chrome <ph name="BEGIN_EMPHASIS" />δεν θα αποθηκεύει<ph name="END_EMPHASIS" /> τις παρακάτω πληροφορίες:
@@ -729,12 +738,14 @@
       • Να δημιουργήσει έναν τρισδιάστατο χάρτη του περιβάλλοντα χώρου σας και να παρακολουθεί τη θέση της κάμερας.
       • Να χρησιμοποιήσει την κάμερά σας.</translation>
 <translation id="337363190475750230">Κατάργηση παροχής</translation>
+<translation id="3375754925484257129">Εκτέλεση ελέγχου ασφαλείας Chrome</translation>
 <translation id="3377144306166885718">Ο διακομιστής έχει παρωχημένη έκδοση TLS.</translation>
 <translation id="3377188786107721145">Σφάλμα ανάλυσης πολιτικής</translation>
 <translation id="3377736046129930310">Χρησιμοποιήστε το κλείδωμα οθόνης για πιο γρήγορη επιβεβαίωση καρτών</translation>
 <translation id="3380365263193509176">Άγνωστο σφάλμα</translation>
 <translation id="3380864720620200369">Αναγνωριστικό πελάτη:</translation>
 <translation id="3381668585148405088">Επαληθεύστε την αγορά σας</translation>
+<translation id="3383566085871012386">Τρέχουσα σειρά προτεραιότητας</translation>
 <translation id="3387261909427947069">Τρόποι πληρωμής</translation>
 <translation id="3391030046425686457">Διεύθυνση παράδοσης</translation>
 <translation id="3391482648489541560">επεξεργασία αρχείου</translation>
@@ -769,6 +780,7 @@
 <translation id="3462200631372590220">Απόκρυψη σύνθετων</translation>
 <translation id="3467763166455606212">Απαιτείται το όνομα κατόχου κάρτας</translation>
 <translation id="3468054117417088249">Αυτήν τη στιγμή είναι ανοιχτή η καρτέλα <ph name="TAB_SWITCH_SUFFIX" />, πατήστε Tab και έπειτα Enter για μετάβαση στην ανοιχτή καρτέλα</translation>
+<translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να κλείσετε όλα τα παράθυρα για ανώνυμη περιήγηση που είναι αυτήν τη στιγμή ανοικτά</translation>
 <translation id="3479552764303398839">Όχι τώρα</translation>
 <translation id="3484560055331845446">Μπορεί να χάσετε την πρόσβαση στον Λογαριασμό σας Google. Το Chrome συνιστά να αλλάξετε τον κωδικό πρόσβασής σας τώρα. Θα σας ζητηθεί να συνδεθείτε.</translation>
 <translation id="3487845404393360112">Δίσκος 4</translation>
@@ -807,6 +819,7 @@
 <translation id="3611395257124510155">Εικονική κάρτα για <ph name="CARD_IDENTIFIER" /></translation>
 <translation id="3614103345592970299">Μέγεθος 2</translation>
 <translation id="361438452008624280">Καταχώριση λίστας "<ph name="LANGUAGE_ID" />": Άγνωστη ή μη υποστηριζόμενη γλώσσα.</translation>
+<translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για εκτέλεση του ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
 <translation id="3615877443314183785">Εισαγάγετε μια έγκυρη ημερομηνία λήξης</translation>
 <translation id="36224234498066874">Διαγραφή δεδομένων περιήγησης…</translation>
 <translation id="362276910939193118">Εμφάνιση πλήρους ιστορικού</translation>
@@ -1405,6 +1418,7 @@
 <translation id="5478437291406423475">B6/C4 (Φάκελος)</translation>
 <translation id="5481076368049295676">Αυτό το περιεχόμενο μπορεί να προσπαθήσει να εγκαταστήσει επικίνδυνο λογισμικό στη συσκευή σας το οποίο κλέβει ή διαγράφει τα στοιχεία σας. <ph name="BEGIN_LINK" />Εμφάνιση ούτως ή άλλως<ph name="END_LINK" /></translation>
 <translation id="54817484435770891">Προσθήκη έγκυρης διεύθυνσης</translation>
+<translation id="5485973315555778056">Μηχάνημα cloud</translation>
 <translation id="5490432419156082418">Διευθύνσεις και άλλα</translation>
 <translation id="5492298309214877701">Αυτός ο ιστότοπος που βρίσκεται στο εσωτερικό δίκτυο της εταιρείας, του οργανισμού ή του σχολείου έχει το ίδιο URL με έναν εξωτερικό ιστότοπο.
     <ph name="LINE_BREAK" />
@@ -1434,6 +1448,7 @@
 <translation id="5571083550517324815">Δεν είναι δυνατή η παραλαβή από αυτήν τη διεύθυνση. Επιλέξτε μια άλλη διεύθυνση.</translation>
 <translation id="5580958916614886209">Ελέγξτε τον μήνα λήξης σας και δοκιμάστε ξανά</translation>
 <translation id="5586446728396275693">Δεν υπάρχουν αποθηκευμένες διευθύνσεις</translation>
+<translation id="5587987780934666589">Χρήστης πλατφόρμας</translation>
 <translation id="5593349413089863479">Η σύνδεση δεν είναι απολύτως ασφαλής.</translation>
 <translation id="5595485650161345191">Επεξεργασία διεύθυνσης</translation>
 <translation id="5598944008576757369">Επιλογή τρόπου πληρωμής</translation>
@@ -1605,6 +1620,7 @@
 <translation id="6218753634732582820">Να καταργηθεί η διεύθυνση από το Chromium;</translation>
 <translation id="622039917539443112">Παράλληλη δίπλωση</translation>
 <translation id="6221345481584921695">Πρόσφατα η Ασφαλής περιήγηση Google <ph name="BEGIN_LINK" />εντόπισε κακόβουλο λογισμικό<ph name="END_LINK" /> στον ιστότοπο <ph name="SITE" />. Οι ιστότοποι που είναι ασφαλείς υπό φυσιολογικές συνθήκες μερικές φορές προσβάλλονται από κακόβουλα λογισμικά. Το κακόβουλο περιεχόμενο προέρχεται από το <ph name="SUBRESOURCE_HOST" />, έναν γνωστό διανομέα κακόβουλου λογισμικού.</translation>
+<translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να εξατομικεύσετε τα εργαλεία προσβασιμότητάς σας στις ρυθμίσεις του Chrome</translation>
 <translation id="6234122620015464377">Περικοπή μετά από κάθε έγγραφο</translation>
 <translation id="6240447795304464094">Λογότυπο Google Pay</translation>
 <translation id="6241121617266208201">Απόκρυψη προτάσεων</translation>
@@ -1623,6 +1639,7 @@
 <translation id="6279098320682980337">Δεν συμπληρώθηκε ο αριθμός εικονικής κάρτας; Κάντε κλικ στις λεπτομέρειες της κάρτας για αντιγραφή.</translation>
 <translation id="6280223929691119688">Δεν είναι δυνατή η παράδοση σε αυτήν τη διεύθυνση. Επιλέξτε μια άλλη διεύθυνση.</translation>
 <translation id="6282194474023008486">Ταχυδρομικός κώδικας</translation>
+<translation id="6285507000506177184">Κουμπί Διαχείριση λήψεων στο Chrome, πατήστε το πλήκτρο Enter για να διαχειριστείτε τα αρχεία που έχετε κατεβάσει στο Chrome</translation>
 <translation id="6289939620939689042">Χρώμα σελίδας</translation>
 <translation id="6290238015253830360">Τα προτεινόμενα άρθρα σας εμφανίζονται εδώ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
@@ -1738,6 +1755,7 @@
 <translation id="6689249931105087298">Σχετική με τη συμπίεση μαύρου σημείου</translation>
 <translation id="6689271823431384964">Το Chrome προσφέρεται να αποθηκεύσει τις κάρτες σας στον Λογαριασμό σας Google, επειδή έχετε συνδεθεί. Μπορείτε να αλλάξετε αυτήν τη συμπεριφορά στις ρυθμίσεις. Το όνομα του κατόχου κάρτας προέρχεται από τον λογαριασμό σας.</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και, στη συνέχεια, Enter για να βρείτε τη συσκευή σας στον Λογαριασμό Google.</translation>
+<translation id="6696588630955820014">Κουμπί Κοινοποίηση αυτής της καρτέλας, πατήστε το πλήκτρο Enter για να μοιραστείτε αυτήν την καρτέλα μέσω κοινοποίησης του συνδέσμου, δημιουργίας κωδικού QR, μετάδοσης κ.ά.</translation>
 <translation id="6698381487523150993">Δημιουργήθηκε:</translation>
 <translation id="6702919718839027939">Παρουσίαση</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
@@ -1943,6 +1961,7 @@
 <translation id="7392089738299859607">Ενημέρωση διεύθυνσης</translation>
 <translation id="7399802613464275309">Έλεγχος ασφαλείας</translation>
 <translation id="7400418766976504921">URL</translation>
+<translation id="7403392780200267761">Μοιραστείτε αυτήν την καρτέλα μέσω κοινοποίησης του συνδέσμου, δημιουργίας κωδικού QR, μετάδοσης κ.ά.</translation>
 <translation id="7403591733719184120">Η συσκευή <ph name="DEVICE_NAME" /> είναι διαχειριζόμενη</translation>
 <translation id="7407424307057130981">&lt;p&gt;Το σφάλμα θα εμφανιστεί, εάν έχετε λογισμικό Superfish στον υπολογιστή σας με Windows.&lt;/p&gt;
     &lt;p&gt;Ακολουθήστε αυτά τα βήματα, για να απενεργοποιήσετε προσωρινά το λογισμικό, προκειμένου να συνδεθείτε στον ιστό. Θα πρέπει να έχετε δικαιώματα διαχειριστή.&lt;/p&gt;
@@ -2118,6 +2137,7 @@
 <translation id="7953569069500808819">Ραφή στο επάνω άκρο</translation>
 <translation id="7956713633345437162">Σελιδοδείκτες κινητής συσκευής</translation>
 <translation id="7961015016161918242">Ποτέ</translation>
+<translation id="7962467575542381659">Μηχάνημα πλατφόρμας</translation>
 <translation id="7966803981046576691">Τύπος λογαριασμού εργασίας</translation>
 <translation id="79682505114836835">Η τιμή <ph name="VALUE" /> δεν είναι ένας έγκυρος δεκαεξαδικός κωδικός χρώματος.</translation>
 <translation id="7968982339740310781">Προβολή λεπτομερειών</translation>
@@ -2172,6 +2192,7 @@
 <translation id="810875025413331850">Δεν βρέθηκαν κοντινές συσκευές.</translation>
 <translation id="8116925261070264013">Σε σίγαση</translation>
 <translation id="8118489163946903409">Τρόπος πληρωμής</translation>
+<translation id="8124639700796374294">Κουμπί Προσαρμογή Chrome, πατήστε το πλήκτρο Enter για να προσαρμόσετε την εμφάνιση του προγράμματος περιήγησης</translation>
 <translation id="8127301229239896662">Το λογισμικό "<ph name="SOFTWARE_NAME" />" δεν εγκαταστάθηκε σωστά στον υπολογιστή ή στο δίκτυό σας. Ζητήστε από τον διαχειριστή IT να επιλύσει αυτό το πρόβλημα.</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
 <translation id="8148608574971654810">Έκδοση PDF:</translation>
@@ -2356,6 +2377,7 @@
 <translation id="87601671197631245">Αυτός ο ιστότοπος χρησιμοποιεί μια παρωχημένη διαμόρφωση ασφαλείας, η οποία μπορεί να εκθέσει τις πληροφορίες σας (για παράδειγμα, τους κωδικούς πρόσβασης, τα μηνύματα ή τα στοιχεία των πιστωτικών σας καρτών) κατά την αποστολή τους σε αυτόν τον ιστότοπο.</translation>
 <translation id="8761567432415473239">Η ασφαλής περιήγηση Google <ph name="BEGIN_LINK" />εντόπισε επιβλαβή προγράμματα<ph name="END_LINK" /> πρόσφατα στο <ph name="SITE" />.</translation>
 <translation id="8763927697961133303">Συσκευή USB</translation>
+<translation id="8763986294015493060">Κλείστε όλα τα παράθυρα για ανώνυμη περιήγηση που είναι αυτήν τη στιγμή ανοικτά</translation>
 <translation id="8766943070169463815">Το φύλλο ελέγχου ταυτότητας διαπιστευτηρίων για ασφαλείς πληρωμές είναι ανοιχτό</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Επανάληψη διαγραφής</translation>
@@ -2369,6 +2391,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να ενημερώσετε το Chrome από τις ρυθμίσεις του Chrome.</translation>
 <translation id="8820817407110198400">Σελιδοδείκτες</translation>
 <translation id="882338992931677877">Χειροκίνητη υποδοχή</translation>
+<translation id="8834380158646307944">Κουμπί Κλείσιμο παραθύρων για ανώνυμη περιήγηση, πατήστε το πλήκτρο Enter για να κλείσετε όλα τα παράθυρα για ανώνυμη περιήγηση που είναι αυτήν τη στιγμή ανοικτά</translation>
 <translation id="883848425547221593">Άλλοι σελιδοδείκτες</translation>
 <translation id="884264119367021077">Διεύθυνση αποστολής</translation>
 <translation id="884923133447025588">Δεν εντοπίστηκε μηχανισμός ακύρωσης.</translation>
@@ -2422,6 +2445,7 @@
 <translation id="9020200922353704812">Απαιτείται διεύθυνση χρέωσης της κάρτας</translation>
 <translation id="9020542370529661692">Αυτή η σελίδα έχει μεταφραστεί στα <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="9020742383383852663">A8</translation>
+<translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να μοιραστείτε αυτήν την καρτέλα μέσω κοινοποίησης του συνδέσμου, δημιουργίας κωδικού QR, μετάδοσης κ.ά.</translation>
 <translation id="9025348182339809926">(Μη έγκυρο)</translation>
 <translation id="9030265603405983977">Μονόχρωμο</translation>
 <translation id="9035022520814077154">Σφάλμα ασφάλειας</translation>

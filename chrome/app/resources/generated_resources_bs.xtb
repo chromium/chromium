@@ -3197,7 +3197,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4289732974614035569">Odaberite PIN</translation>
 <translation id="4290791284969893584">Kada zatvorite stranicu, zadaci koje ste započeli se možda neće završiti</translation>
 <translation id="4295072614469448764">Aplikacija je dostupna na vašem terminalu. U Pokretaču se može nalaziti i ikona.</translation>
-<translation id="4295839147292213505">Možete slati SMS-ove sa svog računara, dijeliti internetsku vezu, odgovarati na obavještenja o razgovoru i telefonom otključati uređaj <ph name="DEVICE_TYPE" />.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Prijavite se ponovo da potvrdite da se vaš račun <ph name="USER_EMAIL" /> može koristiti s web lokacijama, aplikacijama i ekstenzijama na Chromeu i Google Playu. Također možete ukloniti ovaj račun. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Ponovo pokreni i poništi</translation>
 <translation id="4297813521149011456">Rotacija ekrana</translation>

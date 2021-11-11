@@ -107,6 +107,7 @@ Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum 
 <translation id="1894205589103145703">Bei der Anmeldung ist ein Fehler aufgetreten.</translation>
 <translation id="1911619930368729126">Auf Google Drive hochladen</translation>
 <translation id="1923342640370224680">Letzte Stunde</translation>
+<translation id="1930989359703290198">Ihre Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1941314575388338491">Tippen Sie zum Kopieren hier doppelt.</translation>
 <translation id="1952172573699511566">Sofern dies möglich ist, wird Text auf Websites in Ihrer bevorzugten Sprache angezeigt.</translation>
 <translation id="1965935827552890526">Sie können zu Ihrem offenem Chrome-Fenster zurückkehren, um Ihre vorherige Aktion abzuschließen.</translation>
@@ -225,6 +226,7 @@ Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer 
 <translation id="3080525922482950719">Sie können Seiten speichern, um sie später oder offline zu lesen</translation>
 <translation id="3081338492074632642">Das Passwort, das Sie speichern, muss mit dem Passwort für <ph name="WEBSITE" /> übereinstimmen</translation>
 <translation id="3112556859945124369">Markieren…</translation>
+<translation id="3122484138405575719"><ph name="BEGIN_LINK" />Hier sehen Sie, was Sie synchronisieren können<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Alle blockieren</translation>
 <translation id="313283613037595347">Neuen Inkognitotab erstellen.</translation>
 <translation id="3153862085237805241">Karte speichern</translation>
@@ -386,6 +388,8 @@ Ihre Daten sind mit Ihrer Synchronisierungspassphrase verschlüsselt. Geben Sie 
 <translation id="4802417911091824046">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.
 
 Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie die Synchronisierung zurück<ph name="END_LINK" /></translation>
+<translation id="4803185665210547709">Von Ihrer Organisation verwaltet.
+<ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4805759445554688327">Ungültige Kartennummer</translation>
 <translation id="4808744395915275922">Updates</translation>
 <translation id="4818522717893377262">Sprache hinzufügen…</translation>

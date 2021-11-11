@@ -278,6 +278,7 @@
 <translation id="5294769550414936029">バージョン <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ウィンドウをデスクに移動</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">接続</translation>
 <translation id="5315873049536339193">ID</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318334351163689047">TCP リクエストに失敗しました</translation>
@@ -399,6 +400,7 @@
 <translation id="714876143603641390">LAN 接続</translation>
 <translation id="7162487448488904999">ギャラリー</translation>
 <translation id="7172721935181587524">1 件の画像</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> の設定</translation>
 <translation id="7177485034254901881">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています。管理者がこのデバイスをリモートで設定している可能性があります。</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
@@ -501,6 +503,7 @@
 <translation id="8620617069779373398">ローミング状態</translation>
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8660881923941176839">ポンド</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> ネットワークへの接続</translation>
 <translation id="8675354002693747642">事前共有キー</translation>
 <translation id="871560550817059752">失敗 - インクがありません</translation>
 <translation id="8723108084122415655">デフォルト以外のネットワークの応答時間がしきい値を超えています</translation>

@@ -91,6 +91,7 @@
 <translation id="1087965115100412394">Non permitir que os sitios se conecten a dispositivos MIDI</translation>
 <translation id="1088654056000736875">Chrome está quitando software daniño do teu ordenador...</translation>
 <translation id="1088659085457112967">Acceder ao modo de lector</translation>
+<translation id="1089606299949659462">Completaches a revisión</translation>
 <translation id="1090126737595388931">Non hai ningunha aplicación en segundo plano en execución</translation>
 <translation id="1090541560108055381">Antes de vincular os dispositivos, asegúrate de que nos dous se mostre este mesmo código</translation>
 <translation id="1091767800771861448">Preme Esc para omitir este paso (só para compilacións non oficiais).</translation>
@@ -804,6 +805,7 @@
     <ph name="LINE_BREAKS2" />
     Isto non afecta ás aplicacións nin ao contido doutros dispositivos.</translation>
 <translation id="1809734401532861917">Engade os meus marcadores, o historial, os contrasinais e outras opcións de configuración a <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="1810366086647840386">Servidor da imaxe</translation>
 <translation id="1813278315230285598">Servizos</translation>
 <translation id="18139523105317219">Nome da parte EDI</translation>
 <translation id="1815083418640426271">Pegar como texto sen formato</translation>
@@ -1372,6 +1374,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2381499968174336913">Vista previa da pestana compartida</translation>
 <translation id="2381756643783702095">Preguntar antes de enviar (recomendado)</translation>
 <translation id="2387052489799050037">Ir á páxina de inicio</translation>
+<translation id="2389775852302560582">IP</translation>
 <translation id="2390347491606624519">Non se puido establecer conexión co proxy. Inicia sesión de novo</translation>
 <translation id="2390782873446084770">Sincronización wifi</translation>
 <translation id="2391419135980381625">Fonte estándar</translation>
@@ -1429,6 +1432,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2454247629720664989">Palabra clave</translation>
 <translation id="2454264884354864965">A cámara está apagada</translation>
+<translation id="2454524890947537054">Queres aprobar a solicitude de páxinas web?</translation>
 <translation id="245650153866130664">Para actualizar un tícket automaticamente, marca a opción Lembrar contrasinal. O teu contrasinal almacenarase só no teu dispositivo.</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> quere copiar ficheiros de <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Actualmente na canle <ph name="CHANNEL_NAME" /></translation>
@@ -1745,6 +1749,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2773802008104670137">Este tipo de ficheiro pode poñer en perigo o teu ordenador.</translation>
 <translation id="2775104091073479743">Editar impresións dixitais</translation>
 <translation id="2776560192867872731">Cambiar nome de dispositivo por <ph name="DEVICE_NAME" /></translation>
+<translation id="2777251078198759550">Eliminar este contedor</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2782104745158847185">Produciuse un erro ao instalar a aplicación Linux</translation>
 <translation id="2783298271312924866">Descargado</translation>
@@ -1826,10 +1831,12 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2851728849045278002">Produciuse un erro. Fai clic para ver máis detalles.</translation>
 <translation id="285241945869362924">Crea subtítulos automaticamente para o contido de audio e de vídeo. O audio e os subtítulos nunca saen do dispositivo.</translation>
 <translation id="2854896010770911740">Quitar cookies de terceiros</translation>
+<translation id="2856776373509145513">Crear un contedor novo</translation>
 <translation id="2858138569776157458">Populares</translation>
 <translation id="2861301611394761800">Actualización do sistema completada. Reinicia o sistema.</translation>
 <translation id="2861941300086904918">Xestor de seguranza de cliente nativo</translation>
 <translation id="2862815659905780618">Quitar o contorno de programación de Linux</translation>
+<translation id="2864272167277395865">Selecciona un dispositivo:</translation>
 <translation id="2864601841139725659">Definir a túa foto do perfil</translation>
 <translation id="2865919525181940183">Captura de pantalla dos programas que se atopan actualmente na pantalla</translation>
 <translation id="286674810810214575">Comprobando fontes de alimentación…</translation>
@@ -2395,6 +2402,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3458794975359644386">Produciuse un erro ao deixar de compartir o cartafol</translation>
 <translation id="3459509316159669723">Impresión</translation>
 <translation id="3459697287128633276">Para permitir que a túa conta acceda a Google Play Store, debes autenticala co teu provedor de identidade.</translation>
+<translation id="3461766685318630278">Crea e elimina contedores adicionais.</translation>
 <translation id="3462311546193741693">Pecharase sesión na maioría dos sitios, pero seguirás tendo a sesión iniciada na túa Conta de Google. Por este motivo poden borrarse os datos sincronizados.</translation>
 <translation id="3462413494201477527">Queres cancelar a configuración da conta?</translation>
 <translation id="346298925039590474">Esta rede de telefonía móbil estará dispoñible para todos os usuarios deste dispositivo</translation>
@@ -3181,7 +3189,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4289732974614035569">Escolle un PIN</translation>
 <translation id="4290791284969893584">Ao pechar unha páxina, as tarefas iniciadas poderían non finalizar</translation>
 <translation id="4295072614469448764">A aplicación está dispoñible no terminal. Tamén pode haber unha icona no menú de aplicacións.</translation>
-<translation id="4295839147292213505">Podes enviar mensaxes de texto desde o ordenador, compartir a conexión a Internet, responder cando recibas unha notificación de conversa e desbloquear o dispositivo <ph name="DEVICE_TYPE" /> co teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Volve iniciar sesión para confirmar que se pode utilizar a túa conta <ph name="USER_EMAIL" /> cos sitios web, aplicacións e extensións en Chrome e Google Play. Tamén podes quitar esta conta. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Reiniciar e restablecer</translation>
 <translation id="4297813521149011456">Rotación da pantalla</translation>
@@ -3239,6 +3246,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4364830672918311045">Mostrar notificacións</translation>
 <translation id="4366138410738374926">Comezou a impresión</translation>
 <translation id="4369121877634339065">Arrastra o cursor sobre calquera imaxe para buscala</translation>
+<translation id="4369215744064167350">Aprobouse a solicitude de sitios web</translation>
 <translation id="4370975561335139969">O correo electrónico e o contrasinal inseridos non coinciden</translation>
 <translation id="4373966964907728675">Emitindo escritorio</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
@@ -3930,6 +3938,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="5117139026559873716">Desconecta o teléfono do <ph name="DEVICE_TYPE" /> e deixarán de conectarse automaticamente.</translation>
 <translation id="5117930984404104619">Supervisar o comportamento doutras extensións, incluídos os URL visitados</translation>
 <translation id="5119173345047096771">Mozilla Firefox</translation>
+<translation id="5120886753782992638">Fai clic aquí para visitar <ph name="APPROVED_URL" /></translation>
 <translation id="5121052518313988218">Xa non se admite o sistema operativo do teu contedor de Linux. Deixará de recibir actualizacións de seguranza e correccións de erros, e as funcións que agora mesmo funcionan poderían deixar de facelo inesperadamente. Para seguir utilizando Linux, actualiza o contedor á última versión.</translation>
 <translation id="5121130586824819730">O teu disco duro está cheo. Garda o ficheiro noutra localización ou libera espazo no disco duro.</translation>
 <translation id="5123433949759960244">Baloncesto</translation>
@@ -4038,6 +4047,7 @@ Obtén <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> sobre os
 <translation id="523505283826916779">Configuración de accesibilidade</translation>
 <translation id="5235750401727657667">Substituír a páxina que ves ao abrir unha nova pestana</translation>
 <translation id="5236374273162681467">Para poder utilizalos con facilidade en todos os teus dispositivos, podes transferilos á túa Conta de Google</translation>
+<translation id="523862956770478816">Permisos de sitios</translation>
 <translation id="5242724311594467048">Queres activar <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Téntao de novo nuns minutos</translation>
 <translation id="5244474230056479698">Sincronizando en <ph name="EMAIL" /></translation>
@@ -4312,6 +4322,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5526745900034778153">Volve iniciar sesión para retomar a sincronización</translation>
 <translation id="5527463195266282916">Intentouse cambiar a extensión a unha versión anterior.</translation>
 <translation id="5527474464531963247">Tamén podes seleccionar outra rede.</translation>
+<translation id="5528295196101251711">Nome da máquina virtual</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quere:</translation>
 <translation id="5534304873398226603">Descartar foto ou vídeo</translation>
@@ -4665,6 +4676,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
     <ph name="LINE_BREAK" />
     Aparecerá na pantalla de bloqueo e na de inicio de sesión do dispositivo Chromebook.</translation>
 <translation id="5925147183566400388">Identificador de declaración de prácticas de certificación</translation>
+<translation id="592740088639760830">Deter este contedor</translation>
 <translation id="592880897588170157">Descargar ficheiros PDF en lugar de abrilos automaticamente en Chrome</translation>
 <translation id="592919310198008711">Cando faga clic na extensión</translation>
 <translation id="5932124097031739492">Linux actualizouse correctamente.</translation>
@@ -5202,6 +5214,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6498249116389603658">&amp;Todos os teus idiomas</translation>
 <translation id="6499143127267478107">Resolvendo host en script de proxy...</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> quere abrir este ficheiro:</translation>
+<translation id="6501957628055559556">Todos os contedores</translation>
 <translation id="650266656685499220">Para crear álbums, vai a Google Fotos</translation>
 <translation id="6503077044568424649">Máis visitados</translation>
 <translation id="650457560773015827">Botón esquerdo</translation>
@@ -5315,6 +5328,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6619243162837544323">Estado da rede</translation>
 <translation id="6619801788773578757">Engadir aplicación de quiosco</translation>
 <translation id="6619990499523117484">Confirma o PIN</translation>
+<translation id="6620254580880484313">Nome do contedor</translation>
 <translation id="6622980291894852883">Continuar bloqueando as imaxes</translation>
 <translation id="6624036901798307345">No modo de tableta, toca o botón do contador de pestanas que se atopa na barra de ferramentas para abrir a nova franxa de pestanas na que se mostra cadansúa miniatura.</translation>
 <translation id="6624535038674360844"><ph name="FILE_NAME" /> inclúe contido confidencial ou perigoso. Pídelle ao seu propietario que o corrixa.</translation>
@@ -5325,6 +5339,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6635674640674343739">Non se puido establecer a conexión de rede. Comproba a conexión de rede e téntao de novo.</translation>
 <translation id="6635944431854494329">O propietario pode controlar esta función en Configuración &gt; Avanzada &gt; Enviar de forma automática datos de uso e diagnóstico a Google.</translation>
 <translation id="6635956300022133031">Selecciona e personaliza as voces da conversión de texto a voz</translation>
+<translation id="6636623428211296678">Explora máis opcións de configuración a continuación ou remata agora</translation>
 <translation id="6639554308659482635">Memoria SQLite</translation>
 <translation id="6640268266988685324">Pestana aberta</translation>
 <translation id="6642720633335369752">Para ver todas as ventás abertas da aplicación, pasa o dedo cara arriba desde a parte inferior da pantalla e mantena premida.</translation>
@@ -6086,6 +6101,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7450761244949417357">Abrindo a páxina no navegador <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
 <translation id="7453008956351770337">Ao seleccionar esta impresora, concédeselle permiso á extensión seguinte para acceder a ela:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
+<translation id="7455730275746867420">Xestionar contedores adicionais</translation>
 <translation id="7456142309650173560">dev</translation>
 <translation id="7456847797759667638">Abrir localización...</translation>
 <translation id="7457384018036134905">Xestionar idiomas na configuración de Chrome OS</translation>
@@ -6600,6 +6616,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7946586320617670168">A orixe debe ser segura</translation>
 <translation id="794676567536738329">Confirmar permisos</translation>
 <translation id="7947962633355574091">C&amp;opiar enderezo de vídeo</translation>
+<translation id="7948407723851303488">Todas as páxinas de <ph name="DOMAIN_NAME" /></translation>
 <translation id="7951265006188088697">Para engadir ou xestionar métodos de pago de Google Pay, visita a túa <ph name="BEGIN_LINK" />Conta de Google<ph name="END_LINK" /></translation>
 <translation id="7952708427581814389">Os sitios poden pedirche permiso para acceder ao texto e ás imaxes do portapapeis</translation>
 <translation id="795282463722894016">Completouse a restauración</translation>
@@ -7664,6 +7681,7 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="9053893665344928494">Lembrar a miña elección</translation>
 <translation id="9055636786322918818">Forza a encriptación RC4. Esta opción aumenta o risco, porque as cifraxes de RC4 non son seguras.</translation>
 <translation id="9056810968620647706">Non se encontraron coincidencias.</translation>
+<translation id="9057007989365783744"><ph name="SUPERVISED_USER_NAME" /> quere acceder ao seguinte contido:</translation>
 <translation id="9057354806206861646">Programa de actualización</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Produciuse un erro da liña <ph name="ERROR_LINE_START" /> á <ph name="ERROR_LINE_END" /></translation>
@@ -7751,6 +7769,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9139258866388561662">Iniciar sesión en <ph name="WEB_DRIVE" /> para completar a descarga</translation>
 <translation id="9139988741193276691">Configurando Linux</translation>
 <translation id="9140067245205650184">Estás utilizando unha marca de función non compatible: <ph name="BAD_FLAG" />. A estabilidade e a seguranza veranse afectadas.</translation>
+<translation id="9142637293078737510">Alias da imaxe</translation>
 <translation id="9143298529634201539">Queres quitar a suxestión?</translation>
 <translation id="9147392381910171771">&amp;Opcións</translation>
 <translation id="9148058034647219655">Saír</translation>

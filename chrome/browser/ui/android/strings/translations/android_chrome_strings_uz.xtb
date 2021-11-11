@@ -236,7 +236,6 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 <translation id="2450907520913474542">Tasvirlar, mavzular va boshqa maʼlumotlarni belgilangan sahifani tark etmasdan qidiring. Buning uchun soʻz tanlang va u Google qidiruv serverlariga kontekst bilan birga yuboriladi.
 
 Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish uchun kerakli soʻz yoki birikmani belgilang. Soʻrovni tahrirlash uchun panelni yuqoriga tortib oching, yangi varaq ochish uchun yoyish belgisini, keyin qidiruv oynasini bosing.</translation>
-<translation id="2451607499823206582">Kuzatuvda</translation>
 <translation id="2459390580524506445">Kengaytirilgan ovozli qidiruv</translation>
 <translation id="2461822463642141190">Ayni vaqtda</translation>
 <translation id="247737702124049222">Rasmlar tavsifi yoniq</translation>
@@ -429,7 +428,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3527085408025491307">Jild</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB bo‘sh</translation>
 <translation id="3549657413697417275">Tarix ichidan qidirish</translation>
-<translation id="3557272988124495906">Narxi tushganda bildirishnoma olish</translation>
 <translation id="3557336313807607643">Kontaktlarga saqlash</translation>
 <translation id="3563767357928833671">Vaqtincha xotira kontenti chiqarildi</translation>
 <translation id="3566923219790363270">Chrome hali ham VR rejimga tayyorlanmoqda. Chromeni keyinroq qayta ishga tushirish.</translation>
@@ -1232,7 +1230,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8218052821161047641">Tezkor sahifa</translation>
 <translation id="8218622182176210845">Hisobingizni boshqaring</translation>
 <translation id="8223642481677794647">Quyi bildirgi menyu</translation>
-<translation id="8242868071038398515">Biror saytda narxi tushsa, sizga xabar keladi</translation>
 <translation id="8250920743982581267">Hujjatlar</translation>
 <translation id="825412236959742607">Bu sahifa juda ko‘p xotira ishlatishi sababli Chrome bu kontentni olib tashladi.</translation>
 <translation id="8260126382462817229">Qaytadan kirib ko‘ring</translation>

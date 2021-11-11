@@ -3184,7 +3184,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4289732974614035569">Sélectionner un code</translation>
 <translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
 <translation id="4295072614469448764">L'application est disponible via votre terminal. Il peut également y avoir une icône dans votre lanceur d'applications.</translation>
-<translation id="4295839147292213505">Vous pouvez envoyer des SMS depuis votre ordinateur, partager votre connexion Internet, répondre à une conversation depuis une notification et déverrouiller votre <ph name="DEVICE_TYPE" /> avec votre téléphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Veuillez vous reconnecter pour confirmer que votre compte <ph name="USER_EMAIL" /> peut être utilisé avec des sites Web, des applications et des extensions dans Chrome et Google Play. Vous pouvez également supprimer ce compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Redémarrer et réinitialiser</translation>
 <translation id="4297813521149011456">Rotation de l'écran</translation>

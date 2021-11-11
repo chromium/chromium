@@ -278,6 +278,7 @@
 <translation id="5294769550414936029">верзија <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Преместите прозор на радну површину</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Повезивање</translation>
 <translation id="5315873049536339193">Идентитет</translation>
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318334351163689047">Неуспели TCP захтеви</translation>
@@ -399,6 +400,7 @@
 <translation id="714876143603641390">Повезивање LAN-а</translation>
 <translation id="7162487448488904999">Галерија</translation>
 <translation id="7172721935181587524">1 слика</translation>
+<translation id="7175037578838465313">Конфигуришите <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> управља овим <ph name="DEVICE_TYPE" /> уређајем. Администратори могу да конфигуришу уређај даљински.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7216409898977639127">Мобилни оператер</translation>
@@ -501,6 +503,7 @@
 <translation id="8620617069779373398">Статус роминга</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунте</translation>
+<translation id="8662671328352114214">Придружите се <ph name="TYPE" /> мрежи</translation>
 <translation id="8675354002693747642">Тајни кључ</translation>
 <translation id="871560550817059752">Није успело – нема више мастила</translation>
 <translation id="8723108084122415655">Мрежа која није подразумевана премашује граничну вредност за кашњење</translation>

@@ -277,6 +277,7 @@
 <translation id="5294769550414936029">верзија <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Премести прозорец на работна површина</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Поврзи</translation>
 <translation id="5315873049536339193">Идентитет</translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5318334351163689047">Неуспешни TCP-барања</translation>
@@ -398,6 +399,7 @@
 <translation id="714876143603641390">LAN-поврзливост</translation>
 <translation id="7162487448488904999">Галерија</translation>
 <translation id="7172721935181587524">1 слика</translation>
+<translation id="7175037578838465313">Конфигурирање на <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> управува со овој <ph name="DEVICE_TYPE" />. Администраторите може да го конфигурираат уредот оддалеку.</translation>
 <translation id="7180611975245234373">Освежи</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
@@ -500,6 +502,7 @@
 <translation id="8620617069779373398">Статус на роаминг</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8660881923941176839">фунти</translation>
+<translation id="8662671328352114214">Придружување на мрежа <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Претходно споделен клуч</translation>
 <translation id="871560550817059752">Неуспешно - нема мастило</translation>
 <translation id="8723108084122415655">Нестандардната мрежа е над прагот за латенција</translation>

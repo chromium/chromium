@@ -200,6 +200,7 @@
 <translation id="2352467521400612932">触控笔设置</translation>
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
 <translation id="2359808026110333948">继续</translation>
+<translation id="2360625459710946148">重新排序方式</translation>
 <translation id="2367186422933365202">无法登录 Chromebook</translation>
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
 <translation id="2390318262976603432">语言区域设置</translation>
@@ -326,6 +327,7 @@
 <translation id="334252345105450327">截屏</translation>
 <translation id="3351879221545518001">您目前正在投射屏幕。</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
+<translation id="3365977133351922112">您的手机太远了。请将它移近些。</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
 <translation id="3375634426936648815">已连接</translation>
@@ -602,6 +604,7 @@
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5176318573511391780">录制部分屏幕</translation>
 <translation id="5199367439331364630">若要登录 Chromebook，请输入密码</translation>
+<translation id="5206028654245650022"><ph name="APP_NAME" />，<ph name="NOTIFICATION_TITLE" />：<ph name="MESSAGE" />，<ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{另外 1 条通知}other{另外 # 条通知}}</translation>
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
 <translation id="5208059991603368177">开启</translation>
@@ -704,6 +707,7 @@
 <translation id="5977415296283489383">耳机</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
 <translation id="5980301590375426705">退出访客模式</translation>
+<translation id="598407983968395253">使用模板</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
 <translation id="5992218262414051481">已启用高反差模式。再按一次 Ctrl+搜索键+H 组合键即可关闭此模式。</translation>
 <translation id="6018164090099858612">正在退出镜像模式</translation>
@@ -885,6 +889,7 @@
 <translation id="7398254312354928459">已切换网络连接</translation>
 <translation id="7405710164030118432">要解锁此设备，请输入您的 Family Link 家长访问码</translation>
 <translation id="7406608787870898861">请完成您的移动网络设置</translation>
+<translation id="740790383907119240">应用快捷方式</translation>
 <translation id="741244894080940828">换算</translation>
 <translation id="7413851974711031813">按 Esc 键即可关闭</translation>
 <translation id="742594950370306541">摄像头处于使用状态。</translation>
@@ -987,6 +992,7 @@
 <translation id="8061464966246066292">高对比度</translation>
 <translation id="8098591350844501178">停止将屏幕投射到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">开启，所有应用</translation>
+<translation id="8120151603115102514">您的手机未设置锁定屏幕。若要解锁 Chromebook，请输入密码。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8132487352815776550">停用字幕</translation>
@@ -1035,6 +1041,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按 Alt+搜索键或按 Shift 键可取消。</translation>
 <translation id="8492573885090281069">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
+<translation id="85123341071060231">Chromebook 的蓝牙功能已关闭。若要解锁 Chromebook，请输入密码。</translation>
 <translation id="8513108775083588393">自动旋转屏幕</translation>
 <translation id="851458219935658693">显示当前桌面中的窗口，已选中单选按钮</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>

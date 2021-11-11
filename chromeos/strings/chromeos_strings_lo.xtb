@@ -279,6 +279,7 @@
 <translation id="5294769550414936029">ເວີຊັນ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">ຍ້າຍໜ້າຈໍໄປຍັງໂຕະ</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="5315873049536339193">ລະບຸຕົວຕົນ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5318334351163689047">ຂໍ TCP ບໍ່ສຳເລັດ</translation>
@@ -401,6 +402,7 @@
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
 <translation id="7162487448488904999">ຄັງຮູບ</translation>
 <translation id="7172721935181587524">1 ຮູບ</translation>
+<translation id="7175037578838465313">ກຳນົດຄ່າ <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
@@ -503,6 +505,7 @@
 <translation id="8620617069779373398">ສະຖານະການໂຣມມິງ</translation>
 <translation id="8655295600908251630">ຊ່ອງ</translation>
 <translation id="8660881923941176839">ພາວ</translation>
+<translation id="8662671328352114214">ເຂົ້າຮ່ວມເຄືອຂ່າຍ <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
 <translation id="871560550817059752">ບໍ່ສຳເລັດ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="8723108084122415655">ເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>

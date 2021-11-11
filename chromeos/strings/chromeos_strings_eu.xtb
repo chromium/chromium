@@ -278,6 +278,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="5294769550414936029"><ph name="MILESTONE_VERSION" /> bertsioa</translation>
 <translation id="5300814202279832142">Eraman leihoa lan-eremura</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Konektatu</translation>
 <translation id="5315873049536339193">Identitatea</translation>
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5318334351163689047">TCP bidezko eskaeren hutsegiteak</translation>
@@ -399,6 +400,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="714876143603641390">LAN sarearen konexioa</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 irudi</translation>
+<translation id="7175037578838465313">Konfiguratu <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua. Baliteke administratzaileek urrunetik konfiguratzea gailua.</translation>
 <translation id="7180611975245234373">Freskatu</translation>
 <translation id="7216409898977639127">Zerbitzu mugikorraren hornitzailea</translation>
@@ -501,6 +503,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8620617069779373398">Ibiltaritza-egoera</translation>
 <translation id="8655295600908251630">Kanala</translation>
 <translation id="8660881923941176839">libra</translation>
+<translation id="8662671328352114214">Sartu <ph name="TYPE" /> sarean</translation>
 <translation id="8675354002693747642">Aurrez partekatutako gakoa</translation>
 <translation id="871560550817059752">Hutsegitea - Ez dago tintarik</translation>
 <translation id="8723108084122415655">Lehenetsi gabeko sarea latentziaren atalasetik gora dago</translation>

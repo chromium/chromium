@@ -777,7 +777,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="1972134432340252414">Verouderde extensiepunten in het browserproces blokkeren</translation>
 <translation id="1977581177449752640">Als je dit beleid instelt, gebruikt de host voor externe toegang een clientcertificaat met het CN van de opgegeven verstrekker voor verificatie voor <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />. Als je een willekeurig beschikbaar clientcertificaat wilt gebruiken, stel je dit in op <ph name="WILDCARD_VALUE" />. De functie wordt uitgezet als je deze leeg laat of niet instelt.</translation>
 <translation id="1984423899110408165">Geschiedenisclusters tonen op de Chrome-geschiedenispagina</translation>
-<translation id="1986003348976870087">De gebruiker niet vragen om een clientcertificaat te selecteren op het inlogscherm.</translation>
 <translation id="1988345404999458987">Biedt configuraties voor beschikbare printerservers.
 
       Met dit beleid kun je configuratie van externe printerservers als json-bestand leveren aan <ph name="PRODUCT_OS_NAME" />-apparaten.
@@ -2564,12 +2563,6 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 
       Als je het beleid instelt op False, worden er nooit creditcardgegevens voorgesteld of ingevuld door 'Automatisch invullen'. Ook worden er geen aanvullende creditcardgegevens opgeslagen die gebruikers opgeven als ze internetten.</translation>
 <translation id="3989829840000169163">Verouderde extensiepunten van browser blokkeren</translation>
-<translation id="3996594590700242138">Hiermee zet je componentupdates voor alle componenten in <ph name="PRODUCT_NAME" /> aan als het beleid wordt toegepast of niet is ingesteld.
-
-      Als je het beleid niet toepast, staan updates voor componenten uit. Bepaalde componenten zijn wel uitgesloten van dit beleid. Updates voor componenten worden niet uitgezet als deze geen uitvoerbare code bevatten, het gedrag van de browser niet aanzienlijk veranderen of essentieel zijn voor de beveiliging.
-      Voorbeelden van dergelijke componenten zijn Certificate Revocation Lists en Safe Browsing-gegevens.
-      Zie https://developers.google.com/safe-browsing voor meer informatie over Safe Browsing.
-      Als je dit beleid niet toepast, kan dit ertoe leiden dat <ph name="PRODUCT_NAME" />-ontwikkelaars essentiële beveiligingsoplossingen niet tijdig kunnen leveren. Dit wordt dus niet aanbevolen.</translation>
 <translation id="3997519162482760140">URL's die toegang krijgen tot apparaten voor het vastleggen van video op SAML-inlogpagina's</translation>
 <translation id="4004523942550416237">Voice Match-proces van de Google Assistent niet laten zien tijdens de eerste installatie</translation>
 <translation id="4007646377576030214"> Dit beleid is beëindigd in M87 en verwijderd in M89. Gebruik <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> om de privacywaarschuwingen van beheerde gastsessies te configureren.
@@ -4796,7 +4789,6 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
 
           Opmerking: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> overschrijft dit beleid als het is opgegeven.</translation>
 <translation id="6833988859168635883">Startpagina, homepage en pagina 'Nieuw tabblad'</translation>
-<translation id="683399492058633424">Vragen om het clientcertificaat als meerdere certificaten overeenkomen op het inlogscherm.</translation>
 <translation id="6835883744948188639">Toon de gebruiker een terugkerende prompt om aan te geven dat opnieuw opstarten wordt aanbevolen</translation>
 <translation id="683688607121170501">Deze instelling biedt gebruikers de mogelijkheid om in het contentgedeelte van hun browservenster tussen Google-accounts te schakelen nadat ze zijn ingelogd bij hun <ph name="PRODUCT_OS_NAME" />-apparaat.
 

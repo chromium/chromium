@@ -278,6 +278,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5294769550414936029">wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Przenieś okno na biurko</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Połącz</translation>
 <translation id="5315873049536339193">Tożsamość</translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5318334351163689047">Nieudane żądania TCP</translation>
@@ -399,6 +400,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="714876143603641390">Łączność LAN</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7172721935181587524">1 obraz</translation>
+<translation id="7175037578838465313">Skonfiguruj: <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Tym urządzeniem <ph name="DEVICE_TYPE" /> zarządza <ph name="MANAGER" />. Administratorzy mogą je zdalnie konfigurować.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
@@ -501,6 +503,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8620617069779373398">Stan roamingu</translation>
 <translation id="8655295600908251630">Kanał</translation>
 <translation id="8660881923941176839">funty</translation>
+<translation id="8662671328352114214">Połącz z siecią <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Klucz wstępny</translation>
 <translation id="871560550817059752">Niepowodzenie – brak tuszu</translation>
 <translation id="8723108084122415655">Sieć inna niż domyślna przekroczyła próg opóźnienia</translation>

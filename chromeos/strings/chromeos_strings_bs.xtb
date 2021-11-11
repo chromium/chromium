@@ -279,6 +279,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5294769550414936029">verzija <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Premjesti prozor na radnu površinu</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">Poveži</translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5318334351163689047">Greške TCP zahtjeva</translation>
@@ -400,6 +401,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="714876143603641390">Povezivost LAN-a</translation>
 <translation id="7162487448488904999">Galerija</translation>
 <translation id="7172721935181587524">1 slika</translation>
+<translation id="7175037578838465313">Konfigurirajte <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu daljinski konfigurirati uređaj.</translation>
 <translation id="7180611975245234373">Osvježi</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
@@ -502,6 +504,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8620617069779373398">Status rominga</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8660881923941176839">funte</translation>
+<translation id="8662671328352114214">Pridružite se <ph name="TYPE" /> mreži</translation>
 <translation id="8675354002693747642">Unaprijed dijeljeni ključ</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
 <translation id="8723108084122415655">Mreža koja nije zadana je iznad praga latentnosti</translation>

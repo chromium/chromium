@@ -62,6 +62,8 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">Cancelando análisis</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
+<translation id="1857850044054738019">Selecciona esta opción si el dispositivo se va a aprovisionar o reacondicionar para
+        distribuirlo después a un cliente nuevo.</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
@@ -195,6 +197,7 @@
 <translation id="4244962993387259361">Necesitas al menos 500 MB de espacio libre para ejecutar una prueba de memoria. Para liberar espacio, ve a Configuración &gt; Gestión del almacenamiento.</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
 <translation id="4271957103967917607">Ver en pantalla completa</translation>
+<translation id="4275799948641988986">Una vez reparado, ¿quién va a usar el dispositivo?</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
 <translation id="4378373042927530923">Sin ejecutar</translation>
@@ -259,6 +262,7 @@
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Nombre del grupo</translation>
 <translation id="5051044138948155788">Esta es la única página. Accederás a la pantalla de inicio del escaneo.</translation>
+<translation id="5061169534910302641">Actualizar versión y reiniciar</translation>
 <translation id="5088172560898466307">Nombre de host del servidor</translation>
 <translation id="5089810972385038852">Estado/provincia</translation>
 <translation id="5142961317498132443">Autenticación</translation>
@@ -277,6 +281,7 @@
 <translation id="5294769550414936029">versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">Mover ventana al escritorio</translation>
 <translation id="5304899856529773394">EvDo</translation>
+<translation id="5308380583665731573">Conectar</translation>
 <translation id="5315873049536339193">Identidad</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318334351163689047">Errores de solicitud TCP</translation>
@@ -398,6 +403,7 @@
 <translation id="714876143603641390">Conectividad LAN</translation>
 <translation id="7162487448488904999">Galería</translation>
 <translation id="7172721935181587524">1 imagen</translation>
+<translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> gestiona este <ph name="DEVICE_TYPE" />. Los administradores pueden configurar el dispositivo de forma remota.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7216409898977639127">Proveedor de servicios móviles</translation>
@@ -407,6 +413,7 @@
 <translation id="7297226631177386107">No se puede conectar con sitios web HTTPS usando un cortafuegos</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">El dispositivo cambiará de propietario</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Dispositivos de red</translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
@@ -414,6 +421,9 @@
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Escaneo completado. 1 página escaneada}other{Escaneo completado. {NUMBER_OF_PAGES} páginas escaneadas}}</translation>
+<translation id="7451112128070628323">Selecciona esta opción si el dispositivo no va cambiar de propietario.
+        Por ejemplo, el dispositivo se va a transferir a una persona diferente
+        dentro de una misma organización.</translation>
 <translation id="7469648432129124067">Portal detectado</translation>
 <translation id="7487067081878637334">Tecnología</translation>
 <translation id="7490813197707563893">Dirección MAC</translation>
@@ -500,6 +510,7 @@
 <translation id="8620617069779373398">Estado de roaming</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8660881923941176839">libras</translation>
+<translation id="8662671328352114214">Unirse a la red <ph name="TYPE" /></translation>
 <translation id="8675354002693747642">Clave precompartida</translation>
 <translation id="871560550817059752">No se ha podido imprimir - Sin tinta</translation>
 <translation id="8723108084122415655">La red no predeterminada supera el umbral de latencia</translation>
@@ -537,6 +548,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Uso actual</translation>
+<translation id="9095415590198785865">El dispositivo no cambiará de propietario</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>

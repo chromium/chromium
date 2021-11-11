@@ -62,6 +62,7 @@
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">स्क्यान गर्ने कार्य रद्द गरिँदै छ</translation>
 <translation id="1851218745569890714">भिडियो कन्फ्रेन्स</translation>
+<translation id="1857850044054738019">यो डिभाइस नयाँ ग्राहकलाई वितरण गर्ने प्रयोजनका लागि फेरि ल्याइँदै वा मर्मत गरी बिक्रीका लागि तयार गरिँदै छ भने यो विकल्प चयन गर्नुहोस्।</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">हार्डवेयरको पुनरावृत्ति</translation>
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
@@ -196,6 +197,7 @@
 <translation id="4244962993387259361">मेमोरीको जाँच गर्न तपाईंको डिभाइसको भण्डारणमा कम्तीमा ५०० एम.बि. खाली ठाउँ हुनु पर्छ। ठाउँ खाली गर्न सेटिङ &gt; भण्डारण व्यवस्थापनमा जानुहोस्।</translation>
 <translation id="4258281355379922695">HTTP विलम्बता</translation>
 <translation id="4271957103967917607">फुल स्क्रिनमा हेर्नुहोस्</translation>
+<translation id="4275799948641988986">मर्मत गरेपछि यो डिभाइस कसले प्रयोग गर्ने छ?</translation>
 <translation id="4297501883039923494">रोकियो - अज्ञात त्रुटि भयो</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> वटा फोटो</translation>
 <translation id="4378373042927530923">चलेन</translation>
@@ -279,6 +281,7 @@
 <translation id="5294769550414936029">संस्करण <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">विन्डो सारेर डेस्कमा लैजानुहोस्</translation>
 <translation id="5304899856529773394">EVDO</translation>
+<translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5315873049536339193">पहिचान</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5318334351163689047">TCP सम्बन्धी अनुरोध गर्न सकिएन</translation>
@@ -400,6 +403,7 @@
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7172721935181587524">एउटा फोटो छ</translation>
+<translation id="7175037578838465313"><ph name="NAME" /> कन्फिगर गर्नुहोस्</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> ले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ। एड्मिनहरू टाढैबाट यो डिभाइस कन्फिगर गर्न सक्छन्।</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
@@ -409,6 +413,7 @@
 <translation id="7297226631177386107">फायरवाल पार गरेर HTTPS वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7309920310754476121">डिभाइस अर्कै मालिकको स्वामित्वमा रहने छ</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">नेटवर्कसम्बन्धी यन्त्रहरू</translation>
 <translation id="7359657277149375382">फाइलको प्रकार</translation>
@@ -416,6 +421,8 @@
 <translation id="7415801143053185905">HTTP को विलम्बता अति धेरै छ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्क्यान गरिसकियो। एउटा पेज स्क्यान गरियो}other{स्क्यान गरिसकियो। {NUMBER_OF_PAGES} पेज स्क्यान गरिए}}</translation>
+<translation id="7451112128070628323">यो डिभाइसको स्वामित्व हस्तान्तरण गर्न लागिएको छैन भने यो विकल्प चयन गर्नुहोस्।
+        जस्तै, यो डिभाइसको स्वामित्व संस्थाका विभिन्न व्यक्तिलाई हस्तान्तरण गरिँदै छ।</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7487067081878637334">प्रविधि</translation>
 <translation id="7490813197707563893">MAC एड्रेस</translation>
@@ -502,6 +509,7 @@
 <translation id="8620617069779373398">रोमिङको स्थिति</translation>
 <translation id="8655295600908251630">च्यानल</translation>
 <translation id="8660881923941176839">पाउन्ड</translation>
+<translation id="8662671328352114214"><ph name="TYPE" /> नेटवर्कमा सामेल हुनुहोस्</translation>
 <translation id="8675354002693747642">पहिलै साझा गरिएको साँचो</translation>
 <translation id="871560550817059752">प्रिन्ट गर्न सकिएन - मसी सकियो</translation>
 <translation id="8723108084122415655">डिफल्ट नेटवर्कका रूपमा सेट नगरिएको यस नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
@@ -539,6 +547,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9088306295921699330">हालको प्रयोग</translation>
+<translation id="9095415590198785865">डिभाइस सोही मालिकको स्वामित्वमा रहने छ</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> को टिकट पुन: ताजा गर्नुहोस्</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्क्यान गरिँदै छ</translation>

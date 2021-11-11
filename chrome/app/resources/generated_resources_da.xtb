@@ -2402,6 +2402,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3449393517661170867">Nyt fanevindue</translation>
 <translation id="3449839693241009168">Tryk på <ph name="SEARCH_KEY" /> for at sende kommandoer til <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Anvendt andel for inaktiv tilstand</translation>
+<translation id="3450180775417907283"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering.</translation>
 <translation id="3451753556629288767">Har tilladelse til at åbne typer af filer</translation>
 <translation id="3452999110156026232">Forældreadgang</translation>
 <translation id="3453612417627951340">Mangler godkendelse</translation>
@@ -3199,7 +3200,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4289732974614035569">Vælg en pinkode</translation>
 <translation id="4290791284969893584">Når du har lukket en side, kan de handlinger, du har påbegyndt, muligvis ikke gennemføres</translation>
 <translation id="4295072614469448764">Appen er tilgængelig i din terminal. Der vises muligvis også et ikon på din appliste.</translation>
-<translation id="4295839147292213505">Du kan sende sms-beskeder fra din computer, dele din internetforbindelse, svare i samtalenotifikationer og låse din <ph name="DEVICE_TYPE" /> op med din telefon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4295979599050707005">Log ind igen for at bekræfte, at din konto, <ph name="USER_EMAIL" />, kan bruges sammen med websites, apps og udvidelser i Chrome og Google Play. Du kan også fjerne denne konto. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4297219207642690536">Genstart og nulstil</translation>
 <translation id="4297813521149011456">Skærmrotation</translation>
@@ -4265,6 +4265,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5472627187093107397">Gem adgangskoder for dette website</translation>
 <translation id="5473075389972733037">IBM</translation>
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{Pinkoden skal være på mindst ét tegn}one{Pinkoden skal være på mindst # tegn}other{Pinkoden skal være på mindst # tegn}}</translation>
+<translation id="5474859849784484111"><ph name="MANAGER" /> kræver, at du opretter forbindelse til Wi-Fi nu og downloader en opdatering. Du kan også downloade via en forbrugsafregnet forbindelse (du opkræves muligvis et gebyr).</translation>
 <translation id="5481273127572794904">Har ikke tilladelse til at downloade flere filer automatisk</translation>
 <translation id="5481941284378890518">Tilføj printere i nærheden</translation>
 <translation id="5483785310822538350">Tilbagekald adgang til fil og enhed</translation>
@@ -4687,6 +4688,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="592880897588170157">Download PDF-filer, i stedet for at de åbnes automatisk i Chrome</translation>
 <translation id="592919310198008711">Når jeg klikker på udvidelsen</translation>
 <translation id="5932124097031739492">Linux er blevet opgraderet.</translation>
+<translation id="5932209916647644605"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" /> med det samme.</translation>
 <translation id="5932224571077948991">Websitet viser påtrængende eller vildledende annoncer</translation>
 <translation id="59324397759951282">USB-enhed fra <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5932441198730183141">Du har ikke nok tilgængelige licenser til at tilmelde denne Google Meet-hardwareenhed. Kontakt salgsafdelingen for at købe flere. Hvis du mener, at du får denne meddelelse ved en fejl, skal du kontakte support.</translation>
