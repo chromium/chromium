@@ -90,6 +90,10 @@ const char kDisableAccelerated2dCanvas[]    = "disable-accelerated-2d-canvas";
 // Enable in-progress canvas 2d API methods BeginLayer and EndLayer.
 const char kEnableCanvas2DLayers[] = "canvas-2d-layers";
 
+// Enables canvas to clear its context when it is running in background.
+const char kEnableCanvasContextLostInBackground[] =
+    "enable-canvas-context-lost-in-background";
+
 // Enable in-progress canvas 2d API features.
 const char kEnableNewCanvas2DAPI[] = "new-canvas-2d-api";
 

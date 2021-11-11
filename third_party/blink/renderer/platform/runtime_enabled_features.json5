@@ -359,6 +359,9 @@
       status: "experimental",
     },
     {
+      name: "CanvasContextLostInBackground",
+    },
+    {
       name: "CanvasFormattedText",
       status: "experimental",
     },

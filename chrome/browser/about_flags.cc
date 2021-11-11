@@ -6603,6 +6603,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCanvas2DLayersDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableCanvas2DLayers)},
 
+    {"enable-canvas-context-lost-in-background",
+     flag_descriptions::kEnableCanvasContextLostInBackgroundName,
+     flag_descriptions::kEnableCanvasContextLostInBackgroundDescription, kOsAll,
+     SINGLE_VALUE_TYPE(switches::kEnableCanvasContextLostInBackground)},
+
     {"new-canvas-2d-api", flag_descriptions::kNewCanvas2DAPIName,
      flag_descriptions::kNewCanvas2DAPIDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableNewCanvas2DAPI)},

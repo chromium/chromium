@@ -630,6 +630,9 @@ extern const char kDownloadProgressMessageDescription[];
 extern const char kDownloadRangeName[];
 extern const char kDownloadRangeDescription[];
 
+extern const char kEnableCanvasContextLostInBackgroundName[];
+extern const char kEnableCanvasContextLostInBackgroundDescription[];
+
 extern const char kEnableFencedFramesName[];
 extern const char kEnableFencedFramesDescription[];
 

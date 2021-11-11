@@ -998,6 +998,11 @@ const char kDownloadRangeName[] = "Enable download range support";
 const char kDownloadRangeDescription[] =
     "Enables arbitrary download range request support.";
 
+const char kEnableCanvasContextLostInBackgroundName[] =
+    "Enable canvas context to be lost in background";
+const char kEnableCanvasContextLostInBackgroundDescription[] =
+    "Enable canvas context to be cleared when it is running in background";
+
 const char kEnableLayoutNGName[] = "Enable LayoutNG";
 const char kEnableLayoutNGDescription[] =
     "Enable Blink's next generation layout engine.";

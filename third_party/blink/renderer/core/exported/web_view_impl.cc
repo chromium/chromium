@@ -1486,6 +1486,10 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   RuntimeEnabledFeatures::SetAccelerated2dCanvasEnabled(
       prefs.accelerated_2d_canvas_enabled);
 
+  // Enable canvas to clear its context when it is running in background.
+  RuntimeEnabledFeatures::SetCanvasContextLostInBackgroundEnabled(
+      prefs.canvas_context_lost_in_background_enabled);
+
   // Enable new canvas 2d api features
   RuntimeEnabledFeatures::SetNewCanvas2DAPIEnabled(
       prefs.new_canvas_2d_api_enabled);

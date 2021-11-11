@@ -98,6 +98,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool hide_scrollbars;
   bool accelerated_2d_canvas_enabled;
   bool canvas_2d_layers_enabled = false;
+  bool canvas_context_lost_in_background_enabled = false;
   bool new_canvas_2d_api_enabled;
   bool antialiased_2d_canvas_disabled;
   bool antialiased_clips_2d_canvas_enabled;

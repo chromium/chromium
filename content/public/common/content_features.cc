@@ -285,6 +285,10 @@ const base::Feature kEmbeddingRequiresOptIn{"EmbeddingRequiresOptIn",
 const base::Feature kEnableCanvas2DLayers{"EnableCanvas2DLayers",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables canvas context to clear context when it's running in background.
+const base::Feature kEnableCanvasContextLostInBackground{
+    "EnableCanvasContextLostInBackground", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables new canvas 2d api features. Enabled either with either
 // enable-experimental-canvas-features or new-canvas-2d-api runtime flags
 const base::Feature kEnableNewCanvas2DAPI{"EnableNewCanvas2DAPI",
