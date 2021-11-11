@@ -81,6 +81,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
@@ -393,10 +394,21 @@ void PdfViewWebPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
     return;
   }
 
+  // Layer translate is independent of scaling, so apply first.
+  if (!total_translate_.IsZero())
+    canvas->translate(total_translate_.x(), total_translate_.y());
+
   if (device_to_css_scale_ != 1.0f)
     canvas->scale(device_to_css_scale_, device_to_css_scale_);
 
-  canvas->drawImage(snapshot_, plugin_rect().x(), plugin_rect().y());
+  // Position layer at plugin origin before layer scaling.
+  if (!plugin_rect().origin().IsOrigin())
+    canvas->translate(plugin_rect().x(), plugin_rect().y());
+
+  if (snapshot_scale_ != 1.0f)
+    canvas->scale(snapshot_scale_, snapshot_scale_);
+
+  canvas->drawImage(snapshot_, 0, 0);
 }
 
 void PdfViewWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
@@ -769,6 +781,32 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
     InvalidatePluginContainer();
 }
 
+void PdfViewWebPlugin::UpdateScaledValues() {
+  total_translate_ = snapshot_translate_;
+
+  // Scale translate to compensate for use-zoom-for-DSF.
+  if (viewport_to_dip_scale_ != 1.0f)
+    total_translate_.Scale(1.0f / viewport_to_dip_scale_);
+}
+
+void PdfViewWebPlugin::UpdateScale(float scale) {
+  if (client_->IsUseZoomForDSFEnabled()) {
+    viewport_to_dip_scale_ = scale;
+    device_to_css_scale_ = 1.0f;
+  } else {
+    viewport_to_dip_scale_ = 1.0f;
+    device_to_css_scale_ = scale;
+  }
+  UpdateScaledValues();
+}
+
+void PdfViewWebPlugin::UpdateLayerTransform(float scale,
+                                            const gfx::Vector2dF& translate) {
+  snapshot_translate_ = translate;
+  snapshot_scale_ = scale;
+  UpdateScaledValues();
+}
+
 void PdfViewWebPlugin::EnableAccessibility() {
   PdfViewPluginBase::EnableAccessibility();
 }
@@ -930,22 +968,13 @@ void PdfViewWebPlugin::OnViewportChanged(
     const gfx::Rect& plugin_rect_in_css_pixel,
     float new_device_scale) {
   css_plugin_rect_ = plugin_rect_in_css_pixel;
-  float css_to_device_pixel_scale;
-  if (client_->IsUseZoomForDSFEnabled()) {
-    viewport_to_dip_scale_ = 1.0f / new_device_scale;
-    device_to_css_scale_ = 1.0f;
-    css_to_device_pixel_scale = 1.0f;
-  } else {
-    viewport_to_dip_scale_ = 1.0f;
-    device_to_css_scale_ = 1.0f / new_device_scale;
-    css_to_device_pixel_scale = new_device_scale;
-  }
 
   // `plugin_rect_in_css_pixel` needs to be converted to device pixels before
   // getting passed into PdfViewPluginBase::UpdateGeometryOnPluginRectChanged().
   UpdateGeometryOnPluginRectChanged(
-      gfx::ScaleToEnclosingRectSafe(plugin_rect_in_css_pixel,
-                                    css_to_device_pixel_scale),
+      gfx::ScaleToEnclosingRectSafe(
+          plugin_rect_in_css_pixel,
+          client_->IsUseZoomForDSFEnabled() ? 1.0f : new_device_scale),
       new_device_scale);
 }
 

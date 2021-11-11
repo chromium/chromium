@@ -8,7 +8,11 @@
 #include <string>
 #include <utility>
 
+#include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/string_piece.h"
+#include "base/test/bind.h"
+#include "base/time/time.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
@@ -40,6 +44,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/latency/latency_info.h"
 
 namespace chrome_pdf {
@@ -291,10 +296,24 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
 
   // Allow derived test classes to create their own custom TestPDFiumEngine.
   virtual std::unique_ptr<TestPDFiumEngine> CreateEngine() {
-    return std::make_unique<TestPDFiumEngine>(plugin_.get());
+    return std::make_unique<NiceMock<TestPDFiumEngine>>(plugin_.get());
   }
 
   void UpdatePluginGeometry(float device_scale, const gfx::Rect& window_rect) {
+    UpdatePluginGeometryWithoutWaiting(device_scale, window_rect);
+
+    // Waits for main thread callback scheduled by `PaintManager`.
+    base::RunLoop run_loop;
+    plugin_->ScheduleTaskOnMainThread(
+        FROM_HERE, base::BindLambdaForTesting([&run_loop](int32_t /*result*/) {
+          run_loop.Quit();
+        }),
+        /*result=*/0, base::TimeDelta());
+    run_loop.Run();
+  }
+
+  void UpdatePluginGeometryWithoutWaiting(float device_scale,
+                                          const gfx::Rect& window_rect) {
     // The plugin container's device scale must be set before calling
     // UpdateGeometry().
     ASSERT_TRUE(wrapper_ptr_);
@@ -307,7 +326,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
                                         const gfx::Rect& window_rect,
                                         float expected_device_scale,
                                         const gfx::Rect& expected_plugin_rect) {
-    UpdatePluginGeometry(device_scale, window_rect);
+    UpdatePluginGeometryWithoutWaiting(device_scale, window_rect);
     EXPECT_EQ(expected_device_scale, plugin_->GetDeviceScaleForTesting())
         << "Device scale comparison failure at device scale of "
         << device_scale;
@@ -320,7 +339,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
                                const gfx::Rect& window_rect,
                                const gfx::Rect& paint_rect,
                                const gfx::Rect& expected_clipped_rect) {
-    UpdatePluginGeometry(device_scale, window_rect);
+    UpdatePluginGeometryWithoutWaiting(device_scale, window_rect);
     canvas_.DrawColor(kDefaultColor);
 
     plugin_->Paint(canvas_.sk_canvas(), paint_rect);
@@ -375,7 +394,7 @@ class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
 TEST_F(PdfViewWebPluginWithoutInitializeTest, Initialize) {
   auto wrapper =
       std::make_unique<NiceMock<FakeContainerWrapper>>(plugin_.get());
-  auto engine = std::make_unique<TestPDFiumEngine>(plugin_.get());
+  auto engine = std::make_unique<NiceMock<TestPDFiumEngine>>(plugin_.get());
   EXPECT_CALL(*wrapper,
               RequestTouchEventType(
                   blink::WebPluginContainer::kTouchEventRequestTypeRaw));
@@ -504,6 +523,70 @@ TEST_P(PdfViewWebPluginTestUseZoomForDSF,
   }
 }
 
+TEST_P(PdfViewWebPluginTestUseZoomForDSF, UpdateLayerTransformWithIdentity) {
+  plugin_->UpdateLayerTransform(1.0f, gfx::Vector2dF());
+  TestPaintSnapshots(/*device_scale=*/4.0f,
+                     /*window_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*expected_clipped_rect=*/gfx::Rect(10, 10, 20, 20));
+}
+
+TEST_P(PdfViewWebPluginTestUseZoomForDSF, UpdateLayerTransformWithScale) {
+  plugin_->UpdateLayerTransform(0.5f, gfx::Vector2dF());
+  TestPaintSnapshots(/*device_scale=*/4.0f,
+                     /*window_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*expected_clipped_rect=*/gfx::Rect(10, 10, 10, 10));
+}
+
+TEST_F(PdfViewWebPluginTest,
+       UpdateLayerTransformWithTranslateUseZoomForDSFDisabled) {
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(false));
+
+  plugin_->UpdateLayerTransform(1.0f, gfx::Vector2dF(-5, 5));
+  TestPaintSnapshots(/*device_scale=*/4.0f,
+                     /*window_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*expected_clipped_rect=*/gfx::Rect(10, 15, 15, 15));
+}
+
+TEST_F(PdfViewWebPluginTest,
+       UpdateLayerTransformWithTranslateUseZoomForDSFEnabled) {
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(true));
+
+  plugin_->UpdateLayerTransform(1.0f, gfx::Vector2dF(-1.25, 1.25));
+  TestPaintSnapshots(/*device_scale=*/4.0f,
+                     /*window_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*expected_clipped_rect=*/gfx::Rect(10, 15, 15, 15));
+}
+
+TEST_F(PdfViewWebPluginTest,
+       UpdateLayerTransformWithScaleAndTranslateUseZoomForDSFDisabled) {
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(false));
+
+  plugin_->UpdateLayerTransform(0.5f, gfx::Vector2dF(-5, 5));
+  TestPaintSnapshots(/*device_scale=*/4.0f,
+                     /*window_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*expected_clipped_rect=*/gfx::Rect(10, 15, 5, 10));
+}
+
+TEST_F(PdfViewWebPluginTest,
+       UpdateLayerTransformWithScaleAndTranslateUseZoomForDSFEnabled) {
+  EXPECT_CALL(*client_ptr_, IsUseZoomForDSFEnabled)
+      .WillRepeatedly(Return(true));
+
+  plugin_->UpdateLayerTransform(0.5f, gfx::Vector2dF(-1.25, 1.25));
+  TestPaintSnapshots(/*device_scale=*/4.0f,
+                     /*window_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*paint_rect=*/gfx::Rect(10, 10, 20, 20),
+                     /*expected_clipped_rect=*/gfx::Rect(10, 15, 5, 10));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PdfViewWebPluginTestUseZoomForDSF,
                          testing::Bool());
@@ -537,7 +620,8 @@ class PdfViewWebPluginMouseEventsTest : public PdfViewWebPluginTest {
   };
 
   std::unique_ptr<TestPDFiumEngine> CreateEngine() override {
-    return std::make_unique<TestPDFiumEngineForMouseEvents>(plugin_.get());
+    return std::make_unique<NiceMock<TestPDFiumEngineForMouseEvents>>(
+        plugin_.get());
   }
 
   TestPDFiumEngineForMouseEvents* engine() {
@@ -598,7 +682,7 @@ class PdfViewWebPluginImeTest : public PdfViewWebPluginTest {
   };
 
   std::unique_ptr<TestPDFiumEngine> CreateEngine() override {
-    return std::make_unique<TestPDFiumEngineForIme>(plugin_.get());
+    return std::make_unique<NiceMock<TestPDFiumEngineForIme>>(plugin_.get());
   }
 
   TestPDFiumEngineForIme* engine() {

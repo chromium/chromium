@@ -27,6 +27,7 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -254,6 +255,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // SkiaGraphics::Client:
   void UpdateSnapshot(sk_sp<SkImage> snapshot) override;
+  void UpdateScale(float scale) override;
+  void UpdateLayerTransform(float scale,
+                            const gfx::Vector2dF& translate) override;
 
   // PdfAccessibilityActionHandler:
   void EnableAccessibility() override;
@@ -304,6 +308,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   bool InitializeCommon(std::unique_ptr<ContainerWrapper> container_wrapper,
                         std::unique_ptr<PDFiumEngine> engine);
+
+  // Recalculates values that depend on scale factors.
+  void UpdateScaledValues();
 
   void OnViewportChanged(const gfx::Rect& plugin_rect_in_css_pixel,
                          float new_device_scale);
@@ -370,13 +377,23 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   v8::Persistent<v8::Object> scriptable_receiver_;
   PostMessageSender post_message_sender_;
 
+  // The current image snapshot.
   cc::PaintImage snapshot_;
+
+  // Translate from snapshot to device pixels.
+  gfx::Vector2dF snapshot_translate_;
+
+  // Scale from snapshot to device pixels.
+  float snapshot_scale_ = 1.0f;
 
   // The viewport coordinates to DIP (device-independent pixel) ratio.
   float viewport_to_dip_scale_ = 1.0f;
 
   // The device pixel to CSS pixel ratio.
   float device_to_css_scale_ = 1.0f;
+
+  // Combined translate from snapshot to device to CSS pixels.
+  gfx::Vector2dF total_translate_;
 
   // The plugin rect in CSS pixels.
   gfx::Rect css_plugin_rect_;
