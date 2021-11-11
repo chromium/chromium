@@ -15,8 +15,9 @@ namespace ash {
 class TestAshWebViewFactory : public AshWebViewFactory {
  public:
   TestAshWebViewFactory();
-  TestAshWebViewFactory(const AshWebViewFactory& copy) = delete;
-  TestAshWebViewFactory& operator=(const AshWebViewFactory& assign) = delete;
+  TestAshWebViewFactory(const TestAshWebViewFactory& copy) = delete;
+  TestAshWebViewFactory& operator=(const TestAshWebViewFactory& assign) =
+      delete;
   ~TestAshWebViewFactory() override;
 
   // AshWebViewFactory:
