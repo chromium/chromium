@@ -35,9 +35,8 @@ TEST(ReferrerScriptInfo, ToFromV8NoReferencingScript) {
   V8TestingScope scope;
   const KURL script_origin_resource_name("http://example.org/script.js");
 
-  v8::Local<v8::PrimitiveArray> v8_info =
-      ReferrerScriptInfo().ToV8HostDefinedOptions(scope.GetIsolate(),
-                                                  script_origin_resource_name);
+  v8::Local<v8::Data> v8_info = ReferrerScriptInfo().ToV8HostDefinedOptions(
+      scope.GetIsolate(), script_origin_resource_name);
 
   EXPECT_TRUE(v8_info.IsEmpty());
 
@@ -52,7 +51,7 @@ TEST(ReferrerScriptInfo, ToFromV8ScriptOriginBaseUrl) {
   V8TestingScope scope;
   const KURL script_origin_resource_name("http://example.org/script.js");
 
-  v8::Local<v8::PrimitiveArray> v8_info =
+  v8::Local<v8::Data> v8_info =
       ReferrerScriptInfo(script_origin_resource_name, ScriptFetchOptions())
           .ToV8HostDefinedOptions(scope.GetIsolate(),
                                   script_origin_resource_name);
@@ -69,7 +68,7 @@ TEST(ReferrerScriptInfo, ToFromV8ScriptNullBaseUrl) {
   V8TestingScope scope;
   const KURL script_origin_resource_name("http://example.org/script.js");
 
-  v8::Local<v8::PrimitiveArray> v8_info =
+  v8::Local<v8::Data> v8_info =
       ReferrerScriptInfo(KURL(), ScriptFetchOptions())
           .ToV8HostDefinedOptions(scope.GetIsolate(),
                                   script_origin_resource_name);
@@ -91,7 +90,7 @@ TEST(ReferrerScriptInfo, ToFromV8) {
   ReferrerScriptInfo info(url, network::mojom::CredentialsMode::kInclude,
                           "foobar", kNotParserInserted,
                           network::mojom::ReferrerPolicy::kOrigin);
-  v8::Local<v8::PrimitiveArray> v8_info = info.ToV8HostDefinedOptions(
+  v8::Local<v8::Data> v8_info = info.ToV8HostDefinedOptions(
       scope.GetIsolate(), script_origin_resource_name);
 
   ReferrerScriptInfo decoded = ReferrerScriptInfo::FromV8HostDefinedOptions(

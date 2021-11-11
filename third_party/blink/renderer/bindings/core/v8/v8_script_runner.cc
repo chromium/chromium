@@ -229,7 +229,7 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
     SanitizeScriptErrors sanitize_script_errors,
     v8::ScriptCompiler::CompileOptions compile_options,
     v8::ScriptCompiler::NoCacheReason no_cache_reason,
-    const ReferrerScriptInfo& referrer_info) {
+    v8::Local<v8::Data> host_defined_options) {
   v8::Isolate* isolate = script_state->GetIsolate();
   if (source.Source().length() >= v8::String::kMaxLength) {
     V8ThrowException::ThrowError(isolate, "Source file too large.");
@@ -258,7 +258,7 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
       sanitize_script_errors == SanitizeScriptErrors::kSanitize,
       false,  // is_wasm
       false,  // is_module
-      referrer_info.ToV8HostDefinedOptions(isolate, source.Url()));
+      host_defined_options);
 
   if (!*TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(kTraceEventCategoryGroup)) {
     return CompileScriptInternal(isolate, script_state, source, origin,
@@ -383,6 +383,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
 v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
     v8::Isolate* isolate,
     v8::Local<v8::Script> script,
+    v8::Local<v8::Data> host_defined_options,
     ExecutionContext* context) {
   DCHECK(!script.IsEmpty());
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
@@ -421,7 +422,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
     // unpacked.
     probe::ExecuteScript probe(context, ToCoreString(script_url),
                                script->GetUnboundScript()->GetId());
-    result = script->Run(isolate->GetCurrentContext());
+    result = script->Run(isolate->GetCurrentContext(), host_defined_options);
   }
 
   CHECK(!isolate->IsDead());
@@ -519,7 +520,8 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
           ExecutionContext::GetCodeCacheHostFromContext(execution_context),
           source.Source());
     }
-
+    v8::Local<v8::Data> host_defined_options =
+        referrer_info.ToV8HostDefinedOptions(isolate, source.Url());
     v8::ScriptCompiler::CompileOptions compile_options;
     V8CodeCache::ProduceCacheOptions produce_cache_options;
     v8::ScriptCompiler::NoCacheReason no_cache_reason;
@@ -530,10 +532,10 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
     v8::MaybeLocal<v8::Value> maybe_result;
     if (V8ScriptRunner::CompileScript(script_state, source,
                                       sanitize_script_errors, compile_options,
-                                      no_cache_reason, referrer_info)
+                                      no_cache_reason, host_defined_options)
             .ToLocal(&script)) {
-      maybe_result =
-          V8ScriptRunner::RunCompiledScript(isolate, script, execution_context);
+      maybe_result = V8ScriptRunner::RunCompiledScript(
+          isolate, script, host_defined_options, execution_context);
       probe::DidProduceCompilationCache(
           probe::ToCoreProbeSink(execution_context), source, script);
 
@@ -649,13 +651,14 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(
   // produce cache for them.
   DCHECK_EQ(produce_cache_options,
             V8CodeCache::ProduceCacheOptions::kNoProduceCache);
+  v8::Local<v8::Data> host_defined_options;
   v8::Local<v8::Script> script;
   // Use default ScriptReferrerInfo here:
   // - nonce: empty for internal script, and
   // - parser_state: always "not parser inserted" for internal scripts.
   if (!V8ScriptRunner::CompileScript(
            script_state, source_code, SanitizeScriptErrors::kDoNotSanitize,
-           compile_options, no_cache_reason, ReferrerScriptInfo())
+           compile_options, no_cache_reason, host_defined_options)
            .ToLocal(&script))
     return v8::MaybeLocal<v8::Value>();
 

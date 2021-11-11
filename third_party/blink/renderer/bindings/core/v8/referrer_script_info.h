@@ -43,9 +43,9 @@ class CORE_EXPORT ReferrerScriptInfo {
 
   static ReferrerScriptInfo FromV8HostDefinedOptions(
       v8::Local<v8::Context>,
-      v8::Local<v8::PrimitiveArray>,
+      v8::Local<v8::Data>,
       const KURL& script_origin_resource_name);
-  v8::Local<v8::PrimitiveArray> ToV8HostDefinedOptions(
+  v8::Local<v8::Data> ToV8HostDefinedOptions(
       v8::Isolate*,
       const KURL& script_origin_resource_name) const;
 
