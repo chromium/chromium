@@ -52,8 +52,6 @@ struct StaticOobeScreenId {
 };
 
 struct OobeScreen {
-  constexpr static StaticOobeScreenId
-      SCREEN_CREATE_SUPERVISED_USER_FLOW_DEPRECATED{"supervised-user-creation"};
   constexpr static StaticOobeScreenId SCREEN_CONFIRM_PASSWORD{
       "saml-confirm-password"};
 
