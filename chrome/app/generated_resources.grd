@@ -5056,12 +5056,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA" desc="Longer explanation for section of extensions that can't access the current site's data">
         These extensions don't need to see and change information on this site.
       </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_TITLE" desc="Title of the site access tab in the Extensions Menu">
-        Permissions
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_EXTENSIONS_TAB_TITLE" desc="Title of the installed extensions tab in the Extensions Menu">
-        Installed
-      </message>
 
       <!-- Settings API bubble -->
       <message name="IDS_EXTENSIONS_SETTINGS_API_TITLE_HOME_PAGE_BUBBLE" desc="Title of a bubble warning users that an extension has overridden their home page setting">
