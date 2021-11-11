@@ -1371,13 +1371,13 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     }
     // Release wrapped record memory, so scoped reservation may act.
     wrapped_record.Clear();
-    CompressWrappedRecord(buffer);
+    CompressWrappedRecord(std::move(buffer));
   }
 
   void CompressWrappedRecord(std::string serialized_record) {
     // Compress the string.
     storage_queue_->compression_module_->CompressRecord(
-        serialized_record,
+        std::move(serialized_record),
         base::BindOnce(&WriteContext::OnCompressedRecordReady,
                        base::Unretained(this)));
   }
