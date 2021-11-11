@@ -7282,4 +7282,4 @@ crbug.com/1269011 [ Mac10.14 ] virtual/scalefactor200/css3/filters/composited-la
 crbug.com/1269011 [ Mac11 ] virtual/scalefactor200/css3/filters/composited-layer-bounds-after-sw-blur-animation.html [ Failure Pass ]
 
 # Temporarily disable to unblock a WebRTC roll
-crbug.com/webrtc/13377 external/wpt/webrtc-stats/supported-stats.html [ Pass Failure ]
+crbug.com/webrtc/13377 external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
