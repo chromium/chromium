@@ -79,6 +79,18 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
     }
   }
 
+  // CopyDirectory() below does not touch files in destination if no matching
+  // source. Remove existing Keystone bundle to avoid possible extra files left
+  // that breaks bundle signature.
+  UninstallKeystone(scope);
+  const base::FilePath dest_keystone_bundle_path =
+      dest_path.Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"));
+  if (base::PathExists(dest_keystone_bundle_path) &&
+      !base::DeletePathRecursively(dest_keystone_bundle_path)) {
+    LOG(ERROR) << "Failed to delete existing Keystone bundle path.";
+    return false;
+  }
+
   if (!base::CopyDirectory(keystone_bundle_path, dest_path, true)) {
     LOG(ERROR) << "Copying keystone bundle '" << keystone_bundle_path
                << "' to '" << dest_path.value().c_str() << "' failed.";
