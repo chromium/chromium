@@ -39,7 +39,7 @@ void MergeEntry(const mojom::UkmEntry* in, mojom::UkmEntry* out) {
 TestUkmRecorder::TestUkmRecorder() {
   EnableRecording(/*extensions=*/true);
   StoreWhitelistedEntries();
-  DisableSamplingForTesting();
+  SetSamplingForTesting(1);  // 1-in-1 == unsampled
 }
 
 TestUkmRecorder::~TestUkmRecorder() {}

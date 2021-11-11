@@ -79,8 +79,8 @@ class METRICS_EXPORT UkmRecorder {
   // Add an entry to the UkmEntry list.
   virtual void AddEntry(mojom::UkmEntryPtr entry) = 0;
 
-  // Disables sampling for testing purposes.
-  virtual void DisableSamplingForTesting() {}
+  // Controls sampling for testing purposes. Sampling is 1-in-N (N==rate).
+  virtual void SetSamplingForTesting(int rate) {}
 
  protected:
   // Type-safe wrappers for Update<X> functions.

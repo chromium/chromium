@@ -71,7 +71,7 @@ SourceId ConvertSourceIdToWhitelistedType(SourceId id, SourceIdType type) {
 class TestRecordingHelper {
  public:
   explicit TestRecordingHelper(UkmRecorder* recorder) : recorder_(recorder) {
-    recorder_->DisableSamplingForTesting();
+    recorder_->SetSamplingForTesting(1);
   }
 
   TestRecordingHelper(const TestRecordingHelper&) = delete;

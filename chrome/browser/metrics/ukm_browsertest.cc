@@ -1444,7 +1444,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, DebugUiRenders) {
   PlatformBrowser browser = CreatePlatformBrowser(profile);
 
   ukm::UkmService* ukm_service(GetUkmService());
-  EXPECT_TRUE(ukm_service->IsSamplingEnabled());
+  EXPECT_TRUE(ukm_service->IsSamplingConfigured());
 
   // chrome://ukm
   const GURL debug_url(content::GetWebUIURLString(content::kChromeUIUkmHost));
