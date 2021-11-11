@@ -32,6 +32,7 @@ import("//third_party/blink/renderer/core/events/build.gni")
 import("//third_party/blink/renderer/core/execution_context/build.gni")
 import("//third_party/blink/renderer/core/fetch/build.gni")
 import("//third_party/blink/renderer/core/fileapi/build.gni")
+import("//third_party/blink/renderer/core/fragment_directive/build.gni")
 import("//third_party/blink/renderer/core/frame/build.gni")
 import("//third_party/blink/renderer/core/fullscreen/build.gni")
 import("//third_party/blink/renderer/core/geometry/build.gni")
@@ -226,6 +227,9 @@ component("core") {
                          "permissions_policy")
   sources += rebase_path(blink_core_sources_fetch, "", "fetch")
   sources += rebase_path(blink_core_sources_fileapi, "", "fileapi")
+  sources += rebase_path(blink_core_sources_fragment_directive,
+                         "",
+                         "fragment_directive")
   sources += rebase_path(blink_core_sources_frame, "", "frame")
   sources += rebase_path(blink_core_sources_fullscreen, "", "fullscreen")
   sources += rebase_path(blink_core_sources_geometry, "", "geometry")
@@ -1291,6 +1295,12 @@ source_set("unit_tests") {
     "fetch/readable_stream_bytes_consumer_test.cc",
     "fetch/request_test.cc",
     "fetch/response_test.cc",
+    "fragment_directive/text_fragment_anchor_metrics_test.cc",
+    "fragment_directive/text_fragment_anchor_test.cc",
+    "fragment_directive/text_fragment_finder_test.cc",
+    "fragment_directive/text_fragment_handler_test.cc",
+    "fragment_directive/text_fragment_selector_generator_test.cc",
+    "fragment_directive/text_fragment_selector_test.cc",
     "frame/ad_tracker_test.cc",
     "frame/browser_controls_test.cc",
     "frame/child_frame_compositing_helper_test.cc",
@@ -1414,12 +1424,6 @@ source_set("unit_tests") {
     "page/scrolling/scroll_state_test.cc",
     "page/scrolling/scrolling_test.cc",
     "page/scrolling/snap_coordinator_test.cc",
-    "page/scrolling/text_fragment_anchor_metrics_test.cc",
-    "page/scrolling/text_fragment_anchor_test.cc",
-    "page/scrolling/text_fragment_finder_test.cc",
-    "page/scrolling/text_fragment_handler_test.cc",
-    "page/scrolling/text_fragment_selector_generator_test.cc",
-    "page/scrolling/text_fragment_selector_test.cc",
     "page/slot_scoped_traversal_test.cc",
     "page/spatial_navigation_test.cc",
     "page/touch_adjustment_test.cc",

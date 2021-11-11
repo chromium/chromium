@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_handler.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_handler.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -16,10 +16,10 @@
 #include "third_party/blink/renderer/core/editing/range_in_flat_tree.h"
 #include "third_party/blink/renderer/core/editing/selection_editor.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_anchor.h"
 
 namespace {
 bool PreemptiveGenerationEnabled() {

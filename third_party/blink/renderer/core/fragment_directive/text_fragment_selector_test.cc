@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector.h"
+#include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
 
 #include <gtest/gtest.h>
 

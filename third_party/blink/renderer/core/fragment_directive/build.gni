@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_fragment_directive = [
+  "fragment_directive.cc",
+  "fragment_directive.h",
+  "text_directive.cc",
+  "text_directive.h",
+  "text_fragment_anchor.cc",
+  "text_fragment_anchor.h",
+  "text_fragment_anchor_metrics.cc",
+  "text_fragment_anchor_metrics.h",
+  "text_fragment_finder.cc",
+  "text_fragment_finder.h",
+  "text_fragment_selector.cc",
+  "text_fragment_selector.h",
+  "text_fragment_selector_generator.cc",
+  "text_fragment_selector_generator.h",
+  "text_fragment_handler.cc",
+  "text_fragment_handler.h",
+]

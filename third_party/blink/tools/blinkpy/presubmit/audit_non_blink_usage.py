@@ -854,7 +854,7 @@ _CONFIG = [
         ],
     },
     {
-        'paths': ['third_party/blink/renderer/core/page/scrolling'],
+        'paths': ['third_party/blink/renderer/core/fragment_directive'],
         'allowed': [
             'cc::ScrollbarLayerBase',
             'shared_highlighting::.+',
