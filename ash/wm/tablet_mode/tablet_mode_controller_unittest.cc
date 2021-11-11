@@ -1667,6 +1667,51 @@ TEST_F(TabletModeControllerTest, CloseWindowDuringExitAnimation) {
   window.reset();
 }
 
+TEST_F(TabletModeControllerTest, TabletModeUsageMetricsTest) {
+  // We haven't seen any accelerometer data or tablet mode event yet, so
+  // no metrics should be logged.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 0);
+
+  // Start in clamshell mode by accelerometer data.
+  OpenLidToAngle(60.0f);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 0);
+
+  // Enter in tablet mode by accelerometer data.
+  OpenLidToAngle(300.0f);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 1);
+
+  // Exit tablet mode by accelerometer data.
+  OpenLidToAngle(60.0f);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 1);
+
+  // Enter tablet mode by tablet mode event.
+  SetTabletMode(true);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 2);
+
+  // Exit tablet mode by tablet mode event.
+  SetTabletMode(false);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 2);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 2);
+}
+
 class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
  public:
   TabletModeControllerOnDeviceTest() = default;

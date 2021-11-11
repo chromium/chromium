@@ -84,6 +84,10 @@ class ASH_EXPORT TabletModeController
 
   // Public so it can be used by unit tests.
   constexpr static char kLidAngleHistogramName[] = "Ash.TouchView.LidAngle";
+  constexpr static char kTabletInactiveTimeHistogramName[] =
+      "Ash.TouchView.TouchViewInactive";
+  constexpr static char kTabletActiveTimeHistogramName[] =
+      "Ash.TouchView.TouchViewActive";
 
   // Enable or disable using a screenshot for testing as it makes the
   // initialization flow async, which makes most tests harder to write.
@@ -348,6 +352,24 @@ class ASH_EXPORT TabletModeController
   // tablet mode state, false otherwise.
   bool UpdateUiTabletState();
 
+  // Starts tracking the tablet usage metrics if the following conditions are
+  // all meet:
+  // 1. The device is capable of entering tablet mode.
+  // 2. The device has seen accelerometer data or the device has EC lid angle
+  //    driver supported.
+  // 3. The device has seen tablet mode event and has responded to tablet mode
+  //    event.
+  // 4. Initial input device setup has been finished. At this moment, we know
+  //    the device has responded to the input device change.
+  // 5. We haven't started tracking the tablet usage metrics.
+  // The conditions 1, 2, 3, 4 are to avoid the false recordings that can happen
+  // at startup. During startup, since all these above events are async, plus
+  // potential sensor noises, the device can change its ui mode a couple times
+  // before it stabilized to its correct ui mode, thus we don't want to log the
+  // tablet usage metrics before the device has received all necessary events
+  // and has stabilized its ui mode.
+  void StartTrackingTabletUsageMetricsIfApplicable();
+
   // The tablet window manager (if enabled).
   std::unique_ptr<TabletModeWindowManager> tablet_mode_window_manager_;
 
@@ -358,6 +380,9 @@ class ASH_EXPORT TabletModeController
   // Whether we have ever seen accelerometer data. When ChromeOS EC lid angle
   // driver is supported, convertible device cannot see accelerometer data.
   bool have_seen_accelerometer_data_ = false;
+
+  // Whether we have ever seen tablet mode event sent from power manager.
+  bool have_seen_tablet_mode_event_ = false;
 
   // If ECLidAngleDriverStatus is supported, Chrome does not calculate lid angle
   // itself, but will rely on the tablet-mode flag that EC sends to decide if
