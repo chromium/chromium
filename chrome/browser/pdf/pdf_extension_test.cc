@@ -2828,7 +2828,13 @@ class PDFExtensionSaveWithPolicyTest : public PDFExtensionSaveTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, SaveWithPolicy) {
+// Flaky, http://crbug.com/1269147
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_SaveWithPolicy DISABLED_SaveWithPolicy
+#else
+#define MAYBE_SaveWithPolicy SaveWithPolicy
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath save_path = GetDownloadDir().AppendASCII("combobox_form.pdf");
@@ -2845,8 +2851,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, SaveWithPolicy) {
   WaitForSavedPdf(save_path);
 }
 
+// Flaky, http://crbug.com/1269105
+#if defined(OS_LINUX)
+#define MAYBE_SaveWithPolicyUniqueNumberSuffix \
+  DISABLED_SaveWithPolicyUniqueNumberSuffix
+#else
+#define MAYBE_SaveWithPolicyUniqueNumberSuffix SaveWithPolicyUniqueNumberSuffix
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
-                       SaveWithPolicyUniqueNumberSuffix) {
+                       MAYBE_SaveWithPolicyUniqueNumberSuffix) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   CreateConflictingFilenames(GetDownloadDir().AppendASCII("combobox_form.pdf"),
@@ -3019,8 +3032,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
   SendCopyCommandAndCheckCopyPasteClipboard("HEL");
 }
 
+// Flaky, http://crbug.com/1269104
+#if defined(OS_LINUX)
+#define MAYBE_CombinedShiftRightArrowPresses \
+  DISABLED_CombinedShiftRightArrowPresses
+#else
+#define MAYBE_CombinedShiftRightArrowPresses CombinedShiftRightArrowPresses
+#endif
 IN_PROC_BROWSER_TEST_P(PDFExtensionClipboardTest,
-                       CombinedShiftRightArrowPresses) {
+                       MAYBE_CombinedShiftRightArrowPresses) {
   LoadTestComboBoxPdfGetGuestContents();
 
   // Give the editable combo box focus.
