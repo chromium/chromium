@@ -1630,6 +1630,23 @@
       'base_unittests': {},
     },
 
+    'fuchsia_chrome_gtests': {
+      'courgette_unittests': {},
+      'extensions_unittests': {},
+      'headless_unittests': {},
+      'message_center_unittests': {},
+      'views_examples_unittests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter',
+        ],
+      },
+      'views_unittests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter',
+        ],
+      },
+    },
+
     'fuchsia_common_gtests': {
       'absl_hardening_tests': {},
       'accessibility_unittests': {},
@@ -1646,10 +1663,6 @@
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
       'capture_unittests': {},
-      'cc_unittests': {
-        'swarming': {
-          'shards': 2,
-        },},
       'color_unittests': {},
       'components_unittests': {
         'swarming': {
@@ -1665,16 +1678,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_unittests.filter',
         ],
       },
-      'courgette_unittests': {},
       'cronet_tests': {},
       'cronet_unittests': {},
       'crypto_unittests': {},
-      'display_unittests': {},
       'events_unittests': {},
-      'extensions_unittests': {},
       'fuchsia_mojo_unittests': {},
       'gcm_unit_tests': {},
-      'gfx_unittests': {},
       'gin_unittests': {},
       'google_apis_unittests': {},
       'gpu_unittests': {},
@@ -1684,7 +1693,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.headless_browsertests.filter',
         ],
       },
-      'headless_unittests': {},
       'ipc_tests': {},
       'jingle_unittests': {
         'args': [
@@ -1693,7 +1701,6 @@
       },
       'latency_unittests': {},
       'media_unittests': {},
-      'message_center_unittests': {},
       'midi_unittests': {},
       'mojo_unittests': {},
       'native_theme_unittests': {},
@@ -1736,24 +1743,24 @@
       },
       'ui_touch_selection_unittests': {},
       'url_unittests': {},
-      'views_examples_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter',
-        ],
+      'wm_unittests': {},
+      'wtf_unittests': {},
+      'zlib_unittests': {},
+    },
+
+    'fuchsia_common_gtests_with_graphical_output': {
+      'cc_unittests': {
+        'swarming': {
+          'shards': 2,
+        },
       },
-      'views_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter',
-        ],
-      },
+      'display_unittests': {},
+      'gfx_unittests': {},
       'viz_unittests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter',
         ],
       },
-      'wm_unittests': {},
-      'wtf_unittests': {},
-      'zlib_unittests': {},
     },
 
     'fuchsia_experimental_gtests': {
@@ -6208,14 +6215,22 @@
       'gpu_angle_fuchsia_unittests_isolated_scripts',
     ],
 
+    # All gtests that can be run on Fuchsia CI/CQ
     'fuchsia_gtests': [
+      'fuchsia_chrome_gtests',
       'fuchsia_common_gtests',
+      'fuchsia_common_gtests_with_graphical_output',
       'web_engine_gtests',
     ],
 
     'fuchsia_isolated_scripts': [
       'chromium_webkit_isolated_scripts',
       'gpu_angle_fuchsia_unittests_isolated_scripts'
+    ],
+
+    'fuchsia_web_engine_non_graphical_gtests': [
+      'fuchsia_common_gtests',
+      'web_engine_gtests',
     ],
 
     # BEGIN composition test suites used by the GPU bots
