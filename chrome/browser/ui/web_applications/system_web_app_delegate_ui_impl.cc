@@ -23,7 +23,11 @@ namespace web_app {
 namespace {
 
 base::FilePath GetLaunchDirectory(
+    bool should_include_launch_directory,
     const std::vector<base::FilePath>& launch_files) {
+  if (!should_include_launch_directory)
+    return base::FilePath();
+
   // |launch_dir| is the directory that contains all |launch_files|. If
   // there are no launch files, launch_dir is empty.
   base::FilePath launch_dir =
@@ -69,10 +73,12 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   const bool reuse_existing_window =
       browser_type == Browser::TYPE_APP_POPUP || ShouldReuseExistingWindow();
 
+  bool navigating = false;
   if (!browser) {
     browser = CreateWebApplicationWindow(
         profile, params.app_id, params.disposition, params.restore_id,
         kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize());
+    navigating = true;
   } else if (!reuse_existing_window) {
     gfx::Rect initial_bounds = browser->window()->GetRestoredBounds();
     initial_bounds.Offset(20, 20);
@@ -80,6 +86,7 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
         profile, params.app_id, params.disposition, params.restore_id,
         kOmitFromSessionRestore, ShouldAllowResize(), ShouldAllowMaximize(),
         initial_bounds);
+    navigating = true;
   }
 
   // Navigate application window to application's |url| if necessary.
@@ -91,19 +98,19 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
       GetType() == SystemAppType::HELP) {
     web_contents = NavigateWebApplicationWindow(
         browser, params.app_id, url, WindowOpenDisposition::CURRENT_TAB);
+    navigating = true;
   }
 
   // Send launch files.
   if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
           params.app_id)) {
-    if (ShouldIncludeLaunchDirectory()) {
-      web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-          web_contents, web_contents->GetURL(),
-          GetLaunchDirectory(params.launch_files), params.launch_files);
-    } else {
-      web_launch::WebLaunchFilesHelper::SetLaunchPaths(
-          web_contents, web_contents->GetURL(), params.launch_files);
-    }
+    GURL app_scope = provider->registrar().GetAppScope(params.app_id);
+    web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
+        web_contents, app_scope,
+        /*await_navigation=*/navigating,
+        /*launch_url=*/web_contents->GetURL(),
+        GetLaunchDirectory(ShouldIncludeLaunchDirectory(), params.launch_files),
+        params.launch_files);
   }
 
   return browser;

@@ -742,15 +742,15 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class WebAppLaunchHanderLinkCaptureBrowserTest
+class WebAppLaunchHandlerLinkCaptureBrowserTest
     : public WebAppLinkCapturingBrowserTest {
  public:
-  WebAppLaunchHanderLinkCaptureBrowserTest() {
+  WebAppLaunchHandlerLinkCaptureBrowserTest() {
     feature_list_.InitWithFeatures({blink::features::kWebAppEnableLaunchHandler,
                                     features::kIntentPickerPWAPersistence},
                                    {});
   }
-  ~WebAppLaunchHanderLinkCaptureBrowserTest() override = default;
+  ~WebAppLaunchHandlerLinkCaptureBrowserTest() override = default;
 
  protected:
   Profile* profile() { return browser()->profile(); }
@@ -768,7 +768,7 @@ class WebAppLaunchHanderLinkCaptureBrowserTest
       OsIntegrationManager::ScopedSuppressOsHooksForTesting()};
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderLinkCaptureBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerLinkCaptureBrowserTest,
                        RouteToExistingClientFromBrowser) {
   InstallTestApp(
       "/web_apps/"

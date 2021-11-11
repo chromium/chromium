@@ -449,7 +449,8 @@ void LaunchProcess::MaybeEnqueueWebLaunchParams(
     content::WebContents* web_contents) {
   if (is_file_handling || web_app_->launch_handler().has_value()) {
     web_launch::WebLaunchFilesHelper::EnqueueLaunchParams(
-        web_contents, launch_url,
+        web_contents, provider_.registrar().GetAppScope(web_app_->app_id()),
+        /*await_navigation=*/true, launch_url,
         /*launch_dir=*/{},
         is_file_handling ? params_.launch_files
                          : std::vector<base::FilePath>());

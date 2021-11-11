@@ -601,6 +601,8 @@ static_library("test_support") {
       "../browser/extensions/test_extension_prefs.h",
       "../browser/ui/web_applications/test/ssl_test_utils.cc",
       "../browser/ui/web_applications/test/ssl_test_utils.h",
+      "../browser/ui/web_applications/test/test_server_redirect_handle.cc",
+      "../browser/ui/web_applications/test/test_server_redirect_handle.h",
       "../browser/ui/web_applications/test/web_app_browsertest_util.cc",
       "../browser/ui/web_applications/test/web_app_browsertest_util.h",
       "../browser/ui/web_applications/web_app_controller_browsertest.cc",

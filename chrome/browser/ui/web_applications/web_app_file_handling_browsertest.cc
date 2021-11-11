@@ -22,9 +22,12 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/file_handling_permission_request_dialog_test_api.h"
+#include "chrome/browser/ui/web_applications/test/test_server_redirect_handle.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
@@ -183,6 +186,14 @@ base::FilePath NewTestFilePath(const base::StringPiece extension) {
   return new_file_path;
 }
 
+// Attach the launchParams to the window so we can inspect them easily.
+void AttachTestConsumer(content::WebContents* web_contents) {
+  auto result = content::EvalJs(web_contents,
+                                "launchQueue.setConsumer(launchParams => {"
+                                "  window.launchParams = launchParams;"
+                                "});");
+}
+
 // Launches the |app_id| web app with |files| handles, awaits for
 // |expected_launch_url| to load and stashes any launch params on
 // "window.launchParams" for further inspection.
@@ -211,13 +222,7 @@ content::WebContents* LaunchApplication(
           ->LaunchAppWithParams(std::move(params));
 
   navigation_observer.Wait();
-
-  // Attach the launchParams to the window so we can inspect them easily.
-  auto result = content::EvalJs(web_contents,
-                                "launchQueue.setConsumer(launchParams => {"
-                                "  window.launchParams = launchParams;"
-                                "});");
-
+  AttachTestConsumer(web_contents);
   return web_contents;
 }
 
@@ -235,7 +240,8 @@ class WebAppFileHandlingBrowserTest
   WebAppFileHandlingBrowserTest()
       : WebAppFileHandlingBrowserTest(/*parameterize=*/true) {}
 
-  explicit WebAppFileHandlingBrowserTest(bool parameterize) {
+  explicit WebAppFileHandlingBrowserTest(bool parameterize)
+      : redirect_handle_(*https_server()) {
     feature_list_.InitWithFeatures({blink::features::kFileHandlingAPI}, {});
     if (parameterize) {
       feature_list_for_settings_.InitWithFeatureState(
@@ -288,6 +294,7 @@ class WebAppFileHandlingBrowserTest
   }
 
  protected:
+  TestServerRedirectHandle redirect_handle_;
   base::test::ScopedFeatureList feature_list_;
   base::test::ScopedFeatureList feature_list_for_settings_;
   content::WebContents* web_contents_ = nullptr;
@@ -408,9 +415,10 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
   web_app_info->title = u"An app that redirects";
 
-  apps::FileHandler entry;
-  entry.action = https_server()->GetURL(
+  GURL handler_url = https_server()->GetURL(
       "app.com", "/web_app_file_handling/handle_files_with_redirect.html");
+  apps::FileHandler entry;
+  entry.action = handler_url;
   entry.accept.emplace_back();
   entry.accept[0].mime_type = "text/*";
   entry.accept[0].file_extensions.insert(".txt");
@@ -423,15 +431,58 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   // with new file handlers resets it.
   SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
 
-  // The redirect points to handle_files.html, so wait till that navigation is
-  // finished.
   base::FilePath file = NewTestFilePath("txt");
-  LaunchWithFiles(app_id,
-                  https_server()->GetURL(
-                      "app.com", "/web_app_file_handling/handle_files.html"),
-                  {file});
+
+  {
+    auto redirect_scope = redirect_handle_.Redirect({
+        .redirect_url = handler_url,
+        .target_url = https_server()->GetURL(
+            "app.com", "/web_app_file_handling/handle_files.html"),
+        .origin = "app.com",
+    });
+
+    LaunchWithFiles(app_id, redirect_handle_.params().target_url, {file});
+  }
 
   // The redirected-to page should get the launch queue.
+  VerifyPwaDidReceiveFileLaunchParams(true, file);
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url =
+      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
+  web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
+  web_app_info->title = u"An app that will be reloaded";
+
+  GURL handler_url = https_server()->GetURL(
+      "app.com", "/web_app_file_handling/handle_files.html");
+  apps::FileHandler entry;
+  entry.action = handler_url;
+  entry.accept.emplace_back();
+  entry.accept[0].mime_type = "text/*";
+  entry.accept[0].file_extensions.insert(".txt");
+  web_app_info->file_handlers.push_back(std::move(entry));
+
+  AppId app_id =
+      WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+
+  // Note this must be called after the app is installed, as installing an app
+  // with new file handlers resets it.
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
+
+  base::FilePath file = NewTestFilePath("txt");
+  LaunchWithFiles(app_id, handler_url, {file});
+  VerifyPwaDidReceiveFileLaunchParams(true, file);
+
+  // Reload the page.
+  {
+    content::TestNavigationObserver navigation_observer(web_contents_);
+    chrome::Reload(chrome::FindBrowserWithWebContents(web_contents_),
+                   WindowOpenDisposition::CURRENT_TAB);
+    navigation_observer.Wait();
+    AttachTestConsumer(web_contents_);
+  }
   VerifyPwaDidReceiveFileLaunchParams(true, file);
 }
 
@@ -446,10 +497,11 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
   web_app_info->title = u"An app that redirects to a different origin";
 
-  apps::FileHandler entry;
-  entry.action = https_server()->GetURL(
+  GURL handler_url = https_server()->GetURL(
       "app.com",
       "/web_app_file_handling/handle_files_with_redirect_to_other_origin.html");
+  apps::FileHandler entry;
+  entry.action = handler_url;
   entry.accept.emplace_back();
   entry.accept[0].mime_type = "text/*";
   entry.accept[0].file_extensions.insert(".txt");
@@ -458,16 +510,65 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
   AppId app_id =
       WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
 
-  // The redirect points to handle_files.html with a different origin, so wait
-  // till that navigation is finished.
+  // Note this must be called after the app is installed, as installing an app
+  // with new file handlers resets it.
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
+
   base::FilePath file = NewTestFilePath("txt");
-  LaunchWithFiles(
-      app_id,
-      https_server()->GetURL("example.com",
-                             "/web_app_file_handling/handle_files.html"),
-      {file});
+
+  {
+    auto redirect_scope = redirect_handle_.Redirect({
+        .redirect_url = handler_url,
+        .target_url = https_server()->GetURL(
+            "example.com", "/web_app_file_handling/handle_files.html"),
+        .origin = "app.com",
+    });
+
+    LaunchWithFiles(app_id, redirect_handle_.params().target_url, {file});
+  }
 
   // The redirected-to page should NOT get the launch queue.
+  VerifyPwaDidReceiveFileLaunchParams(false);
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppFileHandlingBrowserTest,
+                       LaunchQueueNotSetOnNavigate) {
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
+  GURL start_url =
+      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = start_url;
+  web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
+  web_app_info->title = u"An app that will be navigated";
+
+  GURL handler_url = https_server()->GetURL(
+      "app.com", "/web_app_file_handling/handle_files.html");
+  apps::FileHandler entry;
+  entry.action = handler_url;
+  entry.accept.emplace_back();
+  entry.accept[0].mime_type = "text/*";
+  entry.accept[0].file_extensions.insert(".txt");
+  web_app_info->file_handlers.push_back(std::move(entry));
+
+  AppId app_id =
+      WebAppControllerBrowserTest::InstallWebApp(std::move(web_app_info));
+
+  // Note this must be called after the app is installed, as installing an app
+  // with new file handlers resets it.
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
+
+  base::FilePath file = NewTestFilePath("txt");
+  LaunchWithFiles(app_id, handler_url, {file});
+  VerifyPwaDidReceiveFileLaunchParams(true, file);
+
+  // Navigating the page should not enqueue the LaunchParams again.
+  ASSERT_TRUE(NavigateToURL(web_contents_, start_url));
+  AttachTestConsumer(web_contents_);
+  VerifyPwaDidReceiveFileLaunchParams(false);
+
+  // Nor should navigating back to the handler page re-enqueue.
+  ASSERT_TRUE(NavigateToURL(web_contents_, handler_url));
+  AttachTestConsumer(web_contents_);
   VerifyPwaDidReceiveFileLaunchParams(false);
 }
 

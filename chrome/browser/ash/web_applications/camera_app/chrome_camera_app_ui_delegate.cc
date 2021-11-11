@@ -180,7 +180,10 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
       file_manager::util::GetMyFilesFolderForProfile(profile);
 
   web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-      web_contents, web_contents->GetURL(), my_files_folder_path,
+      web_contents,
+      /*app_scope=*/GURL(ash::kChromeUICameraAppScopeURL),
+      /*await_navigation=*/true,
+      /*launch_url=*/GURL(ash::kChromeUICameraAppMainURL), my_files_folder_path,
       std::vector<base::FilePath>{empty_file_path});
   web_app::WebAppTabHelper::CreateForWebContents(web_contents);
 }

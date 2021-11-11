@@ -20,7 +20,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -118,34 +117,27 @@ WebLaunchFilesHelper* WebLaunchFilesHelper::GetForWebContents(
 }
 
 // static
-void WebLaunchFilesHelper::SetLaunchPaths(
-    content::WebContents* web_contents,
-    const GURL& launch_url,
-    std::vector<base::FilePath> launch_paths) {
-  if (launch_paths.empty())
-    return;
-
-  EnqueueLaunchParams(web_contents, launch_url, /*launch_dir=*/{},
-                      std::move(launch_paths));
-}
-
-// static
 void WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
     content::WebContents* web_contents,
-    const GURL& launch_url,
+    const GURL& app_scope,
+    bool await_navigation,
+    GURL launch_url,
     base::FilePath launch_dir,
     std::vector<base::FilePath> launch_paths) {
-  if (launch_dir.empty() || launch_paths.empty())
+  if (launch_dir.empty() && launch_paths.empty())
     return;
 
-  EnqueueLaunchParams(web_contents, launch_url, launch_dir,
+  EnqueueLaunchParams(web_contents, app_scope, await_navigation,
+                      std::move(launch_url), std::move(launch_dir),
                       std::move(launch_paths));
 }
 
 // static
 void WebLaunchFilesHelper::EnqueueLaunchParams(
     content::WebContents* web_contents,
-    const GURL& launch_url,
+    const GURL& app_scope,
+    bool await_navigation,
+    GURL launch_url,
     base::FilePath launch_dir,
     std::vector<base::FilePath> launch_paths) {
   const bool needs_permission_check =
@@ -164,46 +156,99 @@ void WebLaunchFilesHelper::EnqueueLaunchParams(
   }
 
   auto helper = base::WrapUnique(
-      new WebLaunchFilesHelper(web_contents, launch_url, std::move(launch_dir),
-                               std::move(launch_paths)));
+      new WebLaunchFilesHelper(web_contents, app_scope, std::move(launch_url),
+                               std::move(launch_dir), std::move(launch_paths)));
   // When using settings instead of permissions, the setting should have
   // been checked/prompt shown by this point.
   if (!needs_permission_check)
     helper->passed_permission_check_ = true;
 
-  WebLaunchFilesHelper* helper_ptr = helper.get();
+  auto* helper_ptr = helper.get();
   web_contents->SetUserData(UserDataKey(), std::move(helper));
-  helper_ptr->MaybeSendLaunchEntries();
+  helper_ptr->Start(await_navigation);
 }
 
-bool WebLaunchFilesHelper::SendingFileHandles() const {
-  return !launch_paths_.empty() || !launch_dir_.empty();
+WebLaunchFilesHelper::WebLaunchFilesHelper(
+    content::WebContents* web_contents,
+    const GURL& app_scope,
+    GURL launch_url,
+    base::FilePath launch_dir,
+    std::vector<base::FilePath> launch_paths)
+    : content::WebContentsObserver(web_contents),
+      app_scope_(app_scope.spec()),
+      launch_url_(std::move(launch_url)),
+      launch_dir_(std::move(launch_dir)),
+      launch_paths_(std::move(launch_paths)) {
+  DCHECK(InAppScope(launch_url_));
+}
+
+void WebLaunchFilesHelper::Start(bool await_navigation) {
+  // Wait for DidFinishNavigation before enqueuing.
+  if (await_navigation)
+    return;
+
+  url_params_enqueued_in_ = web_contents()->GetLastCommittedURL();
+  MaybeSendLaunchEntries();
+}
+
+// TODO(crbug.com/1250225): Move this class into chrome/browser/web_applications
+// and use WebAppRegistrar::IsUrlInAppScope().
+bool WebLaunchFilesHelper::InAppScope(const GURL& url) const {
+  return base::StartsWith(url.spec(), app_scope_, base::CompareCase::SENSITIVE);
+}
+
+void WebLaunchFilesHelper::DidFinishNavigation(
+    content::NavigationHandle* handle) {
+  // Currently, launch data is only sent for the main frame.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!handle->IsInPrimaryMainFrame())
+    return;
+
+  // Launch params still haven't been enqueued.
+  if (!url_params_enqueued_in_.is_valid()) {
+    if (!InAppScope(handle->GetURL())) {
+      DestroySelf();
+      return;
+    }
+
+    url_params_enqueued_in_ = handle->GetURL();
+    MaybeSendLaunchEntries();
+    return;
+  }
+
+  // Re-enqueue launch params for page reloads.
+  // Check the current URL still matches as it may have changed via
+  // `history.pushState()`.
+  if (handle->GetReloadType() != content::ReloadType::NONE &&
+      url_params_enqueued_in_ == handle->GetURL()) {
+    MaybeSendLaunchEntries();
+    return;
+  }
+
+  DestroySelf();
+  return;
 }
 
 void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
-  const GURL current_url =
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents());
-  if (launch_url_.DeprecatedGetOriginAsURL() ==
-      current_url.DeprecatedGetOriginAsURL()) {
-    if (!permission_was_checked_ && !passed_permission_check_) {
-      permission_was_checked_ = true;
-      content::RenderFrameHost* frame = web_contents()->GetMainFrame();
-      permissions::PermissionManager* permission_manager =
-          PermissionManagerFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-      permission_manager->RequestPermission(
-          ContentSettingsType::FILE_HANDLING, frame, current_url,
-          /*user_gesture=*/true,
-          base::BindOnce(&WebLaunchFilesHelper::OnPermissionRequestResponse,
-                         weak_ptr_factory_.GetWeakPtr()));
-    } else if (passed_permission_check_) {
-      // If the permission was checked and passed, and then a same-site
-      // navigation (e.g. redirect) occurred, set the launch queue again.
-      SendLaunchEntries();
-    }
-  } else if (permission_was_checked_) {
-    // Delete `this` after a navigation to an ineligible URL.
-    web_contents()->RemoveUserData(UserDataKey());
+  DCHECK(url_params_enqueued_in_.is_valid());
+  DCHECK(InAppScope(url_params_enqueued_in_));
+  GURL current_origin = url_params_enqueued_in_.DeprecatedGetOriginAsURL();
+
+  if (!permission_was_checked_ && !passed_permission_check_) {
+    permission_was_checked_ = true;
+    content::RenderFrameHost* frame = web_contents()->GetMainFrame();
+    permissions::PermissionManager* permission_manager =
+        PermissionManagerFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+    permission_manager->RequestPermission(
+        ContentSettingsType::FILE_HANDLING, frame, current_origin,
+        /*user_gesture=*/true,
+        base::BindOnce(&WebLaunchFilesHelper::OnPermissionRequestResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else if (passed_permission_check_) {
+    SendLaunchEntries();
   }
 }
 
@@ -220,40 +265,13 @@ void WebLaunchFilesHelper::OnPermissionRequestResponse(ContentSetting setting) {
   }
 }
 
-void WebLaunchFilesHelper::DidFinishNavigation(
-    content::NavigationHandle* handle) {
-  // Currently, launch data is only sent for the main frame.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!handle->IsInPrimaryMainFrame())
-    return;
-
-  MaybeSendLaunchEntries();
-}
-
-WebLaunchFilesHelper::WebLaunchFilesHelper(
-    content::WebContents* web_contents,
-    const GURL& launch_url,
-    base::FilePath launch_dir,
-    std::vector<base::FilePath> launch_paths)
-    : content::WebContentsObserver(web_contents),
-      launch_paths_(launch_paths),
-      launch_dir_(launch_dir),
-      launch_url_(launch_url) {}
-
-void WebLaunchFilesHelper::CloseApp() {
-  web_contents()->Close();
-  // `this` is deleted.
-}
-
 void WebLaunchFilesHelper::SendLaunchEntries() {
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
       &launch_service);
   DCHECK(launch_service);
 
-  if (SendingFileHandles()) {
+  if (!launch_paths_.empty() || !launch_dir_.empty()) {
     EntriesBuilder entries_builder(web_contents(), launch_url_,
                                    launch_paths_.size() + 1);
     if (!launch_dir_.empty())
@@ -266,6 +284,16 @@ void WebLaunchFilesHelper::SendLaunchEntries() {
   } else {
     launch_service->EnqueueLaunchParams(launch_url_);
   }
+}
+
+void WebLaunchFilesHelper::CloseApp() {
+  web_contents()->Close();
+  // `this` is deleted.
+}
+
+void WebLaunchFilesHelper::DestroySelf() {
+  web_contents()->RemoveUserData(UserDataKey());
+  // `this` is deleted.
 }
 
 }  // namespace web_launch
