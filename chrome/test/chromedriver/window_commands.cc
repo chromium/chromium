@@ -274,32 +274,34 @@ Status GetVisibleCookies(Session* for_session,
   if (status.IsError())
     return status;
   std::list<Cookie> cookies_tmp;
-  for (size_t i = 0; i < internal_cookies->GetList().size(); ++i) {
-    base::DictionaryValue* cookie_dict;
-    if (!internal_cookies->GetDictionary(i, &cookie_dict))
+  for (const base::Value& cookie_value : internal_cookies->GetList()) {
+    if (!cookie_value.is_dict())
       return Status(kUnknownError, "DevTools returns a non-dictionary cookie");
 
+    const base::DictionaryValue& cookie_dict =
+        base::Value::AsDictionaryValue(cookie_value);
+
     std::string name;
-    cookie_dict->GetString("name", &name);
+    cookie_dict.GetString("name", &name);
     std::string value;
-    cookie_dict->GetString("value", &value);
+    cookie_dict.GetString("value", &value);
     std::string domain;
-    cookie_dict->GetString("domain", &domain);
+    cookie_dict.GetString("domain", &domain);
     std::string path;
-    cookie_dict->GetString("path", &path);
+    cookie_dict.GetString("path", &path);
     std::string samesite;
-    GetOptionalString(cookie_dict, "sameSite", &samesite);
+    GetOptionalString(&cookie_dict, "sameSite", &samesite);
     int64_t expiry =
-        static_cast<int64_t>(cookie_dict->FindDoubleKey("expires").value_or(0));
+        static_cast<int64_t>(cookie_dict.FindDoubleKey("expires").value_or(0));
     // Truncate & convert the value to an integer as required by W3C spec.
     if (expiry >= (1ll << 53) || expiry <= -(1ll << 53))
       expiry = 0;
     bool http_only = false;
-    cookie_dict->GetBoolean("httpOnly", &http_only);
+    cookie_dict.GetBoolean("httpOnly", &http_only);
     bool session = false;
-    cookie_dict->GetBoolean("session", &session);
+    cookie_dict.GetBoolean("session", &session);
     bool secure = false;
-    cookie_dict->GetBoolean("secure", &secure);
+    cookie_dict.GetBoolean("secure", &secure);
 
     cookies_tmp.push_back(Cookie(name, value, domain, path, samesite, expiry,
                                  http_only, secure, session));
@@ -1251,7 +1253,6 @@ Status ProcessInputActionSequence(
     std::vector<std::unique_ptr<base::DictionaryValue>>* action_list) {
   std::string id;
   std::string type;
-  const base::DictionaryValue* source;
   const base::DictionaryValue* parameters;
   std::string pointer_type;
   if (!action_sequence->GetString("type", &type) ||
@@ -1280,19 +1281,21 @@ Status ProcessInputActionSequence(
   }
 
   bool found = false;
-  for (size_t i = 0; i < session->active_input_sources.GetList().size(); i++) {
-    session->active_input_sources.GetDictionary(i, &source);
-    DCHECK(source);
+  for (const base::Value& source_value :
+       session->active_input_sources.GetList()) {
+    DCHECK(source_value.is_dict());
+    const base::DictionaryValue& source =
+        base::Value::AsDictionaryValue(source_value);
 
     std::string source_id;
     std::string source_type;
-    source->GetString("id", &source_id);
-    source->GetString("type", &source_type);
+    source.GetString("id", &source_id);
+    source.GetString("type", &source_type);
     if (source_id == id && source_type == type) {
       found = true;
       if (type == "pointer") {
         std::string source_pointer_type;
-        if (!source->GetString("pointerType", &source_pointer_type) ||
+        if (!source.GetString("pointerType", &source_pointer_type) ||
             pointer_type != source_pointer_type) {
           return Status(kInvalidArgument,
                         "'pointerType' must be a string that matches sources "
@@ -1346,14 +1349,17 @@ Status ProcessInputActionSequence(
     return Status(kInvalidArgument, "'actions' must be an array");
 
   std::unique_ptr<base::ListValue> actions_result(new base::ListValue);
-  for (size_t i = 0; i < actions->GetList().size(); i++) {
+  for (const base::Value& action_item_value : actions->GetList()) {
     std::unique_ptr<base::DictionaryValue> action(new base::DictionaryValue());
 
-    const base::DictionaryValue* action_item;
-    if (!actions->GetDictionary(i, &action_item))
+    if (!action_item_value.is_dict()) {
       return Status(
           kInvalidArgument,
           "each argument in the action sequence must be a dictionary");
+    }
+
+    const base::DictionaryValue* action_item =
+        &base::Value::AsDictionaryValue(action_item_value);
 
     action->SetString("id", id);
     action->SetString("type", type);
@@ -1568,15 +1574,15 @@ Status ExecutePerformActions(Session* session,
 
   // the processed actions
   std::vector<std::vector<std::unique_ptr<base::DictionaryValue>>> actions_list;
-  for (size_t i = 0; i < actions_input->GetList().size(); i++) {
-    // proccess input action sequence
-    const base::DictionaryValue* action_sequence;
-    if (!actions_input->GetDictionary(i, &action_sequence))
+  for (const base::Value& action_sequence : actions_input->GetList()) {
+    // process input action sequence
+    if (!action_sequence.is_dict())
       return Status(kInvalidArgument, "each argument must be a dictionary");
 
     std::vector<std::unique_ptr<base::DictionaryValue>> action_list;
-    Status status =
-        ProcessInputActionSequence(session, action_sequence, &action_list);
+    Status status = ProcessInputActionSequence(
+        session, &base::Value::AsDictionaryValue(action_sequence),
+        &action_list);
     actions_list.push_back(std::move(action_list));
 
     if (status.IsError())

@@ -395,10 +395,10 @@ const base::ListValue& BenchmarkingCanvas::Commands() const {
 }
 
 double BenchmarkingCanvas::GetTime(size_t index) {
-  const base::DictionaryValue* op;
-  if (!op_records_.GetDictionary(index, &op))
+  const base::Value& op = op_records_.GetList()[index];
+  if (!op.is_dict())
     return 0;
-  return op->FindDoubleKey("cmd_time").value_or(0);
+  return op.FindDoubleKey("cmd_time").value_or(0);
 }
 
 void BenchmarkingCanvas::willSave() {

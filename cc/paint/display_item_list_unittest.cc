@@ -113,17 +113,22 @@ TEST_F(DisplayItemListTest, TraceEmptyVisualRect) {
   ASSERT_TRUE(params_dict->GetList("items", &items));
   ASSERT_EQ(2u, items->GetList().size());
 
+  const base::Value* item_value;
   const base::DictionaryValue* item_dict;
   const base::ListValue* visual_rect;
   std::string name;
 
-  ASSERT_TRUE(items->GetDictionary(0, &item_dict));
+  item_value = &items->GetList()[0];
+  ASSERT_TRUE(item_value->is_dict());
+  item_dict = &base::Value::AsDictionaryValue(*item_value);
   ASSERT_TRUE(item_dict->GetList("visual_rect", &visual_rect));
   EXPECT_TRACED_RECT(0, 0, 0, 0, visual_rect);
   EXPECT_TRUE(item_dict->GetString("name", &name));
   EXPECT_EQ("DrawRect", name);
 
-  ASSERT_TRUE(items->GetDictionary(1, &item_dict));
+  item_value = &items->GetList()[1];
+  ASSERT_TRUE(item_value->is_dict());
+  item_dict = &base::Value::AsDictionaryValue(*item_value);
   ASSERT_TRUE(item_dict->GetList("visual_rect", &visual_rect));
   EXPECT_TRACED_RECT(8, 9, 10, 10, visual_rect);
   EXPECT_TRUE(item_dict->GetString("name", &name));
@@ -561,20 +566,22 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
       bool expected_has_skp[] = {false, true, true, true, true, false, false};
 
       for (int i = 0; i < 7; ++i) {
-        const base::DictionaryValue* item_dict;
-        ASSERT_TRUE(items->GetDictionary(i, &item_dict));
+        const base::Value& item_value = items->GetList()[i];
+        ASSERT_TRUE(item_value.is_dict());
+        const base::DictionaryValue& item_dict =
+            base::Value::AsDictionaryValue(item_value);
 
         const base::ListValue* visual_rect;
-        ASSERT_TRUE(item_dict->GetList("visual_rect", &visual_rect));
+        ASSERT_TRUE(item_dict.GetList("visual_rect", &visual_rect));
         EXPECT_TRACED_RECT(2, 3, 8, 9, visual_rect);
 
         std::string name;
-        EXPECT_TRUE(item_dict->GetString("name", &name));
+        EXPECT_TRUE(item_dict.GetString("name", &name));
         EXPECT_EQ(expected_names[i], name);
 
         EXPECT_EQ(
             expected_has_skp[i],
-            item_dict->GetString("skp64", static_cast<std::string*>(nullptr)));
+            item_dict.GetString("skp64", static_cast<std::string*>(nullptr)));
       }
     }
   }

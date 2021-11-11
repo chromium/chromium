@@ -56,15 +56,17 @@ void ValidateLogEntry(base::ListValue *entries,
                       int index,
                       const std::string& expected_level,
                       const std::string& expected_message) {
-  const base::DictionaryValue *entry;
-  ASSERT_TRUE(entries->GetDictionary(index, &entry));
+  const base::Value& entry_value = entries->GetList()[index];
+  ASSERT_TRUE(entry_value.is_dict());
+  const base::DictionaryValue& entry =
+      base::Value::AsDictionaryValue(entry_value);
   std::string level;
-  EXPECT_TRUE(entry->GetString("level", &level));
+  EXPECT_TRUE(entry.GetString("level", &level));
   EXPECT_EQ(expected_level, level);
   std::string message;
-  ASSERT_TRUE(entry->GetString("message", &message));
+  ASSERT_TRUE(entry.GetString("message", &message));
   EXPECT_EQ(expected_message, message);
-  EXPECT_LT(0, entry->FindDoubleKey("timestamp").value());
+  EXPECT_LT(0, entry.FindDoubleKey("timestamp").value());
 }
 
 }  // namespace

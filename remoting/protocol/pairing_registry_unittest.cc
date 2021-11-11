@@ -123,10 +123,14 @@ TEST_F(PairingRegistryTest, GetAllPairings) {
                                           base::Unretained(this)));
 
   ASSERT_EQ(2u, pairings_->GetList().size());
-  const base::DictionaryValue* actual_pairing_1;
-  const base::DictionaryValue* actual_pairing_2;
-  ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_1));
-  ASSERT_TRUE(pairings_->GetDictionary(1, &actual_pairing_2));
+  const base::Value& actual_pairing_1_value = pairings_->GetList()[0];
+  ASSERT_TRUE(actual_pairing_1_value.is_dict());
+  const base::Value& actual_pairing_2_value = pairings_->GetList()[1];
+  ASSERT_TRUE(actual_pairing_2_value.is_dict());
+  const base::DictionaryValue* actual_pairing_1 =
+      &base::Value::AsDictionaryValue(actual_pairing_1_value);
+  const base::DictionaryValue* actual_pairing_2 =
+      &base::Value::AsDictionaryValue(actual_pairing_2_value);
 
   // Ordering is not guaranteed, so swap if necessary.
   std::string actual_client_id;
@@ -156,11 +160,13 @@ TEST_F(PairingRegistryTest, DeletePairing) {
                                           base::Unretained(this)));
 
   ASSERT_EQ(1u, pairings_->GetList().size());
-  const base::DictionaryValue* actual_pairing_2;
-  ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_2));
+  const base::Value& actual_pairing_2_value = pairings_->GetList()[0];
+  ASSERT_TRUE(actual_pairing_2_value.is_dict());
+  const base::DictionaryValue& actual_pairing_2 =
+      base::Value::AsDictionaryValue(actual_pairing_2_value);
   std::string actual_client_id;
-  ASSERT_TRUE(actual_pairing_2->GetString(PairingRegistry::kClientIdKey,
-                                          &actual_client_id));
+  ASSERT_TRUE(actual_pairing_2.GetString(PairingRegistry::kClientIdKey,
+                                         &actual_client_id));
   EXPECT_EQ(pairing_2.client_id(), actual_client_id);
 }
 
