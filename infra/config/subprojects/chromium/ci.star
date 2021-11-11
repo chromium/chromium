@@ -2213,6 +2213,27 @@ ci.cipd_3pp_builder(
     },
 )
 
+ci.cipd_3pp_builder(
+    name = "3pp-mac-amd64-packager",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "3pp|mac",
+        short_name = "amd64",
+    ),
+    cores = None,
+    notifies = ["chromium-3pp-packager"],
+    # TODO(crbug.com/1267449): Trigger builds routinely once works fine.
+    schedule = "triggered",
+    triggered_by = [],
+    properties = {
+        "$build/chromium_3pp": {
+            "platform": "mac-amd64",
+            "gclient_config": "chromium",
+        },
+    },
+)
+
 ci.cipd_builder(
     name = "android-androidx-packager",
     console_view_entry = consoles.console_view_entry(

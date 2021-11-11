@@ -1983,6 +1983,20 @@ try_.cipd_3pp_builder(
     ),
 )
 
+try_.cipd_3pp_builder(
+    name = "3pp-mac-amd64-packager",
+    os = os.MAC_DEFAULT,
+    builderless = True,
+    cores = None,
+    properties = {
+        "$build/chromium_3pp": {
+            "platform": "mac-amd64",
+            "package_prefix": "chromium_3pp",
+            "gclient_config": "chromium",
+        },
+    },
+)
+
 try_.gpu_chromium_android_builder(
     name = "android_optional_gpu_tests_rel",
     branch_selector = branches.STANDARD_MILESTONE,
