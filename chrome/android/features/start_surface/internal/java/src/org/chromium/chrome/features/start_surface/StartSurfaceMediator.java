@@ -864,7 +864,7 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         }
 
         // Hide when focusing the Omnibox on the primary surface.
-        return mPropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE);
+        return hasFakeSearchBox() && mPropertyModel.get(IS_FAKE_SEARCH_BOX_VISIBLE);
     }
 
     private void setTabCarouselVisibility(boolean isVisible) {

@@ -20,7 +20,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_MODEL_SELECTOR;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IN_START_SURFACE_MODE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_CONTENT_DESCRIPTION;
@@ -63,8 +62,6 @@ class StartSurfaceToolbarViewBinder {
             view.setIdentityDiscVisibility(model.get(IDENTITY_DISC_IS_VISIBLE));
         } else if (propertyKey == INCOGNITO_STATE_PROVIDER) {
             view.setIncognitoStateProvider(model.get(INCOGNITO_STATE_PROVIDER));
-        } else if (propertyKey == IN_START_SURFACE_MODE) {
-            view.setStartSurfaceMode(model.get(IN_START_SURFACE_MODE));
         } else if (propertyKey == IS_INCOGNITO) {
             view.updateIncognito(model.get(IS_INCOGNITO));
         } else if (propertyKey == IS_VISIBLE) {

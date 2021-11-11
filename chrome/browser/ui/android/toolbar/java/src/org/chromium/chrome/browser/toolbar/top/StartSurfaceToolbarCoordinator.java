@@ -15,10 +15,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -57,7 +55,6 @@ public class StartSurfaceToolbarCoordinator {
 
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
             UserEducationHelper userEducationHelper,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier, ThemeColorProvider provider,
             MenuButtonCoordinator menuButtonCoordinator,
             Supplier<ButtonData> identityDiscButtonSupplier, boolean isGridTabSwitcherEnabled,
@@ -68,15 +65,11 @@ public class StartSurfaceToolbarCoordinator {
             BooleanSupplier isIncognitoModeEnabledSupplier) {
         mStub = startSurfaceToolbarStub;
 
-        layoutStateProviderSupplier.onAvailable(
-                mCallbackController.makeCancelable(this::setLayoutStateProvider));
-
         mPropertyModel =
                 new PropertyModel.Builder(StartSurfaceToolbarProperties.ALL_KEYS)
                         .with(StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE,
                                 !StartSurfaceConfiguration
                                          .START_SURFACE_HIDE_INCOGNITO_SWITCH_NO_TAB.getValue())
-                        .with(StartSurfaceToolbarProperties.IN_START_SURFACE_MODE, false)
                         .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
@@ -148,17 +141,6 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     /**
-     * Called when Start Surface mode is entered or exited.
-     * @param inStartSurfaceMode Whether or not start surface mode should be shown or hidden.
-     */
-    void setStartSurfaceMode(boolean inStartSurfaceMode) {
-        if (!isInflated()) {
-            inflate();
-        }
-        mToolbarMediator.setStartSurfaceMode(inStartSurfaceMode);
-    }
-
-    /**
      * @param provider The provider used to determine incognito state.
      */
     void setIncognitoStateProvider(IncognitoStateProvider provider) {
@@ -171,14 +153,6 @@ public class StartSurfaceToolbarCoordinator {
      */
     void onAccessibilityStatusChanged(boolean enabled) {
         mToolbarMediator.onAccessibilityStatusChanged(enabled);
-    }
-
-    /**
-     * @param layoutStateProvider The {@link LayoutStateProvider} to observe layout state changes.
-     */
-    private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
-        assert layoutStateProvider != null;
-        mToolbarMediator.setLayoutStateProvider(layoutStateProvider);
     }
 
     /**
@@ -222,6 +196,7 @@ public class StartSurfaceToolbarCoordinator {
      */
     void onStartSurfaceStateChanged(
             @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
+        if (shouldShowStartSurfaceToolbar && !isInflated()) inflate();
         mToolbarMediator.onStartSurfaceStateChanged(newState, shouldShowStartSurfaceToolbar);
     }
 

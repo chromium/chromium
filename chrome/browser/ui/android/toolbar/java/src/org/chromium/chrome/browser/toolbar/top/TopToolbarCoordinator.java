@@ -167,18 +167,17 @@ public class TopToolbarCoordinator implements Toolbar {
                 };
                 mStartSurfaceToolbarCoordinator = new StartSurfaceToolbarCoordinator(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
-                        userEducationHelper, layoutStateProviderSupplier, identityDiscStateSupplier,
-                        overviewThemeColorProvider, overviewModeMenuButtonCoordinator,
-                        identityDiscButtonSupplier, isGridTabSwitcherEnabled,
-                        homepageEnabledSupplier, startSurfaceAsHomepageSupplier,
-                        homepageManagedByPolicySupplier, homeButtonOnClickListener,
-                        isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier);
+                        userEducationHelper, identityDiscStateSupplier, overviewThemeColorProvider,
+                        overviewModeMenuButtonCoordinator, identityDiscButtonSupplier,
+                        isGridTabSwitcherEnabled, homepageEnabledSupplier,
+                        startSurfaceAsHomepageSupplier, homepageManagedByPolicySupplier,
+                        homeButtonOnClickListener, isTabGroupsAndroidContinuationEnabled,
+                        isIncognitoModeEnabledSupplier);
             } else {
                 mTabSwitcherModeCoordinatorPhone = new TabSwitcherModeTTCoordinatorPhone(
                         controlContainer.getRootView().findViewById(R.id.tab_switcher_toolbar_stub),
                         overviewModeMenuButtonCoordinator, isGridTabSwitcherEnabled,
-                        isTabToGtsAnimationEnabled, isStartSurfaceEnabled,
-                        isIncognitoModeEnabledSupplier);
+                        isTabToGtsAnimationEnabled, isIncognitoModeEnabledSupplier);
             }
         }
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
@@ -538,7 +537,7 @@ public class TopToolbarCoordinator implements Toolbar {
         if (mTabSwitcherModeCoordinatorPhone != null) {
             mTabSwitcherModeCoordinatorPhone.setTabSwitcherMode(inTabSwitcherMode);
         } else if (mStartSurfaceToolbarCoordinator != null) {
-            mStartSurfaceToolbarCoordinator.setStartSurfaceMode(inTabSwitcherMode);
+            // Do nothing. Already handled by onStartSurfaceStateChanged.
         }
     }
 
