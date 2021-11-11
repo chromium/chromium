@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -52,6 +53,62 @@ bool StyleRecalcChange::ShouldUpdatePseudoElement(
     return true;
   return RecalcContainerQueryDependent() &&
          pseudo_element.ComputedStyleRef().DependsOnContainerQueries();
+}
+
+String StyleRecalcChange::ToString() const {
+  StringBuilder builder;
+  builder.Append("StyleRecalcChange{propagate=");
+  switch (propagate_) {
+    case kNo:
+      builder.Append("kNo");
+      break;
+    case kUpdatePseudoElements:
+      builder.Append("kUpdatePseudoElements");
+      break;
+    case kIndependentInherit:
+      builder.Append("kIndependentInherit");
+      break;
+    case kRecalcChildren:
+      builder.Append("kRecalcChildren");
+      break;
+    case kRecalcDescendants:
+      builder.Append("kRecalcDescendants");
+      break;
+  }
+  builder.Append(", flags=");
+  if (!flags_) {
+    builder.Append("kNoFlags");
+  } else {
+    Flags flags = flags_;
+    // Make sure we don't loop forever if we aren't handling some case.
+    Flags previous_flags = 0;
+    String separator = "";
+    while (flags && flags != previous_flags) {
+      previous_flags = flags;
+      builder.Append(separator);
+      separator = "|";
+      if (flags & kRecalcContainer) {
+        builder.Append("kRecalcContainer");
+        flags &= ~kRecalcContainer;
+      } else if (flags & kRecalcDescendantContainers) {
+        builder.Append("kRecalcDescendantContainers");
+        flags &= ~kRecalcDescendantContainers;
+      } else if (flags & kReattach) {
+        builder.Append("kReattach");
+        flags &= ~kReattach;
+      } else if (flags & kSuppressRecalc) {
+        builder.Append("kSuppressRecalc");
+        flags &= ~kSuppressRecalc;
+      }
+    }
+    if (flags) {
+      builder.Append(separator);
+      builder.Append("UnknownFlag=");
+      builder.Append(flags);
+    }
+  }
+  builder.Append("}");
+  return builder.ToString();
 }
 
 StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
