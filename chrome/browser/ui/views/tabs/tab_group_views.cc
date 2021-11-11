@@ -32,18 +32,27 @@ TabGroupViews::TabGroupViews(TabStrip* tab_strip,
 }
 
 TabGroupViews::~TabGroupViews() {
-  tab_strip_->RemoveChildViewT(header_);
-  tab_strip_->RemoveChildViewT(underline_);
-  tab_strip_->RemoveChildViewT(highlight_);
+  tab_strip_->RemoveChildViewT(std::exchange(header_, nullptr));
+  tab_strip_->RemoveChildViewT(std::exchange(underline_, nullptr));
+  tab_strip_->RemoveChildViewT(std::exchange(highlight_, nullptr));
 }
 
 void TabGroupViews::UpdateBounds() {
+  // If we're tearing down we should ignore events.
+  if (!header_)
+    return;
+
   const gfx::Rect bounds = GetBounds();
   underline_->UpdateBounds(bounds);
   highlight_->SetBoundsRect(bounds);
 }
 
 void TabGroupViews::OnGroupVisualsChanged() {
+  // If we're tearing down we should ignore events. (We can still receive them
+  // here if the editor bubble was open when the tab group was closed.)
+  if (!header_)
+    return;
+
   header_->VisualsChanged();
   underline_->SchedulePaint();
   const int active_index = tab_strip_->controller()->GetActiveIndex();
