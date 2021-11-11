@@ -52,6 +52,11 @@ void DuplicateDownloadDialogBridge::Show(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> j_otr_profile_id;
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
+  if (!window_android) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
   // If belongs to an off-the-record profile, then the OTRProfileID should be
   // taken from the browser context to support multiple off-the-record profiles.
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();

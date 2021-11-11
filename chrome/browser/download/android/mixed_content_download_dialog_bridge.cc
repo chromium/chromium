@@ -48,6 +48,11 @@ void MixedContentDownloadDialogBridge::CreateDialog(
     const base::FilePath& base_name,
     ui::WindowAndroid* window_android,
     base::OnceCallback<void(bool /* accept */)> callback) {
+  if (!window_android) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MixedContentDownloadDialogBridge_showDialog(
       env, java_object_, window_android->GetJavaObject(),
