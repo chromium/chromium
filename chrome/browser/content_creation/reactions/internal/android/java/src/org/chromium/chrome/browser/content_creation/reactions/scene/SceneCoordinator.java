@@ -161,21 +161,6 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         markActiveStatus(mActiveReaction, false);
     }
 
-    private void replaceActiveReaction(ReactionMetadata reaction) {
-        assert mActiveReaction != null;
-        mMediator.getGifForUrl(reaction.assetUrl,
-                (baseGifImage)
-                        -> mActiveReaction.setDrawable(new ReactionGifDrawable(
-                                reaction, baseGifImage, Bitmap.Config.ARGB_8888)));
-    }
-
-    private void addReactionLayoutToScene(
-            ReactionLayout reactionLayout, RelativeLayout.LayoutParams layoutParams) {
-        mSceneBackground.addView(reactionLayout, layoutParams);
-        mReactionLayouts.add(reactionLayout);
-        markActiveStatus(reactionLayout, true);
-    }
-
     // SceneEditorDelegate implementation.
     @Override
     public boolean canAddReaction() {
@@ -236,6 +221,31 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
             replaceActiveReaction(reaction);
         } else {
             addReactionInDefaultLocation(reaction);
+        }
+    }
+
+    private void replaceActiveReaction(ReactionMetadata reaction) {
+        assert mActiveReaction != null;
+        mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
+            mActiveReaction.setDrawable(
+                    new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888));
+            resetReactions(mActiveReaction);
+        });
+    }
+
+    private void addReactionLayoutToScene(
+            ReactionLayout reactionLayout, RelativeLayout.LayoutParams layoutParams) {
+        mSceneBackground.addView(reactionLayout, layoutParams);
+        mReactionLayouts.add(reactionLayout);
+        markActiveStatus(reactionLayout, true);
+        resetReactions(reactionLayout);
+    }
+
+    private void resetReactions(ReactionLayout layoutToExclude) {
+        for (ReactionLayout rl : mReactionLayouts) {
+            if (rl != layoutToExclude) {
+                rl.getReaction().resetAnimation();
+            }
         }
     }
 
