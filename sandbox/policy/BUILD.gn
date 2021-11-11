@@ -190,11 +190,30 @@ source_set("tests") {
       "win/mf_cdm_sandbox_type_unittest.cc",
       "win/sandbox_win_unittest.cc",
     ]
-    deps += [ "//sandbox/win:sandbox" ]
+    deps += [
+      ":sandbox_test_utils",
+      "//sandbox/win:sandbox",
+    ]
     data = [
       "//base/test/data/pe_image/pe_image_test_32.dll",
       "//base/test/data/pe_image/pe_image_test_64.dll",
       "//base/test/data/pe_image/pe_image_test_arm64.dll",
+    ]
+  }
+}
+
+source_set("sandbox_test_utils") {
+  testonly = true
+
+  if (is_win) {
+    sources = [
+      "win/sandbox_test_utils.cc",
+      "win/sandbox_test_utils.h",
+    ]
+
+    deps = [
+      "//sandbox/win:sandbox",
+      "//testing/gtest",
     ]
   }
 }

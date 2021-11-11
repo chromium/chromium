@@ -2162,6 +2162,7 @@ test("content_unittests") {
     "../browser/renderer_host/render_widget_host_view_aura_unittest.cc",
     "../browser/renderer_host/render_widget_host_view_base_unittest.cc",
     "../browser/renderer_host/render_widget_host_view_child_frame_unittest.cc",
+    "../browser/renderer_host/renderer_sandboxed_process_launcher_delegate_unittest.cc",
     "../browser/renderer_host/visible_time_request_trigger_unittest.cc",
     "../browser/scheduler/browser_io_thread_delegate_unittest.cc",
     "../browser/scheduler/browser_task_executor_unittest.cc",
@@ -2629,6 +2630,8 @@ test("content_unittests") {
       "../child/font_warmup_win_unittest.cc",
     ]
     deps += [
+      "//sandbox/policy:sandbox_test_utils",
+      "//sandbox/win:sandbox",
       "//third_party/blink/public/common",
       "//third_party/blink/public/common:font_unique_name_table_proto",
       "//third_party/iaccessible2",
