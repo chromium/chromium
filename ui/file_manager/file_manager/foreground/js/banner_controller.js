@@ -14,6 +14,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
+import {TAG_NAME as DriveLowSpaceBanner} from './ui/banners/drive_low_space_banner.js';
 import {TAG_NAME as DriveOfflinePinningBannerTagName} from './ui/banners/drive_offline_pinning_banner.js';
 import {TAG_NAME as DriveWelcomeBannerTagName} from './ui/banners/drive_welcome_banner.js';
 import {TAG_NAME as HoldingSpaceWelcomeBannerTagName} from './ui/banners/holding_space_welcome_banner.js';
@@ -232,7 +233,10 @@ export class BannerController extends EventTarget {
     if (!this.disableBannerLoading_) {
       // Banners are initialized in their priority order. The order of the array
       // denotes the priority of the banner, 0th index is highest priority.
-      this.setWarningBannersInOrder([LocalDiskLowSpaceBannerTagName]);
+      this.setWarningBannersInOrder([
+        LocalDiskLowSpaceBannerTagName,
+        DriveLowSpaceBanner,
+      ]);
       this.setEducationalBannersInOrder([
         DriveWelcomeBannerTagName,
         HoldingSpaceWelcomeBannerTagName,
@@ -265,6 +269,18 @@ export class BannerController extends EventTarget {
         shouldShow: () => isPathSharedWithVm(
             this.crostini_, this.currentEntry_, constants.PLUGIN_VM),
         context: () => ({type: constants.PLUGIN_VM}),
+      });
+
+      // Register a custom filter that passes the current size stats down to the
+      // the Drive banner only if the volume stats are available. The general
+      // volume available handler will run before this ensuring the minimum
+      // ratio has been met.
+      this.registerCustomBannerFilter_(DriveLowSpaceBanner, {
+        shouldShow: () => !!this.volumeSizeStats_[this.currentVolume_.volumeId],
+        context: () => ({
+          remainingSize:
+              this.volumeSizeStats_[this.currentVolume_.volumeId].remainingSize
+        })
       });
     }
 

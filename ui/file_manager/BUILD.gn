@@ -371,6 +371,7 @@ preprocess_if_expr("preprocess_generated") {
     "file_manager/foreground/elements/xf_circular_progress.js",
     "file_manager/foreground/elements/xf_display_panel.js",
     "file_manager/foreground/elements/xf_panel_item.js",
+    "file_manager/foreground/js/ui/banners/drive_low_space_banner.js",
     "file_manager/foreground/js/ui/banners/drive_offline_pinning_banner.js",
     "file_manager/foreground/js/ui/banners/drive_welcome_banner.js",
     "file_manager/foreground/js/ui/banners/educational_banner.js",
