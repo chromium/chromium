@@ -3534,6 +3534,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.SandboxedPageLoad.IsWebAccessibleResource"
+    enum="BooleanVisible" expires_after="2022-11-01">
+  <owner>solomonkinard@google.com</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Logs if the requested extension subresource is a Web Accessible Resource
+    that is &quot;visible&quot; to any requesting origin. Logged for each
+    extension subresource request if the requesting origin is opaque (with
+    precursor origin also being an extension).
+  </summary>
+</histogram>
+
 <histogram name="Extensions.SandboxUnpackFailureReason"
     enum="ExtensionUnpackFailureReason" expires_after="never">
   <obsolete>

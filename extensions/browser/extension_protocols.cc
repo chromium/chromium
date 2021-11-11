@@ -670,6 +670,24 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     bool follow_symlinks_anywhere = false;
     bool include_allow_service_worker_header = false;
 
+    // Log if loading an extension resource not listed as a web accessible
+    // resource from a sandboxed page.
+    if (request.request_initiator.has_value() &&
+        request.request_initiator->opaque() &&
+        request.request_initiator->GetTupleOrPrecursorTupleIfOpaque()
+                .scheme() == kExtensionScheme) {
+      // Surface opaque origin for web accessible resource verification.
+      auto origin = url::Origin::Create(
+          request.request_initiator->GetTupleOrPrecursorTupleIfOpaque()
+              .GetURL());
+      bool is_web_accessible_resource =
+          WebAccessibleResourcesInfo::IsResourceWebAccessible(
+              extension.get(), request.url.path(), origin);
+      base::UmaHistogramBoolean(
+          "Extensions.SandboxedPageLoad.IsWebAccessibleResource",
+          is_web_accessible_resource);
+    }
+
     if (extension) {
       GetSecurityPolicyForURL(
           request, *extension, is_web_view_request_, &content_security_policy,
