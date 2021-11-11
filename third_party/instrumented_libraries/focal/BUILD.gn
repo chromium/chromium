@@ -115,6 +115,10 @@ template("instrumented_library") {
     if (defined(invoker.deps)) {
       deps = invoker.deps
     }
+    env = []
+    if (defined(invoker.env)) {
+      env = invoker.env
+    }
     product_dir = rebase_path(root_out_dir)
     intermediate_dir = rebase_path(target_gen_dir)
     args = [
@@ -127,6 +131,7 @@ template("instrumented_library") {
       "--product-dir=${product_dir}",
       "--cflags=${package_cflags}",
       "--ldflags=${package_ldflags}",
+      "--env=${env}",
     ]
     outputs = [ "${root_out_dir}/instrumented_libraries/${target_name}.txt" ]
     inputs = []
@@ -659,6 +664,10 @@ instrumented_library("libxcb1") {
     "--disable-static",
   ]
   pre_build = "scripts/pre-build/autoreconf.sh"
+  env = [ [
+        "PYTHON",
+        "python3",
+      ] ]
 }
 
 instrumented_library("libxcomposite1") {

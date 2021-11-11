@@ -75,14 +75,16 @@ class InstrumentedPackageBuilder(object):
 
     self._ldflags = unescape_flags(args.ldflags)
 
-    self.init_build_env()
+    self.init_build_env(eval(args.env))
 
     # Initialized later.
     self._source_dir = None
     self._source_archives = None
 
-  def init_build_env(self):
+  def init_build_env(self, args_env):
     self._build_env = os.environ.copy()
+
+    self._build_env.update(dict(args_env))
 
     self._build_env['CC'] = self._cc
     self._build_env['CXX'] = self._cxx
@@ -546,6 +548,7 @@ def main():
   parser.add_argument('--sanitizer-ignorelist', default='')
   # The LIBDIR argument to configure/make.
   parser.add_argument('--libdir', default='lib')
+  parser.add_argument('--env', default='')
 
   # Ignore all empty arguments because in several cases gyp passes them to the
   # script, but ArgumentParser treats them as positional arguments instead of
