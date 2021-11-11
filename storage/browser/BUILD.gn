@@ -105,6 +105,8 @@ component("browser") {
     "file_system/file_system_quota_client.cc",
     "file_system/file_system_quota_client.h",
     "file_system/file_system_quota_util.h",
+    "file_system/file_system_request_info.cc",
+    "file_system/file_system_request_info.h",
     "file_system/file_system_url.cc",
     "file_system/file_system_url.h",
     "file_system/file_system_usage_cache.cc",

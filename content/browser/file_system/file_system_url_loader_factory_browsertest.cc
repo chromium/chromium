@@ -78,7 +78,7 @@ void FillBuffer(char* buffer, size_t len) {
   base::RandBytes(buffer, len);
 }
 
-// An auto mounter that will try to mount anything for |storage_domain| =
+// An auto mounter that will try to mount anything for `storage_domain` =
 // "automount", but will only succeed for the mount point "mnt_name".
 bool TestAutoMountForURLRequest(
     const storage::FileSystemRequestInfo& request_info,
@@ -174,7 +174,7 @@ class FileSystemURLLoaderFactoryTest
       const FileSystemURLLoaderFactoryTest&) = delete;
 
  protected:
-  FileSystemURLLoaderFactoryTest() : file_util_(nullptr) {}
+  FileSystemURLLoaderFactoryTest() = default;
   ~FileSystemURLLoaderFactoryTest() override = default;
 
   bool IsIncognito() { return GetParam() == TestMode::kIncognito; }
@@ -344,7 +344,7 @@ class FileSystemURLLoaderFactoryTest
     loop.Run();
   }
 
-  // If |size| is negative, the reported size is ignored.
+  // If `size` is negative, the reported size is ignored.
   void VerifyListingEntry(const std::string& entry_line,
                           const std::string& name,
                           const std::string& url,
@@ -430,7 +430,7 @@ class FileSystemURLLoaderFactoryTest
     return quota_manager_proxy_;
   }
 
-  // |temp_dir_| must be deleted last.
+  // `temp_dir_` must be deleted last.
   base::ScopedTempDir temp_dir_;
   mojo::Remote<network::mojom::URLLoader> loader_;
 
@@ -503,8 +503,8 @@ class FileSystemURLLoaderFactoryTest
   scoped_refptr<FileSystemContext> file_system_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
-  // Owned by |file_system_context_| and only usable on |blocking_task_runner_|.
-  storage::FileSystemFileUtil* file_util_;
+  // Owned by `file_system_context_` and only usable on `blocking_task_runner_`.
+  storage::FileSystemFileUtil* file_util_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest,
 
   std::istringstream in(response_text);
   std::string line;
-  EXPECT_TRUE(std::getline(in, line));  // |line| contains the temp dir path.
+  EXPECT_TRUE(std::getline(in, line));  // `line` contains the temp dir path.
 
   // Result order is not guaranteed, so sort the results.
   std::vector<std::string> listing_entries;

@@ -26,6 +26,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "storage/browser/file_system/file_system_request_info.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/open_file_system_mode.h"
 #include "storage/browser/file_system/plugin_private_file_system_backend.h"
@@ -75,15 +76,6 @@ class SpecialStoragePolicy;
 
 struct BucketInfo;
 struct FileSystemInfo;
-
-struct FileSystemRequestInfo {
-  // The original request URL (always set).
-  const GURL url;
-  // The storage domain (always set).
-  const std::string storage_domain;
-  // Set by the network service for use by callbacks.
-  int content_id = 0;
-};
 
 // An auto mount handler will attempt to mount the file system requested in
 // `request_info`. If the URL is for this auto mount handler, it returns true
@@ -261,7 +253,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   void ResolveURL(const FileSystemURL& url, ResolveURLCallback callback);
 
   // Attempts to mount the filesystem needed to satisfy `request_info` made from
-  // `request_info.storage_domain`. If an appropriate file system is not found,
+  // `request_info.storage_domain_`. If an appropriate file system is not found,
   // callback will return an error.
   void AttemptAutoMountForURLRequest(const FileSystemRequestInfo& request_info,
                                      StatusCallback callback);
