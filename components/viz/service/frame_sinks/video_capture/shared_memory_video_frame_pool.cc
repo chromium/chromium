@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/service/frame_sinks/video_capture/interprocess_frame_pool.h"
+#include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 
 #include <algorithm>
 
@@ -16,16 +16,16 @@ using media::VideoPixelFormat;
 namespace viz {
 
 // static
-constexpr base::TimeDelta InterprocessFramePool::kMinLoggingPeriod;
+constexpr base::TimeDelta SharedMemoryVideoFramePool::kMinLoggingPeriod;
 
-InterprocessFramePool::InterprocessFramePool(int capacity)
+SharedMemoryVideoFramePool::SharedMemoryVideoFramePool(int capacity)
     : capacity_(std::max(capacity, 0)) {
   DCHECK_GT(capacity_, 0u);
 }
 
-InterprocessFramePool::~InterprocessFramePool() = default;
+SharedMemoryVideoFramePool::~SharedMemoryVideoFramePool() = default;
 
-scoped_refptr<VideoFrame> InterprocessFramePool::ReserveVideoFrame(
+scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::ReserveVideoFrame(
     VideoPixelFormat format,
     const gfx::Size& size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -84,7 +84,7 @@ scoped_refptr<VideoFrame> InterprocessFramePool::ReserveVideoFrame(
   return WrapBuffer(std::move(additional), format, size);
 }
 
-void InterprocessFramePool::MarkFrame(const media::VideoFrame& frame) {
+void SharedMemoryVideoFramePool::MarkFrame(const media::VideoFrame& frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   marked_frame_buffer_ = frame.data(0);
   marked_frame_size_ = frame.coded_size();
@@ -92,19 +92,19 @@ void InterprocessFramePool::MarkFrame(const media::VideoFrame& frame) {
   marked_frame_pixel_format_ = frame.format();
 }
 
-void InterprocessFramePool::ClearFrameMarking() {
+void SharedMemoryVideoFramePool::ClearFrameMarking() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   marked_frame_buffer_ = nullptr;
 }
 
-bool InterprocessFramePool::HasMarkedFrameWithSize(
+bool SharedMemoryVideoFramePool::HasMarkedFrameWithSize(
     const gfx::Size& size) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return marked_frame_buffer_ != nullptr && marked_frame_size_ == size;
 }
 
 scoped_refptr<VideoFrame>
-InterprocessFramePool::ResurrectOrDuplicateContentFromMarkedFrame() {
+SharedMemoryVideoFramePool::ResurrectOrDuplicateContentFromMarkedFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!marked_frame_buffer_)
@@ -159,8 +159,8 @@ InterprocessFramePool::ResurrectOrDuplicateContentFromMarkedFrame() {
   return frame;
 }
 
-base::ReadOnlySharedMemoryRegion InterprocessFramePool::CloneHandleForDelivery(
-    const VideoFrame* frame) {
+base::ReadOnlySharedMemoryRegion
+SharedMemoryVideoFramePool::CloneHandleForDelivery(const VideoFrame* frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto it = utilized_buffers_.find(frame);
@@ -169,13 +169,13 @@ base::ReadOnlySharedMemoryRegion InterprocessFramePool::CloneHandleForDelivery(
   return it->second.Duplicate();
 }
 
-float InterprocessFramePool::GetUtilization() const {
+float SharedMemoryVideoFramePool::GetUtilization() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return static_cast<float>(utilized_buffers_.size()) / capacity_;
 }
 
-scoped_refptr<VideoFrame> InterprocessFramePool::WrapBuffer(
+scoped_refptr<VideoFrame> SharedMemoryVideoFramePool::WrapBuffer(
     PooledBuffer pooled_buffer,
     VideoPixelFormat format,
     const gfx::Size& size) {
@@ -190,7 +190,7 @@ scoped_refptr<VideoFrame> InterprocessFramePool::WrapBuffer(
   // return it to the |available_buffers_| pool.
   //
   // The VideoFrame could be held, externally, beyond the lifetime of this
-  // InterprocessFramePool. However, this is safe because 1) the use of a
+  // SharedMemoryVideoFramePool. However, this is safe because 1) the use of a
   // WeakPtr cancels the callback that would return the buffer back to the pool,
   // and 2) the mapped memory remains valid until the
   // WritableSharedMemoryMapping goes out-of-scope (when the OnceClosure is
@@ -204,13 +204,13 @@ scoped_refptr<VideoFrame> InterprocessFramePool::WrapBuffer(
   DCHECK_EQ(frame->data(0), pooled_buffer.mapping.memory());
   utilized_buffers_.emplace(frame.get(), std::move(pooled_buffer.region));
   frame->AddDestructionObserver(
-      base::BindOnce(&InterprocessFramePool::OnFrameWrapperDestroyed,
+      base::BindOnce(&SharedMemoryVideoFramePool::OnFrameWrapperDestroyed,
                      weak_factory_.GetWeakPtr(), base::Unretained(frame.get()),
                      std::move(pooled_buffer.mapping)));
   return frame;
 }
 
-void InterprocessFramePool::OnFrameWrapperDestroyed(
+void SharedMemoryVideoFramePool::OnFrameWrapperDestroyed(
     const VideoFrame* frame,
     base::WritableSharedMemoryMapping mapping) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -227,7 +227,7 @@ void InterprocessFramePool::OnFrameWrapperDestroyed(
   DCHECK_LE(available_buffers_.size() + utilized_buffers_.size(), capacity_);
 }
 
-bool InterprocessFramePool::CanLogSharedMemoryFailure() {
+bool SharedMemoryVideoFramePool::CanLogSharedMemoryFailure() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::TimeTicks now = base::TimeTicks::Now();

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_INTERPROCESS_FRAME_POOL_H_
-#define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_INTERPROCESS_FRAME_POOL_H_
+#ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_SHARED_MEMORY_VIDEO_FRAME_POOL_H_
+#define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_SHARED_MEMORY_VIDEO_FRAME_POOL_H_
 
 #include <utility>
 #include <vector>
@@ -26,16 +26,17 @@ namespace viz {
 
 // A pool of VideoFrames backed by shared memory that can be transported
 // efficiently across mojo service boundaries.
-class VIZ_SERVICE_EXPORT InterprocessFramePool {
+class VIZ_SERVICE_EXPORT SharedMemoryVideoFramePool {
  public:
   // |capacity| is the maximum number of pooled VideoFrames; but they can be of
   // any byte size.
-  explicit InterprocessFramePool(int capacity);
+  explicit SharedMemoryVideoFramePool(int capacity);
 
-  InterprocessFramePool(const InterprocessFramePool&) = delete;
-  InterprocessFramePool& operator=(const InterprocessFramePool&) = delete;
+  SharedMemoryVideoFramePool(const SharedMemoryVideoFramePool&) = delete;
+  SharedMemoryVideoFramePool& operator=(const SharedMemoryVideoFramePool&) =
+      delete;
 
-  ~InterprocessFramePool();
+  ~SharedMemoryVideoFramePool();
 
   // Reserves a buffer from the pool and creates a VideoFrame to wrap its shared
   // memory. When the ref-count of the returned VideoFrame goes to zero, the
@@ -124,9 +125,9 @@ class VIZ_SERVICE_EXPORT InterprocessFramePool {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<InterprocessFramePool> weak_factory_{this};
+  base::WeakPtrFactory<SharedMemoryVideoFramePool> weak_factory_{this};
 };
 
 }  // namespace viz
 
-#endif  // COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_INTERPROCESS_FRAME_POOL_H_
+#endif  // COMPONENTS_VIZ_SERVICE_FRAME_SINKS_VIDEO_CAPTURE_SHARED_MEMORY_VIDEO_FRAME_POOL_H_

@@ -24,7 +24,7 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/frame_sinks/video_capture/in_flight_frame_delivery.h"
-#include "components/viz/service/frame_sinks/video_capture/interprocess_frame_pool.h"
+#include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 #include "components/viz/service/frame_sinks/video_capture/video_capture_overlay.h"
 #include "components/viz/service/viz_service_export.h"
 #include "media/base/video_frame.h"
@@ -305,7 +305,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // Provides a pool of VideoFrames that can be efficiently delivered across
   // processes. The size of this pool is used to limit the maximum number of
   // frames in-flight at any one time.
-  InterprocessFramePool frame_pool_;
+  SharedMemoryVideoFramePool frame_pool_;
 
   // Increased every time the source content changes or a forced refresh is
   // requested.

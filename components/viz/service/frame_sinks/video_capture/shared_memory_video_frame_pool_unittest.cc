@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/service/frame_sinks/video_capture/interprocess_frame_pool.h"
+#include "components/viz/service/frame_sinks/video_capture/shared_memory_video_frame_pool.h"
 
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -26,8 +26,8 @@ void ExpectValidHandleForDelivery(
             region.GetSize());
 }
 
-TEST(InterprocessFramePoolTest, FramesConfiguredCorrectly) {
-  InterprocessFramePool pool(1);
+TEST(SharedMemoryVideoFramePoolTest, FramesConfiguredCorrectly) {
+  SharedMemoryVideoFramePool pool(1);
   const scoped_refptr<media::VideoFrame> frame =
       pool.ReserveVideoFrame(kFormat, kSize);
   ASSERT_TRUE(frame);
@@ -37,13 +37,13 @@ TEST(InterprocessFramePoolTest, FramesConfiguredCorrectly) {
   ASSERT_TRUE(frame->IsMappable());
 }
 
-TEST(InterprocessFramePool, UsesAvailableBuffersIfPossible) {
+TEST(SharedMemoryVideoFramePoolTest, UsesAvailableBuffersIfPossible) {
   constexpr gfx::Size kSmallerSize =
       gfx::Size(kSize.width() / 2, kSize.height() / 2);
   constexpr gfx::Size kBiggerSize =
       gfx::Size(kSize.width() * 2, kSize.height() * 2);
 
-  InterprocessFramePool pool(1);
+  SharedMemoryVideoFramePool pool(1);
 
   // Reserve a frame of baseline size and then free it to return it to the pool.
   scoped_refptr<media::VideoFrame> frame =
@@ -97,8 +97,8 @@ TEST(InterprocessFramePool, UsesAvailableBuffersIfPossible) {
   }
 }
 
-TEST(InterprocessFramePoolTest, ReachesCapacityLimit) {
-  InterprocessFramePool pool(2);
+TEST(SharedMemoryVideoFramePoolTest, ReachesCapacityLimit) {
+  SharedMemoryVideoFramePool pool(2);
   scoped_refptr<media::VideoFrame> frames[5];
 
   // Reserve two frames from a pool of capacity 2.
@@ -143,8 +143,8 @@ bool PlanesAreFilledWithValues(const VideoFrame& frame, const uint8_t* values) {
   return true;
 }
 
-TEST(InterprocessFramePoolTest, ResurrectFrameThatIsNotInUse) {
-  InterprocessFramePool pool(2);
+TEST(SharedMemoryVideoFramePoolTest, ResurrectFrameThatIsNotInUse) {
+  SharedMemoryVideoFramePool pool(2);
   const gfx::ColorSpace kArbitraryColorSpace = gfx::ColorSpace::CreateREC709();
 
   // Reserve a frame, populate it, mark it, and release it.
@@ -176,8 +176,9 @@ TEST(InterprocessFramePoolTest, ResurrectFrameThatIsNotInUse) {
   }
 }
 
-TEST(InterprocessFramePoolTest, ResurrectContentFromFrameThatIsStillInUse) {
-  InterprocessFramePool pool(2);
+TEST(SharedMemoryVideoFramePoolTest,
+     ResurrectContentFromFrameThatIsStillInUse) {
+  SharedMemoryVideoFramePool pool(2);
   const gfx::ColorSpace kArbitraryColorSpace = gfx::ColorSpace::CreateREC709();
 
   // Reserve a frame, populate it, mark it, and hold on to it.
@@ -206,8 +207,8 @@ TEST(InterprocessFramePoolTest, ResurrectContentFromFrameThatIsStillInUse) {
   ASSERT_TRUE(PlanesAreFilledWithValues(*frame2, kValues));
 }
 
-TEST(InterprocessFramePoolTest, ResurrectWhenAtCapacity) {
-  InterprocessFramePool pool(2);
+TEST(SharedMemoryVideoFramePoolTest, ResurrectWhenAtCapacity) {
+  SharedMemoryVideoFramePool pool(2);
   const gfx::ColorSpace kArbitraryColorSpace = gfx::ColorSpace::CreateREC709();
 
   // Reserve two frames and hold on to them
@@ -241,8 +242,8 @@ TEST(InterprocessFramePoolTest, ResurrectWhenAtCapacity) {
   ASSERT_TRUE(PlanesAreFilledWithValues(*frame3, kValues));
 }
 
-TEST(InterprocessFramePoolTest, ResurrectWhenNoFrameMarked) {
-  InterprocessFramePool pool(2);
+TEST(SharedMemoryVideoFramePoolTest, ResurrectWhenNoFrameMarked) {
+  SharedMemoryVideoFramePool pool(2);
 
   // Attempt to resurrect before any frame was ever reserved.
   scoped_refptr<media::VideoFrame> frame =
@@ -261,8 +262,9 @@ TEST(InterprocessFramePoolTest, ResurrectWhenNoFrameMarked) {
   ASSERT_FALSE(frame3);
 }
 
-TEST(InterprocessFramePoolTest, FrameMarkingIsLostWhenBufferIsReallocated) {
-  InterprocessFramePool pool(2);
+TEST(SharedMemoryVideoFramePoolTest,
+     FrameMarkingIsLostWhenBufferIsReallocated) {
+  SharedMemoryVideoFramePool pool(2);
 
   // Reserve enough frames to hit capacity.
   scoped_refptr<media::VideoFrame> frame1 =
@@ -293,8 +295,8 @@ TEST(InterprocessFramePoolTest, FrameMarkingIsLostWhenBufferIsReallocated) {
   ASSERT_FALSE(pool.HasMarkedFrameWithSize(kBiggerSize));
 }
 
-TEST(InterprocessFramePoolTest, FrameMarkingIsLostWhenBufferIsReused) {
-  InterprocessFramePool pool(2);
+TEST(SharedMemoryVideoFramePoolTest, FrameMarkingIsLostWhenBufferIsReused) {
+  SharedMemoryVideoFramePool pool(2);
 
   // Reserve enough frames to hit capacity.
   scoped_refptr<media::VideoFrame> frame1 =
@@ -325,8 +327,8 @@ TEST(InterprocessFramePoolTest, FrameMarkingIsLostWhenBufferIsReused) {
   EXPECT_FALSE(pool.HasMarkedFrameWithSize(kSmallerSize));
 }
 
-TEST(InterprocessFramePoolTest, ReportsCorrectUtilization) {
-  InterprocessFramePool pool(2);
+TEST(SharedMemoryVideoFramePoolTest, ReportsCorrectUtilization) {
+  SharedMemoryVideoFramePool pool(2);
   ASSERT_EQ(0.0f, pool.GetUtilization());
 
   // Run through a typical sequence twice: Once for normal frame reservation,
