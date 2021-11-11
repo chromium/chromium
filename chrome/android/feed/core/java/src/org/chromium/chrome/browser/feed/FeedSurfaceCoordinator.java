@@ -445,7 +445,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     @Override
     public void onRefresh() {
         updateReloadButtonVisibility(/*isReloading=*/true);
-        mLaunchReliabilityLogger.logManualRefresh(System.nanoTime());
+        // It is possible that onRefresh() is called when mLaunchReliabilityLogger is null, see
+        // https://crbug.com/1269056.
+        if (mLaunchReliabilityLogger != null) {
+            mLaunchReliabilityLogger.logManualRefresh(System.nanoTime());
+        }
         mMediator.manualRefresh((Boolean v) -> {
             if (mSwipeRefreshLayout == null) return;
             updateReloadButtonVisibility(/*isReloading=*/false);
