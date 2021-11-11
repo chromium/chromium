@@ -21,7 +21,7 @@ import {DefaultBrowserBrowserProxy, DefaultBrowserBrowserProxyImpl, DefaultBrows
 const SettingsDefaultBrowserPageElementBase =
     WebUIListenerMixin(PolymerElement);
 
-class SettingsDefaultBrowserPageElement extends
+export class SettingsDefaultBrowserPageElement extends
     SettingsDefaultBrowserPageElementBase {
   static get is() {
     return 'settings-default-browser-page';
@@ -79,6 +79,12 @@ class SettingsDefaultBrowserPageElement extends
 
   private onSetDefaultBrowserTap_() {
     this.browserProxy_.setAsDefaultBrowser();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-default-browser-page': SettingsDefaultBrowserPageElement;
   }
 }
 

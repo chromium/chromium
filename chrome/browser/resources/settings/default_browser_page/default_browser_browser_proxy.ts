@@ -12,8 +12,10 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 // clang-format on
 
 export type DefaultBrowserInfo = {
-  canBeDefault: boolean; isDefault: boolean; isDisabledByPolicy: boolean;
-  isUnknownError: boolean;
+  canBeDefault: boolean,
+  isDefault: boolean,
+  isDisabledByPolicy: boolean,
+  isUnknownError: boolean,
 }
 
 export interface DefaultBrowserBrowserProxy {

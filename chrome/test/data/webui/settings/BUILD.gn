@@ -11,6 +11,7 @@ preprocessed_files = [
   "about_page_tests.ts",
   "appearance_page_test.ts",
   "clear_browsing_data_test.ts",
+  "downloads_page_test.ts",
   "privacy_page_test.ts",
   "route_tests.js",
   "security_page_test.ts",
@@ -46,7 +47,6 @@ non_preprocessed_files = [
   "controlled_radio_button_tests.ts",
   "cookies_page_test.ts",
   "do_not_track_toggle_test.ts",
-  "downloads_page_test.js",
   "dropdown_menu_tests.ts",
   "extension_controlled_indicator_tests.ts",
   "fake_language_settings_private.js",
@@ -130,7 +130,7 @@ non_preprocessed_files = [
 
 if (!is_chromeos_ash && !is_chromeos_lacros) {
   non_preprocessed_files += [
-    "default_browser_browsertest.js",
+    "default_browser_test.ts",
     "import_data_dialog_test.js",
     "system_page_tests.js",
   ]

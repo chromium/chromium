@@ -653,7 +653,7 @@ GEN('#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)');
 GEN('#endif  // !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)');
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
-[['DefaultBrowser', 'default_browser_browsertest.js'],
+[['DefaultBrowser', 'default_browser_test.js'],
  ['ImportDataDialog', 'import_data_dialog_test.js'],
  ['SystemPage', 'system_page_tests.js'],
 ].forEach(test => registerTest(...test));

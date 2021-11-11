@@ -82,7 +82,8 @@ export {ControlledButtonElement} from './controls/controlled_button.js';
 export {SettingsCheckboxElement} from './controls/settings_checkbox.js';
 export {SettingsSliderElement} from './controls/settings_slider.js';
 export {SettingsTextareaElement} from './controls/settings_textarea.js';
-export {DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
+export {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
+export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
 // <if expr="_google_chrome and is_win">
 export {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_page/incompatible_applications_browser_proxy.js';
 // </if>
