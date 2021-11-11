@@ -980,6 +980,13 @@ void WallpaperControllerImpl::SetCustomWallpaper(
     WallpaperLayout layout,
     bool preview_mode,
     SetCustomWallpaperCallback callback) {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+  if (!CanSetUserWallpaper(account_id)) {
+    // Return early to skip the work of decoding.
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
   // Invalidate weak ptrs to cancel prior requests to set wallpaper.
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   ReadAndDecodeWallpaper(
@@ -1030,6 +1037,11 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
     const OnlineWallpaperParams& params,
     SetOnlineWallpaperCallback callback) {
   DCHECK(callback);
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+  if (!CanSetUserWallpaper(params.account_id)) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
   // Invalidate weak ptrs to cancel prior requests to set wallpaper.
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   SetOnlineWallpaperIfExists(
@@ -1042,8 +1054,13 @@ void WallpaperControllerImpl::SetOnlineWallpaper(
 void WallpaperControllerImpl::SetOnlineWallpaperIfExists(
     const OnlineWallpaperParams& params,
     SetOnlineWallpaperCallback callback) {
+  DCHECK(callback);
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
-  DCHECK(CanSetUserWallpaper(params.account_id));
+
+  if (!CanSetUserWallpaper(params.account_id)) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
 
   if (params.from_user) {
     // |asset_id| and |collection_id| are empty when the wallpaper is
