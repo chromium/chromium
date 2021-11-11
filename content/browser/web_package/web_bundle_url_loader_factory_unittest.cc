@@ -5,7 +5,6 @@
 #include "content/browser/web_package/web_bundle_url_loader_factory.h"
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/web_package/mock_web_bundle_reader_factory.h"

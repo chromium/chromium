@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_ANDROID_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_SELECTION_CONTROLLER_CLIENT_MANAGER_ANDROID_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/viz/host/hit_test/hit_test_region_observer.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"

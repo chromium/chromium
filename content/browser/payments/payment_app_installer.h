@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/public/browser/supported_delegations.h"
 
 class GURL;

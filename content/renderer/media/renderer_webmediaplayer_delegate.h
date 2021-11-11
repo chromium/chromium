@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/single_sample_metrics.h"

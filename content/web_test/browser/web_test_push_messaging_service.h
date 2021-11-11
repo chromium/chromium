@@ -10,7 +10,6 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 

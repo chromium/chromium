@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"

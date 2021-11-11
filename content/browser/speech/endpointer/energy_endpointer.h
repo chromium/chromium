@@ -42,7 +42,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/browser/speech/endpointer/energy_endpointer_params.h"
 #include "content/common/content_export.h"
 

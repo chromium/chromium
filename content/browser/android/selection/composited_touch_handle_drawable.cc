@@ -7,7 +7,6 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "content/public/browser/android/compositor.h"
 #include "ui/android/handle_view_resources.h"

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_FRAME_TREE_NODE_BLAME_CONTEXT_H_
 #define CONTENT_BROWSER_RENDERER_HOST_FRAME_TREE_NODE_BLAME_CONTEXT_H_
 
-#include "base/macros.h"
 #include "base/trace_event/blame_context.h"
 #include "url/gurl.h"
 

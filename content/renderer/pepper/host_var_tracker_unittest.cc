@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/mock_resource.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"

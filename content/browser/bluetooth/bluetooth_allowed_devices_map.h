@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 

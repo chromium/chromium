@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/audio/audio_output_ipc.h"
 #include "third_party/blink/public/common/tokens/tokens.h"

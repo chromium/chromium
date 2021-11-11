@@ -5,7 +5,6 @@
 #ifndef CONTENT_GPU_GPU_SERVICE_FACTORY_H_
 #define CONTENT_GPU_GPU_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"

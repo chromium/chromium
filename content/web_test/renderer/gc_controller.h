@@ -5,7 +5,6 @@
 #ifndef CONTENT_WEB_TEST_RENDERER_GC_CONTROLLER_H_
 #define CONTENT_WEB_TEST_RENDERER_GC_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "gin/wrappable.h"
 

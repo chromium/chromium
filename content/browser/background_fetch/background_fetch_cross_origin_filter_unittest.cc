@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

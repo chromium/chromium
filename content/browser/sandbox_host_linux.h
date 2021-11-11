@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/threading/simple_thread.h"
 #include "content/browser/sandbox_ipc_linux.h"

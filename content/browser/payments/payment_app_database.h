@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/payments/payment_app_info_fetcher.h"
 #include "content/browser/payments/payment_instrument_icon_fetcher.h"

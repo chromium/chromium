@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/feature_observer.h"

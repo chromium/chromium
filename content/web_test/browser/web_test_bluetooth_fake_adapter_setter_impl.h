@@ -5,7 +5,6 @@
 #ifndef CONTENT_WEB_TEST_BROWSER_WEB_TEST_BLUETOOTH_FAKE_ADAPTER_SETTER_IMPL_H_
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_BLUETOOTH_FAKE_ADAPTER_SETTER_IMPL_H_
 
-#include "base/macros.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/variations/variations.mojom.h"
 #include "content/common/renderer_variations_configuration.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"

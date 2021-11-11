@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 class SkFontMgr;

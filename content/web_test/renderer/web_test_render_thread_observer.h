@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

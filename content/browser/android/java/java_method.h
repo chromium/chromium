@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/browser/android/java/java_type.h"
 #include "content/common/content_export.h"
 

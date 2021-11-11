@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_LOADER_SHARED_CORS_ORIGIN_ACCESS_LIST_IMPL_H_
 #define CONTENT_BROWSER_LOADER_SHARED_CORS_ORIGIN_ACCESS_LIST_IMPL_H_
 
-#include "base/macros.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 

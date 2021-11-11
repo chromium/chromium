@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_TEST_SERVICE_WORKER_OBSERVER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_TEST_SERVICE_WORKER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_version.h"

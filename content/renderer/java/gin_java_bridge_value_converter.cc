@@ -9,7 +9,6 @@
 
 #include <cmath>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_value.h"

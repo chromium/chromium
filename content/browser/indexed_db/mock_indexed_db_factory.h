@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

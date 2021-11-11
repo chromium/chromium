@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/strcat.h"

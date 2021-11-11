@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/files/file_tracing.h"
-#include "base/macros.h"
 
 namespace content {
 

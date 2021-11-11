@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/task/task_observer.h"
 #include "content/common/content_export.h"
 

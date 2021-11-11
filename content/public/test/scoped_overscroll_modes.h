@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_SCOPED_OVERSCROLL_MODES_H_
 #define CONTENT_PUBLIC_TEST_SCOPED_OVERSCROLL_MODES_H_
 
-#include "base/macros.h"
 #include "content/public/browser/overscroll_configuration.h"
 
 namespace content {

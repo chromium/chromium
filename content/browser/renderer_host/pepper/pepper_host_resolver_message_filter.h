@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/receiver.h"

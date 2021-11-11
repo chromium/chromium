@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_THEME_HELPER_MAC_H_
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "content/public/browser/notification_observer.h"

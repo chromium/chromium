@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_LOADER_CROSS_ORIGIN_READ_BLOCKING_CHECKER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"

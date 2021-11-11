@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 

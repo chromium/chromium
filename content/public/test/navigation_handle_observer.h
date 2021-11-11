@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_TEST_NAVIGATION_HANDLE_OBSERVER_H_
 
 #include <cstdint>
-#include "base/macros.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"

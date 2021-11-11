@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_MEDIA_AUDIO_STREAM_MONITOR_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"

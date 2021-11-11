@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_LOG_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_LOG_HANDLER_H_
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/log.h"
 #include "mojo/public/cpp/bindings/remote.h"

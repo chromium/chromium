@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/trace_event/trace_config.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/frame.mojom-forward.h"
 #include "content/renderer/render_frame_impl.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

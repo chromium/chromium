@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/public/browser/browser_accessibility_state.h"

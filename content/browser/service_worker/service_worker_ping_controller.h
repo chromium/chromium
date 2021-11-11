@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_PING_CONTROLLER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_PING_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 

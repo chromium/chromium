@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

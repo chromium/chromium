@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/mock_navigation_handle.h"

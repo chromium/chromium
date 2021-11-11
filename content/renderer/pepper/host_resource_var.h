@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/shared_impl/resource_var.h"

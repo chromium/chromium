@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/platform_notification_context.h"

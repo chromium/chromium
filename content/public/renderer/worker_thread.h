@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_RENDERER_WORKER_THREAD_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace content {

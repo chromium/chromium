@@ -7,7 +7,6 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
-#include "base/macros.h"
 #include "base/process/memory.h"
 #include "base/system/sys_info.h"
 #include "base/test/launcher/test_launcher.h"

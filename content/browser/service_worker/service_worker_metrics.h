@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/public/browser/service_worker_context.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"

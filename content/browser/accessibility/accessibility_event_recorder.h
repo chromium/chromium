@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"

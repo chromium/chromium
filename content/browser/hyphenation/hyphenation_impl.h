@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_HYPHENATION_HYPHENATION_IMPL_H_
 #define CONTENT_BROWSER_HYPHENATION_HYPHENATION_IMPL_H_
 
-#include "base/macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/pickle.h"
 #include "base/values.h"
 #include "content/common/content_export.h"

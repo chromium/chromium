@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"

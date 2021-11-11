@@ -8,7 +8,6 @@
 #include <bitset>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"

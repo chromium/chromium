@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace network {
 class TestNetworkConnectionTracker;
 }

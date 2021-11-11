@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"

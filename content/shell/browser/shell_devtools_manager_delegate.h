@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {

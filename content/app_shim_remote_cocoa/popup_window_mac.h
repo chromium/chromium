@@ -6,7 +6,6 @@
 #define CONTENT_APP_SHIM_REMOTE_COCOA_POPUP_WINDOW_MAC_H_
 
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "content/public/common/widget_type.h"
 #include "ui/gfx/geometry/rect.h"
 

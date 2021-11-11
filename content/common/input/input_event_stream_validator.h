@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/common/input/gesture_event_stream_validator.h"
 #include "content/common/input/touch_event_stream_validator.h"
 

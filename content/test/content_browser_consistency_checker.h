@@ -6,7 +6,6 @@
 #define CONTENT_TEST_CONTENT_BROWSER_CONSISTENCY_CHECKER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace content {
 

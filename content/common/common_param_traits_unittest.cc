@@ -10,7 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "content/common/content_param_traits.h"

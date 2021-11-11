@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/speech/audio_buffer.h"
 #include "third_party/flac/include/FLAC/stream_encoder.h"

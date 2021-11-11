@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "media/capture/content/android/screen_capture_machine_android.h"

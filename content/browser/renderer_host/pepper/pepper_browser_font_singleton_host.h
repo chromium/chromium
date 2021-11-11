@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_PEPPER_PEPPER_BROWSER_FONT_SINGLETON_HOST_H_
 #define CONTENT_BROWSER_RENDERER_HOST_PEPPER_PEPPER_BROWSER_FONT_SINGLETON_HOST_H_
 
-#include "base/macros.h"
 #include "ppapi/host/resource_host.h"
 
 namespace content {

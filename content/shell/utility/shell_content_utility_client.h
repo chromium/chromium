@@ -5,7 +5,6 @@
 #ifndef CONTENT_SHELL_UTILITY_SHELL_CONTENT_UTILITY_CLIENT_H_
 #define CONTENT_SHELL_UTILITY_SHELL_CONTENT_UTILITY_CLIENT_H_
 
-#include "base/macros.h"
 #include "content/public/test/audio_service_test_helper.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "content/public/utility/content_utility_client.h"

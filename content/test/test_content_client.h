@@ -6,7 +6,6 @@
 #define CONTENT_TEST_TEST_CONTENT_CLIENT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/common/content_client.h"
 
 namespace content {

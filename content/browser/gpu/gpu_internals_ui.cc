@@ -17,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/environment.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringize_macros.h"
 #include "base/strings/stringprintf.h"

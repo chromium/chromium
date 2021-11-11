@@ -7,8 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
-
 namespace content {
 
 class PepperAudioOutputHost;

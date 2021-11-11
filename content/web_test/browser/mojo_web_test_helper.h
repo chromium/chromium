@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/test/data/mojo_web_test_helper_test.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 

@@ -7,7 +7,6 @@
 
 #include "content/public/browser/websocket_handshake_request_info.h"
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 
 namespace content {

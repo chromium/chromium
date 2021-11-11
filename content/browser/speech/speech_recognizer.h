@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SPEECH_SPEECH_RECOGNIZER_H_
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 

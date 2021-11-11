@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_TEST_HOST_RESOLVER_H_
 #define CONTENT_PUBLIC_TEST_TEST_HOST_RESOLVER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace net {

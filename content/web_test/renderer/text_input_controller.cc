@@ -4,7 +4,6 @@
 
 #include "content/web_test/renderer/text_input_controller.h"
 
-#include "base/macros.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"

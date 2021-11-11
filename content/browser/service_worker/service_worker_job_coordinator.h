@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "content/browser/service_worker/service_worker_register_job.h"
 #include "content/browser/service_worker/service_worker_unregister_job.h"
 #include "content/common/content_export.h"

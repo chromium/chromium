@@ -8,7 +8,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_test.h"
 #include "content/browser/renderer_host/pepper/pepper_print_settings_manager.h"
 #include "ppapi/c/pp_errors.h"

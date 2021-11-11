@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_NET_BROWSER_ONLINE_STATE_OBSERVER_H_
 #define CONTENT_BROWSER_NET_BROWSER_ONLINE_STATE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "net/base/network_change_notifier.h"

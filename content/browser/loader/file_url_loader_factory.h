@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_LOADER_FILE_URL_LOADER_FACTORY_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

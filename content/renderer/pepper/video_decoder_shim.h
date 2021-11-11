@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/video_decoder_config.h"
 #include "media/video/video_decode_accelerator.h"

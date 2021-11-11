@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_MOCK_WEB_BUNDLE_READER_FACTORY_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_MOCK_WEB_BUNDLE_READER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 

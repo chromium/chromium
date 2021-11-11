@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/process/process_handle.h"
 #include "base/types/pass_key.h"

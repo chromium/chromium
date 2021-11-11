@@ -9,7 +9,6 @@
 #include <map>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/renderer/pepper/v8_var_converter.h"
 #include "gin/handle.h"

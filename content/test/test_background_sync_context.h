@@ -5,7 +5,6 @@
 #ifndef CONTENT_TEST_TEST_BACKGROUND_SYNC_CONTEXT_H_
 #define CONTENT_TEST_TEST_BACKGROUND_SYNC_CONTEXT_H_
 
-#include "base/macros.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
 
 namespace content {

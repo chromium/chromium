@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/fling_controller.h"

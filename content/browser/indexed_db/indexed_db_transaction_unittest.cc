@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

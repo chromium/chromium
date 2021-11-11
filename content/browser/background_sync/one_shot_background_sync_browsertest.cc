@@ -5,7 +5,6 @@
 #include "content/browser/background_sync/background_sync_base_browsertest.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"

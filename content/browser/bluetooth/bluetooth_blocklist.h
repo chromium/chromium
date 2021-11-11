@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"

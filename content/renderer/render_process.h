@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "content/child/child_process.h"
 

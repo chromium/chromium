@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/devtools_background_services.pb.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"

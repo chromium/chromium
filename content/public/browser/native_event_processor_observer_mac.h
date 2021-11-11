@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NATIVE_EVENT_PROCESSOR_OBSERVER_MAC_H_
 #define CONTENT_PUBLIC_BROWSER_NATIVE_EVENT_PROCESSOR_OBSERVER_MAC_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 

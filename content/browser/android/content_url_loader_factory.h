@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ANDROID_CONTENT_URL_LOADER_FACTORY_H_
 #define CONTENT_BROWSER_ANDROID_CONTENT_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"

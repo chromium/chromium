@@ -6,7 +6,6 @@
 #define CONTENT_WEB_TEST_RENDERER_TEST_WEBSOCKET_HANDSHAKE_THROTTLE_PROVIDER_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 

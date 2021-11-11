@@ -15,7 +15,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"

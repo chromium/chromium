@@ -29,7 +29,6 @@
 #include <map>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 
 namespace content {
 

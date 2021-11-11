@@ -11,7 +11,6 @@
 #include <list>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "build/build_config.h"

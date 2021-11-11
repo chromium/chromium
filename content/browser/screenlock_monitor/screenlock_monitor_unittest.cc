@@ -4,7 +4,6 @@
 
 #include "content/browser/screenlock_monitor/screenlock_monitor.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"

@@ -5,8 +5,6 @@
 #ifndef CONTENT_CHILD_SCOPED_CHILD_PROCESS_REFERENCE_H_
 #define CONTENT_CHILD_SCOPED_CHILD_PROCESS_REFERENCE_H_
 
-#include "base/macros.h"
-
 namespace base {
 class TimeDelta;
 }

@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_SKIA_BENCHMARKING_EXTENSION_H_
 #define CONTENT_RENDERER_SKIA_BENCHMARKING_EXTENSION_H_
 
-#include "base/macros.h"
 #include "gin/wrappable.h"
 
 namespace blink {

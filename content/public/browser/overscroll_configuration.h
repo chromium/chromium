@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_OVERSCROLL_CONFIGURATION_H_
 #define CONTENT_PUBLIC_BROWSER_OVERSCROLL_CONFIGURATION_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 

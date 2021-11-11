@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_MIME_REGISTRY_IMPL_H_
 #define CONTENT_BROWSER_MIME_REGISTRY_IMPL_H_
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/mime/mime_registry.mojom.h"

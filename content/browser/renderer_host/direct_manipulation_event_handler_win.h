@@ -10,7 +10,6 @@
 #include <directmanipulation.h>
 #include <wrl.h>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {

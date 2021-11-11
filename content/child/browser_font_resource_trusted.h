@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "cc/paint/paint_canvas.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_instance.h"

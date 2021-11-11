@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/common/dom_automation_controller.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "gin/wrappable.h"

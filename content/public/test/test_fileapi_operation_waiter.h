@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "storage/browser/file_system/file_observers.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"

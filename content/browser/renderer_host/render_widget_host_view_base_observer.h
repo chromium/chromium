@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_BASE_OBSERVER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_VIEW_BASE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace content {

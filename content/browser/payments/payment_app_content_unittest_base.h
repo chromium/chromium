@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/payments/payment_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"

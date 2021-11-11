@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
 namespace content {

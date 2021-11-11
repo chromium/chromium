@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SCREEN_ORIENTATION_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_SCREEN_ORIENTATION_DELEGATE_H_
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 

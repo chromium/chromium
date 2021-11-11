@@ -14,7 +14,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"

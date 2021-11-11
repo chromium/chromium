@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_SCOPED_ACTIVE_URL_H_
 #define CONTENT_BROWSER_SCOPED_ACTIVE_URL_H_
 
-#include "base/macros.h"
-
 class GURL;
 
 namespace url {

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "cc/input/touch_action.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

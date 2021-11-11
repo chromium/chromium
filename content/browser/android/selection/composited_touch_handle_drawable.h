@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_ANDROID_SELECTION_COMPOSITED_TOUCH_HANDLE_DRAWABLE_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/touch_selection/touch_handle.h"

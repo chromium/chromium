@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TIMEOUT_MONITOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"

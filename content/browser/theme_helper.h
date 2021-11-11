@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_THEME_HELPER_H_
 #define CONTENT_BROWSER_THEME_HELPER_H_
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "content/common/renderer.mojom-forward.h"

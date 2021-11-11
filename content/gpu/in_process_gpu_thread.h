@@ -5,7 +5,6 @@
 #ifndef CONTENT_GPU_IN_PROCESS_GPU_THREAD_H_
 #define CONTENT_GPU_IN_PROCESS_GPU_THREAD_H_
 
-#include "base/macros.h"
 #include "base/threading/thread.h"
 #include "content/common/content_export.h"
 #include "content/common/in_process_child_thread_params.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/host_zoom_map_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/zoom_level_delegate.h"

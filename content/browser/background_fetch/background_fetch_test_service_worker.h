@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 

@@ -5,7 +5,6 @@
 #ifndef CONTENT_SERVICES_SHARED_STORAGE_WORKLET_CONSOLE_H_
 #define CONTENT_SERVICES_SHARED_STORAGE_WORKLET_CONSOLE_H_
 
-#include "base/macros.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_CROSS_ORIGIN_FILTER_H_
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_CROSS_ORIGIN_FILTER_H_
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace url {

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "base/win/windows_types.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"

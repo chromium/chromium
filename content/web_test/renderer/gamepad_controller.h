@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "device/gamepad/public/cpp/gamepads.h"

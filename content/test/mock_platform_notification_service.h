@@ -11,7 +11,6 @@
 #include <unordered_set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

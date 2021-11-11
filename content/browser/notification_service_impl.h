@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/notification_service.h"

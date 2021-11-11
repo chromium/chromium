@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_FRAME_LOAD_WAITER_H_
 #define CONTENT_PUBLIC_TEST_FRAME_LOAD_WAITER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/public/renderer/render_frame_observer.h"
 

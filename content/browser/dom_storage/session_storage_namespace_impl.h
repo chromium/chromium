@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/session_storage_namespace.h"

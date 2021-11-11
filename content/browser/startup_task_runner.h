@@ -8,7 +8,6 @@
 #include <list>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 
 #include "build/build_config.h"

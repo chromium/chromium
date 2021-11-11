@@ -10,8 +10,6 @@
 #include <wrl.h>
 #include <array>
 
-#include "base/macros.h"
-
 namespace content {
 class PrecisionTouchpadBrowserTest;
 

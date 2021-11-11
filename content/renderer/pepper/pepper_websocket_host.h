@@ -10,7 +10,6 @@
 #include <memory>
 #include <queue>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "ppapi/host/host_message_context.h"

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/javascript_test_observer.h"
 #include "url/gurl.h"

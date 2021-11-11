@@ -10,8 +10,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
-
 namespace content {
 
 class PepperPlayerDelegate;

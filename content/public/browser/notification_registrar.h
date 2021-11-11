@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 

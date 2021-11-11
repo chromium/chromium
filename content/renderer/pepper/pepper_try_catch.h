@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_TRY_CATCH_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_TRY_CATCH_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_var.h"

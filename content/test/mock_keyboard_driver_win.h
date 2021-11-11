@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace content {
 
 // Implements the platform-dependent part of a pseudo keyboard device for

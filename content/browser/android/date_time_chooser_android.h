@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_ANDROID_DATE_TIME_CHOOSER_ANDROID_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom.h"

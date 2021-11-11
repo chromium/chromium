@@ -9,7 +9,6 @@
 
 #include "base/mac/dispatch_source_mach.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/process/port_provider_mac.h"
 #include "base/process/process_handle.h"

@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_PEPPER_PEPPER_HUNG_PLUGIN_FILTER_H_
 #define CONTENT_RENDERER_PEPPER_PEPPER_HUNG_PLUGIN_FILTER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "content/common/pepper_plugin.mojom.h"

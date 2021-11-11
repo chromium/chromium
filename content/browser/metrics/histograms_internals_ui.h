@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_METRICS_HISTOGRAMS_INTERNALS_UI_H_
 #define CONTENT_BROWSER_METRICS_HISTOGRAMS_INTERNALS_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace content {

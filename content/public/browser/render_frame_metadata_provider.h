@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_RENDER_FRAME_METADATA_PROVIDER_H_
 #define CONTENT_PUBLIC_BROWSER_RENDER_FRAME_METADATA_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"

@@ -16,7 +16,6 @@
 #include "base/check_op.h"
 #include "base/containers/queue.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"

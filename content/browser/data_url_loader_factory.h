@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DATA_URL_LOADER_FACTORY_H_
 #define CONTENT_BROWSER_DATA_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"

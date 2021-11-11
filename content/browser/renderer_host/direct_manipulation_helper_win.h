@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "content/browser/renderer_host/direct_manipulation_event_handler_win.h"
 #include "content/common/content_export.h"
 #include "ui/compositor/compositor_animation_observer.h"

@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_STATS_COLLECTION_CONTROLLER_H_
 #define CONTENT_RENDERER_STATS_COLLECTION_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "gin/wrappable.h"
 
 namespace blink {

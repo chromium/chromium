@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "ui/events/gesture_detection/motion_event.h"

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "content/browser/download/save_types.h"
 #include "content/public/common/referrer.h"
 #include "url/gurl.h"

@@ -5,7 +5,6 @@
 #ifndef CONTENT_SHELL_COMMON_POWER_MONITOR_TEST_IMPL_H_
 #define CONTENT_SHELL_COMMON_POWER_MONITOR_TEST_IMPL_H_
 
-#include "base/macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "content/shell/common/power_monitor_test.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

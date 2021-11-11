@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_GPU_BENCHMARKING_EXTENSION_H_
 #define CONTENT_RENDERER_GPU_BENCHMARKING_EXTENSION_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/input/input_injector.mojom.h"
 #include "gin/wrappable.h"

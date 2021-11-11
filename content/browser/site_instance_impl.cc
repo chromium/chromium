@@ -11,7 +11,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/browsing_instance.h"

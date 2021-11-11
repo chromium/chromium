@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_test.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ppapi/c/pp_instance.h"

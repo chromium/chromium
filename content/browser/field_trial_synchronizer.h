@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "components/variations/variations_ids_provider.h"
 

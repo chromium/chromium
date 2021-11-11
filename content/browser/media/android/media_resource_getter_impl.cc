@@ -5,7 +5,6 @@
 #include "content/browser/media/android/media_resource_getter_impl.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/child_process_security_policy_impl.h"

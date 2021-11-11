@@ -4,7 +4,6 @@
 
 #include "content/browser/android/overscroll_controller_android.h"
 #include <memory>
-#include "base/macros.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/layers/layer.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"

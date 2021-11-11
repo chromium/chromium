@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "services/device/public/mojom/hid.mojom-forward.h"
 

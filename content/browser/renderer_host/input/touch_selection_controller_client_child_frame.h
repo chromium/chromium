@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/viz/common/quads/selection.h"
 #include "content/common/content_export.h"
 #include "ui/touch_selection/touch_selection_controller.h"

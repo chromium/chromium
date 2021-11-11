@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_sync/background_sync_status.h"
 #include "content/public/browser/background_sync_registration.h"

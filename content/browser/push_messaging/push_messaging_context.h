@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 
 class GURL;

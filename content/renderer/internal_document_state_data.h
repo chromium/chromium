@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "net/nqe/effective_connection_type.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"

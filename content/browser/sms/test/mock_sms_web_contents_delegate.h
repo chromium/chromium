@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SMS_TEST_MOCK_SMS_WEB_CONTENTS_DELEGATE_H_
 #define CONTENT_BROWSER_SMS_TEST_MOCK_SMS_WEB_CONTENTS_DELEGATE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

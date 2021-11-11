@@ -5,7 +5,6 @@
 #ifndef CONTENT_TEST_PPAPI_UNITTEST_H_
 #define CONTENT_TEST_PPAPI_UNITTEST_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

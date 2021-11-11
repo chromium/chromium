@@ -19,7 +19,6 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_task_runner_handle.h"

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/frame.mojom.h"
 #include "content/renderer/navigation_client.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"

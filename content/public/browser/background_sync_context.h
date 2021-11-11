@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_BACKGROUND_SYNC_CONTEXT_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "url/origin.h"

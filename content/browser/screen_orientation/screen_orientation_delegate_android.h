@@ -7,7 +7,6 @@
 
 #include <jni.h>
 
-#include "base/macros.h"
 #include "content/public/browser/screen_orientation_delegate.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 

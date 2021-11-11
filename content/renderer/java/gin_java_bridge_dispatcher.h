@@ -10,7 +10,6 @@
 #include <set>
 
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_errors.h"

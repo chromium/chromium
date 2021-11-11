@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

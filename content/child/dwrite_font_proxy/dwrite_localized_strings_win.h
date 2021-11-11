@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace content {
 
 // Impements IDWriteLocalizedStrings, backed by a vector of string pairs.

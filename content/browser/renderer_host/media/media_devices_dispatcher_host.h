@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_util.h"

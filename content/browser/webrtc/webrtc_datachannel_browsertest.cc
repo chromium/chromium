@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/switches.h"

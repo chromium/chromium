@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CLIENT_CERTIFICATE_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_CLIENT_CERTIFICATE_DELEGATE_H_
 
-#include "base/macros.h"
-
 namespace net {
 class SSLPrivateKey;
 class X509Certificate;

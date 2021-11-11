@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/site_instance_impl.h"

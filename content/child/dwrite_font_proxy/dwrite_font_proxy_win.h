@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"

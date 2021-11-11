@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/process/process.h"
 #include "content/public/browser/mhtml_generation_result.h"

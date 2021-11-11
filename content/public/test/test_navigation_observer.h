@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "content/public/browser/navigation_type.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/test/test_utils.h"

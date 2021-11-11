@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/renderer/render_process.h"
 
 namespace content {

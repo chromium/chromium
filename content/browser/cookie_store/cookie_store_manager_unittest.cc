@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"

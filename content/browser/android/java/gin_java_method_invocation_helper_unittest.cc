@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "content/common/android/gin_java_bridge_value.h"
 #include "testing/gtest/include/gtest/gtest.h"

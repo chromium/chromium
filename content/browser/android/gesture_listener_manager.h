@@ -7,7 +7,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 

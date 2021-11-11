@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/test/content_browser_test.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/native_widget_types.h"

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

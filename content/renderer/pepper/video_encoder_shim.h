@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"

@@ -5,7 +5,6 @@
 #ifndef CONTENT_TEST_MOCK_OVERSCROLL_CONTROLLER_DELEGATE_AURA_H_
 #define CONTENT_TEST_MOCK_OVERSCROLL_CONTROLLER_DELEGATE_AURA_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
 #include "content/test/mock_overscroll_observer.h"

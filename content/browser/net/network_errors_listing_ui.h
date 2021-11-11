@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_NET_NETWORK_ERRORS_LISTING_UI_H_
 #define CONTENT_BROWSER_NET_NETWORK_ERRORS_LISTING_UI_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 

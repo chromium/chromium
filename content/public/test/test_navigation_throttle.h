@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_TEST_TEST_NAVIGATION_THROTTLE_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 

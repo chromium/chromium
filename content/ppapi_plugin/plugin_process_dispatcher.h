@@ -5,7 +5,6 @@
 #ifndef CONTENT_PPAPI_PLUGIN_PLUGIN_PROCESS_DISPATCHER_H_
 #define CONTENT_PPAPI_PLUGIN_PLUGIN_PROCESS_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "content/child/scoped_child_process_reference.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
 

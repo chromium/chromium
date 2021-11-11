@@ -11,7 +11,6 @@
 #include "base/android/unguessable_token_android.h"
 #include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/unguessable_token.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/surface_wrapper.h"

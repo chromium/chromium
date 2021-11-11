@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_DEVICE_CHANGE_OBSERVER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_DEVICE_CHANGE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "ui/events/devices/input_device_event_observer.h"
 

@@ -4,7 +4,6 @@
 
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

@@ -6,7 +6,6 @@
 #define CONTENT_RENDERER_PEPPER_HOST_GLOBALS_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/renderer/pepper/host_var_tracker.h"
 #include "ppapi/shared_impl/callback_tracker.h"
 #include "ppapi/shared_impl/ppapi_globals.h"

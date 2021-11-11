@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"

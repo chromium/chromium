@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SMS_TEST_MOCK_SMS_PROVIDER_H_
 #define CONTENT_BROWSER_SMS_TEST_MOCK_SMS_PROVIDER_H_
 
-#include "base/macros.h"
 #include "content/browser/sms/sms_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

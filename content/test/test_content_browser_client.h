@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 

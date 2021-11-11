@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_RENDER_PROCESS_HOST_CREATION_OBSERVER_H_
 #define CONTENT_PUBLIC_BROWSER_RENDER_PROCESS_HOST_CREATION_OBSERVER_H_
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 
 namespace content {

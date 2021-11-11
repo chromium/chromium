@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_TEST_FRAME_NAVIGATION_OBSERVER_H_
 #define CONTENT_PUBLIC_TEST_TEST_FRAME_NAVIGATION_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"

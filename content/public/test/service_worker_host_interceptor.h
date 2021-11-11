@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_TEST_SERVICE_WORKER_HOST_INTERCEPTOR_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"

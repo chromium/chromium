@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "components/download/public/common/base_file.h"
 #include "content/browser/download/save_types.h"
 

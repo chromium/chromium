@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_ANDROID_H_
 #define CONTENT_BROWSER_RENDERER_HOST_DELEGATED_FRAME_HOST_CLIENT_ANDROID_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "content/common/content_export.h"

@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

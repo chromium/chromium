@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/task/task_runner.h"

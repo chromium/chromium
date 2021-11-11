@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/mac/scoped_block.h"
-#include "base/macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"

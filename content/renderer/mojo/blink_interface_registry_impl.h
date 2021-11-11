@@ -5,7 +5,6 @@
 #ifndef CONTENT_RENDERER_MOJO_BLINK_INTERFACE_REGISTRY_IMPL_H_
 #define CONTENT_RENDERER_MOJO_BLINK_INTERFACE_REGISTRY_IMPL_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/service_manager/public/cpp/binder_registry.h"

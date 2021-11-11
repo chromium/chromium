@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"

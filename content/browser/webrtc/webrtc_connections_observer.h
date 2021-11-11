@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_WEBRTC_WEBRTC_CONNECTIONS_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "content/browser/webrtc/webrtc_internals_connections_observer.h"
 

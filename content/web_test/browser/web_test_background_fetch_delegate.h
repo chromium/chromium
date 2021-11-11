@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/download/public/background_service/client.h"
 #include "content/public/browser/background_fetch_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

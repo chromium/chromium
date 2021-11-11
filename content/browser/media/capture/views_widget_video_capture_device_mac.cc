@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/remote_cocoa/browser/scoped_cg_window_id.h"
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"

@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/pepper/pepper_tcp_server_socket_message_filter.h"

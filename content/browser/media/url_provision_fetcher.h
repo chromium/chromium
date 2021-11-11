@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_MEDIA_URL_PROVISION_FETCHER_H_
 #define CONTENT_BROWSER_MEDIA_URL_PROVISION_FETCHER_H_
 
-#include "base/macros.h"
 #include "media/base/provision_fetcher.h"
 
 namespace network {

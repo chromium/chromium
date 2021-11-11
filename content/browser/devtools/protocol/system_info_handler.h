@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/system_info.h"
 #include "content/public/browser/browser_thread.h"

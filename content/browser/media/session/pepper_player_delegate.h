@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 
 namespace content {

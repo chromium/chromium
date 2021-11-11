@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace content {
 class BrowserContext;
 class RenderViewHostTestEnabler;

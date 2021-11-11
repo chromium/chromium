@@ -5,7 +5,6 @@
 #ifndef CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_NS_VIEW_HOST_HELPER_H_
 #define CONTENT_APP_SHIM_REMOTE_COCOA_RENDER_WIDGET_HOST_NS_VIEW_HOST_HELPER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 
 #include <vector>

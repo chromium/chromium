@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/browser_ppapi_host.h"
 #include "ppapi/proxy/resource_message_test_sink.h"
 

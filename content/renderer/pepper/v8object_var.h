@@ -6,7 +6,6 @@
 #define CONTENT_RENDERER_PEPPER_V8OBJECT_VAR_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/var.h"

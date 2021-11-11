@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/loader/navigation_url_loader_factory.h"
 
 namespace content {

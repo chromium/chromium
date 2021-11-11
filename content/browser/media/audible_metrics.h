@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "content/common/content_export.h"
 

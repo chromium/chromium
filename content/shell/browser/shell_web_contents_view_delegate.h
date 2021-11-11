@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
