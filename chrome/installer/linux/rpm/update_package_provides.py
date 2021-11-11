@@ -63,8 +63,8 @@ LIBRARY_FILTER = set([
     "rtld(GNU_HASH)",
 ])
 
-SUPPORTED_FEDORA_RELEASES = ['31', '32', '33']
-SUPPORTED_OPENSUSE_LEAP_RELEASES = ['15.1', '15.2']
+SUPPORTED_FEDORA_RELEASES = ['32', '33', '34']
+SUPPORTED_OPENSUSE_LEAP_RELEASES = ['15.2', '15.3']
 
 COMMON_NS = "http://linux.duke.edu/metadata/common"
 RPM_NS = "http://linux.duke.edu/metadata/rpm"
