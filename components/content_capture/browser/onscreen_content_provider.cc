@@ -231,10 +231,7 @@ void OnscreenContentProvider::DidUpdateFaviconURL(
 void OnscreenContentProvider::NotifyFaviconURLUpdated(
     content::RenderFrameHost* render_frame_host,
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
-  // Only set the favicons for the mainframe.
-  if (render_frame_host != web_contents()->GetMainFrame())
-    return;
-
+  DCHECK(render_frame_host->IsInPrimaryMainFrame());
   if (auto* receiver = ContentCaptureReceiverForFrame(render_frame_host)) {
     receiver->UpdateFaviconURL(candidates);
   }
