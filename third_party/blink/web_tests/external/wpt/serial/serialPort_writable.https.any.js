@@ -70,7 +70,7 @@ serial_test(async (t, fake) => {
   compareArrays(data, value);
 
   await port.close();
-}, 'Can read a large amount of data');
+}, 'Can write a large amount of data');
 
 serial_test(async (t, fake) => {
   const {port, fakePort} = await getFakeSerialPort(fake);
