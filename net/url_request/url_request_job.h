@@ -291,9 +291,6 @@ class NET_EXPORT URLRequestJob {
   bool CanSetCookie(const net::CanonicalCookie& cookie,
                     CookieOptions* options) const;
 
-  // Delegates to URLRequest.
-  PrivacyMode privacy_mode() const;
-
   // Notifies the job that headers have been received.
   void NotifyHeadersComplete();
 
