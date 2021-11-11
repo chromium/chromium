@@ -4,6 +4,7 @@
 
 #include "ash/assistant/ui/assistant_ui_constants.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/font_list.h"
@@ -17,6 +18,14 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kOnlyAllowMouseClickEvents, false)
 const gfx::FontList& GetDefaultFontList() {
   static const base::NoDestructor<gfx::FontList> font_list("Google Sans, 12px");
   return *font_list;
+}
+
+int GetHorizontalMargin() {
+  return features::IsProductivityLauncherEnabled() ? 24 : 32;
+}
+
+int GetHorizontalPadding() {
+  return features::IsProductivityLauncherEnabled() ? 20 : 14;
 }
 
 }  // namespace ui

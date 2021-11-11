@@ -12,6 +12,7 @@
 #include "ash/assistant/ui/main_stage/assistant_opt_in_view.h"
 #include "ash/assistant/ui/main_stage/suggestion_container_view.h"
 #include "ash/assistant/util/animation_util.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
@@ -24,13 +25,16 @@ namespace ash {
 
 namespace {
 
-// Appearance.
-constexpr int kPreferredHeightDip = 48;
-
 // Animation.
 constexpr base::TimeDelta kAnimationFadeInDelay = base::Milliseconds(167);
 constexpr base::TimeDelta kAnimationFadeInDuration = base::Milliseconds(167);
 constexpr base::TimeDelta kAnimationFadeOutDuration = base::Milliseconds(167);
+
+// Returns the preferred height in DIPs. Not named GetPreferredHeight() so it
+// looks less like a views::View method.
+int GetPreferredHeightDip() {
+  return features::IsProductivityLauncherEnabled() ? 64 : 48;
+}
 
 }  // namespace
 
@@ -61,7 +65,7 @@ gfx::Size AssistantFooterView::CalculatePreferredSize() const {
 }
 
 int AssistantFooterView::GetHeightForWidth(int width) const {
-  return kPreferredHeightDip;
+  return GetPreferredHeightDip();
 }
 
 void AssistantFooterView::InitLayout() {

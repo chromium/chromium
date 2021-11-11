@@ -16,6 +16,7 @@ source_set("constants") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//skia",
     "//ui/aura",

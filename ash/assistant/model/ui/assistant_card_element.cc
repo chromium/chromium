@@ -32,7 +32,8 @@ class AssistantCardElement::Processor : public AshWebView::Observer {
 
   void Process() {
     // TODO(dmblack): Find a better way of determining desired card size.
-    const int width_dip = kPreferredWidthDip - 2 * kHorizontalMarginDip;
+    const int width_dip =
+        kPreferredWidthDip - 2 * assistant::ui::GetHorizontalMargin();
 
     // Configure parameters for the card.
     AshWebView::InitParams contents_params;

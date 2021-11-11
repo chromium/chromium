@@ -24,6 +24,8 @@ component("cpp") {
     "device_actions.h",
     "features.cc",
     "features.h",
+    "switches.cc",
+    "switches.h",
   ]
 
   public_deps = [

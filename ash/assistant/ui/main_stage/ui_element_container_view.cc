@@ -136,10 +136,10 @@ void UiElementContainerView::OnContentsPreferredSizeChanged(
 
 void UiElementContainerView::InitLayout() {
   // Content.
+  const int horizontal_margin = assistant::ui::GetHorizontalMargin();
   content_view()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, kHorizontalMarginDip, kPaddingBottomDip,
-                  kHorizontalMarginDip),
+      gfx::Insets(0, horizontal_margin, kPaddingBottomDip, horizontal_margin),
       kSpacingDip));
 
   // Scroll indicator.
